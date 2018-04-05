@@ -1,0 +1,4 @@
+^README\.Rmd$
+^scripts$
+^.*\.Rproj$
+^\.Rproj\.user$
