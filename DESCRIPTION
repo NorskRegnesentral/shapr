@@ -13,5 +13,10 @@ Suggests:
     testthat
 Imports: 
     data.table,
-    ranger
+    ranger,
+    cluster,
+    maptree,
+    corrplot,
+    rockchalk,
+    pcaPP
 RoxygenNote: 6.0.1
