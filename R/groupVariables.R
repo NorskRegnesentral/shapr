@@ -1,19 +1,26 @@
 #' Group variables according to matrix of Kendall's tau
 #'
 #' @param X matrix
+#' @param corMat optional correlation matrix, ignores X if included
+#' @param alpha optional tuning parameter for optimal number of clusters
 #'
 #' @return List
 #'
 #' @export
 #'
 #' @author Anders Løland
-group_variables <- function(X) {
-
-    ## Dimension
-    d = nrow(X)
+group_variables <- function(X = NULL, corMat = NULL, alpha = 1) {
 
     ## Kendall's tau
-    corMat = pcaPP::cor.fk(X)
+    if(is.null(corMat)){
+        corMat = pcaPP::cor.fk(X)
+        ## Dimension
+        d = nrow(X)
+    }
+    else{
+        ## Dimension
+        d = nrow(corMat)
+    }
 
     ## Plot correlation matrix
     corrplot::corrplot(corMat, method = "square")
@@ -31,7 +38,7 @@ group_variables <- function(X) {
     plot(cluster, main="Dissimilarity = 1 - |Kendall's tau|", xlab="")
 
     ## Find optimal number of clusters
-    optimalK = maptree::kgs(cluster, distance, maxclus = d-10, alpha = 0.1)
+    optimalK = maptree::kgs(cluster, distance, maxclus = d-10, alpha = alpha)
     plot(names(optimalK), optimalK, xlab="# of clusters", ylab="penalty",type="b",col="green",lwd=4,pch=19)
     K = as.numeric(names(optimalK)[which(optimalK==min(optimalK))])
 
@@ -46,14 +53,15 @@ group_variables <- function(X) {
     ord = cluster$order
     corrplot::corrplot(corMat[ord,ord], method = "square")
     ## Add cluster rectangles
-    corr_rect_hclust(corMat,k=K)
+    corr_rect_hclust(corMat,cluster,k=K)
 
-    list(corMat = corMat)
+    list(corMat=corMat[ord,ord], K=K, cluster=cluster)
 }
 
 #' Draw rectangles on the correlation matrix graph
 #'
 #' @param corr correlation matrix
+#' @param cluster cluster object from hclust
 #' @param k number of clusters
 #' @param col box colour
 #' @param lwd box line width
@@ -63,13 +71,13 @@ group_variables <- function(X) {
 #' @author Anders Løland
 corr_rect_hclust <- function(
     corr,
+    cluster,
     k = 2,
     col = "yellow",
     lwd = 6){
     n <- nrow(corr)
-    tree <- stats::hclust(stats::as.dist(1 - abs(corr)))
-    hc <- stats::cutree(tree, k = k)
-    clustab <- table(hc)[unique(hc[tree$order])]
+    hc <- stats::cutree(cluster, k = k)
+    clustab <- table(hc)[unique(hc[cluster$order])]
     cu <- c(0, cumsum(clustab))
 
     rect(cu[-(k + 1)] + 0.5,
