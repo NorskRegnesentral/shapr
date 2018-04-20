@@ -5,5 +5,7 @@
 #'
 #' @importFrom stats predict
 #'
+#' @importFrom graphics plot hist rect
+#'
 #' @keywords internal
 "_PACKAGE"
