@@ -17,5 +17,18 @@ dimnames(corMat) = list(
 )
 
 
+groupedSim = group_variables(corMat = corMat, alpha = 1)
 
-grouped = group_variables(corMat = corMat, alpha = 1)
+## DNB data
+trainData = read.table("/nr/project/stat/BigInsight/Projects/Explanations/Data/train6.csv",sep=";",header=TRUE)
+## Remove response
+trainData = trainData[,-1]
+## Kendall's tau
+corMatDNB = pcaPP::cor.fk (trainData)
+
+## Simplify labels
+rown = unlist(strsplit(dimnames(corMatDNB)[[1]],"_end"))
+rown = unlist(strsplit(rown,"_correct"))
+dimnames(corMatDNB) = list(rown,rown)
+
+groupedDNB = group_variables(corMat = corMatDNB, alpha = 0.1)
