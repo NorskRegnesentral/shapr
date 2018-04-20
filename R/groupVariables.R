@@ -1,7 +1,7 @@
 #' Group variables according to matrix of Kendall's tau
 #'
-#' @param X matrix
-#' @param corMat optional correlation matrix, ignores X if included
+#' @param X optional data matrix, ignores corMat if included
+#' @param corMat optional correlation matrix, ignores X if included. Either X or corMat must be included
 #' @param alpha optional tuning parameter for optimal number of clusters
 #'
 #' @return List
