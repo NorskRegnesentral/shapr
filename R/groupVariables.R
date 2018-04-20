@@ -25,7 +25,7 @@ group_variables <- function(X = NULL, corMat = NULL, alpha = 1) {
     ## Plot correlation matrix
     corrplot::corrplot(corMat, method = "square")
     ## Histogram of correlations
-    hist(corMat[upper.tri(corMat)],main="Distribution of Kendall's tau for  data",xlab="",xlim=c(-1,1),nclass=30,col="brown")
+    hist(corMat[upper.tri(corMat)],main="Distribution of Kendall's tau for the data",xlab="",xlim=c(-1,1),nclass=30,col="brown")
 
     ## Use 1 - correlation as distance matrix
     dissimilarity = 1 - abs(corMat)
