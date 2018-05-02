@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 man/*.Rd
+
+^Rprof.out$
