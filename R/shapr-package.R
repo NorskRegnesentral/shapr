@@ -5,5 +5,9 @@
 #'
 #' @importFrom stats predict
 #'
+#' @importFrom Rcpp sourceCpp
+#'
 #' @keywords internal
-"_PACKAGE"
+#'
+#' @useDynLib shapr, .registration = TRUE
+NULL

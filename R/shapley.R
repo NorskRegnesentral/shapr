@@ -17,6 +17,15 @@ w_shapley <- function(m, N, s) {
 #' @param exact Logical.
 #' @param nRows Integer
 #'
+#' @details
+#' The returned data.table contains the following columns
+#' \describe{
+#' \item{ID}{Postive integer. Unique key for combination}
+#' \item{comb}{List.}
+#' \item{num_var}{Postive integer.}
+#' \item{N}{Postive integer.}
+#' }
+#'
 #' @return data.table
 #'
 #' @export
@@ -118,18 +127,12 @@ get_subset_data <- function(X, nRows) {
 #' @author Nikolai Sellereite
 get_weighted_matrix <- function(X) {
 
-    h <- function(i, x) {
-        s <- grep(pattern = paste0("^(", i, "){1}$"), x = x[[1]])
-        return(1 * (length(s) > 0))
-    }
-
-    Xdt <- X[, c(1, lapply(1:m, FUN = h, x = comb), w), ID][, ID := NULL]
-    nms <- paste0("x", head(1:ncol(Xdt), -1))
-    setnames(Xdt, c(nms, "w"))
-    X <- as.matrix(Xdt[, .SD, .SDcols = nms])
-    Xw <-  t(as.matrix(Xdt[, (nms) := .SD * w, by = w][, w := NULL]))
-    W <- solve(Xw %*% X) %*% Xw
-    rownames(W) <- NULL
+    W <- weighted_matrix(
+        comb = X[["comb"]],
+        w = X[["w"]],
+        m = X[.N][["num_var"]],
+        n = X[, .N]
+    )
 
     return(W)
 }
@@ -162,6 +165,32 @@ scale_data <- function(Xtrain, Xtest) {
     return(list(Xtrain = Xtrain, Xtest = Xtest))
 }
 
+#' Create imputed test data
+#'
+#' @param I Array
+#' @param trainData data.table
+#' @param testData data.table
+#' @param model_features Postive integer vector
+#' @param which_comb Positive integer.
+#'
+#' @return Matrix
+#'
+#' @export
+#'
+#' @author Nikolai Sellereite
+impute_data <- function(I, trainData, testData) {
+
+    X <- impute_cpp(
+        I = I,
+        train = trainData,
+        test = testData
+    )
+
+    colnames(X) <- c("ID", names(trainData))
+
+    return(X)
+}
+
 #' Get predictions
 #'
 #' @param X data.table
@@ -172,89 +201,76 @@ scale_data <- function(Xtrain, Xtest) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_predictions <- function(X, model, trainData, testData, sigma = 0, p_default = .5, nSamples = 100) {
+get_predictions <- function(X,
+                            model,
+                            trainData,
+                            testData,
+                            W,
+                            sigma = 0,
+                            p_default = .5,
+                            nSamples = 100) {
 
-    ## Define Shapley matrix ----------------
+    ## Setup ----------------
     l <- list()
-    kernelShapley <- matrix(0, ncol = nrow(W), nrow = nrow(testData))
-    if (sigma == 0) {
-        sigma <- 1.75 * (nrow(trainData)) ^ (-1 / 6)
-    }
+    nfeatures <- nrow(W)
+    ntest <- nrow(testData)
+    ntrain <- nrow(trainData)
+    kernShap <- matrix(0, ntest, nfeatures)
+    if (sigma == 0) sigma <- 1.75 * (ntrain) ^ (-1 / 6)
 
-    get_weights <- function(x, d, trainData) {
+    ## Get distance for all combinations ---------
+    D <- distance_cpp(
+        comb = X[["comb"]],
+        train = trainData,
+        test = testData,
+        ncomb = X[, .N],
+        sigma = sigma
+    )
 
-        N <- length(x)
-        if (N == 0) {
-            distK <- rep(0, nrow(trainData))
-        } else {
+    ## Sample ids for all test observations ---------
+    I <- sample_cpp(
+        X = D,
+        nSamples = nSamples,
+        ncomb = X[, .N]
+    )
 
-            inds <- x
-            d <- unlist(d[, .SD, .SDcols = inds])
-            nms <- colnames(trainData)[inds]
-            if (N == 1) {
-                distK <- (trainData[, .SD, .SDcols = nms] - d) ^ 2
-                distK <- distK[, 1]
-            } else {
-                distK <- trainData[, .SD, .SDcols = nms] - d
-                distK[, (nms) := lapply(.SD, function(i)(i)^2), .SDcols = nms]
-                distK <- distK[, rowSums(.SD), .SDcols = nms]
-            }
-        }
+    ## Get imputed data ---------
+    nms <- tail(names(model$coefficients), -1)
+    nms_ind <- which(colnames(trainData) %in% nms)
+    impute_data <- impute_data(
+        I = I,
+        train = trainData,
+        test = testData
+    )
 
-        obsWeights <- sqrt(exp(-distK/(2*sigma^2)))
+    ## Get predictions ----------
+    phat <- predict(model, data = impute_data, type = "response")
+    yMatTot <- as.data.table(impute_data)
+    yMatTot[, phat := phat]
+    predMat <- yMatTot[, .(mphat = mean(phat)), ID][order(ID)]
+    predMat[1, mphat := p_default]
 
-        if (max(obsWeights) < 0.00001) {
-            obsWeights[] <- 1/trainData[, .N]
-        }
-        return(obsWeights)
-    }
-
-    impute_train <- function(prob, comb, d) {
-        ind <- sample(
-            x = nrow(trainData),
-            nSamples,
-            replace = TRUE,
-            # prob = prob
-            prob = prob[[1]]
-        )
-        comb <- comb[[1]]
-        nms <- colnames(trainData)[comb]
-        yMat <- copy(trainData[ind])
-        if (length(nms) > 0) {
-            yMat[, (nms) := d[, .SD, .SDcols = nms]]
-        }
-
-        return(yMat)
-    }
+    l[[k]] <- predMat[, k := k]
+    kernelShapley[k, ] <- W %*% predMat[, mphat]
 
 
-    for (k in 1:nrow(testData)) {
-        print(sprintf("%d out of %d", k, nrow(testData)))
-
-        ## Get weights for combinations ---------
-        X[, test := lapply(comb, get_weights, d = testData[k], trainData = trainData)]
-
-        ## Generate augmented training data ---------
-        yMatTot <- X[, impute_train(test, comb = comb, d = testData[k]), ID]
-
-        ## Get predictions ----------
-        ranger <- TRUE
-        if (ranger) {
-            yMatTot[, phat := predict(model, data = .SD, type = "response")$predictions[, 2]]
-        } else {
-            yMatTot[, phat := unname(predict(model, data = .SD, type = "response"))]
-        }
-        predMat <- yMatTot[, .(mphat = mean(phat)), ID][order(ID)]
-        predMat[1, mphat := p_default]
-
-        ## Fill in values for Shapley Kernel ----------
-        l[[k]] <- predMat[, k := k]
-        kernelShapley[k, ] <- W %*% predMat[, mphat]
-    }
     p_dt <- rbindlist(l, use.names = TRUE)
 
     list(kernelShapley = kernelShapley, p_dt = p_dt)
 }
+
+
+# for (k in 1:nrow(testData)) {
+#
+#     ## Print ---------
+#     print(sprintf("%d out of %d", k, nrow(testData)))
+#
+#     # if (ranger) {
+#     #     yMatTot[, phat := predict(model, data = .SD, type = "response")$predictions[, 2]]
+#     # } else {
+#     #     yMatTot[, phat := unname(predict(model, data = .SD, type = "response"))]
+#     # }
+# }
 
 #' Get shapley weights for test data
 #'
@@ -281,9 +297,6 @@ kernelShap <- function(m,
     ## Add weights ----------------
     X <- get_weights(X)
 
-    ## Subset data if two many rows ----------------
-    # X <- get_subset_data(X, nRows = nRows)
-
     ## Get weighted matrix ----------------
     W <- get_weighted_matrix(X)
 
@@ -296,6 +309,7 @@ kernelShap <- function(m,
         model = model,
         trainData = S$Xtrain,
         testData = S$Xtest,
+        W = W,
         sigma = sigma,
         p_default = p_default,
         nSamples = nSamples
@@ -303,3 +317,50 @@ kernelShap <- function(m,
 
     return(X)
 }
+
+# get_weights <- function(x, d, trainData) {
+#
+#     N <- length(x)
+#     if (N == 0) {
+#         distK <- rep(0, nrow(trainData))
+#     } else {
+#
+#         inds <- x
+#         d <- unlist(d[, .SD, .SDcols = inds])
+#         nms <- colnames(trainData)[inds]
+#         if (N == 1) {
+#             distK <- (trainData[, .SD, .SDcols = nms] - d) ^ 2
+#             distK <- distK[, 1]
+#         } else {
+#             distK <- trainData[, .SD, .SDcols = nms] - d
+#             distK[, (nms) := lapply(.SD, function(i)(i)^2), .SDcols = nms]
+#             distK <- distK[, rowSums(.SD), .SDcols = nms]
+#         }
+#     }
+#
+#     obsWeights <- sqrt(exp(-distK/(2*sigma^2)))
+#
+#     if (max(obsWeights) < 0.00001) {
+#         obsWeights[] <- 1/trainData[, .N]
+#     }
+#     return(obsWeights)
+# }
+#
+#
+# impute_train <- function(prob, comb, d) {
+#     ind <- sample(
+#         x = nrow(trainData),
+#         nSamples,
+#         replace = TRUE,
+#         # prob = prob
+#         prob = prob[[1]]
+#     )
+#     comb <- comb[[1]]
+#     nms <- colnames(trainData)[comb]
+#     yMat <- copy(trainData[ind])
+#     if (length(nms) > 0) {
+#         yMat[, (nms) := d[, .SD, .SDcols = nms]]
+#     }
+#
+#     return(yMat)
+# }
