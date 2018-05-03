@@ -29,8 +29,8 @@ distance_cpp <- function(comb, train, test, ncomb, sigma) {
 #'
 #' @return Array of three dimensions
 #' @author Nikolai Sellereite
-impute_cpp <- function(I, train, test, model_features, comb) {
-    .Call(`_shapr_impute_cpp`, I, train, test, model_features, comb)
+impute_cpp <- function(I, train, test, comb) {
+    .Call(`_shapr_impute_cpp`, I, train, test, comb)
 }
 
 #' Get distance

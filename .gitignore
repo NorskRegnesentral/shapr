@@ -4,4 +4,4 @@
 .Ruserdata
 man/*.Rd
 
-^Rprof.out$
+Rprof.out

@@ -178,17 +178,18 @@ scale_data <- function(Xtrain, Xtest) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-impute_data <- function(I, trainData, testData) {
+impute_data <- function(I, trainData, testData, comb) {
 
     X <- impute_cpp(
         I = I,
         train = trainData,
-        test = testData
+        test = testData,
+        comb = comb
     )
 
-    colnames(X) <- c("ID", names(trainData))
+    colnames(X) <- c("test_ID", "sample_id", names(trainData))
 
-    return(X)
+    return(as.data.table(X))
 }
 
 #' Get predictions
@@ -211,7 +212,6 @@ get_predictions <- function(X,
                             nSamples = 100) {
 
     ## Setup ----------------
-    l <- list()
     nfeatures <- nrow(W)
     ntest <- nrow(testData)
     ntrain <- nrow(trainData)
@@ -235,28 +235,25 @@ get_predictions <- function(X,
     )
 
     ## Get imputed data ---------
-    nms <- tail(names(model$coefficients), -1)
-    nms_ind <- which(colnames(trainData) %in% nms)
-    impute_data <- impute_data(
+    DT_impute <- impute_data(
         I = I,
         train = trainData,
-        test = testData
+        test = testData,
+        comb = list(1)
     )
 
     ## Get predictions ----------
-    phat <- predict(model, data = impute_data, type = "response")
-    yMatTot <- as.data.table(impute_data)
+    phat <- predict(model, data = DT_impute, type = "response")
+    yMatTot <- as.data.table(DT_impute)
     yMatTot[, phat := phat]
-    predMat <- yMatTot[, .(mphat = mean(phat)), ID][order(ID)]
-    predMat[1, mphat := p_default]
-
-    l[[k]] <- predMat[, k := k]
-    kernelShapley[k, ] <- W %*% predMat[, mphat]
+    predMat <- yMatTot[, .(mphat = mean(phat)), .(test_ID, sample_id)]
 
 
-    p_dt <- rbindlist(l, use.names = TRUE)
+    for (k in 1:nrow(kernShap)) {
+        kernShap[k, ] <- W %*% predMat[test_ID == k, mphat]
+    }
 
-    list(kernelShapley = kernelShapley, p_dt = p_dt)
+    return(list(kernelShapley = kernelShapley, p_dt = p_dt))
 }
 
 
@@ -304,6 +301,15 @@ kernelShap <- function(m,
     S <- scale_data(trainData, testData)
 
     ## Get predictions ----------------
+    X = X
+    model = mod5
+    trainData = S$Xtrain
+    testData = S$Xtest
+    W = W
+    sigma = sigma
+    p_default = .5
+    nSamples = 200
+
     X <- get_predictions(
         X = X,
         model = model,
@@ -317,50 +323,3 @@ kernelShap <- function(m,
 
     return(X)
 }
-
-# get_weights <- function(x, d, trainData) {
-#
-#     N <- length(x)
-#     if (N == 0) {
-#         distK <- rep(0, nrow(trainData))
-#     } else {
-#
-#         inds <- x
-#         d <- unlist(d[, .SD, .SDcols = inds])
-#         nms <- colnames(trainData)[inds]
-#         if (N == 1) {
-#             distK <- (trainData[, .SD, .SDcols = nms] - d) ^ 2
-#             distK <- distK[, 1]
-#         } else {
-#             distK <- trainData[, .SD, .SDcols = nms] - d
-#             distK[, (nms) := lapply(.SD, function(i)(i)^2), .SDcols = nms]
-#             distK <- distK[, rowSums(.SD), .SDcols = nms]
-#         }
-#     }
-#
-#     obsWeights <- sqrt(exp(-distK/(2*sigma^2)))
-#
-#     if (max(obsWeights) < 0.00001) {
-#         obsWeights[] <- 1/trainData[, .N]
-#     }
-#     return(obsWeights)
-# }
-#
-#
-# impute_train <- function(prob, comb, d) {
-#     ind <- sample(
-#         x = nrow(trainData),
-#         nSamples,
-#         replace = TRUE,
-#         # prob = prob
-#         prob = prob[[1]]
-#     )
-#     comb <- comb[[1]]
-#     nms <- colnames(trainData)[comb]
-#     yMat <- copy(trainData[ind])
-#     if (length(nms) > 0) {
-#         yMat[, (nms) := d[, .SD, .SDcols = nms]]
-#     }
-#
-#     return(yMat)
-# }

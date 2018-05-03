@@ -22,17 +22,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // impute_cpp
-arma::Mat<double> impute_cpp(arma::Cube<int> I, DataFrame train, DataFrame test, IntegerVector model_features, int comb);
-RcppExport SEXP _shapr_impute_cpp(SEXP ISEXP, SEXP trainSEXP, SEXP testSEXP, SEXP model_featuresSEXP, SEXP combSEXP) {
+arma::Mat<double> impute_cpp(arma::Cube<int> I, DataFrame train, DataFrame test, List comb);
+RcppExport SEXP _shapr_impute_cpp(SEXP ISEXP, SEXP trainSEXP, SEXP testSEXP, SEXP combSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::Cube<int> >::type I(ISEXP);
     Rcpp::traits::input_parameter< DataFrame >::type train(trainSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type test(testSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type model_features(model_featuresSEXP);
-    Rcpp::traits::input_parameter< int >::type comb(combSEXP);
-    rcpp_result_gen = Rcpp::wrap(impute_cpp(I, train, test, model_features, comb));
+    Rcpp::traits::input_parameter< List >::type comb(combSEXP);
+    rcpp_result_gen = Rcpp::wrap(impute_cpp(I, train, test, comb));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -66,7 +65,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_shapr_distance_cpp", (DL_FUNC) &_shapr_distance_cpp, 5},
-    {"_shapr_impute_cpp", (DL_FUNC) &_shapr_impute_cpp, 5},
+    {"_shapr_impute_cpp", (DL_FUNC) &_shapr_impute_cpp, 4},
     {"_shapr_sample_cpp", (DL_FUNC) &_shapr_sample_cpp, 3},
     {"_shapr_weighted_matrix", (DL_FUNC) &_shapr_weighted_matrix, 4},
     {NULL, NULL, 0}
