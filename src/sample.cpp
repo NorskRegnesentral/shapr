@@ -3,20 +3,20 @@ using namespace Rcpp;
 
 //' Get distance
 //'
-//' @param X Three dimnesional array
+//' @param D Three dimnesional array
 //'
 //' @export
 //'
 //' @return List
 //' @author Nikolai Sellereite
 // [[Rcpp::export]]
-arma::Cube<int> sample_cpp(arma::Cube<double> X, int nSamples, int ncomb) {
+arma::Cube<int> sample_cpp(arma::Cube<double> D, int nsamples, int ncomb) {
 
     // Setup
     int ntrain, ntest;
-    ntrain = X.n_rows;
-    ntest = X.n_cols;
-    arma::Cube<int> Y(nSamples, ntest, ncomb);
+    ntrain = D.n_rows;
+    ntest = D.n_cols;
+    arma::Cube<int> Y(nsamples, ntest, ncomb);
     std::default_random_engine generator;
     NumericVector weights(ntrain);
 
@@ -28,13 +28,13 @@ arma::Cube<int> sample_cpp(arma::Cube<double> X, int nSamples, int ncomb) {
 
             // Get weights
             for (int i = 0; i < ntrain; ++i) {
-                weights[i] = arma::as_scalar(X(arma::span(i), arma::span(j), arma::span(k)));
+                weights[i] = arma::as_scalar(D(arma::span(i), arma::span(j), arma::span(k)));
             }
 
             // Define sampler
             std::discrete_distribution<int> distribution(weights.begin(), weights.end());
 
-            for (int i = 0; i < nSamples; ++i) {
+            for (int i = 0; i < nsamples; ++i) {
                 int number = distribution(generator);
                 Y(i, j, k) = number + 1;
             }

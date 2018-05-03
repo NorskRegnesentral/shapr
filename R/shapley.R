@@ -31,44 +31,44 @@ w_shapley <- function(m, N, s) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_combinations <- function(m, exact = TRUE, nRows = 200) {
+get_combinations <- function(m, exact = TRUE, nrows = 200) {
 
     if (exact == TRUE) {
         N <- 2^m
         X <- data.table(ID = 1:N)
-        all_combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
-        X[, comb := unlist(all_combinations, recursive = FALSE)]
-        X[, num_var := length(comb[[1]]), ID]
-        X[, N := .N, num_var]
+        combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
+        X[, features := unlist(combinations, recursive = FALSE)]
+        X[, nfeatures := length(features[[1]]), ID]
+        X[, N := .N, nfeatures]
     } else {
 
         ## Find weights for given number of features ----------
-        dt_feat <- data.table(num_var = head(1:m, -1))
-        dt_feat[, N := unlist(lapply(num_var, choose, n = m))]
-        dt_feat[, w := w_shapley(m = m, N = N, s = num_var)]
+        DT <- data.table(nfeatures = head(1:m, -1))
+        DT[, N := unlist(lapply(nfeatures, choose, n = m))]
+        DT[, weight := w_shapley(m = m, N = N, s = nfeatures)]
 
         ## Sample number of features ----------
-        X <- data.table(ID = 1:nRows,
-                        num_var = sample(x = dt_feat[["num_var"]],
-                                         size = nRows,
+        X <- data.table(ID = seq(nrows),
+                        nfeatures = sample(x = DT[["nfeatures"]],
+                                         size = nrows,
                                          replace = TRUE,
-                                         prob = dt_feat[["w"]]))
+                                         prob = DT[["weight"]]))
 
         ## Sample specific set of features ----------
-        setkey(X, num_var)
+        setkey(X, nfeatures)
         X[, ID := .I]
-        X[, comb := lapply(num_var, sample, x = 1:m)]
+        X[, features := lapply(nfeatures, sample, x = 1:m)]
 
         ## Add zero features and m features ----------
         X_zero_all <- data.table(ID = seq(X[, max(ID)] + 1, length.out = 2),
                                  num_var = c(0, m),
                                  comb = c(list(NULL), list(1:m)))
         X <- rbindlist(list(X, X_zero_all))
-        setkey(X, num_var)
+        setkey(X, nfeatures)
         X[, ID := .I]
 
         ## Add number of combinations
-        X <- merge(x = X, y = dt_feat[, .(num_var, N)], all.x = TRUE, on = "num_var")
+        X <- merge(x = X, y = DT[, .(nfeatures, N)], all.x = TRUE, on = "nfeatures")
 
     }
 
@@ -85,34 +85,9 @@ get_combinations <- function(m, exact = TRUE, nRows = 200) {
 #'
 #' @author Nikolai Sellereite
 get_weights <- function(X) {
-    X[-c(1, .N), w := w_shapley(m = m, N = N, s = num_var), ID]
-    X[c(1, .N) , w := 10 ^ 6]
+    X[-c(1, .N), weight := w_shapley(m = m, N = N, s = nfeatures), ID]
+    X[c(1, .N) , weight := 10 ^ 6]
 
-    return(X)
-}
-
-#' Get subset data
-#'
-#' @description Currently not used.
-#'
-#' @param X data.table.
-#' @param nRows Integer.
-#'
-#' @return data.table
-#'
-#' @export
-#'
-#' @author Nikolai Sellereite
-get_subset_data <- function(X, nRows) {
-    d <- X[, .N] - 2
-    if (nRows < d) {
-        ind_sample <- X[-c(1, .N), .I] + 1
-        X[, keep := 0]
-        X[c(1, .N), keep := 1]
-        ind_keep <- sample(x = ind_sample, size = nRows, replace = FALSE, prob = X[ind_sample, w])
-        X[ind_keep, keep := 1]
-        X <- X[keep == 1][, keep := NULL]
-    }
     return(X)
 }
 
@@ -128,9 +103,9 @@ get_subset_data <- function(X, nRows) {
 get_weighted_matrix <- function(X) {
 
     W <- weighted_matrix(
-        comb = X[["comb"]],
-        w = X[["w"]],
-        m = X[.N][["num_var"]],
+        comb = X[["features"]],
+        w = X[["weight"]],
+        m = X[.N][["nfeatures"]],
         n = X[, .N]
     )
 
@@ -148,8 +123,7 @@ get_weighted_matrix <- function(X) {
 #'
 #' @author Nikolai Sellereite
 scale_data <- function(Xtrain, Xtest) {
-    Xtrain <- trainData
-    Xtest <- testData
+
     if (!is.data.table(Xtrain)) {
         Xtrain <- as.data.table(Xtrain)
     }
@@ -158,9 +132,9 @@ scale_data <- function(Xtrain, Xtest) {
     }
     nms <- colnames(Xtrain)
     setcolorder(Xtest, nms)
-    sd <- unlist(Xtrain[, lapply(.SD, sd, na.rm = TRUE)])
-    Xtrain[, (nms) := .SD / lapply(.SD, sd, na.rm = TRUE)]
-    Xtest[, (nms) := .SD / sd, .SDcols = nms]
+    sd <- Xtrain[, unname(sapply(.SD, sd, na.rm = TRUE))]
+    Xtrain[, (nms) := .SD / sd]
+    Xtest[, (nms) := .SD / sd]
 
     return(list(Xtrain = Xtrain, Xtest = Xtest))
 }
@@ -178,16 +152,24 @@ scale_data <- function(Xtrain, Xtest) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-impute_data <- function(I, trainData, testData, comb) {
+impute_data <- function(Xtrain, Xtest, features, sigma, nsamples) {
 
-    X <- impute_cpp(
-        I = I,
-        train = trainData,
-        test = testData,
-        comb = comb
+    ## Get distance for all combinations ---------
+    if (missing(sigma) || sigma == 0) sigma <- 1.75 * (Xtrain[, .N]) ^ (-1 / 6)
+    D <- distance_cpp(
+        features = features,
+        Xtrain = Xtrain,
+        Xtest = Xtest,
+        ncomb = length(features),
+        sigma = sigma
     )
 
-    colnames(X) <- c("test_ID", "sample_id", names(trainData))
+    ## Sample ids for all test observations ---------
+    I <- sample_cpp(D, nsamples, length(features))
+
+    ## Get imputed data ---------
+    X <- impute_cpp(I, Xtrain, Xtest, features)
+    colnames(X) <- c("test_id", "sample_id", names(Xtrain))
 
     return(as.data.table(X))
 }
@@ -202,72 +184,29 @@ impute_data <- function(I, trainData, testData, comb) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_predictions <- function(X,
-                            model,
-                            trainData,
-                            testData,
-                            W,
-                            sigma = 0,
-                            p_default = .5,
-                            nSamples = 100) {
+get_predictions <- function(model, DT, W, p_default = .5, ranger = TRUE) {
 
     ## Setup ----------------
     nfeatures <- nrow(W)
-    ntest <- nrow(testData)
-    ntrain <- nrow(trainData)
+    ntest <- DT[, uniqueN(test_id)]
     kernShap <- matrix(0, ntest, nfeatures)
-    if (sigma == 0) sigma <- 1.75 * (ntrain) ^ (-1 / 6)
-
-    ## Get distance for all combinations ---------
-    D <- distance_cpp(
-        comb = X[["comb"]],
-        train = trainData,
-        test = testData,
-        ncomb = X[, .N],
-        sigma = sigma
-    )
-
-    ## Sample ids for all test observations ---------
-    I <- sample_cpp(
-        X = D,
-        nSamples = nSamples,
-        ncomb = X[, .N]
-    )
-
-    ## Get imputed data ---------
-    DT_impute <- impute_data(
-        I = I,
-        train = trainData,
-        test = testData,
-        comb = list(1)
-    )
 
     ## Get predictions ----------
-    phat <- predict(model, data = DT_impute, type = "response")
-    yMatTot <- as.data.table(DT_impute)
-    yMatTot[, phat := phat]
-    predMat <- yMatTot[, .(mphat = mean(phat)), .(test_ID, sample_id)]
-
-
-    for (k in 1:nrow(kernShap)) {
-        kernShap[k, ] <- W %*% predMat[test_ID == k, mphat]
+    if (ranger) {
+        phat <- predict(model, data = DT, type = "response")$predictions[, 2]
+    } else {
+        phat <- predict(model, data = DT, type = "response")
     }
 
-    return(list(kernelShapley = kernelShapley, p_dt = p_dt))
+    DT[, phat := phat]
+    predMat <- DT[, .(mphat = mean(phat)), .(test_id, sample_id)]
+
+    for (k in 1:nrow(kernShap)) {
+        kernShap[k, ] <- W %*% predMat[test_id == k, mphat]
+    }
+
+    return(list(kernShap = kernShap, DT = DT))
 }
-
-
-# for (k in 1:nrow(testData)) {
-#
-#     ## Print ---------
-#     print(sprintf("%d out of %d", k, nrow(testData)))
-#
-#     # if (ranger) {
-#     #     yMatTot[, phat := predict(model, data = .SD, type = "response")$predictions[, 2]]
-#     # } else {
-#     #     yMatTot[, phat := unname(predict(model, data = .SD, type = "response"))]
-#     # }
-# }
 
 #' Get shapley weights for test data
 #'
@@ -279,47 +218,45 @@ get_predictions <- function(X,
 #'
 #' @author Nikolai Sellereite
 kernelShap <- function(m,
-                       trainData,
-                       testData,
-                       nSamples,
-                       p_default,
+                       Xtrain,
+                       Xtest,
+                       nsamples,
                        exact = TRUE,
-                       nRows,
-                       sigma = NULL,
-                       model) {
+                       sigma,
+                       nrows = NULL) {
 
     ## Get all combinations ----------------
-    X <- get_combinations(m = m, exact = exact)
+    browser()
+    X <- get_combinations(m = m, exact = exact, nrows = nrows)
 
     ## Add weights ----------------
-    X <- get_weights(X)
+    X <- get_weights(X = X)
 
     ## Get weighted matrix ----------------
     W <- get_weighted_matrix(X)
 
     ## Transform to data table and scale data ----------------
-    S <- scale_data(trainData, testData)
+    S <- scale_data(Xtrain, Xtest)
 
-    ## Get predictions ----------------
-    X = X
-    model = mod5
-    trainData = S$Xtrain
-    testData = S$Xtest
-    W = W
-    sigma = sigma
-    p_default = .5
-    nSamples = 200
-
-    X <- get_predictions(
-        X = X,
-        model = model,
-        trainData = S$Xtrain,
-        testData = S$Xtest,
-        W = W,
-        sigma = sigma,
-        p_default = p_default,
-        nSamples = nSamples
+    ## Get imputed data ---------
+    DT <- impute_data(
+        Xtrain = S$Xtrain,
+        Xtest = S$Xtest,
+        features = X[["features"]],
+        nsamples = nsamples
     )
 
-    return(X)
+    return(list(DT = DT, W = W, X = X))
 }
+
+## Get predictions ----------------
+# X <- get_predictions(
+#     X = X,
+#     model = model,
+#     trainData = S$Xtrain,
+#     testData = S$Xtest,
+#     W = W,
+#     sigma = sigma,
+#     p_default = p_default,
+#     nSamples = nSamples
+# )

@@ -3,7 +3,6 @@
 export(distance_cpp)
 export(get_combinations)
 export(get_predictions)
-export(get_subset_data)
 export(get_weighted_matrix)
 export(get_weights)
 export(global_arguments)

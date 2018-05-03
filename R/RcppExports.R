@@ -3,9 +3,9 @@
 
 #' Get distance
 #'
-#' @param comb List
-#' @param train Dataframe
-#' @param test Dataframe
+#' @param features List
+#' @param Xtrain Dataframe
+#' @param Xtest Dataframe
 #' @param ncomb Positive integer
 #' @param sigma Positive numeric
 #'
@@ -13,15 +13,15 @@
 #'
 #' @return Array of three dimensions
 #' @author Nikolai Sellereite
-distance_cpp <- function(comb, train, test, ncomb, sigma) {
-    .Call(`_shapr_distance_cpp`, comb, train, test, ncomb, sigma)
+distance_cpp <- function(features, Xtrain, Xtest, ncomb, sigma) {
+    .Call(`_shapr_distance_cpp`, features, Xtrain, Xtest, ncomb, sigma)
 }
 
 #' Get imputed data
 #'
-#' @param comb List
-#' @param train Dataframe
-#' @param test Dataframe
+#' @param features List
+#' @param Xtrain Dataframe
+#' @param Xtest Dataframe
 #' @param ncomb Positive integer
 #' @param sigma Positive numeric
 #'
@@ -29,20 +29,20 @@ distance_cpp <- function(comb, train, test, ncomb, sigma) {
 #'
 #' @return Array of three dimensions
 #' @author Nikolai Sellereite
-impute_cpp <- function(I, train, test, comb) {
-    .Call(`_shapr_impute_cpp`, I, train, test, comb)
+impute_cpp <- function(I, Xtrain, Xtest, features) {
+    .Call(`_shapr_impute_cpp`, I, Xtrain, Xtest, features)
 }
 
 #' Get distance
 #'
-#' @param X Three dimnesional array
+#' @param D Three dimnesional array
 #'
 #' @export
 #'
 #' @return List
 #' @author Nikolai Sellereite
-sample_cpp <- function(X, nSamples, ncomb) {
-    .Call(`_shapr_sample_cpp`, X, nSamples, ncomb)
+sample_cpp <- function(D, nsamples, ncomb) {
+    .Call(`_shapr_sample_cpp`, D, nsamples, ncomb)
 }
 
 #' Get distance

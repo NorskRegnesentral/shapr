@@ -7,44 +7,44 @@
 using namespace Rcpp;
 
 // distance_cpp
-arma::Cube<double> distance_cpp(List comb, DataFrame train, DataFrame test, int ncomb, double sigma);
-RcppExport SEXP _shapr_distance_cpp(SEXP combSEXP, SEXP trainSEXP, SEXP testSEXP, SEXP ncombSEXP, SEXP sigmaSEXP) {
+arma::Cube<double> distance_cpp(List features, DataFrame Xtrain, DataFrame Xtest, int ncomb, double sigma);
+RcppExport SEXP _shapr_distance_cpp(SEXP featuresSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP ncombSEXP, SEXP sigmaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type comb(combSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type train(trainSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type test(testSEXP);
+    Rcpp::traits::input_parameter< List >::type features(featuresSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type Xtrain(XtrainSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type Xtest(XtestSEXP);
     Rcpp::traits::input_parameter< int >::type ncomb(ncombSEXP);
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
-    rcpp_result_gen = Rcpp::wrap(distance_cpp(comb, train, test, ncomb, sigma));
+    rcpp_result_gen = Rcpp::wrap(distance_cpp(features, Xtrain, Xtest, ncomb, sigma));
     return rcpp_result_gen;
 END_RCPP
 }
 // impute_cpp
-arma::Mat<double> impute_cpp(arma::Cube<int> I, DataFrame train, DataFrame test, List comb);
-RcppExport SEXP _shapr_impute_cpp(SEXP ISEXP, SEXP trainSEXP, SEXP testSEXP, SEXP combSEXP) {
+arma::Mat<double> impute_cpp(arma::Cube<int> I, DataFrame Xtrain, DataFrame Xtest, List features);
+RcppExport SEXP _shapr_impute_cpp(SEXP ISEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP featuresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::Cube<int> >::type I(ISEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type train(trainSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type test(testSEXP);
-    Rcpp::traits::input_parameter< List >::type comb(combSEXP);
-    rcpp_result_gen = Rcpp::wrap(impute_cpp(I, train, test, comb));
+    Rcpp::traits::input_parameter< DataFrame >::type Xtrain(XtrainSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type Xtest(XtestSEXP);
+    Rcpp::traits::input_parameter< List >::type features(featuresSEXP);
+    rcpp_result_gen = Rcpp::wrap(impute_cpp(I, Xtrain, Xtest, features));
     return rcpp_result_gen;
 END_RCPP
 }
 // sample_cpp
-arma::Cube<int> sample_cpp(arma::Cube<double> X, int nSamples, int ncomb);
-RcppExport SEXP _shapr_sample_cpp(SEXP XSEXP, SEXP nSamplesSEXP, SEXP ncombSEXP) {
+arma::Cube<int> sample_cpp(arma::Cube<double> D, int nsamples, int ncomb);
+RcppExport SEXP _shapr_sample_cpp(SEXP DSEXP, SEXP nsamplesSEXP, SEXP ncombSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::Cube<double> >::type X(XSEXP);
-    Rcpp::traits::input_parameter< int >::type nSamples(nSamplesSEXP);
+    Rcpp::traits::input_parameter< arma::Cube<double> >::type D(DSEXP);
+    Rcpp::traits::input_parameter< int >::type nsamples(nsamplesSEXP);
     Rcpp::traits::input_parameter< int >::type ncomb(ncombSEXP);
-    rcpp_result_gen = Rcpp::wrap(sample_cpp(X, nSamples, ncomb));
+    rcpp_result_gen = Rcpp::wrap(sample_cpp(D, nsamples, ncomb));
     return rcpp_result_gen;
 END_RCPP
 }

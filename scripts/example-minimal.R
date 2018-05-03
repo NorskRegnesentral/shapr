@@ -41,31 +41,18 @@ cnms <- c(1, 2, 4)
 size <- 100
 test_ind <- sample(x = iris_mod[, .I], size = size)
 iris_mod[, train := TRUE][test_ind, train := FALSE]
-testData <- iris_mod[train == FALSE][, .SD, .SDcols = cnms]
-trainData <- iris_mod[train == TRUE][, .SD, .SDcols = cnms]
+Xtest <- iris_mod[train == FALSE][, .SD, .SDcols = cnms]
+Xtrain <- iris_mod[train == TRUE][, .SD, .SDcols = cnms]
+m <- ncol(Xtrain)
 
-m <- length(cnms)
-exact <- TRUE
-sigma <- 1.75 * (trainData[, .N]) ^ (-1 / 6)
-X <- get_combinations(m = m, exact = exact)
-X <- get_weights(X)
-W <- get_weighted_matrix(X)
-dist_mat <- distance_cpp(
-    comb = X[["comb"]],
-    train = trainData,
-    test = testData,
-    ncomb = X[, .N],
-    sigma = sigma
-)
-
+## Some precomputed stuff ------------
 X <- kernelShap(
 	m = m,
-	trainData = trainData,
-	testData = testData,
-	nSamples = 200,
-	p_default = .5,
+	Xtrain = Xtrain,
+	Xtest = Xtest,
+	nsamples = 200,
 	exact = TRUE,
-	nRows = 1e3,
-	sigma = 0,
-	model = mod5
+	nrows = 1e3
 )
+
+X <- get_predictions(model = mod5, DT = X$DT, W = X$W, p_default = .5)
