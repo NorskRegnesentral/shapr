@@ -3,11 +3,7 @@ using namespace Rcpp;
 
 //' Get imputed data
 //'
-//' @param features List
-//' @param Xtrain Dataframe
-//' @param Xtest Dataframe
-//' @param ncomb Positive integer
-//' @param sigma Positive numeric
+//' @inheritParams global_arguments
 //'
 //' @export
 //'

@@ -6,8 +6,8 @@ library(ranger)
 data_dir <- "/nr/project/stat/BFFGB18/LIME/lime/R/"
 Xtrain <- as.data.table(read.table(paste0(data_dir, "/train6.csv"), sep = ";", header = TRUE))
 Xtest <- as.data.table(read.table(paste0(data_dir, "/test6.csv"), sep = ";", header = TRUE))
-Xtrain <- Xtrain[, .SD, .SDcols = 1:7]
-Xtest <- Xtest[, .SD, .SDcols = 1:7]
+Xtrain <- Xtrain[, .SD, .SDcols = 1:10]
+Xtest <- Xtest[, .SD, .SDcols = 1:10]
 
 model <- ranger(as.factor(default) ~ .,
                 data = Xtrain,
@@ -25,13 +25,20 @@ Xtest <- Xtest[, .SD, .SDcols = nms]
 setcolorder(Xtest, nms)
 m <- ncol(Xtrain)
 
-X <- kernelShap(
-    m = m,
-    Xtrain = Xtrain,
-    Xtest = Xtest,
-    nsamples = 200,
-    exact = TRUE,
-    nrows = 1e3
-)
+S <- scale_data(Xtrain, Xtest, scale = TRUE)
 
-X <- get_predictions(model = model, DT = X$DT, W = X$W, p_default = p_default, ranger = TRUE)
+Xtrain = as.matrix(S$Xtrain)
+Xtest = as.matrix(S$Xtest)
+
+
+X <- get_combinations(m = m, exact = FALSE, nrows = 1e4)
+X <- get_weights(X = X)
+W <- get_weighted_matrix(X = X)
+x <- distance_cpp2(Xtrain, Xtest, m)
+
+devtools::load_all()
+sigma <- 1.75 * (nrow(Xtrain)) ^ (-1 / 6)
+test <- sample_unit(x[,1,], X[["features"]], nsamples = 1e4, sigma)
+
+test1 <- impute_data_unit(test, Xtrain, Xtest)
+str(test1)

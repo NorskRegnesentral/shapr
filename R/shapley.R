@@ -15,15 +15,15 @@ w_shapley <- function(m, N, s) {
 #'
 #' @param m Integer.
 #' @param exact Logical.
-#' @param nRows Integer
+#' @param nrows Integer
 #'
 #' @details
 #' The returned data.table contains the following columns
 #' \describe{
 #' \item{ID}{Postive integer. Unique key for combination}
-#' \item{comb}{List.}
-#' \item{num_var}{Postive integer.}
-#' \item{N}{Postive integer.}
+#' \item{features}{List}
+#' \item{nfeautres}{Postive integer}
+#' \item{N}{Postive integer}
 #' }
 #'
 #' @return data.table
@@ -62,13 +62,15 @@ get_combinations <- function(m, exact = TRUE, nrows = 200) {
         ## Add zero features and m features ----------
         X_zero_all <- data.table(ID = seq(X[, max(ID)] + 1, length.out = 2),
                                  num_var = c(0, m),
-                                 comb = c(list(NULL), list(1:m)))
+                                 comb = c(list(numeric(0)), list(1:m)))
         X <- rbindlist(list(X, X_zero_all))
         setkey(X, nfeatures)
         X[, ID := .I]
 
         ## Add number of combinations
         X <- merge(x = X, y = DT[, .(nfeatures, N)], all.x = TRUE, on = "nfeatures")
+        nms <- c("ID", "features", "nfeatures", "N")
+        setcolorder(X, nms)
 
     }
 
@@ -103,7 +105,7 @@ get_weights <- function(X) {
 get_weighted_matrix <- function(X) {
 
     W <- weighted_matrix(
-        comb = X[["features"]],
+        features = X[["features"]],
         w = X[["weight"]],
         m = X[.N][["nfeatures"]],
         n = X[, .N]
@@ -122,7 +124,7 @@ get_weighted_matrix <- function(X) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-scale_data <- function(Xtrain, Xtest) {
+scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 
     if (!is.data.table(Xtrain)) {
         Xtrain <- as.data.table(Xtrain)
@@ -130,24 +132,27 @@ scale_data <- function(Xtrain, Xtest) {
     if (!is.data.table(Xtest)) {
         Xtest <- as.data.table(Xtest)
     }
-    nms <- colnames(Xtrain)
-    setcolorder(Xtest, nms)
-    sd <- Xtrain[, unname(sapply(.SD, sd, na.rm = TRUE))]
-    Xtrain[, (nms) := .SD / sd]
-    Xtest[, (nms) := .SD / sd]
+
+    if (scale) {
+        nms <- colnames(Xtrain)
+        setcolorder(Xtest, nms)
+        sd <- Xtrain[, unname(sapply(.SD, sd, na.rm = TRUE))]
+        Xtrain[, (nms) := .SD / sd]
+        Xtest[, (nms) := .SD / sd]
+    }
 
     return(list(Xtrain = Xtrain, Xtest = Xtest))
 }
 
 #' Create imputed test data
 #'
-#' @param I Array
-#' @param trainData data.table
-#' @param testData data.table
-#' @param model_features Postive integer vector
-#' @param which_comb Positive integer.
+#' @param Xtrain data.table
+#' @param Xtest data.table
+#' @param features Postive integer vector
+#' @param sigma Positive numeric
+#' @param nsamples Positive integer
 #'
-#' @return Matrix
+#' @return data.table
 #'
 #' @export
 #'
@@ -155,11 +160,20 @@ scale_data <- function(Xtrain, Xtest) {
 impute_data <- function(Xtrain, Xtest, features, sigma, nsamples) {
 
     ## Get distance for all combinations ---------
-    if (missing(sigma) || sigma == 0) sigma <- 1.75 * (Xtrain[, .N]) ^ (-1 / 6)
+    if (missing(sigma) || sigma == 0) sigma <- 1.75 * (nrow(Xtrain)) ^ (-1 / 6)
     D <- distance_cpp(
         features = features,
         Xtrain = Xtrain,
         Xtest = Xtest,
+        ncomb = length(features),
+        sigma = sigma
+    )
+
+
+    D <- sample_unit_cpp(
+        features = features,
+        Xtrain = Xtrain,
+        Xtest = Xtest[1, ],
         ncomb = length(features),
         sigma = sigma
     )
@@ -176,7 +190,8 @@ impute_data <- function(Xtrain, Xtest, features, sigma, nsamples) {
 
 #' Get predictions
 #'
-#' @param X data.table
+#' @param DT data.table
+#' @param ranger Logical
 #' @inheritParams global_arguments
 #'
 #' @return List
@@ -223,10 +238,10 @@ kernelShap <- function(m,
                        nsamples,
                        exact = TRUE,
                        sigma,
-                       nrows = NULL) {
+                       nrows = NULL,
+                       scale = FALSE) {
 
     ## Get all combinations ----------------
-    browser()
     X <- get_combinations(m = m, exact = exact, nrows = nrows)
 
     ## Add weights ----------------
@@ -236,7 +251,7 @@ kernelShap <- function(m,
     W <- get_weighted_matrix(X)
 
     ## Transform to data table and scale data ----------------
-    S <- scale_data(Xtrain, Xtest)
+    S <- scale_data(Xtrain, Xtest, scale = scale)
 
     ## Get imputed data ---------
     DT <- impute_data(

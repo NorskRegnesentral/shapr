@@ -69,3 +69,37 @@ arma::Cube<double> distance_cpp(List features, DataFrame Xtrain, DataFrame Xtest
 
     return X;
 }
+
+//' Get distance
+//'
+//' @param Xtrain Dataframe
+//' @param Xtest Dataframe
+//' @param m Positive integer
+//'
+//' @export
+//'
+//' @return Array of three dimensions
+//' @author Nikolai Sellereite
+// [[Rcpp::export]]
+arma::Cube<double> distance_cpp2(NumericMatrix Xtrain, NumericMatrix Xtest, int m) {
+
+    // Define variables
+    int ntrain, ntest;
+    ntrain = Xtrain.nrow();
+    ntest = Xtest.nrow();
+    arma::cube X(ntrain, ntest, m, arma::fill::zeros);
+
+    for (int k = 0; k < m; ++k) {
+
+        for (int j = 0; j < ntest; ++j) {
+
+            for (int i = 0; i < ntrain; ++i) {
+
+                X(i, j, k) = pow(Xtrain(i, k) - Xtest(j, k), 2.0);
+            }
+
+        }
+    }
+
+    return X;
+}

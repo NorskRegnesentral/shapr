@@ -3,31 +3,31 @@ using namespace Rcpp;
 
 //' Get distance
 //'
-//' @param comb List
-//' @param v Postive numberic vector
-//' @param m Postive integer. Number of features
+//' @param w Postive numberic vector
 //' @param n Postive integer. Number of combinations
+//' @inheritParams global_arguments
 //'
 //' @export
 //'
 //' @return Matrix of dimension n x m + 1
 //' @author Nikolai Sellereite
 // [[Rcpp::export]]
-arma::Mat<double> weighted_matrix(List comb, NumericVector w, int m, int n) {
+arma::mat weighted_matrix(List features, NumericVector w, int m, int n) {
 
     // Define variables
-    int s;
-    IntegerVector ind;
-    arma::Mat<double> X(n, m + 1), Xw(n, m + 1);
+    int nfeatures;
+    IntegerVector feature_vec;
+    arma::mat X(n, m + 1, arma::fill::zeros), Xw(n, m + 1, arma::fill::zeros);
+    arma::mat W(m + 1, n, arma::fill::zeros);
 
     // Populate matrix
     for (int i = 0; i < n; i++) {
 
-        ind = comb[i];
-        s = ind.length();
-        if (s > 0) {
-            for (int j = 0; j < s; j++)
-                X(i, ind[j]) = 1;
+        feature_vec = features[i];
+        nfeatures = feature_vec.length();
+        if (nfeatures > 0) {
+            for (int j = 0; j < nfeatures; j++)
+                X(i, feature_vec[j]) = 1;
         }
     }
 
@@ -38,13 +38,15 @@ arma::Mat<double> weighted_matrix(List comb, NumericVector w, int m, int n) {
 
     // Multiple weights
     for (int i = 0; i < n; i++) {
+
         for (int j = 0; j < X.n_cols; j++) {
+
             Xw(i, j) = w[i] * X(i, j);
         }
     }
 
     Xw = Xw.t();
-    arma::Mat<double> W = inv(Xw * X) * Xw;
+    W = inv(Xw * X) * Xw;
 
     return W;
 }

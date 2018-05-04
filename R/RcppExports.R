@@ -17,13 +17,23 @@ distance_cpp <- function(features, Xtrain, Xtest, ncomb, sigma) {
     .Call(`_shapr_distance_cpp`, features, Xtrain, Xtest, ncomb, sigma)
 }
 
-#' Get imputed data
+#' Get distance
 #'
-#' @param features List
 #' @param Xtrain Dataframe
 #' @param Xtest Dataframe
-#' @param ncomb Positive integer
-#' @param sigma Positive numeric
+#' @param m Positive integer
+#'
+#' @export
+#'
+#' @return Array of three dimensions
+#' @author Nikolai Sellereite
+distance_cpp2 <- function(Xtrain, Xtest, m) {
+    .Call(`_shapr_distance_cpp2`, Xtrain, Xtest, m)
+}
+
+#' Get imputed data
+#'
+#' @inheritParams global_arguments
 #'
 #' @export
 #'
@@ -35,7 +45,9 @@ impute_cpp <- function(I, Xtrain, Xtest, features) {
 
 #' Get distance
 #'
-#' @param D Three dimnesional array
+#' @param D 3-D array
+#' @param ncomb Positive integer. Total number of combinations
+#' @inheritParams global_arguments
 #'
 #' @export
 #'
@@ -47,16 +59,52 @@ sample_cpp <- function(D, nsamples, ncomb) {
 
 #' Get distance
 #'
-#' @param comb List
-#' @param v Postive numberic vector
-#' @param m Postive integer. Number of features
+#' @param D 3-D array
+#' @param ncomb Positive integer. Total number of combinations
+#' @inheritParams global_arguments
+#'
+#' @export
+#'
+#' @return List
+#' @author Nikolai Sellereite
+sample_unit <- function(D, features, nsamples, sigma) {
+    .Call(`_shapr_sample_unit`, D, features, nsamples, sigma)
+}
+
+#' Get distance
+#'
+#' @param D 3-D array
+#' @param ncomb Positive integer. Total number of combinations
+#' @inheritParams global_arguments
+#'
+#' @export
+#'
+#' @return List
+#' @author Nikolai Sellereite
+impute_data_unit <- function(D, Xtrain, Xtest) {
+    .Call(`_shapr_impute_data_unit`, D, Xtrain, Xtest)
+}
+
+#' Get distance
+#'
+#' @export
+#'
+#' @author Nikolai Sellereite
+test <- function(D, a) {
+    .Call(`_shapr_test`, D, a)
+}
+
+#' Get distance
+#'
+#' @param w Postive numberic vector
 #' @param n Postive integer. Number of combinations
+#' @inheritParams global_arguments
 #'
 #' @export
 #'
 #' @return Matrix of dimension n x m + 1
 #' @author Nikolai Sellereite
-weighted_matrix <- function(comb, w, m, n) {
-    .Call(`_shapr_weighted_matrix`, comb, w, m, n)
+weighted_matrix <- function(features, w, m, n) {
+    .Call(`_shapr_weighted_matrix`, features, w, m, n)
 }
 
