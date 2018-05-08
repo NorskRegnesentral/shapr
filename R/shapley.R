@@ -106,7 +106,6 @@ get_weighted_matrix <- function(X) {
 
     W <- weighted_matrix(
         features = X[["features"]],
-        w = X[["weight"]],
         m = X[.N][["nfeatures"]],
         n = X[, .N]
     )

@@ -75,6 +75,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sample_unit_development
+NumericMatrix sample_unit_development(NumericMatrix D, List features, int nsamples, double sigma);
+RcppExport SEXP _shapr_sample_unit_development(SEXP DSEXP, SEXP featuresSEXP, SEXP nsamplesSEXP, SEXP sigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type D(DSEXP);
+    Rcpp::traits::input_parameter< List >::type features(featuresSEXP);
+    Rcpp::traits::input_parameter< int >::type nsamples(nsamplesSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_unit_development(D, features, nsamples, sigma));
+    return rcpp_result_gen;
+END_RCPP
+}
 // impute_data_unit
 NumericMatrix impute_data_unit(NumericMatrix D, NumericMatrix Xtrain, NumericMatrix Xtest);
 RcppExport SEXP _shapr_impute_data_unit(SEXP DSEXP, SEXP XtrainSEXP, SEXP XtestSEXP) {
@@ -101,16 +115,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // weighted_matrix
-arma::mat weighted_matrix(List features, NumericVector w, int m, int n);
-RcppExport SEXP _shapr_weighted_matrix(SEXP featuresSEXP, SEXP wSEXP, SEXP mSEXP, SEXP nSEXP) {
+arma::mat weighted_matrix(List features, int m, int n);
+RcppExport SEXP _shapr_weighted_matrix(SEXP featuresSEXP, SEXP mSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type features(featuresSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(weighted_matrix(features, w, m, n));
+    rcpp_result_gen = Rcpp::wrap(weighted_matrix(features, m, n));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -121,9 +134,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_impute_cpp", (DL_FUNC) &_shapr_impute_cpp, 4},
     {"_shapr_sample_cpp", (DL_FUNC) &_shapr_sample_cpp, 3},
     {"_shapr_sample_unit", (DL_FUNC) &_shapr_sample_unit, 4},
+    {"_shapr_sample_unit_development", (DL_FUNC) &_shapr_sample_unit_development, 4},
     {"_shapr_impute_data_unit", (DL_FUNC) &_shapr_impute_data_unit, 3},
     {"_shapr_test", (DL_FUNC) &_shapr_test, 2},
-    {"_shapr_weighted_matrix", (DL_FUNC) &_shapr_weighted_matrix, 4},
+    {"_shapr_weighted_matrix", (DL_FUNC) &_shapr_weighted_matrix, 3},
     {NULL, NULL, 0}
 };
 

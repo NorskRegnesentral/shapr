@@ -102,6 +102,53 @@ IntegerMatrix sample_unit(NumericMatrix D, List features, int nsamples, double s
     return X;
 }
 
+
+//' Get distance
+//'
+//' @param D 3-D array
+//' @param ncomb Positive integer. Total number of combinations
+//' @inheritParams global_arguments
+//'
+//' @export
+//'
+//' @return List
+//' @author Nikolai Sellereite
+// [[Rcpp::export]]
+NumericMatrix sample_unit_development(NumericMatrix D, List features, int nsamples, double sigma) {
+
+    // Define variables
+    int ntrain, ncomb, nfeatures;
+    ntrain = D.nrow();
+    nfeatures = D.ncol();
+    ncomb = features.length();
+    NumericMatrix X(ntrain, ncomb), A(ncomb, nfeatures);
+
+    for (int i = 1; i < ncomb; ++i) {
+
+        NumericVector feature_vec = features[i];
+
+        for (int j = 0; j < feature_vec.length(); ++j) {
+
+            A(i, feature_vec[j] - 1) = 1.0;
+        }
+    }
+
+    for (int i = 0; i < ntrain; ++i) {
+
+        for (int j = 0; j < ncomb; ++j) {
+
+            for (int k = 0; k < nfeatures; ++k) {
+
+                X(i, j) += D(i, k) * A(j, k);
+            }
+
+            X(i, j) = exp((-0.5 * X(i, j)) / pow(sigma, 2.0));
+        }
+    }
+
+    return X;
+}
+
 //' Get distance
 //'
 //' @param D 3-D array

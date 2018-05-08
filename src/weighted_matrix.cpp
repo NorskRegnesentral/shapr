@@ -12,13 +12,17 @@ using namespace Rcpp;
 //' @return Matrix of dimension n x m + 1
 //' @author Nikolai Sellereite
 // [[Rcpp::export]]
-arma::mat weighted_matrix(List features, NumericVector w, int m, int n) {
+arma::mat weighted_matrix(List features, int m, int n) {
 
     // Define variables
     int nfeatures;
     IntegerVector feature_vec;
+    NumericVector w(n);
     arma::mat X(n, m + 1, arma::fill::zeros), Xw(n, m + 1, arma::fill::zeros);
     arma::mat W(m + 1, n, arma::fill::zeros);
+    std::fill(w.begin(), w.end(), 1.0);
+    w[0] = pow(10.0, 6.0);
+    w[n - 1] = pow(10.0, 6.0);
 
     // Populate matrix
     for (int i = 0; i < n; i++) {

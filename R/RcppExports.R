@@ -81,6 +81,20 @@ sample_unit <- function(D, features, nsamples, sigma) {
 #'
 #' @return List
 #' @author Nikolai Sellereite
+sample_unit_development <- function(D, features, nsamples, sigma) {
+    .Call(`_shapr_sample_unit_development`, D, features, nsamples, sigma)
+}
+
+#' Get distance
+#'
+#' @param D 3-D array
+#' @param ncomb Positive integer. Total number of combinations
+#' @inheritParams global_arguments
+#'
+#' @export
+#'
+#' @return List
+#' @author Nikolai Sellereite
 impute_data_unit <- function(D, Xtrain, Xtest) {
     .Call(`_shapr_impute_data_unit`, D, Xtrain, Xtest)
 }
@@ -104,7 +118,7 @@ test <- function(D, a) {
 #'
 #' @return Matrix of dimension n x m + 1
 #' @author Nikolai Sellereite
-weighted_matrix <- function(features, w, m, n) {
-    .Call(`_shapr_weighted_matrix`, features, w, m, n)
+weighted_matrix <- function(features, m, n) {
+    .Call(`_shapr_weighted_matrix`, features, m, n)
 }
 
