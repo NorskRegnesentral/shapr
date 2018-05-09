@@ -1,8 +1,7 @@
 rm(list = ls())
 
-library(data.table)
-library(ranger)
 library(shapr)
+library(data.table)
 
 ## Load training/test data and train model --------------------------------
 data_dir = "/nr/project/stat/BFFGB18/LIME/lime/R/"
@@ -11,14 +10,16 @@ Xtest = as.data.table(read.table(paste0(data_dir, "/test6.csv"), sep = ";", head
 Xtrain <- Xtrain[, .SD, .SDcols = 1:4]
 Xtest <- Xtest[, .SD, .SDcols = 1:4]
 
-model = ranger(as.factor(default) ~ .,
-                data = Xtrain,
-                num.trees = 500,
-                num.threads = 3,
-                verbose = TRUE,
-                probability = TRUE,
-                importance = "impurity",
-                mtry = sqrt(ncol(Xtrain) - 1))
+model = ranger::ranger(
+    formula = as.factor(default) ~ .,
+    data = Xtrain,
+    num.trees = 500,
+    num.threads = 3,
+    verbose = TRUE,
+    probability = TRUE,
+    importance = "impurity",
+    mtry = sqrt(ncol(Xtrain) - 1)
+)
 
 p_default = Xtrain[, mean(default)]
 nms = colnames(Xtrain)[-1]
@@ -38,9 +39,12 @@ l <- kernelShap(
 
 ## Loop through all test observations --------------------------------
 sigma <- .1
+ll <- list()
 for (i in Xtest[, .I]) {
 
-    test <- get_prediction_data(
+    print(sprintf("%d out of %d", i, Xtest[, .N]))
+    ll[[i]] <- get_prediction_data(
+        model = model,
         D = l$D[, i,],
         S = l$S,
         Xtrain = as.matrix(l$Xtrain),
@@ -48,6 +52,7 @@ for (i in Xtest[, .I]) {
         sigma = sigma,
         w_threshold = 1,
         n_threshold = 1e5,
-        verbose = TRUE
+        verbose = FALSE
     )
+    ll[[i]][, id := i]
 }

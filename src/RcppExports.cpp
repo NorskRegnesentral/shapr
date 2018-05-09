@@ -59,15 +59,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // weights_train_comb_cpp
-arma::mat weights_train_comb_cpp(arma::mat D, arma::mat F, double sigma);
-RcppExport SEXP _shapr_weights_train_comb_cpp(SEXP DSEXP, SEXP FSEXP, SEXP sigmaSEXP) {
+arma::mat weights_train_comb_cpp(arma::mat D, arma::mat S, double sigma);
+RcppExport SEXP _shapr_weights_train_comb_cpp(SEXP DSEXP, SEXP SSEXP, SEXP sigmaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type D(DSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type F(FSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type S(SSEXP);
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
-    rcpp_result_gen = Rcpp::wrap(weights_train_comb_cpp(D, F, sigma));
+    rcpp_result_gen = Rcpp::wrap(weights_train_comb_cpp(D, S, sigma));
     return rcpp_result_gen;
 END_RCPP
 }

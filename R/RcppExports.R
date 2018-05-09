@@ -5,7 +5,6 @@
 #'
 #' @param Xtrain Dataframe
 #' @param Xtest Dataframe
-#' @param m Positive integer
 #'
 #' @export
 #'
@@ -17,7 +16,10 @@ distance_cpp <- function(Xtrain, Xtest) {
 
 #' Get imputed data
 #'
+#' @param ID Positive integer vector
+#' @param Comb Positive integer vector
 #' @inheritParams global_arguments
+#'
 #'
 #' @export
 #'
@@ -29,7 +31,6 @@ impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
 
 #' Get distance
 #'
-#' @param w Postive numberic vector
 #' @param n Postive integer. Number of combinations
 #' @inheritParams global_arguments
 #'
@@ -56,15 +57,13 @@ feature_matrix_cpp <- function(features, nfeatures) {
 
 #' Get distance
 #'
-#' @param w Postive numberic vector
-#' @param n Postive integer. Number of combinations
 #' @inheritParams global_arguments
 #'
 #' @export
 #'
 #' @return Matrix of dimension n x m + 1
 #' @author Nikolai Sellereite
-weights_train_comb_cpp <- function(D, F, sigma) {
-    .Call(`_shapr_weights_train_comb_cpp`, D, F, sigma)
+weights_train_comb_cpp <- function(D, S, sigma) {
+    .Call(`_shapr_weights_train_comb_cpp`, D, S, sigma)
 }
 

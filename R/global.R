@@ -12,8 +12,14 @@
 #' @param model Model object
 #' @param p_default Numeric
 #' @param nrows Integer
+#' @param w_threshold Positive numeric.
+#' @param n_threshold Postive integer.
 #' @param W Matrix
 #' @param I Matrix
+#' @param D Matrix
+#' @param S Matrix
+#' @param verbose Logical
+#' @param scale Logical
 #'
 #' @export
 #'
@@ -31,7 +37,13 @@ global_arguments <- function(m,
                              sigma,
                              model,
                              nrows,
+                             scale,
+                             w_threshold,
+                             n_threshold,
+                             verbose,
                              W,
+                             S,
+                             D,
                              I,
                              p_default) {
     return(NULL)

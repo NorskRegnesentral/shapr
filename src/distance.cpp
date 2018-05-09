@@ -5,7 +5,6 @@ using namespace Rcpp;
 //'
 //' @param Xtrain Dataframe
 //' @param Xtest Dataframe
-//' @param m Positive integer
 //'
 //' @export
 //'

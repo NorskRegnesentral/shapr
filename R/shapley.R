@@ -115,8 +115,7 @@ get_weighted_matrix <- function(X) {
 
 #' Scale training and test data
 #'
-#' @param Xtrain data.frame
-#' @param Xtest data.frame
+#' @inheritParams global_arguments
 #'
 #' @return List
 #'
@@ -152,13 +151,13 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_prediction_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE) {
+get_prediction_data <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE) {
 
     ## Find weights for all combinations and training data
     if (verbose) print("Calculate weights for all traning - and feature combinations ")
     DT = as.data.table(weights_train_comb_cpp(D, S, sigma))
     DT[, ID := .I]
-    DT = melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
+    DT = data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
 
     ## Remove training data with small weight
     if (verbose) print("Sort data.table by combination and weights")
@@ -185,7 +184,7 @@ get_prediction_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_
     setnames(DTp, colnames(Xtrain))
     DTp[, wcomb := DT[["wcomb"]]]
     DTp[, w := DT[["w"]]]
-    DTp[, p_hat := predict(model, .SD)$predictions[, 2]]
+    DTp[, p_hat := predict(model, .SD, num.threads = 5)$predictions[, 2]]
     DTres <- DTp[, .(k = sum((p_hat * w) / sum(w))), wcomb]
     setkey(DTres, wcomb)
 

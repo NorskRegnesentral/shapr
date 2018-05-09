@@ -6,6 +6,7 @@
 
             c("ID", "N", "W", "features", "keep", "m", "mphat", "nfeatures", "phat",
               "test", "Xtest", "Xtrain", "weight", "test_id", "sample_id",
+              "comb", "p_hat", "w", "wcomb", "wcum",
 
               ".", ".N", ".I", ".GRP", ".SD")
         )

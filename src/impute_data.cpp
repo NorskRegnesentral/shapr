@@ -3,7 +3,10 @@ using namespace Rcpp;
 
 //' Get imputed data
 //'
+//' @param ID Positive integer vector
+//' @param Comb Positive integer vector
 //' @inheritParams global_arguments
+//'
 //'
 //' @export
 //'
