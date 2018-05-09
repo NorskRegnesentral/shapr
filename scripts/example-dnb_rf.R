@@ -56,3 +56,9 @@ for (i in Xtest[, .I]) {
     )
     ll[[i]][, id := i]
 }
+
+DT <- rbindlist(ll)
+Kshap <- matrix(0, nrow = Xtest[, .N], ncol = nrow(l$W))
+for (i in Xtest[, .I]) {
+    Kshap[i, ] = l$W %*% DT[id == i, k]
+}
