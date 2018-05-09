@@ -54,3 +54,54 @@ arma::mat weighted_matrix(List features, int m, int n) {
 
     return W;
 }
+
+//' Get feature matrix
+//'
+//' @param features List
+//' @param nfeatures Positive integer. Total number of features
+//'
+//' @export
+//'
+//' @return Matrix
+//' @author Nikolai Sellereite
+// [[Rcpp::export]]
+NumericMatrix feature_matrix_cpp(List features, int nfeatures) {
+
+    // Define variables
+    int ncomb;
+    ncomb = features.length();
+    NumericMatrix A(ncomb, nfeatures);
+
+    for (int i = 1; i < ncomb; ++i) {
+
+        NumericVector feature_vec = features[i];
+
+        for (int j = 0; j < feature_vec.length(); ++j) {
+
+            A(i, feature_vec[j] - 1) = 1.0;
+        }
+    }
+
+    return A;
+}
+
+//' Get distance
+//'
+//' @param w Postive numberic vector
+//' @param n Postive integer. Number of combinations
+//' @inheritParams global_arguments
+//'
+//' @export
+//'
+//' @return Matrix of dimension n x m + 1
+//' @author Nikolai Sellereite
+// [[Rcpp::export]]
+arma::mat weights_train_comb_cpp(arma::mat D, arma::mat F, double sigma) {
+
+    arma::mat A(D.n_rows, F.n_rows);
+
+    A = D * F.t();
+    A = sqrt(exp((-0.5 * A) / pow(sigma, 2.0)));
+
+    return A;
+}

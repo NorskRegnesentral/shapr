@@ -143,54 +143,8 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
     return(list(Xtrain = Xtrain, Xtest = Xtest))
 }
 
-#' Create imputed test data
-#'
-#' @param Xtrain data.table
-#' @param Xtest data.table
-#' @param features Postive integer vector
-#' @param sigma Positive numeric
-#' @param nsamples Positive integer
-#'
-#' @return data.table
-#'
-#' @export
-#'
-#' @author Nikolai Sellereite
-impute_data <- function(Xtrain, Xtest, features, sigma, nsamples) {
-
-    ## Get distance for all combinations ---------
-    if (missing(sigma) || sigma == 0) sigma <- 1.75 * (nrow(Xtrain)) ^ (-1 / 6)
-    D <- distance_cpp(
-        features = features,
-        Xtrain = Xtrain,
-        Xtest = Xtest,
-        ncomb = length(features),
-        sigma = sigma
-    )
-
-
-    D <- sample_unit_cpp(
-        features = features,
-        Xtrain = Xtrain,
-        Xtest = Xtest[1, ],
-        ncomb = length(features),
-        sigma = sigma
-    )
-
-    ## Sample ids for all test observations ---------
-    I <- sample_cpp(D, nsamples, length(features))
-
-    ## Get imputed data ---------
-    X <- impute_cpp(I, Xtrain, Xtest, features)
-    colnames(X) <- c("test_id", "sample_id", names(Xtrain))
-
-    return(as.data.table(X))
-}
-
 #' Get predictions
 #'
-#' @param DT data.table
-#' @param ranger Logical
 #' @inheritParams global_arguments
 #'
 #' @return List
@@ -198,29 +152,46 @@ impute_data <- function(Xtrain, Xtest, features, sigma, nsamples) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_predictions <- function(model, DT, W, p_default = .5, ranger = TRUE) {
+get_prediction_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE) {
 
-    ## Setup ----------------
-    nfeatures <- nrow(W)
-    ntest <- DT[, uniqueN(test_id)]
-    kernShap <- matrix(0, ntest, nfeatures)
+    ## Find weights for all combinations and training data
+    if (verbose) print("Calculate weights for all traning - and feature combinations ")
+    DT = as.data.table(weights_train_comb_cpp(D, S, sigma))
+    DT[, ID := .I]
+    DT = melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
 
-    ## Get predictions ----------
-    if (ranger) {
-        phat <- predict(model, data = DT, type = "response")$predictions[, 2]
-    } else {
-        phat <- predict(model, data = DT, type = "response")
-    }
+    ## Remove training data with small weight
+    if (verbose) print("Sort data.table by combination and weights")
+    setkey(DT, comb, w)
+    DT[, w := w/sum(w), comb]
+    DT[, wcum := cumsum(w), comb]
+    DT <- DT[wcum > 1 - w_threshold][, wcum := NULL]
+    DT <- DT[, tail(.SD, n_threshold), comb]
+    DT[, comb := gsub(comb, pattern = "V", replacement = ""), comb]
+    DT[, wcomb := as.integer(comb), comb][, comb := NULL]
 
-    DT[, phat := phat]
-    predMat <- DT[, .(mphat = mean(phat)), .(test_id, sample_id)]
+    ## Generate data used for prediction
+    if (verbose) print("Create imputed prediction data")
+    DTp <- impute_cpp(
+        ID = DT[["ID"]],
+        Comb = DT[["wcomb"]],
+        Xtrain = Xtrain,
+        Xtest = Xtest,
+        S = S
+    )
 
-    for (k in 1:nrow(kernShap)) {
-        kernShap[k, ] <- W %*% predMat[test_id == k, mphat]
-    }
+    if (verbose) print("Calculate predictions")
+    DTp <- as.data.table(DTp)
+    setnames(DTp, colnames(Xtrain))
+    DTp[, wcomb := DT[["wcomb"]]]
+    DTp[, w := DT[["w"]]]
+    DTp[, p_hat := predict(model, .SD)$predictions[, 2]]
+    DTres <- DTp[, .(k = sum((p_hat * w) / sum(w))), wcomb]
+    setkey(DTres, wcomb)
 
-    return(list(kernShap = kernShap, DT = DT))
+    return(DTres)
 }
+
 
 #' Get shapley weights for test data
 #'
@@ -234,9 +205,7 @@ get_predictions <- function(model, DT, W, p_default = .5, ranger = TRUE) {
 kernelShap <- function(m,
                        Xtrain,
                        Xtest,
-                       nsamples,
                        exact = TRUE,
-                       sigma,
                        nrows = NULL,
                        scale = FALSE) {
 
@@ -250,27 +219,13 @@ kernelShap <- function(m,
     W <- get_weighted_matrix(X)
 
     ## Transform to data table and scale data ----------------
-    S <- scale_data(Xtrain, Xtest, scale = scale)
+    l <- scale_data(Xtrain, Xtest, scale = scale)
 
-    ## Get imputed data ---------
-    DT <- impute_data(
-        Xtrain = S$Xtrain,
-        Xtest = S$Xtest,
-        features = X[["features"]],
-        nsamples = nsamples
-    )
+    ## Get distance ---------
+    D <- distance_cpp(as.matrix(l$Xtrain), as.matrix(l$Xtest))
 
-    return(list(DT = DT, W = W, X = X))
+    ## Get feature matrix ---------
+    S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain))
+
+    return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest))
 }
-
-## Get predictions ----------------
-# X <- get_predictions(
-#     X = X,
-#     model = model,
-#     trainData = S$Xtrain,
-#     testData = S$Xtest,
-#     W = W,
-#     sigma = sigma,
-#     p_default = p_default,
-#     nSamples = nSamples
-# )

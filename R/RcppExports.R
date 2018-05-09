@@ -3,22 +3,6 @@
 
 #' Get distance
 #'
-#' @param features List
-#' @param Xtrain Dataframe
-#' @param Xtest Dataframe
-#' @param ncomb Positive integer
-#' @param sigma Positive numeric
-#'
-#' @export
-#'
-#' @return Array of three dimensions
-#' @author Nikolai Sellereite
-distance_cpp <- function(features, Xtrain, Xtest, ncomb, sigma) {
-    .Call(`_shapr_distance_cpp`, features, Xtrain, Xtest, ncomb, sigma)
-}
-
-#' Get distance
-#'
 #' @param Xtrain Dataframe
 #' @param Xtest Dataframe
 #' @param m Positive integer
@@ -27,8 +11,8 @@ distance_cpp <- function(features, Xtrain, Xtest, ncomb, sigma) {
 #'
 #' @return Array of three dimensions
 #' @author Nikolai Sellereite
-distance_cpp2 <- function(Xtrain, Xtest, m) {
-    .Call(`_shapr_distance_cpp2`, Xtrain, Xtest, m)
+distance_cpp <- function(Xtrain, Xtest) {
+    .Call(`_shapr_distance_cpp`, Xtrain, Xtest)
 }
 
 #' Get imputed data
@@ -39,73 +23,8 @@ distance_cpp2 <- function(Xtrain, Xtest, m) {
 #'
 #' @return Array of three dimensions
 #' @author Nikolai Sellereite
-impute_cpp <- function(I, Xtrain, Xtest, features) {
-    .Call(`_shapr_impute_cpp`, I, Xtrain, Xtest, features)
-}
-
-#' Get distance
-#'
-#' @param D 3-D array
-#' @param ncomb Positive integer. Total number of combinations
-#' @inheritParams global_arguments
-#'
-#' @export
-#'
-#' @return List
-#' @author Nikolai Sellereite
-sample_cpp <- function(D, nsamples, ncomb) {
-    .Call(`_shapr_sample_cpp`, D, nsamples, ncomb)
-}
-
-#' Get distance
-#'
-#' @param D 3-D array
-#' @param ncomb Positive integer. Total number of combinations
-#' @inheritParams global_arguments
-#'
-#' @export
-#'
-#' @return List
-#' @author Nikolai Sellereite
-sample_unit <- function(D, features, nsamples, sigma) {
-    .Call(`_shapr_sample_unit`, D, features, nsamples, sigma)
-}
-
-#' Get distance
-#'
-#' @param D 3-D array
-#' @param ncomb Positive integer. Total number of combinations
-#' @inheritParams global_arguments
-#'
-#' @export
-#'
-#' @return List
-#' @author Nikolai Sellereite
-sample_unit_development <- function(D, features, nsamples, sigma) {
-    .Call(`_shapr_sample_unit_development`, D, features, nsamples, sigma)
-}
-
-#' Get distance
-#'
-#' @param D 3-D array
-#' @param ncomb Positive integer. Total number of combinations
-#' @inheritParams global_arguments
-#'
-#' @export
-#'
-#' @return List
-#' @author Nikolai Sellereite
-impute_data_unit <- function(D, Xtrain, Xtest) {
-    .Call(`_shapr_impute_data_unit`, D, Xtrain, Xtest)
-}
-
-#' Get distance
-#'
-#' @export
-#'
-#' @author Nikolai Sellereite
-test <- function(D, a) {
-    .Call(`_shapr_test`, D, a)
+impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
+    .Call(`_shapr_impute_cpp`, ID, Comb, Xtrain, Xtest, S)
 }
 
 #' Get distance
@@ -120,5 +39,32 @@ test <- function(D, a) {
 #' @author Nikolai Sellereite
 weighted_matrix <- function(features, m, n) {
     .Call(`_shapr_weighted_matrix`, features, m, n)
+}
+
+#' Get feature matrix
+#'
+#' @param features List
+#' @param nfeatures Positive integer. Total number of features
+#'
+#' @export
+#'
+#' @return Matrix
+#' @author Nikolai Sellereite
+feature_matrix_cpp <- function(features, nfeatures) {
+    .Call(`_shapr_feature_matrix_cpp`, features, nfeatures)
+}
+
+#' Get distance
+#'
+#' @param w Postive numberic vector
+#' @param n Postive integer. Number of combinations
+#' @inheritParams global_arguments
+#'
+#' @export
+#'
+#' @return Matrix of dimension n x m + 1
+#' @author Nikolai Sellereite
+weights_train_comb_cpp <- function(D, F, sigma) {
+    .Call(`_shapr_weights_train_comb_cpp`, D, F, sigma)
 }
 
