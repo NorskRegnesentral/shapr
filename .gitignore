@@ -3,3 +3,7 @@
 .RData
 .Ruserdata
 man/*.Rd
+
+*.o
+
+*.so
