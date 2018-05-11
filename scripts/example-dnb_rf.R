@@ -43,7 +43,7 @@ ll <- list()
 for (i in Xtest[, .I]) {
 
     print(sprintf("%d out of %d", i, Xtest[, .N]))
-    ll[[i]] <- get_prediction_data(
+    ll[[i]] <- get_predictions(
         model = model,
         D = l$D[, i,],
         S = l$S,
