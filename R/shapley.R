@@ -151,16 +151,14 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_prediction_data <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE) {
+impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3) {
 
     ## Find weights for all combinations and training data
-    if (verbose) print("Calculate weights for all traning - and feature combinations ")
     DT = as.data.table(weights_train_comb_cpp(D, S, sigma))
     DT[, ID := .I]
     DT = data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
 
     ## Remove training data with small weight
-    if (verbose) print("Sort data.table by combination and weights")
     setkey(DT, comb, w)
     DT[, w := w/sum(w), comb]
     DT[, wcum := cumsum(w), comb]
@@ -170,7 +168,6 @@ get_prediction_data <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold =
     DT[, wcomb := as.integer(comb), comb][, comb := NULL]
 
     ## Generate data used for prediction
-    if (verbose) print("Create imputed prediction data")
     DTp <- impute_cpp(
         ID = DT[["ID"]],
         Comb = DT[["wcomb"]],
@@ -179,12 +176,66 @@ get_prediction_data <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold =
         S = S
     )
 
-    if (verbose) print("Calculate predictions")
+    ## Add keys
     DTp <- as.data.table(DTp)
     setnames(DTp, colnames(Xtrain))
     DTp[, wcomb := DT[["wcomb"]]]
     DTp[, w := DT[["w"]]]
-    DTp[, p_hat := predict(model, .SD, num.threads = 5)$predictions[, 2]]
+
+    return(DTp)
+}
+
+#' Get predictions
+#'
+#' @inheritParams global_arguments
+#'
+#' @return List
+#'
+#' @export
+#'
+#' @author Nikolai Sellereite
+get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE) {
+
+    ## Get imputed data
+    DTp <- impute_data(
+        D = D,
+        S = S,
+        Xtrain = Xtrain,
+        Xtest = Xtest,
+        sigma = sigma,
+        w_threshold = w_threshold,
+        n_threshold = n_threshold
+    )
+
+    ## Figure out which model type we're using
+    model_class <- head(class(model), 1)
+
+    if (model_class == "glm") {
+
+        if (model$family[[1]] == "binomial") {
+            DTp[, p_hat := predict(object = model, newdata = .SD, type = "response")]
+        } else {
+            DTp[, p_hat := predict(object = model, newdata = .SD)]
+        }
+
+    } else if (model_class == "lm") {
+
+        DTp[, p_hat := predict(object = model, newdata = .SD)]
+
+    } else if (model_class == "ranger") {
+
+        if (model$treetype == "Probability estimation") {
+            DTp[, p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions[, 2]]
+        } else {
+            DTp[, p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions]
+        }
+
+    } else if (model_class == "xgb.Booster") {
+
+        DTp[, p_hat := predict(object = model, newdata = as.matrix(.SD))]
+    }
+
+    ## Get mean probability
     DTres <- DTp[, .(k = sum((p_hat * w) / sum(w))), wcomb]
     setkey(DTres, wcomb)
 
