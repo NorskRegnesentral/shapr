@@ -4,4 +4,6 @@
 .Ruserdata
 man/*.Rd
 
-Rprof.out
+*.o
+
+*.so
