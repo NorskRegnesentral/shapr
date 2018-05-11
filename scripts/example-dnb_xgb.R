@@ -58,7 +58,7 @@ ll <- list()
 for (i in Xtest[, .I]) {
 
     print(sprintf("%d out of %d", i, Xtest[, .N]))
-    ll[[i]] <- get_prediction_data(
+    ll[[i]] <- get_predictions(
         model = model,
         D = l$D[, i,],
         S = l$S,
@@ -77,5 +77,3 @@ Kshap <- matrix(0, nrow = Xtest[, .N], ncol = nrow(l$W))
 for (i in Xtest[, .I]) {
     Kshap[i, ] = l$W %*% DT[id == i, k]
 }
-
-
