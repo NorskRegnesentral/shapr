@@ -17,7 +17,7 @@ Imports:
     ranger,
     xgboost,
     stats,
-    Rcpp (>= 0.12.15)
+    Rcpp (>= 0.12.15),
     cluster,
     maptree,
     corrplot,
