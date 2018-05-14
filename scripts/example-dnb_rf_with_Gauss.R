@@ -21,7 +21,8 @@ model = ranger::ranger(
     mtry = sqrt(ncol(Xtrain) - 1)
 )
 
-p_default = Xtrain[, mean(default)]
+pred_zero = Xtrain[, mean(default)]
+
 nms = colnames(Xtrain)[-1]
 Xtrain = Xtrain[, .SD, .SDcols = nms]
 Xtest = Xtest[1:20, .SD, .SDcols = nms]
@@ -54,7 +55,8 @@ for (i in Xtest[, .I]) {
         n_threshold = 1e3,
         verbose = FALSE,
         Gaussian = T,
-        feature_list = l$X$features
+        feature_list = l$X$features,
+        pred_zero = pred_zero
     )
     ll[[i]][, id := i]
 }

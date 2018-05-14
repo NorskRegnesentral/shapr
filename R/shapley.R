@@ -196,14 +196,9 @@ impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshol
 #'
 #' @author Martin Jullum
 samp_Gauss_func <- function(given.ind,n_threshold,mu,Sigma,p,Xtest){
-    # Handles the unconditional and full conditional separtely
-    if(length(given.ind) ==0){
-        ret <- rmvnorm(n = n_threshold,
-                       mean = mu,
-                       sigma = Sigma,
-                       method = "chol")
-    } else if(length(given.ind) ==p){
-        ret <- Xtest%x%rep(1,n_threshold)
+    # Handles the unconditional and full conditional separtely when predicting
+    if(length(given.ind) %in% c(0,p)){
+        ret <- matrix(Xtest,ncol=p,nrow=1)
     } else {
         dependent.ind <- (1:length(mu))[-given.ind]
         X.given <- Xtest[given.ind]
@@ -234,7 +229,7 @@ samp_Gauss_func <- function(given.ind,n_threshold,mu,Sigma,p,Xtest){
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE,Gaussian = FALSE,feature_list) {
+get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE,Gaussian = FALSE,feature_list,pred_zero) {
 
     if(Gaussian){
         ## Assume Gaussian distributed variables and sample from the various conditional distributions
@@ -254,6 +249,7 @@ get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7,
 
         DTp <- rbindlist(Gauss_samp,idcol="wcomb")
         DTp[,w:=1/n_threshold]
+        DTp[wcomb %in% c(1,2^p),w:=1] # Adjust weights for zero and full model
 
     } else {
         ## Get imputed data
@@ -268,6 +264,9 @@ get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7,
         )
     }
 
+
+
+
     ## Figure out which model type we're using
     model_class <- head(class(model), 1)
     nms <- colnames(Xtest)
@@ -275,28 +274,39 @@ get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7,
     if (model_class == "glm") {
 
         if (model$family[[1]] == "binomial") {
-            DTp[, p_hat := predict(object = model, newdata = .SD, type = "response")]
+            DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, newdata = .SD, type = "response"),.SDcols = nms]
+            DTp[wcomb == 2^p, p_hat := predict(object = model, newdata = Xtest, type = "response")]
+
         } else {
-            DTp[, p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
+            DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
+            DTp[wcomb == 2^p, p_hat := predict(object = model, newdata = Xtest)]
         }
 
     } else if (model_class == "lm") {
 
-        DTp[, p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
-        DTp[, p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
+        DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
+        DTp[wcomb == 2^p, p_hat := predict(object = model, newdata = Xtest)]
 
     } else if (model_class == "ranger") {
 
         if (model$treetype == "Probability estimation") {
-            DTp[, p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions[, 2],.SDcols = nms]
+            DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions[, 2],.SDcols = nms]
+            DTp[wcomb == 2^p, p_hat := predict(object = model, data = Xtest, num.threads = 5)$predictions[, 2]]
+
         } else {
-            DTp[, p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions,.SDcols = nms]
+            DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions,.SDcols = nms]
+            DTp[wcomb == 2^p, p_hat := predict(object = model, data = Xtest, num.threads = 5)$predictions]
+
         }
 
     } else if (model_class == "xgb.Booster") {
 
-        DTp[, p_hat := predict(object = model, newdata = as.matrix(.SD)),.SDcols = nms]
+        DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, newdata = as.matrix(.SD)),.SDcols = nms]
+        DTp[wcomb == 2^p, p_hat := predict(object = model, newdata = as.matrix(Xtest))]
+
     }
+    DTp[wcomb ==1, p_hat := pred_zero]
+
 
     ## Get mean probability
     DTres <- DTp[, .(k = sum((p_hat * w) / sum(w))), wcomb]
