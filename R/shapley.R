@@ -209,30 +209,31 @@ get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7,
 
     ## Figure out which model type we're using
     model_class <- head(class(model), 1)
+    nms <- colnames(Xtest)
 
     if (model_class == "glm") {
 
         if (model$family[[1]] == "binomial") {
             DTp[, p_hat := predict(object = model, newdata = .SD, type = "response")]
         } else {
-            DTp[, p_hat := predict(object = model, newdata = .SD)]
+            DTp[, p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
         }
 
     } else if (model_class == "lm") {
 
-        DTp[, p_hat := predict(object = model, newdata = .SD)]
+        DTp[, p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
 
     } else if (model_class == "ranger") {
 
         if (model$treetype == "Probability estimation") {
-            DTp[, p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions[, 2]]
+            DTp[, p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions[, 2],.SDcols = nms]
         } else {
-            DTp[, p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions]
+            DTp[, p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions,.SDcols = nms]
         }
 
     } else if (model_class == "xgb.Booster") {
 
-        DTp[, p_hat := predict(object = model, newdata = as.matrix(.SD))]
+        DTp[, p_hat := predict(object = model, newdata = as.matrix(.SD)),.SDcols = nms]
     }
 
     ## Get mean probability

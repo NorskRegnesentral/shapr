@@ -4,3 +4,6 @@
 .Ruserdata
 Rprof.out
 man/*.Rd
+src/*.o
+src/*.so
+
