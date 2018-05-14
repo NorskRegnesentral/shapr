@@ -2,6 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-man/*.Rd
-
 Rprof.out
+man/*.Rd
