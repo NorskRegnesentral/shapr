@@ -18,6 +18,10 @@ Imports:
     xgboost,
     stats,
     Rcpp (>= 0.12.15)
+    cluster,
+    maptree,
+    corrplot,
+    pcaPP
 RoxygenNote: 6.0.1
 LinkingTo: 
     RcppArmadillo,
