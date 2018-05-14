@@ -21,7 +21,9 @@ Imports:
     cluster,
     maptree,
     corrplot,
-    pcaPP
+    pcaPP,
+    condMVNorm,
+    mvtnorm
 RoxygenNote: 6.0.1
 LinkingTo: 
     RcppArmadillo,

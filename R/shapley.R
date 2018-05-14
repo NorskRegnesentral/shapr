@@ -185,6 +185,46 @@ impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshol
     return(DTp)
 }
 
+#' Sample conditional Gaussian variables
+#'
+#' @inheritParams global_arguments
+#'
+#' @return data.table with n_threshold (conditional) Gaussian samples
+#'
+#' @import condMVNorm
+#' @export
+#'
+#' @author Martin Jullum
+samp_Gauss_func <- function(given.ind,n_threshold,mu,Sigma,p,Xtest){
+    # Handles the unconditional and full conditional separtely
+    if(length(given.ind) ==0){
+        ret <- rmvnorm(n = n_threshold,
+                       mean = mu,
+                       sigma = Sigma,
+                       method = "chol")
+    } else if(length(given.ind) ==p){
+        ret <- Xtest%x%rep(1,n_threshold)
+    } else {
+        dependent.ind <- (1:length(mu))[-given.ind]
+        X.given <- Xtest[given.ind]
+        ret0 <- rcmvnorm(n = n_threshold,
+                         mean = mu,
+                         sigma = Sigma,
+                         dependent.ind = dependent.ind,
+                         given.ind = given.ind,
+                         X.given = X.given,
+                         method = "chol")
+        ret <- matrix(NA,ncol=p,nrow=n_threshold)
+        ret[,given.ind] <- X.given
+        ret[,dependent.ind] <- ret0
+    }
+    colnames(ret) <- colnames(Xtrain)
+    return(as.data.table(ret))
+}
+
+
+
+
 #' Get predictions
 #'
 #' @inheritParams global_arguments
@@ -193,19 +233,40 @@ impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshol
 #'
 #' @export
 #'
-#' @author Nikolai Sellereite
-get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE) {
+#' @author Nikolai Sellereite, Martin Jullum
+get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE,Gaussian = FALSE,feature_list) {
 
-    ## Get imputed data
-    DTp <- impute_data(
-        D = D,
-        S = S,
-        Xtrain = Xtrain,
-        Xtest = Xtest,
-        sigma = sigma,
-        w_threshold = w_threshold,
-        n_threshold = n_threshold
-    )
+    if(Gaussian){
+        ## Assume Gaussian distributed variables and sample from the various conditional distributions
+        p <- ncol(Xtrain)
+        mu <- colMeans(Xtrain)
+        Sigma <- cov(Xtrain)
+        if(any(eigen(Sigma)$values<=1e-06)){ # Make matrix positive definite if not, or close to not.
+            Sigma <- as.matrix(nearPD(Sigma)$mat)
+        }
+        Gauss_samp <- lapply(X=feature_list,
+                             FUN=samp_Gauss_func,
+                             n_threshold = n_threshold,
+                             mu = mu,
+                             Sigma = Sigma,
+                             p = p,
+                             Xtest = Xtest)
+
+        DTp <- rbindlist(Gauss_samp,idcol="wcomb")
+        DTp[,w:=1/n_threshold]
+
+    } else {
+        ## Get imputed data
+        DTp <- impute_data(
+            D = D,
+            S = S,
+            Xtrain = Xtrain,
+            Xtest = Xtest,
+            sigma = sigma,
+            w_threshold = w_threshold,
+            n_threshold = n_threshold
+        )
+    }
 
     ## Figure out which model type we're using
     model_class <- head(class(model), 1)
@@ -221,6 +282,7 @@ get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7,
 
     } else if (model_class == "lm") {
 
+        DTp[, p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
         DTp[, p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
 
     } else if (model_class == "ranger") {
@@ -242,6 +304,8 @@ get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7,
 
     return(DTres)
 }
+
+
 
 
 #' Get shapley weights for test data
