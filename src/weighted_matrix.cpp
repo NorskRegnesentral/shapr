@@ -97,8 +97,14 @@ arma::mat weights_train_comb_cpp(arma::mat D, arma::mat S, double sigma) {
 
     arma::mat A(D.n_rows, S.n_rows);
 
-    A = D * S.t();
-    A = sqrt(exp((-0.5 * A) / pow(sigma, 2.0)));
+    if (sigma == 0) {
+        A.fill(1.0);
+    } else {
+        A = D * S.t();
+        A = sqrt(exp((-0.5 * A) / pow(sigma, 2.0)));
+    }
+
+
 
     return A;
 }

@@ -158,6 +158,9 @@ impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshol
     DT[, ID := .I]
     DT = data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
 
+    if(sigma==0){
+        DT[,w:=w+rnorm(.N)] # To get actual randomness when doing independence sampling
+    }
     ## Remove training data with small weight
     setkey(DT, comb, w)
     DT[, w := w/sum(w), comb]
@@ -265,10 +268,7 @@ get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7,
         )
     }
 
-
-
-
-    ## Figure out which model type we're using
+    ## Performing prediction
     nms <- colnames(Xtest)
 
     DTp[!(wcomb %in% c(1,2^p)), p_hat := pred_vector(model = model, data = .SD),.SDcols = nms]

@@ -12,7 +12,7 @@ library(data.table)
 library(mvtnorm)
 library(condMVNorm)
 
-source("scripts/paper_helper_funcs.R")
+source("paper_scripts/paper_helper_funcs.R")
 
 mu.list = list(c(0,0,0))
 Sigma.list <- list(matrix(c(1,0,0,
@@ -107,7 +107,7 @@ Shapley.approx$sigma.03 = compute_kernelShap(model = model,
 
 Shapley.approx$indep = compute_kernelShap(model = model,
                               l,
-                              sigma = 10^6,
+                              sigma = 0, # sigma==0 gives the special case of independence (NOTE: NOT the same as setting sigma= 10^10)
                               w_threshold = w_threshold,
                               n_threshold = n_threshold,
                               verbose = FALSE,
@@ -116,7 +116,7 @@ Shapley.approx$indep = compute_kernelShap(model = model,
 
 Shapley.approx$Gauss = compute_kernelShap(model = model,
                               l,
-                              sigma = 10^6,
+                              sigma = 0, # Ignored when Gaussian==T
                               w_threshold = w_threshold,
                               n_threshold = n_threshold,
                               verbose = FALSE,

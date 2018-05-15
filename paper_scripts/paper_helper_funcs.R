@@ -75,47 +75,50 @@ integrator.1D.func <- function(h,integrate.inds,given.inds,Xtest,model,X.grid,pi
     intval <- rep(NA,nTest)
     for (i in 1:nTest){
 
-        x.given <- as.numeric(Xtest[i,given.inds])
+        X.given <- as.numeric(Xtest[i,given.inds])
         for (j in 1:length(given.inds)){
-            X.grid[,given.inds[j]] <- x.given[j]
+            X.grid[,given.inds[j]] <- X.given[j]
         }
 
-        integrand.vec <- integrand.func(model,X.grid,given.inds,x.given,pi.G,mu.list,Sigma.list)
-        #intval[i] <- h*(integrand.vec[1]/2 + sum(integrand.vec[2:n]) + integrand.vec[n+1]/2)
-        intval[i] <- h * sum(integrand.vec) #h*(integrand.vec[1]/2 + sum(integrand.vec[2:n]) + integrand.vec[n+1]/2)
-
+        integrand.vec <- integrand.func(model = model,
+                                        X.grid = X.grid,
+                                        given.inds = given.inds,
+                                        X.given = X.given,
+                                        pi.G = pi.G,
+                                        mu.list = mu.list,
+                                        Sigma.list = Sigma.list)
+        intval[i] <- h * sum(integrand.vec)
     }
-    print(paste0("Integration over ",integrate.inds," finished."))
+    print(paste0("Integration over dim ",integrate.inds," finished."))
 
     return(intval)
 }
 
 integrator.2D.func <- function(h,integrate.inds,given.inds,Xtest,model,X.grid,pi.G,mu.list,Sigma.list){
     nTest <- nrow(Xtest)
+    p <- ncol(Xtest)
     intval <- rep(NA,nTest)
 
-    X.new.sub <- matrix(NA,ncol=3,nrow=nrow(X.grid)^2)
-    X.new.sub[,integrate.inds] <- as.matrix(expand.grid(as.data.frame(X.grid[,integrate.inds])))
+    X.new.grid <- matrix(NA,ncol=p,nrow=nrow(X.grid)^2)
+    X.new.grid[,integrate.inds] <- as.matrix(expand.grid(as.data.frame(X.grid[,integrate.inds])))
 
-    colnames(X.new.sub) = colnames(Xtest)
+    colnames(X.new.grid) = colnames(Xtest)
     for (i in 1:nTest){
         X.given <- as.numeric(Xtest[i,given.inds])
         for (j in 1:length(given.inds)){
-            X.new.sub[,given.inds[j]] <- X.given[j]
+            X.new.grid[,given.inds[j]] <- X.given[j]
         }
 
-        #    integrand.vec <- (X.new.sub[,2]>0)*(X.new.sub[,2]<=1)*(X.new.sub[,3]>0)*(X.new.sub[,3]<=1)*1
         integrand.vec <- integrand.func(model=model,
-                                        X.grid=X.new.sub,
+                                        X.grid=X.new.grid,
                                         given.inds=given.inds,
                                         X.given=X.given,
                                         pi.G=pi.G,
                                         mu.list=mu.list,
                                         Sigma.list=Sigma.list)
-        #intval[i] <- h*(integrand.vec[1]/2 + sum(integrand.vec[2:n]) + integrand.vec[n+1]/2)
-        intval[i] <- h^2 * sum(integrand.vec) #h*(integrand.vec[1]/2 + sum(integrand.vec[2:n]) + integrand.vec[n+1]/2)
+        intval[i] <- h^2 * sum(integrand.vec)
     }
-    print(paste0("Integration over (",paste0(integrate.inds,collapse=", "),") finished."))
+    print(paste0("Integration over dim (",paste0(integrate.inds,collapse=", "),") finished."))
     return(intval)
 }
 
@@ -138,14 +141,14 @@ Shapley_true = function(model,Xtrain,Xtest,pi.G,mu.list,Sigma.list,int.samp=500,
         integrate.inds = which(l$S[i,]==0)
         if(length(integrate.inds)==1){
             trueValues.mat[,i]=integrator.1D.func(h = h,
-                                                      integrate.inds=integrate.inds,
-                                                      given.inds=given.inds,
-                                                      Xtest= as.matrix(Xtest),
-                                                      model = model,
-                                                      X.grid = X.grid,
-                                                      pi.G = pi.G,
-                                                      mu.list = mu.list,
-                                                      Sigma.list = Sigma.list)
+                                                  integrate.inds=integrate.inds,
+                                                  given.inds=given.inds,
+                                                  Xtest= as.matrix(Xtest),
+                                                  model = model,
+                                                  X.grid = X.grid,
+                                                  pi.G = pi.G,
+                                                  mu.list = mu.list,
+                                                  Sigma.list = Sigma.list)
         } else {
             trueValues.mat[,i]=integrator.2D.func(h = h,
                                                   integrate.inds=integrate.inds,
@@ -159,10 +162,11 @@ Shapley_true = function(model,Xtrain,Xtest,pi.G,mu.list,Sigma.list,int.samp=500,
 
         }
     }
+    # Handles the zero and full models separatedly
     trueValues.mat[,1] = pred_zero
     trueValues.mat[,2^p] = pred_vector(model,data=as.data.frame(Xtest))
 
-    #Eksakt Shapley values
+    #Exact Shapley values
     exactShap = matrix(NA,nrow(Xtest),p+1)
     for(i in 1:nTest){
         exactShap[i,] <- c(l$W %*% trueValues.mat[i,])
