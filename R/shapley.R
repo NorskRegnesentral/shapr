@@ -231,9 +231,10 @@ samp_Gauss_func <- function(given.ind,n_threshold,mu,Sigma,p,Xtest){
 #' @author Nikolai Sellereite, Martin Jullum
 get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE,Gaussian = FALSE,feature_list,pred_zero) {
 
+    p <- ncol(Xtrain)
+
     if(Gaussian){
         ## Assume Gaussian distributed variables and sample from the various conditional distributions
-        p <- ncol(Xtrain)
         mu <- colMeans(Xtrain)
         Sigma <- cov(Xtrain)
         if(any(eigen(Sigma)$values<=1e-06)){ # Make matrix positive definite if not, or close to not.
@@ -268,45 +269,11 @@ get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7,
 
 
     ## Figure out which model type we're using
-    model_class <- head(class(model), 1)
     nms <- colnames(Xtest)
 
-    if (model_class == "glm") {
-
-        if (model$family[[1]] == "binomial") {
-            DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, newdata = .SD, type = "response"),.SDcols = nms]
-            DTp[wcomb == 2^p, p_hat := predict(object = model, newdata = Xtest, type = "response")]
-
-        } else {
-            DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
-            DTp[wcomb == 2^p, p_hat := predict(object = model, newdata = Xtest)]
-        }
-
-    } else if (model_class == "lm") {
-
-        DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, newdata = .SD),.SDcols = nms]
-        DTp[wcomb == 2^p, p_hat := predict(object = model, newdata = Xtest)]
-
-    } else if (model_class == "ranger") {
-
-        if (model$treetype == "Probability estimation") {
-            DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions[, 2],.SDcols = nms]
-            DTp[wcomb == 2^p, p_hat := predict(object = model, data = Xtest, num.threads = 5)$predictions[, 2]]
-
-        } else {
-            DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, data = .SD, num.threads = 5)$predictions,.SDcols = nms]
-            DTp[wcomb == 2^p, p_hat := predict(object = model, data = Xtest, num.threads = 5)$predictions]
-
-        }
-
-    } else if (model_class == "xgb.Booster") {
-
-        DTp[!(wcomb %in% c(1,2^p)), p_hat := predict(object = model, newdata = as.matrix(.SD)),.SDcols = nms]
-        DTp[wcomb == 2^p, p_hat := predict(object = model, newdata = as.matrix(Xtest))]
-
-    }
+    DTp[!(wcomb %in% c(1,2^p)), p_hat := pred_vector(model = model, data = .SD),.SDcols = nms]
+    DTp[wcomb == 2^p, p_hat := pred_vector(model = model, data = as.data.frame(Xtest))]
     DTp[wcomb ==1, p_hat := pred_zero]
-
 
     ## Get mean probability
     DTres <- DTp[, .(k = sum((p_hat * w) / sum(w))), wcomb]
@@ -315,6 +282,51 @@ get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7,
     return(DTres)
 }
 
+
+#' Predict on vector form
+#'
+#' @description Performs prediction of response for model classes lm, glm, ranger and xgboost with binary or continuous response.
+#' Outpus the prediction on vector form. May let the user provide this function to handle any prediction model in the future.
+#'
+#' @inheritParams global_arguments
+#' @param data data.table or data.frame with data to perform prediction
+#' @return Vector of predictions
+#'
+#' @export
+#'
+#' @author Martin Jullum
+pred_vector = function(model,data){
+    ## Figure out which model type we're using
+    model_class <- head(class(model), 1)
+
+    if (model_class == "glm") {
+
+        if (model$family[[1]] == "binomial") {
+            ret <- predict(model,newdata=data, type = "response")
+        } else {
+            ret <- predict(model,newdata=data)
+        }
+
+    } else if (model_class == "lm") {
+        ret <- predict(model,newdata=data)
+
+
+    } else if (model_class == "ranger") {
+
+        if (model$treetype == "Probability estimation") {
+            ret <- predict(model,data=data,num.threads = 5)$predictions[, 2]
+
+        } else {
+            ret <- predict(model,data=data,num.threads = 5)$predictions
+
+        }
+
+    } else if (model_class == "xgb.Booster") {
+        ret <- predict(model,newdata=as.matrix(data))
+    }
+
+    return(ret)
+}
 
 
 
@@ -327,7 +339,7 @@ get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7,
 #' @export
 #'
 #' @author Nikolai Sellereite
-kernelShap <- function(m,
+prepare_kernelShap <- function(m,
                        Xtrain,
                        Xtest,
                        exact = TRUE,
