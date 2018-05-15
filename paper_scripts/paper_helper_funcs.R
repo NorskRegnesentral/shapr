@@ -1,5 +1,5 @@
 
-#### DOCUMENT THESE FUNCTION AND PUT THEM IN THE R FOLDER LATER  ####
+#### Should probably document these helper functions  ####
 
 dens.X.func <- function(X,pi.G,mu.list,Sigma.list){
     no.mix <- length(pi.G)
@@ -55,48 +55,6 @@ joint.samp.func <- function(n,pi.G,mu.list,Sigma.list){
 
     return(dat)
 }
-
-Shapleyoutput = function(model,
-                         l,
-                         sigma = 0.1,
-                         w_threshold = 0.95,
-                         n_threshold = 1e3,
-                         verbose = FALSE,
-                         Gaussian = F,
-                         pred_zero) {
-    ll = list()
-    for (i in Xtest[, .I]) {
-        print(sprintf("%d out of %d", i, Xtest[, .N]))
-
-        ll[[i]] <- get_predictions(
-            model = model,
-            D = l$D[, i,],
-            S = l$S,
-            Xtrain = as.matrix(l$Xtrain),
-            Xtest = as.matrix(l$Xtest)[i, , drop = FALSE],
-            sigma = sigma,
-            w_threshold = w_threshold,
-            n_threshold = n_threshold,
-            verbose = verbose,
-            Gaussian = Gaussian,
-            feature_list = l$X$features,
-            pred_zero = pred_zero
-        )
-        ll[[i]][, id := i]
-
-    }
-
-    DT <- rbindlist(ll)
-
-    Kshap <- matrix(0, nrow = Xtest[, .N], ncol = nrow(l$W))
-    for (i in Xtest[, .I]) {
-        Kshap[i, ] = l$W %*% DT[id == i, k]
-    }
-
-    ret.list = list(ll=ll,DT=DT,Kshap=Kshap)
-    return(ret.list)
-}
-
 
 integrand.func <- function(model,X.grid,given.inds,X.given,pi.G,mu.list,Sigma.list){
 
@@ -163,6 +121,7 @@ integrator.2D.func <- function(h,integrate.inds,given.inds,Xtest,model,X.grid,pi
 
 Shapley_true = function(model,Xtrain,Xtest,pi.G,mu.list,Sigma.list,int.samp=500,l,pred_zero){
     p = ncol(Xtest)
+    nTest <- nrow(Xtest)
     Xtraintest = rbind(Xtrain,Xtest)
     Xrange = range(Xtraintest)
     Xsd = mean(diag(var(Xtraintest)))
@@ -201,12 +160,11 @@ Shapley_true = function(model,Xtrain,Xtest,pi.G,mu.list,Sigma.list,int.samp=500,
         }
     }
     trueValues.mat[,1] = pred_zero
-    trueValues.mat[,2^p] = pred_func(model,data=Xtest)
+    trueValues.mat[,2^p] = pred_vector(model,data=as.data.frame(Xtest))
 
     #Eksakt Shapley values
     exactShap = matrix(NA,nrow(Xtest),p+1)
-    for(i in 1:nTest)
-    {
+    for(i in 1:nTest){
         exactShap[i,] <- c(l$W %*% trueValues.mat[i,])
     }
 
