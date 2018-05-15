@@ -88,40 +88,40 @@ n_threshold = 10^3
 Shapley.approx = list()
 
 Shapley.approx$sigma.01 = compute_kernelShap(model = model,
-                                 l,
-                                 sigma = 0.1,
-                                 w_threshold = w_threshold,
-                                 n_threshold = n_threshold,
-                                 verbose = FALSE,
-                                 Gaussian = F,
-                                 pred_zero=pred_zero)
+                                             l,
+                                             sigma = 0.1,
+                                             w_threshold = w_threshold,
+                                             n_threshold = n_threshold,
+                                             verbose = FALSE,
+                                             Gaussian = F,
+                                             pred_zero=pred_zero)
 
 Shapley.approx$sigma.03 = compute_kernelShap(model = model,
-                                 l,
-                                 sigma = 0.3,
-                                 w_threshold = w_threshold,
-                                 n_threshold = n_threshold,
-                                 verbose = FALSE,
-                                 Gaussian = F,
-                                 pred_zero=pred_zero)
+                                             l,
+                                             sigma = 0.3,
+                                             w_threshold = w_threshold,
+                                             n_threshold = n_threshold,
+                                             verbose = FALSE,
+                                             Gaussian = F,
+                                             pred_zero=pred_zero)
 
 Shapley.approx$indep = compute_kernelShap(model = model,
-                              l,
-                              sigma = 0, # sigma==0 gives the special case of independence (NOTE: NOT the same as setting sigma= 10^10)
-                              w_threshold = w_threshold,
-                              n_threshold = n_threshold,
-                              verbose = FALSE,
-                              Gaussian = F,
-                              pred_zero=pred_zero)
+                                          l,
+                                          sigma = 0, # sigma==0 gives the special case of independence (NOTE: NOT the same as setting sigma= 10^10)
+                                          w_threshold = w_threshold,
+                                          n_threshold = n_threshold,
+                                          verbose = FALSE,
+                                          Gaussian = F,
+                                          pred_zero=pred_zero)
 
 Shapley.approx$Gauss = compute_kernelShap(model = model,
-                              l,
-                              sigma = 0, # Ignored when Gaussian==T
-                              w_threshold = w_threshold,
-                              n_threshold = n_threshold,
-                              verbose = FALSE,
-                              Gaussian = T,
-                              pred_zero=pred_zero)
+                                          l,
+                                          sigma = 0, # Ignored when Gaussian==T
+                                          w_threshold = w_threshold,
+                                          n_threshold = n_threshold,
+                                          verbose = FALSE,
+                                          Gaussian = T,
+                                          pred_zero=pred_zero)
 
 Shapley.true = Shapley_true(model = model,
                             Xtrain = Xtrain,
