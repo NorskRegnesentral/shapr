@@ -328,6 +328,61 @@ pred_vector = function(model,data){
     return(ret)
 }
 
+#' Computes the kernelShap values for the test data given to prepare_kernelShao
+#'
+#' @inheritParams global_arguments
+#' @param l The output from prepare_kernelShap
+#' @param sigma Bandwidth in the Gaussian kernel if the empirical conditional sampling approach is used (Gaussian==F)
+#' @param Gaussian Logical indicating whether the Gaussian conditional sampling approach is used or not (default==F)
+#' @param pred_zero The prediction value for unseen data, typically equal to the mean of the response
+#'
+#' @return List with kernel Shap values (Kshap) and other object used to perform the computation (helpful for debugging etc.)
+#'
+#' @export
+#'
+#' @author Martin Jullum
+compute_kernelShap = function(model,
+                   l,
+                   sigma = 0.1,
+                   w_threshold = 0.95,
+                   n_threshold = 1e3,
+                   verbose = FALSE,
+                   Gaussian = F,
+                   pred_zero) {
+    ll = list()
+    for (i in l$Xtest[, .I]) {   # This may be parallelized when the prediction function is not parallelized.
+        print(sprintf("%d out of %d", i, l$Xtest[, .N]))
+
+        ll[[i]] <- get_predictions(
+            model = model,
+            D = l$D[, i,],
+            S = l$S,
+            Xtrain = as.matrix(l$Xtrain),
+            Xtest = as.matrix(l$Xtest)[i, , drop = FALSE],
+            sigma = sigma,
+            w_threshold = w_threshold,
+            n_threshold = n_threshold,
+            verbose = verbose,
+            Gaussian = Gaussian,
+            feature_list = l$X$features,
+            pred_zero = pred_zero
+        )
+        ll[[i]][, id := i]
+
+    }
+
+    DT <- rbindlist(ll)
+
+    Kshap <- matrix(0, nrow = Xtest[, .N], ncol = nrow(l$W))
+    for (i in Xtest[, .I]) {
+        Kshap[i, ] = l$W %*% DT[id == i, k]
+    }
+
+    ret.list = list(Kshap=Kshap,other_objects = list(ll=ll,DT=DT))
+    return(ret.list)
+}
+
+
 
 
 #' Get shapley weights for test data

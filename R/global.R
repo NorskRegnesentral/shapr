@@ -20,6 +20,7 @@
 #' @param S Matrix
 #' @param verbose Logical
 #' @param scale Logical
+#' @param Gaussian Logical indicating whether the Gaussian conditional sampling approach should be used
 #'
 #' @export
 #'
