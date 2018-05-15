@@ -41,7 +41,7 @@ setcolorder(Xtest, nms)
 m = ncol(Xtrain)
 
 ## Pre computation before kernel shap --------------------------------
-l <- kernelShap(
+l <- prepare_kernelShap(
     m = m,
     Xtrain = Xtrain,
     Xtest = Xtest,

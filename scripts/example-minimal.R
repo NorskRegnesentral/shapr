@@ -46,7 +46,7 @@ Xtrain <- iris_mod[train == TRUE][, .SD, .SDcols = cnms]
 m <- ncol(Xtrain)
 
 ## Some precomputed stuff ------------
-X <- kernelShap(
+X <- prepare_kernelShap(
 	m = m,
 	Xtrain = Xtrain,
 	Xtest = Xtest,
