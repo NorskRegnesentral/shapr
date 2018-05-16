@@ -314,10 +314,10 @@ pred_vector = function(model,data){
     } else if (model_class == "ranger") {
 
         if (model$treetype == "Probability estimation") {
-            ret <- predict(model,data=data,num.threads = 5)$predictions[, 2]
+            ret <- predict(model,data=data)$predictions[, 2]
 
         } else {
-            ret <- predict(model,data=data,num.threads = 5)$predictions
+            ret <- predict(model,data=data)$predictions
 
         }
 
