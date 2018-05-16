@@ -1,0 +1,47 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: appsilon/ci-base:1.0
+    steps:
+      - checkout
+      - run:
+          name: Set environmental variables
+          command: |
+            Rscript --vanilla \
+              -e 'dsc <- read.dcf("DESCRIPTION")' \
+              -e 'cat(sprintf("export PKG_TARBALL=%s_%s.tar.gz\n", dsc[,"Package"], dsc[,"Version"]))' \
+              -e 'cat(sprintf("export RCHECK_DIR=%s.Rcheck\n", dsc[,"Package"]))' \
+              >> ${BASH_ENV}
+      - restore_cache:
+          keys:
+            - deps1-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
+            - deps1-{{ .Branch }}
+            - deps1-
+      - run:
+          name: Install dependencies
+          command: R -e 'devtools::install_deps(dependencies = TRUE)'
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
+          paths:
+            - "/usr/local/lib/R/site-library"
+      - run:
+          name: Document package
+          command: R -e 'devtools::document()'
+      - run:
+          name: Build package
+          command: R CMD build . --no-examples
+      - run:
+          name: Check package
+          command: R CMD check "${PKG_TARBALL}" --no-examples
+      - run:
+          name: Move files
+          command: mv ${RCHECK_DIR} /tmp/Rcheck
+          when: always
+
+      - store_test_results:
+          path: /tmp/Rcheck/tests/
+          when: always
+      - store_artifacts:
+          path: /tmp/Rcheck
+          when: always
