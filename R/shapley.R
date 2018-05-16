@@ -15,51 +15,62 @@ w_shapley <- function(m, N, s) {
 #'
 #' @param m Integer.
 #' @param exact Logical.
-#' @param nRows Integer
+#' @param nrows Integer
+#'
+#' @details
+#' The returned data.table contains the following columns
+#' \describe{
+#' \item{ID}{Postive integer. Unique key for combination}
+#' \item{features}{List}
+#' \item{nfeautres}{Postive integer}
+#' \item{N}{Postive integer}
+#' }
 #'
 #' @return data.table
 #'
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_combinations <- function(m, exact = TRUE, nRows = 200) {
+get_combinations <- function(m, exact = TRUE, nrows = 200) {
 
     if (exact == TRUE) {
         N <- 2^m
         X <- data.table(ID = 1:N)
-        all_combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
-        X[, comb := unlist(all_combinations, recursive = FALSE)]
-        X[, num_var := length(comb[[1]]), ID]
-        X[, N := .N, num_var]
+        combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
+        X[, features := unlist(combinations, recursive = FALSE)]
+        X[, nfeatures := length(features[[1]]), ID]
+        X[, N := .N, nfeatures]
     } else {
 
         ## Find weights for given number of features ----------
-        dt_feat <- data.table(num_var = head(1:m, -1))
-        dt_feat[, N := unlist(lapply(num_var, choose, n = m))]
-        dt_feat[, w := w_shapley(m = m, N = N, s = num_var)]
+        DT <- data.table(nfeatures = head(1:m, -1))
+        DT[, N := unlist(lapply(nfeatures, choose, n = m))]
+        DT[, weight := w_shapley(m = m, N = N, s = nfeatures)]
 
         ## Sample number of features ----------
-        X <- data.table(ID = 1:nRows,
-                        num_var = sample(x = dt_feat[["num_var"]],
-                                         size = nRows,
+        X <- data.table(ID = seq(nrows),
+                        nfeatures = sample(x = DT[["nfeatures"]],
+                                         size = nrows,
                                          replace = TRUE,
-                                         prob = dt_feat[["w"]]))
+                                         prob = DT[["weight"]]))
 
         ## Sample specific set of features ----------
-        setkey(X, num_var)
+        setkey(X, nfeatures)
         X[, ID := .I]
-        X[, comb := lapply(num_var, sample, x = 1:m)]
+        X[, features := lapply(nfeatures, sample, x = 1:m)]
 
         ## Add zero features and m features ----------
         X_zero_all <- data.table(ID = seq(X[, max(ID)] + 1, length.out = 2),
                                  num_var = c(0, m),
-                                 comb = c(list(NULL), list(1:m)))
+                                 comb = c(list(numeric(0)), list(1:m)))
         X <- rbindlist(list(X, X_zero_all))
-        setkey(X, num_var)
+        setkey(X, nfeatures)
         X[, ID := .I]
 
         ## Add number of combinations
-        X <- merge(x = X, y = dt_feat[, .(num_var, N)], all.x = TRUE, on = "num_var")
+        X <- merge(x = X, y = DT[, .(nfeatures, N)], all.x = TRUE, on = "nfeatures")
+        nms <- c("ID", "features", "nfeatures", "N")
+        setcolorder(X, nms)
 
     }
 
@@ -76,34 +87,9 @@ get_combinations <- function(m, exact = TRUE, nRows = 200) {
 #'
 #' @author Nikolai Sellereite
 get_weights <- function(X) {
-    X[-c(1, .N), w := w_shapley(m = m, N = N, s = num_var), ID]
-    X[c(1, .N) , w := 10 ^ 6]
+    X[-c(1, .N), weight := w_shapley(m = m, N = N, s = nfeatures), ID]
+    X[c(1, .N) , weight := 10 ^ 6]
 
-    return(X)
-}
-
-#' Get subset data
-#'
-#' @description Currently not used.
-#'
-#' @param X data.table.
-#' @param nRows Integer.
-#'
-#' @return data.table
-#'
-#' @export
-#'
-#' @author Nikolai Sellereite
-get_subset_data <- function(X, nRows) {
-    d <- X[, .N] - 2
-    if (nRows < d) {
-        ind_sample <- X[-c(1, .N), .I] + 1
-        X[, keep := 0]
-        X[c(1, .N), keep := 1]
-        ind_keep <- sample(x = ind_sample, size = nRows, replace = FALSE, prob = X[ind_sample, w])
-        X[ind_keep, keep := 1]
-        X <- X[keep == 1][, keep := NULL]
-    }
     return(X)
 }
 
@@ -118,53 +104,17 @@ get_subset_data <- function(X, nRows) {
 #' @author Nikolai Sellereite
 get_weighted_matrix <- function(X) {
 
-    h <- function(i, x) {
-        s <- grep(pattern = paste0("^(", i, "){1}$"), x = x[[1]])
-        return(1 * (length(s) > 0))
-    }
-
-    Xdt <- X[, c(1, lapply(1:m, FUN = h, x = comb), w), ID][, ID := NULL]
-    nms <- paste0("x", head(1:ncol(Xdt), -1))
-    setnames(Xdt, c(nms, "w"))
-    X <- as.matrix(Xdt[, .SD, .SDcols = nms])
-    Xw <-  t(as.matrix(Xdt[, (nms) := .SD * w, by = w][, w := NULL]))
-    W <- solve(Xw %*% X) %*% Xw
-    rownames(W) <- NULL
+    W <- weighted_matrix(
+        features = X[["features"]],
+        m = X[.N][["nfeatures"]],
+        n = X[, .N]
+    )
 
     return(W)
 }
 
 #' Scale training and test data
 #'
-#' @param Xtrain data.frame
-#' @param Xtest data.frame
-#'
-#' @return List
-#'
-#' @export
-#'
-#' @author Nikolai Sellereite
-scale_data <- function(Xtrain, Xtest) {
-    Xtrain <- trainData
-    Xtest <- testData
-    if (!is.data.table(Xtrain)) {
-        Xtrain <- as.data.table(Xtrain)
-    }
-    if (!is.data.table(Xtest)) {
-        Xtest <- as.data.table(Xtest)
-    }
-    nms <- colnames(Xtrain)
-    setcolorder(Xtest, nms)
-    sd <- unlist(Xtrain[, lapply(.SD, sd, na.rm = TRUE)])
-    Xtrain[, (nms) := .SD / lapply(.SD, sd, na.rm = TRUE)]
-    Xtest[, (nms) := .SD / sd, .SDcols = nms]
-
-    return(list(Xtrain = Xtrain, Xtest = Xtest))
-}
-
-#' Get predictions
-#'
-#' @param X data.table
 #' @inheritParams global_arguments
 #'
 #' @return List
@@ -172,89 +122,268 @@ scale_data <- function(Xtrain, Xtest) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_predictions <- function(X, model, trainData, testData, sigma = 0, p_default = .5, nSamples = 100) {
+scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 
-    ## Define Shapley matrix ----------------
-    l <- list()
-    kernelShapley <- matrix(0, ncol = nrow(W), nrow = nrow(testData))
-    if (sigma == 0) {
-        sigma <- 1.75 * (nrow(trainData)) ^ (-1 / 6)
+    if (!is.data.table(Xtrain)) {
+        Xtrain <- as.data.table(Xtrain)
+    }
+    if (!is.data.table(Xtest)) {
+        Xtest <- as.data.table(Xtest)
     }
 
-    get_weights <- function(x, d, trainData) {
-
-        N <- length(x)
-        if (N == 0) {
-            distK <- rep(0, nrow(trainData))
-        } else {
-
-            inds <- x
-            d <- unlist(d[, .SD, .SDcols = inds])
-            nms <- colnames(trainData)[inds]
-            if (N == 1) {
-                distK <- (trainData[, .SD, .SDcols = nms] - d) ^ 2
-                distK <- distK[, 1]
-            } else {
-                distK <- trainData[, .SD, .SDcols = nms] - d
-                distK[, (nms) := lapply(.SD, function(i)(i)^2), .SDcols = nms]
-                distK <- distK[, rowSums(.SD), .SDcols = nms]
-            }
-        }
-
-        obsWeights <- sqrt(exp(-distK/(2*sigma^2)))
-
-        if (max(obsWeights) < 0.00001) {
-            obsWeights[] <- 1/trainData[, .N]
-        }
-        return(obsWeights)
+    if (scale) {
+        nms <- colnames(Xtrain)
+        setcolorder(Xtest, nms)
+        sd <- Xtrain[, unname(sapply(.SD, sd, na.rm = TRUE))]
+        Xtrain[, (nms) := .SD / sd]
+        Xtest[, (nms) := .SD / sd]
     }
 
-    impute_train <- function(prob, comb, d) {
-        ind <- sample(
-            x = nrow(trainData),
-            nSamples,
-            replace = TRUE,
-            # prob = prob
-            prob = prob[[1]]
-        )
-        comb <- comb[[1]]
-        nms <- colnames(trainData)[comb]
-        yMat <- copy(trainData[ind])
-        if (length(nms) > 0) {
-            yMat[, (nms) := d[, .SD, .SDcols = nms]]
-        }
-
-        return(yMat)
-    }
-
-
-    for (k in 1:nrow(testData)) {
-        print(sprintf("%d out of %d", k, nrow(testData)))
-
-        ## Get weights for combinations ---------
-        X[, test := lapply(comb, get_weights, d = testData[k], trainData = trainData)]
-
-        ## Generate augmented training data ---------
-        yMatTot <- X[, impute_train(test, comb = comb, d = testData[k]), ID]
-
-        ## Get predictions ----------
-        ranger <- TRUE
-        if (ranger) {
-            yMatTot[, phat := predict(model, data = .SD, type = "response")$predictions[, 2]]
-        } else {
-            yMatTot[, phat := unname(predict(model, data = .SD, type = "response"))]
-        }
-        predMat <- yMatTot[, .(mphat = mean(phat)), ID][order(ID)]
-        predMat[1, mphat := p_default]
-
-        ## Fill in values for Shapley Kernel ----------
-        l[[k]] <- predMat[, k := k]
-        kernelShapley[k, ] <- W %*% predMat[, mphat]
-    }
-    p_dt <- rbindlist(l, use.names = TRUE)
-
-    list(kernelShapley = kernelShapley, p_dt = p_dt)
+    return(list(Xtrain = Xtrain, Xtest = Xtest))
 }
+
+#' Get predictions
+#'
+#' @inheritParams global_arguments
+#'
+#' @return List
+#'
+#' @export
+#'
+#' @author Nikolai Sellereite
+impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3) {
+
+    ## Find weights for all combinations and training data
+    DT = as.data.table(weights_train_comb_cpp(D, S, sigma))
+    DT[, ID := .I]
+    DT = data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
+
+    if(sigma==0){
+        DT[,w:=w+rnorm(.N)] # To get actual randomness when doing independence sampling
+    }
+    ## Remove training data with small weight
+    setkey(DT, comb, w)
+    DT[, w := w/sum(w), comb]
+    DT[, wcum := cumsum(w), comb]
+    DT <- DT[wcum > 1 - w_threshold][, wcum := NULL]
+    DT <- DT[, tail(.SD, n_threshold), comb]
+    DT[, comb := gsub(comb, pattern = "V", replacement = ""), comb]
+    DT[, wcomb := as.integer(comb), comb][, comb := NULL]
+
+    ## Generate data used for prediction
+    DTp <- impute_cpp(
+        ID = DT[["ID"]],
+        Comb = DT[["wcomb"]],
+        Xtrain = Xtrain,
+        Xtest = Xtest,
+        S = S
+    )
+
+    ## Add keys
+    DTp <- as.data.table(DTp)
+    setnames(DTp, colnames(Xtrain))
+    DTp[, wcomb := DT[["wcomb"]]]
+    DTp[, w := DT[["w"]]]
+
+    return(DTp)
+}
+
+#' Sample conditional Gaussian variables
+#'
+#' @inheritParams global_arguments
+#'
+#' @return data.table with n_threshold (conditional) Gaussian samples
+#'
+#' @import condMVNorm
+#' @export
+#'
+#' @author Martin Jullum
+samp_Gauss_func <- function(given.ind,n_threshold,mu,Sigma,p,Xtest){
+    # Handles the unconditional and full conditional separtely when predicting
+    if(length(given.ind) %in% c(0,p)){
+        ret <- matrix(Xtest,ncol=p,nrow=1)
+    } else {
+        dependent.ind <- (1:length(mu))[-given.ind]
+        X.given <- Xtest[given.ind]
+        ret0 <- rcmvnorm(n = n_threshold,
+                         mean = mu,
+                         sigma = Sigma,
+                         dependent.ind = dependent.ind,
+                         given.ind = given.ind,
+                         X.given = X.given,
+                         method = "chol")
+        ret <- matrix(NA,ncol=p,nrow=n_threshold)
+        ret[,given.ind] <- X.given
+        ret[,dependent.ind] <- ret0
+    }
+    colnames(ret) <- colnames(Xtrain)
+    return(as.data.table(ret))
+}
+
+
+
+
+#' Get predictions
+#'
+#' @inheritParams global_arguments
+#'
+#' @return List
+#'
+#' @export
+#'
+#' @author Nikolai Sellereite, Martin Jullum
+get_predictions <- function(model, D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, verbose = FALSE,Gaussian = FALSE,feature_list,pred_zero) {
+
+    p <- ncol(Xtrain)
+
+    if(Gaussian){
+        ## Assume Gaussian distributed variables and sample from the various conditional distributions
+        mu <- colMeans(Xtrain)
+        Sigma <- cov(Xtrain)
+        if(any(eigen(Sigma)$values<=1e-06)){ # Make matrix positive definite if not, or close to not.
+            Sigma <- as.matrix(nearPD(Sigma)$mat)
+        }
+        Gauss_samp <- lapply(X=feature_list,
+                             FUN=samp_Gauss_func,
+                             n_threshold = n_threshold,
+                             mu = mu,
+                             Sigma = Sigma,
+                             p = p,
+                             Xtest = Xtest)
+
+        DTp <- rbindlist(Gauss_samp,idcol="wcomb")
+        DTp[,w:=1/n_threshold]
+        DTp[wcomb %in% c(1,2^p),w:=1] # Adjust weights for zero and full model
+
+    } else {
+        ## Get imputed data
+        DTp <- impute_data(
+            D = D,
+            S = S,
+            Xtrain = Xtrain,
+            Xtest = Xtest,
+            sigma = sigma,
+            w_threshold = w_threshold,
+            n_threshold = n_threshold
+        )
+    }
+
+    ## Performing prediction
+    nms <- colnames(Xtest)
+
+    DTp[!(wcomb %in% c(1,2^p)), p_hat := pred_vector(model = model, data = .SD),.SDcols = nms]
+    DTp[wcomb == 2^p, p_hat := pred_vector(model = model, data = as.data.frame(Xtest))]
+    DTp[wcomb ==1, p_hat := pred_zero]
+
+    ## Get mean probability
+    DTres <- DTp[, .(k = sum((p_hat * w) / sum(w))), wcomb]
+    setkey(DTres, wcomb)
+
+    return(DTres)
+}
+
+
+#' Predict on vector form
+#'
+#' @description Performs prediction of response for model classes lm, glm, ranger and xgboost with binary or continuous response.
+#' Outpus the prediction on vector form. May let the user provide this function to handle any prediction model in the future.
+#'
+#' @inheritParams global_arguments
+#' @param data data.table or data.frame with data to perform prediction
+#' @return Vector of predictions
+#'
+#' @export
+#'
+#' @author Martin Jullum
+pred_vector = function(model,data){
+    ## Figure out which model type we're using
+    model_class <- head(class(model), 1)
+
+    if (model_class == "glm") {
+
+        if (model$family[[1]] == "binomial") {
+            ret <- predict(model,newdata=data, type = "response")
+        } else {
+            ret <- predict(model,newdata=data)
+        }
+
+    } else if (model_class == "lm") {
+        ret <- predict(model,newdata=data)
+
+
+    } else if (model_class == "ranger") {
+
+        if (model$treetype == "Probability estimation") {
+            ret <- predict(model,data=data,num.threads = 5)$predictions[, 2]
+
+        } else {
+            ret <- predict(model,data=data,num.threads = 5)$predictions
+
+        }
+
+    } else if (model_class == "xgb.Booster") {
+        ret <- predict(model,newdata=as.matrix(data))
+    }
+
+    return(ret)
+}
+
+#' Computes the kernelShap values for the test data given to prepare_kernelShao
+#'
+#' @inheritParams global_arguments
+#' @param l The output from prepare_kernelShap
+#' @param sigma Bandwidth in the Gaussian kernel if the empirical conditional sampling approach is used (Gaussian==F)
+#' @param Gaussian Logical indicating whether the Gaussian conditional sampling approach is used or not (default==F)
+#' @param pred_zero The prediction value for unseen data, typically equal to the mean of the response
+#'
+#' @return List with kernel Shap values (Kshap) and other object used to perform the computation (helpful for debugging etc.)
+#'
+#' @export
+#'
+#' @author Martin Jullum
+compute_kernelShap = function(model,
+                   l,
+                   sigma = 0.1,
+                   w_threshold = 0.95,
+                   n_threshold = 1e3,
+                   verbose = FALSE,
+                   Gaussian = F,
+                   pred_zero) {
+    ll = list()
+    for (i in l$Xtest[, .I]) {   # This may be parallelized when the prediction function is not parallelized.
+        print(sprintf("%d out of %d", i, l$Xtest[, .N]))
+
+        ll[[i]] <- get_predictions(
+            model = model,
+            D = l$D[, i,],
+            S = l$S,
+            Xtrain = as.matrix(l$Xtrain),
+            Xtest = as.matrix(l$Xtest)[i, , drop = FALSE],
+            sigma = sigma,
+            w_threshold = w_threshold,
+            n_threshold = n_threshold,
+            verbose = verbose,
+            Gaussian = Gaussian,
+            feature_list = l$X$features,
+            pred_zero = pred_zero
+        )
+        ll[[i]][, id := i]
+
+    }
+
+    DT <- rbindlist(ll)
+
+    Kshap <- matrix(0, nrow = Xtest[, .N], ncol = nrow(l$W))
+    for (i in Xtest[, .I]) {
+        Kshap[i, ] = l$W %*% DT[id == i, k]
+    }
+
+    ret.list = list(Kshap=Kshap,other_objects = list(ll=ll,DT=DT))
+    return(ret.list)
+}
+
+
+
 
 #' Get shapley weights for test data
 #'
@@ -265,41 +394,30 @@ get_predictions <- function(X, model, trainData, testData, sigma = 0, p_default 
 #' @export
 #'
 #' @author Nikolai Sellereite
-kernelShap <- function(m,
-                       trainData,
-                       testData,
-                       nSamples,
-                       p_default,
+prepare_kernelShap <- function(m,
+                       Xtrain,
+                       Xtest,
                        exact = TRUE,
-                       nRows,
-                       sigma = NULL,
-                       model) {
+                       nrows = NULL,
+                       scale = FALSE) {
 
     ## Get all combinations ----------------
-    X <- get_combinations(m = m, exact = exact)
+    X <- get_combinations(m = m, exact = exact, nrows = nrows)
 
     ## Add weights ----------------
-    X <- get_weights(X)
-
-    ## Subset data if two many rows ----------------
-    # X <- get_subset_data(X, nRows = nRows)
+    X <- get_weights(X = X)
 
     ## Get weighted matrix ----------------
     W <- get_weighted_matrix(X)
 
     ## Transform to data table and scale data ----------------
-    S <- scale_data(trainData, testData)
+    l <- scale_data(Xtrain, Xtest, scale = scale)
 
-    ## Get predictions ----------------
-    X <- get_predictions(
-        X = X,
-        model = model,
-        trainData = S$Xtrain,
-        testData = S$Xtest,
-        sigma = sigma,
-        p_default = p_default,
-        nSamples = nSamples
-    )
+    ## Get distance ---------
+    D <- distance_cpp(as.matrix(l$Xtrain), as.matrix(l$Xtest))
 
-    return(X)
+    ## Get feature matrix ---------
+    S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain))
+
+    return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest))
 }

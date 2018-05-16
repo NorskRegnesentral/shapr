@@ -2,3 +2,5 @@
 ^scripts$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^Rprof\.out$
+^cleanup$

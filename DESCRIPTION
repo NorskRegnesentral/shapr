@@ -4,7 +4,8 @@ Title: Explain the output of machine learning models
 Description: What the package does (one paragraph).
 Authors@R: c(
     person("Nikolai", "Sellereite", email = "Nikolai.Sellereite@nr.no", role = "cre"),
-    person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = "aut")) 
+    person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = "aut"),  
+    person("Anders", "Løland", email = "Anders.Løland@nr.no", role = "aut")) 
 License: file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -13,5 +14,17 @@ Suggests:
     testthat
 Imports: 
     data.table,
-    ranger
+    ranger,
+    xgboost,
+    stats,
+    Rcpp (>= 0.12.15),
+    cluster,
+    maptree,
+    corrplot,
+    pcaPP,
+    condMVNorm,
+    mvtnorm
 RoxygenNote: 6.0.1
+LinkingTo: 
+    RcppArmadillo,
+    Rcpp

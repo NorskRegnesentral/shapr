@@ -3,14 +3,24 @@
 #' @param m Integer. Total nnumber of features
 #' @param N Integer. Number of combinations
 #' @param s Integer. Number of chosen
-#' @param trainData data.frame
-#' @param testData data.frame
-#' @param nSamples Integer. Number of samples
+#' @param Xtrain data.frame
+#' @param Xtest data.frame
+#' @param nsamples Integer. Number of samples
+#' @param features List.
 #' @param exact Logical
 #' @param sigma Numeric
 #' @param model Model object
 #' @param p_default Numeric
-#' @param nRows Integer
+#' @param nrows Integer
+#' @param w_threshold Positive numeric.
+#' @param n_threshold Postive integer.
+#' @param W Matrix
+#' @param I Matrix
+#' @param D Matrix
+#' @param S Matrix
+#' @param verbose Logical
+#' @param scale Logical
+#' @param Gaussian Logical indicating whether the Gaussian conditional sampling approach should be used
 #'
 #' @export
 #'
@@ -20,13 +30,22 @@
 global_arguments <- function(m,
                              N,
                              s,
-                             trainData,
-                             testData,
-                             nSamples,
+                             Xtrain,
+                             Xtest,
+                             nsamples,
+                             features,
                              exact,
                              sigma,
                              model,
-                             nRows,
+                             nrows,
+                             scale,
+                             w_threshold,
+                             n_threshold,
+                             verbose,
+                             W,
+                             S,
+                             D,
+                             I,
                              p_default) {
     return(NULL)
 }
