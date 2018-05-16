@@ -11,7 +11,8 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Suggests: 
-    testthat
+    testthat, 
+    lintr
 Imports: 
     data.table,
     ranger,
@@ -23,7 +24,8 @@ Imports:
     corrplot,
     pcaPP,
     condMVNorm,
-    mvtnorm
+    mvtnorm,
+    Matrix
 RoxygenNote: 6.0.1
 LinkingTo: 
     RcppArmadillo,
