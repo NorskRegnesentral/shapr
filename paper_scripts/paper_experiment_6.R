@@ -3,7 +3,8 @@
 #### PAPER EXPERIMENT FRAMEWORK ####
 #### Use the current setup for all experiements in the paper to ease reproducablity etc.
 
-#### Example 1 ####
+#### Example 6 ####
+# Random Forest with Gaussian mixture distributed features.
 
 rm(list = ls())
 
@@ -11,11 +12,10 @@ library(shapr)
 library(data.table)
 library(mvtnorm)
 library(condMVNorm)
-library(xgboost)
 
 source("paper_scripts/paper_helper_funcs.R")
 
-mu.list = list(c(0,0,0),c(0,0,0))
+mu.list = list(c(0,0,0),c(10,-5,10))
 Sigma.list <- list(matrix(c(1,0.7,0.7,
                             0.7,1,0.7,
                             0.7,0.7,1),ncol=3),
@@ -27,7 +27,7 @@ pi.G <- c(0.5,0.5)
 sd = 0.1
 
 nTrain <- 10000
-nTest <- 100
+nTest <- 1000
 
 
 #### Defining the true distribution of the variables and the model------
@@ -44,7 +44,7 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 samp_model <- function(n,X,sd){
     y <- 0.5*X[,2]  +  (X[,1]<0)*1 + (X[,2]<2) + (X[,2]>4)*1 + (X[,3]<10)*1 + (X[,3]<0)*1 + (X[,1]>-5)*(X[,2]<4)*1+ rnorm(n = n,mean=0,sd=sd)
     return(y)
-    }
+}
 
 
 
@@ -70,22 +70,16 @@ Xtest[,y:=NULL]
 
 #### Fitting the model ----------
 
-xgb.train <- xgb.DMatrix(data = as.matrix(Xtrain),
-                         label = XYtrain$y)
-xgb.test <- xgb.DMatrix(data = as.matrix(Xtest),
-                         label = XYtest$y)
+model = ranger::ranger(
+    formula = y~.,
+    data = XYtrain,
+    num.trees = 50,
+    num.threads = 3,
+    verbose = TRUE,
+    importance = "impurity",
+    mtry=2)
 
-params <- list(eta =  0.3,
-               objective = "reg:linear",
-               eval_metric = "rmse",
-               tree_method="hist") # gpu_hist
 
-model <- xgb.train(data = xgb.train,
-                     params = params,
-                     nrounds = 40,
-                     print_every_n = 10,
-                     ntread = 3,
-                     watchlist = list(train=xgb.train,test=xgb.test))
 
 pred_zero = XYtrain[, mean(y)]
 m = ncol(Xtrain)
@@ -162,10 +156,10 @@ Shapley.true = Shapley_true(model = model,
 (absmeans.Gauss = colMeans(abs(Shapley.true[,-1]-Shapley.approx$Gauss$Kshap[,-1])))
 
 # Mean of the absolute errors over all variables
-mean(absmeans.sigma.01)
-mean(absmeans.sigma.03)
-mean(absmeans.indep)
-mean(absmeans.Gauss)
+res_to_paper <- c(S_KS=mean(absmeans.indep),G_KS = mean(absmeans.Gauss),E_KS_0.1=mean(absmeans.sigma.01),E_KS_0.3=mean(absmeans.sigma.03))
+res_to_paper
+#S_KS       G_KS   E_KS_0.1   E_KS_0.3
+#0.15787697 0.34907895 0.01552833 0.01815017
 
 # Insert ranking based measures etc. here as well.
 

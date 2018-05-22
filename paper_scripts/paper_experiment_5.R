@@ -3,7 +3,8 @@
 #### PAPER EXPERIMENT FRAMEWORK ####
 #### Use the current setup for all experiements in the paper to ease reproducablity etc.
 
-#### Example 1 ####
+#### Example 5 ####
+# Linear  model with Gaussian mixture distributed features.
 
 rm(list = ls())
 
@@ -14,16 +15,19 @@ library(condMVNorm)
 
 source("paper_scripts/paper_helper_funcs.R")
 
-mu.list = list(c(0,0,0))
-Sigma.list <- list(matrix(c(1,0,0,
-                            0,1,0,
-                            0,0,1),ncol=3))
-pi.G <- 1
+mu.list = list(c(0,0,0),c(10,-5,10))
+Sigma.list <- list(matrix(c(1,0.7,0.7,
+                            0.7,1,0.7,
+                            0.7,0.7,1),ncol=3),
+                   matrix(c(1,0.7,0.7,
+                            0.7,1,0.7,
+                            0.7,0.7,1),ncol=3))
+pi.G <- c(0.5,0.5)
 
 sd = 0.1
 
 nTrain <- 10000
-nTest <- 100
+nTest <- 1000
 
 
 #### Defining the true distribution of the variables and the model------
@@ -38,7 +42,7 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 }
 
 samp_model <- function(n,X,sd){
-    y <- X[,1] + X[,2] + X[,3] + rnorm(n = n,mean=0,sd=sd)
+    y <- 0.5*X[,1] + 0.5*X[,2] + abs(X[,3]) + rnorm(n = n,mean=0,sd=sd)
 }
 
 
@@ -66,6 +70,7 @@ Xtest[,y:=NULL]
 #### Fitting the model ----------
 
 model = lm(y~.,data=XYtrain)
+
 
 pred_zero = XYtrain[, mean(y)]
 m = ncol(Xtrain)
@@ -142,10 +147,10 @@ Shapley.true = Shapley_true(model = model,
 (absmeans.Gauss = colMeans(abs(Shapley.true[,-1]-Shapley.approx$Gauss$Kshap[,-1])))
 
 # Mean of the absolute errors over all variables
-mean(absmeans.sigma.01)
-mean(absmeans.sigma.03)
-mean(absmeans.indep)
-mean(absmeans.Gauss)
+res_to_paper <- c(S_KS=mean(absmeans.indep),G_KS = mean(absmeans.Gauss),E_KS_0.1=mean(absmeans.sigma.01),E_KS_0.3=mean(absmeans.sigma.03))
+res_to_paper
+#S_KS       G_KS   E_KS_0.1   E_KS_0.3
+#1.70075624 0.74500897 0.02322865 0.02424549
 
 # Insert ranking based measures etc. here as well.
 
