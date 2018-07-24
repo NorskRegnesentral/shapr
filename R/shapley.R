@@ -153,15 +153,14 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, distance_metric = "Euclidean", kernel_metric = "Gaussian") {
+impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, kernel_metric = "Gaussian") {
 
     ## Find weights for all combinations and training data
-    inv_covMat <- solve(cov(Xtrain))
-    DT = as.data.table(weights_train_comb_cpp(D, S, sigma, inv_covMat,distance_metric, kernel_metric))
+    DT = as.data.table(weights_train_comb_cpp(D, S, sigma, kernel_metric))
     DT[, ID := .I]
     DT = data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
 
-    if (sigma == 0) {
+    if (kernel_metric == "independence") {
         DT[, w := w + stats::rnorm(.N)] # To get actual randomness when doing independence sampling
     }
     ## Remove training data with small weight
@@ -253,7 +252,6 @@ get_predictions <- function(model,
                             gaussian_sample = FALSE,
                             feature_list,
                             pred_zero,
-                            distance_metric = "Euclidean",
                             kernel_metric = "Gaussian") {
     p <- ncol(Xtrain)
 
@@ -287,7 +285,6 @@ get_predictions <- function(model,
             sigma = sigma,
             w_threshold = w_threshold,
             n_threshold = n_threshold,
-            distance_metric = distance_metric,
             kernel_metric = kernel_metric
         )
     }
@@ -364,7 +361,6 @@ compute_kernelShap = function(model,
                               verbose = FALSE,
                               gaussian_sample = FALSE,
                               pred_zero,
-                              distance_metric = "Euclidean",
                               kernel_metric = "Gaussian") {
     ll = list()
     for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction function is not parallelized.
@@ -383,7 +379,6 @@ compute_kernelShap = function(model,
             gaussian_sample = gaussian_sample,
             feature_list = l$X$features,
             pred_zero = pred_zero,
-            distance_metric = distance_metric,
             kernel_metric = kernel_metric
         )
         ll[[i]][, id := i]
@@ -433,17 +428,21 @@ prepare_kernelShap <- function(m,
     l <- scale_data(Xtrain, Xtest, scale = scale)
 
     ## Get distance ---------
-    if (distance_metric=="Euclidean"){
-        D <- distance_cpp(as.matrix(l$Xtrain), as.matrix(l$Xtest)) # MJ: We should typically scale if using Euclidean, while it is no point when using Mahalanobis
-    } else {# If distance_metric == "Mahalanobis"
-        # Rewrite this to Rcpp when you see that it works as intended, by copying everything but the sum in the end here: https://github.com/cran/Rfast/blob/master/src/maha.cpp
-        D <- array(dim=c(nrow(Xtrain),nrow(Xtest),m))
-        mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
+# Old code, clean up when you see that everything works fine
+#    if (distance_metric=="Euclidean"){
+#        D <- distance_cpp(as.matrix(l$Xtrain), as.matrix(l$Xtest)) # MJ: We should typically scale if using Euclidean, while it is no point when using Mahalanobis
+#    }
 
-        for (i in Xtest[,.I]){
-            dec <- chol(mcov)
-            D[,i,] <- t(forwardsolve(t(dec), t(as.matrix(l$Xtrain)) - unlist(l$Xtest[i,]) )^2)
-        }
+    D <- array(dim=c(nrow(Xtrain),nrow(Xtest),m))
+    if (distance_metric=="Euclidean"){
+        mcov <- diag(m) # Should typically use scale if Euclidean is being used.
+    } else { # i.e. If distance_metric == "Mahalanobis"
+        mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
+    }
+    # Rewrite this to Rcpp when you see that it works as intended, by copying everything but the sum in the end here: https://github.com/cran/Rfast/blob/master/src/maha.cpp
+    for (i in Xtest[,.I]){ # Rewrite to Rcpp
+        dec <- chol(mcov)
+        D[,i,] <- t(forwardsolve(t(dec), t(as.matrix(l$Xtrain)) - unlist(l$Xtest[i,]) )^2)
     }
 
     ## Get feature matrix ---------
