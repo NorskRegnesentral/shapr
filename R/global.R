@@ -21,7 +21,11 @@
 #' @param verbose Logical
 #' @param scale Logical
 #' @param gaussian_sample Logical indicating whether the Gaussian conditional sampling approach should be used
-#'
+#' @param distance_metric String indicating which distance metric should be used in the empirical conditional
+#' distribution. Defaults to "Euclidean", with "Mahalanobis" being a second option.
+#' @param kernel_metric String indicating which kernel metric should be used in the empirical conditional distribution.
+#' Defaults to "Gaussian" [\exp(-D/2\sigma)], with "independence" (imputing independently, ignoring any distance) being the second option
+#' "Gaussian_old" [sqrt(\exp(-D/2\sigma))] is also kept for reproducability.
 #' @export
 #'
 #' @return NULL
@@ -47,6 +51,8 @@ global_arguments <- function(m,
                              D,
                              I,
                              gaussian_sample,
-                             p_default) {
+                             p_default,
+                             distance_metric = "Euclidean",
+                             kernel_metric = "Gaussian") {
     return(NULL)
 }
