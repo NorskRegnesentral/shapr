@@ -153,10 +153,11 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3) {
+impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, distance_metric = "Euclidean", kernel_metric = "Gaussian") {
 
     ## Find weights for all combinations and training data
-    DT = as.data.table(weights_train_comb_cpp(D, S, sigma))
+    inv_covMat <- solve(cov(Xtrain))
+    DT = as.data.table(weights_train_comb_cpp(D, S, sigma, inv_covMat,distance_metric, kernel_metric))
     DT[, ID := .I]
     DT = data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
 
@@ -251,7 +252,9 @@ get_predictions <- function(model,
                             verbose = FALSE,
                             gaussian_sample = FALSE,
                             feature_list,
-                            pred_zero) {
+                            pred_zero,
+                            distance_metric = "Euclidean",
+                            kernel_metric = "Gaussian") {
     p <- ncol(Xtrain)
 
     if (gaussian_sample) {
@@ -283,7 +286,9 @@ get_predictions <- function(model,
             Xtest = Xtest,
             sigma = sigma,
             w_threshold = w_threshold,
-            n_threshold = n_threshold
+            n_threshold = n_threshold,
+            distance_metric = distance_metric,
+            kernel_metric = kernel_metric
         )
     }
 
@@ -343,7 +348,7 @@ pred_vector = function(model, data) {
 #'
 #' @inheritParams global_arguments
 #' @param l The output from prepare_kernelShap
-#' @param sigma Bandwidth in the Gaussian kernel if the empirical conditional sampling approach is used (Gaussian==F)
+#' @param sigma Bandwidth in the Gaussian kernel if the empirical conditional sampling approach is used (gaussian_sample==F)
 #' @param pred_zero The prediction value for unseen data, typically equal to the mean of the response
 #'
 #' @return List with kernel Shap values (Kshap) and other object used to perform the computation (helpful for debugging etc.)
@@ -358,7 +363,9 @@ compute_kernelShap = function(model,
                               n_threshold = 1e3,
                               verbose = FALSE,
                               gaussian_sample = FALSE,
-                              pred_zero) {
+                              pred_zero,
+                              distance_metric = "Euclidean",
+                              kernel_metric = "Gaussian") {
     ll = list()
     for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction function is not parallelized.
         print(sprintf("%d out of %d", i, l$Xtest[, .N]))
@@ -375,7 +382,9 @@ compute_kernelShap = function(model,
             verbose = verbose,
             gaussian_sample = gaussian_sample,
             feature_list = l$X$features,
-            pred_zero = pred_zero
+            pred_zero = pred_zero,
+            distance_metric = distance_metric,
+            kernel_metric = kernel_metric
         )
         ll[[i]][, id := i]
     }
@@ -408,7 +417,8 @@ prepare_kernelShap <- function(m,
                                Xtest,
                                exact = TRUE,
                                nrows = NULL,
-                               scale = FALSE) {
+                               scale = FALSE,
+                               distance_metric = "Euclidean") {
 
     ## Get all combinations ----------------
     X <- get_combinations(m = m, exact = exact, nrows = nrows)
@@ -423,10 +433,23 @@ prepare_kernelShap <- function(m,
     l <- scale_data(Xtrain, Xtest, scale = scale)
 
     ## Get distance ---------
-    D <- distance_cpp(as.matrix(l$Xtrain), as.matrix(l$Xtest))
+    if (distance_metric=="Euclidean"){
+        D <- distance_cpp(as.matrix(l$Xtrain), as.matrix(l$Xtest)) # MJ: We should typically scale if using Euclidean, while it is no point when using Mahalanobis
+    } else {# If distance_metric == "Mahalanobis"
+        # Rewrite this to Rcpp when you see that it works as intended, by copying everything but the sum in the end here: https://github.com/cran/Rfast/blob/master/src/maha.cpp
+        D <- array(dim=c(nrow(Xtrain),nrow(Xtest),m))
+        mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
+
+        for (i in Xtest[,.I]){
+            dec <- chol(mcov)
+            D[,i,] <- t(forwardsolve(t(dec), t(as.matrix(l$Xtrain)) - unlist(l$Xtest[i,]) )^2)
+        }
+    }
 
     ## Get feature matrix ---------
     S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain))
 
     return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest))
 }
+
+
