@@ -21,7 +21,7 @@ NumericMatrix impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtr
 
         for (int j = 0; j < X.ncol(); ++j) {
 
-            if (S(Comb[i] - 1, j) == 1) {
+            if (S(Comb[i] - 1, j) > 0) {
                 X(i, j) = Xtest(0, j);
             } else {
                 X(i, j) = Xtrain(ID[i] - 1, j);

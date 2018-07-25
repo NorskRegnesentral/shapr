@@ -22,10 +22,11 @@
 #' @param scale Logical
 #' @param gaussian_sample Logical indicating whether the Gaussian conditional sampling approach should be used
 #' @param distance_metric String indicating which distance metric should be used in the empirical conditional
-#' distribution. Defaults to "Euclidean", with "Mahalanobis" being a second option.
+#' distribution. Defaults to "Euclidean", "Mahalanobis" and "Mahalanobis_scaled" being the other options. "Mahlanobis_scaled" includes
+#' the 1/|S| factor in the paper is preferred for a consistent \eqn{\sigma}.
 #' @param kernel_metric String indicating which kernel metric should be used in the empirical conditional distribution.
-#' Defaults to "Gaussian" [\exp(-D/2\sigma)], with "independence" (imputing independently, ignoring any distance) being the second option
-#' "Gaussian_old" [sqrt(\exp(-D/2\sigma))] is also kept for reproducability.
+#' Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing independently, ignoring any distance) being the second option
+#' "Gaussian_old" [\eqn{\sqrt(\exp(-D/2\sigma))}] is also kept for reproducability.
 #' @export
 #'
 #' @return NULL

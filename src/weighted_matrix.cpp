@@ -103,7 +103,7 @@ arma::mat weights_train_comb_cpp(arma::mat D,
     if (kernel_metric == "independence") {
         A.fill(1.0);
     } else {
-        A = D * S.t();
+        A = D * S.t(); // A here is equal to D_S^2 in the paper. When S is scaled as in distance_metric == "Mahalnobis_scaled", this matrix product takes care of the scaling
     }
 
 

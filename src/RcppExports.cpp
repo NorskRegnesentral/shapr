@@ -59,15 +59,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // weights_train_comb_cpp
-arma::mat weights_train_comb_cpp(arma::mat D, arma::mat S, double sigma);
-RcppExport SEXP _shapr_weights_train_comb_cpp(SEXP DSEXP, SEXP SSEXP, SEXP sigmaSEXP) {
+arma::mat weights_train_comb_cpp(arma::mat D, arma::mat S, double sigma, std::string kernel_metric);
+RcppExport SEXP _shapr_weights_train_comb_cpp(SEXP DSEXP, SEXP SSEXP, SEXP sigmaSEXP, SEXP kernel_metricSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type D(DSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type S(SSEXP);
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
-    rcpp_result_gen = Rcpp::wrap(weights_train_comb_cpp(D, S, sigma));
+    Rcpp::traits::input_parameter< std::string >::type kernel_metric(kernel_metricSEXP);
+    rcpp_result_gen = Rcpp::wrap(weights_train_comb_cpp(D, S, sigma, kernel_metric));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -77,7 +78,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_impute_cpp", (DL_FUNC) &_shapr_impute_cpp, 5},
     {"_shapr_weighted_matrix", (DL_FUNC) &_shapr_weighted_matrix, 3},
     {"_shapr_feature_matrix_cpp", (DL_FUNC) &_shapr_feature_matrix_cpp, 2},
-    {"_shapr_weights_train_comb_cpp", (DL_FUNC) &_shapr_weights_train_comb_cpp, 3},
+    {"_shapr_weights_train_comb_cpp", (DL_FUNC) &_shapr_weights_train_comb_cpp, 4},
     {NULL, NULL, 0}
 };
 

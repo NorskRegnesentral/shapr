@@ -63,7 +63,7 @@ feature_matrix_cpp <- function(features, nfeatures) {
 #'
 #' @return Matrix of dimension n x m + 1
 #' @author Nikolai Sellereite
-weights_train_comb_cpp <- function(D, S, sigma) {
-    .Call(`_shapr_weights_train_comb_cpp`, D, S, sigma)
+weights_train_comb_cpp <- function(D, S, sigma, kernel_metric) {
+    .Call(`_shapr_weights_train_comb_cpp`, D, S, sigma, kernel_metric)
 }
 

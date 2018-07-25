@@ -446,7 +446,12 @@ prepare_kernelShap <- function(m,
     }
 
     ## Get feature matrix ---------
-    S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain))
+    S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain)) # The scaling of S influence onyl the matrix product with D, as we only care about the elements of S being zero/nonzero elsewhere.
+    if (distance_metric=="Mahlanobis_scaled"){
+        scaling <- 1/rowSums(S)
+        scaling[is.infinite(scaling)] <- 0
+        S <- S*scaling^2 #
+    }
 
     return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest))
 }
