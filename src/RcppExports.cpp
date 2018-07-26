@@ -18,6 +18,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// prepare_gen_Mahlanobis_dist_cpp_old
+arma::cube prepare_gen_Mahlanobis_dist_cpp_old(arma::mat Xtrain, arma::mat Xtest, arma::mat mcov);
+RcppExport SEXP _shapr_prepare_gen_Mahlanobis_dist_cpp_old(SEXP XtrainSEXP, SEXP XtestSEXP, SEXP mcovSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type Xtrain(XtrainSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Xtest(XtestSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
+    rcpp_result_gen = Rcpp::wrap(prepare_gen_Mahlanobis_dist_cpp_old(Xtrain, Xtest, mcov));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gen_Mahlanobis_dist_cpp
+arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList, arma::mat Xtrain, arma::mat Xtest, arma::mat mcov, bool S_scale_dist);
+RcppExport SEXP _shapr_gen_Mahlanobis_dist_cpp(SEXP featureListSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type featureList(featureListSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Xtrain(XtrainSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Xtest(XtestSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
+    Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
+    rcpp_result_gen = Rcpp::wrap(gen_Mahlanobis_dist_cpp(featureList, Xtrain, Xtest, mcov, S_scale_dist));
+    return rcpp_result_gen;
+END_RCPP
+}
 // impute_cpp
 NumericMatrix impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtrain, NumericMatrix Xtest, IntegerMatrix S);
 RcppExport SEXP _shapr_impute_cpp(SEXP IDSEXP, SEXP CombSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP SSEXP) {
@@ -58,27 +86,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// weights_train_comb_cpp
-arma::mat weights_train_comb_cpp(arma::mat D, arma::mat S, double sigma, std::string kernel_metric);
-RcppExport SEXP _shapr_weights_train_comb_cpp(SEXP DSEXP, SEXP SSEXP, SEXP sigmaSEXP, SEXP kernel_metricSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type D(DSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type S(SSEXP);
-    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
-    Rcpp::traits::input_parameter< std::string >::type kernel_metric(kernel_metricSEXP);
-    rcpp_result_gen = Rcpp::wrap(weights_train_comb_cpp(D, S, sigma, kernel_metric));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_shapr_distance_cpp", (DL_FUNC) &_shapr_distance_cpp, 2},
+    {"_shapr_prepare_gen_Mahlanobis_dist_cpp_old", (DL_FUNC) &_shapr_prepare_gen_Mahlanobis_dist_cpp_old, 3},
+    {"_shapr_gen_Mahlanobis_dist_cpp", (DL_FUNC) &_shapr_gen_Mahlanobis_dist_cpp, 5},
     {"_shapr_impute_cpp", (DL_FUNC) &_shapr_impute_cpp, 5},
     {"_shapr_weighted_matrix", (DL_FUNC) &_shapr_weighted_matrix, 3},
     {"_shapr_feature_matrix_cpp", (DL_FUNC) &_shapr_feature_matrix_cpp, 2},
-    {"_shapr_weights_train_comb_cpp", (DL_FUNC) &_shapr_weights_train_comb_cpp, 4},
     {NULL, NULL, 0}
 };
 

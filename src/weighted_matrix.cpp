@@ -84,36 +84,3 @@ NumericMatrix feature_matrix_cpp(List features, int nfeatures) {
     return A;
 }
 
-//' Get distance
-//'
-//' @inheritParams global_arguments
-//'
-//' @export
-//'
-//' @return Matrix of dimension n x m + 1
-//' @author Nikolai Sellereite
-// [[Rcpp::export]]
-arma::mat weights_train_comb_cpp(arma::mat D,
-                                 arma::mat S,
-                                 double sigma,
-                                 std::string kernel_metric) {
-
-    arma::mat A(D.n_rows, S.n_rows);
-
-    if (kernel_metric == "independence") {
-        A.fill(1.0);
-    } else {
-        A = D * S.t(); // A here is equal to D_S^2 in the paper. When S is scaled as in distance_metric == "Mahalnobis_scaled", this matrix product takes care of the scaling
-    }
-
-
-    if (kernel_metric == "Gaussian"){
-        A = exp((-0.5 * A) / pow(sigma, 2.0));
-    }
-    if (kernel_metric == "Gaussian_old"){
-        A = sqrt(exp((-0.5 * A) / pow(sigma, 2.0)));
-    }
-
-
-    return A;
-}

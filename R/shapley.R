@@ -153,16 +153,13 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3, kernel_metric = "Gaussian") {
+impute_data <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, n_threshold = 1e3) {
 
     ## Find weights for all combinations and training data
-    DT = as.data.table(weights_train_comb_cpp(D, S, sigma, kernel_metric))
+    DT = as.data.table(W_kernel)
     DT[, ID := .I]
     DT = data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
 
-    if (kernel_metric == "independence") {
-        DT[, w := w + stats::rnorm(.N)] # To get actual randomness when doing independence sampling
-    }
     ## Remove training data with small weight
     setkey(DT, comb, w)
     DT[, w := w / sum(w), comb]
@@ -241,7 +238,7 @@ samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest) {
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 get_predictions <- function(model,
-                            D,
+                            W_kernel,
                             S,
                             Xtrain,
                             Xtest,
@@ -251,8 +248,7 @@ get_predictions <- function(model,
                             verbose = FALSE,
                             gaussian_sample = FALSE,
                             feature_list,
-                            pred_zero,
-                            kernel_metric = "Gaussian") {
+                            pred_zero) {
     p <- ncol(Xtrain)
 
     if (gaussian_sample) {
@@ -278,14 +274,12 @@ get_predictions <- function(model,
     } else {
         ## Get imputed data
         DTp <- impute_data(
-            D = D,
+            W_kernel = W_kernel,
             S = S,
             Xtrain = Xtrain,
             Xtest = Xtest,
-            sigma = sigma,
             w_threshold = w_threshold,
-            n_threshold = n_threshold,
-            kernel_metric = kernel_metric
+            n_threshold = n_threshold
         )
     }
 
@@ -363,12 +357,24 @@ compute_kernelShap = function(model,
                               pred_zero,
                               kernel_metric = "Gaussian") {
     ll = list()
+
+    # Handle the computation of all training-test weights for ALL combinations here, before looping
+    if (kernel_metric == "independence"){
+        W_kernel <- array(rnorm(prod(dim(l$D)))^2,dim = dim(l$D)) # Just random noise to "fake" a distance between observations
+    }
+    if (kernel_metric =="Gaussian"){
+        W_kernel <- exp((-0.5*l$D)/sigma^2)
+    }
+    if (kernel_metric =="Gaussian_old"){
+        W_kernel <- sqrt(exp((-0.5*l$D)/sigma^2))
+    }
+
     for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction function is not parallelized.
         print(sprintf("%d out of %d", i, l$Xtest[, .N]))
 
         ll[[i]] <- get_predictions(
             model = model,
-            D = l$D[, i, ],
+            W_kernel = W_kernel[,i,],
             S = l$S,
             Xtrain = as.matrix(l$Xtrain),
             Xtest = as.matrix(l$Xtest)[i, , drop = FALSE],
@@ -378,9 +384,7 @@ compute_kernelShap = function(model,
             verbose = verbose,
             gaussian_sample = gaussian_sample,
             feature_list = l$X$features,
-            pred_zero = pred_zero,
-            kernel_metric = kernel_metric
-        )
+            pred_zero = pred_zero)
         ll[[i]][, id := i]
     }
 
@@ -413,7 +417,7 @@ prepare_kernelShap <- function(m,
                                exact = TRUE,
                                nrows = NULL,
                                scale = FALSE,
-                               distance_metric = "Euclidean") {
+                               distance_metric = "Mahalanobis_scaled") {
 
     ## Get all combinations ----------------
     X <- get_combinations(m = m, exact = exact, nrows = nrows)
@@ -425,27 +429,26 @@ prepare_kernelShap <- function(m,
     W <- get_weighted_matrix(X)
 
     ## Transform to data table and scale data ----------------
-    l <- scale_data(Xtrain, Xtest, scale = scale)
+    l <- scale_data(Xtrain, Xtest, scale = scale) # MJ: One should typically scale if using Euclidean, while it is no point when using Mahalanobis
 
     ## Get distance ---------
-# Old code, clean up when you see that everything works fine
-#    if (distance_metric=="Euclidean"){
-#        D <- distance_cpp(as.matrix(l$Xtrain), as.matrix(l$Xtest)) # MJ: We should typically scale if using Euclidean, while it is no point when using Mahalanobis
-#    }
-
-    D <- array(dim=c(nrow(Xtrain),nrow(Xtest),m))
     if (distance_metric=="Euclidean"){
         mcov <- diag(m) # Should typically use scale if Euclidean is being used.
     } else { # i.e. If distance_metric == "Mahalanobis"
         mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
     }
-    # Rewrite this to Rcpp when you see that it works as intended, by copying everything but the sum in the end here: https://github.com/cran/Rfast/blob/master/src/maha.cpp
-    for (i in Xtest[,.I]){ # Rewrite to Rcpp
-        dec <- chol(mcov)
-        D[,i,] <- t(forwardsolve(t(dec), t(as.matrix(l$Xtrain)) - unlist(l$Xtest[i,]) )^2)
+
+    if (distance_metric=="Mahlanobis_scaled"){
+        S_scale_dist <- T
+    } else {
+        S_scale_dist <- F
     }
 
+    D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
+
     ## Get feature matrix ---------
+
+    ### HANDLE THIS AFTERWORDS
     S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain)) # The scaling of S influence onyl the matrix product with D, as we only care about the elements of S being zero/nonzero elsewhere.
     if (distance_metric=="Mahlanobis_scaled"){
         scaling <- 1/rowSums(S)
@@ -455,5 +458,7 @@ prepare_kernelShap <- function(m,
 
     return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest))
 }
+
+
 
 
