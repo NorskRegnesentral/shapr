@@ -447,14 +447,7 @@ prepare_kernelShap <- function(m,
     D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
 
     ## Get feature matrix ---------
-
-    ### HANDLE THIS AFTERWORDS
     S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain)) # The scaling of S influence onyl the matrix product with D, as we only care about the elements of S being zero/nonzero elsewhere.
-    if (distance_metric=="Mahlanobis_scaled"){
-        scaling <- 1/rowSums(S)
-        scaling[is.infinite(scaling)] <- 0
-        S <- S*scaling^2 #
-    }
 
     return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest))
 }

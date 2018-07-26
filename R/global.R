@@ -27,6 +27,7 @@
 #' @param kernel_metric String indicating which kernel metric should be used in the empirical conditional distribution.
 #' Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing independently, ignoring any distance) being the second option
 #' "Gaussian_old" [\eqn{\sqrt(\exp(-D/2\sigma))}] is also kept for reproducability.
+#' @param W_kernel Array containg all unscaled weights between training and testing observations for all combinations.
 #' @export
 #'
 #' @return NULL

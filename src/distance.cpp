@@ -143,9 +143,6 @@ arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList,arma::mat Xtrain, arma
 
     arma::cube out(ntrain,ntest,p,arma::fill::zeros);
 
-    //vec out(Xtrain.n_rows);
-    //arma::cube out(ntrain,ntest,p,arma::fill::zeros);
-
     // Declaring some private variables
 
     double acc;
@@ -195,46 +192,7 @@ arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList,arma::mat Xtrain, arma
         }
         out.slice(k) *= S_scale;
     }
-
-/*
-    for (int j = 0; j < ntest; ++j) {
-        //mu = conv_to<vec>::from(Xtest.row(j)); // Not sure if this is needed
-
-        // For each of the "n" random vectors, forwardsolve the corresponding linear system.
-        // Forwardsolve because I'm using the lower triangle Cholesky.
-        for(icol = 0; icol < ntrain; icol++)
-        {
-
-            for(irow = 0; irow < d; irow++)
-            {
-                acc = 0.0;
-
-                for(ii = 0; ii < irow; ii++) acc += tmp.at(ii) * cholDec.at(irow, ii);
-
-                tmp.at(irow) = ( Xtrain0.at(icol, irow) - mu.at(irow) - acc ) / D.at(irow);
-            }
-
-            out.tube(icol,j) = square(tmp).t(); // ?
-
-        }
-    }
-//}
-*/
-// arma::uvec aa = as<arma::uvec>(featureList[7]);
-//    cout<<typeid().name()<<endl;
-//std::cout<<typeid(theseFeatures).name()<<"\t" <<"\n";
- //   std::cout<<theseFeatures<<"\t" <<"\n";
-  //  std::cout<<mcov0<<"\t" <<"\n";
     return out;
-
-
-    /* #Equivalent R-code
-     for (i in Xtest[,.I]){ # Rewrite to Rcpp
-     dec <- chol(mcov)
-     D[,i,] <- t(forwardsolve(t(dec), t(as.matrix(l$Xtrain)) - unlist(l$Xtest[i,]) )^2)
-     }
-     */
-
 }
 
 
