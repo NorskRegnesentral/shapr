@@ -390,8 +390,8 @@ compute_kernelShap = function(model,
 
     DT <- rbindlist(ll)
 
-    Kshap <- matrix(0, nrow = Xtest[, .N], ncol = nrow(l$W))
-    for (i in Xtest[, .I]) {
+    Kshap <- matrix(0, nrow = l$Xtest[, .N], ncol = nrow(l$W))
+    for (i in l$Xtest[, .I]) {
         Kshap[i, ] = l$W %*% DT[id == i, k]
     }
 
