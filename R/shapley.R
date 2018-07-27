@@ -219,10 +219,10 @@ samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest) {
             method = "chol"
         )
         ret <- matrix(NA, ncol = p, nrow = n_threshold)
-        ret[, given_ind] <- X_given
+        ret[, given_ind] <- rep(X_given,each=n_threshold)
         ret[, dependent_ind] <- ret0
     }
-    colnames(ret) <- colnames(Xtrain)
+    colnames(ret) <- colnames(Xtest)
     return(as.data.table(ret))
 }
 
@@ -242,7 +242,6 @@ get_predictions <- function(model,
                             S,
                             Xtrain,
                             Xtest,
-                            sigma,
                             w_threshold = .7,
                             n_threshold = 1e3,
                             verbose = FALSE,
@@ -287,7 +286,11 @@ get_predictions <- function(model,
     nms <- colnames(Xtest)
 
     DTp[!(wcomb %in% c(1, 2 ^ p)), p_hat := pred_vector(model = model, data = .SD), .SDcols = nms]
-    DTp[wcomb == 2 ^ p, p_hat := pred_vector(model = model, data = as.data.frame(Xtest))]
+    if(nrow(Xtest)==1){
+        DTp[wcomb == 2 ^ p, p_hat := pred_vector(model = model, data = as.data.frame(rbind(Xtest,Xtest)))[1]] # Just a hack for a single prediction
+    } else {
+        DTp[wcomb == 2 ^ p, p_hat := pred_vector(model = model, data = as.data.frame(Xtest))]
+    }
     DTp[wcomb == 1, p_hat := pred_zero]
 
     ## Get mean probability
@@ -378,7 +381,6 @@ compute_kernelShap = function(model,
             S = l$S,
             Xtrain = as.matrix(l$Xtrain),
             Xtest = as.matrix(l$Xtest)[i, , drop = FALSE],
-            sigma = sigma,
             w_threshold = w_threshold,
             n_threshold = n_threshold,
             verbose = verbose,
@@ -390,12 +392,12 @@ compute_kernelShap = function(model,
 
     DT <- rbindlist(ll)
 
-    Kshap <- matrix(0, nrow = l$Xtest[, .N], ncol = nrow(l$W))
+    Kshap <- matrix(0, nrow = nrow(l$Xtest), ncol = nrow(l$W))
     for (i in l$Xtest[, .I]) {
         Kshap[i, ] = l$W %*% DT[id == i, k]
     }
 
-    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT))
+    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT,W_kernel=W_kernel))
     return(ret_list)
 }
 
@@ -438,7 +440,7 @@ prepare_kernelShap <- function(m,
         mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
     }
 
-    if (distance_metric=="Mahlanobis_scaled"){
+    if (distance_metric=="Mahalanobis_scaled"){
         S_scale_dist <- T
     } else {
         S_scale_dist <- F
