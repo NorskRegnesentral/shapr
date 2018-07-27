@@ -32,6 +32,10 @@ w_shapley <- function(m, N, s) {
 #'
 #' @author Nikolai Sellereite
 get_combinations <- function(m, exact = TRUE, nrows = 200) {
+    if (nrows>2^m){
+        exact = TRUE
+        cat(paste0("nrows is larger than 2^m = ",2^m,". Using exact instead."))
+    }
     if (exact == TRUE) {
         N <- 2 ^ m
         X <- data.table(ID = 1:N)
