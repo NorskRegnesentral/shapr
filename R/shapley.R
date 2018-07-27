@@ -213,15 +213,23 @@ samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest) {
     } else {
         dependent_ind <- (1:length(mu))[-given_ind]
         X_given <- Xtest[given_ind]
-        ret0 <- condMVNorm::rcmvnorm(
-            n = n_threshold,
+        # ret0 <- condMVNorm::rcmvnorm(
+        #     n = n_threshold,
+        #     mean = mu,
+        #     sigma = Sigma,
+        #     dependent.ind = dependent_ind,
+        #     given.ind = given_ind,
+        #     X.given = X_given,
+        #     method = "chol")
+        tmp <- condMVNorm::condMVN(
             mean = mu,
             sigma = Sigma,
             dependent.ind = dependent_ind,
             given.ind = given_ind,
-            X.given = X_given,
-            method = "chol"
-        )
+            X.given = X_given)
+        #ret0 <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
+        ret0 <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
+
         ret <- matrix(NA, ncol = p, nrow = n_threshold)
         ret[, given_ind] <- rep(X_given,each=n_threshold)
         ret[, dependent_ind] <- ret0
@@ -251,16 +259,13 @@ get_predictions <- function(model,
                             verbose = FALSE,
                             gaussian_sample = FALSE,
                             feature_list,
-                            pred_zero) {
+                            pred_zero,
+                            mu,
+                            Sigma) {
     p <- ncol(Xtrain)
 
     if (gaussian_sample) {
         ## Assume Gaussian distributed variables and sample from the various conditional distributions
-        mu <- colMeans(Xtrain)
-        Sigma <- stats::cov(Xtrain)
-        if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
-            Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
-        }
         Gauss_samp <- lapply(
             X = feature_list,
             FUN = samp_Gauss_func,
@@ -376,6 +381,13 @@ compute_kernelShap = function(model,
         W_kernel <- sqrt(exp((-0.5*l$D)/sigma^2))
     }
 
+    mu <- colMeans(l$Xtrain)
+    Sigma <- stats::cov(l$Xtrain)
+    if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
+        Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
+    }
+    Sigma <- (Sigma + t(Sigma))/2
+
     for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction function is not parallelized.
         print(sprintf("%d out of %d", i, l$Xtest[, .N]))
 
@@ -390,7 +402,9 @@ compute_kernelShap = function(model,
             verbose = verbose,
             gaussian_sample = gaussian_sample,
             feature_list = l$X$features,
-            pred_zero = pred_zero)
+            pred_zero = pred_zero,
+            mu = mu,
+            Sigma = Sigma)
         ll[[i]][, id := i]
     }
 
