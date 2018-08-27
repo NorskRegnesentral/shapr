@@ -90,7 +90,7 @@ get_combinations <- function(m, exact = TRUE, nrows = 200) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_weights <- function(X) {
+get_weights <- function(X, m) {
     X[-c(1, .N), weight := w_shapley(m = m, N = N, s = nfeatures), ID]
     X[c(1, .N), weight := 10 ^ 6]
 
@@ -414,7 +414,7 @@ prepare_kernelShap <- function(m,
     X <- get_combinations(m = m, exact = exact, nrows = nrows)
 
     ## Add weights ----------------
-    X <- get_weights(X = X)
+    X <- get_weights(X = X, m = m)
 
     ## Get weighted matrix ----------------
     W <- get_weighted_matrix(X)
