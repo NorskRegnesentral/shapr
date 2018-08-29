@@ -386,7 +386,7 @@ compute_kernelShap = function(model,
     if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
         Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
     }
-    Sigma <- (Sigma + t(Sigma))/2
+    #Sigma <- (Sigma + t(Sigma))/2
 
     for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction function is not parallelized.
         print(sprintf("%d out of %d", i, l$Xtest[, .N]))

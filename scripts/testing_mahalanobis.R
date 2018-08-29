@@ -41,19 +41,15 @@ vineBeta <- function(d, betaparam){
 M = 10
 set.seed(123)
 mu.15 = rep(0,M)
-#corMat.15 = cov2cor(genPositiveDefMat(M,'eigen')$Sigma*.2) # A correlation matrix
+corMat.15 = cov2cor(genPositiveDefMat(M,'eigen')$Sigma) # A correlation matrix
 #corMat.15 = cov2cor(genPositiveDefMat(M,'onion',eta=0.0001)$Sigma) # A correlation matrix
 #corMat.15 = rcorrmatrix(M,0.0000000000015)
-corMat.15 <- vineBeta(M,1) # Generating high-correlation matrix
+#corMat.15 <- vineBeta(M,1) # Generating high-correlation matrix
 
 nTrain.15 <- 10000
 nTest.15  <- 5
 simData.15 <- mvrnorm(n = nTrain.15+nTest.15, mu=mu.15, Sigma=corMat.15)
 # Create nonlinear response:
-if(M==15){
-    resp.15 <- 0.5*rowSums(simData.15[,1:3]) + 1*rowSums(I(simData.15[,4:8]< -0.2)) +2*I(simData.15[,9]>0.3)*I(simData.15[,10]>0.3)+rowSums(simData.15[,11:15]^2)
-    response.15 = resp.15 > 7.5
-}
 if (M==5){
     resp.15 <- 0.5*rowSums(simData.15[,1:3]) + 1*rowSums(I(simData.15[,4:5]< -0.2))
     response.15 = resp.15 > 0.8
@@ -62,6 +58,11 @@ if (M==10){
     resp.15 <- 0.5*rowSums(simData.15[,1:3]) + 1*rowSums(I(simData.15[,4:8]< -0.2)) +2*I(simData.15[,9]>0.3)*I(simData.15[,10]>0.3)
     response.15 = resp.15 > 2
 }
+if(M==15){
+    resp.15 <- 0.5*rowSums(simData.15[,1:3]) + 1*rowSums(I(simData.15[,4:8]< -0.2)) +2*I(simData.15[,9]>0.3)*I(simData.15[,10]>0.3)+rowSums(simData.15[,11:15]^2)
+    response.15 = resp.15 > 7.5
+}
+
 
 
 simData.15 = as.data.frame(cbind(response.15,simData.15))
@@ -92,7 +93,6 @@ l <- prepare_kernelShap(
     scale = T,
     distance_metric = "Mahalanobis_scaled")
 
-
 # Settings
 model = model.15
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
@@ -100,13 +100,12 @@ n_threshold_gaussian <- 1000 # i.e. how many conditional samples we use in the G
 verbose = FALSE
 gaussian_sample = FALSE
 pred_zero = mean(response.15)
-kernel_metric = "Gaussian"
+kernel_metric = "Gaussian_old"
 
 #### Computing the various Shapley approximations --------
 
-
-sigma.vec <- 100#c(0.1,0.3,0.5,0.7,1,2,100)
-n_threshold.vec = 10^3#10^2*c(0.1,0.5,1,2,5,10)
+sigma.vec <- c(0.1,0.3,0.5,0.7,1,2,100)
+n_threshold.vec = 10^2*c(0.1,0.5,1,2,5,10)
 
 DT.summary.list <- list()
 listnum <- 0
