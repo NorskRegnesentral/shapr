@@ -8,7 +8,7 @@
 
 ### Trying the bandwith selector for this problem implemented in the np package
 
-# Sample some data. The response y here, would correspond to the prediction s(y,x)
+# Sample some data. The response y here, would correspond to the yiction s(y,x)
 rm(list=ls())
 set.seed(12345)
 
@@ -16,12 +16,12 @@ n <- 500
 x1 <- rnorm(n)
 x2 <- runif(n,-2,2)
 x3 <- rnorm(n)
-X <- cbind(x1,x2)
-pred <- x1 + x2 +x3 + rnorm(n)
+X <- cbind(x1,x2,x3)
+y <- x1 + x2 +x3 + rnorm(n)
 
 
 library(np)
-bw <- npregbw(formula=pred~x1+x2+x3,regtype="lc",bwmethod="cv.aic")
+bw <- npregbw(formula=y~x1+x2+x3,regtype="lc",bwmethod="cv.aic")
 
 ### It is probably working, but it is quite slow only with n=500.
 
@@ -57,20 +57,25 @@ H.func <- function(h.vec,X){
     return(H)
 }
 
-sigma.hat.sq.func <- function(pred,H){
-    n <- length(pred)
+sigma.hat.sq.func <- function(y,H){
+    n <- length(y)
 
-    sigma.hat.sq <- as.numeric(t(pred)%*%t(diag(n)-H)%*%(diag(n)-H)%*%pred)/n
+    sigma.hat.sq <- as.numeric(t(y)%*%t(diag(n)-H)%*%(diag(n)-H)%*%y)/n
 
     return(sigma.hat.sq)
 }
 
-AICc.func <- function(h.vec,pred,X,negative = FALSE){
-    n <- length(pred)
+AICc.func <- function(h.vec,y,X,negative = FALSE){
+    n <- length(y)
+    q <- ncol(X)
+
+    if (length(h.vec)==1){
+        h.vec <- rep(h.vec,q)
+    }
 
     H <- H.func(h.vec = h.vec,X = X)
 
-    sigma.hat.sq <- sigma.hat.sq.func(pred=pred,
+    sigma.hat.sq <- sigma.hat.sq.func(y=y,
                                       H = H)
 
     tr.H <- sum(diag(H))
@@ -83,45 +88,28 @@ AICc.func <- function(h.vec,pred,X,negative = FALSE){
     return(AICc)
 }
 
-AICc.func(c(1,2,3),pred,X)
+AICc.func(c(1,2,3),y,X)
 
-#nlminb(start = c(1,1,1),objective = AICc.func,pred=pred,X=X,negative=T)
+# Should give the same answer -- and it does
+AICc.func(c(1,1,1),y,X)
+AICc.func(1,y,X)
 
 
-AICc.single.h.func <- function(h,pred,X,negative = FALSE){
-    n <- length(pred)
-    q <- ncol(X)
+#nlminb(start = c(1,1,1),objective = AICc.func,y=y,X=X,negative=T)
 
-    H <- H.func(h.vec = rep(h,q),X = X)
-
-    sigma.hat.sq <- sigma.hat.sq.func(pred=pred,
-                                      H = H)
-
-    tr.H <- sum(diag(H))
-    correction.term <- (1+tr.H/n)/(1-(tr.H+2)/n)
-
-    AICc <- log(sigma.hat.sq) + correction.term
-    if(negative){
-        AICc <- -AICc
-    }
-    return(AICc)
-}
-
-AICc.single.h.func(1,pred,X)
-
-h.val <- seq(0.2,3,0.2)
-h.val <- seq(0.02,0.4,0.02)
-
-AICc.vals <- rep(NA,length(h.val))
-for (i in 1:length(h.val)){
-    (AICc.vals[i] <- AICc.single.h.func(h=h.val[i],pred=pred,X=X,negative=F))
-    print(AICc.vals)
-}
+# h.val <- seq(0.2,3,0.2)
+# h.val <- seq(0.02,0.4,0.02)
+#
+# AICc.vals <- rep(NA,length(h.val))
+# for (i in 1:length(h.val)){
+#     (AICc.vals[i] <- AICc.single.h.func(h=h.val[i],y=y,X=X,negative=F))
+#     print(AICc.vals)
+# }
 
 
 
 
-nlminb(start = 1,objective = AICc.func,pred=pred,X=X,negative=T)
+#nlminb(start = 1,objective = AICc.func,y=y,X=X,negative=T)
 
 
 # ## Trying to vectorize...
@@ -135,6 +123,150 @@ nlminb(start = 1,objective = AICc.func,pred=pred,X=X,negative=T)
 # }
 #
 # outer(1:n,1:n,FUN=vec.Kh.ij.func,h.vec=h.vec,X=X)
+
+
+################## Trying with only one variable #############
+
+set.seed(12345)
+
+n <- 500
+x1 <- rnorm(n)
+y <- x1 + rnorm(n)
+X <- cbind(x1)
+
+
+AICc.single.h.func(1,y,X)
+
+# h.val <- seq(0.02,2,0.02)
+#
+# AICc.vals <- rep(NA,length(h.val))
+# for (i in 1:length(h.val)){
+#     (AICc.vals[i] <- AICc.single.h.func(h=h.val[i],y=y,X=X,negative=F))
+#     print(AICc.vals[i])
+# }
+
+
+g.hat.func <- function(x,h.vec,y,XMAT){
+
+    n <- nrow(XMAT)
+    q <- ncol(XMAT)
+
+    if (length(h.vec)==1){
+        h.vec <- rep(h.vec,q)
+    }
+    K <- rep(NA,n)
+    for (i in 1:n){
+        K[i] <- prod(k.func((XMAT[i,]-x)/h.vec))
+    }
+    g.hat <- sum(y*K)/sum(K)
+
+    return(g.hat)
+}
+
+g.hat.func(1,1,y,X)
+
+g.hat.func.vec <- Vectorize(g.hat.func,vectorize.args = "x")
+
+x.val <- seq(-3,3,0.01)
+true.y <- x.val
+
+ksmooth.val <- ksmooth(x1, y, kernel = "normal", bandwidth = 0.3,
+                       range.x = range(x.val),
+                       n.points = length(x.val))
+
+library(KernSmooth)
+locpoly.val <- locpoly(x1, y, degree=0, kernel="normal", bandwidth=.3,
+                       range.x = range(x.val),
+                       gridsize = length(x.val))
+
+plot(locpoly.val,type="l")
+lines(ksmooth.val,col=2)
+lines(x.val,g.hat.func.vec(x.val,0.3,y,X),col=3)
+
+h.val <- seq(0.1,1,0.04)
+
+### sample some test data#
+#
+#n <- 10000
+#x1.test <- rnorm(n)
+#y.test <- x1.test + rnorm(n)
+
+
+par(mfrow=c(2,2))
+MSE.vec <- rep(NA,length(h.val))
+plot(x1,y,asp = 1,xlim=range(x.val))
+lines(x.val,true.y)
+for (i in 1:length(h.val)){
+#    pred.y <- g.hat.func.vec(x.val,h.val[i],y,X)
+    pred.y <-locpoly(x1, y, degree=0, kernel="normal", bandwidth=h.val[i],
+                     range.x = range(x.val),
+                     gridsize = length(x.val))$y # Same results, just faster
+    MSE.vec[i] <- mean((pred.y-true.y)^2)
+    lines(x.val,pred.y,col=2)
+}
+
+lines(x.val,locpoly(x1, y, degree=0, kernel="normal", bandwidth=0.215,
+                    range.x = range(x.val),
+                    gridsize = length(x.val))$y,col=4,lwd=3)
+lines(x.val,locpoly(x1, y, degree=0, kernel="normal", bandwidth=0.3,
+                    range.x = range(x.val),
+                    gridsize = length(x.val))$y,col=3,lwd=3)
+
+plot(h.val,MSE.vec,type='l')
+
+
+AICc.vec <- rep(NA,length(h.val))
+for (i in 1:length(h.val)){
+    AICc.vec[i] <- AICc.single.h.func(h.val[i],y,X)
+    print(AICc.vec[i])
+}
+
+plot(h.val,AICc.vec,type='l')
+bw <- npregbw(formula=y~x1,regtype="lc",bwmethod="cv.aic")
+
+###########################333
+
+
+n <- 500
+x1 <- rnorm(n)
+x2 <- runif(n,-2,2)
+x3 <- rnorm(n)
+X <- cbind(x1,x2,x3)
+y <- x1 + x2 +x3 + rnorm(n)
+
+
+### sample some test data#
+
+n.test <- 1000
+x1.test <- rnorm(n.test)
+x2.test <- runif(n.test,-2,2)
+x3.test <- rnorm(n.test)
+X.test <- cbind(x1.test,x2.test,x3.test)
+y.test <- x1.test + x2.test +x3.test + rnorm(n.test)
+
+
+MSE.testvec <- rep(NA,length(h.val))
+for (i in 1:length(h.val)){
+    pred.y <- apply(X = X.test, MARGIN = 1, FUN = g.hat.func, h.vec = h.val[i],y=y,XMAT=X)
+    #pred.y <-locpoly(x1, y, degree=0, kernel="normal", bandwidth=h.val[i],
+    #                 range.x = range(x.val),
+    #                 gridsize = length(x.val))$y # Same results, just faster
+    MSE.testvec[i] <- mean((pred.y-y.test)^2)
+    print(c(h.val[i],MSE.testvec[i]))
+}
+
+AICc.vec <- rep(NA,length(h.val))
+for (i in 1:length(h.val)){
+    AICc.vec[i] <- AICc.single.h.func(h.val[i],y,X)
+    print(AICc.vec[i])
+}
+
+par(mfrow=c(2,1))
+plot(h.val,MSE.testvec,type='l')
+plot(h.val,AICc.vec,type='l',log="y")
+
+
+
 
 
 
