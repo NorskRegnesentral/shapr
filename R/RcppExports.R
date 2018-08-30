@@ -14,6 +14,40 @@ distance_cpp <- function(Xtrain, Xtest) {
     .Call(`_shapr_distance_cpp`, Xtrain, Xtest)
 }
 
+#' Prepare (generalized) Mahalanobis distance
+#'
+#' Used to get the Euclidean distance as well by setting mcov = diag(m).
+#' @param Xtrain Dataframe
+#' @param Xtest Dataframe
+#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (cov(Xtrain) gives Mahalanobis distance,
+#' diag(m) gives the Euclidean distance.
+#'
+#' @export
+#'
+#' @return Array of three dimensions. Multiplying X[,i,] with t(S) gives the Mahlanbis distance for all combinations
+#' @author Martin Jullum
+prepare_gen_Mahlanobis_dist_cpp_old <- function(Xtrain, Xtest, mcov) {
+    .Call(`_shapr_prepare_gen_Mahlanobis_dist_cpp_old`, Xtrain, Xtest, mcov)
+}
+
+#' (Generalized) Mahalanobis distance
+#'
+#' Used to get the Euclidean distance as well by setting mcov = diag(m).
+#' @param featureList List of vectors indicating all facture combinations that should be included in the computations. Assumes that the first one is empty.
+#' @param Xtrain Dataframe
+#' @param Xtest Dataframe
+#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (cov(Xtrain) gives Mahalanobis distance,
+#' diag(m) gives the Euclidean distance.
+#' @param S_scale_dist Logical indicating
+#'
+#' @export
+#'
+#' @return Array of three dimensions containg the the squared distance for between all training and test observations for all feature combinations passed to the function.
+#' @author Martin Jullum
+gen_Mahlanobis_dist_cpp <- function(featureList, Xtrain, Xtest, mcov, S_scale_dist) {
+    .Call(`_shapr_gen_Mahlanobis_dist_cpp`, featureList, Xtrain, Xtest, mcov, S_scale_dist)
+}
+
 #' Get imputed data
 #'
 #' @param ID Positive integer vector
@@ -53,17 +87,5 @@ weighted_matrix <- function(features, m, n) {
 #' @author Nikolai Sellereite
 feature_matrix_cpp <- function(features, nfeatures) {
     .Call(`_shapr_feature_matrix_cpp`, features, nfeatures)
-}
-
-#' Get distance
-#'
-#' @inheritParams global_arguments
-#'
-#' @export
-#'
-#' @return Matrix of dimension n x m + 1
-#' @author Nikolai Sellereite
-weights_train_comb_cpp <- function(D, S, sigma) {
-    .Call(`_shapr_weights_train_comb_cpp`, D, S, sigma)
 }
 

@@ -32,6 +32,10 @@ w_shapley <- function(m, N, s) {
 #'
 #' @author Nikolai Sellereite
 get_combinations <- function(m, exact = TRUE, nrows = 200) {
+    if (nrows>2^m){
+        exact = TRUE
+        cat(paste0("nrows is larger than 2^m = ",2^m,". Using exact instead."))
+    }
     if (exact == TRUE) {
         N <- 2 ^ m
         X <- data.table(ID = 1:N)
@@ -153,16 +157,13 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-impute_data <- function(D, S, Xtrain, Xtest, sigma, w_threshold = .7, n_threshold = 1e3) {
+impute_data <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, n_threshold = 1e3) {
 
     ## Find weights for all combinations and training data
-    DT = as.data.table(weights_train_comb_cpp(D, S, sigma))
+    DT = as.data.table(W_kernel)
     DT[, ID := .I]
     DT = data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
 
-    if (sigma == 0) {
-        DT[, w := w + stats::rnorm(.N)] # To get actual randomness when doing independence sampling
-    }
     ## Remove training data with small weight
     setkey(DT, comb, w)
     DT[, w := w / sum(w), comb]
@@ -212,20 +213,28 @@ samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest) {
     } else {
         dependent_ind <- (1:length(mu))[-given_ind]
         X_given <- Xtest[given_ind]
-        ret0 <- condMVNorm::rcmvnorm(
-            n = n_threshold,
+        # ret0 <- condMVNorm::rcmvnorm(
+        #     n = n_threshold,
+        #     mean = mu,
+        #     sigma = Sigma,
+        #     dependent.ind = dependent_ind,
+        #     given.ind = given_ind,
+        #     X.given = X_given,
+        #     method = "chol")
+        tmp <- condMVNorm::condMVN(
             mean = mu,
             sigma = Sigma,
             dependent.ind = dependent_ind,
             given.ind = given_ind,
-            X.given = X_given,
-            method = "chol"
-        )
+            X.given = X_given)
+        #ret0 <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
+        ret0 <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
+
         ret <- matrix(NA, ncol = p, nrow = n_threshold)
-        ret[, given_ind] <- X_given
+        ret[, given_ind] <- rep(X_given,each=n_threshold)
         ret[, dependent_ind] <- ret0
     }
-    colnames(ret) <- colnames(Xtrain)
+    colnames(ret) <- colnames(Xtest)
     return(as.data.table(ret))
 }
 
@@ -241,26 +250,22 @@ samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest) {
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 get_predictions <- function(model,
-                            D,
+                            W_kernel,
                             S,
                             Xtrain,
                             Xtest,
-                            sigma,
                             w_threshold = .7,
                             n_threshold = 1e3,
                             verbose = FALSE,
                             gaussian_sample = FALSE,
                             feature_list,
-                            pred_zero) {
+                            pred_zero,
+                            mu,
+                            Sigma) {
     p <- ncol(Xtrain)
 
     if (gaussian_sample) {
         ## Assume Gaussian distributed variables and sample from the various conditional distributions
-        mu <- colMeans(Xtrain)
-        Sigma <- stats::cov(Xtrain)
-        if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
-            Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
-        }
         Gauss_samp <- lapply(
             X = feature_list,
             FUN = samp_Gauss_func,
@@ -277,11 +282,10 @@ get_predictions <- function(model,
     } else {
         ## Get imputed data
         DTp <- impute_data(
-            D = D,
+            W_kernel = W_kernel,
             S = S,
             Xtrain = Xtrain,
             Xtest = Xtest,
-            sigma = sigma,
             w_threshold = w_threshold,
             n_threshold = n_threshold
         )
@@ -291,7 +295,11 @@ get_predictions <- function(model,
     nms <- colnames(Xtest)
 
     DTp[!(wcomb %in% c(1, 2 ^ p)), p_hat := pred_vector(model = model, data = .SD), .SDcols = nms]
-    DTp[wcomb == 2 ^ p, p_hat := pred_vector(model = model, data = as.data.frame(Xtest))]
+    if(nrow(Xtest)==1){
+        DTp[wcomb == 2 ^ p, p_hat := pred_vector(model = model, data = as.data.frame(rbind(Xtest,Xtest)))[1]] # Just a hack for a single prediction
+    } else {
+        DTp[wcomb == 2 ^ p, p_hat := pred_vector(model = model, data = as.data.frame(Xtest))]
+    }
     DTp[wcomb == 1, p_hat := pred_zero]
 
     ## Get mean probability
@@ -343,7 +351,7 @@ pred_vector = function(model, data) {
 #'
 #' @inheritParams global_arguments
 #' @param l The output from prepare_kernelShap
-#' @param sigma Bandwidth in the Gaussian kernel if the empirical conditional sampling approach is used (Gaussian==F)
+#' @param sigma Bandwidth in the Gaussian kernel if the empirical conditional sampling approach is used (gaussian_sample==F)
 #' @param pred_zero The prediction value for unseen data, typically equal to the mean of the response
 #'
 #' @return List with kernel Shap values (Kshap) and other object used to perform the computation (helpful for debugging etc.)
@@ -358,36 +366,56 @@ compute_kernelShap = function(model,
                               n_threshold = 1e3,
                               verbose = FALSE,
                               gaussian_sample = FALSE,
-                              pred_zero) {
+                              pred_zero,
+                              kernel_metric = "Gaussian") {
     ll = list()
+
+    # Handle the computation of all training-test weights for ALL combinations here, before looping
+    if (kernel_metric == "independence"){
+        W_kernel <- array(rnorm(prod(dim(l$D)))^2,dim = dim(l$D)) # Just random noise to "fake" a distance between observations
+    }
+    if (kernel_metric =="Gaussian"){
+        W_kernel <- exp((-0.5*l$D)/sigma^2)
+    }
+    if (kernel_metric =="Gaussian_old"){
+        W_kernel <- sqrt(exp((-0.5*l$D)/sigma^2))
+    }
+
+    mu <- colMeans(l$Xtrain)
+    Sigma <- stats::cov(l$Xtrain)
+    if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
+        Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
+    }
+    #Sigma <- (Sigma + t(Sigma))/2
+
     for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction function is not parallelized.
         print(sprintf("%d out of %d", i, l$Xtest[, .N]))
 
         ll[[i]] <- get_predictions(
             model = model,
-            D = l$D[, i, ],
+            W_kernel = W_kernel[,i,],
             S = l$S,
             Xtrain = as.matrix(l$Xtrain),
             Xtest = as.matrix(l$Xtest)[i, , drop = FALSE],
-            sigma = sigma,
             w_threshold = w_threshold,
             n_threshold = n_threshold,
             verbose = verbose,
             gaussian_sample = gaussian_sample,
             feature_list = l$X$features,
-            pred_zero = pred_zero
-        )
+            pred_zero = pred_zero,
+            mu = mu,
+            Sigma = Sigma)
         ll[[i]][, id := i]
     }
 
     DT <- rbindlist(ll)
 
-    Kshap <- matrix(0, nrow = Xtest[, .N], ncol = nrow(l$W))
-    for (i in Xtest[, .I]) {
+    Kshap <- matrix(0, nrow = nrow(l$Xtest), ncol = nrow(l$W))
+    for (i in l$Xtest[, .I]) {
         Kshap[i, ] = l$W %*% DT[id == i, k]
     }
 
-    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT))
+    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT,W_kernel=W_kernel))
     return(ret_list)
 }
 
@@ -408,7 +436,8 @@ prepare_kernelShap <- function(m,
                                Xtest,
                                exact = TRUE,
                                nrows = NULL,
-                               scale = FALSE) {
+                               scale = FALSE,
+                               distance_metric = "Mahalanobis_scaled") {
 
     ## Get all combinations ----------------
     X <- get_combinations(m = m, exact = exact, nrows = nrows)
@@ -420,13 +449,29 @@ prepare_kernelShap <- function(m,
     W <- get_weighted_matrix(X)
 
     ## Transform to data table and scale data ----------------
-    l <- scale_data(Xtrain, Xtest, scale = scale)
+    l <- scale_data(Xtrain, Xtest, scale = scale) # MJ: One should typically scale if using Euclidean, while it is no point when using Mahalanobis
 
     ## Get distance ---------
-    D <- distance_cpp(as.matrix(l$Xtrain), as.matrix(l$Xtest))
+    if (distance_metric=="Euclidean"){
+        mcov <- diag(m) # Should typically use scale if Euclidean is being used.
+    } else { # i.e. If distance_metric == "Mahalanobis"
+        mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
+    }
+
+    if (distance_metric=="Mahalanobis_scaled"){
+        S_scale_dist <- T
+    } else {
+        S_scale_dist <- F
+    }
+
+    D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
 
     ## Get feature matrix ---------
-    S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain))
+    S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain)) # The scaling of S influence onyl the matrix product with D, as we only care about the elements of S being zero/nonzero elsewhere.
 
     return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest))
 }
+
+
+
+
