@@ -19,12 +19,13 @@ mu.list = list(c(0,0,0))
 Sigma.list <- list(matrix(c(1,0.7,0.7,
                             0.7,1,0.7,
                             0.7,0.7,1),ncol=3))
+Sigma.list <- list(diag(3))
 pi.G <- 1
 
 sd = 0.1
 
 nTrain <- 500
-nTest <- 1000
+nTest <- 200
 
 
 #### Defining the true distribution of the variables and the model------
@@ -82,47 +83,124 @@ l <- prepare_kernelShap(
     distance_metric = "Euclidean"
 )
 
+#### Finding which h is actually the best
+
+
+w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
+n_threshold = 10^3
+
+
+Shapley.Gauss = compute_kernelShap(model = model,
+                                   l,
+                                   sigma = 1, # Ignored when Gaussian==T
+                                   w_threshold = w_threshold,
+                                   n_threshold = n_threshold,
+                                   verbose = FALSE,
+                                   gaussian_sample = TRUE,
+                                   pred_zero=pred_zero,
+                                   kernel_metric = "Gaussian")
+
+h.val <- seq(0.05,1,0.05)
+Shapley.approx.test <- list()
+for (i in 1:length(h.val)){
+
+    Shapley.approx.test[[i]] = compute_kernelShap(model = model,
+                                             l,
+                                             sigma = h.val[i],
+                                             w_threshold = w_threshold,
+                                             n_threshold = n_threshold,
+                                             verbose = FALSE,
+                                             gaussian_sample = FALSE,
+                                             pred_zero=pred_zero,
+                                             kernel_metric = "Gaussian")
+    print(i)
+
+}
+
+DT.gaussian <- rbindlist(Shapley.Gauss$other_object$ll)
+setnames(DT.gaussian,"k","p.gaussian")
+
+DT.list <- list()
+for (i in 1:length(h.val)){
+
+    DT.approx <- rbindlist(Shapley.approx.test[[i]]$other_object$ll)
+    setnames(DT.approx,"k","p.approx")
+    DT.approx[,h:=h.val[i]]
+
+    DT.list[[i]] <- merge(DT.approx,DT.gaussian,by=c("wcomb","id"),all=T)
+}
+DT <- rbindlist(DT.list)
+
+
+
+helper <- copy(l$X)
+helper[,wcomb:=ID]
+helper[,ID:= NULL]
+helper[,features:= NULL]
+helper[,N:= NULL]
+helper[,weight:= NULL]
+
+DT <- merge(DT,helper,by="wcomb")
+DT[,diff:=p.approx-p.gaussian]
+DT[,absdiff:=abs(diff)]
+
+print(DT[,mean(absdiff)]) # Mean
+DT.summary <- DT[,.(mean=mean(absdiff),sd=sd(absdiff)),by=.(nfeatures,h)] # Summary per nfeatures
+DT.summary[nfeatures %in% c(1,2),]
+DT.summary[,mean(mean),by=h]
+
+#### Optimum is h=0.20 for nfeatures=1, and h=0.35 for nfeatures=2 with correlation 0.7.
+
+
+
+
 ############# DOING THE AICc-stuff ####
 
 source("scripts/AICc_helper_functions.R")
 
 # Computing for the first test observation only
-x.star <- Xtest[1,]
 
-h.optim.vec <- rep(NA,nrow(l$S))
-for (i in 2:(nrow(l$S)-1)){ # Finding optimal h for each submodel, except the zero and full model
-    S <- l$S[i,]
+no.testobs <- 5
 
-    S.cols <- paste0("X",which(as.logical(S)))
-    Sbar.cols <- paste0("X",which(as.logical(1-S)))
+h.optim.mat <- matrix(NA,nrow=nrow(l$S),ncol=no.testobs)
 
-    Xtrain.Sbar <- subset(Xtrain,select=Sbar.cols)
-    x.star.S <- subset(x.star,select=S.cols)
+for (j in 1:no.testobs){
+    x.star <- Xtest[j,]
+    for (i in 2:(nrow(l$S)-1)){ # Finding optimal h for each submodel, except the zero and full model
+        S <- l$S[i,]
 
-    pred <- cbind(Xtrain.Sbar,x.star.S)
+        S.cols <- paste0("X",which(as.logical(S)))
+        Sbar.cols <- paste0("X",which(as.logical(1-S)))
 
-    X.nms <- colnames(Xtrain)
-    setcolorder(pred,X.nms)
+        Xtrain.Sbar <- subset(Xtrain,select=Sbar.cols)
+        x.star.S <- subset(x.star,select=S.cols)
 
-    pred[, p_hat := pred_vector(model = model, data = .SD), .SDcols = X.nms]
+        pred <- cbind(Xtrain.Sbar,x.star.S)
 
-    # h.val <- seq(0.02,1,0.04)
-    # h.val <- seq(0.001,0.02,0.001)
-    #
-    # AICc.vec <- rep(NA,length(h.val))
-    # for (j in 1:length(h.val)){
-    #     AICc.vec[j] <- AICc.func(h.vec = h.val[j],y = pred$p_hat,X = as.matrix(subset(pred,select = X.nms)))
-    #     print(c(h.val[j],AICc.vec[j]))
-    # }
+        X.nms <- colnames(Xtrain)
+        setcolorder(pred,X.nms)
 
-    nlm.obj <- nlminb(start = 0.1,objective = AICc.func,y = pred$p_hat,X = as.matrix(subset(pred,select = X.nms)),lower = 0,control=list(eval.max=20,trace=1))
-    h.optim.vec[i] <- nlm.obj$par
-    # May also use mlrMBO here, something like this maybe: https://mlr-org.github.io/Stepwise-Bayesian-Optimization-with-mlrMBO/, just not stepwise. See other tutorial.
-#    exp(-l$D[,1,i]/2*h)
+        pred[, p_hat := pred_vector(model = model, data = .SD), .SDcols = X.nms]
 
+        # h.val <- seq(0.02,1,0.04)
+        # h.val <- seq(0.001,0.02,0.001)
+        #
+        # AICc.vec <- rep(NA,length(h.val))
+        # for (j in 1:length(h.val)){
+        #     AICc.vec[j] <- AICc.func(h.vec = h.val[j],y = pred$p_hat,X = as.matrix(subset(pred,select = X.nms)))
+        #     print(c(h.val[j],AICc.vec[j]))
+        # }
+
+        nlm.obj <- nlminb(start = 0.1,objective = AICc.func,y = pred$p_hat,X = as.matrix(subset(pred,select = X.nms)),lower = 0,control=list(eval.max=20,trace=1))
+        h.optim.mat[i,j] <- nlm.obj$par
+        # May also use mlrMBO here, something like this maybe: https://mlr-org.github.io/Stepwise-Bayesian-Optimization-with-mlrMBO/, just not stepwise. See other tutorial.
+        #    exp(-l$D[,1,i]/2*h)
+        print(c(i,j))
+    }
 }
 
 
+h.optim.mat
 
 
 #### Computing the various Shapley approximations --------
