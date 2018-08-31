@@ -229,20 +229,23 @@ bw <- npregbw(formula=y~x1,regtype="lc",bwmethod="cv.aic")
 
 n <- 500
 x1 <- rnorm(n)
-x2 <- runif(n,-2,2)
+x2 <- rnorm(n)
 x3 <- rnorm(n)
 X <- cbind(x1,x2,x3)
-y <- x1 + x2 +x3 + rnorm(n)
+y <- x1 + x2 +x3 + rnorm(n,sd=0.1)
+model <- lm(y~x1+x2+x3)
 
+y.pred.12 <- x1+x2 # conditioning on x3=0
+X[,3] <- 0
 
 ### sample some test data#
 
 n.test <- 1000
 x1.test <- rnorm(n.test)
-x2.test <- runif(n.test,-2,2)
+x2.test <- rnorm(n)
 x3.test <- rnorm(n.test)
 X.test <- cbind(x1.test,x2.test,x3.test)
-y.test <- x1.test + x2.test +x3.test + rnorm(n.test)
+y.test <- x1.test + x2.test +x3.test + rnorm(n.test,sd=0.1)
 
 
 MSE.testvec <- rep(NA,length(h.val))
@@ -257,15 +260,39 @@ for (i in 1:length(h.val)){
 
 AICc.vec <- rep(NA,length(h.val))
 for (i in 1:length(h.val)){
-    AICc.vec[i] <- AICc.single.h.func(h.val[i],y,X)
+    AICc.vec[i] <- AICc.func(h.val[i],y.pred.12,X)
     print(AICc.vec[i])
 }
 
+
 par(mfrow=c(2,1))
 plot(h.val,MSE.testvec,type='l')
-plot(h.val,AICc.vec,type='l',log="y")
+plot(h.val,AICc.vec+5,type='l',log="y")
 
 
+#### How well does the conditioned version work? ####
+
+MSE.testvec <- rep(NA,length(h.val))
+for (i in 1:length(h.val)){
+
+    n <- nrow(X)
+    q <- ncol(X)
+    h.vec <- rep(h.val,q)
+
+    K <- rep(NA,n)
+    for (i in 1:n){
+        K[i] <- prod(k.func((X[i,]-x)/h.vec))
+    }
+
+
+    pred.y <- apply(X = X, MARGIN = 1, FUN = g.hat.func, h.vec = h.val[i],y=y.pred.12,XMAT=X)
+    #pred.y <-locpoly(x1, y, degree=0, kernel="normal", bandwidth=h.val[i],
+    #                 range.x = range(x.val),
+    #                 gridsize = length(x.val))$y # Same results, just faster
+    mean(pred.y)
+    MSE.testvec[i] <- mean((pred.y-y.test)^2)
+    print(c(h.val[i],MSE.testvec[i]))
+}
 
 
 

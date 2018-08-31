@@ -1,18 +1,48 @@
-k.func <- function(x){
+library(mvtnorm)
+
+k.func.Euclidean <- function(x){
     dnorm(x = x,mean = 0,sd = 1)
 }
+K.func.Euclidean <- function(x,h.vec,Sigma){
+    prod(k.func.Euclidean((x)/h.vec)/h.vec)
+}
+K.func.Mahalanobis.all <- function(X,h.vec,Sigma){
+    exp(-gen_Mahlanobis_dist_cpp(featureList = list(1,1:ncol(X)),Xtrain = X,Xtest = X,mcov = Sigma,S_scale_dist = F)[,,2]/(2*h.vec^2))
+    }
+
+
 # h.vec is vector of length q=ncol(X)
-H.func <- function(h.vec,X){
+H.func <- function(h.vec,X,kernel = "Euclidean"){
     n <- nrow(X)
 
     H <- matrix(NA,ncol=n,nrow=n)
+    Sigma <- cov(X)
 
-    for (i in 1:n){
-        for (j in 1:n){
-            H[i,j] <- prod(k.func((X[i,]-X[j,])/h.vec)/h.vec)
-        }
-        H[i,] <- H[i,]/sum(H[i,])
+    if (kernel=="Euclidean"){
+        ### OLD VERSION
+        # K.func <- K.func.Euclidean
+        # for (i in 1:n){
+        #     for (j in 1:n){
+        #         H[i,j] <- K.func(x = X[i,]-X[j,],h.vec=h.vec,Sigma=Sigma)
+        #     }
+        #     H[i,] <- H[i,]/sum(H[i,])
+        # }
+
+    H <- K.func.Mahalanobis.all(X=X,h.vec=h.vec,Sigma=diag(ncol(Sigma))) # So including the variance in this measure, not to have to scale for different variability in different dimensions.
+       for (i in 1:n){
+          H[i,] <- H[i,]/sum(H[i,])
+      }
+
+
     }
+
+    if (kernel=="Mahalanobis"){
+        H <- K.func.Mahalanobis.all(X=X,h.vec=h.vec,Sigma=Sigma)
+        for (i in 1:n){
+            H[i,] <- H[i,]/sum(H[i,])
+        }
+    }
+
     return(H)
 }
 
@@ -24,7 +54,7 @@ sigma.hat.sq.func <- function(y,H){
     return(sigma.hat.sq)
 }
 
-AICc.func <- function(h.vec,y,X,negative = FALSE){
+AICc.func <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean"){
     n <- length(y)
     q <- ncol(X)
 
@@ -32,7 +62,7 @@ AICc.func <- function(h.vec,y,X,negative = FALSE){
         h.vec <- rep(h.vec,q)
     }
 
-    H <- H.func(h.vec = h.vec,X = X)
+    H <- H.func(h.vec = h.vec,X = X,kernel = kernel)
 
     sigma.hat.sq <- sigma.hat.sq.func(y=y,
                                       H = H)
@@ -46,7 +76,7 @@ AICc.func <- function(h.vec,y,X,negative = FALSE){
     }
     return(AICc)
 }
-g.hat.func <- function(x,h.vec,y,XMAT){
+g.hat.func <- function(x,h.vec,y,XMAT,kernel = "Euclidean"){
 
     n <- nrow(XMAT)
     q <- ncol(XMAT)
@@ -54,9 +84,17 @@ g.hat.func <- function(x,h.vec,y,XMAT){
     if (length(h.vec)==1){
         h.vec <- rep(h.vec,q)
     }
+
+    if (kernel=="Euclidean"){
+        K.func <- K.func.Euclidean
+    }
+    if (kernel=="Mahalanobis"){
+        K.func <- K.func.Mahalanobis
+    }
+
     K <- rep(NA,n)
     for (i in 1:n){
-        K[i] <- prod(k.func((XMAT[i,]-x)/h.vec))
+        K[i] <- K.func(x=XAT[i,]-x,h.vec=h.vec,Sigma=cov(XMAT))
     }
     g.hat <- sum(y*K)/sum(K)
 
