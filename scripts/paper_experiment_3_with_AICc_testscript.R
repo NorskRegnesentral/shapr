@@ -19,6 +19,11 @@ mu.list = list(c(0,0,0))
 Sigma.list <- list(matrix(c(1,0.7,0.7,
                             0.7,1,0.7,
                             0.7,0.7,1),ncol=3))
+Sigma.list <- list(diag(c(1,2,4))%*%matrix(c(1,0.7,0.7,
+                            0.7,1,0.7,
+                            0.7,0.7,1),ncol=3)%*%diag(c(1,2,4)))
+
+
 #Sigma.list <- list(diag(3))
 pi.G <- 1
 
@@ -193,7 +198,7 @@ for (j in 1:no.testobs){
 
         pred <- pred_vector(model=model,data=X.pred)
 
-        nlm.obj <- nlminb(start = 1,objective = AICc.func,y = pred,X = as.matrix(Xtrain.S),kernel="Euclidean",lower = 0,control=list(eval.max=20,trace=1))
+        nlm.obj <- nlminb(start = 1,objective = AICc.func,y = pred,X = as.matrix(Xtrain.S),kernel="Mahalanobis",scale_var=T,lower = 0,control=list(eval.max=20,trace=1))
         h.optim.mat[i,j] <- nlm.obj$par
         # May also use mlrMBO here, something like this maybe: https://mlr-org.github.io/Stepwise-Bayesian-Optimization-with-mlrMBO/, just not stepwise. See other tutorial.
         #    exp(-l$D[,1,i]/2*h)

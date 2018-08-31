@@ -12,7 +12,7 @@ K.func.Mahalanobis.all <- function(X,h.vec,Sigma){
 
 
 # h.vec is vector of length q=ncol(X)
-H.func <- function(h.vec,X,kernel = "Euclidean"){
+H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T){
     n <- nrow(X)
 
     H <- matrix(NA,ncol=n,nrow=n)
@@ -27,9 +27,14 @@ H.func <- function(h.vec,X,kernel = "Euclidean"){
         #     }
         #     H[i,] <- H[i,]/sum(H[i,])
         # }
-
-    H <- K.func.Mahalanobis.all(X=X,h.vec=h.vec,Sigma=diag(ncol(Sigma))) # So including the variance in this measure, not to have to scale for different variability in different dimensions.
-       for (i in 1:n){
+        Sigma.var <- 0*Sigma
+        if(scale_var){
+            diag(Sigma.var) <- diag(Sigma)
+        } else {
+            diag(Sigma.var) <- 1
+        }
+        H <- K.func.Mahalanobis.all(X=X,h.vec=h.vec,Sigma=Sigma.var) # So including the variance in this measure, not to have to scale for different variability in different dimensions.
+        for (i in 1:n){
           H[i,] <- H[i,]/sum(H[i,])
       }
 
@@ -54,7 +59,7 @@ sigma.hat.sq.func <- function(y,H){
     return(sigma.hat.sq)
 }
 
-AICc.func <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean"){
+AICc.func <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_var = T){
     n <- length(y)
     q <- ncol(X)
 
@@ -62,7 +67,7 @@ AICc.func <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean"){
         h.vec <- rep(h.vec,q)
     }
 
-    H <- H.func(h.vec = h.vec,X = X,kernel = kernel)
+    H <- H.func(h.vec = h.vec,X = X,kernel = kernel, scale_var = scale_var)
 
     sigma.hat.sq <- sigma.hat.sq.func(y=y,
                                       H = H)
