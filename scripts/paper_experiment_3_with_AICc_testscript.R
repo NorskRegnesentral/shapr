@@ -19,9 +19,9 @@ mu.list = list(c(0,0,0))
 Sigma.list <- list(matrix(c(1,0.7,0.7,
                             0.7,1,0.7,
                             0.7,0.7,1),ncol=3))
-Sigma.list <- list(diag(c(1,2,4))%*%matrix(c(1,0.7,0.7,
+Sigma.list <- list(diag(0.03*c(1,1,1))%*%matrix(c(1,0.7,0.7,
                             0.7,1,0.7,
-                            0.7,0.7,1),ncol=3)%*%diag(c(1,2,4)))
+                            0.7,0.7,1),ncol=3)%*%diag(0.03*c(1,1,1)))
 
 
 #Sigma.list <- list(diag(3))
@@ -218,6 +218,8 @@ h.optim.mat
 #[6,] 0.4494405 0.4494405 0.4494405
 #[7,] 0.3923674 0.3923674 0.3923674
 #[8,]        NA        NA        NA
+
+### Varying variance for the differnet variables gives strange results, but just a simple scaling to all, works fine.... Why?
 
 
 ########## THIS IS INCORRECT ####################
