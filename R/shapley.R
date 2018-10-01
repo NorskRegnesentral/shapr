@@ -367,7 +367,9 @@ compute_kernelShap = function(model,
                               verbose = FALSE,
                               gaussian_sample = FALSE,
                               pred_zero,
-                              kernel_metric = "Gaussian") {
+                              kernel_metric = "Gaussian",
+                              mu = NULL,
+                              Sigma = NULL) {
     ll = list()
 
     # Handle the computation of all training-test weights for ALL combinations here, before looping
@@ -381,8 +383,14 @@ compute_kernelShap = function(model,
         W_kernel <- sqrt(exp((-0.5*l$D)/sigma^2))
     }
 
-    mu <- colMeans(l$Xtrain)
-    Sigma <- stats::cov(l$Xtrain)
+
+    if(is.null(mu)){ # Using the mean of the training data in the Gaussian approach if not provided directly
+        mu <- colMeans(l$Xtrain)
+    }
+    if(is.null(Sigma)){ # Using the sample covariance of the training data in the Gaussian approach if not provided directly
+        Sigma <- stats::cov(l$Xtrain)
+    }
+
     if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
         Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
     }
@@ -437,7 +445,8 @@ prepare_kernelShap <- function(m,
                                exact = TRUE,
                                nrows = NULL,
                                scale = FALSE,
-                               distance_metric = "Mahalanobis_scaled") {
+                               distance_metric = "Mahalanobis_scaled",
+                               gaussian_sample = F) {
 
     ## Get all combinations ----------------
     X <- get_combinations(m = m, exact = exact, nrows = nrows)
@@ -464,7 +473,11 @@ prepare_kernelShap <- function(m,
         S_scale_dist <- F
     }
 
-    D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
+    if(gaussian_sample){ # Only compute the distances if gaussian_sample is FALSE
+        D <- NULL
+    } else {
+        D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
+    }
 
     ## Get feature matrix ---------
     S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain)) # The scaling of S influence onyl the matrix product with D, as we only care about the elements of S being zero/nonzero elsewhere.
