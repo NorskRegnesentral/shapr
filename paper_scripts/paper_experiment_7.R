@@ -6,7 +6,7 @@
 #### Example 1 ####
 # XGBoost with Gaussian mixture distributed features.
 
-rm(list = ls())
+#rm(list = ls())
 
 library(shapr)
 library(data.table)
@@ -27,7 +27,7 @@ pi.G <- c(0.5,0.5)
 
 sd = 0.1
 
-nTrain <- 10000
+nTrain <- 2000
 nTest <- 1000
 
 
@@ -98,7 +98,8 @@ l <- prepare_kernelShap(
     Xtrain = Xtrain,
     Xtest = Xtest,
     exact = TRUE,
-    nrows = 1e4
+    nrows = 1e4,
+    distance_metric = "Mahalanobis_scaled"
 )
 
 #### Computing the various Shapley approximations --------
@@ -115,7 +116,8 @@ Shapley.approx$sigma.01 = compute_kernelShap(model = model,
                                              n_threshold = n_threshold,
                                              verbose = FALSE,
                                              gaussian_sample = FALSE,
-                                             pred_zero=pred_zero)
+                                             pred_zero=pred_zero,
+                                             kernel_metric = "Gaussian")
 
 Shapley.approx$sigma.03 = compute_kernelShap(model = model,
                                              l,
@@ -124,7 +126,9 @@ Shapley.approx$sigma.03 = compute_kernelShap(model = model,
                                              n_threshold = n_threshold,
                                              verbose = FALSE,
                                              gaussian_sample = FALSE,
-                                             pred_zero=pred_zero)
+                                             pred_zero=pred_zero,
+                                             kernel_metric = "Gaussian")
+
 
 Shapley.approx$indep = compute_kernelShap(model = model,
                                           l,
@@ -133,7 +137,9 @@ Shapley.approx$indep = compute_kernelShap(model = model,
                                           n_threshold = n_threshold,
                                           verbose = FALSE,
                                           gaussian_sample = FALSE,
-                                          pred_zero=pred_zero)
+                                          pred_zero=pred_zero,
+                                          kernel_metric = "independence")
+
 
 Shapley.approx$Gauss = compute_kernelShap(model = model,
                                           l,
@@ -142,7 +148,9 @@ Shapley.approx$Gauss = compute_kernelShap(model = model,
                                           n_threshold = n_threshold,
                                           verbose = FALSE,
                                           gaussian_sample = TRUE,
-                                          pred_zero=pred_zero)
+                                          pred_zero=pred_zero,
+                                          kernel_metric = "Gaussian")
+
 
 Shapley.true = Shapley_true(model = model,
                             Xtrain = Xtrain,
@@ -154,73 +162,101 @@ Shapley.true = Shapley_true(model = model,
                             l,
                             pred_zero = pred_zero)
 
+#### Running AICc to optimize the sigma in the empirical version ####
+
+source("scripts/AICc_helper_functions.R")
+
+# Computing for the first test observation only
+
+no.testobs <- 1
+
+# Same optimum is found for every test observation, so no need to do this for more than one test observation.
+
+h.optim.mat <- matrix(NA,nrow=nrow(l$S),ncol=no.testobs)
+
+### If we use Mahalanobis, we might be able to adjust for different correlation between the variables, such that we at least need to do it only once
+### per conditioning size (or a few and taking the mean of them) If we are also able to generalize the distance measure to take into account how the optimal bandwidth changes from one size to another,
+### we may also get away doing it just once (or a few differnet sets which we take the mean of)
+
+S_scale_dist = T # Scaling the Mahalanbois ditstance
+
+
+for (j in 1:no.testobs){
+    x.star <- Xtest[j,]
+    for (i in 2:(nrow(l$S)-1)){ # Finding optimal h for each submodel, except the zero and full model
+        S <- l$S[i,]
+
+
+        S.cols <- paste0("X",which(as.logical(S)))
+        Sbar.cols <- paste0("X",which(as.logical(1-S)))
+
+        Xtrain.S <- subset(Xtrain,select=S.cols)
+        Xtrain.Sbar <- subset(Xtrain,select=Sbar.cols)
+        x.star.S <- subset(x.star,select=S.cols)
+
+        X.pred <- cbind(Xtrain.Sbar,x.star.S)
+        X.nms <- colnames(Xtrain)
+        setcolorder(X.pred,X.nms)
+
+        pred <- pred_vector(model=model,data=X.pred)
+
+        nlm.obj <- nlminb(start = 0.1,objective = AICc.func,y = pred,X = as.matrix(Xtrain.S),kernel="Mahalanobis",scale_var=T,S_scale_dist = S_scale_dist,lower = 0,control=list(eval.max=20,trace=1))
+        h.optim.mat[i,j] <- nlm.obj$par
+        # May also use mlrMBO here, something like this maybe: https://mlr-org.github.io/Stepwise-Bayesian-Optimization-with-mlrMBO/, just not stepwise. See other tutorial.
+        #    exp(-l$D[,1,i]/2*h)
+        print(c(i,j))
+    }
+}
+
+h.optim.mat
+#> h.optim.mat
+#[,1]
+#[1,]        NA
+#[2,] 0.1182843
+#[3,] 0.1444610
+#[4,] 0.1373879
+#[5,] 0.2398393
+#[6,] 0.2430718
+#[7,] 0.2354757
+#[8,]        NA
+
+
+Shapley.approx$sigma.AICc = compute_kernelShap(model = model,
+                                               l,
+                                               sigma = mean(h.optim.mat,na.rm=T),
+                                               w_threshold = w_threshold,
+                                               n_threshold = n_threshold,
+                                               verbose = FALSE,
+                                               gaussian_sample = FALSE,
+                                               pred_zero=pred_zero,
+                                               kernel_metric = "Gaussian")
+
+
 Shapley.tree = predict(model,xgb.test,predcontrib=T)
 Shapley.tree = Shapley.tree[,c(m+1,1:m)]
 
+
 #### Comparing the true and approximate values -------------
 
+
+
 # Mean absolute errors per variable (to see if the performance differ between variables)
-(absmeans.sigma.01 = colMeans(abs(Shapley.true[,-1]-Shapley.approx$sigma.01$Kshap[,-1])))
-(absmeans.sigma.03 = colMeans(abs(Shapley.true[,-1]-Shapley.approx$sigma.03$Kshap[,-1])))
-(absmeans.indep = colMeans(abs(Shapley.true[,-1]-Shapley.approx$indep$Kshap[,-1])))
-(absmeans.Gauss = colMeans(abs(Shapley.true[,-1]-Shapley.approx$Gauss$Kshap[,-1])))
-(absmeans.treeSHAP = colMeans(abs(Shapley.true[,-1]-Shapley.tree[,-1])))
+(absmeans.sigma.01 = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$sigma.01$Kshap[,-1])))
+(absmeans.sigma.03 = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$sigma.03$Kshap[,-1])))
+(absmeans.indep = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$indep$Kshap[,-1])))
+(absmeans.Gauss = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$Gauss$Kshap[,-1])))
+(absmeans.sigma.AICc = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$sigma.AICc$Kshap[,-1])))
+
+(absmeans.treeSHAP = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.tree[,-1]))) # Additional one
+
 
 # Mean of the absolute errors over all variables
-res_to_paper <- c(S_KS=mean(absmeans.indep),G_KS = mean(absmeans.Gauss),E_KS_0.1=mean(absmeans.sigma.01),E_KS_0.3=mean(absmeans.sigma.03),TreeSHAP = mean(absmeans.treeSHAP))
-res_to_paper
-#S_KS       G_KS   E_KS_0.1   E_KS_0.3   TreeSHAP
-#0.34820946 0.43440090 0.01641733 0.01956438 0.53103073
+# Mean of the absolute errors over all variables
+res_to_paper <- data.frame(S_KS=mean(absmeans.indep),G_KS = mean(absmeans.Gauss),E_KS_0.1=mean(absmeans.sigma.01),E_KS_0.3=mean(absmeans.sigma.03),E_KS_AICc=mean(absmeans.sigma.AICc),TreeSHAP = mean(absmeans.treeSHAP))
+spec <- data.frame(gx="Piecewise constant",fx="XGBoost",px="Gaussian mix",rho=NA)
+res_to_paper <- cbind(spec,res_to_paper)
 
-# > head(Shapley.true)
-# [,1]       [,2]       [,3]        [,4]
-# [1,] 1.967222  1.0977997  0.6804683  0.01954934
-# [2,] 1.967222  1.0481261  0.6882733  1.06880830
-# [3,] 1.967216 -0.7057892 -0.1752125 -0.69093237
-# [4,] 1.967221  0.4420589  0.7468005  0.40357911
-# [5,] 1.967222  1.1982615  0.8750538  1.24919635
-# [6,] 1.967216 -0.6842513 -0.8658663 -1.17223433
-# > head(Shapley.approx$sigma.01$Kshap)
-# [,1]       [,2]       [,3]        [,4]
-# [1,] 1.967222  1.0685953  0.6944469  0.03477513
-# [2,] 1.967222  1.0398454  0.7107238  1.05463846
-# [3,] 1.967216 -0.7101268 -0.1907009 -0.67110649
-# [4,] 1.967221  0.4335967  0.7707739  0.38806796
-# [5,] 1.967222  1.1458725  0.9400747  1.23656453
-# [6,] 1.967216 -0.6789063 -0.8825749 -1.16087085
-# > head(Shapley.approx$sigma.03$Kshap)
-# [,1]       [,2]       [,3]        [,4]
-# [1,] 1.967222  1.0814289  0.6870695  0.02931905
-# [2,] 1.967222  1.0424219  0.7066151  1.05617066
-# [3,] 1.967216 -0.7076935 -0.1375420 -0.72669864
-# [4,] 1.967221  0.4147620  0.7960784  0.38159818
-# [5,] 1.967222  1.1722584  0.9032127  1.24704063
-# [6,] 1.967216 -0.6788523 -0.8795635 -1.16393621
-# > head(Shapley.approx$indep$Kshap)
-# [,1]       [,2]        [,3]       [,4]
-# [1,] 1.967219  1.4356721  0.49482024 -0.1326743
-# [2,] 1.967219  1.5733779  0.70123652  0.5305938
-# [3,] 1.967219 -1.0435808  0.02296052 -0.5513144
-# [4,] 1.967219  0.7119209  1.07177356 -0.1912554
-# [5,] 1.967218  1.6745170  1.03857816  0.6094169
-# [6,] 1.967219 -1.2644230 -0.89442034 -0.5635091
-# > head(Shapley.approx$Gauss$Kshap)
-# [,1]        [,2]       [,3]        [,4]
-# [1,] 1.967222  1.17794001  0.5019815  0.11789619
-# [2,] 1.967222  1.15240997  0.3973654  1.25543236
-# [3,] 1.967217 -1.11820372  1.2369343 -1.69066419
-# [4,] 1.967221  0.08669377  1.5172152 -0.01147065
-# [5,] 1.967222  1.25738639  0.7392101  1.32591460
-# [6,] 1.967217 -0.85652476 -0.2567578 -1.60906796
-# > head(Shapley.tree)
-# BIAS         X1         X2         X3
-# [1,] 1.967214  1.7632607  0.3793693 -0.3448085
-# [2,] 1.967214  1.9746418  0.5461401  0.2844310
-# [3,] 1.967214 -1.4163880  0.2028517 -0.3583940
-# [4,] 1.967214  0.9595515  0.8032548 -0.1703618
-# [5,] 1.967214  2.0893619  0.9166681  0.3164874
-# [6,] 1.967214 -1.6430440 -0.7250342 -0.3542672
->
+
 
 
 # Insert ranking based measures etc. here as well.

@@ -6,13 +6,13 @@ k.func.Euclidean <- function(x){
 K.func.Euclidean <- function(x,h.vec,Sigma){
     prod(k.func.Euclidean((x)/h.vec)/h.vec)
 }
-K.func.Mahalanobis.all <- function(X,h.vec,Sigma){
-    exp(-gen_Mahlanobis_dist_cpp(featureList = list(1,1:ncol(X)),Xtrain = X,Xtest = X,mcov = Sigma,S_scale_dist = F)[,,2]/(2*h.vec^2))
+K.func.Mahalanobis.all <- function(X,h.vec,Sigma,S_scale_dist){
+    exp(-gen_Mahlanobis_dist_cpp(featureList = list(1,1:ncol(X)),Xtrain = X,Xtest = X,mcov = Sigma,S_scale_dist = S_scale_dist)[,,2]/(2*h.vec^2))
     }
 
 
 # h.vec is vector of length q=ncol(X)
-H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T){
+H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){
     n <- nrow(X)
 
     H <- matrix(NA,ncol=n,nrow=n)
@@ -33,7 +33,7 @@ H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T){
         } else {
             diag(Sigma.var) <- 1
         }
-        H <- K.func.Mahalanobis.all(X=X,h.vec=h.vec,Sigma=Sigma.var) # So including the variance in this measure, not to have to scale for different variability in different dimensions.
+        H <- K.func.Mahalanobis.all(X=X,h.vec=h.vec,Sigma=Sigma.var,S_scale_dist = F) # So including the variance in this measure, not to have to scale for different variability in different dimensions.
         for (i in 1:n){
           H[i,] <- H[i,]/sum(H[i,])
       }
@@ -42,7 +42,7 @@ H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T){
     }
 
     if (kernel=="Mahalanobis"){
-        H <- K.func.Mahalanobis.all(X=X,h.vec=h.vec,Sigma=Sigma)
+        H <- K.func.Mahalanobis.all(X=X,h.vec=h.vec,Sigma=Sigma,S_scale_dist = S_scale_dist)
         for (i in 1:n){
             H[i,] <- H[i,]/sum(H[i,])
         }
@@ -59,7 +59,7 @@ sigma.hat.sq.func <- function(y,H){
     return(sigma.hat.sq)
 }
 
-AICc.func <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_var = T){
+AICc.func <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_var = T,S_scale_dist = F){
     n <- length(y)
     q <- ncol(X)
 
@@ -67,7 +67,7 @@ AICc.func <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_var 
         h.vec <- rep(h.vec,q)
     }
 
-    H <- H.func(h.vec = h.vec,X = X,kernel = kernel, scale_var = scale_var)
+    H <- H.func(h.vec = h.vec,X = X,kernel = kernel, scale_var = scale_var, S_scale_dist = S_scale_dist)
 
     sigma.hat.sq <- sigma.hat.sq.func(y=y,
                                       H = H)

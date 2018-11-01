@@ -16,21 +16,30 @@ library(condMVNorm)
 source("paper_scripts/paper_helper_funcs.R")
 
 mu.list = list(c(0,0,0))
+Sigma.sd <- 2
 Sigma.list <- list(matrix(c(1,0.7,0.7,
                             0.7,1,0.7,
                             0.7,0.7,1),ncol=3))
-Sigma.list <- list(diag(0.03*c(1,1,1))%*%matrix(c(1,0.7,0.7,
-                            0.7,1,0.7,
-                            0.7,0.7,1),ncol=3)%*%diag(0.03*c(1,1,1)))
+Sigma.list <- list(diag(Sigma.sd*c(1,2,4))%*%matrix(c(1,0.7,0.5,
+                                                      0.7,1,0.3,
+                                                      0.5,0.3,1),ncol=3)%*%diag(Sigma.sd*c(1,2,4)))
+pi.G <- 1
 
+mu.list = list(c(0,0,0),c(10,-5,10))
+Sigma.list <- list(diag(Sigma.sd*c(1,2,4))%*%matrix(c(1,0.7,0.5,
+                                                      0.7,1,0.3,
+                                                      0.5,0.3,1),ncol=3)%*%diag(Sigma.sd*c(1,2,4)),
+                   diag(Sigma.sd*c(1,2,4))%*%matrix(c(1,0.7,0.5,
+                                                      0.7,1,0.3,
+                                                      0.5,0.3,1),ncol=3)%*%diag(Sigma.sd*c(1,2,4)))
+pi.G <- c(0.5,0.5)
 
 #Sigma.list <- list(diag(3))
-pi.G <- 1
 
 sd = 0.1
 
 nTrain <- 500
-nTest <- 200
+nTest <- 100
 
 
 #### Defining the true distribution of the variables and the model------
@@ -85,7 +94,7 @@ l <- prepare_kernelShap(
     Xtest = Xtest,
     exact = TRUE,
     nrows = 1e4,
-    distance_metric = "Euclidean"
+    distance_metric = "Mahlanobis"
 )
 
 #### Finding which h is actually the best
@@ -95,16 +104,18 @@ w_threshold = 1 # For a fairer comparison, all models use the same number of sam
 n_threshold = 10^3
 
 
-Shapley.Gauss = compute_kernelShap(model = model,
-                                   l,
-                                   sigma = 1, # Ignored when Gaussian==T
-                                   w_threshold = w_threshold,
-                                   n_threshold = n_threshold,
-                                   verbose = FALSE,
-                                   gaussian_sample = TRUE,
-                                   pred_zero=pred_zero,
-                                   kernel_metric = "Gaussian")
+# Not really needed anymore, as we use Shapley.true instead
+# Shapley.Gauss = compute_kernelShap(model = model,
+#                                    l,
+#                                    sigma = 1, # Ignored when Gaussian==T
+#                                    w_threshold = w_threshold,
+#                                    n_threshold = n_threshold,
+#                                    verbose = FALSE,
+#                                    gaussian_sample = TRUE,
+#                                    pred_zero=pred_zero,
+#                                    kernel_metric = "Gaussian")
 
+h.val <- seq(0.5,1,0.1)
 h.val <- seq(0.05,0.5,0.025)
 #h.val <- seq(0.1,3,0.2)
 
@@ -124,8 +135,25 @@ for (i in 1:length(h.val)){
 
 }
 
-DT.gaussian <- rbindlist(Shapley.Gauss$other_object$ll)
-setnames(DT.gaussian,"k","p.gaussian")
+#DT.gaussian <- rbindlist(Shapley.Gauss$other_object$ll)
+#setnames(DT.gaussian,"k","p.gaussian")
+
+
+Shapley.true = Shapley_true(model = model,
+                            Xtrain = Xtrain,
+                            Xtest = Xtest,
+                            pi.G = pi.G,
+                            mu.list = mu.list,
+                            Sigma.list = Sigma.list,
+                            int.samp=200,
+                            l,
+                            pred_zero = pred_zero)
+
+DT.true <- data.table(wcomb = rep(1:2^m,nrow(Shapley.true$trueValue.mat)),
+                      p.true = (c(t(Shapley.true$trueValue.mat))),
+                      id = rep(1:nrow(Shapley.true$trueValue.mat),each=2^m))
+DT.true
+
 
 DT.list <- list()
 for (i in 1:length(h.val)){
@@ -134,7 +162,7 @@ for (i in 1:length(h.val)){
     setnames(DT.approx,"k","p.approx")
     DT.approx[,h:=h.val[i]]
 
-    DT.list[[i]] <- merge(DT.approx,DT.gaussian,by=c("wcomb","id"),all=T)
+    DT.list[[i]] <- merge(DT.approx,DT.true,by=c("wcomb","id"),all=T)
 }
 DT <- rbindlist(DT.list)
 
@@ -148,13 +176,16 @@ helper[,N:= NULL]
 helper[,weight:= NULL]
 
 DT <- merge(DT,helper,by="wcomb")
-DT[,diff:=p.approx-p.gaussian]
+DT[,diff:=p.approx-p.true]
 DT[,absdiff:=abs(diff)]
 
 print(DT[,mean(absdiff)]) # Mean
 DT.summary <- DT[,.(mean=mean(absdiff),sd=sd(absdiff)),by=.(nfeatures,h)] # Summary per nfeatures
 DT.summary[nfeatures %in% c(1,2),]
 DT.summary[,mean(mean),by=h]
+
+
+
 
 #### Optimum is h=0.20 for nfeatures=1, and h=0.35 for nfeatures=2 with correlation 0.7.
 #### Optimum is h=1.05 for nfeatures=1, and h=1.45 for nfeatures=2 with independence.
@@ -208,6 +239,114 @@ for (j in 1:no.testobs){
 
 
 h.optim.mat
+
+mean(h.optim.mat[2:4])
+mean(h.optim.mat[5:7])
+
+DT.summary[(nfeatures %in% c(1,2)),.SD[which.min(mean)] ,by=.(nfeatures)]
+
+aa=DT[,.(mean=mean(absdiff),sd=sd(absdiff)),by=.(nfeatures,h,wcomb)] # Summary per nfeatures
+
+aa[nfeatures%in%c(1,2),.SD[which.min(mean)] ,by=.(wcomb)]
+aa[nfeatures%in%c(1,2),.SD,by=.(wcomb)]
+
+#### Results summary #######
+
+# cor=0.7, Sigma.sd=1
+# > mean(h.optim.mat[2:4])
+# [1] 0.2738817
+# > mean(h.optim.mat[5:7])
+# [1] 0.3913567
+# >
+#     > DT.summary[(nfeatures %in% c(1,2)),.SD[which.min(mean)] ,by=.(nfeatures)]
+# nfeatures     h       mean         sd
+# 1:         1 0.225 0.09822560 0.09520941
+# 2:         2 0.350 0.09390674 0.09139088
+
+# cor=0.7, Sigma.sd=2
+#
+# > mean(h.optim.mat[2:4])
+# [1] 0.2738814
+# > mean(h.optim.mat[5:7])
+# [1] 0.3913568
+# >
+#     > DT.summary[(nfeatures %in% c(1,2)),.SD[which.min(mean)] ,by=.(nfeatures)]
+# nfeatures     h      mean        sd
+# 1:         1 0.225 0.1964994 0.1905481
+# 2:         2 0.350 0.1878502 0.1829048
+# >
+
+# cor=0.7, Sigma.sd=0.2
+# > mean(h.optim.mat[2:4])
+# [1] 0.2738894
+# > mean(h.optim.mat[5:7])
+# [1] 0.3913568
+# >
+#     > DT.summary[(nfeatures %in% c(1,2)),.SD[which.min(mean)] ,by=.(nfeatures)]
+# nfeatures     h       mean         sd
+# 1:         1 0.225 0.01960685 0.01894102
+# 2:         2 0.350 0.01875198 0.01818695
+
+### So standard svaling is fine, gives the same answer.
+
+### What about differnet variances in different dimensions... # Not perfect, but not bad either. Checking scaling of this version...
+# cor=0.7, Sigma.sd=0.5, but multiplied by (1,2,4)
+#> mean(h.optim.mat[2:4])
+#[1] 0.2533439
+#> mean(h.optim.mat[5:7])
+#[1] 0.4120809
+#>
+#    > DT.summary[(nfeatures %in% c(1,2)),.SD[which.min(mean)] ,by=.(nfeatures)]
+#nfeatures     h      mean        sd
+#1:         1 0.225 0.1153786 0.1408772
+#2:         2 0.375 0.1133652 0.1616035
+
+# cor=0.7, Sigma.sd=1, but multiplied by (1,2,4) -- scaling still fine
+#> mean(h.optim.mat[2:4])
+#[1] 0.2533703
+#> mean(h.optim.mat[5:7])
+#[1] 0.4120809
+#>
+#    > DT.summary[(nfeatures %in% c(1,2)),.SD[which.min(mean)] ,by=.(nfeatures)]
+#nfeatures     h      mean        sd
+#1:         1 0.225 0.2308656 0.2820839
+#2:         2 0.375 0.2267850 0.3236441
+
+### What about different correlations? # Seems fine
+# cor=0.7,0.5,0.3, Sigma.sd=1
+
+#> mean(h.optim.mat[2:4])
+#[1] 0.2870061
+#> mean(h.optim.mat[5:7])
+#[1] 0.43442
+#>
+#    > DT.summary[(nfeatures %in% c(1,2)),.SD[which.min(mean)] ,by=.(nfeatures)]
+#nfeatures     h       mean         sd
+#1:         1 0.250 0.09670137 0.10895669
+#2:         2 0.375 0.09593984 0.09807051
+
+# cor=0.7,0.5,0.3, Sigma.sd=1, but multiplied by (1,2,4) -- not as fine....
+# (now with ntrain=5000)
+# > mean(h.optim.mat[2:4])
+# [1] 0.2271235
+# > mean(h.optim.mat[5:7])
+# [1] 0.2890058
+# >
+#     > DT.summary[(nfeatures %in% c(1,2)),.SD[which.min(mean)] ,by=.(nfeatures)]
+# nfeatures     h      mean        sd
+# 1:         1 0.200 0.1433664 0.1381306
+# 2:         2 0.275 0.1692141 0.2587795
+
+
+
+
+
+
+
+
+
+
+################ end results summary ################
 ## REgular Euclidean
 #[,1]      [,2]      [,3]
 #[1,]        NA        NA        NA

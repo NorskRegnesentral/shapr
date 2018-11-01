@@ -38,7 +38,7 @@ cond.dens.X.func <- function(X,given.ind,X.given,pi.G,mu.list,Sigma.list){
     dens.joint <-dens.X.func(X.dependent.and.given,pi.G,mu.list,Sigma.list)
     dens.marginal <-dens.X.func(X.given.mat,pi.G,mu.list.given,Sigma.list.given)
 
-    dens.cond <- dens.joint/dens.marginal
+    dens.cond <- exp(log(dens.joint)-log(dens.marginal))
 
     return(dens.cond)
 }
@@ -79,6 +79,7 @@ integrator.1D.func <- function(h,integrate.inds,given.inds,Xtest,model,X.grid,pi
         for (j in 1:length(given.inds)){
             X.grid[,given.inds[j]] <- X.given[j]
         }
+        #unique(X.grid)
 
         integrand.vec <- integrand.func(model = model,
                                         X.grid = X.grid,
@@ -93,6 +94,7 @@ integrator.1D.func <- function(h,integrate.inds,given.inds,Xtest,model,X.grid,pi
 
     return(intval)
 }
+
 
 integrator.2D.func <- function(h,integrate.inds,given.inds,Xtest,model,X.grid,pi.G,mu.list,Sigma.list){
     nTest <- nrow(Xtest)
@@ -172,6 +174,108 @@ Shapley_true = function(model,Xtrain,Xtest,pi.G,mu.list,Sigma.list,int.samp=500,
         exactShap[i,] <- c(l$W %*% trueValues.mat[i,])
     }
 
-    return(exactShap)
+    ret <- list(exactShap=exactShap,trueValue.mat = trueValues.mat)
+
+    return(ret)
 }
+
+
+#### Helper functions for the generlizewd hyperbolic distribution ####
+
+simulateGenHyperbolic <- function(nSim, Sigma, beta,omega,lambda,mu)
+{
+    dim <- nrow(Sigma)
+    W <- rgig(nSim, lambda,omega, omega)
+    Z <- matrix(rnorm(nSim * dim), ncol = dim)
+    A <- chol(Sigma, pivot = FALSE)
+    U <- (Z %*% A)
+    M <- matrix(rep(mu,nSim), ncol = dim, byrow = TRUE)
+    X <- M+outer(W, beta)+sqrt(W)*U
+
+    X
+}
+
+
+#########################################################################################################################################################
+
+simulateCondDistHyperbolic <- function(nSim, Sigma,lambda,omega,beta,mu,dep.ind,given.ind,x0)
+{
+    d1 <- length(given.ind)
+    beta1 <- beta[given.ind]
+    beta2 <- beta[dep.ind]
+    Sigma11 <- as.matrix(Sigma[given.ind,given.ind])
+    Sigma2 <- as.matrix(Sigma[dep.ind,dep.ind])
+    Sigma12 <- matrix(Sigma[given.ind,dep.ind],ncol=length(dep.ind),byrow=T)
+    x1 <- x0[given.ind]
+    mu1 <- mu[given.ind]
+    mu2 <- mu[dep.ind]
+
+    lambda21  <- lambda - d1/2
+    psi21     <- omega  +       t(beta1)%*%solve(Sigma11)%*%beta1
+    Sigma21   <- Sigma2 -t(Sigma12)%*%solve(Sigma11)%*%Sigma12
+    chi21     <- omega  + t(x1-mu1)%*%solve(Sigma11)%*%(x1-mu1)
+    mu21      <- mu2    +    t(Sigma12)%*%solve(Sigma11)%*%(x1-mu1)
+    beta21    <- beta2  -   t(Sigma12)%*%solve(Sigma11)%*%beta1
+
+    if(length(dep.ind)==1)
+    {
+        univ.ghyp <- ghyp(lambda=as.numeric(lambda21), chi=as.numeric(chi21), psi=as.numeric(psi21), mu=as.numeric(mu21), sigma=as.numeric(Sigma21), gamma=as.numeric(beta21))
+        simData <- rghyp(n = nSim, univ.ghyp)
+    }
+    else
+    {
+        multiv.ghyp <- ghyp(lambda=lambda21, chi=as.numeric(chi21), psi=as.numeric(psi21), mu=mu21, sigma=Sigma21, gamma=beta21)
+        simData <- rghyp(n = nSim, multiv.ghyp)
+    }
+    simData
+}
+
+simulateCondDistHyperbolic_new <- function(given.ind, n_threshold, Sigma,lambda,omega,beta,mu,p,Xtest)
+{
+    if (length(given.ind) %in% c(0, p)) {
+        ret <- matrix(Xtest, ncol = p, nrow = 1)
+    } else {
+        # Transforming some variables for below
+        nSim <- n_threshold
+        x0 <- Xtest
+        dep.ind <- (1:length(mu))[-given.ind]
+        X_given <- Xtest[given.ind]
+
+
+        ## Core function of "simulateCondDistHyperbolic"
+        d1 <- length(given.ind)
+        beta1 <- beta[given.ind]
+        beta2 <- beta[dep.ind]
+        Sigma11 <- Sigma[given.ind,given.ind,drop=FALSE]
+        Sigma2 <- Sigma[dep.ind,dep.ind,drop=FALSE]
+        Sigma12 <- Sigma[given.ind,dep.ind,drop=FALSE]
+        x1 <- x0[given.ind]
+        mu1 <- mu[given.ind]
+        mu2 <- mu[dep.ind]
+
+        lambda21  <- lambda - d1/2
+        psi21     <- omega  +       t(beta1)%*%solve(Sigma11)%*%beta1
+        Sigma21   <- Sigma2 -t(Sigma12)%*%solve(Sigma11)%*%Sigma12
+        chi21     <- omega  + t(x1-mu1)%*%solve(Sigma11)%*%(x1-mu1)
+        mu21      <- mu2    +    t(Sigma12)%*%solve(Sigma11)%*%(x1-mu1)
+        beta21    <- beta2  -   t(Sigma12)%*%solve(Sigma11)%*%beta1
+
+        if(length(dep.ind)==1){
+            univ.ghyp <- ghyp(lambda=as.numeric(lambda21), chi=as.numeric(chi21), psi=as.numeric(psi21), mu=as.numeric(mu21), sigma=as.numeric(Sigma21), gamma=as.numeric(beta21))
+            simData <- rghyp(n = nSim, univ.ghyp)
+        }
+        else{
+            multiv.ghyp <- ghyp(lambda=lambda21, chi=as.numeric(chi21), psi=as.numeric(psi21), mu=mu21, sigma=Sigma21, gamma=beta21)
+            simData <- rghyp(n = nSim, multiv.ghyp)
+        }
+
+        ret <- matrix(NA, ncol = p, nrow = n_threshold)
+        ret[, given.ind] <- rep(X_given,each=n_threshold)
+        ret[, dep.ind] <- simData
+    }
+    colnames(ret) <- colnames(Xtest)
+    return(as.data.table(ret))
+}
+
+
 

@@ -10,3 +10,11 @@ src/*.so
 *.o
 
 *.so
+
+tmp/
+
+\.RDataTmp
+
+*.out
+
+*.Rout

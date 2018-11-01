@@ -6,7 +6,7 @@
 #### Example 5 ####
 # Linear  model with Gaussian mixture distributed features.
 
-rm(list = ls())
+#rm(list = ls())
 
 library(shapr)
 library(data.table)
@@ -26,7 +26,7 @@ pi.G <- c(0.5,0.5)
 
 sd = 0.1
 
-nTrain <- 10000
+nTrain <- 2000
 nTest <- 1000
 
 
@@ -41,8 +41,12 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
     return(X)
 }
 
+# Old version
+#samp_model <- function(n,X,sd){
+#    y <- 0.5*X[,1] + 0.5*X[,2] + abs(X[,3]) + rnorm(n = n,mean=0,sd=sd)
+#}
 samp_model <- function(n,X,sd){
-    y <- 0.5*X[,1] + 0.5*X[,2] + abs(X[,3]) + rnorm(n = n,mean=0,sd=sd)
+    y <- X[,1] + X[,2] + X[,3] + rnorm(n = n,mean=0,sd=sd)
 }
 
 
@@ -82,7 +86,8 @@ l <- prepare_kernelShap(
     Xtrain = Xtrain,
     Xtest = Xtest,
     exact = TRUE,
-    nrows = 1e4
+    nrows = 1e4,
+    distance_metric = "Mahalanobis_scaled"
 )
 
 #### Computing the various Shapley approximations --------
@@ -99,7 +104,8 @@ Shapley.approx$sigma.01 = compute_kernelShap(model = model,
                                              n_threshold = n_threshold,
                                              verbose = FALSE,
                                              gaussian_sample = FALSE,
-                                             pred_zero=pred_zero)
+                                             pred_zero=pred_zero,
+                                             kernel_metric = "Gaussian")
 
 Shapley.approx$sigma.03 = compute_kernelShap(model = model,
                                              l,
@@ -108,7 +114,9 @@ Shapley.approx$sigma.03 = compute_kernelShap(model = model,
                                              n_threshold = n_threshold,
                                              verbose = FALSE,
                                              gaussian_sample = FALSE,
-                                             pred_zero=pred_zero)
+                                             pred_zero=pred_zero,
+                                             kernel_metric = "Gaussian")
+
 
 Shapley.approx$indep = compute_kernelShap(model = model,
                                           l,
@@ -117,7 +125,9 @@ Shapley.approx$indep = compute_kernelShap(model = model,
                                           n_threshold = n_threshold,
                                           verbose = FALSE,
                                           gaussian_sample = FALSE,
-                                          pred_zero=pred_zero)
+                                          pred_zero=pred_zero,
+                                          kernel_metric = "independence")
+
 
 Shapley.approx$Gauss = compute_kernelShap(model = model,
                                           l,
@@ -126,7 +136,9 @@ Shapley.approx$Gauss = compute_kernelShap(model = model,
                                           n_threshold = n_threshold,
                                           verbose = FALSE,
                                           gaussian_sample = TRUE,
-                                          pred_zero=pred_zero)
+                                          pred_zero=pred_zero,
+                                          kernel_metric = "Gaussian")
+
 
 Shapley.true = Shapley_true(model = model,
                             Xtrain = Xtrain,
@@ -138,17 +150,92 @@ Shapley.true = Shapley_true(model = model,
                             l,
                             pred_zero = pred_zero)
 
+#### Running AICc to optimize the sigma in the empirical version ####
+
+source("scripts/AICc_helper_functions.R")
+
+# Computing for the first test observation only
+
+no.testobs <- 1
+
+# Same optimum is found for every test observation, so no need to do this for more than one test observation.
+
+h.optim.mat <- matrix(NA,nrow=nrow(l$S),ncol=no.testobs)
+
+### If we use Mahalanobis, we might be able to adjust for different correlation between the variables, such that we at least need to do it only once
+### per conditioning size (or a few and taking the mean of them) If we are also able to generalize the distance measure to take into account how the optimal bandwidth changes from one size to another,
+### we may also get away doing it just once (or a few differnet sets which we take the mean of)
+
+S_scale_dist = T # Scaling the Mahalanbois ditstance
+
+
+for (j in 1:no.testobs){
+    x.star <- Xtest[j,]
+    for (i in 2:(nrow(l$S)-1)){ # Finding optimal h for each submodel, except the zero and full model
+        S <- l$S[i,]
+
+
+        S.cols <- paste0("X",which(as.logical(S)))
+        Sbar.cols <- paste0("X",which(as.logical(1-S)))
+
+        Xtrain.S <- subset(Xtrain,select=S.cols)
+        Xtrain.Sbar <- subset(Xtrain,select=Sbar.cols)
+        x.star.S <- subset(x.star,select=S.cols)
+
+        X.pred <- cbind(Xtrain.Sbar,x.star.S)
+        X.nms <- colnames(Xtrain)
+        setcolorder(X.pred,X.nms)
+
+        pred <- pred_vector(model=model,data=X.pred)
+
+        nlm.obj <- nlminb(start = 0.1,objective = AICc.func,y = pred,X = as.matrix(Xtrain.S),kernel="Mahalanobis",scale_var=T,S_scale_dist = S_scale_dist,lower = 0,control=list(eval.max=20,trace=1))
+        h.optim.mat[i,j] <- nlm.obj$par
+        # May also use mlrMBO here, something like this maybe: https://mlr-org.github.io/Stepwise-Bayesian-Optimization-with-mlrMBO/, just not stepwise. See other tutorial.
+        #    exp(-l$D[,1,i]/2*h)
+        print(c(i,j))
+    }
+}
+
+h.optim.mat
+#> h.optim.mat
+#[,1]
+#[1,]        NA
+#[2,] 0.1182843
+#[3,] 0.1444610
+#[4,] 0.1373879
+#[5,] 0.2398393
+#[6,] 0.2430718
+#[7,] 0.2354757
+#[8,]        NA
+
+
+Shapley.approx$sigma.AICc = compute_kernelShap(model = model,
+                                               l,
+                                               sigma = mean(h.optim.mat,na.rm=T),
+                                               w_threshold = w_threshold,
+                                               n_threshold = n_threshold,
+                                               verbose = FALSE,
+                                               gaussian_sample = FALSE,
+                                               pred_zero=pred_zero,
+                                               kernel_metric = "Gaussian")
+
+
+
+
 #### Comparing the true and approximate values -------------
 
 # Mean absolute errors per variable (to see if the performance differ between variables)
-(absmeans.sigma.01 = colMeans(abs(Shapley.true[,-1]-Shapley.approx$sigma.01$Kshap[,-1])))
-(absmeans.sigma.03 = colMeans(abs(Shapley.true[,-1]-Shapley.approx$sigma.03$Kshap[,-1])))
-(absmeans.indep = colMeans(abs(Shapley.true[,-1]-Shapley.approx$indep$Kshap[,-1])))
-(absmeans.Gauss = colMeans(abs(Shapley.true[,-1]-Shapley.approx$Gauss$Kshap[,-1])))
+(absmeans.sigma.01 = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$sigma.01$Kshap[,-1])))
+(absmeans.sigma.03 = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$sigma.03$Kshap[,-1])))
+(absmeans.indep = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$indep$Kshap[,-1])))
+(absmeans.Gauss = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$Gauss$Kshap[,-1])))
+(absmeans.sigma.AICc = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$sigma.AICc$Kshap[,-1])))
+
 
 # Mean of the absolute errors over all variables
-res_to_paper <- c(S_KS=mean(absmeans.indep),G_KS = mean(absmeans.Gauss),E_KS_0.1=mean(absmeans.sigma.01),E_KS_0.3=mean(absmeans.sigma.03))
-res_to_paper
+res_to_paper <- data.frame(S_KS=mean(absmeans.indep),G_KS = mean(absmeans.Gauss),E_KS_0.1=mean(absmeans.sigma.01),E_KS_0.3=mean(absmeans.sigma.03),E_KS_AICc=mean(absmeans.sigma.AICc),TreeSHAP = NA)
+spec <- data.frame(gx="Piecewise constant",fx="Linear",px="Gaussian mix",rho=NA)
+res_to_paper <- cbind(spec,res_to_paper)
 #S_KS       G_KS   E_KS_0.1   E_KS_0.3
 #1.70075624 0.74500897 0.02322865 0.02424549
 
