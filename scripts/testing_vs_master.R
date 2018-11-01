@@ -93,7 +93,7 @@ Shapley.approx.test = compute_kernelShap(model = model,
                                          w_threshold = w_threshold,
                                          n_threshold = n_threshold,
                                          verbose = FALSE,
-                                         gaussian_sample = FALSE,
+                                         cond_approach = "empirical",
                                          pred_zero=pred_zero,
                                          kernel_metric = "Gaussian_old")
 

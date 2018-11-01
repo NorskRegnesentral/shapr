@@ -169,7 +169,7 @@ Shapley.approx$sigma.01 = compute_kernelShap(model = model,
                                              w_threshold = w_threshold,
                                              n_threshold = n_threshold,
                                              verbose = FALSE,
-                                             gaussian_sample = FALSE,
+                                             cond_approach = "empirical",
                                              pred_zero=pred_zero,
                                              kernel_metric = "Gaussian")
 
@@ -179,7 +179,7 @@ Shapley.approx$sigma.03 = compute_kernelShap(model = model,
                                              w_threshold = w_threshold,
                                              n_threshold = n_threshold,
                                              verbose = FALSE,
-                                             gaussian_sample = FALSE,
+                                             cond_approach = "empirical",
                                              pred_zero=pred_zero,
                                              kernel_metric = "Gaussian")
 
@@ -190,7 +190,7 @@ Shapley.approx$indep = compute_kernelShap(model = model,
                                           w_threshold = w_threshold,
                                           n_threshold = n_threshold,
                                           verbose = FALSE,
-                                          gaussian_sample = FALSE,
+                                          cond_approach = "empirical",
                                           pred_zero=pred_zero,
                                           kernel_metric = "independence")
 
@@ -201,7 +201,7 @@ Shapley.approx$Gauss = compute_kernelShap(model = model,
                                           w_threshold = w_threshold,
                                           n_threshold = n_threshold,
                                           verbose = FALSE,
-                                          gaussian_sample = TRUE,
+                                          cond_approach = "Gaussian",
                                           pred_zero=pred_zero,
                                           kernel_metric = "Gaussian")
 
@@ -281,7 +281,7 @@ Shapley.approx$sigma.AICc = compute_kernelShap(model = model,
                                                w_threshold = w_threshold,
                                                n_threshold = n_threshold,
                                                verbose = FALSE,
-                                               gaussian_sample = FALSE,
+                                               cond_approach = "empirical",
                                                pred_zero=pred_zero,
                                                kernel_metric = "Gaussian")
 

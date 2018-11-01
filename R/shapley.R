@@ -257,14 +257,14 @@ get_predictions <- function(model,
                             w_threshold = .7,
                             n_threshold = 1e3,
                             verbose = FALSE,
-                            gaussian_sample = FALSE,
+                            cond_approach = "empirical",
                             feature_list,
                             pred_zero,
                             mu,
                             Sigma) {
     p <- ncol(Xtrain)
 
-    if (gaussian_sample) {
+    if (cond_approach == "Gaussian") {
         ## Assume Gaussian distributed variables and sample from the various conditional distributions
         Gauss_samp <- lapply(
             X = feature_list,
@@ -358,7 +358,7 @@ pred_vector = function(model, data) {
 #'
 #' @inheritParams global_arguments
 #' @param l The output from prepare_kernelShap
-#' @param sigma Bandwidth in the Gaussian kernel if the empirical conditional sampling approach is used (gaussian_sample==F)
+#' @param sigma Bandwidth in the Gaussian kernel if the empirical conditional sampling approach is used (cond_approach == "empirical")
 #' @param pred_zero The prediction value for unseen data, typically equal to the mean of the response
 #'
 #' @return List with kernel Shap values (Kshap) and other object used to perform the computation (helpful for debugging etc.)
@@ -372,7 +372,7 @@ compute_kernelShap = function(model,
                               w_threshold = 0.95,
                               n_threshold = 1e3,
                               verbose = FALSE,
-                              gaussian_sample = FALSE,
+                              cond_approach = "empirical",
                               pred_zero,
                               kernel_metric = "Gaussian",
                               mu = NULL,
@@ -417,7 +417,7 @@ compute_kernelShap = function(model,
             w_threshold = w_threshold,
             n_threshold = n_threshold,
             verbose = verbose,
-            gaussian_sample = gaussian_sample,
+            cond_approach = cond_approach,
             feature_list = l$X$features,
             pred_zero = pred_zero,
             mu = mu,
@@ -455,7 +455,7 @@ prepare_kernelShap <- function(m,
                                nrows = NULL,
                                scale = FALSE,
                                distance_metric = "Mahalanobis_scaled",
-                               gaussian_sample = F) {
+                               cond_approach = "empirical") {
 
     ## Get all combinations ----------------
     X <- get_combinations(m = m, exact = exact, nrows = nrows)
@@ -482,10 +482,10 @@ prepare_kernelShap <- function(m,
         S_scale_dist <- F
     }
 
-    if(gaussian_sample){ # Only compute the distances if gaussian_sample is FALSE
-        D <- NULL
-    } else {
+    if(cond_approach  == "empirical"){ # Only compute the distances if the empirical approach is used
         D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
+    } else {
+        D <- NULL
     }
 
     ## Get feature matrix ---------
