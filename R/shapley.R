@@ -332,16 +332,23 @@ pred_vector = function(model, data) {
         } else {
             ret <- predict(model, newdata = data)
         }
-    } else if (model_class == "lm") {
+    }
+    if (model_class == "lm") {
         ret <- predict(model, newdata = data)
-    } else if (model_class == "ranger") {
+    }
+    if (model_class == "ranger") {
         if (model$treetype == "Probability estimation") {
             ret <- predict(model, data = data)$predictions[, 2]
         } else {
             ret <- predict(model, data = data)$predictions
         }
-    } else if (model_class == "xgb.Booster") {
+    }
+    if (model_class == "xgb.Booster") {
         ret <- predict(model, newdata = as.matrix(data))
+    }
+
+    if (model_class == "gam"){
+        ret <- predict(model,newdata = data)
     }
 
     return(ret)
@@ -377,10 +384,12 @@ compute_kernelShap = function(model,
         W_kernel <- array(rnorm(prod(dim(l$D)))^2,dim = dim(l$D)) # Just random noise to "fake" a distance between observations
     }
     if (kernel_metric =="Gaussian"){
-        W_kernel <- exp((-0.5*l$D)/sigma^2)
+        val <- (-0.5*l$D)/sigma^2
+        W_kernel <- exp(val) # To avoid numerical problems for small sigma values, we need to substract some constant from val here. Check if it is possible to do this per column/row of l$D[,i,]
     }
     if (kernel_metric =="Gaussian_old"){
-        W_kernel <- sqrt(exp((-0.5*l$D)/sigma^2))
+        val <- (-0.5*l$D)/sigma^2
+        W_kernel <- sqrt(exp(val)) # To avoid numerical problems for small sigma values
     }
 
 
