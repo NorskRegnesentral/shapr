@@ -82,16 +82,16 @@ l <- prepare_kernelShap(
     exact = TRUE,
     nrows = 1e4,
     distance_metric = "Mahalanobis_scaled",
-    gaussian_sample = T)
+    compute_distances = FALSE)
 
 
 Shapley.Gauss = compute_kernelShap(model = model,
                                    l,
-                                   sigma = 0, # Ignored when gaussian_sample==T
+                                   sigma = 0, # # Ignored when cond_approach != "empirical"
                                    w_threshold = w_threshold,
                                    n_threshold = n_threshold,
                                    verbose = FALSE,
-                                   gaussian_sample = TRUE,
+                                   cond_approach = "Gaussian",
                                    pred_zero=pred_zero,
                                    kernel_metric = "Gaussian",
                                    mu = mu,
@@ -175,16 +175,16 @@ l.2 <- prepare_kernelShap(
     exact = TRUE,
     nrows = 1e4,
     distance_metric = "Mahalanobis_scaled",
-    gaussian_sample = F)
+    compute_distances = TRUE)
 
 
 Shapley.sigma.01 = compute_kernelShap(model = model,
                                       l.2,
-                                      sigma = 0.1, # Ignored when gaussian_sample==T
+                                      sigma = 0.1, # Ignored when cond_approach != "empirical"
                                       w_threshold = w_threshold,
                                       n_threshold = n_threshold,
                                       verbose = FALSE,
-                                      gaussian_sample = F,
+                                      cond_approach = "empirical",
                                       pred_zero=pred_zero,
                                       kernel_metric = "Gaussian",
                                       mu = mu,
@@ -202,11 +202,11 @@ DT.merged[,.(error.ML=mean(abserror.ML),error.emp=mean(abserror.emp)),by="nfeatu
 
 Shapley.indep = compute_kernelShap(model = model,
                                    l.2,
-                                   sigma = 0.1, # Ignored when gaussian_sample==T
+                                   sigma = 0.1, # Ignored when cond_approach != "empirical"
                                    w_threshold = w_threshold,
                                    n_threshold = n_threshold,
                                    verbose = FALSE,
-                                   gaussian_sample = F,
+                                   cond_approach = "empirical",
                                    pred_zero=pred_zero,
                                    kernel_metric = "independence",
                                    mu = mu,

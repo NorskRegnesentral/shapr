@@ -176,7 +176,7 @@ model = model.15
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^2
 verbose = FALSE
-gaussian_sample = FALSE
+cond_approach = "empirical"
 pred_zero = mean(response.15)
 kernel_metric = "Gaussian_old"
 
@@ -191,7 +191,7 @@ Shapley.approx.test = compute_kernelShap(model = model,
                                          w_threshold = w_threshold,
                                          n_threshold = n_threshold,
                                          verbose = verbose,
-                                         gaussian_sample = gaussian_sample,
+                                         cond_approach = cond_approach,
                                          pred_zero=pred_zero,
                                          kernel_metric = kernel_metric)
 
@@ -201,7 +201,7 @@ Shapley.gaussian = compute_kernelShap(model = model,
                                       w_threshold = w_threshold,
                                       n_threshold = n_threshold,
                                       verbose = verbose,
-                                      gaussian_sample = TRUE,
+                                      cond_approach = "Gaussian",
                                       pred_zero=pred_zero,
                                       kernel_metric = kernel_metric)
 

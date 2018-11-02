@@ -96,7 +96,7 @@ w_threshold = 1 # For a fairer comparison, all models use the same number of sam
 n_threshold = 10^3
 sigma = 0.1
 verbose = FALSE
-gaussian_sample = FALSE
+cond_approach = "empirical"
 
 
 #### Computing the various Shapley approximations --------
@@ -110,7 +110,7 @@ Shapley.approx.test = compute_kernelShap(model = model,
                                          w_threshold = w_threshold,
                                          n_threshold = n_threshold,
                                          verbose = FALSE,
-                                         gaussian_sample = FALSE,
+                                         cond_approach = "empirical",
                                          pred_zero=pred_zero,
                                          kernel_metric = "Gaussian_old")
 

@@ -3,10 +3,10 @@
 #### PAPER EXPERIMENT FRAMEWORK ####
 #### Use the current setup for all experiements in the paper to ease reproducablity etc.
 
-#### Example 6 ####
-# Random Forest with Gaussian mixture distributed features.
+#### Example 1 ####
+# Linear model with independent Gaussian features
 
-#rm(list = ls())
+rm(list = ls())
 
 library(shapr)
 library(data.table)
@@ -15,19 +15,16 @@ library(condMVNorm)
 
 source("paper_scripts/paper_helper_funcs.R")
 
-mu.list = list(c(0,0,0),c(10,-5,10))
-Sigma.list <- list(matrix(c(1,0.7,0.7,
-                            0.7,1,0.7,
-                            0.7,0.7,1),ncol=3),
-                   matrix(c(1,0.7,0.7,
-                            0.7,1,0.7,
-                            0.7,0.7,1),ncol=3))
-pi.G <- c(0.5,0.5)
+mu.list = list(c(0,0,0))
+Sigma.list <- list(matrix(c(1,0,0,
+                            0,1,0,
+                            0,0,1),ncol=3))
+pi.G <- 1
 
 sd = 0.1
 
-nTrain <- 2000
-nTest <- 1000
+nTrain <- 200
+nTest <- 100
 
 
 #### Defining the true distribution of the variables and the model------
@@ -42,8 +39,7 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 }
 
 samp_model <- function(n,X,sd){
-    y <- 0.5*X[,2]  +  (X[,1]<0)*1 + (X[,2]<2) + (X[,2]>4)*1 + (X[,3]<10)*1 + (X[,3]<0)*1 + (X[,1]>-5)*(X[,2]<4)*1+ rnorm(n = n,mean=0,sd=sd)
-    return(y)
+    y <- X[,1] + X[,2] + X[,3] + rnorm(n = n,mean=0,sd=sd)
 }
 
 
@@ -70,16 +66,7 @@ Xtest[,y:=NULL]
 
 #### Fitting the model ----------
 
-model = ranger::ranger(
-    formula = y~.,
-    data = XYtrain,
-    num.trees = 50,
-    num.threads = 3,
-    verbose = TRUE,
-    importance = "impurity",
-    mtry=2)
-
-
+model = lm(y~.,data=XYtrain)
 
 pred_zero = XYtrain[, mean(y)]
 m = ncol(Xtrain)
@@ -95,10 +82,8 @@ l <- prepare_kernelShap(
     distance_metric = "Mahalanobis_scaled"
 )
 
-#### Computing the various Shapley approximations --------
-
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
-n_threshold = 10^3
+n_threshold = 10^2
 
 Shapley.approx = list()
 
@@ -141,6 +126,231 @@ Shapley.approx$Gauss = compute_kernelShap(model = model,
                                           n_threshold = n_threshold,
                                           verbose = FALSE,
                                           cond_approach = "Gaussian",
+                                          pred_zero=pred_zero,
+                                          kernel_metric = "Gaussian")
+
+
+Shapley.true = Shapley_true(model = model,
+                            Xtrain = Xtrain,
+                            Xtest = Xtest,
+                            pi.G = pi.G,
+                            mu.list = mu.list,
+                            Sigma.list = Sigma.list,
+                            int.samp=200,
+                            l,
+                            pred_zero = pred_zero)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##################
+
+
+
+
+
+
+
+model <- model
+l <- l
+verbose = FALSE
+cond_approach = "copula"
+pred_zero = pred_zero
+kernel_metric = "Gaussian"
+mu = NULL
+Sigma = NULL
+sigma = 0.1
+
+
+
+p <- ncol(Xtrain)
+
+Gauss_samp <- lapply(
+    X = feature_list,
+    FUN = samp_Gauss_func,
+    n_threshold = n_threshold,
+    mu = mu,
+    Sigma = Sigma,
+    p = p,
+    Xtest = Xtest
+)
+
+
+nSim <- 52
+X <- as.matrix(Xtrain)
+dep.ind <- 2:3
+given.ind <- 1
+x00 <- as.matrix(Xtest)[1,]
+
+Xtrain_Gauss_trans <- apply(X = Xtran0,MARGIN = 2,FUN=Gauss_trans_func)
+Xtest_Gauss_trans <- apply(X = rbind(Xtest0,Xtran0),MARGIN = 2,FUN=Gauss_trans_func_seperate,n_y = nrow(Xtest0))
+
+
+
+nSim <- length(data)
+y1.f = splinefun((0:(nSim-1))/nSim, sort(data), method = "monoH.FC")
+
+
+
+
+empDist <- function(data)
+{
+    n <- length(data)
+    cumdist <- seq(1/n, 1, 1/n)
+    cumdist[n] <- 1 - (1/(2 * n))
+    unif <- cumdist[rank(data)]
+    unif
+}
+
+newQuantile <- function(data,quant)
+{
+    n <- length(data)
+    z <- order(data)
+    ind <- round(quant*n,0)
+    ind[which(ind==0)] <- 1
+
+    y <- data[z[ind]]
+    y
+}
+############# MJ CODE ############3
+
+Gauss_trans_func <- function(x){
+    u <- rank(x)/(length(x)+1)
+    z <- qnorm(u)
+    return(z)
+}
+
+inv_Gauss_trans_func <- function(z,x,type=7){
+    u <- pnorm(z)
+    xNew <- quantile(x,u,type=type)
+    return(xNew)
+    }
+
+
+Xtrain_Gauss_trans <- apply(X = Xtrain,MARGIN = 2,FUN=Gauss_trans_func)
+
+
+
+samp_copula_func <- function(given_ind,n_threshold,Xtrain_Gauss_trans,Xtest){
+
+}
+#################
+
+
+
+
+
+
+
+simulateCondDistGaussianEmpirical <- function(nSim,X, dep.ind,given.ind,x00)
+{
+    XX <- X
+    for(i in 1:dim(X)[2])
+        XX[,i] <- qnorm(empDist(X[,i]))
+
+    x0 <- x00
+    for(i in 1:dim(X)[2])
+    {
+        ind <- which(abs(X[,i]-x00[i])==min(abs(X[,i]-x00[i])))
+        x0[i] <- XX[ind,i]
+    }
+    muNorm0 <- apply(XX,2,mean)
+    covMat0 <- var(XX)
+
+    normData01 <- simulateCondDistGaussianNew(nSim=nSim, muNorm0,covMat0,dep.ind,given.ind,x0)
+    if(length(dep.ind)==1)
+        simDataN <- newQuantile(X[,dep.ind],pnorm(normData01))
+    else
+    {
+        simDataN <- normData01
+        for(i in 1:dim(simDataN)[2])
+            simDataN[,i] <- newQuantile(X[,dep.ind[i]],pnorm(normData01[,i]))
+    }
+    simDataN
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### Computing the various Shapley approximations --------
+
+w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
+n_threshold = 10^3
+
+Shapley.approx = list()
+
+Shapley.approx$sigma.01 = compute_kernelShap(model = model,
+                                             l,
+                                             sigma = 0.1,
+                                             w_threshold = w_threshold,
+                                             n_threshold = n_threshold,
+                                             verbose = FALSE,
+                                             gaussian_sample = FALSE,
+                                             pred_zero=pred_zero,
+                                             kernel_metric = "Gaussian")
+
+Shapley.approx$sigma.03 = compute_kernelShap(model = model,
+                                             l,
+                                             sigma = 0.3,
+                                             w_threshold = w_threshold,
+                                             n_threshold = n_threshold,
+                                             verbose = FALSE,
+                                             gaussian_sample = FALSE,
+                                             pred_zero=pred_zero,
+                                             kernel_metric = "Gaussian")
+
+
+Shapley.approx$indep = compute_kernelShap(model = model,
+                                          l,
+                                          sigma = 0, # sigma==0 gives the special case of independence (NOTE: NOT the same as setting sigma= 10^10)
+                                          w_threshold = w_threshold,
+                                          n_threshold = n_threshold,
+                                          verbose = FALSE,
+                                          gaussian_sample = FALSE,
+                                          pred_zero=pred_zero,
+                                          kernel_metric = "independence")
+
+
+Shapley.approx$Gauss = compute_kernelShap(model = model,
+                                          l,
+                                          sigma = 0, # Ignored when Gaussian==T
+                                          w_threshold = w_threshold,
+                                          n_threshold = n_threshold,
+                                          verbose = FALSE,
+                                          gaussian_sample = TRUE,
                                           pred_zero=pred_zero,
                                           kernel_metric = "Gaussian")
 
@@ -220,7 +430,7 @@ Shapley.approx$sigma.AICc = compute_kernelShap(model = model,
                                                w_threshold = w_threshold,
                                                n_threshold = n_threshold,
                                                verbose = FALSE,
-                                               cond_approach = "empirical",
+                                               gaussian_sample = FALSE,
                                                pred_zero=pred_zero,
                                                kernel_metric = "Gaussian")
 
@@ -239,10 +449,10 @@ Shapley.approx$sigma.AICc = compute_kernelShap(model = model,
 
 # Mean of the absolute errors over all variables
 res_to_paper <- data.frame(S_KS=mean(absmeans.indep),G_KS = mean(absmeans.Gauss),E_KS_0.1=mean(absmeans.sigma.01),E_KS_0.3=mean(absmeans.sigma.03),E_KS_AICc=mean(absmeans.sigma.AICc),TreeSHAP = NA)
-spec <- data.frame(gx="Piecewise constant",fx="Random Forest",px="Gaussian mix",rho=NA)
+spec <- data.frame(gx = "Linear", fx="Linear",px="Gaussian",rho=0)
 res_to_paper <- cbind(spec,res_to_paper)
 #S_KS       G_KS   E_KS_0.1   E_KS_0.3
-#0.15787697 0.34907895 0.01552833 0.01815017
+#0.01789263 0.01903016 0.03861126 0.02175289
 
 # Insert ranking based measures etc. here as well.
 
