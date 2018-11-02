@@ -20,8 +20,11 @@
 #' @param S Matrix
 #' @param verbose Logical
 #' @param scale Logical
-#' @param cond_approach String indicating which method should be used to estimate the conditional expectation.
-#' Defaults to "empirical", with "Gaussian" and "copula" being other alternatives.
+#' @param cond_approach Either a string indicating which method should be used to estimate all conditional expectations.
+#' Defaults to "empirical", with "Gaussian" and "copula" being other alternatives. One can also supply a named list where the names
+#' are one or more of the implemented methods, and the named lists contains one vector each, each containing the row numbers of the S-matrix
+#' computed using prepare_kernelShap that whose corresponding conditional expectations should be computed with that method. Any number not
+#' specified is computed with the default empirical method.
 #' @param distance_metric String indicating which distance metric should be used in the empirical conditional
 #' distribution. Defaults to "Euclidean", "Mahalanobis" and "Mahalanobis_scaled" being the other options. "Mahlanobis_scaled" includes
 #' the 1/|S| factor in the paper is preferred for a consistent \eqn{\sigma}.

@@ -362,18 +362,22 @@ get_predictions <- function(model,
                             w_threshold = .7,
                             n_threshold = 1e3,
                             verbose = FALSE,
-                            cond_approach = "empirical",
+                            cond_approach_list,
                             feature_list,
                             pred_zero,
                             mu,
                             Sigma,
+                            mu_Gauss_trans = mu_Gauss_trans,
+                            Sigma_Gauss_tran = Sigma_Gauss_trans,
                             Xtest_Gauss_trans) {
     p <- ncol(Xtrain)
 
-    if (cond_approach == "Gaussian") {
+    DTp.Gaussian <- DTp.copula <- DTp.empirical <- NULL
+
+    if ("Gaussian" %in% names(cond_approach_list)) {
         ## Assume Gaussian distributed variables and sample from the various conditional distributions
         samp_list <- lapply(
-            X = feature_list,
+            X = feature_list[cond_approach_list$Gaussian],
             FUN = samp_Gauss_func,
             n_threshold = n_threshold,
             mu = mu,
@@ -382,44 +386,51 @@ get_predictions <- function(model,
             Xtest = Xtest
         )
 
-        DTp <- rbindlist(samp_list, idcol = "wcomb")
-        DTp[, w := 1 / n_threshold]
-        DTp[wcomb %in% c(1, 2 ^ p), w := 1] # Adjust weights for zero and full model
+        DTp.Gaussian <- rbindlist(samp_list, idcol = "wcomb")
+        DTp.Gaussian[,wcomb:=cond_approach_list$Gaussian[wcomb]]  # Correcting originally assigned wcomb
+        DTp.Gaussian[, w := 1 / n_threshold]
+        DTp.Gaussian[wcomb %in% c(1, 2 ^ p), w := 1] # Adjust weights for zero and full model
 
     }
-    if (cond_approach == "copula"){
+    if ("copula" %in% names(cond_approach_list)){
         samp_list <- lapply(
-            X = feature_list,
+            X = feature_list[cond_approach_list$copula],
             FUN = samp_copula_func,
             n_threshold = n_threshold,
-            mu = mu,
-            Sigma = Sigma,
+            mu = mu_Gauss_trans,
+            Sigma = Sigma_Gauss_tran,
             p = p,
             Xtest_Gauss_trans = Xtest_Gauss_trans,
             Xtrain = Xtrain,
             Xtest = Xtest
         )
 
-        DTp <- rbindlist(samp_list, idcol = "wcomb")
-        DTp[, w := 1 / n_threshold]
-        DTp[wcomb %in% c(1, 2 ^ p), w := 1] # Adjust weights for zero and full model
+        DTp.copula <- rbindlist(samp_list, idcol = "wcomb")
+        DTp.copula[,wcomb:=cond_approach_list$copula[wcomb]]  # Correcting originally assigned wcomb
+        DTp.copula[, w := 1 / n_threshold]
+        DTp.copula[wcomb %in% c(1, 2 ^ p), w := 1] # Adjust weights for zero and full model
 
     }
 
-    if (cond_approach == "empirical"){
+    if ("empirical" %in% names(cond_approach_list)){
         ## Get imputed data
-        DTp <- impute_data(
-            W_kernel = W_kernel,
-            S = S,
+        DTp.empirical <- impute_data(
+            W_kernel = W_kernel[,cond_approach_list$empirical],
+            S = S[cond_approach_list$copula,],
             Xtrain = Xtrain,
             Xtest = Xtest,
             w_threshold = w_threshold,
             n_threshold = n_threshold
         )
+        DTp.empirical[,wcomb:=cond_approach_list$empirical[wcomb]]  # Correcting originally assigned wcomb
+
     }
 
     ## Performing prediction
     nms <- colnames(Xtest)
+
+    DTp <- rbind(DTp.Gaussian,DTp.copula,DTp.empirical)
+    setkey(DTp,wcomb)
 
     DTp[!(wcomb %in% c(1, 2 ^ p)), p_hat := pred_vector(model = model, data = .SD), .SDcols = nms]
     if(nrow(Xtest)==1){
@@ -506,6 +517,15 @@ compute_kernelShap = function(model,
                               Sigma = NULL) {
     ll = list()
 
+    if(is.character(cond_approach)){
+        cond_approach_list <- list(1:nrow(l$S))
+        names(cond_approach_list) <- cond_approach
+    }
+    if(is.list(cond_approach)){
+        cond_approach_list <- cond_approach
+    }
+
+
     # Handle the computation of all training-test weights for ALL combinations here, before looping
     if (kernel_metric == "independence"){
         W_kernel <- array(rnorm(prod(dim(l$D)))^2,dim = dim(l$D)) # Just random noise to "fake" a distance between observations
@@ -519,45 +539,27 @@ compute_kernelShap = function(model,
         W_kernel <- sqrt(exp(val)) # To avoid numerical problems for small sigma values
     }
 
+    if(is.null(mu)){ # Using the mean of the training data in the Gaussian approach if not provided directly
+        mu <- colMeans(l$Xtrain)
+    }
+    if(is.null(Sigma)){ # Using the sample covariance of the training data in the Gaussian approach if not provided directly
+        Sigma <- stats::cov(l$Xtrain)
+    }
 
+    if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
+        Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
+    }
+    Xtest.mat <- as.matrix(l$Xtest)
+    Xtrain.mat <- as.matrix(l$Xtrain)
 
-    if (cond_approach == "copula"){
+    # Only needed for copula method, but is not time consuming anyway
+    Xtrain_Gauss_trans <- apply(X = l$Xtrain,MARGIN = 2,FUN=Gauss_trans_func)
+    Xtest_Gauss_trans <- apply(X = rbind(l$Xtest,l$Xtrain),MARGIN = 2,FUN=Gauss_trans_func_seperate,n_y = nrow(l$Xtest))
 
-        # Redefining the train and test set to be sent to get_predictions
-        Xtrain_Gauss_trans <- apply(X = l$Xtrain,MARGIN = 2,FUN=Gauss_trans_func)
-        Xtest_Gauss_trans <- apply(X = rbind(l$Xtest,l$Xtrain),MARGIN = 2,FUN=Gauss_trans_func_seperate,n_y = nrow(l$Xtest))
-
-        mu <- rep(0,ncol(l$Xtrain))
-        Sigma <- stats::cov(Xtrain_Gauss_trans)
-        if (any(eigen(Sigma)$values <= 1e-06)) {
-            Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
-        }
-        Xtest.mat <- as.matrix(l$Xtest)
-        Xtrain.mat <- as.matrix(l$Xtrain)
-
-
-    } else {
-
-        # Defines the mu and Sigma to be sent to get_predictions
-
-        if(is.null(mu)){ # Using the mean of the training data in the Gaussian approach if not provided directly
-            mu <- colMeans(l$Xtrain)
-        }
-        if(is.null(Sigma)){ # Using the sample covariance of the training data in the Gaussian approach if not provided directly
-            Sigma <- stats::cov(l$Xtrain)
-        }
-
-        if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
-            Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
-        }
-        #Sigma <- (Sigma + t(Sigma))/2
-
-        Xtest.mat <- as.matrix(l$Xtest)
-        Xtrain.mat <- as.matrix(l$Xtrain)
-
-        ### Just placeholders
-        Xtrain_Gauss_trans <- NULL
-        Xtest_Gauss_trans <- NA*Xtest.mat
+    mu_Gauss_trans <- rep(0,ncol(l$Xtrain))
+    Sigma_Gauss_trans <- stats::cov(Xtrain_Gauss_trans)
+    if (any(eigen(Sigma_Gauss_trans)$values <= 1e-06)) {
+        Sigma_Gauss_trans <- as.matrix(Matrix::nearPD(Sigma_Gauss_trans)$mat)
     }
 
     for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction function is not parallelized.
@@ -572,11 +574,13 @@ compute_kernelShap = function(model,
             w_threshold = w_threshold,
             n_threshold = n_threshold,
             verbose = verbose,
-            cond_approach = cond_approach,
+            cond_approach_list = cond_approach_list,
             feature_list = l$X$features,
             pred_zero = pred_zero,
             mu = mu,
             Sigma = Sigma,
+            mu_Gauss_trans = mu_Gauss_trans,
+            Sigma_Gauss_tran = Sigma_Gauss_trans,
             Xtest_Gauss_trans = Xtest_Gauss_trans[i,,drop=FALSE])
         ll[[i]][, id := i]
     }
