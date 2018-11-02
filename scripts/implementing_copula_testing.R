@@ -6,7 +6,7 @@
 #### Example 1 ####
 # Linear model with independent Gaussian features
 
-#rm(list = ls())
+rm(list = ls())
 
 library(shapr)
 library(data.table)
@@ -82,6 +82,63 @@ l <- prepare_kernelShap(
     distance_metric = "Mahalanobis_scaled"
 )
 
+w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
+n_threshold = 10^2
+
+Shapley.approx = list()
+
+Shapley.approx$sigma.01 = compute_kernelShap(model = model,
+                                             l,
+                                             sigma = 0.1,
+                                             w_threshold = w_threshold,
+                                             n_threshold = n_threshold,
+                                             verbose = FALSE,
+                                             cond_approach = "empirical",
+                                             pred_zero=pred_zero,
+                                             kernel_metric = "Gaussian")
+
+Shapley.approx$sigma.03 = compute_kernelShap(model = model,
+                                             l,
+                                             sigma = 0.3,
+                                             w_threshold = w_threshold,
+                                             n_threshold = n_threshold,
+                                             verbose = FALSE,
+                                             cond_approach = "empirical",
+                                             pred_zero=pred_zero,
+                                             kernel_metric = "Gaussian")
+
+
+Shapley.approx$indep = compute_kernelShap(model = model,
+                                          l,
+                                          sigma = 0, # sigma==0 gives the special case of independence (NOTE: NOT the same as setting sigma= 10^10)
+                                          w_threshold = w_threshold,
+                                          n_threshold = n_threshold,
+                                          verbose = FALSE,
+                                          cond_approach = "empirical",
+                                          pred_zero=pred_zero,
+                                          kernel_metric = "independence")
+
+
+Shapley.approx$Gauss = compute_kernelShap(model = model,
+                                          l,
+                                          sigma = 0, # Ignored when Gaussian==T
+                                          w_threshold = w_threshold,
+                                          n_threshold = n_threshold,
+                                          verbose = FALSE,
+                                          cond_approach = "Gaussian",
+                                          pred_zero=pred_zero,
+                                          kernel_metric = "Gaussian")
+
+
+Shapley.true = Shapley_true(model = model,
+                            Xtrain = Xtrain,
+                            Xtest = Xtest,
+                            pi.G = pi.G,
+                            mu.list = mu.list,
+                            Sigma.list = Sigma.list,
+                            int.samp=200,
+                            l,
+                            pred_zero = pred_zero)
 
 
 
@@ -89,6 +146,152 @@ l <- prepare_kernelShap(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##################
+
+
+
+
+
+
+
+model <- model
+l <- l
+verbose = FALSE
+cond_approach = "copula"
+pred_zero = pred_zero
+kernel_metric = "Gaussian"
+mu = NULL
+Sigma = NULL
+sigma = 0.1
+
+
+
+p <- ncol(Xtrain)
+
+Gauss_samp <- lapply(
+    X = feature_list,
+    FUN = samp_Gauss_func,
+    n_threshold = n_threshold,
+    mu = mu,
+    Sigma = Sigma,
+    p = p,
+    Xtest = Xtest
+)
+
+
+nSim <- 52
+X <- as.matrix(Xtrain)
+dep.ind <- 2:3
+given.ind <- 1
+x00 <- as.matrix(Xtest)[1,]
+
+Xtrain_Gauss_trans <- apply(X = Xtran0,MARGIN = 2,FUN=Gauss_trans_func)
+Xtest_Gauss_trans <- apply(X = rbind(Xtest0,Xtran0),MARGIN = 2,FUN=Gauss_trans_func_seperate,n_y = nrow(Xtest0))
+
+
+
+nSim <- length(data)
+y1.f = splinefun((0:(nSim-1))/nSim, sort(data), method = "monoH.FC")
+
+
+
+
+empDist <- function(data)
+{
+    n <- length(data)
+    cumdist <- seq(1/n, 1, 1/n)
+    cumdist[n] <- 1 - (1/(2 * n))
+    unif <- cumdist[rank(data)]
+    unif
+}
+
+newQuantile <- function(data,quant)
+{
+    n <- length(data)
+    z <- order(data)
+    ind <- round(quant*n,0)
+    ind[which(ind==0)] <- 1
+
+    y <- data[z[ind]]
+    y
+}
+############# MJ CODE ############3
+
+Gauss_trans_func <- function(x){
+    u <- rank(x)/(length(x)+1)
+    z <- qnorm(u)
+    return(z)
+}
+
+inv_Gauss_trans_func <- function(z,x,type=7){
+    u <- pnorm(z)
+    xNew <- quantile(x,u,type=type)
+    return(xNew)
+    }
+
+
+Xtrain_Gauss_trans <- apply(X = Xtrain,MARGIN = 2,FUN=Gauss_trans_func)
+
+
+
+samp_copula_func <- function(given_ind,n_threshold,Xtrain_Gauss_trans,Xtest){
+
+}
+#################
+
+
+
+
+
+
+
+simulateCondDistGaussianEmpirical <- function(nSim,X, dep.ind,given.ind,x00)
+{
+    XX <- X
+    for(i in 1:dim(X)[2])
+        XX[,i] <- qnorm(empDist(X[,i]))
+
+    x0 <- x00
+    for(i in 1:dim(X)[2])
+    {
+        ind <- which(abs(X[,i]-x00[i])==min(abs(X[,i]-x00[i])))
+        x0[i] <- XX[ind,i]
+    }
+    muNorm0 <- apply(XX,2,mean)
+    covMat0 <- var(XX)
+
+    normData01 <- simulateCondDistGaussianNew(nSim=nSim, muNorm0,covMat0,dep.ind,given.ind,x0)
+    if(length(dep.ind)==1)
+        simDataN <- newQuantile(X[,dep.ind],pnorm(normData01))
+    else
+    {
+        simDataN <- normData01
+        for(i in 1:dim(simDataN)[2])
+            simDataN[,i] <- newQuantile(X[,dep.ind[i]],pnorm(normData01[,i]))
+    }
+    simDataN
+}
 
 
 

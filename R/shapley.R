@@ -191,12 +191,117 @@ impute_data <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, n_threshol
     return(DTp)
 }
 
+
+#' Transforms new data to standardized normal (dimension 1) based on other datas transformation
+#'
+#' Handled in this way in order to allow using the apply function over this function
+#' @param zx Vector where the first part is the Gaussian data, and last part is
+#' the data with the original transformation
+#' @param n_y How many elements of the yx vector that belongs to the y-part (new data)
+#' @param type The quantile type used when back-transforming. 7 (default) is the default in quantile().
+#'
+#' @return Vector of transformed new data
+#' @export
+#'
+#' @author Martin Jullum
+inv_Gauss_trans_func <- function(zx,n_z,type=7){
+    z <- zx[1:n_z]
+    x <- zx[-(1:n_z)]
+    u <- pnorm(z)
+    xNew <- quantile(x,u,type=type)
+    return(xNew)
+}
+
+
+#' Transforms new data to standardized normal (dimension 1) based on other datas transformation
+#'
+#' Handled in this way in order to allow using the apply function over this function
+#' @param yx Vector where the first part is the new data to transform,
+#' and last part is the data with the original transformation
+#' @param n_z How many elements of the zx vector that belongs to the z-part (Gaussian data)
+#'
+#' @return Vector of back-transformed Gaussian data
+#' @export
+#'
+#' @author Martin Jullum
+Gauss_trans_func_seperate <- function(yx,n_y){
+    y <- yx[1:n_y]
+    x <- yx[-(1:n_y)]
+    tmp <- rank(c(y,x))[1:length(y)]
+    tmp <- tmp -rank(tmp)+0.5
+    u.y <- tmp/(length(x)+1)
+    z.y <- qnorm(u.y)
+    return(z.y)
+}
+
+#' Transforms a sample to standardized normal (dimension 1)
+#'
+#' @param x Vector of data to transform
+#'
+#' @return Vector of transformed data
+#' @export
+#'
+#' @author Martin Jullum
+Gauss_trans_func <- function(x){
+    u <- rank(x)/(length(x)+1)
+    z <- qnorm(u)
+    return(z)
+}
+
+
+#' Sample conditional variables using the Gaussian copula approach
+#'
+#' @param given_ind Vector
+#' @param p Positive integer
+#'
+#' @inheritParams global_arguments
+#'
+#' @return data.table with n_threshold (conditional) Gaussian samples
+#'
+#' @import condMVNorm
+#' @export
+#'
+#' @author Martin Jullum
+samp_copula_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest_Gauss_trans,Xtrain,Xtest) {
+    # Handles the unconditional and full conditional separtely when predicting
+    if (length(given_ind) %in% c(0, p)) {
+        ret <- matrix(Xtest, ncol = p, nrow = 1)
+    } else {
+        dependent_ind <- (1:length(mu))[-given_ind]
+        X_given <- Xtest_Gauss_trans[given_ind]
+        X_given_orig <- Xtest[given_ind]
+        # ret0 <- condMVNorm::rcmvnorm(
+        #     n = n_threshold,
+        #     mean = mu,
+        #     sigma = Sigma,
+        #     dependent.ind = dependent_ind,
+        #     given.ind = given_ind,
+        #     X.given = X_given,
+        #     method = "chol")
+        tmp <- condMVNorm::condMVN(
+            mean = mu,
+            sigma = Sigma,
+            dependent.ind = dependent_ind,
+            given.ind = given_ind,
+            X.given = X_given)
+        #ret0 <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
+        ret0_z <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
+
+        ret0_x <- apply(X = rbind(ret0_z,Xtrain[,dependent_ind,drop=F]),MARGIN=2,FUN=inv_Gauss_trans_func,n_z = n_threshold)
+
+        ret <- matrix(NA, ncol = p, nrow = n_threshold)
+        ret[, given_ind] <- rep(X_given_orig,each=n_threshold)
+        ret[, dependent_ind] <- ret0_x
+    }
+    colnames(ret) <- colnames(Xtest)
+    return(as.data.table(ret))
+}
+
+
 #' Sample conditional Gaussian variables
 #'
 #' @param given_ind Vector
-#' @param mu Vector
 #' @param p Positive integer
-#' @param Sigma Matrix
 #'
 #' @inheritParams global_arguments
 #'
@@ -261,12 +366,13 @@ get_predictions <- function(model,
                             feature_list,
                             pred_zero,
                             mu,
-                            Sigma) {
+                            Sigma,
+                            Xtest_Gauss_trans) {
     p <- ncol(Xtrain)
 
     if (cond_approach == "Gaussian") {
         ## Assume Gaussian distributed variables and sample from the various conditional distributions
-        Gauss_samp <- lapply(
+        samp_list <- lapply(
             X = feature_list,
             FUN = samp_Gauss_func,
             n_threshold = n_threshold,
@@ -276,10 +382,31 @@ get_predictions <- function(model,
             Xtest = Xtest
         )
 
-        DTp <- rbindlist(Gauss_samp, idcol = "wcomb")
+        DTp <- rbindlist(samp_list, idcol = "wcomb")
         DTp[, w := 1 / n_threshold]
         DTp[wcomb %in% c(1, 2 ^ p), w := 1] # Adjust weights for zero and full model
-    } else {
+
+    }
+    if (cond_approach == "copula"){
+        samp_list <- lapply(
+            X = feature_list,
+            FUN = samp_copula_func,
+            n_threshold = n_threshold,
+            mu = mu,
+            Sigma = Sigma,
+            p = p,
+            Xtest_Gauss_trans = Xtest_Gauss_trans,
+            Xtrain = Xtrain,
+            Xtest = Xtest
+        )
+
+        DTp <- rbindlist(samp_list, idcol = "wcomb")
+        DTp[, w := 1 / n_threshold]
+        DTp[wcomb %in% c(1, 2 ^ p), w := 1] # Adjust weights for zero and full model
+
+    }
+
+    else {
         ## Get imputed data
         DTp <- impute_data(
             W_kernel = W_kernel,
@@ -455,7 +582,7 @@ prepare_kernelShap <- function(m,
                                nrows = NULL,
                                scale = FALSE,
                                distance_metric = "Mahalanobis_scaled",
-                               cond_approach = "empirical") {
+                               compute_distances = TRUE) {
 
     ## Get all combinations ----------------
     X <- get_combinations(m = m, exact = exact, nrows = nrows)
@@ -485,7 +612,7 @@ prepare_kernelShap <- function(m,
     if(cond_approach  == "empirical"){ # Only compute the distances if the empirical approach is used
         D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
     } else {
-        D <- NULL
+            D <- NULL
     }
 
     ## Get feature matrix ---------

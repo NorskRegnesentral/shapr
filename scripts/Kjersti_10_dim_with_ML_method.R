@@ -80,7 +80,7 @@ l <- prepare_kernelShap(
     exact = TRUE,
     nrows = 1e4,
     distance_metric = "Mahalanobis_scaled",
-    cond_approach = "Gaussian")
+    compute_distances =  FALSE)
 
 
 Shapley.Gauss = compute_kernelShap(model = model,
@@ -168,7 +168,7 @@ l.2 <- prepare_kernelShap(
     exact = TRUE,
     nrows = 1e4,
     distance_metric = "Mahalanobis_scaled",
-    cond_approach = "empirical")
+    compute_distances = TRUE)
 
 
 Shapley.sigma.01 = compute_kernelShap(model = model,

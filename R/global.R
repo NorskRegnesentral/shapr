@@ -20,7 +20,8 @@
 #' @param S Matrix
 #' @param verbose Logical
 #' @param scale Logical
-#' @param cond_approach String indicating which method should be used to estimate the conditional expectation. Defaults to "empirical", with "Gaussian" and "copula" being other alternatives
+#' @param cond_approach String indicating which method should be used to estimate the conditional expectation.
+#' Defaults to "empirical", with "Gaussian" and "copula" being other alternatives.
 #' @param distance_metric String indicating which distance metric should be used in the empirical conditional
 #' distribution. Defaults to "Euclidean", "Mahalanobis" and "Mahalanobis_scaled" being the other options. "Mahlanobis_scaled" includes
 #' the 1/|S| factor in the paper is preferred for a consistent \eqn{\sigma}.
