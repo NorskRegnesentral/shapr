@@ -29,6 +29,9 @@
 #' Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing independently, ignoring any distance) being the second option
 #' "Gaussian_old" [\eqn{\sqrt(\exp(-D/2\sigma))}] is also kept for reproducability.
 #' @param W_kernel Array containg all unscaled weights between training and testing observations for all combinations.
+#' @param Xtest_Gauss_trans Vector with the Gaussian transformed test observations
+#' @param mu Mean vector of training set
+#' @param Sigma Covariance matrix of training set
 #' @export
 #'
 #' @return NULL

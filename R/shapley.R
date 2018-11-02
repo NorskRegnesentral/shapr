@@ -406,7 +406,7 @@ get_predictions <- function(model,
 
     }
 
-    else {
+    if (cond_approach == "empirical"){
         ## Get imputed data
         DTp <- impute_data(
             W_kernel = W_kernel,
