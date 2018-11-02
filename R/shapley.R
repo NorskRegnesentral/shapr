@@ -638,10 +638,10 @@ prepare_kernelShap <- function(m,
         S_scale_dist <- F
     }
 
-    if(cond_approach  == "empirical"){ # Only compute the distances if the empirical approach is used
+    if(compute_distances){ # Only compute the distances if the empirical approach is used
         D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
     } else {
-            D <- NULL
+        D <- NULL
     }
 
     ## Get feature matrix ---------
