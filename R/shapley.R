@@ -520,17 +520,45 @@ compute_kernelShap = function(model,
     }
 
 
-    if(is.null(mu)){ # Using the mean of the training data in the Gaussian approach if not provided directly
-        mu <- colMeans(l$Xtrain)
-    }
-    if(is.null(Sigma)){ # Using the sample covariance of the training data in the Gaussian approach if not provided directly
-        Sigma <- stats::cov(l$Xtrain)
-    }
 
-    if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
-        Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
+    if (cond_approach == "copula"){
+
+        # Redefining the train and test set to be sent to get_predictions
+        Xtrain_Gauss_trans <- apply(X = l$Xtrain,MARGIN = 2,FUN=Gauss_trans_func)
+        Xtest_Gauss_trans <- apply(X = rbind(l$Xtest,l$Xtrain),MARGIN = 2,FUN=Gauss_trans_func_seperate,n_y = nrow(l$Xtest))
+
+        mu <- rep(0,ncol(l$Xtrain))
+        Sigma <- stats::cov(Xtrain_Gauss_trans)
+        if (any(eigen(Sigma)$values <= 1e-06)) {
+            Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
+        }
+        Xtest.mat <- as.matrix(l$Xtest)
+        Xtrain.mat <- as.matrix(l$Xtrain)
+
+
+    } else {
+
+        # Defines the mu and Sigma to be sent to get_predictions
+
+        if(is.null(mu)){ # Using the mean of the training data in the Gaussian approach if not provided directly
+            mu <- colMeans(l$Xtrain)
+        }
+        if(is.null(Sigma)){ # Using the sample covariance of the training data in the Gaussian approach if not provided directly
+            Sigma <- stats::cov(l$Xtrain)
+        }
+
+        if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
+            Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
+        }
+        #Sigma <- (Sigma + t(Sigma))/2
+
+        Xtest.mat <- as.matrix(l$Xtest)
+        Xtrain.mat <- as.matrix(l$Xtrain)
+
+        ### Just placeholders
+        Xtrain_Gauss_trans <- NULL
+        Xtest_Gauss_trans <- NA*Xtest.mat
     }
-    #Sigma <- (Sigma + t(Sigma))/2
 
     for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction function is not parallelized.
         print(sprintf("%d out of %d", i, l$Xtest[, .N]))
@@ -539,8 +567,8 @@ compute_kernelShap = function(model,
             model = model,
             W_kernel = W_kernel[,i,],
             S = l$S,
-            Xtrain = as.matrix(l$Xtrain),
-            Xtest = as.matrix(l$Xtest)[i, , drop = FALSE],
+            Xtrain = Xtrain.mat,
+            Xtest = Xtest.mat[i, , drop = FALSE],
             w_threshold = w_threshold,
             n_threshold = n_threshold,
             verbose = verbose,
@@ -548,7 +576,8 @@ compute_kernelShap = function(model,
             feature_list = l$X$features,
             pred_zero = pred_zero,
             mu = mu,
-            Sigma = Sigma)
+            Sigma = Sigma,
+            Xtest_Gauss_trans = Xtest_Gauss_trans[i,,drop=FALSE])
         ll[[i]][, id := i]
     }
 
