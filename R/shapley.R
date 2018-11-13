@@ -368,7 +368,7 @@ get_predictions <- function(model,
                             mu,
                             Sigma,
                             mu_Gauss_trans = mu_Gauss_trans,
-                            Sigma_Gauss_tran = Sigma_Gauss_trans,
+                            Sigma_Gauss_trans = Sigma_Gauss_trans,
                             Xtest_Gauss_trans) {
     p <- ncol(Xtrain)
 
@@ -398,7 +398,7 @@ get_predictions <- function(model,
             FUN = samp_copula_func,
             n_threshold = n_threshold,
             mu = mu_Gauss_trans,
-            Sigma = Sigma_Gauss_tran,
+            Sigma = Sigma_Gauss_trans,
             p = p,
             Xtest_Gauss_trans = Xtest_Gauss_trans,
             Xtrain = Xtrain,
@@ -416,7 +416,7 @@ get_predictions <- function(model,
         ## Get imputed data
         DTp.empirical <- impute_data(
             W_kernel = W_kernel[,cond_approach_list$empirical],
-            S = S[cond_approach_list$copula,],
+            S = S[cond_approach_list$empirical,],
             Xtrain = Xtrain,
             Xtest = Xtest,
             w_threshold = w_threshold,
@@ -580,10 +580,13 @@ compute_kernelShap = function(model,
             mu = mu,
             Sigma = Sigma,
             mu_Gauss_trans = mu_Gauss_trans,
-            Sigma_Gauss_tran = Sigma_Gauss_trans,
+            Sigma_Gauss_trans = Sigma_Gauss_trans,
             Xtest_Gauss_trans = Xtest_Gauss_trans[i,,drop=FALSE])
         ll[[i]][, id := i]
     }
+
+    test3 <- list(W_kernel,l$S,Xtrain.mat,Xtest.mat[i, , drop = FALSE],w_threshold,n_threshold,verbose,l$X$features,pred_zero,
+                 cond_approach_list,mu,Sigma,mu_Gauss_trans,Sigma_Gauss_trans,Xtest_Gauss_trans)
 
     DT <- rbindlist(ll)
 
