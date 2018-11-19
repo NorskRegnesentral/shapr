@@ -90,7 +90,7 @@ n_threshold = 10^3
 verbose = FALSE
 cond_approach <- list(empirical = 1:4,copula=5:6,Gaussian=7:8)
 cond_approach <- list(empirical = 1:8)
-,copula=5:6,Gaussian=7:8)
+#,copula=5:6,Gaussian=7:8)
 
 kernel_metric = "Gaussian"
 mu = Sigma = NULL
@@ -101,7 +101,6 @@ sigma = 0.1
 # 3. Implement functionality that sets the  non-defined S-rows to empirical.
 # 4. Implement check that l$D is not null when empirical is used and than throw an error.
 # 5. Think over how to allow differnet sigmas to be used. Could let sigma be a vector or length equal to nrow(S) as well? -- only relevant when AICc is implemented
-# 6. Check whether I messed up something regarding the empirical stuff, the results seems strange...?
 
 Shapley.approx <- list()
 

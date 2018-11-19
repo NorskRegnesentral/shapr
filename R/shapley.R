@@ -355,7 +355,8 @@ samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest) {
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 get_predictions <- function(model,
-                            W_kernel,
+#                            W_kernel,
+                            D,
                             S,
                             Xtrain,
                             Xtest,
@@ -511,6 +512,13 @@ compute_kernelShap = function(model,
                               n_threshold = 1e3,
                               verbose = FALSE,
                               cond_approach = "empirical",
+                              empirical_settings = list(type = "fixed_sigma", # May in the future allow a vector of length nrow(S) here as well to specify fixed for some and optimiziation for others
+                                                        fixed_sigma_vec = 0.1, # Should allow this to be a vector of size nrow(S) as well
+                                                        AICc_no_samp_per_optim = NULL,
+                                                        AICc_optimize_every_testobs = F,
+                                                        AIC_optim_func = "nlminb",
+                                                        AIC_optim_max_eval = 20,
+                                                        AIC_optim_startval = 0.1),
                               pred_zero,
                               kernel_metric = "Gaussian",
                               mu = NULL,
@@ -524,6 +532,83 @@ compute_kernelShap = function(model,
     if(is.list(cond_approach)){
         cond_approach_list <- cond_approach
     }
+
+
+    if("empirical" %in% names(cond_approach_list)){
+
+        these_empirical <- cond_approach_list$empirical
+        these_empirical <- these_empirical[!(these_empirical %in% c(1,nrow(l$S)))]
+
+        h_optim_vec <- rep(NA,nrow(l$S))
+
+        samp_train_test_comb <- function(nTrain,nTest,nosamp){
+
+            sampinds <- 1:(nTrain*nTest)
+            if (empirical_settings$AICc_no_samp_per_optim < max(sampinds)){
+                input_samp <- sample(x = sampinds,
+                                     size = empirical_settings$AICc_no_samp_per_optim,
+                                     replace = F)
+            } else {
+                input_samp <- sampinds
+            }
+
+            #               Test using input_samp=c(1,2,3, 1999, 2000 ,2001 ,2002)
+            samp_train <- (input_samp-1) %% nTrain + 1
+            samp_test <- (input_samp-1) %/% nTrain + 1
+
+            ret <- data.frame(samp_train = samp_train, samp_test = samp_test)
+            return(ret)
+        }
+
+        #### Procedure for sampling a combination of an index in the training and the test sets ####
+        optimsamp <- samp_train_test_comb(nTrain = nrow(l$Xtrain),
+                                          nTest = nrow(l$Xtest),
+                                          nosamp = empirical_settings$AICc_no_samp_per_optim)
+
+
+        ### Include test here that empirical settings is defined as it should be
+
+        if (empirical_settings$type == "AICc_full"){
+
+
+
+            for (i in these_empirical){
+
+                S <- l$S[i,]
+
+                S.cols <- which(as.logical(S))
+                Sbar.cols <- which(as.logical(1-S))
+
+                Xtrain.S <- subset(Xtrain,select=S.cols)[optimsamp$samp_train,]
+                Xtrain.Sbar <- subset(Xtrain,select=Sbar.cols)[optimsamp$samp_train,]
+                Xtest.S <- subset(Xtest,select=S.cols)[optimsamp$samp_test,]
+
+                X.pred <- cbind(Xtrain.Sbar,Xtest.S)
+                X.nms <- colnames(Xtrain)
+                setcolorder(X.pred,X.nms)
+
+                pred <- pred_vector(model=model,data=X.pred)
+
+                if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
+                    nlm.obj <- nlminb(start = empirical_settings$AIC_optim_startval,
+                                      objective = AICc.func,
+                                      y = pred,
+                                      X = as.matrix(Xtrain.S),
+                                      lower = 0,
+                                      control=list(eval.max=empirical_settings$AIC_optim_max_eval,
+                                                   trace=1))
+                    h_optim_vec[i] <- nlm.obj$par
+                }
+
+                print(paste0("Optimized ", i ))
+
+            }
+
+
+        }
+    }
+
+#    if(sum(grepl("AICc",names(cond_approach_list)))>0){}
 
 
     # Handle the computation of all training-test weights for ALL combinations here, before looping
@@ -567,7 +652,7 @@ compute_kernelShap = function(model,
 
         ll[[i]] <- get_predictions(
             model = model,
-            W_kernel = W_kernel[,i,],
+            D = l$D[,i,],
             S = l$S,
             Xtrain = Xtrain.mat,
             Xtest = Xtest.mat[i, , drop = FALSE],
@@ -584,9 +669,6 @@ compute_kernelShap = function(model,
             Xtest_Gauss_trans = Xtest_Gauss_trans[i,,drop=FALSE])
         ll[[i]][, id := i]
     }
-
-    test3 <- list(W_kernel,l$S,Xtrain.mat,Xtest.mat[i, , drop = FALSE],w_threshold,n_threshold,verbose,l$X$features,pred_zero,
-                 cond_approach_list,mu,Sigma,mu_Gauss_trans,Sigma_Gauss_trans,Xtest_Gauss_trans)
 
     DT <- rbindlist(ll)
 
