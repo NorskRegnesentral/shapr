@@ -355,8 +355,9 @@ samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest) {
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 get_predictions <- function(model,
-#                            W_kernel,
                             D,
+                            h_optim_vec,
+                            kernel_metric,
                             S,
                             Xtrain,
                             Xtest,
@@ -377,8 +378,11 @@ get_predictions <- function(model,
 
     if ("Gaussian" %in% names(cond_approach_list)) {
         ## Assume Gaussian distributed variables and sample from the various conditional distributions
+        these_wcomb <- cond_approach_list$Gaussian
+        these_wcomb <- these_wcomb[!(these_wcomb %in% c(1,nrow(l$S)))]
+
         samp_list <- lapply(
-            X = feature_list[cond_approach_list$Gaussian],
+            X = feature_list[these_wcomb],
             FUN = samp_Gauss_func,
             n_threshold = n_threshold,
             mu = mu,
@@ -388,14 +392,16 @@ get_predictions <- function(model,
         )
 
         DTp.Gaussian <- rbindlist(samp_list, idcol = "wcomb")
-        DTp.Gaussian[,wcomb:=cond_approach_list$Gaussian[wcomb]]  # Correcting originally assigned wcomb
+        DTp.Gaussian[,wcomb:=these_wcomb[wcomb]]  # Correcting originally assigned wcomb
         DTp.Gaussian[, w := 1 / n_threshold]
-        DTp.Gaussian[wcomb %in% c(1, 2 ^ p), w := 1] # Adjust weights for zero and full model
-
     }
     if ("copula" %in% names(cond_approach_list)){
+        these_wcomb <- cond_approach_list$copula
+        these_wcomb <- these_wcomb[!(these_wcomb %in% c(1,nrow(l$S)))]
+
+
         samp_list <- lapply(
-            X = feature_list[cond_approach_list$copula],
+            X = feature_list[these_wcomb],
             FUN = samp_copula_func,
             n_threshold = n_threshold,
             mu = mu_Gauss_trans,
@@ -407,23 +413,40 @@ get_predictions <- function(model,
         )
 
         DTp.copula <- rbindlist(samp_list, idcol = "wcomb")
-        DTp.copula[,wcomb:=cond_approach_list$copula[wcomb]]  # Correcting originally assigned wcomb
+        DTp.copula[,wcomb:=these_wcomb[wcomb]]  # Correcting originally assigned wcomb
         DTp.copula[, w := 1 / n_threshold]
-        DTp.copula[wcomb %in% c(1, 2 ^ p), w := 1] # Adjust weights for zero and full model
 
     }
 
     if ("empirical" %in% names(cond_approach_list)){
+        these_wcomb <- cond_approach_list$empirical
+        these_wcomb <- these_wcomb[!(these_wcomb %in% c(1,nrow(l$S)))]
+
+
+        # Handle the computation of all training-test weights for ALL combinations here, before looping
+        if (kernel_metric == "independence"){
+            W_kernel <- array(rnorm(length(these_empirical)*nrow(Xtrain)),dim=c(nrow(Xtrain),length(these_empirical))) # Just random noise to "fake" a distance between observations
+        }
+        if (kernel_metric =="Gaussian"){
+            val <- t(t(-0.5*D[,these_empirical])/h_optim_vec[these_empirical]^2)
+            W_kernel <- exp(val) # To avoid numerical problems for small sigma values, we need to substract some constant from val here. Check if it is possible to do this per column/row of l$D[,i,]
+        }
+        if (kernel_metric =="Gaussian_old"){
+            val <- t(t(-0.5*D[,these_empirical])/h_optim_vec[these_empirical]^2)
+            W_kernel <- sqrt(exp(val))
+        }
+
+
         ## Get imputed data
         DTp.empirical <- impute_data(
-            W_kernel = W_kernel[,cond_approach_list$empirical],
-            S = S[cond_approach_list$empirical,],
+            W_kernel = W_kernel,
+            S = S[these_empirical,],
             Xtrain = Xtrain,
             Xtest = Xtest,
             w_threshold = w_threshold,
             n_threshold = n_threshold
         )
-        DTp.empirical[,wcomb:=cond_approach_list$empirical[wcomb]]  # Correcting originally assigned wcomb
+        DTp.empirical[,wcomb:=these_empirical[wcomb]]  # Correcting originally assigned wcomb
 
     }
 
@@ -431,14 +454,12 @@ get_predictions <- function(model,
     nms <- colnames(Xtest)
 
     DTp <- rbind(DTp.Gaussian,DTp.copula,DTp.empirical)
+    DTp <- merge(DTp,data.table(wcomb=c(1,2^p),w=1),all=T)
     setkey(DTp,wcomb)
 
+
     DTp[!(wcomb %in% c(1, 2 ^ p)), p_hat := pred_vector(model = model, data = .SD), .SDcols = nms]
-    if(nrow(Xtest)==1){
-        DTp[wcomb == 2 ^ p, p_hat := pred_vector(model = model, data = as.data.frame(rbind(Xtest,Xtest)))[1]] # Just a hack for a single prediction
-    } else {
-        DTp[wcomb == 2 ^ p, p_hat := pred_vector(model = model, data = as.data.frame(Xtest))]
-    }
+    DTp[wcomb == 2 ^ p, p_hat := pred_vector(model = model, data = as.data.frame(Xtest))]
     DTp[wcomb == 1, p_hat := pred_zero]
 
     ## Get mean probability
@@ -534,6 +555,7 @@ compute_kernelShap = function(model,
     }
 
 
+
     if("empirical" %in% names(cond_approach_list)){
 
         these_empirical <- cond_approach_list$empirical
@@ -541,32 +563,40 @@ compute_kernelShap = function(model,
 
         h_optim_vec <- rep(NA,nrow(l$S))
 
-        samp_train_test_comb <- function(nTrain,nTest,nosamp){
-
-            sampinds <- 1:(nTrain*nTest)
-            if (empirical_settings$AICc_no_samp_per_optim < max(sampinds)){
-                input_samp <- sample(x = sampinds,
-                                     size = empirical_settings$AICc_no_samp_per_optim,
-                                     replace = F)
-            } else {
-                input_samp <- sampinds
-            }
-
-            #               Test using input_samp=c(1,2,3, 1999, 2000 ,2001 ,2002)
-            samp_train <- (input_samp-1) %% nTrain + 1
-            samp_test <- (input_samp-1) %/% nTrain + 1
-
-            ret <- data.frame(samp_train = samp_train, samp_test = samp_test)
-            return(ret)
-        }
-
         #### Procedure for sampling a combination of an index in the training and the test sets ####
         optimsamp <- samp_train_test_comb(nTrain = nrow(l$Xtrain),
                                           nTest = nrow(l$Xtest),
                                           nosamp = empirical_settings$AICc_no_samp_per_optim)
 
-
         ### Include test here that empirical settings is defined as it should be
+
+        if (empirical_settings$type == "AICc_each_k"){ # This means doing optimization only once for all distributions which conditions on exactly k variables
+
+            these_k <- unique(l$X$nfeatures[these_empirical])
+
+            for (i in these_k){
+
+                these_cond <- l$X[nfeatures==i,ID]
+
+                ### CONTINYE HERE, first sampling these cond with replacement, and then looping over the S corresponding to these_cond and recursively building the Xtrain:S, Xtrain.Sbar etc, and after the loop make pred.
+                S <- l$S[these_cond,]
+
+                S.cols <- which(as.logical(S))
+                Sbar.cols <- which(as.logical(1-S))
+
+                Xtrain.S <- subset(l$Xtrain,select=S.cols)[optimsamp$samp_train,]
+                Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[optimsamp$samp_train,]
+                Xtest.S <- subset(l$Xtest,select=S.cols)[optimsamp$samp_test,]
+
+                X.pred <- cbind(Xtrain.Sbar,Xtest.S)
+                X.nms <- colnames(Xtrain)
+                setcolorder(X.pred,X.nms)
+
+                pred <- pred_vector(model=model,data=X.pred)
+
+            }
+
+
 
         if (empirical_settings$type == "AICc_full"){
 
@@ -579,9 +609,9 @@ compute_kernelShap = function(model,
                 S.cols <- which(as.logical(S))
                 Sbar.cols <- which(as.logical(1-S))
 
-                Xtrain.S <- subset(Xtrain,select=S.cols)[optimsamp$samp_train,]
-                Xtrain.Sbar <- subset(Xtrain,select=Sbar.cols)[optimsamp$samp_train,]
-                Xtest.S <- subset(Xtest,select=S.cols)[optimsamp$samp_test,]
+                Xtrain.S <- subset(l$Xtrain,select=S.cols)[optimsamp$samp_train,]
+                Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[optimsamp$samp_train,]
+                Xtest.S <- subset(l$Xtest,select=S.cols)[optimsamp$samp_test,]
 
                 X.pred <- cbind(Xtrain.Sbar,Xtest.S)
                 X.nms <- colnames(Xtrain)
@@ -611,18 +641,6 @@ compute_kernelShap = function(model,
 #    if(sum(grepl("AICc",names(cond_approach_list)))>0){}
 
 
-    # Handle the computation of all training-test weights for ALL combinations here, before looping
-    if (kernel_metric == "independence"){
-        W_kernel <- array(rnorm(prod(dim(l$D)))^2,dim = dim(l$D)) # Just random noise to "fake" a distance between observations
-    }
-    if (kernel_metric =="Gaussian"){
-        val <- (-0.5*l$D)/sigma^2
-        W_kernel <- exp(val) # To avoid numerical problems for small sigma values, we need to substract some constant from val here. Check if it is possible to do this per column/row of l$D[,i,]
-    }
-    if (kernel_metric =="Gaussian_old"){
-        val <- (-0.5*l$D)/sigma^2
-        W_kernel <- sqrt(exp(val)) # To avoid numerical problems for small sigma values
-    }
 
     if(is.null(mu)){ # Using the mean of the training data in the Gaussian approach if not provided directly
         mu <- colMeans(l$Xtrain)
@@ -653,6 +671,8 @@ compute_kernelShap = function(model,
         ll[[i]] <- get_predictions(
             model = model,
             D = l$D[,i,],
+            h_optim_vec = h_optim_vec,
+            kernel_metric = kernel_metric,
             S = l$S,
             Xtrain = Xtrain.mat,
             Xtest = Xtest.mat[i, , drop = FALSE],
