@@ -53,6 +53,26 @@ AICc.func <- function(h.vec,y,X,negative = FALSE){
     return(AICc)
 }
 
+samp_train_test_comb <- function(nTrain,nTest,nosamp){
+
+    sampinds <- 1:(nTrain*nTest)
+    if (empirical_settings$AICc_no_samp_per_optim < max(sampinds)){
+        input_samp <- sample(x = sampinds,
+                             size = empirical_settings$AICc_no_samp_per_optim,
+                             replace = F)
+    } else {
+        input_samp <- sampinds
+    }
+
+    #               Test using input_samp=c(1,2,3, 1999, 2000 ,2001 ,2002)
+    samp_train <- (input_samp-1) %% nTrain + 1
+    samp_test <- (input_samp-1) %/% nTrain + 1
+
+    ret <- data.frame(samp_train = samp_train, samp_test = samp_test)
+    return(ret)
+}
+
+
 
 ####################33
 
@@ -154,7 +174,7 @@ sigma = 0.1
 
 # Settings #
 
-cond_approach <- list(empirical = 1:4,copula=5:6,Gaussian=7:8)
+cond_approach <- list(empirical = 1:5,copula=6,Gaussian=7:8)
 empirical_settings = list(type = "AICc_full", # May in the future allow a vector of length nrow(S) here as well to specify fixed for some and optimiziation for others
                           fixed_sigma_vec = 0.1, # Should allow this to be a vector of size nrow(S) as well
                           AICc_optimize_every_testobs = F,
