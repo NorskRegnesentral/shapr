@@ -533,10 +533,10 @@ compute_kernelShap = function(model,
                               verbose = FALSE,
                               cond_approach = "empirical",
                               empirical_settings = list(type = "fixed_sigma", # May in the future allow a vector of length nrow(S) here as well to specify fixed for some and optimiziation for others
-                                                        fixed_sigma_vec = 0.1, # Should allow this to be a vector of size nrow(S) as well
+                                                        fixed_sigma_vec = 0.1, # May be a vector of length nrow(S), or a single number used for all
                                                         AICc_no_samp_per_optim = NULL,
                                                         AICc_optimize_every_testobs = F,
-                                                        AIC_optim_func = "nlminb",
+                                                        AIC_optim_func = "nlminb", # only "nlminb" allowed for now
                                                         AIC_optim_max_eval = 20,
                                                         AIC_optim_startval = 0.1),
                               pred_zero,
@@ -563,7 +563,11 @@ compute_kernelShap = function(model,
 
 
         if (empirical_settings$type == "fixed_sigma"){
-            h_optim_vec[these_empirical] <- empirical_settings$fixed_sigma_vec
+            if(length(empirical_settings$fixed_sigma_vec)==1){
+                empirical_settings$fixed_sigma_vec = rep(empirical_settings$fixed_sigma_vec,nrow(l$S))
+            }
+
+            h_optim_vec[these_empirical] <- empirical_settings$fixed_sigma_vec[these_empirical]
         } else {
 
             #### Procedure for sampling a combination of an index in the training and the test sets ####
@@ -581,14 +585,11 @@ compute_kernelShap = function(model,
 
                     these_cond <- l$X[ID%in% these_empirical][nfeatures==i,ID]
 
-                    if (length(these_cond)>1){
-                        cond_samp <- sample(x = these_cond,
-                                            size = empirical_settings$AICc_no_samp_per_optim,
-                                            replace = T)
-                    } else {
-                        cond_samp <- rep(these_cond,empirical_settings$AICc_no_samp_per_optim)
-                    }
+                    cutters <- 1:empirical_settings$AICc_no_samp_per_optim
+                    no_cond <- length(these_cond)
 
+                    cond_samp <- cut(cutters,quantile(cutters,(0:no_cond)/no_cond), include.lowest=TRUE, labels=these_cond)
+                    cond_samp <- as.numeric(levels(cond_samp))[cond_samp]
 
                     j <- 1
                     Xtrain.S.list <- X.pred.list <- list()

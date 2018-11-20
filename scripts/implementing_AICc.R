@@ -207,6 +207,34 @@ Shapley.approx.new.2$other_objects$h_optim_vec
 Shapley.approx.new.3$other_objects$h_optim_vec
 
 
+empirical_settings = list(type = "fixed_sigma", # May in the future allow a vector of length nrow(S) here as well to specify fixed for some and optimiziation for others
+                          fixed_sigma_vec = Shapley.approx.new.3$other_objects$h_optim_vec, # Should allow this to be a vector of size nrow(S) as well
+                          AICc_optimize_every_testobs = F,
+                          AICc_no_samp_per_optim = 1000,
+                          AIC_optim_func = "nlminb",
+                          AIC_optim_max_eval = 20,
+                          AIC_optim_startval = 0.1)
+
+Shapley.approx.new.4 = compute_kernelShap(model = model,
+                                          l,
+                                          w_threshold = w_threshold,
+                                          n_threshold = n_threshold,
+                                          verbose = FALSE,
+                                          cond_approach = cond_approach,
+                                          empirical_settings = empirical_settings,
+                                          pred_zero=pred_zero,
+                                          kernel_metric = "Gaussian")
+
+Shapley.approx.new.3$other_objects$h_optim_vec
+Shapley.approx.new.4$other_objects$h_optim_vec
+
+head(Shapley.approx.new.3$other_objects$DT[wcomb%in%cond_approach$empirical,],10)
+head(Shapley.approx.new.4$other_objects$DT[wcomb%in%cond_approach$empirical,],10)
+
+Shapley.approx.new.3$other_objects$DT[wcomb%in%cond_approach$empirical,k]-Shapley.approx.new.4$other_objects$DT[wcomb%in%cond_approach$empirical,k]
+
+#### Everything looks all correct. Have not checked that the optimization is good though.
+
 
 ## Old approach
 sigma = 0.1
