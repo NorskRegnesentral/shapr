@@ -255,8 +255,6 @@ Shapley.approx.old = compute_kernelShap(model = model,
 # 2. Define default parameters
 # 3. Implement checks that things are defined correctly when they are needed etc.
 # 4. Implement a seed for sampling the data used in the optimization such that we don't get new results every time
-# 5. Consider implementing fixed cond_samp version, enough randomized already.
-
 
 
 ### TODO for combined conditional approach:
