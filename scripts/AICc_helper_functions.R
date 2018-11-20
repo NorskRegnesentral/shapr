@@ -1,11 +1,11 @@
 library(mvtnorm)
 
-k.func.Euclidean <- function(x){
-    dnorm(x = x,mean = 0,sd = 1)
-}
-K.func.Euclidean <- function(x,h.vec,Sigma){
-    prod(k.func.Euclidean((x)/h.vec)/h.vec)
-}
+#k.func.Euclidean <- function(x){
+#    dnorm(x = x,mean = 0,sd = 1)
+#}
+#K.func.Euclidean <- function(x,h.vec,Sigma){
+#    prod(k.func.Euclidean((x)/h.vec)/h.vec)
+#}
 K.func.Mahalanobis.all <- function(X,h.vec,Sigma,S_scale_dist){
     exp(-gen_Mahlanobis_dist_cpp(featureList = list(1,1:ncol(X)),Xtrain = X,Xtest = X,mcov = Sigma,S_scale_dist = S_scale_dist)[,,2]/(2*h.vec^2))
     }
@@ -51,6 +51,26 @@ H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){
     return(H)
 }
 
+######
+# h.vec is vector of length q=ncol(X)
+# Requires X to include a .id column as the first column in the X matrix, identifying how the H-matrix should be
+# diagonalized
+
+H.func.new <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){
+    H.list <- list()
+    for(i in unique(X$.id)){
+        H.list[[i]] <- H.func(h.vec=h.vec,
+                              X = as.matrix(X[.id == i,-1]),
+                              kernel = kernel,
+                              scale_var = scale_var,
+                              S_scale_dist = S_scale_dist)
+    }
+    H <- as.matrix(Matrix::bdiag(H.list)) # Inefficient, but will be coding this up in Rcpp anyway
+    return(H)
+}
+
+
+
 sigma.hat.sq.func <- function(y,H){
     n <- length(y)
 
@@ -81,6 +101,58 @@ AICc.func <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_var 
     }
     return(AICc)
 }
+
+# Requires X to include a .id column as the first column in X, which now is a data.table object, identifying how the H-matrix should be
+# diagonalized
+
+AICc.func.new <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_var = T,S_scale_dist = F,idcol = T){
+    n <- length(y)
+    q <- ncol(X) - idcol
+
+    if (length(h.vec)==1){
+        h.vec <- rep(h.vec,q)
+    }
+
+    H <- H.func.new(h.vec = h.vec,X = X,kernel = kernel, scale_var = scale_var, S_scale_dist = S_scale_dist)
+
+    sigma.hat.sq <- sigma.hat.sq.func(y=y,
+                                      H = H)
+
+    tr.H <- sum(diag(H))
+    correction.term <- (1+tr.H/n)/(1-(tr.H+2)/n)
+
+    AICc <- log(sigma.hat.sq) + correction.term
+    if(negative){
+        AICc <- -AICc
+    }
+    return(AICc)
+}
+
+
+
+samp_train_test_comb <- function(nTrain,nTest,nosamp){
+
+    sampinds <- 1:(nTrain*nTest)
+    if (empirical_settings$AICc_no_samp_per_optim < max(sampinds)){
+        input_samp <- sample(x = sampinds,
+                             size = empirical_settings$AICc_no_samp_per_optim,
+                             replace = F)
+    } else {
+        input_samp <- sampinds
+    }
+
+    #               Test using input_samp=c(1,2,3, 1999, 2000 ,2001 ,2002)
+    samp_train <- (input_samp-1) %% nTrain + 1
+    samp_test <- (input_samp-1) %/% nTrain + 1
+
+    ret <- data.frame(samp_train = samp_train, samp_test = samp_test)
+    return(ret)
+}
+
+
+
+
+
 g.hat.func <- function(x,h.vec,y,XMAT,kernel = "Euclidean"){
 
     n <- nrow(XMAT)

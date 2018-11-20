@@ -425,14 +425,14 @@ get_predictions <- function(model,
 
         # Handle the computation of all training-test weights for ALL combinations here, before looping
         if (kernel_metric == "independence"){
-            W_kernel <- array(rnorm(length(these_empirical)*nrow(Xtrain)),dim=c(nrow(Xtrain),length(these_empirical))) # Just random noise to "fake" a distance between observations
+            W_kernel <- array(rnorm(length(these_wcomb)*nrow(Xtrain)),dim=c(nrow(Xtrain),length(these_wcomb))) # Just random noise to "fake" a distance between observations
         }
         if (kernel_metric =="Gaussian"){
-            val <- t(t(-0.5*D[,these_empirical])/h_optim_vec[these_empirical]^2)
+            val <- t(t(-0.5*D[,these_wcomb])/h_optim_vec[these_wcomb]^2)
             W_kernel <- exp(val) # To avoid numerical problems for small sigma values, we need to substract some constant from val here. Check if it is possible to do this per column/row of l$D[,i,]
         }
         if (kernel_metric =="Gaussian_old"){
-            val <- t(t(-0.5*D[,these_empirical])/h_optim_vec[these_empirical]^2)
+            val <- t(t(-0.5*D[,these_wcomb])/h_optim_vec[these_wcomb]^2)
             W_kernel <- sqrt(exp(val))
         }
 
@@ -440,13 +440,13 @@ get_predictions <- function(model,
         ## Get imputed data
         DTp.empirical <- impute_data(
             W_kernel = W_kernel,
-            S = S[these_empirical,],
+            S = S[these_wcomb,],
             Xtrain = Xtrain,
             Xtest = Xtest,
             w_threshold = w_threshold,
             n_threshold = n_threshold
         )
-        DTp.empirical[,wcomb:=these_empirical[wcomb]]  # Correcting originally assigned wcomb
+        DTp.empirical[,wcomb:=these_wcomb[wcomb]]  # Correcting originally assigned wcomb
 
     }
 
@@ -528,7 +528,6 @@ pred_vector = function(model, data) {
 #' @author Martin Jullum
 compute_kernelShap = function(model,
                               l,
-                              sigma = 0.1,
                               w_threshold = 0.95,
                               n_threshold = 1e3,
                               verbose = FALSE,
@@ -554,6 +553,7 @@ compute_kernelShap = function(model,
         cond_approach_list <- cond_approach
     }
 
+    h_optim_vec <- rep(NA,nrow(l$S))
 
 
     if("empirical" %in% names(cond_approach_list)){
@@ -561,7 +561,6 @@ compute_kernelShap = function(model,
         these_empirical <- cond_approach_list$empirical
         these_empirical <- these_empirical[!(these_empirical %in% c(1,nrow(l$S)))]
 
-        h_optim_vec <- rep(NA,nrow(l$S))
 
         #### Procedure for sampling a combination of an index in the training and the test sets ####
         optimsamp <- samp_train_test_comb(nTrain = nrow(l$Xtrain),
@@ -576,31 +575,66 @@ compute_kernelShap = function(model,
 
             for (i in these_k){
 
-                these_cond <- l$X[nfeatures==i,ID]
+                these_cond <- l$X[ID%in% these_empirical][nfeatures==i,ID]
 
-                ### CONTINYE HERE, first sampling these cond with replacement, and then looping over the S corresponding to these_cond and recursively building the Xtrain:S, Xtrain.Sbar etc, and after the loop make pred.
-                S <- l$S[these_cond,]
+                if (length(these_cond)>1){
+                    cond_samp <- sample(x = these_cond,
+                                        size = empirical_settings$AICc_no_samp_per_optim,
+                                        replace = T)
+                } else {
+                    cond_samp <- rep(these_cond,empirical_settings$AICc_no_samp_per_optim)
+                }
 
-                S.cols <- which(as.logical(S))
-                Sbar.cols <- which(as.logical(1-S))
 
-                Xtrain.S <- subset(l$Xtrain,select=S.cols)[optimsamp$samp_train,]
-                Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[optimsamp$samp_train,]
-                Xtest.S <- subset(l$Xtest,select=S.cols)[optimsamp$samp_test,]
+                j <- 1
+                Xtrain.S.list <- X.pred.list <- list()
+                for (this_cond in unique(cond_samp)){
 
-                X.pred <- cbind(Xtrain.Sbar,Xtest.S)
+                    these_inds <- which(cond_samp==this_cond)
+
+                    S <- l$S[this_cond,]
+
+                    S.cols <- which(as.logical(S))
+                    Sbar.cols <- which(as.logical(1-S))
+
+                    Xtrain.S.list[[j]] <- subset(l$Xtrain,select=S.cols)[optimsamp$samp_train[these_inds],]
+                    Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[optimsamp$samp_train[these_inds],]
+                    Xtest.S <- subset(l$Xtest,select=S.cols)[optimsamp$samp_test[these_inds],]
+
+                    X.pred.list[[j]] <- cbind(Xtrain.Sbar,Xtest.S)
+
+                    j <- j + 1
+                }
+
+                X.pred <- rbindlist(X.pred.list,use.names=T)
                 X.nms <- colnames(Xtrain)
                 setcolorder(X.pred,X.nms)
 
+                Xtrain.S <- rbindlist(Xtrain.S.list,use.names=F,idcol = T) # Including .id column such that
+                colnames(Xtrain.S)[-1] <-  rep("",i) # Removing variable names as these are incorrect anyway.
+
                 pred <- pred_vector(model=model,data=X.pred)
 
+                if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
+                    nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
+                                      objective = AICc.func.new,
+                                      y = pred,
+                                      X = Xtrain.S,
+                                      kernel="Mahalanobis",
+                                      scale_var=T,
+                                      S_scale_dist = T,
+                                      lower = 0,
+                                      control=list(eval.max=empirical_settings$AIC_optim_max_eval,
+                                                   trace=0)))
+                    h_optim_vec[these_cond] <- nlm.obj$par
+                }
+
+                #print(paste0("Optimized ", i ))
+
             }
-
-
+        }
 
         if (empirical_settings$type == "AICc_full"){
-
-
 
             for (i in these_empirical){
 
@@ -613,6 +647,9 @@ compute_kernelShap = function(model,
                 Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[optimsamp$samp_train,]
                 Xtest.S <- subset(l$Xtest,select=S.cols)[optimsamp$samp_test,]
 
+                Xtrain.S[,.id:=1]
+                setcolorder(Xtrain.S,".id") # moves the .id column to the front
+
                 X.pred <- cbind(Xtrain.Sbar,Xtest.S)
                 X.nms <- colnames(Xtrain)
                 setcolorder(X.pred,X.nms)
@@ -620,21 +657,26 @@ compute_kernelShap = function(model,
                 pred <- pred_vector(model=model,data=X.pred)
 
                 if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
-                    nlm.obj <- nlminb(start = empirical_settings$AIC_optim_startval,
-                                      objective = AICc.func,
+                    nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
+                                      objective = AICc.func.new,
                                       y = pred,
-                                      X = as.matrix(Xtrain.S),
+                                      X = Xtrain.S,
+                                      kernel="Mahalanobis",
+                                      scale_var=F,
+                                      S_scale_dist = T,
                                       lower = 0,
                                       control=list(eval.max=empirical_settings$AIC_optim_max_eval,
-                                                   trace=1))
+                                                   trace=0)))
                     h_optim_vec[i] <- nlm.obj$par
                 }
-
-                print(paste0("Optimized ", i ))
+               # print(paste0("Optimized ", i ))
 
             }
 
+        }
 
+        if (empirical_settings$type == "fixed_sigma"){
+            h_optim_vec[these_empirical] <- empirical_settings$fixed_sigma_vec
         }
     }
 
@@ -697,7 +739,7 @@ compute_kernelShap = function(model,
         Kshap[i, ] = l$W %*% DT[id == i, k]
     }
 
-    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT,W_kernel=W_kernel))
+    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT, h_optim_vec = h_optim_vec))
     return(ret_list)
 }
 
