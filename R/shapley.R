@@ -562,125 +562,129 @@ compute_kernelShap = function(model,
         these_empirical <- these_empirical[!(these_empirical %in% c(1,nrow(l$S)))]
 
 
-        #### Procedure for sampling a combination of an index in the training and the test sets ####
-        optimsamp <- samp_train_test_comb(nTrain = nrow(l$Xtrain),
-                                          nTest = nrow(l$Xtest),
-                                          nosamp = empirical_settings$AICc_no_samp_per_optim)
+        if (empirical_settings$type == "fixed_sigma"){
+            h_optim_vec[these_empirical] <- empirical_settings$fixed_sigma_vec
+        } else {
 
-        ### Include test here that empirical settings is defined as it should be
+            #### Procedure for sampling a combination of an index in the training and the test sets ####
+            optimsamp <- samp_train_test_comb(nTrain = nrow(l$Xtrain),
+                                              nTest = nrow(l$Xtest),
+                                              nosamp = empirical_settings$AICc_no_samp_per_optim)
 
-        if (empirical_settings$type == "AICc_each_k"){ # This means doing optimization only once for all distributions which conditions on exactly k variables
+            ### Include test here that empirical settings is defined as it should be
 
-            these_k <- unique(l$X$nfeatures[these_empirical])
+            if (empirical_settings$type == "AICc_each_k"){ # This means doing optimization only once for all distributions which conditions on exactly k variables
 
-            for (i in these_k){
+                these_k <- unique(l$X$nfeatures[these_empirical])
 
-                these_cond <- l$X[ID%in% these_empirical][nfeatures==i,ID]
+                for (i in these_k){
 
-                if (length(these_cond)>1){
-                    cond_samp <- sample(x = these_cond,
-                                        size = empirical_settings$AICc_no_samp_per_optim,
-                                        replace = T)
-                } else {
-                    cond_samp <- rep(these_cond,empirical_settings$AICc_no_samp_per_optim)
+                    these_cond <- l$X[ID%in% these_empirical][nfeatures==i,ID]
+
+                    if (length(these_cond)>1){
+                        cond_samp <- sample(x = these_cond,
+                                            size = empirical_settings$AICc_no_samp_per_optim,
+                                            replace = T)
+                    } else {
+                        cond_samp <- rep(these_cond,empirical_settings$AICc_no_samp_per_optim)
+                    }
+
+
+                    j <- 1
+                    Xtrain.S.list <- X.pred.list <- list()
+                    for (this_cond in unique(cond_samp)){
+
+                        these_inds <- which(cond_samp==this_cond)
+
+                        S <- l$S[this_cond,]
+
+                        S.cols <- which(as.logical(S))
+                        Sbar.cols <- which(as.logical(1-S))
+
+                        Xtrain.S.list[[j]] <- subset(l$Xtrain,select=S.cols)[optimsamp$samp_train[these_inds],]
+                        Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[optimsamp$samp_train[these_inds],]
+                        Xtest.S <- subset(l$Xtest,select=S.cols)[optimsamp$samp_test[these_inds],]
+
+                        X.pred.list[[j]] <- cbind(Xtrain.Sbar,Xtest.S)
+
+                        j <- j + 1
+                    }
+
+                    X.pred <- rbindlist(X.pred.list,use.names=T)
+                    X.nms <- colnames(Xtrain)
+                    setcolorder(X.pred,X.nms)
+
+                    Xtrain.S <- rbindlist(Xtrain.S.list,use.names=F,idcol = T) # Including .id column such that
+                    colnames(Xtrain.S)[-1] <-  rep("",i) # Removing variable names as these are incorrect anyway.
+
+                    pred <- pred_vector(model=model,data=X.pred)
+
+                    if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
+                        nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
+                                                           objective = AICc.func.new,
+                                                           y = pred,
+                                                           X = Xtrain.S,
+                                                           kernel="Mahalanobis",
+                                                           scale_var=T,
+                                                           S_scale_dist = T,
+                                                           lower = 0,
+                                                           control=list(eval.max=empirical_settings$AIC_optim_max_eval,
+                                                                        trace=0)))
+                        h_optim_vec[these_cond] <- nlm.obj$par
+                    }
+
+                    #print(paste0("Optimized ", i ))
+
                 }
+            }
 
+            if (empirical_settings$type == "AICc_full"){
 
-                j <- 1
-                Xtrain.S.list <- X.pred.list <- list()
-                for (this_cond in unique(cond_samp)){
+                for (i in these_empirical){
 
-                    these_inds <- which(cond_samp==this_cond)
-
-                    S <- l$S[this_cond,]
+                    S <- l$S[i,]
 
                     S.cols <- which(as.logical(S))
                     Sbar.cols <- which(as.logical(1-S))
 
-                    Xtrain.S.list[[j]] <- subset(l$Xtrain,select=S.cols)[optimsamp$samp_train[these_inds],]
-                    Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[optimsamp$samp_train[these_inds],]
-                    Xtest.S <- subset(l$Xtest,select=S.cols)[optimsamp$samp_test[these_inds],]
+                    Xtrain.S <- subset(l$Xtrain,select=S.cols)[optimsamp$samp_train,]
+                    Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[optimsamp$samp_train,]
+                    Xtest.S <- subset(l$Xtest,select=S.cols)[optimsamp$samp_test,]
 
-                    X.pred.list[[j]] <- cbind(Xtrain.Sbar,Xtest.S)
+                    Xtrain.S[,.id:=1]
+                    setcolorder(Xtrain.S,".id") # moves the .id column to the front
 
-                    j <- j + 1
+                    X.pred <- cbind(Xtrain.Sbar,Xtest.S)
+                    X.nms <- colnames(Xtrain)
+                    setcolorder(X.pred,X.nms)
+
+                    pred <- pred_vector(model=model,data=X.pred)
+
+                    if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
+                        nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
+                                                           objective = AICc.func.new,
+                                                           y = pred,
+                                                           X = Xtrain.S,
+                                                           kernel="Mahalanobis",
+                                                           scale_var=F,
+                                                           S_scale_dist = T,
+                                                           lower = 0,
+                                                           control=list(eval.max=empirical_settings$AIC_optim_max_eval,
+                                                                        trace=0)))
+                        h_optim_vec[i] <- nlm.obj$par
+                    }
+                    # print(paste0("Optimized ", i ))
+
                 }
-
-                X.pred <- rbindlist(X.pred.list,use.names=T)
-                X.nms <- colnames(Xtrain)
-                setcolorder(X.pred,X.nms)
-
-                Xtrain.S <- rbindlist(Xtrain.S.list,use.names=F,idcol = T) # Including .id column such that
-                colnames(Xtrain.S)[-1] <-  rep("",i) # Removing variable names as these are incorrect anyway.
-
-                pred <- pred_vector(model=model,data=X.pred)
-
-                if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
-                    nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
-                                      objective = AICc.func.new,
-                                      y = pred,
-                                      X = Xtrain.S,
-                                      kernel="Mahalanobis",
-                                      scale_var=T,
-                                      S_scale_dist = T,
-                                      lower = 0,
-                                      control=list(eval.max=empirical_settings$AIC_optim_max_eval,
-                                                   trace=0)))
-                    h_optim_vec[these_cond] <- nlm.obj$par
-                }
-
-                #print(paste0("Optimized ", i ))
-
-            }
-        }
-
-        if (empirical_settings$type == "AICc_full"){
-
-            for (i in these_empirical){
-
-                S <- l$S[i,]
-
-                S.cols <- which(as.logical(S))
-                Sbar.cols <- which(as.logical(1-S))
-
-                Xtrain.S <- subset(l$Xtrain,select=S.cols)[optimsamp$samp_train,]
-                Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[optimsamp$samp_train,]
-                Xtest.S <- subset(l$Xtest,select=S.cols)[optimsamp$samp_test,]
-
-                Xtrain.S[,.id:=1]
-                setcolorder(Xtrain.S,".id") # moves the .id column to the front
-
-                X.pred <- cbind(Xtrain.Sbar,Xtest.S)
-                X.nms <- colnames(Xtrain)
-                setcolorder(X.pred,X.nms)
-
-                pred <- pred_vector(model=model,data=X.pred)
-
-                if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
-                    nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
-                                      objective = AICc.func.new,
-                                      y = pred,
-                                      X = Xtrain.S,
-                                      kernel="Mahalanobis",
-                                      scale_var=F,
-                                      S_scale_dist = T,
-                                      lower = 0,
-                                      control=list(eval.max=empirical_settings$AIC_optim_max_eval,
-                                                   trace=0)))
-                    h_optim_vec[i] <- nlm.obj$par
-                }
-               # print(paste0("Optimized ", i ))
 
             }
 
+
         }
 
-        if (empirical_settings$type == "fixed_sigma"){
-            h_optim_vec[these_empirical] <- empirical_settings$fixed_sigma_vec
-        }
     }
 
-#    if(sum(grepl("AICc",names(cond_approach_list)))>0){}
+    #    if(sum(grepl("AICc",names(cond_approach_list)))>0){}
 
 
 
