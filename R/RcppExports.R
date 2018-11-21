@@ -44,8 +44,8 @@ prepare_gen_Mahlanobis_dist_cpp_old <- function(Xtrain, Xtest, mcov) {
 #'
 #' @return Array of three dimensions containg the the squared distance for between all training and test observations for all feature combinations passed to the function.
 #' @author Martin Jullum
-gen_Mahlanobis_dist_cpp <- function(featureList, Xtrain, Xtest, mcov, S_scale_dist) {
-    .Call(`_shapr_gen_Mahlanobis_dist_cpp`, featureList, Xtrain, Xtest, mcov, S_scale_dist)
+gen_Mahlanobis_dist_cpp <- function(featureList, Xtrain, Xtest, mcov, S_scale_dist, normalize_rows) {
+    .Call(`_shapr_gen_Mahlanobis_dist_cpp`, featureList, Xtrain, Xtest, mcov, S_scale_dist, normalize_rows)
 }
 
 #' Get imputed data

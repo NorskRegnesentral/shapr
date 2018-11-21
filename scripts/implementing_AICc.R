@@ -53,7 +53,7 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 }
 
 samp_model <- function(n,X,sd){
-    y <- X[,1] + X[,2] + X[,3] + rnorm(n = n,mean=0,sd=sd)
+    y <- X[,1]^2 + X[,2]^2 + X[,3]^3 + rnorm(n = n,mean=0,sd=sd)
 }
 
 
@@ -81,6 +81,7 @@ Xtest[,y:=NULL]
 #### Fitting the model ----------
 
 model = lm(y~.,data=XYtrain)
+model = mgcv::gam(y~s(X1)+s(X2)+s(X3),data=XYtrain)
 
 pred_zero = XYtrain[, mean(y)]
 m = ncol(Xtrain)

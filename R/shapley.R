@@ -32,7 +32,8 @@ w_shapley <- function(m, N, s) {
 #'
 #' @author Nikolai Sellereite
 get_combinations <- function(m, exact = TRUE, nrows = 200) {
-    if (nrows>2^m){
+
+    if (!exact && nrows>2^m){
         exact = TRUE
         cat(paste0("nrows is larger than 2^m = ",2^m,". Using exact instead."))
     }
@@ -538,9 +539,9 @@ compute_kernelShap = function(model,
                                                         AICc_optimize_every_testobs = F,
                                                         AIC_optim_func = "nlminb", # only "nlminb" allowed for now
                                                         AIC_optim_max_eval = 20,
-                                                        AIC_optim_startval = 0.1),
+                                                        AIC_optim_startval = 0.1,
+                                                        kernel_metric = "Gaussian"),
                               pred_zero,
-                              kernel_metric = "Gaussian",
                               mu = NULL,
                               Sigma = NULL) {
     ll = list()
@@ -561,8 +562,9 @@ compute_kernelShap = function(model,
         these_empirical <- cond_approach_list$empirical
         these_empirical <- these_empirical[!(these_empirical %in% c(1,nrow(l$S)))]
 
-
-        if (empirical_settings$type == "fixed_sigma"){
+        if(empirical_settings$type == "independence"){
+            empirical_settings$kernel_metric <- "independence" # Overriding the kernel_metric setting if type is set to "independence"
+        }  else if (empirical_settings$type == "fixed_sigma"){
             if(length(empirical_settings$fixed_sigma_vec)==1){
                 empirical_settings$fixed_sigma_vec = rep(empirical_settings$fixed_sigma_vec,nrow(l$S))
             }
@@ -748,7 +750,7 @@ compute_kernelShap = function(model,
             model = model,
             D = l$D[,i,],
             h_optim_vec = h_optim_mat[,i],
-            kernel_metric = kernel_metric,
+            kernel_metric = empirical_settings$kernel_metric,
             S = l$S,
             Xtrain = Xtrain.mat,
             Xtest = Xtest.mat[i, , drop = FALSE],
@@ -773,7 +775,7 @@ compute_kernelShap = function(model,
         Kshap[i, ] = l$W %*% DT[id == i, k]
     }
 
-    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT, h_optim_vec = h_optim_vec))
+    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT, h_optim_mat = h_optim_mat))
     return(ret_list)
 }
 
@@ -796,7 +798,8 @@ prepare_kernelShap <- function(m,
                                nrows = NULL,
                                scale = FALSE,
                                distance_metric = "Mahalanobis_scaled",
-                               compute_distances = TRUE) {
+                               compute_distances = TRUE,
+                               normalize_distance_rows = TRUE) {
 
     ## Get all combinations ----------------
     X <- get_combinations(m = m, exact = exact, nrows = nrows)
@@ -824,7 +827,7 @@ prepare_kernelShap <- function(m,
     }
 
     if(compute_distances){ # Only compute the distances if the empirical approach is used
-        D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
+        D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist, normalize_rows = normalize_distance_rows) # This is D_S(,)^2 in the paper
     } else {
         D <- NULL
     }

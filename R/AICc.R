@@ -1,16 +1,27 @@
-library(mvtnorm)
 
-#k.func.Euclidean <- function(x){
-#    dnorm(x = x,mean = 0,sd = 1)
-#}
-#K.func.Euclidean <- function(x,h.vec,Sigma){
-#    prod(k.func.Euclidean((x)/h.vec)/h.vec)
-#}
+#' The kernel function using the the Mahalanobis distance used within the H-function of the AICc-function. Need to improve this help file.
+#'
+#' @inheritParams global_arguments
+#'
+#' @return K-function output.
+#'
+#' @export
+#'
+#' @author Martin Jullum
 K.func.Mahalanobis.all <- function(X,h.vec,Sigma,S_scale_dist){
     exp(-gen_Mahlanobis_dist_cpp(featureList = list(1,1:ncol(X)),Xtrain = X,Xtest = X,mcov = Sigma,S_scale_dist = S_scale_dist)[,,2]/(2*h.vec^2))
-    }
+}
 
 
+#' Internal  H-function used in the AICc-function. Need to improve this help file.
+#'
+#' @inheritParams global_arguments
+#' @param h.vec Vector of bandwidths of size q=ncol(X)
+#' @return H-function output.
+#'
+#' @export
+#'
+#' @author Martin Jullum
 # h.vec is vector of length q=ncol(X)
 H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){ #### SPEEDUP: Make an Rcpp function doing all of this with Mahlanobis only.
     n <- nrow(X)
@@ -35,8 +46,8 @@ H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){ #### 
         }
         H <- K.func.Mahalanobis.all(X=X,h.vec=h.vec,Sigma=Sigma.var,S_scale_dist = F) # So including the variance in this measure, not to have to scale for different variability in different dimensions.
         for (i in 1:n){
-          H[i,] <- H[i,]/sum(H[i,])
-      }
+            H[i,] <- H[i,]/sum(H[i,])
+        }
 
 
     }
@@ -57,13 +68,19 @@ H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){ #### 
     return(H)
 }
 
-######
+#' Most general H-function used in the AICc-function, uses an X data.table where the first column is an .id column identifying how the H-matrix should be diagonalized.
+#' Need to improve this help file.
+#'
+#' @inheritParams global_arguments
+#' @param h.vec Vector of bandwidths of size q=ncol(X)
+#' @return H-function output.
+#'
+#' @export
+#'
+#' @author Martin Jullum
 # h.vec is vector of length q=ncol(X)
-# Requires X to include a .id column as the first column in the X matrix, identifying how the H-matrix should be
-# diagonalized
-
 H.func.new <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){ #### SPEEDUP: Make an Rcpp function doing all of this witha loop of uniqe ids, and where X is only the matrix part, and
-                                                                               #### the .idcol is supplied as an integer vector to the function. Include only Mahlanobis only, Sigma supplied directly and with scaling of Mahlanobis, not the variables themselves
+    #### the .idcol is supplied as an integer vector to the function. Include only Mahlanobis only, Sigma supplied directly and with scaling of Mahlanobis, not the variables themselves
     H.list <- list()
     for(i in unique(X$.id)){
         H.list[[i]] <- H.func(h.vec=h.vec,
@@ -77,6 +94,16 @@ H.func.new <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){ #
 }
 
 
+#' Variance of the local constant regression method. Used in the AICc-function.
+#' Need to improve this help file.
+#'
+#' @inheritParams global_arguments
+#' @return numeric
+#'
+#' @export
+#'
+#' @author Martin Jullum
+# h.vec is vector of length q=ncol(X)
 
 sigma.hat.sq.func <- function(y,H){
     n <- length(y)
@@ -86,32 +113,19 @@ sigma.hat.sq.func <- function(y,H){
     return(sigma.hat.sq)
 }
 
-AICc.func <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_var = T,S_scale_dist = F){
-    n <- length(y)
-    q <- ncol(X)
-
-    if (length(h.vec)==1){
-        h.vec <- rep(h.vec,q)
-    }
-
-    H <- H.func(h.vec = h.vec,X = X,kernel = kernel, scale_var = scale_var, S_scale_dist = S_scale_dist)
-
-    sigma.hat.sq <- sigma.hat.sq.func(y=y,
-                                      H = H)
-
-    tr.H <- sum(diag(H))
-    correction.term <- (1+tr.H/n)/(1-(tr.H+2)/n)
-
-    AICc <- log(sigma.hat.sq) + correction.term
-    if(negative){
-        AICc <- -AICc
-    }
-    return(AICc)
-}
-
-# Requires X to include a .id column as the first column in X, which now is a data.table object, identifying how the H-matrix should be
+#' New AICc-function. The X here needs to include a .id column as the first column in X, which now is a data.table object, identifying how the H-matrix should be
 # diagonalized
-
+#' Need to improve this help file.
+#'
+#' @inheritParams global_arguments
+#' @param h.vec Vector of bandwidths of size q=ncol(X)
+#' @param X Needs to include a .id column as the first column in X, which now is a data.table object, identifying how the H-matrix should be
+# diagonalized
+#' @return H-function output.
+#'
+#' @export
+#'
+#' @author Martin Jullum
 AICc.func.new <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_var = T,S_scale_dist = F,idcol = T){
     n <- length(y)
     q <- ncol(X) - idcol
@@ -136,7 +150,16 @@ AICc.func.new <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_
 }
 
 
-
+#' Helper function to sample a combination of training and testing rows, which does not risk getting the same observation twice.
+#' Need to improve this help file.
+#'
+#' @inheritParams global_arguments
+#' @return numeric
+#'
+#' @export
+#'
+#' @author Martin Jullum
+# h.vec is vector of length q=ncol(X)
 samp_train_test_comb <- function(nTrain,nTest,nosamp){
 
     sampinds <- 1:(nTrain*nTest)
@@ -156,31 +179,3 @@ samp_train_test_comb <- function(nTrain,nTest,nosamp){
     return(ret)
 }
 
-
-
-g.hat.func <- function(x,h.vec,y,XMAT,kernel = "Euclidean"){
-
-    n <- nrow(XMAT)
-    q <- ncol(XMAT)
-
-    if (length(h.vec)==1){
-        h.vec <- rep(h.vec,q)
-    }
-
-    if (kernel=="Euclidean"){
-        K.func <- K.func.Euclidean
-    }
-    if (kernel=="Mahalanobis"){
-        K.func <- K.func.Mahalanobis
-    }
-
-    K <- rep(NA,n)
-    for (i in 1:n){
-        K[i] <- K.func(x=XAT[i,]-x,h.vec=h.vec,Sigma=cov(XMAT))
-    }
-    g.hat <- sum(y*K)/sum(K)
-
-    return(g.hat)
-}
-
-g.hat.func.vec <- Vectorize(g.hat.func,vectorize.args = "x")
