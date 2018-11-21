@@ -575,7 +575,7 @@ compute_kernelShap = function(model,
                                               nTest = nrow(l$Xtest),
                                               nosamp = empirical_settings$AICc_no_samp_per_optim)
 
-
+            nloops <- ifelse(empirical_settings$AICc_optimize_every_testobs,yes = nrow(l$Xtest),no = 1)
 
             ### Include test here that empirical settings is defined as it should be
 
@@ -593,14 +593,12 @@ compute_kernelShap = function(model,
                     cond_samp <- cut(cutters,quantile(cutters,(0:no_cond)/no_cond), include.lowest=TRUE, labels=these_cond)
                     cond_samp <- as.numeric(levels(cond_samp))[cond_samp]
 
-                    nloops <- ifelse(empirical_settings$AICc_optimize_every_testobs,yes = nrow(l$Xtest),no = 1)
-
-                    #### CONTINYE HERE DEFININT this.optimsamp replacing the second column with loop if AICc_optimize_every_testobs.
-                    # Maybe it is more clearcut if I split this in 2?
-
-                    this.optimsamp
 
                     for (loop in 1:nloops){
+                        this.optimsamp <- optimsamp
+                        if (empirical_settings$AICc_optimize_every_testobs){
+                            this.optimsamp$samp_test <- loop
+                        }
 
                         j <- 1
                         Xtrain.S.list <- X.pred.list <- list()
@@ -637,12 +635,17 @@ compute_kernelShap = function(model,
                                                                y = pred,
                                                                X = Xtrain.S,
                                                                kernel="Mahalanobis",
-                                                               scale_var=T,
+                                                               scale_var=F,
                                                                S_scale_dist = T,
+                                                               idcol = T,
                                                                lower = 0,
                                                                control=list(eval.max=empirical_settings$AIC_optim_max_eval,
                                                                             trace=0)))
-                            h_optim_mat[these_cond,loop] <- nlm.obj$par
+                            if (empirical_settings$AICc_optimize_every_testobs){
+                                h_optim_mat[these_cond,loop] <- nlm.obj$par
+                            } else {
+                                h_optim_mat[these_cond,] <- nlm.obj$par
+                            }
                         }
 
                     }
@@ -661,9 +664,16 @@ compute_kernelShap = function(model,
                     S.cols <- which(as.logical(S))
                     Sbar.cols <- which(as.logical(1-S))
 
-                    Xtrain.S <- subset(l$Xtrain,select=S.cols)[optimsamp$samp_train,]
-                    Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[optimsamp$samp_train,]
-                    Xtest.S <- subset(l$Xtest,select=S.cols)[optimsamp$samp_test,]
+                    for (loop in 1:nloops){
+                        this.optimsamp <- optimsamp
+                        if (empirical_settings$AICc_optimize_every_testobs){
+                            this.optimsamp$samp_test <- loop
+                        }
+
+
+                    Xtrain.S <- subset(l$Xtrain,select=S.cols)[this.optimsamp$samp_train,]
+                    Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[this.optimsamp$samp_train,]
+                    Xtest.S <- subset(l$Xtest,select=S.cols)[this.optimsamp$samp_test,]
 
                     Xtrain.S[,.id:=1]
                     setcolorder(Xtrain.S,".id") # moves the .id column to the front
@@ -677,17 +687,23 @@ compute_kernelShap = function(model,
                     if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
                         nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
                                                            objective = AICc.func.new,
-                                                           y = pred,
+                                                           y = pred+rnorm(50),
                                                            X = Xtrain.S,
                                                            kernel="Mahalanobis",
                                                            scale_var=F,
                                                            S_scale_dist = T,
+                                                           idcol = T,
                                                            lower = 0,
                                                            control=list(eval.max=empirical_settings$AIC_optim_max_eval,
                                                                         trace=0)))
-                        h_optim_mat[i,] <- nlm.obj$par
+                        if (empirical_settings$AICc_optimize_every_testobs){
+                            h_optim_mat[i,loop] <- nlm.obj$par
+                        } else {
+                            h_optim_mat[i,] <- nlm.obj$par
+                        }
                     }
                     # print(paste0("Optimized ", i ))
+                    }
 
                 }
 

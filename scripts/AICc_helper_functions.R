@@ -12,11 +12,11 @@ K.func.Mahalanobis.all <- function(X,h.vec,Sigma,S_scale_dist){
 
 
 # h.vec is vector of length q=ncol(X)
-H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){
+H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){ #### SPEEDUP: Make an Rcpp function doing all of this with Mahlanobis only.
     n <- nrow(X)
 
     H <- matrix(NA,ncol=n,nrow=n)
-    Sigma <- cov(X)
+    Sigma <- cov(X)   #### SPEEDUP: May move this outside both the H.func and the AICc-function.
 
     if (kernel=="Euclidean"){
         ### OLD VERSION
@@ -43,9 +43,15 @@ H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){
 
     if (kernel=="Mahalanobis"){
         H <- K.func.Mahalanobis.all(X=X,h.vec=h.vec,Sigma=Sigma,S_scale_dist = S_scale_dist)
-        for (i in 1:n){
-            H[i,] <- H[i,]/sum(H[i,])
-        }
+        H <- H/rowSums(H)
+
+        # OLD CODE
+        #        for (i in 1:n){
+        #            H[i,] <- H[i,]/sum(H[i,])
+        #        }
+
+
+
     }
 
     return(H)
@@ -56,7 +62,8 @@ H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){
 # Requires X to include a .id column as the first column in the X matrix, identifying how the H-matrix should be
 # diagonalized
 
-H.func.new <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){
+H.func.new <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){ #### SPEEDUP: Make an Rcpp function doing all of this witha loop of uniqe ids, and where X is only the matrix part, and
+                                                                               #### the .idcol is supplied as an integer vector to the function. Include only Mahlanobis only, Sigma supplied directly and with scaling of Mahlanobis, not the variables themselves
     H.list <- list()
     for(i in unique(X$.id)){
         H.list[[i]] <- H.func(h.vec=h.vec,
@@ -113,13 +120,13 @@ AICc.func.new <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_
         h.vec <- rep(h.vec,q)
     }
 
-    H <- H.func.new(h.vec = h.vec,X = X,kernel = kernel, scale_var = scale_var, S_scale_dist = S_scale_dist)
+    H <- H.func.new(h.vec = h.vec,X = X,kernel = kernel, scale_var = scale_var, S_scale_dist = S_scale_dist) #### SPEEDUP: Rcpp this
 
-    sigma.hat.sq <- sigma.hat.sq.func(y=y,
+    sigma.hat.sq <- sigma.hat.sq.func(y=y,    #### SPEEDUP: Rcpp this with log taken automatically
                                       H = H)
 
     tr.H <- sum(diag(H))
-    correction.term <- (1+tr.H/n)/(1-(tr.H+2)/n)
+    correction.term <- (1+tr.H/n)/(1-(tr.H+2)/n) #### SPEEDUP: Rcpp this with log taken automatically
 
     AICc <- log(sigma.hat.sq) + correction.term
     if(negative){
