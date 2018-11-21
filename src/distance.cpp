@@ -189,7 +189,7 @@ arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList,arma::mat Xtrain, arma
 
                 out.at(icol,j,k) = sum(square(tmp));
             }
-            // testing new stuff
+            // testing new stuff //// FOR NOW JUST DO THIS IN R INSTEAD !!!!!!
             if(normalize_rows){
                 // gettign the sum in an akward way
                 for(icol = 0; icol < ntrain; icol++){
