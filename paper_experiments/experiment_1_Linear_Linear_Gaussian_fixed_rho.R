@@ -12,8 +12,16 @@ library(mvtnorm)
 library(condMVNorm)
 library(stringi)
 
+#### NOTE: May consider running the below procedure multiple times to get a better representation of the error when optimizing sigma.
+#### May alternatively use the same training data, but new test observations every time, or consider other sampling methods
+
+#### Should anyhow try to write up the full AICc-function in RCpp -- that may give a large performance boost because that is
+#### currently what takes the most time.
+
+
+
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
-joint_csv_filename <- "all_results.csv" # Set to NULL if results should not be included in any joint results table
+joint_csv_filename <- "all_results_dim3.csv" # Set to NULL if results should not be included in any joint results table
 
 initial_current_csv_filename <- "Experiment_1_Linear_Linear_Gaussian_fixed_rho"
 true_model <- "Linear"
@@ -36,7 +44,7 @@ Sigma.list <- list(matrix(c(1,rho,rho,
                             rho,rho,1),ncol=3))
 
 this.seed <- 123
-#### Defining the true distribution of the variables and the model------
+#### Defining the true distribution of the variables and the model
 
 samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 
@@ -102,9 +110,3 @@ if(!is.null(joint_csv_filename)){
 
 
 ##### DONE ------------------
-
-
-
-# OLD RESULTS....
-#S_KS       G_KS   E_KS_0.1   E_KS_0.3
-#0.01789263 0.01903016 0.03861126 0.02175289
