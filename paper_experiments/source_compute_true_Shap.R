@@ -6,6 +6,6 @@ Shapley.true = Shapley_true(model = model,
                             pi.G = pi.G,
                             mu.list = mu.list,
                             Sigma.list = Sigma.list,
-                            int.samp=200,
+                            int.samp=1000,
                             l = l,
                             pred_zero = pred_zero)

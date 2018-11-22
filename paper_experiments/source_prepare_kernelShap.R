@@ -6,5 +6,6 @@ l <- prepare_kernelShap(
     Xtrain = Xtrain,
     Xtest = Xtest,
     exact = TRUE,
-    distance_metric = "Mahalanobis_scaled"
+    distance_metric = "Mahalanobis_scaled",
+    normalize_distance_rows = TRUE
 )

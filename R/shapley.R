@@ -426,7 +426,7 @@ get_predictions <- function(model,
 
         # Handle the computation of all training-test weights for ALL combinations here, before looping
         if (kernel_metric == "independence"){
-            W_kernel <- array(rnorm(length(these_wcomb)*nrow(Xtrain)),dim=c(nrow(Xtrain),length(these_wcomb))) # Just random noise to "fake" a distance between observations
+            W_kernel <- array(runif(length(these_wcomb)*nrow(Xtrain)),dim=c(nrow(Xtrain),length(these_wcomb))) # Just random noise to "fake" a distance between observations
         }
         if (kernel_metric =="Gaussian"){
             val <- t(t(-0.5*D[,these_wcomb])/h_optim_vec[these_wcomb]^2)
@@ -827,7 +827,14 @@ prepare_kernelShap <- function(m,
     }
 
     if(compute_distances){ # Only compute the distances if the empirical approach is used
-        D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist, normalize_rows = normalize_distance_rows) # This is D_S(,)^2 in the paper
+        D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
+        if (normalize_distance_rows){
+            colmin <- apply(X = D,MARGIN = c(2,3),FUN=min)
+            for(i in 1:2^m){
+                D[,,i] <- t(t(D[,,i])-colmin[,i])
+            }
+        }
+
     } else {
         D <- NULL
     }

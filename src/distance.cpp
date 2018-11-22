@@ -125,7 +125,7 @@ arma::cube prepare_gen_Mahlanobis_dist_cpp_old(arma::mat Xtrain, arma::mat Xtest
 //' @return Array of three dimensions containg the the squared distance for between all training and test observations for all feature combinations passed to the function.
 //' @author Martin Jullum
 // [[Rcpp::export]]
-arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList,arma::mat Xtrain, arma::mat Xtest, arma::mat mcov, bool S_scale_dist, bool normalize_rows) {
+arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList,arma::mat Xtrain, arma::mat Xtest, arma::mat mcov, bool S_scale_dist) {
 
     using namespace arma;
 
@@ -189,21 +189,6 @@ arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList,arma::mat Xtrain, arma
 
                 out.at(icol,j,k) = sum(square(tmp));
             }
-            // testing new stuff //// FOR NOW JUST DO THIS IN R INSTEAD !!!!!!
-            if(normalize_rows){
-                // gettign the sum in an akward way
-                for(icol = 0; icol < ntrain; icol++){
-                    rowsum +=out.at(icol,j,k);
-                }
-
-// old non-working code     rowsum = sum(sub2ind()out.subcube(0,j,k,out.n_rows,j,k)));
-                for(icol = 0; icol < ntrain; icol++){
-                    out.at(icol,j,k) *= 1.0/rowsum;
-                }
-            }
-
-            // end testing new stuff
-
 
         }
         out.slice(k) *= S_scale;

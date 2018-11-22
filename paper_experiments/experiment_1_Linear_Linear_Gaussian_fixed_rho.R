@@ -3,25 +3,30 @@
 #### Use the current setup for all experiements in the paper to ease reproducablity etc.
 
 #### Example 1 ####
-# Linear true model
-# Linear fitted model
-# Gaussian variables
-# Fixed rho
 
-rm(list = ls())
+#rm(list = ls())
 
 library(shapr)
 library(data.table)
 library(mvtnorm)
 library(condMVNorm)
+library(stringi)
 
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
+joint_csv_filename <- "all_results.csv" # Set to NULL if results should not be included in any joint results table
+
+initial_current_csv_filename <- "Experiment_1_Linear_Linear_Gaussian_fixed_rho"
+true_model <- "Linear"
+fitted_model <- "Linear"
+variables <- "Gaussian"
+notes <- "All var equal contribution"
+
 
 rho <- 0
 pi.G <- 1
-sd = 0.1
-nTrain <- 200# 2000
-nTest <- 100 # 1000
+sd_noise = 0.1
+nTrain <- 2000
+nTest <- 1000
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
 
@@ -42,8 +47,8 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
     return(X)
 }
 
-samp_model <- function(n,X,sd){
-    y <- X[,1] + X[,2] + X[,3] + rnorm(n = n,mean=0,sd=sd)
+samp_model <- function(n,X,sd_noise){
+    y <- X[,1] + X[,2] + X[,3] + rnorm(n = n,mean=0,sd=sd_noise)
 }
 
 fit_model_func <- function(XYtrain){
@@ -52,6 +57,8 @@ fit_model_func <- function(XYtrain){
 
 
 ####################################################################################################
+
+current_csv_filename = paste0(initial_current_csv_filename,"___",stri_rand_strings(n = 1,length = 5),".csv")
 
 source("paper_scripts/paper_helper_funcs.R") # Helper functions these experiments (mainly computing the true Shapley values)
 
@@ -73,36 +80,31 @@ source("paper_experiments/source_prepare_kernelShap.R")
 
 #### Computing the various Shapley approximations  --------
 
-source("paper_experiments/source_compute_approx_Shap.R")
+source("paper_experiments/source_compute_approx_Shap.R") # Creating Shapley.approx object
 
 #### Computing the true Shapley values ------
 
-
-source("paper_experiments/source_compute_true_Shap.R")
-
-#### Running AICc to optimize the sigma in the empirical version ####
-
-source("scripts/AICc_helper_functions.R")
-
-# Computing for the first test observation only
-
+source("paper_experiments/source_compute_true_Shap.R") # Creating the Shapley.true object
 
 #### Comparing the true and approximate values -------------
 
-# Mean absolute errors per variable (to see if the performance differ between variables)
-(absmeans.sigma.01 = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$sigma.01$Kshap[,-1])))
-(absmeans.sigma.03 = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$sigma.03$Kshap[,-1])))
-(absmeans.indep = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$indep$Kshap[,-1])))
-(absmeans.Gauss = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$Gauss$Kshap[,-1])))
-(absmeans.sigma.AICc = colMeans(abs(Shapley.true$exactShap[,-1]-Shapley.approx$sigma.AICc$Kshap[,-1])))
+
+source("paper_experiments/source_compute_results.R") # Creating the res.DT object
+
+print(res.DT) # Printing the results to the terminal
+
+#### Write results to csv files ------------
+fwrite(x = res.DT,file = paste0("paper_experiments/res/",current_csv_filename))
+
+if(!is.null(joint_csv_filename)){
+    fwrite(x = res.DT,file = paste0("paper_experiments/res/",joint_csv_filename),append = T)
+}
 
 
-# Mean of the absolute errors over all variables
-res_to_paper <- data.frame(S_KS=mean(absmeans.indep),G_KS = mean(absmeans.Gauss),E_KS_0.1=mean(absmeans.sigma.01),E_KS_0.3=mean(absmeans.sigma.03),E_KS_AICc=mean(absmeans.sigma.AICc),TreeSHAP = NA)
-spec <- data.frame(gx = "Linear", fx="Linear",px="Gaussian",rho=0)
-res_to_paper <- cbind(spec,res_to_paper)
+##### DONE ------------------
+
+
+
+# OLD RESULTS....
 #S_KS       G_KS   E_KS_0.1   E_KS_0.3
 #0.01789263 0.01903016 0.03861126 0.02175289
-
-# Insert ranking based measures etc. here as well.
-

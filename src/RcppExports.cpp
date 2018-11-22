@@ -32,8 +32,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gen_Mahlanobis_dist_cpp
-arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList, arma::mat Xtrain, arma::mat Xtest, arma::mat mcov, bool S_scale_dist, bool normalize_rows);
-RcppExport SEXP _shapr_gen_Mahlanobis_dist_cpp(SEXP featureListSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP normalize_rowsSEXP) {
+arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList, arma::mat Xtrain, arma::mat Xtest, arma::mat mcov, bool S_scale_dist);
+RcppExport SEXP _shapr_gen_Mahlanobis_dist_cpp(SEXP featureListSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,8 +42,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type Xtest(XtestSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
-    Rcpp::traits::input_parameter< bool >::type normalize_rows(normalize_rowsSEXP);
-    rcpp_result_gen = Rcpp::wrap(gen_Mahlanobis_dist_cpp(featureList, Xtrain, Xtest, mcov, S_scale_dist, normalize_rows));
+    rcpp_result_gen = Rcpp::wrap(gen_Mahlanobis_dist_cpp(featureList, Xtrain, Xtest, mcov, S_scale_dist));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -91,7 +90,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_shapr_distance_cpp", (DL_FUNC) &_shapr_distance_cpp, 2},
     {"_shapr_prepare_gen_Mahlanobis_dist_cpp_old", (DL_FUNC) &_shapr_prepare_gen_Mahlanobis_dist_cpp_old, 3},
-    {"_shapr_gen_Mahlanobis_dist_cpp", (DL_FUNC) &_shapr_gen_Mahlanobis_dist_cpp, 6},
+    {"_shapr_gen_Mahlanobis_dist_cpp", (DL_FUNC) &_shapr_gen_Mahlanobis_dist_cpp, 5},
     {"_shapr_impute_cpp", (DL_FUNC) &_shapr_impute_cpp, 5},
     {"_shapr_weighted_matrix", (DL_FUNC) &_shapr_weighted_matrix, 3},
     {"_shapr_feature_matrix_cpp", (DL_FUNC) &_shapr_feature_matrix_cpp, 2},
