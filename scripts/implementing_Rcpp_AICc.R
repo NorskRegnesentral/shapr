@@ -35,6 +35,37 @@ dim(aa_new)
 
 all.equal(aa_new,aa_old2)
 
+### FORTSETT HER !!!!
+
+### lag Rcpp funksjon ac sigma.hat.sq.func også, samt correction term, og til slutt en hovedfunksjon som
+# tar inn Rcpp:List med alt som trengs, og så looper gjennom hver del og til slutt summerer alt til AICc-formelen
+
+
+sourceCpp("src/AICc.cpp")
+
+X = matrix(rnorm(5*3),ncol=3)
+Sigma <- cov(X)+0.1   #### SPEEDUP: May move this outside both the H.func and the AICc-function.
+
+H = H_cpp(X,mcov = Sigma,S_scale_dist = S_scale_dist,h = 0.2)
+y = rnorm(nrow(H))
+
+sighat_new = sigma_hat_sq_cpp(H,y,ret_log=F)
+
+sighat_old = sigma.hat.sq.func(y,H)
+
+all.equal(sighat_new,sighat_old)
+
+
+sourceCpp("src/AICc.cpp")
+
+correction_term_cpp(H)
+tr.H <- sum(diag(H)) ### THink a bit about this... is trace(H) always equal to -nrow(H)? that is diagonal always one? YES, but is that how it should be? check the paper!
+n = nrow(H)
+(correction.term <- (1+tr.H/n)/(1-(tr.H+2)/n))
+
+
+################# OLD
+
 ##### NOw we continue with H_func.new which needs to build a block diagnoal matrix of the H-functions.
 
 ### testing
@@ -48,16 +79,26 @@ y = rnorm(40)
 sigma.hat.sq <- as.numeric(t(y)%*%t(diag(n)-H)%*%(diag(n)-H)%*%y)/n
 as.numeric(t(y[1:20])%*%t(diag(20)-H[1:20,1:20])%*%(diag(20)-H[1:20,1:20])%*%y[1:20])/n+as.numeric(t(y[21:40])%*%t(diag(20)-H[21:40,21:40])%*%(diag(20)-H[21:40,21:40])%*%y[21:40])/n
 
-sourceCpp("src/AICc.cpp")
 
 
 aa_new = H_cpp(X,mcov = Sigma,S_scale_dist = S_scale_dist,h = 0.2)
 
 
+#aa_new2 = H_new_cpp(X,mcov = Sigma,S_scale_dist = S_scale_dist,h = 0.2)
 
-aa_new2 = H_new_cpp(X,mcov = Sigma,S_scale_dist = S_scale_dist,h = 0.2)
+#all.equal(aa_new,aa_new2)
 
-all.equal(aa_new,aa_new2)
+
+
+
+
+############
+
+## OLD
+
+
+
+
 
 # Gives the same, so can put the H matrices in a list, and just loop over the list elements when doing the various computations
 
@@ -85,11 +126,9 @@ test_new = H_new_cpp(X.list,mcov = Sigma.list,S_scale_dist = S_scale_dist,h = 0.
 
 all.equal(test_old,test_new)
 
-### FORTSETT HER !!!!
-
 # Så ideen er å loope over antall liste-elementer, kjøre H_cpp på alle dem og lagre resultatene i en
 # std::vector<arma::mat>
-std::vector<arma::mat>
+#std::vector<arma::mat>
 
 
 
