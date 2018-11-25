@@ -18,3 +18,7 @@ tmp/
 *.out
 
 *.Rout
+
+src-i386/
+
+src-x64/

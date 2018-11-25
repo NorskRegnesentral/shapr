@@ -6,6 +6,20 @@
 
 using namespace Rcpp;
 
+// H_cpp
+arma::mat H_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h);
+RcppExport SEXP _shapr_H_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
+    Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
+    Rcpp::traits::input_parameter< double >::type h(hSEXP);
+    rcpp_result_gen = Rcpp::wrap(H_cpp(X, mcov, S_scale_dist, h));
+    return rcpp_result_gen;
+END_RCPP
+}
 // distance_cpp
 arma::Cube<double> distance_cpp(NumericMatrix Xtrain, NumericMatrix Xtest);
 RcppExport SEXP _shapr_distance_cpp(SEXP XtrainSEXP, SEXP XtestSEXP) {
@@ -88,6 +102,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_shapr_H_cpp", (DL_FUNC) &_shapr_H_cpp, 4},
     {"_shapr_distance_cpp", (DL_FUNC) &_shapr_distance_cpp, 2},
     {"_shapr_prepare_gen_Mahlanobis_dist_cpp_old", (DL_FUNC) &_shapr_prepare_gen_Mahlanobis_dist_cpp_old, 3},
     {"_shapr_gen_Mahlanobis_dist_cpp", (DL_FUNC) &_shapr_gen_Mahlanobis_dist_cpp, 5},
