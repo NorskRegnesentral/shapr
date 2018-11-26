@@ -68,6 +68,8 @@ arma::mat H_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h) {
 
     out = exp(-out);
 
+    out = normalise(out,1,1);
+
     return out;
 }
 
@@ -104,6 +106,36 @@ double sigma_hat_sq_cpp(arma::mat H, arma::vec y, bool ret_log) {
     return(out);
 }
 
+//' sigma_hat_sq-function
+//'
+//' @param H matrix being the output from H_cpp
+//' @param y vector with the "response variable"
+//' @param ret_log logical indicating whether to return the logarithm of the sigma_sq
+//' @export
+//'
+//' @return Scalar
+//' @author Martin Jullum
+// [[Rcpp::export]]
+double rss_cpp(arma::mat H, arma::vec y) {
+
+    // Define variables
+    int n = y.n_elem;
+    arma::mat one(n,n,fill::zeros);
+    arma::vec two(n,fill::zeros);
+    double out;
+
+    arma::mat diag(n,n,fill::eye);
+
+    // simplifies
+    one = diag - H;
+    two = one*y;
+
+    out = as_scalar(two.t()*two);
+
+    return(out);
+}
+
+
 //' correction term in AICc formula
 //'
 //' @param H matrix being the output from H_cpp
@@ -125,7 +157,120 @@ double correction_term_cpp(arma::mat H) {
     return(out);
 }
 
+//' correction term with trace_input in AICc formula
+//'
+//' @param H matrix being the output from H_cpp
+//' @export
+//'
+//' @return Scalar
+//' @author Martin Jullum
+// [[Rcpp::export]]
+double correction_term_trace_input_cpp(double tr_H,int n) {
 
+    double out = (1.0+tr_H/n)/(1.0-(tr_H+2.0)/n);
+
+    return(out);
+}
+
+
+//'  AICc formula for single X
+//'
+//' @param X matrix with "covariates"
+//' @param mcov covariance matrix
+//' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+//' @param h numeric specifying the scaling (sigma)
+//' @param y vector with the "response variable"
+//'
+//' @export
+//'
+//' @return Scalar with the numeric value of the AICc formula
+//' @author Martin Jullum
+// [[Rcpp::export]]
+double AICc_single_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y, bool negative) {
+
+    bool ret_log = true;
+
+    arma::mat H = H_cpp(X, mcov, S_scale_dist, h);
+
+
+    double log_sigma_hat_sq = sigma_hat_sq_cpp(H, y, ret_log);
+    double correction = correction_term_cpp(H);
+
+    double out = log_sigma_hat_sq + correction;
+
+    if(negative){
+        out *= -1;
+    }
+
+    return(out);
+}
+
+//'  Intermediate function for computing the full AICc with several X's etc
+//'
+//' @param X matrix with "covariates"
+//' @param mcov covariance matrix
+//' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+//' @param h numeric specifying the scaling (sigma)
+//' @param y vector with the "response variable"
+//'
+//' @export
+//'
+//' @return Scalar with the numeric value of the AICc formula
+//' @author Martin Jullum
+// [[Rcpp::export]]
+arma::vec AICc_full_intermediate_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y) {
+
+    arma::vec out(3);
+
+    arma::mat H = H_cpp(X, mcov, S_scale_dist, h);
+
+    double rss = rss_cpp(H, y);
+    double tr_H = trace(H);
+
+    out(0) = rss;
+    out(1) = tr_H;
+    out(2) = y.n_elem;
+
+    return(out);
+}
+
+
+//'  AICc formula for several sets
+//'
+//' @param X matrix with "covariates"
+//' @param mcov covariance matrix
+//' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+//' @param h numeric specifying the scaling (sigma)
+//' @param y vector with the "response variable"
+//'
+//' @export
+//'
+//' @return Scalar with the numeric value of the AICc formula
+//' @author Martin Jullum
+// [[Rcpp::export]]
+double AICc_full_cpp(Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, double h, Rcpp::List y_list, bool negative) {
+
+    int nloops = X_list.size();
+    arma::vec summer(3);
+    double out = 0;
+
+    for (int k = 0; k < nloops; ++k){
+        arma::mat X = X_list[k];
+        arma::mat mcov = mcov_list[k];
+        arma::vec y = y_list[k];
+
+        summer += AICc_full_intermediate_cpp(X, mcov, S_scale_dist, h,  y);
+
+    }
+
+    out = log(summer(0)/summer(2)) + correction_term_trace_input_cpp(summer(1),summer(2));
+
+    if(negative){
+        out *= -1;
+    }
+
+    return(out);
+}
 
 
 

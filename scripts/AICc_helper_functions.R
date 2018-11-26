@@ -132,6 +132,11 @@ AICc.func.new <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_
     if(negative){
         AICc <- -AICc
     }
+
+    print(sigma.hat.sq)
+    print(correction.term)
+    print(tr.H)
+
     return(AICc)
 }
 
