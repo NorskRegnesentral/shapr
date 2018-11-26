@@ -16,6 +16,63 @@ H_cpp <- function(X, mcov, S_scale_dist, h) {
     .Call(`_shapr_H_cpp`, X, mcov, S_scale_dist, h)
 }
 
+#' sigma_hat_sq-function
+#'
+#' @param H matrix being the output from H_cpp
+#' @param y vector with the "response variable"
+#' @param ret_log logical indicating whether to return the logarithm of the sigma_sq
+#' @export
+#'
+#' @return Scalar
+#' @author Martin Jullum
+rss_cpp <- function(H, y) {
+    .Call(`_shapr_rss_cpp`, H, y)
+}
+
+#' correction term with trace_input in AICc formula
+#'
+#' @param tr_H numeric giving the trace of H
+#' @param n numeric given the number of rows in H
+#' @export
+#'
+#' @return Scalar
+#' @author Martin Jullum
+correction_cpp <- function(tr_H, n) {
+    .Call(`_shapr_correction_cpp`, tr_H, n)
+}
+
+#'  Temp-function for computing the full AICc with several X's etc
+#'
+#' @param X matrix with "covariates"
+#' @param mcov covariance matrix
+#' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+#' @param h numeric specifying the scaling (sigma)
+#' @param y vector with the "response variable"
+#'
+#' @export
+#'
+#' @return Scalar with the numeric value of the AICc formula
+#' @author Martin Jullum
+AICc_full_tmp_cpp <- function(X, mcov, S_scale_dist, h, y) {
+    .Call(`_shapr_AICc_full_tmp_cpp`, X, mcov, S_scale_dist, h, y)
+}
+
+#'  AICc formula for several sets
+#'
+#' @param h numeric specifying the scaling (sigma)
+#' @param X matrix with "covariates"
+#' @param mcov covariance matrix
+#' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+#' @param y vector with the "response variable"
+#'
+#' @export
+#'
+#' @return Scalar with the numeric value of the AICc formula
+#' @author Martin Jullum
+AICc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) {
+    .Call(`_shapr_AICc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
+}
+
 #' Get distance
 #'
 #' @param Xtrain Dataframe

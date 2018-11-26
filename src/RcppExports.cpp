@@ -20,6 +20,61 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rss_cpp
+double rss_cpp(arma::mat H, arma::vec y);
+RcppExport SEXP _shapr_rss_cpp(SEXP HSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type H(HSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rss_cpp(H, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// correction_cpp
+double correction_cpp(double tr_H, int n);
+RcppExport SEXP _shapr_correction_cpp(SEXP tr_HSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type tr_H(tr_HSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(correction_cpp(tr_H, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// AICc_full_tmp_cpp
+arma::vec AICc_full_tmp_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y);
+RcppExport SEXP _shapr_AICc_full_tmp_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
+    Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
+    Rcpp::traits::input_parameter< double >::type h(hSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(AICc_full_tmp_cpp(X, mcov, S_scale_dist, h, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// AICc_full_cpp
+double AICc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative);
+RcppExport SEXP _shapr_AICc_full_cpp(SEXP hSEXP, SEXP X_listSEXP, SEXP mcov_listSEXP, SEXP S_scale_distSEXP, SEXP y_listSEXP, SEXP negativeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type h(hSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type X_list(X_listSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type mcov_list(mcov_listSEXP);
+    Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type y_list(y_listSEXP);
+    Rcpp::traits::input_parameter< bool >::type negative(negativeSEXP);
+    rcpp_result_gen = Rcpp::wrap(AICc_full_cpp(h, X_list, mcov_list, S_scale_dist, y_list, negative));
+    return rcpp_result_gen;
+END_RCPP
+}
 // distance_cpp
 arma::Cube<double> distance_cpp(NumericMatrix Xtrain, NumericMatrix Xtest);
 RcppExport SEXP _shapr_distance_cpp(SEXP XtrainSEXP, SEXP XtestSEXP) {
@@ -103,6 +158,10 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_shapr_H_cpp", (DL_FUNC) &_shapr_H_cpp, 4},
+    {"_shapr_rss_cpp", (DL_FUNC) &_shapr_rss_cpp, 2},
+    {"_shapr_correction_cpp", (DL_FUNC) &_shapr_correction_cpp, 2},
+    {"_shapr_AICc_full_tmp_cpp", (DL_FUNC) &_shapr_AICc_full_tmp_cpp, 5},
+    {"_shapr_AICc_full_cpp", (DL_FUNC) &_shapr_AICc_full_cpp, 6},
     {"_shapr_distance_cpp", (DL_FUNC) &_shapr_distance_cpp, 2},
     {"_shapr_prepare_gen_Mahlanobis_dist_cpp_old", (DL_FUNC) &_shapr_prepare_gen_Mahlanobis_dist_cpp_old, 3},
     {"_shapr_gen_Mahlanobis_dist_cpp", (DL_FUNC) &_shapr_gen_Mahlanobis_dist_cpp, 5},
