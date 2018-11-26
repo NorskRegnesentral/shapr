@@ -118,9 +118,9 @@ sourceCpp("src/AICc.cpp")
 
 h = 0.2
 set.seed(123)
-n <- 100
-p = 10
-K = 2
+n <- 500
+p = 2
+K = 5
 kernel="Mahalanobis"
 scale_var=F
 S_scale_dist = T
@@ -134,7 +134,7 @@ X_list_dt <- list()
 for (k in 1:K){
     X_list[[k]] = matrix(rnorm(n*p),ncol=p)
     mcov_list[[k]] <- cov(X_list[[k]])   #### SPEEDUP: May move this outside both the H.func and the AICc-function.
-    y_list[[k]] = rnorm(nrow(X_list[[k]]))
+    y_list[[k]] = rowSums(X_list[[1]])
 
     X_list_dt[[k]] = data.table(X_list[[k]])
 }
@@ -144,6 +144,7 @@ for (k in 1:K){
 X_for_R = rbindlist(X_list_dt,idcol = T)
 y_for_R = unlist(y_list)
 
+tt=proc.time()
 AICc_R = AICc.func.new(h.vec = h,
                        y = y_for_R,
                        X = X_for_R,
@@ -153,24 +154,56 @@ AICc_R = AICc.func.new(h.vec = h,
                        S_scale_dist = S_scale_dist,
                        idcol = T)
 
-AICc_cpp = AICc_full_cpp(X_list = X_list,
+print(proc.time()-tt)
+#28.624   9.869  38.516
+
+tt=proc.time()
+AICc_cpp = AICc_full_cpp(h = h,
+                         X_list = X_list,
                          mcov_list = mcov_list,
                          S_scale_dist = S_scale_dist,
-                         h = h,
                          y_list = y_list,
                          negative = negative)
+print(proc.time()-tt)
+#12.265   0.517  11.049
+
 
 all.equal(AICc_R,AICc_cpp)
 
-#### testing
+######## Just doing a test with nlminb as well
 
-aa=AICc_full_intermediate_cpp(X_list[[1]], mcov_list[[1]], S_scale_dist, h,  y_list[[1]])+AICc_full_intermediate_cpp(X_list[[2]], mcov_list[[2]], S_scale_dist, h,  y_list[[2]])
 
-log(aa[1])+correction_term_trace_input_cpp(aa[2],aa[3])
 
-log(0.6546109) + 1.2144005
+tt=proc.time()
 
-AICc.func(h.vec = h,y = y_list[[2]],X = X_list[[2]],negative = negative,kernel = kernel,scale_var = scale_var,S_scale_dist = S_scale_dist)
+nlm.obj_R <- nlminb(start = 0.1,
+                    objective = AICc.func.new,
+                    y = y_for_R,
+                    X = X_for_R,
+                    kernel=kernel,
+                    scale_var=scale_var,
+                    S_scale_dist = S_scale_dist,
+                    negative = F,
+                    idcol = T,
+                    lower = 0,
+                    control=list(eval.max=20,trace=1))
+print(proc.time()-tt)
+#4.378   0.665   5.042
+
+tt=proc.time()
+
+nlm.obj_R <- nlminb(start = 0.1,
+                    objective = AICc_full_cpp,
+                    X_list = X_list,
+                    mcov_list = mcov_list,
+                    S_scale_dist = S_scale_dist,
+                    y_list = y_list,
+                    negative = F,
+                    lower = 0,
+                    control=list(eval.max=20,trace=1))
+print(proc.time()-tt)
+#1.699   0.001   0.504
+
 
 
 ################# OLD
