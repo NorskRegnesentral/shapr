@@ -232,8 +232,6 @@ Shapley.approx$sigma.AICc = compute_kernelShap(model = model,
                                                kernel_metric = "Gaussian")
 
 
-Shapley.tree = predict(model,xgb.test,predcontrib=T)
-Shapley.tree = Shapley.tree[,c(m+1,1:m)]
 
 
 #### Comparing the true and approximate values -------------
