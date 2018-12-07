@@ -644,7 +644,41 @@ compute_kernelShap = function(model,
                                                                idcol = T,
                                                                lower = 0,
                                                                control=list(eval.max=empirical_settings$AIC_optim_max_eval,
-                                                                            trace=0)))
+                                                                            trace=verbose)))
+
+                            #### Testing
+
+                            X_list_cpp <- list()
+                            mcov_list_cpp <- list()
+                            for (ii in 1:length(Xtrain.Sbar)){
+                                X_list_cpp[[ii]] <- as.matrix(Xtrain.S.list[[ii]])
+                                colnames(X_list_cpp[[ii]]) <- rep("",i) # Yes i here, not ii
+                                mcov_list_cpp[[ii]] <- cov(X_list_cpp[[ii]])
+                            }
+                            y_list_cpp <- list()
+                            ii <- 1
+                            for (this_cond in unique(cond_samp)){
+                                these_inds <- which(cond_samp==this_cond)
+                                y_list_cpp[[ii]] <- pred[these_inds]
+                                ii <- ii+1
+                            }
+
+
+                            nlm.obj2 <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
+                                                               objective = AICc_full_cpp,
+                                                               X_list = X_list_cpp,
+                                                               mcov_list = mcov_list_cpp,
+                                                               S_scale_dist = T,
+                                                               y_list = y_list_cpp,
+                                                               negative = F,
+                                                               lower = 0,
+                                                               control=list(eval.max=empirical_settings$AIC_optim_max_eval,
+                                                                            trace=verbose)))
+ ####################### SOMETHING STRANGE HERE, the results form nlm.obj and nlm.obj2 are not he same. Even evaluating the AICc in the
+                            #### 0.1 gives differnet numbers. I believe this was all checked in the implementing_Rcpp_AICc.R-script!!! FIGURE THIS OUT!
+
+
+
                             if (empirical_settings$AICc_optimize_every_testobs){
                                 h_optim_mat[these_cond,loop] <- nlm.obj$par
                             } else {
