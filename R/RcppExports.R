@@ -10,7 +10,7 @@
 #'
 #' @export
 #'
-#' @return Matrix of dimension ncol(X) \times ncol(X)
+#' @return Matrix of dimension ncol(X)*ncol(X)
 #' @author Martin Jullum
 H_cpp <- function(X, mcov, S_scale_dist, h) {
     .Call(`_shapr_H_cpp`, X, mcov, S_scale_dist, h)

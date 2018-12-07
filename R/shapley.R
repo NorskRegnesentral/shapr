@@ -576,6 +576,8 @@ compute_kernelShap = function(model,
             optimsamp <- samp_train_test_comb(nTrain = nrow(l$Xtrain),
                                               nTest = nrow(l$Xtest),
                                               nosamp = empirical_settings$AICc_no_samp_per_optim)
+            empirical_settings$AICc_no_samp_per_optim <- nrow(optimsamp) # Updating this parameter (if larger than nTrain*nTest)
+
 
             nloops <- ifelse(empirical_settings$AICc_optimize_every_testobs,yes = nrow(l$Xtest),no = 1)
 
@@ -744,7 +746,9 @@ compute_kernelShap = function(model,
     }
 
     for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction function is not parallelized.
-        print(sprintf("%d out of %d", i, l$Xtest[, .N]))
+        if(verbose>0){
+            print(sprintf("%d out of %d", i, l$Xtest[, .N]))
+        }
 
         ll[[i]] <- get_predictions(
             model = model,

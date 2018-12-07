@@ -11,7 +11,7 @@ using namespace arma;
 //'
 //' @export
 //'
-//' @return Matrix of dimension ncol(X) \times ncol(X)
+//' @return Matrix of dimension ncol(X)*ncol(X)
 //' @author Martin Jullum
 // [[Rcpp::export]]
 arma::mat H_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h) {
