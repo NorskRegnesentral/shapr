@@ -172,12 +172,26 @@ all.equal(AICc_R,AICc_cpp)
 
 ## temp test
 
-AICc_cpp = AICc_full_cpp_alt(h = h,
-                         X_list = X_list,
-                         mcov_list = mcov_list,
-                         S_scale_dist = S_scale_dist,
-                         y_list = y_list,
-                         negative = negative)
+AICc_full_cpp_alt(h = h,
+                  X_list = X_list[1:2],
+                  mcov_list = mcov_list[1:2],
+                  S_scale_dist = S_scale_dist,
+                  y_list = y_list[1:2],
+                  negative = negative)
+
+AICc_full_cpp_alt(h = h,
+                  X_list = X_list[3:5],
+                  mcov_list = mcov_list[3:5],
+                  S_scale_dist = S_scale_dist,
+                  y_list = y_list[3:5],
+                  negative = negative)
+
+AICc_full_cpp_alt(h = h,
+                  X_list = X_list,
+                  mcov_list = mcov_list,
+                  S_scale_dist = S_scale_dist,
+                  y_list = y_list,
+                  negative = negative)
 
 
 

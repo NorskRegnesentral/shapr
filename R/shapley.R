@@ -578,6 +578,7 @@ compute_kernelShap = function(model,
                                               nTest = nrow(l$Xtest),
                                               nosamp = empirical_settings$AICc_no_samp_per_optim,
                                               separate = empirical_settings$AICc_optimize_every_testobs)
+
             empirical_settings$AICc_no_samp_per_optim <- nrow(optimsamp) # Updating this parameter (if larger than nTrain*nTest)
 
 

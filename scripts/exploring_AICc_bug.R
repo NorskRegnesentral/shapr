@@ -147,6 +147,57 @@ verbose <- TRUE
 mu <- Sigma <- NULL
 
 
+#### Just some minor testing once agian
+
+for (h in c(0.001,0.005,0.01,0.05,0.1,0.2,0.5)){
+    summer=AICc_full_tmp_cpp(X = X_list[[1]][1:500,],
+                      mcov = mcov_list[[1]],
+                      S_scale_dist = T,
+                      y = y_list[[1]][1:500],
+                      h = h)
+
+
+    print(c(summer[3],log(summer[1]/summer[3]),correction_cpp(summer[2],summer[3]),sum(c(log(summer[1]/summer[3]),correction_cpp(summer[2],summer[3])))))
+
+}
+
+bb=numeric()
+for (aa in seq(100,2000,100)){
+these = sample(1:2000,aa,replace=F)
+    summer=AICc_full_tmp_cpp(X = X_list[[1]][these,],
+                             mcov = mcov_list[[1]],
+                             S_scale_dist = T,
+                             y = y_list[[1]][these],
+                             h = 0.01)
+    print(aa)
+    bb[aa] = summer[1]/summer[3]
+
+}
+
+    print(summer[1]/summer[3])
+    H = H_cpp(X = X_list[[1]][1:aa,],mcov = mcov_list[[1]],S_scale_dist = T,h = 0.01)
+    org = y_list[[1]][1:aa]
+    est = H%*%y_list[[1]][1:aa]
+
+    var(org-est)
+
+    one = diag(aa) - H
+    two = one%*%y_list[[1]][1:aa]
+
+    out = (t(two)%*%two)
+
+    print(out/summer[3])
+
+
+
+}
+plot(bb)
+
+    print(c(summer[3],log(summer[1]/summer[3]),correction_cpp(summer[2],summer[3]),sum(c(log(summer[1]/summer[3]),correction_cpp(summer[2],summer[3])))))
+
+}
+
+
 
 ##############
 

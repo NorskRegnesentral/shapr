@@ -154,7 +154,11 @@ AICc.func.new <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_
 #' Need to improve this help file.
 #'
 #' @inheritParams global_arguments
-#' @param separate Logical indicating whether the train and test data should be sampled separatedly or in a joint sampling space
+#' @param separate Logical indicating whether the train and test data should be sampled separatedly or in a joint sampling space.
+#' If they are sampled separetly (which typically would be used when optimizing more than one distribution at once) we sample with
+#' replacement if more samples than training data. Not optimal, but for now fine if careful when using more samples than the number
+#' training observatiosn while at the same time doing optimization over every testobservation.
+#'
 #' @return numeric
 #'
 #' @export
@@ -164,10 +168,10 @@ AICc.func.new <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_
 samp_train_test_comb <- function(nTrain,nTest,nosamp,separate = F){
 
 
-    if (separate){
+    if (separate){ # With separate sampling, we do sampling with replacement if nosamp is larger than nTrain
         sampinds_train = 1:nTrain
         sampinds_test = 1:nTest
-        if(nosamp < length(sampinds_train)){ # Not optimal in general, but works for the current purpose. test data is always sampled,
+        if(nosamp < nTrain){ # Not optimal in general, but works for the current purpose. test data is always sampled,
                                      # while only reducing if the training data goes above nosamp.
             samp_train <- sample(x = sampinds_train,
                                  size = nosamp,
@@ -176,10 +180,12 @@ samp_train_test_comb <- function(nTrain,nTest,nosamp,separate = F){
                                 size = nosamp,
                                 replace = nosamp>length(sampinds_test))
         } else {
-            samp_train <- sampinds_train
+            samp_train <- sample(x = sampinds_train,
+                                 size = nosamp,
+                                 replace = T)
             samp_test <- sample(x = sampinds_test,
-                                size = length(sampinds_train),
-                                replace = length(sampinds_train)>length(sampinds_test))
+                                size = nosamp,
+                                replace = T)
         }
 
     } else {
