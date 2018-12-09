@@ -598,6 +598,67 @@ compute_kernelShap = function(model,
                     cond_samp <- as.numeric(levels(cond_samp))[cond_samp]
 
 
+
+                    for (loop in 1:nloops){
+                        this.optimsamp <- optimsamp
+                        if (empirical_settings$AICc_optimize_every_testobs){
+                            this.optimsamp$samp_test <- loop
+                        }
+
+                        j <- 1
+                        X_list <- X.pred.list <- m_cov_list <- list()
+                        for (this_cond in unique(cond_samp)){
+
+                            these_inds <- which(cond_samp==this_cond)
+
+                            S <- l$S[this_cond,]
+
+                            S.cols <- which(as.logical(S))
+                            Sbar.cols <- which(as.logical(1-S))
+
+                            X_list[[j]] <- as.matrix(subset(l$Xtrain,select=S.cols)[this.optimsamp$samp_train[these_inds],])
+                            m_cov_list[[j]] <- cov(X_list[[j]])
+
+                            Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[this.optimsamp$samp_train[these_inds],]
+                            Xtest.S <- subset(l$Xtest,select=S.cols)[this.optimsamp$samp_test[these_inds],]
+                            X.pred.list[[j]] <- cbind(Xtrain.Sbar,Xtest.S)
+
+                            j <- j + 1
+                        }
+
+                        # Combining the X's for doing prediction
+                        X.pred <- rbindlist(X.pred.list,use.names=T)
+                        X.nms <- colnames(Xtrain)
+                        setcolorder(X.pred,X.nms)
+                        # Doing prediction jointly (for speed), and then splitting them back into the y_list
+                        pred <- pred_vector(model=model,data=X.pred)
+                        y_list = split(pred,cond_samp)
+                        names(y_list) = NULL
+
+
+                        if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
+                            nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
+                                                                objective = AICc_full_cpp,
+                                                                X_list = X_list,
+                                                                mcov_list = mcov_list,
+                                                                S_scale_dist = T,
+                                                                y_list = y_list,
+                                                                negative = F,
+                                                                lower = 0,
+                                                                control=list(eval.max=empirical_settings$AIC_optim_max_eval,
+                                                                             trace=verbose)))
+
+
+                            if (empirical_settings$AICc_optimize_every_testobs){
+                                h_optim_mat[these_cond,loop] <- nlm.obj$par
+                            } else {
+                                h_optim_mat[these_cond,] <- nlm.obj$par
+                            }
+                        }
+
+                    }
+
+
                     for (loop in 1:nloops){
                         this.optimsamp <- optimsamp
                         if (empirical_settings$AICc_optimize_every_testobs){
@@ -650,7 +711,7 @@ compute_kernelShap = function(model,
 
                             X_list_cpp <- list()
                             mcov_list_cpp <- list()
-                            for (ii in 1:length(Xtrain.Sbar)){
+                            for (ii in 1:length(Xtrain.S.list)){
                                 X_list_cpp[[ii]] <- as.matrix(Xtrain.S.list[[ii]])
                                 colnames(X_list_cpp[[ii]]) <- rep("",i) # Yes i here, not ii
                                 mcov_list_cpp[[ii]] <- cov(X_list_cpp[[ii]])

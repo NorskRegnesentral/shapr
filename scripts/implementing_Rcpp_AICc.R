@@ -118,7 +118,7 @@ sourceCpp("src/AICc.cpp")
 
 h = 0.2
 set.seed(123)
-n <- 500
+n <- 5
 p = 2
 K = 5
 kernel="Mahalanobis"
@@ -132,9 +132,9 @@ y_list <- list()
 
 X_list_dt <- list()
 for (k in 1:K){
-    X_list[[k]] = matrix(rnorm(n*p),ncol=p)
+    X_list[[k]] = matrix(rnorm((n+1*k)*p),ncol=p)
     mcov_list[[k]] <- cov(X_list[[k]])   #### SPEEDUP: May move this outside both the H.func and the AICc-function.
-    y_list[[k]] = rowSums(X_list[[1]])
+    y_list[[k]] = rowSums(X_list[[k]])
 
     X_list_dt[[k]] = data.table(X_list[[k]])
 }
