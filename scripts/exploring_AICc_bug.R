@@ -181,6 +181,24 @@ mean(test^2)
 mean(test2^2)
 mean(test3^2)
 
+### The whole training alogrighm is changed when I increase the number of samples. that is the problem, so cannot do that directly.
+### Could be done by using distance to all when computing the sd, but only doing that for some of the samples. Need to figure out how
+### how the H should be at that point though. Need further work (not now)
+
+### WHat remains now is to see how the algorithm works when doing the exact thing (with all training samples). Can still do it
+### over each_k are all dist at once (need to implement this then), and in theory with more test samples (will not do that now!)
+
+## TODO:
+
+# check how nosamp=2000 works for the current example with full optimization for each k and all (fewer testobs)
+# Check what is the optimal choice inserting different fixed sigmas
+
+# Use a different example and do the same to see how that turns out there.
+
+
+
+
+
 
     print(summer[1]/summer[3])
     H = H_cpp(X = X_list[[1]][1:aa,],mcov = mcov_list[[1]],S_scale_dist = T,h = 0.01)
