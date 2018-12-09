@@ -174,6 +174,14 @@ these = sample(1:2000,aa,replace=F)
 
 }
 
+test=rnorm(100)
+test2=rnorm(1000)
+test3 = rnorm(10000)
+mean(test^2)
+mean(test2^2)
+mean(test3^2)
+
+
     print(summer[1]/summer[3])
     H = H_cpp(X = X_list[[1]][1:aa,],mcov = mcov_list[[1]],S_scale_dist = T,h = 0.01)
     org = y_list[[1]][1:aa]
