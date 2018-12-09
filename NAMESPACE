@@ -3,6 +3,7 @@
 S3method(sigma,hat.sq.func)
 export(AICc.func.new)
 export(AICc_full_cpp)
+export(AICc_full_cpp_alt)
 export(AICc_full_tmp_cpp)
 export(Gauss_trans_func)
 export(Gauss_trans_func_seperate)

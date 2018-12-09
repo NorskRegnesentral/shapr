@@ -73,6 +73,22 @@ AICc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
     .Call(`_shapr_AICc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
 }
 
+#'  AICc formula for several sets, alternative definition
+#'
+#' @param h numeric specifying the scaling (sigma)
+#' @param X matrix with "covariates"
+#' @param mcov covariance matrix
+#' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+#' @param y vector with the "response variable"
+#'
+#' @export
+#'
+#' @return Scalar with the numeric value of the AICc formula
+#' @author Martin Jullum
+AICc_full_cpp_alt <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) {
+    .Call(`_shapr_AICc_full_cpp_alt`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
+}
+
 #' Get distance
 #'
 #' @param Xtrain Dataframe

@@ -184,6 +184,43 @@ double AICc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_s
     return(out);
 }
 
+//'  AICc formula for several sets, alternative definition
+//'
+//' @param h numeric specifying the scaling (sigma)
+//' @param X matrix with "covariates"
+//' @param mcov covariance matrix
+//' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+//' @param y vector with the "response variable"
+//'
+//' @export
+//'
+//' @return Scalar with the numeric value of the AICc formula
+//' @author Martin Jullum
+// [[Rcpp::export]]
+double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative) {
+
+    int nloops = X_list.size();
+    arma::vec summer(3,fill::zeros);
+    double out = 0.0;
+
+    for (int k = 0; k < nloops; ++k){
+        arma::mat X = X_list[k];
+        arma::mat mcov = mcov_list[k];
+        arma::vec y = y_list[k];
+
+        summer = AICc_full_tmp_cpp(X, mcov, S_scale_dist, h,  y);
+
+        out += log(summer(0)/summer(2)) + correction_cpp(summer(1),summer(2)); // This computes log(sigma_1 = rss_1/n_1) + correction_formula(H = H_1,n = n_1) + log(sigma_2 = rss_2/n_2) + correction_formula(H = H_2,n = n_2)
+    }
+
+    if(negative){
+        out *= -1;
+    }
+
+    return(out);
+}
+
+
 
 
 // //' sigma_hat_sq-function

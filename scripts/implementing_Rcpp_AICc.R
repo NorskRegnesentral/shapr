@@ -170,6 +170,17 @@ print(proc.time()-tt)
 
 all.equal(AICc_R,AICc_cpp)
 
+## temp test
+
+AICc_cpp = AICc_full_cpp_alt(h = h,
+                         X_list = X_list,
+                         mcov_list = mcov_list,
+                         S_scale_dist = S_scale_dist,
+                         y_list = y_list,
+                         negative = negative)
+
+
+
 ######## Just doing a test with nlminb as well
 
 

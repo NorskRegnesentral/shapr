@@ -154,26 +154,49 @@ AICc.func.new <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_
 #' Need to improve this help file.
 #'
 #' @inheritParams global_arguments
+#' @param separate Logical indicating whether the train and test data should be sampled separatedly or in a joint sampling space
 #' @return numeric
 #'
 #' @export
 #'
 #' @author Martin Jullum
 # h.vec is vector of length q=ncol(X)
-samp_train_test_comb <- function(nTrain,nTest,nosamp){
+samp_train_test_comb <- function(nTrain,nTest,nosamp,separate = F){
 
-    sampinds <- 1:(nTrain*nTest)
-    if (nosamp < max(sampinds)){
-        input_samp <- sample(x = sampinds,
-                             size = nosamp,
-                             replace = F)
+
+    if (separate){
+        sampinds_train = 1:nTrain
+        sampinds_test = 1:nTest
+        if(nosamp < length(sampinds_train)){ # Not optimal in general, but works for the current purpose. test data is always sampled,
+                                     # while only reducing if the training data goes above nosamp.
+            samp_train <- sample(x = sampinds_train,
+                                 size = nosamp,
+                                 replace = F)
+            samp_test <- sample(x = sampinds_test,
+                                size = nosamp,
+                                replace = nosamp>length(sampinds_test))
+        } else {
+            samp_train <- sampinds_train
+            samp_test <- sample(x = sampinds_test,
+                                size = length(sampinds_train),
+                                replace = length(sampinds_train)>length(sampinds_test))
+        }
+
     } else {
-        input_samp <- sampinds
-    }
+        sampinds <- 1:(nTrain*nTest)
+        if (nosamp < max(sampinds)){
+            input_samp <- sample(x = sampinds,
+                                 size = nosamp,
+                                 replace = F)
+        } else {
+            input_samp <- sampinds
+        }
 
-    #               Test using input_samp=c(1,2,3, 1999, 2000 ,2001 ,2002)
-    samp_train <- (input_samp-1) %% nTrain + 1
-    samp_test <- (input_samp-1) %/% nTrain + 1
+        #               Test using input_samp=c(1,2,3, 1999, 2000 ,2001 ,2002)
+        samp_train <- (input_samp-1) %% nTrain + 1
+        samp_test <- (input_samp-1) %/% nTrain + 1
+
+    }
 
     ret <- data.frame(samp_train = samp_train, samp_test = samp_test)
     return(ret)

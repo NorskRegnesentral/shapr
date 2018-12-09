@@ -132,6 +132,136 @@ source("paper_experiments/source_compute_true_Shap.R") # Creating the Shapley.tr
 
 #### Here we start the testin ############################g
 
+### Have explored below that in this example ntrain=200 and ntest = 100, we AICc works best for small samples, when it comes to combining the similar samples
+empirical_settings_1 = list(type = "AICc_full",
+                            AICc_optimize_every_testobs = T,
+                            AICc_no_samp_per_optim = 5000,
+                            AIC_optim_func = "nlminb",
+                            AIC_optim_max_eval = 20,
+                            AIC_optim_startval = 0.1,
+                            kernel_metric = "Gaussian")
+cond_approach = "empirical"
+empirical_settings = empirical_settings_1
+verbose <- TRUE
+
+mu <- Sigma <- NULL
+
+
+
+##############
+
+
+Shapley.approx = list()
+
+empirical_settings_1 = list(type = "AICc_full",
+                            AICc_optimize_every_testobs = F,
+                            AICc_no_samp_per_optim = 100,
+                            AIC_optim_func = "nlminb",
+                            AIC_optim_max_eval = 20,
+                            AIC_optim_startval = 0.1,
+                            kernel_metric = "Gaussian")
+
+Shapley.approx[[length(Shapley.approx)+1]] = compute_kernelShap(model = model,
+                                                                l = l,
+                                                                w_threshold = w_threshold,
+                                                                n_threshold = n_threshold,
+                                                                cond_approach = "empirical",
+                                                                empirical_settings = empirical_settings_1,
+                                                                pred_zero=pred_zero,
+                                                                verbose = T)
+
+
+empirical_settings_2 = list(type = "AICc_full",
+                            AICc_optimize_every_testobs = F,
+                            AICc_no_samp_per_optim = 500,
+                            AIC_optim_func = "nlminb",
+                            AIC_optim_max_eval = 20,
+                            AIC_optim_startval = 0.1,
+                            kernel_metric = "Gaussian")
+
+Shapley.approx[[length(Shapley.approx)+1]] = compute_kernelShap(model = model,
+                                                                l = l,
+                                                                w_threshold = w_threshold,
+                                                                n_threshold = n_threshold,
+                                                                cond_approach = "empirical",
+                                                                empirical_settings = empirical_settings_2,
+                                                                pred_zero=pred_zero,
+                                                                verbose = T)
+
+
+empirical_settings_3 = list(type = "AICc_full",
+                            AICc_optimize_every_testobs = F,
+                            AICc_no_samp_per_optim = 1000,
+                            AIC_optim_func = "nlminb",
+                            AIC_optim_max_eval = 20,
+                            AIC_optim_startval = 0.1,
+                            kernel_metric = "Gaussian")
+
+Shapley.approx[[length(Shapley.approx)+1]] = compute_kernelShap(model = model,
+                                                                l = l,
+                                                                w_threshold = w_threshold,
+                                                                n_threshold = n_threshold,
+                                                                cond_approach = "empirical",
+                                                                empirical_settings = empirical_settings_3,
+                                                                pred_zero=pred_zero,
+                                                                verbose = T)
+
+empirical_settings_4 = list(type = "AICc_full",
+                            AICc_optimize_every_testobs = F,
+                            AICc_no_samp_per_optim = 5000,
+                            AIC_optim_func = "nlminb",
+                            AIC_optim_max_eval = 20,
+                            AIC_optim_startval = 0.1,
+                            kernel_metric = "Gaussian")
+
+Shapley.approx[[length(Shapley.approx)+1]] = compute_kernelShap(model = model,
+                                                                l = l,
+                                                                w_threshold = w_threshold,
+                                                                n_threshold = n_threshold,
+                                                                cond_approach = "empirical",
+                                                                empirical_settings = empirical_settings_4,
+                                                                pred_zero=pred_zero,
+                                                                verbose = T)
+
+
+empirical_settings_5 = list(type = "AICc_full",
+                            AICc_optimize_every_testobs = F,
+                            AICc_no_samp_per_optim = 10000,
+                            AIC_optim_func = "nlminb",
+                            AIC_optim_max_eval = 20,
+                            AIC_optim_startval = 0.1,
+                            kernel_metric = "Gaussian")
+
+Shapley.approx[[length(Shapley.approx)+1]] = compute_kernelShap(model = model,
+                                                                l = l,
+                                                                w_threshold = w_threshold,
+                                                                n_threshold = n_threshold,
+                                                                cond_approach = "empirical",
+                                                                empirical_settings = empirical_settings_5,
+                                                                pred_zero=pred_zero,
+                                                                verbose = T)
+
+names(Shapley.approx) = paste0("test ",1:5)
+source("paper_experiments/source_compute_results.R") # Creating the res.DT object
+
+print(res.DT) # Printing the results to the terminal
+
+#### GOING INTO DETAIL ####
+
+cond_approach = "empirical"
+empirical_settings = empirical_settings_5
+verbose <- TRUE
+
+mu <- Sigma <- NULL
+### Checking
+
+
+
+
+
+################## END TESTING #################
+
+
 cond_approach = "empirical"
 empirical_settings = empirical_AIC_each_k_settings_10000
 verbose <- TRUE
@@ -147,7 +277,7 @@ AICc_full_cpp(h = empirical_settings$AIC_optim_startval,
               S_scale_dist = T,
 
 
-              )
+)
 
 
 #################################################3
