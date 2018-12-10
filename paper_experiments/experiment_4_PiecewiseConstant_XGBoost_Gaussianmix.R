@@ -31,8 +31,8 @@ variables <- "Gaussianmix"
 notes <- "rho set to 0.7"
 
 
-rho <- 0.7#ifelse(exists("rho"),rho,0.5)
-pi.G <- 1
+rho <- 0.5#ifelse(exists("rho"),rho,0.5)
+pi.G <- c(0.5,0.5)
 sd_noise = 0.1
 nTrain <- 2000
 nTest <- 1000
@@ -40,6 +40,8 @@ w_threshold = 1 # For a fairer comparison, all models use the same number of sam
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
 
 mu.list = list(c(0,0,0),c(10,-5,10))
+mu.list = list(c(-4,2,-4),c(4,-2,4))
+
 Sigma.list <- list(matrix(c(1,rho,rho,
                             rho,1,rho,
                             rho,rho,1),ncol=3),
@@ -60,7 +62,8 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 }
 
 samp_model <- function(n,X,sd_noise){
-    y <- 0.5*X[,2]  +  (X[,1]<0)*1 + (X[,2]<2) + (X[,2]>4)*1 + (X[,3]<10)*1 + (X[,3]<0)*1 + (X[,1]>-5)*(X[,2]<4)*1+ rnorm(n = n,mean=0,sd=sd_noise)
+    #y <- 0.5*X[,2]  +  (X[,1]<-4)*1 - (X[,2]<2)*1 + (X[,2]>-2)*1 - (X[,3]<4)*1 + (X[,3]<-4)*1 - (X[,1]>0)*(X[,2]<-2)*1+ rnorm(n = n,mean=0,sd=sd_noise)
+    y <- 0.5*X[,2]  +  (X[,1]<-2)*1 - (X[,2]<1)*1 + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-2)*1 - (X[,1]>0)*(X[,2]<-1)*1+ rnorm(n = n,mean=0,sd=sd_noise)
 }
 
 fit_model_func <- function(XYtrain){

@@ -31,7 +31,7 @@ notes <- "rho set to 0.7"
 
 
 rho <- 0.7#ifelse(exists("rho"),rho,0)
-pi.G <- 1
+pi.G <- c(0.5,0.5)
 sd_noise = 0.1
 nTrain <- 2000
 nTest <- 1000
