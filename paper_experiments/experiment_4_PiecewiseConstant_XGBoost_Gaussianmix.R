@@ -41,6 +41,7 @@ n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
 
 mu.list = list(c(0,0,0),c(10,-5,10))
 mu.list = list(c(-4,2,-4),c(4,-2,4))
+#mu.list = list(c(0,0,0),c(8,-4,8))
 
 Sigma.list <- list(matrix(c(1,rho,rho,
                             rho,1,rho,
@@ -61,10 +62,16 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
     return(X)
 }
 
+### NEED TO FIX THIS ONE !!!!!!
+
 samp_model <- function(n,X,sd_noise){
     #y <- 0.5*X[,2]  +  (X[,1]<-4)*1 - (X[,2]<2)*1 + (X[,2]>-2)*1 - (X[,3]<4)*1 + (X[,3]<-4)*1 - (X[,1]>0)*(X[,2]<-2)*1+ rnorm(n = n,mean=0,sd=sd_noise)
-    y <- 0.5*X[,2]  +  (X[,1]<-2)*1 - (X[,2]<1)*1 + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-2)*1 - (X[,1]>0)*(X[,2]<-1)*1+ rnorm(n = n,mean=0,sd=sd_noise)
-}
+    #y <- 0.5*X[,2]  +  (X[,1]<-2)*1 - (X[,2]<1)*1 + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-2)*1 - (X[,1]>0)*(X[,2]<-1)*1+ rnorm(n = n,mean=0,sd=sd_noise)
+    #y <- 0.1*X[,2]  +  (X[,1]<0)*1 - (X[,2]<1)*0 + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-1)*4 - (X[,3]>-1)*(X[,2]<-1)*2+ rnorm(n = n,mean=0,sd=sd_noise)
+    y <- 0.1*X[,2]  +  (X[,1]<0)*((X[,1]<-4)*1 - (X[,2]<3)*0 + (X[,2]>1)*1 - (X[,3]<-3)*1 + (X[,3]<-5)*4 - (X[,3]>-5)*(X[,2]<1)*2) +
+                       (X[,1]>0)*((X[,1]<4)*1 - (X[,2]<-1)*0 + (X[,2]>-3)*1 - (X[,3]<5)*1 + (X[,3]<3)*4 - (X[,3]>3)*(X[,2]<-3)*2) +
+        rnorm(n = n,mean=0,sd=sd_noise)
+    }
 
 fit_model_func <- function(XYtrain){
     xgb.train <- xgb.DMatrix(data = as.matrix(XYtrain[,-"y"]),

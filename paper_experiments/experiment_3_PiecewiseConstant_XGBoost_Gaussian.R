@@ -57,7 +57,7 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 }
 
 samp_model <- function(n,X,sd_noise){
-    y <- 0.5*X[,2]  +  (X[,1]<-1)*1 - (X[,2]<1)*1 + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-)*1 - (X[,1]>0)*(X[,2]<-1)*1+ rnorm(n = n,mean=0,sd=sd_noise)
+    y <- 0.1*X[,2]  +  (X[,1]<0)*1 - (X[,2]<1)*0 + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-1)*4 - (X[,3]>-1)*(X[,2]<-1)*2+ rnorm(n = n,mean=0,sd=sd_noise)
 }
 
 fit_model_func <- function(XYtrain){
