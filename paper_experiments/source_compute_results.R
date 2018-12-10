@@ -43,10 +43,15 @@ rownames(h_optims) <- names(Shapley.approx)
 colnames(h_optims) <- colnam_h
 h_optims[which(rownames(h_optims)=="empirical_independence"),] <- Inf
 
+comp_time <- rep(NA,length(Shapley.approx))
+for (i in 1:length(Shapley.approx)){
+    comp_time[i] <- Shapley.approx[[i]]$other_objects$comp_time[3]
+}
 
 res <- cbind(absmeans,abssds,h_optims[,-c(1,ncol(h_optims))])
 res.DT <- data.table(res,keep.rownames = T)
 
+res.DT[,comp_time:=comp_time]
 res.DT[,true_model:=true_model]
 res.DT[,fitted_model:=fitted_model]
 res.DT[,variables:=variables]

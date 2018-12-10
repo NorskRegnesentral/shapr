@@ -545,6 +545,8 @@ compute_kernelShap = function(model,
                               pred_zero,
                               mu = NULL,
                               Sigma = NULL) {
+    tt <- proc.time()
+
     ll = list()
 
     if(is.character(cond_approach)){
@@ -816,7 +818,10 @@ compute_kernelShap = function(model,
         Kshap[i, ] = l$W %*% DT[id == i, k]
     }
 
-    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT, h_optim_mat = h_optim_mat))
+
+    tt <- proc.time()-tt
+
+    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT, h_optim_mat = h_optim_mat,comp_time = tt))
     return(ret_list)
 }
 
