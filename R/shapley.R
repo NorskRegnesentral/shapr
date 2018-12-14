@@ -535,13 +535,14 @@ compute_kernelShap = function(model,
                               cond_approach = "empirical",
                               empirical_settings = list(type = "fixed_sigma", # May in the future allow a vector of length nrow(S) here as well to specify fixed for some and optimiziation for others
                                                         fixed_sigma_vec = 0.1, # May be a vector of length nrow(S), or a single number used for all
-                                                        AICc_no_samp_per_optim = NULL,
-                                                        AICc_optimize_every_testobs = F,
+                                                        AICc_no_samp_per_optim = 1000,
+                                                        AICc_optimize_every_testobs = T,
                                                         AIC_optim_func = "nlminb", # only "nlminb" allowed for now
                                                         AIC_optim_max_eval = 20,
                                                         AIC_optim_startval = 0.1,
                                                         AICc_combination_type = "alternative", # "alternative" or "standard" # "Standard" combines sds and partial H's before computing one AICc, while "alternative computes AICc seperatedly and combines them.
-                                                        kernel_metric = "Gaussian"),
+                                                        kernel_metric = "Gaussian",
+                                                        AICc_force_use_all_trainsamp_per_optim = T),
                               pred_zero,
                               mu = NULL,
                               Sigma = NULL) {
@@ -602,6 +603,7 @@ compute_kernelShap = function(model,
                     cond_samp <- cut(cutters,quantile(cutters,(0:no_cond)/no_cond), include.lowest=TRUE, labels=these_cond)
                     cond_samp <- as.numeric(levels(cond_samp))[cond_samp]
 
+
                     for (loop in 1:nloops){
                         this.optimsamp <- optimsamp
                         if (empirical_settings$AICc_optimize_every_testobs){
@@ -613,17 +615,26 @@ compute_kernelShap = function(model,
                         for (this_cond in unique(cond_samp)){
 
                             these_inds <- which(cond_samp==this_cond)
+                            these_train <- this.optimsamp$samp_train[these_inds]
+                            these_test <- this.optimsamp$samp_test[these_inds]
+                            if (empirical_settings$AICc_force_use_all_trainsamp){# Hacky way to handle the situation when optimizing in the usual way. Needs to be improved!
+                                these_train <- 1:nrow(l$Xtrain)
+                                these_test <- sample(x = these_test,size = nrow(l$Xtrain),replace = T)
+                                current_cond_samp <- rep(unique(cond_samp),each=nrow(l$Xtrain))
+                            } else {
+                                current_cond_samp <- cond_samp
+                            }
 
                             S <- l$S[this_cond,]
 
                             S.cols <- which(as.logical(S))
                             Sbar.cols <- which(as.logical(1-S))
 
-                            X_list[[j]] <- as.matrix(subset(l$Xtrain,select=S.cols)[this.optimsamp$samp_train[these_inds],])
+                            X_list[[j]] <- as.matrix(subset(l$Xtrain,select=S.cols)[these_train,])
                             mcov_list[[j]] <- cov(X_list[[j]])
 
-                            Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[this.optimsamp$samp_train[these_inds],]
-                            Xtest.S <- subset(l$Xtest,select=S.cols)[this.optimsamp$samp_test[these_inds],]
+                            Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[these_train,]
+                            Xtest.S <- subset(l$Xtest,select=S.cols)[these_test,]
                             X.pred.list[[j]] <- cbind(Xtrain.Sbar,Xtest.S)
 
                             j <- j + 1
@@ -635,7 +646,7 @@ compute_kernelShap = function(model,
                         setcolorder(X.pred,X.nms)
                         # Doing prediction jointly (for speed), and then splitting them back into the y_list
                         pred <- pred_vector(model=model,data=X.pred)
-                        y_list = split(pred,cond_samp)
+                        y_list = split(pred,current_cond_samp)
                         names(y_list) = NULL
 
 
@@ -678,7 +689,6 @@ compute_kernelShap = function(model,
 
                     }
 
-
                 }
             }
 
@@ -696,13 +706,18 @@ compute_kernelShap = function(model,
                         if (empirical_settings$AICc_optimize_every_testobs){
                             this.optimsamp$samp_test <- loop
                         }
+                        these_train <- this.optimsamp$samp_train
+                        these_test <- this.optimsamp$samp_test
+                        if (empirical_settings$AICc_force_use_all_trainsamp){# Hacky way to handle the situation when optimizing in the usual way. Needs to be improved!
+                            these_train <- 1:nrow(l$Xtrain)
+                            these_test <- sample(x = these_test,size = nrow(l$Xtrain),replace = T)
+                        }
 
-
-                        X_list <- list(as.matrix(subset(l$Xtrain,select=S.cols)[this.optimsamp$samp_train,]))
+                        X_list <- list(as.matrix(subset(l$Xtrain,select=S.cols)[these_train,]))
                         mcov_list <- list(cov(X_list[[1]]))
 
-                        Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[this.optimsamp$samp_train,]
-                        Xtest.S <- subset(l$Xtest,select=S.cols)[this.optimsamp$samp_test,]
+                        Xtrain.Sbar <- subset(l$Xtrain,select=Sbar.cols)[these_train,]
+                        Xtest.S <- subset(l$Xtest,select=S.cols)[these_test,]
                         X.pred <- cbind(Xtrain.Sbar,Xtest.S)
 
                         X.nms <- colnames(Xtrain)

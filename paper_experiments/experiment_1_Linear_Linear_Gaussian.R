@@ -21,7 +21,7 @@ library(stringi)
 
 
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
-joint_csv_filename <- "all_results_dim3.csv" # Set to NULL if results should not be included in any joint results table
+joint_csv_filename <- "all_results_dim3_with_AICc_per_testobs.csv" # Set to NULL if results should not be included in any joint results table
 
 initial_current_csv_filename <- "Experiment_1_Linear_Linear_Gaussian"
 true_model <- "Linear"
@@ -30,7 +30,7 @@ variables <- "Gaussian"
 notes <- "All var equal contribution"
 
 
-rho <- ifelse(exists("rho"),rho,0)
+rho <- ifelse(exists("rho"),rho,0.5)
 pi.G <- 1
 sd_noise = 0.1
 nTrain <- 2000
@@ -87,8 +87,8 @@ model <- fit_model_func(XYtrain)
 source("paper_experiments/source_prepare_kernelShap.R")
 
 #### Computing the various Shapley approximations  --------
-
-source("paper_experiments/source_compute_approx_Shap_no_AICc.R") # Creating Shapley.approx object
+source("paper_experiments/source_compute_approx_Shap_with_AICc_per_testobs.R") # Creating Shapley.approx object
+#source("paper_experiments/source_compute_approx_Shap_no_AICc.R") # Creating Shapley.approx object
 
 #### Computing the true Shapley values ------
 

@@ -1,11 +1,13 @@
 
-### Running experiment 2 and 4
+### Running experiment 3 for different rho values
 
-source("paper_experiments/experiment_2_Linear_Linear_Gaussianmix.R")
+rho.vec <- c(seq(0.1,0.9,0.1),seq(0.05,0.95,0.1))
 
-print(paste0("Just finished computation for experiment 2"))
+for (rho in rho.vec){ # Should probably be paralellized
+    source("paper_experiments/experiment_1_Linear_Linear_Gaussian.R")
 
-source("paper_experiments/experiment_4_PiecewiseConstant_XGBoost_Gaussianmix.R")
+    print(paste0("Just finished computation for rho = ",rho))
+}
 
-print(paste0("Just finished computation for experiment 4"))
+
 

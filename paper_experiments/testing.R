@@ -2,7 +2,7 @@
 #### PAPER EXPERIMENT FRAMEWORK ####
 #### Use the current setup for all experiements in the paper to ease reproducablity etc.
 
-#### Example 3 ####
+#### Example 1 ####
 
 #rm(list = ls())
 
@@ -11,7 +11,6 @@ library(data.table)
 library(mvtnorm)
 library(condMVNorm)
 library(stringi)
-library(xgboost)
 
 #### NOTE: May consider running the below procedure multiple times to get a better representation of the error when optimizing sigma.
 #### May alternatively use the same training data, but new test observations every time, or consider other sampling methods
@@ -20,21 +19,22 @@ library(xgboost)
 #### currently what takes the most time.
 
 
-####################### ONLY TOUCH THINGS IN THIS SECTION ################################
-joint_csv_filename <- "all_results_dim3_with_AICc_per_testobs.csv" # Set to NULL if results should not be included in any joint results table
 
-initial_current_csv_filename <- "Experiment_3_PiecewiseConstant_XGBoost_Gaussian"
-true_model <- "PiecewiseConstant"
-fitted_model <- "XGBoost"
+####################### ONLY TOUCH THINGS IN THIS SECTION ################################
+joint_csv_filename <- NULL#"all_results_dim3.csv" # Set to NULL if results should not be included in any joint results table
+
+initial_current_csv_filename <- "Experiment_1_Linear_Linear_Gaussian"
+true_model <- "Linear"
+fitted_model <- "Linear"
 variables <- "Gaussian"
-notes <- "All var equal contribution"
+notes <- "Testing full AICc"
 
 
 rho <- ifelse(exists("rho"),rho,0.5)
 pi.G <- 1
 sd_noise = 0.1
 nTrain <- 2000
-nTest <- 1000
+nTest <- 20
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
 
@@ -56,24 +56,11 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 }
 
 samp_model <- function(n,X,sd_noise){
-    y <- 0.1*X[,2]  +  (X[,1]<0)*1 + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-1)*4 - (X[,3]>-1)*(X[,2]<-1)*2+ rnorm(n = n,mean=0,sd=sd_noise)
+    y <- X[,1] + X[,2] + X[,3] + rnorm(n = n,mean=0,sd=sd_noise)
 }
 
 fit_model_func <- function(XYtrain){
-    xgb.train <- xgb.DMatrix(data = as.matrix(XYtrain[,-"y"]),
-                             label = XYtrain[,y])
-
-    params <- list(eta =  0.3,
-                   objective = "reg:linear",
-                   eval_metric = "rmse",
-                   tree_method="hist") # gpu_hist
-
-    model <- xgb.train(data = xgb.train,
-                       params = params,
-                       nrounds = 50,
-                       print_every_n = 10,
-                       ntread = 3)
-    return(model)
+    lm(y~.,data=XYtrain)
 }
 
 
@@ -100,8 +87,8 @@ model <- fit_model_func(XYtrain)
 source("paper_experiments/source_prepare_kernelShap.R")
 
 #### Computing the various Shapley approximations  --------
+
 source("paper_experiments/source_compute_approx_Shap_with_AICc_per_testobs.R") # Creating Shapley.approx object
-#source("paper_experiments/source_compute_approx_Shap_no_AICc.R") # Creating Shapley.approx object
 
 #### Computing the true Shapley values ------
 
