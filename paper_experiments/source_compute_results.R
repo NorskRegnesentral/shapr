@@ -30,7 +30,8 @@ abssds <- cbind(abssds,abssd_total=abssd_total)
 h_optims <- matrix(NA,nrow=length(Shapley.approx), ncol=2^ncol(Xtrain))
 for (i in 1:length(Shapley.approx)){
     for (j in 1:(2^ncol(Xtrain))){
-        h_optims[i,j] <- Shapley.approx[[i]]$other_objects$h_optim_mat[j,1]
+        h_optims[i,j] <- mean(Shapley.approx[[i]]$other_objects$h_optim_mat[j,])
+        #h_optims[i,j] <-Shapley.approx[[i]]$other_objects$h_optim_mat[j,1]
     }
 }
 

@@ -2,7 +2,7 @@
 #### PAPER EXPERIMENT FRAMEWORK ####
 #### Use the current setup for all experiements in the paper to ease reproducablity etc.
 
-#### Example 3 ####
+#### Example 5 ####
 
 #rm(list = ls())
 
@@ -12,46 +12,46 @@ library(mvtnorm)
 library(condMVNorm)
 library(stringi)
 library(xgboost)
+library(GIGrvg)
 
 #### NOTE: May consider running the below procedure multiple times to get a better representation of the error when optimizing sigma.
 #### May alternatively use the same training data, but new test observations every time, or consider other sampling methods
 
-#### Should anyhow try to write up the full AICc-function in RCpp -- that may give a large performance boost because that is
-#### currently what takes the most time.
-
-
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
-joint_csv_filename <- "all_results_dim3_with_AICc_per_testobs.csv" # Set to NULL if results should not be included in any joint results table
+joint_csv_filename <- "all_results_dim10.csv" # Set to NULL if results should not be included in any joint results table
 
-initial_current_csv_filename <- "Experiment_3_PiecewiseConstant_XGBoost_Gaussian"
+initial_current_csv_filename <- "Experiment_5_PiecewiseConstant_XGBoost_GenHyp10dim_heavytails"
 true_model <- "PiecewiseConstant"
 fitted_model <- "XGBoost"
-variables <- "Gaussian"
-notes <- "All var equal contribution"
+variables <- "GenHyp10dim_heavytails"
+notes <- "10 dimensional"
+X_GenHyp <- TRUE
 
 
-rho <- ifelse(exists("rho"),rho,0.5)
-pi.G <- 1
+# Setting X-distribution parameters
+lambda <- 1
+mu     <- c(1:3,1:3,1:3,3)
+Sigma <- diag(c(1:3,1:3,1:3,3))
+beta <- c(rep(1,5),rep(0.5,5))
+omega <- 0.5
+
 sd_noise = 0.1
-nTrain <- 200
-nTest <- 5
+nTrain <- 2000#2000
+nTest <- 20#1000
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
-
-mu.list = list(c(0,0,0))
-Sigma.list <- list(matrix(c(1,rho,rho,
-                            rho,1,rho,
-                            rho,rho,1),ncol=3))
 
 this.seed <- 123
 #### Defining the true distribution of the variables and the model
 
-samp_variables <- function(n,pi.G,mu.list,Sigma.list){
+samp_variables <- function(n,Sigma,beta,omega,lambda,mu){
 
-    X <- joint.samp.func(n = n,
-                         pi.G,
-                         mu.list,
-                         Sigma.list)
+    X <- simulateGenHyperbolic(nSim=n,
+                               Sigma=Sigma,
+                               beta = beta,
+                               omega = omega,
+                               lambda = lambda,
+                               mu = mu)
     return(X)
 }
 
