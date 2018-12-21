@@ -43,7 +43,6 @@ Sigma.list <- list(matrix(c(1,rho,rho,
                             rho,1,rho,
                             rho,rho,1),ncol=3))
 
-this.seed <- 123
 #### Defining the true distribution of the variables and the model
 
 samp_variables <- function(n,pi.G,mu.list,Sigma.list){
@@ -78,8 +77,14 @@ fit_model_func <- function(XYtrain){
 
 
 ####################################################################################################
+seed0 <- print(as.numeric(Sys.time())*1000,digits=10) # Getting a time based seed.
+(this.seed <- abs(seed0 - signif(seed0)))
 
-current_csv_filename = paste0(initial_current_csv_filename,"___",stri_rand_strings(n = 1,length = 5),".csv")
+run_indicator <- stri_rand_strings(n = 1,length = 5)
+run_date_time <- Sys.time()
+
+current_csv_filename = paste0(initial_current_csv_filename,"___",run_indicator,".csv")
+current_RData_filename = paste0(initial_current_csv_filename,"___",run_indicator,".RData")
 
 source("paper_scripts/paper_helper_funcs.R") # Helper functions these experiments (mainly computing the true Shapley values)
 
@@ -123,5 +128,6 @@ if(!is.null(joint_csv_filename)){
     fwrite(x = res.DT,file = paste0("paper_experiments/res/",joint_csv_filename),append = T)
 }
 
+save(Shapley.approx,Shapley.true,file=paste0("paper_experiments/res/",current_RData_filename))
 
 ##### DONE ------------------

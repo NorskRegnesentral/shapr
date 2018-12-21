@@ -57,11 +57,24 @@ res.DT[,true_model:=true_model]
 res.DT[,fitted_model:=fitted_model]
 res.DT[,variables:=variables]
 res.DT[,notes:=notes]
-res.DT[,rho:=rho]
-res.DT[,pi.G:=pi.G]
+if(ncol(l$Xtrain)==3){
+    res.DT[,rho:=rho]
+    res.DT[,pi.G:=pi.G]
+
+} else {
+# Don't bother to store these after all.
+#    res.DT[,lambda:=lambda]
+#    res.DT[,mu:=mu]
+#    res.DT[,Sigma:=Sigma]
+#    res.DT[,beta:=beta]
+#    res.DT[,omega:=omega]
+}
+
 res.DT[,sd_noise:=sd_noise]
 res.DT[,nTrain:=nTrain]
 res.DT[,nTest:=nTest]
 res.DT[,w_threshold:=w_threshold]
 res.DT[,n_threshold:=n_threshold]
 res.DT[,this.seed:=this.seed]
+res.DT[,run_indicator:=run_indicator]
+res.DT[,run_date_time:=run_date_time]

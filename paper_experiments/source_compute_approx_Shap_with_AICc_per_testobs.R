@@ -32,6 +32,7 @@ empirical_independence_settings = list(type = "independence")
 
 Shapley.approx = list()
 
+
 Shapley.approx$empirical_sigma.01 = compute_kernelShap(model = model,
                                                        l = l,
                                                        w_threshold = w_threshold,
@@ -40,21 +41,60 @@ Shapley.approx$empirical_sigma.01 = compute_kernelShap(model = model,
                                                        empirical_settings = empirical_fixed_sigma.01_settings,
                                                        pred_zero=pred_zero)
 
-Shapley.approx$empirical_AIC_each_k = compute_kernelShap(model = model,
-                                                         l = l,
-                                                         w_threshold = w_threshold,
-                                                         n_threshold = n_threshold,
-                                                         cond_approach = "empirical",
-                                                         empirical_settings = empirical_AIC_each_k_settings,
-                                                         pred_zero=pred_zero)
+if(ncol(l$Xtrain)<=3){
 
-Shapley.approx$empirical_AIC_full = compute_kernelShap(model = model,
-                                                       l = l,
-                                                       w_threshold = w_threshold,
-                                                       n_threshold = n_threshold,
-                                                       cond_approach = "empirical",
-                                                       empirical_settings = empirical_AIC_full_settings,
-                                                       pred_zero=pred_zero)
+    Shapley.approx$empirical_AIC_each_k = compute_kernelShap(model = model,
+                                                             l = l,
+                                                             w_threshold = w_threshold,
+                                                             n_threshold = n_threshold,
+                                                             cond_approach = "empirical",
+                                                             empirical_settings = empirical_AIC_each_k_settings,
+                                                             pred_zero=pred_zero)
+
+    Shapley.approx$empirical_AIC_full = compute_kernelShap(model = model,
+                                                           l = l,
+                                                           w_threshold = w_threshold,
+                                                           n_threshold = n_threshold,
+                                                           cond_approach = "empirical",
+                                                           empirical_settings = empirical_AIC_full_settings,
+                                                           pred_zero=pred_zero)
+
+} else{
+
+    Shapley.approx$comb_sigma.01 = compute_kernelShap(model = model,
+                                                      l,
+                                                      w_threshold = w_threshold,
+                                                      n_threshold = n_threshold,
+                                                      cond_approach = list(empirical = 1:176,copula =177:1024),
+                                                      empirical_settings = empirical_fixed_sigma.01_settings,
+                                                      pred_zero=pred_zero)
+
+    Shapley.approx$comb_independence = compute_kernelShap(model = model,
+                                                          l,
+                                                          w_threshold = w_threshold,
+                                                          n_threshold = n_threshold,
+                                                          cond_approach = list(empirical = 1:176,copula =177:1024),
+                                                          empirical_settings = empirical_independence_settings,
+                                                          pred_zero=pred_zero)
+
+
+    Shapley.approx$comb_AIC_each_k = compute_kernelShap(model = model,
+                                                        l,
+                                                        w_threshold = w_threshold,
+                                                        n_threshold = n_threshold,
+                                                        cond_approach = list(empirical = 1:176,copula =177:1024),
+                                                        empirical_settings = empirical_AIC_each_k_settings,
+                                                        pred_zero=pred_zero)
+
+    # Shapley.approx$comb_AIC_full = compute_kernelShap(model = model,
+    #                                                   l,
+    #                                                   w_threshold = w_threshold,
+    #                                                   n_threshold = n_threshold,
+    #                                                   cond_approach = list(empirical = 1:176,copula =177:1024),
+    #                                                   empirical_settings = empirical_AIC_full_settings,
+    #                                                   pred_zero=pred_zero)
+
+}
 
 Shapley.approx$empirical_independence = compute_kernelShap(model = model,
                                                            l = l,
@@ -77,6 +117,12 @@ Shapley.approx$copula = compute_kernelShap(model = model,
                                            n_threshold = n_threshold,
                                            cond_approach = "copula",
                                            pred_zero=pred_zero)
+
+
+
+
+
+
 if(class(model)=="xgb.Booster"){
     tt <- proc.time()
     tmp= predict(model,as.matrix(Xtest),predcontrib=T)

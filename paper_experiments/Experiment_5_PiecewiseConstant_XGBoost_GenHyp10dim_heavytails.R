@@ -13,6 +13,7 @@ library(condMVNorm)
 library(stringi)
 library(xgboost)
 library(GIGrvg)
+library(ghyp)
 
 #### NOTE: May consider running the below procedure multiple times to get a better representation of the error when optimizing sigma.
 #### May alternatively use the same training data, but new test observations every time, or consider other sampling methods
@@ -37,11 +38,10 @@ omega <- 0.5
 
 sd_noise = 0.1
 nTrain <- 2000#2000
-nTest <- 20#1000
+nTest <- 100#1000
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
 
-this.seed <- 123
 #### Defining the true distribution of the variables and the model
 
 samp_variables <- function(n,Sigma,beta,omega,lambda,mu){
@@ -78,8 +78,14 @@ fit_model_func <- function(XYtrain){
 
 
 ####################################################################################################
+seed0 <- print(as.numeric(Sys.time())*1000,digits=10) # Getting a time based seed.
+(this.seed <- abs(seed0 - signif(seed0)))
 
-current_csv_filename = paste0(initial_current_csv_filename,"___",stri_rand_strings(n = 1,length = 5),".csv")
+run_indicator <- stri_rand_strings(n = 1,length = 5)
+run_date_time <- Sys.time()
+
+current_csv_filename = paste0(initial_current_csv_filename,"___",run_indicator,".csv")
+current_RData_filename = paste0(initial_current_csv_filename,"___",run_indicator,".RData")
 
 source("paper_scripts/paper_helper_funcs.R") # Helper functions these experiments (mainly computing the true Shapley values)
 
@@ -122,6 +128,8 @@ fwrite(x = res.DT,file = paste0("paper_experiments/res/",current_csv_filename))
 if(!is.null(joint_csv_filename)){
     fwrite(x = res.DT,file = paste0("paper_experiments/res/",joint_csv_filename),append = T)
 }
+
+save(Shapley.approx,Shapley.true,file=paste0("paper_experiments/res/",current_RData_filename))
 
 
 ##### DONE ------------------
