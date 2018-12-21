@@ -19,7 +19,7 @@ library(ghyp)
 #### May alternatively use the same training data, but new test observations every time, or consider other sampling methods
 
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
-joint_csv_filename <- "all_results_dim10.csv" # Set to NULL if results should not be included in any joint results table
+joint_csv_filename <- "all_results_GenHyp10dim.csv" # Set to NULL if results should not be included in any joint results table
 
 initial_current_csv_filename <- "Experiment_5_PiecewiseConstant_XGBoost_GenHyp10dim_heavytails"
 true_model <- "PiecewiseConstant"
@@ -31,7 +31,7 @@ X_GenHyp <- TRUE
 
 # Setting X-distribution parameters
 lambda <- 1
-mu     <- c(1:3,1:3,1:3,3)
+mu     <- c(1:3,1:3,1:3,3)-2
 Sigma <- diag(c(1:3,1:3,1:3,3))
 beta <- c(rep(1,5),rep(0.5,5))
 omega <- 0.5
@@ -56,7 +56,9 @@ samp_variables <- function(n,Sigma,beta,omega,lambda,mu){
 }
 
 samp_model <- function(n,X,sd_noise){
-    y <- 0.1*X[,2]  +  (X[,1]<0)*1 + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-1)*4 - (X[,3]>-1)*(X[,2]<-1)*2+ rnorm(n = n,mean=0,sd=sd_noise)
+#    y <- 0.1*X[,2]  +  (X[,1]<0)*1 + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-1)*4 - (X[,3]>-1)*(X[,2]<-1)*2+ rnorm(n = n,mean=0,sd=sd_noise)
+#    y <- (0.1*X[,2]  + (X[,1]<2)*3 + (X[,3]<2)*1.5 + (X[,4]>4)*1 + (X[,5]<6)*1 + (X[,6]<0)*1.5 + (X[,7]>0)*1.5 + (X[,7]>-2)*(X[,8]<4)*1+ 0.1*X[,9] + 0.1*X[,10])+ rnorm(n, mean=0, sd = sd_noise)
+    y <- (0.05*X[,2]  + (X[,1]<0)*1 + (X[,3]<0)*1.5 + (X[,4]>2)*1 + (X[,5]<4)*1 + (X[,6]<1)*0.5 + (X[,7]>-2)*1.5 + (X[,7]>-4)*(X[,8]<3)*0.5 + 0.05*X[,9] + 0.05*X[,10])+ rnorm(n, mean=0, sd = sd_noise)
 }
 
 fit_model_func <- function(XYtrain){
@@ -72,26 +74,15 @@ fit_model_func <- function(XYtrain){
                        params = params,
                        nrounds = 50,
                        print_every_n = 10,
-                       ntread = 3)
+                       ntread = 10)
     return(model)
 }
 
 
 ####################################################################################################
-seed0 <- print(as.numeric(Sys.time())*1000,digits=10) # Getting a time based seed.
-(this.seed <- abs(seed0 - signif(seed0)))
-
-run_indicator <- stri_rand_strings(n = 1,length = 5)
-run_date_time <- Sys.time()
-
-current_csv_filename = paste0(initial_current_csv_filename,"___",run_indicator,".csv")
-current_RData_filename = paste0(initial_current_csv_filename,"___",run_indicator,".RData")
-
 source("paper_scripts/paper_helper_funcs.R") # Helper functions these experiments (mainly computing the true Shapley values)
 
-
-set.seed(this.seed)
-
+source("paper_experiments/source_specifying_seed_and_filenames.R") # Setting random or fixed seed and filenames.
 
 #### Sampling train and test data ---------
 # Creating the XYtrain, XYtest, Xtrain and Xtest objects
@@ -100,6 +91,9 @@ source("paper_experiments/source_sampling_data.R")
 #### Fitting the model ----------
 
 model <- fit_model_func(XYtrain)
+
+#xgb.importance(model=model)
+#summary(XYtrain)
 
 #### Pre computation before kernel shap ---------
 # Creating the l object
@@ -119,7 +113,6 @@ source("paper_experiments/source_compute_true_Shap.R") # Creating the Shapley.tr
 source("paper_experiments/source_compute_results.R") # Creating the res.DT object
 
 # Printing the results to the terminal
-print(res.DT)
 print(res.DT)
 
 #### Write results to csv files ------------

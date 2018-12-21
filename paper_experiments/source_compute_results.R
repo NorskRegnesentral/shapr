@@ -57,17 +57,18 @@ res.DT[,true_model:=true_model]
 res.DT[,fitted_model:=fitted_model]
 res.DT[,variables:=variables]
 res.DT[,notes:=notes]
-if(ncol(l$Xtrain)==3){
+res.DT[,X_dim:=X_dim]
+res.DT[,X_GenHyp:=X_GenHyp]
+
+if(X_GenHyp){
+    res.DT[,lambda:=lambda]
+    res.DT[,mu:=mu]
+    res.DT[,Sigma:=Sigma]
+    res.DT[,beta:=beta]
+    res.DT[,omega:=omega]
+} else {
     res.DT[,rho:=rho]
     res.DT[,pi.G:=pi.G]
-
-} else {
-# Don't bother to store these after all.
-#    res.DT[,lambda:=lambda]
-#    res.DT[,mu:=mu]
-#    res.DT[,Sigma:=Sigma]
-#    res.DT[,beta:=beta]
-#    res.DT[,omega:=omega]
 }
 
 res.DT[,sd_noise:=sd_noise]

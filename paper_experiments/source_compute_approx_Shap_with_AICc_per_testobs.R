@@ -41,7 +41,7 @@ Shapley.approx$empirical_sigma.01 = compute_kernelShap(model = model,
                                                        empirical_settings = empirical_fixed_sigma.01_settings,
                                                        pred_zero=pred_zero)
 
-if(ncol(l$Xtrain)<=3){
+if(X_dim==3){
 
     Shapley.approx$empirical_AIC_each_k = compute_kernelShap(model = model,
                                                              l = l,

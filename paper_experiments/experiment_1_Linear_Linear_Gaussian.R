@@ -21,7 +21,7 @@ library(stringi)
 
 
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
-joint_csv_filename <- "all_results_dim3_with_AICc_per_testobs.csv" # Set to NULL if results should not be included in any joint results table
+joint_csv_filename <- "all_results_dim3_new.csv" # Set to NULL if results should not be included in any joint results table
 
 initial_current_csv_filename <- "Experiment_1_Linear_Linear_Gaussian"
 true_model <- "Linear"
@@ -34,7 +34,7 @@ rho <- ifelse(exists("rho"),rho,0.5)
 pi.G <- 1
 sd_noise = 0.1
 nTrain <- 2000
-nTest <- 1000
+nTest <- 100
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
 
@@ -64,20 +64,11 @@ fit_model_func <- function(XYtrain){
 
 
 ####################################################################################################
-seed0 <- print(as.numeric(Sys.time())*1000,digits=10) # Getting a time based seed.
-(this.seed <- abs(seed0 - signif(seed0)))
-
-run_indicator <- stri_rand_strings(n = 1,length = 5)
-run_date_time <- Sys.time()
-
-current_csv_filename = paste0(initial_current_csv_filename,"___",run_indicator,".csv")
-current_RData_filename = paste0(initial_current_csv_filename,"___",run_indicator,".RData")
 
 source("paper_scripts/paper_helper_funcs.R") # Helper functions these experiments (mainly computing the true Shapley values)
 
 
-set.seed(this.seed)
-
+source("paper_experiments/source_specifying_seed_and_filenames.R") # Setting random or fixed seed and filenames.
 
 #### Sampling train and test data ---------
 # Creating the XYtrain, XYtest, Xtrain and Xtest objects
