@@ -16,3 +16,6 @@
 
 # Change from using absolute error to absolute error relative to the true value
 
+#### Setting on just Gaussian simulations now, but know how to deal with Gaussian mixtures, so could put on
+#### that for dim 3 for both linear and piecewise constant (need to have them dispersing from zero)
+
