@@ -47,7 +47,7 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 }
 
 samp_model <- function(n,X,sd_noise){
-    y <- rowSums(X) + rnorm(n = n,mean=0,sd=sd_noise)
+    y <- rowSums(X[,-10]) + rnorm(n = n,mean=0,sd=sd_noise)
 }
 
 fit_model_func <- function(XYtrain){

@@ -32,11 +32,10 @@ lambda <- 1
 mu     <- rep(-3,3)
 Sigma <- matrix(rho,ncol=X_dim,nrow=X_dim)
 diag(Sigma) <- rep(1,3)
-beta <- c(1,0.5,-0.5)
+beta <- c(0.5,0.5,0.5)*1
 omega <- 0.5
 
 #### Defining the true distribution of the variables and the model
-
 
 samp_variables <- function(n,Sigma,beta,omega,lambda,mu){
 

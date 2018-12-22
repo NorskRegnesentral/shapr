@@ -1,4 +1,25 @@
 
+stepwiseConstant_fun1 = function(x){
+    sign(x)*1
+}
+
+stepwiseConstant_fun2 = function(x){
+    floor(x/2)*2
+}
+
+stepwiseConstant_fun3 = function(x){
+    tmp.class = floor(x/2)
+    up = (abs(tmp.class) %% 2 == 0)*2-1
+    return(up)
+}
+
+
+#x = seq(-10,10,0.1)
+#plot(x,stepwiseConstant_fun1(x),type="l",ylim=c(-3,3),lwd=3)
+#lines(x,stepwiseConstant_fun2(x),col=2)
+#lines(x,stepwiseConstant_fun3(x),col=3)
+
+
 #### Should probably document these helper functions  ####
 
 dens.X.func <- function(X,pi.G,mu.list,Sigma.list){

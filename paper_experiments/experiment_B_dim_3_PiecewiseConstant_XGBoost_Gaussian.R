@@ -46,8 +46,10 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
     return(X)
 }
 
+
 samp_model <- function(n,X,sd_noise){
-    y <-  (X[,1]<0)*1 + 0.1*X[,2] + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-1)*4 - (X[,3]>-1)*(X[,2]<-1)*1.5+ rnorm(n = n,mean=0,sd=sd_noise)
+    y <- stepwiseConstant_fun1(X[,1]) + stepwiseConstant_fun2(X[,2])*1 + stepwiseConstant_fun3(X[,3])*1+ rnorm(n = n,mean=0,sd=sd_noise)
+#    y <-(X[,1]<0)*1 + 0.1*X[,2] + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-1)*4 - (X[,3]>-1)*(X[,2]<-1)*1.5+ rnorm(n = n,mean=0,sd=sd_noise)
 }
 
 fit_model_func <- function(XYtrain){
@@ -90,7 +92,7 @@ source("paper_experiments/source_sampling_data.R")
 #### Fitting the model ----------
 
 model <- fit_model_func(XYtrain)
-
+xgb.importance(model=model)
 #### Pre computation before kernel shap ---------
 # Creating the l object
 source("paper_experiments/source_prepare_kernelShap.R")
