@@ -10,10 +10,6 @@ library(mvtnorm)
 library(condMVNorm)
 library(stringi)
 
-library(xgboost)
-library(GIGrvg)
-library(ghyp)
-
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
 experiment = "A"
 true_model <- "Linear"

@@ -20,7 +20,7 @@ true_model <- "Linear"
 fitted_model <- "Linear"
 variables <- "Gaussian" # Gaussian, Gaussianmix, or GenHyp
 notes <- "All var equal contribution"
-X_dim <- 3
+X_dim <- 10
 
 nTrain <- 2000
 nTest <- 100

@@ -15,10 +15,10 @@ library(GIGrvg)
 library(ghyp)
 
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
-experiment = "A"
+experiment = "C"
 true_model <- "Linear"
 fitted_model <- "Linear"
-variables <- "Gaussian" # Gaussian, Gaussianmix, or GenHyp
+variables <- "GenHyp" # Gaussian, Gaussianmix, or GenHyp
 notes <- "All var equal contribution"
 X_dim <- 3
 
@@ -27,22 +27,25 @@ nTest <- 100
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
 
-pi.G <- 1
-sd_noise = 0.1
-rho <- ifelse(exists("rho"),rho,0.5) # Do not edit
-mu.list = list(rep(0,X_dim))
-mat <- matrix(rho,ncol=X_dim,nrow=X_dim)
-diag(mat) <- 1
-Sigma.list <- list(mat)
+rho <- 0.5
+lambda <- 1
+mu     <- rep(-3,3)
+Sigma <- matrix(rho,ncol=X_dim,nrow=X_dim)
+diag(Sigma) <- rep(1,3)
+beta <- c(1,0.5,-0.5)
+omega <- 0.5
 
 #### Defining the true distribution of the variables and the model
 
-samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 
-    X <- joint.samp.func(n = n,
-                         pi.G,
-                         mu.list,
-                         Sigma.list)
+samp_variables <- function(n,Sigma,beta,omega,lambda,mu){
+
+    X <- simulateGenHyperbolic(nSim=n,
+                               Sigma=Sigma,
+                               beta = beta,
+                               omega = omega,
+                               lambda = lambda,
+                               mu = mu)
     return(X)
 }
 
@@ -77,6 +80,11 @@ source("paper_experiments/source_sampling_data.R")
 #### Fitting the model ----------
 
 model <- fit_model_func(XYtrain)
+
+model
+summary(XYtrain)
+pairs(XYtrain)
+cor(XYtrain)
 
 #### Pre computation before kernel shap ---------
 # Creating the l object
