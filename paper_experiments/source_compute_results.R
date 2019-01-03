@@ -25,6 +25,19 @@ for (i in 1:length(Shapley.approx)){
 absrelmeans <- cbind(absrelmeans,absrelmean_total=rowMeans(absrelmeans))
 
 
+absrelmeans <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Xtrain))
+rownames(absrelmeans) <- names(Shapley.approx)
+colnam <- paste0("absrelmean_X",1:ncol(Xtrain))
+colnames(absrelmeans) <- colnam
+
+for (i in 1:length(Shapley.approx)){
+    absrelmeans[i,] <- colMeans(abs((Shapley.true$exactShap[,-1]-Shapley.approx[[i]]$Kshap[,-1])/Shapley.true$exactShap[,-1]))
+
+}
+absrelmeans <- cbind(absrelmeans,absrelmean_total=rowMeans(absrelmeans))
+
+
+
 abssds <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Xtrain))
 rownames(abssds) <- names(Shapley.approx)
 colnam <- paste0("abssd_X",1:ncol(Xtrain))

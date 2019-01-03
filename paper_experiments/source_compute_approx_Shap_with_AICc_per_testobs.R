@@ -32,7 +32,6 @@ empirical_independence_settings = list(type = "independence")
 
 Shapley.approx = list()
 
-
 Shapley.approx$empirical_sigma.01 = compute_kernelShap(model = model,
                                                        l = l,
                                                        w_threshold = w_threshold,
@@ -62,7 +61,7 @@ if(X_dim==3){
 } else{
 
     Shapley.approx$comb_sigma.01 = compute_kernelShap(model = model,
-                                                      l,
+                                                      l = l,
                                                       w_threshold = w_threshold,
                                                       n_threshold = n_threshold,
                                                       cond_approach = list(empirical = 1:176,copula =177:1024),
@@ -70,7 +69,7 @@ if(X_dim==3){
                                                       pred_zero=pred_zero)
 
     Shapley.approx$comb_independence = compute_kernelShap(model = model,
-                                                          l,
+                                                          l = l,
                                                           w_threshold = w_threshold,
                                                           n_threshold = n_threshold,
                                                           cond_approach = list(empirical = 1:176,copula =177:1024),
@@ -79,7 +78,7 @@ if(X_dim==3){
 
 
     Shapley.approx$comb_AIC_each_k = compute_kernelShap(model = model,
-                                                        l,
+                                                        l = l,
                                                         w_threshold = w_threshold,
                                                         n_threshold = n_threshold,
                                                         cond_approach = list(empirical = 1:176,copula =177:1024),
@@ -105,14 +104,14 @@ Shapley.approx$empirical_independence = compute_kernelShap(model = model,
                                                            pred_zero=pred_zero)
 
 Shapley.approx$Gaussian = compute_kernelShap(model = model,
-                                             l,
+                                             l = l,
                                              w_threshold = w_threshold,
                                              n_threshold = n_threshold,
                                              cond_approach = "Gaussian",
                                              pred_zero=pred_zero)
 
 Shapley.approx$copula = compute_kernelShap(model = model,
-                                           l,
+                                           l = l,
                                            w_threshold = w_threshold,
                                            n_threshold = n_threshold,
                                            cond_approach = "copula",

@@ -380,7 +380,7 @@ get_predictions <- function(model,
     if ("Gaussian" %in% names(cond_approach_list)) {
         ## Assume Gaussian distributed variables and sample from the various conditional distributions
         these_wcomb <- cond_approach_list$Gaussian
-        these_wcomb <- these_wcomb[!(these_wcomb %in% c(1,nrow(l$S)))]
+        these_wcomb <- these_wcomb[!(these_wcomb %in% c(1,nrow(S)))]
 
         samp_list <- lapply(
             X = feature_list[these_wcomb],
@@ -398,7 +398,7 @@ get_predictions <- function(model,
     }
     if ("copula" %in% names(cond_approach_list)){
         these_wcomb <- cond_approach_list$copula
-        these_wcomb <- these_wcomb[!(these_wcomb %in% c(1,nrow(l$S)))]
+        these_wcomb <- these_wcomb[!(these_wcomb %in% c(1,nrow(S)))]
 
 
         samp_list <- lapply(
@@ -421,7 +421,7 @@ get_predictions <- function(model,
 
     if ("empirical" %in% names(cond_approach_list)){
         these_wcomb <- cond_approach_list$empirical
-        these_wcomb <- these_wcomb[!(these_wcomb %in% c(1,nrow(l$S)))]
+        these_wcomb <- these_wcomb[!(these_wcomb %in% c(1,nrow(S)))]
 
 
         # Handle the computation of all training-test weights for ALL combinations here, before looping
@@ -642,13 +642,12 @@ compute_kernelShap = function(model,
 
                         # Combining the X's for doing prediction
                         X.pred <- rbindlist(X.pred.list,use.names=T)
-                        X.nms <- colnames(Xtrain)
+                        X.nms <- colnames(l$Xtrain)
                         setcolorder(X.pred,X.nms)
                         # Doing prediction jointly (for speed), and then splitting them back into the y_list
                         pred <- pred_vector(model=model,data=X.pred)
                         y_list = split(pred,current_cond_samp)
                         names(y_list) = NULL
-
 
                         if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
                             if (empirical_settings$AICc_combination_type == "standard"){
@@ -720,7 +719,7 @@ compute_kernelShap = function(model,
                         Xtest.S <- subset(l$Xtest,select=S.cols)[these_test,]
                         X.pred <- cbind(Xtrain.Sbar,Xtest.S)
 
-                        X.nms <- colnames(Xtrain)
+                        X.nms <- colnames(l$Xtrain)
                         setcolorder(X.pred,X.nms)
 
                         pred <- pred_vector(model=model,data=X.pred)
