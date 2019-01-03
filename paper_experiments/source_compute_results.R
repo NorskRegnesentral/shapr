@@ -85,16 +85,22 @@ res.DT[,notes:=notes]
 res.DT[,X_dim:=X_dim]
 res.DT[,X_GenHyp:=X_GenHyp]
 
-if(X_GenHyp){
+if(variables=="GenHyp"){
+    res.DT[,beta.scale:=beta.scale]
+    res.DT[,rho:=rho]
     res.DT[,lambda:=lambda]
-    res.DT[,mu:=mu]
-    res.DT[,Sigma:=Sigma]
-    res.DT[,beta:=beta]
     res.DT[,omega:=omega]
-} else {
+}
+if (variables=="Gaussianmix"){
+    res.DT[,mu.scale:=mu.scale]
     res.DT[,rho:=rho]
     res.DT[,pi.G:=pi.G]
 }
+if (variables=="Gaussian"){
+    res.DT[,rho:=rho]
+    res.DT[,pi.G:=pi.G]
+}
+
 
 res.DT[,sd_noise:=sd_noise]
 res.DT[,nTrain:=nTrain]

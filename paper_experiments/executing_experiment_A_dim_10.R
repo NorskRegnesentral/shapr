@@ -21,7 +21,6 @@ bb = foreach(rho = rho.vec, .options.snow = opts, .errorhandling = 'pass') %dopa
 }
 
 
-    #
 
 
 
