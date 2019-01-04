@@ -19,11 +19,11 @@ experiment = "A"
 true_model <- "Linear"
 fitted_model <- "Linear"
 variables <- "Gaussian" # Gaussian, Gaussianmix, or GenHyp
-notes <- "JUST TESTING. All var equal contribution"
+notes <- "All var equal contribution"
 X_dim <- 10
-local <- ifelse(exists("local"),local,FALSE)
+source.local <- ifelse(exists("source.local"),source.local,FALSE)
 
-nTrain <- 200
+nTrain <- 2000
 nTest <- 100
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
@@ -66,14 +66,14 @@ X_GenHyp <- (variables=="GenHyp")
 (initial_current_csv_filename <- paste0("current_results_experiment_",experiment,"_dim_",X_dim,"_",true_model,"_",fitted_model,"_",variables))
 
 
-source("paper_scripts/paper_helper_funcs.R",local=local) # Helper functions these experiments (mainly computing the true Shapley values)
+source("paper_scripts/paper_helper_funcs.R",local = source.local) # Helper functions these experiments (mainly computing the true Shapley values)
 
 
-source("paper_experiments/source_specifying_seed_and_filenames.R",local=local) # Setting random or fixed seed and filenames.
+source("paper_experiments/source_specifying_seed_and_filenames.R",local = source.local) # Setting random or fixed seed and filenames.
 
 #### Sampling train and test data ---------
 # Creating the XYtrain, XYtest, Xtrain and Xtest objects
-source("paper_experiments/source_sampling_data.R",local=local)
+source("paper_experiments/source_sampling_data.R",local = source.local)
 
 #### Fitting the model ----------
 
@@ -81,21 +81,21 @@ model <- fit_model_func(XYtrain)
 
 #### Pre computation before kernel shap ---------
 # Creating the l object
-source("paper_experiments/source_prepare_kernelShap.R",local=local)
+source("paper_experiments/source_prepare_kernelShap.R",local = source.local)
 
 #### Computing the various Shapley approximations  --------
 
-source("paper_experiments/source_compute_approx_Shap_with_AICc_per_testobs.R",local=local) # Creating Shapley.approx object
+source("paper_experiments/source_compute_approx_Shap_with_AICc_per_testobs.R",local = source.local) # Creating Shapley.approx object
 #source("paper_experiments/source_compute_approx_Shap_no_AICc.R") # Creating Shapley.approx object
 
 #### Computing the true Shapley values ------
 
-source("paper_experiments/source_compute_true_Shap.R",local=local) # Creating the Shapley.true object
+source("paper_experiments/source_compute_true_Shap.R",local = source.local) # Creating the Shapley.true object
 
 ### Comparing the true and approximate values -------------
 
 
-source("paper_experiments/source_compute_results.R",local=local) # Creating the res.DT object
+source("paper_experiments/source_compute_results_devel.R",local = source.local) # Creating the res.DT object
 
 # Printing the results to the terminal
 print(res.DT)

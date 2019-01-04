@@ -159,7 +159,6 @@ g1 <- ggplot(data = dat_C_dim3, aes(x=beta.scale,y=avg_absmean_total,color=rn))+
     labs(y="Absolute error (log scale)",
          #  title = "Results experiment A dim 3",
          color = "Method") +
-    xlim(0,1) +
     scale_colour_manual(values=cbbPalette) +
     theme_light() +
     theme(legend.position = "bottom")
@@ -169,7 +168,7 @@ g2 <- ggplot(data = dat_C_dim3, aes(x=beta.scale,y=skill_absmean_total,color=rn)
     labs(y="Skill score relative to independence",
          #    title = "Results experiment A dim 3",
          color = "Method") +
-    xlim(0,1) + ylim(-0.5,1) +
+    ylim(-0.5,1) +
     scale_colour_manual(values=cbbPalette) +
     theme_light() +
     theme(legend.position = "bottom")
@@ -196,7 +195,6 @@ g1 <- ggplot(data = dat_D_dim3, aes(x=beta.scale,y=avg_absmean_total,color=rn))+
     labs(y="Absolute error (log scale)",
          #  title = "Results experiment A dim 3",
          color = "Method") +
-    xlim(0,1) +
     scale_colour_manual(values=cbbPalette) +
     theme_light() +
     theme(legend.position = "bottom")
@@ -206,13 +204,13 @@ g2 <- ggplot(data = dat_D_dim3, aes(x=beta.scale,y=skill_absmean_total,color=rn)
     labs(y="Skill score relative to independence",
          #    title = "Results experiment A dim 3",
          color = "Method") +
-    xlim(0,1) + ylim(-0.5,1) +
+    ylim(-0.5,1) +
     scale_colour_manual(values=cbbPalette) +
     theme_light() +
     theme(legend.position = "bottom")
 
 #grid.arrange(g1,g2,ncol=2)
-fig_D_3=grid_arrange_shared_legend(g1, g2,title = "Results experiment C dim 3")
+fig_D_3=grid_arrange_shared_legend(g1, g2,title = "Results experiment D dim 3")
 ggsave(file.path(res_folder,"tables_and_figures_for_paper","paper_figure_ex_D_dim_3.pdf"),fig_D_3,width = 10, height = 5)
 
 #### Creating figure, experiment E dim 3 ####
@@ -233,7 +231,6 @@ g1 <- ggplot(data = dat_E_dim3, aes(x=mu.scale,y=avg_absmean_total,color=rn))+
     labs(y="Absolute error (log scale)",
          #  title = "Results experiment A dim 3",
          color = "Method") +
-    xlim(0,1) +
     scale_colour_manual(values=cbbPalette) +
     theme_light() +
     theme(legend.position = "bottom")
@@ -243,13 +240,13 @@ g2 <- ggplot(data = dat_E_dim3, aes(x=mu.scale,y=skill_absmean_total,color=rn))+
     labs(y="Skill score relative to independence",
          #    title = "Results experiment A dim 3",
          color = "Method") +
-    xlim(0,1) + ylim(-0.5,1) +
+    ylim(-0.5,1) +
     scale_colour_manual(values=cbbPalette) +
     theme_light() +
     theme(legend.position = "bottom")
 
 #grid.arrange(g1,g2,ncol=2)
-fig_E_3=grid_arrange_shared_legend(g1, g2,title = "Results experiment C dim 3")
+fig_E_3=grid_arrange_shared_legend(g1, g2,title = "Results experiment E dim 3")
 ggsave(file.path(res_folder,"tables_and_figures_for_paper","paper_figure_ex_E_dim_3.pdf"),fig_E_3,width = 10, height = 5)
 
 #### Creating figure, experiment F dim 3 ####
@@ -270,7 +267,6 @@ g1 <- ggplot(data = dat_F_dim3, aes(x=mu.scale,y=avg_absmean_total,color=rn))+
     labs(y="Absolute error (log scale)",
          #  title = "Results experiment A dim 3",
          color = "Method") +
-    xlim(0,1) +
     scale_colour_manual(values=cbbPalette) +
     theme_light() +
     theme(legend.position = "bottom")
@@ -280,14 +276,17 @@ g2 <- ggplot(data = dat_F_dim3, aes(x=mu.scale,y=skill_absmean_total,color=rn))+
     labs(y="Skill score relative to independence",
          #    title = "Results experiment A dim 3",
          color = "Method") +
-    xlim(0,1) + ylim(-0.5,1) +
+    ylim(-0.5,1) +
     scale_colour_manual(values=cbbPalette) +
     theme_light() +
     theme(legend.position = "bottom")
 
 #grid.arrange(g1,g2,ncol=2)
-fig_F_3=grid_arrange_shared_legend(g1, g2,title = "Results experiment C dim 3")
+fig_F_3=grid_arrange_shared_legend(g1, g2,title = "Results experiment F dim 3")
 ggsave(file.path(res_folder,"tables_and_figures_for_paper","paper_figure_ex_F_dim_3.pdf"),fig_F_3,width = 10, height = 5)
+
+
+
 
 
 

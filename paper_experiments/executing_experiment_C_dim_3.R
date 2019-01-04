@@ -4,7 +4,7 @@ library(doSNOW)
 library(foreach)
 cl <- makeCluster(5,outfile="")
 registerDoSNOW(cl)
-seed.vec <- 1:10 + 1234 # We fix this seed
+seed.vec <- 6:10 + 1234 # We fix this seed
 source.local <- TRUE
 
 

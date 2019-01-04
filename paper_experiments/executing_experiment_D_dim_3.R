@@ -17,6 +17,5 @@ bb = foreach(this.seed = seed.vec,.options.snow = opts, .errorhandling = 'pass')
     for (beta.scale in beta.scale.vec){
         source("paper_experiments/experiment_D_dim_3_PiecewiseConstant_XGBoost_GenHyp.R",local = source.local)
     }
-    paste0("Just finished computation beta..scale = ",beta.scale," with seed = ",this.seed)
+    paste0("Just finished computation beta.scale = ",beta.scale," with seed = ",this.seed)
 }
-
