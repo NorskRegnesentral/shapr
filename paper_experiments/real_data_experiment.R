@@ -106,7 +106,7 @@ FastROC <- function(y, x) {
 xgb.train <- xgb.DMatrix(data = as.matrix(XYtrain[,-"y"]),
                          label = XYtrain[,y])
 xgb.test <- xgb.DMatrix(data = as.matrix(XYtest[,-"y"]),
-                         label = XYtest[,y])
+                        label = XYtest[,y])
 
 params <- list(eta =  0.1,
                objective = "binary:logistic",
@@ -121,6 +121,9 @@ model <- xgb.train(data = xgb.train,
                    watchlist = list(train = xgb.train,
                                     test = xgb.test),
                    verbose = 1)
+
+
+#### Make a parallelized loop over parts of the
 
 #### Pre computation before kernel shap ---------
 # Creating the l object

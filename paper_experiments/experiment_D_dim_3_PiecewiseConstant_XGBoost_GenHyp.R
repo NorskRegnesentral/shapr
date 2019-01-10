@@ -80,7 +80,6 @@ fit_model_func <- function(XYtrain){
 
 
 
-
 ####################################################################################################
 
 #### Autoset helping variables. DO NOT TOUCH ####

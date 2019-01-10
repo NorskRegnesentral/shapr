@@ -2,9 +2,9 @@
 ##############
 library(doSNOW)
 library(foreach)
-cl <- makeCluster(5,outfile="")
+cl <- makeCluster(2,outfile="")
 registerDoSNOW(cl)
-seed.vec <- 1:5 + 1234 # We fix this seed
+seed.vec <- c(1237,1238) # We fix this seed
 source.local <- TRUE
 
 
@@ -16,11 +16,9 @@ rho.vec <- c(0.1)#0.2,0.4,0.6,0.8)
 
  bb = foreach(this.seed = seed.vec,.options.snow = opts, .errorhandling = 'pass') %dopar% {
      for (rho in rho.vec){
-         source("paper_experiments/experiment_B_dim_10_PiecewiseConstant_XGBoost_Gaussian.R",local = source.local)
-     }
+         source("paper_experiments/experiment_A_dim_10_Linear_Linear_Gaussian.R",local = source.local)
+        }
     paste0("Just finished computation for rho = ",rho," with seed ",this.seed)
-}
-
-
+ }
 
 

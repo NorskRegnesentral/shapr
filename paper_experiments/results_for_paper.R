@@ -25,6 +25,19 @@ all_res_experiment_B_dim10 <- "all_results_experiment_B_dim_10_PiecewiseConstant
 cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
 
+### Testign #####
+
+#dat <- fread(paste0(res_folder,all_res_experiment_A_dim10))
+
+# A+B dim 3 is done
+# C needs 600 more runs on the same seed
+# D needs to run everything
+# E needs to run last 500
+# F needs to run last 500
+
+#dat[,sum(nTest),by=.(this.seed,rn)]
+
+#########
 # Help function
 
 grid_arrange_shared_legend <-
