@@ -32,140 +32,29 @@ w_shapley <- function(m, N, s) {
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-get_combinations <- function(m, exact = TRUE, nrows = 200, replace = FALSE) {
+get_combinations <- function(m, exact = TRUE, nrows = 200, replace = FALSE, shapley_weight_inf_replacement = 10^6) {
 
     if (!exact && nrows>2^m){
         exact = TRUE
         cat(paste0("nrows is larger than 2^m = ",2^m,". Using exact instead."))
     }
+    N <- 2 ^ m
+    X <- data.table(ID = 1:N)
+    combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
+    X[, features := unlist(combinations, recursive = FALSE)]
+    X[, nfeatures := length(features[[1]]), ID]
+    X[, N := .N, nfeatures]
+    X[!(nfeatures%in%c(0,m)), shapley_weight := w_shapley(m = m, N = N, s = nfeatures)]
+    X[nfeatures%in% c(0,m), shapley_weight := shapley_weight_inf_replacement]
+
     if (exact == TRUE) {
-        N <- 2 ^ m
-        X <- data.table(ID = 1:N)
-        combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
-        X[, features := unlist(combinations, recursive = FALSE)]
-        X[, nfeatures := length(features[[1]]), ID]
-        X[, N := .N, nfeatures]
-    } else {
-        if (replace){ # If sampling without replacement
-
-            DT <- data.table(nfeatures = head(1:m, -1))
-            DT[, N := unlist(lapply(nfeatures, choose, n = m))]
-            DT[, weight := w_shapley(m = m, N = N, s = nfeatures)]
-            DT[, weight := N*weight] # To get right conditional sampling probabilities
-
-            X <- data.table(
-                ID = seq(nrows),
-                nfeatures = sample(
-                    x = DT[["nfeatures"]],
-                    size = nrows,
-                    replace = replace,
-                    prob = DT[["weight"]])
-            )
-
-            ## Sample specific set of features ----------
-            setkey(X, nfeatures)
-            X[, ID := .I]
-            X[, features := lapply(nfeatures, sample, x = 1:m,replace=replace)]
-            X[, features.txt := as.character(features)]
-            X[, N := .N, by=features.txt] ##### FIND A BETTER WAY TO DO THIS COUNTING AND REDUCTION OF THE TABLE #####
-            #### ADD VARIABLE SAYING IF THE REDUCTION SHOULD BE DONE AS WELL ####
-
-            ## Add zero features and m features ----------
-            X_zero_all <- data.table(
-                ID = seq(X[, max(ID)] + 1, length.out = 2),
-                num_var = c(0, m),
-                comb = c(list(numeric(0)), list(1:m))
-            )
-            X <- rbindlist(list(X, X_zero_all))
-            setkey(X, nfeatures)
-            X[, ID := .I]
-
-            ## Add number of combinations
-            nms <- c("ID", "features", "nfeatures")
-            setcolorder(X, nms)
-
-
-        } else { # If sampling without replacement
-
-            DT <- data.table(nfeatures = head(1:m, -1))
-            DT[, N := unlist(lapply(nfeatures, choose, n = m))]
-            DT[, weight := w_shapley(m = m, N = N, s = nfeatures)]
-#            aa=sample(x = rep(DT$nfeatures,times=DT$N),size = nrows,replace = replace,prob = rep(DT$weight,times=DT$N))
-            X <- data.table(
-                ID = seq(nrows),
-                nfeatures = sample(
-                    x = rep(DT[["nfeatures"]],times=DT[["N"]]),
-                    size = nrows,
-                    replace = replace,
-                    prob = rep(DT[["weight"]],times=DT[["N"]]))
-                )
-            ## Sample specific set of features ----------
-            setkey(X, nfeatures)
-            X[, ID := .I]
-            X[, features := lapply(nfeatures, sample, x = 1:m,replace=replace)]
-
-            ## Add zero features and m features ----------
-            X_zero_all <- data.table(
-                ID = seq(X[, max(ID)] + 1, length.out = 2),
-                num_var = c(0, m),
-                comb = c(list(numeric(0)), list(1:m))
-            )
-            X <- rbindlist(list(X, X_zero_all))
-            setkey(X, nfeatures)
-            X[, ID := .I]
-
-            ## Add number of combinations
-            nms <- c("ID", "features", "nfeatures")
-            setcolorder(X, nms)
-
-
-        }
-
-        #### NEW VERSION
-        ## Find weights for given number of features ----------
-        DT <- data.table(nfeatures = head(1:m, -1))
-        DT[, N := unlist(lapply(nfeatures, choose, n = m))]
-        DT[, weight := w_shapley(m = m, N = N, s = nfeatures)]
-#        DT[, weight := weight*N]
-
-
-
-        aa=sample(x = rep(DT$nfeatures,times=DT$N),size = nrows,replace = replace,prob = rep(DT$weight,times=DT$N))
-        X <- data.table(
-            ID = seq(nrows),
-            nfeatures = sample(
-                x = DT[["nfeatures"]],
-                size = nrows,
-                replace = TRUE,
-                prob = DT[["weight"]]
-            )
-        )
-
-
-        ## Sample number of features ----------
-        X <- data.table(
-            ID = seq(nrows),
-            nfeatures = sample(
-                x = DT[["nfeatures"]],
-                size = nrows,
-                replace = TRUE,
-                prob = DT[["weight"]]
-            )
-        )
-
-        ## Sample specific set of features ----------
-        setkey(X, nfeatures)
-        X[, ID := .I]
-        X[, features := lapply(nfeatures, sample, x = 1:m)]
-
-
-        #### END NEW VERSIOn
-
-
-
-
+        X[, no := 1]
+    } else { # Sample some of the feature combinations, with or without replacement
+        X0 = data.table(ID = c(1,2^m,sample(x=X[N!=1,ID],size = nrows, replace = replace, prob = X[N!=1,shapley_weight])))
+        X0[,no:=.N,by=ID] # Counting repetitions of the same sample
+        X0= unique(X0)
+        X = merge(X,X0,by = "ID")
     }
-
     return(X)
 }
 
@@ -194,11 +83,15 @@ get_weights <- function(X, m) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_weighted_matrix <- function(X) {
+get_weighted_matrix <- function(X,use_shapley_weights_in_W = T, normalize_W_weights = T) {
     W <- weighted_matrix(
         features = X[["features"]],
         m = X[.N][["nfeatures"]],
-        n = X[, .N]
+        n = X[, .N],
+        shapley_weight = X[["shapley_weight"]],
+        no = X[["no"]],
+        use_shapley_weights_in_W = use_shapley_weights_in_W,
+        normalize_W_weights = normalize_W_weights
     )
 
     return(W)
@@ -940,19 +833,19 @@ prepare_kernelShap <- function(m,
                                exact = TRUE,
                                replace = FALSE,
                                nrows = NULL,
+                               shapley_weight_inf_replacement = 10^6,
                                scale = FALSE,
+                               use_shapley_weights_in_W = T,
+                               normalize_W_weights = T,
                                distance_metric = "Mahalanobis_scaled",
                                compute_distances = TRUE,
                                normalize_distance_rows = TRUE) {
 
     ## Get all combinations ----------------
-    X <- get_combinations(m = m, exact = exact, nrows = nrows, replace = replace)
-
-    ## Add weights ----------------
-    X <- get_weights(X = X, m = m)
+    X <- get_combinations(m = m, exact = exact, nrows = nrows, replace = replace, shapley_weight_inf_replacement = shapley_weight_inf_replacement)
 
     ## Get weighted matrix ----------------
-    W <- get_weighted_matrix(X)
+    W <- get_weighted_matrix(X, use_shapley_weights_in_W = use_shapley_weights_in_W, normalize_W_weights = normalize_W_weights)
 
     ## Transform to data table and scale data ----------------
     l <- scale_data(Xtrain, Xtest, scale = scale) # MJ: One should typically scale if using Euclidean, while it is no point when using Mahalanobis
