@@ -22,3 +22,5 @@ tmp/
 src-i386/
 
 src-x64/
+
+paper_experiments/res/single_res/

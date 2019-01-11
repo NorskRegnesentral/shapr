@@ -160,8 +160,8 @@ impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
 #'
 #' @return Matrix of dimension n x m + 1
 #' @author Nikolai Sellereite
-weighted_matrix <- function(features, m, n) {
-    .Call(`_shapr_weighted_matrix`, features, m, n)
+weighted_matrix <- function(features, m, n, w) {
+    .Call(`_shapr_weighted_matrix`, features, m, n, w)
 }
 
 #' Get feature matrix

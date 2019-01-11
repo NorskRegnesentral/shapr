@@ -147,15 +147,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // weighted_matrix
-arma::mat weighted_matrix(List features, int m, int n);
-RcppExport SEXP _shapr_weighted_matrix(SEXP featuresSEXP, SEXP mSEXP, SEXP nSEXP) {
+arma::mat weighted_matrix(List features, int m, int n, NumericVector w);
+RcppExport SEXP _shapr_weighted_matrix(SEXP featuresSEXP, SEXP mSEXP, SEXP nSEXP, SEXP wSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type features(featuresSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(weighted_matrix(features, m, n));
+    Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
+    rcpp_result_gen = Rcpp::wrap(weighted_matrix(features, m, n, w));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -183,7 +184,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_prepare_gen_Mahlanobis_dist_cpp_old", (DL_FUNC) &_shapr_prepare_gen_Mahlanobis_dist_cpp_old, 3},
     {"_shapr_gen_Mahlanobis_dist_cpp", (DL_FUNC) &_shapr_gen_Mahlanobis_dist_cpp, 5},
     {"_shapr_impute_cpp", (DL_FUNC) &_shapr_impute_cpp, 5},
-    {"_shapr_weighted_matrix", (DL_FUNC) &_shapr_weighted_matrix, 3},
+    {"_shapr_weighted_matrix", (DL_FUNC) &_shapr_weighted_matrix, 4},
     {"_shapr_feature_matrix_cpp", (DL_FUNC) &_shapr_feature_matrix_cpp, 2},
     {NULL, NULL, 0}
 };

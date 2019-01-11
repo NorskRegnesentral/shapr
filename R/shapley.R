@@ -32,12 +32,12 @@ w_shapley <- function(m, N, s) {
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-get_combinations <- function(m, exact = TRUE, nrows = 200, replace = FALSE, shapley_weight_inf_replacement = 10^6) {
+get_combinations <- function(m, exact = TRUE, nrows = 200, replace = FALSE, shapley_weight_inf_replacement = 10^6,reduce_dim = T) {
 
-    if (!exact && nrows>2^m){
-        exact = TRUE
+    if (!exact && nrows>(2^m-2) && !replace ){
+        nrows = 2^m-2
         cat(paste0("nrows is larger than 2^m = ",2^m,". Using exact instead."))
-    }
+   }
     N <- 2 ^ m
     X <- data.table(ID = 1:N)
     combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
@@ -52,9 +52,15 @@ get_combinations <- function(m, exact = TRUE, nrows = 200, replace = FALSE, shap
     } else { # Sample some of the feature combinations, with or without replacement
         X0 = data.table(ID = c(1,2^m,sample(x=X[N!=1,ID],size = nrows, replace = replace, prob = X[N!=1,shapley_weight])))
         X0[,no:=.N,by=ID] # Counting repetitions of the same sample
-        X0= unique(X0)
+        if (reduce_dim){
+            X0 = unique(X0)
+        } else {
+            X0[,no:=1]
+        }
         X = merge(X,X0,by = "ID")
     }
+    #X[nfeatures%in% c(0,m), no := shapley_weight_inf_replacement]
+
     return(X)
 }
 
@@ -84,14 +90,22 @@ get_weights <- function(X, m) {
 #'
 #' @author Nikolai Sellereite
 get_weighted_matrix <- function(X,use_shapley_weights_in_W = T, normalize_W_weights = T) {
+    if (use_shapley_weights_in_W){
+        w <- X[["shapley_weight"]]*X[["no"]]
+    } else {
+        w <- X[["no"]]
+        w[c(1,length(w))] <- X[["shapley_weight"]][c(1,length(w))]
+    }
+
+if (normalize_W_weights){
+    w[-c(1,length(w))] <- w[-c(1,length(w))]/sum(w[-c(1,length(w))])
+}
+
     W <- weighted_matrix(
         features = X[["features"]],
         m = X[.N][["nfeatures"]],
         n = X[, .N],
-        shapley_weight = X[["shapley_weight"]],
-        no = X[["no"]],
-        use_shapley_weights_in_W = use_shapley_weights_in_W,
-        normalize_W_weights = normalize_W_weights
+        w = w
     )
 
     return(W)
@@ -835,6 +849,7 @@ prepare_kernelShap <- function(m,
                                nrows = NULL,
                                shapley_weight_inf_replacement = 10^6,
                                scale = FALSE,
+                               reduce_dim = TRUE,
                                use_shapley_weights_in_W = T,
                                normalize_W_weights = T,
                                distance_metric = "Mahalanobis_scaled",
@@ -842,7 +857,7 @@ prepare_kernelShap <- function(m,
                                normalize_distance_rows = TRUE) {
 
     ## Get all combinations ----------------
-    X <- get_combinations(m = m, exact = exact, nrows = nrows, replace = replace, shapley_weight_inf_replacement = shapley_weight_inf_replacement)
+    X <- get_combinations(m = m, exact = exact, nrows = nrows, replace = replace, shapley_weight_inf_replacement = shapley_weight_inf_replacement, reduce_dim = reduce_dim)
 
     ## Get weighted matrix ----------------
     W <- get_weighted_matrix(X, use_shapley_weights_in_W = use_shapley_weights_in_W, normalize_W_weights = normalize_W_weights)
