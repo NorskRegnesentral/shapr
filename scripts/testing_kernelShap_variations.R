@@ -13,7 +13,7 @@ library(GIGrvg)
 library(ghyp)
 
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
-X_dim <- 12 # use 3,6,9,12,15
+X_dim <- 3 # use 3,6,9,12,15
 source.local <- ifelse(exists("source.local"),source.local,FALSE)
 
 nTrain <- 2000
@@ -168,7 +168,11 @@ for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction functi
 
 DT <- rbindlist(ll)
 
-nrows_prop_vec <- c(0.1,0.2,0.5,1,2,5,10,50,100,500,10^3)#seq(1,20,1)
+Shapley.true = list()
+Shapley.true$exactShap <- matrix(NA,ncol=X_dim+1,nrow=nTest)
+
+
+nrows_prop_vec <- c(0.5,1,2,5,10,50,100,500,10^3)#seq(1,20,1)
 a <- 1
 all.res.DT.list <- list()
 for (nrows_prop in nrows_prop_vec){
@@ -270,7 +274,6 @@ for (nrows_prop in nrows_prop_vec){
         Shapley.approx[[j]]$Kshap <- matrix(NA,ncol=X_dim+1,nrow=nTest)
     }
 
-    Shapley.true$exactShap <- matrix(NA,ncol=X_dim+1,nrow=nTest)
 
 
 

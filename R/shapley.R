@@ -79,7 +79,7 @@ get_combinations <- function(m, exact = TRUE, nrows = 200, replace = TRUE, shapl
             if(reduce_dim){
                 isDup <- duplicated(X)
                 X[,features:=Samp.list]
-                X <- X[isDup,]
+                X <- X[!isDup,]
             } else {
                 X[,no:=1]
                 X[,features:=Samp.list]
@@ -140,7 +140,7 @@ get_weights <- function(X, m) {
 #'
 #' @export
 #'
-#' @author Nikolai Sellereite
+#' @author Nikolai Sellereite, Martin Jullum
 get_weighted_matrix <- function(X,use_shapley_weights_in_W = T, normalize_W_weights = T) {
     if (use_shapley_weights_in_W){
         w <- X[["shapley_weight"]]*X[["no"]]
@@ -897,12 +897,12 @@ prepare_kernelShap <- function(m,
                                Xtrain,
                                Xtest,
                                exact = TRUE,
-                               replace = FALSE,
+                               replace = TRUE,
                                nrows = NULL,
                                shapley_weight_inf_replacement = 10^6,
                                scale = FALSE,
                                reduce_dim = TRUE,
-                               use_shapley_weights_in_W = T,
+                               use_shapley_weights_in_W = ifelse(exact,T,F),
                                normalize_W_weights = T,
                                distance_metric = "Mahalanobis_scaled",
                                compute_distances = TRUE,
