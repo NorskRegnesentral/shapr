@@ -603,10 +603,17 @@ compute_kernelShap = function(model,
     h_optim_mat <- matrix(NA,ncol=nrow(l$Xtest),nrow=nrow(l$S)) # Each test observation has one column
 
 
+
+
     if("empirical" %in% names(cond_approach_list)){
 
         these_empirical <- cond_approach_list$empirical
         these_empirical <- these_empirical[!(these_empirical %in% c(1,nrow(l$S)))]
+
+        # Checking whether any of the distance are not pre-computed.
+        if(any(!(these_empirical %in% l$D_for_these_varcomb))){
+            paste0("Distance not pre-computed for varcomb ",paste0(these_empirical[!(these_empirical %in% l$D_for_these_varcomb)],collapse=", "))
+        }
 
         if(empirical_settings$type == "independence"){
             empirical_settings$kernel_metric <- "independence" # Overriding the kernel_metric setting if type is set to "independence"
@@ -905,7 +912,7 @@ prepare_kernelShap <- function(m,
                                use_shapley_weights_in_W = ifelse(exact,T,F),
                                normalize_W_weights = T,
                                distance_metric = "Mahalanobis_scaled",
-                               compute_distances = TRUE,
+                               compute_distances_for_these_varcomb = 1:(2^m), # Set to NULL if noe distances are to be computed
                                normalize_distance_rows = TRUE) {
 
     ## Get all combinations ----------------
@@ -930,8 +937,8 @@ prepare_kernelShap <- function(m,
         S_scale_dist <- F
     }
 
-    if(compute_distances){ # Only compute the distances if the empirical approach is used
-        D <- gen_Mahlanobis_dist_cpp(X$features,as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
+    if(!is.null(compute_distances_for_these_varcomb[1])){ # Only compute the distances if the empirical approach is used
+        D <- gen_Mahlanobis_dist_cpp(X$features[compute_distances_for_these_varcomb],as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
         if (normalize_distance_rows){
             colmin <- apply(X = D,MARGIN = c(2,3),FUN=min)
             for(i in 1:dim(D)[3]){
@@ -942,10 +949,11 @@ prepare_kernelShap <- function(m,
         D <- NULL
     }
 
+
     ## Get feature matrix ---------
     S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain)) # The scaling of S influence onyl the matrix product with D, as we only care about the elements of S being zero/nonzero elsewhere.
 
-    return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest))
+    return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest, D_for_these_varcomb = compute_distances_for_these_varcomb))
 }
 
 

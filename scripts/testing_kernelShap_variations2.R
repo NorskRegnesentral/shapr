@@ -13,7 +13,7 @@ library(GIGrvg)
 library(ghyp)
 
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
-X_dim <- 3 # use 3,6,9,12,15
+X_dim <- 6 # use 3,6,9,12,15
 source.local <- ifelse(exists("source.local"),source.local,FALSE)
 
 nTrain <- 2000
