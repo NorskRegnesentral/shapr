@@ -19,3 +19,6 @@ bb = foreach(this.seed = seed.vec,.options.snow = opts, .errorhandling = 'pass')
     }
     paste0("Just finished computation beta.scale = ",beta.scale," with seed = ",this.seed)
 }
+
+
+

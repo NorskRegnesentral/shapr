@@ -1,21 +1,36 @@
 
-library(doSNOW)
+library(parallel)
 library(foreach)
-cl <- makeCluster(5,outfile="")
-registerDoSNOW(cl)
-seed.vec <- 8:10 + 1234 # We fix this seed
+cl <- parallel::makeCluster(5,outfile="")
+seed.vec <- 1:10 + 1234 # We fix this seed
 source.local <- TRUE
 
 rho.vec <- seq(0,0.98,length.out=50)[c(seq(1,50,by=2),seq(2,50,by=2))]
 
-progress <- function(n) cat(sprintf("task %d is complete\n", n))
-opts <- list(progress=progress)
+bb = foreach(rho = 1:10, .errorhandling = 'pass') %dopar% {
+    rho = rho^2
+    source("paper_experiments/test2.R")
+    this
+}
 
-bb = foreach(rho = rho.vec, .options.snow = opts, .errorhandling = 'pass') %dopar% {
-    for (this.seed in seed.vec){
-        source("paper_experiments/experiment_A_dim_3_Linear_Linear_Gaussian.R",local = source.local)
-    }
-    paste0("Just finished computation for rho = ",rho," with seed ",this.seed)
+primary = "hpc04"
+
+
+
+
+
+f <- function(rho){
+    print(rho)
+
+
+    rho
 }
 
 
+
+aa=mclapply(1:5,f)
+
+
+
+
+stopCluster(cl)

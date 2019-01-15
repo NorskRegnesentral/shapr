@@ -46,11 +46,19 @@ source("paper_experiments/source_specifying_seed_and_filenames.R",local = source
 XYtrain <-  fread("/nr/project_stat/BFFGB18/LIME/lime/R/train6.csv")
 XYtest <-   fread("/nr/project_stat/BFFGB18/LIME/lime/R/test6.csv")
 
+dim(XYtrain)
+
 XYtrain[,V1:=NULL]
 XYtest[,V1:=NULL]
 
 setnames(XYtrain,"default","y")
 setnames(XYtest,"default","y")
+
+# Testing, reducing the dimension of the data
+XYtrain <- XYtrain[,1:10]
+XYtest <- XYtest[,1:10]
+nrows_kernelShap <- 10^2
+
 
 nTrain <- nrow(XYtrain)
 nTest <- nrow(XYtest)
@@ -131,7 +139,7 @@ l <- prepare_kernelShap(
     m = ncol(Xtrain),
     Xtrain = Xtrain,
     Xtest = Xtest[1:10,],
-    exact = FALSE,
+    exact = TRUE,
     nrows = nrows_kernelShap,
     distance_metric = "Mahalanobis_scaled",
     normalize_distance_rows = TRUE

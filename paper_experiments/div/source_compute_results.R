@@ -3,9 +3,9 @@ colSds <- function(x){
 }
 
 
-absmeans <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Shapley.approx[[1]][[1]])-1)
+absmeans <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Xtrain))
 rownames(absmeans) <- names(Shapley.approx)
-colnam <- paste0("absmean_X",1:(ncol(Shapley.approx[[1]][[1]])-1))
+colnam <- paste0("absmean_X",1:ncol(Xtrain))
 colnames(absmeans) <- colnam
 
 for (i in 1:length(Shapley.approx)){
@@ -13,9 +13,9 @@ for (i in 1:length(Shapley.approx)){
 }
 absmeans <- cbind(absmeans,absmean_total=rowMeans(absmeans))
 
-absrelmeans <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Shapley.approx[[1]][[1]])-1)
+absrelmeans <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Xtrain))
 rownames(absrelmeans) <- names(Shapley.approx)
-colnam <- paste0("absrelmean_X",1:(ncol(Shapley.approx[[1]][[1]])-1))
+colnam <- paste0("absrelmean_X",1:ncol(Xtrain))
 colnames(absrelmeans) <- colnam
 
 for (i in 1:length(Shapley.approx)){
@@ -24,25 +24,23 @@ for (i in 1:length(Shapley.approx)){
 }
 absrelmeans <- cbind(absrelmeans,absrelmean_total=rowMeans(absrelmeans))
 
-skillscoremeans <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Shapley.approx[[1]][[1]])-1)
-rownames(skillscoremeans) <- names(Shapley.approx)
-colnam <- paste0("absrelmean_X",1:(ncol(Shapley.approx[[1]][[1]])-1))
-colnames(skillscoremeans) <- colnam
 
-absmeans_ref <- absmeans[rownames(absmeans)=="empirical_independence",]
-last <- length(absmeans_ref)
+absrelmeans <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Xtrain))
+rownames(absrelmeans) <- names(Shapley.approx)
+colnam <- paste0("absrelmean_X",1:ncol(Xtrain))
+colnames(absrelmeans) <- colnam
 
 for (i in 1:length(Shapley.approx)){
-    skillscoremeans[i,] <- (absmeans[i,-last] - absmeans_ref[-last])/(0-absmeans_ref[-last])
+    absrelmeans[i,] <- colMeans(abs((Shapley.true$exactShap[,-1]-Shapley.approx[[i]]$Kshap[,-1])/Shapley.true$exactShap[,-1]))
+
 }
-
-skillscoremeans <- cbind(skillscoremeans,absrelmean_total=rowMeans(skillscoremeans))
-
+absrelmeans <- cbind(absrelmeans,absrelmean_total=rowMeans(absrelmeans))
 
 
-abssds <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Shapley.approx[[1]][[1]])-1)
+
+abssds <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Xtrain))
 rownames(abssds) <- names(Shapley.approx)
-colnam <- paste0("abssd_X",1:(ncol(Shapley.approx[[1]][[1]])-1))
+colnam <- paste0("abssd_X",1:ncol(Xtrain))
 colnames(abssds) <- colnam
 
 abssd_total <- numeric()
@@ -54,16 +52,16 @@ abssds <- cbind(abssds,abssd_total=abssd_total)
 
 
 ### Storing the optimal bandwidths (h)
-h_optims <- matrix(NA,nrow=length(Shapley.approx), ncol=2^(ncol(Shapley.approx[[1]][[1]])-1))
+h_optims <- matrix(NA,nrow=length(Shapley.approx), ncol=2^ncol(Xtrain))
 for (i in 1:length(Shapley.approx)){
-    for (j in 1:(2^(ncol(Shapley.approx[[1]][[1]])-1))){
+    for (j in 1:(2^ncol(Xtrain))){
         h_optims[i,j] <- mean(Shapley.approx[[i]]$other_objects$h_optim_mat[j,])
         #h_optims[i,j] <-Shapley.approx[[i]]$other_objects$h_optim_mat[j,1]
     }
 }
 
 colnam_h <- character()
-for (j in 1:(2^(ncol(Shapley.approx[[1]][[1]])-1))){
+for (j in 1:(2^ncol(Xtrain))){
     colnam_h[j] <- paste0("h_X_",paste0(l$X$features[[j]],collapse = "_"))
 }
 
@@ -76,7 +74,7 @@ for (i in 1:length(Shapley.approx)){
     comp_time[i] <- Shapley.approx[[i]]$other_objects$comp_time[3]
 }
 
-res <- cbind(skillscoremeans,absrelmeans,absmeans,abssds,h_optims[,-c(1,ncol(h_optims))])
+res <- cbind(absrelmeans,absmeans,abssds,h_optims[,-c(1,ncol(h_optims))])
 res.DT <- data.table(res,keep.rownames = T)
 
 res.DT[,comp_time:=comp_time]

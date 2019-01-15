@@ -27,15 +27,11 @@ cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2"
 
 ### Testign #####
 
-#dat <- fread(paste0(res_folder,all_res_experiment_A_dim10))
+dat <- fread(paste0(res_folder,all_res_experiment_B_dim10))
 
-# A+B dim 3 is done
-# C needs 600 more runs on the same seed
-# D needs to run everything
-# E needs to run last 500
-# F needs to run last 500
+# A+B+C+E+F dim 3 is done
 
-#dat[,sum(nTest),by=.(this.seed,rn)]
+dat[,sum(nTest),by=.(rho,rn)]
 
 #########
 # Help function
