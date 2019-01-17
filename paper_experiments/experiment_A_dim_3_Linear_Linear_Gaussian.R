@@ -20,8 +20,8 @@ X_dim <- 3
 source.local <- ifelse(exists("source.local"),source.local,FALSE)
 
 
-nTrain <- 200
-nTest <- 10
+nTrain <- 2000
+nTest <- 100
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
 

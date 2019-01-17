@@ -26,7 +26,7 @@ absrelmeans <- cbind(absrelmeans,absrelmean_total=rowMeans(absrelmeans))
 
 skillscoremeans <- matrix(NA,nrow=length(Shapley.approx), ncol=ncol(Shapley.approx[[1]][[1]])-1)
 rownames(skillscoremeans) <- names(Shapley.approx)
-colnam <- paste0("absrelmean_X",1:(ncol(Shapley.approx[[1]][[1]])-1))
+colnam <- paste0("skillscoremean_X",1:(ncol(Shapley.approx[[1]][[1]])-1))
 colnames(skillscoremeans) <- colnam
 
 absmeans_ref <- absmeans[rownames(absmeans)=="empirical_independence",]
@@ -36,7 +36,7 @@ for (i in 1:length(Shapley.approx)){
     skillscoremeans[i,] <- (absmeans[i,-last] - absmeans_ref[-last])/(0-absmeans_ref[-last])
 }
 
-skillscoremeans <- cbind(skillscoremeans,absrelmean_total=rowMeans(skillscoremeans))
+skillscoremeans <- cbind(skillscoremeans,skillscoremean_total=rowMeans(skillscoremeans))
 
 
 

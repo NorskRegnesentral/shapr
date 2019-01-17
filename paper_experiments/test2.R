@@ -1,4 +1,11 @@
 
 
+machine = Sys.info()
 
-source("paper_experiments/test.R")
+#print(machine[4])
+
+
+source("paper_experiments/test.R",local=T)
+
+
+aaaa=rho

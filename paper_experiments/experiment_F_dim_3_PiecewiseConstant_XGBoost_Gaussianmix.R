@@ -19,11 +19,11 @@ experiment = "F"
 true_model <- "PiecewiseConstant"
 fitted_model <- "XGBoost"
 variables <- "Gaussianmix" # Gaussian, Gaussianmix, or GenHyp
-notes <- "Fixed rho to 0.5, increasing distance between mixtures, mu.scale"
+notes <- "Fixed rho to 0.2, increasing distance between mixtures, mu.scale"
 X_dim <- 3
 source.local <- ifelse(exists("source.local"),source.local,FALSE)
 
-rho <- 0.5
+rho <- 0.2
 pi.G <- c(0.5,0.5)
 sd_noise = 0.1
 nTrain <- 2000
@@ -108,6 +108,7 @@ source("paper_experiments/source_compute_approx_Shap_with_AICc_per_testobs.R",lo
 source("paper_experiments/source_compute_true_Shap.R",local = source.local) # Creating the Shapley.true object
 
 #### Comparing the true and approximate values -------------
+
 
 source("paper_experiments/source_compute_results.R",local = source.local) # Creating the res.DT object
 

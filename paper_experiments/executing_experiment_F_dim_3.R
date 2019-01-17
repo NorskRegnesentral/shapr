@@ -1,19 +1,17 @@
 
 ##############
-library(doSNOW)
+library(parallel)
 library(foreach)
-cl <- makeCluster(5,outfile="")
-registerDoSNOW(cl)
+library(doParallel)
+cl <- parallel::makeCluster(5,outfile="")
+registerDoParallel(cl)
 seed.vec <- 1:10 + 1234 # We fix this seed
 source.local <- TRUE
 
 
-mu.scale.vec <- c(1,2,3,5,10)
+mu.scale.vec <- c(0.5,1,2,3,5,10)
 
-progress <- function(n) cat(sprintf("task %d is complete\n", n))
-opts <- list(progress=progress)
-
-bb = foreach(this.seed = seed.vec,.options.snow = opts, .errorhandling = 'pass') %dopar% {
+bb = foreach(this.seed = seed.vec, .errorhandling = 'pass') %dopar% {
     for (mu.scale in mu.scale.vec){
         source("paper_experiments/experiment_F_dim_3_PiecewiseConstant_XGBoost_Gaussianmix.R",local = source.local)
     }

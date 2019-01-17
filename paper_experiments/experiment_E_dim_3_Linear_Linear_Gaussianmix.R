@@ -15,11 +15,11 @@ experiment = "E"
 true_model <- "Linear"
 fitted_model <- "Linear"
 variables <- "Gaussianmix" # Gaussian, Gaussianmix, or GenHyp
-notes <- "Fixed rho to 0.5, increasing distance between mixtures, mu.scale"
+notes <- "Fixed rho to 0.2, increasing distance between mixtures, mu.scale"
 X_dim <- 3
 source.local <- ifelse(exists("source.local"),source.local,FALSE)
 
-rho <- 0.5
+rho <- 0.2
 pi.G <- c(0.5,0.5)
 sd_noise = 0.1
 nTrain <- 2000

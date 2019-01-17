@@ -3,8 +3,10 @@
 
 rho <- ifelse(exists("rho"),rho,0.5) # Do not edit
 
-print(rho^2)
+rho=rho^2
+print(rho)
 
-this=R.Version()
+version=R.Version()
 
-print(this$version.string)
+#print(version$version.string)
+
