@@ -17,7 +17,7 @@ X_dim <- 6 # use 3,6,9,12,15
 source.local <- ifelse(exists("source.local"),source.local,FALSE)
 
 nTrain <- 200
-nTest <- 10
+nTest <- 3
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
 
@@ -117,7 +117,7 @@ scale = FALSE
 use_shapley_weights_in_W = T
 normalize_W_weights = T
 distance_metric = "Mahalanobis_scaled"
-compute_distances_for_these_varcomb = 1:20
+compute_distances_for_these_varcomb = c(62:64,3:10)
 normalize_distance_rows = TRUE
 
 
@@ -139,14 +139,68 @@ empirical_fixed_sigma.01_settings = list(type = "fixed_sigma",
                                          fixed_sigma_vec = 0.1,
                                          kernel_metric = "Gaussian")
 
+Shapley.approx <- list()
+
+
+mu = NULL
+Sigma = NULL
+cond_approach = list(empirical = 6:9,Gaussian = c(1:5,10:64))
+empirical_settings = empirical_fixed_sigma.01_settings
+verbose = T
+
+
 Shapley.approx$comb_sigma.01 = compute_kernelShap(model = model,
                                                   l = l,
                                                   w_threshold = w_threshold,
                                                   n_threshold = n_threshold,
-                                                  cond_approach = list(empirical = 1:20,copula =21:64),
-                                                  empirical_settings = empirical_fixed_sigma.01_settings,
-                                                  pred_zero=pred_zero)
+                                                  cond_approach = cond_approach,
+                                                  empirical_settings = empirical_settings,
+                                                  pred_zero=pred_zero,
+                                                  mu = mu,
+                                                  Sigma = Sigma)
+
+empirical_settings = list(type = "AICc_full",
+                          fixed_sigma_vec = 0.1,
+                          AICc_no_samp_per_optim = 1000,
+                          AICc_optimize_every_testobs = T,
+                          AIC_optim_func = "nlminb", # only "nlminb" allowed for now
+                          AIC_optim_max_eval = 20,
+                          AIC_optim_startval = 0.1,
+                          AICc_combination_type = "alternative", # "alternative" or "standard" # "Standard" combines sds and partial H's before computing one AICc, while "alternative computes AICc seperatedly and combines them.
+                          kernel_metric = "Gaussian",
+                          AICc_force_use_all_trainsamp_per_optim = T)
+
+Shapley.approx$full = compute_kernelShap(model = model,
+                                         l = l,
+                                         w_threshold = w_threshold,
+                                         n_threshold = n_threshold,
+                                         cond_approach = cond_approach,
+                                         empirical_settings = empirical_settings,
+                                         pred_zero=pred_zero,
+                                         mu = mu,
+                                         Sigma = Sigma)
 
 
+empirical_settings = list(type = "AICc_each_k",
+                          fixed_sigma_vec = 0.1,
+                          AICc_no_samp_per_optim = 1000,
+                          AICc_optimize_every_testobs = T,
+                          AIC_optim_func = "nlminb", # only "nlminb" allowed for now
+                          AIC_optim_max_eval = 20,
+                          AIC_optim_startval = 0.1,
+                          AICc_combination_type = "alternative", # "alternative" or "standard" # "Standard" combines sds and partial H's before computing one AICc, while "alternative computes AICc seperatedly and combines them.
+                          kernel_metric = "Gaussian",
+                          AICc_force_use_all_trainsamp_per_optim = T)
 
+Shapley.approx$eachK = compute_kernelShap(model = model,
+                                         l = l,
+                                         w_threshold = w_threshold,
+                                         n_threshold = n_threshold,
+                                         cond_approach = cond_approach,
+                                         empirical_settings = empirical_settings,
+                                         pred_zero=pred_zero,
+                                         mu = mu,
+                                         Sigma = Sigma)
+
+Shapley.new <- Shapley.approx
 
