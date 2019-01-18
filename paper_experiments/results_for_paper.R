@@ -88,31 +88,43 @@ ex_dims <- c(3,10)
 for (letter in ex_letters){
     for(dim0 in ex_dims){
 
+        if(letter%in%c("A","B")){
+            var = "rho"
+        }
+        if(letter%in%c("C","D")){
+            var = "beta.scale"
+        }
+        if(letter%in%c("E","F")){
+            var = "mu.scale"
+        }
+
         file = paste0(res_folder,get(paste0("all_res_experiment_",letter,"_dim",dim0)))
         if (file.exists(file)){
             dat <- fread(file)
 
-            dat[,avg_absrelmean_total := mean(absrelmean_total),by=.(rho,rn)]
-            dat[,avg_absmean_total := mean(absmean_total),by=.(rho,rn)]
-            dat[,avg_skillscoremean_total := mean(skillscoremean_total),by=.(rho,rn)]
+            dat[,avg_absrelmean_total := mean(absrelmean_total),by=.(get(var),rn)]
+            dat[,avg_absmean_total := mean(absmean_total),by=.(get(var),rn)]
+            dat[,avg_skillscoremean_total := mean(skillscoremean_total),by=.(get(var),rn)]
 
-            g1 <- ggplot(data = dat, aes(x=rho,y=avg_absmean_total,color=rn))+
+            g1 <- ggplot(data = dat, aes(x=get(var),y=avg_absmean_total,color=rn))+
                 geom_line() +
                 scale_y_continuous(trans='log10') +
                 labs(y="Absolute error (log scale)",
+                     x=var,
                      #  title = "Results experiment A dim 3",
                      color = "Method") +
-                xlim(0,1) +
+                xlim(range(dat[,get(var)])) +
                 scale_colour_manual(values=cbbPalette) +
                 theme_light() +
                 theme(legend.position = "bottom")
 
-            g2 <- ggplot(data = dat, aes(x=rho,y=avg_skillscoremean_total,color=rn))+
+            g2 <- ggplot(data = dat, aes(x=get(var),y=avg_skillscoremean_total,color=rn))+
                 geom_line() +
                 labs(y="Skill score relative to independence",
+                     x=var,
                      #    title = "Results experiment A dim 3",
                      color = "Method") +
-                xlim(0,1) + ylim(-0.5,1) +
+                xlim(range(dat[,get(var)])) + ylim(-0.5,1) +
                 scale_colour_manual(values=cbbPalette) +
                 theme_light() +
                 theme(legend.position = "bottom")
