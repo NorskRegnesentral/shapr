@@ -139,7 +139,7 @@ empirical_fixed_sigma.01_settings = list(type = "fixed_sigma",
                                          fixed_sigma_vec = 0.1,
                                          kernel_metric = "Gaussian")
 
-#Shapley.approx <- list()
+Shapley.approx <- list()
 
 
 mu = NULL
@@ -170,5 +170,37 @@ empirical_settings = list(type = "AICc_full",
                           kernel_metric = "Gaussian",
                           AICc_force_use_all_trainsamp_per_optim = T)
 
+Shapley.approx$full = compute_kernelShap(model = model,
+                                         l = l,
+                                         w_threshold = w_threshold,
+                                         n_threshold = n_threshold,
+                                         cond_approach = cond_approach,
+                                         empirical_settings = empirical_settings,
+                                         pred_zero=pred_zero,
+                                         mu = mu,
+                                         Sigma = Sigma)
 
+
+empirical_settings = list(type = "AICc_each_k",
+                          fixed_sigma_vec = 0.1,
+                          AICc_no_samp_per_optim = 1000,
+                          AICc_optimize_every_testobs = T,
+                          AIC_optim_func = "nlminb", # only "nlminb" allowed for now
+                          AIC_optim_max_eval = 20,
+                          AIC_optim_startval = 0.1,
+                          AICc_combination_type = "alternative", # "alternative" or "standard" # "Standard" combines sds and partial H's before computing one AICc, while "alternative computes AICc seperatedly and combines them.
+                          kernel_metric = "Gaussian",
+                          AICc_force_use_all_trainsamp_per_optim = T)
+
+Shapley.approx$eachK = compute_kernelShap(model = model,
+                                         l = l,
+                                         w_threshold = w_threshold,
+                                         n_threshold = n_threshold,
+                                         cond_approach = cond_approach,
+                                         empirical_settings = empirical_settings,
+                                         pred_zero=pred_zero,
+                                         mu = mu,
+                                         Sigma = Sigma)
+
+Shapley.new <- Shapley.approx
 

@@ -894,10 +894,13 @@ compute_kernelShap = function(model,
         Kshap[i, ] = l$W %*% DT[id == i, k]
     }
 
+    h_optim_DT <- data.table(varcomb=these_empirical,h_optim_mat)
+    colnames(h_optim_DT)[-1] <- paste0("Testobs_",1:nrow(l$Xtest))
+
 
     tt <- proc.time()-tt
 
-    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT, h_optim_mat = h_optim_mat,comp_time = tt))
+    ret_list = list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT, h_optim_mat = h_optim_mat,h_optim_DT=h_optim_DT,comp_time = tt))
     return(ret_list)
 }
 
