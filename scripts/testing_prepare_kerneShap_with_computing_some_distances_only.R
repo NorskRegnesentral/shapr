@@ -42,9 +42,9 @@ samp_variables <- function(n,pi.G,mu.list,Sigma.list){
 
 samp_model <- function(n,X,sd_noise,X_dim){
     y <- stepwiseConstant_fun1(X[,1])*1 + stepwiseConstant_fun2(X[,2])*1 + stepwiseConstant_fun3(X[,3])*1  + rnorm(n = n,mean=0,sd=sd_noise)
-        if(X_dim>=6){
+    if(X_dim>=6){
         y <- y + stepwiseConstant_fun1(X[,4])*1 + stepwiseConstant_fun2(X[,5])*1 + stepwiseConstant_fun3(X[,6])*1
-        }
+    }
     if(X_dim>=9){
         y <- y + stepwiseConstant_fun1(X[,7])*1 + stepwiseConstant_fun2(X[,8])*1 + stepwiseConstant_fun3(X[,9])*1
     }
@@ -117,7 +117,7 @@ scale = FALSE
 use_shapley_weights_in_W = T
 normalize_W_weights = T
 distance_metric = "Mahalanobis_scaled"
-compute_distances_for_these_varcomb = c(62:64,3:10)
+compute_distances_for_these_varcomb = 1:64#c(62:64,3:10)
 normalize_distance_rows = TRUE
 
 
@@ -193,14 +193,19 @@ empirical_settings = list(type = "AICc_each_k",
                           AICc_force_use_all_trainsamp_per_optim = T)
 
 Shapley.approx$eachK = compute_kernelShap(model = model,
-                                         l = l,
-                                         w_threshold = w_threshold,
-                                         n_threshold = n_threshold,
-                                         cond_approach = cond_approach,
-                                         empirical_settings = empirical_settings,
-                                         pred_zero=pred_zero,
-                                         mu = mu,
-                                         Sigma = Sigma)
+                                          l = l,
+                                          w_threshold = w_threshold,
+                                          n_threshold = n_threshold,
+                                          cond_approach = cond_approach,
+                                          empirical_settings = empirical_settings,
+                                          pred_zero=pred_zero,
+                                          mu = mu,
+                                          Sigma = Sigma)
 
-Shapley.new <- Shapley.approx
+#Shapley.new <- Shapley.approx
 
+
+all.equal(Shapley.new[[1]]$Kshap,Shapley.approx[[1]]$Kshap)
+all.equal(Shapley.new[[2]]$Kshap,Shapley.approx[[2]]$Kshap)
+all.equal(Shapley.new[[3]]$Kshap,Shapley.approx[[3]]$Kshap)
+Shapley.approx[[3]]$other_objects$h_optim_mat[6:9,]-Shapley.new[[3]]$other_objects$h_optim_mat
