@@ -465,17 +465,18 @@ get_predictions <- function(model,
         these_wcomb <- cond_approach_list$empirical
         these_wcomb <- these_wcomb[!(these_wcomb %in% c(1,nrow(S)))]
 
+        no_wcomb <- length(these_wcomb)
 
         # Handle the computation of all training-test weights for ALL combinations here, before looping
         if (kernel_metric == "independence"){
-            W_kernel <- array(runif(length(these_wcomb)*nrow(Xtrain)),dim=c(nrow(Xtrain),length(these_wcomb))) # Just random noise to "fake" a distance between observations
+            W_kernel <- array(runif(no_wcomb*nrow(Xtrain)),dim=c(nrow(Xtrain),no_wcomb)) # Just random noise to "fake" a distance between observations
         }
         if (kernel_metric =="Gaussian"){
-            val <- t(t(-0.5*D[,these_wcomb])/h_optim_vec[these_wcomb]^2)
+            val <- t(t(-0.5*D)/h_optim_vec^2)
             W_kernel <- exp(val) # To avoid numerical problems for small sigma values, we need to substract some constant from val here. Check if it is possible to do this per column/row of l$D[,i,]
         }
         if (kernel_metric =="Gaussian_old"){
-            val <- t(t(-0.5*D[,these_wcomb])/h_optim_vec[these_wcomb]^2)
+            val <- t(t(-0.5*D)/h_optim_vec^2)
             W_kernel <- sqrt(exp(val))
         }
 
@@ -600,29 +601,42 @@ compute_kernelShap = function(model,
         cond_approach_list <- cond_approach
     }
 
-    h_optim_mat <- matrix(NA,ncol=nrow(l$Xtest),nrow=nrow(l$S)) # Each test observation has one column
 
 
 
 
     if("empirical" %in% names(cond_approach_list)){
 
+
+
         these_empirical <- cond_approach_list$empirical
-        these_empirical <- these_empirical[!(these_empirical %in% c(1,nrow(l$S)))]
+        exclude_emp <- (these_empirical %in% c(1,nrow(l$S)))
+
+        these_empirical <- these_empirical[!exclude_emp]
+
+        no_empirical <- length(these_empirical)
+        h_optim_mat <- matrix(NA,ncol=nrow(l$Xtest),nrow=no_empirical) # Each test observation has one column
 
         # Checking whether any of the distance are not pre-computed.
         if(any(!(these_empirical %in% l$D_for_these_varcomb))){
             paste0("Distance not pre-computed for varcomb ",paste0(these_empirical[!(these_empirical %in% l$D_for_these_varcomb)],collapse=", "))
         }
 
+        # Reducing and re-ordering the D-array
+        l$D <- l$D[,,match(these_empirical, l$D_for_these_varcomb)] # Now the D-array corresponds to exactly the covariate combinations specified in these_empirical
+
+
         if(empirical_settings$type == "independence"){
             empirical_settings$kernel_metric <- "independence" # Overriding the kernel_metric setting if type is set to "independence"
         }  else if (empirical_settings$type == "fixed_sigma"){
             if(length(empirical_settings$fixed_sigma_vec)==1){
-                empirical_settings$fixed_sigma_vec = rep(empirical_settings$fixed_sigma_vec,nrow(l$S))
+                empirical_settings$fixed_sigma_vec <- rep(empirical_settings$fixed_sigma_vec,no_empirical)
+            } else {
+                empirical_settings$fixed_sigma_vec <- empirical_settings$fixed_sigma_vec[!exclude_emp]
             }
 
-            h_optim_mat[these_empirical,] <- empirical_settings$fixed_sigma_vec[these_empirical]
+            h_optim_mat[,] <- empirical_settings$fixed_sigma_vec
+
         } else {
 
             #### Procedure for sampling a combination of an index in the training and the test sets ####
@@ -728,9 +742,9 @@ compute_kernelShap = function(model,
 
 
                             if (empirical_settings$AICc_optimize_every_testobs){
-                                h_optim_mat[these_cond,loop] <- nlm.obj$par
+                                h_optim_mat[match(these_cond,these_empirical),loop] <- nlm.obj$par
                             } else {
-                                h_optim_mat[these_cond,] <- nlm.obj$par
+                                h_optim_mat[match(these_cond,these_empirical),] <- nlm.obj$par
                             }
 
                         }
@@ -803,9 +817,9 @@ compute_kernelShap = function(model,
                             }
 
                             if (empirical_settings$AICc_optimize_every_testobs){
-                                h_optim_mat[i,loop] <- nlm.obj$par
+                                h_optim_mat[match(i,these_empirical),loop] <- nlm.obj$par
                             } else {
-                                h_optim_mat[i,] <- nlm.obj$par
+                                h_optim_mat[match(i,these_empirical),] <- nlm.obj$par
                             }
                         }
                         # print(paste0("Optimized ", i ))
@@ -814,7 +828,6 @@ compute_kernelShap = function(model,
                 }
 
             }
-
 
         }
 
