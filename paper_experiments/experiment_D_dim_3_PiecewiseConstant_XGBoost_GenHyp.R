@@ -32,12 +32,13 @@ n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
 
 beta.scale <- ifelse(exists("beta.scale"),beta.scale,1)
 beta <- c(0.25,0.25,0.25)*beta.scale
-EW = 4.55
+EW = 4.56
 
-rho <- 0.5
+rho <- 0
 lambda <- 1
 Sigma <- matrix(rho,ncol=X_dim,nrow=X_dim)
 diag(Sigma) <- rep(1,3)
+
 omega <- 0.5
 mu     <- rep(0,3) - EW*mean(beta)
 

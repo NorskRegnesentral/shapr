@@ -130,8 +130,8 @@ if(class(model)=="xgb.Booster"){
     Shapley.approx$treeSHAP$Kshap <- tmp[,c(ncol(Xtest)+1,1:ncol(Xtest))]
     Shapley.approx$treeSHAP$other_objects <- list()
     Shapley.approx$treeSHAP$other_objects$h_optim_mat <- matrix(NA,ncol=nrow(Xtest),nrow=2^ncol(Xtest))
+    Shapley.approx$treeSHAP$other_objects$h_optim_DT <- NULL
     Shapley.approx$treeSHAP$other_objects$comp_time <- proc.time()-tt
-
 }
 
 

@@ -1,24 +1,20 @@
 
-##############
-library(doSNOW)
+rm(list=ls())
+library(parallel)
 library(foreach)
-cl <- makeCluster(2,outfile="")
-registerDoSNOW(cl)
-seed.vec <- c(1237,1238) # We fix this seed
+library(doParallel)
+cl <- parallel::makeCluster(5,outfile="")
+registerDoParallel(cl)
+seed.vec <- 1:10 + 1234 # We fix this seed
 source.local <- TRUE
 
+rho.vec <- seq(0,0.95,length.out=20)[c(seq(1,20,by=2),seq(2,20,by=2))]
 
-rho.vec <- c(0.1)#0.2,0.4,0.6,0.8)
-
-#seq(0,0.95,length.out=20)[c(seq(1,20,by=2),seq(2,20,by=2))]
- progress <- function(n) cat(sprintf("task %d is complete\n", n))
- opts <- list(progress=progress)
-
- bb = foreach(this.seed = seed.vec,.options.snow = opts, .errorhandling = 'pass') %dopar% {
-     for (rho in rho.vec){
-         source("paper_experiments/experiment_A_dim_10_Linear_Linear_Gaussian.R",local = source.local)
-        }
-    paste0("Just finished computation for rho = ",rho," with seed ",this.seed)
- }
+bb = foreach(rho = rho.vec, .errorhandling = 'pass') %dopar% {
+    for (this.seed in seed.vec){
+        source("paper_experiments/experiment_A_dim_10_Linear_Linear_Gaussian.R",local = source.local)
+    }
+    print(paste0("Just finished computation for rho = ",rho," with seed ",this.seed))
+}
 
 

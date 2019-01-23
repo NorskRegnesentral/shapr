@@ -46,6 +46,7 @@ source("paper_experiments/source_specifying_seed_and_filenames.R",local = source
 XYtrain <-  fread("/nr/project_stat/BFFGB18/LIME/lime/R/train6.csv")
 XYtest <-   fread("/nr/project_stat/BFFGB18/LIME/lime/R/test6.csv")
 
+
 dim(XYtrain)
 
 XYtrain[,V1:=NULL]
@@ -55,9 +56,8 @@ setnames(XYtrain,"default","y")
 setnames(XYtest,"default","y")
 
 # Testing, reducing the dimension of the data
-XYtrain <- XYtrain[,1:10]
-XYtest <- XYtest[,1:10]
-nrows_kernelShap <- 10^2
+XYtest <- XYtest[,1:7]
+XYtrain <- XYtrain[,1:7]
 
 
 nTrain <- nrow(XYtrain)
@@ -121,6 +121,9 @@ params <- list(eta =  0.1,
                eval_metric = "auc",
                tree_method="hist") # gpu_hist
 
+set.seed(123)
+
+
 model <- xgb.train(data = xgb.train,
                    params = params,
                    nrounds = 50,
@@ -130,19 +133,23 @@ model <- xgb.train(data = xgb.train,
                                     test = xgb.test),
                    verbose = 1)
 
+pred_zero = mean(XYtrain$y)
+
 
 #### Make a parallelized loop over parts of the
+
 
 #### Pre computation before kernel shap ---------
 # Creating the l object
 l <- prepare_kernelShap(
     m = ncol(Xtrain),
     Xtrain = Xtrain,
-    Xtest = Xtest[1:10,],
-    exact = TRUE,
-    nrows = nrows_kernelShap,
+    Xtest = Xtest[1:2,],
+    exact = FALSE,
+    nrows = 15,
     distance_metric = "Mahalanobis_scaled",
-    normalize_distance_rows = TRUE
+    normalize_distance_rows = TRUE,
+    compute_distances_for_no_var = 0:3
 )
 
 #### Running various approximation approaches ####
@@ -167,7 +174,7 @@ Shapley.approx$comb_sigma.01 = compute_kernelShap(model = model,
                                                   l = l,
                                                   w_threshold = w_threshold,
                                                   n_threshold = n_threshold,
-                                                  cond_approach = list(empirical = 1:176,copula =177:1024),
+                                                  cond_approach = list(empirical = l$D_for_these_varcomb,copula =l$X[,.I][-l$D_for_these_varcomb]),
                                                   empirical_settings = empirical_fixed_sigma.01_settings,
                                                   pred_zero=pred_zero)
 
@@ -179,7 +186,26 @@ Shapley.approx$copula = compute_kernelShap(model = model,
                                            cond_approach = "copula",
                                            pred_zero=pred_zero)
 
+l <- prepare_kernelShap(
+    m = ncol(Xtrain),
+    Xtrain = Xtrain,
+    Xtest = Xtest[1:2,],
+    exact = T,
+    nrows = 15,
+    distance_metric = "Mahalanobis_scaled",
+    normalize_distance_rows = TRUE,
+    compute_distances_for_no_var = 0:3
+)
 
-save(Shapley.approx,file=paste0("paper_experiments/res/single_res/",current_RData_filename))
+Shapley.approx$comb_sigma.01.exact = compute_kernelShap(model = model,
+                                                  l = l,
+                                                  w_threshold = w_threshold,
+                                                  n_threshold = n_threshold,
+                                                  cond_approach = list(empirical = l$D_for_these_varcomb,copula =l$X[,.I][-l$D_for_these_varcomb]),
+                                                  empirical_settings = empirical_fixed_sigma.01_settings,
+                                                  pred_zero=pred_zero)
+
+
+#save(Shapley.approx,file=paste0("paper_experiments/res/single_res/",current_RData_filename))
 
 

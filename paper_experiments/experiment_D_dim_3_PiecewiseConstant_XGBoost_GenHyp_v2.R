@@ -16,9 +16,9 @@ library(ghyp)
 
 
 ####################### ONLY TOUCH THINGS IN THIS SECTION ################################
-experiment = "C"
-true_model <- "Linear"
-fitted_model <- "Linear"
+experiment = "D"
+true_model <- "PiecewiseConstant"
+fitted_model <- "XGBoost"
 variables <- "GenHyp" # Gaussian, Gaussianmix, or GenHyp
 notes <- "All var equal contribution. Increasing beat.scale, while adjusting mu for constant mean, but increasing variance and skewness."
 X_dim <- 3
@@ -58,11 +58,25 @@ samp_variables <- function(n,Sigma,beta,omega,lambda,mu){
 }
 
 samp_model <- function(n,X,sd_noise){
-    y <- rowSums(X) + rnorm(n = n,mean=0,sd=sd_noise)
+    y <- stepwiseConstant_fun1(X[,1]/3) + stepwiseConstant_fun2(X[,2]/3)*1 + stepwiseConstant_fun3(X[,3]/3)*1+ rnorm(n = n,mean=0,sd=sd_noise)
+    #    y <-(X[,1]<0)*1 + 0.1*X[,2] + (X[,2]>-1)*1 - (X[,3]<1)*1 + (X[,3]<-1)*4 - (X[,3]>-1)*(X[,2]<-1)*1.5+ rnorm(n = n,mean=0,sd=sd_noise)
 }
 
 fit_model_func <- function(XYtrain){
-    lm(y~.,data=XYtrain)
+    xgb.train <- xgb.DMatrix(data = as.matrix(XYtrain[,-"y"]),
+                             label = XYtrain[,y])
+
+    params <- list(eta =  0.3,
+                   objective = "reg:linear",
+                   eval_metric = "rmse",
+                   tree_method="hist") # gpu_hist
+
+    model <- xgb.train(data = xgb.train,
+                       params = params,
+                       nrounds = 50,
+                       print_every_n = 10,
+                       ntread = 3)
+    return(model)
 }
 
 

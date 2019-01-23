@@ -23,7 +23,6 @@ notes <- "All var equal contribution"
 X_dim <- 10
 source.local <- ifelse(exists("source.local"),source.local,FALSE)
 
-
 nTrain <- 2000
 nTest <- 100
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
@@ -103,7 +102,6 @@ model <- fit_model_func(XYtrain)
 source("paper_experiments/source_prepare_kernelShap.R",local = source.local)
 
 #### Computing the various Shapley approximations  --------
-
 source("paper_experiments/source_compute_approx_Shap_with_AICc_per_testobs.R",local = source.local) # Creating Shapley.approx object
 #source("paper_experiments/source_compute_approx_Shap_no_AICc.R") # Creating Shapley.approx object
 
@@ -111,10 +109,10 @@ source("paper_experiments/source_compute_approx_Shap_with_AICc_per_testobs.R",lo
 
 source("paper_experiments/source_compute_true_Shap.R",local = source.local) # Creating the Shapley.true object
 
-### Comparing the true and approximate values -------------
+#### Comparing the true and approximate values -------------
 
 
-source("paper_experiments/source_compute_results_devel.R",local = source.local) # Creating the res.DT object
+source("paper_experiments/source_compute_results.R",local = source.local) # Creating the res.DT object
 
 # Printing the results to the terminal
 print(res.DT)

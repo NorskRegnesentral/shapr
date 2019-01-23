@@ -54,29 +54,35 @@ abssds <- cbind(abssds,abssd_total=abssd_total)
 
 
 ### Storing the optimal bandwidths (h)
-h_optims <- matrix(NA,nrow=length(Shapley.approx), ncol=2^(ncol(Shapley.approx[[1]][[1]])-1))
+if(X_dim==3){
+    these_in_h_optims <- 2:8
+} else {
+    these_in_h_optims <- 2:176
+}
+
+h_optims <- matrix(NA,nrow=length(Shapley.approx), ncol=length(these_in_h_optims))
 for (i in 1:length(Shapley.approx)){
-    for (j in 1:(2^(ncol(Shapley.approx[[1]][[1]])-1))){
-        h_optims[i,j] <- mean(Shapley.approx[[i]]$other_objects$h_optim_mat[j,])
+    if(!is.null(Shapley.approx[[i]]$other_objects$h_optim_DT)){
+        h_optims[i,] <- rowMeans(Shapley.approx[[i]]$other_objects$h_optim_DT[match(these_in_h_optims,varcomb),][,-1])
         #h_optims[i,j] <-Shapley.approx[[i]]$other_objects$h_optim_mat[j,1]
     }
 }
 
 colnam_h <- character()
-for (j in 1:(2^(ncol(Shapley.approx[[1]][[1]])-1))){
-    colnam_h[j] <- paste0("h_X_",paste0(l$X$features[[j]],collapse = "_"))
+for (j in 1:length(these_in_h_optims)){
+    colnam_h[j] <- paste0("h_X_",paste0(l$X$features[[these_in_h_optims[j]]],collapse = "_"))
 }
 
 rownames(h_optims) <- names(Shapley.approx)
 colnames(h_optims) <- colnam_h
-h_optims[which(rownames(h_optims)=="empirical_independence"),] <- Inf
+h_optims[grep("independence",rownames(h_optims)),] <- Inf
 
 comp_time <- rep(NA,length(Shapley.approx))
 for (i in 1:length(Shapley.approx)){
     comp_time[i] <- Shapley.approx[[i]]$other_objects$comp_time[3]
 }
 
-res <- cbind(skillscoremeans,absrelmeans,absmeans,abssds,h_optims[,-c(1,ncol(h_optims))])
+res <- cbind(skillscoremeans,absrelmeans,absmeans,abssds,h_optims)
 res.DT <- data.table(res,keep.rownames = T)
 
 res.DT[,comp_time:=comp_time]

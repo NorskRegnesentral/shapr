@@ -15,9 +15,9 @@ stepwiseConstant_fun3 = function(x){
 
 
 #x = seq(-10,10,0.1)
-#plot(x,stepwiseConstant_fun1(x),type="l",ylim=c(-3,3),lwd=3)
-#lines(x,stepwiseConstant_fun2(x),col=2)
-#lines(x,stepwiseConstant_fun3(x),col=3)
+#plot(x,stepwiseConstant_fun1(x*0.5),type="l",ylim=c(-3,3),lwd=3)
+#lines(x,stepwiseConstant_fun2(x*0.5),col=2)
+#lines(x,stepwiseConstant_fun3(x*0.5),col=3)
 
 
 #### Should probably document these helper functions  ####
