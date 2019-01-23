@@ -575,7 +575,7 @@ compute_kernelShap = function(model,
                               w_threshold = 0.95,
                               n_threshold = 1e3,
                               verbose = FALSE,
-                              cond_approach = "empirical",
+                              cond_approach = "empirical", # When being a list, the elements in the list refers to the rows in l$X that ought to be included in each of the approaches!
                               empirical_settings = list(type = "fixed_sigma", # May in the future allow a vector of length nrow(S) here as well to specify fixed for some and optimiziation for others
                                                         fixed_sigma_vec = 0.1, # May be a vector of length nrow(S), or a single number used for all
                                                         AICc_no_samp_per_optim = 1000,
@@ -831,6 +831,12 @@ compute_kernelShap = function(model,
 
         }
 
+
+        h_optim_DT <- data.table(varcomb=these_empirical,h_optim_mat)
+        colnames(h_optim_DT)[-1] <- paste0("Testobs_",1:nrow(l$Xtest))
+    } else {
+        h_optim_mat <- NULL
+        h_optim_DT <- NULL
     }
 
     #    if(sum(grepl("AICc",names(cond_approach_list)))>0){}
@@ -894,8 +900,6 @@ compute_kernelShap = function(model,
         Kshap[i, ] = l$W %*% DT[id == i, k]
     }
 
-    h_optim_DT <- data.table(varcomb=these_empirical,h_optim_mat)
-    colnames(h_optim_DT)[-1] <- paste0("Testobs_",1:nrow(l$Xtest))
 
 
     tt <- proc.time()-tt
@@ -928,7 +932,7 @@ prepare_kernelShap <- function(m,
                                use_shapley_weights_in_W = ifelse(exact,T,F),
                                normalize_W_weights = T,
                                distance_metric = "Mahalanobis_scaled",
-                               compute_distances_for_these_varcomb = 1:(2^m), # Set to NULL if noe distances are to be computed
+                               compute_distances_for_no_var = 0:m, # Set to NULL if no distances are to be computed
                                normalize_distance_rows = TRUE) {
 
     ## Get all combinations ----------------
@@ -953,8 +957,8 @@ prepare_kernelShap <- function(m,
         S_scale_dist <- F
     }
 
-    if(!is.null(compute_distances_for_these_varcomb[1])){ # Only compute the distances if the empirical approach is used
-        D <- gen_Mahlanobis_dist_cpp(X$features[compute_distances_for_these_varcomb],as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
+    if(!is.null(compute_distances_for_no_var[1])){ # Only compute the distances if the empirical approach is used
+        D <- gen_Mahlanobis_dist_cpp(X[nfeatures%in%compute_distances_for_no_var,features],as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
         if (normalize_distance_rows){
             colmin <- apply(X = D,MARGIN = c(2,3),FUN=min)
             for(i in 1:dim(D)[3]){
@@ -969,7 +973,7 @@ prepare_kernelShap <- function(m,
     ## Get feature matrix ---------
     S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain)) # The scaling of S influence onyl the matrix product with D, as we only care about the elements of S being zero/nonzero elsewhere.
 
-    return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest, D_for_these_varcomb = compute_distances_for_these_varcomb))
+    return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest, D_for_these_varcomb = X[nfeatures%in%compute_distances_for_no_var,which=TRUE]))
 }
 
 
