@@ -354,7 +354,7 @@ samp_copula_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest_Gauss_t
 #' @export
 #'
 #' @author Martin Jullum
-samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest) {
+samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest,ensure_condcov_symmetry=F) {
     # Handles the unconditional and full conditional separtely when predicting
     if (length(given_ind) %in% c(0, p)) {
         ret <- matrix(Xtest, ncol = p, nrow = 1)
@@ -369,12 +369,22 @@ samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest) {
         #     given.ind = given_ind,
         #     X.given = X_given,
         #     method = "chol")
-        tmp <- condMVNorm::condMVN(
-            mean = mu,
-            sigma = Sigma,
-            dependent.ind = dependent_ind,
-            given.ind = given_ind,
-            X.given = X_given)
+        if (!ensure_condcov_symmetry){
+            tmp <- condMVNorm::condMVN(
+                mean = mu,
+                sigma = Sigma,
+                dependent.ind = dependent_ind,
+                given.ind = given_ind,
+                X.given = X_given)
+
+        } else {
+            tmp <- condMVN_modified(
+                mean = mu,
+                sigma = Sigma,
+                dependent.ind = dependent_ind,
+                given.ind = given_ind,
+                X.given = X_given)
+        }
         #ret0 <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
         ret0 <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
 
@@ -414,7 +424,8 @@ get_predictions <- function(model,
                             Sigma,
                             mu_Gauss_trans = mu_Gauss_trans,
                             Sigma_Gauss_trans = Sigma_Gauss_trans,
-                            Xtest_Gauss_trans) {
+                            Xtest_Gauss_trans,
+                            ensure_condcov_symmetry = F) {
     p <- ncol(Xtrain)
 
     DTp.Gaussian <- DTp.copula <- DTp.empirical <- NULL
@@ -431,7 +442,8 @@ get_predictions <- function(model,
             mu = mu,
             Sigma = Sigma,
             p = p,
-            Xtest = Xtest
+            Xtest = Xtest,
+            ensure_condcov_symmetry = ensure_condcov_symmetry
         )
 
         DTp.Gaussian <- rbindlist(samp_list, idcol = "wcomb")
@@ -588,7 +600,8 @@ compute_kernelShap = function(model,
                                                         AICc_force_use_all_trainsamp_per_optim = T),
                               pred_zero,
                               mu = NULL,
-                              Sigma = NULL) {
+                              Sigma = NULL,
+                              ensure_condcov_symmetry = F) {
     tt <- proc.time()
 
     ll = list()
@@ -852,6 +865,7 @@ compute_kernelShap = function(model,
 
     if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
         Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
+        #Sigma <- solve(symmpart(solve(Sigma))) # No point apparently
     }
     Xtest.mat <- as.matrix(l$Xtest)
     Xtrain.mat <- as.matrix(l$Xtrain)
@@ -889,7 +903,8 @@ compute_kernelShap = function(model,
             Sigma = Sigma,
             mu_Gauss_trans = mu_Gauss_trans,
             Sigma_Gauss_trans = Sigma_Gauss_trans,
-            Xtest_Gauss_trans = Xtest_Gauss_trans[i,,drop=FALSE])
+            Xtest_Gauss_trans = Xtest_Gauss_trans[i,,drop=FALSE],
+            ensure_condcov_symmetry = ensure_condcov_symmetry)
         ll[[i]][, id := i]
     }
 
