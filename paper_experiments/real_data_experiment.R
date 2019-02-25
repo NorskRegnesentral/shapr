@@ -29,6 +29,7 @@ source.local <- ifelse(exists("source.local"),source.local,FALSE)
 
 
 # May adjust these for the differnet methods
+this.seed <- 12345
 nrows_kernelShap <- 10^4
 w_threshold = 1 # For a fairer comparison, all models use the same number of samples (n_threshold)
 n_threshold = 10^3 # Number of samples used in the Monte Carlo integration
@@ -43,8 +44,8 @@ source("paper_scripts/paper_helper_funcs.R",local = source.local) # Helper funct
 source("paper_experiments/source_specifying_seed_and_filenames.R",local = source.local) # Setting random or fixed seed and filenames.
 
 #### Loading data ####
-XYtrain <-  fread("/nr/project_stat/BFFGB18/LIME/lime/R/train6.csv")
-XYtest <-   fread("/nr/project_stat/BFFGB18/LIME/lime/R/test6.csv")
+XYtrain <-  fread("/nr/project/stat/BFFGB18/LIME/lime/R/train6.csv")
+XYtest <-   fread("/nr/project/stat/BFFGB18/LIME/lime/R/test6.csv")
 
 
 dim(XYtrain)
@@ -56,8 +57,8 @@ setnames(XYtrain,"default","y")
 setnames(XYtest,"default","y")
 
 # Testing, reducing the dimension of the data
-XYtest <- XYtest[,1:7]
-XYtrain <- XYtrain[,1:7]
+XYtest <- XYtest
+XYtrain <- XYtrain
 
 
 nTrain <- nrow(XYtrain)
@@ -121,7 +122,6 @@ params <- list(eta =  0.1,
                eval_metric = "auc",
                tree_method="hist") # gpu_hist
 
-set.seed(123)
 
 
 model <- xgb.train(data = xgb.train,
@@ -138,19 +138,26 @@ pred_zero = mean(XYtrain$y)
 
 #### Make a parallelized loop over parts of the
 
+d <- 1:nrow(Xtest)
+run_list <- split(d, ceiling(seq_along(d)/21))
 
+for(run_ind in 3:length(run_list)){
+    set.seed(this.seed)
+
+    current.Xtest <- copy(Xtest[run_list[[run_ind]],])
 #### Pre computation before kernel shap ---------
 # Creating the l object
 l <- prepare_kernelShap(
     m = ncol(Xtrain),
     Xtrain = Xtrain,
-    Xtest = Xtest[1:2,],
+    Xtest = current.Xtest,
     exact = FALSE,
-    nrows = 15,
+    nrows = nrows_kernelShap,
     distance_metric = "Mahalanobis_scaled",
     normalize_distance_rows = TRUE,
     compute_distances_for_no_var = 0:3
 )
+#lapply(l,function(x){format(object.size(x),units="auto")})
 
 #### Running various approximation approaches ####
 empirical_independence_settings = list(type = "independence")
@@ -178,6 +185,16 @@ Shapley.approx$comb_sigma.01 = compute_kernelShap(model = model,
                                                   empirical_settings = empirical_fixed_sigma.01_settings,
                                                   pred_zero=pred_zero)
 
+Shapley.approx$Gaussian = compute_kernelShap(model = model,
+                                             l = l,
+                                             w_threshold = w_threshold,
+                                             n_threshold = n_threshold,
+                                             cond_approach = "Gaussian",
+                                             pred_zero=pred_zero,
+                                             verbose = TRUE,
+                                             ensure_condcov_symmetry = T)
+
+
 
 Shapley.approx$copula = compute_kernelShap(model = model,
                                            l = l,
@@ -186,26 +203,17 @@ Shapley.approx$copula = compute_kernelShap(model = model,
                                            cond_approach = "copula",
                                            pred_zero=pred_zero)
 
-l <- prepare_kernelShap(
-    m = ncol(Xtrain),
-    Xtrain = Xtrain,
-    Xtest = Xtest[1:2,],
-    exact = T,
-    nrows = 15,
-    distance_metric = "Mahalanobis_scaled",
-    normalize_distance_rows = TRUE,
-    compute_distances_for_no_var = 0:3
-)
+tt <- proc.time()
+tmp= predict(model,as.matrix(current.Xtest),predcontrib=T)
+colnames(tmp) <- NULL
+Shapley.approx$treeSHAP <- list()
+Shapley.approx$treeSHAP$Kshap <- tmp[,c(ncol(current.Xtest)+1,1:ncol(current.Xtest))]
+Shapley.approx$treeSHAP$other_objects <- list()
+Shapley.approx$treeSHAP$other_objects$h_optim_DT <- NULL
+Shapley.approx$treeSHAP$other_objects$comp_time <- proc.time()-tt
 
-Shapley.approx$comb_sigma.01.exact = compute_kernelShap(model = model,
-                                                  l = l,
-                                                  w_threshold = w_threshold,
-                                                  n_threshold = n_threshold,
-                                                  cond_approach = list(empirical = l$D_for_these_varcomb,copula =l$X[,.I][-l$D_for_these_varcomb]),
-                                                  empirical_settings = empirical_fixed_sigma.01_settings,
-                                                  pred_zero=pred_zero)
+print(paste0("Run_ind ",run_ind," out of ",length(run_list)," just computed!"))
 
+save(Shapley.approx,file=paste0("paper_experiments/res/single_res/",current_RData_filename))
 
-#save(Shapley.approx,file=paste0("paper_experiments/res/single_res/",current_RData_filename))
-
-
+}

@@ -15,3 +15,5 @@ bb = foreach(beta.scale = beta.scale.vec, .errorhandling = 'pass') %dopar% {
     }
     print(paste0("Just finished computation beta..scale = ",beta.scale," with seed = ",this.seed))
 }
+
+

@@ -128,7 +128,7 @@ l.exact <- prepare_kernelShap(m = X_dim,
 l <- l.exact
 
 feature_list <- l$X$features
-n_threshold_true <- 10^4
+n_threshold_true <- 10^3
 p <- ncol(l$Xtest)
 ll <- list()
 
