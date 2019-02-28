@@ -12,20 +12,20 @@ folder = "paper_experiments/res/single_res/"
 filelist <- list.files(folder)
 
 
-Adim10_filelist <- filelist[grepl("current_results_experiment_A_dim_10_Linear",filelist)]
+Bdim10_filelist <- filelist[grepl("current_results_experiment_B_dim_10_PiecewiseConstant",filelist)]
 
-Adim10_filelist_RData <- Adim10_filelist[grepl(".RData",Adim10_filelist)]
+Bdim10_filelist_RData <- Bdim10_filelist[grepl(".RData",Bdim10_filelist)]
 
-Adim10_filelist_RData_seedlist <- list()
+Bdim10_filelist_RData_seedlist <- list()
 for(i in 1:10){
     seed = 1234 + i
-    Adim10_filelist_RData_seedlist[[i]] <- Adim10_filelist_RData[grepl(paste0("this.seed_",seed,"\\."),Adim10_filelist_RData)]
+    Bdim10_filelist_RData_seedlist[[i]] <- Bdim10_filelist_RData[grepl(paste0("this.seed_",seed,"\\."),Bdim10_filelist_RData)]
 }
 
 fileDT <- NULL
 for (i in 1:10){
-    for(j in 1:length(Adim10_filelist_RData_seedlist[[i]])){
-        pathRData <- file.path(folder,Adim10_filelist_RData_seedlist[[i]][j])
+    for(j in 1:length(Bdim10_filelist_RData_seedlist[[i]])){
+        pathRData <- file.path(folder,Bdim10_filelist_RData_seedlist[[i]][j])
         pathcsv <- paste0(substr(pathRData,start=1,stop=nchar(pathRData)-5),"csv")
 #        load(pathRData)
         dat <- fread(pathcsv)
@@ -57,7 +57,7 @@ for (k in 1:nrow(fileDT)){
 
     source("paper_experiments/source_getting_l_for_hacking__A_dim_10.R",local = source.local)
 
-    pathRData <- file.path(folder,Adim10_filelist_RData_seedlist[[i]][j])
+    pathRData <- file.path(folder,Bdim10_filelist_RData_seedlist[[i]][j])
     pathcsv <- paste0(substr(pathRData,start=1,stop=nchar(pathRData)-5),"csv")
     load(pathRData)
     dat <- fread(pathcsv)
@@ -88,6 +88,7 @@ for (k in 1:nrow(fileDT)){
 
     Shapley.approx$comb_Gaussian_AIC_each_k$Kshap <- Kshap
 
+
     #####
 
     Shapley.approx$comb_Gaussian_sigma.01 <- Shapley.approx$comb_sigma.01
@@ -105,14 +106,15 @@ for (k in 1:nrow(fileDT)){
 
     source("paper_experiments/source_getting_compute_results_for_hacking_A_dim_10.R",local = source.local) # Creating the res.DT object
 
+    ####
+
     newdat <- data.table(res,keep.rownames = T)
 
     newdat <- cbind(newdat,rbind(dat[,221:237],dat[4,221:237],dat[2,221:237]))
 
 
-
     #### Write results to csv files ------------
-    fwrite(x = newdat,file = paste0("paper_experiments/res/","all_results_experiment_A_dim_10_Linear_Linear_Gaussian_hacked.csv"),append = T)
+    fwrite(x = newdat,file = paste0("paper_experiments/res/","all_results_experiment_B_dim_10_PiecewiseConstant_XGBoost_Gaussian_hacked.csv"),append = T)
 
     newpathcsv <- paste0(substring(pathcsv,1,nchar(pathcsv)-4),"_hacked.csv")
     newpathRData <- paste0(substring(pathRData,1,nchar(pathRData)-6),"_hacked.RData")

@@ -11,9 +11,7 @@ source.local <- TRUE
 beta.scale.vec <- c(3,4,7)#c(1,2,5,10)
 bb = foreach(beta.scale = beta.scale.vec, .errorhandling = 'pass') %dopar% {
     for (this.seed in seed.vec){
-        source("paper_experiments/experiment_D_dim_3_PiecewiseConstant_XGBoost_GenHyp.R",local = source.local)
+        source("paper_experiments/experiment_C_dim_3_Linear_Linear_GenHyp.R",local = source.local)
     }
-    print(paste0("Just finished computation beta..scale = ",beta.scale," with seed = ",this.seed))
+    print(paste0("Just finished computation beta.scale = ",beta.scale," with seed = ",this.seed))
 }
-
-

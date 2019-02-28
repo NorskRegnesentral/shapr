@@ -20,10 +20,10 @@ all_res_experiment_E_dim3 <- "all_results_experiment_D_dim_3_PiecewiseConstant_X
 all_res_experiment_C_dim3 <- "all_results_experiment_E_dim_3_Linear_Linear_Gaussianmix.csv"
 all_res_experiment_F_dim3 <- "all_results_experiment_F_dim_3_PiecewiseConstant_XGBoost_Gaussianmix.csv"
 
-all_res_experiment_A_dim10 <- "all_results_experiment_A_dim_10_Linear_Linear_Gaussian.csv"
-all_res_experiment_B_dim10 <- "all_results_experiment_B_dim_10_PiecewiseConstant_XGBoost_Gaussian.csv"
-all_res_experiment_G_dim10 <- "all_results_experiment_A_dim_10_Linear_Linear_Gaussian.csv"
-all_res_experiment_H_dim10 <- "all_results_experiment_B_dim_10_PiecewiseConstant_XGBoost_Gaussian.csv"
+#all_res_experiment_A_dim10 <- "all_results_experiment_A_dim_10_Linear_Linear_Gaussian.csv"
+#all_res_experiment_B_dim10 <- "all_results_experiment_B_dim_10_PiecewiseConstant_XGBoost_Gaussian.csv"
+all_res_experiment_G_dim10 <- "all_results_experiment_A_dim_10_Linear_Linear_Gaussian_hacked.csv"
+all_res_experiment_H_dim10 <- "all_results_experiment_B_dim_10_PiecewiseConstant_XGBoost_Gaussian_hacked.csv"
 all_res_experiment_C_dim10 <- "all_results_experiment_C_dim_10_Linear_Linear_GenHyp.csv"
 all_res_experiment_D_dim10 <- "all_results_experiment_D_dim_10_PiecewiseConstant_XGBoost_GenHyp.csv"
 all_res_experiment_E_dim10 <- "all_results_experiment_E_dim_10_Linear_Linear_Gaussianmix.csv"
@@ -35,7 +35,6 @@ cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2"
 
 ### Testign #####
 
-aa <- "paper_experiments/res/all_results_experiment_D_dim_10_PiecewiseConstant_XGBoost_GenHyp.csv"
 
 dat <- fread(aa)
 
@@ -45,17 +44,21 @@ dat[,avg_skillscoremean_total := mean(skillscoremean_total),by=.(rn)]
 
 dat[,.(absmean=mean(avg_absmean_total),skillscore=mean(avg_skillscoremean_total)),by=rn]
 
+aa <- all_res_experiment_G_dim10#"paper_experiments/res/all_results_experiment_D_dim_10_PiecewiseConstant_XGBoost_GenHyp.csv"
 
-dat <- fread(paste0(res_folder,all_res_experiment_A_dim10))
+
+dat <- fread(paste0(res_folder,aa))
 
 # A+B+C+E+F dim 3 is done
 setkey(dat,rho)
 
 #dat <- dat[rho>=0.5,]
 #fwrite(dat,file = aa)
-dat[,sum(nTest),by=this.seed]
+dat[,sum(nTest),by=rho]
 
-dat[rho==0.0,sum(nTest),by=.(this.seed)]
+
+
+dat[rho==0.3,sum(nTest),by=.(this.seed)]
 
 dat[this.seed %in% c(1238,1239),sum(nTest),by=.(rn)]
 
@@ -131,11 +134,15 @@ ex_letter_dims_comb$X6 <- c(expression(rho),
                             expression(rho))
 
 newnamesDT <- data.table(rn=c("empirical_sigma.01","comb_sigma.01","comb_AIC_each_k","Gaussian","copula","empirical_AIC_each_k","empirical_AIC_full","comb_Gaussian_AIC_each_k","comb_Gaussian_sigma.01","empirical_independence","treeSHAP"),
-                         new_rn=c("empirical-0.1","empirical-0.1+copula","empirical-AICc-approx+copula","Gaussian","copula","empirical-AICc-approx","empirical-AICc-exact","empirical-AICc-approx+Gaussian","empirical-0.1+Gaussian","empirical-indep","TreeSHAP"))
+                         new_rn=c("empirical-0.1","empirical-0.1+copula","empirical-AICc-approx+copula","Gaussian","copula","empirical-AICc-approx","empirical-AICc-exact","empirical-AICc-approx+Gaussian","empirical-0.1+Gaussian","original","TreeSHAP"))
 
-cols <-  c(brewer.pal(n=9,name="Set1"),"#000000","#000000")
-linetypes <- c(rep(1,9),2,6)
-sizes <- c(rep(0.5,9),1,1)
+cols <-  c("orange","green2","green2","blue3","deepskyblue","orange","orange","green4","green4","black","red")
+#    c("black", "red" ,"orange",,"orange", "deepskyblue", "blue4", "green4","green4", "yellow2", "yellow2")
+ #   c(brewer.pal(n=9,name="Set1"),"#000000","#000000")
+linetypes <- c(3,1,2,1,1,2,1,2,1,1,1)
+
+#c(rep(1,9),2,6)
+#sizes <- c(rep(0.5,9),1,1)
 
 names(cols) = names(linetypes) = newnamesDT$new_rn
 
@@ -212,19 +219,19 @@ for(aa in 1:nrow(ex_letter_dims_comb)){
         xlim(range(dat[,get(var)])) +
         scale_colour_manual(name="",values = cols) +
         scale_linetype_manual(name="", values=linetypes) +
-        #   theme_light() +
+           theme_light() +
         theme(legend.position = "bottom")
 
     g2 <- ggplot(data = dat, aes(x=get(var),y=avg_skillscoremean_total,color=new_rn,linetype=new_rn))+
         geom_line() +
-        labs(y="MAE skill score relative to empirical-indep",
+        labs(y="Skill score (MAE)",
              x=xlab) +
         #  title = "Results experiment A dim 3",
         # color = "Method")
         xlim(range(dat[,get(var)])) +
         scale_colour_manual(name="",values = cols) +
         scale_linetype_manual(name="", values=linetypes) +
-        #    theme_light() +
+            theme_light() +
         theme(legend.position = "bottom")
 
     #grid.arrange(g1,g2,ncol=2)
@@ -292,6 +299,77 @@ library(fields)
 image.plot(as.matrix(datres[,-c(1,2)]))
 
 sign(as.matrix(datres[,-c(1,2)]))
+
+
+###### Plott histogram of real data
+
+XYtrain <- fread("/nr/project/stat/BFFGB18/LIME/lime/R/train6.csv")
+nn <- c(2,6,9,12,15,18,21,24,27)+1
+XYtrain.sub <- subset(XYtrain,select = nn)
+
+XYtrain.sub.melt <- melt(XYtrain.sub)
+
+ggplot(XYtrain.sub.melt,aes(x=value)) +
+    geom_histogram(aes(y=..density..),binwidth = 0.25) +
+    facet_wrap(~variable,ncol=3)+
+    xlim(c(-2,5)) +
+    ylim(c(0,4)) +
+    theme_light() +
+#    theme(strip.background =element_rect(fill="white"))+
+    theme(strip.text = element_text(colour = 'black'))
+
+
+tmp <- read.table("/nr/home/kjersti/all_results.csv",sep=",",header=T)
+mat1 <- NULL
+mat6 <- NULL
+for(i in 1:1281)
+{
+    foo <- t(tmp[which(tmp[,2]==i),-c(1,2,3)])
+    mat1 <- cbind(mat1,foo[,1])
+    mat6 <- cbind(mat6,foo[,6])
+}
+
+dat1 <- as.data.table(t(mat1[c(3,9,19,27),]))
+melt.dat1 <- melt(dat1)
+dat6 <- as.data.table(t(mat6[c(3,9,19,27),]))
+melt.dat6 <- melt(dat6)
+
+melts <- cbind(melt.dat1,meldt.dat6$value)
+
+sub <- aa <- list()
+for(i in 1:9){
+    sub[[i]] <- subset(XYtrain.sub,select = i)
+    colnames(sub[[i]]) <- "var"
+    aa[[i]] <- ggplot(sub[[i]],aes(x=var)) + geom_histogram(aes(y=..density..),binwidth=0.5) + xlim(quantile(unlist(sub[[i]]),c(0.01,0.99)))
+}
+        bb <- ggplot(XYtrain.sub,aes(x=br_std_mean_correct_end)) + geom_histogram(aes(y=..density..),binwidth=0.5)  +scale_y_continuous(limits=c(0,0.3)) + xlim(c(0,15))
+
+        geom_histogram(aes(y=..density..),binwidth=1)
+}
+
+
+train6 <- read.table("/nr/project/stat/BFFGB18/LIME/lime/R/train6.csv",sep=";",header=TRUE)
+
+
+> par(mfrow=c(3,3))
+> for(i in nn)
+    > hist(train6[,i],main=colnames(train6)[i],xlab="Value",prob=T)
+>
+
+
+
+    > par(mfrow=c(2,2))
+>
+    > for(i in c(3,9,19,27))
+        > {
+            >  plot(mat1[i,],mat6[i,],xlab="Standard",ylab="Comb-Gaussian")
+            >  #lines(mat6[i,],mat6[i,],lty=3)
+                >  lines(seq(-0.04,0.09,0.01),seq(-0.04,0.09,0.01),lty=3)
+            >  title(colnames(tmp)[i+3])
+            > }
+
+
+
 
 
 ################################# old ##########
