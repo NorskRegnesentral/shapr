@@ -307,6 +307,12 @@ XYtrain <- fread("/nr/project/stat/BFFGB18/LIME/lime/R/train6.csv")
 nn <- c(2,6,9,12,15,18,21,24,27)+1
 XYtrain.sub <- subset(XYtrain,select = nn)
 
+colnames(XYtrain.sub) <- substr(colnames(XYtrain.sub),start=1,stop=nchar(colnames(XYtrain.sub))-4)
+colnames(XYtrain.sub)[grepl("_correct",colnames(XYtrain.sub))] <- substr(colnames(XYtrain.sub)[grepl("_correct",colnames(XYtrain.sub))],
+                                                                         start=1,
+                                                                         stop=nchar(colnames(XYtrain.sub)[grepl("_correct",colnames(XYtrain.sub))])-8)
+
+
 XYtrain.sub.melt <- melt(XYtrain.sub)
 
 ggplot(XYtrain.sub.melt,aes(x=value)) +
@@ -317,7 +323,32 @@ ggplot(XYtrain.sub.melt,aes(x=value)) +
     theme_light() +
 #    theme(strip.background =element_rect(fill="white"))+
     theme(strip.text = element_text(colour = 'black'))
+ggsave(file.path(output_folder,"real_example_histograms.pdf"),width = 6, height = 6)
 
+
+
+sub <- aa <- list()
+for(i in 1:9){
+    sub[[i]] <- subset(XYtrain.sub,select = i)
+    colnames(sub[[i]]) <- "var"
+    aa[[i]] <- ggplot(sub[[i]],aes(x=var)) +
+        geom_histogram(aes(y=..density..),bins=30) +
+        xlim(quantile(unlist(sub[[i]]),c(0.01,0.99))) +
+        xlab(colnames(XYtrain.sub)[i]) +
+        ylab(ifelse(i %in% c(1,4,7),"density","")) +
+        theme_light()
+}
+
+library(gridExtra)
+
+pdf(file.path(output_folder,"real_example_histograms_2.pdf"),width = 7, height = 7)
+grid.arrange(grobs=aa,ncol=3)
+dev.off()
+
+
+
+
+#######
 
 tmp <- read.table("/nr/home/kjersti/all_results.csv",sep=",",header=T)
 mat1 <- NULL
@@ -330,45 +361,55 @@ for(i in 1:1281)
 }
 
 dat1 <- as.data.table(t(mat1[c(3,9,19,27),]))
-melt.dat1 <- melt(dat1)
 dat6 <- as.data.table(t(mat6[c(3,9,19,27),]))
+nam <- substr(colnames(dat1),start=1,stop=nchar(colnames(dat1))-4)
+nam[grepl("_correct",nam)] <- substr(nam[grepl("_correct",nam)],
+                                                                         start=1,
+                                                                         stop=nchar(nam[grepl("_correct",nam)])-8)
+colnames(dat1) = colnames(dat6) =nam
+
+melt.dat1 <- melt(dat1)
+
 melt.dat6 <- melt(dat6)
 
-melts <- cbind(melt.dat1,meldt.dat6$value)
+melts <- cbind(melt.dat1,melt.dat6$value)
+colnames(melts)[2:3] = c("original","CombGaussian")
 
-sub <- aa <- list()
-for(i in 1:9){
-    sub[[i]] <- subset(XYtrain.sub,select = i)
-    colnames(sub[[i]]) <- "var"
-    aa[[i]] <- ggplot(sub[[i]],aes(x=var)) + geom_histogram(aes(y=..density..),binwidth=0.5) + xlim(quantile(unlist(sub[[i]]),c(0.01,0.99)))
-}
-        bb <- ggplot(XYtrain.sub,aes(x=br_std_mean_correct_end)) + geom_histogram(aes(y=..density..),binwidth=0.5)  +scale_y_continuous(limits=c(0,0.3)) + xlim(c(0,15))
+library(ggplot2)
+ggplot(melts,aes(x=original,y=CombGaussian)) +
+    geom_point(size=1) +
+    geom_abline(slope=1,color=2)  +
+    facet_wrap(~variable,ncol=2)+
+    theme_light() +
+    #    theme(strip.background =element_rect(fill="white"))+
+    theme(strip.text = element_text(colour = 'black')) +
+    ylab("empirical-0.1-Gaussian") + xlim(c(-0.07,0.1)) + ylim(c(-0.07,0.11))
+ggsave(file.path(output_folder,"Shapley_value_plot_real_example.pdf"),width = 6, height = 6)
 
-        geom_histogram(aes(y=..density..),binwidth=1)
-}
-
-
-train6 <- read.table("/nr/project/stat/BFFGB18/LIME/lime/R/train6.csv",sep=";",header=TRUE)
-
-
-> par(mfrow=c(3,3))
-> for(i in nn)
-    > hist(train6[,i],main=colnames(train6)[i],xlab="Value",prob=T)
->
-
-
-
-    > par(mfrow=c(2,2))
->
-    > for(i in c(3,9,19,27))
-        > {
-            >  plot(mat1[i,],mat6[i,],xlab="Standard",ylab="Comb-Gaussian")
-            >  #lines(mat6[i,],mat6[i,],lty=3)
-                >  lines(seq(-0.04,0.09,0.01),seq(-0.04,0.09,0.01),lty=3)
-            >  title(colnames(tmp)[i+3])
-            > }
-
-
+#
+#
+#
+# train6 <- read.table("/nr/project/stat/BFFGB18/LIME/lime/R/train6.csv",sep=";",header=TRUE)
+#
+#
+# > par(mfrow=c(3,3))
+# > for(i in nn)
+#     > hist(train6[,i],main=colnames(train6)[i],xlab="Value",prob=T)
+# >
+#
+#
+#
+#     > par(mfrow=c(2,2))
+# >
+#     > for(i in c(3,9,19,27))
+#         > {
+#             >  plot(mat1[i,],mat6[i,],xlab="Standard",ylab="Comb-Gaussian")
+#             >  #lines(mat6[i,],mat6[i,],lty=3)
+#                 >  lines(seq(-0.04,0.09,0.01),seq(-0.04,0.09,0.01),lty=3)
+#             >  title(colnames(tmp)[i+3])
+#             > }
+#
+#
 
 
 
