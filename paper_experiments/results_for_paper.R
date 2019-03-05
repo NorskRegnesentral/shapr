@@ -8,7 +8,7 @@ library(data.table)
 library(ggplot2)
 library(gridExtra)
 library(grid)
-
+  #
 res_folder <- "paper_experiments/res/"
 output_folder <- "/home/jullum/nr/project_stat/BigInsight/Projects/Explanations/Doc/MJ/GIT/Fig"
 #output_folder <- "paper_experiments/res/tables_and_figures_for_paper"
