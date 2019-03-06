@@ -1,8 +1,0 @@
-#### CONCLUSION:
-#- Gaussisk gjør det jevnt over best
-#- Det er vanskelig å velge en god sigma.
-#- Sigma= 0.1 overalt gjør det bedre enn å bruke AICc, men man kommer greit ut av det med å gjøre
-#- Selv om man velger den h-en som er mest optimal sett over alle 50 observasjoner (ved å se på sanneheten, altså jukse), så er Gaussisk såvidt bedre.
-#- Gaussisk gjør det gradivs bedre jo flere variable man betinger på (var dette det samme som Kjersti observerte, eller omvendt?)
-#- Optimal sigma er høy når man betinger på få variable, og krymper ettersom man betinger på flere og flere variable.
-#- AICc har lignende oppførsel, men ligger generelt litt for høyt, og er ikke liten nok for mange variable.
