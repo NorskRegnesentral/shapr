@@ -592,10 +592,8 @@ compute_kernelShap = function(model,
                                                         fixed_sigma_vec = 0.1, # May be a vector of length nrow(S), or a single number used for all
                                                         AICc_no_samp_per_optim = 1000,
                                                         AICc_optimize_every_testobs = T,
-                                                        AIC_optim_func = "nlminb", # only "nlminb" allowed for now
                                                         AIC_optim_max_eval = 20,
                                                         AIC_optim_startval = 0.1,
-                                                        AICc_combination_type = "alternative", # "alternative" or "standard" # "Standard" combines sds and partial H's before computing one AICc, while "alternative computes AICc seperatedly and combines them.
                                                         kernel_metric = "Gaussian",
                                                         AICc_force_use_all_trainsamp_per_optim = T),
                               pred_zero,
@@ -725,42 +723,26 @@ compute_kernelShap = function(model,
                         y_list = split(pred,current_cond_samp)
                         names(y_list) = NULL
 
-                        if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
-                            if (empirical_settings$AICc_combination_type == "standard"){
-                                nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
-                                                                   objective = AICc_full_cpp,
-                                                                   X_list = X_list,
-                                                                   mcov_list = mcov_list,
-                                                                   S_scale_dist = T,
-                                                                   y_list = y_list,
-                                                                   negative = F,
-                                                                   lower = 0,
-                                                                   control=list(eval.max=empirical_settings$AIC_optim_max_eval,
-                                                                                trace=verbose)))
 
-                            }
-                            if (empirical_settings$AICc_combination_type == "alternative"){
-                                nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
-                                                                   objective = AICc_full_cpp_alt,
-                                                                   X_list = X_list,
-                                                                   mcov_list = mcov_list,
-                                                                   S_scale_dist = T,
-                                                                   y_list = y_list,
-                                                                   negative = F,
-                                                                   lower = 0,
-                                                                   control=list(eval.max=empirical_settings$AIC_optim_max_eval,
-                                                                                trace=verbose)))
-
-                            }
+                        ## Doing the numerical optimization -------
+                        nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
+                                                           objective = AICc_full_cpp_alt,
+                                                           X_list = X_list,
+                                                           mcov_list = mcov_list,
+                                                           S_scale_dist = T,
+                                                           y_list = y_list,
+                                                           negative = F,
+                                                           lower = 0,
+                                                           control=list(eval.max=empirical_settings$AIC_optim_max_eval,
+                                                                        trace=verbose)))
 
 
-                            if (empirical_settings$AICc_optimize_every_testobs){
-                                h_optim_mat[match(these_cond,these_empirical),loop] <- nlm.obj$par
-                            } else {
-                                h_optim_mat[match(these_cond,these_empirical),] <- nlm.obj$par
-                            }
-
+                        if (empirical_settings$AICc_optimize_every_testobs){
+                            h_optim_mat[match(these_cond,these_empirical),loop] <- nlm.obj$par
+                        } else {
+                            h_optim_mat[match(these_cond,these_empirical),] <- nlm.obj$par
                         }
+
 
                     }
 
@@ -801,41 +783,25 @@ compute_kernelShap = function(model,
                         pred <- pred_vector(model=model,data=X.pred)
                         y_list <- list(pred)
 
-                        if (empirical_settings$AIC_optim_func == "nlminb"){ # May implement the version which just evaluates on a grid
-                            if (empirical_settings$AICc_combination_type == "standard"){
-                                nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
-                                                                   objective = AICc_full_cpp,
-                                                                   X_list = X_list,
-                                                                   mcov_list = mcov_list,
-                                                                   S_scale_dist = T,
-                                                                   y_list = y_list,
-                                                                   negative = F,
-                                                                   lower = 0,
-                                                                   control=list(eval.max=empirical_settings$AIC_optim_max_eval,
-                                                                                trace=verbose)))
+                        ## Running the nonlinear optimization
 
-                            }
-                            if (empirical_settings$AICc_combination_type == "alternative"){
-                                nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
-                                                                   objective = AICc_full_cpp_alt,
-                                                                   X_list = X_list,
-                                                                   mcov_list = mcov_list,
-                                                                   S_scale_dist = T,
-                                                                   y_list = y_list,
-                                                                   negative = F,
-                                                                   lower = 0,
-                                                                   control=list(eval.max=empirical_settings$AIC_optim_max_eval,
-                                                                                trace=verbose)))
+                        nlm.obj <- suppressWarnings(nlminb(start = empirical_settings$AIC_optim_startval,
+                                                           objective = AICc_full_cpp_alt,
+                                                           X_list = X_list,
+                                                           mcov_list = mcov_list,
+                                                           S_scale_dist = T,
+                                                           y_list = y_list,
+                                                           negative = F,
+                                                           lower = 0,
+                                                           control=list(eval.max=empirical_settings$AIC_optim_max_eval,
+                                                                        trace=verbose)))
 
-                            }
 
-                            if (empirical_settings$AICc_optimize_every_testobs){
-                                h_optim_mat[match(i,these_empirical),loop] <- nlm.obj$par
-                            } else {
-                                h_optim_mat[match(i,these_empirical),] <- nlm.obj$par
-                            }
+                        if (empirical_settings$AICc_optimize_every_testobs){
+                            h_optim_mat[match(i,these_empirical),loop] <- nlm.obj$par
+                        } else {
+                            h_optim_mat[match(i,these_empirical),] <- nlm.obj$par
                         }
-                        # print(paste0("Optimized ", i ))
                     }
 
                 }
