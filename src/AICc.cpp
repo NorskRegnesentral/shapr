@@ -149,40 +149,6 @@ arma::vec AICc_full_tmp_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, doub
 }
 
 
-//'  AICc formula for several sets
-//'
-//' @param h numeric specifying the scaling (sigma)
-//' @param X matrix with "covariates"
-//' @param mcov covariance matrix
-//' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
-//' @param y vector with the "response variable"
-//'
-//' @export
-//'
-//' @return Scalar with the numeric value of the AICc formula
-//' @author Martin Jullum
-// [[Rcpp::export]]
-double AICc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative) {
-
-    int nloops = X_list.size();
-    arma::vec summer(3,fill::zeros);
-
-    for (int k = 0; k < nloops; ++k){
-        arma::mat X = X_list[k];
-        arma::mat mcov = mcov_list[k];
-        arma::vec y = y_list[k];
-
-        summer += AICc_full_tmp_cpp(X, mcov, S_scale_dist, h,  y);
-    }
-
-    double out = log(summer(0)/summer(2)) + correction_cpp(summer(1),summer(2)); // This computes log(sigma_full = (rss_1 + rss_2)/(n_1+n_2)) + correction_formula(H = H_1+H_2, n = n_1 + n_2)
-
-    if(negative){
-        out *= -1;
-    }
-
-    return(out);
-}
 
 //'  AICc formula for several sets, alternative definition
 //'
@@ -251,6 +217,41 @@ double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool
 //
 //     if(ret_log){
 //         out = log(out);
+//     }
+//
+//     return(out);
+// }
+
+// //'  AICc formula for several sets
+// //'
+// //' @param h numeric specifying the scaling (sigma)
+// //' @param X matrix with "covariates"
+// //' @param mcov covariance matrix
+// //' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+// //' @param y vector with the "response variable"
+// //'
+// //' @export
+// //'
+// //' @return Scalar with the numeric value of the AICc formula
+// //' @author Martin Jullum
+// // [[Rcpp::export]]
+// double AICc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative) {
+//
+//     int nloops = X_list.size();
+//     arma::vec summer(3,fill::zeros);
+//
+//     for (int k = 0; k < nloops; ++k){
+//         arma::mat X = X_list[k];
+//         arma::mat mcov = mcov_list[k];
+//         arma::vec y = y_list[k];
+//
+//         summer += AICc_full_tmp_cpp(X, mcov, S_scale_dist, h,  y);
+//     }
+//
+//     double out = log(summer(0)/summer(2)) + correction_cpp(summer(1),summer(2)); // This computes log(sigma_full = (rss_1 + rss_2)/(n_1+n_2)) + correction_formula(H = H_1+H_2, n = n_1 + n_2)
+//
+//     if(negative){
+//         out *= -1;
 //     }
 //
 //     return(out);

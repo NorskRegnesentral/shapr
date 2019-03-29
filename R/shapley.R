@@ -924,7 +924,7 @@ prepare_kernelShap <- function(m,
     S <- feature_matrix_cpp(features = X[["features"]],
                             nfeatures = ncol(Xtrain))
 
-    return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest,
+    return(list(D = D, S = S, W = W, X = X, Xtrain = Xtrain, Xtest = Xtest,
                 D_for_these_varcomb = X[nfeatures%in%compute_distances_for_no_var,which=TRUE]))
 }
 

@@ -57,22 +57,6 @@ AICc_full_tmp_cpp <- function(X, mcov, S_scale_dist, h, y) {
     .Call(`_shapr_AICc_full_tmp_cpp`, X, mcov, S_scale_dist, h, y)
 }
 
-#'  AICc formula for several sets
-#'
-#' @param h numeric specifying the scaling (sigma)
-#' @param X matrix with "covariates"
-#' @param mcov covariance matrix
-#' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
-#' @param y vector with the "response variable"
-#'
-#' @export
-#'
-#' @return Scalar with the numeric value of the AICc formula
-#' @author Martin Jullum
-AICc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) {
-    .Call(`_shapr_AICc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
-}
-
 #'  AICc formula for several sets, alternative definition
 #'
 #' @param h numeric specifying the scaling (sigma)
@@ -87,35 +71,6 @@ AICc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 #' @author Martin Jullum
 AICc_full_cpp_alt <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) {
     .Call(`_shapr_AICc_full_cpp_alt`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
-}
-
-#' Get distance
-#'
-#' @param Xtrain Dataframe
-#' @param Xtest Dataframe
-#'
-#' @export
-#'
-#' @return Array of three dimensions
-#' @author Nikolai Sellereite
-distance_cpp <- function(Xtrain, Xtest) {
-    .Call(`_shapr_distance_cpp`, Xtrain, Xtest)
-}
-
-#' Prepare (generalized) Mahalanobis distance
-#'
-#' Used to get the Euclidean distance as well by setting mcov = diag(m).
-#' @param Xtrain Dataframe
-#' @param Xtest Dataframe
-#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (cov(Xtrain) gives Mahalanobis distance,
-#' diag(m) gives the Euclidean distance.
-#'
-#' @export
-#'
-#' @return Array of three dimensions. Multiplying X[,i,] with t(S) gives the Mahlanbis distance for all combinations
-#' @author Martin Jullum
-prepare_gen_Mahlanobis_dist_cpp_old <- function(Xtrain, Xtest, mcov) {
-    .Call(`_shapr_prepare_gen_Mahlanobis_dist_cpp_old`, Xtrain, Xtest, mcov)
 }
 
 #' (Generalized) Mahalanobis distance
