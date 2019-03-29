@@ -939,46 +939,37 @@ prepare_kernelShap <- function(m,
                                Xtrain,
                                Xtest,
                                exact = TRUE,
-                               replace = TRUE,
                                nrows = NULL,
                                shapley_weight_inf_replacement = 10^6,
-                               scale = FALSE,
-                               reduce_dim = TRUE,
-                               use_shapley_weights_in_W = ifelse(exact,T,F),
-                               normalize_W_weights = T,
-                               distance_metric = "Mahalanobis_scaled",
-                               compute_distances_for_no_var = 0:m, # Set to NULL if no distances are to be computed
-                               normalize_distance_rows = TRUE) {
+                               compute_distances_for_no_var = 0:m){ # Set to NULL if no distances are to be computed
+
+    ## Convert data to data.table format --------------
+    if (!is.data.table(Xtrain)) {
+        Xtrain <- as.data.table(Xtrain)
+    }
+    if (!is.data.table(Xtest)) {
+        Xtest <- as.data.table(Xtest)
+    }
 
     ## Get all combinations ----------------
-    X <- get_combinations(m = m, exact = exact, nrows = nrows, replace = replace, shapley_weight_inf_replacement = shapley_weight_inf_replacement, reduce_dim = reduce_dim)
+    X <- get_combinations(m = m, exact = exact, nrows = nrows, replace = T, shapley_weight_inf_replacement = shapley_weight_inf_replacement, reduce_dim = T)
 
     ## Get weighted matrix ----------------
-    W <- get_weighted_matrix(X, use_shapley_weights_in_W = use_shapley_weights_in_W, normalize_W_weights = normalize_W_weights)
+    W <- get_weighted_matrix(X, use_shapley_weights_in_W = ifelse(exact,T,F), normalize_W_weights = T)
 
-    ## Transform to data table and scale data ----------------
-    l <- scale_data(Xtrain, Xtest, scale = scale) # MJ: One should typically scale if using Euclidean, while it is no point when using Mahalanobis
-
-    ## Get distance ---------
-    if (distance_metric=="Euclidean"){
-        mcov <- diag(m) # Should typically use scale if Euclidean is being used.
-    } else { # i.e. If distance_metric == "Mahalanobis"
-        mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
-    }
-
-    if (distance_metric=="Mahalanobis_scaled"){
-        S_scale_dist <- T
-    } else {
-        S_scale_dist <- F
-    }
+    mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
 
     if(!is.null(compute_distances_for_no_var[1])){ # Only compute the distances if the empirical approach is used
-        D <- gen_Mahlanobis_dist_cpp(X[nfeatures%in%compute_distances_for_no_var,features],as.matrix(Xtrain),as.matrix(Xtest),mcov=mcov,S_scale_dist = S_scale_dist) # This is D_S(,)^2 in the paper
-        if (normalize_distance_rows){
-            colmin <- apply(X = D,MARGIN = c(2,3),FUN=min)
-            for(i in 1:dim(D)[3]){
-                D[,,i] <- t(t(D[,,i])-colmin[,i])
-            }
+        D <- gen_Mahlanobis_dist_cpp(featureList = X[nfeatures%in%compute_distances_for_no_var,features],
+                                     Xtrain = as.matrix(Xtrain),
+                                     Xtest = as.matrix(Xtest),
+                                     mcov=mcov,
+                                     S_scale_dist = T) # This is D_S(,)^2 in the paper
+
+        ## Normalize the distance rows to ensure numerical stability in later operations
+        colmin <- apply(X = D,MARGIN = c(2,3),FUN=min)
+        for(i in 1:dim(D)[3]){
+            D[,,i] <- t(t(D[,,i])-colmin[,i])
         }
     } else {
         D <- NULL
@@ -986,9 +977,11 @@ prepare_kernelShap <- function(m,
 
 
     ## Get feature matrix ---------
-    S <- feature_matrix_cpp(features = X[["features"]], nfeatures = ncol(Xtrain)) # The scaling of S influence onyl the matrix product with D, as we only care about the elements of S being zero/nonzero elsewhere.
+    S <- feature_matrix_cpp(features = X[["features"]],
+                            nfeatures = ncol(Xtrain))
 
-    return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest, D_for_these_varcomb = X[nfeatures%in%compute_distances_for_no_var,which=TRUE]))
+    return(list(D = D, S = S, W = W, X = X, Xtrain = l$Xtrain, Xtest = l$Xtest,
+                D_for_these_varcomb = X[nfeatures%in%compute_distances_for_no_var,which=TRUE]))
 }
 
 
