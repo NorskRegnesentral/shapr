@@ -1,19 +1,25 @@
 #' Set of global arguments used in the package
 #'
+#' @param Xtrain Matrix, data.frame or data.table with the features from the training data
+#' @param Xtest Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)
+#' @param Xtrain_mat Matrix with the features from the training data
+#' @param Xtest_mat Matrix with the features, whose predictions ought to be explained (test data)
+#' @param exact Logical. If TRUE, uses the full sum in the Shapley formula, if FALSE, uses a sampling approach to approximate the sum
+#' @param noSamp Integer. How many samples to use when approximating the sum in the Shapley formula
+#' (previously called nrows)
+#' @param shapley_weight_inf_replacement Numeric. Indicating which weight to use for the full conditional and unconditional expectations in kernel SHAPs WLS formulation.
+#' @param reduce_dim Logical. Indicating whether to reduce the dimension WLS problem by merging identical columns and adjusting their weights.
 #' @param m Integer. Total nnumber of features
+#' @param model Model object. Fitted model that is used to produce the predictions
+#' @param l List. The output from the prepare_kernelShap function
+#' @param noSamp_MC Postive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called n_threshold)
+#' @param verbose Integer. How much information to print during function execution (in development)
 #' @param N Integer. Number of combinations
 #' @param s Integer. Number of chosen
-#' @param Xtrain data.frame
-#' @param Xtest data.frame
 #' @param nsamples Integer. Number of samples
 #' @param features List.
-#' @param exact Logical
 #' @param sigma Numeric
-#' @param model Model object
 #' @param p_default Numeric
-#' @param nrows Integer
-#' @param w_threshold Positive numeric.
-#' @param n_threshold Postive integer.
 #' @param W Matrix
 #' @param I Matrix
 #' @param D Matrix

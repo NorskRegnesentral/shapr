@@ -13,10 +13,7 @@ w_shapley <- function(m, N, s) {
 
 #' Get combinations
 #'
-#' @param m Integer.
-#' @param exact Logical.
-#' @param nrows Integer
-#' @param replace Logical Whether to do sampling with replacement (if exact==FALSE)
+#' @inheritParams global_arguments
 #'
 #' @details
 #' The returned data.table contains the following columns
@@ -32,11 +29,11 @@ w_shapley <- function(m, N, s) {
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-get_combinations <- function(m, exact = TRUE, nrows = 200, replace = TRUE, shapley_weight_inf_replacement = 10^6,reduce_dim = T) {
+get_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_replacement = 10^6,reduce_dim = T) {
 
-    if (!exact && nrows>(2^m-2) && !replace ){
-        nrows = 2^m-2
-        cat(paste0("nrows is larger than 2^m = ",2^m,". Using exact instead."))
+    if (!exact && noSamp>(2^m-2) && !replace ){
+        noSamp = 2^m-2
+        cat(paste0("noSamp is larger than 2^m = ",2^m,". Using exact instead."))
     }
     if (exact == TRUE) {
         N <- 2 ^ m
@@ -49,7 +46,6 @@ get_combinations <- function(m, exact = TRUE, nrows = 200, replace = TRUE, shapl
         X[nfeatures%in% c(0,m), shapley_weight := shapley_weight_inf_replacement]
         X[, no := 1]
     } else {
-        if (replace){
             ## Find weights for given number of features ----------
             DT0 <- data.table(nfeatures = head(1:m, -1))
             DT0[, N := unlist(lapply(nfeatures, choose, n = m))]
@@ -61,13 +57,13 @@ get_combinations <- function(m, exact = TRUE, nrows = 200, replace = TRUE, shapl
             X <- data.table(
                 nfeatures = sample(
                     x = DT0[["nfeatures"]],
-                    size = nrows,
+                    size = noSamp,
                     replace = TRUE,
                     prob = DT0[["samp_weight"]]
                 )
             )
 
-            ## Sample specific set of features # Not optimal, as it is a bit slow for nrows -------
+            ## Sample specific set of features # Not optimal, as it is a bit slow for noSamp -------
             setkey(X, nfeatures)
             Samp <- sapply(X=X$nfeatures,FUN = function(x){aa <- rep(NA,m);aa[1:x]=sample(x=1:m,size = x);aa})
             Samp <- t(apply(X = Samp,MARGIN = 2,FUN=sort,na.last=T))
@@ -108,9 +104,6 @@ get_combinations <- function(m, exact = TRUE, nrows = 200, replace = TRUE, shapl
             X[,ID:=.I]
             X[nfeatures%in% c(0,m), ':='(shapley_weight = shapley_weight_inf_replacement,
                                          N = 1)]
-
-        } else {
-            cat(paste0("replace= FALSE no long supported..."))
         }
     }
     return(X)
@@ -200,7 +193,7 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-impute_data <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, n_threshold = 1e3) {
+impute_data <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {
 
     ## Find weights for all combinations and training data
     DT = as.data.table(W_kernel)
@@ -212,7 +205,7 @@ impute_data <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, n_threshol
     DT[, w := w / sum(w), comb]
     DT[, wcum := cumsum(w), comb]
     DT <- DT[wcum > 1 - w_threshold][, wcum := NULL]
-    DT <- DT[, tail(.SD, n_threshold), comb]
+    DT <- DT[, tail(.SD, noSamp_MC), comb]
     DT[, comb := gsub(comb, pattern = "V", replacement = ""), comb]
     DT[, wcomb := as.integer(comb), comb][, comb := NULL]
 
@@ -299,13 +292,13 @@ Gauss_trans_func <- function(x){
 #'
 #' @inheritParams global_arguments
 #'
-#' @return data.table with n_threshold (conditional) Gaussian samples
+#' @return data.table with noSamp_MC (conditional) Gaussian samples
 #'
 #' @import condMVNorm
 #' @export
 #'
 #' @author Martin Jullum
-samp_copula_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest_Gauss_trans,Xtrain,Xtest) {
+samp_copula_func <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,Xtrain,Xtest) {
     # Handles the unconditional and full conditional separtely when predicting
     if (length(given_ind) %in% c(0, p)) {
         ret <- matrix(Xtest, ncol = p, nrow = 1)
@@ -314,7 +307,7 @@ samp_copula_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest_Gauss_t
         X_given <- Xtest_Gauss_trans[given_ind]
         X_given_orig <- Xtest[given_ind]
         # ret0 <- condMVNorm::rcmvnorm(
-        #     n = n_threshold,
+        #     n = noSamp_MC,
         #     mean = mu,
         #     sigma = Sigma,
         #     dependent.ind = dependent_ind,
@@ -327,13 +320,13 @@ samp_copula_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest_Gauss_t
             dependent.ind = dependent_ind,
             given.ind = given_ind,
             X.given = X_given)
-        #ret0 <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
-        ret0_z <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
+        #ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
+        ret0_z <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
 
-        ret0_x <- apply(X = rbind(ret0_z,Xtrain[,dependent_ind,drop=F]),MARGIN=2,FUN=inv_Gauss_trans_func,n_z = n_threshold)
+        ret0_x <- apply(X = rbind(ret0_z,Xtrain[,dependent_ind,drop=F]),MARGIN=2,FUN=inv_Gauss_trans_func,n_z = noSamp_MC)
 
-        ret <- matrix(NA, ncol = p, nrow = n_threshold)
-        ret[, given_ind] <- rep(X_given_orig,each=n_threshold)
+        ret <- matrix(NA, ncol = p, nrow = noSamp_MC)
+        ret[, given_ind] <- rep(X_given_orig,each=noSamp_MC)
         ret[, dependent_ind] <- ret0_x
     }
     colnames(ret) <- colnames(Xtest)
@@ -348,13 +341,13 @@ samp_copula_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest_Gauss_t
 #'
 #' @inheritParams global_arguments
 #'
-#' @return data.table with n_threshold (conditional) Gaussian samples
+#' @return data.table with noSamp_MC (conditional) Gaussian samples
 #'
 #' @import condMVNorm
 #' @export
 #'
 #' @author Martin Jullum
-samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest,ensure_condcov_symmetry=F) {
+samp_Gauss_func <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest,ensure_condcov_symmetry=F) {
     # Handles the unconditional and full conditional separtely when predicting
     if (length(given_ind) %in% c(0, p)) {
         ret <- matrix(Xtest, ncol = p, nrow = 1)
@@ -362,7 +355,7 @@ samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest,ensure_c
         dependent_ind <- (1:length(mu))[-given_ind]
         X_given <- Xtest[given_ind]
         # ret0 <- condMVNorm::rcmvnorm(
-        #     n = n_threshold,
+        #     n = noSamp_MC,
         #     mean = mu,
         #     sigma = Sigma,
         #     dependent.ind = dependent_ind,
@@ -385,11 +378,11 @@ samp_Gauss_func <- function(given_ind, n_threshold, mu, Sigma, p, Xtest,ensure_c
                 given.ind = given_ind,
                 X.given = X_given)
         }
-        #ret0 <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
-        ret0 <- rmvnorm(n = n_threshold, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
+        #ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
+        ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
 
-        ret <- matrix(NA, ncol = p, nrow = n_threshold)
-        ret[, given_ind] <- rep(X_given,each=n_threshold)
+        ret <- matrix(NA, ncol = p, nrow = noSamp_MC)
+        ret[, given_ind] <- rep(X_given,each=noSamp_MC)
         ret[, dependent_ind] <- ret0
     }
     colnames(ret) <- colnames(Xtest)
@@ -415,7 +408,7 @@ get_predictions <- function(model,
                             Xtrain,
                             Xtest,
                             w_threshold = .7,
-                            n_threshold = 1e3,
+                            noSamp_MC = 1e3,
                             verbose = FALSE,
                             cond_approach_list,
                             feature_list,
@@ -438,7 +431,7 @@ get_predictions <- function(model,
         samp_list <- lapply(
             X = feature_list[these_wcomb],
             FUN = samp_Gauss_func,
-            n_threshold = n_threshold,
+            noSamp_MC = noSamp_MC,
             mu = mu,
             Sigma = Sigma,
             p = p,
@@ -448,7 +441,7 @@ get_predictions <- function(model,
 
         DTp.Gaussian <- rbindlist(samp_list, idcol = "wcomb")
         DTp.Gaussian[,wcomb:=these_wcomb[wcomb]]  # Correcting originally assigned wcomb
-        DTp.Gaussian[, w := 1 / n_threshold]
+        DTp.Gaussian[, w := 1 / noSamp_MC]
     }
     if ("copula" %in% names(cond_approach_list)){
         these_wcomb <- cond_approach_list$copula
@@ -458,7 +451,7 @@ get_predictions <- function(model,
         samp_list <- lapply(
             X = feature_list[these_wcomb],
             FUN = samp_copula_func,
-            n_threshold = n_threshold,
+            noSamp_MC = noSamp_MC,
             mu = mu_Gauss_trans,
             Sigma = Sigma_Gauss_trans,
             p = p,
@@ -469,7 +462,7 @@ get_predictions <- function(model,
 
         DTp.copula <- rbindlist(samp_list, idcol = "wcomb")
         DTp.copula[,wcomb:=these_wcomb[wcomb]]  # Correcting originally assigned wcomb
-        DTp.copula[, w := 1 / n_threshold]
+        DTp.copula[, w := 1 / noSamp_MC]
 
     }
 
@@ -495,7 +488,7 @@ get_predictions <- function(model,
             Xtrain = Xtrain,
             Xtest = Xtest,
             w_threshold = w_threshold,
-            n_threshold = n_threshold
+            noSamp_MC = noSamp_MC
         )
         DTp.empirical[,wcomb:=these_wcomb[wcomb]]  # Correcting originally assigned wcomb
 
@@ -568,9 +561,9 @@ pred_vector = function(model, data) {
 #' Computes the kernelShap values for the test data given to prepare_kernelShao
 #'
 #' @inheritParams global_arguments
-#' @param l The output from prepare_kernelShap
 #' @param sigma Bandwidth in the Gaussian kernel if the empirical conditional sampling approach is used (cond_approach == "empirical")
 #' @param pred_zero The prediction value for unseen data, typically equal to the mean of the response
+#' @param empirical_settings List. Specifying the settings when using the empirial method to compute the conditional expectations.
 #'
 #' @return List with kernel Shap values (Kshap) and other object used to perform the computation (helpful for debugging etc.)
 #'
@@ -579,15 +572,15 @@ pred_vector = function(model, data) {
 #' @author Martin Jullum
 compute_kernelShap = function(model,
                               l,
-                              w_threshold = 0.95,
-                              n_threshold = 1e3,
+                              noSamp_MC = 1e3,
                               verbose = FALSE,
                               cond_approach = "empirical", # When being a list, the elements in the list refers to the rows in l$X that ought to be included in each of the approaches!
                               empirical_settings = list(type = "fixed_sigma", # May in the future allow a vector of length nrow(S) here as well to specify fixed for some and optimiziation for others
                                                         fixed_sigma_vec = 0.1, # May be a vector of length nrow(S), or a single number used for all
                                                         AICc_no_samp_per_optim = 1000,
                                                         AIC_optim_max_eval = 20,
-                                                        AIC_optim_startval = 0.1),
+                                                        AIC_optim_startval = 0.1,
+                                                        w_threshold = 0.95),
                               pred_zero,
                               mu = NULL,
                               Sigma = NULL,
@@ -837,8 +830,8 @@ compute_kernelShap = function(model,
             S = l$S,
             Xtrain = Xtrain.mat,
             Xtest = Xtest.mat[i, , drop = FALSE],
-            w_threshold = w_threshold,
-            n_threshold = n_threshold,
+            w_threshold = empirical_settings$w_threshold,
+            noSamp_MC = noSamp_MC,
             verbose = verbose,
             cond_approach_list = cond_approach_list,
             feature_list = l$X$features,
@@ -879,13 +872,12 @@ compute_kernelShap = function(model,
 #' @export
 #'
 #' @author Nikolai Sellereite
-prepare_kernelShap <- function(m,
-                               Xtrain,
+prepare_kernelShap <- function(Xtrain,
                                Xtest,
                                exact = TRUE,
-                               nrows = NULL,
+                               noSamp = NULL,
                                shapley_weight_inf_replacement = 10^6,
-                               compute_distances_for_no_var = 0:m){ # Set to NULL if no distances are to be computed
+                               compute_distances_for_no_var = 0:ncol(Xtrain)){ # Set to NULL if no distances are to be computed
 
     ## Convert data to data.table format --------------
     if (!is.data.table(Xtrain)) {
@@ -896,7 +888,7 @@ prepare_kernelShap <- function(m,
     }
 
     ## Get all combinations ----------------
-    X <- get_combinations(m = m, exact = exact, nrows = nrows, replace = T, shapley_weight_inf_replacement = shapley_weight_inf_replacement, reduce_dim = T)
+    X <- get_combinations(m = ncol(Xtrain), exact = exact, noSamp = noSamp, shapley_weight_inf_replacement = shapley_weight_inf_replacement, reduce_dim = T)
 
     ## Get weighted matrix ----------------
     W <- get_weighted_matrix(X, use_shapley_weights_in_W = ifelse(exact,T,F), normalize_W_weights = T)
@@ -905,8 +897,8 @@ prepare_kernelShap <- function(m,
 
     if(!is.null(compute_distances_for_no_var[1])){ # Only compute the distances if the empirical approach is used
         D <- gen_Mahlanobis_dist_cpp(featureList = X[nfeatures%in%compute_distances_for_no_var,features],
-                                     Xtrain = as.matrix(Xtrain),
-                                     Xtest = as.matrix(Xtest),
+                                     Xtrain_mat = as.matrix(Xtrain),
+                                     Xtest_mat = as.matrix(Xtest),
                                      mcov=mcov,
                                      S_scale_dist = T) # This is D_S(,)^2 in the paper
 

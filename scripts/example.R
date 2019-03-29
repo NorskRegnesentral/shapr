@@ -61,7 +61,6 @@ model <- fit_model_func(XYtrain)
 #### Preparing the data for kernelShap
 
 l <- prepare_kernelShap(
-    m = ncol(Xtrain),
     Xtrain = Xtrain,
     Xtest = Xtest)
 
