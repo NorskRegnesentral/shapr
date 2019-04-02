@@ -14,6 +14,9 @@
 #' @param l List. The output from the prepare_kernelShap function
 #' @param noSamp_MC Postive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called n_threshold)
 #' @param verbose Integer. How much information to print during function execution (in development)
+#' @param cond_approach String or list. When being a list, the elements in the list refers to the rows in l$X that ought to be included in each of the approaches!
+#' @param mu Numeric vector. (Optional) Containing the mean of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).
+#' @param Sigma Numeric matrix. (Optional) Containing the covariance matrix of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).
 #' @param N Integer. Number of combinations
 #' @param s Integer. Number of chosen
 #' @param nsamples Integer. Number of samples

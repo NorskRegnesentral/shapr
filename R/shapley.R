@@ -105,7 +105,6 @@ get_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_r
             X[nfeatures%in% c(0,m), ':='(shapley_weight = shapley_weight_inf_replacement,
                                          N = 1)]
         }
-    }
     return(X)
 }
 
@@ -561,9 +560,10 @@ pred_vector = function(model, data) {
 #' Computes the kernelShap values for the test data given to prepare_kernelShao
 #'
 #' @inheritParams global_arguments
-#' @param sigma Bandwidth in the Gaussian kernel if the empirical conditional sampling approach is used (cond_approach == "empirical")
-#' @param pred_zero The prediction value for unseen data, typically equal to the mean of the response
 #' @param empirical_settings List. Specifying the settings when using the empirial method to compute the conditional expectations.
+#' @param pred_zero The prediction value for unseen data, typically equal to the mean of the response
+#' @param ensure_condcov_symmetry Logical. Whether to an apply a symmetry ensurance mechanism for the conditional covariance matrices in the Gaussian and copula approaches.
+#' Typically only needed if theoriginal covariance is just barely positive definite.
 #'
 #' @return List with kernel Shap values (Kshap) and other object used to perform the computation (helpful for debugging etc.)
 #'
