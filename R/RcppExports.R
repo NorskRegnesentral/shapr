@@ -77,9 +77,7 @@ AICc_full_cpp_alt <- function(h, X_list, mcov_list, S_scale_dist, y_list, negati
 #'
 #' Used to get the Euclidean distance as well by setting mcov = diag(m).
 #' @param featureList List of vectors indicating all facture combinations that should be included in the computations. Assumes that the first one is empty.
-#' @param Xtrain Dataframe
-#' @param Xtest Dataframe
-#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (cov(Xtrain) gives Mahalanobis distance,
+#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (cov(Xtrain_mat) gives Mahalanobis distance,
 #' diag(m) gives the Euclidean distance.
 #' @param S_scale_dist Logical indicating
 #'
@@ -87,8 +85,8 @@ AICc_full_cpp_alt <- function(h, X_list, mcov_list, S_scale_dist, y_list, negati
 #'
 #' @return Array of three dimensions containg the the squared distance for between all training and test observations for all feature combinations passed to the function.
 #' @author Martin Jullum
-gen_Mahlanobis_dist_cpp <- function(featureList, Xtrain, Xtest, mcov, S_scale_dist) {
-    .Call(`_shapr_gen_Mahlanobis_dist_cpp`, featureList, Xtrain, Xtest, mcov, S_scale_dist)
+gen_Mahlanobis_dist_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist) {
+    .Call(`_shapr_gen_Mahlanobis_dist_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
 }
 
 #' Get imputed data

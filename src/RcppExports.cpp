@@ -76,17 +76,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // gen_Mahlanobis_dist_cpp
-arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList, arma::mat Xtrain, arma::mat Xtest, arma::mat mcov, bool S_scale_dist);
-RcppExport SEXP _shapr_gen_Mahlanobis_dist_cpp(SEXP featureListSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
+arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList, arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist);
+RcppExport SEXP _shapr_gen_Mahlanobis_dist_cpp(SEXP featureListSEXP, SEXP Xtrain_matSEXP, SEXP Xtest_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type featureList(featureListSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Xtrain(XtrainSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Xtest(XtestSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Xtrain_mat(Xtrain_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Xtest_mat(Xtest_matSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
-    rcpp_result_gen = Rcpp::wrap(gen_Mahlanobis_dist_cpp(featureList, Xtrain, Xtest, mcov, S_scale_dist));
+    rcpp_result_gen = Rcpp::wrap(gen_Mahlanobis_dist_cpp(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist));
     return rcpp_result_gen;
 END_RCPP
 }
