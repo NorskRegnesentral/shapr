@@ -1,36 +1,91 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
-//' Get distance
+
+
+//' (Generalized) Mahalanobis distance
 //'
-//' @param Xtrain Dataframe
-//' @param Xtest Dataframe
+//' Used to get the Euclidean distance as well by setting mcov = diag(m).
+//' @param featureList List of vectors indicating all facture combinations that should be included in the computations. Assumes that the first one is empty.
+//' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (cov(Xtrain_mat) gives Mahalanobis distance,
+//' diag(m) gives the Euclidean distance.
+//' @param S_scale_dist Logical indicating
 //'
 //' @export
 //'
-//' @return Array of three dimensions
-//' @author Nikolai Sellereite
+//' @return Array of three dimensions containg the the squared distance for between all training and test observations for all feature combinations passed to the function.
+//' @author Martin Jullum
 // [[Rcpp::export]]
-arma::Cube<double> distance_cpp(NumericMatrix Xtrain, NumericMatrix Xtest) {
+arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList,arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist) {
+
+    using namespace arma;
 
     // Define variables
-    int ntrain, ntest, nfeatures;
-    ntrain = Xtrain.nrow();
-    ntest = Xtest.nrow();
-    nfeatures = Xtrain.ncol();
-    arma::cube X(ntrain, ntest, nfeatures, arma::fill::zeros);
+    int ntrain = Xtrain_mat.n_rows;
+    int ntest = Xtest_mat.n_rows;
+    int m = Xtrain_mat.n_cols;
+    int p = featureList.size();
 
-    for (int k = 0; k < nfeatures; ++k) {
+    arma::mat mcov0;
+    arma::mat cholDec;
+    arma::mat mu0;
+    arma::mat mu;
+    arma::mat X;
+
+    arma::cube out(ntrain,ntest,p,arma::fill::zeros);
+
+    // Declaring some private variables
+
+    double acc;
+    uint32_t icol, irow, ii;
+    double S_scale;
+    double rowsum;
+
+
+    for (int k = 1; k < p; ++k){ // Ignoring the first List element (assuming it contains en empty vector)
+
+        arma::uvec theseFeatures = featureList[k];
+        theseFeatures = theseFeatures-1;
+
+        mcov0 = mcov.submat(theseFeatures,theseFeatures);
+        X = Xtrain_mat.cols(theseFeatures);
+        mu0 = Xtest_mat.cols(theseFeatures);
+
+        uint32_t d = X.n_cols;
+        vec tmp(d);
+        cholDec = trimatl(chol(mcov0).t());
+        vec D = cholDec.diag();
+        if(S_scale_dist){
+            S_scale = 1.0/pow(theseFeatures.n_elem,2);
+       } else {
+            S_scale = 1.0;
+        }
 
         for (int j = 0; j < ntest; ++j) {
+            mu = mu0.row(j);
 
-            for (int i = 0; i < ntrain; ++i) {
+            // For each of the "n" random vectors, forwardsolve the corresponding linear system.
+            // Forwardsolve because I'm using the lower triangle Cholesky.
+            for(icol = 0; icol < ntrain; icol++)
+            {
 
-                X(i, j, k) = pow(Xtrain(i, k) - Xtest(j, k), 2.0);
+                for(irow = 0; irow < d; irow++)
+                {
+                    acc = 0.0;
+
+                    for(ii = 0; ii < irow; ii++) acc += tmp.at(ii) * cholDec.at(irow, ii);
+
+                    tmp.at(irow) = ( X.at(icol, irow) - mu.at(irow) - acc ) / D.at(irow);
+                }
+
+                out.at(icol,j,k) = sum(square(tmp));
             }
 
         }
+        out.slice(k) *= S_scale;
     }
 
-    return X;
+
+    return out;
 }
+

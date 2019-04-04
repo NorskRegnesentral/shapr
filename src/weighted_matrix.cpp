@@ -11,17 +11,13 @@ using namespace Rcpp;
 //' @return Matrix of dimension n x m + 1
 //' @author Nikolai Sellereite
 // [[Rcpp::export]]
-arma::mat weighted_matrix(List features, int m, int n) {
+arma::mat weighted_matrix(List features, int m, int n, NumericVector w){
 
     // Define variables
     int nfeatures;
     IntegerVector feature_vec;
-    NumericVector w(n);
     arma::mat X(n, m + 1, arma::fill::zeros), Xw(n, m + 1, arma::fill::zeros);
     arma::mat W(m + 1, n, arma::fill::zeros);
-    std::fill(w.begin(), w.end(), 1.0);
-    w[0] = pow(10.0, 6.0);
-    w[n - 1] = pow(10.0, 6.0);
 
     // Populate matrix
     for (int i = 0; i < n; i++) {
@@ -50,8 +46,11 @@ arma::mat weighted_matrix(List features, int m, int n) {
 
     Xw = Xw.t();
     W = inv(Xw * X) * Xw;
-
     return W;
+
+    //Rcpp::List ret = List::create(Named("W") = W , _["w"] = w, _["X"] = X, Named("Xw") = Xw);
+    //return ret;
+
 }
 
 //' Get feature matrix
@@ -84,27 +83,3 @@ NumericMatrix feature_matrix_cpp(List features, int nfeatures) {
     return A;
 }
 
-//' Get distance
-//'
-//' @inheritParams global_arguments
-//'
-//' @export
-//'
-//' @return Matrix of dimension n x m + 1
-//' @author Nikolai Sellereite
-// [[Rcpp::export]]
-arma::mat weights_train_comb_cpp(arma::mat D, arma::mat S, double sigma) {
-
-    arma::mat A(D.n_rows, S.n_rows);
-
-    if (sigma == 0) {
-        A.fill(1.0);
-    } else {
-        A = D * S.t();
-        A = sqrt(exp((-0.5 * A) / pow(sigma, 2.0)));
-    }
-
-
-
-    return A;
-}

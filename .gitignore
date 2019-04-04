@@ -10,3 +10,19 @@ src/*.so
 *.o
 
 *.so
+
+tmp/
+
+\.RDataTmp
+
+*.out
+
+*.Rout
+
+src-i386/
+
+src-x64/
+
+paper_experiments/res/single_res/
+
+paper_experiments/res/single_res_old/

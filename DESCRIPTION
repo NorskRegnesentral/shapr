@@ -26,7 +26,7 @@ Imports:
     condMVNorm,
     mvtnorm,
     Matrix
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 LinkingTo: 
     RcppArmadillo,
     Rcpp
