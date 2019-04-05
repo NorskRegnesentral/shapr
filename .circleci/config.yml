@@ -13,6 +13,10 @@ jobs:
               -e 'cat(sprintf("export PKG_TARBALL=%s_%s.tar.gz\n", dsc[,"Package"], dsc[,"Version"]))' \
               -e 'cat(sprintf("export RCHECK_DIR=%s.Rcheck\n", dsc[,"Package"]))' \
               >> ${BASH_ENV}
+      - restore_cache:
+          keys:
+            - deps1-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
+            - deps1-{{ .Branch }}
       - run:
           name: Install lib2git-dev
           command: apt-get update && apt-get install -y libgit2-dev
@@ -22,9 +26,10 @@ jobs:
       - run:
           name: Install dependencies
           command: R -e 'devtools::install_deps(dependencies = TRUE, upgrade = "never")'
-      - run:
-          name: Document package
-          command: R -e 'devtools::document()'
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
+          paths:
+            - "/usr/local/lib/R/site-library"
       - run:
           name: Build package
           command: R CMD build . --no-examples
