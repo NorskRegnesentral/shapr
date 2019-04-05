@@ -1,7 +1,8 @@
 #' Group variables according to matrix of Kendall's tau
 #'
-#' @param X optional data matrix, ignores corMat if included
-#' @param corMat optional correlation matrix, ignores X if included. Either X or corMat must be included
+#' @param X optional data matrix, ignores \code{corMat} if included
+#' @param corMat optional correlation matrix, ignores X if included. Either \code{X} or
+#' \code{corMat} must be included
 #' @param alpha optional tuning parameter for optimal number of clusters
 #'
 #' @return List
@@ -77,9 +78,9 @@ group_variables <- function(X = NULL, corMat = NULL, alpha = 1) {
 #' Draw rectangles on the correlation matrix graph
 #'
 #' @param corr correlation matrix
-#' @param cluster cluster object from hclust
+#' @param cluster An object of class \code{hclust}. See \code{\link[stats]{hclust}}
 #' @param k number of clusters
-#' @param col box colour
+#' @param col box color
 #' @param lwd box line width
 #'
 #' @export

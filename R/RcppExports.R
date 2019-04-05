@@ -5,12 +5,12 @@
 #'
 #' @param X matrix with "covariates"
 #' @param mcov covariance matrix
-#' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+#' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 #' @param h numeric specifying the scaling (sigma)
 #'
 #' @export
 #'
-#' @return Matrix of dimension ncol(X)*ncol(X)
+#' @return Matrix of dimension \code{ncol(X)*ncol(X)}
 #' @author Martin Jullum
 H_cpp <- function(X, mcov, S_scale_dist, h) {
     .Call(`_shapr_H_cpp`, X, mcov, S_scale_dist, h)
@@ -18,9 +18,9 @@ H_cpp <- function(X, mcov, S_scale_dist, h) {
 
 #' sigma_hat_sq-function
 #'
-#' @param H matrix being the output from H_cpp
-#' @param y vector with the "response variable"
-#' @param ret_log logical indicating whether to return the logarithm of the sigma_sq
+#' @param H Matrix. Output from \code{\link{H_cpp}}
+#' @param y Vector, i.e. representing the response variable
+#' @param ret_log Logical. Indicates whether to return the logarithm of \code{sigma_sq}
 #' @export
 #'
 #' @return Scalar
@@ -45,7 +45,7 @@ correction_cpp <- function(tr_H, n) {
 #'
 #' @param X matrix with "covariates"
 #' @param mcov covariance matrix
-#' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+#' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 #' @param h numeric specifying the scaling (sigma)
 #' @param y vector with the "response variable"
 #'
@@ -62,7 +62,7 @@ AICc_full_tmp_cpp <- function(X, mcov, S_scale_dist, h, y) {
 #' @param h numeric specifying the scaling (sigma)
 #' @param X matrix with "covariates"
 #' @param mcov covariance matrix
-#' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+#' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 #' @param y vector with the "response variable"
 #'
 #' @export
@@ -75,15 +75,16 @@ AICc_full_cpp_alt <- function(h, X_list, mcov_list, S_scale_dist, y_list, negati
 
 #' (Generalized) Mahalanobis distance
 #'
-#' Used to get the Euclidean distance as well by setting mcov = diag(m).
-#' @param featureList List of vectors indicating all facture combinations that should be included in the computations. Assumes that the first one is empty.
-#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (cov(Xtrain_mat) gives Mahalanobis distance,
-#' diag(m) gives the Euclidean distance.
+#' Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
+#'
+#' @param featureList List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.
+#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{cov(Xtrain_mat)}) gives Mahalanobis distance,
+#' \code{diag(m)} gives the Euclidean distance.
 #' @param S_scale_dist Logical indicating
 #'
 #' @export
 #'
-#' @return Array of three dimensions containg the the squared distance for between all training and test observations for all feature combinations passed to the function.
+#' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 #' @author Martin Jullum
 gen_Mahlanobis_dist_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist) {
     .Call(`_shapr_gen_Mahlanobis_dist_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
@@ -106,7 +107,7 @@ impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
 
 #' Get distance
 #'
-#' @param n Postive integer. Number of combinations
+#' @param n Positive integer. Number of combinations
 #' @inheritParams global_arguments
 #'
 #' @export

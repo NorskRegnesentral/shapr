@@ -1,5 +1,7 @@
 #' Calculate conditional mu and Sigma
-#' Copied from the condMVNorm package, but added a line to ensure symmetry of resulting conditional covariance matrix
+#'
+#' Copied from the \link[condMVNorm]{condMVN} package, but added a line to
+#' ensure symmetry of resulting conditional covariance matrix
 #'
 #' @inheritParams global_arguments
 #'
@@ -8,7 +10,6 @@
 #' @export
 #'
 #' @author Martin Jullum
-
 condMVN_modified <- function (mean, sigma, dependent.ind, given.ind, X.given, check.sigma = TRUE)
 {
     if (missing(dependent.ind))

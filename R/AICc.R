@@ -68,7 +68,7 @@ H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){ #### 
     return(H)
 }
 
-#' Most general H-function used in the AICc-function, uses an X data.table where the first column is an .id column identifying how the H-matrix should be diagonalized.
+#' Most general H-function used in the AICc-function, uses an X data.table where the first column is an .id column identifying how the diagonal should be in the H-matrix.
 #' Need to improve this help file.
 #'
 #' @inheritParams global_arguments
@@ -113,14 +113,14 @@ sigma.hat.sq.func <- function(y,H){
     return(sigma.hat.sq)
 }
 
-#' New AICc-function. The X here needs to include a .id column as the first column in X, which now is a data.table object, identifying how the H-matrix should be
-# diagonalized
+#' New AICc-function. The X here needs to include a .id column as the first column in X, which now is a data.table object, identifying how the diagonal should be in the H-matrix
+#'
 #' Need to improve this help file.
 #'
 #' @inheritParams global_arguments
-#' @param h.vec Vector of bandwidths of size q=ncol(X)
-#' @param X Needs to include a .id column as the first column in X, which now is a data.table object, identifying how the H-matrix should be
-# diagonalized
+#' @param h.vec Vector of bandwidths of size \code{ncol(X})
+#' @param X Needs to include a .id column as the first column in X, which now is a data.table object, identifying how the diagonal should be in the H-matrix
+#'
 #' @return H-function output.
 #'
 #' @export
@@ -154,17 +154,16 @@ AICc.func.new <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_
 #' Need to improve this help file.
 #'
 #' @inheritParams global_arguments
-#' @param separate Logical indicating whether the train and test data should be sampled separatedly or in a joint sampling space.
-#' If they are sampled separetly (which typically would be used when optimizing more than one distribution at once) we sample with
+#' @param separate Logical indicating whether the train and test data should be sampled separately or in a joint sampling space.
+#' If they are sampled separately (which typically would be used when optimizing more than one distribution at once) we sample with
 #' replacement if more samples than training data. Not optimal, but for now fine if careful when using more samples than the number
-#' training observatiosn while at the same time doing optimization over every testobservation.
+#' training observations while at the same time doing optimization over every test observation.
 #'
-#' @return numeric
+#' @return Numeric
 #'
 #' @export
 #'
 #' @author Martin Jullum
-# h.vec is vector of length q=ncol(X)
 samp_train_test_comb <- function(nTrain,nTest,nosamp,separate = F){
 
 

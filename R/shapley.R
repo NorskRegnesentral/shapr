@@ -18,10 +18,10 @@ w_shapley <- function(m, N, s) {
 #' @details
 #' The returned data.table contains the following columns
 #' \describe{
-#' \item{ID}{Postive integer. Unique key for combination}
+#' \item{ID}{Positive integer. Unique key for combination}
 #' \item{features}{List}
-#' \item{nfeautres}{Postive integer}
-#' \item{N}{Postive integer}
+#' \item{nfeautres}{Positive integer}
+#' \item{N}{Positive integer}
 #' }
 #'
 #' @return data.table
@@ -108,7 +108,7 @@ get_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_r
     return(X)
 }
 
-#' Calculate shapley weights
+#' Calculate Shapley weights
 #'
 #' @param X data.table
 #'
@@ -227,12 +227,12 @@ impute_data <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC 
 }
 
 
-#' Transforms new data to standardized normal (dimension 1) based on other datas transformation
+#' Transforms new data to standardized normal (dimension 1) based on other data transformations
 #'
 #' Handled in this way in order to allow using the apply function over this function
 #' @param zx Vector where the first part is the Gaussian data, and last part is
 #' the data with the original transformation
-#' @param n_y How many elements of the yx vector that belongs to the y-part (new data)
+#' @param n_y How many elements of \code{yx} that belongs to the y-part (new data)
 #' @param type The quantile type used when back-transforming. 7 (default) is the default in quantile().
 #'
 #' @return Vector of transformed new data
@@ -248,12 +248,12 @@ inv_Gauss_trans_func <- function(zx,n_z,type=7){
 }
 
 
-#' Transforms new data to standardized normal (dimension 1) based on other datas transformation
+#' Transforms new data to standardized normal (dimension 1) based on other data transformations
 #'
 #' Handled in this way in order to allow using the apply function over this function
 #' @param yx Vector where the first part is the new data to transform,
 #' and last part is the data with the original transformation
-#' @param n_z How many elements of the zx vector that belongs to the z-part (Gaussian data)
+#' @param n_z How many elements of \code{zx} that belongs to the z-part (Gaussian data)
 #'
 #' @return Vector of back-transformed Gaussian data
 #' @export
@@ -515,14 +515,17 @@ get_predictions <- function(model,
 
 #' Predict on vector form
 #'
-#' @description Performs prediction of response for model classes lm, glm, ranger and xgboost with binary or continuous response.
-#' Outpus the prediction on vector form. May let the user provide this function to handle any prediction model in the future.
+#' @description Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
+#' \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous response.
+#' Output the prediction on vector form. May let the user provide this function to handle any
+#' prediction model in the future.
 #'
 #' @inheritParams global_arguments
 #' @param data data.table or data.frame with data to perform prediction
 #' @return Vector of predictions
 #'
 #' @export
+#'
 #'
 #' @author Martin Jullum
 pred_vector = function(model, data) {
@@ -557,13 +560,13 @@ pred_vector = function(model, data) {
     return(ret)
 }
 
-#' Computes the kernelShap values for the test data given to prepare_kernelShao
+#' Computes kernel SHAP values for test data
 #'
 #' @inheritParams global_arguments
-#' @param empirical_settings List. Specifying the settings when using the empirial method to compute the conditional expectations.
+#' @param empirical_settings List. Specifying the settings when using the empirical method to compute the conditional expectations.
 #' @param pred_zero The prediction value for unseen data, typically equal to the mean of the response
-#' @param ensure_condcov_symmetry Logical. Whether to an apply a symmetry ensurance mechanism for the conditional covariance matrices in the Gaussian and copula approaches.
-#' Typically only needed if theoriginal covariance is just barely positive definite.
+#' @param ensure_condcov_symmetry Logical. Whether to ensure that the conditional covariance matrices in the Gaussian and copula approaches are symmetric.
+#' Typically only needed if the original covariance is just barely positive definite.
 #'
 #' @return List with kernel Shap values (Kshap) and other object used to perform the computation (helpful for debugging etc.)
 #'

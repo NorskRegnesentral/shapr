@@ -10,6 +10,7 @@ License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true
+Language: en-US
 Suggests: 
     testthat, 
     lintr

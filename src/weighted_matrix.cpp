@@ -3,7 +3,7 @@ using namespace Rcpp;
 
 //' Get distance
 //'
-//' @param n Postive integer. Number of combinations
+//' @param n Positive integer. Number of combinations
 //' @inheritParams global_arguments
 //'
 //' @export
