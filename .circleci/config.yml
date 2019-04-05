@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: appsilon/ci-base:1.0
+      - image: rocker/rstudio:3.5.1
     steps:
       - checkout
       - run:
@@ -19,21 +19,24 @@ jobs:
             - deps1-{{ .Branch }}
             - deps1-
       - run:
+          name: Install lib2git-dev
+          command: apt-get update && apt-get install -y libgit2-dev
+      - run:
+          name: Install devtools
+          command: R -e 'install.packages("devtools")'
+      - run:
           name: Install dependencies
-          command: R -e 'devtools::install_deps(dependencies = TRUE)'
+          command: R -e 'devtools::install_deps(dependencies = TRUE, upgrade = "never")'
       - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
           paths:
             - "/usr/local/lib/R/site-library"
       - run:
-          name: Document package
-          command: R -e 'devtools::document()'
-      - run:
           name: Build package
-          command: R CMD build . --no-examples
+          command: R CMD build . --no-manual
       - run:
           name: Check package
-          command: R CMD check "${PKG_TARBALL}" --no-examples
+          command: R CMD check "${PKG_TARBALL}" --no-examples --no-manual
       - run:
           name: Move files
           command: mv ${RCHECK_DIR} /tmp/Rcheck

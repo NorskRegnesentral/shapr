@@ -1,7 +1,7 @@
 ^README\.Rmd$
-^scripts$
-^paper_scripts$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^Rprof\.out$
-^cleanup$
+^\.circleci$
+^\.lintr$
+^\.covrignore$

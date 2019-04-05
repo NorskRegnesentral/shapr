@@ -11,12 +11,12 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Suggests: 
+    xgboost,
     testthat, 
     lintr
 Imports: 
     data.table,
     ranger,
-    xgboost,
     stats,
     Rcpp (>= 0.12.15),
     cluster,

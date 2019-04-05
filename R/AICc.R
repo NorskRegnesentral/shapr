@@ -105,7 +105,7 @@ H.func.new <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){ #
 #' @author Martin Jullum
 # h.vec is vector of length q=ncol(X)
 
-sigma.hat.sq.func <- function(y,H){
+sigma_hat_sq_func <- function(y,H){
     n <- length(y)
 
     sigma.hat.sq <- as.numeric(t(y)%*%t(diag(n)-H)%*%(diag(n)-H)%*%y)/n
@@ -136,7 +136,7 @@ AICc.func.new <- function(h.vec,y,X,negative = FALSE,kernel = "Euclidean",scale_
 
     H <- H.func.new(h.vec = h.vec,X = X,kernel = kernel, scale_var = scale_var, S_scale_dist = S_scale_dist) #### SPEEDUP: Rcpp this
 
-    sigma.hat.sq <- sigma.hat.sq.func(y=y,    #### SPEEDUP: Rcpp this with log taken automatically
+    sigma.hat.sq <- sigma_hat_sq_func(y=y,    #### SPEEDUP: Rcpp this with log taken automatically
                                       H = H)
 
     tr.H <- sum(diag(H))
