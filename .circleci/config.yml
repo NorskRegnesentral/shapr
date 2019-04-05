@@ -32,10 +32,10 @@ jobs:
             - "/usr/local/lib/R/site-library"
       - run:
           name: Build package
-          command: R CMD build . --no-examples --no-manual
+          command: R CMD build . --no-manual
       - run:
           name: Check package
-          command: R CMD check "${PKG_TARBALL}" --no-examples
+          command: R CMD check "${PKG_TARBALL}" --no-examples --no-manual
       - run:
           name: Move files
           command: mv ${RCHECK_DIR} /tmp/Rcheck
