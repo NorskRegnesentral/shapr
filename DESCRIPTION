@@ -12,12 +12,12 @@ LazyData: true
 ByteCompile: true
 Language: en-US
 Suggests: 
+    xgboost,
     testthat, 
     lintr
 Imports: 
     data.table,
     ranger,
-    xgboost,
     stats,
     Rcpp (>= 0.12.15),
     cluster,
