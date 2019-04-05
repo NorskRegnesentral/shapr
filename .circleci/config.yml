@@ -17,6 +17,7 @@ jobs:
           keys:
             - deps1-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
             - deps1-{{ .Branch }}
+            - deps1-
       - run:
           name: Install lib2git-dev
           command: apt-get update && apt-get install -y libgit2-dev
