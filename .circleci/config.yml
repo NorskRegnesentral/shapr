@@ -19,6 +19,9 @@ jobs:
             - deps1-{{ .Branch }}
             - deps1-
       - run:
+          name: Install devtools
+          command: R -e 'install.packages("devtools")'
+      - run:
           name: Install dependencies
           command: R -e 'devtools::install_deps(dependencies = TRUE)'
       - save_cache:
