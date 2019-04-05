@@ -6,7 +6,7 @@ Authors@R: c(
     person("Nikolai", "Sellereite", email = "Nikolai.Sellereite@nr.no", role = "cre"),
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = "aut"),  
     person("Anders", "Løland", email = "Anders.Løland@nr.no", role = "aut")) 
-License: file LICENSE
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true
