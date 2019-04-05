@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: rocker/rstudio:3.5.2
+      - image: rocker/rstudio:3.5.1
     steps:
       - checkout
       - run:
@@ -32,7 +32,7 @@ jobs:
             - "/usr/local/lib/R/site-library"
       - run:
           name: Build package
-          command: R CMD build . --no-examples
+          command: R CMD build . --no-examples --no-manual
       - run:
           name: Check package
           command: R CMD check "${PKG_TARBALL}" --no-examples
