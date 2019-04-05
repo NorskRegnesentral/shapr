@@ -23,7 +23,7 @@ jobs:
           command: R -e 'install.packages("devtools")'
       - run:
           name: Install dependencies
-          command: R -e 'devtools::install_deps(dependencies = TRUE)'
+          command: R -e 'devtools::install_deps(dependencies = TRUE, upgrade = "never")'
       - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
           paths:
