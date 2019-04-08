@@ -9,9 +9,9 @@ weighted_matrix(features, m, n, w)
 \arguments{
 \item{features}{List.}
 
-\item{m}{Integer. Total nnumber of features}
+\item{m}{Integer. Total number of features}
 
-\item{n}{Postive integer. Number of combinations}
+\item{n}{Positive integer. Number of combinations}
 }
 \value{
 Matrix of dimension n x m + 1

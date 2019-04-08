@@ -7,7 +7,7 @@
 H.func(h.vec, X, kernel = "Euclidean", scale_var = T, S_scale_dist)
 }
 \arguments{
-\item{h.vec}{Vector of bandwidths of size q=ncol(X)}
+\item{h.vec}{Vector of bandwidths of size \code{q=ncol(X)}}
 }
 \value{
 H-function output.

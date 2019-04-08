@@ -10,7 +10,7 @@ samp_Gauss_func(given_ind, noSamp_MC, mu, Sigma, p, Xtest,
 \arguments{
 \item{given_ind}{Vector}
 
-\item{noSamp_MC}{Postive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called n_threshold)}
+\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
@@ -21,7 +21,7 @@ samp_Gauss_func(given_ind, noSamp_MC, mu, Sigma, p, Xtest,
 \item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
 }
 \value{
-data.table with noSamp_MC (conditional) Gaussian samples
+data.table with \code{noSamp_MC} (conditional) Gaussian samples
 }
 \description{
 Sample conditional Gaussian variables

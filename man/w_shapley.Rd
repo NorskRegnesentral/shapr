@@ -2,12 +2,12 @@
 % Please edit documentation in R/shapley.R
 \name{w_shapley}
 \alias{w_shapley}
-\title{Calculate shapley weight}
+\title{Calculate Shapley weight}
 \usage{
 w_shapley(m, N, s)
 }
 \arguments{
-\item{m}{Integer. Total nnumber of features}
+\item{m}{Integer. Total number of features}
 
 \item{N}{Integer. Number of combinations}
 
@@ -17,7 +17,7 @@ w_shapley(m, N, s)
 Numeric
 }
 \description{
-Calculate shapley weight
+Calculate Shapley weight
 }
 \author{
 Nikolai Sellereite

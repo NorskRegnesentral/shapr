@@ -18,7 +18,7 @@ get_predictions(model, D, h_optim_vec, kernel_metric, S, Xtrain, Xtest,
 
 \item{kernel_metric}{String indicating which kernel metric should be used in the empirical conditional distribution.
 Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing independently, ignoring any distance) being the second option
-"Gaussian_old" [\eqn{\sqrt(\exp(-D/2\sigma))}] is also kept for reproducability.}
+"Gaussian_old" [\eqn{\sqrt(\exp(-D/2\sigma))}] is also kept for reproducibility.}
 
 \item{S}{Matrix}
 
@@ -26,7 +26,7 @@ Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing i
 
 \item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
 
-\item{noSamp_MC}{Postive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called n_threshold)}
+\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 
 \item{verbose}{Integer. How much information to print during function execution (in development)}
 

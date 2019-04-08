@@ -16,7 +16,7 @@ K.func.Mahalanobis.all <- function(X,h.vec,Sigma,S_scale_dist){
 #' Internal  H-function used in the AICc-function. Need to improve this help file.
 #'
 #' @inheritParams global_arguments
-#' @param h.vec Vector of bandwidths of size q=ncol(X)
+#' @param h.vec Vector of bandwidths of size \code{q=ncol(X)}
 #' @return H-function output.
 #'
 #' @export
@@ -72,7 +72,7 @@ H.func <- function(h.vec,X,kernel = "Euclidean",scale_var=T,S_scale_dist){ #### 
 #' Need to improve this help file.
 #'
 #' @inheritParams global_arguments
-#' @param h.vec Vector of bandwidths of size q=ncol(X)
+#' @param h.vec Vector of bandwidths of size \code{q=ncol(X)}
 #' @return H-function output.
 #'
 #' @export

@@ -9,7 +9,7 @@ AICc_full_cpp_alt(h, X_list, mcov_list, S_scale_dist, y_list, negative)
 \arguments{
 \item{h}{numeric specifying the scaling (sigma)}
 
-\item{S_scale_dist}{logical indicating whether the Mahlanobis distance should be scaled with the number of variables}
+\item{S_scale_dist}{logical indicating whether the Mahalanobis distance should be scaled with the number of variables}
 
 \item{X}{matrix with "covariates"}
 

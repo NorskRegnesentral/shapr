@@ -1,4 +1,4 @@
-#' Calculate shapley weight
+#' Calculate Shapley weight
 #'
 #' @inheritParams global_arguments
 #'
@@ -291,7 +291,7 @@ Gauss_trans_func <- function(x){
 #'
 #' @inheritParams global_arguments
 #'
-#' @return data.table with noSamp_MC (conditional) Gaussian samples
+#' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
 #'
 #' @import condMVNorm
 #' @export
@@ -340,7 +340,7 @@ samp_copula_func <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_tra
 #'
 #' @inheritParams global_arguments
 #'
-#' @return data.table with noSamp_MC (conditional) Gaussian samples
+#' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
 #'
 #' @import condMVNorm
 #' @export
@@ -568,7 +568,7 @@ pred_vector = function(model, data) {
 #' @param ensure_condcov_symmetry Logical. Whether to ensure that the conditional covariance matrices in the Gaussian and copula approaches are symmetric.
 #' Typically only needed if the original covariance is just barely positive definite.
 #'
-#' @return List with kernel Shap values (Kshap) and other object used to perform the computation (helpful for debugging etc.)
+#' @return List with kernel SHAP values (\code{Kshap}) and other object used to perform the computation (helpful for debugging etc.)
 #'
 #' @export
 #'
@@ -866,7 +866,7 @@ compute_kernelShap = function(model,
 
 
 
-#' Get shapley weights for test data
+#' Get Shapley weights for test data
 #'
 #' @inheritParams global_arguments
 #'

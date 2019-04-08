@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapley.R
 \name{Gauss_trans_func_seperate}
 \alias{Gauss_trans_func_seperate}
-\title{Transforms new data to standardized normal (dimension 1) based on other datas transformation}
+\title{Transforms new data to standardized normal (dimension 1) based on other data transformations}
 \usage{
 Gauss_trans_func_seperate(yx, n_y)
 }
@@ -10,7 +10,7 @@ Gauss_trans_func_seperate(yx, n_y)
 \item{yx}{Vector where the first part is the new data to transform,
 and last part is the data with the original transformation}
 
-\item{n_z}{How many elements of the zx vector that belongs to the z-part (Gaussian data)}
+\item{n_z}{How many elements of \code{zx} that belongs to the z-part (Gaussian data)}
 }
 \value{
 Vector of back-transformed Gaussian data

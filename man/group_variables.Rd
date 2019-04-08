@@ -7,9 +7,10 @@
 group_variables(X = NULL, corMat = NULL, alpha = 1)
 }
 \arguments{
-\item{X}{optional data matrix, ignores corMat if included}
+\item{X}{optional data matrix, ignores \code{corMat} if included}
 
-\item{corMat}{optional correlation matrix, ignores X if included. Either X or corMat must be included}
+\item{corMat}{optional correlation matrix, ignores X if included. Either \code{X} or
+\code{corMat} must be included}
 
 \item{alpha}{optional tuning parameter for optimal number of clusters}
 }

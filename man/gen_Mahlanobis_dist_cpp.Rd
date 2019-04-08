@@ -8,18 +8,18 @@ gen_Mahlanobis_dist_cpp(featureList, Xtrain_mat, Xtest_mat, mcov,
   S_scale_dist)
 }
 \arguments{
-\item{featureList}{List of vectors indicating all facture combinations that should be included in the computations. Assumes that the first one is empty.}
+\item{featureList}{List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.}
 
-\item{mcov}{Matrix. The Sigma-matrix in the Mahalanobis distance formula (cov(Xtrain_mat) gives Mahalanobis distance,
-diag(m) gives the Euclidean distance.}
+\item{mcov}{Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{cov(Xtrain_mat)}) gives Mahalanobis distance,
+\code{diag(m)} gives the Euclidean distance.}
 
 \item{S_scale_dist}{Logical indicating}
 }
 \value{
-Array of three dimensions containg the the squared distance for between all training and test observations for all feature combinations passed to the function.
+Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 }
 \description{
-Used to get the Euclidean distance as well by setting mcov = diag(m).
+Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
 }
 \author{
 Martin Jullum

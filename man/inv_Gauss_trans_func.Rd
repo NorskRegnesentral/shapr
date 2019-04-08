@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapley.R
 \name{inv_Gauss_trans_func}
 \alias{inv_Gauss_trans_func}
-\title{Transforms new data to standardized normal (dimension 1) based on other datas transformation}
+\title{Transforms new data to standardized normal (dimension 1) based on other data transformations}
 \usage{
 inv_Gauss_trans_func(zx, n_z, type = 7)
 }
@@ -12,7 +12,7 @@ the data with the original transformation}
 
 \item{type}{The quantile type used when back-transforming. 7 (default) is the default in quantile().}
 
-\item{n_y}{How many elements of the yx vector that belongs to the y-part (new data)}
+\item{n_y}{How many elements of \code{yx} that belongs to the y-part (new data)}
 }
 \value{
 Vector of transformed new data

@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapley.R
 \name{compute_kernelShap}
 \alias{compute_kernelShap}
-\title{Computes the kernelShap values for the test data given to prepare_kernelShao}
+\title{Computes kernel SHAP values for test data}
 \usage{
 compute_kernelShap(model, l, noSamp_MC = 1000, verbose = FALSE,
   cond_approach = "empirical", empirical_settings = list(type =
@@ -13,15 +13,15 @@ compute_kernelShap(model, l, noSamp_MC = 1000, verbose = FALSE,
 \arguments{
 \item{model}{Model object. Fitted model that is used to produce the predictions}
 
-\item{l}{List. The output from the prepare_kernelShap function}
+\item{l}{List. The output from the \code{prepare_kernelShap} function}
 
-\item{noSamp_MC}{Postive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called n_threshold)}
+\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 
 \item{verbose}{Integer. How much information to print during function execution (in development)}
 
 \item{cond_approach}{String or list. When being a list, the elements in the list refers to the rows in l$X that ought to be included in each of the approaches!}
 
-\item{empirical_settings}{List. Specifying the settings when using the empirial method to compute the conditional expectations.}
+\item{empirical_settings}{List. Specifying the settings when using the empirical method to compute the conditional expectations.}
 
 \item{pred_zero}{The prediction value for unseen data, typically equal to the mean of the response}
 
@@ -29,14 +29,14 @@ compute_kernelShap(model, l, noSamp_MC = 1000, verbose = FALSE,
 
 \item{Sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
-\item{ensure_condcov_symmetry}{Logical. Whether to an apply a symmetry ensurance mechanism for the conditional covariance matrices in the Gaussian and copula approaches.
-Typically only needed if theoriginal covariance is just barely positive definite.}
+\item{ensure_condcov_symmetry}{Logical. Whether to ensure that the conditional covariance matrices in the Gaussian and copula approaches are symmetric.
+Typically only needed if the original covariance is just barely positive definite.}
 }
 \value{
-List with kernel Shap values (Kshap) and other object used to perform the computation (helpful for debugging etc.)
+List with kernel SHAP values (\code{Kshap}) and other object used to perform the computation (helpful for debugging etc.)
 }
 \description{
-Computes the kernelShap values for the test data given to prepare_kernelShao
+Computes kernel SHAP values for test data
 }
 \author{
 Martin Jullum
