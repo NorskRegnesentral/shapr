@@ -107,8 +107,10 @@ get_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_r
     nms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "no")
     setcolorder(X, nms)
     X[, ID := .I]
-    X[nfeatures %in% c(0, m), ":="(shapley_weight = shapley_weight_inf_replacement,
-      N = 1)]
+    X[nfeatures %in% c(0, m), `:=`(
+      shapley_weight = shapley_weight_inf_replacement,
+      N = 1
+    )]
   }
   return(X)
 }
