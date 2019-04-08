@@ -15,9 +15,9 @@ jobs:
               >> ${BASH_ENV}
       - restore_cache:
           keys:
-            - deps1-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
-            - deps1-{{ .Branch }}
-            - deps1-
+            - deps01-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
+            - deps01-{{ .Branch }}
+            - deps01-
       - run:
           name: Install lib2git-dev
           command: apt-get update && apt-get install -y libgit2-dev
@@ -28,7 +28,7 @@ jobs:
           name: Install dependencies
           command: R -e 'devtools::install_deps(dependencies = TRUE, upgrade = "never")'
       - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
+          key: deps01-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
           paths:
             - "/usr/local/lib/R/site-library"
       - run:
