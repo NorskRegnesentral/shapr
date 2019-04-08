@@ -72,5 +72,5 @@ global_arguments <- function(m,
                              p_default,
                              distance_metric = "Euclidean",
                              kernel_metric = "Gaussian") {
-    return(NULL)
+  return(NULL)
 }

@@ -10,15 +10,15 @@
 #' @return List
 #' @export
 linters_config <- function() {
-    lintr::with_defaults(
-        object_usage_linter = NULL,
-        absolute_paths_linter = NULL,
-        assignment_linter = NULL,
-        line_length_linter = NULL,
-        multiple_dots_linter = NULL,
-        commented_code_linter = NULL,
-        open_curly_linter = NULL,
-        object_name_linter = NULL,
-        object_length_linter = lintr::object_length_linter(40)
-    )
+  lintr::with_defaults(
+    object_usage_linter = NULL,
+    absolute_paths_linter = NULL,
+    assignment_linter = NULL,
+    line_length_linter = NULL,
+    multiple_dots_linter = NULL,
+    commented_code_linter = NULL,
+    open_curly_linter = NULL,
+    object_name_linter = NULL,
+    object_length_linter = lintr::object_length_linter(40)
+  )
 }
