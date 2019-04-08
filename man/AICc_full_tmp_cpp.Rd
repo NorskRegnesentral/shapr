@@ -11,7 +11,7 @@ AICc_full_tmp_cpp(X, mcov, S_scale_dist, h, y)
 
 \item{mcov}{covariance matrix}
 
-\item{S_scale_dist}{logical indicating whether the Mahlanobis distance should be scaled with the number of variables}
+\item{S_scale_dist}{logical indicating whether the Mahalanobis distance should be scaled with the number of variables}
 
 \item{h}{numeric specifying the scaling (sigma)}
 

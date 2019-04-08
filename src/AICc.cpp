@@ -6,12 +6,12 @@ using namespace arma;
 //'
 //' @param X matrix with "covariates"
 //' @param mcov covariance matrix
-//' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+//' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 //' @param h numeric specifying the scaling (sigma)
 //'
 //' @export
 //'
-//' @return Matrix of dimension ncol(X)*ncol(X)
+//' @return Matrix of dimension \code{ncol(X)*ncol(X)}
 //' @author Martin Jullum
 // [[Rcpp::export]]
 arma::mat H_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h) {
@@ -75,9 +75,9 @@ arma::mat H_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h) {
 
 //' sigma_hat_sq-function
 //'
-//' @param H matrix being the output from H_cpp
-//' @param y vector with the "response variable"
-//' @param ret_log logical indicating whether to return the logarithm of the sigma_sq
+//' @param H Matrix. Output from \code{\link{H_cpp}}
+//' @param y Vector, i.e. representing the response variable
+//' @param ret_log Logical. Indicates whether to return the logarithm of \code{sigma_sq}
 //' @export
 //'
 //' @return Scalar
@@ -123,7 +123,7 @@ double correction_cpp(double tr_H,int n) {
 //'
 //' @param X matrix with "covariates"
 //' @param mcov covariance matrix
-//' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+//' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 //' @param h numeric specifying the scaling (sigma)
 //' @param y vector with the "response variable"
 //'
@@ -155,7 +155,7 @@ arma::vec AICc_full_tmp_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, doub
 //' @param h numeric specifying the scaling (sigma)
 //' @param X matrix with "covariates"
 //' @param mcov covariance matrix
-//' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+//' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 //' @param y vector with the "response variable"
 //'
 //' @export
@@ -227,7 +227,7 @@ double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool
 // //' @param h numeric specifying the scaling (sigma)
 // //' @param X matrix with "covariates"
 // //' @param mcov covariance matrix
-// //' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+// //' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 // //' @param y vector with the "response variable"
 // //'
 // //' @export
@@ -286,7 +286,7 @@ double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool
 // //'
 // //' @param X matrix with "covariates"
 // //' @param mcov covariance matrix
-// //' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+// //' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 // //' @param h numeric specifying the scaling (sigma)
 // //' @param y vector with the "response variable"
 // //'
@@ -321,7 +321,7 @@ double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool
 // //'
 // //' @param X matrix with "covariates"
 // //' @param mcov covariance matrix
-// //' @param S_scale_dist logical indicating whether the Mahlanobis distance should be scaled with the number of variables
+// //' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 // //' @param h numeric specifying the scaling (sigma)
 // //'
 // //' @export

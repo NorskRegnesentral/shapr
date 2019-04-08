@@ -8,16 +8,16 @@ get_combinations(m, exact = TRUE, noSamp = 200,
   shapley_weight_inf_replacement = 10^6, reduce_dim = T)
 }
 \arguments{
-\item{m}{Integer. Total nnumber of features}
+\item{m}{Integer. Total number of features}
 
 \item{exact}{Logical. If TRUE, uses the full sum in the Shapley formula, if FALSE, uses a sampling approach to approximate the sum}
 
 \item{noSamp}{Integer. How many samples to use when approximating the sum in the Shapley formula
-(previously called nrows)}
+(previously called \code{nrows})}
 
-\item{shapley_weight_inf_replacement}{Numeric. Indicating which weight to use for the full conditional and unconditional expectations in kernel SHAPs WLS formulation.}
+\item{shapley_weight_inf_replacement}{Numeric. Indicating which weight to use for the full conditional and unconditional expectations in kernel SHAPs weighted least squares formulation.}
 
-\item{reduce_dim}{Logical. Indicating whether to reduce the dimension WLS problem by merging identical columns and adjusting their weights.}
+\item{reduce_dim}{Logical. Indicating whether to reduce the dimension of the weighted least squares problem by merging identical columns and adjusting their weights.}
 }
 \value{
 data.table
@@ -28,10 +28,10 @@ Get combinations
 \details{
 The returned data.table contains the following columns
 \describe{
-\item{ID}{Postive integer. Unique key for combination}
+\item{ID}{Positive integer. Unique key for combination}
 \item{features}{List}
-\item{nfeautres}{Postive integer}
-\item{N}{Postive integer}
+\item{nfeautres}{Positive integer}
+\item{N}{Positive integer}
 }
 }
 \author{

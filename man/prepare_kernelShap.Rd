@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapley.R
 \name{prepare_kernelShap}
 \alias{prepare_kernelShap}
-\title{Get shapley weights for test data}
+\title{Get Shapley weights for test data}
 \usage{
 prepare_kernelShap(Xtrain, Xtest, exact = TRUE, noSamp = NULL,
   shapley_weight_inf_replacement = 10^6,
@@ -16,15 +16,15 @@ prepare_kernelShap(Xtrain, Xtest, exact = TRUE, noSamp = NULL,
 \item{exact}{Logical. If TRUE, uses the full sum in the Shapley formula, if FALSE, uses a sampling approach to approximate the sum}
 
 \item{noSamp}{Integer. How many samples to use when approximating the sum in the Shapley formula
-(previously called nrows)}
+(previously called \code{nrows})}
 
-\item{shapley_weight_inf_replacement}{Numeric. Indicating which weight to use for the full conditional and unconditional expectations in kernel SHAPs WLS formulation.}
+\item{shapley_weight_inf_replacement}{Numeric. Indicating which weight to use for the full conditional and unconditional expectations in kernel SHAPs weighted least squares formulation.}
 }
 \value{
 Matrix
 }
 \description{
-Get shapley weights for test data
+Get Shapley weights for test data
 }
 \author{
 Nikolai Sellereite

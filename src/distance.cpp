@@ -5,15 +5,16 @@ using namespace Rcpp;
 
 //' (Generalized) Mahalanobis distance
 //'
-//' Used to get the Euclidean distance as well by setting mcov = diag(m).
-//' @param featureList List of vectors indicating all facture combinations that should be included in the computations. Assumes that the first one is empty.
-//' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (cov(Xtrain_mat) gives Mahalanobis distance,
-//' diag(m) gives the Euclidean distance.
+//' Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
+//'
+//' @param featureList List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.
+//' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{cov(Xtrain_mat)}) gives Mahalanobis distance,
+//' \code{diag(m)} gives the Euclidean distance.
 //' @param S_scale_dist Logical indicating
 //'
 //' @export
 //'
-//' @return Array of three dimensions containg the the squared distance for between all training and test observations for all feature combinations passed to the function.
+//' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 //' @author Martin Jullum
 // [[Rcpp::export]]
 arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList,arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist) {

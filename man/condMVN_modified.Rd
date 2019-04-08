@@ -2,8 +2,7 @@
 % Please edit documentation in R/extra.R
 \name{condMVN_modified}
 \alias{condMVN_modified}
-\title{Calculate conditional mu and Sigma
-Copied from the condMVNorm package, but added a line to ensure symmetry of resulting conditional covariance matrix}
+\title{Calculate conditional mu and Sigma}
 \usage{
 condMVN_modified(mean, sigma, dependent.ind, given.ind, X.given,
   check.sigma = TRUE)
@@ -15,8 +14,8 @@ condMVN_modified(mean, sigma, dependent.ind, given.ind, X.given,
 Numeric
 }
 \description{
-Calculate conditional mu and Sigma
-Copied from the condMVNorm package, but added a line to ensure symmetry of resulting conditional covariance matrix
+Copied from the \link[condMVNorm]{condMVN} package, but added a line to
+ensure symmetry of resulting conditional covariance matrix
 }
 \author{
 Martin Jullum

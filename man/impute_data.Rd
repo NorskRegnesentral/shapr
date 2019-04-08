@@ -8,7 +8,7 @@ impute_data(W_kernel, S, Xtrain, Xtest, w_threshold = 0.7,
   noSamp_MC = 1000)
 }
 \arguments{
-\item{W_kernel}{Array containg all unscaled weights between training and testing observations for all combinations.}
+\item{W_kernel}{Array. Contains all nonscaled weights between training and testing observations for all combinations.}
 
 \item{S}{Matrix}
 
@@ -16,7 +16,7 @@ impute_data(W_kernel, S, Xtrain, Xtest, w_threshold = 0.7,
 
 \item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
 
-\item{noSamp_MC}{Postive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called n_threshold)}
+\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 }
 \value{
 List

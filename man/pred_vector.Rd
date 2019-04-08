@@ -15,8 +15,10 @@ pred_vector(model, data)
 Vector of predictions
 }
 \description{
-Performs prediction of response for model classes lm, glm, ranger and xgboost with binary or continuous response.
-Outpus the prediction on vector form. May let the user provide this function to handle any prediction model in the future.
+Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
+\code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous response.
+Output the prediction on vector form. May let the user provide this function to handle any
+prediction model in the future.
 }
 \author{
 Martin Jullum

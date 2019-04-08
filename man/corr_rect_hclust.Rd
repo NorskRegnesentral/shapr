@@ -9,11 +9,11 @@ corr_rect_hclust(corr, cluster, k = 2, col = "yellow", lwd = 6)
 \arguments{
 \item{corr}{correlation matrix}
 
-\item{cluster}{cluster object from hclust}
+\item{cluster}{An object of class \code{hclust}. See \code{\link[stats]{hclust}}}
 
 \item{k}{number of clusters}
 
-\item{col}{box colour}
+\item{col}{box color}
 
 \item{lwd}{box line width}
 }

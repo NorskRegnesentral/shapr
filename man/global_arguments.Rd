@@ -10,7 +10,7 @@ global_arguments(m, N, s, Xtrain, Xtest, nsamples, features, exact, sigma,
   distance_metric = "Euclidean", kernel_metric = "Gaussian")
 }
 \arguments{
-\item{m}{Integer. Total nnumber of features}
+\item{m}{Integer. Total number of features}
 
 \item{N}{Integer. Number of combinations}
 
@@ -47,27 +47,27 @@ global_arguments(m, N, s, Xtrain, Xtest, nsamples, features, exact, sigma,
 \item{p_default}{Numeric}
 
 \item{distance_metric}{String indicating which distance metric should be used in the empirical conditional
-distribution. Defaults to "Euclidean", "Mahalanobis" and "Mahalanobis_scaled" being the other options. "Mahlanobis_scaled" includes
+distribution. Defaults to "Euclidean", "Mahalanobis" and "Mahalanobis_scaled" being the other options. "Mahalanobis_scaled" includes
 the 1/|S| factor in the paper is preferred for a consistent \eqn{\sigma}.}
 
 \item{kernel_metric}{String indicating which kernel metric should be used in the empirical conditional distribution.
 Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing independently, ignoring any distance) being the second option
-"Gaussian_old" [\eqn{\sqrt(\exp(-D/2\sigma))}] is also kept for reproducability.}
+"Gaussian_old" [\eqn{\sqrt(\exp(-D/2\sigma))}] is also kept for reproducibility.}
 
 \item{Xtrain_mat}{Matrix with the features from the training data}
 
 \item{Xtest_mat}{Matrix with the features, whose predictions ought to be explained (test data)}
 
 \item{noSamp}{Integer. How many samples to use when approximating the sum in the Shapley formula
-(previously called nrows)}
+(previously called \code{nrows})}
 
-\item{shapley_weight_inf_replacement}{Numeric. Indicating which weight to use for the full conditional and unconditional expectations in kernel SHAPs WLS formulation.}
+\item{shapley_weight_inf_replacement}{Numeric. Indicating which weight to use for the full conditional and unconditional expectations in kernel SHAPs weighted least squares formulation.}
 
-\item{reduce_dim}{Logical. Indicating whether to reduce the dimension WLS problem by merging identical columns and adjusting their weights.}
+\item{reduce_dim}{Logical. Indicating whether to reduce the dimension of the weighted least squares problem by merging identical columns and adjusting their weights.}
 
-\item{l}{List. The output from the prepare_kernelShap function}
+\item{l}{List. The output from the \code{prepare_kernelShap} function}
 
-\item{noSamp_MC}{Postive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called n_threshold)}
+\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
@@ -78,10 +78,10 @@ Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing i
 \item{cond_approach}{Either a string indicating which method should be used to estimate all conditional expectations.
 Defaults to "empirical_fixed_sigma", with "empirical_AICc_full", "empirical_AICc_each_k","Gaussian" and "copula" being other alternatives. One can also supply a named list where the names
 are one or more of the implemented methods, and the named lists contains one vector each, each containing the row numbers of the S-matrix
-computed using prepare_kernelShap that whose corresponding conditional expectations should be computed with that method. Any number not
+computed using \code{prepare_kernelShap} that whose corresponding conditional expectations should be computed with that method. Any number not
 specified is computed with the default empirical method.}
 
-\item{W_kernel}{Array containg all unscaled weights between training and testing observations for all combinations.}
+\item{W_kernel}{Array. Contains all nonscaled weights between training and testing observations for all combinations.}
 
 \item{Xtest_Gauss_trans}{Vector with the Gaussian transformed test observations}
 

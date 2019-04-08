@@ -7,11 +7,11 @@
 rss_cpp(H, y)
 }
 \arguments{
-\item{H}{matrix being the output from H_cpp}
+\item{H}{Matrix. Output from \code{\link{H_cpp}}}
 
-\item{y}{vector with the "response variable"}
+\item{y}{Vector, i.e. representing the response variable}
 
-\item{ret_log}{logical indicating whether to return the logarithm of the sigma_sq}
+\item{ret_log}{Logical. Indicates whether to return the logarithm of \code{sigma_sq}}
 }
 \value{
 Scalar

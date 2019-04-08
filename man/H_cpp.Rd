@@ -11,12 +11,12 @@ H_cpp(X, mcov, S_scale_dist, h)
 
 \item{mcov}{covariance matrix}
 
-\item{S_scale_dist}{logical indicating whether the Mahlanobis distance should be scaled with the number of variables}
+\item{S_scale_dist}{logical indicating whether the Mahalanobis distance should be scaled with the number of variables}
 
 \item{h}{numeric specifying the scaling (sigma)}
 }
 \value{
-Matrix of dimension ncol(X)*ncol(X)
+Matrix of dimension \code{ncol(X)*ncol(X)}
 }
 \description{
 Computing single H matrix in AICc-function using the Mahalanobis distance

@@ -2,22 +2,20 @@
 % Please edit documentation in R/AICc.R
 \name{AICc.func.new}
 \alias{AICc.func.new}
-\title{New AICc-function. The X here needs to include a .id column as the first column in X, which now is a data.table object, identifying how the H-matrix should be
-Need to improve this help file.}
+\title{New AICc-function. The X here needs to include a .id column as the first column in X, which now is a data.table object, identifying how the diagonal should be in the H-matrix}
 \usage{
 AICc.func.new(h.vec, y, X, negative = FALSE, kernel = "Euclidean",
   scale_var = T, S_scale_dist = F, idcol = T)
 }
 \arguments{
-\item{h.vec}{Vector of bandwidths of size q=ncol(X)}
+\item{h.vec}{Vector of bandwidths of size \code{ncol(X})}
 
-\item{X}{Needs to include a .id column as the first column in X, which now is a data.table object, identifying how the H-matrix should be}
+\item{X}{Needs to include a .id column as the first column in X, which now is a data.table object, identifying how the diagonal should be in the H-matrix}
 }
 \value{
 H-function output.
 }
 \description{
-New AICc-function. The X here needs to include a .id column as the first column in X, which now is a data.table object, identifying how the H-matrix should be
 Need to improve this help file.
 }
 \author{

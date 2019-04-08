@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapley.R
 \name{get_weights}
 \alias{get_weights}
-\title{Calculate shapley weights}
+\title{Calculate Shapley weights}
 \usage{
 get_weights(X, m)
 }
@@ -13,7 +13,7 @@ get_weights(X, m)
 data.table
 }
 \description{
-Calculate shapley weights
+Calculate Shapley weights
 }
 \author{
 Nikolai Sellereite
