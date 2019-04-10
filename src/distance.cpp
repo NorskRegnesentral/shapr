@@ -17,7 +17,7 @@ using namespace Rcpp;
 //' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 //' @author Martin Jullum
 // [[Rcpp::export]]
-arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList,arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist) {
+arma::cube mahalanobis_distance(Rcpp::List featureList,arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist) {
 
     using namespace arma;
 

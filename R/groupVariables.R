@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @author Anders Løland
-group_variables <- function(X = NULL, corMat = NULL, alpha = 1) {
+cluster_features <- function(X = NULL, corMat = NULL, alpha = 1) {
 
   ## Kendall's tau
   if (is.null(corMat)) {
@@ -70,7 +70,7 @@ group_variables <- function(X = NULL, corMat = NULL, alpha = 1) {
   ord <- cluster$order
   corrplot::corrplot(corMat[ord, ord], method = "square")
   ## Add cluster rectangles
-  corr_rect_hclust(corMat, cluster, k = K)
+  correlation_rectangles(corMat, cluster, k = K)
 
   list(corMat = corMat[ord, ord], K = K, cluster = cluster)
 }
@@ -86,7 +86,7 @@ group_variables <- function(X = NULL, corMat = NULL, alpha = 1) {
 #' @export
 #'
 #' @author Anders Løland
-corr_rect_hclust <- function(
+correlation_rectangles <- function(
                              corr,
                              cluster,
                              k = 2,

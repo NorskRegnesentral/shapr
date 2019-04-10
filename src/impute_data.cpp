@@ -13,7 +13,7 @@ using namespace Rcpp;
 //' @return Array of three dimensions
 //' @author Nikolai Sellereite
 // [[Rcpp::export]]
-NumericMatrix impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtrain, NumericMatrix Xtest, IntegerMatrix S) {
+NumericMatrix observation_impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtrain, NumericMatrix Xtest, IntegerMatrix S) {
 
     NumericMatrix X(ID.length(), Xtrain.ncol());
 

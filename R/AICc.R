@@ -8,8 +8,8 @@
 #' @export
 #'
 #' @author Martin Jullum
-K.func.Mahalanobis.all <- function(X, h.vec, Sigma, S_scale_dist) {
-  exp(-gen_Mahlanobis_dist_cpp(featureList = list(1, 1:ncol(X)), Xtrain = X, Xtest = X, mcov = Sigma, S_scale_dist = S_scale_dist)[, , 2] / (2 * h.vec^2))
+k_mahalanobis <- function(X, h.vec, Sigma, S_scale_dist) {
+  exp(-mahalanobis_distance(featureList = list(1, 1:ncol(X)), Xtrain = X, Xtest = X, mcov = Sigma, S_scale_dist = S_scale_dist)[, , 2] / (2 * h.vec^2))
 }
 
 
@@ -23,11 +23,11 @@ K.func.Mahalanobis.all <- function(X, h.vec, Sigma, S_scale_dist) {
 #'
 #' @author Martin Jullum
 # h.vec is vector of length q=ncol(X)
-H.func <- function(h.vec, X, kernel = "Euclidean", scale_var = T, S_scale_dist) { #### SPEEDUP: Make an Rcpp function doing all of this with Mahlanobis only.
+smoother_matrix <- function(h.vec, X, kernel = "Euclidean", scale_var = T, S_scale_dist) { #### SPEEDUP: Make an Rcpp function doing all of this with Mahlanobis only.
   n <- nrow(X)
 
   H <- matrix(NA, ncol = n, nrow = n)
-  Sigma <- cov(X) #### SPEEDUP: May move this outside both the H.func and the AICc-function.
+  Sigma <- cov(X) #### SPEEDUP: May move this outside both the smoother_matrix and the AICc-function.
 
   if (kernel == "Euclidean") {
     ### OLD VERSION
@@ -44,14 +44,14 @@ H.func <- function(h.vec, X, kernel = "Euclidean", scale_var = T, S_scale_dist) 
     } else {
       diag(Sigma.var) <- 1
     }
-    H <- K.func.Mahalanobis.all(X = X, h.vec = h.vec, Sigma = Sigma.var, S_scale_dist = F) # So including the variance in this measure, not to have to scale for different variability in different dimensions.
+    H <- k_mahalanobis(X = X, h.vec = h.vec, Sigma = Sigma.var, S_scale_dist = F) # So including the variance in this measure, not to have to scale for different variability in different dimensions.
     for (i in 1:n) {
       H[i, ] <- H[i, ] / sum(H[i, ])
     }
   }
 
   if (kernel == "Mahalanobis") {
-    H <- K.func.Mahalanobis.all(X = X, h.vec = h.vec, Sigma = Sigma, S_scale_dist = S_scale_dist)
+    H <- k_mahalanobis(X = X, h.vec = h.vec, Sigma = Sigma, S_scale_dist = S_scale_dist)
     H <- H / rowSums(H)
 
     # OLD CODE
@@ -74,11 +74,11 @@ H.func <- function(h.vec, X, kernel = "Euclidean", scale_var = T, S_scale_dist) 
 #'
 #' @author Martin Jullum
 # h.vec is vector of length q=ncol(X)
-H.func.new <- function(h.vec, X, kernel = "Euclidean", scale_var = T, S_scale_dist) { #### SPEEDUP: Make an Rcpp function doing all of this witha loop of uniqe ids, and where X is only the matrix part, and
+smoother_matrix_new <- function(h.vec, X, kernel = "Euclidean", scale_var = T, S_scale_dist) { #### SPEEDUP: Make an Rcpp function doing all of this witha loop of uniqe ids, and where X is only the matrix part, and
   #### the .idcol is supplied as an integer vector to the function. Include only Mahlanobis only, Sigma supplied directly and with scaling of Mahlanobis, not the variables themselves
   H.list <- list()
   for (i in unique(X$.id)) {
-    H.list[[i]] <- H.func(
+    H.list[[i]] <- smoother_matrix(
       h.vec = h.vec,
       X = as.matrix(X[.id == i, -1]),
       kernel = kernel,
@@ -102,7 +102,7 @@ H.func.new <- function(h.vec, X, kernel = "Euclidean", scale_var = T, S_scale_di
 #' @author Martin Jullum
 # h.vec is vector of length q=ncol(X)
 
-sigma_hat_sq_func <- function(y, H) {
+sigma_hat_squared <- function(y, H) {
   n <- length(y)
 
   sigma.hat.sq <- as.numeric(t(y) %*% t(diag(n) - H) %*% (diag(n) - H) %*% y) / n
@@ -123,7 +123,7 @@ sigma_hat_sq_func <- function(y, H) {
 #' @export
 #'
 #' @author Martin Jullum
-AICc.func.new <- function(h.vec, y, X, negative = FALSE, kernel = "Euclidean", scale_var = T, S_scale_dist = F, idcol = T) {
+aicc <- function(h.vec, y, X, negative = FALSE, kernel = "Euclidean", scale_var = T, S_scale_dist = F, idcol = T) {
   n <- length(y)
   q <- ncol(X) - idcol
 
@@ -131,9 +131,9 @@ AICc.func.new <- function(h.vec, y, X, negative = FALSE, kernel = "Euclidean", s
     h.vec <- rep(h.vec, q)
   }
 
-  H <- H.func.new(h.vec = h.vec, X = X, kernel = kernel, scale_var = scale_var, S_scale_dist = S_scale_dist) #### SPEEDUP: Rcpp this
+  H <- smoother_matrix_new(h.vec = h.vec, X = X, kernel = kernel, scale_var = scale_var, S_scale_dist = S_scale_dist) #### SPEEDUP: Rcpp this
 
-  sigma.hat.sq <- sigma_hat_sq_func(
+  sigma.hat.sq <- sigma_hat_squared(
     y = y, #### SPEEDUP: Rcpp this with log taken automatically
     H = H
   )
@@ -163,7 +163,7 @@ AICc.func.new <- function(h.vec, y, X, negative = FALSE, kernel = "Euclidean", s
 #' @export
 #'
 #' @author Martin Jullum
-samp_train_test_comb <- function(nTrain, nTest, nosamp, separate = F) {
+sample_combinations <- function(nTrain, nTest, nosamp, separate = F) {
   if (separate) { # With separate sampling, we do sampling with replacement if nosamp is larger than nTrain
     sampinds_train <- 1:nTrain
     sampinds_test <- 1:nTest

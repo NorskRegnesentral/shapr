@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @author Nikolai Sellereite
-w_shapley <- function(m, N, s) {
+shapley_weights <- function(m, N, s) {
   (m - 1) / (N * s * (m - s))
 }
 
@@ -29,7 +29,7 @@ w_shapley <- function(m, N, s) {
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-get_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = T) {
+feature_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = T) {
   if (!exact && noSamp > (2^m - 2) && !replace) {
     noSamp <- 2^m - 2
     cat(paste0("noSamp is larger than 2^m = ", 2^m, ". Using exact instead."))
@@ -41,14 +41,14 @@ get_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_r
     X[, features := unlist(combinations, recursive = FALSE)]
     X[, nfeatures := length(features[[1]]), ID]
     X[, N := .N, nfeatures]
-    X[!(nfeatures %in% c(0, m)), shapley_weight := w_shapley(m = m, N = N, s = nfeatures)]
+    X[!(nfeatures %in% c(0, m)), shapley_weight := shapley_weights(m = m, N = N, s = nfeatures)]
     X[nfeatures %in% c(0, m), shapley_weight := shapley_weight_inf_replacement]
     X[, no := 1]
   } else {
     ## Find weights for given number of features ----------
     DT0 <- data.table(nfeatures = head(1:m, -1))
     DT0[, N := unlist(lapply(nfeatures, choose, n = m))]
-    DT0[, shapley_weight := w_shapley(m = m, N = N, s = nfeatures)]
+    DT0[, shapley_weight := shapley_weights(m = m, N = N, s = nfeatures)]
     DT0[, samp_weight := shapley_weight * N]
     DT0[, samp_weight := samp_weight / sum(samp_weight)]
 
@@ -124,8 +124,8 @@ get_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_r
 #' @export
 #'
 #' @author Nikolai Sellereite
-get_weights <- function(X, m) {
-  X[-c(1, .N), weight := w_shapley(m = m, N = N, s = nfeatures), ID]
+observation_weights <- function(X, m) {
+  X[-c(1, .N), weight := shapley_weights(m = m, N = N, s = nfeatures), ID]
   X[c(1, .N), weight := 10^6]
 
   return(X)
@@ -140,7 +140,7 @@ get_weights <- function(X, m) {
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-get_weighted_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights = T) {
+weight_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights = T) {
   if (use_shapley_weights_in_W) {
     w <- X[["shapley_weight"]] * X[["no"]]
   } else {
@@ -152,7 +152,7 @@ get_weighted_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_wei
     w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
   }
 
-  W <- weighted_matrix(
+  W <- weight_matrix_cpp(
     features = X[["features"]],
     m = X[.N][["nfeatures"]],
     n = X[, .N],
@@ -199,7 +199,7 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-impute_data <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {
+observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {
 
   ## Find weights for all combinations and training data
   DT <- as.data.table(W_kernel)
@@ -216,7 +216,7 @@ impute_data <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC 
   DT[, wcomb := as.integer(comb), comb][, comb := NULL]
 
   ## Generate data used for prediction
-  DTp <- impute_cpp(
+  DTp <- observation_impute_cpp(
     ID = DT[["ID"]],
     Comb = DT[["wcomb"]],
     Xtrain = Xtrain,
@@ -246,7 +246,7 @@ impute_data <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC 
 #' @export
 #'
 #' @author Martin Jullum
-inv_Gauss_trans_func <- function(zx, n_z, type = 7) {
+inv_gaussian_transform <- function(zx, n_z, type = 7) {
   z <- zx[1:n_z]
   x <- zx[-(1:n_z)]
   u <- pnorm(z)
@@ -266,7 +266,7 @@ inv_Gauss_trans_func <- function(zx, n_z, type = 7) {
 #' @export
 #'
 #' @author Martin Jullum
-Gauss_trans_func_seperate <- function(yx, n_y) {
+gaussian_transform_separate <- function(yx, n_y) {
   y <- yx[1:n_y]
   x <- yx[-(1:n_y)]
   tmp <- rank(c(y, x))[1:length(y)]
@@ -284,7 +284,7 @@ Gauss_trans_func_seperate <- function(yx, n_y) {
 #' @export
 #'
 #' @author Martin Jullum
-Gauss_trans_func <- function(x) {
+gaussian_transform <- function(x) {
   u <- rank(x) / (length(x) + 1)
   z <- qnorm(u)
   return(z)
@@ -304,7 +304,7 @@ Gauss_trans_func <- function(x) {
 #' @export
 #'
 #' @author Martin Jullum
-samp_copula_func <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans, Xtrain, Xtest) {
+sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans, Xtrain, Xtest) {
   # Handles the unconditional and full conditional separtely when predicting
   if (length(given_ind) %in% c(0, p)) {
     ret <- matrix(Xtest, ncol = p, nrow = 1)
@@ -330,7 +330,7 @@ samp_copula_func <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_tra
     # ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
     ret0_z <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
 
-    ret0_x <- apply(X = rbind(ret0_z, Xtrain[, dependent_ind, drop = F]), MARGIN = 2, FUN = inv_Gauss_trans_func, n_z = noSamp_MC)
+    ret0_x <- apply(X = rbind(ret0_z, Xtrain[, dependent_ind, drop = F]), MARGIN = 2, FUN = inv_gaussian_transform, n_z = noSamp_MC)
 
     ret <- matrix(NA, ncol = p, nrow = noSamp_MC)
     ret[, given_ind] <- rep(X_given_orig, each = noSamp_MC)
@@ -354,7 +354,7 @@ samp_copula_func <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_tra
 #' @export
 #'
 #' @author Martin Jullum
-samp_Gauss_func <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_condcov_symmetry = F) {
+sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_condcov_symmetry = F) {
   # Handles the unconditional and full conditional separtely when predicting
   if (length(given_ind) %in% c(0, p)) {
     ret <- matrix(Xtest, ncol = p, nrow = 1)
@@ -408,7 +408,7 @@ samp_Gauss_func <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_co
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-get_predictions <- function(model,
+predictions <- function(model,
                             D,
                             h_optim_vec,
                             kernel_metric,
@@ -438,7 +438,7 @@ get_predictions <- function(model,
 
     samp_list <- lapply(
       X = feature_list[these_wcomb],
-      FUN = samp_Gauss_func,
+      FUN = sample_gaussian,
       noSamp_MC = noSamp_MC,
       mu = mu,
       Sigma = Sigma,
@@ -458,7 +458,7 @@ get_predictions <- function(model,
 
     samp_list <- lapply(
       X = feature_list[these_wcomb],
-      FUN = samp_copula_func,
+      FUN = sample_copula,
       noSamp_MC = noSamp_MC,
       mu = mu_Gauss_trans,
       Sigma = Sigma_Gauss_trans,
@@ -489,7 +489,7 @@ get_predictions <- function(model,
     }
 
     ## Get imputed data
-    DTp.empirical <- impute_data(
+    DTp.empirical <- observation_impute(
       W_kernel = W_kernel,
       S = S[these_wcomb, ],
       Xtrain = Xtrain,
@@ -508,8 +508,8 @@ get_predictions <- function(model,
   setkey(DTp, wcomb)
 
 
-  DTp[!(wcomb %in% c(1, 2^p)), p_hat := pred_vector(model = model, data = .SD), .SDcols = nms]
-  DTp[wcomb == 2^p, p_hat := pred_vector(model = model, data = as.data.frame(Xtest))]
+  DTp[!(wcomb %in% c(1, 2^p)), p_hat := prediction_vector(model = model, data = .SD), .SDcols = nms]
+  DTp[wcomb == 2^p, p_hat := prediction_vector(model = model, data = as.data.frame(Xtest))]
   DTp[wcomb == 1, p_hat := pred_zero]
 
   ## Get mean probability
@@ -535,7 +535,7 @@ get_predictions <- function(model,
 #'
 #'
 #' @author Martin Jullum
-pred_vector <- function(model, data) {
+prediction_vector <- function(model, data) {
   ## Figure out which model type we're using
   model_class <- head(class(model), 1)
 
@@ -580,7 +580,7 @@ pred_vector <- function(model, data) {
 #' @export
 #'
 #' @author Martin Jullum
-compute_kernelShap <- function(model,
+compute_kshap <- function(model,
                                l,
                                noSamp_MC = 1e3,
                                verbose = FALSE,
@@ -643,7 +643,7 @@ compute_kernelShap <- function(model,
       } else {
 
         #### Procedure for sampling a combination of an index in the training and the test sets ####
-        optimsamp <- samp_train_test_comb(
+        optimsamp <- sample_combinations(
           nTrain = nrow(l$Xtrain),
           nTest = nrow(l$Xtest),
           nosamp = empirical_settings$AICc_no_samp_per_optim,
@@ -706,7 +706,7 @@ compute_kernelShap <- function(model,
               X.nms <- colnames(l$Xtrain)
               setcolorder(X.pred, X.nms)
               # Doing prediction jointly (for speed), and then splitting them back into the y_list
-              pred <- pred_vector(model = model, data = X.pred)
+              pred <- prediction_vector(model = model, data = X.pred)
               y_list <- split(pred, current_cond_samp)
               names(y_list) <- NULL
 
@@ -714,7 +714,7 @@ compute_kernelShap <- function(model,
               ## Doing the numerical optimization -------
               nlm.obj <- suppressWarnings(nlminb(
                 start = empirical_settings$AIC_optim_startval,
-                objective = AICc_full_cpp_alt,
+                objective = aicc_full_cpp,
                 X_list = X_list,
                 mcov_list = mcov_list,
                 S_scale_dist = T,
@@ -762,14 +762,14 @@ compute_kernelShap <- function(model,
               X.nms <- colnames(l$Xtrain)
               setcolorder(X.pred, X.nms)
 
-              pred <- pred_vector(model = model, data = X.pred)
+              pred <- prediction_vector(model = model, data = X.pred)
               y_list <- list(pred)
 
               ## Running the nonlinear optimization
 
               nlm.obj <- suppressWarnings(nlminb(
                 start = empirical_settings$AIC_optim_startval,
-                objective = AICc_full_cpp_alt,
+                objective = aicc_full_cpp,
                 X_list = X_list,
                 mcov_list = mcov_list,
                 S_scale_dist = T,
@@ -816,8 +816,8 @@ compute_kernelShap <- function(model,
   Xtrain.mat <- as.matrix(l$Xtrain)
 
   # Only needed for copula method, but is not time consuming anyway
-  Xtrain_Gauss_trans <- apply(X = l$Xtrain, MARGIN = 2, FUN = Gauss_trans_func)
-  Xtest_Gauss_trans <- apply(X = rbind(l$Xtest, l$Xtrain), MARGIN = 2, FUN = Gauss_trans_func_seperate, n_y = nrow(l$Xtest))
+  Xtrain_Gauss_trans <- apply(X = l$Xtrain, MARGIN = 2, FUN = gaussian_transform)
+  Xtest_Gauss_trans <- apply(X = rbind(l$Xtest, l$Xtrain), MARGIN = 2, FUN = gaussian_transform_separate, n_y = nrow(l$Xtest))
 
   mu_Gauss_trans <- rep(0, ncol(l$Xtrain))
   Sigma_Gauss_trans <- stats::cov(Xtrain_Gauss_trans)
@@ -830,7 +830,7 @@ compute_kernelShap <- function(model,
       print(sprintf("%d out of %d", i, l$Xtest[, .N]))
     }
 
-    ll[[i]] <- get_predictions(
+    ll[[i]] <- predictions(
       model = model,
       D = l$D[, i, ],
       h_optim_vec = h_optim_mat[, i],
@@ -881,7 +881,7 @@ compute_kernelShap <- function(model,
 #' @export
 #'
 #' @author Nikolai Sellereite
-prepare_kernelShap <- function(Xtrain,
+prepare_kshap <- function(Xtrain,
                                Xtest,
                                exact = TRUE,
                                noSamp = NULL,
@@ -897,15 +897,15 @@ prepare_kernelShap <- function(Xtrain,
   }
 
   ## Get all combinations ----------------
-  X <- get_combinations(m = ncol(Xtrain), exact = exact, noSamp = noSamp, shapley_weight_inf_replacement = shapley_weight_inf_replacement, reduce_dim = T)
+  X <- feature_combinations(m = ncol(Xtrain), exact = exact, noSamp = noSamp, shapley_weight_inf_replacement = shapley_weight_inf_replacement, reduce_dim = T)
 
   ## Get weighted matrix ----------------
-  W <- get_weighted_matrix(X, use_shapley_weights_in_W = ifelse(exact, T, F), normalize_W_weights = T)
+  W <- weight_matrix(X, use_shapley_weights_in_W = ifelse(exact, T, F), normalize_W_weights = T)
 
   mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
 
   if (!is.null(compute_distances_for_no_var[1])) { # Only compute the distances if the empirical approach is used
-    D <- gen_Mahlanobis_dist_cpp(
+    D <- mahalanobis_distance(
       featureList = X[nfeatures %in% compute_distances_for_no_var, features],
       Xtrain_mat = as.matrix(Xtrain),
       Xtest_mat = as.matrix(Xtest),

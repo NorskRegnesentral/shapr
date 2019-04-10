@@ -6,9 +6,9 @@
 
 using namespace Rcpp;
 
-// H_cpp
-arma::mat H_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h);
-RcppExport SEXP _shapr_H_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP) {
+// smoother_matrix_cpp
+arma::mat smoother_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h);
+RcppExport SEXP _shapr_smoother_matrix_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -16,7 +16,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
     Rcpp::traits::input_parameter< double >::type h(hSEXP);
-    rcpp_result_gen = Rcpp::wrap(H_cpp(X, mcov, S_scale_dist, h));
+    rcpp_result_gen = Rcpp::wrap(smoother_matrix_cpp(X, mcov, S_scale_dist, h));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -32,21 +32,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// correction_cpp
-double correction_cpp(double tr_H, int n);
-RcppExport SEXP _shapr_correction_cpp(SEXP tr_HSEXP, SEXP nSEXP) {
+// correct_matrix
+double correct_matrix(double tr_H, int n);
+RcppExport SEXP _shapr_correct_matrix(SEXP tr_HSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type tr_H(tr_HSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(correction_cpp(tr_H, n));
+    rcpp_result_gen = Rcpp::wrap(correct_matrix(tr_H, n));
     return rcpp_result_gen;
 END_RCPP
 }
-// AICc_full_tmp_cpp
-arma::vec AICc_full_tmp_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y);
-RcppExport SEXP _shapr_AICc_full_tmp_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP, SEXP ySEXP) {
+// aicc_full_tmp_cpp
+arma::vec aicc_full_tmp_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y);
+RcppExport SEXP _shapr_aicc_full_tmp_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -55,13 +55,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
     Rcpp::traits::input_parameter< double >::type h(hSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(AICc_full_tmp_cpp(X, mcov, S_scale_dist, h, y));
+    rcpp_result_gen = Rcpp::wrap(aicc_full_tmp_cpp(X, mcov, S_scale_dist, h, y));
     return rcpp_result_gen;
 END_RCPP
 }
-// AICc_full_cpp_alt
-double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative);
-RcppExport SEXP _shapr_AICc_full_cpp_alt(SEXP hSEXP, SEXP X_listSEXP, SEXP mcov_listSEXP, SEXP S_scale_distSEXP, SEXP y_listSEXP, SEXP negativeSEXP) {
+// aicc_full_cpp
+double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative);
+RcppExport SEXP _shapr_aicc_full_cpp(SEXP hSEXP, SEXP X_listSEXP, SEXP mcov_listSEXP, SEXP S_scale_distSEXP, SEXP y_listSEXP, SEXP negativeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -71,13 +71,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type y_list(y_listSEXP);
     Rcpp::traits::input_parameter< bool >::type negative(negativeSEXP);
-    rcpp_result_gen = Rcpp::wrap(AICc_full_cpp_alt(h, X_list, mcov_list, S_scale_dist, y_list, negative));
+    rcpp_result_gen = Rcpp::wrap(aicc_full_cpp(h, X_list, mcov_list, S_scale_dist, y_list, negative));
     return rcpp_result_gen;
 END_RCPP
 }
-// gen_Mahlanobis_dist_cpp
-arma::cube gen_Mahlanobis_dist_cpp(Rcpp::List featureList, arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist);
-RcppExport SEXP _shapr_gen_Mahlanobis_dist_cpp(SEXP featureListSEXP, SEXP Xtrain_matSEXP, SEXP Xtest_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
+// mahalanobis_distance
+arma::cube mahalanobis_distance(Rcpp::List featureList, arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist);
+RcppExport SEXP _shapr_mahalanobis_distance(SEXP featureListSEXP, SEXP Xtrain_matSEXP, SEXP Xtest_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -86,13 +86,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type Xtest_mat(Xtest_matSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
-    rcpp_result_gen = Rcpp::wrap(gen_Mahlanobis_dist_cpp(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist));
+    rcpp_result_gen = Rcpp::wrap(mahalanobis_distance(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist));
     return rcpp_result_gen;
 END_RCPP
 }
-// impute_cpp
-NumericMatrix impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtrain, NumericMatrix Xtest, IntegerMatrix S);
-RcppExport SEXP _shapr_impute_cpp(SEXP IDSEXP, SEXP CombSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP SSEXP) {
+// observation_impute_cpp
+NumericMatrix observation_impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtrain, NumericMatrix Xtest, IntegerMatrix S);
+RcppExport SEXP _shapr_observation_impute_cpp(SEXP IDSEXP, SEXP CombSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP SSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -101,13 +101,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type Xtrain(XtrainSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Xtest(XtestSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type S(SSEXP);
-    rcpp_result_gen = Rcpp::wrap(impute_cpp(ID, Comb, Xtrain, Xtest, S));
+    rcpp_result_gen = Rcpp::wrap(observation_impute_cpp(ID, Comb, Xtrain, Xtest, S));
     return rcpp_result_gen;
 END_RCPP
 }
-// weighted_matrix
-arma::mat weighted_matrix(List features, int m, int n, NumericVector w);
-RcppExport SEXP _shapr_weighted_matrix(SEXP featuresSEXP, SEXP mSEXP, SEXP nSEXP, SEXP wSEXP) {
+// weight_matrix_cpp
+arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w);
+RcppExport SEXP _shapr_weight_matrix_cpp(SEXP featuresSEXP, SEXP mSEXP, SEXP nSEXP, SEXP wSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -115,7 +115,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(weighted_matrix(features, m, n, w));
+    rcpp_result_gen = Rcpp::wrap(weight_matrix_cpp(features, m, n, w));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -133,14 +133,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_shapr_H_cpp", (DL_FUNC) &_shapr_H_cpp, 4},
+    {"_shapr_smoother_matrix_cpp", (DL_FUNC) &_shapr_smoother_matrix_cpp, 4},
     {"_shapr_rss_cpp", (DL_FUNC) &_shapr_rss_cpp, 2},
-    {"_shapr_correction_cpp", (DL_FUNC) &_shapr_correction_cpp, 2},
-    {"_shapr_AICc_full_tmp_cpp", (DL_FUNC) &_shapr_AICc_full_tmp_cpp, 5},
-    {"_shapr_AICc_full_cpp_alt", (DL_FUNC) &_shapr_AICc_full_cpp_alt, 6},
-    {"_shapr_gen_Mahlanobis_dist_cpp", (DL_FUNC) &_shapr_gen_Mahlanobis_dist_cpp, 5},
-    {"_shapr_impute_cpp", (DL_FUNC) &_shapr_impute_cpp, 5},
-    {"_shapr_weighted_matrix", (DL_FUNC) &_shapr_weighted_matrix, 4},
+    {"_shapr_correct_matrix", (DL_FUNC) &_shapr_correct_matrix, 2},
+    {"_shapr_aicc_full_tmp_cpp", (DL_FUNC) &_shapr_aicc_full_tmp_cpp, 5},
+    {"_shapr_aicc_full_cpp", (DL_FUNC) &_shapr_aicc_full_cpp, 6},
+    {"_shapr_mahalanobis_distance", (DL_FUNC) &_shapr_mahalanobis_distance, 5},
+    {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},
+    {"_shapr_weight_matrix_cpp", (DL_FUNC) &_shapr_weight_matrix_cpp, 4},
     {"_shapr_feature_matrix_cpp", (DL_FUNC) &_shapr_feature_matrix_cpp, 2},
     {NULL, NULL, 0}
 };

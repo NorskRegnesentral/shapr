@@ -14,7 +14,7 @@ using namespace arma;
 //' @return Matrix of dimension \code{ncol(X)*ncol(X)}
 //' @author Martin Jullum
 // [[Rcpp::export]]
-arma::mat H_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h) {
+arma::mat smoother_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h) {
 
 
     // Define variables
@@ -75,7 +75,7 @@ arma::mat H_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h) {
 
 //' sigma_hat_sq-function
 //'
-//' @param H Matrix. Output from \code{\link{H_cpp}}
+//' @param H Matrix. Output from \code{\link{smoother_matrix_cpp}}
 //' @param y Vector, i.e. representing the response variable
 //' @param ret_log Logical. Indicates whether to return the logarithm of \code{sigma_sq}
 //' @export
@@ -111,7 +111,7 @@ double rss_cpp(arma::mat H, arma::vec y) {
 //' @return Scalar
 //' @author Martin Jullum
 // [[Rcpp::export]]
-double correction_cpp(double tr_H,int n) {
+double correct_matrix(double tr_H,int n) {
 
     double out = (1.0+tr_H/n)/(1.0-(tr_H+2.0)/n);
 
@@ -132,11 +132,11 @@ double correction_cpp(double tr_H,int n) {
 //' @return Scalar with the numeric value of the AICc formula
 //' @author Martin Jullum
 // [[Rcpp::export]]
-arma::vec AICc_full_tmp_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y) {
+arma::vec aicc_full_tmp_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y) {
 
     arma::vec out(3);
 
-    arma::mat H = H_cpp(X, mcov, S_scale_dist, h);
+    arma::mat H = smoother_matrix_cpp(X, mcov, S_scale_dist, h);
 
     double rss = rss_cpp(H, y);
     double tr_H = trace(H);
@@ -163,7 +163,7 @@ arma::vec AICc_full_tmp_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, doub
 //' @return Scalar with the numeric value of the AICc formula
 //' @author Martin Jullum
 // [[Rcpp::export]]
-double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative) {
+double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative) {
 
     int nloops = X_list.size();
     arma::vec summer(3,fill::zeros);
@@ -174,9 +174,9 @@ double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool
         arma::mat mcov = mcov_list[k];
         arma::vec y = y_list[k];
 
-        summer = AICc_full_tmp_cpp(X, mcov, S_scale_dist, h,  y);
+        summer = aicc_full_tmp_cpp(X, mcov, S_scale_dist, h,  y);
 
-        out += log(summer(0)/summer(2)) + correction_cpp(summer(1),summer(2)); // This computes log(sigma_1 = rss_1/n_1) + correction_formula(H = H_1,n = n_1) + log(sigma_2 = rss_2/n_2) + correction_formula(H = H_2,n = n_2)
+        out += log(summer(0)/summer(2)) + correct_matrix(summer(1),summer(2)); // This computes log(sigma_1 = rss_1/n_1) + correction_formula(H = H_1,n = n_1) + log(sigma_2 = rss_2/n_2) + correction_formula(H = H_2,n = n_2)
     }
 
     if(negative){
@@ -191,7 +191,7 @@ double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool
 
 // //' sigma_hat_sq-function
 // //'
-// //' @param H matrix being the output from H_cpp
+// //' @param H matrix being the output from smoother_matrix_cpp
 // //' @param y vector with the "response variable"
 // //' @param ret_log logical indicating whether to return the logarithm of the sigma_sq
 // //' @export
@@ -245,10 +245,10 @@ double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool
 //         arma::mat mcov = mcov_list[k];
 //         arma::vec y = y_list[k];
 //
-//         summer += AICc_full_tmp_cpp(X, mcov, S_scale_dist, h,  y);
+//         summer += aicc_full_tmp_cpp(X, mcov, S_scale_dist, h,  y);
 //     }
 //
-//     double out = log(summer(0)/summer(2)) + correction_cpp(summer(1),summer(2)); // This computes log(sigma_full = (rss_1 + rss_2)/(n_1+n_2)) + correction_formula(H = H_1+H_2, n = n_1 + n_2)
+//     double out = log(summer(0)/summer(2)) + correct_matrix(summer(1),summer(2)); // This computes log(sigma_full = (rss_1 + rss_2)/(n_1+n_2)) + correction_formula(H = H_1+H_2, n = n_1 + n_2)
 //
 //     if(negative){
 //         out *= -1;
@@ -261,7 +261,7 @@ double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool
 //
 // //' correction term in AICc formula
 // //'
-// //' @param H matrix being the output from H_cpp
+// //' @param H matrix being the output from smoother_matrix_cpp
 // //' @export
 // //'
 // //' @return Scalar
@@ -299,7 +299,7 @@ double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool
 //
 //     bool ret_log = true;
 //
-//     arma::mat H = H_cpp(X, mcov, S_scale_dist, h);
+//     arma::mat H = smoother_matrix_cpp(X, mcov, S_scale_dist, h);
 //
 //
 //     double log_sigma_hat_sq = sigma_hat_sq_cpp(H, y, ret_log);
@@ -344,8 +344,8 @@ double AICc_full_cpp_alt(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool
 // //    arma::mat out2(nrows,nrows,arma::fill::zeros);
 //
 //
-//     arma::mat out1 = H_cpp(X, mcov_list[0], S_scale_dist, h);
-// //    out2 = H_cpp(X, mcov, S_scale_dist, h);
+//     arma::mat out1 = smoother_matrix_cpp(X, mcov_list[0], S_scale_dist, h);
+// //    out2 = smoother_matrix_cpp(X, mcov, S_scale_dist, h);
 //
 //     std::vector<arma::mat> out;
 //

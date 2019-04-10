@@ -60,7 +60,7 @@ model <- fit_model_func(XYtrain)
 
 #### Preparing the data for kernelShap
 
-l <- prepare_kernelShap(
+l <- prepare_kshap(
     Xtrain = Xtrain,
     Xtest = Xtest)
 
@@ -70,18 +70,18 @@ l <- prepare_kernelShap(
 Shapley.approx = list()
 
 # Empirical version with sigma set to the default value of 0.1
-Shapley.approx$empirical_sigma.01 = compute_kernelShap(model = model,
+Shapley.approx$empirical_sigma.01 = compute_kshap(model = model,
                                                        l = l,
                                                        pred_zero=pred_zero)
 
 # Gaussian approach
-Shapley.approx$Gaussian = compute_kernelShap(model = model,
+Shapley.approx$Gaussian = compute_kshap(model = model,
                                              l = l,
                                              cond_approach = "Gaussian",
                                              pred_zero=pred_zero)
 
 # Combined Gaussian and empirical with sigma=0.1
-Shapley.approx$comb = compute_kernelShap(model = model,
+Shapley.approx$comb = compute_kshap(model = model,
                                          l = l,
                                          cond_approach = list(empirical=1:5, Gaussian=6:32),
                                          pred_zero=pred_zero)
