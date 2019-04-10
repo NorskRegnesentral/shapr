@@ -7,7 +7,7 @@
 rss_cpp(H, y)
 }
 \arguments{
-\item{H}{Matrix. Output from \code{\link{H_cpp}}}
+\item{H}{Matrix. Output from \code{\link{smoother_matrix_cpp}}}
 
 \item{y}{Vector, i.e. representing the response variable}
 
