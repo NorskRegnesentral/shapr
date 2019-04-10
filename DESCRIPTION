@@ -1,5 +1,5 @@
 Package: shapr
-Version: 0.0.0.9001
+Version: 0.0.0.9000
 Title: Explain the output of machine learning models
 Description: What the package does (one paragraph).
 Authors@R: c(
