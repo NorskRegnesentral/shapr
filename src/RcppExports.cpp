@@ -75,9 +75,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// mahalanobis_distance
-arma::cube mahalanobis_distance(Rcpp::List featureList, arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist);
-RcppExport SEXP _shapr_mahalanobis_distance(SEXP featureListSEXP, SEXP Xtrain_matSEXP, SEXP Xtest_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
+// mahalanobis_distance_cpp
+arma::cube mahalanobis_distance_cpp(Rcpp::List featureList, arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist);
+RcppExport SEXP _shapr_mahalanobis_distance_cpp(SEXP featureListSEXP, SEXP Xtrain_matSEXP, SEXP Xtest_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -86,7 +86,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type Xtest_mat(Xtest_matSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
-    rcpp_result_gen = Rcpp::wrap(mahalanobis_distance(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist));
+    rcpp_result_gen = Rcpp::wrap(mahalanobis_distance_cpp(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -138,7 +138,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_correction_matrix_cpp", (DL_FUNC) &_shapr_correction_matrix_cpp, 2},
     {"_shapr_aicc_full_single_cpp", (DL_FUNC) &_shapr_aicc_full_single_cpp, 5},
     {"_shapr_aicc_full_cpp", (DL_FUNC) &_shapr_aicc_full_cpp, 6},
-    {"_shapr_mahalanobis_distance", (DL_FUNC) &_shapr_mahalanobis_distance, 5},
+    {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},
     {"_shapr_weight_matrix_cpp", (DL_FUNC) &_shapr_weight_matrix_cpp, 4},
     {"_shapr_feature_matrix_cpp", (DL_FUNC) &_shapr_feature_matrix_cpp, 2},

@@ -86,8 +86,8 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 #'
 #' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 #' @author Martin Jullum
-mahalanobis_distance <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist) {
-    .Call(`_shapr_mahalanobis_distance`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
+mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist) {
+    .Call(`_shapr_mahalanobis_distance_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
 }
 
 #' Get imputed data

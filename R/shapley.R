@@ -199,7 +199,7 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-observation_impute_prepare <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {
+observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {
 
   ## Find weights for all combinations and training data
   DT <- as.data.table(W_kernel)
@@ -489,7 +489,7 @@ predictions <- function(model,
     }
 
     ## Get imputed data
-    DTp.empirical <- observation_impute_prepare(
+    DTp.empirical <- observation_impute(
       W_kernel = W_kernel,
       S = S[these_wcomb, ],
       Xtrain = Xtrain,
@@ -905,7 +905,7 @@ prepare_kshap <- function(Xtrain,
   mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
 
   if (!is.null(compute_distances_for_no_var[1])) { # Only compute the distances if the empirical approach is used
-    D <- mahalanobis_distance(
+    D <- mahalanobis_distance_cpp(
       featureList = X[nfeatures %in% compute_distances_for_no_var, features],
       Xtrain_mat = as.matrix(Xtrain),
       Xtest_mat = as.matrix(Xtest),
