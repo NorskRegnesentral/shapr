@@ -8,7 +8,7 @@ library(shapr)
 dimX <- 5
 rho <- 0.5
 nTrain <- 500
-nTest <- 50
+nTest <- 10
 
 mu <- 1:dimX
 Sigma <- matrix(rho,ncol=dimX,nrow=dimX)
@@ -86,6 +86,13 @@ Shapley.approx$comb = compute_kernelShap(model = model,
                                          cond_approach = list(empirical=1:5, Gaussian=6:32),
                                          pred_zero=pred_zero)
 
+# Classical kernelShap assuming independence
+Shapley.approx$empirical_independence = compute_kshap(model = model,
+                                                      l = l,
+                                                      empirical_settings = list(type = "independence",
+                                                                                w_threshold = 1),
+                                                      pred_zero=pred_zero)
+
 
 ### Just looking at some of the results
 
@@ -94,6 +101,9 @@ head(Shapley.approx$empirical_sigma.01$Kshap)
 head(Shapley.approx$Gaussian$Kshap)
 
 head(Shapley.approx$comb$Kshap)
+
+head(Shapley.approx$empirical_independence$Kshap)
+
 
 #> head(Shapley.approx$empirical_sigma.01$Kshap)
 #[,1]        [,2]       [,3]       [,4]       [,5]        [,6]
@@ -121,5 +131,13 @@ head(Shapley.approx$comb$Kshap)
 #[4,] 15.12186  2.372320720  0.1726334  3.2917833  0.63998113 -0.7393384
 #[5,] 15.12185  0.969900702 -0.9433975  3.6876274  0.08742696 -4.8314652
 #[6,] 15.12185 -1.097507445 -3.4018879 -4.9092677  0.50676064  1.7067072
-
+#
+# > head(Shapley.approx$empirical_independence$Kshap)
+# [,1]       [,2]       [,3]       [,4]       [,5]        [,6]
+# [1,] 15.12185 -0.2132539 -0.4355152 -2.4175282 -1.3926871  5.34863846
+# [2,] 15.12185  0.1598323  1.2829112 -0.1663144  1.2493053  0.03328819
+# [3,] 15.12185  0.9630519 -0.6036891 -2.7352989  1.6173171 -0.51359578
+# [4,] 15.12185  1.6306047  0.6584501  2.8261303  0.9675633 -0.34536831
+# [5,] 15.12185  0.6452431 -0.4857762  2.8128117  0.2193151 -4.22150128
+# [6,] 15.12185 -1.0010532 -2.6095189 -4.0659459 -0.4317870  0.91310953
 
