@@ -19,14 +19,24 @@ knitr::opts_chunk$set(
 
 [![CircleCI](https://circleci.com/gh/NorskRegnesentral/shapr.svg?style=svg&circle-token=7c2a3a4edc870b4694982f0fe8ac66f92d639099)](https://circleci.com/gh/NorskRegnesentral/shapr)
 
-Explaining complex or seemingly simple machine learning models is a practical and ethical question, 
-as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want 
-to explain individual predictions from a complex machine learning model by learning simple, 
-interpretable explanations. 
+Explaining complex or seemingly simple machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable explanations.
 
-This package implements more accurate approximations to Shapley values as described in @aas2019explaining.
+Shapley values is the only prediction explanation framework with a solid theoretical foundation [cite lundberg]. Unless the true distribution of the features are known, and there are less than say 10-15 features these Shapley values needs to be estimated/approximated. 
+Popular methods like Shapley Sampling Values [cite], SHAP/Kernel SHAP [...], and to some extent TreeSHAP (...), ignore this dependence when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. @aas2019explaining extends and improves the Kernel SHAP method of ... to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. See the paper for details.
+
+This package implements more the methodology of @aas2019explaining.
 
 The following features are currently implemented:
+
+-   Something (@aas2019explaining).
+-   Something
+
+Future releases will include:
+
+-   Support for models not supported natively, by supplying the `prediction_vector` function taking model and data as input and produces a vector of predictions as output.
+-   Support for parallelization over explanations, features subsets for non-parallelizable prediction functions.
+
+All feedback and suggestions are very welcome.
 
 - Something (@aas2019explaining).
 - Something
@@ -47,6 +57,68 @@ devtools::install_github("NorskRegnesentral/shapr")
 ```
 
 ## An example
+`shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome. Currently models of the classes "glm", "lm","ranger", "xgboost" and "gam" are supported natively. 
+
+The following example shows how a simple `xgboost` model is trained on a the *Boston Housing Data*, and then how `shapr` is used to explain new predictions. 
+
+
+``` r
+library(MASS)
+library(xgboost)
+library(shapr)
+
+data("Boston")
+
+x_var <-  c("lstat","rm","dis","indus")
+y_var <- "medv"
+
+x_train <- as.matrix(Boston[-(1:10),x_var])
+y_train <- Boston[-(1:10),y_var]
+x_test <- as.matrix(Boston[1:10,x_var])
+
+# Just looking at the dependence between the features
+
+ cor(x_train)
+ #> cor(x_train)
+ # lstat         rm        dis      indus
+ # lstat  1.0000000 -0.6106362 -0.5075796  0.6073291
+ # rm    -0.6106362  1.0000000  0.2051866 -0.3897134
+ # dis   -0.5075796  0.2051866  1.0000000 -0.7059103
+ # indus  0.6073291 -0.3897134 -0.7059103  1.0000000
+
+
+# Fitting a basic xgboost model to the training data
+model <- xgboost(data = x_train,
+                 label = y_train,
+                 nround=20)
+
+
+# Prepare the data for explanation
+l <- prepare_kshap(Xtrain = x_train,
+                   Xtest = x_test)
+
+# Spedifying the phi_0, i.e. the expected prediction without any features
+pred_zero <- mean(y_train)
+
+# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
+# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
+explanation = compute_kshap(model = model,
+                            l = l,
+                            pred_zero=pred_zero)
+
+# Printing the Shapley values for the test data
+explanation$Kshap
+
+#          [,1]      [,2]       [,3]        [,4]       [,5]
+# [1,] 22.45484 5.3814963 -0.4823530  1.56978008  4.9216356
+# [2,] 22.45484 0.3344492 -0.8322893  0.97687526  0.3750935
+# [3,] 22.45484 6.1609843  4.8894905  0.53138409 -2.0826502
+# [4,] 22.45484 8.9163071  0.3154509 -0.18616672  2.1797222
+# [5,] 22.45484 0.7486236  6.2298609  0.24828116  2.7369589
+# [6,] 22.45484 2.5868833 -3.8420937 -0.02532364  3.1038779
+```
+
+
 
 ## References
 
