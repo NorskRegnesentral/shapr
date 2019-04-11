@@ -370,7 +370,7 @@ sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_co
       X.given = X_given
     )
     if (ensure_condcov_symmetry) {
-      tmp$cVar <- Matrix::symmpart(tmp$cVar)
+      tmp$condVar <- Matrix::symmpart(tmp$condVar)
     }
     ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
 
