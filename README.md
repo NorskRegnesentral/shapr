@@ -5,20 +5,20 @@ shapr
 
 [![CircleCI](https://circleci.com/gh/NorskRegnesentral/shapr.svg?style=svg&circle-token=7c2a3a4edc870b4694982f0fe8ac66f92d639099)](https://circleci.com/gh/NorskRegnesentral/shapr)
 
-The most common task of machine learning is to train a model which is able to predicts an unknown outcome (reponse variable) based on a set of known input variables/features. When using such models for real life applications, it is often crucial to understand why certain set of features lead to exactly that prediction. However, explaining predictions from complex or seemingly simple machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable explanations.
+The most common task of machine learning is to train a model which is able to predict an unknown outcome (repsonse variable) based on a set of known input variables/features. When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction. However, explaining predictions from complex, or seemingly simple, machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable explanations.
 
-Shapley values is the only prediction explanation framework with a solid theoretical foundation \[cite lundberg\]. Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. Popular methods like Shapley Sampling Values (Štrumbelj and Kononenko (2014)), SHAP/Kernel SHAP (Lundberg and Lee (2017)), and to some extent TreeSHAP (Lundberg, Erion, and Lee (2018)), ignore this dependence when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. Aas, Jullum, and Løland (2019) extends and improves the Kernel SHAP method of Lundberg and Lee (2017) to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. See the paper for details.
+Shapley values is the only prediction explanation framework with a solid theoretical foundation (Lundberg and Lee (2017)). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. Popular methods like Shapley Sampling Values (Štrumbelj and Kononenko (2014)), SHAP/Kernel SHAP (Lundberg and Lee (2017)), and to some extent TreeSHAP (Lundberg, Erion, and Lee (2018)), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. Aas, Jullum, and Løland (2019) extends and improves the Kernel SHAP method of Lundberg and Lee (2017) to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. See the paper for details.
 
 This package implements the methodology of Aas, Jullum, and Løland (2019).
 
 The following methodology/features are currently implemented:
 
--   Native support of explanation of predictions with the following model classes "glm", "lm","ranger", "xgboost" and "gam".
+-   Native support of explanation of predictions with the following model classes `stats::glm`, `stats::lm`,`ranger::ranger`, `xgboost::xgboost` and `mgcv::gam`.
 -   Accounting for feature dependence assuming the features are Gaussian (Aas, Jullum, and Løland (2019)).
 -   Accounting for feature dependence with a Gaussian copula (Gaussian dependence structure, any marginal) (Aas, Jullum, and Løland (2019)).
--   Accounting for feature dependence using the Mahlanobis distance based empirical (conditional) distribution approach of Aas, Jullum, and Løland (2019)
+-   Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of Aas, Jullum, and Løland (2019)
 -   Combine any of the three methods
--   Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai (1998) to optimization of bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2019).
+-   Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai (1998) when optimizing the bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2019).
 
 <!--
 Current methodological restrictions:
@@ -29,14 +29,14 @@ Current methodological restrictions:
 -->
 Future releases will include:
 
--   Support for models not supported natively by supplying the `prediction_vector` function taking model and data as input and produces a vector of predictions as output.
+-   Support for models not supported natively by supplying the `shapr::prediction_vector()` taking model and data as input and produces a vector of predictions as output.
 -   Support for parallelization over explanations, features subsets for non-parallelizable prediction functions.
 -   Simplify the use of the combination method.
 -   Plotting functionality for Shapley values
 -   Computational improvement of the AICc optimization approach
 -   Adaptive selection of method to account for the feature dependence
 
-Note: Both the features and the prediction must be numeric. The approach is constructed for continuous features. Discrete features may also work just fine with the empirical (conditional) distribution approach. Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease the interpretability, i.e. not via log odds transformations.
+Note that both the features and the prediction must be numeric. The approach is constructed for continuous features. Discrete features may also work just fine with the empirical (conditional) distribution approach. Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease the interpretability, i.e. not via log odds transformations.
 
 All feedback and suggestions are very welcome.
 
@@ -54,7 +54,7 @@ An example
 
 `shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.
 
-The following example shows how a simple `xgboost` model is trained on a the *Boston Housing Data*, and then how `shapr` is used to explain new predictions.
+The following example shows how a simple `xgboost` model is trained using the *Boston Housing Data*, and how `shapr` explains the individual predictions.
 
 ``` r
 library(MASS)
@@ -63,15 +63,14 @@ library(shapr)
 
 data("Boston")
 
-x_var <-  c("lstat","rm","dis","indus")
+x_var <-  c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:10),x_var])
-y_train <- Boston[-(1:10),y_var]
-x_test <- as.matrix(Boston[1:10,x_var])
+x_train <- as.matrix(Boston[-(1:10), x_var])
+y_train <- Boston[-(1:10), y_var]
+x_test <- as.matrix(Boston[1:10, x_var])
 
-# Just looking at the dependence between the features
-# The features are are highly correlated
+# Quick look at the dependence between the features
  cor(x_train)
  #> cor(x_train)
  # lstat         rm        dis      indus
@@ -80,25 +79,31 @@ x_test <- as.matrix(Boston[1:10,x_var])
  # dis   -0.5075796  0.2051866  1.0000000 -0.7059103
  # indus  0.6073291 -0.3897134 -0.7059103  1.0000000
 
+# The features are are highly correlated
 
-# Fitting a basic xgboost model to the training data
-model <- xgboost(data = x_train,
-                 label = y_train,
-                 nround=20)
-
+# Fit basic xgboost model to training data
+model <- xgboost(
+  data = x_train, 
+  label = y_train, 
+  nround = 20
+)
 
 # Prepare the data for explanation
-l <- prepare_kshap(Xtrain = x_train,
-                   Xtest = x_test)
+l <- prepare_kshap(
+  Xtrain = x_train, 
+  Xtest = x_test
+)
 
-# Spedifying the phi_0, i.e. the expected prediction without any features
+# Spesifying the phi_0, i.e. the expected prediction without any features
 pred_zero <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation = compute_kshap(model = model,
-                            l = l,
-                            pred_zero=pred_zero)
+explanation <- compute_kshap(
+  model = model,
+  l = l,
+  pred_zero = pred_zero
+)
 
 # Printing the Shapley values for the test data
 explanation$Kshap
