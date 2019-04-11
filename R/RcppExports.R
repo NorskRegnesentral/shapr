@@ -12,13 +12,13 @@
 #'
 #' @return Matrix of dimension \code{ncol(X)*ncol(X)}
 #' @author Martin Jullum
-smoother_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
-    .Call(`_shapr_smoother_matrix_cpp`, X, mcov, S_scale_dist, h)
+hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
+    .Call(`_shapr_hat_matrix_cpp`, X, mcov, S_scale_dist, h)
 }
 
 #' sigma_hat_sq-function
 #'
-#' @param H Matrix. Output from \code{\link{smoother_matrix_cpp}}
+#' @param H Matrix. Output from \code{\link{hat_matrix_cpp}}
 #' @param y Vector, i.e. representing the response variable
 #' @param ret_log Logical. Indicates whether to return the logarithm of \code{sigma_sq}
 #' @export
@@ -37,8 +37,8 @@ rss_cpp <- function(H, y) {
 #'
 #' @return Scalar
 #' @author Martin Jullum
-correct_matrix <- function(tr_H, n) {
-    .Call(`_shapr_correct_matrix`, tr_H, n)
+correction_matrix_cpp <- function(tr_H, n) {
+    .Call(`_shapr_correction_matrix_cpp`, tr_H, n)
 }
 
 #'  Temp-function for computing the full AICc with several X's etc
@@ -53,8 +53,8 @@ correct_matrix <- function(tr_H, n) {
 #'
 #' @return Scalar with the numeric value of the AICc formula
 #' @author Martin Jullum
-aicc_full_tmp_cpp <- function(X, mcov, S_scale_dist, h, y) {
-    .Call(`_shapr_aicc_full_tmp_cpp`, X, mcov, S_scale_dist, h, y)
+aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
+    .Call(`_shapr_aicc_full_single_cpp`, X, mcov, S_scale_dist, h, y)
 }
 
 #'  AICc formula for several sets, alternative definition

@@ -199,7 +199,7 @@ scale_data <- function(Xtrain, Xtest, scale = TRUE) {
 #' @export
 #'
 #' @author Nikolai Sellereite
-observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {
+observation_impute_prepare <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {
 
   ## Find weights for all combinations and training data
   DT <- as.data.table(W_kernel)
@@ -489,7 +489,7 @@ predictions <- function(model,
     }
 
     ## Get imputed data
-    DTp.empirical <- observation_impute(
+    DTp.empirical <- observation_impute_prepare(
       W_kernel = W_kernel,
       S = S[these_wcomb, ],
       Xtrain = Xtrain,

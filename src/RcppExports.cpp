@@ -6,9 +6,9 @@
 
 using namespace Rcpp;
 
-// smoother_matrix_cpp
-arma::mat smoother_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h);
-RcppExport SEXP _shapr_smoother_matrix_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP) {
+// hat_matrix_cpp
+arma::mat hat_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h);
+RcppExport SEXP _shapr_hat_matrix_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -16,7 +16,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
     Rcpp::traits::input_parameter< double >::type h(hSEXP);
-    rcpp_result_gen = Rcpp::wrap(smoother_matrix_cpp(X, mcov, S_scale_dist, h));
+    rcpp_result_gen = Rcpp::wrap(hat_matrix_cpp(X, mcov, S_scale_dist, h));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -32,21 +32,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// correct_matrix
-double correct_matrix(double tr_H, int n);
-RcppExport SEXP _shapr_correct_matrix(SEXP tr_HSEXP, SEXP nSEXP) {
+// correction_matrix_cpp
+double correction_matrix_cpp(double tr_H, int n);
+RcppExport SEXP _shapr_correction_matrix_cpp(SEXP tr_HSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type tr_H(tr_HSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(correct_matrix(tr_H, n));
+    rcpp_result_gen = Rcpp::wrap(correction_matrix_cpp(tr_H, n));
     return rcpp_result_gen;
 END_RCPP
 }
-// aicc_full_tmp_cpp
-arma::vec aicc_full_tmp_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y);
-RcppExport SEXP _shapr_aicc_full_tmp_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP, SEXP ySEXP) {
+// aicc_full_single_cpp
+arma::vec aicc_full_single_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y);
+RcppExport SEXP _shapr_aicc_full_single_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -55,7 +55,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
     Rcpp::traits::input_parameter< double >::type h(hSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(aicc_full_tmp_cpp(X, mcov, S_scale_dist, h, y));
+    rcpp_result_gen = Rcpp::wrap(aicc_full_single_cpp(X, mcov, S_scale_dist, h, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -133,10 +133,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_shapr_smoother_matrix_cpp", (DL_FUNC) &_shapr_smoother_matrix_cpp, 4},
+    {"_shapr_hat_matrix_cpp", (DL_FUNC) &_shapr_hat_matrix_cpp, 4},
     {"_shapr_rss_cpp", (DL_FUNC) &_shapr_rss_cpp, 2},
-    {"_shapr_correct_matrix", (DL_FUNC) &_shapr_correct_matrix, 2},
-    {"_shapr_aicc_full_tmp_cpp", (DL_FUNC) &_shapr_aicc_full_tmp_cpp, 5},
+    {"_shapr_correction_matrix_cpp", (DL_FUNC) &_shapr_correction_matrix_cpp, 2},
+    {"_shapr_aicc_full_single_cpp", (DL_FUNC) &_shapr_aicc_full_single_cpp, 5},
     {"_shapr_aicc_full_cpp", (DL_FUNC) &_shapr_aicc_full_cpp, 6},
     {"_shapr_mahalanobis_distance", (DL_FUNC) &_shapr_mahalanobis_distance, 5},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},
