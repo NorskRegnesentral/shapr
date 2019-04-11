@@ -861,11 +861,17 @@ compute_kshap <- function(model,
     Kshap[i, ] <- l$W %*% DT[id == i, k]
   }
 
+  # Makes data.table from Kshap
+  Kshap <- as.data.table(Kshap)
+  colnames(Kshap) <- c("none",colnames(l$Xtrain))
 
+
+  # Makes vector with the full prediction that is decomposed
+  pred_vec <- DT[wcomb==2^ncol(Xtrain),k]
 
   tt <- proc.time() - tt
 
-  ret_list <- list(Kshap = Kshap, other_objects = list(ll = ll, DT = DT, h_optim_DT = h_optim_DT, comp_time = tt))
+  ret_list <- list(Kshap = Kshap, pred_vec = pred_vec,other_objects = list(ll = ll, DT = DT, h_optim_DT = h_optim_DT, comp_time = tt))
   return(ret_list)
 }
 
