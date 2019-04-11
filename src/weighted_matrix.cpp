@@ -11,7 +11,7 @@ using namespace Rcpp;
 //' @return Matrix of dimension n x m + 1
 //' @author Nikolai Sellereite
 // [[Rcpp::export]]
-arma::mat weighted_matrix(List features, int m, int n, NumericVector w){
+arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
 
     // Define variables
     int nfeatures;

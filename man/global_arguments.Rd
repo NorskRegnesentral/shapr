@@ -65,7 +65,7 @@ Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing i
 
 \item{reduce_dim}{Logical. Indicating whether to reduce the dimension of the weighted least squares problem by merging identical columns and adjusting their weights.}
 
-\item{l}{List. The output from the \code{prepare_kernelShap} function}
+\item{l}{List. The output from the \code{prepare_kshap} function}
 
 \item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 
@@ -78,7 +78,7 @@ Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing i
 \item{cond_approach}{Either a string indicating which method should be used to estimate all conditional expectations.
 Defaults to "empirical_fixed_sigma", with "empirical_AICc_full", "empirical_AICc_each_k","Gaussian" and "copula" being other alternatives. One can also supply a named list where the names
 are one or more of the implemented methods, and the named lists contains one vector each, each containing the row numbers of the S-matrix
-computed using \code{prepare_kernelShap} that whose corresponding conditional expectations should be computed with that method. Any number not
+computed using \code{prepare_kshap} that whose corresponding conditional expectations should be computed with that method. Any number not
 specified is computed with the default empirical method.}
 
 \item{W_kernel}{Array. Contains all nonscaled weights between training and testing observations for all combinations.}

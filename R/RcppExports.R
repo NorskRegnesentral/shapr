@@ -12,13 +12,13 @@
 #'
 #' @return Matrix of dimension \code{ncol(X)*ncol(X)}
 #' @author Martin Jullum
-H_cpp <- function(X, mcov, S_scale_dist, h) {
-    .Call(`_shapr_H_cpp`, X, mcov, S_scale_dist, h)
+hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
+    .Call(`_shapr_hat_matrix_cpp`, X, mcov, S_scale_dist, h)
 }
 
 #' sigma_hat_sq-function
 #'
-#' @param H Matrix. Output from \code{\link{H_cpp}}
+#' @param H Matrix. Output from \code{\link{hat_matrix_cpp}}
 #' @param y Vector, i.e. representing the response variable
 #' @param ret_log Logical. Indicates whether to return the logarithm of \code{sigma_sq}
 #' @export
@@ -37,8 +37,8 @@ rss_cpp <- function(H, y) {
 #'
 #' @return Scalar
 #' @author Martin Jullum
-correction_cpp <- function(tr_H, n) {
-    .Call(`_shapr_correction_cpp`, tr_H, n)
+correction_matrix_cpp <- function(tr_H, n) {
+    .Call(`_shapr_correction_matrix_cpp`, tr_H, n)
 }
 
 #'  Temp-function for computing the full AICc with several X's etc
@@ -53,8 +53,8 @@ correction_cpp <- function(tr_H, n) {
 #'
 #' @return Scalar with the numeric value of the AICc formula
 #' @author Martin Jullum
-AICc_full_tmp_cpp <- function(X, mcov, S_scale_dist, h, y) {
-    .Call(`_shapr_AICc_full_tmp_cpp`, X, mcov, S_scale_dist, h, y)
+aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
+    .Call(`_shapr_aicc_full_single_cpp`, X, mcov, S_scale_dist, h, y)
 }
 
 #'  AICc formula for several sets, alternative definition
@@ -69,8 +69,8 @@ AICc_full_tmp_cpp <- function(X, mcov, S_scale_dist, h, y) {
 #'
 #' @return Scalar with the numeric value of the AICc formula
 #' @author Martin Jullum
-AICc_full_cpp_alt <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) {
-    .Call(`_shapr_AICc_full_cpp_alt`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
+aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) {
+    .Call(`_shapr_aicc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
 }
 
 #' (Generalized) Mahalanobis distance
@@ -86,8 +86,8 @@ AICc_full_cpp_alt <- function(h, X_list, mcov_list, S_scale_dist, y_list, negati
 #'
 #' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 #' @author Martin Jullum
-gen_Mahlanobis_dist_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist) {
-    .Call(`_shapr_gen_Mahlanobis_dist_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
+mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist) {
+    .Call(`_shapr_mahalanobis_distance_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
 }
 
 #' Get imputed data
@@ -101,8 +101,8 @@ gen_Mahlanobis_dist_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S_
 #'
 #' @return Array of three dimensions
 #' @author Nikolai Sellereite
-impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
-    .Call(`_shapr_impute_cpp`, ID, Comb, Xtrain, Xtest, S)
+observation_impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
+    .Call(`_shapr_observation_impute_cpp`, ID, Comb, Xtrain, Xtest, S)
 }
 
 #' Get distance
@@ -114,8 +114,8 @@ impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
 #'
 #' @return Matrix of dimension n x m + 1
 #' @author Nikolai Sellereite
-weighted_matrix <- function(features, m, n, w) {
-    .Call(`_shapr_weighted_matrix`, features, m, n, w)
+weight_matrix_cpp <- function(features, m, n, w) {
+    .Call(`_shapr_weight_matrix_cpp`, features, m, n, w)
 }
 
 #' Get feature matrix
