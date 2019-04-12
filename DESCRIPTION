@@ -6,15 +6,13 @@ Authors@R: c(
     person("Nikolai", "Sellereite", email = "Nikolai.Sellereite@nr.no", role = "cre"),
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = "aut"),  
     person("Anders", "Løland", email = "Anders.Løland@nr.no", role = "aut")) 
+URL: https://github.com/NorskRegnesentral/shapr
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Language: en-US
-Suggests: 
-    xgboost,
-    testthat, 
-    lintr
+RoxygenNote: 6.1.1
 Imports: 
     data.table,
     ranger,
@@ -27,7 +25,10 @@ Imports:
     condMVNorm,
     mvtnorm,
     Matrix
-RoxygenNote: 6.1.1
+Suggests: 
+    xgboost,
+    testthat, 
+    lintr
 LinkingTo: 
     RcppArmadillo,
     Rcpp
