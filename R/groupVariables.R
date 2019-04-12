@@ -87,11 +87,11 @@ cluster_features <- function(X = NULL, corMat = NULL, alpha = 1) {
 #'
 #' @author Anders Løland
 correlation_rectangles <- function(
-                             corr,
-                             cluster,
-                             k = 2,
-                             col = "yellow",
-                             lwd = 6) {
+                                   corr,
+                                   cluster,
+                                   k = 2,
+                                   col = "yellow",
+                                   lwd = 6) {
   n <- nrow(corr)
   hc <- stats::cutree(cluster, k = k)
   clustab <- table(hc)[unique(hc[cluster$order])]

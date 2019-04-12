@@ -1,4 +1,3 @@
-
 #' Plot of the Shapley value explanations
 #'
 #' Plots the individual prediction explanations. Uses facet_wrap of ggplot
@@ -13,56 +12,54 @@
 #'
 #' @return ggplot object with plots of the Shapley value explanations
 #'
-#' @import ggplot2
 #' @export
 #'
 #' @author Martin Jullum
-
 plot_kshap <- function(explanation,
                        l,
-                       no_desc_digits=3,
+                       no_desc_digits = 3,
                        plot_phi0 = T,
                        plot_which_Xtest = 1:nrow(l$Xtest),
-                       top_k_features = ncol(l$Xtest)+1){
+                       top_k_features = ncol(l$Xtest) + 1) {
 
+  is_installed <- requireNamespace("ggplot2", quietly = TRUE)
+  if (!is_installed) stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   colnam <- colnames(l$Xtest)
 
   # melting Kshap
-  meltKshap <- melt(copy(explanation$Kshap[,id:=.I]),id.vars="id",value.name="phi")
-  meltKshap[,sign :=factor(sign(phi),levels=c(1,-1),labels=c("Increases","Decreases"))]
+  meltKshap <- melt(copy(explanation$Kshap[, id := .I]), id.vars = "id", value.name = "phi")
+  meltKshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
   # Converting and melting Xtest
-  desc_mat <- format(l$Xtest,digits=no_desc_digits)
-  for (i in 1:ncol(desc_mat)){
-    desc_mat[,i] <- paste0(colnam[i]," = ",desc_mat[,i])
+  desc_mat <- format(l$Xtest, digits = no_desc_digits)
+  for (i in 1:ncol(desc_mat)) {
+    desc_mat[, i] <- paste0(colnam[i], " = ", desc_mat[, i])
   }
-  desc_dt <- as.data.table(cbind(none= "none",desc_mat))
-  melt_desc_dt <- melt(desc_dt[,id:=.I],id.vars="id",value.name="description")
+  desc_dt <- as.data.table(cbind(none = "none", desc_mat))
+  melt_desc_dt <- melt(desc_dt[, id := .I], id.vars = "id", value.name = "description")
 
   # Data table for plotting
-  plotting_dt <- merge(meltKshap,melt_desc_dt)
+  plotting_dt <- merge(meltKshap, melt_desc_dt)
 
-  if (!plot_phi0){
-    plotting_dt <- plotting_dt[variable!="none"]
+  if (!plot_phi0) {
+    plotting_dt <- plotting_dt[variable != "none"]
   }
   plotting_dt <- plotting_dt[id %in% plot_which_Xtest]
-
-  plotting_dt[,rank := frank(-abs(phi)),by=id]
-  plotting_dt <- plotting_dt[rank<=top_k_features]
-
-#  plotting_dt <- plotting_dt[order(id,-abs(phi))]
-
-  plotting_dt[,description:=factor(description, levels = unique(description[order(abs(phi))]))]
+  plotting_dt[, rank := frank(-abs(phi)), by = id]
+  plotting_dt <- plotting_dt[rank <= top_k_features]
+  plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
 
   # Plotting
-  gg <- ggplot(plotting_dt) +
-    facet_wrap(~id,scales="free_y",labeller="label_both") +
-    geom_col(aes(x=description,y=phi,fill=sign)) +
-    coord_flip() +
-    scale_fill_manual(values = c("steelblue", "lightsteelblue"), drop = T) +
-    labs(y = "Feature contribution", x = "Feature", fill = "",title = "Shapley value prediction explanation") +
-    theme(legend.position = 'bottom',
-          plot.title = element_text(hjust = 0.5))
+  gg <- ggplot2::ggplot(plotting_dt) +
+    ggplot2::facet_wrap(~id, scales = "free_y", labeller = "label_both") +
+    ggplot2::geom_col(ggplot2::aes(x = description, y = phi, fill = sign)) +
+    ggplot2::coord_flip() +
+    ggplot2::scale_fill_manual(values = c("steelblue", "lightsteelblue"), drop = T) +
+    ggplot2::labs(y = "Feature contribution", x = "Feature", fill = "", title = "Shapley value prediction explanation") +
+    ggplot2::theme(
+      legend.position = "bottom",
+      plot.title = ggplot2::element_text(hjust = 0.5)
+    )
 
   return(gg)
 }

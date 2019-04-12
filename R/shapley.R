@@ -395,24 +395,24 @@ sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_co
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 predictions <- function(model,
-                            D,
-                            h_optim_vec,
-                            kernel_metric,
-                            S,
-                            Xtrain,
-                            Xtest,
-                            w_threshold = .7,
-                            noSamp_MC = 1e3,
-                            verbose = FALSE,
-                            cond_approach_list,
-                            feature_list,
-                            pred_zero,
-                            mu,
-                            Sigma,
-                            mu_Gauss_trans = mu_Gauss_trans,
-                            Sigma_Gauss_trans = Sigma_Gauss_trans,
-                            Xtest_Gauss_trans,
-                            ensure_condcov_symmetry = F) {
+                        D,
+                        h_optim_vec,
+                        kernel_metric,
+                        S,
+                        Xtrain,
+                        Xtest,
+                        w_threshold = .7,
+                        noSamp_MC = 1e3,
+                        verbose = FALSE,
+                        cond_approach_list,
+                        feature_list,
+                        pred_zero,
+                        mu,
+                        Sigma,
+                        mu_Gauss_trans = mu_Gauss_trans,
+                        Sigma_Gauss_trans = Sigma_Gauss_trans,
+                        Xtest_Gauss_trans,
+                        ensure_condcov_symmetry = F) {
   p <- ncol(Xtrain)
 
   DTp.Gaussian <- DTp.copula <- DTp.empirical <- NULL
@@ -567,22 +567,22 @@ prediction_vector <- function(model, data) {
 #'
 #' @author Martin Jullum
 compute_kshap <- function(model,
-                               l,
-                               noSamp_MC = 1e3,
-                               verbose = FALSE,
-                               cond_approach = "empirical", # When being a list, the elements in the list refers to the rows in l$X that ought to be included in each of the approaches!
-                               empirical_settings = list(
-                                 type = "fixed_sigma", # May in the future allow a vector of length nrow(S) here as well to specify fixed for some and optimiziation for others
-                                 fixed_sigma_vec = 0.1, # May be a vector of length nrow(S), or a single number used for all
-                                 AICc_no_samp_per_optim = 1000,
-                                 AIC_optim_max_eval = 20,
-                                 AIC_optim_startval = 0.1,
-                                 w_threshold = 0.95
-                               ),
-                               pred_zero,
-                               mu = NULL,
-                               Sigma = NULL,
-                               ensure_condcov_symmetry = F) {
+                          l,
+                          noSamp_MC = 1e3,
+                          verbose = FALSE,
+                          cond_approach = "empirical", # When being a list, the elements in the list refers to the rows in l$X that ought to be included in each of the approaches!
+                          empirical_settings = list(
+                            type = "fixed_sigma", # May in the future allow a vector of length nrow(S) here as well to specify fixed for some and optimiziation for others
+                            fixed_sigma_vec = 0.1, # May be a vector of length nrow(S), or a single number used for all
+                            AICc_no_samp_per_optim = 1000,
+                            AIC_optim_max_eval = 20,
+                            AIC_optim_startval = 0.1,
+                            w_threshold = 0.95
+                          ),
+                          pred_zero,
+                          mu = NULL,
+                          Sigma = NULL,
+                          ensure_condcov_symmetry = F) {
   tt <- proc.time()
 
   ll <- list()
@@ -849,15 +849,15 @@ compute_kshap <- function(model,
 
   # Makes data.table from Kshap
   Kshap <- as.data.table(Kshap)
-  colnames(Kshap) <- c("none",colnames(l$Xtrain))
+  colnames(Kshap) <- c("none", colnames(l$Xtrain))
 
 
   # Makes vector with the full prediction that is decomposed
-  pred_vec <- DT[wcomb==2^ncol(l$Xtrain),k]
+  pred_vec <- DT[wcomb == 2^ncol(l$Xtrain), k]
 
   tt <- proc.time() - tt
 
-  ret_list <- list(Kshap = Kshap, pred_vec = pred_vec,other_objects = list(ll = ll, DT = DT, h_optim_DT = h_optim_DT, comp_time = tt))
+  ret_list <- list(Kshap = Kshap, pred_vec = pred_vec, other_objects = list(ll = ll, DT = DT, h_optim_DT = h_optim_DT, comp_time = tt))
   return(ret_list)
 }
 
@@ -874,11 +874,11 @@ compute_kshap <- function(model,
 #'
 #' @author Nikolai Sellereite
 prepare_kshap <- function(Xtrain,
-                               Xtest,
-                               exact = TRUE,
-                               noSamp = NULL,
-                               shapley_weight_inf_replacement = 10^6,
-                               compute_distances_for_no_var = 0:ncol(Xtrain)) { # Set to NULL if no distances are to be computed
+                          Xtest,
+                          exact = TRUE,
+                          noSamp = NULL,
+                          shapley_weight_inf_replacement = 10^6,
+                          compute_distances_for_no_var = 0:ncol(Xtrain)) { # Set to NULL if no distances are to be computed
 
   ## Convert data to data.table format --------------
   if (!is.data.table(Xtrain)) {
