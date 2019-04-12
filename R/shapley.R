@@ -867,7 +867,7 @@ compute_kshap <- function(model,
 
 
   # Makes vector with the full prediction that is decomposed
-  pred_vec <- DT[wcomb==2^ncol(Xtrain),k]
+  pred_vec <- DT[wcomb==2^ncol(l$Xtrain),k]
 
   tt <- proc.time() - tt
 
