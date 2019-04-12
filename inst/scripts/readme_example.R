@@ -1,4 +1,3 @@
-rm(list=ls())
 library(MASS)
 library(xgboost)
 library(shapr)

@@ -57,7 +57,6 @@ An example
 The following example shows how a simple `xgboost` model is trained using the *Boston Housing Data*, and how `shapr` explains the individual predictions.
 
 ``` r
-rm(list=ls())
 library(MASS)
 library(xgboost)
 library(shapr)
@@ -93,7 +92,7 @@ model <- xgboost(data = x_train,
 l <- prepare_kshap(Xtrain = x_train,
                    Xtest = x_test)
 
-# Spedifying the phi_0, i.e. the expected prediction without any features
+# Specifying the phi_0, i.e. the expected prediction without any features
 pred_zero <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
