@@ -28,7 +28,7 @@ plot_kshap <- function(explanation,
   colnam <- colnames(l$Xtest)
 
   # melting Kshap
-  meltKshap <- melt(explanation$Kshap[,id:=.I],id.vars="id",value.name="phi")
+  meltKshap <- melt(copy(explanation$Kshap[,id:=.I]),id.vars="id",value.name="phi")
   meltKshap[,sign :=factor(sign(phi),levels=c(1,-1),labels=c("Increases","Decreases"))]
 
   # Converting and melting Xtest

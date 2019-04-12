@@ -1,25 +1,27 @@
+rm(list=ls())
 library(MASS)
 library(xgboost)
 library(shapr)
+library(ggplot2)
 
 data("Boston")
 
 x_var <-  c("lstat","rm","dis","indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:10),x_var])
-y_train <- Boston[-(1:10),y_var]
-x_test <- as.matrix(Boston[1:10,x_var])
+x_train <- as.matrix(Boston[-(1:6),x_var])
+y_train <- Boston[-(1:6),y_var]
+x_test <- as.matrix(Boston[1:6,x_var])
 
 # Just looking at the dependence between the features
 
- cor(x_train)
- #> cor(x_train)
- # lstat         rm        dis      indus
- # lstat  1.0000000 -0.6106362 -0.5075796  0.6073291
- # rm    -0.6106362  1.0000000  0.2051866 -0.3897134
- # dis   -0.5075796  0.2051866  1.0000000 -0.7059103
- # indus  0.6073291 -0.3897134 -0.7059103  1.0000000
+cor(x_train)
+#> cor(x_train)
+# lstat         rm        dis      indus
+# lstat  1.0000000 -0.6106362 -0.5075796  0.6073291
+# rm    -0.6106362  1.0000000  0.2051866 -0.3897134
+# dis   -0.5075796  0.2051866  1.0000000 -0.7059103
+# indus  0.6073291 -0.3897134 -0.7059103  1.0000000
 
 
 # Fitting a basic xgboost model to the training data
@@ -44,10 +46,13 @@ explanation = compute_kshap(model = model,
 # Printing the Shapley values for the test data
 explanation$Kshap
 
-#          [,1]      [,2]       [,3]        [,4]       [,5]
-# [1,] 22.45484 5.3814963 -0.4823530  1.56978008  4.9216356
-# [2,] 22.45484 0.3344492 -0.8322893  0.97687526  0.3750935
-# [3,] 22.45484 6.1609843  4.8894905  0.53138409 -2.0826502
-# [4,] 22.45484 8.9163071  0.3154509 -0.18616672  2.1797222
-# [5,] 22.45484 0.7486236  6.2298609  0.24828116  2.7369589
-# [6,] 22.45484 2.5868833 -3.8420937 -0.02532364  3.1038779
+#      none     lstat         rm       dis      indus
+# 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644
+# 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871
+# 3: 22.446 5.9888016  5.5450861 0.5660136 -1.4304350
+# 4: 22.446 8.2142203  0.7507569 0.1893368  1.8298305
+# 5: 22.446 0.5059890  5.6875106 0.8432240  2.2471152
+# 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531
+
+# Finally we plot the resulting explanations
+plot_kshap(explanation,l)
