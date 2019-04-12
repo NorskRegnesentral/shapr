@@ -57,70 +57,66 @@ An example
 The following example shows how a simple `xgboost` model is trained using the *Boston Housing Data*, and how `shapr` explains the individual predictions.
 
 ``` r
+rm(list=ls())
 library(MASS)
 library(xgboost)
 library(shapr)
+library(data.table)
+library(ggplot2)
 
 data("Boston")
 
-x_var <-  c("lstat", "rm", "dis", "indus")
+x_var <-  c("lstat","rm","dis","indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:10), x_var])
-y_train <- Boston[-(1:10), y_var]
-x_test <- as.matrix(Boston[1:10, x_var])
+x_train <- as.matrix(Boston[-(1:6),x_var])
+y_train <- Boston[-(1:6),y_var]
+x_test <- as.matrix(Boston[1:6,x_var])
 
-# Quick look at the dependence between the features
+# Just looking at the dependence between the features
+
 cor(x_train)
 #>            lstat         rm        dis      indus
-#> lstat  1.0000000 -0.6106362 -0.5075796  0.6073291
-#> rm    -0.6106362  1.0000000  0.2051866 -0.3897134
-#> dis   -0.5075796  0.2051866  1.0000000 -0.7059103
-#> indus  0.6073291 -0.3897134 -0.7059103  1.0000000
+#> lstat  1.0000000 -0.6108040 -0.4928126  0.5986263
+#> rm    -0.6108040  1.0000000  0.1999130 -0.3870571
+#> dis   -0.4928126  0.1999130  1.0000000 -0.7060903
+#> indus  0.5986263 -0.3870571 -0.7060903  1.0000000
 
-# The features are are highly correlated
+# Fitting a basic xgboost model to the training data
+model <- xgboost(data = x_train,
+                 label = y_train,
+                 nround=20,
+                 verbose=F)
 
-# Fit basic xgboost model to training data
-model <- xgboost(
-  data = x_train, 
-  label = y_train, 
-  nround = 20, 
-  verbose = FALSE
-)
 
 # Prepare the data for explanation
-l <- prepare_kshap(
-  Xtrain = x_train, 
-  Xtest = x_test
-)
+l <- prepare_kshap(Xtrain = x_train,
+                   Xtest = x_test)
 
-# Specifying the phi_0, i.e. the expected prediction without any features
+# Spedifying the phi_0, i.e. the expected prediction without any features
 pred_zero <- mean(y_train)
-print(pred_zero)
-#> [1] 22.45484
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation <- compute_kshap(
-  model = model,
-  l = l,
-  pred_zero = pred_zero
-)
+explanation = compute_kshap(model = model,
+                            l = l,
+                            pred_zero=pred_zero)
 
 # Printing the Shapley values for the test data
-print(explanation$Kshap)
-#>           [,1]       [,2]       [,3]        [,4]        [,5]
-#>  [1,] 22.45484  5.3814963 -0.4823530  1.56978008  4.92163556
-#>  [2,] 22.45484  0.3344492 -0.8322893  0.97687526  0.37509350
-#>  [3,] 22.45484  6.1609843  4.8894905  0.53138409 -2.08265017
-#>  [4,] 22.45484  8.9163071  0.3154509 -0.18616672  2.17972216
-#>  [5,] 22.45484  0.7486236  6.2298609  0.24828117  2.73695892
-#>  [6,] 22.45484  2.5868833 -3.8420937 -0.02532364  3.10387793
-#>  [7,] 22.45484 -1.0434064 -1.5499314  1.19064778 -0.83828715
-#>  [8,] 22.45484 -5.3505414 -0.4604888  1.34558699 -0.52891751
-#>  [9,] 22.45484 -6.0891236 -1.1543907  1.57635992  0.02279797
-#> [10,] 22.45484 -4.0430392 -1.2308774  0.55839033 -0.78247565
+explanation$Kshap
+#>      none     lstat         rm       dis      indus
+#> 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644
+#> 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871
+#> 3: 22.446 5.9888016  5.5450861 0.5660136 -1.4304350
+#> 4: 22.446 8.2142203  0.7507569 0.1893368  1.8298305
+#> 5: 22.446 0.5059890  5.6875106 0.8432240  2.2471152
+#> 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531
+
+# Finally we plot the resulting explanations
+plot_kshap(explanation,l)
 ```
+
+<img src="man/figures/README-basic_example-1.png" width="100%" />
 
 References
 ----------
