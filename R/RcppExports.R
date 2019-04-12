@@ -78,7 +78,7 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 #' Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
 #'
 #' @param featureList List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.
-#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{cov(Xtrain_mat)}) gives Mahalanobis distance,
+#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
 #' \code{diag(m)} gives the Euclidean distance.
 #' @param S_scale_dist Logical indicating
 #'

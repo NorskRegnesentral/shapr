@@ -240,7 +240,7 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
 #' @param zx Vector where the first part is the Gaussian data, and last part is
 #' the data with the original transformation
 #' @param n_y How many elements of \code{yx} that belongs to the y-part (new data)
-#' @param type The quantile type used when back-transforming. 7 (default) is the default in quantile().
+#' @param type The quantile type used when back-transforming. 7 (default) is the default in stats::quantile().
 #'
 #' @return Vector of transformed new data
 #' @export
@@ -249,8 +249,8 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
 inv_gaussian_transform <- function(zx, n_z, type = 7) {
   z <- zx[1:n_z]
   x <- zx[-(1:n_z)]
-  u <- pnorm(z)
-  xNew <- quantile(x, u, type = type)
+  u <- stats::pnorm(z)
+  xNew <- stats::quantile(x, u, type = type)
   return(xNew)
 }
 
@@ -272,7 +272,7 @@ gaussian_transform_separate <- function(yx, n_y) {
   tmp <- rank(c(y, x))[1:length(y)]
   tmp <- tmp - rank(tmp) + 0.5
   u.y <- tmp / (length(x) + 1)
-  z.y <- qnorm(u.y)
+  z.y <- stats::qnorm(u.y)
   return(z.y)
 }
 
@@ -286,7 +286,7 @@ gaussian_transform_separate <- function(yx, n_y) {
 #' @author Martin Jullum
 gaussian_transform <- function(x) {
   u <- rank(x) / (length(x) + 1)
-  z <- qnorm(u)
+  z <- stats::qnorm(u)
   return(z)
 }
 
@@ -328,7 +328,7 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
       X.given = X_given
     )
     # ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
-    ret0_z <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
+    ret0_z <- mvtnorm::rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
 
     ret0_x <- apply(X = rbind(ret0_z, Xtrain[, dependent_ind, drop = F]), MARGIN = 2, FUN = inv_gaussian_transform, n_z = noSamp_MC)
 
@@ -355,39 +355,25 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
 #'
 #' @author Martin Jullum
 sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_condcov_symmetry = F) {
+
   # Handles the unconditional and full conditional separtely when predicting
   if (length(given_ind) %in% c(0, p)) {
     ret <- matrix(Xtest, ncol = p, nrow = 1)
   } else {
     dependent_ind <- (1:length(mu))[-given_ind]
     X_given <- Xtest[given_ind]
-    # ret0 <- condMVNorm::rcmvnorm(
-    #     n = noSamp_MC,
-    #     mean = mu,
-    #     sigma = Sigma,
-    #     dependent.ind = dependent_ind,
-    #     given.ind = given_ind,
-    #     X.given = X_given,
-    #     method = "chol")
-    if (!ensure_condcov_symmetry) {
-      tmp <- condMVNorm::condMVN(
-        mean = mu,
-        sigma = Sigma,
-        dependent.ind = dependent_ind,
-        given.ind = given_ind,
-        X.given = X_given
-      )
-    } else {
-      tmp <- condMVN_modified(
-        mean = mu,
-        sigma = Sigma,
-        dependent.ind = dependent_ind,
-        given.ind = given_ind,
-        X.given = X_given
-      )
+    tmp <- condMVNorm::condMVN(
+      mean = mu,
+      sigma = Sigma,
+      dependent.ind = dependent_ind,
+      given.ind = given_ind,
+      X.given = X_given
+    )
+    if (ensure_condcov_symmetry) {
+      tmp$condVar <- Matrix::symmpart(tmp$condVar)
     }
-    # ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
-    ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
+
+    ret0 <- mvtnorm::rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
 
     ret <- matrix(NA, ncol = p, nrow = noSamp_MC)
     ret[, given_ind] <- rep(X_given, each = noSamp_MC)
@@ -481,7 +467,7 @@ predictions <- function(model,
 
     # Handle the computation of all training-test weights for ALL combinations here, before looping
     if (kernel_metric == "independence") {
-      W_kernel <- array(runif(no_wcomb * nrow(Xtrain)), dim = c(nrow(Xtrain), no_wcomb)) # Just random noise to "fake" a distance between observations
+      W_kernel <- array(stats::runif(no_wcomb * nrow(Xtrain)), dim = c(nrow(Xtrain), no_wcomb)) # Just random noise to "fake" a distance between observations
     }
     if (kernel_metric == "Gaussian") {
       val <- t(t(-0.5 * D) / h_optim_vec^2)
@@ -666,7 +652,7 @@ compute_kshap <- function(model,
             cutters <- 1:empirical_settings$AICc_no_samp_per_optim
             no_cond <- length(these_cond)
 
-            cond_samp <- cut(cutters, quantile(cutters, (0:no_cond) / no_cond), include.lowest = TRUE, labels = these_cond)
+            cond_samp <- cut(cutters, stats::quantile(cutters, (0:no_cond) / no_cond), include.lowest = TRUE, labels = these_cond)
             cond_samp <- as.numeric(levels(cond_samp))[cond_samp]
 
 
@@ -692,7 +678,7 @@ compute_kshap <- function(model,
                 Sbar.cols <- which(as.logical(1 - S))
 
                 X_list[[j]] <- as.matrix(subset(l$Xtrain, select = S.cols)[these_train, ])
-                mcov_list[[j]] <- cov(X_list[[j]])
+                mcov_list[[j]] <- stats::cov(X_list[[j]])
 
                 Xtrain.Sbar <- subset(l$Xtrain, select = Sbar.cols)[these_train, ]
                 Xtest.S <- subset(l$Xtest, select = S.cols)[these_test, ]
@@ -712,7 +698,7 @@ compute_kshap <- function(model,
 
 
               ## Doing the numerical optimization -------
-              nlm.obj <- suppressWarnings(nlminb(
+              nlm.obj <- suppressWarnings(stats::nlminb(
                 start = empirical_settings$AIC_optim_startval,
                 objective = aicc_full_cpp,
                 X_list = X_list,
@@ -753,7 +739,7 @@ compute_kshap <- function(model,
               these_test <- sample(x = these_test, size = nrow(l$Xtrain), replace = T)
 
               X_list <- list(as.matrix(subset(l$Xtrain, select = S.cols)[these_train, ]))
-              mcov_list <- list(cov(X_list[[1]]))
+              mcov_list <- list(stats::cov(X_list[[1]]))
 
               Xtrain.Sbar <- subset(l$Xtrain, select = Sbar.cols)[these_train, ]
               Xtest.S <- subset(l$Xtest, select = S.cols)[these_test, ]
@@ -767,7 +753,7 @@ compute_kshap <- function(model,
 
               ## Running the nonlinear optimization
 
-              nlm.obj <- suppressWarnings(nlminb(
+              nlm.obj <- suppressWarnings(stats::nlminb(
                 start = empirical_settings$AIC_optim_startval,
                 objective = aicc_full_cpp,
                 X_list = X_list,
@@ -908,7 +894,7 @@ prepare_kshap <- function(Xtrain,
   ## Get weighted matrix ----------------
   W <- weight_matrix(X, use_shapley_weights_in_W = ifelse(exact, T, F), normalize_W_weights = T)
 
-  mcov <- cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
+  mcov <- stats::cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
 
   if (!is.null(compute_distances_for_no_var[1])) { # Only compute the distances if the empirical approach is used
     D <- mahalanobis_distance_cpp(
