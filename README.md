@@ -29,7 +29,7 @@ Current methodological restrictions:
 -->
 Future releases will include:
 
--   Support for models not supported natively by supplying the `shapr::prediction_vector()` taking model and data as input and produces a vector of predictions as output.
+-   Support for models not supported natively.
 -   Support for parallelization over explanations, features subsets for non-parallelizable prediction functions.
 -   Simplify the use of the combination method.
 -   Plotting functionality for Shapley values
