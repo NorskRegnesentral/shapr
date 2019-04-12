@@ -13,8 +13,10 @@ ByteCompile: true
 Language: en-US
 Suggests: 
     xgboost,
-    testthat, 
-    lintr
+    testthat,
+    lintr,
+    knitr,
+    rmarkdown
 Imports: 
     data.table,
     ranger,
@@ -31,3 +33,4 @@ RoxygenNote: 6.1.1
 LinkingTo: 
     RcppArmadillo,
     Rcpp
+VignetteBuilder: knitr
