@@ -51,10 +51,10 @@ plot_kshap <- function(explanation,
 
   # Plotting
   gg <- ggplot2::ggplot(plotting_dt) +
-    ggplot2::facet_wrap(~id, scales = "free_y", labeller = "label_both") +
+    ggplot2::facet_wrap(~id, scales = "free_y", labeller = "label_both", ncol = 2) +
     ggplot2::geom_col(ggplot2::aes(x = description, y = phi, fill = sign)) +
     ggplot2::coord_flip() +
-    ggplot2::scale_fill_manual(values = c("steelblue", "lightsteelblue"), drop = T) +
+    ggplot2::scale_fill_manual(values = c("steelblue", "lightsteelblue"), drop = TRUE) +
     ggplot2::labs(y = "Feature contribution", x = "Feature", fill = "", title = "Shapley value prediction explanation") +
     ggplot2::theme(
       legend.position = "bottom",
