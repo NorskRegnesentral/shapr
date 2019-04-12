@@ -14,7 +14,8 @@ Language: en-US
 Suggests: 
     xgboost,
     testthat, 
-    lintr
+    lintr,
+    covr
 Imports: 
     data.table,
     ranger,
