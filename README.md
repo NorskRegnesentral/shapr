@@ -57,6 +57,7 @@ An example
 The following example shows how a simple `xgboost` model is trained using the *Boston Housing Data*, and how `shapr` explains the individual predictions.
 
 ``` r
+
 library(MASS)
 library(xgboost)
 library(shapr)
@@ -72,7 +73,7 @@ x_train <- as.matrix(Boston[-(1:6), x_var])
 y_train <- Boston[-(1:6), y_var]
 x_test <- as.matrix(Boston[1:6, x_var])
 
-# Just looking at the dependence between the features
+# Looking at the dependence between the features
 
 cor(x_train)
 #>            lstat         rm        dis      indus

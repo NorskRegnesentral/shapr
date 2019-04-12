@@ -5,17 +5,17 @@ library(ggplot2)
 
 data("Boston")
 
-x_var <-  c("lstat","rm","dis","indus")
+x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:6),x_var])
-y_train <- Boston[-(1:6),y_var]
-x_test <- as.matrix(Boston[1:6,x_var])
+x_train <- as.matrix(Boston[-(1:6), x_var])
+y_train <- Boston[-(1:6), y_var]
+x_test <- as.matrix(Boston[1:6, x_var])
 
 # Just looking at the dependence between the features
 
 cor(x_train)
-#> cor(x_train)
+# > cor(x_train)
 # lstat         rm        dis      indus
 # lstat  1.0000000 -0.6106362 -0.5075796  0.6073291
 # rm    -0.6106362  1.0000000  0.2051866 -0.3897134
@@ -24,23 +24,29 @@ cor(x_train)
 
 
 # Fitting a basic xgboost model to the training data
-model <- xgboost(data = x_train,
-                 label = y_train,
-                 nround=20)
+model <- xgboost(
+  data = x_train,
+  label = y_train,
+  nround = 20
+)
 
 
 # Prepare the data for explanation
-l <- prepare_kshap(Xtrain = x_train,
-                   Xtest = x_test)
+l <- prepare_kshap(
+  Xtrain = x_train,
+  Xtest = x_test
+)
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
 pred_zero <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation = compute_kshap(model = model,
-                            l = l,
-                            pred_zero=pred_zero)
+explanation <- compute_kshap(
+  model = model,
+  l = l,
+  pred_zero = pred_zero
+)
 
 # Printing the Shapley values for the test data
 explanation$Kshap
@@ -54,4 +60,4 @@ explanation$Kshap
 # 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531
 
 # Finally we plot the resulting explanations
-plot_kshap(explanation,l)
+plot_kshap(explanation, l)
