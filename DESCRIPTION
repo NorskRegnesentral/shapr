@@ -34,7 +34,8 @@ Suggests:
     ranger,
     xgboost,
     testthat, 
-    lintr
+    lintr,
+    covr
 LinkingTo: 
     RcppArmadillo,
     Rcpp

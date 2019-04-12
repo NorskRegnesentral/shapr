@@ -41,7 +41,10 @@ jobs:
           name: Move files
           command: mv ${RCHECK_DIR} /tmp/Rcheck
           when: always
-
+      - run:
+          name: Code coverage
+          when: on_success
+          command: R -e 'covr::package_coverage()'
       - store_test_results:
           path: /tmp/Rcheck/tests/
           when: always
