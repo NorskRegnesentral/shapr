@@ -10,7 +10,7 @@ inv_gaussian_transform(zx, n_z, type = 7)
 \item{zx}{Vector where the first part is the Gaussian data, and last part is
 the data with the original transformation}
 
-\item{type}{The quantile type used when back-transforming. 7 (default) is the default in quantile().}
+\item{type}{The quantile type used when back-transforming. 7 (default) is the default in stats::quantile().}
 
 \item{n_y}{How many elements of \code{yx} that belongs to the y-part (new data)}
 }
