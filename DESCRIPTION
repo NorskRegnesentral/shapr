@@ -14,9 +14,8 @@ ByteCompile: true
 Language: en-US
 RoxygenNote: 6.1.1
 Imports: 
-    data.table,
-    ranger,
     stats,
+    data.table,
     Rcpp (>= 0.12.15),
     cluster,
     maptree,
@@ -26,6 +25,7 @@ Imports:
     mvtnorm,
     Matrix
 Suggests: 
+    ranger,
     xgboost,
     testthat, 
     lintr
