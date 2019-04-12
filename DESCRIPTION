@@ -35,7 +35,8 @@ Suggests:
     xgboost,
     testthat, 
     lintr,
-    covr
+    covr,
+    ggplot2
 LinkingTo: 
     RcppArmadillo,
     Rcpp
