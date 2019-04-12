@@ -111,7 +111,7 @@ l <- prepare_kshap(
   Xtest = x_test
 )
 
-# Spesifying the phi_0, i.e. the expected prediction without any features
+# Specifying the phi_0, i.e. the expected prediction without any features
 pred_zero <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
