@@ -355,38 +355,23 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
 #'
 #' @author Martin Jullum
 sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_condcov_symmetry = F) {
+
   # Handles the unconditional and full conditional separtely when predicting
   if (length(given_ind) %in% c(0, p)) {
     ret <- matrix(Xtest, ncol = p, nrow = 1)
   } else {
     dependent_ind <- (1:length(mu))[-given_ind]
     X_given <- Xtest[given_ind]
-    # ret0 <- condMVNorm::rcmvnorm(
-    #     n = noSamp_MC,
-    #     mean = mu,
-    #     sigma = Sigma,
-    #     dependent.ind = dependent_ind,
-    #     given.ind = given_ind,
-    #     X.given = X_given,
-    #     method = "chol")
-    if (!ensure_condcov_symmetry) {
-      tmp <- condMVNorm::condMVN(
-        mean = mu,
-        sigma = Sigma,
-        dependent.ind = dependent_ind,
-        given.ind = given_ind,
-        X.given = X_given
-      )
-    } else {
-      tmp <- condMVN_modified(
-        mean = mu,
-        sigma = Sigma,
-        dependent.ind = dependent_ind,
-        given.ind = given_ind,
-        X.given = X_given
-      )
+    tmp <- condMVNorm::condMVN(
+      mean = mu,
+      sigma = Sigma,
+      dependent.ind = dependent_ind,
+      given.ind = given_ind,
+      X.given = X_given
+    )
+    if (ensure_condcov_symmetry) {
+      tmp$condVar <- Matrix::symmpart(tmp$condVar)
     }
-    # ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
     ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
 
     ret <- matrix(NA, ncol = p, nrow = noSamp_MC)
