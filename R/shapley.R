@@ -300,7 +300,6 @@ gaussian_transform <- function(x) {
 #'
 #' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
 #'
-#' @import condMVNorm
 #' @export
 #'
 #' @author Martin Jullum
@@ -350,7 +349,6 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
 #'
 #' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
 #'
-#' @import condMVNorm
 #' @export
 #'
 #' @author Martin Jullum
