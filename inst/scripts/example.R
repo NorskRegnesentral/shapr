@@ -1,5 +1,3 @@
-rm(list = ls())
-
 library(data.table)
 library(mvtnorm)
 library(shapr)
