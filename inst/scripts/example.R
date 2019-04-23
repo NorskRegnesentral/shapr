@@ -1,5 +1,5 @@
 library(data.table)
-library(mvtnorm)
+library(mvnfast)
 library(shapr)
 
 ### Defining sampling data and model

@@ -300,7 +300,6 @@ gaussian_transform <- function(x) {
 #'
 #' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
 #'
-#' @import condMVNorm
 #' @export
 #'
 #' @author Martin Jullum
@@ -328,7 +327,7 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
       X.given = X_given
     )
     # ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
-    ret0_z <- mvtnorm::rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
+    ret0_z <- mvnfast::rmvn(n = noSamp_MC, mu = tmp$condMean, sigma = tmp$condVar)
 
     ret0_x <- apply(X = rbind(ret0_z, Xtrain[, dependent_ind, drop = F]), MARGIN = 2, FUN = inv_gaussian_transform, n_z = noSamp_MC)
 
@@ -350,7 +349,6 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
 #'
 #' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
 #'
-#' @import condMVNorm
 #' @export
 #'
 #' @author Martin Jullum
@@ -373,7 +371,7 @@ sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_co
       tmp$condVar <- Matrix::symmpart(tmp$condVar)
     }
 
-    ret0 <- mvtnorm::rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = tmp$condVar, method = "chol")
+    ret0 <- mvnfast::rmvn(n = noSamp_MC, mu = tmp$condMean, sigma = tmp$condVar)
 
     ret <- matrix(NA, ncol = p, nrow = noSamp_MC)
     ret[, given_ind] <- rep(X_given, each = noSamp_MC)
