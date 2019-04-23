@@ -2,23 +2,24 @@
 % Please edit documentation in R/extra.R
 \name{sample_combinations}
 \alias{sample_combinations}
-\title{Helper function to sample a combination of training and testing rows, which does not risk getting the same observation twice.
-Need to improve this help file.}
+\title{Helper function to sample a combination of training and testing rows, which does not risk
+getting the same observation twice. Need to improve this help file.}
 \usage{
-sample_combinations(nTrain, nTest, nosamp, separate = F)
+sample_combinations(n_train, n_test, nosamp, separate = F)
 }
 \arguments{
-\item{separate}{Logical indicating whether the train and test data should be sampled separately or in a joint sampling space.
-If they are sampled separately (which typically would be used when optimizing more than one distribution at once) we sample with
-replacement if more samples than training data. Not optimal, but for now fine if careful when using more samples than the number
+\item{separate}{Logical indicating whether the train and test data should be sampled separately
+or in a joint sampling space. If they are sampled separately (which typically would be used when
+optimizing more than one distribution at once) we sample with replacement if more samples than
+training data. Not optimal, but for now fine if careful when using more samples than the number
 training observations while at the same time doing optimization over every test observation.}
 }
 \value{
 Numeric
 }
 \description{
-Helper function to sample a combination of training and testing rows, which does not risk getting the same observation twice.
-Need to improve this help file.
+Helper function to sample a combination of training and testing rows, which does not risk
+getting the same observation twice. Need to improve this help file.
 }
 \author{
 Martin Jullum

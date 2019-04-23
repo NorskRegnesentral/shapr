@@ -4,11 +4,11 @@
 \alias{predictions}
 \title{Get predictions}
 \usage{
-predictions(model, D, h_optim_vec, kernel_metric, S, Xtrain, Xtest,
-  w_threshold = 0.7, noSamp_MC = 1000, verbose = FALSE,
-  cond_approach_list, feature_list, pred_zero, mu, Sigma,
-  mu_Gauss_trans = mu_Gauss_trans,
-  Sigma_Gauss_trans = Sigma_Gauss_trans, Xtest_Gauss_trans,
+predictions(model, D, h_optim_vec, kernel_metric, s, xtrain, xtest,
+  w_threshold = 0.7, no_samp_mc = 1000, verbose = FALSE,
+  cond_approach_list, feature_list, pred_zero, mu, sigma,
+  mu_gauss_trans = mu_gauss_trans,
+  sigma_gauss_trans = sigma_gauss_trans, xtest_gauss_trans,
   ensure_condcov_symmetry = F)
 }
 \arguments{
@@ -16,17 +16,21 @@ predictions(model, D, h_optim_vec, kernel_metric, S, Xtrain, Xtest,
 
 \item{D}{Matrix}
 
-\item{kernel_metric}{String indicating which kernel metric should be used in the empirical conditional distribution.
-Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing independently, ignoring any distance) being the second option
+\item{kernel_metric}{String indicating which kernel metric should be used in the empirical
+conditional distribution.
+Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing independently,
+ignoring any distance) being the second option
 "Gaussian_old" [\eqn{\sqrt(\exp(-D/2\sigma))}] is also kept for reproducibility.}
 
-\item{S}{Matrix}
+\item{s}{Matrix}
 
-\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data}
+\item{xtrain}{Matrix, data.frame or data.table with the features from the training data}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
+\item{xtest}{Matrix, data.frame or data.table with the features, whose predictions ought
+to be explained (test data)}
 
-\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
+\item{no_samp_mc}{Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 
 \item{verbose}{Integer. How much information to print during function execution (in development)}
 
@@ -34,11 +38,13 @@ Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence" (imputing i
 
 \item{pred_zero}{Numeric}
 
-\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
+NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
-\item{Sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+\item{sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
+distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
-\item{Xtest_Gauss_trans}{Vector with the Gaussian transformed test observations}
+\item{xtest_gauss_trans}{Vector with the Gaussian transformed test observations}
 }
 \value{
 List

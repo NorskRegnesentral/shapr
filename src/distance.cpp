@@ -7,8 +7,8 @@ using namespace Rcpp;
 //'
 //' Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
 //'
-//' @param featureList List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.
-//' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
+//' @param feature_list List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.
+//' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(xtrain_mat)}) gives Mahalanobis distance,
 //' \code{diag(m)} gives the Euclidean distance.
 //' @param S_scale_dist Logical indicating
 //'
@@ -17,21 +17,21 @@ using namespace Rcpp;
 //' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 //' @author Martin Jullum
 // [[Rcpp::export]]
-arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist) {
+arma::cube mahalanobis_distance_cpp(Rcpp::List feature_list,arma::mat xtrain_mat, arma::mat xtest_mat, arma::mat mcov, bool S_scale_dist) {
 
     using namespace arma;
 
     // Define variables
-    int ntrain = Xtrain_mat.n_rows;
-    int ntest = Xtest_mat.n_rows;
-    int m = Xtrain_mat.n_cols;
-    int p = featureList.size();
+    int ntrain = xtrain_mat.n_rows;
+    int ntest = xtest_mat.n_rows;
+    int m = xtrain_mat.n_cols;
+    int p = feature_list.size();
 
     arma::mat mcov0;
     arma::mat cholDec;
     arma::mat mu0;
     arma::mat mu;
-    arma::mat X;
+    arma::mat x;
 
     arma::cube out(ntrain,ntest,p,arma::fill::zeros);
 
@@ -45,14 +45,14 @@ arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat,
 
     for (int k = 1; k < p; ++k){ // Ignoring the first List element (assuming it contains en empty vector)
 
-        arma::uvec theseFeatures = featureList[k];
+        arma::uvec theseFeatures = feature_list[k];
         theseFeatures = theseFeatures-1;
 
         mcov0 = mcov.submat(theseFeatures,theseFeatures);
-        X = Xtrain_mat.cols(theseFeatures);
-        mu0 = Xtest_mat.cols(theseFeatures);
+        x = xtrain_mat.cols(theseFeatures);
+        mu0 = xtest_mat.cols(theseFeatures);
 
-        uint32_t d = X.n_cols;
+        uint32_t d = x.n_cols;
         vec tmp(d);
         cholDec = trimatl(chol(mcov0).t());
         vec D = cholDec.diag();
@@ -76,7 +76,7 @@ arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat,
 
                     for(ii = 0; ii < irow; ii++) acc += tmp.at(ii) * cholDec.at(irow, ii);
 
-                    tmp.at(irow) = ( X.at(icol, irow) - mu.at(irow) - acc ) / D.at(irow);
+                    tmp.at(irow) = ( x.at(icol, irow) - mu.at(irow) - acc ) / D.at(irow);
                 }
 
                 out.at(icol,j,k) = sum(square(tmp));

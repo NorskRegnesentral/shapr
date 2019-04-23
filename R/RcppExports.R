@@ -3,17 +3,17 @@
 
 #' Computing single H matrix in AICc-function using the Mahalanobis distance
 #'
-#' @param X matrix with "covariates"
+#' @param x matrix with "covariates"
 #' @param mcov covariance matrix
 #' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 #' @param h numeric specifying the scaling (sigma)
 #'
 #' @export
 #'
-#' @return Matrix of dimension \code{ncol(X)*ncol(X)}
+#' @return Matrix of dimension \code{ncol(x)*ncol(x)}
 #' @author Martin Jullum
-hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
-    .Call(`_shapr_hat_matrix_cpp`, X, mcov, S_scale_dist, h)
+hat_matrix_cpp <- function(x, mcov, S_scale_dist, h) {
+    .Call(`_shapr_hat_matrix_cpp`, x, mcov, S_scale_dist, h)
 }
 
 #' sigma_hat_sq-function
@@ -43,7 +43,7 @@ correction_matrix_cpp <- function(tr_H, n) {
 
 #'  Temp-function for computing the full AICc with several X's etc
 #'
-#' @param X matrix with "covariates"
+#' @param x matrix with "covariates"
 #' @param mcov covariance matrix
 #' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 #' @param h numeric specifying the scaling (sigma)
@@ -53,14 +53,14 @@ correction_matrix_cpp <- function(tr_H, n) {
 #'
 #' @return Scalar with the numeric value of the AICc formula
 #' @author Martin Jullum
-aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
-    .Call(`_shapr_aicc_full_single_cpp`, X, mcov, S_scale_dist, h, y)
+aicc_full_single_cpp <- function(x, mcov, S_scale_dist, h, y) {
+    .Call(`_shapr_aicc_full_single_cpp`, x, mcov, S_scale_dist, h, y)
 }
 
 #'  AICc formula for several sets, alternative definition
 #'
 #' @param h numeric specifying the scaling (sigma)
-#' @param X matrix with "covariates"
+#' @param x matrix with "covariates"
 #' @param mcov covariance matrix
 #' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 #' @param y vector with the "response variable"
@@ -69,16 +69,16 @@ aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
 #'
 #' @return Scalar with the numeric value of the AICc formula
 #' @author Martin Jullum
-aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) {
-    .Call(`_shapr_aicc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
+aicc_full_cpp <- function(h, x_list, mcov_list, S_scale_dist, y_list, negative) {
+    .Call(`_shapr_aicc_full_cpp`, h, x_list, mcov_list, S_scale_dist, y_list, negative)
 }
 
 #' (Generalized) Mahalanobis distance
 #'
 #' Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
 #'
-#' @param featureList List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.
-#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
+#' @param feature_list List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.
+#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(xtrain_mat)}) gives Mahalanobis distance,
 #' \code{diag(m)} gives the Euclidean distance.
 #' @param S_scale_dist Logical indicating
 #'
@@ -86,13 +86,13 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 #'
 #' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 #' @author Martin Jullum
-mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist) {
-    .Call(`_shapr_mahalanobis_distance_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
+mahalanobis_distance_cpp <- function(feature_list, xtrain_mat, xtest_mat, mcov, S_scale_dist) {
+    .Call(`_shapr_mahalanobis_distance_cpp`, feature_list, xtrain_mat, xtest_mat, mcov, S_scale_dist)
 }
 
 #' Get imputed data
 #'
-#' @param ID Positive integer vector
+#' @param id Positive integer vector
 #' @param Comb Positive integer vector
 #' @inheritParams global_arguments
 #'
@@ -101,8 +101,8 @@ mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S
 #'
 #' @return Array of three dimensions
 #' @author Nikolai Sellereite
-observation_impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
-    .Call(`_shapr_observation_impute_cpp`, ID, Comb, Xtrain, Xtest, S)
+observation_impute_cpp <- function(id, Comb, xtrain, xtest, s) {
+    .Call(`_shapr_observation_impute_cpp`, id, Comb, xtrain, xtest, s)
 }
 
 #' Get distance

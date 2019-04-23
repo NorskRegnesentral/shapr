@@ -8,9 +8,9 @@ data("Boston")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:6), x_var])
-y_train <- Boston[-(1:6), y_var]
-x_test <- as.matrix(Boston[1:6, x_var])
+x_train <- as.matrix(Boston[-seq(6), x_var])
+y_train <- Boston[-seq(6), y_var]
+x_test <- as.matrix(Boston[seq(6), x_var])
 
 # Just looking at the dependence between the features
 
@@ -33,8 +33,8 @@ model <- xgboost(
 
 # Prepare the data for explanation
 l <- prepare_kshap(
-  Xtrain = x_train,
-  Xtest = x_test
+  xtrain = x_train,
+  xtest = x_test
 )
 
 # Spedifying the phi_0, i.e. the expected prediction without any features

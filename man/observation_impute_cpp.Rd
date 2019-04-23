@@ -4,18 +4,19 @@
 \alias{observation_impute_cpp}
 \title{Get imputed data}
 \usage{
-observation_impute_cpp(ID, Comb, Xtrain, Xtest, S)
+observation_impute_cpp(id, Comb, xtrain, xtest, s)
 }
 \arguments{
-\item{ID}{Positive integer vector}
+\item{id}{Positive integer vector}
 
 \item{Comb}{Positive integer vector}
 
-\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data}
+\item{xtrain}{Matrix, data.frame or data.table with the features from the training data}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
+\item{xtest}{Matrix, data.frame or data.table with the features, whose predictions ought
+to be explained (test data)}
 
-\item{S}{Matrix}
+\item{s}{Matrix}
 }
 \value{
 Array of three dimensions

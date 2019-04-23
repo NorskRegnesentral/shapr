@@ -4,10 +4,10 @@
 \alias{weight_matrix}
 \title{Get weighted matrix}
 \usage{
-weight_matrix(X, use_shapley_weights_in_W = T, normalize_W_weights = T)
+weight_matrix(x, use_shapley_weights_in_w = T, normalize_w_weights = T)
 }
 \arguments{
-\item{X}{data.table}
+\item{x}{data.table}
 }
 \value{
 Matrix

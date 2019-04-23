@@ -10,18 +10,18 @@ nTest <- 10
 
 mu <- 1:dimX
 Sigma <- matrix(rho,ncol=dimX,nrow=dimX)
-diag(Sigma) <- 1:dimX
+diag(sigma) <- 1:dimX
 
 
-samp_variables <- function(n,mu,Sigma){
+samp_variables <- function(n,mu,sigma){
     data.table(rmvnorm(n = n,
                        mean = mu,
-                       sigma = Sigma))
+                       sigma = sigma))
 
 }
 
-samp_model <- function(n,X,sd_noise){
-    y <- rowSums(X) + rnorm(n = n,mean=0,sd=sd_noise)
+samp_model <- function(n,x,sd_noise){
+    y <- rowSums(x) + rnorm(n = n,mean=0,sd=sd_noise)
 }
 
 fit_model_func <- function(XYtrain){
@@ -35,18 +35,18 @@ sd_noise <- 0.5
 
 set.seed(123)
 
-XYtrain <- data.table(samp_variables(n = nTrain,
+XYtrain <- data.table(samp_variables(n = n_train,
                                      mu = mu,
-                                     Sigma = Sigma))
+                                     sigma = sigma))
 
 XYtrain[,y:=samp_model(.N,.SD,sd_noise=sd_noise)]
 Xtrain <- copy(XYtrain)
 Xtrain[,y:=NULL]
 
 # Just features for testing
-Xtest <- data.table(samp_variables(n = nTest,
+Xtest <- data.table(samp_variables(n = n_test,
                                    mu = mu,
-                                   Sigma = Sigma))
+                                   sigma = sigma))
 
 
 pred_zero = XYtrain[, mean(y)] # Storing the mean prediction
@@ -59,8 +59,8 @@ model <- fit_model_func(XYtrain)
 #### Preparing the data for kernelShap
 
 l <- prepare_kshap(
-    Xtrain = Xtrain,
-    Xtest = Xtest)
+    xtrain = xtrain,
+    xtest = xtest)
 
 #### Running a few different versions of kernelShap
 

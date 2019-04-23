@@ -4,14 +4,14 @@
 \alias{aicc_full_cpp}
 \title{AICc formula for several sets, alternative definition}
 \usage{
-aicc_full_cpp(h, X_list, mcov_list, S_scale_dist, y_list, negative)
+aicc_full_cpp(h, x_list, mcov_list, S_scale_dist, y_list, negative)
 }
 \arguments{
 \item{h}{numeric specifying the scaling (sigma)}
 
 \item{S_scale_dist}{logical indicating whether the Mahalanobis distance should be scaled with the number of variables}
 
-\item{X}{matrix with "covariates"}
+\item{x}{matrix with "covariates"}
 
 \item{mcov}{covariance matrix}
 
