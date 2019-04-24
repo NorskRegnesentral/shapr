@@ -605,7 +605,7 @@ compute_kshap <- function(model,
   ll <- list()
 
   if (is.character(cond_approach)) {
-    cond_approach_list <- list(1:nrow(l$S))
+    cond_approach_list <- list(1:nrow(l$s))
     names(cond_approach_list) <- cond_approach
   }
   if (is.list(cond_approach)) {
@@ -614,7 +614,7 @@ compute_kshap <- function(model,
 
   if ("empirical" %in% names(cond_approach_list)) {
     these_empirical <- cond_approach_list$empirical
-    exclude_emp <- (these_empirical %in% c(1, nrow(l$S)))
+    exclude_emp <- (these_empirical %in% c(1, nrow(l$s)))
 
     these_empirical <- these_empirical[!exclude_emp]
 
@@ -698,7 +698,7 @@ compute_kshap <- function(model,
                 these_test <- sample(x = these_test, size = nrow(l$xtrain), replace = T)
                 current_cond_samp <- rep(unique(cond_samp), each = nrow(l$xtrain))
 
-                s <- l$S[this_cond, ]
+                s <- l$s[this_cond, ]
 
                 s_cols <- which(as.logical(s))
                 sbar_cols <- which(as.logical(1 - s))
@@ -748,7 +748,7 @@ compute_kshap <- function(model,
 
         if (empirical_settings$type == "AICc_full") {
           for (i in these_empirical) {
-            s <- l$S[i, ]
+            s <- l$s[i, ]
 
             s_cols <- which(as.logical(s))
             sbar_cols <- which(as.logical(1 - s))
@@ -828,7 +828,7 @@ compute_kshap <- function(model,
   # Only needed for copula method, but is not time consuming anyway
   xtrain_gauss_trans <- apply(l$xtrain, MARGIN = 2, FUN = gaussian_transform)
   xtest_gauss_trans <- apply(
-    x = rbind(l$xtest, l$xtrain),
+    rbind(l$xtest, l$xtrain),
     MARGIN = 2,
     FUN = gaussian_transform_separate,
     n_y = nrow(l$xtest)
@@ -851,7 +851,7 @@ compute_kshap <- function(model,
       D = l$D[, i, ],
       h_optim_vec = h_optim_mat[, i],
       kernel_metric = kernel_metric,
-      s = l$S,
+      s = l$s,
       xtrain = xtrain_mat,
       xtest = xtest_mat[i, , drop = FALSE],
       w_threshold = empirical_settings$w_threshold,
@@ -872,9 +872,9 @@ compute_kshap <- function(model,
 
   dt <- rbindlist(ll)
 
-  kshap <- matrix(0, nrow = nrow(l$xtest), ncol = nrow(l$W))
+  kshap <- matrix(0, nrow = nrow(l$xtest), ncol = nrow(l$w))
   for (i in l$xtest[, .I]) {
-    kshap[i, ] <- l$W %*% dt[id == i, k]
+    kshap[i, ] <- l$w %*% dt[id == i, k]
   }
 
   # Makes data.table from kshap

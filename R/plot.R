@@ -19,19 +19,20 @@ plot_kshap <- function(explanation,
                        l,
                        no_desc_digits = 3,
                        plot_phi0 = T,
-                       plot_which_xtest = 1:nrow(l$Xtest),
-                       top_k_features = ncol(l$Xtest) + 1) {
+                       plot_which_xtest = 1:nrow(l$xtest),
+                       top_k_features = ncol(l$xtest) + 1) {
+
 
   is_installed <- requireNamespace("ggplot2", quietly = TRUE)
   if (!is_installed) stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
-  colnam <- colnames(l$Xtest)
+  colnam <- colnames(l$xtest)
 
   # melting kshap
-  melt_kshap <- data.table::melt(data.table::copy(explanation$Kshap[, id := .I]), id.vars = "id", value.name = "phi")
+  melt_kshap <- data.table::melt(data.table::copy(explanation$kshap[, id := .I]), id.vars = "id", value.name = "phi")
   melt_kshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
   # Converting and melting xtest
-  desc_mat <- format(l$Xtest, digits = no_desc_digits)
+  desc_mat <- format(l$xtest, digits = no_desc_digits)
   for (i in 1:ncol(desc_mat)) {
     desc_mat[, i] <- paste0(colnam[i], " = ", desc_mat[, i])
   }
