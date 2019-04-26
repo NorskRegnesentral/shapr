@@ -2,6 +2,7 @@ library(MASS)
 library(xgboost)
 library(shapr)
 library(ggplot2)
+library(data.table)
 
 data("Boston")
 

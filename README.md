@@ -16,9 +16,10 @@ The following methodology/features are currently implemented:
 -   Native support of explanation of predictions with the following model classes `stats::glm`, `stats::lm`,`ranger::ranger`, `xgboost::xgboost` and `mgcv::gam`.
 -   Accounting for feature dependence assuming the features are Gaussian (Aas, Jullum, and Løland (2019)).
 -   Accounting for feature dependence with a Gaussian copula (Gaussian dependence structure, any marginal) (Aas, Jullum, and Løland (2019)).
--   Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of Aas, Jullum, and Løland (2019)
--   Combine any of the three methods
+-   Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of Aas, Jullum, and Løland (2019).
+-   Combine any of the three methods.
 -   Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai (1998) when optimizing the bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2019).
+-   Functionality for visualizing the explanations.
 
 <!--
 Current methodological restrictions:
@@ -30,9 +31,8 @@ Current methodological restrictions:
 Future releases will include:
 
 -   Support for models not supported natively.
--   Support for parallelization over explanations, features subsets for non-parallelizable prediction functions.
+-   Support for parallelization over explanations, Monte Carlo sampling and features subsets for non-parallelizable prediction functions.
 -   Simplify the use of the combination method.
--   Plotting functionality for Shapley values
 -   Computational improvement of the AICc optimization approach
 -   Adaptive selection of method to account for the feature dependence
 
