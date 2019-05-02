@@ -818,7 +818,8 @@ compute_kshap <- function(model,
 
   # Only needed for copula method, but is not time consuming anyway
   Xtrain_Gauss_trans <- apply(X = l$Xtrain, MARGIN = 2, FUN = gaussian_transform)
-  Xtest_Gauss_trans <- apply(rbind(l$Xtest, l$Xtrain),
+  Xtest_Gauss_trans <- apply(
+    X = rbind(l$Xtest, l$Xtrain),
     MARGIN = 2,
     FUN = gaussian_transform_separate,
     n_y = nrow(l$Xtest)
