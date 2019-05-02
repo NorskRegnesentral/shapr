@@ -21,7 +21,6 @@ plot_kshap <- function(explanation,
                        plot_phi0 = T,
                        plot_which_Xtest = 1:nrow(l$Xtest),
                        top_k_features = ncol(l$Xtest) + 1) {
-
   is_installed <- requireNamespace("ggplot2", quietly = TRUE)
   if (!is_installed) stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   colnam <- colnames(l$Xtest)
@@ -45,11 +44,11 @@ plot_kshap <- function(explanation,
   plotting_dt <- merge(meltKshap, melt_desc_dt)
 
   # Adding the predictions
-  predDT <- data.table::data.table(id=KshapDT$id,pred=explanation$pred_vec)
-  plotting_dt <- merge(plotting_dt,predDT,by = "id")
+  predDT <- data.table::data.table(id = KshapDT$id, pred = explanation$pred_vec)
+  plotting_dt <- merge(plotting_dt, predDT, by = "id")
 
   # Adding header for each individual plot
-  plotting_dt[,header:=paste0("id: ",id,", pred = ",format(pred, digits = no_desc_digits+1))]
+  plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = no_desc_digits + 1))]
 
   if (!plot_phi0) {
     plotting_dt <- plotting_dt[variable != "none"]
