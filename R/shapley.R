@@ -247,8 +247,9 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
 #'
 #' @author Martin Jullum
 inv_gaussian_transform <- function(zx, n_z, type = 7) {
-  z <- zx[1:n_z]
-  x <- zx[-(1:n_z)]
+  ind <- 1:n_z
+  z <- zx[ind]
+  x <- zx[-ind]
   u <- stats::pnorm(z)
   xNew <- stats::quantile(x, u, type = type)
   return(xNew)
@@ -267,8 +268,9 @@ inv_gaussian_transform <- function(zx, n_z, type = 7) {
 #'
 #' @author Martin Jullum
 gaussian_transform_separate <- function(yx, n_y) {
-  y <- yx[1:n_y]
-  x <- yx[-(1:n_y)]
+  ind <- 1:n_y
+  y <- yx[ind]
+  x <- yx[-ind]
   tmp <- rank(c(y, x))[1:length(y)]
   tmp <- tmp - rank(tmp) + 0.5
   u.y <- tmp / (length(x) + 1)
@@ -311,14 +313,7 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
     dependent_ind <- (1:length(mu))[-given_ind]
     X_given <- Xtest_Gauss_trans[given_ind]
     X_given_orig <- Xtest[given_ind]
-    # ret0 <- condMVNorm::rcmvnorm(
-    #     n = noSamp_MC,
-    #     mean = mu,
-    #     sigma = Sigma,
-    #     dependent.ind = dependent_ind,
-    #     given.ind = given_ind,
-    #     X.given = X_given,
-    #     method = "chol")
+
     tmp <- condMVNorm::condMVN(
       mean = mu,
       sigma = Sigma,
@@ -326,10 +321,15 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
       given.ind = given_ind,
       X.given = X_given
     )
-    # ret0 <- rmvnorm(n = noSamp_MC, mean = tmp$condMean, sigma = (tmp$condVar+t(tmp$condVar))/2, method = "chol")
+
     ret0_z <- mvnfast::rmvn(n = noSamp_MC, mu = tmp$condMean, sigma = tmp$condVar)
 
-    ret0_x <- apply(X = rbind(ret0_z, Xtrain[, dependent_ind, drop = F]), MARGIN = 2, FUN = inv_gaussian_transform, n_z = noSamp_MC)
+    ret0_x <- apply(
+      X = rbind(ret0_z, Xtrain[, dependent_ind, drop = F]),
+      MARGIN = 2,
+      FUN = inv_gaussian_transform,
+      n_z = noSamp_MC
+    )
 
     ret <- matrix(NA, ncol = p, nrow = noSamp_MC)
     ret[, given_ind] <- rep(X_given_orig, each = noSamp_MC)
@@ -465,11 +465,14 @@ predictions <- function(model,
 
     # Handle the computation of all training-test weights for ALL combinations here, before looping
     if (kernel_metric == "independence") {
-      W_kernel <- array(stats::runif(no_wcomb * nrow(Xtrain)), dim = c(nrow(Xtrain), no_wcomb)) # Just random noise to "fake" a distance between observations
+      # Just random noise to "fake" a distance between observations
+      W_kernel <- array(stats::runif(no_wcomb * nrow(Xtrain)), dim = c(nrow(Xtrain), no_wcomb))
     }
     if (kernel_metric == "Gaussian") {
       val <- t(t(-0.5 * D) / h_optim_vec^2)
-      W_kernel <- exp(val) # To avoid numerical problems for small sigma values, we need to substract some constant from val here. Check if it is possible to do this per column/row of l$D[,i,]
+      W_kernel <- exp(val)
+      # To avoid numerical problems for small sigma values, we need to substract some constant from
+      # val here. Check if it is possible to do this per column/row of l$D[,i,]
     }
 
     ## Get imputed data
@@ -554,12 +557,19 @@ prediction_vector <- function(model, data) {
 #' Computes kernel SHAP values for test data
 #'
 #' @inheritParams global_arguments
-#' @param empirical_settings List. Specifying the settings when using the empirical method to compute the conditional expectations.
-#' @param pred_zero The prediction value for unseen data, typically equal to the mean of the response
-#' @param ensure_condcov_symmetry Logical. Whether to ensure that the conditional covariance matrices in the Gaussian and copula approaches are symmetric.
-#' Typically only needed if the original covariance is just barely positive definite.
+#' @param empirical_settings List. Specifying the settings when using the empirical method to
+#' compute the conditional expectations.
+#' @param pred_zero The prediction value for unseen data, typically equal to the mean of the
+#' response
+#' @param ensure_condcov_symmetry Logical. Whether to ensure that the conditional covariance
+#' matrices in the Gaussian and copula approaches are symmetric. Typically only needed if the
+#' original covariance is just barely positive definite.
 #'
-#' @return List with kernel SHAP values (\code{Kshap}) and other object used to perform the computation (helpful for debugging etc.)
+#' @details If \code{cond_approach} is a list, the elements in the list refers to the rows in
+#' \code{l$X} that ought to be included in each of the approaches!
+#'
+#' @return List with kernel SHAP values (\code{Kshap}) and other object used to perform
+#' the computation (helpful for debugging etc.)
 #'
 #' @export
 #'
@@ -568,10 +578,10 @@ compute_kshap <- function(model,
                           l,
                           noSamp_MC = 1e3,
                           verbose = FALSE,
-                          cond_approach = "empirical", # When being a list, the elements in the list refers to the rows in l$X that ought to be included in each of the approaches!
+                          cond_approach = "empirical",
                           empirical_settings = list(
-                            type = "fixed_sigma", # May in the future allow a vector of length nrow(S) here as well to specify fixed for some and optimiziation for others
-                            fixed_sigma_vec = 0.1, # May be a vector of length nrow(S), or a single number used for all
+                            type = "fixed_sigma",
+                            fixed_sigma_vec = 0.1,
                             AICc_no_samp_per_optim = 1000,
                             AIC_optim_max_eval = 20,
                             AIC_optim_startval = 0.1,
@@ -604,11 +614,14 @@ compute_kshap <- function(model,
 
     # Checking whether any of the distance are not pre-computed.
     if (any(!(these_empirical %in% l$D_for_these_varcomb))) {
-      paste0("Distance not pre-computed for varcomb ", paste0(these_empirical[!(these_empirical %in% l$D_for_these_varcomb)], collapse = ", "))
+      str_msg <- paste0(these_empirical[!(these_empirical %in% l$D_for_these_varcomb)], collapse = ", ")
+      paste0("Distance not pre-computed for varcomb ", str_msg)
     }
 
     # Reducing and re-ordering the D-array
-    l$D <- l$D[, , match(these_empirical, l$D_for_these_varcomb)] # Now the D-array corresponds to exactly the covariate combinations specified in these_empirical
+    l$D <- l$D[, , match(these_empirical, l$D_for_these_varcomb)]
+    # Note that the D-array corresponds to exactly the covariate combinations specified in
+    # these_empirical
 
 
     if (empirical_settings$type == "independence") {
@@ -626,7 +639,7 @@ compute_kshap <- function(model,
         h_optim_mat[, ] <- empirical_settings$fixed_sigma_vec
       } else {
 
-        #### Procedure for sampling a combination of an index in the training and the test sets ####
+        # Procedure for sampling a combination of an index in the training and the test sets
         optimsamp <- sample_combinations(
           nTrain = nrow(l$Xtrain),
           nTest = nrow(l$Xtest),
@@ -634,14 +647,15 @@ compute_kshap <- function(model,
           separate = T
         )
 
-        empirical_settings$AICc_no_samp_per_optim <- nrow(optimsamp) # Updating this parameter (if larger than nTrain*nTest)
+        # Updating parameter (only if it is larger than nTrain*nTest)
+        empirical_settings$AICc_no_samp_per_optim <- nrow(optimsamp)
 
         nloops <- nrow(l$Xtest)
 
-        ### Include test here that empirical settings is defined as it should be
-
-        if (empirical_settings$type == "AICc_each_k") { # This means doing optimization only once for all distributions which conditions on exactly k variables
-
+        # Include test here that empirical settings is defined as it should be
+        if (empirical_settings$type == "AICc_each_k") {
+          # Optimization is done only once for all distributions which conditions on
+          # exactly k variables
           these_k <- unique(l$X$nfeatures[these_empirical])
 
           for (i in these_k) {
@@ -650,7 +664,12 @@ compute_kshap <- function(model,
             cutters <- 1:empirical_settings$AICc_no_samp_per_optim
             no_cond <- length(these_cond)
 
-            cond_samp <- cut(cutters, stats::quantile(cutters, (0:no_cond) / no_cond), include.lowest = TRUE, labels = these_cond)
+            cond_samp <- cut(
+              x = cutters,
+              breaks = stats::quantile(cutters, (0:no_cond) / no_cond),
+              include.lowest = TRUE,
+              labels = these_cond
+            )
             cond_samp <- as.numeric(levels(cond_samp))[cond_samp]
 
 
@@ -781,27 +800,29 @@ compute_kshap <- function(model,
     h_optim_DT <- NULL
   }
 
-  #    if(sum(grepl("AICc",names(cond_approach_list)))>0){}
-
-
-
-  if (is.null(mu)) { # Using the mean of the training data in the Gaussian approach if not provided directly
+  if (is.null(mu)) {
+    # Using the mean of the training data in the Gaussian approach if not provided directly
     mu <- colMeans(l$Xtrain)
   }
-  if (is.null(Sigma)) { # Using the sample covariance of the training data in the Gaussian approach if not provided directly
+  if (is.null(Sigma)) {
+    # Using the sample covariance of the training data in the Gaussian approach if not provided directly
     Sigma <- stats::cov(l$Xtrain)
   }
 
-  if (any(eigen(Sigma)$values <= 1e-06)) { # Make matrix positive definite if not, or close to not.
+  if (any(eigen(Sigma)$values <= 1e-06)) {
+    # Make matrix positive definite if not, or close to not.
     Sigma <- as.matrix(Matrix::nearPD(Sigma)$mat)
-    # Sigma <- solve(symmpart(solve(Sigma))) # No point apparently
   }
   Xtest.mat <- as.matrix(l$Xtest)
   Xtrain.mat <- as.matrix(l$Xtrain)
 
   # Only needed for copula method, but is not time consuming anyway
   Xtrain_Gauss_trans <- apply(X = l$Xtrain, MARGIN = 2, FUN = gaussian_transform)
-  Xtest_Gauss_trans <- apply(X = rbind(l$Xtest, l$Xtrain), MARGIN = 2, FUN = gaussian_transform_separate, n_y = nrow(l$Xtest))
+  Xtest_Gauss_trans <- apply(rbind(l$Xtest, l$Xtrain),
+    MARGIN = 2,
+    FUN = gaussian_transform_separate,
+    n_y = nrow(l$Xtest)
+  )
 
   mu_Gauss_trans <- rep(0, ncol(l$Xtrain))
   Sigma_Gauss_trans <- stats::cov(Xtrain_Gauss_trans)
@@ -809,7 +830,8 @@ compute_kshap <- function(model,
     Sigma_Gauss_trans <- as.matrix(Matrix::nearPD(Sigma_Gauss_trans)$mat)
   }
 
-  for (i in l$Xtest[, .I]) { # This may be parallelized when the prediction function is not parallelized.
+  for (i in l$Xtest[, .I]) {
+    # This may be parallelized when the prediction function is not parallelized.
     if (verbose > 0) {
       print(sprintf("%d out of %d", i, l$Xtest[, .N]))
     }
@@ -855,7 +877,11 @@ compute_kshap <- function(model,
 
   tt <- proc.time() - tt
 
-  ret_list <- list(Kshap = Kshap, pred_vec = pred_vec, other_objects = list(ll = ll, DT = DT, h_optim_DT = h_optim_DT, comp_time = tt))
+  ret_list <- list(
+    Kshap = Kshap,
+    pred_vec = pred_vec,
+    other_objects = list(ll = ll, DT = DT, h_optim_DT = h_optim_DT, comp_time = tt)
+  )
   return(ret_list)
 }
 
@@ -865,6 +891,7 @@ compute_kshap <- function(model,
 #' Get Shapley weights for test data
 #'
 #' @inheritParams global_arguments
+#' @param compute_distances_for_no_var  If equal to \code{NULL} no distances are computed
 #'
 #' @return Matrix
 #'
@@ -876,7 +903,7 @@ prepare_kshap <- function(Xtrain,
                           exact = TRUE,
                           noSamp = NULL,
                           shapley_weight_inf_replacement = 10^6,
-                          compute_distances_for_no_var = 0:ncol(Xtrain)) { # Set to NULL if no distances are to be computed
+                          compute_distances_for_no_var = 0:ncol(Xtrain)) {
 
   ## Convert data to data.table format --------------
   if (!is.data.table(Xtrain)) {
@@ -887,21 +914,31 @@ prepare_kshap <- function(Xtrain,
   }
 
   ## Get all combinations ----------------
-  X <- feature_combinations(m = ncol(Xtrain), exact = exact, noSamp = noSamp, shapley_weight_inf_replacement = shapley_weight_inf_replacement, reduce_dim = T)
+  X <- feature_combinations(
+    m = ncol(Xtrain),
+    exact = exact,
+    noSamp = noSamp,
+    shapley_weight_inf_replacement = shapley_weight_inf_replacement,
+    reduce_dim = TRUE
+  )
 
   ## Get weighted matrix ----------------
   W <- weight_matrix(X, use_shapley_weights_in_W = ifelse(exact, T, F), normalize_W_weights = T)
 
-  mcov <- stats::cov(Xtrain) # Move distance_metric if-test here and replace by diag(m) if "Euclidean" once you see everything works fine
+  mcov <- stats::cov(Xtrain)
+  # Note that we could move distance_metric if-test here and replace by diag(m) if "Euclidean"
+  # once you see everything works fine
 
-  if (!is.null(compute_distances_for_no_var[1])) { # Only compute the distances if the empirical approach is used
+  if (!is.null(compute_distances_for_no_var[1])) {
+    # Only compute the distances if the empirical approach is used
     D <- mahalanobis_distance_cpp(
       featureList = X[nfeatures %in% compute_distances_for_no_var, features],
       Xtrain_mat = as.matrix(Xtrain),
       Xtest_mat = as.matrix(Xtest),
       mcov = mcov,
       S_scale_dist = T
-    ) # This is D_S(,)^2 in the paper
+    )
+    # Note that this is D_S(,)^2 in the paper
 
     ## Normalize the distance rows to ensure numerical stability in later operations
     colmin <- apply(X = D, MARGIN = c(2, 3), FUN = min)

@@ -97,8 +97,8 @@ correlation_rectangles <- function(
   clustab <- table(hc)[unique(hc[cluster$order])]
   cu <- c(0, cumsum(clustab))
 
-  rect(cu[-(k + 1)] + 0.5,
-    n - cu[-(k + 1)] + 0.5,
+  rect(cu[-1 * (k + 1)] + 0.5,
+    n - cu[-1 * (k + 1)] + 0.5,
     cu[-1] + 0.5,
     n - cu[-1] + 0.5,
     border = col, lwd = lwd
