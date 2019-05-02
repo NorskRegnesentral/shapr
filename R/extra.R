@@ -13,12 +13,12 @@
 #' @export
 #'
 #' @author Martin Jullum
-sample_combinations <- function(nTrain, nTest, nosamp, separate = F) {
+sample_combinations <- function(n_train, n_test, nosamp, separate = F) {
   if (separate) {
-    # With separate sampling, we do sampling with replacement if nosamp is larger than nTrain
-    sampinds_train <- 1:nTrain
-    sampinds_test <- 1:nTest
-    if (nosamp < nTrain) {
+    # With separate sampling, we do sampling with replacement if nosamp is larger than n_train
+    sampinds_train <- 1:n_train
+    sampinds_test <- 1:n_test
+    if (nosamp < n_train) {
       # Not optimal in general, but works for the current purpose. test data is always sampled,
       # while only reducing if the training data goes above nosamp.
       samp_train <- sample(
@@ -44,7 +44,7 @@ sample_combinations <- function(nTrain, nTest, nosamp, separate = F) {
       )
     }
   } else {
-    sampinds <- 1:(nTrain * nTest)
+    sampinds <- 1:(n_train * n_test)
     if (nosamp < max(sampinds)) {
       input_samp <- sample(
         x = sampinds,
@@ -56,8 +56,8 @@ sample_combinations <- function(nTrain, nTest, nosamp, separate = F) {
     }
 
     #               Test using input_samp=c(1,2,3, 1999, 2000 ,2001 ,2002)
-    samp_train <- (input_samp - 1) %% nTrain + 1
-    samp_test <- (input_samp - 1) %/% nTrain + 1
+    samp_train <- (input_samp - 1) %% n_train + 1
+    samp_test <- (input_samp - 1) %/% n_train + 1
   }
 
   ret <- data.frame(samp_train = samp_train, samp_test = samp_test)

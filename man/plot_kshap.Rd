@@ -5,7 +5,7 @@
 \title{Plot of the Shapley value explanations}
 \usage{
 plot_kshap(explanation, l, no_desc_digits = 3, plot_phi0 = T,
-  plot_which_Xtest = 1:nrow(l$Xtest), top_k_features = ncol(l$Xtest) +
+  plot_which_xtest = 1:nrow(l$xtest), top_k_features = ncol(l$xtest) +
   1)
 }
 \arguments{
@@ -17,7 +17,7 @@ plot_kshap(explanation, l, no_desc_digits = 3, plot_phi0 = T,
 
 \item{plot_phi0}{Logical. Whether to include phi0 in the plot}
 
-\item{plot_which_Xtest}{Integer vector. Which of the test observations to plot}
+\item{plot_which_xtest}{Integer vector. Which of the test observations to plot}
 
 \item{top_k_features}{Integer. How many features to include in the plot}
 }

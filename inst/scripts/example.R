@@ -10,18 +10,18 @@ nTest <- 10
 
 mu <- 1:dimX
 Sigma <- matrix(rho,ncol=dimX,nrow=dimX)
-diag(Sigma) <- 1:dimX
+diag(sigma) <- 1:dimX
 
 
-samp_variables <- function(n,mu,Sigma){
+samp_variables <- function(n,mu,sigma){
     data.table(rmvnorm(n = n,
                        mean = mu,
-                       sigma = Sigma))
+                       sigma = sigma))
 
 }
 
-samp_model <- function(n,X,sd_noise){
-    y <- rowSums(X) + rnorm(n = n,mean=0,sd=sd_noise)
+samp_model <- function(n,x,sd_noise){
+    y <- rowSums(x) + rnorm(n = n,mean=0,sd=sd_noise)
 }
 
 fit_model_func <- function(XYtrain){
@@ -35,18 +35,18 @@ sd_noise <- 0.5
 
 set.seed(123)
 
-XYtrain <- data.table(samp_variables(n = nTrain,
+XYtrain <- data.table(samp_variables(n = n_train,
                                      mu = mu,
-                                     Sigma = Sigma))
+                                     sigma = sigma))
 
 XYtrain[,y:=samp_model(.N,.SD,sd_noise=sd_noise)]
 Xtrain <- copy(XYtrain)
 Xtrain[,y:=NULL]
 
 # Just features for testing
-Xtest <- data.table(samp_variables(n = nTest,
+Xtest <- data.table(samp_variables(n = n_test,
                                    mu = mu,
-                                   Sigma = Sigma))
+                                   sigma = sigma))
 
 
 pred_zero = XYtrain[, mean(y)] # Storing the mean prediction
@@ -59,8 +59,8 @@ model <- fit_model_func(XYtrain)
 #### Preparing the data for kernelShap
 
 l <- prepare_kshap(
-    Xtrain = Xtrain,
-    Xtest = Xtest)
+    xtrain = xtrain,
+    xtest = xtest)
 
 #### Running a few different versions of kernelShap
 
@@ -94,16 +94,16 @@ Shapley.approx$empirical_independence = compute_kshap(model = model,
 
 ### Just looking at some of the results
 
-head(Shapley.approx$empirical_sigma.01$Kshap)
+head(Shapley.approx$empirical_sigma.01$kshap)
 
-head(Shapley.approx$Gaussian$Kshap)
+head(Shapley.approx$Gaussian$kshap)
 
-head(Shapley.approx$comb$Kshap)
+head(Shapley.approx$comb$kshap)
 
-head(Shapley.approx$empirical_independence$Kshap)
+head(Shapley.approx$empirical_independence$kshap)
 
 
-#> head(Shapley.approx$empirical_sigma.01$Kshap)
+#> head(Shapley.approx$empirical_sigma.01$kshap)
 #[,1]        [,2]       [,3]       [,4]       [,5]        [,6]
 #[1,] 15.12185 -0.33101596 -0.1995941 -3.1716767 -1.3690171  5.96095813
 #[2,] 15.12185  0.07543789  1.4629576 -0.4498481  1.4533601  0.01711505
@@ -112,7 +112,7 @@ head(Shapley.approx$empirical_independence$Kshap)
 #[5,] 15.12185  1.22095162 -1.5424712  3.5383849  0.4585373 -4.70531011
 #[6,] 15.12185 -1.05841893 -2.9451814 -5.2363138  0.2268107  1.81790819
 #>
-#    > head(Shapley.approx$Gaussian$Kshap)
+#    > head(Shapley.approx$Gaussian$kshap)
 #[,1]        [,2]       [,3]       [,4]        [,5]       [,6]
 #[1,] 15.12185 -0.26997464 -0.5612531 -2.8961716 -1.57141431  6.1884677
 #[2,] 15.12185  0.08823734  1.7546374 -0.4306098  1.30675389 -0.1599963
@@ -121,7 +121,7 @@ head(Shapley.approx$empirical_independence$Kshap)
 #[5,] 15.12185  1.06791081 -0.9292292  3.5612818  0.14014064 -4.8700116
 #[6,] 15.12185 -1.17506733 -3.0383310 -4.6305757  0.08754156  1.5612371
 #>
-#   > head(Shapley.approx$comb$Kshap)
+#   > head(Shapley.approx$comb$kshap)
 #[,1]         [,2]       [,3]       [,4]        [,5]       [,6]
 #[1,] 15.12185 -0.365222151 -0.4642992 -2.9715479 -1.51400585  6.2047293
 #[2,] 15.12185 -0.004273317  1.7791250 -0.3399272  1.23111803 -0.1070200
@@ -130,7 +130,7 @@ head(Shapley.approx$empirical_independence$Kshap)
 #[5,] 15.12185  0.969900702 -0.9433975  3.6876274  0.08742696 -4.8314652
 #[6,] 15.12185 -1.097507445 -3.4018879 -4.9092677  0.50676064  1.7067072
 #
-# > head(Shapley.approx$empirical_independence$Kshap)
+# > head(Shapley.approx$empirical_independence$kshap)
 # [,1]       [,2]       [,3]       [,4]       [,5]        [,6]
 # [1,] 15.12185 -0.2132539 -0.4355152 -2.4175282 -1.3926871  5.34863846
 # [2,] 15.12185  0.1598323  1.2829112 -0.1663144  1.2493053  0.03328819

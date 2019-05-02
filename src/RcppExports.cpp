@@ -7,16 +7,16 @@
 using namespace Rcpp;
 
 // hat_matrix_cpp
-arma::mat hat_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h);
-RcppExport SEXP _shapr_hat_matrix_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP) {
+arma::mat hat_matrix_cpp(arma::mat x, arma::mat mcov, bool S_scale_dist, double h);
+RcppExport SEXP _shapr_hat_matrix_cpp(SEXP xSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
     Rcpp::traits::input_parameter< double >::type h(hSEXP);
-    rcpp_result_gen = Rcpp::wrap(hat_matrix_cpp(X, mcov, S_scale_dist, h));
+    rcpp_result_gen = Rcpp::wrap(hat_matrix_cpp(x, mcov, S_scale_dist, h));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -45,63 +45,63 @@ BEGIN_RCPP
 END_RCPP
 }
 // aicc_full_single_cpp
-arma::vec aicc_full_single_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y);
-RcppExport SEXP _shapr_aicc_full_single_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP, SEXP ySEXP) {
+arma::vec aicc_full_single_cpp(arma::mat x, arma::mat mcov, bool S_scale_dist, double h, arma::vec y);
+RcppExport SEXP _shapr_aicc_full_single_cpp(SEXP xSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
     Rcpp::traits::input_parameter< double >::type h(hSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(aicc_full_single_cpp(X, mcov, S_scale_dist, h, y));
+    rcpp_result_gen = Rcpp::wrap(aicc_full_single_cpp(x, mcov, S_scale_dist, h, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // aicc_full_cpp
-double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative);
-RcppExport SEXP _shapr_aicc_full_cpp(SEXP hSEXP, SEXP X_listSEXP, SEXP mcov_listSEXP, SEXP S_scale_distSEXP, SEXP y_listSEXP, SEXP negativeSEXP) {
+double aicc_full_cpp(double h, Rcpp::List x_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative);
+RcppExport SEXP _shapr_aicc_full_cpp(SEXP hSEXP, SEXP x_listSEXP, SEXP mcov_listSEXP, SEXP S_scale_distSEXP, SEXP y_listSEXP, SEXP negativeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type h(hSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type X_list(X_listSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type x_list(x_listSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type mcov_list(mcov_listSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type y_list(y_listSEXP);
     Rcpp::traits::input_parameter< bool >::type negative(negativeSEXP);
-    rcpp_result_gen = Rcpp::wrap(aicc_full_cpp(h, X_list, mcov_list, S_scale_dist, y_list, negative));
+    rcpp_result_gen = Rcpp::wrap(aicc_full_cpp(h, x_list, mcov_list, S_scale_dist, y_list, negative));
     return rcpp_result_gen;
 END_RCPP
 }
 // mahalanobis_distance_cpp
-arma::cube mahalanobis_distance_cpp(Rcpp::List featureList, arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist);
-RcppExport SEXP _shapr_mahalanobis_distance_cpp(SEXP featureListSEXP, SEXP Xtrain_matSEXP, SEXP Xtest_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
+arma::cube mahalanobis_distance_cpp(Rcpp::List featureList, arma::mat xtrain_mat, arma::mat xtest_mat, arma::mat mcov, bool S_scale_dist);
+RcppExport SEXP _shapr_mahalanobis_distance_cpp(SEXP featureListSEXP, SEXP xtrain_matSEXP, SEXP xtest_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type featureList(featureListSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Xtrain_mat(Xtrain_matSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Xtest_mat(Xtest_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type xtrain_mat(xtrain_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type xtest_mat(xtest_matSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
-    rcpp_result_gen = Rcpp::wrap(mahalanobis_distance_cpp(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist));
+    rcpp_result_gen = Rcpp::wrap(mahalanobis_distance_cpp(featureList, xtrain_mat, xtest_mat, mcov, S_scale_dist));
     return rcpp_result_gen;
 END_RCPP
 }
 // observation_impute_cpp
-NumericMatrix observation_impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtrain, NumericMatrix Xtest, IntegerMatrix S);
-RcppExport SEXP _shapr_observation_impute_cpp(SEXP IDSEXP, SEXP CombSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP SSEXP) {
+NumericMatrix observation_impute_cpp(IntegerVector id, IntegerVector Comb, NumericMatrix xtrain, NumericMatrix xtest, IntegerMatrix s);
+RcppExport SEXP _shapr_observation_impute_cpp(SEXP idSEXP, SEXP CombSEXP, SEXP xtrainSEXP, SEXP xtestSEXP, SEXP sSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type ID(IDSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type id(idSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type Comb(CombSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Xtrain(XtrainSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Xtest(XtestSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type S(SSEXP);
-    rcpp_result_gen = Rcpp::wrap(observation_impute_cpp(ID, Comb, Xtrain, Xtest, S));
+    Rcpp::traits::input_parameter< NumericMatrix >::type xtrain(xtrainSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type xtest(xtestSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type s(sSEXP);
+    rcpp_result_gen = Rcpp::wrap(observation_impute_cpp(id, Comb, xtrain, xtest, s));
     return rcpp_result_gen;
 END_RCPP
 }

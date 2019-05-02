@@ -4,14 +4,14 @@
 \alias{shapley_weights}
 \title{Calculate Shapley weight}
 \usage{
-shapley_weights(m, N, s)
+shapley_weights(m, n, s)
 }
 \arguments{
 \item{m}{Integer. Total number of features}
 
-\item{N}{Integer. Number of combinations}
+\item{n}{Integer. Number of combinations}
 
-\item{s}{Integer. Number of chosen}
+\item{s}{Matrix}
 }
 \value{
 Numeric

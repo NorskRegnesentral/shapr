@@ -4,10 +4,10 @@
 \alias{hat_matrix_cpp}
 \title{Computing single H matrix in AICc-function using the Mahalanobis distance}
 \usage{
-hat_matrix_cpp(X, mcov, S_scale_dist, h)
+hat_matrix_cpp(x, mcov, S_scale_dist, h)
 }
 \arguments{
-\item{X}{matrix with "covariates"}
+\item{x}{matrix with "covariates"}
 
 \item{mcov}{covariance matrix}
 
@@ -16,7 +16,7 @@ hat_matrix_cpp(X, mcov, S_scale_dist, h)
 \item{h}{numeric specifying the scaling (sigma)}
 }
 \value{
-Matrix of dimension \code{ncol(X)*ncol(X)}
+Matrix of dimension \code{ncol(x)*ncol(x)}
 }
 \description{
 Computing single H matrix in AICc-function using the Mahalanobis distance

@@ -4,19 +4,22 @@
 \alias{observation_impute}
 \title{Get predictions}
 \usage{
-observation_impute(W_kernel, S, Xtrain, Xtest, w_threshold = 0.7,
-  noSamp_MC = 1000)
+observation_impute(w_kernel, s, xtrain, xtest, w_threshold = 0.7,
+  no_samp_mc = 1000)
 }
 \arguments{
-\item{W_kernel}{Array. Contains all nonscaled weights between training and testing observations for all combinations.}
+\item{w_kernel}{Array. Contains all nonscaled weights between training and testing observations
+for all combinations.}
 
-\item{S}{Matrix}
+\item{s}{Matrix}
 
-\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data}
+\item{xtrain}{Matrix, data.frame or data.table with the features from the training data}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
+\item{xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
+be explained (test data)}
 
-\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
+\item{no_samp_mc}{Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 }
 \value{
 List

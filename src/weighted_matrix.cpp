@@ -26,13 +26,13 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
         nfeatures = feature_vec.length();
         if (nfeatures > 0) {
             for (int j = 0; j < nfeatures; j++)
-                X(i, feature_vec[j]) = 1;
+              X(i, feature_vec[j]) = 1;
         }
     }
 
     // Set first column to 1
     for (int i = 0; i < n; i++) {
-        X(i, 0) = 1;
+      X(i, 0) = 1;
     }
 
     // Multiple weights
@@ -47,10 +47,6 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
     Xw = Xw.t();
     W = inv(Xw * X) * Xw;
     return W;
-
-    //Rcpp::List ret = List::create(Named("W") = W , _["w"] = w, _["X"] = X, Named("Xw") = Xw);
-    //return ret;
-
 }
 
 //' Get feature matrix

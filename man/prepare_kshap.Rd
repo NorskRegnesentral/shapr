@@ -4,21 +4,26 @@
 \alias{prepare_kshap}
 \title{Get Shapley weights for test data}
 \usage{
-prepare_kshap(Xtrain, Xtest, exact = TRUE, noSamp = NULL,
+prepare_kshap(xtrain, xtest, exact = TRUE, no_samp = NULL,
   shapley_weight_inf_replacement = 10^6,
-  compute_distances_for_no_var = 0:ncol(Xtrain))
+  compute_distances_for_no_var = 0:ncol(xtrain))
 }
 \arguments{
-\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data}
+\item{xtrain}{Matrix, data.frame or data.table with the features from the training data}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
+\item{xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
+be explained (test data)}
 
-\item{exact}{Logical. If TRUE, uses the full sum in the Shapley formula, if FALSE, uses a sampling approach to approximate the sum}
+\item{exact}{Logical. If TRUE, uses the full sum in the Shapley formula, if FALSE, uses a
+sampling approach to approximate the sum}
 
-\item{noSamp}{Integer. How many samples to use when approximating the sum in the Shapley formula
+\item{no_samp}{Integer. How many samples to use when approximating the sum in the Shapley formula
 (previously called \code{nrows})}
 
-\item{shapley_weight_inf_replacement}{Numeric. Indicating which weight to use for the full conditional and unconditional expectations in kernel SHAPs weighted least squares formulation.}
+\item{shapley_weight_inf_replacement}{Numeric. Indicating which weight to use for the full
+conditional and unconditional expectations in kernel SHAPs weighted least squares formulation.}
+
+\item{compute_distances_for_no_var}{If equal to \code{NULL} no distances are computed}
 }
 \value{
 Matrix

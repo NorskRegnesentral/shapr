@@ -4,10 +4,10 @@
 \alias{observation_weights}
 \title{Calculate Shapley weights}
 \usage{
-observation_weights(X, m)
+observation_weights(x, m)
 }
 \arguments{
-\item{X}{data.table}
+\item{x}{data.table}
 }
 \value{
 data.table

@@ -3,7 +3,7 @@ using namespace Rcpp;
 
 //' Get imputed data
 //'
-//' @param ID Positive integer vector
+//' @param id Positive integer vector
 //' @param Comb Positive integer vector
 //' @inheritParams global_arguments
 //'
@@ -13,22 +13,22 @@ using namespace Rcpp;
 //' @return Array of three dimensions
 //' @author Nikolai Sellereite
 // [[Rcpp::export]]
-NumericMatrix observation_impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtrain, NumericMatrix Xtest, IntegerMatrix S) {
+NumericMatrix observation_impute_cpp(IntegerVector id, IntegerVector Comb, NumericMatrix xtrain, NumericMatrix xtest, IntegerMatrix s) {
 
-    NumericMatrix X(ID.length(), Xtrain.ncol());
+    NumericMatrix x(id.length(), xtrain.ncol());
 
-    for (int i = 0; i < X.nrow(); ++i) {
+    for (int i = 0; i < x.nrow(); ++i) {
 
-        for (int j = 0; j < X.ncol(); ++j) {
+        for (int j = 0; j < x.ncol(); ++j) {
 
-            if (S(Comb[i] - 1, j) > 0) {
-                X(i, j) = Xtest(0, j);
+            if (s(Comb[i] - 1, j) > 0) {
+                x(i, j) = xtest(0, j);
             } else {
-                X(i, j) = Xtrain(ID[i] - 1, j);
+                x(i, j) = xtrain(id[i] - 1, j);
             }
 
         }
     }
 
-    return X;
+    return x;
 }

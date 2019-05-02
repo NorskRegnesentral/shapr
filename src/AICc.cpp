@@ -4,22 +4,22 @@ using namespace arma;
 
 //' Computing single H matrix in AICc-function using the Mahalanobis distance
 //'
-//' @param X matrix with "covariates"
+//' @param x matrix with "covariates"
 //' @param mcov covariance matrix
 //' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 //' @param h numeric specifying the scaling (sigma)
 //'
 //' @export
 //'
-//' @return Matrix of dimension \code{ncol(X)*ncol(X)}
+//' @return Matrix of dimension \code{ncol(x)*ncol(x)}
 //' @author Martin Jullum
 // [[Rcpp::export]]
-arma::mat hat_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h) {
+arma::mat hat_matrix_cpp(arma::mat x, arma::mat mcov, bool S_scale_dist, double h) {
 
 
     // Define variables
-    int nrows = X.n_rows;
-    int m = X.n_cols;
+    int nrows = x.n_rows;
+    int m = x.n_cols;
 
     arma::mat cholDec;
     arma::mat mu;
@@ -43,7 +43,7 @@ arma::mat hat_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double 
     }
 
     for (int j = 0; j < nrows; ++j) {
-        mu = X.row(j);
+        mu = x.row(j);
 
         // For each of the "n" random vectors, forwardsolve the corresponding linear system.
         // Forwardsolve because Im using the lower triangle Cholesky.
@@ -56,7 +56,7 @@ arma::mat hat_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double 
 
                 for(ii = 0; ii < irow; ii++) acc += tmp.at(ii) * cholDec.at(irow, ii);
 
-                tmp.at(irow) = ( X.at(icol, irow) - mu.at(irow) - acc ) / D.at(irow);
+                tmp.at(irow) = ( x.at(icol, irow) - mu.at(irow) - acc ) / D.at(irow);
             }
 
             out.at(icol,j) = sum(square(tmp));
@@ -121,7 +121,7 @@ double correction_matrix_cpp(double tr_H,int n) {
 
 //'  Temp-function for computing the full AICc with several X's etc
 //'
-//' @param X matrix with "covariates"
+//' @param x matrix with "covariates"
 //' @param mcov covariance matrix
 //' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 //' @param h numeric specifying the scaling (sigma)
@@ -132,11 +132,11 @@ double correction_matrix_cpp(double tr_H,int n) {
 //' @return Scalar with the numeric value of the AICc formula
 //' @author Martin Jullum
 // [[Rcpp::export]]
-arma::vec aicc_full_single_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y) {
+arma::vec aicc_full_single_cpp(arma::mat x, arma::mat mcov, bool S_scale_dist, double h, arma::vec y) {
 
     arma::vec out(3);
 
-    arma::mat H = hat_matrix_cpp(X, mcov, S_scale_dist, h);
+    arma::mat H = hat_matrix_cpp(x, mcov, S_scale_dist, h);
 
     double rss = rss_cpp(H, y);
     double tr_H = trace(H);
@@ -153,7 +153,7 @@ arma::vec aicc_full_single_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, d
 //'  AICc formula for several sets, alternative definition
 //'
 //' @param h numeric specifying the scaling (sigma)
-//' @param X matrix with "covariates"
+//' @param x matrix with "covariates"
 //' @param mcov covariance matrix
 //' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 //' @param y vector with the "response variable"
@@ -163,18 +163,18 @@ arma::vec aicc_full_single_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, d
 //' @return Scalar with the numeric value of the AICc formula
 //' @author Martin Jullum
 // [[Rcpp::export]]
-double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative) {
+double aicc_full_cpp(double h, Rcpp::List x_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative) {
 
-    int nloops = X_list.size();
+    int nloops = x_list.size();
     arma::vec summer(3,fill::zeros);
     double out = 0.0;
 
     for (int k = 0; k < nloops; ++k){
-        arma::mat X = X_list[k];
+        arma::mat x = x_list[k];
         arma::mat mcov = mcov_list[k];
         arma::vec y = y_list[k];
 
-        summer = aicc_full_single_cpp(X, mcov, S_scale_dist, h,  y);
+        summer = aicc_full_single_cpp(x, mcov, S_scale_dist, h,  y);
 
         out += log(summer(0)/summer(2)) + correction_matrix_cpp(summer(1),summer(2)); // This computes log(sigma_1 = rss_1/n_1) + correction_formula(H = H_1,n = n_1) + log(sigma_2 = rss_2/n_2) + correction_formula(H = H_2,n = n_2)
     }
@@ -225,7 +225,7 @@ double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_s
 // //'  AICc formula for several sets
 // //'
 // //' @param h numeric specifying the scaling (sigma)
-// //' @param X matrix with "covariates"
+// //' @param x matrix with "covariates"
 // //' @param mcov covariance matrix
 // //' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 // //' @param y vector with the "response variable"
@@ -235,17 +235,17 @@ double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_s
 // //' @return Scalar with the numeric value of the AICc formula
 // //' @author Martin Jullum
 // // [[Rcpp::export]]
-// double AICc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative) {
+// double AICc_full_cpp(double h, Rcpp::List x_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative) {
 //
-//     int nloops = X_list.size();
+//     int nloops = x_list.size();
 //     arma::vec summer(3,fill::zeros);
 //
 //     for (int k = 0; k < nloops; ++k){
-//         arma::mat X = X_list[k];
+//         arma::mat x = x_list[k];
 //         arma::mat mcov = mcov_list[k];
 //         arma::vec y = y_list[k];
 //
-//         summer += aicc_full_single_cpp(X, mcov, S_scale_dist, h,  y);
+//         summer += aicc_full_single_cpp(x, mcov, S_scale_dist, h,  y);
 //     }
 //
 //     double out = log(summer(0)/summer(2)) + correction_matrix_cpp(summer(1),summer(2)); // This computes log(sigma_full = (rss_1 + rss_2)/(n_1+n_2)) + correction_formula(H = H_1+H_2, n = n_1 + n_2)
@@ -282,9 +282,9 @@ double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_s
 //
 //
 //
-// //'  AICc formula for single X
+// //'  AICc formula for single x
 // //'
-// //' @param X matrix with "covariates"
+// //' @param x matrix with "covariates"
 // //' @param mcov covariance matrix
 // //' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 // //' @param h numeric specifying the scaling (sigma)
@@ -295,11 +295,11 @@ double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_s
 // //' @return Scalar with the numeric value of the AICc formula
 // //' @author Martin Jullum
 // // [[Rcpp::export]]
-// double AICc_single_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h, arma::vec y, bool negative) {
+// double AICc_single_cpp(arma::mat x, arma::mat mcov, bool S_scale_dist, double h, arma::vec y, bool negative) {
 //
 //     bool ret_log = true;
 //
-//     arma::mat H = hat_matrix_cpp(X, mcov, S_scale_dist, h);
+//     arma::mat H = hat_matrix_cpp(x, mcov, S_scale_dist, h);
 //
 //
 //     double log_sigma_hat_sq = sigma_hat_sq_cpp(H, y, ret_log);
@@ -319,23 +319,23 @@ double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_s
 
 // //' NEW Computing single H matrix in AICc-function using the Mahalanobis distance
 // //'
-// //' @param X matrix with "covariates"
+// //' @param x matrix with "covariates"
 // //' @param mcov covariance matrix
 // //' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 // //' @param h numeric specifying the scaling (sigma)
 // //'
 // //' @export
 // //'
-// //' @return Matrix of dimension ncol(X) \times ncol(X)
+// //' @return Matrix of dimension ncol(x) \times ncol(x)
 // //' @author Martin Jullum
 // // [[Rcpp::export]]
-// std::vector<arma::mat> H_new_cpp(Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, double h) {
+// std::vector<arma::mat> H_new_cpp(Rcpp::List x_list, Rcpp::List mcov_list, bool S_scale_dist, double h) {
 //
 //     // Define variables
-//     arma::mat X = X_list[0];
+//     arma::mat x = x_list[0];
 //
-//     int nrows = X.n_rows;
-//     int m = X.n_cols;
+//     int nrows = x.n_rows;
+//     int m = x.n_cols;
 //
 //     arma::mat cholDec;
 //     arma::mat mu;
@@ -344,8 +344,8 @@ double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_s
 // //    arma::mat out2(nrows,nrows,arma::fill::zeros);
 //
 //
-//     arma::mat out1 = hat_matrix_cpp(X, mcov_list[0], S_scale_dist, h);
-// //    out2 = hat_matrix_cpp(X, mcov, S_scale_dist, h);
+//     arma::mat out1 = hat_matrix_cpp(x, mcov_list[0], S_scale_dist, h);
+// //    out2 = hat_matrix_cpp(x, mcov, S_scale_dist, h);
 //
 //     std::vector<arma::mat> out;
 //

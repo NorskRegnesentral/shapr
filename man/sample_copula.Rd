@@ -4,25 +4,29 @@
 \alias{sample_copula}
 \title{Sample conditional variables using the Gaussian copula approach}
 \usage{
-sample_copula(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
-  Xtrain, Xtest)
+sample_copula(given_ind, no_samp_mc, mu, sigma, p, xtest_gauss_trans,
+  xtrain, xtest)
 }
 \arguments{
 \item{given_ind}{Vector}
 
-\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
+\item{no_samp_mc}{Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 
-\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
+NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
-\item{Sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+\item{sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
+distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
 \item{p}{Positive integer}
 
-\item{Xtest_Gauss_trans}{Vector with the Gaussian transformed test observations}
+\item{xtest_gauss_trans}{Vector with the Gaussian transformed test observations}
 
-\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data}
+\item{xtrain}{Matrix, data.frame or data.table with the features from the training data}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
+\item{xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
+be explained (test data)}
 }
 \value{
 data.table with \code{noSamp_MC} (conditional) Gaussian samples

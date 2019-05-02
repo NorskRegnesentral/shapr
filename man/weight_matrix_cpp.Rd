@@ -12,6 +12,8 @@ weight_matrix_cpp(features, m, n, w)
 \item{m}{Integer. Total number of features}
 
 \item{n}{Positive integer. Number of combinations}
+
+\item{w}{Matrix}
 }
 \value{
 Matrix of dimension n x m + 1

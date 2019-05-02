@@ -5,7 +5,7 @@
 #' @param explanation The output from compute_kshap
 #' @param no_desc_digits Integer. Number of significant digits to use in the feature description
 #' @param plot_phi0 Logical. Whether to include phi0 in the plot
-#' @param plot_which_Xtest Integer vector. Which of the test observations to plot
+#' @param plot_which_xtest Integer vector. Which of the test observations to plot
 #' @param top_k_features Integer. How many features to include in the plot
 #'
 #' @inheritParams global_arguments
@@ -19,21 +19,21 @@ plot_kshap <- function(explanation,
                        l,
                        no_desc_digits = 3,
                        plot_phi0 = T,
-                       plot_which_Xtest = 1:nrow(l$Xtest),
-                       top_k_features = ncol(l$Xtest) + 1) {
+                       plot_which_xtest = 1:nrow(l$xtest),
+                       top_k_features = ncol(l$xtest) + 1) {
   is_installed <- requireNamespace("ggplot2", quietly = TRUE)
   if (!is_installed) stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
-  colnam <- colnames(l$Xtest)
+  colnam <- colnames(l$xtest)
 
-  # melting Kshap
-  KshapDT <- data.table::copy(explanation$Kshap)
-  KshapDT[, id := .I]
+  # melting kshap
+  kshap_dt <- data.table::copy(explanation$kshap)
+  kshap_dt[, id := .I]
 
-  meltKshap <- data.table::melt(KshapDT, id.vars = "id", value.name = "phi")
-  meltKshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
+  melt_kshap <- data.table::melt(kshap_dt, id.vars = "id", value.name = "phi")
+  melt_kshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
-  # Converting and melting Xtest
-  desc_mat <- format(l$Xtest, digits = no_desc_digits)
+  # Converting and melting xtest
+  desc_mat <- format(l$xtest, digits = no_desc_digits)
   for (i in 1:ncol(desc_mat)) {
     desc_mat[, i] <- paste0(colnam[i], " = ", desc_mat[, i])
   }
@@ -41,11 +41,11 @@ plot_kshap <- function(explanation,
   melt_desc_dt <- data.table::melt(desc_dt[, id := .I], id.vars = "id", value.name = "description")
 
   # Data table for plotting
-  plotting_dt <- merge(meltKshap, melt_desc_dt)
+  plotting_dt <- merge(melt_kshap, melt_desc_dt)
 
   # Adding the predictions
-  predDT <- data.table::data.table(id = KshapDT$id, pred = explanation$pred_vec)
-  plotting_dt <- merge(plotting_dt, predDT, by = "id")
+  dt_pred <- data.table::data.table(id = kshap_dt$id, pred = explanation$pred_vec)
+  plotting_dt <- merge(plotting_dt, dt_pred, by = "id")
 
   # Adding header for each individual plot
   plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = no_desc_digits + 1))]
@@ -53,7 +53,7 @@ plot_kshap <- function(explanation,
   if (!plot_phi0) {
     plotting_dt <- plotting_dt[variable != "none"]
   }
-  plotting_dt <- plotting_dt[id %in% plot_which_Xtest]
+  plotting_dt <- plotting_dt[id %in% plot_which_xtest]
   plotting_dt[, rank := data.table::frank(-abs(phi)), by = id]
   plotting_dt <- plotting_dt[rank <= top_k_features]
   plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]

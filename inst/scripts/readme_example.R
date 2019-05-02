@@ -34,8 +34,8 @@ model <- xgboost(
 
 # Prepare the data for explanation
 l <- prepare_kshap(
-  Xtrain = x_train,
-  Xtest = x_test
+  xtrain = x_train,
+  xtest = x_test
 )
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
@@ -50,7 +50,7 @@ explanation <- compute_kshap(
 )
 
 # Printing the Shapley values for the test data
-explanation$Kshap
+explanation$kshap
 
 #      none     lstat         rm       dis      indus
 # 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644

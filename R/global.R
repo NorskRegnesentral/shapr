@@ -1,13 +1,13 @@
 #' Set of global arguments used in the package
 #'
-#' @param Xtrain Matrix, data.frame or data.table with the features from the training data
-#' @param Xtest Matrix, data.frame or data.table with the features, whose predictions ought to
+#' @param xtrain Matrix, data.frame or data.table with the features from the training data
+#' @param xtest Matrix, data.frame or data.table with the features, whose predictions ought to
 #' be explained (test data)
-#' @param Xtrain_mat Matrix with the features from the training data
-#' @param Xtest_mat Matrix with the features, whose predictions ought to be explained (test data)
+#' @param xtrain_mat Matrix with the features from the training data
+#' @param xtest_mat Matrix with the features, whose predictions ought to be explained (test data)
 #' @param exact Logical. If TRUE, uses the full sum in the Shapley formula, if FALSE, uses a
 #' sampling approach to approximate the sum
-#' @param noSamp Integer. How many samples to use when approximating the sum in the Shapley formula
+#' @param no_samp Integer. How many samples to use when approximating the sum in the Shapley formula
 #' (previously called \code{nrows})
 #' @param shapley_weight_inf_replacement Numeric. Indicating which weight to use for the full
 #' conditional and unconditional expectations in kernel SHAPs weighted least squares formulation.
@@ -16,25 +16,23 @@
 #' @param m Integer. Total number of features
 #' @param model Model object. Fitted model that is used to produce the predictions
 #' @param l List. The output from the \code{prepare_kshap} function
-#' @param noSamp_MC Positive integer. Indicating the maximum number of samples to use in the
+#' @param no_samp_mc Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})
 #' @param verbose Integer. How much information to print during function execution (in development)
 #' @param cond_approach String or list. When being a list, the elements in the list refers to the
-#' rows in l$X that ought to be included in each of the approaches!
+#' rows in l$x that ought to be included in each of the approaches!
 #' @param mu Numeric vector. (Optional) Containing the mean of the data generating distribution.
 #' NULL means it is estimated from the data if needed (in the Gaussian approach).
-#' @param Sigma Numeric matrix. (Optional) Containing the covariance matrix of the data generating
+#' @param sigma Numeric matrix. (Optional) Containing the covariance matrix of the data generating
 #' distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).
-#' @param N Integer. Number of combinations
-#' @param s Integer. Number of chosen
+#' @param n Integer. Number of combinations
 #' @param nsamples Integer. Number of samples
 #' @param features List.
-#' @param sigma Numeric
 #' @param p_default Numeric
-#' @param W Matrix
+#' @param w Matrix
 #' @param I Matrix
 #' @param D Matrix
-#' @param S Matrix
+#' @param s Matrix
 #' @param verbose Logical
 #' @param scale Logical
 #' @param cond_approach Either a string indicating which method should be used to estimate all
@@ -52,21 +50,20 @@
 #' conditional distribution. Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence"
 #' (imputing independently, ignoring any distance) being the second option "Gaussian_old"
 #' [\eqn{\sqrt(\exp(-D/2\sigma))}] is also kept for reproducibility.
-#' @param W_kernel Array. Contains all nonscaled weights between training and testing observations
+#' @param w_kernel Array. Contains all nonscaled weights between training and testing observations
 #' for all combinations.
-#' @param Xtest_Gauss_trans Vector with the Gaussian transformed test observations
+#' @param xtest_gauss_trans Vector with the Gaussian transformed test observations
 #' @param mu Mean vector of training set
-#' @param Sigma Covariance matrix of training set
+#' @param sigma Covariance matrix of training set
 #' @export
 #'
 #' @return NULL
 #'
 #' @author Nikolai Sellereite
 global_arguments <- function(m,
-                             N,
-                             s,
-                             Xtrain,
-                             Xtest,
+                             n,
+                             xtrain,
+                             xtest,
                              nsamples,
                              features,
                              exact,
@@ -77,8 +74,8 @@ global_arguments <- function(m,
                              w_threshold,
                              n_threshold,
                              verbose,
-                             W,
-                             S,
+                             w,
+                             s,
                              D,
                              I,
                              cond_approach = "empirical",

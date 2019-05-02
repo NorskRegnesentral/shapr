@@ -4,10 +4,10 @@
 \alias{aicc_full_single_cpp}
 \title{Temp-function for computing the full AICc with several X's etc}
 \usage{
-aicc_full_single_cpp(X, mcov, S_scale_dist, h, y)
+aicc_full_single_cpp(x, mcov, S_scale_dist, h, y)
 }
 \arguments{
-\item{X}{matrix with "covariates"}
+\item{x}{matrix with "covariates"}
 
 \item{mcov}{covariance matrix}
 

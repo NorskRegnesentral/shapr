@@ -4,12 +4,13 @@
 \alias{scale_data}
 \title{Scale training and test data}
 \usage{
-scale_data(Xtrain, Xtest, scale = TRUE)
+scale_data(xtrain, xtest, scale = TRUE)
 }
 \arguments{
-\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data}
+\item{xtrain}{Matrix, data.frame or data.table with the features from the training data}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
+\item{xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
+be explained (test data)}
 
 \item{scale}{Logical}
 }
