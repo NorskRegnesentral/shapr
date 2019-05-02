@@ -28,7 +28,7 @@ Imports:
     corrplot,
     pcaPP,
     condMVNorm,
-    mvtnorm,
+    mvnfast,
     Matrix
 Suggests: 
     ranger,
