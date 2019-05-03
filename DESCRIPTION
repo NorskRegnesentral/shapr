@@ -34,7 +34,6 @@ Suggests:
     ranger,
     xgboost,
     testthat, 
-    lintr,
     covr,
     ggplot2
 LinkingTo: 

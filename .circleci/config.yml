@@ -25,6 +25,9 @@ jobs:
           name: Install devtools
           command: R -e 'install.packages("devtools")'
       - run:
+          name: Install lintr
+          command: R -e 'devtools::install_github("jimhester/lintr")'
+      - run:
           name: Install dependencies
           command: R -e 'devtools::install_deps(dependencies = TRUE, upgrade = "never")'
       - save_cache:
