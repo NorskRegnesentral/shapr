@@ -31,10 +31,10 @@ Get combinations
 \details{
 The returned data.table contains the following columns
 \describe{
-\item{ID}{Positive integer. Unique key for combination}
+\item{id}{Positive integer. Unique key for combination}
 \item{features}{List}
-\item{nfeautres}{Positive integer}
-\item{N}{Positive integer}
+\item{nfeatures}{Positive integer}
+\item{n}{Positive integer}
 }
 }
 \author{

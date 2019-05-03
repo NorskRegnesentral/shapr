@@ -18,10 +18,10 @@ shapley_weights <- function(m, n, s) {
 #' @details
 #' The returned data.table contains the following columns
 #' \describe{
-#' \item{ID}{Positive integer. Unique key for combination}
+#' \item{id}{Positive integer. Unique key for combination}
 #' \item{features}{List}
-#' \item{nfeautres}{Positive integer}
-#' \item{N}{Positive integer}
+#' \item{nfeatures}{Positive integer}
+#' \item{n}{Positive integer}
 #' }
 #'
 #' @return data.table
@@ -84,7 +84,7 @@ feature_combinations <- function(m,
     if (reduce_dim) {
       is_dup <- duplicated(x)
       x[, features := samp_list]
-      x <- x[!isDup, ]
+      x <- x[!is_dup, ]
     } else {
       x[, no := 1]
       x[, features := samp_list]
@@ -663,7 +663,7 @@ compute_kshap <- function(model,
           these_k <- unique(l$x$nfeatures[these_empirical])
 
           for (i in these_k) {
-            these_cond <- l$x[ID %in% these_empirical][nfeatures == i, id]
+            these_cond <- l$x[id %in% these_empirical][nfeatures == i, id]
 
             cutters <- 1:empirical_settings$aicc_no_samp_per_optim
             no_cond <- length(these_cond)
