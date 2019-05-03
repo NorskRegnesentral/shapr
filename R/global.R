@@ -54,7 +54,7 @@
 #' for all combinations.
 #' @param xtest_gauss_trans Vector with the Gaussian transformed test observations
 #' @param mu Mean vector of training set
-#' @param sigma Covariance matrix of training set
+#' @param cov_mat Covariance matrix of training set
 #' @export
 #'
 #' @return NULL
@@ -67,7 +67,7 @@ global_arguments <- function(m,
                              nsamples,
                              features,
                              exact,
-                             sigma,
+                             cov_mat,
                              model,
                              nrows,
                              scale,
