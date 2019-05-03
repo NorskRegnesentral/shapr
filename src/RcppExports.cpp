@@ -7,16 +7,16 @@
 using namespace Rcpp;
 
 // hat_matrix_cpp
-arma::mat hat_matrix_cpp(arma::mat x, arma::mat mcov, bool S_scale_dist, double h);
-RcppExport SEXP _shapr_hat_matrix_cpp(SEXP xSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP) {
+arma::mat hat_matrix_cpp(arma::mat x_mat, arma::mat mcov, bool S_scale_dist, double h);
+RcppExport SEXP _shapr_hat_matrix_cpp(SEXP x_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x_mat(x_matSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type mcov(mcovSEXP);
     Rcpp::traits::input_parameter< bool >::type S_scale_dist(S_scale_distSEXP);
     Rcpp::traits::input_parameter< double >::type h(hSEXP);
-    rcpp_result_gen = Rcpp::wrap(hat_matrix_cpp(x, mcov, S_scale_dist, h));
+    rcpp_result_gen = Rcpp::wrap(hat_matrix_cpp(x_mat, mcov, S_scale_dist, h));
     return rcpp_result_gen;
 END_RCPP
 }

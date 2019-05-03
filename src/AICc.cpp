@@ -4,7 +4,7 @@ using namespace arma;
 
 //' Computing single H matrix in AICc-function using the Mahalanobis distance
 //'
-//' @param x matrix with "covariates"
+//' @param x_mat matrix with "covariates"
 //' @param mcov covariance matrix
 //' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 //' @param h numeric specifying the scaling (sigma)
@@ -14,12 +14,12 @@ using namespace arma;
 //' @return Matrix of dimension \code{ncol(x)*ncol(x)}
 //' @author Martin Jullum
 // [[Rcpp::export]]
-arma::mat hat_matrix_cpp(arma::mat x, arma::mat mcov, bool S_scale_dist, double h) {
+arma::mat hat_matrix_cpp(arma::mat x_mat, arma::mat mcov, bool S_scale_dist, double h) {
 
 
     // Define variables
-    int nrows = x.n_rows;
-    int m = x.n_cols;
+    int nrows = x_mat.n_rows;
+    int m = x_mat.n_cols;
 
     arma::mat cholDec;
     arma::mat mu;
@@ -37,13 +37,13 @@ arma::mat hat_matrix_cpp(arma::mat x, arma::mat mcov, bool S_scale_dist, double 
     cholDec = trimatl(chol(mcov).t()); // Should also compute this outside of the function and pass it directly.
     vec D = cholDec.diag();
     if(S_scale_dist){
-        S_scale = 0.5/pow(m*h,2);
+        S_scale = 0.5/std::pow(m*h, 2);
     } else {
-        S_scale = 0.5/pow(h,2);
+        S_scale = 0.5/std::pow(h, 2);
     }
 
     for (int j = 0; j < nrows; ++j) {
-        mu = x.row(j);
+        mu = x_mat.row(j);
 
         // For each of the "n" random vectors, forwardsolve the corresponding linear system.
         // Forwardsolve because Im using the lower triangle Cholesky.
@@ -56,7 +56,7 @@ arma::mat hat_matrix_cpp(arma::mat x, arma::mat mcov, bool S_scale_dist, double 
 
                 for(ii = 0; ii < irow; ii++) acc += tmp.at(ii) * cholDec.at(irow, ii);
 
-                tmp.at(irow) = ( x.at(icol, irow) - mu.at(irow) - acc ) / D.at(irow);
+                tmp.at(irow) = ( x_mat.at(icol, irow) - mu.at(irow) - acc ) / D.at(irow);
             }
 
             out.at(icol,j) = sum(square(tmp));

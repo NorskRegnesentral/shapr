@@ -3,7 +3,7 @@
 
 #' Computing single H matrix in AICc-function using the Mahalanobis distance
 #'
-#' @param x matrix with "covariates"
+#' @param x_mat matrix with "covariates"
 #' @param mcov covariance matrix
 #' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
 #' @param h numeric specifying the scaling (sigma)
@@ -12,8 +12,8 @@
 #'
 #' @return Matrix of dimension \code{ncol(x)*ncol(x)}
 #' @author Martin Jullum
-hat_matrix_cpp <- function(x, mcov, S_scale_dist, h) {
-    .Call(`_shapr_hat_matrix_cpp`, x, mcov, S_scale_dist, h)
+hat_matrix_cpp <- function(x_mat, mcov, S_scale_dist, h) {
+    .Call(`_shapr_hat_matrix_cpp`, x_mat, mcov, S_scale_dist, h)
 }
 
 #' sigma_hat_sq-function
