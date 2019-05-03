@@ -1,6 +1,6 @@
 #' Group variables according to matrix of Kendall's tau
 #'
-#' @param x optional data matrix, ignores \code{corMat} if included
+#' @param x_mat optional data matrix, ignores \code{corMat} if included
 #' @param cor_mat optional correlation matrix, ignores x if included. Either \code{X} or
 #' \code{corMat} must be included
 #' @param alpha optional tuning parameter for optimal number of clusters
@@ -10,18 +10,11 @@
 #' @export
 #'
 #' @author Anders Løland
-cluster_features <- function(x = NULL, cor_mat = NULL, alpha = 1) {
+cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
 
   ## Kendall's tau
-  if (is.null(cor_mat)) {
-    cor_mat <- pcaPP::cor.fk(x)
-    ## Dimension
-    d <- nrow(x)
-  }
-  else {
-    ## Dimension
-    d <- nrow(cor_mat)
-  }
+  d <- ifelse(is.null(cor_mat), nrow(x_mat), nrow(cor_mat))
+  if (is.null(cor_mat)) cor_mat <- pcaPP::cor.fk(x_mat)
 
   ## Plot correlation matrix
   corrplot::corrplot(cor_mat, method = "square")
