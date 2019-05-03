@@ -4,7 +4,7 @@
 \alias{observation_weights}
 \title{Calculate Shapley weights}
 \usage{
-observation_weights(x, m)
+observation_weights(dt, m)
 }
 \arguments{
 \item{x}{data.table}

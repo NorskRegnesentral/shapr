@@ -4,7 +4,7 @@
 \alias{global_arguments}
 \title{Set of global arguments used in the package}
 \usage{
-global_arguments(m, n, xtrain, xtest, nsamples, features, exact, sigma,
+global_arguments(m, n, xtrain, xtest, nsamples, features, exact, cov_mat,
   model, nrows, scale, w_threshold, n_threshold, verbose, w, s, D, I,
   cond_approach = "empirical", p_default,
   distance_metric = "Euclidean", kernel_metric = "Gaussian")
@@ -26,8 +26,7 @@ be explained (test data)}
 \item{exact}{Logical. If TRUE, uses the full sum in the Shapley formula, if FALSE, uses a
 sampling approach to approximate the sum}
 
-\item{sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
-distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+\item{cov_mat}{Covariance matrix of training set}
 
 \item{model}{Model object. Fitted model that is used to produce the predictions}
 
@@ -79,6 +78,9 @@ Monte Carlo integration for every conditional expectation (previously called \co
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
+\item{sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
+distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+
 \item{verbose}{Logical}
 
 \item{cond_approach}{Either a string indicating which method should be used to estimate all
@@ -95,8 +97,6 @@ for all combinations.}
 \item{xtest_gauss_trans}{Vector with the Gaussian transformed test observations}
 
 \item{mu}{Mean vector of training set}
-
-\item{sigma}{Covariance matrix of training set}
 }
 \description{
 Set of global arguments used in the package

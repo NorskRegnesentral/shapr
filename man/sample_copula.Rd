@@ -4,7 +4,7 @@
 \alias{sample_copula}
 \title{Sample conditional variables using the Gaussian copula approach}
 \usage{
-sample_copula(given_ind, no_samp_mc, mu, sigma, p, xtest_gauss_trans,
+sample_copula(given_ind, no_samp_mc, mu, cov_mat, p, xtest_gauss_trans,
   xtrain, xtest)
 }
 \arguments{
@@ -16,8 +16,7 @@ Monte Carlo integration for every conditional expectation (previously called \co
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
-\item{sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
-distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+\item{cov_mat}{Covariance matrix of training set}
 
 \item{p}{Positive integer}
 

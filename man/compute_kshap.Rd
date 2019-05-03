@@ -8,7 +8,7 @@ compute_kshap(model, l, no_samp_mc = 1000, verbose = FALSE,
   cond_approach = "empirical", empirical_settings = list(type =
   "fixed_sigma", fixed_sigma_vec = 0.1, aicc_no_samp_per_optim = 1000,
   AIC_optim_max_eval = 20, AIC_optim_startval = 0.1, w_threshold = 0.95),
-  pred_zero, mu = NULL, sigma = NULL, ensure_condcov_symmetry = F)
+  pred_zero, mu = NULL, cov_mat = NULL, ensure_condcov_symmetry = F)
 }
 \arguments{
 \item{model}{Model object. Fitted model that is used to produce the predictions}
@@ -32,8 +32,7 @@ response}
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
-\item{sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
-distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+\item{cov_mat}{Covariance matrix of training set}
 
 \item{ensure_condcov_symmetry}{Logical. Whether to ensure that the conditional covariance
 matrices in the Gaussian and copula approaches are symmetric. Typically only needed if the
@@ -48,7 +47,7 @@ Computes kernel SHAP values for test data
 }
 \details{
 If \code{cond_approach} is a list, the elements in the list refers to the rows in
-\code{l$X} that ought to be included in each of the approaches!
+\code{l$dt} that ought to be included in each of the approaches!
 }
 \author{
 Martin Jullum

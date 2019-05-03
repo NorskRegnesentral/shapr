@@ -4,11 +4,11 @@
 \alias{mahalanobis_distance_cpp}
 \title{(Generalized) Mahalanobis distance}
 \usage{
-mahalanobis_distance_cpp(featureList, xtrain_mat, xtest_mat, mcov,
+mahalanobis_distance_cpp(feature_list, xtrain_mat, xtest_mat, mcov,
   S_scale_dist)
 }
 \arguments{
-\item{featureList}{List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.}
+\item{feature_list}{List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.}
 
 \item{mcov}{Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(xtrain_mat)}) gives Mahalanobis distance,
 \code{diag(m)} gives the Euclidean distance.}

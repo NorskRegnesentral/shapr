@@ -4,10 +4,10 @@
 \alias{cluster_features}
 \title{Group variables according to matrix of Kendall's tau}
 \usage{
-cluster_features(x = NULL, cor_mat = NULL, alpha = 1)
+cluster_features(x_mat = NULL, cor_mat = NULL, alpha = 1)
 }
 \arguments{
-\item{x}{optional data matrix, ignores \code{corMat} if included}
+\item{x_mat}{optional data matrix, ignores \code{corMat} if included}
 
 \item{cor_mat}{optional correlation matrix, ignores x if included. Either \code{X} or
 \code{corMat} must be included}

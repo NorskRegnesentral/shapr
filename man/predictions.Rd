@@ -6,7 +6,7 @@
 \usage{
 predictions(model, D, h_optim_vec, kernel_metric, s, xtrain, xtest,
   w_threshold = 0.7, no_samp_mc = 1000, verbose = FALSE,
-  cond_approach_list, feature_list, pred_zero, mu, sigma,
+  cond_approach_list, feature_list, pred_zero, mu, cov_mat,
   mu_gauss_trans = mu_gauss_trans,
   sigma_gauss_trans = sigma_gauss_trans, xtest_gauss_trans,
   ensure_condcov_symmetry = F)
@@ -40,8 +40,7 @@ Monte Carlo integration for every conditional expectation (previously called \co
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
-\item{sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
-distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+\item{cov_mat}{Covariance matrix of training set}
 
 \item{xtest_gauss_trans}{Vector with the Gaussian transformed test observations}
 }
