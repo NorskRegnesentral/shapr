@@ -62,8 +62,8 @@ cluster_features <- function(x = NULL, cor_mat = NULL, alpha = 1) {
   ## Display variables with optimal cluster number
   cluster_k <- stats::cutree(cluster, k = k)
   cluster_list <- list()
-  for (k in 1:k) {
-    cluster_list[[k]] <- which(cluster_k == k)
+  for (i in 1:k) {
+    cluster_list[[i]] <- which(cluster_k == i)
   }
 
   ## Plot correlation matrix, ordered in clusters
@@ -86,8 +86,7 @@ cluster_features <- function(x = NULL, cor_mat = NULL, alpha = 1) {
 #' @export
 #'
 #' @author Anders Løland
-correlation_rectangles <- function(
-                                   corr,
+correlation_rectangles <- function(corr,
                                    cluster,
                                    k = 2,
                                    col = "yellow",
