@@ -4,8 +4,8 @@
   if (getRversion() >= "2.15.1") {
     utils::globalVariables(
       c(
-        "id", "n", "W", "features", "keep", "m", "mphat", "nfeatures", "phat",
-        "test", "Xtest", "Xtrain", "weight", "test_id", "sample_id",
+        "id", "n", "w_mat", "features", "keep", "m", "mphat", "nfeatures", "phat",
+        "test", "xtest", "xtrain", "weight", "test_id", "sample_id",
         "comb", "p_hat", "w", "wcomb", "wcum", "id", "k",
 
         ".", ".N", ".I", ".GRP", ".SD"
