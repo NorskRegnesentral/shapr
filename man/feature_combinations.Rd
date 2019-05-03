@@ -5,7 +5,7 @@
 \title{Get combinations}
 \usage{
 feature_combinations(m, exact = TRUE, no_samp = 200,
-  shapley_weight_inf_replacement = 10^6, reduce_dim = T)
+  shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE)
 }
 \arguments{
 \item{m}{Integer. Total number of features}
