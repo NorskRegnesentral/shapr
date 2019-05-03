@@ -29,7 +29,11 @@ shapley_weights <- function(m, n, s) {
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-feature_combinations <- function(m, exact = TRUE, no_samp = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = T) {
+feature_combinations <- function(m,
+                                 exact = TRUE,
+                                 no_samp = 200,
+                                 shapley_weight_inf_replacement = 10^6,
+                                 reduce_dim = TRUE) {
   if (!exact && no_samp > (2^m - 2) && !replace) {
     no_samp <- 2^m - 2
     cat(paste0("noSamp is larger than 2^m = ", 2^m, ". Using exact instead."))
@@ -413,7 +417,7 @@ predictions <- function(model,
                         ensure_condcov_symmetry = F) {
   p <- ncol(xtrain)
 
-  dt_p_Gaussian <- dt_p_copula <- dt_p_empirical <- NULL
+  dt_p_gaussian <- dt_p_copula <- dt_p_empirical <- NULL
 
   if ("Gaussian" %in% names(cond_approach_list)) {
     ## Assume Gaussian distributed variables and sample from the various conditional distributions
@@ -431,9 +435,9 @@ predictions <- function(model,
       ensure_condcov_symmetry = ensure_condcov_symmetry
     )
 
-    dt_p_Gaussian <- rbindlist(samp_list, idcol = "wcomb")
-    dt_p_Gaussian[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
-    dt_p_Gaussian[, w := 1 / no_samp_mc]
+    dt_p_gaussian <- rbindlist(samp_list, idcol = "wcomb")
+    dt_p_gaussian[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
+    dt_p_gaussian[, w := 1 / no_samp_mc]
   }
   if ("copula" %in% names(cond_approach_list)) {
     these_wcomb <- cond_approach_list$copula
@@ -490,7 +494,7 @@ predictions <- function(model,
   ## Performing prediction
   nms <- colnames(xtest)
 
-  dt_p <- rbind(dt_p_Gaussian, dt_p_copula, dt_p_empirical)
+  dt_p <- rbind(dt_p_gaussian, dt_p_copula, dt_p_empirical)
   dt_p <- merge(dt_p, data.table(wcomb = c(1, 2^p), w = 1), all = T)
   setkey(dt_p, wcomb)
 
