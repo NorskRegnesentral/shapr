@@ -1,25 +1,58 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-shapr
-=====
 
-[![CircleCI](https://circleci.com/gh/NorskRegnesentral/shapr.svg?style=svg&circle-token=7c2a3a4edc870b4694982f0fe8ac66f92d639099)](https://circleci.com/gh/NorskRegnesentral/shapr) ![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)
+# shapr <img src="man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
 
-The most common task of machine learning is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features. When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction. However, explaining predictions from complex, or seemingly simple, machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable explanations.
+[![CircleCI](https://circleci.com/gh/NorskRegnesentral/shapr.svg?style=svg&circle-token=7c2a3a4edc870b4694982f0fe8ac66f92d639099)](https://circleci.com/gh/NorskRegnesentral/shapr)
+![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)
 
-Shapley values is the only prediction explanation framework with a solid theoretical foundation (Lundberg and Lee (2017)). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. Popular methods like Shapley Sampling Values (Štrumbelj and Kononenko (2014)), SHAP/Kernel SHAP (Lundberg and Lee (2017)), and to some extent TreeSHAP (Lundberg, Erion, and Lee (2018)), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. Aas, Jullum, and Løland (2019) extends and improves the Kernel SHAP method of Lundberg and Lee (2017) to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. See the paper for details.
+The most common task of machine learning is to train a model which is
+able to predict an unknown outcome (response variable) based on a set of
+known input variables/features. When using such models for real life
+applications, it is often crucial to understand why a certain set of
+features lead to exactly that prediction. However, explaining
+predictions from complex, or seemingly simple, machine learning models
+is a practical and ethical question, as well as a legal issue. Can I
+trust the model? Is it biased? Can I explain it to others? We want to
+explain individual predictions from a complex machine learning model by
+learning simple, interpretable explanations.
 
-This package implements the methodology of Aas, Jullum, and Løland (2019).
+Shapley values is the only prediction explanation framework with a solid
+theoretical foundation (Lundberg and Lee (2017)). Unless the true
+distribution of the features are known, and there are less than say
+10-15 features, these Shapley values needs to be estimated/approximated.
+Popular methods like Shapley Sampling Values (Štrumbelj and Kononenko
+(2014)), SHAP/Kernel SHAP (Lundberg and Lee (2017)), and to some extent
+TreeSHAP (Lundberg, Erion, and Lee (2018)), assume that the features are
+independent when approximating the Shapley values for prediction
+explanation. This may lead to very inaccurate Shapley values, and
+consequently wrong interpretations of the predictions. Aas, Jullum, and
+Løland (2019) extends and improves the Kernel SHAP method of Lundberg
+and Lee (2017) to account for the dependence between the features,
+resulting in significantly more accurate approximations to the Shapley
+values. See the paper for details.
+
+This package implements the methodology of Aas, Jullum, and Løland
+(2019).
 
 The following methodology/features are currently implemented:
 
--   Native support of explanation of predictions with the following model classes `stats::glm`, `stats::lm`,`ranger::ranger`, `xgboost::xgboost` and `mgcv::gam`.
--   Accounting for feature dependence assuming the features are Gaussian (Aas, Jullum, and Løland (2019)).
--   Accounting for feature dependence with a Gaussian copula (Gaussian dependence structure, any marginal) (Aas, Jullum, and Løland (2019)).
--   Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of Aas, Jullum, and Løland (2019).
--   Combine any of the three methods.
--   Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai (1998) when optimizing the bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2019).
--   Functionality for visualizing the explanations.
+  - Native support of explanation of predictions with the following
+    model classes `stats::glm`, `stats::lm`,`ranger::ranger`,
+    `xgboost::xgboost` and `mgcv::gam`.
+  - Accounting for feature dependence assuming the features are Gaussian
+    (Aas, Jullum, and Løland (2019)).
+  - Accounting for feature dependence with a Gaussian copula (Gaussian
+    dependence structure, any marginal) (Aas, Jullum, and Løland
+    (2019)).
+  - Accounting for feature dependence using the Mahalanobis distance
+    based empirical (conditional) distribution approach of Aas, Jullum,
+    and Løland (2019).
+  - Combine any of the three methods.
+  - Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai
+    (1998) when optimizing the bandwidth parameter in the empirical
+    (conditional) approach of Aas, Jullum, and Løland (2019).
+  - Functionality for visualizing the explanations.
 
 <!--
 Current methodological restrictions:
@@ -28,20 +61,26 @@ Current methodological restrictions:
 - Discrete features typically work just fine in practice although the theory breaks down
 - Ordered/unordered categorical features are not supported
 -->
+
 Future releases will include:
 
--   Support for models not supported natively.
--   Support for parallelization over explanations, Monte Carlo sampling and features subsets for non-parallelizable prediction functions.
--   Simplify the use of the combination method.
--   Computational improvement of the AICc optimization approach
--   Adaptive selection of method to account for the feature dependence
+  - Support for models not supported natively.
+  - Support for parallelization over explanations, Monte Carlo sampling
+    and features subsets for non-parallelizable prediction functions.
+  - Simplify the use of the combination method.
+  - Computational improvement of the AICc optimization approach
+  - Adaptive selection of method to account for the feature dependence
 
-Note that both the features and the prediction must be numeric. The approach is constructed for continuous features. Discrete features may also work just fine with the empirical (conditional) distribution approach. Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease the interpretability, i.e. not via log odds transformations.
+Note that both the features and the prediction must be numeric. The
+approach is constructed for continuous features. Discrete features may
+also work just fine with the empirical (conditional) distribution
+approach. Unlike SHAP and TreeSHAP, we decompose probability predictions
+directly to ease the interpretability, i.e. not via log odds
+transformations.
 
 All feedback and suggestions are very welcome.
 
-Installation
-------------
+## Installation
 
 To install the current development version, use
 
@@ -49,12 +88,14 @@ To install the current development version, use
 devtools::install_github("NorskRegnesentral/shapr")
 ```
 
-An example
-----------
+## An example
 
-`shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.
+`shapr` supports computation of Shapley values with any predictive model
+which takes a set of numeric features and produces a numeric outcome.
 
-The following example shows how a simple `xgboost` model is trained using the *Boston Housing Data*, and how `shapr` explains the individual predictions.
+The following example shows how a simple `xgboost` model is trained
+using the *Boston Housing Data*, and how `shapr` explains the individual
+predictions.
 
 ``` r
 
@@ -124,15 +165,50 @@ plot_kshap(explanation, l)
 
 <img src="man/figures/README-basic_example-1.png" width="100%" />
 
-References
-----------
+## References
 
-Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
+<div id="refs" class="references">
 
-Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998. “Smoothing Parameter Selection in Nonparametric Regression Using an Improved Akaike Information Criterion.” *Journal of the Royal Statistical Society: Series B (Statistical Methodology)* 60 (2). Wiley Online Library: 271–93.
+<div id="ref-aas2019explaining">
 
-Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In *Advances in Neural Information Processing Systems*, 4765–74.
+Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining
+Individual Predictions When Features Are Dependent: More Accurate
+Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
 
-Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent Individualized Feature Attribution for Tree Ensembles.” *arXiv Preprint arXiv:1802.03888*.
+</div>
 
-Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models and Individual Predictions with Feature Contributions.” *Knowledge and Information Systems* 41 (3). Springer: 647–65.
+<div id="ref-hurvich1998smoothing">
+
+Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998.
+“Smoothing Parameter Selection in Nonparametric Regression Using an
+Improved Akaike Information Criterion.” *Journal of the Royal
+Statistical Society: Series B (Statistical Methodology)* 60 (2). Wiley
+Online Library: 271–93.
+
+</div>
+
+<div id="ref-lundberg2018consistent">
+
+Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent
+Individualized Feature Attribution for Tree Ensembles.” *arXiv Preprint
+arXiv:1802.03888*.
+
+</div>
+
+<div id="ref-lundberg2017unified">
+
+Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to
+Interpreting Model Predictions.” In *Advances in Neural Information
+Processing Systems*, 4765–74.
+
+</div>
+
+<div id="ref-vstrumbelj2014explaining">
+
+Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models
+and Individual Predictions with Feature Contributions.” *Knowledge and
+Information Systems* 41 (3). Springer: 647–65.
+
+</div>
+
+</div>

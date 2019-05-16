@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 ```
 
-# shapr
+# shapr <img src="man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
 
 [![CircleCI](https://circleci.com/gh/NorskRegnesentral/shapr.svg?style=svg&circle-token=7c2a3a4edc870b4694982f0fe8ac66f92d639099)](https://circleci.com/gh/NorskRegnesentral/shapr)
 ![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)
