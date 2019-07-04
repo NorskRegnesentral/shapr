@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 
-[![CircleCI](https://circleci.com/gh/NorskRegnesentral/shapr.svg?style=svg)](https://circleci.com/gh/NorskRegnesentral/shapr)
+[![CircleCI](https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg)](https://circleci.com/gh/NorskRegnesentral/shapr)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License:
