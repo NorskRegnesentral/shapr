@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 # shapr <img src="man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
 
 <!-- badges: start -->
-[![CircleCI](https://circleci.com/gh/NorskRegnesentral/shapr.svg?style=svg)](https://circleci.com/gh/NorskRegnesentral/shapr)
+[![CircleCI](https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg)](https://circleci.com/gh/NorskRegnesentral/shapr)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
