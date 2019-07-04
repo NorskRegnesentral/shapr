@@ -9,9 +9,11 @@ weight_matrix_cpp(features, m, n, w)
 \arguments{
 \item{features}{List.}
 
-\item{m}{Integer. Total number of features}
+\item{m}{Positive integer. Total number of features}
 
 \item{n}{Positive integer. Number of combinations}
+
+\item{w}{Numeric vector}
 }
 \value{
 Matrix of dimension n x m + 1

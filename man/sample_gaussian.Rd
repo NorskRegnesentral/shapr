@@ -23,6 +23,8 @@ distribution. NULL means it is estimated from the data if needed (in the Gaussia
 
 \item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
 be explained (test data)}
+
+\item{ensure_condcov_symmetry}{Logical}
 }
 \value{
 data.table with \code{noSamp_MC} (conditional) Gaussian samples

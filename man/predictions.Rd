@@ -16,6 +16,8 @@ predictions(model, D, h_optim_vec, kernel_metric, S, Xtrain, Xtest,
 
 \item{D}{Matrix}
 
+\item{h_optim_vec}{<Something>}
+
 \item{kernel_metric}{String indicating which kernel metric should be used in the empirical
 conditional distribution. Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence"
 (imputing independently, ignoring any distance) being the second option "Gaussian_old"
@@ -28,10 +30,14 @@ conditional distribution. Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with 
 \item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
 be explained (test data)}
 
+\item{w_threshold}{Numeric}
+
 \item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 
-\item{verbose}{Integer. How much information to print during function execution (in development)}
+\item{verbose}{Logical}
+
+\item{cond_approach_list}{<Something>}
 
 \item{feature_list}{List}
 
@@ -43,7 +49,13 @@ NULL means it is estimated from the data if needed (in the Gaussian approach).}
 \item{Sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
 distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
+\item{mu_Gauss_trans}{<Something>}
+
+\item{Sigma_Gauss_trans}{<Something>}
+
 \item{Xtest_Gauss_trans}{Vector with the Gaussian transformed test observations}
+
+\item{ensure_condcov_symmetry}{<Something>}
 }
 \value{
 List

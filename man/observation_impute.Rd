@@ -18,6 +18,8 @@ for all combinations.}
 \item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
 be explained (test data)}
 
+\item{w_threshold}{Numeric}
+
 \item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 }

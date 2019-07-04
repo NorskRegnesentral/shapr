@@ -18,10 +18,15 @@ compute_kshap(model, l, noSamp_MC = 1000, verbose = FALSE,
 \item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 
-\item{verbose}{Integer. How much information to print during function execution (in development)}
+\item{verbose}{Logical}
 
-\item{cond_approach}{String or list. When being a list, the elements in the list refers to the
-rows in l$X that ought to be included in each of the approaches!}
+\item{cond_approach}{Either a string indicating which method should be used to estimate all
+conditional expectations. Defaults to "empirical_fixed_sigma", with "empirical_AICc_full",
+"empirical_AICc_each_k","Gaussian" and "copula" being other alternatives. One can also supply a
+named list where the names are one or more of the implemented methods, and the named lists
+contains one vector each, each containing the row numbers of the S-matrix computed using
+\code{prepare_kshap} that whose corresponding conditional expectations should be computed with
+that method. Any number not specified is computed with the default empirical method.}
 
 \item{empirical_settings}{List. Specifying the settings when using the empirical method to
 compute the conditional expectations.}

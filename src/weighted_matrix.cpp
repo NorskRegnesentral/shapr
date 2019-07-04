@@ -4,6 +4,8 @@ using namespace Rcpp;
 //' Get distance
 //'
 //' @param n Positive integer. Number of combinations
+//' @param m Positive integer. Total number of features
+//' @param w Numeric vector
 //' @inheritParams global_arguments
 //'
 //' @export

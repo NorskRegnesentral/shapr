@@ -8,6 +8,10 @@ weight_matrix(X, use_shapley_weights_in_W = T, normalize_W_weights = T)
 }
 \arguments{
 \item{X}{data.table}
+
+\item{use_shapley_weights_in_W}{Logical}
+
+\item{normalize_W_weights}{Logical}
 }
 \value{
 Matrix

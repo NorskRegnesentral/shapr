@@ -20,7 +20,6 @@ hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
 #'
 #' @param H Matrix. Output from \code{\link{hat_matrix_cpp}}
 #' @param y Vector, i.e. representing the response variable
-#' @param ret_log Logical. Indicates whether to return the logarithm of \code{sigma_sq}
 #' @export
 #'
 #' @return Scalar
@@ -60,10 +59,11 @@ aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
 #'  AICc formula for several sets, alternative definition
 #'
 #' @param h numeric specifying the scaling (sigma)
-#' @param X matrix with "covariates"
-#' @param mcov covariance matrix
+#' @param X_list List
+#' @param mcov_list List
 #' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
-#' @param y vector with the "response variable"
+#' @param y_list List
+#' @param negative Logical
 #'
 #' @export
 #'
@@ -81,6 +81,7 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 #' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
 #' \code{diag(m)} gives the Euclidean distance.
 #' @param S_scale_dist Logical indicating
+#' @inheritParams global_arguments
 #'
 #' @export
 #'
@@ -108,6 +109,8 @@ observation_impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
 #' Get distance
 #'
 #' @param n Positive integer. Number of combinations
+#' @param m Positive integer. Total number of features
+#' @param w Numeric vector
 #' @inheritParams global_arguments
 #'
 #' @export

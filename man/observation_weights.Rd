@@ -8,6 +8,8 @@ observation_weights(X, m)
 }
 \arguments{
 \item{X}{data.table}
+
+\item{m}{Positive integer. Total number of features}
 }
 \value{
 data.table

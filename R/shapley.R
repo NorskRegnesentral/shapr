@@ -118,6 +118,7 @@ feature_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_i
 #' Calculate Shapley weights
 #'
 #' @param X data.table
+#' @param m Positive integer. Total number of features
 #'
 #' @return data.table
 #'
@@ -134,6 +135,8 @@ observation_weights <- function(X, m) {
 #' Get weighted matrix
 #'
 #' @param X data.table
+#' @param use_shapley_weights_in_W Logical
+#' @param normalize_W_weights Logical
 #'
 #' @return Matrix
 #'
@@ -239,7 +242,7 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
 #' Handled in this way in order to allow using the apply function over this function
 #' @param zx Vector where the first part is the Gaussian data, and last part is
 #' the data with the original transformation
-#' @param n_y How many elements of \code{yx} that belongs to the y-part (new data)
+#' @param n_z How many elements of \code{zx} that belongs to the y-part (new data)
 #' @param type The quantile type used when back-transforming. 7 (default) is the default in stats::quantile().
 #'
 #' @return Vector of transformed new data
@@ -261,7 +264,7 @@ inv_gaussian_transform <- function(zx, n_z, type = 7) {
 #' Handled in this way in order to allow using the apply function over this function
 #' @param yx Vector where the first part is the new data to transform,
 #' and last part is the data with the original transformation
-#' @param n_z How many elements of \code{zx} that belongs to the z-part (Gaussian data)
+#' @param n_y Postive integer
 #'
 #' @return Vector of back-transformed Gaussian data
 #' @export
@@ -344,7 +347,7 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
 #'
 #' @param given_ind Vector
 #' @param p Positive integer
-#'
+#' @param ensure_condcov_symmetry Logical
 #' @inheritParams global_arguments
 #'
 #' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
@@ -385,6 +388,11 @@ sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_co
 #'
 #' @param feature_list List
 #' @param pred_zero Numeric
+#' @param h_optim_vec <Something>
+#' @param cond_approach_list <Something>
+#' @param mu_Gauss_trans <Something>
+#' @param Sigma_Gauss_trans <Something>
+#' @param ensure_condcov_symmetry <Something>
 #' @inheritParams global_arguments
 #'
 #' @return List

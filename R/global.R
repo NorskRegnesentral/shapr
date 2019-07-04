@@ -18,9 +18,6 @@
 #' @param l List. The output from the \code{prepare_kshap} function
 #' @param noSamp_MC Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})
-#' @param verbose Integer. How much information to print during function execution (in development)
-#' @param cond_approach String or list. When being a list, the elements in the list refers to the
-#' rows in l$X that ought to be included in each of the approaches!
 #' @param mu Numeric vector. (Optional) Containing the mean of the data generating distribution.
 #' NULL means it is estimated from the data if needed (in the Gaussian approach).
 #' @param Sigma Numeric matrix. (Optional) Containing the covariance matrix of the data generating
@@ -55,8 +52,8 @@
 #' @param W_kernel Array. Contains all nonscaled weights between training and testing observations
 #' for all combinations.
 #' @param Xtest_Gauss_trans Vector with the Gaussian transformed test observations
-#' @param mu Mean vector of training set
-#' @param Sigma Covariance matrix of training set
+#' @param w_threshold Numeric
+#' @param n_threshold Numeric
 #' @export
 #'
 #' @return NULL
@@ -66,13 +63,14 @@ global_arguments <- function(m,
                              N,
                              s,
                              Xtrain,
+                             Xtrain_mat,
                              Xtest,
+                             Xtest_mat,
                              nsamples,
                              features,
                              exact,
                              sigma,
                              model,
-                             nrows,
                              scale,
                              w_threshold,
                              n_threshold,
@@ -83,6 +81,15 @@ global_arguments <- function(m,
                              I,
                              cond_approach = "empirical",
                              p_default,
+                             noSamp,
+                             shapley_weight_inf_replacement,
+                             reduce_dim,
+                             l,
+                             noSamp_MC,
+                             mu,
+                             Sigma,
+                             W_kernel,
+                             Xtest_Gauss_trans,
                              distance_metric = "Euclidean",
                              kernel_metric = "Gaussian") {
   return(NULL)

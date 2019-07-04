@@ -1,7 +1,9 @@
 #' Helper function to sample a combination of training and testing rows, which does not risk
 #' getting the same observation twice. Need to improve this help file.
 #'
-#' @inheritParams global_arguments
+#' @param nTrain Positive integer
+#' @param nTest Positive integer
+#' @param nosamp Positive integer
 #' @param separate Logical indicating whether the train and test data should be sampled separately
 #' or in a joint sampling space. If they are sampled separately (which typically would be used when
 #' optimizing more than one distribution at once) we sample with replacement if more samples than

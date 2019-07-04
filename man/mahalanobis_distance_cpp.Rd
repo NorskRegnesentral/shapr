@@ -10,6 +10,10 @@ mahalanobis_distance_cpp(featureList, Xtrain_mat, Xtest_mat, mcov,
 \arguments{
 \item{featureList}{List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.}
 
+\item{Xtrain_mat}{Matrix with the features from the training data}
+
+\item{Xtest_mat}{Matrix with the features, whose predictions ought to be explained (test data)}
+
 \item{mcov}{Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
 \code{diag(m)} gives the Euclidean distance.}
 

@@ -8,6 +8,12 @@ getting the same observation twice. Need to improve this help file.}
 sample_combinations(nTrain, nTest, nosamp, separate = F)
 }
 \arguments{
+\item{nTrain}{Positive integer}
+
+\item{nTest}{Positive integer}
+
+\item{nosamp}{Positive integer}
+
 \item{separate}{Logical indicating whether the train and test data should be sampled separately
 or in a joint sampling space. If they are sampled separately (which typically would be used when
 optimizing more than one distribution at once) we sample with replacement if more samples than

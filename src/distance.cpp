@@ -11,6 +11,7 @@ using namespace Rcpp;
 //' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
 //' \code{diag(m)} gives the Euclidean distance.
 //' @param S_scale_dist Logical indicating
+//' @inheritParams global_arguments
 //'
 //' @export
 //'
