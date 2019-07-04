@@ -9,7 +9,8 @@ scale_data(Xtrain, Xtest, scale = TRUE)
 \arguments{
 \item{Xtrain}{Matrix, data.frame or data.table with the features from the training data}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
+\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
+be explained (test data)}
 
 \item{scale}{Logical}
 }
