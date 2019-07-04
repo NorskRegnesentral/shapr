@@ -10,15 +10,19 @@ sample_gaussian(given_ind, noSamp_MC, mu, Sigma, p, Xtest,
 \arguments{
 \item{given_ind}{Vector}
 
-\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
+\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 
-\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
+NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
-\item{Sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
+\item{Sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
+distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
 \item{p}{Positive integer}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
+\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
+be explained (test data)}
 }
 \value{
 data.table with \code{noSamp_MC} (conditional) Gaussian samples
