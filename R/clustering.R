@@ -83,11 +83,10 @@ cluster_features <- function(X = NULL, corMat = NULL, alpha = 1) {
 #' @param col box color
 #' @param lwd box line width
 #'
-#' @export
+#' @keywords internal
 #'
 #' @author Anders Løland
-correlation_rectangles <- function(
-                                   corr,
+correlation_rectangles <- function(corr,
                                    cluster,
                                    k = 2,
                                    col = "yellow",
@@ -99,9 +98,9 @@ correlation_rectangles <- function(
 
   ind <- k + 1
   rect(cu[-ind] + 0.5,
-    n - cu[-ind] + 0.5,
-    cu[-1] + 0.5,
-    n - cu[-1] + 0.5,
-    border = col, lwd = lwd
+       n - cu[-ind] + 0.5,
+       cu[-1] + 0.5,
+       n - cu[-1] + 0.5,
+       border = col, lwd = lwd
   )
 }
