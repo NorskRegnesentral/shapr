@@ -13,6 +13,7 @@ Authors@R: c(
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = "aut"),  
     person("Anders", "Løland", email = "Anders.Løland@nr.no", role = "aut")) 
 URL: https://github.com/NorskRegnesentral/shapr
+BugReports: https://github.com/NorskRegnesentral/shapr/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
