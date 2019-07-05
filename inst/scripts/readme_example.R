@@ -9,9 +9,9 @@ data("Boston")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:6), x_var])
-y_train <- Boston[-(1:6), y_var]
-x_test <- as.matrix(Boston[1:6, x_var])
+x_train <- as.matrix(tail(Boston[, x_var], -6))
+y_train <- tail(Boston[, y_var], -6)
+x_test <- as.matrix(head(Boston[, x_var], 6))
 
 # Just looking at the dependence between the features
 

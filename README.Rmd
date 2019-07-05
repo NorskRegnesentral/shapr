@@ -16,9 +16,13 @@ knitr::opts_chunk$set(
 
 ```
 
-# shapr
+# shapr <img src="man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
 
-[![CircleCI](https://circleci.com/gh/NorskRegnesentral/shapr.svg?style=svg&circle-token=7c2a3a4edc870b4694982f0fe8ac66f92d639099)](https://circleci.com/gh/NorskRegnesentral/shapr)
+<!-- badges: start -->
+[![CircleCI](https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg)](https://circleci.com/gh/NorskRegnesentral/shapr)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- badges: end -->
 
 The most common task of machine learning is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features.
 When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction.

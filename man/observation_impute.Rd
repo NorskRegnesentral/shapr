@@ -8,15 +8,18 @@ observation_impute(W_kernel, S, Xtrain, Xtest, w_threshold = 0.7,
   noSamp_MC = 1000)
 }
 \arguments{
-\item{W_kernel}{Array. Contains all nonscaled weights between training and testing observations for all combinations.}
+\item{W_kernel}{Array. Contains all nonscaled weights between training and testing observations
+for all combinations.}
 
 \item{S}{Matrix}
 
 \item{Xtrain}{Matrix, data.frame or data.table with the features from the training data}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data)}
+\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
+be explained (test data)}
 
-\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
+\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
 }
 \value{
 List
