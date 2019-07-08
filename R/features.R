@@ -16,7 +16,7 @@
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-feature_combinations <- function(m, exact = TRUE, noSamp = 200, weight_zero_m = 10^6, reduce_dim = TRUE) {
+feature_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
 
   if (!exact && noSamp > (2^m - 2) && !reduce_dim) {
     noSamp <- 2^m - 2
@@ -24,9 +24,9 @@ feature_combinations <- function(m, exact = TRUE, noSamp = 200, weight_zero_m = 
   }
 
   if (exact) {
-    dt <- feature_exact(m, weight_zero_m)
+    dt <- feature_exact(m, shapley_weight_inf_replacement)
   } else {
-    dt <- feature_not_exact(m, noSamp, weight_zero_m, reduce_dim)
+    dt <- feature_not_exact(m, noSamp, shapley_weight_inf_replacement, reduce_dim)
   }
 
   return(dt)
@@ -34,14 +34,14 @@ feature_combinations <- function(m, exact = TRUE, noSamp = 200, weight_zero_m = 
 
 #' @keywords internal
 #' @export
-feature_exact <- function(m, weight_zero_m = 10^6) {
+feature_exact <- function(m, shapley_weight_inf_replacement = 10^6) {
 
   dt <- data.table::data.table(ID = seq(2^m))
   combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
   dt[, features := unlist(combinations, recursive = FALSE)]
   dt[, nfeatures := length(features[[1]]), ID]
   dt[, N := .N, nfeatures]
-  dt[, shapley_weight := shapley_weights(m = m, N = N, s = nfeatures, weight_zero_m)]
+  dt[, shapley_weight := shapley_weights(m = m, N = N, s = nfeatures, shapley_weight_inf_replacement)]
   dt[, no := 1]
 
   return(dt)
@@ -49,7 +49,7 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 
 #' @keywords internal
 #' @export
-feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim = TRUE) {
+feature_not_exact <- function(m, noSamp = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
 
   # Not supported for m > 30
   if (m > 30) {
@@ -98,7 +98,7 @@ feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim 
   data.table::setcolorder(X, nms)
 
   # Add shapley weight and number of combinations
-  X[, shapley_weight := weight_zero_m]
+  X[, shapley_weight := shapley_weight_inf_replacement]
   X[, N := 1]
   X[between(nfeatures, 1, m - 1), ind := TRUE]
   X[ind == TRUE, shapley_weight := p[nfeatures]]

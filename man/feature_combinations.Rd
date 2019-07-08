@@ -5,7 +5,7 @@
 \title{Get combinations}
 \usage{
 feature_combinations(m, exact = TRUE, noSamp = 200,
-  weight_zero_m = 10^6, reduce_dim = TRUE)
+  shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE)
 }
 \arguments{
 \item{m}{Integer. Total number of features}
@@ -15,6 +15,9 @@ sampling approach to approximate the sum}
 
 \item{noSamp}{Integer. How many samples to use when approximating the sum in the Shapley formula
 (previously called \code{nrows})}
+
+\item{shapley_weight_inf_replacement}{Numeric. Indicating which weight to use for the full
+conditional and unconditional expectations in kernel SHAPs weighted least squares formulation.}
 
 \item{reduce_dim}{Logical. Indicating whether to reduce the dimension of the weighted least
 squares problem by merging identical columns and adjusting their weights.}
