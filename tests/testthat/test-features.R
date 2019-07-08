@@ -26,7 +26,7 @@ test_that("Test feature_combinations", {
     reduce_dim = reduce_dim
   )
   set.seed(1)
-  y2 <-  feature_not_exact(
+  y2 <- feature_not_exact(
     m = m,
     noSamp = noSamp,
     shapley_weight_inf_replacement = w,
