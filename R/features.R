@@ -51,6 +51,11 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 #' @export
 feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim = TRUE) {
 
+  # Not supported for m > 30
+  if (m > 30) {
+    stop("Currently we are not supporting cases where m > 30.")
+  }
+
   # Find weights for given number of features ----------
   nfeatures <- seq(m - 1)
   n <- sapply(nfeatures, choose, n = m)
@@ -119,7 +124,7 @@ helper_feature <- function(m, feature_sample) {
   data.table::setnames(dt, cnms)
   dt[, no := as.integer(.N), by = cnms]
   dt[, is_duplicate := duplicated(dt)]
-  cnms <- c("no", "is_duplicate")
+  dt[, (cnms) := NULL]
 
-  return(dt[, .SD, .SDcols = cnms])
+  return(dt)
 }
