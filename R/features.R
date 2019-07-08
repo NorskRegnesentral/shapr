@@ -76,13 +76,13 @@ feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim 
   data.table::setkey(X, nfeatures)
   feature_sample <- sample_features_cpp(m, X$nfeatures)
 
-  # Get number of occurences and remove duplicated rows -------
+  # Get number of occurences and duplicated rows-------
   r <- helper_feature(m, feature_sample)
   X[, no := r[["no"]]]
   X[, is_duplicate := r[["is_duplicate"]]]
   X[, ID := .I]
 
-  # Populate data.table -------
+  # Populate table and remove duplicated rows -------
   X[, features := feature_sample]
   if (reduce_dim && any(X[["is_duplicate"]])) {
     X <- X[is_duplicate == FALSE]
