@@ -8,7 +8,7 @@ test_that("Test feature_combinations", {
   m <- 3
   exact <- TRUE
   w <- 10^6
-  x1 <- feature_combinations(m = m, exact = exact, weight_zero_m = w)
+  x1 <- feature_combinations(m = m, exact = exact, shapley_weight_inf_replacement = w)
   x2 <- feature_exact(m, w)
 
   # Example 2 -----------
@@ -22,14 +22,14 @@ test_that("Test feature_combinations", {
     m = m,
     exact = exact,
     noSamp = noSamp,
-    weight_zero_m = w,
+    shapley_weight_inf_replacement = w,
     reduce_dim = reduce_dim
   )
   set.seed(1)
   y2 <-  feature_not_exact(
     m = m,
     noSamp = noSamp,
-    weight_zero_m = w,
+    shapley_weight_inf_replacement = w,
     reduce_dim = reduce_dim
   )
 
@@ -44,7 +44,7 @@ test_that("Test feature_combinations", {
     m = m,
     exact = exact,
     noSamp = noSamp,
-    weight_zero_m = w,
+    shapley_weight_inf_replacement = w,
     reduce_dim = FALSE
   )
 
@@ -58,8 +58,8 @@ test_that("Test feature_exact", {
 
   # Example -----------
   m <- 3
-  weight_zero_m <- 10^6
-  x <- feature_exact(m, weight_zero_m)
+  shapley_weight_inf_replacement <- 10^6
+  x <- feature_exact(m, shapley_weight_inf_replacement)
 
   # Define results -----------
   cnms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "no")
@@ -100,7 +100,7 @@ test_that("Test feature_not_exact", {
   x <- feature_not_exact(
     m = m,
     noSamp = noSamp,
-    weight_zero_m = w,
+    shapley_weight_inf_replacement = w,
     reduce_dim = reduce_dim
   )
   set.seed(1)
