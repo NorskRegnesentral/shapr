@@ -5,7 +5,7 @@
 \title{Get combinations}
 \usage{
 feature_combinations(m, exact = TRUE, noSamp = 200,
-  weight_zero_m = 10^6, reduce_dim = T)
+  weight_zero_m = 10^6, reduce_dim = TRUE)
 }
 \arguments{
 \item{m}{Integer. Total number of features}
@@ -29,8 +29,8 @@ Get combinations
 The returned data.table contains the following columns
 \describe{
 \item{ID}{Positive integer. Unique key for combination}
-\item{features}{List}
-\item{nfeautres}{Positive integer}
+\item{features}{List of integer vectors}
+\item{nfeatures}{Positive integer}
 \item{N}{Positive integer}
 }
 }
