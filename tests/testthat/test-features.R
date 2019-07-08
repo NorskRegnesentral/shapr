@@ -36,23 +36,22 @@ test_that("Test feature_combinations", {
   # Example 3 -----------
   m <- 3
   exact <- FALSE
-  noSamp <- 100
+  noSamp <- 1e4
   w <- 10^6
   reduce_dim <- TRUE
-  replace <- FALSE
   set.seed(1)
   y3 <- feature_combinations(
     m = m,
     exact = exact,
     noSamp = noSamp,
     weight_zero_m = w,
-    reduce_dim = reduce_dim
+    reduce_dim = FALSE
   )
 
   # Test results -----------
   expect_equal(x1, x2)
   expect_equal(y1, y2)
-  expect_equal(nrow(y3), 2^3 - 1)
+  expect_equal(nrow(y3), 2^3)
 })
 
 test_that("Test feature_exact", {
@@ -92,11 +91,33 @@ test_that("Test feature_exact", {
 test_that("Test feature_not_exact", {
 
   # Example -----------
-  x <- 1
+  m <- 10
+  exact <- FALSE
+  noSamp <- 50
+  w <- 10^6
+  reduce_dim <- FALSE
+  set.seed(1)
+  x <- feature_not_exact(
+    m = m,
+    noSamp = noSamp,
+    weight_zero_m = w,
+    reduce_dim = reduce_dim
+  )
+  set.seed(1)
+
+  cnms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "no")
+  classes <- c("integer", "list", "integer", "integer", "double", "integer")
 
   # Test results -----------
-  expect_equal(x - 1, 0)
-  expect_error(x - "a")
+  expect_true(data.table::is.data.table(x))
+  expect_equal(names(x), cnms)
+  expect_equal(unname(sapply(x, typeof)), classes)
+  # expect_equal(x[["ID"]], seq(nrow(x)))
+  # expect_equal(x[["features"]], lfeatures)
+  # expect_equal(x[["nfeatures"]], nfeatures)
+  # expect_equal(x[["N"]], n)
+  # expect_equal(x[["no"]], rep(1, nrow(x)))
+
 })
 
 test_that("Test helper_feature", {

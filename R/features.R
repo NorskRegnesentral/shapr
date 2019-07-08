@@ -16,9 +16,9 @@
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-feature_combinations <- function(m, exact = TRUE, noSamp = 200, weight_zero_m = 10^6, reduce_dim = T, replace = FALSE) {
+feature_combinations <- function(m, exact = TRUE, noSamp = 200, weight_zero_m = 10^6, reduce_dim = TRUE) {
 
-  if (!exact && noSamp > (2^m - 2) && !replace) {
+  if (!exact && noSamp > (2^m - 2) && !reduce_dim) {
     noSamp <- 2^m - 2
     cat(sprintf("noSamp is larger than 2^m = %d. Using exact instead.", 2^m))
   }
@@ -49,7 +49,7 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 
 #' @keywords internal
 #' @export
-feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim = T) {
+feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim = TRUE) {
 
   # Find weights for given number of features ----------
   nfeatures <- seq(m - 1)
@@ -105,6 +105,7 @@ feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim 
   data.table::setcolorder(X, nms)
   data.table::setkey(X, nfeatures)
   X[, ID := .I]
+  X[, N := as.integer(N)]
 
   return(X)
 }
@@ -117,7 +118,7 @@ helper_feature <- function(m, feature_sample) {
   cnms <- paste0("V", seq(m))
   data.table::setnames(dt, cnms)
   dt[, nfeatures := as.integer(rowSums(x))]
-  dt[, no := .N, by = cnms]
+  dt[, no := as.integer(.N), by = cnms]
   dt[, is_duplicate := duplicated(dt)]
   cnms <- c("nfeatures", "no", "is_duplicate")
 
