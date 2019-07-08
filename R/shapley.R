@@ -14,22 +14,6 @@ shapley_weights <- function(m, N, s, weight_zero_m) {
   x
 }
 
-#' Calculate Shapley weights
-#'
-#' @param X data.table
-#'
-#' @return data.table
-#'
-#' @export
-#'
-#' @author Nikolai Sellereite
-observation_weights <- function(X, m) {
-  X[-c(1, .N), weight := shapley_weights(m = m, N = N, s = nfeatures), ID]
-  X[c(1, .N), weight := 10^6]
-
-  return(X)
-}
-
 #' Get weighted matrix
 #'
 #' @param X data.table
