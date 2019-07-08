@@ -90,6 +90,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sample_features_cpp
+List sample_features_cpp(int m, IntegerVector nfeatures);
+RcppExport SEXP _shapr_sample_features_cpp(SEXP mSEXP, SEXP nfeaturesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nfeatures(nfeaturesSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_features_cpp(m, nfeatures));
+    return rcpp_result_gen;
+END_RCPP
+}
+// helper_feature_matrix
+IntegerMatrix helper_feature_matrix(int m, List l);
+RcppExport SEXP _shapr_helper_feature_matrix(SEXP mSEXP, SEXP lSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< List >::type l(lSEXP);
+    rcpp_result_gen = Rcpp::wrap(helper_feature_matrix(m, l));
+    return rcpp_result_gen;
+END_RCPP
+}
 // observation_impute_cpp
 NumericMatrix observation_impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtrain, NumericMatrix Xtest, IntegerMatrix S);
 RcppExport SEXP _shapr_observation_impute_cpp(SEXP IDSEXP, SEXP CombSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP SSEXP) {
@@ -139,6 +163,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_aicc_full_single_cpp", (DL_FUNC) &_shapr_aicc_full_single_cpp, 5},
     {"_shapr_aicc_full_cpp", (DL_FUNC) &_shapr_aicc_full_cpp, 6},
     {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
+    {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
+    {"_shapr_helper_feature_matrix", (DL_FUNC) &_shapr_helper_feature_matrix, 2},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},
     {"_shapr_weight_matrix_cpp", (DL_FUNC) &_shapr_weight_matrix_cpp, 4},
     {"_shapr_feature_matrix_cpp", (DL_FUNC) &_shapr_feature_matrix_cpp, 2},

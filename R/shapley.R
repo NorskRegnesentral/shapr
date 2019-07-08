@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @author Nikolai Sellereite
-shapley_weights <- function(m, N, s, weight_zero_m) {
+shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 
   x <- (m - 1) / (N * s * (m - s))
   x[!is.finite(x)] <- weight_zero_m

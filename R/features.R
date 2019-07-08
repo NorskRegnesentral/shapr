@@ -49,74 +49,82 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 
 #' @keywords internal
 #' @export
-feature_not_exact <- function(m, exact = TRUE, noSamp = 200, weight_zero_m = 10^6, reduce_dim = T) {
+feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim = T) {
 
-  ## Find weights for given number of features ----------
-  DT0 <- data.table(nfeatures = head(1:m, -1))
-  DT0[, N := unlist(lapply(nfeatures, choose, n = m))]
-  DT0[, shapley_weight := shapley_weights(m = m, N = N, s = nfeatures)]
-  DT0[, samp_weight := shapley_weight * N]
-  DT0[, samp_weight := samp_weight / sum(samp_weight)]
+  m <- 20
+  noSamp = 1e4
+  weight_zero_m = 10^6
+  reduce_dim = T
 
-  ## Sample number of features ----------
-  X <- data.table(
-    nfeatures = sample(
-      x = DT0[["nfeatures"]],
-      size = noSamp,
-      replace = TRUE,
-      prob = DT0[["samp_weight"]]
+  # Find weights for given number of features ----------
+  nfeatures <- seq(m - 1)
+  n <- sapply(nfeatures, choose, n = m)
+  w <- shapley_weights(m = m, N = n, s = nfeatures) * n
+  p <- w / sum(w)
+
+  # Sample number of features ----------
+  X <- data.table::data.table(
+    nfeatures = c(
+      0,
+      sample(
+        x = nfeatures,
+        size = noSamp,
+        replace = TRUE,
+        prob = p
+      ),
+      m
     )
   )
 
-  ## Sample specific set of features # Not optimal, as it is a bit slow for noSamp -------
-  setkey(X, nfeatures)
-  Samp <- sapply(X = X$nfeatures, FUN = function(x) {
-    aa <- rep(NA, m)
-    aa[1:x] <- sample(x = 1:m, size = x)
-    aa
-  })
-  Samp <- t(apply(X = Samp, MARGIN = 2, FUN = sort, na.last = T))
-  Samp.list <- apply(X = Samp, MARGIN = 1, FUN = function(x) {
-    x[!is.na(x)]
-  })
+  # Sample specific set of features -------
+  data.table::setkey(X, nfeatures)
+  feature_sample <- sample_features_cpp(m, X$nfeatures)
 
-  X <- cbind(X, Samp)
-  X[, no := .N, by = mget(paste0("V", 1:m))] # Counting repetitions of the same sample
+  # Get number of occurences and remove duplicated rows -------
+  r <- helper_feature(m, feature_sample)
+  X[, no := r[["no"]]]
+  X[, is_duplicate := r[["is_duplicate"]]]
+  X[, nfeatures := r[["nfeatures"]]]
+  X[, ID := .I]
 
-  if (reduce_dim) {
-    isDup <- duplicated(X)
-    X[, features := Samp.list]
-    X <- X[!isDup, ]
-  } else {
+  # Populate data.table -------
+  X[, features := feature_sample]
+  if (reduce_dim && any(X[["is_duplicate"]])) {
+    X <- X[is_duplicate == FALSE]
     X[, no := 1]
-    X[, features := Samp.list]
   }
-
-  X[, paste0("V", 1:m) := NULL]
-  X[, ID := .I]
-
+  X[, is_duplicate := NULL]
   nms <- c("ID", "nfeatures", "features", "no")
-  setcolorder(X, nms)
+  data.table::setcolorder(X, nms)
 
-  ## Add zero features and m features ----------
-  X_zero_all <- data.table(
-    ID = seq(X[, max(ID)] + 1, length.out = 2),
-    num_var = c(0, m),
-    comb = c(list(numeric(0)), list(1:m)),
-    no = 1
-  )
-  X <- rbindlist(list(X, X_zero_all))
-  setkey(X, nfeatures)
+  # Add shapley weight and number of combinations
+  X[, shapley_weight := weight_zero_m]
+  X[, N := 1]
+  X[between(nfeatures, 1, m - 1), ind := TRUE]
+  X[ind == TRUE, shapley_weight := p[nfeatures]]
+  X[ind == TRUE, N := n[nfeatures]]
+  X[, ind := NULL]
 
-  ## Add number of combinations
-  X <- merge(x = X, y = DT0[, .(nfeatures, N, shapley_weight)], all.x = TRUE, on = "nfeatures")
+  # Set column order and key table
   nms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "no")
-  setcolorder(X, nms)
+  data.table::setcolorder(X, nms)
+  data.table::setkey(X, nfeatures)
   X[, ID := .I]
-  X[nfeatures %in% c(0, m), `:=`(
-    shapley_weight = weight_zero_m,
-    N = 1
-  )]
 
   return(X)
+}
+
+#' @keywords internal
+helper_feature <- function(m, feature_sample) {
+
+  x <- helper_feature_matrix(m, feature_sample)
+  dt <- data.table::data.table(x)
+  cnms <- paste0("V", seq(m))
+  data.table::setnames(dt, cnms)
+  dt[, nfeatures := rowSums(x)]
+  dt[, no := .N, by = cnms]
+  dt[, is_duplicate := duplicated(dt)]
+  cnms <- c("nfeatures", "no", "is_duplicate")
+
+  return(dt[, .SD, .SDcols = cnms])
 }

@@ -90,6 +90,22 @@ mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S
     .Call(`_shapr_mahalanobis_distance_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
 }
 
+#' @keywords internal
+#'
+#' @export
+#'
+sample_features_cpp <- function(m, nfeatures) {
+    .Call(`_shapr_sample_features_cpp`, m, nfeatures)
+}
+
+#' @keywords internal
+#'
+#' @export
+#'
+helper_feature_matrix <- function(m, l) {
+    .Call(`_shapr_helper_feature_matrix`, m, l)
+}
+
 #' Get imputed data
 #'
 #' @param ID Positive integer vector
