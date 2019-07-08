@@ -134,18 +134,16 @@ test_that("Test helper_feature", {
   x <- helper_feature(m, feature_sample)
 
   # Define results -----------
-  x1 <- c(0, 2, 3, 2, 5)
   x2 <- c(1, 2, 1, 2, 1)
   x3 <- c(FALSE, FALSE, FALSE, TRUE, FALSE)
 
   # Test results -----------
-  cnms <- c("nfeatures", "no", "is_duplicate")
-  classes <- c("integer", "integer", "logical")
+  cnms <- c("no", "is_duplicate")
+  classes <- c("integer", "logical")
   expect_true(data.table::is.data.table(x))
   expect_equal(names(x), cnms)
   expect_equal(nrow(x), length(feature_sample))
   expect_equal(classes, unname(sapply(x, typeof)))
-  expect_equal(x[["nfeatures"]], x1)
   expect_equal(x[["no"]], x2)
   expect_equal(x[["is_duplicate"]], x3)
 

@@ -70,6 +70,7 @@ feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim 
       m
     )
   )
+  X[, nfeatures := as.integer(nfeatures)]
 
   # Sample specific set of features -------
   data.table::setkey(X, nfeatures)
@@ -79,7 +80,6 @@ feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim 
   r <- helper_feature(m, feature_sample)
   X[, no := r[["no"]]]
   X[, is_duplicate := r[["is_duplicate"]]]
-  X[, nfeatures := r[["nfeatures"]]]
   X[, ID := .I]
 
   # Populate data.table -------
@@ -117,10 +117,9 @@ helper_feature <- function(m, feature_sample) {
   dt <- data.table::data.table(x)
   cnms <- paste0("V", seq(m))
   data.table::setnames(dt, cnms)
-  dt[, nfeatures := as.integer(rowSums(x))]
   dt[, no := as.integer(.N), by = cnms]
   dt[, is_duplicate := duplicated(dt)]
-  cnms <- c("nfeatures", "no", "is_duplicate")
+  cnms <- c("no", "is_duplicate")
 
   return(dt[, .SD, .SDcols = cnms])
 }
