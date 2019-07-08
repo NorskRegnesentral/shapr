@@ -79,7 +79,7 @@ feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim 
 
   # Sample specific set of features -------
   data.table::setkey(X, nfeatures)
-  feature_sample <- sample_features_cpp(m, X$nfeatures)
+  feature_sample <- sample_features_cpp(m, X[["nfeatures"]])
 
   # Get number of occurences and duplicated rows-------
   r <- helper_feature(m, feature_sample)
