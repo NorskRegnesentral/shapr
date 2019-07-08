@@ -23,11 +23,11 @@ feature_combinations <- function(m, exact = TRUE, noSamp = 200, weight_zero_m = 
     cat(sprintf("noSamp is larger than 2^m = %d. Using exact instead.", 2^m))
   }
 
-  dt <- ifelse(
-    exact,
-    feature_exact(m, weight_zero_m),
-    feature_not_exact(m, noSamp, weight_zero_m, reduce_dim),
-  )
+  if (exact) {
+    dt <- feature_exact(m, weight_zero_m)
+  } else {
+    dt <- feature_not_exact(m, noSamp, weight_zero_m, reduce_dim)
+  }
 
   return(dt)
 }
@@ -116,7 +116,7 @@ helper_feature <- function(m, feature_sample) {
   dt <- data.table::data.table(x)
   cnms <- paste0("V", seq(m))
   data.table::setnames(dt, cnms)
-  dt[, nfeatures := rowSums(x)]
+  dt[, nfeatures := as.integer(rowSums(x))]
   dt[, no := .N, by = cnms]
   dt[, is_duplicate := duplicated(dt)]
   cnms <- c("nfeatures", "no", "is_duplicate")
