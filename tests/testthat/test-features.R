@@ -33,9 +33,26 @@ test_that("Test feature_combinations", {
     reduce_dim = reduce_dim
   )
 
+  # Example 3 -----------
+  m <- 3
+  exact <- FALSE
+  noSamp <- 100
+  w <- 10^6
+  reduce_dim <- TRUE
+  replace <- FALSE
+  set.seed(1)
+  y3 <- feature_combinations(
+    m = m,
+    exact = exact,
+    noSamp = noSamp,
+    weight_zero_m = w,
+    reduce_dim = reduce_dim
+  )
+
   # Test results -----------
   expect_equal(x1, x2)
   expect_equal(y1, y2)
+  expect_equal(nrow(y3), 2^3 - 1)
 })
 
 test_that("Test feature_exact", {

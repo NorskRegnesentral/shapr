@@ -16,7 +16,7 @@
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-feature_combinations <- function(m, exact = TRUE, noSamp = 200, weight_zero_m = 10^6, reduce_dim = T) {
+feature_combinations <- function(m, exact = TRUE, noSamp = 200, weight_zero_m = 10^6, reduce_dim = T, replace = FALSE) {
 
   if (!exact && noSamp > (2^m - 2) && !replace) {
     noSamp <- 2^m - 2
