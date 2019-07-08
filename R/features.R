@@ -51,11 +51,6 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 #' @export
 feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim = T) {
 
-  m <- 20
-  noSamp = 1e4
-  weight_zero_m = 10^6
-  reduce_dim = T
-
   # Find weights for given number of features ----------
   nfeatures <- seq(m - 1)
   n <- sapply(nfeatures, choose, n = m)
