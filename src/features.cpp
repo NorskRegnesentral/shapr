@@ -22,25 +22,3 @@ List sample_features_cpp(int m, IntegerVector nfeatures) {
 
     return l;
 }
-
-//' @keywords internal
-//'
-//' @export
-//'
-// [[Rcpp::export]]
-IntegerMatrix helper_feature_matrix(int m, List l) {
-
-    int n = l.length();
-    IntegerMatrix x(n, m);
-
-    for (int i = 0; i < n; i++) {
-
-        IntegerVector k = l[i];
-
-        for (int j = 0; j < k.length(); j++) {
-            x(i, k[j] - 1) = 1;
-        }
-    }
-
-    return x;
-}

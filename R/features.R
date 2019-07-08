@@ -112,7 +112,7 @@ feature_not_exact <- function(m, noSamp = 200, weight_zero_m = 10^6, reduce_dim 
 #' @keywords internal
 helper_feature <- function(m, feature_sample) {
 
-  x <- helper_feature_matrix(m, feature_sample)
+  x <- feature_matrix_cpp(feature_sample, m)
   dt <- data.table::data.table(x)
   cnms <- paste0("V", seq(m))
   data.table::setnames(dt, cnms)

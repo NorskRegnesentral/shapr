@@ -98,14 +98,6 @@ sample_features_cpp <- function(m, nfeatures) {
     .Call(`_shapr_sample_features_cpp`, m, nfeatures)
 }
 
-#' @keywords internal
-#'
-#' @export
-#'
-helper_feature_matrix <- function(m, l) {
-    .Call(`_shapr_helper_feature_matrix`, m, l)
-}
-
 #' Get imputed data
 #'
 #' @param ID Positive integer vector
