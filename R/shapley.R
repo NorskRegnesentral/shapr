@@ -7,8 +7,11 @@
 #' @export
 #'
 #' @author Nikolai Sellereite
-shapley_weights <- function(m, N, s) {
-  (m - 1) / (N * s * (m - s))
+shapley_weights <- function(m, N, s, weight_zero_m) {
+
+  x <- (m - 1) / (N * s * (m - s))
+  x[!is.finite(x)] <- weight_zero_m
+  x
 }
 
 #' Calculate Shapley weights

@@ -4,7 +4,7 @@
 \alias{shapley_weights}
 \title{Calculate Shapley weight}
 \usage{
-shapley_weights(m, N, s)
+shapley_weights(m, N, s, weight_zero_m)
 }
 \arguments{
 \item{m}{Integer. Total number of features}
