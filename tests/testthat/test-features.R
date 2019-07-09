@@ -52,6 +52,7 @@ test_that("Test feature_combinations", {
   expect_equal(x1, x2)
   expect_equal(y1, y2)
   expect_equal(nrow(y3), 2^3)
+  expect_error(feature_combinations(100))
 })
 
 test_that("Test feature_exact", {

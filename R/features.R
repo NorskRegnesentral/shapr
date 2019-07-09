@@ -18,6 +18,11 @@
 #' @author Nikolai Sellereite, Martin Jullum
 feature_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
 
+  # Not supported for m > 30
+  if (m > 30) {
+    stop("Currently we are not supporting cases where m > 30.")
+  }
+
   if (!exact && noSamp > (2^m - 2) && !reduce_dim) {
     noSamp <- 2^m - 2
     cat(sprintf("noSamp is larger than 2^m = %d. Using exact instead.", 2^m))
@@ -50,11 +55,6 @@ feature_exact <- function(m, shapley_weight_inf_replacement = 10^6) {
 #' @keywords internal
 #' @export
 feature_not_exact <- function(m, noSamp = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
-
-  # Not supported for m > 30
-  if (m > 30) {
-    stop("Currently we are not supporting cases where m > 30.")
-  }
 
   # Find weights for given number of features ----------
   nfeatures <- seq(m - 1)
