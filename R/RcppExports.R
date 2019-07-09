@@ -105,10 +105,15 @@ observation_impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
     .Call(`_shapr_observation_impute_cpp`, ID, Comb, Xtrain, Xtest, S)
 }
 
-#' Get distance
+#' Calculate weight matrix
 #'
-#' @param n Positive integer. Number of combinations
-#' @inheritParams global_arguments
+#' @param features List. Each of the elements equals an integer
+#' vector representing a valid combination of features.
+#' @param m Integer. Number of features
+#' @param n Integer. Number of combinations
+#' @param w Numeric vector of length \code{n}, i.e. \code{w[i]} equals
+#' the shapley weight of feature combination \code{i}, represented by
+#' \code{features[[i]]}.
 #'
 #' @export
 #'
