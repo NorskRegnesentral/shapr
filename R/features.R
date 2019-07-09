@@ -62,7 +62,7 @@ feature_not_exact <- function(m, noSamp = 200, shapley_weight_inf_replacement = 
   w <- shapley_weights(m = m, N = n, s = nfeatures) * n
   p <- w / sum(w)
 
-  # Sample number of features ----------
+  # Sample number of chosen features ----------
   X <- data.table::data.table(
     nfeatures = c(
       0,
