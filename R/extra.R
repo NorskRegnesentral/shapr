@@ -15,7 +15,7 @@
 #' training data. Not optimal, but for now fine if careful when using more samples than the number
 #' training observations while at the same time doing optimization over every test observation.
 #'
-#' @return @return A data.frame containing \code{nosamp} rows of resampled train and test observations.
+#' @return A data.frame containing \code{nosamp} rows of resampled train and test observations.
 #'
 #' @export
 #'
