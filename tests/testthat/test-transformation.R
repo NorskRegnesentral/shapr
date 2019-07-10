@@ -5,7 +5,7 @@ context("test-transformation.R")
 test_that("Test inv_gaussian_transform", {
 
   # Example -----------
-  zx <- seq(-1, 1, length.out = 100)
+  zx <- rnorm(50)
   n_z <- 30
   type <- 7
 
@@ -24,7 +24,7 @@ test_that("Test inv_gaussian_transform", {
 test_that("Test gaussian_transform_separate", {
 
   # Example -----------
-  yx <- rnorm(100)
+  yx <- rnorm(50)
   n_y <- 30
 
   x <- gaussian_transform_separate(yx, n_y)
@@ -33,5 +33,19 @@ test_that("Test gaussian_transform_separate", {
   expect_true(is.vector(x))
   expect_true(is.double(x))
   expect_equal(length(x), n_y)
+
+})
+
+test_that("Test gaussian_transform", {
+
+  # Example -----------
+  y <- rnorm(50)
+  x <- gaussian_transform(y)
+
+  # Tests -----------
+  expect_true(is.vector(x))
+  expect_true(is.double(x))
+  expect_equal(length(x), length(y))
+
 
 })
