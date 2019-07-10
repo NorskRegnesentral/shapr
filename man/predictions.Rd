@@ -16,8 +16,6 @@ predictions(model, D, h_optim_vec, kernel_metric, S, Xtrain, Xtest,
 
 \item{D}{Matrix}
 
-\item{h_optim_vec}{<Something>}
-
 \item{kernel_metric}{String indicating which kernel metric should be used in the empirical
 conditional distribution. Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence"
 (imputing independently, ignoring any distance) being the second option "Gaussian_old"
@@ -37,8 +35,6 @@ Monte Carlo integration for every conditional expectation (previously called \co
 
 \item{verbose}{Logical}
 
-\item{cond_approach_list}{<Something>}
-
 \item{feature_list}{List}
 
 \item{pred_zero}{Numeric}
@@ -49,13 +45,7 @@ NULL means it is estimated from the data if needed (in the Gaussian approach).}
 \item{Sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
 distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
-\item{mu_Gauss_trans}{<Something>}
-
-\item{Sigma_Gauss_trans}{<Something>}
-
 \item{Xtest_Gauss_trans}{Vector with the Gaussian transformed test observations}
-
-\item{ensure_condcov_symmetry}{<Something>}
 }
 \value{
 List
