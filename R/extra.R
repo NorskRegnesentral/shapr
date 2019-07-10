@@ -3,11 +3,11 @@
 #'
 #' @inheritParams global_arguments
 #'
-#' @param nTrain Number of training observations to sample from.
+#' @param nTrain Positive integer. Number of training observations to sample from.
 #'
-#' @param nTest Number of test observations to sample from.
+#' @param nTest Positive integer. Number of test observations to sample from.
 #'
-#' @param nosamp Number of samples
+#' @param nosamp Positive integer. Number of samples.
 #'
 #' @param separate Logical indicating whether the train and test data should be sampled separately
 #' or in a joint sampling space. If they are sampled separately (which typically would be used when
@@ -15,7 +15,7 @@
 #' training data. Not optimal, but for now fine if careful when using more samples than the number
 #' training observations while at the same time doing optimization over every test observation.
 #'
-#' @return A data.frame containing \code{nosamp} rows of resampled train and test observations.
+#' @return Data.frame. Contains \code{nosamp} rows of re-sampled train and test observations.
 #'
 #' @export
 #'
