@@ -20,7 +20,7 @@
 #' @export
 #'
 #' @author Martin Jullum
-sample_combinations <- function(nTrain, nTest, nosamp, separate = F) {
+sample_combinations <- function(nTrain, nTest, nosamp, separate = FALSE) {
 
   if (separate) {
 
