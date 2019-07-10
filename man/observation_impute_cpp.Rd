@@ -4,25 +4,42 @@
 \alias{observation_impute_cpp}
 \title{Get imputed data}
 \usage{
-observation_impute_cpp(ID, Comb, Xtrain, Xtest, S)
+observation_impute_cpp(index_xtrain, index_s, xtrain, xtest, S)
 }
 \arguments{
-\item{ID}{Positive integer vector}
+\item{index_xtrain}{Positive integer. Represents a sequence of indices from \code{xtrain},
+i.e. \code{min(index_xtrain) >= 1} and \code{max(index_xtrain) <= nrow(xtrain)}.}
 
-\item{Comb}{Positive integer vector}
+\item{index_s}{Positive integer. Represents a sequence of indices from \code{S},
+i.e. \code{min(index_s) >= 1} and \code{max(index_s) <= nrow(S)}.}
 
-\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data}
+\item{xtrain}{Numeric matrix.}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
-be explained (test data)}
+\item{xtest}{Numeric matrix. Represents a single test observation.}
 
-\item{S}{Matrix}
+\item{S}{Integer matrix of dimension \code{ncomb x nfeatures}, where \code{ncomb} equals
+the total number of sampled/non-sampled feature combinations and \code{nfeatures} equals
+the total number of unique features. Note that \code{nfeature = ncol(xtrain)}. See details
+for more information.}
 }
 \value{
-Array of three dimensions
+Numeric matrix
 }
 \description{
 Get imputed data
+}
+\details{
+\code{S(i, j) = 1} if and only if feature \code{j} is present in feature
+combination \code{i}, otherwise \code{S(i, j) = 0}. I.e. if \code{nfeatures = 3}, there
+are \code{2^3 = 8} unique ways to combine the features. In this case \code{dim(S) = c(8, 3)}.
+Let's call the features \code{x1, x2, x3} and take a closer look at the combination
+represented by \code{s = c(x1, x2)}. If this combination is represented by the second row,
+the following is true: \code{S[2, 1:3] = c(1, 1, 0)}.
+
+The returned object, \code{X}, is a numerix matrix where
+\code{dim(X) = c(length(index_xtrain), ncol(xtrain))}. If feature \code{j} is present in
+the k-th observation, that is \code{S[index_[k], j] == 1}, \code{X[k, j] = xtest[1, j]}.
+Otherwise \code{X[k, j] = xtrain[index_xtrain[k], j]}.
 }
 \author{
 Nikolai Sellereite

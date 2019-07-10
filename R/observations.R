@@ -25,10 +25,10 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
 
   ## Generate data used for prediction
   DTp <- observation_impute_cpp(
-    ID = DT[["ID"]],
-    Comb = DT[["wcomb"]],
-    Xtrain = Xtrain,
-    Xtest = Xtest,
+    index_xtrain = DT[["ID"]],
+    index_s = DT[["wcomb"]],
+    xtrain = Xtrain,
+    xtest = Xtest,
     S = S
   )
 
