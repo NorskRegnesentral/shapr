@@ -8,6 +8,12 @@ getting the same observation twice. Need to improve this help file.}
 sample_combinations(nTrain, nTest, nosamp, separate = F)
 }
 \arguments{
+\item{nTrain}{Positive integer. Number of training observations to sample from.}
+
+\item{nTest}{Positive integer. Number of test observations to sample from.}
+
+\item{nosamp}{Positive integer. Number of samples.}
+
 \item{separate}{Logical indicating whether the train and test data should be sampled separately
 or in a joint sampling space. If they are sampled separately (which typically would be used when
 optimizing more than one distribution at once) we sample with replacement if more samples than
@@ -15,7 +21,7 @@ training data. Not optimal, but for now fine if careful when using more samples 
 training observations while at the same time doing optimization over every test observation.}
 }
 \value{
-Numeric
+Data.frame. Contains \code{nosamp} rows of re-sampled train and test observations.
 }
 \description{
 Helper function to sample a combination of training and testing rows, which does not risk
