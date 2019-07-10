@@ -38,8 +38,7 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
     // Define objects
     int nfeatures;
     IntegerVector feature_vec;
-    arma::mat Z(n, m + 1, arma::fill::zeros);
-    arma::mat X(n, m + 1, arma::fill::zeros);
+    arma::mat Z(n, m + 1, arma::fill::zeros), X(n, m + 1, arma::fill::zeros);
     arma::mat W(m + 1, n, arma::fill::zeros);
 
     // Populate Z
