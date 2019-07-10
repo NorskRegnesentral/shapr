@@ -2,7 +2,7 @@ library(shapr)
 
 context("test-sample_combinations.R")
 
-test_that("Test function on extra.R", {
+test_that("Test sample_combinations", {
 
   # Example -----------
   nTrain <- 10
