@@ -19,7 +19,7 @@ using namespace Rcpp;
 arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
 
     // Note that Z is a n x (m + 1) matrix, where m is the number
-    // of unique features. All elements in the first column is equal to 1.
+    // of unique features. All elements in the first column are equal to 1.
     // For j > 0, Z(i, j) = 1 if and only if feature j is present in
     // the ith combination of features. In example, if Z(i, j) = 1 we know that
     // j is present in l[i].
@@ -28,18 +28,21 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
     // n x n matrix.
 
     // Note that X.t() equals Z.t() * W, where w is the diagonal of W, which by
-    // definition equals that X = W * Z. Since W is a diagonal matrix we could
+    // definition gives X = W * Z. Since W is a diagonal matrix we could
     // simplify this so that X(i, j) = sum(W(i, k) * Z(k, j)) = W(i, i) * Z(i, j))
-    // for k = {1, ..., n}.
+    // for all combinations of (i, j).
 
-    // Note that W represents a (m +1) * n matrix, i.e. W = (X.t() * Z)^-1 * X.t(),
+    // Note that R represents a (m + 1) * n matrix, i.e. R = (X.t() * Z)^-1 * X.t(),
     // where X.t() = Z.t() * W.
+
+    // See \url{https://arxiv.org/pdf/1903.10464.pdf} for additional details,
+    // i.e. section 3.2.
 
     // Define objects
     int nfeatures;
     IntegerVector feature_vec;
     arma::mat Z(n, m + 1, arma::fill::zeros), X(n, m + 1, arma::fill::zeros);
-    arma::mat W(m + 1, n, arma::fill::zeros);
+    arma::mat R(m + 1, n, arma::fill::zeros);
 
     // Populate Z
     for (int i = 0; i < n; i++) {
@@ -65,9 +68,9 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
         }
     }
 
-    W = inv(X.t() * Z) * X.t();
+    R = inv(X.t() * Z) * X.t();
 
-    return W;
+    return R;
 }
 
 //' Get feature matrix
