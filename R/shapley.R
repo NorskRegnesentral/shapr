@@ -148,7 +148,7 @@ compute_kshap <- function(model,
           ntrain = nrow(l$Xtrain),
           ntest = nrow(l$Xtest),
           nsamples = empirical_settings$AICc_no_samp_per_optim,
-          separate = T
+          joint_sampling = FALSE
         )
 
         # Updating parameter (only if it is larger than nTrain*nTest)

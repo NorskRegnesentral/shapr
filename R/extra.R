@@ -9,20 +9,21 @@
 #'
 #' @param nsamples Positive integer. Number of samples.
 #'
-#' @param separate Logical indicating whether the train and test data should be sampled separately
-#' or in a joint sampling space. If they are sampled separately (which typically would be used when
-#' optimizing more than one distribution at once) we sample with replacement if more samples than
-#' training data. Not optimal, but for now fine if careful when using more samples than the number
-#' training observations while at the same time doing optimization over every test observation.
+#' @param joint_sampling Logical. Indicates whether train- and test data should be sampled
+#' separately or in a joint sampling space. If they are sampled separately (which typically
+#' would be used when optimizing more than one distribution at once) we sample with replacement
+#' if \code{nsamples > ntrain}. Note that this solution is not optimal. Be careful if you're
+#' doing an optimization over every test observation.when \code{nsamples > ntrain}.
+#'
 #'
 #' @return Data.frame. Contains \code{nsamples} rows of re-sampled train and test observations.
 #'
 #' @export
 #'
 #' @author Martin Jullum
-sample_combinations <- function(ntrain, ntest, nsamples, separate = FALSE) {
+sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) {
 
-  if (separate) {
+  if (!joint_sampling) {
 
     # Sample training data
     samp_train <- sample(
