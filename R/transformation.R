@@ -37,7 +37,7 @@ gaussian_transform_separate <- function(yx, n_y) {
   tmp <- rank(yx)[1:n_y]
   tmp <- tmp - rank(tmp) + 0.5
   u_y <- tmp / (length(x) + 1)
-  z.y <- stats::qnorm(u.y)
+  z_y <- stats::qnorm(u_y)
   return(z.y)
 }
 
