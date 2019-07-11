@@ -4,13 +4,13 @@
 \alias{cluster_features}
 \title{Group variables according to matrix of Kendall's tau}
 \usage{
-cluster_features(X = NULL, corMat = NULL, alpha = 1)
+cluster_features(x_mat = NULL, cor_mat = NULL, alpha = 1)
 }
 \arguments{
-\item{X}{optional data matrix, ignores \code{corMat} if included}
+\item{x_mat}{optional data matrix, ignores \code{cor_mat} if included}
 
-\item{corMat}{optional correlation matrix, ignores X if included. Either \code{X} or
-\code{corMat} must be included}
+\item{cor_mat}{optional correlation matrix, ignores \code{x_mat} if included. Either \code{x_mat} or
+\code{cor_mat} must be included}
 
 \item{alpha}{optional tuning parameter for optimal number of clusters}
 }
