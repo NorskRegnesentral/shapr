@@ -12,7 +12,7 @@ test_that("Test inv_gaussian_transform", {
   x <- inv_gaussian_transform(zx, n_z, type)
 
   # Tests -----------
-  expect_true(is.vector(x))
+  expect_true(is.atomic(x))
   expect_true(is.double(x))
 
   expect_equal(length(x), n_z)
@@ -30,7 +30,7 @@ test_that("Test gaussian_transform_separate", {
   x <- gaussian_transform_separate(yx, n_y)
 
   # Tests -----------
-  expect_true(is.vector(x))
+  expect_true(is.atomic(x))
   expect_true(is.double(x))
   expect_equal(length(x), n_y)
 
@@ -43,7 +43,7 @@ test_that("Test gaussian_transform", {
   x <- gaussian_transform(y)
 
   # Tests -----------
-  expect_true(is.vector(x))
+  expect_true(is.atomic(x))
   expect_true(is.double(x))
   expect_equal(length(x), length(y))
 

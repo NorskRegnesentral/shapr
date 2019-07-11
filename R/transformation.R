@@ -11,6 +11,7 @@
 #'
 #' @author Martin Jullum
 inv_gaussian_transform <- function(zx, n_z, type = 7) {
+  if (n_z >= length(zx)) stop("n_z should be less than length(zx)")
   ind <- 1:n_z
   z <- zx[ind]
   x <- zx[-ind]
@@ -32,6 +33,7 @@ inv_gaussian_transform <- function(zx, n_z, type = 7) {
 #'
 #' @author Martin Jullum
 gaussian_transform_separate <- function(yx, n_y) {
+  if (n_y >= length(yx)) stop("n_y should be less than length(yx)")
   ind <- 1:n_y
   x <- yx[-ind]
   tmp <- rank(yx)[ind]
