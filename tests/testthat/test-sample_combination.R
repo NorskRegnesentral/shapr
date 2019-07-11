@@ -8,10 +8,10 @@ test_that("Test sample_combinations", {
   ntrain <- 10
   ntest <- 10
   nsamples <- 7
-  separate <- TRUE
+  joint_sampling <- FALSE
   cnms <- c("samp_train", "samp_test")
 
-  x <- sample_combinations(ntrain, ntest, nsamples, separate)
+  x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
 
   # Tests -----------
@@ -30,9 +30,9 @@ test_that("Test sample_combinations", {
   ntrain <- 5
   ntest <- 5
   nsamples <- 7
-  separate <- TRUE
+  joint_sampling <- FALSE
 
-  x <- sample_combinations(ntrain, ntest, nsamples, separate)
+  x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
   # Tests -----------
   expect_true(max(x$samp_train) <= ntrain)
@@ -43,9 +43,9 @@ test_that("Test sample_combinations", {
   ntrain <- 5
   ntest <- 5
   nsamples <- 7
-  separate <- FALSE
+  joint_sampling <- TRUE
 
-  x <- sample_combinations(ntrain, ntest, nsamples, separate)
+  x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
   # Tests -----------
   expect_true(max(x$samp_train) <= ntrain)
