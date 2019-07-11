@@ -5,7 +5,7 @@
 \title{Helper function to sample a combination of training and testing rows, which does not risk
 getting the same observation twice. Need to improve this help file.}
 \usage{
-sample_combinations(nTrain, nTest, nosamp, separate = F)
+sample_combinations(nTrain, nTest, nosamp, separate = FALSE)
 }
 \arguments{
 \item{nTrain}{Positive integer. Number of training observations to sample from.}
