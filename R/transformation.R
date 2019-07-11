@@ -34,7 +34,7 @@ inv_gaussian_transform <- function(zx, n_z, type = 7) {
 gaussian_transform_separate <- function(yx, n_y) {
   ind <- 1:n_y
   x <- yx[-ind]
-  tmp <- rank(yx)[1:n_y]
+  tmp <- rank(yx)[ind]
   tmp <- tmp - rank(tmp) + 0.5
   u_y <- tmp / (length(x) + 1)
   z_y <- stats::qnorm(u_y)
