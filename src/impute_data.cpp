@@ -3,10 +3,10 @@ using namespace Rcpp;
 
 //' Get imputed data
 //'
-//' @param index_xtrain Positive integer. Represents a sequence of indices from \code{xtrain},
+//' @param index_xtrain Positive integer. Represents a sequence of row indices from \code{xtrain},
 //' i.e. \code{min(index_xtrain) >= 1} and \code{max(index_xtrain) <= nrow(xtrain)}.
 //'
-//' @param index_s Positive integer. Represents a sequence of indices from \code{S},
+//' @param index_s Positive integer. Represents a sequence of row indices from \code{S},
 //' i.e. \code{min(index_s) >= 1} and \code{max(index_s) <= nrow(S)}.
 //'
 //' @param xtrain Numeric matrix.

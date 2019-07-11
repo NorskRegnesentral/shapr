@@ -7,10 +7,10 @@
 observation_impute_cpp(index_xtrain, index_s, xtrain, xtest, S)
 }
 \arguments{
-\item{index_xtrain}{Positive integer. Represents a sequence of indices from \code{xtrain},
+\item{index_xtrain}{Positive integer. Represents a sequence of row indices from \code{xtrain},
 i.e. \code{min(index_xtrain) >= 1} and \code{max(index_xtrain) <= nrow(xtrain)}.}
 
-\item{index_s}{Positive integer. Represents a sequence of indices from \code{S},
+\item{index_s}{Positive integer. Represents a sequence of row indices from \code{S},
 i.e. \code{min(index_s) >= 1} and \code{max(index_s) <= nrow(S)}.}
 
 \item{xtrain}{Numeric matrix.}
