@@ -13,9 +13,9 @@ correlation_rectangles(corr, cluster, k = 2, col = "yellow", lwd = 6)
 
 \item{k}{number of clusters}
 
-\item{col}{box_mat color}
+\item{col}{box color}
 
-\item{lwd}{box_mat line width}
+\item{lwd}{box line width}
 }
 \description{
 Draw rectangles on the correlation matrix graph
