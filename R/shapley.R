@@ -145,9 +145,9 @@ compute_kshap <- function(model,
 
         # Procedure for sampling a combination of an index in the training and the test sets
         optimsamp <- sample_combinations(
-          nTrain = nrow(l$Xtrain),
-          nTest = nrow(l$Xtest),
-          nosamp = empirical_settings$AICc_no_samp_per_optim,
+          ntrain = nrow(l$Xtrain),
+          ntest = nrow(l$Xtest),
+          nsamples = empirical_settings$AICc_no_samp_per_optim,
           separate = T
         )
 
