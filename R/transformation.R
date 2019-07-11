@@ -16,7 +16,7 @@ inv_gaussian_transform <- function(zx, n_z, type = 7) {
   x <- zx[-ind]
   u <- stats::pnorm(z)
   x_new <- stats::quantile(x, probs = u, type = type)
-  return(xNew)
+  return(x_new)
 }
 
 
