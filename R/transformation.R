@@ -38,7 +38,7 @@ gaussian_transform_separate <- function(yx, n_y) {
   tmp <- tmp - rank(tmp) + 0.5
   u_y <- tmp / (length(x) + 1)
   z_y <- stats::qnorm(u_y)
-  return(z.y)
+  return(z_y)
 }
 
 #' Transforms a sample to standardized normal (dimension 1)
