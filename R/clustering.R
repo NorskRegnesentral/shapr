@@ -48,7 +48,7 @@ cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
   ## Find optimal number of clusters
   optimal_k <- maptree::kgs(cluster, distance, maxclus = d - 10, alpha = alpha)
   plot(
-    x_mat = names(optimal_k),
+    x = names(optimal_k),
     y = optimal_k,
     xlab = "# of clusters",
     ylab = "penalty",
