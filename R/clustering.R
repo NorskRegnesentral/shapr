@@ -80,8 +80,8 @@ cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
 #' @param corr correlation matrix
 #' @param cluster An object of class \code{hclust}. See \code{\link[stats]{hclust}}
 #' @param k number of clusters
-#' @param col box_mat color
-#' @param lwd box_mat line width
+#' @param col box color
+#' @param lwd box line width
 #'
 #' @keywords internal
 #'
