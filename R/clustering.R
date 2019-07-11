@@ -43,14 +43,14 @@ cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
   cluster <- stats::hclust(distance)
 
   ## Plot dendrogram
-  plot(cluster, main = "Dissimilarity = 1 - |Kendall's tau|", x_matlab = "")
+  plot(cluster, main = "Dissimilarity = 1 - |Kendall's tau|", xlab = "")
 
   ## Find optimal number of clusters
-  optimal_k <- maptree::kgs(cluster, distance, max_matclus = d - 10, alpha = alpha)
+  optimal_k <- maptree::kgs(cluster, distance, maxclus = d - 10, alpha = alpha)
   plot(
     x_mat = names(optimal_k),
     y = optimal_k,
-    x_matlab = "# of clusters",
+    xlab = "# of clusters",
     ylab = "penalty",
     type = "b",
     col = "green",
