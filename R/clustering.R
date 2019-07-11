@@ -27,10 +27,10 @@ cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
   corrplot::corrplot(cor_mat, method = "square")
   ## Histogram of correlations
   hist(
-    x_mat = cor_mat[upper.tri(cor_mat)],
+    x = cor_mat[upper.tri(cor_mat)],
     main = "Distribution of Kendall's tau for the data",
-    x_matlab = "",
-    x_matlim = c(-1, 1),
+    xlab = "",
+    xlim = c(-1, 1),
     nclass = 30,
     col = "brown"
   )
