@@ -10,7 +10,7 @@ gaussian_transform_separate(yx, n_y)
 \item{yx}{Vector where the first part is the new data to transform,
 and last part is the data with the original transformation}
 
-\item{n_z}{How many elements of \code{zx} that belongs to the z-part (Gaussian data)}
+\item{n_y}{How many elements of \code{yx} that belongs to the y-part (Gaussian data)}
 }
 \value{
 Vector of back-transformed Gaussian data
