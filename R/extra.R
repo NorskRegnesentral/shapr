@@ -13,7 +13,7 @@
 #' separately or in a joint sampling space. If they are sampled separately (which typically
 #' would be used when optimizing more than one distribution at once) we sample with replacement
 #' if \code{nsamples > ntrain}. Note that this solution is not optimal. Be careful if you're
-#' doing an optimization over every test observation when \code{nsamples > ntrain}.
+#' doing optimization over every test observation when \code{nsamples > ntrain}.
 #'
 #'
 #' @return Data.frame. Contains \code{nsamples} rows of re-sampled train and test observations.
