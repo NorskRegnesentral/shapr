@@ -2,14 +2,14 @@
 % Please edit documentation in R/clustering.R
 \name{cluster_features}
 \alias{cluster_features}
-\title{Group variables according to matrix_mat of Kendall's tau}
+\title{Group variables according to matrix of Kendall's tau}
 \usage{
 cluster_features(x_mat = NULL, cor_mat = NULL, alpha = 1)
 }
 \arguments{
-\item{x_mat}{optional data matrix_mat, ignores \code{cor_mat} if included}
+\item{x_mat}{optional data matrix, ignores \code{cor_mat} if included}
 
-\item{cor_mat}{optional correlation matrix_mat, ignores x_mat if included. Either \code{x_mat} or
+\item{cor_mat}{optional correlation matrix, ignores \code{x_mat} if included. Either \code{x_mat} or
 \code{cor_mat} must be included}
 
 \item{alpha}{optional tuning parameter for optimal number of clusters}
@@ -18,7 +18,7 @@ cluster_features(x_mat = NULL, cor_mat = NULL, alpha = 1)
 List
 }
 \description{
-Group variables according to matrix_mat of Kendall's tau
+Group variables according to matrix of Kendall's tau
 }
 \author{
 Anders Løland

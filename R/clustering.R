@@ -1,7 +1,7 @@
-#' Group variables according to matrix_mat of Kendall's tau
+#' Group variables according to matrix of Kendall's tau
 #'
-#' @param x_mat optional data matrix_mat, ignores \code{cor_mat} if included
-#' @param cor_mat optional correlation matrix_mat, ignores x_mat if included. Either \code{x_mat} or
+#' @param x_mat optional data matrix, ignores \code{cor_mat} if included
+#' @param cor_mat optional correlation matrix, ignores \code{x_mat} if included. Either \code{x_mat} or
 #' \code{cor_mat} must be included
 #' @param alpha optional tuning parameter for optimal number of clusters
 #'
@@ -23,7 +23,7 @@ cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
     d <- nrow(cor_mat)
   }
 
-  ## Plot correlation matrix_mat
+  ## Plot correlation matrix
   corrplot::corrplot(cor_mat, method = "square")
   ## Histogram of correlations
   hist(
@@ -35,7 +35,7 @@ cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
     col = "brown"
   )
 
-  ## Use 1 - correlation as distance matrix_mat
+  ## Use 1 - correlation as distance matrix
   dissimilarity <- 1 - abs(cor_mat)
   distance <- stats::as.dist(dissimilarity)
 
@@ -66,7 +66,7 @@ cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
     cluster_list[[k]] <- which(cluster_k == k)
   }
 
-  ## Plot correlation matrix_mat, ordered in clusters
+  ## Plot correlation matrix, ordered in clusters
   ord <- cluster$order
   corrplot::corrplot(cor_mat[ord, ord], method = "square")
   ## Add cluster rectangles
@@ -75,9 +75,9 @@ cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
   list(cor_mat = cor_mat[ord, ord], which_k = which_k, cluster = cluster)
 }
 
-#' Draw rectangles on the correlation matrix_mat graph
+#' Draw rectangles on the correlation matrix graph
 #'
-#' @param corr correlation matrix_mat
+#' @param corr correlation matrix
 #' @param cluster An object of class \code{hclust}. See \code{\link[stats]{hclust}}
 #' @param k number of clusters
 #' @param col box_mat color

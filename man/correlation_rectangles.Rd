@@ -2,12 +2,12 @@
 % Please edit documentation in R/clustering.R
 \name{correlation_rectangles}
 \alias{correlation_rectangles}
-\title{Draw rectangles on the correlation matrix_mat graph}
+\title{Draw rectangles on the correlation matrix graph}
 \usage{
 correlation_rectangles(corr, cluster, k = 2, col = "yellow", lwd = 6)
 }
 \arguments{
-\item{corr}{correlation matrix_mat}
+\item{corr}{correlation matrix}
 
 \item{cluster}{An object of class \code{hclust}. See \code{\link[stats]{hclust}}}
 
@@ -18,7 +18,7 @@ correlation_rectangles(corr, cluster, k = 2, col = "yellow", lwd = 6)
 \item{lwd}{box_mat line width}
 }
 \description{
-Draw rectangles on the correlation matrix_mat graph
+Draw rectangles on the correlation matrix graph
 }
 \author{
 Anders Løland
