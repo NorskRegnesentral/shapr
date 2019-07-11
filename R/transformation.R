@@ -4,7 +4,7 @@
 #' @param zx Vector where the first part is the Gaussian data, and last part is
 #' the data with the original transformation
 #' @param n_z How many elements of \code{zx} that belongs to the z-part (new data)
-#' @param type The quantile type used when back-transforming. 7 (default) is the default in stats::quantile().
+#' @param type The quantile type used when back-transforming. 7 (default) is the default in \code{stats::quantile()}.
 #'
 #' @return Vector of transformed new data
 #' @export
