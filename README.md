@@ -140,8 +140,8 @@ model <- xgboost(
 
 # Prepare the data for explanation
 l <- prepare_kshap(
-  Xtrain = x_train,
-  Xtest = x_test
+  x_train,
+  x_test
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features

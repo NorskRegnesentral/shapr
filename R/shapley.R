@@ -400,66 +400,89 @@ compute_kshap <- function(model,
 #' @export
 #'
 #' @author Nikolai Sellereite
-prepare_kshap <- function(Xtrain,
-                          Xtest,
-                          exact = TRUE,
-                          noSamp = NULL,
-                          shapley_weight_inf_replacement = 10^6,
-                          compute_distances_for_no_var = 0:ncol(Xtrain)) {
+prepare_kshap <- function(x,
+                          x_test,
+                          n_combinations = NULL) {
 
-  ## Convert data to data.table format --------------
-  if (!is.data.table(Xtrain)) {
-    Xtrain <- as.data.table(Xtrain)
+
+  # Setup
+  if (is.null(n_combinations)) exact <- TRUE
+  n_features <- ncol(x)
+
+  # TODO: Add check if user passes too many features using exact method
+
+  # Create  data.tables--------------
+  if (!data.table::is.data.table(x)) {
+    x_train <- data.table::as.data.table(x)
   }
-  if (!is.data.table(Xtest)) {
-    Xtest <- as.data.table(Xtest)
+  if (!is.null(x_test) && !data.table::is.data.table(x_test)) {
+    x_test <- data.table::as.data.table(x_test)
   }
 
-  ## Get all combinations ----------------
-  X <- feature_combinations(
-    m = ncol(Xtrain),
+  # Get all combinations ----------------
+  dt_combinations <- feature_combinations(
+    m = n_features,
     exact = exact,
-    noSamp = noSamp,
-    shapley_weight_inf_replacement = shapley_weight_inf_replacement,
+    noSamp = n_combinations,
+    shapley_weight_inf_replacement = 10^6,
     reduce_dim = TRUE
   )
 
-  ## Get weighted matrix ----------------
-  W <- weight_matrix(X, use_shapley_weights_in_W = ifelse(exact, T, F), normalize_W_weights = T)
-
-  mcov <- stats::cov(Xtrain)
-  # Note that we could move distance_metric if-test here and replace by diag(m) if "Euclidean"
-  # once you see everything works fine
-
-  if (!is.null(compute_distances_for_no_var[1])) {
-    # Only compute the distances if the empirical approach is used
-    D <- mahalanobis_distance_cpp(
-      featureList = X[nfeatures %in% compute_distances_for_no_var, features],
-      Xtrain_mat = as.matrix(Xtrain),
-      Xtest_mat = as.matrix(Xtest),
-      mcov = mcov,
-      S_scale_dist = T
-    )
-    # Note that this is D_S(,)^2 in the paper
-
-    ## Normalize the distance rows to ensure numerical stability in later operations
-    colmin <- apply(X = D, MARGIN = c(2, 3), FUN = min)
-    for (i in 1:dim(D)[3]) {
-      D[, , i] <- t(t(D[, , i]) - colmin[, i])
-    }
-  } else {
-    D <- NULL
-  }
-
-
-  ## Get feature matrix ---------
-  S <- feature_matrix_cpp(
-    features = X[["features"]],
-    nfeatures = ncol(Xtrain)
+  # Get weighted matrix ----------------
+  weighted_mat <- weight_matrix(
+    X = dt_combinations,
+    use_shapley_weights_in_W = ifelse(exact, T, F),
+    normalize_W_weights = TRUE
   )
 
-  return(list(
-    D = D, S = S, W = W, X = X, Xtrain = Xtrain, Xtest = Xtest,
-    D_for_these_varcomb = X[nfeatures %in% compute_distances_for_no_var, which = TRUE]
-  ))
+  # Get distance matrix ----------------
+  dist_matrix <- distance_matrix(
+    x_train,
+    x_test,
+    dt_combinations
+  )
+
+  ## Get feature matrix ---------
+  feature_matrix <- feature_matrix_cpp(
+    features = dt_combinations[["features"]],
+    nfeatures = n_features
+  )
+
+  res <- list(
+    D = dist_matrix,
+    S = feature_matrix,
+    W = weighted_mat,
+    X = dt_combinations,
+    Xtrain = x_train,
+    Xtest = x_test,
+    D_for_these_varcomb = dt_combinations[, .I]
+  )
+
+  return(res)
+}
+
+#' @keywords internal
+distance_matrix <- function(x_train, x_test = NULL, dt_combinations) {
+
+  if (is.null(x_test)) return(NULL)
+
+  # Get covariance matrix
+  mcov <- stats::cov(x_train)
+
+  # Note that D equals D_S(,)^2 in the paper
+  D <- mahalanobis_distance_cpp(
+    featureList = dt_combinations[["features"]],
+    Xtrain_mat = as.matrix(x_train),
+    Xtest_mat = as.matrix(x_test),
+    mcov = mcov,
+    S_scale_dist = TRUE
+  )
+
+  #Normalize distance rows to ensure numerical stability in later operations
+  colmin <- apply(X = D, MARGIN = c(2, 3), FUN = min)
+  for (i in 1:dim(D)[3]) {
+    D[, , i] <- t(t(D[, , i]) - colmin[, i])
+  }
+
+  return(D)
 }
