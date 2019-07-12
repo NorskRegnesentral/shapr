@@ -20,7 +20,6 @@ inv_gaussian_transform <- function(zx, n_z, type = 7) {
   return(x_new)
 }
 
-
 #' Transforms new data to standardized normal (dimension 1) based on other data transformations
 #'
 #' Handled in this way in order to allow using the apply function over this function
@@ -56,4 +55,3 @@ gaussian_transform <- function(x) {
   z <- stats::qnorm(u)
   return(z)
 }
-
