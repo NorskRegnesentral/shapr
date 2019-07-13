@@ -400,9 +400,9 @@ compute_kshap <- function(model,
 #' @export
 #'
 #' @author Nikolai Sellereite
-prepare_kshap <- function(x,
-                          x_test,
-                          n_combinations = NULL) {
+shapr <- function(x,
+                  model,
+                  n_combinations = NULL) {
 
 
   # Setup
@@ -410,6 +410,8 @@ prepare_kshap <- function(x,
   n_features <- ncol(x)
 
   # TODO: Add check if user passes too many features using exact method
+
+  # TODO: Add check for model object
 
   # Create  data.tables--------------
   if (!data.table::is.data.table(x)) {
@@ -435,13 +437,6 @@ prepare_kshap <- function(x,
     normalize_W_weights = TRUE
   )
 
-  # Get distance matrix ----------------
-  dist_matrix <- distance_matrix(
-    x_train,
-    x_test,
-    dt_combinations
-  )
-
   ## Get feature matrix ---------
   feature_matrix <- feature_matrix_cpp(
     features = dt_combinations[["features"]],
@@ -449,13 +444,11 @@ prepare_kshap <- function(x,
   )
 
   res <- list(
-    D = dist_matrix,
     S = feature_matrix,
     W = weighted_mat,
     X = dt_combinations,
     Xtrain = x_train,
-    Xtest = x_test,
-    D_for_these_varcomb = dt_combinations[, .I]
+    model = model
   )
 
   return(res)

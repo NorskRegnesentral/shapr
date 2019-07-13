@@ -1,17 +1,38 @@
 #' @export
-explain <- function(x, explainer, ...) {
+explain <- function(x, explainer, approach, prediction_zero, ...) {
 
-  UseMethod("shapr", x)
+  if (approach == "empirical") {
+    class(x) <- "empirical"
+  } else if (approach == "gaussian") {
+    class(x) <- "gaussian"
+  } else if (approach == "copula") {
+    class(x) <- "copula"
+  } else {
+    stop("It seems that you passed a non-valid value for approach. It should be either 'empirical', 'gaussian' or 'copula'.")
+  }
+
+  UseMethod("explain", x)
 }
 
-explain.empirical <- function() {
+#' @export
+explain.empirical <- function(x, explainer, approach, prediction_zero, index_features) {
+
+  # Get distance matrix ----------------
+  explainer$D <- distance_matrix(
+    explainer$Xtrain,
+    x,
+    explainer$X
+  )
+
+  return()
+}
+
+#' @export
+explain.gaussian <- function(x, ...) {
 
 }
 
-explain.gaussian <- function() {
-
-}
-
-explain.copula <- function() {
+#' @export
+explain.copula <- function(x, ...) {
 
 }
