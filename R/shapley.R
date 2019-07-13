@@ -447,7 +447,7 @@ shapr <- function(x,
     S = feature_matrix,
     W = weighted_mat,
     X = dt_combinations,
-    Xtrain = x_train,
+    x_train = x_train,
     model = model
   )
 
