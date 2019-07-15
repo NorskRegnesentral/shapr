@@ -1,3 +1,4 @@
+#' hey
 #' @export
 explain <- function(x, explainer, approach, prediction_zero, ...) {
 
@@ -14,12 +15,13 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   UseMethod("explain", x)
 }
 
+#' hey
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero, index_features) {
 
   # Get distance matrix ----------------
   explainer$D <- distance_matrix(
-    explainer$Xtrain,
+    explainer$x_train,
     x,
     explainer$X
   )
@@ -34,12 +36,16 @@ explain.empirical <- function(x, explainer, approach, prediction_zero, index_fea
 }
 
 #' @export
-explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL) {
+explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, n_samples = 1e3) {
+
+  # Add arguments to explainer object
+  explainer$n_samples <- n_samples
+  explainer$x_test <- x
+  explainer$approach <- approach
 
   # If mu is not provided directly, use mean of training data
   if (is.null(mu)) {
-
-    mu <- unname(colMeans(explainer$x_train))
+    explainer$mu <- unname(colMeans(explainer$x_train))
   }
 
   # If cov_mat is not provided directly, use sample covariance of training data
@@ -50,17 +56,24 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
   # Make sure that covariance matrix is positive-definite
   eigen_values <- eigen(cov_mat)$values
   if (any(eigen_values <= 1e-06)) {
-    cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
+    explainer$cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
+  } else {
+    explainer$cov_mat <- cov_mat
   }
 
+  # Generate data
+  dt <- prepare_data(explainer)
+
   # Predict
+  cnms <- colnames(explainer$x_test)
+  data.table::setkeyv(dt, "wcomb")
+  dt[, p_hat := predict_model(x = explainer$model, newdata = .SD), .SDcols = cnms]
 
-  # Process
+  # Get mean probability
+  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), keyby = "wcomb"]
+  data.table::setkeyv(dt, "wcomb")
 
-  # Return
-
-  return(mu)
-
+  return(dt_res)
 }
 
 #' @export
@@ -86,10 +99,65 @@ explain.copula <- function(x, ...) {
     cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
   }
 
+  # Generate data
+
   # Predict
 
   # Process
 
   # Return
 
+}
+
+#' @export
+prepare_data <- function(x){
+
+  class(x) <- x$approach
+  UseMethod("prepare_data", x)
+}
+
+#' @export
+prepare_data.empirical <- function(x){
+  UseMethod("prepare_data", x)
+}
+
+#' @export
+prepare_data.gaussian <- function(x){
+
+  l <- lapply(
+    X = x$X$features,
+    FUN = sample_gaussian,
+    noSamp_MC = x$n_samples,
+    mu = x$mu,
+    Sigma = x$cov_mat,
+    p = ncol(x$x_test),
+    Xtest = x$x_test,
+    ensure_condcov_symmetry = TRUE
+  )
+
+  dt <- data.table::rbindlist(l, idcol = "wcomb")
+  # dt[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
+  dt[, w := 1 / x$n_samples]
+
+  return(dt)
+}
+
+#' @export
+prepare_data.copula <- function(x){
+
+  samp_list <- lapply(
+    X = x$X$features,
+    FUN = sample_copula,
+    noSamp_MC = x$n_samples,
+    mu = x$mu,
+    Sigma = x$mu,
+    p = ncol(x$x_test),
+    Xtest_Gauss_trans = x$x_test,
+    Xtrain = Xtrain,
+    Xtest = Xtest
+  )
+
+  DTp.copula <- rbindlist(samp_list, idcol = "wcomb")
+  DTp.copula[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
+  DTp.copula[, w := 1 / noSamp_MC]
 }

@@ -365,7 +365,28 @@ compute_kshap <- function(model,
     ll[[i]][, id := i]
   }
 
-  DT <- rbindlist(ll)
+  # process_predictions <- function(list_predictions, n_features, n_test, W){
+  #
+  #   dt_predictions <- data.table::rbindlist(
+  #     list_predictions,
+  #     use.names = TRUE,
+  #     fill = TRUE
+  #   )
+  #
+  #   kshap <- kshap_cpp(W, index_feature)
+  #
+  #   # Makes data.table from Kshap
+  #   kshap <- data.table::as.data.table(Kshap)
+  #   data.table::setnames(kshap) <- c("none", names(l$x_train))
+  #
+  #   # Makes vector with the full prediction that is decomposed
+  #   pred_vec <- DT[wcomb == 2^ncol(l$Xtrain), k]
+  #
+  #   return(list(kshap = kshap, pred_vec = pred_vec))
+  # }
+  #
+  # kshap <- process_predictions(ll, n_test, W)
+
 
   Kshap <- matrix(0, nrow = nrow(l$Xtest), ncol = nrow(l$W))
   for (i in l$Xtest[, .I]) {
