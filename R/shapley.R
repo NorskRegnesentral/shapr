@@ -365,6 +365,8 @@ compute_kshap <- function(model,
     ll[[i]][, id := i]
   }
 
+
+  DT <- rbindlist(ll)
   # process_predictions <- function(list_predictions, n_features, n_test, W){
   #
   #   dt_predictions <- data.table::rbindlist(
@@ -427,14 +429,14 @@ shapr <- function(x,
 
 
   # Setup
-  if (is.null(n_combinations)) exact <- TRUE
-  n_features <- ncol(x)
+  explainer <- as.list(environment())
+  explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
+  explainer$n_features <- ncol(x)
+  explainer$model_type <- model_type(model)
 
   # TODO: Add check if user passes too many features using exact method
 
-  # TODO: Add check for model object
-
-  # Create  data.tables--------------
+  # Create  data.tables --------------
   if (!data.table::is.data.table(x)) {
     x_train <- data.table::as.data.table(x)
   }
@@ -444,8 +446,8 @@ shapr <- function(x,
 
   # Get all combinations ----------------
   dt_combinations <- feature_combinations(
-    m = n_features,
-    exact = exact,
+    m = explainer$n_features,
+    exact = explainer$exact,
     noSamp = n_combinations,
     shapley_weight_inf_replacement = 10^6,
     reduce_dim = TRUE
@@ -454,25 +456,24 @@ shapr <- function(x,
   # Get weighted matrix ----------------
   weighted_mat <- weight_matrix(
     X = dt_combinations,
-    use_shapley_weights_in_W = ifelse(exact, T, F),
+    use_shapley_weights_in_W = ifelse(explainer$exact, TRUE, FALSE),
     normalize_W_weights = TRUE
   )
 
   ## Get feature matrix ---------
   feature_matrix <- feature_matrix_cpp(
     features = dt_combinations[["features"]],
-    nfeatures = n_features
+    nfeatures = explainer$n_features
   )
 
-  res <- list(
-    S = feature_matrix,
-    W = weighted_mat,
-    X = dt_combinations,
-    x_train = x_train,
-    model = model
-  )
+  explainer$S <- feature_matrix
+  explainer$W <- weighted_mat
+  explainer$X <- dt_combinations
+  explainer$x_train <- x_train
 
-  return(res)
+  attr(explainer, "class") <- c("explainer", "list")
+
+  return(explainer)
 }
 
 #' @keywords internal

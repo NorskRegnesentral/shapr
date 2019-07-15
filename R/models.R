@@ -74,3 +74,51 @@ predict_model.mgcv <- function(x, newdata) {
 
   predict(x, newdata)
 }
+
+#' @export
+model_type <- function(x) {
+  UseMethod("model_type")
+}
+
+#' @export
+model_type.default <- function(x) {
+stop("The model you passed to shapr is currently not supported.")
+}
+
+#' @export
+model_type.lm <- function(x) {
+  "regression"
+}
+
+#' @export
+model_type.glm <- function(x) {
+  ifelse(
+    x$family[[1]] == "binomial",
+    "classification",
+    "regression"
+  )
+}
+
+#' @export
+model_type.ranger <- function(x) {
+  ifelse(
+    x$family[[1]] == "binomial",
+    "classification",
+    "regression"
+  )
+}
+
+#' @export
+model_type.mgcv <- function(x) {
+  "regression"
+}
+
+#' @export
+model_type.xgb.Booster <- function(x) {
+
+  ifelse(
+    !is.null(x$treetype) && x$treetype == "Probability estimation",
+    "classification",
+    "regression"
+  )
+}

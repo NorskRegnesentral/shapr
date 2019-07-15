@@ -66,14 +66,23 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
   # Predict
   cnms <- colnames(explainer$x_test)
-  data.table::setkeyv(dt, "wcomb")
+  data.table::setkeyv(dt, c("id", "wcomb"))
   dt[, p_hat := predict_model(x = explainer$model, newdata = .SD), .SDcols = cnms]
+  dt[wcomb == 1, p_hat := prediction_zero]
+
+  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
+  data.table::setkeyv(dt_res, c("id", "wcomb"))
 
   # Get mean probability
-  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), keyby = "wcomb"]
-  data.table::setkeyv(dt, "wcomb")
+  kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
+  for (j in 1:ncol(kshap)) {
 
-  return(dt_res)
+    kshap[, j] <- explainer$W %*% dt_res[id == j, k]
+  }
+  dt_kshap <- as.data.table(t(kshap))
+  colnames(dt_kshap) <- c("none", colnames(explainer$x_train))
+
+  return(dt_kshap)
 }
 
 #' @export
@@ -124,20 +133,26 @@ prepare_data.empirical <- function(x){
 #' @export
 prepare_data.gaussian <- function(x){
 
-  l <- lapply(
-    X = x$X$features,
-    FUN = sample_gaussian,
-    noSamp_MC = x$n_samples,
-    mu = x$mu,
-    Sigma = x$cov_mat,
-    p = ncol(x$x_test),
-    Xtest = x$x_test,
-    ensure_condcov_symmetry = TRUE
-  )
+  n_xtest <- nrow(x$x_test)
+  dt_l <- list()
+  for (i in seq(n_xtest)) {
+    l <- lapply(
+      X = x$X$features,
+      FUN = sample_gaussian,
+      noSamp_MC = x$n_samples,
+      mu = x$mu,
+      Sigma = x$cov_mat,
+      p = ncol(x$x_test),
+      Xtest = x$x_test,
+      ensure_condcov_symmetry = TRUE
+    )
 
-  dt <- data.table::rbindlist(l, idcol = "wcomb")
-  # dt[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
-  dt[, w := 1 / x$n_samples]
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    # dt[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
+    dt_l[[i]][, w := 1 / x$n_samples]
+    dt_l[[i]][, id := i]
+  }
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
 
   return(dt)
 }
