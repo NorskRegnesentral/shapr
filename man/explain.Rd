@@ -2,10 +2,21 @@
 % Please edit documentation in R/explanation.R
 \name{explain}
 \alias{explain}
-\title{hey}
+\title{Explaining the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(x, explainer, approach, prediction_zero, ...)
 }
+\arguments{
+\item{x}{1}
+
+\item{explainer}{2}
+
+\item{approach}{3}
+
+\item{prediction_zero}{4}
+
+\item{...}{Soething}
+}
 \description{
-hey
+Explaining the output of machine learning models with more accurately estimated Shapley values
 }

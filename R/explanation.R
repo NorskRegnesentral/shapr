@@ -1,4 +1,11 @@
-#' hey
+#' Explaining the output of machine learning models with more accurately estimated Shapley values
+#'
+#' @param x 1
+#' @param explainer 2
+#' @param approach 3
+#' @param prediction_zero 4
+#' @param ... Soething
+#'
 #' @export
 explain <- function(x, explainer, approach, prediction_zero, ...) {
 
@@ -73,7 +80,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
   data.table::setkeyv(dt_res, c("id", "wcomb"))
 
-  # Get mean probability
+  # Get mean probability - TODO: move this into a function (perhaps Rcpp)
   kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
   for (j in 1:ncol(kshap)) {
 
@@ -86,7 +93,12 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 }
 
 #' @export
-explain.copula <- function(x, ...) {
+explain.copula <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, n_samples = 1e3) {
+
+  # Setup
+  explainer$n_samples <- n_samples
+  explainer$x_test <- x
+  explainer$approach <- approach
 
   # Prepare data
   x_train <- apply(
@@ -101,26 +113,28 @@ explain.copula <- function(x, ...) {
     n_y = nrow(explainer$x_test)
   )
 
-  mu <- rep(0, ncol(explainer$x_train))
+  explainer$mu <- rep(0, ncol(explainer$x_train))
   cov_mat <- stats::cov(x_train)
-  eigen_values <- eigen(x_train)$values
+  eigen_values <- eigen(cov_mat)$values
+
   if (any(eigen_values <= 1e-06)) {
-    cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
+    explainer$cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
+  } else {
+    explainer$cov_mat <- cov_mat
   }
 
   # Generate data
+  dt <- prepare_data(explainer, x_test)
 
   # Predict
+  dt_kshap <- prediction(dt, prediction_zero, explainer)
 
-  # Process
-
-  # Return
+  return(dt_kshap)
 
 }
 
 #' @export
-prepare_data <- function(x){
-
+prepare_data <- function(x, ...){
   class(x) <- x$approach
   UseMethod("prepare_data", x)
 }
@@ -158,21 +172,30 @@ prepare_data.gaussian <- function(x){
 }
 
 #' @export
-prepare_data.copula <- function(x){
+prepare_data.copula <- function(x, x_test){
 
-  samp_list <- lapply(
-    X = x$X$features,
-    FUN = sample_copula,
-    noSamp_MC = x$n_samples,
-    mu = x$mu,
-    Sigma = x$mu,
-    p = ncol(x$x_test),
-    Xtest_Gauss_trans = x$x_test,
-    Xtrain = Xtrain,
-    Xtest = Xtest
-  )
+  n_xtest <- nrow(x$x_test)
+  dt_l <- list()
 
-  DTp.copula <- rbindlist(samp_list, idcol = "wcomb")
-  DTp.copula[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
-  DTp.copula[, w := 1 / noSamp_MC]
+  for (i in seq(n_xtest)) {
+
+    l <- lapply(
+      X = x$X$features,
+      FUN = sample_copula,
+      noSamp_MC = x$n_samples,
+      mu = x$mu,
+      Sigma = x$cov_mat,
+      p = x$n_features,
+      Xtest = x$x_test[i,, drop = FALSE],
+      Xtrain = as.matrix(x$x_train),
+      Xtest_Gauss_trans = x_test
+    )
+
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    # dt[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
+    dt_l[[i]][, w := 1 / x$n_samples]
+    dt_l[[i]][, id := i]
+  }
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+
 }

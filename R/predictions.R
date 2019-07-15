@@ -122,3 +122,27 @@ predictions <- function(model,
 
   return(DTres)
 }
+
+#' @export
+prediction <- function(dt, prediction_zero, explainer) {
+
+  cnms <- colnames(explainer$x_test)
+  data.table::setkeyv(dt, c("id", "wcomb"))
+  dt[, p_hat := predict_model(x = explainer$model, newdata = .SD), .SDcols = cnms]
+  dt[wcomb == 1, p_hat := prediction_zero]
+
+  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
+  data.table::setkeyv(dt_res, c("id", "wcomb"))
+
+  # Get mean probability - TODO: move this into a function (perhaps Rcpp)
+  kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
+  for (j in 1:ncol(kshap)) {
+
+    kshap[, j] <- explainer$W %*% dt_res[id == j, k]
+  }
+  dt_kshap <- as.data.table(t(kshap))
+  colnames(dt_kshap) <- c("none", colnames(explainer$x_train))
+
+  return(dt_kshap)
+}
+
