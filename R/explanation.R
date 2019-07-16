@@ -24,14 +24,26 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 
 #' hey
 #' @export
-explain.empirical <- function(x, explainer, approach, prediction_zero, index_features) {
+explain.empirical <- function(x, explainer, approach, prediction_zero, index_features, ...) {
+
+  # Add arguments to explainer object
+  explainer$x_test <- x
+  explainer$approach <- approach
+  fixed_sigma_vec = 0.1
+  AICc_no_samp_per_optim = 1000
+  AIC_optim_max_eval = 20
+  AIC_optim_startval = 0.1
+  w_threshold = 0.95
 
   # Get distance matrix ----------------
   explainer$D <- distance_matrix(
     explainer$x_train,
     x,
-    explainer$X
+    explainer$X$features
   )
+
+  # Prepare data
+  dt <- prepare_data(explainer, ...)
 
   # Predict
 
@@ -39,7 +51,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero, index_fea
 
   # Return
 
-  return()
+  return(explainer$D)
 }
 
 #' @export
@@ -72,22 +84,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
   dt <- prepare_data(explainer)
 
   # Predict
-  cnms <- colnames(explainer$x_test)
-  data.table::setkeyv(dt, c("id", "wcomb"))
-  dt[, p_hat := predict_model(x = explainer$model, newdata = .SD), .SDcols = cnms]
-  dt[wcomb == 1, p_hat := prediction_zero]
-
-  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
-  data.table::setkeyv(dt_res, c("id", "wcomb"))
-
-  # Get mean probability - TODO: move this into a function (perhaps Rcpp)
-  kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
-  for (j in 1:ncol(kshap)) {
-
-    kshap[, j] <- explainer$W %*% dt_res[id == j, k]
-  }
-  dt_kshap <- as.data.table(t(kshap))
-  colnames(dt_kshap) <- c("none", colnames(explainer$x_train))
+  dt_kshap <- prediction(dt, prediction_zero, explainer)
 
   return(dt_kshap)
 }
@@ -140,8 +137,40 @@ prepare_data <- function(x, ...){
 }
 
 #' @export
-prepare_data.empirical <- function(x){
-  UseMethod("prepare_data", x)
+prepare_data.empirical <- function(x, type = "independence"){
+
+  kernel_metric <- ifelse(type == "independence", type, "gaussian")
+  browser()
+  # Handle the computation of all training-test weights for ALL combinations here, before looping
+  if (kernel_metric == "independence") {
+
+    # Adds random noise to "fake" a distance between observations
+    n <- no_wcomb * nrow(x$x_train)
+    W_kernel <- array(
+      stats::runif(n),
+      dim = c(nrow(x$x_train), no_wcomb)
+    )
+  } else if(kernel_metric == "Gaussian") {
+    val <- t(t(-0.5 * x$D) / (x$h_optim_vec)^2)
+    W_kernel <- exp(val)
+    # To avoid numerical problems for small sigma values, we need to substract some constant from
+    # val here. Check if it is possible to do this per column/row of l$D[,i,]
+  } else {
+    stop("It seems that you've passed a non-valid value when using kernel_metric")
+  }
+
+  # Generate permutations of data
+  dt <- observation_impute(
+    W_kernel = W_kernel,
+    S = S[these_wcomb, ],
+    Xtrain = Xtrain,
+    Xtest = Xtest,
+    w_threshold = w_threshold,
+    noSamp_MC = noSamp_MC
+  )
+  dt[, wcomb := these_wcomb[wcomb]]
+
+  return(dt)
 }
 
 #' @export

@@ -140,7 +140,7 @@ prediction <- function(dt, prediction_zero, explainer) {
 
     kshap[, j] <- explainer$W %*% dt_res[id == j, k]
   }
-  dt_kshap <- as.data.table(t(kshap))
+  dt_kshap <- data.table::as.data.table(t(kshap))
   colnames(dt_kshap) <- c("none", colnames(explainer$x_train))
 
   return(dt_kshap)

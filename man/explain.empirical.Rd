@@ -5,7 +5,7 @@
 \title{hey}
 \usage{
 \method{explain}{empirical}(x, explainer, approach, prediction_zero,
-  index_features)
+  index_features, ...)
 }
 \description{
 hey

@@ -436,6 +436,8 @@ shapr <- function(x,
 
   # TODO: Add check if user passes too many features using exact method
 
+  # TODO: Add check if user valid data
+
   # Create  data.tables --------------
   if (!data.table::is.data.table(x)) {
     x_train <- data.table::as.data.table(x)
@@ -477,7 +479,7 @@ shapr <- function(x,
 }
 
 #' @keywords internal
-distance_matrix <- function(x_train, x_test = NULL, dt_combinations) {
+distance_matrix <- function(x_train, x_test = NULL, list_features) {
 
   if (is.null(x_test)) return(NULL)
 
@@ -486,7 +488,7 @@ distance_matrix <- function(x_train, x_test = NULL, dt_combinations) {
 
   # Note that D equals D_S(,)^2 in the paper
   D <- mahalanobis_distance_cpp(
-    featureList = dt_combinations[["features"]],
+    featureList = list_features,
     Xtrain_mat = as.matrix(x_train),
     Xtest_mat = as.matrix(x_test),
     mcov = mcov,
