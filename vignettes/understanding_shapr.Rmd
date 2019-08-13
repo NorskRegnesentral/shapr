@@ -1,5 +1,5 @@
 ---
-title: "Understanding shapr"
+title: "`shapr`: Explaining individual machine learning predictions with Shapley values"
 author: "Martin Jullum & Nikolai Sellereite"
 output: rmarkdown::html_vignette
 vignette: >
@@ -11,11 +11,143 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  out.width ='100%',
+  out.height  = '100%',
+  tidy = 'styler'
 )
 ```
 
-```{r setup}
+```{r setup, include=FALSE, warning=FALSE}
 library(shapr)
 ```
-   
+ 
+ 
+> [Introduction](#intro)
+
+> [Overview of Package](#overview)
+
+> [The Kernel SHAP Method](#KSHAP)
+
+> [Comparison to `shap`](#compare)
+
+> [An Example](#ex)
+
+<a id="intro"></a>
+
+# Introduction
+ 
+ 
+The `shapr` package implements an extended version of the Kernel SHAP method for approximating Shapley values (Lundberg and Lee, 2017), in which dependence between the features is taken into account (Aas, Jullum and Løland, 2019). Estimation of Shapley values is of interest when attempting to explain complex machine learning models. Of existing work on interpreting individual predictions, Shapley values is regarded to be the only model-agnostic explanation method with a solid theoretical foundation (Lundberg and Lee, 2017). Kernel SHAP is a computationally efficient approximation to Shapley values in higher dimensions, but it assumes independent features. Aas, Jullum and Løland (2019) extend the Kernel SHAP method to handle dependent features, resulting in more accurate approximations to the true Shapley values. See the paper for further details.
+
+
+<a id="overview"></a>
+
+# Overview of Package
+
+## Functions
+
+Here is an overview of the main functions. You can read their documentation and see examples with `?function_name`.
+
+----------------------------- ------------------------------------------------------
+Function Name                 Description
+----------------------------- ------------------------------------------------------
+`compute_kshap`               Computes kernel SHAP values for test data.
+
+`observation_weights`         Calculate Shapley weights.
+
+`plot_kshap`                  Plots the individual prediction explanations. Uses facet_wrap of ggplot
+
+`prepare_kshap`               Get Shapley weights for test data.
+
+`shapley_weights`             Calculate Shapley weight. 
+
+------------------- --------------------------------------------------
+
+: Main functions in the `shapr` package.
+
+
+
+<a id="KSHAP"></a>
+
+# The Kernel SHAP Method
+
+
+
+## Multivariate Gaussian Distribution Approach
+
+
+## Gaussian Copula Approach
+
+
+
+## Empirical Conditional Distribution Approach
+
+
+
+<a id="compare"></a>
+
+# Comparison to `shap`
+
+
+<a id="ex"></a>
+
+# An Example
+
+Boston housing data
+
+```{r,warning=FALSE}
+library(MASS)
+library(xgboost)
+library(shapr)
+library(data.table)
+library(ggplot2)
+
+data("Boston")
+
+x_var <- c("lstat", "rm", "dis", "indus")
+y_var <- "medv"
+
+x_train <- as.matrix(Boston[-(1:6), x_var])
+y_train <- Boston[-(1:6), y_var]
+x_test <- as.matrix(Boston[1:6, x_var])
+
+# Looking at the dependence between the features
+cor(x_train)
+
+# Fitting a basic xgboost model to the training data
+model <- xgboost(
+  data = x_train,
+  label = y_train,
+  nround = 20,
+  verbose = F
+)
+
+# Prepare the data for explanation
+l <- prepare_kshap(
+  Xtrain = x_train,
+  Xtest = x_test
+)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+pred_zero <- mean(y_train)
+
+# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
+# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
+explanation <- compute_kshap(
+  model = model,
+  l = l,
+  pred_zero = pred_zero
+)
+
+# Printing the Shapley values for the test data
+explanation$Kshap
+
+# Finally we plot the resulting explanations
+plot_kshap(explanation, l)
+```
+
+
+
+# References
+
