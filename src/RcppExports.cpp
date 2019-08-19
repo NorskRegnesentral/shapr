@@ -91,17 +91,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // observation_impute_cpp
-NumericMatrix observation_impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtrain, NumericMatrix Xtest, IntegerMatrix S);
-RcppExport SEXP _shapr_observation_impute_cpp(SEXP IDSEXP, SEXP CombSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP SSEXP) {
+NumericMatrix observation_impute_cpp(IntegerVector index_xtrain, IntegerVector index_s, NumericMatrix xtrain, NumericMatrix xtest, IntegerMatrix S);
+RcppExport SEXP _shapr_observation_impute_cpp(SEXP index_xtrainSEXP, SEXP index_sSEXP, SEXP xtrainSEXP, SEXP xtestSEXP, SEXP SSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type ID(IDSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type Comb(CombSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Xtrain(XtrainSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Xtest(XtestSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type index_xtrain(index_xtrainSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type index_s(index_sSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type xtrain(xtrainSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type xtest(xtestSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type S(SSEXP);
-    rcpp_result_gen = Rcpp::wrap(observation_impute_cpp(ID, Comb, Xtrain, Xtest, S));
+    rcpp_result_gen = Rcpp::wrap(observation_impute_cpp(index_xtrain, index_s, xtrain, xtest, S));
     return rcpp_result_gen;
 END_RCPP
 }
