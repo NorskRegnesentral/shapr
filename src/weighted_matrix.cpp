@@ -22,7 +22,7 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
     // of unique features. All elements in the first column are equal to 1.
     // For j > 0, Z(i, j) = 1 if and only if feature j is present in
     // the ith combination of features. In example, if Z(i, j) = 1 we know that
-    // j is present in l[i].
+    // j is present in features[i].
 
     // Note that w represents the diagonal in W, where W is a diagoanl
     // n x n matrix.
