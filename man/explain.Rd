@@ -2,9 +2,13 @@
 % Please edit documentation in R/explanation.R
 \name{explain}
 \alias{explain}
+\alias{explain.empirical}
 \title{Explaining the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(x, explainer, approach, prediction_zero, ...)
+
+\method{explain}{empirical}(x, explainer, approach, prediction_zero,
+  index_features, ...)
 }
 \arguments{
 \item{x}{1}

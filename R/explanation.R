@@ -29,7 +29,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   UseMethod("explain", x)
 }
 
-#' hey
+#' @rdname explain
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero, index_features, ...) {
 
