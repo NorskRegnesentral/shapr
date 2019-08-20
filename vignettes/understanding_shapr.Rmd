@@ -107,7 +107,7 @@ sample from the resulting multivariate Gaussian conditional distribution. While 
 
 ## Empirical Conditional Distribution Approach
 
-If both the dependence structure and the marginal distributions of $\boldsymbol{x}$ are very far from the Gaussian, neither of the two aforementioned methods will work very well. Few methods exists for the non-parametric estimation of conditional densities, and the classic kernel estimator (@rosenblatt1956) for non-parametric density estimation suffers greatly from the curse of dimensionality and does not provide a way to generate samples from the estimated distribution. For such situations, @aas2019explaining propose an empirical conditional approach to sample approximately from $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$. The idea is to compute weights $w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^i),\ i=1,...,n_{\text{train}}$ for all training instances based on their Mahalanobis distances (in the $S$ subset only) to the instance $\boldsymbol{x}^*$ to be explained. Instead of sampling from this weighted (conditional) empirical distribution, @aas2019explaining suggests a more efficient varient, using only the $K$ instances with the largest weights:
+If both the dependence structure and the marginal distributions of $\boldsymbol{x}$ are very far from the Gaussian, neither of the two aforementioned methods will work very well. Few methods exists for the non-parametric estimation of conditional densities, and the classic kernel estimator (@rosenblatt1956) for non-parametric density estimation suffers greatly from the curse of dimensionality and does not provide a way to generate samples from the estimated distribution. For such situations, @aas2019explaining propose an empirical conditional approach to sample approximately from $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$. The idea is to compute weights $w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^i),\ i=1,...,n_{\text{train}}$ for all training instances based on their Mahalanobis distances (in the $S$ subset only) to the instance $\boldsymbol{x}^*$ to be explained. Instead of sampling from this weighted (conditional) empirical distribution, @aas2019explaining suggests a more efficient variant, using only the $K$ instances with the largest weights:
 
 $$v_{\text{condKerSHAP}}(\mathcal{S}) = \frac{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^{[k]}) f(\boldsymbol{x}_{\bar{\mathcal{S}}}^{[k]},\boldsymbol{x}_{\mathcal{S}}^*)}{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^{[k]})},$$ 
 
@@ -203,6 +203,11 @@ explanation_copula <- compute_kshap(
 plot_kshap(explanation_copula, l, plot_phi0 = F,plot_which_Xtest = c(1,6))
 
 ```
+
+
+When using `prepare_kshap`, the full sum is by default used in the Shapley formula. A sampling approach may be used by setting `exact=FALSE`, and the number of samples used must then be specified by the argument `noSamp`. When computing the kernel SHAP values by `compute_kshap`, the maximum number of samples to use in the Monte Carlo integration for every conditional expectation is controlled by the argument `noSamp_MC`, by deafult set to be 1000. As seen in the code above, the argument `pred_zero` for the prediction value of the unseen data is required, and typically this is equal to the mean of the response. If the empirical method is used, the settings to use can be specified through the argument `empirical_settings`. If the Gaussian approach is used, we may specify the mean vector and covariance matrix of the data generating distribution by the arguments `mu` and `Sigma`. If not specified, they are estimated from the data.  
+
+
 
 <a id="compare"></a>
 
