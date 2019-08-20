@@ -90,25 +90,61 @@ mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S
     .Call(`_shapr_mahalanobis_distance_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
 }
 
-#' Get imputed data
-#'
-#' @param ID Positive integer vector
-#' @param Comb Positive integer vector
-#' @inheritParams global_arguments
-#'
+#' @keywords internal
 #'
 #' @export
 #'
-#' @return Array of three dimensions
-#' @author Nikolai Sellereite
-observation_impute_cpp <- function(ID, Comb, Xtrain, Xtest, S) {
-    .Call(`_shapr_observation_impute_cpp`, ID, Comb, Xtrain, Xtest, S)
+sample_features_cpp <- function(m, nfeatures) {
+    .Call(`_shapr_sample_features_cpp`, m, nfeatures)
 }
 
-#' Get distance
+#' Get imputed data
 #'
-#' @param n Positive integer. Number of combinations
-#' @inheritParams global_arguments
+#' @param index_xtrain Positive integer. Represents a sequence of row indices from \code{xtrain},
+#' i.e. \code{min(index_xtrain) >= 1} and \code{max(index_xtrain) <= nrow(xtrain)}.
+#'
+#' @param index_s Positive integer. Represents a sequence of row indices from \code{S},
+#' i.e. \code{min(index_s) >= 1} and \code{max(index_s) <= nrow(S)}.
+#'
+#' @param xtrain Numeric matrix.
+#'
+#' @param xtest Numeric matrix. Represents a single test observation.
+#'
+#' @param S Integer matrix of dimension \code{ncomb x nfeatures}, where \code{ncomb} equals
+#' the total number of sampled/non-sampled feature combinations and \code{nfeatures} equals
+#' the total number of unique features. Note that \code{nfeature = ncol(xtrain)}. See details
+#' for more information.
+#'
+#' @details \code{S(i, j) = 1} if and only if feature \code{j} is present in feature
+#' combination \code{i}, otherwise \code{S(i, j) = 0}. I.e. if \code{nfeatures = 3}, there
+#' are \code{2^3 = 8} unique ways to combine the features. In this case \code{dim(S) = c(8, 3)}.
+#' Let's call the features \code{x1, x2, x3} and take a closer look at the combination
+#' represented by \code{s = c(x1, x2)}. If this combination is represented by the second row,
+#' the following is true: \code{S[2, 1:3] = c(1, 1, 0)}.
+#'
+#' The returned object, \code{X}, is a numerix matrix where
+#' \code{dim(X) = c(length(index_xtrain), ncol(xtrain))}. If feature \code{j} is present in
+#' the k-th observation, that is \code{S[index_[k], j] == 1}, \code{X[k, j] = xtest[1, j]}.
+#' Otherwise \code{X[k, j] = xtrain[index_xtrain[k], j]}.
+#'
+#' @export
+#'
+#' @return Numeric matrix
+#'
+#' @author Nikolai Sellereite
+observation_impute_cpp <- function(index_xtrain, index_s, xtrain, xtest, S) {
+    .Call(`_shapr_observation_impute_cpp`, index_xtrain, index_s, xtrain, xtest, S)
+}
+
+#' Calculate weight matrix
+#'
+#' @param features List. Each of the elements equals an integer
+#' vector representing a valid combination of features.
+#' @param m Integer. Number of features
+#' @param n Integer. Number of combinations
+#' @param w Numeric vector of length \code{n}, i.e. \code{w[i]} equals
+#' the shapley weight of feature combination \code{i}, represented by
+#' \code{features[[i]]}.
 #'
 #' @export
 #'
