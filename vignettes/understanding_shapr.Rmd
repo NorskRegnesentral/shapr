@@ -1,6 +1,6 @@
 ---
 title: "`shapr`: Explaining individual machine learning predictions with Shapley values"
-author: "Martin Jullum & Nikolai Sellereite"
+author: "Camilla Lingjærde, Martin Jullum & Nikolai Sellereite"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 vignette: >
@@ -38,7 +38,7 @@ library(shapr)
 # Introduction
  
  
-The `shapr` package implements an extended version of the Kernel SHAP method for approximating Shapley values (@lundberg2017unified), in which dependence between the features is taken into account (@aas2019explaining). Estimation of Shapley values is of interest when attempting to explain complex machine learning models. Of existing work on interpreting individual predictions, Shapley values is regarded to be the only model-agnostic explanation method with a solid theoretical foundation (@lundberg2017unified). Kernel SHAP is a computationally efficient approximation to Shapley values in higher dimensions, but it assumes independent features. @aas2019explaining extend the Kernel SHAP method to handle dependent features, resulting in more accurate approximations to the true Shapley values. See the paper for further details.
+The `shapr` package implements an extended version of the Kernel SHAP method for approximating Shapley values (@lundberg2017unified), in which dependence between the features is taken into account (@aas2019explaining). Estimation of Shapley values is of interest when attempting to explain complex machine learning models. Of existing work on interpreting individual predictions, Shapley values is regarded to be the only model-agnostic explanation method with a solid theoretical foundation (@lundberg2017unified). Kernel SHAP is a computationally efficient approximation to Shapley values in higher dimensions, but it assumes independent features. @aas2019explaining extend the Kernel SHAP method to handle dependent features, resulting in more accurate approximations to the true Shapley values. [See the paper for further details](https://arxiv.org/abs/1903.10464).
 
 
 <a id="overview"></a>
@@ -76,13 +76,15 @@ that is, a weighted mean over all subsets $S$ of players not containing player $
 
 $$E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*] = \int f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S^*)\,p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)d\boldsymbol{x}_{\bar{S}},$$
 
-the conditional distributions $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ are needed to compute the contributions. The Kernel SHAP method of @lundberg2017unified assumes feature independence, so that $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)=p(\boldsymbol{x}_{\bar{S}})$. Using the training set as the empirical distribution of $\boldsymbol{x}$, the contributions can then be approximated by 
+the conditional distributions $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ are needed to compute the contributions. The Kernel SHAP method of @lundberg2017unified assumes feature independence, so that $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)=p(\boldsymbol{x}_{\bar{S}})$. 
+If samples $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$, from $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ are available, the conditional expectation above can be approximated by 
 
 \begin{equation}
-  v_{\text{KerSHAP}}(S) = \frac{1}{K}\sum_{k=1}^K f(\boldsymbol{x}_{\bar{S}}^{k},\boldsymbol{x}_S^*),
+  v_{\text{KerSHAP}}(S) = \frac{1}{K}\sum_{k=1}^K f(\boldsymbol{x}_{\bar{S}}^{k},\boldsymbol{x}_S^*).
 \end{equation}
 
-where $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$ are samples from the training data, which, due to the independence assumption, are sampled independent of $\boldsymbol{x}_{S}$. If the features in a given model are highly dependent, the Kernel SHAP method may however give a completely wrong answer. This can be avoided by estimating the conditional distribution $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ directly and 
+In Kernel SHAP, $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$ are sampled from the $\bar{S}$-part of the training data, *independently* of $\boldsymbol{x}_{S}$. This is motivated by using the training set as the empirical distribution of $\boldsymbol{x}_{\bar{S}}$, and assuming that $\boldsymbol{x}_{\bar{S}}$ is independent of $\boldsymbol{x}_S=\boldsymbol{x}_S^*$.
+Due to the indpendencde assumption, if the features in a given model are highly dependent, the Kernel SHAP method may give a completely wrong answer. This can be avoided by estimating the conditional distribution $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ directly and 
 generating samples from this distribution. With this small change, the contributions and Shapley values may then be approximated as in the ordinary Kernel SHAP framework. @aas2019explaining propose three different approaches for estimating the conditional probabilities: 
 
 
