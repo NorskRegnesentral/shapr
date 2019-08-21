@@ -482,7 +482,7 @@ distance_matrix <- function(x_train, x_test = NULL, list_features) {
     S_scale_dist = TRUE
   )
 
-  #Normalize distance rows to ensure numerical stability in later operations
+  # Normalize distance rows to ensure numerical stability in later operations
   colmin <- apply(X = D, MARGIN = c(2, 3), FUN = min)
   for (i in 1:dim(D)[3]) {
     D[, , i] <- t(t(D[, , i]) - colmin[, i])

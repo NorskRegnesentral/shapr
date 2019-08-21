@@ -52,18 +52,16 @@ explain.empirical <- function(x, explainer, approach, prediction_zero, index_fea
 
   #
 
-  # Prepare data
-  dt <- prepare_data(explainer, ...)
+  # Generate data
+  dt <- prepare_data(explainer, x_test)
 
   # Predict
+  dt_kshap <- prediction(dt, prediction_zero, explainer)
 
-  # Process
-
-  # Return
-
-  return(explainer$D)
+  return(dt_kshap)
 }
 
+#' @rdname explain
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, n_samples = 1e3) {
 
@@ -99,6 +97,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
   return(dt_kshap)
 }
 
+#' @rdname explain
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, n_samples = 1e3) {
 
@@ -140,6 +139,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, mu = NULL, c
 
 }
 
+#' @rdname explain
 #' @export
 explain.combined <- function(x, explainer, approach, prediction_zero, ...) {
 

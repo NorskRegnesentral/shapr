@@ -1,6 +1,7 @@
 rm(list = ls())
 
 library(shapr)
+library(MASS)
 
 data("Boston")
 
@@ -29,6 +30,10 @@ explanation <- explain(x_test, explainer, approach = "gaussian", prediction_zero
 explanation
 
 # Explain predictions (copula)
+explanation <- explain(x_test, explainer, approach = "copula", prediction_zero = mean(y_train))
+explanation
+
+# Explain predictions (combined)
 explanation <- explain(x_test, explainer, approach = "copula", prediction_zero = mean(y_train))
 explanation
 

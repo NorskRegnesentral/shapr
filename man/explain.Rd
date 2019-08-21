@@ -3,12 +3,23 @@
 \name{explain}
 \alias{explain}
 \alias{explain.empirical}
+\alias{explain.gaussian}
+\alias{explain.copula}
+\alias{explain.combined}
 \title{Explaining the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{empirical}(x, explainer, approach, prediction_zero,
   index_features, ...)
+
+\method{explain}{gaussian}(x, explainer, approach, prediction_zero,
+  mu = NULL, cov_mat = NULL, n_samples = 1000)
+
+\method{explain}{copula}(x, explainer, approach, prediction_zero,
+  mu = NULL, cov_mat = NULL, n_samples = 1000)
+
+\method{explain}{combined}(x, explainer, approach, prediction_zero, ...)
 }
 \arguments{
 \item{x}{1}
