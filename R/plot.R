@@ -21,7 +21,7 @@ plot_kshap <- function(explanation,
                        no_desc_digits = 3,
                        plot_phi0 = T,
                        plot_which_Xtest = 1:nrow(Xtest),
-                       top_k_features = ncol(l$Xtest) + 1) {
+                       top_k_features = ncol(Xtest) + 1) {
   is_installed <- requireNamespace("ggplot2", quietly = TRUE)
   if (!is_installed) stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   colnam <- colnames(Xtest)
