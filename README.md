@@ -166,7 +166,7 @@ explanation$Kshap
 #> 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531
 
 # Finally we plot the resulting explanations
-plot_kshap(explanation, l)
+plot_kshap(explanation, x_test)
 ```
 
 <img src="man/figures/README-basic_example-1.png" width="100%" />
