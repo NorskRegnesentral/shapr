@@ -15,8 +15,15 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     class(x) <- "gaussian"
   } else if (approach == "copula") {
     class(x) <- "copula"
+  } else if (approach == "combined") {
+    class(x) <- "copula"
   } else {
-    stop("It seems that you passed a non-valid value for approach. It should be either 'empirical', 'gaussian' or 'copula'.")
+    str_error <- paste(
+      "It seems that you passed a non-valid value for approach.",
+      "It should be either 'empirical', 'gaussian', 'copula' or",
+      "'combined'."
+    )
+    stop(str_error)
   }
 
   UseMethod("explain", x)
@@ -36,11 +43,14 @@ explain.empirical <- function(x, explainer, approach, prediction_zero, index_fea
   w_threshold = 0.95
 
   # Get distance matrix ----------------
+  browser()
   explainer$D <- distance_matrix(
     explainer$x_train,
     x,
     explainer$X$features
   )
+
+  #
 
   # Prepare data
   dt <- prepare_data(explainer, ...)
@@ -131,6 +141,16 @@ explain.copula <- function(x, explainer, approach, prediction_zero, mu = NULL, c
 }
 
 #' @export
+explain.combined <- function(x, explainer, approach, prediction_zero, ...) {
+
+  # Setup
+  explainer$n_samples <- n_samples
+  explainer$x_test <- x
+  explainer$approach <- approach
+
+}
+
+#' @export
 prepare_data <- function(x, ...){
   class(x) <- x$approach
   UseMethod("prepare_data", x)
@@ -151,6 +171,7 @@ prepare_data.empirical <- function(x, type = "independence"){
       dim = c(nrow(x$x_train), no_wcomb)
     )
   } else if(kernel_metric == "Gaussian") {
+
     val <- t(t(-0.5 * x$D) / (x$h_optim_vec)^2)
     W_kernel <- exp(val)
     # To avoid numerical problems for small sigma values, we need to substract some constant from
@@ -168,7 +189,6 @@ prepare_data.empirical <- function(x, type = "independence"){
     w_threshold = w_threshold,
     noSamp_MC = noSamp_MC
   )
-  dt[, wcomb := these_wcomb[wcomb]]
 
   return(dt)
 }
