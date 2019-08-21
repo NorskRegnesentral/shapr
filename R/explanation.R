@@ -31,29 +31,30 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 
 #' @rdname explain
 #' @export
-explain.empirical <- function(x, explainer, approach, prediction_zero, index_features, ...) {
+explain.empirical <- function(x, explainer, approach, prediction_zero, index_features,
+                              type = "fixed_sigma", fixed_sigma_vec = 0.1,
+                              AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
+                              AIC_optim_startval = 0.1, w_threshold = 0.95) {
 
   # Add arguments to explainer object
   explainer$x_test <- x
   explainer$approach <- approach
-  fixed_sigma_vec = 0.1
-  AICc_no_samp_per_optim = 1000
-  AIC_optim_max_eval = 20
-  AIC_optim_startval = 0.1
-  w_threshold = 0.95
+  explainer$type <- type
+  explainer$fixed_sigma_vec <- fixed_sigma_vec
+  explainer$AICc_no_samp_per_optim <- AICc_no_samp_per_optim
+  explainer$AIC_optim_max_eval <- AIC_optim_max_eval
+  explainer$AIC_optim_startval <- AIC_optim_startval
+  explainer$w_threshold <- w_threshold
 
   # Get distance matrix ----------------
-  browser()
   explainer$D <- distance_matrix(
     explainer$x_train,
     x,
     explainer$X$features
   )
 
-  #
-
   # Generate data
-  dt <- prepare_data(explainer, x_test)
+  dt <- prepare_data(explainer)
 
   # Predict
   dt_kshap <- prediction(dt, prediction_zero, explainer)

@@ -48,10 +48,10 @@ prepare_data <- function(x, ...){
 }
 
 #' @export
-prepare_data.empirical <- function(x, type = "independence"){
+prepare_data.empirical <- function(x){
 
-  kernel_metric <- ifelse(type == "independence", type, "gaussian")
-  browser()
+  kernel_metric <- ifelse(x$type == "independence", x$type, "gaussian")
+
   # Handle the computation of all training-test weights for ALL combinations here, before looping
   if (kernel_metric == "independence") {
 
@@ -61,7 +61,7 @@ prepare_data.empirical <- function(x, type = "independence"){
       stats::runif(n),
       dim = c(nrow(x$x_train), no_wcomb)
     )
-  } else if(kernel_metric == "Gaussian") {
+  } else if(kernel_metric == "gaussian") {
 
     val <- t(t(-0.5 * x$D) / (x$h_optim_vec)^2)
     W_kernel <- exp(val)
