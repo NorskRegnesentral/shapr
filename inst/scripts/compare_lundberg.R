@@ -47,15 +47,18 @@ explanation.independence <- compute_kshap(
        w_threshold = 1)
 )
 
-explanation.default <- compute_kshap(
+explanation.largesigma <- compute_kshap(
   model = model,
   l = l,
-  pred_zero = pred_zero
+  pred_zero = pred_zero,
+  cond_approach = "empirical",
+  empirical_settings = list(type ="fixed_sigma", fixed_sigma_vec = 10000, w_threshold = 1)
 )
 
 
 # Printing the Shapley values for the test data
-Kshap <- explanation.independence$Kshap
+Kshap_indep <- explanation.independence$Kshap
+Kshap_largesigma <- explanation.largesigma$Kshap
 
 
 
@@ -84,57 +87,30 @@ import pandas as pd
 model = xgb.Booster()  # init model
 model.load_model("inst/compare_lundberg.xgb.obj")
 
-#model = xgb.XGBRegressor(n_estimators = 20)  # init model
-#model.fit(r.x_train,r.y_train)
-
-#model.predict(r.x_test)
-
-
-DMatrix_test = xgb.DMatrix(r.x_test)
-
-py_pred_test = model.predict(DMatrix_test)
-
-sum((py_pred_test-r.pred_test)**2) #
-
-#### Applying kernelshap
-
 ## kernel shap sends data as numpy array which has no column names, so we fix it
 def xgb_predict(data_asarray):
-  data_asframe =  pd.DataFrame(data_asarray, columns=feature_names)
-  return model.predict(data_asframe)
-
-def xgb_predict_two(data_asarray):
   data_asDmatrix =  xgb.DMatrix(data_asarray)
   return model.predict(data_asDmatrix)
 
-xgb_predict_two(r.x_test)
+py_pred_test = xgb_predict(r.x_test) # Test predictions in python
 
+sum((py_pred_test-r.pred_test)**2) # checking equality with r predictions
 
+#### Applying kernelshap
 
-feature_names = r.x_var
+shap_kernel_explainer = shap.KernelExplainer(xgb_predict, r.x_train)
 
-xgb_predict(r.x_test)
+getattr(shap_kernel_explainer,'expected_value') # This is phi0, not used at all below
 
-data_asframe =  pd.DataFrame(r.x_test, columns=feature_names)
+Kshap_shap0 = shap_kernel_explainer.shap_values(r.x_test,nsamples = int(100000),l1_reg=0)
 
-shap_kernel_explainer = shap.KernelExplainer(xgb_predict_two, r.x_train)
-
-getattr(shap_kernel_explainer,'expected_value')
-setattr(shap_kernel_explainer,'expected_value',r.pred_zero) # Does not affect the
-
-Kshap_shap0 = shap_kernel_explainer.shap_values(r.x_test,nsamples = int(400),l1_reg=0)
-
-
-Kshap_shap = pd.DataFrame(Kshap_shap0,columns = feature_names)
+Kshap_shap = pd.DataFrame(Kshap_shap0,columns = r.x_var)
 
 Kshap_shap.insert(0,"none",getattr(shap_kernel_explainer,'expected_value'),True) # Adding the none column
 
 Kshap_shap
-
-
-r.Kshap
-
-
+r.Kshap_indep
+r.Kshap_largesigma
 
 
 exit
