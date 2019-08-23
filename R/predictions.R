@@ -83,13 +83,11 @@ predictions <- function(model,
     # Handle the computation of all training-test weights for ALL combinations here, before looping
     if (kernel_metric == "independence") {
       # Just random noise to "fake" a distance between observations
-      W_kernel <- array(stats::runif(no_wcomb * nrow(Xtrain)), dim = c(nrow(Xtrain), no_wcomb))
+      D <- D[sample.int(n=nrow(D)),] # Randomly reordering the distance
+      h_optim_vec <- mean(D)*1000 # Setting a very large bandwidth to give all used observation identical weight
     }
-    if (kernel_metric == "Gaussian") {
       val <- t(t(-0.5 * D) / h_optim_vec^2)
       W_kernel <- exp(val)
-      # To avoid numerical problems for small sigma values, we need to substract some constant from
-      # val here. Check if it is possible to do this per column/row of l$D[,i,]
     }
 
     ## Get imputed data
