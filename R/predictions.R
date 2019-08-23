@@ -86,8 +86,9 @@ predictions <- function(model,
       D <- D[sample.int(n=nrow(D)),] # Randomly reordering the distance
       h_optim_vec <- mean(D)*1000 # Setting a very large bandwidth to give all used observation identical weight
     }
-      val <- t(t(-0.5 * D) / h_optim_vec^2)
-      W_kernel <- exp(val)
+    # Common for both Gaussan and independence
+    val <- t(t(-0.5 * D) / h_optim_vec^2)
+    W_kernel <- exp(val)
 
     ## Get imputed data
     DTp.empirical <- observation_impute(
