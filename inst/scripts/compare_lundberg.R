@@ -1,5 +1,4 @@
-# Comparing original kernelshap with our implementation with that of Lundberg.
-
+# Comparing original kernelshap with our implementation with that of Lundberg using the readme example
 
 
 library(MASS)
@@ -7,8 +6,6 @@ library(xgboost)
 library(shapr)
 library(ggplot2)
 library(data.table)
-
-#### Installing shapper -- R wrapper for Lundbergs Python shap package using the reticulate package ####
 
 
 data("Boston")
@@ -60,6 +57,9 @@ explanation.largesigma <- compute_kshap(
 Kshap_indep <- explanation.independence$Kshap
 Kshap_largesigma <- explanation.largesigma$Kshap
 
+# Checking the difference between the methods
+sum((as.matrix(Kshap_indep)-as.matrix(Kshap_largesigma))^2)
+#[1] 1,264819e-13 # Numerically identical
 
 
 #xgb.save(model=model,fname = "inst/compare_lundberg.xgb.obj") # Need to wait a bit after saving and then loading this in python
@@ -109,44 +109,13 @@ Kshap_shap = pd.DataFrame(Kshap_shap0,columns = r.x_var)
 Kshap_shap.insert(0,"none",getattr(shap_kernel_explainer,'expected_value'),True) # Adding the none column
 
 Kshap_shap
-r.Kshap_indep
-r.Kshap_largesigma
 
 
 exit
 # Exit python code
 
 
-
-
-
-
-#### Applying shapper ####
-x_test_df <- as.data.frame(x_test)
-x_train_df <- as.data.frame(x_train)
-
-
-p_function <- function(model, data) predict(model, newdata = as.matrix(data))
-p_function(model,x_test_df)
-
-Kshap_original <- matrix(NA,ncol=ncol(x_test)+1,nrow=nrow(x_test))
-
-for(i in 1:nrow(x_test)){
-
-  out = shapper::individual_variable_effect(x = model,
-                                             data = x_train_df,
-                                             new_observation = x_test_df[i,],
-                                             predict_function=p_function,nsamples = 10000)
-  Kshap_original[i,1] <- out$`_yhat_mean_`[1] # same for all
-  Kshap_original[i,1:ncol(x_test)+1] <- out$`_attribution_`
-}
-
-Kshap_original <- as.data.table(Kshap_original)
-colnames(Kshap_original) <- colnames(Kshap)
-
-
-Kshap_original
-Kshap
-
-###############33
+# Checking difference between our R implementtaion and the shap implementation i Python
+sum((as.matrix(Kshap_indep)-as.matrix(py$Kshap_shap))^2)
+#[1] 4,742449e-13 # Numerically identical
 
