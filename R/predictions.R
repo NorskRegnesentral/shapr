@@ -88,7 +88,6 @@ predictions <- function(model,
     }
       val <- t(t(-0.5 * D) / h_optim_vec^2)
       W_kernel <- exp(val)
-    }
 
     ## Get imputed data
     DTp.empirical <- observation_impute(
