@@ -2,15 +2,14 @@
 #'
 #' @description Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
 #' \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous response.
-#' Output the prediction on vector form. May let the user provide this function to handle any
-#' prediction model in the future.
 #'
-#' @inheritParams global_arguments
-#' @param data data.table or data.frame with data to perform prediction
-#' @return Vector of predictions
+#' @param x Object of class inheriting from \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
+#' \code{\link[ranger]{ranger}}, \code{\link[mgcv]{mgcv}} or \code{\link[xgboost]{xgboost}}.
+#' @param newdata A data frame (or matrix) in which to look for variables with which to predict.
+#'
+#' @return Atomic vector
 #'
 #' @export
-#'
 #'
 #' @author Martin Jullum
 predict_model <- function(x, newdata) {
