@@ -17,6 +17,7 @@ predict_model <- function(x, newdata) {
   UseMethod("predict_model", x)
 }
 
+#' @rdname predict_model
 #' @export
 predict_model.lm <- function(x, newdata) {
 
@@ -27,6 +28,7 @@ predict_model.lm <- function(x, newdata) {
   predict(x, newdata)
 }
 
+#' @rdname predict_model
 #' @export
 predict_model.glm <- function(x, newdata) {
 
@@ -41,6 +43,7 @@ predict_model.glm <- function(x, newdata) {
   }
 }
 
+#' @rdname predict_model
 #' @export
 predict_model.ranger <- function(x, newdata) {
 
@@ -55,6 +58,7 @@ predict_model.ranger <- function(x, newdata) {
   }
 }
 
+#' @rdname predict_model
 #' @export
 predict_model.xgb.Booster <- function(x, newdata) {
 
@@ -65,6 +69,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
   predict(x, as.matrix(newdata))
 }
 
+#' @rdname predict_model
 #' @export
 predict_model.mgcv <- function(x, newdata) {
 
