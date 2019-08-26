@@ -2,21 +2,37 @@
 % Please edit documentation in R/models.R
 \name{predict_model}
 \alias{predict_model}
+\alias{predict_model.lm}
+\alias{predict_model.glm}
+\alias{predict_model.ranger}
+\alias{predict_model.xgb.Booster}
+\alias{predict_model.mgcv}
 \title{Predict on vector form}
 \usage{
 predict_model(x, newdata)
+
+\method{predict_model}{lm}(x, newdata)
+
+\method{predict_model}{glm}(x, newdata)
+
+\method{predict_model}{ranger}(x, newdata)
+
+\method{predict_model}{xgb.Booster}(x, newdata)
+
+\method{predict_model}{mgcv}(x, newdata)
 }
 \arguments{
-\item{data}{data.table or data.frame with data to perform prediction}
+\item{x}{Object of class inheriting from \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
+\code{\link[ranger]{ranger}}, \code{\link[mgcv]{mgcv}} or \code{\link[xgboost]{xgboost}}.}
+
+\item{newdata}{A data frame (or matrix) in which to look for variables with which to predict.}
 }
 \value{
-Vector of predictions
+Atomic vector
 }
 \description{
 Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
 \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous response.
-Output the prediction on vector form. May let the user provide this function to handle any
-prediction model in the future.
 }
 \author{
 Martin Jullum

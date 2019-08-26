@@ -202,7 +202,7 @@ compute_kshap <- function(model,
               X.nms <- colnames(l$Xtrain)
               setcolorder(X.pred, X.nms)
               # Doing prediction jointly (for speed), and then splitting them back into the y_list
-              pred <- prediction_vector(model = model, data = X.pred)
+              pred <- predict_model(model, X.pred)
               y_list <- split(pred, current_cond_samp)
               names(y_list) <- NULL
 
@@ -258,7 +258,7 @@ compute_kshap <- function(model,
               X.nms <- colnames(l$Xtrain)
               setcolorder(X.pred, X.nms)
 
-              pred <- prediction_vector(model = model, data = X.pred)
+              pred <- predict_model(model, X.pred)
               y_list <- list(pred)
 
               ## Running the nonlinear optimization

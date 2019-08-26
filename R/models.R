@@ -2,21 +2,21 @@
 #'
 #' @description Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
 #' \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous response.
-#' Output the prediction on vector form. May let the user provide this function to handle any
-#' prediction model in the future.
 #'
-#' @inheritParams global_arguments
-#' @param data data.table or data.frame with data to perform prediction
-#' @return Vector of predictions
+#' @param x Object of class inheriting from \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
+#' \code{\link[ranger]{ranger}}, \code{\link[mgcv]{mgcv}} or \code{\link[xgboost]{xgboost}}.
+#' @param newdata A data frame (or matrix) in which to look for variables with which to predict.
+#'
+#' @return Atomic vector
 #'
 #' @export
-#'
 #'
 #' @author Martin Jullum
 predict_model <- function(x, newdata) {
   UseMethod("predict_model", x)
 }
 
+#' @rdname predict_model
 #' @export
 predict_model.lm <- function(x, newdata) {
 
@@ -27,6 +27,7 @@ predict_model.lm <- function(x, newdata) {
   predict(x, newdata)
 }
 
+#' @rdname predict_model
 #' @export
 predict_model.glm <- function(x, newdata) {
 
@@ -41,6 +42,7 @@ predict_model.glm <- function(x, newdata) {
   }
 }
 
+#' @rdname predict_model
 #' @export
 predict_model.ranger <- function(x, newdata) {
 
@@ -55,6 +57,7 @@ predict_model.ranger <- function(x, newdata) {
   }
 }
 
+#' @rdname predict_model
 #' @export
 predict_model.xgb.Booster <- function(x, newdata) {
 
@@ -65,6 +68,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
   predict(x, as.matrix(newdata))
 }
 
+#' @rdname predict_model
 #' @export
 predict_model.mgcv <- function(x, newdata) {
 
@@ -82,7 +86,7 @@ model_type <- function(x) {
 
 #' @export
 model_type.default <- function(x) {
-stop("The model you passed to shapr is currently not supported.")
+  stop("The model you passed to shapr is currently not supported.")
 }
 
 #' @export

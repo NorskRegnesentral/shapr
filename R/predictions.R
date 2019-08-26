@@ -110,8 +110,8 @@ predictions <- function(model,
   setkey(DTp, wcomb)
 
 
-  DTp[!(wcomb %in% c(1, 2^p)), p_hat := prediction_vector(model = model, data = .SD), .SDcols = nms]
-  DTp[wcomb == 2^p, p_hat := prediction_vector(model = model, data = as.data.frame(Xtest))]
+  DTp[!(wcomb %in% c(1, 2^p)), p_hat := predict_model(model, .SD), .SDcols = nms]
+  DTp[wcomb == 2^p, p_hat := predict_model(model, as.data.frame(Xtest))]
   DTp[wcomb == 1, p_hat := pred_zero]
 
   ## Get mean probability
@@ -143,4 +143,3 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   return(dt_kshap)
 }
-
