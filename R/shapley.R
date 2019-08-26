@@ -117,6 +117,8 @@ compute_kshap <- function(model,
 
     if (empirical_settings$type == "independence") {
       kernel_metric <- "independence"
+      empirical_settings$w_threshold = 1
+      paste0("empirical_settings$w_threshold force set to 1 for empirical_settings$type = 'independence'")
     } else {
       kernel_metric <- "Gaussian"
 
