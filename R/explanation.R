@@ -100,7 +100,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
 #' @rdname explain
 #' @export
-explain.copula <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, n_samples = 1e3) {
+explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3) {
 
   # Setup
   explainer$n_samples <- n_samples
