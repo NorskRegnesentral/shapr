@@ -16,7 +16,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   } else if (approach == "copula") {
     class(x) <- "copula"
   } else if (approach == "combined") {
-    class(x) <- "copula"
+    class(x) <- "combined"
   } else {
     str_error <- paste(
       "It seems that you passed a non-valid value for approach.",
