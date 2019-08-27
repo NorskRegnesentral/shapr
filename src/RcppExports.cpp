@@ -90,18 +90,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// observation_impute_cpp
-NumericMatrix observation_impute_cpp(IntegerVector ID, IntegerVector Comb, NumericMatrix Xtrain, NumericMatrix Xtest, IntegerMatrix S);
-RcppExport SEXP _shapr_observation_impute_cpp(SEXP IDSEXP, SEXP CombSEXP, SEXP XtrainSEXP, SEXP XtestSEXP, SEXP SSEXP) {
+// sample_features_cpp
+List sample_features_cpp(int m, IntegerVector nfeatures);
+RcppExport SEXP _shapr_sample_features_cpp(SEXP mSEXP, SEXP nfeaturesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type ID(IDSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type Comb(CombSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Xtrain(XtrainSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Xtest(XtestSEXP);
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nfeatures(nfeaturesSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_features_cpp(m, nfeatures));
+    return rcpp_result_gen;
+END_RCPP
+}
+// observation_impute_cpp
+NumericMatrix observation_impute_cpp(IntegerVector index_xtrain, IntegerVector index_s, NumericMatrix xtrain, NumericMatrix xtest, IntegerMatrix S);
+RcppExport SEXP _shapr_observation_impute_cpp(SEXP index_xtrainSEXP, SEXP index_sSEXP, SEXP xtrainSEXP, SEXP xtestSEXP, SEXP SSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type index_xtrain(index_xtrainSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type index_s(index_sSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type xtrain(xtrainSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type xtest(xtestSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type S(SSEXP);
-    rcpp_result_gen = Rcpp::wrap(observation_impute_cpp(ID, Comb, Xtrain, Xtest, S));
+    rcpp_result_gen = Rcpp::wrap(observation_impute_cpp(index_xtrain, index_s, xtrain, xtest, S));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -139,6 +151,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_aicc_full_single_cpp", (DL_FUNC) &_shapr_aicc_full_single_cpp, 5},
     {"_shapr_aicc_full_cpp", (DL_FUNC) &_shapr_aicc_full_cpp, 6},
     {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
+    {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},
     {"_shapr_weight_matrix_cpp", (DL_FUNC) &_shapr_weight_matrix_cpp, 4},
     {"_shapr_feature_matrix_cpp", (DL_FUNC) &_shapr_feature_matrix_cpp, 2},

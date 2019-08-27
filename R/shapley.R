@@ -7,24 +7,11 @@
 #' @export
 #'
 #' @author Nikolai Sellereite
-shapley_weights <- function(m, N, s) {
-  (m - 1) / (N * s * (m - s))
-}
+shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 
-#' Calculate Shapley weights
-#'
-#' @param X data.table
-#'
-#' @return data.table
-#'
-#' @export
-#'
-#' @author Nikolai Sellereite
-observation_weights <- function(X, m) {
-  X[-c(1, .N), weight := shapley_weights(m = m, N = N, s = nfeatures), ID]
-  X[c(1, .N), weight := 10^6]
-
-  return(X)
+  x <- (m - 1) / (N * s * (m - s))
+  x[!is.finite(x)] <- weight_zero_m
+  x
 }
 
 #' Get weighted matrix
@@ -130,6 +117,8 @@ compute_kshap <- function(model,
 
     if (empirical_settings$type == "independence") {
       kernel_metric <- "independence"
+      empirical_settings$w_threshold = 1
+      paste0("empirical_settings$w_threshold force set to 1 for empirical_settings$type = 'independence'")
     } else {
       kernel_metric <- "Gaussian"
 
@@ -213,7 +202,7 @@ compute_kshap <- function(model,
               X.nms <- colnames(l$Xtrain)
               setcolorder(X.pred, X.nms)
               # Doing prediction jointly (for speed), and then splitting them back into the y_list
-              pred <- prediction_vector(model = model, data = X.pred)
+              pred <- predict_model(model, X.pred)
               y_list <- split(pred, current_cond_samp)
               names(y_list) <- NULL
 
@@ -269,7 +258,7 @@ compute_kshap <- function(model,
               X.nms <- colnames(l$Xtrain)
               setcolorder(X.pred, X.nms)
 
-              pred <- prediction_vector(model = model, data = X.pred)
+              pred <- predict_model(model, X.pred)
               y_list <- list(pred)
 
               ## Running the nonlinear optimization
