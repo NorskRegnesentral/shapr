@@ -9,6 +9,9 @@
 #' @author Nikolai Sellereite
 observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {
 
+  stopifnot(all(dim(W_kernel) == c(nrow(Xtrain),nrow(S))))
+  stopifnot(all(is.integer(S)))
+
   ## Find weights for all combinations and training data
   DT <- as.data.table(W_kernel)
   DT[, ID := .I]
