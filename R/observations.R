@@ -102,11 +102,11 @@ prepare_data.gaussian <- function(x){
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
-    # dt[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
     dt_l[[i]][, w := 1 / x$n_samples]
     dt_l[[i]][, id := i]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
 
   return(dt)
 }
@@ -132,10 +132,11 @@ prepare_data.copula <- function(x, x_test){
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
-    # dt[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
     dt_l[[i]][, w := 1 / x$n_samples]
     dt_l[[i]][, id := i]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
 
+  return(dt)
 }
