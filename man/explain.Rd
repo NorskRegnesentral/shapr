@@ -19,7 +19,7 @@ explain(x, explainer, approach, prediction_zero, ...)
   mu = NULL, cov_mat = NULL, n_samples = 1000)
 
 \method{explain}{copula}(x, explainer, approach, prediction_zero,
-  mu = NULL, cov_mat = NULL, n_samples = 1000)
+  n_samples = 1000)
 
 \method{explain}{combined}(x, explainer, approach, prediction_zero, ...)
 }
