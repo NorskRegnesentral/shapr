@@ -59,7 +59,7 @@ test_that("test sample_gaussian", {
   noSamp <- 50
   mu <- rep(1, m)
   Sigma <- cov(matrix(rnorm(noSamp * m), noSamp, m))
-  Xtest <- mvrnorm(1, mu, Sigma)
+  Xtest <- MASS::mvrnorm(1, mu, Sigma)
   given.ind <- 4
   set.seed(1)
   ret <- sample_gaussian(given.ind, noSamp, mu, Sigma, m, Xtest)
@@ -101,9 +101,9 @@ test_that("test sample_copula", {
   noSamp <- 50
   mu <- rep(1, m)
   Sigma <- cov(matrix(rnorm(n * m), n, m))
-  Xtrain <- mvrnorm(n, mu, Sigma)
-  Xtest <- mvrnorm(1, mu, Sigma)
-  Xtest_Gauss <- mvrnorm(1, mu, Sigma)
+  Xtrain <- MASS::mvrnorm(n, mu, Sigma)
+  Xtest <- MASS::mvrnorm(1, mu, Sigma)
+  Xtest_Gauss <- MASS::mvrnorm(1, mu, Sigma)
   given.ind <- 3:6
   set.seed(1)
   ret <- sample_copula(given.ind, noSamp, mu, Sigma, m, Xtest_Gauss, Xtrain, Xtest)
