@@ -1,7 +1,11 @@
 #' Sample conditional variables using the Gaussian copula approach
 #'
-#' @param given_ind Vector
-#' @param p Positive integer
+#' @param given_ind Vector. The indices of the features to condition upon.
+#' @param p Positive integer. The number of features.
+#' @param Xtest_Gauss_trans Vector with the Gaussian transformed features of the observation whose predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
+#' @param Xtest Matrix, data.frame or data.table with the features of the observation whose predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
+#'
+#'
 #'
 #' @inheritParams global_arguments
 #'
@@ -47,8 +51,11 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
 
 #' Sample conditional Gaussian variables
 #'
-#' @param given_ind Vector
-#' @param p Positive integer
+#' @param given_ind Vector. The indices of the features to condition upon.
+#' @param p Positive integer. The number of features.
+#' @param ensure_condcov_symmetry Logical. If \code{true}, \code{symmpart} is used on the conditional covariance matrix to ensure symmetry.
+#' @param Xtest Matrix, data.frame or data.table with the features of the observation whose predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
+#'
 #'
 #' @inheritParams global_arguments
 #'
