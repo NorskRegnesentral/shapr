@@ -204,9 +204,13 @@ plot_kshap(explanation_copula, l, plot_phi0 = F,plot_which_Xtest = c(1,6))
 
 ```
 
+## Main arguments in `prepare_kshap`
+When using `prepare_kshap`, the the default behavior is to use all feature combinations in the Shapley formula. Kernel SHAPs sampling based approach may be used by setting `exact=FALSE`, and specifying the number of samples by the argument `noSamp`. The computation time grows approximately exponentially with this number. The Mahalanobis based distance matrices are also computed in this step. If one does not intend to use the empirical approach for all feature combinations, one can skip unnecessary computations (and save memory) through the argument `compute_distances_for_no_var`. Setting this to say $c(1,2,3)$ computes distances only when conditioning on 1, 2 or 3 features. Setting `compute_distances_for_no_var` to `NULL` does not compute any distances.
 
-When using `prepare_kshap`, the full sum is by default used in the Shapley formula. A sampling approach may be used by setting `exact=FALSE`, and the number of samples used must then be specified by the argument `noSamp`. When computing the kernel SHAP values by `compute_kshap`, the maximum number of samples to use in the Monte Carlo integration for every conditional expectation is controlled by the argument `noSamp_MC`, by deafult set to be 1000. As seen in the code above, the argument `pred_zero` for the prediction value of the unseen data is required, and typically this is equal to the mean of the response. If the empirical method is used, the settings to use can be specified through the argument `empirical_settings`. If the Gaussian approach is used, we may specify the mean vector and covariance matrix of the data generating distribution by the arguments `mu` and `Sigma`. If not specified, they are estimated from the data.  
-
+## Main arguments in `compute_kshap`
+When computing the kernel SHAP values by `compute_kshap`, the maximum number of samples to use in the Monte Carlo integration for every conditional expectation is controlled by the argument `noSamp_MC`, by deafult set to be 1000. 
+The computation time grows approximately linear with this number. As seen in the code above, the argument `pred_zero` for the prediction value of the unseen data is required. We recommend setting this equal to the mean of the response, but other values, like the mean prediction of a large test data set is also a possibility.
+If the empirical method is used, specific settings for that approach, like a fixed $\sigma$ value or the use of the AICc method for estimating $\sigma$, can be specified through the argument `empirical_settings`, see the documentation of `compute_kshap` for details. If the Gaussian approach is used, we may specify the mean vector and covariance matrix of the data generating distribution by the arguments `mu` and `Sigma`. If not specified, they are estimated from the training data.  
 
 
 <a id="compare"></a>
