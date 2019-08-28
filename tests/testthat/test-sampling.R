@@ -13,7 +13,6 @@ test_that("Test sample_combinations", {
 
   x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
-
   # Tests -----------
   expect_true(is.data.frame(x))
   expect_equal(names(x), cnms)
@@ -69,13 +68,11 @@ test_that("test sample_gaussian", {
   res1.2 <- as.data.table(ret[, ..given.ind])
   colnames(res1.1) <- colnames(res1.2)
 
-
   # Example 2 -------------
   # Check that conditioning upon all variables simply returns the test observation.
   given.ind <- 1:m
   x2 <- as.data.table(matrix(Xtest, ncol = m, nrow = 1))
   res2 <- sample_gaussian(given.ind, noSamp, mu, Sigma, m, Xtest)
-
 
   # Example 3 -------------
   # Check that ensuring conditional covariance matrix symmetry is FALSE by default.
@@ -127,7 +124,6 @@ test_that("test sample_copula", {
   Xtest <- t(as.data.frame(Xtest))
   colnames(Xtest) <- 1:m
   res3 <- sample_copula(given.ind, noSamp, mu, Sigma, m, Xtest_Gauss, Xtrain, Xtest)
-
 
   # Tests ------------------
   expect_equal(res1.1, res1.2)
