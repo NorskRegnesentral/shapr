@@ -26,6 +26,7 @@ Imports:
     stats,
     data.table,
     Rcpp (>= 0.12.15),
+    mgcv,
     cluster,
     maptree,
     corrplot,
