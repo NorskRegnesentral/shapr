@@ -110,13 +110,15 @@ compute_kshap <- function(model,
     }
 
     # Reducing and re-ordering the D-array
-    l$D <- l$D[, , match(these_empirical, l$D_for_these_varcomb)]
+    l$D <- l$D[, , match(these_empirical, l$D_for_these_varcomb),drop=FALSE]
     # Note that the D-array corresponds to exactly the covariate combinations specified in
     # these_empirical
 
 
     if (empirical_settings$type == "independence") {
       kernel_metric <- "independence"
+      empirical_settings$w_threshold = 1
+      paste0("empirical_settings$w_threshold force set to 1 for empirical_settings$type = 'independence'")
     } else {
       kernel_metric <- "Gaussian"
 
@@ -200,7 +202,7 @@ compute_kshap <- function(model,
               X.nms <- colnames(l$Xtrain)
               setcolorder(X.pred, X.nms)
               # Doing prediction jointly (for speed), and then splitting them back into the y_list
-              pred <- prediction_vector(model = model, data = X.pred)
+              pred <- predict_model(model, X.pred)
               y_list <- split(pred, current_cond_samp)
               names(y_list) <- NULL
 
@@ -256,7 +258,7 @@ compute_kshap <- function(model,
               X.nms <- colnames(l$Xtrain)
               setcolorder(X.pred, X.nms)
 
-              pred <- prediction_vector(model = model, data = X.pred)
+              pred <- predict_model(model, X.pred)
               y_list <- list(pred)
 
               ## Running the nonlinear optimization
