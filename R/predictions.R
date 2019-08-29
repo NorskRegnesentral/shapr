@@ -1,6 +1,31 @@
-#'
-#'
-#' OLD FUNCTION. Not in use any more.
+
+#' @export
+prediction <- function(dt, prediction_zero, explainer) {
+
+  cnms <- colnames(explainer$x_test)
+  data.table::setkeyv(dt, c("id", "wcomb"))
+  dt[, p_hat := predict_model(x = explainer$model, newdata = .SD), .SDcols = cnms]
+  dt[wcomb == 1, p_hat := prediction_zero]
+
+  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
+  data.table::setkeyv(dt_res, c("id", "wcomb"))
+
+  if(length(dt_res[id == 1, k])<ncol(explainer$W)){
+    explainer$W=explainer$W[,-c(1,ncol(explainer$W))]
+  }
+  kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
+  for (j in 1:ncol(kshap)) {
+    kshap[, j] <- explainer$W %*% dt_res[id == j, k]
+  }
+  dt_kshap <- data.table::as.data.table(t(kshap))
+  colnames(dt_kshap) <- c("none", cnms)
+
+  return(dt_kshap)
+}
+
+
+
+#' OLD FUNCTION. Not in use any more, but useful for verifying the new functions.
 #'
 #' Get predictions
 #'
@@ -40,7 +65,6 @@ predictions <- function(model,
     ## Assume Gaussian distributed variables and sample from the various conditional distributions
     these_wcomb <- cond_approach_list$Gaussian
     these_wcomb <- these_wcomb[!(these_wcomb %in% c(1, nrow(S)))]
-
     samp_list <- lapply(
       X = feature_list[these_wcomb],
       FUN = sample_gaussian,
@@ -51,7 +75,6 @@ predictions <- function(model,
       Xtest = Xtest,
       ensure_condcov_symmetry = ensure_condcov_symmetry
     )
-
     DTp.Gaussian <- rbindlist(samp_list, idcol = "wcomb")
     DTp.Gaussian[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
     DTp.Gaussian[, w := 1 / noSamp_MC]
@@ -121,33 +144,4 @@ predictions <- function(model,
   DTres <- DTp[, .(k = sum((p_hat * w) / sum(w))), wcomb]
   setkey(DTres, wcomb)
   return(DTres)
-}
-
-#' @export
-prediction <- function(dt, prediction_zero, explainer) {
-
-  cnms <- colnames(explainer$x_test)
-  data.table::setkeyv(dt, c("id", "wcomb"))
-  dt[, p_hat := predict_model(x = explainer$model, newdata = .SD), .SDcols = cnms]
-  dt[wcomb == 1, p_hat := prediction_zero]
-  # HERE IT GOES WRONG.6 predictions cannot be put at all locations.
-  #dt[wcomb == 2^length(cnms), p_hat := predict_model(x = explainer$model, newdata = explainer$x_test)]
-
-  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
-  data.table::setkeyv(dt_res, c("id", "wcomb"))
-
-  if(length(dt_res[id == 1, k])<ncol(explainer$W)){
-    explainer$W=explainer$W[,-c(1,ncol(explainer$W))]
-  }
-  # Get mean probability - TODO: move this into a function (perhaps Rcpp)
-  kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test)) # Moved this to be after the test above.
-
-  for (j in 1:ncol(kshap)) {
-
-    kshap[, j] <- explainer$W %*% dt_res[id == j, k]
-  }
-  dt_kshap <- data.table::as.data.table(t(kshap))
-  colnames(dt_kshap) <- c("none", cnms)
-
-  return(dt_kshap)
 }

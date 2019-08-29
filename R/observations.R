@@ -78,11 +78,9 @@ prepare_data.empirical <- function(x){
         h_optim_mat<-compute_AICc_full(x,h_optim_mat)
 
       } else {
-        stop("Some error message")
+        stop("type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
       }
     }
-  } else {
-    stop("Some error message")
   }
   dt_l <- list()
   for (i in seq(n_col)) {
@@ -148,7 +146,7 @@ prepare_data.gaussian <- function(x){
 
 
 prepare_data.copula <- function(x, x_test){
-  # x_test is the Gaussian transformed data
+
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
 
@@ -186,11 +184,10 @@ compute_AICc_each_k <- function(x,h_optim_mat){
   )
   x$AICc_no_samp_per_optim <- nrow(optimsamp)
   nloops <- nrow(x$x_test) # No of observations in test data
+
   # Optimization is done only once for all distributions which conditions on
   # exactly k variables
-
   these_k <- unique(x$X$nfeatures[-c(1,nrow(x$S))])
-  #these_k <- unique(x$X$nfeatures)
   for (i in these_k) {
     these_cond <- x$X[nfeatures == i, ID]
     cutters <- 1:x$AICc_no_samp_per_optim
@@ -203,7 +200,7 @@ compute_AICc_each_k <- function(x,h_optim_mat){
     )
     cond_samp <- as.numeric(levels(cond_samp))[cond_samp]
 
-    # Loop over each observation to explain:
+    # Loop over each observation to explain
     for (loop in 1:nloops) {
       this.optimsamp <- optimsamp
       this.optimsamp$samp_test <- loop
@@ -294,7 +291,6 @@ compute_AICc_full <- function(x,h_optim_mat){
       these_train <- this.optimsamp$samp_train
       these_test <- this.optimsamp$samp_test
 
-      # Hacky way to handle the situation when optimizing in the usual way. Needs to be improved!
       these_train <- 1:nrow(x$x_train)
       these_test <- sample(x = these_test, size = nrow(x$x_train), replace = T)
 
@@ -316,7 +312,6 @@ compute_AICc_full <- function(x,h_optim_mat){
       y_list <- list(pred)
 
       ## Running the nonlinear optimization
-
       nlm.obj <- suppressWarnings(stats::nlminb(
         start = x$AIC_optim_startval,
         objective = aicc_full_cpp,
