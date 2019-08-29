@@ -106,7 +106,7 @@ explanation.orig$Kshap
 
 # ---------------------------------------------------------------------------------------------------------
 # Explain predictions (copula)
-explanation <- explain(x_test, explainer, approach = "copula", prediction_zero = mean(y_train))
+explanation <- explain(x_test, explainer, approach = "copula", prediction_zero = mean(y_train),n_samples=1e5)
 explanation
 
 explainer.orig <- prepare_kshap(x_train, x_test)
@@ -114,27 +114,46 @@ explanation.orig <- compute_kshap(
   model = model,
   l = explainer.orig,
   pred_zero = mean(y_train),
-  cond_approach = "copula")
+  cond_approach = "copula",noSamp_MC = 1e5)
 explanation.orig$Kshap
-
 
 
 
 # ---------------------------------------------------------------------------------------------------------
 # Explain predictions (combined)
 
-# Not yet developed
-explanation <- explain(x_test, explainer, approach = "combined", prediction_zero = mean(y_train))
+comb_approach=list("empirical"=1:6)
+emp_type=list("independence"=1:6)
+explanation <- explain(x_test, explainer, approach = comb_approach,empirical.types=emp_type, prediction_zero = mean(y_train))
 explanation
 
-# Not implemented?:
+
+comb_approach=list("empirical"=1:3,"gaussian"=4:6)
+emp_type=list("independence"=1:3)
+explanation <- explain(x_test, explainer, approach = comb_approach,empirical.types=emp_type, prediction_zero = mean(y_train))
+explanation
+
+
+comb_approach=list("empirical"=1:3,"copula"=4:6)
+emp_type=list("fixed_sigma"=1:3)
+explanation <- explain(x_test, explainer, approach = comb_approach,empirical.types=emp_type, prediction_zero = mean(y_train))
+explanation
+
+comb_approach=list("empirical"=1:3,"copula"=4:6)
+emp_type=list("fixed_sigma"=1:2,"AICc_full"=3)
+explanation <- explain(x_test, explainer, approach = comb_approach,empirical.types=emp_type, prediction_zero = mean(y_train))
+explanation
+
+
+# The old method did not work:
 explainer.orig <- prepare_kshap(x_train, x_test)
 explanation.orig <- compute_kshap(
   model = model,
   l = explainer.orig,
   pred_zero = mean(y_train),
-  cond_approach = "combined")
-explanation.orig$Kshap
+  cond_approach = comb_approach
+  )
 
+explanation.orig$Kshap
 
 

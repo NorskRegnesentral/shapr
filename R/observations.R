@@ -148,7 +148,7 @@ prepare_data.gaussian <- function(x){
 
 
 prepare_data.copula <- function(x, x_test){
-
+  # x_test is the Gaussian transformed data
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
 
@@ -163,7 +163,7 @@ prepare_data.copula <- function(x, x_test){
       p = x$n_features,
       Xtest = x$x_test[i,, drop = FALSE],
       Xtrain = as.matrix(x$x_train),
-      Xtest_Gauss_trans = x_test
+      Xtest_Gauss_trans = x_test[i,,drop=FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
@@ -172,7 +172,6 @@ prepare_data.copula <- function(x, x_test){
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
-
   return(dt)
 }
 
@@ -268,17 +267,22 @@ compute_AICc_each_k <- function(x,h_optim_mat){
 
 #' @export
 compute_AICc_full <- function(x,h_optim_mat){
+  ntest = nrow(x$x_test)
+  if(is.null(dim(x$x_test))){
+    nloops=1
+    ntest=1}
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
-    ntest = nrow(x$x_test),
+    ntest = ntest,
     nsamples = x$AICc_no_samp_per_optim,
     joint_sampling = FALSE
   )
   x$AICc_no_samp_per_optim <- nrow(optimsamp)
   nloops <- nrow(x$x_test) # No of observations in test data
+
   ind_of_vars_to_cond_on = 2:(nrow(x$S)-1)
   for (i in ind_of_vars_to_cond_on) {
-    S <- x$S[i, ]
+    S <- x$S[i,]
     S.cols <- which(as.logical(S))
     Sbar.cols <- which(as.logical(1 - S))
 

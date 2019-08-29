@@ -317,6 +317,7 @@ compute_kshap <- function(model,
 
   mu_Gauss_trans <- rep(0, ncol(l$Xtrain))
   Sigma_Gauss_trans <- stats::cov(Xtrain_Gauss_trans)
+
   if (any(eigen(Sigma_Gauss_trans)$values <= 1e-06)) {
     Sigma_Gauss_trans <- as.matrix(Matrix::nearPD(Sigma_Gauss_trans)$mat)
   }
@@ -468,7 +469,9 @@ distance_matrix <- function(x_train, x_test = NULL, list_features) {
 
   # Get covariance matrix
   mcov <- stats::cov(x_train)
-
+  if(is.null(dim(x_test))){
+    x_test=t(as.matrix(x_test))
+  }
   # Note that D equals D_S(,)^2 in the paper
   D <- mahalanobis_distance_cpp(
     featureList = list_features,
