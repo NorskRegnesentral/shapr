@@ -7,7 +7,7 @@
 #' @param ... Soething
 #'
 #' @export
-explain <- function(x, explainer, approach, prediction_zero, ...) {
+explain <- function(x, explainer, approach, prediction_zero, n_samples, ...) {
 
   if (approach == "empirical") {
     class(x) <- "empirical"
@@ -31,11 +31,10 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 
 #' @rdname explain
 #' @export
-explain.empirical <- function(x, explainer, approach, prediction_zero, index_features,
+explain.empirical <- function(x, explainer, approach, prediction_zero, index_features, n_samples = 1e3,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
                               AIC_optim_startval = 0.1, w_threshold = 0.95) {
-
   # Add arguments to explainer object
   explainer$x_test <- x
   explainer$approach <- approach
@@ -45,6 +44,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero, index_fea
   explainer$AIC_optim_max_eval <- AIC_optim_max_eval
   explainer$AIC_optim_startval <- AIC_optim_startval
   explainer$w_threshold <- w_threshold
+  explainer$n_samples <- n_samples
 
   # Get distance matrix ----------------
   explainer$D <- distance_matrix(

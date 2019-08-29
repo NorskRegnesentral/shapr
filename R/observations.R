@@ -50,36 +50,75 @@ prepare_data <- function(x, ...){
 #' @export
 prepare_data.empirical <- function(x){
 
+  # Setup
+  n_col <- nrow(x$x_test)
+  h_optim_mat <- matrix(NA, ncol = n_col, nrow = nrow(x$S))
+  h_optim_DT <- as.data.table(h_optim_mat)
+  data.table::setnames(h_optim_DT, paste0("Testobs_", seq(nrow(x$x_test))))
+  h_optim_DT[, varcomb := .I]
   kernel_metric <- ifelse(x$type == "independence", x$type, "gaussian")
 
-  # Handle the computation of all training-test weights for ALL combinations here, before looping
   if (kernel_metric == "independence") {
+    # 1. Check that this method works and give the same results as previous steps
+    x$w_threshold <- 1
 
-    # Adds random noise to "fake" a distance between observations
-    n <- no_wcomb * nrow(x$x_train)
-    W_kernel <- array(
-      stats::runif(n),
-      dim = c(nrow(x$x_train), no_wcomb)
-    )
-  } else if(kernel_metric == "gaussian") {
+  } else if (kernel_metric == "gaussian") {
 
-    val <- t(t(-0.5 * x$D) / (x$h_optim_vec)^2)
-    W_kernel <- exp(val)
-    # To avoid numerical problems for small sigma values, we need to substract some constant from
-    # val here. Check if it is possible to do this per column/row of l$D[,i,]
+
+    if (x$type == "fixed_sigma") {
+
+      # 2. Check that this method works and give the same results as previous steps
+      h_optim_mat[, ] <- x$fixed_sigma_vec
+
+    } else {
+
+      if (empirical_settings$type == "AICc_each_k") {
+
+        # 3. Add functionality to Find h_optim_mat for this option
+
+      } else if (empirical_settings$type == "AICc_full") {
+
+        # 4. Add functionality to Find h_optim_mat for this option
+
+      } else {
+        stop("Some error message")
+      }
+    }
   } else {
-    stop("It seems that you've passed a non-valid value when using kernel_metric")
+    stop("Some error message")
   }
 
-  # Generate permutations of data
-  dt <- observation_impute(
-    W_kernel = W_kernel,
-    S = S[these_wcomb, ],
-    Xtrain = Xtrain,
-    Xtest = Xtest,
-    w_threshold = w_threshold,
-    noSamp_MC = noSamp_MC
-  )
+  dt_l <- list()
+  for (i in seq(n_col)) {
+
+    D <- x$D[, i, ]
+    h_optim_vec <- h_optim_mat[, i]
+
+    if (kernel_metric == "independence") {
+
+      D <- D[sample(nrow(D)),]
+      h_optim_vec <- mean(D)*1000
+
+    }
+
+    val <- t(t(-0.5 * D) / h_optim_vec^2)
+    W_kernel <- exp(val)
+
+    ## Get imputed data
+    dt_l[[i]] <- observation_impute(
+      W_kernel = W_kernel,
+      S = x$S,
+      Xtrain = x$x,
+      Xtest = x$x_test[i, , drop = FALSE],
+      w_threshold = x$w_threshold,
+      noSamp_MC = x$n_samples
+    )
+    dt_l[[i]][, id := i]
+
+  }
+
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
 
   return(dt)
 }

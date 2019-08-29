@@ -23,7 +23,8 @@ model <- xgboost::xgboost(
 explainer <- shapr(x_train, model)
 
 # Explain predictions (empirical)
-explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = mean(y_train))
+explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = mean(y_train), type = "independence")
+explanation
 
 # Explain predictions (gaussian)
 explanation <- explain(x_test, explainer, approach = "gaussian", prediction_zero = mean(y_train))

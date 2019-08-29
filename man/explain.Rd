@@ -8,12 +8,13 @@
 \alias{explain.combined}
 \title{Explaining the output of machine learning models with more accurately estimated Shapley values}
 \usage{
-explain(x, explainer, approach, prediction_zero, ...)
+explain(x, explainer, approach, prediction_zero, n_samples, ...)
 
 \method{explain}{empirical}(x, explainer, approach, prediction_zero,
-  index_features, type = "fixed_sigma", fixed_sigma_vec = 0.1,
-  AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-  AIC_optim_startval = 0.1, w_threshold = 0.95)
+  index_features, n_samples = 1000, type = "fixed_sigma",
+  fixed_sigma_vec = 0.1, AICc_no_samp_per_optim = 1000,
+  AIC_optim_max_eval = 20, AIC_optim_startval = 0.1,
+  w_threshold = 0.95)
 
 \method{explain}{gaussian}(x, explainer, approach, prediction_zero,
   mu = NULL, cov_mat = NULL, n_samples = 1000)
