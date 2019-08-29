@@ -91,7 +91,7 @@ explanation.orig$Kshap
 # ---------------------------------------------------------------------------------------------------------
 # Explain predictions (gaussian)
 
-explanation <- explain(x_test, explainer, approach = "gaussian", prediction_zero = mean(y_train))
+explanation <- explain(x_test, explainer, approach = "gaussian", prediction_zero = mean(y_train),n_samples=1e5)
 explanation
 
 
@@ -100,7 +100,7 @@ explanation.orig <- compute_kshap(
   model = model,
   l = explainer.orig,
   pred_zero = mean(y_train),
-  cond_approach ="Gaussian")
+  cond_approach ="Gaussian",noSamp_MC = 1e5)
 explanation.orig$Kshap
 
 
@@ -108,6 +108,7 @@ explanation.orig$Kshap
 # Explain predictions (copula)
 explanation <- explain(x_test, explainer, approach = "copula", prediction_zero = mean(y_train))
 explanation
+
 explainer.orig <- prepare_kshap(x_train, x_test)
 explanation.orig <- compute_kshap(
   model = model,

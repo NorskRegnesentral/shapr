@@ -51,7 +51,7 @@ prepare_data.empirical <- function(x){
 
   # Setup
   n_col <- nrow(x$x_test)
-  no_empirical <- nrow(x$S) # Omit conditioning on 1 or all variables
+  no_empirical <- nrow(x$S)
 
   h_optim_mat <- matrix(NA, ncol = n_col, nrow =no_empirical)
   h_optim_DT <- as.data.table(h_optim_mat)
@@ -133,8 +133,8 @@ prepare_data.gaussian <- function(x){
       mu = x$mu,
       Sigma = x$cov_mat,
       p = ncol(x$x_test),
-      Xtest = x$x_test,
-      ensure_condcov_symmetry = TRUE
+      Xtest = x$x_test[i,, drop = FALSE],
+      ensure_condcov_symmetry = F
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
@@ -143,7 +143,6 @@ prepare_data.gaussian <- function(x){
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
-
   return(dt)
 }
 

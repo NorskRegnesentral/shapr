@@ -131,6 +131,7 @@ prediction <- function(dt, prediction_zero, explainer) {
   data.table::setkeyv(dt, c("id", "wcomb"))
   dt[, p_hat := predict_model(x = explainer$model, newdata = .SD), .SDcols = cnms]
   dt[wcomb == 1, p_hat := prediction_zero]
+  dt[wcomb == 2^length(cnms), p_hat := predict_model(x = explainer$model, newdata = explainer$x_test)]
 
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
   data.table::setkeyv(dt_res, c("id", "wcomb"))
