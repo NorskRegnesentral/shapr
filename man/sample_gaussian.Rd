@@ -8,7 +8,7 @@ sample_gaussian(given_ind, noSamp_MC, mu, Sigma, p, Xtest,
   ensure_condcov_symmetry = F)
 }
 \arguments{
-\item{given_ind}{Vector}
+\item{given_ind}{Vector. The indices of the features to condition upon.}
 
 \item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
@@ -19,10 +19,11 @@ NULL means it is estimated from the data if needed (in the Gaussian approach).}
 \item{Sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
 distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
-\item{p}{Positive integer}
+\item{p}{Positive integer. The number of features.}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
-be explained (test data)}
+\item{Xtest}{Matrix, data.frame or data.table with the features of the observation whose predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.}
+
+\item{ensure_condcov_symmetry}{Logical. If \code{true}, \code{symmpart} is used on the conditional covariance matrix to ensure symmetry.}
 }
 \value{
 data.table with \code{noSamp_MC} (conditional) Gaussian samples

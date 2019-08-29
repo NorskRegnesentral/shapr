@@ -110,7 +110,7 @@ compute_kshap <- function(model,
     }
 
     # Reducing and re-ordering the D-array
-    l$D <- l$D[, , match(these_empirical, l$D_for_these_varcomb)]
+    l$D <- l$D[, , match(these_empirical, l$D_for_these_varcomb),drop=FALSE]
     # Note that the D-array corresponds to exactly the covariate combinations specified in
     # these_empirical
 
