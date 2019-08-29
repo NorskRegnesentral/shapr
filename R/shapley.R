@@ -422,6 +422,8 @@ shapr <- function(x,
 
   # TODO: Add check if user valid data
 
+  # TODO: Check model object
+
   # Create  data.tables --------------
   if (!data.table::is.data.table(x)) {
     x_train <- data.table::as.data.table(x)

@@ -18,6 +18,18 @@ predict_model <- function(x, newdata) {
 
 #' @rdname predict_model
 #' @export
+predict_model.default <- function(x, newdata) {
+
+    str_error <- paste(
+      "It seems that you passed a non-valid model object.",
+      "See more information about which models that are supported",
+      "by running ?predict_model."
+    )
+    stop(str_error)
+}
+
+#' @rdname predict_model
+#' @export
 predict_model.lm <- function(x, newdata) {
 
   if (!requireNamespace('stats', quietly = TRUE)) {

@@ -11,10 +11,9 @@
 explain(x, explainer, approach, prediction_zero, n_samples, ...)
 
 \method{explain}{empirical}(x, explainer, approach, prediction_zero,
-  index_features, n_samples = 1000, type = "fixed_sigma",
-  fixed_sigma_vec = 0.1, AICc_no_samp_per_optim = 1000,
-  AIC_optim_max_eval = 20, AIC_optim_startval = 0.1,
-  w_threshold = 0.95)
+  index_features, type = "fixed_sigma", fixed_sigma_vec = 0.1,
+  AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
+  AIC_optim_startval = 0.1, w_threshold = 0.95)
 
 \method{explain}{gaussian}(x, explainer, approach, prediction_zero,
   mu = NULL, cov_mat = NULL, n_samples = 1000)
@@ -22,7 +21,11 @@ explain(x, explainer, approach, prediction_zero, n_samples, ...)
 \method{explain}{copula}(x, explainer, approach, prediction_zero,
   n_samples = 1000)
 
-\method{explain}{combined}(x, explainer, approach, prediction_zero, ...)
+\method{explain}{combined}(x, explainer, prediction_zero,
+  approach = NULL, empirical.types = NULL, nsamples = 1000,
+  fixed_sigma_vec = 0.1, AICc_no_samp_per_optim = 1000,
+  AIC_optim_max_eval = 20, AIC_optim_startval = 0.1,
+  w_threshold = 0.95, mu = NULL, cov_mat = NULL, ...)
 }
 \arguments{
 \item{x}{1}

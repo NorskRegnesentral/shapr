@@ -2,6 +2,7 @@
 % Please edit documentation in R/models.R
 \name{predict_model}
 \alias{predict_model}
+\alias{predict_model.default}
 \alias{predict_model.lm}
 \alias{predict_model.glm}
 \alias{predict_model.ranger}
@@ -10,6 +11,8 @@
 \title{Predict on vector form}
 \usage{
 predict_model(x, newdata)
+
+\method{predict_model}{default}(x, newdata)
 
 \method{predict_model}{lm}(x, newdata)
 

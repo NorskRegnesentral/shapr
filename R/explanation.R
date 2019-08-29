@@ -7,20 +7,23 @@
 #' @param ... Soething
 #'
 #' @export
-explain <- function(x, explainer, approach, prediction_zero, ...) {
+explain <- function(x, explainer, approach, prediction_zero, n_samples, ...) {
+
   str_error <- paste(
     "It seems that you passed a non-valid value for approach.",
     "It should be either 'empirical', 'gaussian', 'copula' or",
     "a list."
   )
+
+  nms_valid <- c("empirical", "gaussian", "copula", "combined")
+
   if(is.list(approach)){
-    if(! all(colnames(approach) %in% c('empirical','gaussian','copula'))){
+    if(! all(colnames(approach) %in% nms_valid)){
       stop(str_error)
     }
-    class(x) = "combined"
-  }
-  else {
-    if(! approach %in% c('empirical','gaussian','copula')){
+    class(x) <- "combined"
+  } else {
+    if(!is.element(approach, nms_valid)) {
       stop(str_error)
     }
     class(x) <- approach
