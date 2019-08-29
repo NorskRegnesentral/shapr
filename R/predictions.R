@@ -1,3 +1,7 @@
+#'
+#'
+#' OLD FUNCTION. Not in use any more.
+#'
 #' Get predictions
 #'
 #' @param feature_list List
@@ -130,18 +134,20 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
   data.table::setkeyv(dt_res, c("id", "wcomb"))
-  # Get mean probability - TODO: move this into a function (perhaps Rcpp)
-  kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
+
   # REMOVE?
   if(length(dt_res[id == 1, k])<ncol(explainer$W)){
     explainer$W=explainer$W[,-c(1,ncol(explainer$W))]
   }
+  # Get mean probability - TODO: move this into a function (perhaps Rcpp)
+  kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test)) # Moved this to be after the test above.
+
   for (j in 1:ncol(kshap)) {
 
     kshap[, j] <- explainer$W %*% dt_res[id == j, k]
   }
   dt_kshap <- data.table::as.data.table(t(kshap))
-  colnames(dt_kshap) <- c("none", colnames(explainer$x_train))
+  colnames(dt_kshap) <- c("none", cnms)
 
   return(dt_kshap)
 }

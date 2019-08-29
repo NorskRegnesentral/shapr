@@ -134,7 +134,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
 
 #' @rdname explain
 #' @export
-explain.combined <- function(x, explainer, approach, prediction_zero, ...) {
+explain.combined <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ...) {
 
   # Setup
   explainer$n_samples <- n_samples

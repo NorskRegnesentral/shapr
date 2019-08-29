@@ -75,7 +75,7 @@ prepare_data.empirical <- function(x){
 
       } else if (x$type == "AICc_full") {
 
-        # 4. Add functionality to Find h_optim_mat for this option
+        h_optim_mat<-compute_AICc_full(x,h_optim_mat)
 
       } else {
         stop("Some error message")
@@ -101,12 +101,6 @@ prepare_data.empirical <- function(x){
     val <- t(t(-0.5 * D) / h_optim_vec^2)
     W_kernel <- exp(val)
     S=x$S
-
-    # UNSURE HERE! Tries to remove the columns of W_kernel with only NA, corresponding to conditioning on on all or no variables.
-    # if(x$type=='AICc_each_k'){
-    #   W_kernel <- W_kernel[,-c(1,ncol(W_kernel))]
-    #   S=x$S[-c(1,nrow(x$S)),]
-    # }
 
     ## Get imputed data
     dt_l[[i]] <- observation_impute(
@@ -196,7 +190,7 @@ compute_AICc_each_k <- function(x,h_optim_mat){
   nloops <- nrow(x$x_test) # No of observations in test data
   # Optimization is done only once for all distributions which conditions on
   # exactly k variables
-  # UNSURE HERE:
+
   these_k <- unique(x$X$nfeatures[-c(1,nrow(x$S))])
   #these_k <- unique(x$X$nfeatures)
   for (i in these_k) {
@@ -273,4 +267,71 @@ compute_AICc_each_k <- function(x,h_optim_mat){
 }
 
 
+#' @export
+compute_AICc_full <- function(x,h_optim_mat){
+  optimsamp <- sample_combinations(
+    ntrain = nrow(x$x_train),
+    ntest = nrow(x$x_test),
+    nsamples = x$AICc_no_samp_per_optim,
+    joint_sampling = FALSE
+  )
+  x$AICc_no_samp_per_optim <- nrow(optimsamp)
+  nloops <- nrow(x$x_test) # No of observations in test data
+  ind_of_vars_to_cond_on = 2:(nrow(x$S)-1)
+  for (i in ind_of_vars_to_cond_on) {
+    S <- x$S[i, ]
+    S.cols <- which(as.logical(S))
+    Sbar.cols <- which(as.logical(1 - S))
+
+    # Loop over each observation to explain:
+    for (loop in 1:nloops) {
+      this.optimsamp <- optimsamp
+      this.optimsamp$samp_test <- loop
+
+      these_train <- this.optimsamp$samp_train
+      these_test <- this.optimsamp$samp_test
+
+      # Hacky way to handle the situation when optimizing in the usual way. Needs to be improved!
+      these_train <- 1:nrow(x$x_train)
+      these_test <- sample(x = these_test, size = nrow(x$x_train), replace = T)
+
+      X_list <- list(as.matrix(subset(x$x_train, select = S.cols)[these_train, ]))
+      mcov_list <- list(stats::cov(X_list[[1]]))
+
+      Xtrain.Sbar <- subset(x$x_train, select = Sbar.cols)[these_train, ]
+      Xtest.S <- subset(x$x_test, select = S.cols)[these_test, ]
+      X.pred <- cbind(Xtrain.Sbar, Xtest.S)
+
+      # Ensure colnames are correct:
+      varname= colnames(x$x_train)[-which(colnames(x$x_train) %in% colnames(Xtrain.Sbar))]
+      colnames(X.pred) <-c(colnames(Xtrain.Sbar),varname)
+
+      X.nms <- colnames(x$x_train)
+      setcolorder(X.pred, X.nms)
+
+      pred <- predict_model(model, X.pred)
+      y_list <- list(pred)
+
+      ## Running the nonlinear optimization
+
+      nlm.obj <- suppressWarnings(stats::nlminb(
+        start = x$AIC_optim_startval,
+        objective = aicc_full_cpp,
+        X_list = X_list,
+        mcov_list = mcov_list,
+        S_scale_dist = T,
+        y_list = y_list,
+        negative = F,
+        lower = 0,
+        control = list(
+          eval.max = x$AIC_optim_max_eval
+        )
+      ))
+
+
+      h_optim_mat[i, loop] <- nlm.obj$par
+    }
+  }
+  return(h_optim_mat)
+}
 

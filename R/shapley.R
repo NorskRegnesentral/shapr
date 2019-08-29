@@ -45,7 +45,7 @@ weight_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights =
   return(W)
 }
 
-#' Computes kernel SHAP values for test data
+#' DELETE! Old function that computes kernel SHAP values for test data.
 #'
 #' @inheritParams global_arguments
 #' @param empirical_settings List. Specifying the settings when using the empirical method to
@@ -96,6 +96,7 @@ compute_kshap <- function(model,
 
   if ("empirical" %in% names(cond_approach_list)) {
     these_empirical <- cond_approach_list$empirical
+
     exclude_emp <- (these_empirical %in% c(1, nrow(l$S)))
 
     these_empirical <- these_empirical[!exclude_emp]
