@@ -13,7 +13,6 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
   DT <- as.data.table(W_kernel)
   DT[, ID := .I]
   DT <- data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
-
   ## Remove training data with small weight
   setkey(DT, comb, w)
   DT[, w := w / sum(w), comb]
@@ -52,31 +51,29 @@ prepare_data.empirical <- function(x){
 
   # Setup
   n_col <- nrow(x$x_test)
-  h_optim_mat <- matrix(NA, ncol = n_col, nrow = nrow(x$S))
+  no_empirical <- nrow(x$S) # Omit conditioning on 1 or all variables
+
+  h_optim_mat <- matrix(NA, ncol = n_col, nrow =no_empirical)
   h_optim_DT <- as.data.table(h_optim_mat)
   data.table::setnames(h_optim_DT, paste0("Testobs_", seq(nrow(x$x_test))))
   h_optim_DT[, varcomb := .I]
   kernel_metric <- ifelse(x$type == "independence", x$type, "gaussian")
 
   if (kernel_metric == "independence") {
-    # 1. Check that this method works and give the same results as previous steps
     x$w_threshold <- 1
-
+    paste0("w_threshold force set to 1 for kernel_metric = 'independence'")
   } else if (kernel_metric == "gaussian") {
-
 
     if (x$type == "fixed_sigma") {
 
-      # 2. Check that this method works and give the same results as previous steps
       h_optim_mat[, ] <- x$fixed_sigma_vec
 
     } else {
+      if (x$type == "AICc_each_k") {
 
-      if (empirical_settings$type == "AICc_each_k") {
+        h_optim_mat<-compute_AICc_each_k(x,h_optim_mat)
 
-        # 3. Add functionality to Find h_optim_mat for this option
-
-      } else if (empirical_settings$type == "AICc_full") {
+      } else if (x$type == "AICc_full") {
 
         # 4. Add functionality to Find h_optim_mat for this option
 
@@ -87,12 +84,12 @@ prepare_data.empirical <- function(x){
   } else {
     stop("Some error message")
   }
-
   dt_l <- list()
   for (i in seq(n_col)) {
 
     D <- x$D[, i, ]
     h_optim_vec <- h_optim_mat[, i]
+    h_optim_vec[is.na(h_optim_vec)] <- 1
 
     if (kernel_metric == "independence") {
 
@@ -103,11 +100,18 @@ prepare_data.empirical <- function(x){
 
     val <- t(t(-0.5 * D) / h_optim_vec^2)
     W_kernel <- exp(val)
+    S=x$S
+
+    # UNSURE HERE! Tries to remove the columns of W_kernel with only NA, corresponding to conditioning on on all or no variables.
+    # if(x$type=='AICc_each_k'){
+    #   W_kernel <- W_kernel[,-c(1,ncol(W_kernel))]
+    #   S=x$S[-c(1,nrow(x$S)),]
+    # }
 
     ## Get imputed data
     dt_l[[i]] <- observation_impute(
       W_kernel = W_kernel,
-      S = x$S,
+      S = S,
       Xtrain = x$x,
       Xtest = x$x_test[i, , drop = FALSE],
       w_threshold = x$w_threshold,
@@ -119,7 +123,6 @@ prepare_data.empirical <- function(x){
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
-
   return(dt)
 }
 
@@ -150,7 +153,7 @@ prepare_data.gaussian <- function(x){
   return(dt)
 }
 
-#' @export
+
 prepare_data.copula <- function(x, x_test){
 
   n_xtest <- nrow(x$x_test)
@@ -179,3 +182,95 @@ prepare_data.copula <- function(x, x_test){
 
   return(dt)
 }
+
+
+#' @export
+compute_AICc_each_k <- function(x,h_optim_mat){
+  optimsamp <- sample_combinations(
+    ntrain = nrow(x$x_train),
+    ntest = nrow(x$x_test),
+    nsamples = x$AICc_no_samp_per_optim,
+    joint_sampling = FALSE
+  )
+  x$AICc_no_samp_per_optim <- nrow(optimsamp)
+  nloops <- nrow(x$x_test) # No of observations in test data
+  # Optimization is done only once for all distributions which conditions on
+  # exactly k variables
+  # UNSURE HERE:
+  these_k <- unique(x$X$nfeatures[-c(1,nrow(x$S))])
+  #these_k <- unique(x$X$nfeatures)
+  for (i in these_k) {
+    these_cond <- x$X[nfeatures == i, ID]
+    cutters <- 1:x$AICc_no_samp_per_optim
+    no_cond <- length(these_cond)
+    cond_samp <- cut(
+      x = cutters,
+      breaks = stats::quantile(cutters, (0:no_cond) / no_cond),
+      include.lowest = TRUE,
+      labels = these_cond
+    )
+    cond_samp <- as.numeric(levels(cond_samp))[cond_samp]
+
+    # Loop over each observation to explain:
+    for (loop in 1:nloops) {
+      this.optimsamp <- optimsamp
+      this.optimsamp$samp_test <- loop
+
+      j <- 1
+      X_list <- X.pred.list <- mcov_list <- list()
+      for (this_cond in unique(cond_samp)) {
+        these_inds <- which(cond_samp == this_cond)
+        these_train <- this.optimsamp$samp_train[these_inds]
+        these_test <- this.optimsamp$samp_test[these_inds]
+
+        these_train <- 1:nrow(x$x_train)
+        these_test <- sample(x = these_test, size = nrow(x$x_train), replace = T)
+        current_cond_samp <- rep(unique(cond_samp), each = nrow(x$x_train))
+
+        S <- x$S[this_cond, ]
+        S.cols <- which(as.logical(S))
+        Sbar.cols <- which(as.logical(1 - S))
+
+        X_list[[j]] <- as.matrix(subset(x$x_train, select = S.cols)[these_train, ])
+        mcov_list[[j]] <- stats::cov(X_list[[j]])
+
+        Xtrain.Sbar <- subset(x$x_train, select = Sbar.cols)[these_train, ]
+        Xtest.S <- subset(x$x_test, select = S.cols)[these_test, ]
+        X.pred.list[[j]] <- cbind(Xtrain.Sbar, Xtest.S)
+
+        # Ensure colnames are correct:
+        varname= colnames(x$x_train)[-which(colnames(x$x_train) %in% colnames(Xtrain.Sbar))]
+        colnames(X.pred.list[[j]]) <-c(colnames(Xtrain.Sbar),varname)
+
+        j <- j + 1
+      }
+      # Combining the X's for doing prediction
+      X.pred <- rbindlist(X.pred.list, use.names = T)
+      X.nms <- colnames(x$x_train)
+      setcolorder(X.pred, X.nms)
+      # Doing prediction jointly (for speed), and then splitting them back into the y_list
+      pred <- predict_model(model, X.pred)
+      y_list <- split(pred, current_cond_samp)
+      names(y_list) <- NULL
+      ## Doing the numerical optimization -------
+      nlm.obj <- suppressWarnings(stats::nlminb(
+        start = x$AIC_optim_startval,
+        objective = aicc_full_cpp,
+        X_list = X_list,
+        mcov_list = mcov_list,
+        S_scale_dist = T,
+        y_list = y_list,
+        negative = F,
+        lower = 0,
+        control = list(
+          eval.max = x$AIC_optim_max_eval
+        )
+      ))
+      h_optim_mat[these_cond, loop] <- nlm.obj$par
+    }
+  }
+  return(h_optim_mat)
+}
+
+
+

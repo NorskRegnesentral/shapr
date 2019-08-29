@@ -7,7 +7,7 @@
 #' @param ... Soething
 #'
 #' @export
-explain <- function(x, explainer, approach, prediction_zero, n_samples, ...) {
+explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   if(! approach %in% c('empirical','gaussian','copula','combined')){
       str_error <- paste(
@@ -24,10 +24,11 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples, ...) {
 
 #' @rdname explain
 #' @export
-explain.empirical <- function(x, explainer, approach, prediction_zero, index_features, n_samples = 1e3,
+explain.empirical <- function(x, explainer, approach, prediction_zero, index_features,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
                               AIC_optim_startval = 0.1, w_threshold = 0.95) {
+
   # Add arguments to explainer object
   explainer$x_test <- x
   explainer$approach <- approach
@@ -37,15 +38,13 @@ explain.empirical <- function(x, explainer, approach, prediction_zero, index_fea
   explainer$AIC_optim_max_eval <- AIC_optim_max_eval
   explainer$AIC_optim_startval <- AIC_optim_startval
   explainer$w_threshold <- w_threshold
-  explainer$n_samples <- n_samples
-
+  explainer$n_samples <- AICc_no_samp_per_optim
   # Get distance matrix ----------------
   explainer$D <- distance_matrix(
     explainer$x_train,
     x,
     explainer$X$features
   )
-
   # Generate data
   dt <- prepare_data(explainer)
 

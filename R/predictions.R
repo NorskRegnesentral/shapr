@@ -117,7 +117,6 @@ predictions <- function(model,
   ## Get mean probability
   DTres <- DTp[, .(k = sum((p_hat * w) / sum(w))), wcomb]
   setkey(DTres, wcomb)
-
   return(DTres)
 }
 
@@ -131,9 +130,12 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
   data.table::setkeyv(dt_res, c("id", "wcomb"))
-
   # Get mean probability - TODO: move this into a function (perhaps Rcpp)
   kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
+  # REMOVE?
+  if(length(dt_res[id == 1, k])<ncol(explainer$W)){
+    explainer$W=explainer$W[,-c(1,ncol(explainer$W))]
+  }
   for (j in 1:ncol(kshap)) {
 
     kshap[, j] <- explainer$W %*% dt_res[id == j, k]

@@ -110,7 +110,7 @@ compute_kshap <- function(model,
     }
 
     # Reducing and re-ordering the D-array
-    l$D <- l$D[, , match(these_empirical, l$D_for_these_varcomb),drop=FALSE]
+    l$D <- l$D[, , match(these_empirical, l$D_for_these_varcomb)]
     # Note that the D-array corresponds to exactly the covariate combinations specified in
     # these_empirical
 
@@ -153,7 +153,6 @@ compute_kshap <- function(model,
 
           for (i in these_k) {
             these_cond <- l$X[ID %in% these_empirical][nfeatures == i, ID]
-
             cutters <- 1:empirical_settings$AICc_no_samp_per_optim
             no_cond <- length(these_cond)
 
@@ -229,7 +228,6 @@ compute_kshap <- function(model,
             }
           }
         }
-
         if (empirical_settings$type == "AICc_full") {
           for (i in these_empirical) {
             S <- l$S[i, ]
@@ -285,14 +283,12 @@ compute_kshap <- function(model,
         }
       }
     }
-
     h_optim_DT <- data.table(varcomb = these_empirical, h_optim_mat)
     colnames(h_optim_DT)[-1] <- paste0("Testobs_", 1:nrow(l$Xtest))
   } else {
     h_optim_mat <- NULL
     h_optim_DT <- NULL
   }
-
   if (is.null(mu)) {
     # Using the mean of the training data in the Gaussian approach if not provided directly
     mu <- colMeans(l$Xtrain)
@@ -323,7 +319,6 @@ compute_kshap <- function(model,
   if (any(eigen(Sigma_Gauss_trans)$values <= 1e-06)) {
     Sigma_Gauss_trans <- as.matrix(Matrix::nearPD(Sigma_Gauss_trans)$mat)
   }
-
   for (i in l$Xtest[, .I]) {
     # This may be parallelized when the prediction function is not parallelized.
     if (verbose > 0) {
@@ -377,8 +372,6 @@ compute_kshap <- function(model,
   # }
   #
   # kshap <- process_predictions(ll, n_test, W)
-
-
   Kshap <- matrix(0, nrow = nrow(l$Xtest), ncol = nrow(l$W))
   for (i in l$Xtest[, .I]) {
     Kshap[i, ] <- l$W %*% DT[id == i, k]
@@ -491,4 +484,79 @@ distance_matrix <- function(x_train, x_test = NULL, list_features) {
   }
 
   return(D)
+}
+
+
+#' Get Shapley weights for test data. DELETE
+#'
+#' @inheritParams global_arguments
+#' @param compute_distances_for_no_var  If equal to \code{NULL} no distances are computed
+#'
+#' @return Matrix
+#'
+#' @export
+#'
+#' @author Nikolai Sellereite
+prepare_kshap <- function(Xtrain,
+                          Xtest,
+                          exact = TRUE,
+                          noSamp = NULL,
+                          shapley_weight_inf_replacement = 10^6,
+                          compute_distances_for_no_var = 0:ncol(Xtrain)) {
+
+  ## Convert data to data.table format --------------
+  if (!is.data.table(Xtrain)) {
+    Xtrain <- as.data.table(Xtrain)
+  }
+  if (!is.data.table(Xtest)) {
+    Xtest <- as.data.table(Xtest)
+  }
+
+  ## Get all combinations ----------------
+  X <- feature_combinations(
+    m = ncol(Xtrain),
+    exact = exact,
+    noSamp = noSamp,
+    shapley_weight_inf_replacement = shapley_weight_inf_replacement,
+    reduce_dim = TRUE
+  )
+
+  ## Get weighted matrix ----------------
+  W <- weight_matrix(X, use_shapley_weights_in_W = ifelse(exact, T, F), normalize_W_weights = T)
+
+  mcov <- stats::cov(Xtrain)
+  # Note that we could move distance_metric if-test here and replace by diag(m) if "Euclidean"
+  # once you see everything works fine
+
+  if (!is.null(compute_distances_for_no_var[1])) {
+    # Only compute the distances if the empirical approach is used
+    D <- mahalanobis_distance_cpp(
+      featureList = X[nfeatures %in% compute_distances_for_no_var, features],
+      Xtrain_mat = as.matrix(Xtrain),
+      Xtest_mat = as.matrix(Xtest),
+      mcov = mcov,
+      S_scale_dist = T
+    )
+    # Note that this is D_S(,)^2 in the paper
+
+    ## Normalize the distance rows to ensure numerical stability in later operations
+    colmin <- apply(X = D, MARGIN = c(2, 3), FUN = min)
+    for (i in 1:dim(D)[3]) {
+      D[, , i] <- t(t(D[, , i]) - colmin[, i])
+    }
+  } else {
+    D <- NULL
+  }
+
+
+  ## Get feature matrix ---------
+  S <- feature_matrix_cpp(
+    features = X[["features"]],
+    nfeatures = ncol(Xtrain)
+  )
+
+  return(list(
+    D = D, S = S, W = W, X = X, Xtrain = Xtrain, Xtest = Xtest,
+    D_for_these_varcomb = X[nfeatures %in% compute_distances_for_no_var, which = TRUE]
+  ))
 }
