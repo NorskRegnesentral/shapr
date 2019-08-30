@@ -26,7 +26,6 @@ Imports:
     stats,
     data.table,
     Rcpp (>= 0.12.15),
-    mgcv,
     cluster,
     maptree,
     corrplot,
@@ -37,6 +36,7 @@ Imports:
 Suggests: 
     ranger,
     xgboost,
+    mgcv,
     testthat, 
     lintr,
     covr,
