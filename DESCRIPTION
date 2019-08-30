@@ -33,6 +33,7 @@ Imports:
 Suggests: 
     ranger,
     xgboost,
+    mgcv,
     testthat, 
     lintr,
     covr,
