@@ -12,6 +12,16 @@
 #' @author Anders Løland
 cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
 
+  if (!requireNamespace("pcaPP", quietly = TRUE)) {
+    stop("pcaPP is not installed. Please run install.packages('pcaPP')")
+  }
+  if (!requireNamespace("corrplot", quietly = TRUE)) {
+    stop("corrplot is not installed. Please run install.packages('corrplot')")
+  }
+  if (!requireNamespace("maptree", quietly = TRUE)) {
+    stop("maptree is not installed. Please run install.packages('maptree')")
+  }
+
   ## Kendall's tau
   if (is.null(cor_mat)) {
     cor_mat <- pcaPP::cor.fk(x_mat)

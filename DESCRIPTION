@@ -26,19 +26,19 @@ Imports:
     stats,
     data.table,
     Rcpp (>= 0.12.15),
-    cluster,
-    maptree,
-    corrplot,
-    pcaPP,
     condMVNorm,
     mvnfast,
     Matrix
 Suggests: 
     ranger,
     xgboost,
+    mgcv,
     testthat, 
     lintr,
     covr,
+    maptree,
+    corrplot,
+    pcaPP,
     ggplot2
 LinkingTo: 
     RcppArmadillo,
