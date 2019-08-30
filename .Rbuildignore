@@ -6,3 +6,4 @@
 ^\.lintr$
 ^\.covrignore$
 ^LICENSE\.md$
+inst/compare_lundberg\.xgb\.obj
