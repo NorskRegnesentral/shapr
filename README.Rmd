@@ -130,7 +130,7 @@ explanation <- compute_kshap(
 explanation$Kshap
 
 # Finally we plot the resulting explanations
-plot_kshap(explanation, l)
+plot_kshap(explanation, x_test)
 ```
 
 ## References
