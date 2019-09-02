@@ -2,7 +2,8 @@
 % Please edit documentation in R/shapley.R
 \name{compute_kshap}
 \alias{compute_kshap}
-\title{DELETE! Old function that computes kernel SHAP values for test data.}
+\title{Not in use any more. Old function that computes kernel SHAP values for test data.
+Still useful for verfifying results of new methods.}
 \usage{
 compute_kshap(model, l, noSamp_MC = 1000, verbose = FALSE,
   cond_approach = "empirical", empirical_settings = list(type =
@@ -44,7 +45,8 @@ List with kernel SHAP values (\code{Kshap}) and other object used to perform
 the computation (helpful for debugging etc.)
 }
 \description{
-DELETE! Old function that computes kernel SHAP values for test data.
+Not in use any more. Old function that computes kernel SHAP values for test data.
+Still useful for verfifying results of new methods.
 }
 \details{
 If \code{cond_approach} is a list, the elements in the list refers to the rows in

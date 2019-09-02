@@ -91,21 +91,25 @@ predict_model.mgcv <- function(x, newdata) {
   predict(x, newdata)
 }
 
+#' TODO: Add title & description
 #' @export
 model_type <- function(x) {
   UseMethod("model_type")
 }
 
+#' @rdname model_type
 #' @export
 model_type.default <- function(x) {
   stop("The model you passed to shapr is currently not supported.")
 }
 
+#' @rdname model_type
 #' @export
 model_type.lm <- function(x) {
   "regression"
 }
 
+#' @rdname model_type
 #' @export
 model_type.glm <- function(x) {
   ifelse(
@@ -115,6 +119,7 @@ model_type.glm <- function(x) {
   )
 }
 
+#' @rdname model_type
 #' @export
 model_type.ranger <- function(x) {
   ifelse(
@@ -124,6 +129,7 @@ model_type.ranger <- function(x) {
   )
 }
 
+#' @rdname model_type
 #' @export
 model_type.mgcv <- function(x) {
   "regression"

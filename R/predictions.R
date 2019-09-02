@@ -1,7 +1,5 @@
-
 #' @export
 prediction <- function(dt, prediction_zero, explainer) {
-
   cnms <- colnames(explainer$x_test)
   data.table::setkeyv(dt, c("id", "wcomb"))
   dt[, p_hat := predict_model(x = explainer$model, newdata = .SD), .SDcols = cnms]
@@ -10,8 +8,8 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
   data.table::setkeyv(dt_res, c("id", "wcomb"))
 
-  if(length(dt_res[id == 1, k])<ncol(explainer$W)){
-    explainer$W=explainer$W[,-c(1,ncol(explainer$W))]
+  if (length(dt_res[id == 1, k]) < ncol(explainer$W)) {
+    explainer$W <- explainer$W[, -c(1, ncol(explainer$W))]
   }
   kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
   for (j in 1:ncol(kshap)) {
@@ -109,8 +107,8 @@ predictions <- function(model,
     # Handle the computation of all training-test weights for ALL combinations here, before looping
     if (kernel_metric == "independence") {
       # Just random noise to "fake" a distance between observations
-      D <- D[sample.int(n=nrow(D)),] # Randomly reordering the distance
-      h_optim_vec <- mean(D)*1000 # Setting a very large bandwidth to give all used observation identical weight
+      D <- D[sample.int(n = nrow(D)), ] # Randomly reordering the distance
+      h_optim_vec <- mean(D) * 1000 # Setting a very large bandwidth to give all used observation identical weight
     }
     # Common for both Gaussan and independence
     val <- t(t(-0.5 * D) / h_optim_vec^2)

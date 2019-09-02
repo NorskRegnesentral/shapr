@@ -2,20 +2,22 @@
 % Please edit documentation in R/shapley.R
 \name{shapr}
 \alias{shapr}
-\title{Get Shapley weights for test data}
+\title{Get Shapley weights.}
 \usage{
 shapr(x, model, n_combinations = NULL)
 }
 \arguments{
+\item{x}{\code{ntrain x p} Matrix, data.frame or data.table with the features from the training data.}
+
 \item{model}{Model object. Fitted model that is used to produce the predictions}
 
-\item{compute_distances_for_no_var}{If equal to \code{NULL} no distances are computed}
+\item{n_combinations}{Integer. The number of feature combinations to sample. If ´\code{NULL}, the exact method is used and all combinations are considered.}
 }
 \value{
-Matrix
+A List.
 }
 \description{
-Get Shapley weights for test data
+Get Shapley weights.
 }
 \author{
 Nikolai Sellereite

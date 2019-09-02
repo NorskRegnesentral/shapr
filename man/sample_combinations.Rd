@@ -30,3 +30,4 @@ getting the same observation twice. Need to improve this help file.
 \author{
 Martin Jullum
 }
+\keyword{internal}

@@ -2,7 +2,8 @@
 % Please edit documentation in R/shapley.R
 \name{prepare_kshap}
 \alias{prepare_kshap}
-\title{Get Shapley weights for test data. DELETE}
+\title{This function is not useed any more. Only for verifying new functions.
+Get Shapley weights for test data.}
 \usage{
 prepare_kshap(Xtrain, Xtest, exact = TRUE, noSamp = NULL,
   shapley_weight_inf_replacement = 10^6,
@@ -26,10 +27,11 @@ conditional and unconditional expectations in kernel SHAPs weighted least square
 \item{compute_distances_for_no_var}{If equal to \code{NULL} no distances are computed}
 }
 \value{
-Matrix
+A list.
 }
 \description{
-Get Shapley weights for test data. DELETE
+This function is not useed any more. Only for verifying new functions.
+Get Shapley weights for test data.
 }
 \author{
 Nikolai Sellereite

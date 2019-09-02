@@ -2,7 +2,7 @@
 % Please edit documentation in R/predictions.R
 \name{predictions}
 \alias{predictions}
-\title{OLD FUNCTION. Not in use any more.}
+\title{OLD FUNCTION. Not in use any more, but useful for verifying the new functions.}
 \usage{
 predictions(model, D, h_optim_vec, kernel_metric, S, Xtrain, Xtest,
   w_threshold = 0.7, noSamp_MC = 1000, verbose = FALSE,

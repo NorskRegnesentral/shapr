@@ -8,7 +8,6 @@
 #'
 #' @author Nikolai Sellereite
 shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
-
   x <- (m - 1) / (N * s * (m - s))
   x[!is.finite(x)] <- weight_zero_m
   x
@@ -60,9 +59,8 @@ weight_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights =
 shapr <- function(x,
                   model,
                   n_combinations = NULL) {
-
-  if(is.null(dim(x))){
-    x=t(as.matrix(x))
+  if (is.null(dim(x))) {
+    x <- t(as.matrix(x))
   }
   # Setup
   explainer <- as.list(environment())
@@ -70,16 +68,16 @@ shapr <- function(x,
   explainer$n_features <- ncol(x)
   explainer$model_type <- model_type(model)
 
-  if(explainer$exact){
-    if(explainer$n_features>30){
+  if (explainer$exact) {
+    if (explainer$n_features > 30) {
       stop("Exact method is currently not supported for more than 30 features.")
     }
   }
-  if(is.null(x) | is.null(explainer$model_type)){
+  if (is.null(x) | is.null(explainer$model_type)) {
     stop("Invalid argument values")
   }
   # Test that the input is valid
-  if(! all(colnames(x) %in% model$feature_names)){
+  if (!all(colnames(x) %in% model$feature_names)) {
     stop("Features of X must match model")
   }
 
@@ -125,13 +123,12 @@ shapr <- function(x,
 
 #' @keywords internal
 distance_matrix <- function(x_train, x_test = NULL, list_features) {
-
   if (is.null(x_test)) return(NULL)
 
   # Get covariance matrix
   mcov <- stats::cov(x_train)
-  if(is.null(dim(x_test))){
-    x_test=t(as.matrix(x_test))
+  if (is.null(dim(x_test))) {
+    x_test <- t(as.matrix(x_test))
   }
   # Note that D equals D_S(,)^2 in the paper
   D <- mahalanobis_distance_cpp(
@@ -226,7 +223,7 @@ compute_kshap <- function(model,
 
     if (empirical_settings$type == "independence") {
       kernel_metric <- "independence"
-      empirical_settings$w_threshold = 1
+      empirical_settings$w_threshold <- 1
       paste0("empirical_settings$w_threshold force set to 1 for empirical_settings$type = 'independence'")
     } else {
       kernel_metric <- "Gaussian"
@@ -422,8 +419,8 @@ compute_kshap <- function(model,
     FUN = gaussian_transform_separate,
     n_y = nrow(l$Xtest)
   )
-  if(is.null(dim(Xtest_Gauss_trans))){
-    Xtest_Gauss_trans=t(as.matrix(Xtest_Gauss_trans))
+  if (is.null(dim(Xtest_Gauss_trans))) {
+    Xtest_Gauss_trans <- t(as.matrix(Xtest_Gauss_trans))
   }
   mu_Gauss_trans <- rep(0, ncol(l$Xtrain))
   Sigma_Gauss_trans <- stats::cov(Xtrain_Gauss_trans)

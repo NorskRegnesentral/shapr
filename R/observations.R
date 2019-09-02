@@ -13,6 +13,7 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
   DT <- as.data.table(W_kernel)
   DT[, ID := .I]
   DT <- data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
+
   ## Remove training data with small weight
   setkey(DT, comb, w)
   DT[, w := w / sum(w), comb]
@@ -40,20 +41,22 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
   return(DTp)
 }
 
+#' Generate data used for predictions
 #' @export
-prepare_data <- function(x, ...){
+prepare_data <- function(x, ...) {
   class(x) <- x$approach
   UseMethod("prepare_data", x)
 }
 
+#' @rdname prepare_data
 #' @export
-prepare_data.empirical <- function(x){
+prepare_data.empirical <- function(x) {
 
   # Setup
   n_col <- nrow(x$x_test)
   no_empirical <- nrow(x$S)
 
-  h_optim_mat <- matrix(NA, ncol = n_col, nrow =no_empirical)
+  h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
   h_optim_DT <- as.data.table(h_optim_mat)
   data.table::setnames(h_optim_DT, paste0("Testobs_", seq(nrow(x$x_test))))
   h_optim_DT[, varcomb := .I]
@@ -63,20 +66,13 @@ prepare_data.empirical <- function(x){
     x$w_threshold <- 1
     paste0("w_threshold force set to 1 for kernel_metric = 'independence'")
   } else if (kernel_metric == "gaussian") {
-
     if (x$type == "fixed_sigma") {
-
       h_optim_mat[, ] <- x$fixed_sigma_vec
-
     } else {
       if (x$type == "AICc_each_k") {
-
-        h_optim_mat<-compute_AICc_each_k(x,h_optim_mat)
-
+        h_optim_mat <- compute_AICc_each_k(x, h_optim_mat)
       } else if (x$type == "AICc_full") {
-
-        h_optim_mat<-compute_AICc_full(x,h_optim_mat)
-
+        h_optim_mat <- compute_AICc_full(x, h_optim_mat)
       } else {
         stop("type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
       }
@@ -84,21 +80,18 @@ prepare_data.empirical <- function(x){
   }
   dt_l <- list()
   for (i in seq(n_col)) {
-
     D <- x$D[, i, ]
     h_optim_vec <- h_optim_mat[, i]
     h_optim_vec[is.na(h_optim_vec)] <- 1
 
     if (kernel_metric == "independence") {
-
-      D <- D[sample(nrow(D)),]
-      h_optim_vec <- mean(D)*1000
-
+      D <- D[sample(nrow(D)), ]
+      h_optim_vec <- mean(D) * 1000
     }
 
     val <- t(t(-0.5 * D) / h_optim_vec^2)
     W_kernel <- exp(val)
-    S=x$S
+    S <- x$S
 
     ## Get imputed data
     dt_l[[i]] <- observation_impute(
@@ -110,7 +103,6 @@ prepare_data.empirical <- function(x){
       noSamp_MC = x$n_samples
     )
     dt_l[[i]][, id := i]
-
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
@@ -118,9 +110,9 @@ prepare_data.empirical <- function(x){
   return(dt)
 }
 
+#' @rdname prepare_data
 #' @export
-prepare_data.gaussian <- function(x){
-
+prepare_data.gaussian <- function(x) {
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   for (i in seq(n_xtest)) {
@@ -131,7 +123,7 @@ prepare_data.gaussian <- function(x){
       mu = x$mu,
       Sigma = x$cov_mat,
       p = ncol(x$x_test),
-      Xtest = x$x_test[i,, drop = FALSE],
+      Xtest = x$x_test[i, , drop = FALSE],
       ensure_condcov_symmetry = F
     )
 
@@ -144,14 +136,13 @@ prepare_data.gaussian <- function(x){
   return(dt)
 }
 
-
-prepare_data.copula <- function(x, x_test){
-
+#' @rdname prepare_data
+#' @export
+prepare_data.copula <- function(x, x_test) {
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
 
   for (i in seq(n_xtest)) {
-
     l <- lapply(
       X = x$X$features,
       FUN = sample_copula,
@@ -159,9 +150,9 @@ prepare_data.copula <- function(x, x_test){
       mu = x$mu,
       Sigma = x$cov_mat,
       p = x$n_features,
-      Xtest = x$x_test[i,, drop = FALSE],
+      Xtest = x$x_test[i, , drop = FALSE],
       Xtrain = as.matrix(x$x_train),
-      Xtest_Gauss_trans = x_test[i,,drop=FALSE]
+      Xtest_Gauss_trans = x_test[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
@@ -175,7 +166,7 @@ prepare_data.copula <- function(x, x_test){
 
 
 #' @export
-compute_AICc_each_k <- function(x,h_optim_mat){
+compute_AICc_each_k <- function(x, h_optim_mat) {
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
     ntest = nrow(x$x_test),
@@ -187,7 +178,8 @@ compute_AICc_each_k <- function(x,h_optim_mat){
 
   # Optimization is done only once for all distributions which conditions on
   # exactly k variables
-  these_k <- unique(x$X$nfeatures[-c(1,nrow(x$S))])
+  these_k <- unique(x$X$nfeatures[-c(1, nrow(x$S))])
+
   for (i in these_k) {
     these_cond <- x$X[nfeatures == i, ID]
     cutters <- 1:x$AICc_no_samp_per_optim
@@ -228,8 +220,8 @@ compute_AICc_each_k <- function(x,h_optim_mat){
         X.pred.list[[j]] <- cbind(Xtrain.Sbar, Xtest.S)
 
         # Ensure colnames are correct:
-        varname= colnames(x$x_train)[-which(colnames(x$x_train) %in% colnames(Xtrain.Sbar))]
-        colnames(X.pred.list[[j]]) <-c(colnames(Xtrain.Sbar),varname)
+        varname <- colnames(x$x_train)[-which(colnames(x$x_train) %in% colnames(Xtrain.Sbar))]
+        colnames(X.pred.list[[j]]) <- c(colnames(Xtrain.Sbar), varname)
 
         j <- j + 1
       }
@@ -263,11 +255,12 @@ compute_AICc_each_k <- function(x,h_optim_mat){
 
 
 #' @export
-compute_AICc_full <- function(x,h_optim_mat){
-  ntest = nrow(x$x_test)
-  if(is.null(dim(x$x_test))){
-    nloops=1
-    ntest=1}
+compute_AICc_full <- function(x, h_optim_mat) {
+  ntest <- nrow(x$x_test)
+  if (is.null(dim(x$x_test))) {
+    nloops <- 1
+    ntest <- 1
+  }
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
     ntest = ntest,
@@ -277,9 +270,9 @@ compute_AICc_full <- function(x,h_optim_mat){
   x$AICc_no_samp_per_optim <- nrow(optimsamp)
   nloops <- nrow(x$x_test) # No of observations in test data
 
-  ind_of_vars_to_cond_on = 2:(nrow(x$S)-1)
+  ind_of_vars_to_cond_on <- 2:(nrow(x$S) - 1)
   for (i in ind_of_vars_to_cond_on) {
-    S <- x$S[i,]
+    S <- x$S[i, ]
     S.cols <- which(as.logical(S))
     Sbar.cols <- which(as.logical(1 - S))
 
@@ -302,8 +295,8 @@ compute_AICc_full <- function(x,h_optim_mat){
       X.pred <- cbind(Xtrain.Sbar, Xtest.S)
 
       # Ensure colnames are correct:
-      varname= colnames(x$x_train)[-which(colnames(x$x_train) %in% colnames(Xtrain.Sbar))]
-      colnames(X.pred) <-c(colnames(Xtrain.Sbar),varname)
+      varname <- colnames(x$x_train)[-which(colnames(x$x_train) %in% colnames(Xtrain.Sbar))]
+      colnames(X.pred) <- c(colnames(Xtrain.Sbar), varname)
 
       X.nms <- colnames(x$x_train)
       setcolorder(X.pred, X.nms)
@@ -332,4 +325,3 @@ compute_AICc_full <- function(x,h_optim_mat){
   }
   return(h_optim_mat)
 }
-

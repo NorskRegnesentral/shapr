@@ -34,3 +34,4 @@ Sample conditional Gaussian variables
 \author{
 Martin Jullum
 }
+\keyword{internal}

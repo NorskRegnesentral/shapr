@@ -7,7 +7,6 @@
 #' @param type The quantile type used when back-transforming. 7 (default) is the default in \code{stats::quantile()}.
 #'
 #' @return Vector of transformed new data
-#' @export
 #'
 #' @author Martin Jullum
 inv_gaussian_transform <- function(zx, n_z, type = 7) {
@@ -28,7 +27,6 @@ inv_gaussian_transform <- function(zx, n_z, type = 7) {
 #' @param n_y How many elements of \code{yx} that belongs to the y-part (Gaussian data)
 #'
 #' @return Vector of back-transformed Gaussian data
-#' @export
 #'
 #' @author Martin Jullum
 gaussian_transform_separate <- function(yx, n_y) {
@@ -47,7 +45,6 @@ gaussian_transform_separate <- function(yx, n_y) {
 #' @param x Vector of data to transform
 #'
 #' @return Vector of transformed data
-#' @export
 #'
 #' @author Martin Jullum
 gaussian_transform <- function(x) {

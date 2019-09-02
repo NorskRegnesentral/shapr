@@ -5,13 +5,11 @@
 #' @param Xtest_Gauss_trans Vector with the Gaussian transformed features of the observation whose predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
 #' @param Xtest Matrix, data.frame or data.table with the features of the observation whose predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
 #'
-#'
-#'
 #' @inheritParams global_arguments
 #'
-#' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
+#' @keywords internal
 #'
-#' @export
+#' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
 #'
 #' @author Martin Jullum
 sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans, Xtrain, Xtest) {
@@ -56,12 +54,11 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
 #' @param ensure_condcov_symmetry Logical. If \code{true}, \code{symmpart} is used on the conditional covariance matrix to ensure symmetry.
 #' @param Xtest Matrix, data.frame or data.table with the features of the observation whose predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
 #'
-#'
 #' @inheritParams global_arguments
 #'
-#' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
+#' @keywords internal
 #'
-#' @export
+#' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
 #'
 #' @author Martin Jullum
 sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_condcov_symmetry = F) {
@@ -110,10 +107,9 @@ sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_co
 #' if \code{nsamples > ntrain}. Note that this solution is not optimal. Be careful if you're
 #' doing optimization over every test observation when \code{nsamples > ntrain}.
 #'
+#' @keywords internal
 #'
 #' @return Data.frame. Contains \code{nsamples} rows of re-sampled train and test observations.
-#'
-#' @export
 #'
 #' @author Martin Jullum
 sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) {

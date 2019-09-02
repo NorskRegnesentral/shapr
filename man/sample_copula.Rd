@@ -36,3 +36,4 @@ Sample conditional variables using the Gaussian copula approach
 \author{
 Martin Jullum
 }
+\keyword{internal}
