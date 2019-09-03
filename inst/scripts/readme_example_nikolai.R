@@ -39,6 +39,7 @@ explanation.orig <- compute_kshap(
                             AIC_optim_max_eval = 20, AIC_optim_startval = 0.1, w_threshold = 0.95)
 )
 explanation.orig$Kshap
+all(abs(explanation - explanation.orig$Kshap) < 1e-2)
 
 # ---------------------------------------------------------------------------------------------------------
 # Ex 2: Explain predictions (empirical, AICc full)
@@ -55,7 +56,7 @@ explanation.orig <- compute_kshap(
                             AIC_optim_max_eval = 20, AIC_optim_startval = 0.1, w_threshold = 0.95)
 )
 explanation.orig$Kshap
-
+all(abs(explanation - explanation.orig$Kshap) < 1e-2)
 
 # ---------------------------------------------------------------------------------------------------------
 # Ex 3: Explain predictions (empirical, independence):
@@ -71,6 +72,7 @@ explanation.orig <- compute_kshap(
                               "independence", fixed_sigma_vec = 0.1, w_threshold = 0.95)
 )
 explanation.orig$Kshap
+all(abs(explanation - explanation.orig$Kshap) < 1e-2)
 
 # ---------------------------------------------------------------------------------------------------------
 # Ex 4: Explain predictions (empirical, fixed sigma)
@@ -86,11 +88,11 @@ explanation.orig <- compute_kshap(
                               "fixed_sigma", fixed_sigma_vec = 0.1, w_threshold = 0.95)
 )
 explanation.orig$Kshap
-
+all(abs(explanation - explanation.orig$Kshap) < 1e-2)
 
 # ---------------------------------------------------------------------------------------------------------
 # Ex 5: Explain predictions (gaussian)
-explanation <- explain(x_test, explainer, approach = "gaussian", prediction_zero = mean(y_train),n_samples=1e5)
+explanation <- explain(x_test, explainer, approach = "gaussian", prediction_zero = mean(y_train))
 explanation
 
 
@@ -99,8 +101,9 @@ explanation.orig <- compute_kshap(
   model = model,
   l = explainer.orig,
   pred_zero = mean(y_train),
-  cond_approach ="Gaussian",noSamp_MC = 1e5)
+  cond_approach ="Gaussian")
 explanation.orig$Kshap
+all(abs(explanation - explanation.orig$Kshap) < 1e-2)
 
 # Note: since all Gaussian data is sampled at once for the original function while it is sampled seperately for each test obs. in the new function,
 # we may compare the results by setting a seed, and comparing one observation at a time. Otherwise only the Shapley values of the first observation
@@ -125,7 +128,7 @@ explanation.orig$Kshap
 
 # ---------------------------------------------------------------------------------------------------------
 # Ex 6: Explain predictions (copula)
-explanation <- explain(x_test, explainer, approach = "copula", prediction_zero = mean(y_train),n_samples=1e5)
+explanation <- explain(x_test, explainer, approach = "copula", prediction_zero = mean(y_train))
 explanation
 
 explainer.orig <- prepare_kshap(x_train, x_test)
@@ -133,8 +136,9 @@ explanation.orig <- compute_kshap(
   model = model,
   l = explainer.orig,
   pred_zero = mean(y_train),
-  cond_approach = "copula",noSamp_MC = 1e5)
+  cond_approach = "copula")
 explanation.orig$Kshap
+all(abs(explanation - explanation.orig$Kshap) < 1e-3)
 
 # As above, we compare one observation at a time using a seed.
 # Ex: obs 1

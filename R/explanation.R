@@ -61,7 +61,7 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples, ...) {
 explain.empirical <- function(x, explainer, approach, prediction_zero, index_features,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-                              AIC_optim_startval = 0.1, w_threshold = 0.95) {
+                              AIC_optim_startval = 0.1, w_threshold = 0.95, seed = 1) {
   if (is.null(dim(x))) {
     x <- t(as.matrix(x))
   }
@@ -75,6 +75,8 @@ explain.empirical <- function(x, explainer, approach, prediction_zero, index_fea
   explainer$AIC_optim_startval <- AIC_optim_startval
   explainer$w_threshold <- w_threshold
   explainer$n_samples <- AICc_no_samp_per_optim
+  explainer$seed <- seed
+
   # Get distance matrix ----------------
   explainer$D <- distance_matrix(
     explainer$x_train,
@@ -92,7 +94,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero, index_fea
 
 #' @rdname explain
 #' @export
-explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, n_samples = 1e3) {
+explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, n_samples = 1e3, seed = 1) {
   if (is.null(dim(x))) {
     x <- t(as.matrix(x))
   }
@@ -100,6 +102,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
   explainer$n_samples <- n_samples
   explainer$x_test <- x
   explainer$approach <- approach
+  explainer$seed <- seed
 
   # If mu is not provided directly, use mean of training data
   if (is.null(mu)) {
@@ -131,7 +134,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
 #' @rdname explain
 #' @export
-explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3) {
+explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, seed = 1) {
   if (is.null(dim(x))) {
     x <- t(as.matrix(x))
   }
@@ -139,6 +142,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
   explainer$n_samples <- n_samples
   explainer$x_test <- x
   explainer$approach <- approach
+  explainer$seed <- seed
 
   # Prepare transformed data
   x_train <- apply(

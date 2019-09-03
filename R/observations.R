@@ -115,6 +115,7 @@ prepare_data.empirical <- function(x) {
 prepare_data.gaussian <- function(x) {
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
+  if (!is.null(x$seed)) set.seed(x$seed)
   for (i in seq(n_xtest)) {
     l <- lapply(
       X = x$X$features,
@@ -141,7 +142,7 @@ prepare_data.gaussian <- function(x) {
 prepare_data.copula <- function(x, x_test) {
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
-
+  if (!is.null(x$seed)) set.seed(x$seed)
   for (i in seq(n_xtest)) {
     l <- lapply(
       X = x$X$features,

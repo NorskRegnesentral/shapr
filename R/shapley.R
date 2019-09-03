@@ -428,6 +428,7 @@ compute_kshap <- function(model,
   if (any(eigen(Sigma_Gauss_trans)$values <= 1e-06)) {
     Sigma_Gauss_trans <- as.matrix(Matrix::nearPD(Sigma_Gauss_trans)$mat)
   }
+  set.seed(1)
   for (i in l$Xtest[, .I]) {
     # This may be parallelized when the prediction function is not parallelized.
     if (verbose > 0) {
