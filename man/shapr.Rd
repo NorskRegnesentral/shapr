@@ -14,10 +14,13 @@ shapr(x, model, n_combinations = NULL)
 \item{n_combinations}{Integer. The number of feature combinations to sample. If ´\code{NULL}, the exact method is used and all combinations are considered.}
 }
 \value{
-A List.
+List
 }
 \description{
 Get Shapley weights.
+}
+\examples{
+TODO: Add simple example
 }
 \author{
 Nikolai Sellereite

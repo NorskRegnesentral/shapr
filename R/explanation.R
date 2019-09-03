@@ -5,7 +5,7 @@
 #' @param x x \code{ntest x p} Matrix, data.frame or data.table with the features, whose
 #' predictions ought to be explained (test data).
 #'
-#' @param An \code{explainer} object to use for exaplaining the observations.
+#' @param explainer An \code{explainer} object to use for exaplaining the observations.
 #' See \code{\link{shapr}}.
 #'
 #' @param approach String or list. If a String, the approach to use when computing the Shapley
@@ -15,25 +15,19 @@
 #' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
 #' the response.
 #'
-#' @param type String or list. Only applicable when \code{approach='empirical'}. If a string, the type of empirical approach to use,
-#'  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a list, the elements in the list refers to the rows in \code{x}
-#'  that ought to be included in each of the empirical approaches.
-#' @param fixed.sigma.vec Vector or numeric. Only applicable when \code{approach='empirical'} and \code{type='fixed_sigma'}.
-#' The bandwidth to use. Default value \code{0.1}
-#' @param AICc_no_samp_per_optim Positive integer. Only applicable when \code{approach='empirical'} and \code{type='AICc_each_k'} or
-#' \code{type='AICc_full'}. Number of samples to consider in AICc optimization. Default value \code{1000}.
-#' @param AIC_optim_max_eval Positive integer. Only applicable when \code{approach='empirical'} and \code{type='AICc_each_k'} or
-#' \code{type='AICc_full'}. Numeric. Maximum value when optimizing the AICc. Default value \code{20}.
-#' @param AIC_optim_startval Numeric. Only applicable when \code{approach='empirical'} and \code{type='AICc_each_k'} or
-#' \code{type='AICc_full'}. Starting value when optimizing the AICc. Default value \code{0.1}.
-#' @param w_threshold Default value \code{0.95}.
 #' @param mu Numeric vector. (Optional) Containing the mean of the data generating distribution.
-#' \code{NULL} means it is estimated from the data if needed (in the Gaussian approach).
-#' @param cov_mat Numeric matrix. (Optional) Containing the covariance matrix of the data generating distribution.
-#' \code{NULL} means it is estimated from the data if needed (in the Gaussian approach).
-#' @param n_samples Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration
-#' for every conditional expectation. Default value \code{1e3}.
-#' @param ... Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or \code{explain.copula}.
+#' If \code{NULL} the expected values are estimated from the data. Note that this is only used
+#' when \code{approach = "gaussian"}.
+#'
+#' @param cov_mat Numeric matrix. (Optional) Containing the covariance matrix of the data
+#' generating distribution. \code{NULL} means it is estimated from the data if needed
+#' (in the Gaussian approach).
+#'
+#' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
+#' Monte Carlo integration for every conditional expectation.
+#'
+#' @param ... Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or
+#' \code{explain.copula}.
 #'
 #' @details TODO: Some additional details about the returned object
 #'
@@ -68,9 +62,31 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples, ...) {
   UseMethod("explain", x)
 }
 
+#' @param type String or list. Only applicable when \code{approach='empirical'}. If a string, the
+#' type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a
+#' list, the elements in the list refers to the rows in \code{x} that ought to be included in
+#' each of the empirical approaches.
+#'
+#' @param fixed_sigma_vec Vector or numeric. Only applicable when \code{approach='empirical'} and
+#' \code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}
+#'
+#' @param AICc_no_samp_per_optim Positive integer. Only applicable when
+#' \code{approach='empirical'} and \code{type='AICc_each_k'} or
+#' \code{type='AICc_full'}. Number of samples to consider in AICc optimization.
+#'
+#' @param AIC_optim_max_eval Positive integer. Only applicable when \code{approach='empirical'}
+#' and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Numeric. Maximum value when
+#' optimizing the AICc.
+#'
+#' @param AIC_optim_startval Numeric. Only applicable when \code{approach='empirical'} and
+#' \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.
+#'
+#' @param w_threshold Postive integer between 0 and 1.
+#'
 #' @rdname explain
+#'
 #' @export
-explain.empirical <- function(x, explainer, approach, prediction_zero, index_features,
+explain.empirical <- function(x, explainer, approach, prediction_zero,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
                               AIC_optim_startval = 0.1, w_threshold = 0.95, seed = 1) {
@@ -78,7 +94,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero, index_fea
     x <- t(as.matrix(x))
   }
   # Add arguments to explainer object
-  explainer$x_test <- x # The data to explain
+  explainer$x_test <- x
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec

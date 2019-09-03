@@ -51,11 +51,14 @@ weight_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights =
 #' @param x \code{ntrain x p} Matrix, data.frame or data.table with the features from the training data.
 #' @param n_combinations Integer. The number of feature combinations to sample. If ´\code{NULL}, the exact method is used and all combinations are considered.
 #'
-#' @return A List.
+#' @return List
 #'
 #' @export
 #'
 #' @author Nikolai Sellereite
+#'
+#' @examples
+#' TODO: Add simple example
 shapr <- function(x,
                   model,
                   n_combinations = NULL) {
@@ -485,17 +488,9 @@ compute_kshap <- function(model,
   return(ret_list)
 }
 
-#' This function is not useed any more. Only for verifying new functions.
-#' Get Shapley weights for test data.
-#'
-#' @inheritParams global_arguments
-#' @param compute_distances_for_no_var  If equal to \code{NULL} no distances are computed
-#'
-#' @return A list.
-#'
+#' DELETE
+#' @keywords interal
 #' @export
-#'
-#' @author Nikolai Sellereite
 prepare_kshap <- function(Xtrain,
                           Xtest,
                           exact = TRUE,

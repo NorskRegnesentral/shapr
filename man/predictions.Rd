@@ -11,46 +11,7 @@ predictions(model, D, h_optim_vec, kernel_metric, S, Xtrain, Xtest,
   Sigma_Gauss_trans = Sigma_Gauss_trans, Xtest_Gauss_trans,
   ensure_condcov_symmetry = F)
 }
-\arguments{
-\item{model}{Model object. Fitted model that is used to produce the predictions}
-
-\item{D}{Matrix}
-
-\item{kernel_metric}{String indicating which kernel metric should be used in the empirical
-conditional distribution. Defaults to "Gaussian" [\eqn{\exp(-D/2\sigma)}], with "independence"
-(imputing independently, ignoring any distance) being the second option "Gaussian_old"
-[\eqn{\sqrt(\exp(-D/2\sigma))}] is also kept for reproducibility.}
-
-\item{S}{Matrix}
-
-\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data}
-
-\item{Xtest}{Matrix, data.frame or data.table with the features, whose predictions ought to
-be explained (test data)}
-
-\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
-
-\item{verbose}{Integer. How much information to print during function execution (in development)}
-
-\item{feature_list}{List}
-
-\item{pred_zero}{Numeric}
-
-\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
-NULL means it is estimated from the data if needed (in the Gaussian approach).}
-
-\item{Sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
-distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
-
-\item{Xtest_Gauss_trans}{Vector with the Gaussian transformed test observations}
-}
-\value{
-List
-}
 \description{
-Get predictions
+OLD FUNCTION. Not in use any more, but useful for verifying the new functions.
 }
-\author{
-Nikolai Sellereite, Martin Jullum
-}
+\keyword{internal}

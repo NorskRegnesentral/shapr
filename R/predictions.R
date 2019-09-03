@@ -24,18 +24,7 @@ prediction <- function(dt, prediction_zero, explainer) {
 
 
 #' OLD FUNCTION. Not in use any more, but useful for verifying the new functions.
-#'
-#' Get predictions
-#'
-#' @param feature_list List
-#' @param pred_zero Numeric
-#' @inheritParams global_arguments
-#'
-#' @return List
-#'
-#' @export
-#'
-#' @author Nikolai Sellereite, Martin Jullum
+#' @keywords internal
 predictions <- function(model,
                         D,
                         h_optim_vec,

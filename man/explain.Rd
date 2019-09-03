@@ -11,7 +11,7 @@
 explain(x, explainer, approach, prediction_zero, n_samples, ...)
 
 \method{explain}{empirical}(x, explainer, approach, prediction_zero,
-  index_features, type = "fixed_sigma", fixed_sigma_vec = 0.1,
+  type = "fixed_sigma", fixed_sigma_vec = 0.1,
   AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
   AIC_optim_startval = 0.1, w_threshold = 0.95, seed = 1)
 
@@ -31,6 +31,9 @@ explain(x, explainer, approach, prediction_zero, n_samples, ...)
 \item{x}{x \code{ntest x p} Matrix, data.frame or data.table with the features, whose
 predictions ought to be explained (test data).}
 
+\item{explainer}{An \code{explainer} object to use for exaplaining the observations.
+See \code{\link{shapr}}.}
+
 \item{approach}{String or list. If a String, the approach to use when computing the Shapley
 values. Equal to 'empirical', 'gaussian' or 'copula'. If a list, the elements in the list
 refers to the rows in \code{x} that ought to be included in each of the approaches.}
@@ -38,37 +41,40 @@ refers to the rows in \code{x} that ought to be included in each of the approach
 \item{prediction_zero}{The prediction value for unseen data, typically equal to the mean of
 the response.}
 
-\item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration
-for every conditional expectation. Default value \code{1e3}.}
+\item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation.}
 
-\item{...}{Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or \code{explain.copula}.}
+\item{...}{Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or
+\code{explain.copula}.}
 
-\item{type}{String or list. Only applicable when \code{approach='empirical'}. If a string, the type of empirical approach to use,
-equal to 'independence, 'gaussian' or 'fixed_sigma'. If a list, the elements in the list refers to the rows in \code{x}
-that ought to be included in each of the empirical approaches.}
+\item{type}{String or list. Only applicable when \code{approach='empirical'}. If a string, the
+type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a
+list, the elements in the list refers to the rows in \code{x} that ought to be included in
+each of the empirical approaches.}
 
-\item{AICc_no_samp_per_optim}{Positive integer. Only applicable when \code{approach='empirical'} and \code{type='AICc_each_k'} or
-\code{type='AICc_full'}. Number of samples to consider in AICc optimization. Default value \code{1000}.}
+\item{fixed_sigma_vec}{Vector or numeric. Only applicable when \code{approach='empirical'} and
+\code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}}
 
-\item{AIC_optim_max_eval}{Positive integer. Only applicable when \code{approach='empirical'} and \code{type='AICc_each_k'} or
-\code{type='AICc_full'}. Numeric. Maximum value when optimizing the AICc. Default value \code{20}.}
+\item{AICc_no_samp_per_optim}{Positive integer. Only applicable when
+\code{approach='empirical'} and \code{type='AICc_each_k'} or
+\code{type='AICc_full'}. Number of samples to consider in AICc optimization.}
 
-\item{AIC_optim_startval}{Numeric. Only applicable when \code{approach='empirical'} and \code{type='AICc_each_k'} or
-\code{type='AICc_full'}. Starting value when optimizing the AICc. Default value \code{0.1}.}
+\item{AIC_optim_max_eval}{Positive integer. Only applicable when \code{approach='empirical'}
+and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Numeric. Maximum value when
+optimizing the AICc.}
 
-\item{w_threshold}{Default value \code{0.95}.}
+\item{AIC_optim_startval}{Numeric. Only applicable when \code{approach='empirical'} and
+\code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.}
+
+\item{w_threshold}{Postive integer between 0 and 1.}
 
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
-\code{NULL} means it is estimated from the data if needed (in the Gaussian approach).}
+If \code{NULL} the expected values are estimated from the data. Note that this is only used
+when \code{approach = "gaussian"}.}
 
-\item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating distribution.
-\code{NULL} means it is estimated from the data if needed (in the Gaussian approach).}
-
-\item{An}{\code{explainer} object to use for exaplaining the observations.
-See \code{\link{shapr}}.}
-
-\item{fixed.sigma.vec}{Vector or numeric. Only applicable when \code{approach='empirical'} and \code{type='fixed_sigma'}.
-The bandwidth to use. Default value \code{0.1}}
+\item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data
+generating distribution. \code{NULL} means it is estimated from the data if needed
+(in the Gaussian approach).}
 }
 \value{
 data.frame. Contains the estimated Shapley values for the test data. Note that
