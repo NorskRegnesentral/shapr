@@ -58,7 +58,7 @@ weight_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights =
 #' @author Nikolai Sellereite
 #'
 #' @examples
-#' TODO: Add simple example
+#' #TODO: Add simple example
 shapr <- function(x,
                   model,
                   n_combinations = NULL) {

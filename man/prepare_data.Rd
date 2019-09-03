@@ -9,11 +9,11 @@
 \usage{
 prepare_data(x, ...)
 
-\method{prepare_data}{empirical}(x)
+\method{prepare_data}{empirical}(x, ...)
 
-\method{prepare_data}{gaussian}(x)
+\method{prepare_data}{gaussian}(x, ...)
 
-\method{prepare_data}{copula}(x, x_test)
+\method{prepare_data}{copula}(x, x_test, ...)
 }
 \description{
 Generate data used for predictions

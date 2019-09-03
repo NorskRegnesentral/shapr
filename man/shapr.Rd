@@ -20,7 +20,7 @@ List
 Get Shapley weights.
 }
 \examples{
-TODO: Add simple example
+#TODO: Add simple example
 }
 \author{
 Nikolai Sellereite

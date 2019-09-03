@@ -2,7 +2,7 @@
 #'
 #' @description TODO: Add a more detailed description
 #'
-#' @param x x \code{ntest x p} Matrix, data.frame or data.table with the features, whose
+#' @param x A matrix or data.frame. Contains the the features, whose
 #' predictions ought to be explained (test data).
 #'
 #' @param explainer An \code{explainer} object to use for exaplaining the observations.
@@ -15,16 +15,10 @@
 #' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
 #' the response.
 #'
-#' @param mu Numeric vector. (Optional) Containing the mean of the data generating distribution.
-#' If \code{NULL} the expected values are estimated from the data. Note that this is only used
-#' when \code{approach = "gaussian"}.
-#'
-#' @param cov_mat Numeric matrix. (Optional) Containing the covariance matrix of the data
-#' generating distribution. \code{NULL} means it is estimated from the data if needed
-#' (in the Gaussian approach).
-#'
 #' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation.
+#'
+#' @param seed Positive integer. If \code{NULL} a random seed will be used.
 #'
 #' @param ... Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or
 #' \code{explain.copula}.
@@ -84,6 +78,7 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples, ...) {
 #' @param w_threshold Postive integer between 0 and 1.
 #'
 #' @rdname explain
+#' @name explain
 #'
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
@@ -120,7 +115,19 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   return(dt_kshap)
 }
 
+#' @inheritParams explain
+#'
+#' @param mu Numeric vector. (Optional) Containing the mean of the data generating distribution.
+#' If \code{NULL} the expected values are estimated from the data. Note that this is only used
+#' when \code{approach = "gaussian"}.
+#'
+#' @param cov_mat Numeric matrix. (Optional) Containing the covariance matrix of the data
+#' generating distribution. \code{NULL} means it is estimated from the data if needed
+#' (in the Gaussian approach).
+#'
 #' @rdname explain
+#' @name explain
+#'
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, n_samples = 1e3, seed = 1) {
   if (is.null(dim(x))) {
@@ -161,6 +168,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 }
 
 #' @rdname explain
+#' @name explain
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, seed = 1) {
   if (is.null(dim(x))) {

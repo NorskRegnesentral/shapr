@@ -28,7 +28,7 @@ explain(x, explainer, approach, prediction_zero, n_samples, ...)
   w_threshold = 0.95, mu = NULL, cov_mat = NULL, ...)
 }
 \arguments{
-\item{x}{x \code{ntest x p} Matrix, data.frame or data.table with the features, whose
+\item{x}{A matrix or data.frame. Contains the the features, whose
 predictions ought to be explained (test data).}
 
 \item{explainer}{An \code{explainer} object to use for exaplaining the observations.
@@ -67,6 +67,8 @@ optimizing the AICc.}
 \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.}
 
 \item{w_threshold}{Postive integer between 0 and 1.}
+
+\item{seed}{Positive integer. If \code{NULL} a random seed will be used.}
 
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 If \code{NULL} the expected values are estimated from the data. Note that this is only used

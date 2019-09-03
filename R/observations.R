@@ -42,6 +42,7 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
 }
 
 #' Generate data used for predictions
+#' @name prepare_data
 #' @export
 prepare_data <- function(x, ...) {
   class(x) <- x$approach
@@ -49,8 +50,9 @@ prepare_data <- function(x, ...) {
 }
 
 #' @rdname prepare_data
+#' @name prepare_data
 #' @export
-prepare_data.empirical <- function(x) {
+prepare_data.empirical <- function(x, ...) {
 
   # Setup
   n_col <- nrow(x$x_test)
@@ -111,8 +113,9 @@ prepare_data.empirical <- function(x) {
 }
 
 #' @rdname prepare_data
+#' @name prepare_data
 #' @export
-prepare_data.gaussian <- function(x) {
+prepare_data.gaussian <- function(x, ...) {
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(x$seed)) set.seed(x$seed)
@@ -138,8 +141,9 @@ prepare_data.gaussian <- function(x) {
 }
 
 #' @rdname prepare_data
+#' @name prepare_data
 #' @export
-prepare_data.copula <- function(x, x_test) {
+prepare_data.copula <- function(x, x_test, ...) {
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(x$seed)) set.seed(x$seed)
@@ -164,7 +168,6 @@ prepare_data.copula <- function(x, x_test) {
   dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
   return(dt)
 }
-
 
 #' @export
 compute_AICc_each_k <- function(x, h_optim_mat) {
