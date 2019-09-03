@@ -6,7 +6,7 @@
 \alias{explain.gaussian}
 \alias{explain.copula}
 \alias{explain.combined}
-\title{Explaining the output of machine learning models with more accurately estimated Shapley values}
+\title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(x, explainer, approach, prediction_zero, n_samples, ...)
 
@@ -28,15 +28,15 @@ explain(x, explainer, approach, prediction_zero, n_samples, ...)
   w_threshold = 0.95, mu = NULL, cov_mat = NULL, ...)
 }
 \arguments{
-\item{x}{x \code{ntest x p} Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data).}
+\item{x}{x \code{ntest x p} Matrix, data.frame or data.table with the features, whose
+predictions ought to be explained (test data).}
 
-\item{explainer}{List. The output from the \code{shapr} function.}
+\item{approach}{String or list. If a String, the approach to use when computing the Shapley
+values. Equal to 'empirical', 'gaussian' or 'copula'. If a list, the elements in the list
+refers to the rows in \code{x} that ought to be included in each of the approaches.}
 
-\item{approach}{String or list. If a String, the approach to use when computing the Shapley values. Equal to 'empirical', 'gaussian' or 'copula'.
-If a list, the elements in the list refers to the rows in \code{x} that ought to be included in each of the approaches.}
-
-\item{prediction_zero}{The prediction value for unseen data, typically equal to the mean of the
-response.}
+\item{prediction_zero}{The prediction value for unseen data, typically equal to the mean of
+the response.}
 
 \item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the Monte Carlo integration
 for every conditional expectation. Default value \code{1e3}.}
@@ -64,12 +64,23 @@ that ought to be included in each of the empirical approaches.}
 \item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the data if needed (in the Gaussian approach).}
 
+\item{An}{\code{explainer} object to use for exaplaining the observations.
+See \code{\link{shapr}}.}
+
 \item{fixed.sigma.vec}{Vector or numeric. Only applicable when \code{approach='empirical'} and \code{type='fixed_sigma'}.
 The bandwidth to use. Default value \code{0.1}}
 }
 \value{
-Data frame with the estimated Shapley values for the test data. \code{ntest x (p+1)}.
+data.frame. Contains the estimated Shapley values for the test data. Note that
+the dimensions of the data.frame equals \code{n x (p+1)}, where \code{n} equals the number
+of test observations, and \code{p} equals the total number of features.
 }
 \description{
-Explaining the output of machine learning models with more accurately estimated Shapley values
+TODO: Add a more detailed description
+}
+\details{
+TODO: Some additional details about the returned object
+}
+\author{
+Camilla Lingjaerde
 }

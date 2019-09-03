@@ -1,12 +1,20 @@
-#' Explaining the output of machine learning models with more accurately estimated Shapley values
+#' Explain the output of machine learning models with more accurately estimated Shapley values
 #'
-#' @inheritParams global_arguments
-#' @param x x \code{ntest x p} Matrix, data.frame or data.table with the features, whose predictions ought to be explained (test data).
-#' @param explainer List. The output from the \code{shapr} function.
-#' @param approach String or list. If a String, the approach to use when computing the Shapley values. Equal to 'empirical', 'gaussian' or 'copula'.
-#' If a list, the elements in the list refers to the rows in \code{x} that ought to be included in each of the approaches.
-#' @param prediction_zero The prediction value for unseen data, typically equal to the mean of the
-#' response.
+#' @description TODO: Add a more detailed description
+#'
+#' @param x x \code{ntest x p} Matrix, data.frame or data.table with the features, whose
+#' predictions ought to be explained (test data).
+#'
+#' @param An \code{explainer} object to use for exaplaining the observations.
+#' See \code{\link{shapr}}.
+#'
+#' @param approach String or list. If a String, the approach to use when computing the Shapley
+#' values. Equal to 'empirical', 'gaussian' or 'copula'. If a list, the elements in the list
+#' refers to the rows in \code{x} that ought to be included in each of the approaches.
+#'
+#' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
+#' the response.
+#'
 #' @param type String or list. Only applicable when \code{approach='empirical'}. If a string, the type of empirical approach to use,
 #'  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a list, the elements in the list refers to the rows in \code{x}
 #'  that ought to be included in each of the empirical approaches.
@@ -27,11 +35,15 @@
 #' for every conditional expectation. Default value \code{1e3}.
 #' @param ... Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or \code{explain.copula}.
 #'
+#' @details TODO: Some additional details about the returned object
 #'
-#'
-#' @return Data frame with the estimated Shapley values for the test data. \code{ntest x (p+1)}.
+#' @return data.frame. Contains the estimated Shapley values for the test data. Note that
+#' the dimensions of the data.frame equals \code{n x (p+1)}, where \code{n} equals the number
+#' of test observations, and \code{p} equals the total number of features.
 #'
 #' @export
+#'
+#' @author Camilla Lingjaerde
 explain <- function(x, explainer, approach, prediction_zero, n_samples, ...) {
   str_error <- paste(
     "It seems that you passed a non-valid value for approach.",
