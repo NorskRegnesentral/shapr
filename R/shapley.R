@@ -45,7 +45,115 @@ weight_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights =
   return(W)
 }
 
-#' DELETE! Old function that computes kernel SHAP values for test data.
+
+#' Get Shapley weights.
+#'
+#' @inheritParams global_arguments
+#' @param x \code{ntrain x p} Matrix, data.frame or data.table with the features from the training data.
+#' @param n_combinations Integer. The number of feature combinations to sample. If ´\code{NULL}, the exact method is used and all combinations are considered.
+#'
+#' @return A List.
+#'
+#' @export
+#'
+#' @author Nikolai Sellereite
+shapr <- function(x,
+                  model,
+                  n_combinations = NULL) {
+
+  if(is.null(dim(x))){
+    x=t(as.matrix(x))
+  }
+  # Setup
+  explainer <- as.list(environment())
+  explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
+  explainer$n_features <- ncol(x)
+  explainer$model_type <- model_type(model)
+
+  if(explainer$exact){
+    if(explainer$n_features>30){
+      stop("Exact method is currently not supported for more than 30 features.")
+    }
+  }
+  if(is.null(x) | is.null(explainer$model_type)){
+    stop("Invalid argument values")
+  }
+  # Test that the input is valid
+  if(! all(colnames(x) %in% model$feature_names)){
+    stop("Features of X must match model")
+  }
+
+  # Create  data.tables --------------
+  if (!data.table::is.data.table(x)) {
+    x_train <- data.table::as.data.table(x)
+  }
+  if (!is.null(x_test) && !data.table::is.data.table(x_test)) {
+    x_test <- data.table::as.data.table(x_test)
+  }
+
+  # Get all combinations ----------------
+  dt_combinations <- feature_combinations(
+    m = explainer$n_features,
+    exact = explainer$exact,
+    noSamp = n_combinations,
+    shapley_weight_inf_replacement = 10^6,
+    reduce_dim = TRUE
+  )
+
+  # Get weighted matrix ----------------
+  weighted_mat <- weight_matrix(
+    X = dt_combinations,
+    use_shapley_weights_in_W = ifelse(explainer$exact, TRUE, FALSE),
+    normalize_W_weights = TRUE
+  )
+
+  ## Get feature matrix ---------
+  feature_matrix <- feature_matrix_cpp(
+    features = dt_combinations[["features"]],
+    nfeatures = explainer$n_features
+  )
+
+  explainer$S <- feature_matrix
+  explainer$W <- weighted_mat
+  explainer$X <- dt_combinations
+  explainer$x_train <- x_train
+
+  attr(explainer, "class") <- c("explainer", "list")
+
+  return(explainer)
+}
+
+#' @keywords internal
+distance_matrix <- function(x_train, x_test = NULL, list_features) {
+
+  if (is.null(x_test)) return(NULL)
+
+  # Get covariance matrix
+  mcov <- stats::cov(x_train)
+  if(is.null(dim(x_test))){
+    x_test=t(as.matrix(x_test))
+  }
+  # Note that D equals D_S(,)^2 in the paper
+  D <- mahalanobis_distance_cpp(
+    featureList = list_features,
+    Xtrain_mat = as.matrix(x_train),
+    Xtest_mat = as.matrix(x_test),
+    mcov = mcov,
+    S_scale_dist = TRUE
+  )
+
+  # Normalize distance rows to ensure numerical stability in later operations
+  colmin <- apply(X = D, MARGIN = c(2, 3), FUN = min)
+  for (i in 1:dim(D)[3]) {
+    D[, , i] <- t(t(D[, , i]) - colmin[, i])
+  }
+
+  return(D)
+}
+
+
+#' Not in use any more. Old function that computes kernel SHAP values for test data.
+#' Still useful for verfifying results of new methods.
 #'
 #' @inheritParams global_arguments
 #' @param empirical_settings List. Specifying the settings when using the empirical method to
@@ -314,7 +422,9 @@ compute_kshap <- function(model,
     FUN = gaussian_transform_separate,
     n_y = nrow(l$Xtest)
   )
-
+  if(is.null(dim(Xtest_Gauss_trans))){
+    Xtest_Gauss_trans=t(as.matrix(Xtest_Gauss_trans))
+  }
   mu_Gauss_trans <- rep(0, ncol(l$Xtrain))
   Sigma_Gauss_trans <- stats::cov(Xtrain_Gauss_trans)
 
@@ -397,108 +507,13 @@ compute_kshap <- function(model,
   return(ret_list)
 }
 
-#' Get Shapley weights for test data
+#' This function is not useed any more. Only for verifying new functions.
+#' Get Shapley weights for test data.
 #'
 #' @inheritParams global_arguments
 #' @param compute_distances_for_no_var  If equal to \code{NULL} no distances are computed
 #'
-#' @return Matrix
-#'
-#' @export
-#'
-#' @author Nikolai Sellereite
-shapr <- function(x,
-                  model,
-                  n_combinations = NULL) {
-
-
-  # Setup
-  explainer <- as.list(environment())
-  explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
-  explainer$n_features <- ncol(x)
-  explainer$model_type <- model_type(model)
-
-  # TODO: Add check if user passes too many features using exact method
-
-  # TODO: Add check if user valid data
-
-  # TODO: Check model object
-
-  # Create  data.tables --------------
-  if (!data.table::is.data.table(x)) {
-    x_train <- data.table::as.data.table(x)
-  }
-  if (!is.null(x_test) && !data.table::is.data.table(x_test)) {
-    x_test <- data.table::as.data.table(x_test)
-  }
-
-  # Get all combinations ----------------
-  dt_combinations <- feature_combinations(
-    m = explainer$n_features,
-    exact = explainer$exact,
-    noSamp = n_combinations,
-    shapley_weight_inf_replacement = 10^6,
-    reduce_dim = TRUE
-  )
-
-  # Get weighted matrix ----------------
-  weighted_mat <- weight_matrix(
-    X = dt_combinations,
-    use_shapley_weights_in_W = ifelse(explainer$exact, TRUE, FALSE),
-    normalize_W_weights = TRUE
-  )
-
-  ## Get feature matrix ---------
-  feature_matrix <- feature_matrix_cpp(
-    features = dt_combinations[["features"]],
-    nfeatures = explainer$n_features
-  )
-
-  explainer$S <- feature_matrix
-  explainer$W <- weighted_mat
-  explainer$X <- dt_combinations
-  explainer$x_train <- x_train
-
-  attr(explainer, "class") <- c("explainer", "list")
-
-  return(explainer)
-}
-
-#' @keywords internal
-distance_matrix <- function(x_train, x_test = NULL, list_features) {
-
-  if (is.null(x_test)) return(NULL)
-
-  # Get covariance matrix
-  mcov <- stats::cov(x_train)
-  if(is.null(dim(x_test))){
-    x_test=t(as.matrix(x_test))
-  }
-  # Note that D equals D_S(,)^2 in the paper
-  D <- mahalanobis_distance_cpp(
-    featureList = list_features,
-    Xtrain_mat = as.matrix(x_train),
-    Xtest_mat = as.matrix(x_test),
-    mcov = mcov,
-    S_scale_dist = TRUE
-  )
-
-  # Normalize distance rows to ensure numerical stability in later operations
-  colmin <- apply(X = D, MARGIN = c(2, 3), FUN = min)
-  for (i in 1:dim(D)[3]) {
-    D[, , i] <- t(t(D[, , i]) - colmin[, i])
-  }
-
-  return(D)
-}
-
-
-#' Get Shapley weights for test data. DELETE
-#'
-#' @inheritParams global_arguments
-#' @param compute_distances_for_no_var  If equal to \code{NULL} no distances are computed
-#'
-#' @return Matrix
+#' @return A list.
 #'
 #' @export
 #'
@@ -553,14 +568,11 @@ prepare_kshap <- function(Xtrain,
   } else {
     D <- NULL
   }
-
-
-  ## Get feature matrix ---------
+  # Get feature matrix
   S <- feature_matrix_cpp(
     features = X[["features"]],
     nfeatures = ncol(Xtrain)
   )
-
   return(list(
     D = D, S = S, W = W, X = X, Xtrain = Xtrain, Xtest = Xtest,
     D_for_these_varcomb = X[nfeatures %in% compute_distances_for_no_var, which = TRUE]
