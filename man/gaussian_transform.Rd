@@ -15,6 +15,11 @@ Vector of transformed data
 \description{
 Transforms a sample to standardized normal (dimension 1)
 }
+\examples{
+# TODO: Add simple example
+
+}
 \author{
 Martin Jullum
 }
+\keyword{internal}

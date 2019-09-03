@@ -13,7 +13,7 @@
 #'
 #' @return data.table
 #'
-#' @export
+#' @keywords internal
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 feature_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
@@ -38,7 +38,6 @@ feature_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_i
 }
 
 #' @keywords internal
-#' @export
 feature_exact <- function(m, shapley_weight_inf_replacement = 10^6) {
 
   dt <- data.table::data.table(ID = seq(2^m))
@@ -53,7 +52,6 @@ feature_exact <- function(m, shapley_weight_inf_replacement = 10^6) {
 }
 
 #' @keywords internal
-#' @export
 feature_not_exact <- function(m, noSamp = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
 
   # Find weights for given number of features ----------
