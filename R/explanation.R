@@ -23,7 +23,8 @@
 #' @param ... Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or
 #' \code{explain.copula}.
 #'
-#' @details TODO: Some additional details about the returned object
+#' @details
+#' TODO: Some additional details about the returned object
 #'
 #' @return data.frame. Contains the estimated Shapley values for the test data. Note that
 #' the dimensions of the data.frame equals \code{n x (p+1)}, where \code{n} equals the number
@@ -33,6 +34,13 @@
 #'
 #' @author Camilla Lingjaerde
 explain <- function(x, explainer, approach, prediction_zero, n_samples, ...) {
+
+  # Check input for x
+  if (!is.matrix(x) & !is.data.frame(x)) {
+    stop("x should be a matrix or a dataframe.")
+  }
+
+  # Check input for approach
   str_error <- paste(
     "It seems that you passed a non-valid value for approach.",
     "It should be either 'empirical', 'gaussian', 'copula' or",
@@ -85,9 +93,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
                               AIC_optim_startval = 0.1, w_threshold = 0.95, seed = 1) {
-  if (is.null(dim(x))) {
-    x <- t(as.matrix(x))
-  }
+
   # Add arguments to explainer object
   explainer$x_test <- x
   explainer$approach <- approach
@@ -130,9 +136,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #'
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, n_samples = 1e3, seed = 1) {
-  if (is.null(dim(x))) {
-    x <- t(as.matrix(x))
-  }
+
   # Add arguments to explainer object
   explainer$n_samples <- n_samples
   explainer$x_test <- x
@@ -171,9 +175,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 #' @name explain
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, seed = 1) {
-  if (is.null(dim(x))) {
-    x <- t(as.matrix(x))
-  }
+
   # Setup
   explainer$n_samples <- n_samples
   explainer$x_test <- x
