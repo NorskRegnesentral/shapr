@@ -7,6 +7,7 @@
 \alias{model_type.glm}
 \alias{model_type.ranger}
 \alias{model_type.mgcv}
+\alias{model_type.xgb.Booster}
 \title{TODO: Add title & description}
 \usage{
 model_type(x)
@@ -20,6 +21,8 @@ model_type(x)
 \method{model_type}{ranger}(x)
 
 \method{model_type}{mgcv}(x)
+
+\method{model_type}{xgb.Booster}(x)
 }
 \description{
 TODO: Add title & description

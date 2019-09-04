@@ -3,11 +3,22 @@
 #' @description Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
 #' \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous response.
 #'
-#' @param x Object of class inheriting from \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-#' \code{\link[ranger]{ranger}}, \code{\link[mgcv]{mgcv}} or \code{\link[xgboost]{xgboost}}.
+#' @param x Object of class inheriting from one of the supported models. See details.
 #' @param newdata A data frame (or matrix) in which to look for variables with which to predict.
 #'
-#' @return Atomic vector
+#' @details The following models are currently supported:
+#' \itemize{
+#' \item \code{\link[stats]{lm}}
+#' \item \code{\link[stats]{glm}}
+#' \item \code{\link[ranger]{ranger}}
+#' \item \code{\link[mgcv]{mgcv}}
+#' \item \code{\link[xgboost]{xgboost}}
+#' }
+#'
+#' For more details on how to use a custom model see the package vignette:
+#' \code{vignette("understanding_shapr", package = "shapr")}
+#'
+#' @return Numeric
 #'
 #' @export
 #'
@@ -17,6 +28,7 @@ predict_model <- function(x, newdata) {
 }
 
 #' @rdname predict_model
+#' @name predict_model
 #' @export
 predict_model.default <- function(x, newdata) {
 
@@ -29,6 +41,7 @@ predict_model.default <- function(x, newdata) {
 }
 
 #' @rdname predict_model
+#' @name predict_model
 #' @export
 predict_model.lm <- function(x, newdata) {
 
@@ -40,6 +53,7 @@ predict_model.lm <- function(x, newdata) {
 }
 
 #' @rdname predict_model
+#' @name predict_model
 #' @export
 predict_model.glm <- function(x, newdata) {
 
@@ -55,6 +69,7 @@ predict_model.glm <- function(x, newdata) {
 }
 
 #' @rdname predict_model
+#' @name predict_model
 #' @export
 predict_model.ranger <- function(x, newdata) {
 
@@ -70,6 +85,7 @@ predict_model.ranger <- function(x, newdata) {
 }
 
 #' @rdname predict_model
+#' @name predict_model
 #' @export
 predict_model.xgb.Booster <- function(x, newdata) {
 
@@ -81,6 +97,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
 }
 
 #' @rdname predict_model
+#' @name predict_model
 #' @export
 predict_model.mgcv <- function(x, newdata) {
 
@@ -98,18 +115,21 @@ model_type <- function(x) {
 }
 
 #' @rdname model_type
+#' @name model_type
 #' @export
 model_type.default <- function(x) {
   stop("The model you passed to shapr is currently not supported.")
 }
 
 #' @rdname model_type
+#' @name model_type
 #' @export
 model_type.lm <- function(x) {
   "regression"
 }
 
 #' @rdname model_type
+#' @name model_type
 #' @export
 model_type.glm <- function(x) {
   ifelse(
@@ -120,21 +140,25 @@ model_type.glm <- function(x) {
 }
 
 #' @rdname model_type
+#' @name model_type
 #' @export
 model_type.ranger <- function(x) {
   ifelse(
-    x$family[[1]] == "binomial",
+    x$forest$treetype == "Classification",
     "classification",
     "regression"
   )
 }
 
 #' @rdname model_type
+#' @name model_type
 #' @export
 model_type.mgcv <- function(x) {
   "regression"
 }
 
+#' @rdname model_type
+#' @name model_type
 #' @export
 model_type.xgb.Booster <- function(x) {
 

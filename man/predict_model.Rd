@@ -25,17 +25,29 @@ predict_model(x, newdata)
 \method{predict_model}{mgcv}(x, newdata)
 }
 \arguments{
-\item{x}{Object of class inheriting from \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-\code{\link[ranger]{ranger}}, \code{\link[mgcv]{mgcv}} or \code{\link[xgboost]{xgboost}}.}
+\item{x}{Object of class inheriting from one of the supported models. See details.}
 
 \item{newdata}{A data frame (or matrix) in which to look for variables with which to predict.}
 }
 \value{
-Atomic vector
+Numeric
 }
 \description{
 Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
 \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous response.
+}
+\details{
+The following models are currently supported:
+\itemize{
+\item \code{\link[stats]{lm}}
+\item \code{\link[stats]{glm}}
+\item \code{\link[ranger]{ranger}}
+\item \code{\link[mgcv]{mgcv}}
+\item \code{\link[xgboost]{xgboost}}
+}
+
+For more details on how to use a custom model see the package vignette:
+\code{vignette("understanding_shapr", package = "shapr")}
 }
 \author{
 Martin Jullum
