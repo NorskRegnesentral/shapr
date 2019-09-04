@@ -2,7 +2,8 @@
 % Please edit documentation in R/predictions.R
 \name{predictions}
 \alias{predictions}
-\title{OLD FUNCTION. Not in use any more, but useful for verifying the new functions.}
+\title{Note that this function is deprecated, but we'll keep it for a week
+to check that results are stable.}
 \usage{
 predictions(model, D, h_optim_vec, kernel_metric, S, Xtrain, Xtest,
   w_threshold = 0.7, noSamp_MC = 1000, verbose = FALSE,
@@ -12,6 +13,6 @@ predictions(model, D, h_optim_vec, kernel_metric, S, Xtrain, Xtest,
   ensure_condcov_symmetry = F)
 }
 \description{
-OLD FUNCTION. Not in use any more, but useful for verifying the new functions.
+TODO: Delete this function from the codebase
 }
 \keyword{internal}

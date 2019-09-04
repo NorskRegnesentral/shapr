@@ -1,9 +1,27 @@
-#' @export
+#' Calculate shapley weights
+#'
+#' @description
+#' TODO: Write a better description
+#'
+#' @param dt data.table
+#' @param prediction_zero Positive integer between 0 & 1.
+#' @param explainer An object of class \code{explainer}
+#'
+#' @details
+#' TODO: Write details about how this is done (reference to paper)
+#'
+#' @examples
+#' TODO: Add simple examples
+#'
+#' @author Nikolai Sellereite
 prediction <- function(dt, prediction_zero, explainer) {
+
   cnms <- colnames(explainer$x_test)
   data.table::setkeyv(dt, c("id", "wcomb"))
   dt[, p_hat := predict_model(x = explainer$model, newdata = .SD), .SDcols = cnms]
   dt[wcomb == 1, p_hat := prediction_zero]
+  # TODO: Should we also have the following:
+  # dt[wcomb == max(wcomb), p_hat := predict_model(x = explainer$model, newdata = explainer$x_test)]
 
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
   data.table::setkeyv(dt_res, c("id", "wcomb"))
@@ -21,10 +39,14 @@ prediction <- function(dt, prediction_zero, explainer) {
   return(dt_kshap)
 }
 
-
-
-#' OLD FUNCTION. Not in use any more, but useful for verifying the new functions.
+#' Note that this function is deprecated, but we'll keep it for a week
+#' to check that results are stable.
+#'
+#' TODO: Delete this function from the codebase
+#'
 #' @keywords internal
+#'
+#' @export
 predictions <- function(model,
                         D,
                         h_optim_vec,

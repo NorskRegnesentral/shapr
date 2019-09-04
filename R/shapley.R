@@ -154,7 +154,6 @@ distance_matrix <- function(x_train, x_test = NULL, list_features) {
   return(D)
 }
 
-
 #' Note that this function is deprecated, but we'll keep it for a week
 #' to check that results are stable.
 #'
