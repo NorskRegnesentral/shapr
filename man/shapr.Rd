@@ -2,25 +2,34 @@
 % Please edit documentation in R/shapley.R
 \name{shapr}
 \alias{shapr}
-\title{Get Shapley weights.}
+\title{Create an explainer object}
 \usage{
 shapr(x, model, n_combinations = NULL)
 }
 \arguments{
-\item{x}{\code{ntrain x p} Matrix, data.frame or data.table with the features from the training data.}
+\item{x}{A numeric matrix or data.frame. Contains the variables used for training the model
+(i.e. the explanatory variables). Note that the response variable should not be part of
+\code{x}.}
 
-\item{model}{Model object. Fitted model that is used to produce the predictions}
-
-\item{n_combinations}{Integer. The number of feature combinations to sample. If ´\code{NULL}, the exact method is used and all combinations are considered.}
+\item{n_combinations}{Integer. The number of feature combinations to sample. If ´\code{NULL},
+the exact method is used and all combinations are considered. The maximum number of
+combinations equlas \code{2^p}, where \code{p = ncol(x)} (total number of explanatory variables).}
 }
 \value{
 List
 }
 \description{
-Get Shapley weights.
+Create an explainer object
+}
+\details{
+TODO: Write a better description of this function.
+
+TODO: Write about missing values and categorical variables
+TODO: Write about the different elements that are returned
 }
 \examples{
 #TODO: Add simple example
+
 }
 \author{
 Nikolai Sellereite

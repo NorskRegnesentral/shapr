@@ -13,7 +13,7 @@ shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
   x
 }
 
-#' Get weighted matrix
+#' Calculate weighted matrix
 #'
 #' @param X data.table
 #'
@@ -22,7 +22,7 @@ shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-weight_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights = T) {
+weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weights = TRUE) {
   if (use_shapley_weights_in_W) {
     w <- X[["shapley_weight"]] * X[["no"]]
   } else {
@@ -45,46 +45,52 @@ weight_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights =
 }
 
 
-#' Get Shapley weights.
+#' Create an explainer object
 #'
-#' @inheritParams global_arguments
-#' @param x \code{ntrain x p} Matrix, data.frame or data.table with the features from the training data.
-#' @param n_combinations Integer. The number of feature combinations to sample. If ´\code{NULL}, the exact method is used and all combinations are considered.
+#' @details TODO: Write a better description of this function.
+#'
+#' @param x A numeric matrix or data.frame. Contains the variables used for training the model
+#' (i.e. the explanatory variables). Note that the response variable should not be part of
+#' \code{x}.
+#'
+#' @param n_combinations Integer. The number of feature combinations to sample. If ´\code{NULL},
+#' the exact method is used and all combinations are considered. The maximum number of
+#' combinations equlas \code{2^p}, where \code{p = ncol(x)} (total number of explanatory variables).
+#'
+#' @details
+#' TODO: Write about missing values and categorical variables
+#' TODO: Write about the different elements that are returned
 #'
 #' @return List
 #'
 #' @export
 #'
-#' @author Nikolai Sellereite
-#'
 #' @examples
 #' #TODO: Add simple example
+#'
+#' @author Nikolai Sellereite
+#'
 shapr <- function(x,
                   model,
                   n_combinations = NULL) {
-  if (is.null(dim(x))) {
-    x <- t(as.matrix(x))
+
+  # Checks input argument
+  if (!is.matrix(x) & !is.data.frame(x)) {
+    stop("x should be a matrix or a dataframe.")
   }
+
   # Setup
   explainer <- as.list(environment())
   explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
   explainer$n_features <- ncol(x)
   explainer$model_type <- model_type(model)
 
-  if (explainer$exact) {
-    if (explainer$n_features > 30) {
-      stop("Exact method is currently not supported for more than 30 features.")
-    }
-  }
-  if (is.null(x) | is.null(explainer$model_type)) {
-    stop("Invalid argument values")
-  }
   # Test that the input is valid
   if (!all(colnames(x) %in% model$feature_names)) {
     stop("Features of X must match model")
   }
 
-  # Create  data.tables --------------
+  # Create data.table --------------
   if (!data.table::is.data.table(x)) {
     x_train <- data.table::as.data.table(x)
   }
@@ -149,27 +155,14 @@ distance_matrix <- function(x_train, x_test = NULL, list_features) {
 }
 
 
-#' Not in use any more. Old function that computes kernel SHAP values for test data.
-#' Still useful for verfifying results of new methods.
+#' Note that this function is deprecated, but we'll keep it for a week
+#' to check that results are stable.
 #'
-#' @inheritParams global_arguments
-#' @param empirical_settings List. Specifying the settings when using the empirical method to
-#' compute the conditional expectations.
-#' @param pred_zero The prediction value for unseen data, typically equal to the mean of the
-#' response
-#' @param ensure_condcov_symmetry Logical. Whether to ensure that the conditional covariance
-#' matrices in the Gaussian and copula approaches are symmetric. Typically only needed if the
-#' original covariance is just barely positive definite.
+#' TODO: Delete this function from the codebase
 #'
-#' @details If \code{cond_approach} is a list, the elements in the list refers to the rows in
-#' \code{l$X} that ought to be included in each of the approaches!
-#'
-#' @return List with kernel SHAP values (\code{Kshap}) and other object used to perform
-#' the computation (helpful for debugging etc.)
+#' @keywords internal
 #'
 #' @export
-#'
-#' @author Martin Jullum
 compute_kshap <- function(model,
                           l,
                           noSamp_MC = 1e3,
