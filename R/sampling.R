@@ -7,9 +7,12 @@
 #'
 #' @inheritParams global_arguments
 #'
+#' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
+#'
 #' @keywords internal
 #'
-#' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
+#' @examples
+#' # TODO: Add simple example
 #'
 #' @author Martin Jullum
 sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans, Xtrain, Xtest) {
@@ -56,9 +59,12 @@ sample_copula <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest_Gauss_trans,
 #'
 #' @inheritParams global_arguments
 #'
+#' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
+#'
 #' @keywords internal
 #'
-#' @return data.table with \code{noSamp_MC} (conditional) Gaussian samples
+#' @examples
+#' # TODO: Add simple example
 #'
 #' @author Martin Jullum
 sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_condcov_symmetry = F) {
@@ -93,8 +99,6 @@ sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_co
 #' Helper function to sample a combination of training and testing rows, which does not risk
 #' getting the same observation twice. Need to improve this help file.
 #'
-#' @inheritParams global_arguments
-#'
 #' @param ntrain Positive integer. Number of training observations to sample from.
 #'
 #' @param ntest Positive integer. Number of test observations to sample from.
@@ -107,9 +111,12 @@ sample_gaussian <- function(given_ind, noSamp_MC, mu, Sigma, p, Xtest, ensure_co
 #' if \code{nsamples > ntrain}. Note that this solution is not optimal. Be careful if you're
 #' doing optimization over every test observation when \code{nsamples > ntrain}.
 #'
+#' @return Data.frame. Contains \code{nsamples} rows of re-sampled train and test observations.
+#'
 #' @keywords internal
 #'
-#' @return Data.frame. Contains \code{nsamples} rows of re-sampled train and test observations.
+#' @examples
+#' # TODO: Add simple example
 #'
 #' @author Martin Jullum
 sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) {

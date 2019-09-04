@@ -18,6 +18,11 @@ Vector of back-transformed Gaussian data
 \description{
 Handled in this way in order to allow using the apply function over this function
 }
+\examples{
+# TODO: Add simple example
+
+}
 \author{
 Martin Jullum
 }
+\keyword{internal}

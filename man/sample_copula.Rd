@@ -33,6 +33,10 @@ data.table with \code{noSamp_MC} (conditional) Gaussian samples
 \description{
 Sample conditional variables using the Gaussian copula approach
 }
+\examples{
+# TODO: Add simple example
+
+}
 \author{
 Martin Jullum
 }

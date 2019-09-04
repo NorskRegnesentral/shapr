@@ -8,6 +8,11 @@
 #'
 #' @return Vector of transformed new data
 #'
+#' @keywords internal
+#'
+#' @examples
+#' # TODO: Add simple example
+#'
 #' @author Martin Jullum
 inv_gaussian_transform <- function(zx, n_z, type = 7) {
   if (n_z >= length(zx)) stop("n_z should be less than length(zx)")
@@ -28,6 +33,11 @@ inv_gaussian_transform <- function(zx, n_z, type = 7) {
 #'
 #' @return Vector of back-transformed Gaussian data
 #'
+#' @keywords internal
+#'
+#' @examples
+#' # TODO: Add simple example
+#'
 #' @author Martin Jullum
 gaussian_transform_separate <- function(yx, n_y) {
   if (n_y >= length(yx)) stop("n_y should be less than length(yx)")
@@ -45,6 +55,11 @@ gaussian_transform_separate <- function(yx, n_y) {
 #' @param x Vector of data to transform
 #'
 #' @return Vector of transformed data
+#'
+#' @keywords internal
+#'
+#' @examples
+#' # TODO: Add simple example
 #'
 #' @author Martin Jullum
 gaussian_transform <- function(x) {
