@@ -234,7 +234,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
       X.nms <- colnames(x$x_train)
       setcolorder(X.pred, X.nms)
       # Doing prediction jointly (for speed), and then splitting them back into the y_list
-      pred <- predict_model(model, X.pred)
+      pred <- predict_model(x$model, X.pred)
       y_list <- split(pred, current_cond_samp)
       names(y_list) <- NULL
       ## Doing the numerical optimization -------
@@ -305,7 +305,7 @@ compute_AICc_full <- function(x, h_optim_mat) {
       X.nms <- colnames(x$x_train)
       setcolorder(X.pred, X.nms)
 
-      pred <- predict_model(model, X.pred)
+      pred <- predict_model(x$model, X.pred)
       y_list <- list(pred)
 
       ## Running the nonlinear optimization
