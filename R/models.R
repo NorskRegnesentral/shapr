@@ -15,6 +15,9 @@
 #' \item \code{\link[xgboost]{xgboost}}
 #' }
 #'
+#' For more details on how to use a custom model see the package vignette:
+#' \code{vignette("understanding_shapr", package = "shapr")}
+#'
 #' @return Numeric
 #'
 #' @export
