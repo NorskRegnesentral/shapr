@@ -21,7 +21,7 @@ test_that("Test new", {
   )
 
   # Prepare the data for explanation
-  explainer <- shapr(l$x_train, l$model)
+  explainer <- shapr(x_train, model)
   explainer_orig <- prepare_kshap(x_train, x_test)
 
   # Ex 1: Explain predictions (gaussian)
