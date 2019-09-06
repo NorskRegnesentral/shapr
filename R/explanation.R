@@ -33,7 +33,7 @@
 #' @export
 #'
 #' @author Camilla Lingjaerde
-explain <- function(x, explainer, approach, prediction_zero, n_samples, ...) {
+explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Check input for x
   if (!is.matrix(x) & !is.data.frame(x)) {
@@ -112,7 +112,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
     explainer$X$features
   )
   # Generate data
-  dt <- prepare_data(explainer)
+  dt <- prepare_data(explainer, ...)
 
   # Predict
   dt_kshap <- prediction(dt, prediction_zero, explainer)
@@ -171,14 +171,12 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 #' @rdname explain
 #' @name explain
 #' @export
-explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, seed = 1) {
+explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Setup
   explainer$x_test <- as.matrix(x)
-  explainer$n_samples <- n_samples
   explainer$x_test <- x
   explainer$approach <- approach
-  explainer$seed <- seed
 
   # Prepare transformed data
   x_train <- apply(
@@ -192,8 +190,8 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
     FUN = gaussian_transform_separate,
     n_y = nrow(explainer$x_test)
   )
-  if (is.null(dim(x_test))) {
-    x_test <- t(as.matrix(x_test))
+  if (is.null(dim(x))) {
+    x_test <- t(as.matrix(x))
   }
 
   explainer$mu <- rep(0, ncol(explainer$x_train))
@@ -205,7 +203,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
     explainer$cov_mat <- cov_mat
   }
   # Generate data
-  dt <- prepare_data(explainer, x_test)
+  dt <- prepare_data(explainer, x_test = x_test, ...)
 
   # Predict
   dt_kshap <- prediction(dt, prediction_zero, explainer)
@@ -215,7 +213,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
 #' @rdname explain
 #' @export
 explain.combined <- function(x, explainer, prediction_zero, approach = NULL,
-                             empirical.types = NULL, n_samples = 1e3, fixed_sigma_vec = 0.1,
+                             empirical.types = NULL, fixed_sigma_vec = 0.1,
                              AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
                              AIC_optim_startval = 0.1, w_threshold = 0.95, mu = NULL, cov_mat = NULL, ...) {
   one.obs.only <- is.null(nrow(x))

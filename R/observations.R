@@ -44,7 +44,7 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
 #' Generate data used for predictions
 #' @name prepare_data
 #' @export
-prepare_data <- function(x, seed = 1, n_samples = 1e3) {
+prepare_data <- function(x, ...) {
   class(x) <- x$approach
   UseMethod("prepare_data", x)
 }
@@ -52,7 +52,7 @@ prepare_data <- function(x, seed = 1, n_samples = 1e3) {
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3) {
+prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, ...) {
 
   # Setup
   n_col <- nrow(x$x_test)
@@ -99,7 +99,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3) {
     dt_l[[i]] <- observation_impute(
       W_kernel = W_kernel,
       S = S,
-      Xtrain = x$x,
+      Xtrain = as.matrix(x$x_train),
       Xtest = x$x_test[i, , drop = FALSE],
       w_threshold = x$w_threshold,
       noSamp_MC = x$n_samples
@@ -115,7 +115,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3) {
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3) {
+prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, ...) {
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -145,7 +145,8 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3) {
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.copula <- function(x, x_test, seed = 1, n_samples = 1e3) {
+prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, ...) {
+
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)

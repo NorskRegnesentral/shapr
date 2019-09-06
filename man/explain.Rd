@@ -8,7 +8,7 @@
 \alias{explain.combined}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
-explain(x, explainer, approach, prediction_zero, n_samples, ...)
+explain(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{empirical}(x, explainer, approach, prediction_zero,
   type = "fixed_sigma", fixed_sigma_vec = 0.1,
@@ -18,14 +18,13 @@ explain(x, explainer, approach, prediction_zero, n_samples, ...)
 \method{explain}{gaussian}(x, explainer, approach, prediction_zero,
   mu = NULL, cov_mat = NULL, ...)
 
-\method{explain}{copula}(x, explainer, approach, prediction_zero,
-  n_samples = 1000, seed = 1)
+\method{explain}{copula}(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{combined}(x, explainer, prediction_zero,
-  approach = NULL, empirical.types = NULL, n_samples = 1000,
-  fixed_sigma_vec = 0.1, AICc_no_samp_per_optim = 1000,
-  AIC_optim_max_eval = 20, AIC_optim_startval = 0.1,
-  w_threshold = 0.95, mu = NULL, cov_mat = NULL, ...)
+  approach = NULL, empirical.types = NULL, fixed_sigma_vec = 0.1,
+  AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
+  AIC_optim_startval = 0.1, w_threshold = 0.95, mu = NULL,
+  cov_mat = NULL, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -40,9 +39,6 @@ refers to the rows in \code{x} that ought to be included in each of the approach
 
 \item{prediction_zero}{The prediction value for unseen data, typically equal to the mean of
 the response.}
-
-\item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation.}
 
 \item{...}{Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or
 \code{explain.copula}.}
@@ -75,6 +71,9 @@ when \code{approach = "gaussian"}.}
 \item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. \code{NULL} means it is estimated from the data if needed
 (in the Gaussian approach).}
+
+\item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation.}
 
 \item{seed}{Positive integer. If \code{NULL} a random seed will be used.}
 }
