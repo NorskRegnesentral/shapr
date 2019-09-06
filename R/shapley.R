@@ -121,6 +121,7 @@ shapr <- function(x,
   explainer$W <- weighted_mat
   explainer$X <- dt_combinations
   explainer$x_train <- x_train
+  explainer$x <- NULL
 
   attr(explainer, "class") <- c("explainer", "list")
 

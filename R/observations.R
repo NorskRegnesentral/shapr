@@ -44,7 +44,7 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
 #' Generate data used for predictions
 #' @name prepare_data
 #' @export
-prepare_data <- function(x, ...) {
+prepare_data <- function(x, seed = 1, n_samples = 1e3) {
   class(x) <- x$approach
   UseMethod("prepare_data", x)
 }
@@ -52,7 +52,7 @@ prepare_data <- function(x, ...) {
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.empirical <- function(x, ...) {
+prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3) {
 
   # Setup
   n_col <- nrow(x$x_test)
@@ -115,24 +115,26 @@ prepare_data.empirical <- function(x, ...) {
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.gaussian <- function(x, ...) {
+prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3) {
+
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
-  if (!is.null(x$seed)) set.seed(x$seed)
+  if (!is.null(seed)) set.seed(seed)
   for (i in seq(n_xtest)) {
+
     l <- lapply(
       X = x$X$features,
       FUN = sample_gaussian,
-      noSamp_MC = x$n_samples,
+      noSamp_MC = n_samples,
       mu = x$mu,
       Sigma = x$cov_mat,
       p = ncol(x$x_test),
       Xtest = x$x_test[i, , drop = FALSE],
-      ensure_condcov_symmetry = F
+      ensure_condcov_symmetry = FALSE
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
-    dt_l[[i]][, w := 1 / x$n_samples]
+    dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
@@ -143,15 +145,15 @@ prepare_data.gaussian <- function(x, ...) {
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.copula <- function(x, x_test, ...) {
+prepare_data.copula <- function(x, x_test, seed = 1, n_samples = 1e3) {
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
-  if (!is.null(x$seed)) set.seed(x$seed)
+  if (!is.null(seed)) set.seed(seed)
   for (i in seq(n_xtest)) {
     l <- lapply(
       X = x$X$features,
       FUN = sample_copula,
-      noSamp_MC = x$n_samples,
+      noSamp_MC = n_samples,
       mu = x$mu,
       Sigma = x$cov_mat,
       p = x$n_features,
@@ -161,7 +163,7 @@ prepare_data.copula <- function(x, x_test, ...) {
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
-    dt_l[[i]][, w := 1 / x$n_samples]
+    dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)

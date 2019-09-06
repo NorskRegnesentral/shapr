@@ -7,13 +7,13 @@
 \alias{prepare_data.copula}
 \title{Generate data used for predictions}
 \usage{
-prepare_data(x, ...)
+prepare_data(x, seed = 1, n_samples = 1000)
 
-\method{prepare_data}{empirical}(x, ...)
+\method{prepare_data}{empirical}(x, seed = 1, n_samples = 1000)
 
-\method{prepare_data}{gaussian}(x, ...)
+\method{prepare_data}{gaussian}(x, seed = 1, n_samples = 1000)
 
-\method{prepare_data}{copula}(x, x_test, ...)
+\method{prepare_data}{copula}(x, x_test, seed = 1, n_samples = 1000)
 }
 \description{
 Generate data used for predictions

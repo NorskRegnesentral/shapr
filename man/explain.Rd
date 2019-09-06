@@ -13,10 +13,10 @@ explain(x, explainer, approach, prediction_zero, n_samples, ...)
 \method{explain}{empirical}(x, explainer, approach, prediction_zero,
   type = "fixed_sigma", fixed_sigma_vec = 0.1,
   AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-  AIC_optim_startval = 0.1, w_threshold = 0.95, seed = 1)
+  AIC_optim_startval = 0.1, w_threshold = 0.95, ...)
 
 \method{explain}{gaussian}(x, explainer, approach, prediction_zero,
-  mu = NULL, cov_mat = NULL, n_samples = 1000, seed = 1)
+  mu = NULL, cov_mat = NULL, ...)
 
 \method{explain}{copula}(x, explainer, approach, prediction_zero,
   n_samples = 1000, seed = 1)
@@ -68,8 +68,6 @@ optimizing the AICc.}
 
 \item{w_threshold}{Postive integer between 0 and 1.}
 
-\item{seed}{Positive integer. If \code{NULL} a random seed will be used.}
-
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 If \code{NULL} the expected values are estimated from the data. Note that this is only used
 when \code{approach = "gaussian"}.}
@@ -77,6 +75,8 @@ when \code{approach = "gaussian"}.}
 \item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. \code{NULL} means it is estimated from the data if needed
 (in the Gaussian approach).}
+
+\item{seed}{Positive integer. If \code{NULL} a random seed will be used.}
 }
 \value{
 data.frame. Contains the estimated Shapley values for the test data. Note that
