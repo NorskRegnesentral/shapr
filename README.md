@@ -83,8 +83,6 @@ approach. Unlike SHAP and TreeSHAP, we decompose probability predictions
 directly to ease the interpretability, i.e. not via log odds
 transformations.
 
-All feedback and suggestions are very welcome.
-
 ## Installation
 
 To install the current development version, use
@@ -161,6 +159,15 @@ plot(explanation)
 ```
 
 <img src="man/figures/README-basic_example-1.png" width="100%" />
+
+## Contribution
+
+All feedback and suggestions are very welcome. Details on how to
+contribute can be found [here](./github/CONTRIBUTING.md)
+
+Please note that the ‘shapr’ project is released with a [Contributor
+Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
+you agree to abide by its terms.
 
 ## References
 
