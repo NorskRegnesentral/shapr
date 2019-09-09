@@ -1,17 +1,27 @@
-#' Get predictions
+#' Generate permutations of training data using test observations
 #'
+#' @description
+#' TODO: Add a description text
 #'
-#' @param W_kernel Array. Contains all nonscaled weights between training and testing observations for all combinations. Dimension \code{ntrain x nfeatures}.
-#' @param S Integer matrix of dimension \code{ncomb x nfeatures}, where \code{ncomb} equals the total number of sampled/non-sampled feature combinations and \code{nfeatures} equals the total number of unique features. Note that \code{nfeatures = ncol(xtrain)}.
-#' @param Xtrain Matrix, data.frame or data.table with the features from the training data. Dimension \code{ntrain x nfeatures}.
-#' @param Xtest Matrix, data.frame or data.table with the features of the observation whose predictions ought to be explained (test data). Dimension \code{1 x nfeatures} or \code{nfeatures x 1}.
-#' @param w_threshold Numeric. The number of samples to use is chosen to be the number of the largest weights needed to account for this fraction of the total weight.
+#' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
+#' observations for all feature combinations. The dimension equals \code{n_train x n_features}.
+#' @param S Integer matrix of dimension \code{ncomb x n_features}, where \code{ncomb} equals the
+#' total number of sampled/non-sampled feature combinations and \code{n_features} equals the
+#' total number of unique features. Note that \code{n_features = ncol(xtrain)}.
+#' @param Xtrain A matrix or data.frame with the features from the training data.
+#' Dimension \code{ntrain x nfeatures}.
+#' @param Xtest Matrix, data.frame or data.table with the features of the observation whose
+#' predictions ought to be explained (test data). Dimension \code{1 x nfeatures} or
+#' \code{nfeatures x 1}.
+#' @param w_threshold Numeric vector of length 1. The number of samples to use is chosen to be
+#' the number of the largest weights needed to account for this fraction of the total weight.
 #'
-#' @inheritParams global_arguments
+#' @return data.table
 #'
-#' @return List
+#' @keywords internal
 #'
-#' @export
+#' @examples
+#' # TODO: Add simple example
 #'
 #' @author Nikolai Sellereite
 observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {

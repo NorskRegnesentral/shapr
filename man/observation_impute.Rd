@@ -2,21 +2,28 @@
 % Please edit documentation in R/observations.R
 \name{observation_impute}
 \alias{observation_impute}
-\title{Get predictions}
+\title{Generate permutated data for empirical}
 \usage{
 observation_impute(W_kernel, S, Xtrain, Xtest, w_threshold = 0.7,
   noSamp_MC = 1000)
 }
 \arguments{
-\item{W_kernel}{Array. Contains all nonscaled weights between training and testing observations for all combinations. Dimension \code{ntrain x nfeatures}.}
+\item{W_kernel}{Array. Contains all nonscaled weights between training and testing observations
+for all combinations. Dimension \code{ntrain x nfeatures}.}
 
-\item{S}{Integer matrix of dimension \code{ncomb x nfeatures}, where \code{ncomb} equals the total number of sampled/non-sampled feature combinations and \code{nfeatures} equals the total number of unique features. Note that \code{nfeatures = ncol(xtrain)}.}
+\item{S}{Integer matrix of dimension \code{ncomb x nfeatures}, where \code{ncomb} equals the
+total number of sampled/non-sampled feature combinations and \code{nfeatures} equals the
+total number of unique features. Note that \code{nfeatures = ncol(xtrain)}.}
 
-\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data. Dimension \code{ntrain x nfeatures}.}
+\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data.
+Dimension \code{ntrain x nfeatures}.}
 
-\item{Xtest}{Matrix, data.frame or data.table with the features of the observation whose predictions ought to be explained (test data). Dimension \code{1 x nfeatures} or \code{nfeatures x 1}.}
+\item{Xtest}{Matrix, data.frame or data.table with the features of the observation whose
+predictions ought to be explained (test data). Dimension \code{1 x nfeatures} or
+\code{nfeatures x 1}.}
 
-\item{w_threshold}{Numeric. The number of samples to use is chosen to be the number of the largest weights needed to account for this fraction of the total weight.}
+\item{w_threshold}{Numeric. The number of samples to use is chosen to be the number of the
+largest weights needed to account for this fraction of the total weight.}
 
 \item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
@@ -25,7 +32,7 @@ Monte Carlo integration for every conditional expectation (previously called \co
 List
 }
 \description{
-Get predictions
+TODO: Add a description text
 }
 \author{
 Nikolai Sellereite
