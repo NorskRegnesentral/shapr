@@ -33,15 +33,14 @@ predictions ought to be explained (test data).}
 \item{explainer}{An \code{explainer} object to use for exaplaining the observations.
 See \code{\link{shapr}}.}
 
-\item{approach}{String or list. If a String, the approach to use when computing the Shapley
-values. Equal to 'empirical', 'gaussian' or 'copula'. If a list, the elements in the list
-refers to the rows in \code{x} that ought to be included in each of the approaches.}
+\item{approach}{Character. Note that \code{1 <= length(approach) <= n_features}, where
+\code{n_features} where equals the total number of features in the model. All elements should be
+either be \code{gaussian}, \code{copula} or \code{empirical}. See details for more information.}
 
 \item{prediction_zero}{The prediction value for unseen data, typically equal to the mean of
 the response.}
 
-\item{...}{Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or
-\code{explain.copula}.}
+\item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 
 \item{type}{String or list. Only applicable when \code{approach='empirical'}. If a string, the
 type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a
@@ -86,6 +85,7 @@ of test observations, and \code{p} equals the total number of features.
 TODO: Add a more detailed description
 }
 \details{
+TODO: Add information about approach.
 TODO: Some additional details about the returned object
 }
 \author{
