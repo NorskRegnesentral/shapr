@@ -102,7 +102,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, ...) {
       Xtrain = as.matrix(x$x_train),
       Xtest = x$x_test[i, , drop = FALSE],
       w_threshold = x$w_threshold,
-      noSamp_MC = x$n_samples
+      noSamp_MC = n_samples
     )
     dt_l[[i]][, id := i]
   }

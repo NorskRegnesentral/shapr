@@ -103,7 +103,6 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   explainer$AIC_optim_max_eval <- AIC_optim_max_eval
   explainer$AIC_optim_startval <- AIC_optim_startval
   explainer$w_threshold <- w_threshold
-  explainer$n_samples <- AICc_no_samp_per_optim
 
   # Get distance matrix ----------------
   explainer$D <- distance_matrix(
