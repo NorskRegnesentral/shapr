@@ -94,7 +94,7 @@ test_that("Test new", {
     AIC_optim_startval = 0.1,
     w_threshold = 0.95
   )
-  e6_new <- explain(x_test, explainer, approach = "empirical", prediction_zero = mean(y_train), type = "AICc_full", n_samples = 20)
+  e6_new <- explain(x_test, explainer, approach = "empirical", prediction_zero = mean(y_train), type = "AICc_full")
   e6_old <- compute_kshap(
     model = model,
     l = explainer_orig,
