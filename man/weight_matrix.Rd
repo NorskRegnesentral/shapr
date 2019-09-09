@@ -2,9 +2,10 @@
 % Please edit documentation in R/shapley.R
 \name{weight_matrix}
 \alias{weight_matrix}
-\title{Get weighted matrix}
+\title{Calculate weighted matrix}
 \usage{
-weight_matrix(X, use_shapley_weights_in_W = T, normalize_W_weights = T)
+weight_matrix(X, use_shapley_weights_in_W = TRUE,
+  normalize_W_weights = TRUE)
 }
 \arguments{
 \item{X}{data.table}
@@ -13,7 +14,7 @@ weight_matrix(X, use_shapley_weights_in_W = T, normalize_W_weights = T)
 Matrix
 }
 \description{
-Get weighted matrix
+Calculate weighted matrix
 }
 \author{
 Nikolai Sellereite, Martin Jullum
