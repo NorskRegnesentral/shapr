@@ -43,7 +43,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   # Check input for approach
   if (!(is.vector(approach) &&
         is.atomic(approach) &&
-        (length(approach) < ncol(x)) &&
+        (length(approach) <= ncol(x)) &&
         all(is.element(approach, c("empirical", "gaussian", "copula"))))
   ) {
     stop(
@@ -56,7 +56,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   }
 
   if (length(approach) > 1) {
-    class(x) <- "combinded"
+    class(x) <- "combined"
   } else {
     class(x) <- approach
   }

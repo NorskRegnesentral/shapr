@@ -102,4 +102,22 @@ test_that("Test new", {
     empirical_settings = empirical_settings
   )
   expect_true(all(abs(e6_new - e6_old$Kshap) < 1e-4))
+
+  # Ex 7: Explain combined
+  empirical_settings <- list(
+    type = "AICc_full",
+    fixed_sigma_vec = 0.1,
+    AICc_no_samp_per_optim = 20,
+    AIC_optim_max_eval = 20,
+    AIC_optim_startval = 0.1,
+    w_threshold = 0.95
+  )
+  # e7_new <- explain(x_test, explainer, approach = c("empirical", rep("gaussian", 3)), prediction_zero = mean(y_train), type = "AICc_full")
+  e7_old <- compute_kshap(
+    model = model,
+    l = explainer_orig,
+    pred_zero = mean(y_train),
+    cond_approach = list("empirical" = 1:5, "Gaussian" = 6:16)
+  )
+  expect_true(all(abs(e7_new - e7_old$Kshap) < 1e-4))
 })
