@@ -26,9 +26,13 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
   data.table::setkeyv(dt_res, c("id", "wcomb"))
 
+  #dt_res <- dt_res[! wcomb ==1] # Do not include wcomb 1. Remove?
+
+
   if (length(dt_res[id == 1, k]) < ncol(explainer$W)) {
     explainer$W <- explainer$W[, -c(1, ncol(explainer$W))]
   }
+  #browser()
   kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
   for (j in 1:ncol(kshap)) {
     kshap[, j] <- explainer$W %*% dt_res[id == j, k]

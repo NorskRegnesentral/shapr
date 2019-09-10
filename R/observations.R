@@ -108,6 +108,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, ...) {
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  #!!!!!???????
   dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
   return(dt)
 }
