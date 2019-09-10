@@ -18,21 +18,14 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   cnms <- colnames(explainer$x_test)
   data.table::setkeyv(dt, c("id", "wcomb"))
-  dt[, p_hat := predict_model(x = explainer$model, newdata = .SD), .SDcols = cnms]
+  dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
   dt[wcomb == 1, p_hat := prediction_zero]
-  # TODO: Should we also have the following:
-  # dt[wcomb == max(wcomb), p_hat := predict_model(x = explainer$model, newdata = explainer$x_test)]
+  p_all <- predict_model(explainer$model, newdata = explainer$x_test)
+  dt[wcomb == max(wcomb), p_hat := p_all[id]]
 
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
   data.table::setkeyv(dt_res, c("id", "wcomb"))
 
-  #dt_res <- dt_res[! wcomb ==1] # Do not include wcomb 1. Remove?
-
-
-  if (length(dt_res[id == 1, k]) < ncol(explainer$W)) {
-    explainer$W <- explainer$W[, -c(1, ncol(explainer$W))]
-  }
-  #browser()
   kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
   for (j in 1:ncol(kshap)) {
     kshap[, j] <- explainer$W %*% dt_res[id == j, k]

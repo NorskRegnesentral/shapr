@@ -43,7 +43,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   # Check input for approach
   if (!(is.vector(approach) &&
         is.atomic(approach) &&
-        (length(approach) < ncol(x)) &&
+        (length(approach) <= ncol(x)) &&
         all(is.element(approach, c("empirical", "gaussian", "copula"))))
   ) {
     stop(
@@ -92,7 +92,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 explain.empirical <- function(x, explainer, approach, prediction_zero,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-                              AIC_optim_startval = 0.1, w_threshold = 0.95,combined=F, ...) {
+                              AIC_optim_startval = 0.1, w_threshold = 0.95, ...) {
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(x)
@@ -104,19 +104,9 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   explainer$AIC_optim_startval <- AIC_optim_startval
   explainer$w_threshold <- w_threshold
 
-  # Get distance matrix ----------------
-  explainer$D <- distance_matrix(
-    explainer$x_train,
-    x,
-    explainer$X$features
-  )
   # Generate data
   dt <- prepare_data(explainer, ...)
-
-  # If combined method is used, do not compute Shapley values yet
-  if(combined==T){
-    return(list(dt,explainer))
-  }
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   dt_kshap <- prediction(dt, prediction_zero, explainer)
@@ -138,7 +128,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #' @name explain
 #'
 #' @export
-explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, combined=F, ...) {
+explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(x)
@@ -166,11 +156,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-
-  # If combined method is used, do not compute Shapley values yet
-  if(combined==T){
-    return(list(dt,explainer))
-  }
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   dt_kshap <- prediction(dt, prediction_zero, explainer)
@@ -180,7 +166,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 #' @rdname explain
 #' @name explain
 #' @export
-explain.copula <- function(x, explainer, approach, prediction_zero, combined=F,...) {
+explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Setup
   explainer$x_test <- as.matrix(x)
@@ -213,198 +199,65 @@ explain.copula <- function(x, explainer, approach, prediction_zero, combined=F,.
   }
   # Generate data
   dt <- prepare_data(explainer, x_test = x_test, ...)
+  if (!is.null(explainer$return)) return(dt)
 
-  # If combined method is used, do not compute Shapley values yet
-  if(combined==T){
-    return(list(dt,explainer))
-  }
   # Predict
   dt_kshap <- prediction(dt, prediction_zero, explainer)
   return(dt_kshap)
 }
 
-
-
 #' @rdname explain
 #' @export
-explain.combined <- function(x, explainer, prediction_zero, approach = NULL,
-                             type = NULL, fixed_sigma_vec = 0.1,
-                             AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-                             AIC_optim_startval = 0.1, w_threshold = 0.95, mu = NULL, cov_mat = NULL,
-                             n_samples=1e5,...) {
-  one.obs.only <- is.null(nrow(x))
-  empirical.types=type
-  if (is.null(approach)) {
-    #if (one.obs.only) {
-    # approach <- rep("empirical",1) # If nothing else is specified, empirical is used
-    #} else {
-    approach <- rep("empirical", explainer$n_features)
-    #}
-  }
-  if (is.null(empirical.types)) {
-    #if (!one.obs.only) {
-    empirical.types <- rep("independence", sum(approach=='empirical'))
-    #} else {
-    # empirical.types <- list("independence" = 1)
-    #}
-  }
-  if(length(type)==1){
-    empirical.types<-rep(type,sum(approach=='empirical'))
-  }
-  # Setup
+explain.combined <- function(x, explainer, prediction_zero, approach = NULL, mu = NULL, cov_mat = NULL, ...) {
+
+  # Get indices of combinations
+  l <- get_list_approaches(explainer$X$nfeatures, approach)
+  explainer$return <- TRUE
   explainer$x_test <- as.matrix(x)
-  explainer$x_test <- x
-  explainer$approach <- approach
-  dt.final <- NULL
-  dt.rownames <- NULL
-  fixed.ind=indep.ind=gauss.ind=each.ind=full.ind=cop.ind=numeric(0)
-  if (!all(approach %in% c("empirical", "gaussian", "copula"))) {
-    stop("Approach must be 'empirical','gaussian' or 'copula'")
-  }
-  if ("empirical" %in% approach) {
-    if (!all(empirical.types %in% c("independence", "fixed_sigma", "AICc_each_k", "AICc_full"))) {
-      stop("Empirical approach must be 'independence','fixed_sigma','AICc_each_k' or 'AICc_full'")
-    }
-    if ("independence" %in% empirical.types) {
-      emp_indep<- which(empirical.types=='independence')
-      indep.ind=which(explainer$X$nfeatures %in% emp_indep)
-      #if(1 %in% emp_indep) {emp_indep=c(0,emp_indep)} # If this approach is used when conditionioning on one var, include conditioning on none
-      #expl = explainer
-      #this.ind = which(explainer$X$nfeatures %in% emp_indep)
-      #expl$S=explainer$S[this.ind,]
-      #expl$X=explainer$X[this.ind,]
-      #expl$W = explainer$W[,this.ind]
-      dt.indep <- explain.empirical(x, explainer,
-                                    approach = "empirical", type = "independence",
-                                    prediction_zero = prediction_zero, w_threshold = w_threshold,combined=T
-      )
-      dt.indep.reduced = dt.indep[[1]][wcomb %in% indep.ind,]
-      dt.final <- rbind(dt.final, dt.indep.reduced)
-      explainer=dt.indep[[2]]
-      #dt.rownames <- c(dt.rownames, emp_indep_ind)
-    }
-    if ("fixed_sigma" %in% empirical.types) {
-      emp_fixed<- which(empirical.types=='fixed_sigma')
-      fixed.ind = which(explainer$X$nfeatures %in% emp_fixed)
-      #(1 %in% emp_fixed) {emp_fixed=c(0,emp_fixed)} # Include conditioning on none
-      #expl = explainer
-      #this.ind = which(explainer$X$nfeatures %in% emp_fixed)
-      #expl$S=explainer$S[this.ind,]
-      #expl$X=explainer$X[this.ind,]
-      #expl$W = explainer$W[,this.ind]
-      dt.fixed <- explain.empirical(x, explainer,
-                                    approach = "empirical", prediction_zero = prediction_zero,
-                                    type = "fixed_sigma", fixed_sigma_vec = fixed_sigma_vec, w_threshold = w_threshold,combined=T
-      )
-      dt.fixed.reduced = dt.fixed[[1]][wcomb %in% fixed.ind,]
-      dt.final <- rbind(dt.final, dt.fixed.reduced)
-      explainer=dt.fixed[[2]]
-      #dt.rownames <- c(dt.rownames, emp_fixed_ind)
-    }
-    if ("AICc_each_k" %in% empirical.types) {
-      emp_each <- which(empirical.types=='AICc_each_k')
-      each.ind = which(explainer$X$nfeatures %in% emp_each)
-      #if(1 %in% emp_each) {emp_each=c(0,emp_each)} # Include conditioning on none
-      #expl = explainer
-      #this.ind = which(explainer$X$nfeatures %in% emp_each)
-      #expl$S=explainer$S[this.ind,]
-      ##expl$X=explainer$X[this.ind,]
-      #expl$W = explainer$W[,this.ind]
-      dt.AICc_each <- explain.empirical(x, explainer,
-                                        approach = "empirical", type = "AICc_each_k", prediction_zero = prediction_zero,
-                                        AICc_no_samp_per_optim = AICc_no_samp_per_optim, AIC_optim_max_eval = AIC_optim_max_eval,
-                                        AIC_optim_startval = AIC_optim_startval, w_threshold = w_threshold,combined=T
-      )
-      dt.each.reduced = dt.AICc_each[[1]][wcomb %in% each.ind,]
-      dt.final <- rbind(dt.final, dt.each.reduced)
-      explainer=dt.AICc_each[[2]]
-      #dt.rownames <- c(dt.rownames, emp_each_ind)
-    }
-    if ("AICc_full" %in% empirical.types) {
-      emp_full <- which(empirical.types=='AICc_full')
-      full.ind = which(explainer$X$nfeatures %in% emp_full)
-      #if(1 %in% emp_full) {emp_full=c(0,emp_full)} # Include conditioning on none
-      #expl = explainer
-      #this.ind = which(explainer$X$nfeatures %in% emp_full)
-      #expl$S=explainer$S[this.ind,]
-      #expl$X=explainer$X[this.ind,]
-      #expl$W = explainer$W[,this.ind]
-      dt.AICc_full <- explain.empirical(x, explainer,
-                                        approach = "empirical", prediction_zero = prediction_zero,
-                                        type = "AICc_full", AICc_no_samp_per_optim = AICc_no_samp_per_optim, AIC_optim_max_eval = AIC_optim_max_eval,
-                                        AIC_optim_startval = AIC_optim_startval, w_threshold = w_threshold,combined=T
-      )
-      dt.full.reduced = dt.AICc_full[[1]][wcomb %in% full.ind,]
-      dt.final <- rbind(dt.final, dt.full.reduced)
-      explainer=dt.AICc_full[[2]]
-      #dt.rownames <- c(dt.rownames, emp_full_ind)
-    }
-  }
-  if ("gaussian" %in% approach) {
-    gaussian_ind <- which(approach=='gaussian')
-    gauss.ind = which(explainer$X$nfeatures %in% gaussian_ind)
-    #if(1 %in% gaussian_ind) {gaussian_ind=c(0,gaussian_ind)} # Include conditioning on none
-    #expl = explainer
-    #this.ind = which(explainer$X$nfeatures %in% gaussian_ind)
-    #expl$S=explainer$S[this.ind,]
-    #expl$X=explainer$X[this.ind,]
-    #expl$W = explainer$W[,this.ind]
-    dt.gaussian <- explain.gaussian(x, explainer, approach = "gaussian", prediction_zero = prediction_zero, mu = mu,
-                                    cov_mat = cov_mat, n_samples = n_samples,combined=T)
-    dt.gaussian.reduced = dt.gaussian[[1]][wcomb %in% gauss.ind,]
-    dt.final <- rbind(dt.final, dt.gaussian.reduced)
-    explainer=dt.gaussian[[2]]
-    #dt.rownames <- c(dt.rownames, gaussian_ind)
-  }
-  if ("copula" %in% approach) {
-    copula_ind <- which(approach=='copula')
-    cop.ind=which(explainer$X$nfeatures %in% copula_ind)
-    #if(1 %in% copula_ind) {copula_ind=c(0,copula_ind)} # Include conditioning on none
-    #expl = explainer
-    #this.ind = which(explainer$X$nfeatures %in% copula_ind)
-    #expl$S=explainer$S[this.ind,]
-    #expl$X=explainer$X[this.ind,]
-    #expl$W = explainer$W[,this.ind]
-    dt.copula <- explain.copula(x, explainer, approach = "copula", prediction_zero = prediction_zero, n_samples = n_samples,combined=T)
-    dt.copula.reduced = dt.copula[[1]][wcomb %in% cop.ind,]
-    dt.final <- rbind(dt.final, dt.copula.reduced)
-    explainer=dt.copula[[2]]
-    #dt.rownames <- c(dt.rownames, copula_ind)
-  }
-  # Add results from conditioning on none or all variables:
-  if(! one.obs.only){
-      dt.empty = dt.final[1:nrow(x),]
-      dt.empty[,1:(ncol(dt.empty)-3)]=as.data.frame(x)
-      dt.empty$wcomb= 1.0
-      dt.empty$id=1:nrow(x)
-      dt.empty$w = 1
-      dt.all= dt.empty
-      dt.all$wcomb=length(explainer$X$nfeatures)
-  }
-  else{
-    dt.empty=dt.final[1,,drop=F]
-    dt.empty[,1:(ncol(dt.empty)-3)]=as.data.frame(x)
-    dt.empty$wcomb= 1.0
-    dt.empty$id=dt.empty$w=1
-    dt.all=dt.empty
-    dt.all$wcomb=length(explainer$X$nfeatures)
-  }
-  dt.final=rbind(dt.empty,dt.final,dt.all)
+  dt_e <- dt_g <- dt_c <- NULL
 
-
-  # Sort by id
-  dt.final = dt.final[order(dt.final$id),]
-  # Sort by wcomb
-  for(i in unique(dt.final$id)){
-    dt.final[id==i,]=dt.final[id==i,][order(wcomb),]
+  if (!is.null(l$empirical)) {
+    dt_e <- explain(x, explainer, approach = "empirical", prediction_zero, index_features = l$empirical, ...)
   }
-  # Predict
-  dt_kshap <- prediction(dt.final, prediction_zero, explainer)
 
-  #if (!one.obs.only) {
-  #rownames(dt.final) <- dt.rownames
-  #dt.final <- dt.final[order(dt.rownames), ]
+  if (!is.null(l$gaussian)) {
+    dt_g <- explain(x, explainer, approach = "gaussian", prediction_zero, index_features = l$gaussian, ...)
 
+  }
+
+  if (!is.null(l$copula)) {
+    dt_c <- explain(x, explainer, approach = "copula", prediction_zero, index_features = l$copula, ...)
+  }
+
+  dt <- data.table::rbindlist(list(dt_e, dt_g, dt_c), use.names = TRUE)
+
+  dt_kshap <- prediction(dt, prediction_zero, explainer)
   return(dt_kshap)
+
 }
 
+#' @keywords internal
+get_list_approaches <- function(n_features, approach) {
+
+  l <- list()
+
+  x <- which(approach == "empirical")
+  if (length(x) > 0) {
+    if (approach[1] == "empirical") x <- c(0, x)
+    l$empirical <- which(n_features %in% x)
+  }
+
+  x <- which(approach == "gaussian")
+  if (length(x) > 0) {
+    if (approach[1] == "gaussian") x <- c(0, x)
+    l$gaussian <- which(n_features %in% x)
+  }
+
+  x <- which(approach == "copula")
+  if (length(x) > 0) {
+    if (approach[1] == "copula") x <- c(0, x)
+    l$copula <- which(n_features %in% x)
+
+  }
+  return(l)
+}
