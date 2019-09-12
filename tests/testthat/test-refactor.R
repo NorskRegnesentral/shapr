@@ -138,16 +138,16 @@ test_that("Test new", {
   )
   expect_true(all(abs(e9_new - e9_old$Kshap) < 1e-4))
 
-  # Ex 10: gaussian and copula XX
-  e10_new <- explain(x_test, explainer, approach = c(rep("gaussian", 2),rep("copula",2)), prediction_zero = mean(y_train), n_samples = 1e5)
+  # Ex 10: gaussian and copula XX (works with seed)
+  e10_new <- explain(x_test, explainer, approach = c(rep("gaussian", 2),rep("copula",2)), prediction_zero = mean(y_train), n_samples = 1e4)
   e10_old <- compute_kshap(
     model = model,
     l = explainer_orig,
-    noSamp_MC = 1e5,
+    noSamp_MC = 1e4,
     pred_zero = mean(y_train),
     cond_approach = list("Gaussian" = 1:11, "copula" = 12:16)
   )
-  expect_true(all(abs(e10_new - e10_old$Kshap) < 1e-4))
+  expect_true(all(abs(e10_new- e10_old$Kshap) < 1e-4))
 
   # Ex 11: empirical and gaussian
   e11_new <- explain(x_test, explainer, approach = c(rep("empirical", 2),rep("gaussian",2)), prediction_zero = mean(y_train), n_samples = 1e4)
@@ -182,7 +182,7 @@ test_that("Test new", {
   )
   expect_true(all(abs(e13_new - e13_old$Kshap) < 1e-4))
 
-  # Ex 14: gaussian and copula XX
+  # Ex 14: gaussian and copula XX (works with seed)
   e14_new <- explain(x_test, explainer, approach = c(rep("gaussian", 1),rep("copula",3)), prediction_zero = mean(y_train), n_samples = 1e4)
   e14_old <- compute_kshap(
     model = model,
@@ -194,11 +194,11 @@ test_that("Test new", {
   expect_true(all(abs(e14_new - e14_old$Kshap) < 1e-4))
 
   # Ex 15: empirical and copula
-  e15_new <- explain(x_test, explainer, approach = c(rep("empirical", 1),rep("copula",3)), prediction_zero = mean(y_train), n_samples = 1e4)
+  e15_new <- explain(x_test, explainer, approach = c(rep("empirical", 1),rep("copula",3)), prediction_zero = mean(y_train), n_samples = 1e5)
   e15_old <- compute_kshap(
     model = model,
     l = explainer_orig,
-    noSamp_MC = 1e4,
+    noSamp_MC = 1e5,
     pred_zero = mean(y_train),
     cond_approach = list("empirical" = 1:5, "copula" = 6:16)
   )
@@ -225,5 +225,16 @@ test_that("Test new", {
     cond_approach = list("Gaussian" = 1:11, "empirical" = 12:16)
   )
   expect_true(all(abs(e17_new - e17_old$Kshap) < 1e-4))
+
+  # Ex 8: Explain combined II - all empirical
+  e18_new <- explain(x_test, explainer, approach = c(rep("empirical", 4)), prediction_zero = mean(y_train), n_samples = 1e4)
+  e18_old <- compute_kshap(
+    model = model,
+    l = explainer_orig,
+    noSamp_MC = 1e4,
+    pred_zero = mean(y_train),
+    cond_approach = list("empirical" = 1:16)
+  )
+  expect_true(all(abs(e18_new - e18_old$Kshap) < 1e-4))
 
 })
