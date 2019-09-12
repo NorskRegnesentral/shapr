@@ -16,6 +16,7 @@
 #' @author Nikolai Sellereite
 prediction <- function(dt, prediction_zero, explainer) {
 
+  # Predictions
   cnms <- colnames(explainer$x_test)
   data.table::setkeyv(dt, c("id", "wcomb"))
   dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
@@ -23,14 +24,13 @@ prediction <- function(dt, prediction_zero, explainer) {
   p_all <- predict_model(explainer$model, newdata = explainer$x_test)
   dt[wcomb == max(wcomb), p_hat := p_all[id]]
 
+  # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
   data.table::setkeyv(dt_res, c("id", "wcomb"))
-
-  kshap <- matrix(0.0, nrow(explainer$W), nrow(explainer$x_test))
-  for (j in 1:ncol(kshap)) {
-    kshap[, j] <- explainer$W %*% dt_res[id == j, k]
-  }
-  dt_kshap <- data.table::as.data.table(t(kshap))
+  dt_mat <- data.table::dcast(dt_res, wcomb ~ id, value.var = "k")
+  dt_mat[, wcomb := NULL]
+  kshap <-  t(explainer$W %*% as.matrix(dt_mat))
+  dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", cnms)
 
   return(dt_kshap)

@@ -56,12 +56,12 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
 
   # Get distance matrix ----------------
   if (is.null(index_features)) {
-    index_features <- explainer$X[, .I]
+    index_features <- x$X[, .I]
   }
   x$D <- distance_matrix(
     x$x_train,
     x$x_test,
-    explainer$X$features[index_features]
+    x$X$features[index_features]
   )
   # Setup
   n_col <- nrow(x$x_test)
