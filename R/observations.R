@@ -193,7 +193,7 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
       noSamp_MC = n_samples,
       mu = x$mu,
       Sigma = x$cov_mat,
-      p = x$n_features,
+      p = ncol(x$x_test),
       Xtest = x$x_test[i, , drop = FALSE],
       Xtrain = as.matrix(x$x_train),
       Xtest_Gauss_trans = x_test[i, , drop = FALSE]
