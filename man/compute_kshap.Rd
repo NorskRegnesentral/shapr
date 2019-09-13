@@ -2,7 +2,8 @@
 % Please edit documentation in R/shapley.R
 \name{compute_kshap}
 \alias{compute_kshap}
-\title{Computes kernel SHAP values for test data}
+\title{Note that this function is deprecated, but we'll keep it for a week
+to check that results are stable.}
 \usage{
 compute_kshap(model, l, noSamp_MC = 1000, verbose = FALSE,
   cond_approach = "empirical", empirical_settings = list(type =
@@ -10,46 +11,7 @@ compute_kshap(model, l, noSamp_MC = 1000, verbose = FALSE,
   AIC_optim_max_eval = 20, AIC_optim_startval = 0.1, w_threshold = 0.95),
   pred_zero, mu = NULL, Sigma = NULL, ensure_condcov_symmetry = F)
 }
-\arguments{
-\item{model}{Model object. Fitted model that is used to produce the predictions}
-
-\item{l}{List. The output from the \code{prepare_kshap} function}
-
-\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
-
-\item{verbose}{Integer. How much information to print during function execution (in development)}
-
-\item{cond_approach}{String or list. When being a list, the elements in the list refers to the
-rows in l$X that ought to be included in each of the approaches!}
-
-\item{empirical_settings}{List. Specifying the settings when using the empirical method to
-compute the conditional expectations.}
-
-\item{pred_zero}{The prediction value for unseen data, typically equal to the mean of the
-response}
-
-\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
-NULL means it is estimated from the data if needed (in the Gaussian approach).}
-
-\item{Sigma}{Numeric matrix. (Optional) Containing the covariance matrix of the data generating
-distribution. NULL means it is estimated from the data if needed (in the Gaussian approach).}
-
-\item{ensure_condcov_symmetry}{Logical. Whether to ensure that the conditional covariance
-matrices in the Gaussian and copula approaches are symmetric. Typically only needed if the
-original covariance is just barely positive definite.}
-}
-\value{
-List with kernel SHAP values (\code{Kshap}) and other object used to perform
-the computation (helpful for debugging etc.)
-}
 \description{
-Computes kernel SHAP values for test data
+TODO: Delete this function from the codebase
 }
-\details{
-If \code{cond_approach} is a list, the elements in the list refers to the rows in
-\code{l$X} that ought to be included in each of the approaches!
-}
-\author{
-Martin Jullum
-}
+\keyword{internal}
