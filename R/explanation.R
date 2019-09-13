@@ -33,7 +33,7 @@
 #' @export
 #'
 #' @author Camilla Lingjaerde
-explain <- function(x, explainer, approach, prediction_zero, ...) {
+explain <- function(x, explainer, approach='empirical', prediction_zero, ...) {
 
   # Check input for x
   if (!is.matrix(x) & !is.data.frame(x)) {
