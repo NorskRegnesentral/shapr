@@ -132,8 +132,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
-  print(seed)
-  print(n_samples)
   if (!is.null(seed)) set.seed(seed)
   if (is.null(index_features)) {
     features <- x$X$features
