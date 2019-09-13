@@ -9,12 +9,14 @@
 \usage{
 prepare_data(x, ...)
 
-\method{prepare_data}{empirical}(x, seed = 1, n_samples = 1000, ...)
+\method{prepare_data}{empirical}(x, seed = 1, n_samples = 1000,
+  index_features = NULL, ...)
 
-\method{prepare_data}{gaussian}(x, seed = 1, n_samples = 1000, ...)
+\method{prepare_data}{gaussian}(x, seed = 1, n_samples = 1000,
+  index_features = NULL, ...)
 
 \method{prepare_data}{copula}(x, x_test = 1, seed = 1,
-  n_samples = 1000, ...)
+  n_samples = 1000, index_features = NULL, ...)
 }
 \description{
 Generate data used for predictions

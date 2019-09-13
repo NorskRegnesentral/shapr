@@ -1,16 +1,15 @@
 #' Explain the output of machine learning models with more accurately estimated Shapley values
 #'
-#' @description TODO: Add a more detailed description
 #'
 #' @param x A matrix or data.frame. Contains the the features, whose
 #' predictions ought to be explained (test data).
 #'
-#' @param explainer An \code{explainer} object to use for exaplaining the observations.
+#' @param explainer An list returned by \code{shapr} whose elements are used to explain the observations.
 #' See \code{\link{shapr}}.
 #'
-#' @param approach String or list. If a String, the approach to use when computing the Shapley
-#' values. Equal to 'empirical', 'gaussian' or 'copula'. If a list, the elements in the list
-#' refers to the rows in \code{x} that ought to be included in each of the approaches.
+#' @param approach Character or List. The method to use when computing the Shapley values. If a list, a combined approach is used where element \code{i} indicates the approach to use when conditioning on \code{i} variables. Note that \code{1 <= length(approach) <= n_features}, where
+#' \code{n_features} equals the total number of features in the model. All elements should
+#' either be \code{gaussian}, \code{copula} or \code{empirical}. See details for more information.
 #'
 #' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
 #' the response.
@@ -18,22 +17,19 @@
 #' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation.
 #'
-#' @param seed Positive integer. If \code{NULL} a random seed will be used.
+#' @param seed Positive integer. If \code{NULL} a random seed will be used. Useful for debugging.
 #'
-#' @param ... Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or
-#' \code{explain.copula}.
+#' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
-#' @details
-#' TODO: Some additional details about the returned object
 #'
 #' @return data.frame. Contains the estimated Shapley values for the test data. Note that
-#' the dimensions of the data.frame equals \code{n x (p+1)}, where \code{n} equals the number
+#' the dimensions of the data.frame equals \code{ntest x (p+1)}, where \code{ntest} equals the number
 #' of test observations, and \code{p} equals the total number of features.
 #'
 #' @export
 #'
 #' @author Camilla Lingjaerde
-explain <- function(x, explainer, approach, prediction_zero, ...) {
+explain <- function(x, explainer, approach='empirical', prediction_zero, ...) {
 
   # Check input for x
   if (!is.matrix(x) & !is.data.frame(x)) {
@@ -41,23 +37,23 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   }
 
   # Check input for approach
-  str_error <- paste(
-    "It seems that you passed a non-valid value for approach.",
-    "It should be either 'empirical', 'gaussian', 'copula' or",
-    "a list."
-  )
+  if (!(is.vector(approach) &&
+        is.atomic(approach) &&
+        (length(approach) <= ncol(x)) &&
+        all(is.element(approach, c("empirical", "gaussian", "copula"))))
+  ) {
+    stop(
+      paste(
+        "It seems that you passed a non-valid value for approach.",
+        "It should be either 'empirical', 'gaussian', 'copula' or",
+        "a list."
+      )
+    )
+  }
 
-  nms_valid <- c("empirical", "gaussian", "copula", "combined")
-
-  if (is.list(approach)) {
-    if (!all(colnames(approach) %in% nms_valid)) {
-      stop(str_error)
-    }
+  if (length(approach) > 1) {
     class(x) <- "combined"
   } else {
-    if (!is.element(approach, nms_valid)) {
-      stop(str_error)
-    }
     class(x) <- approach
   }
 
@@ -65,7 +61,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 }
 
 #' @param type String or list. Only applicable when \code{approach='empirical'}. If a string, the
-#' type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a
+#' type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma' (default). If a
 #' list, the elements in the list refers to the rows in \code{x} that ought to be included in
 #' each of the empirical approaches.
 #'
@@ -74,16 +70,16 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #'
 #' @param AICc_no_samp_per_optim Positive integer. Only applicable when
 #' \code{approach='empirical'} and \code{type='AICc_each_k'} or
-#' \code{type='AICc_full'}. Number of samples to consider in AICc optimization.
+#' \code{type='AICc_full'}. Number of samples to consider in AICc optimization. Default value \code{1000}.
 #'
 #' @param AIC_optim_max_eval Positive integer. Only applicable when \code{approach='empirical'}
 #' and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Numeric. Maximum value when
-#' optimizing the AICc.
+#' optimizing the AICc. Default value \code{20}.
 #'
 #' @param AIC_optim_startval Numeric. Only applicable when \code{approach='empirical'} and
-#' \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.
+#' \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc. Default value \code{0.1}.
 #'
-#' @param w_threshold Postive integer between 0 and 1.
+#' @param w_threshold Postive integer between 0 and 1. Default value \code{0.95}. We choose the number \code{K} of observations to use so that they account for this fraction of the total weight.
 #'
 #' @rdname explain
 #' @name explain
@@ -104,14 +100,9 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   explainer$AIC_optim_startval <- AIC_optim_startval
   explainer$w_threshold <- w_threshold
 
-  # Get distance matrix ----------------
-  explainer$D <- distance_matrix(
-    explainer$x_train,
-    x,
-    explainer$X$features
-  )
   # Generate data
   dt <- prepare_data(explainer, ...)
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   dt_kshap <- prediction(dt, prediction_zero, explainer)
@@ -161,6 +152,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   dt_kshap <- prediction(dt, prediction_zero, explainer)
@@ -203,6 +195,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
   }
   # Generate data
   dt <- prepare_data(explainer, x_test = x_test, ...)
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   dt_kshap <- prediction(dt, prediction_zero, explainer)
@@ -211,119 +204,56 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
 #' @rdname explain
 #' @export
-explain.combined <- function(x, explainer, prediction_zero, approach = NULL,
-                             empirical.types = NULL, fixed_sigma_vec = 0.1,
-                             AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-                             AIC_optim_startval = 0.1, w_threshold = 0.95, mu = NULL, cov_mat = NULL, ...) {
-  one.obs.only <- is.null(nrow(x))
+explain.combined <- function(x, explainer, prediction_zero, approach = NULL, mu = NULL, cov_mat = NULL, ...) {
 
-  if (is.null(approach)) {
-    if (one.obs.only) {
-      approach <- list("empirical" = 1)
-    } else {
-      approach <- list("empirical" = 1:nrow(x))
-    }
+  # Get indices of combinations
+  l <- get_list_approaches(explainer$X$nfeatures, approach)
+  explainer$return <- TRUE
+  explainer$x_test <- as.matrix(x)
+  dt_e <- dt_g <- dt_c <- NULL
+
+  if (!is.null(l$empirical)) {
+    dt_e <- explain(x, explainer, approach = "empirical", prediction_zero, index_features = l$empirical, ...)
   }
-  if (is.null(empirical.types)) {
-    if (!one.obs.only) {
-      empirical.types <- list("independence" = 1:nrow(x))
-    } else {
-      empirical.types <- list("independence" = 1)
-    }
+
+  if (!is.null(l$gaussian)) {
+    dt_g <- explain(x, explainer, approach = "gaussian", prediction_zero, index_features = l$gaussian, ...)
+
   }
-  dt.final <- NULL
-  dt.rownames <- NULL
-  if (!all(names(approach) %in% c("empirical", "gaussian", "copula"))) {
-    stop("Approach must be 'empirical','gaussian' or 'copula'")
+
+  if (!is.null(l$copula)) {
+    dt_c <- explain(x, explainer, approach = "copula", prediction_zero, index_features = l$copula, ...)
   }
-  if ("empirical" %in% names(approach)) {
-    if (!all(names(empirical.types) %in% c("independence", "fixed_sigma", "AICc_each_k", "AICc_full"))) {
-      stop("Empirical approach must be 'independence','fixed_sigma','AICc_each_k' or 'AICc_full'")
-    }
-    if ("independence" %in% names(empirical.types)) {
-      emp_indep_ind <- empirical.types$independence
-      if (one.obs.only) {
-        x.emp.indep <- x
-      } else {
-        x.emp.indep <- x[emp_indep_ind, ]
-      }
-      dt.indep <- explain.empirical(x.emp.indep, explainer,
-        approach = "empirical", type = "independence",
-        prediction_zero = prediction_zero, w_threshold = w_threshold
-      )
-      dt.final <- rbind(dt.final, dt.indep)
-      dt.rownames <- c(dt.rownames, emp_indep_ind)
-    }
-    if ("fixed_sigma" %in% names(empirical.types)) {
-      emp_fixed_ind <- empirical.types$fixed_sigma
-      if (one.obs.only) {
-        x.emp.fixed <- x
-      } else {
-        x.emp.fixed <- x[emp_fixed_ind, ]
-      }
-      dt.fixed <- explain.empirical(x.emp.fixed, explainer,
-        approach = "empirical", prediction_zero = prediction_zero,
-        type = "fixed_sigma", fixed_sigma_vec = fixed_sigma_vec, w_threshold = w_threshold
-      )
-      dt.final <- rbind(dt.final, dt.fixed)
-      dt.rownames <- c(dt.rownames, emp_fixed_ind)
-    }
-    if ("AICc_each_k" %in% names(empirical.types)) {
-      emp_each_ind <- empirical.types$AICc_each_k
-      if (one.obs.only) {
-        x.emp.each <- x
-      } else {
-        x.emp.each <- x[emp_each_ind, ]
-      }
-      dt.AICc_each <- explain.empirical(x.emp.each, explainer,
-        approach = "empirical", type = "AICc_each_k", prediction_zero = prediction_zero,
-        AICc_no_samp_per_optim = AICc_no_samp_per_optim, AIC_optim_max_eval = AIC_optim_max_eval,
-        AIC_optim_startval = AIC_optim_startval, w_threshold = w_threshold
-      )
-      dt.final <- rbind(dt.final, dt.AICc_each)
-      dt.rownames <- c(dt.rownames, emp_each_ind)
-    }
-    if ("AICc_full" %in% names(empirical.types)) {
-      emp_full_ind <- empirical.types$AICc_full
-      if (one.obs.only) {
-        x.emp.full <- x
-      } else {
-        x.emp.full <- x[emp_full_ind, ]
-      }
-      dt.AICc_full <- explain.empirical(x.emp.full, explainer,
-        approach = "empirical", prediction_zero = prediction_zero,
-        type = "AICc_full", AICc_no_samp_per_optim = AICc_no_samp_per_optim, AIC_optim_max_eval = AIC_optim_max_eval,
-        AIC_optim_startval = AIC_optim_startval, w_threshold = w_threshold
-      )
-      dt.final <- rbind(dt.final, dt.AICc_full)
-      dt.rownames <- c(dt.rownames, emp_full_ind)
-    }
+
+  dt <- data.table::rbindlist(list(dt_e, dt_g, dt_c), use.names = TRUE)
+
+  dt_kshap <- prediction(dt, prediction_zero, explainer)
+  return(dt_kshap)
+
+}
+
+#' @keywords internal
+get_list_approaches <- function(n_features, approach) {
+
+  l <- list()
+
+  x <- which(approach == "empirical")
+  if (length(x) > 0) {
+    if (approach[1] == "empirical") x <- c(0, x)
+    l$empirical <- which(n_features %in% x)
   }
-  if ("gaussian" %in% names(approach)) {
-    gaussian_ind <- approach$gaussian
-    if (!one.obs.only) {
-      x.gauss <- x[gaussian_ind, ]
-    } else {
-      x.gauss <- x
-    }
-    dt.gaussian <- explain.gaussian(x.gauss, explainer, approach = "gaussian", prediction_zero = prediction_zero, mu = mu, cov_mat = cov_mat, n_samples = n_samples)
-    dt.final <- rbind(dt.final, dt.gaussian)
-    dt.rownames <- c(dt.rownames, gaussian_ind)
+
+  x <- which(approach == "gaussian")
+  if (length(x) > 0) {
+    if (approach[1] == "gaussian") x <- c(0, x)
+    l$gaussian <- which(n_features %in% x)
   }
-  if ("copula" %in% names(approach)) {
-    copula_ind <- approach$copula
-    if (!one.obs.only) {
-      x.copula <- x[copula_ind, ]
-    } else {
-      x.copula <- x
-    }
-    dt.copula <- explain.copula(x.copula, explainer, approach = "copula", prediction_zero = prediction_zero, n_samples = n_samples)
-    dt.final <- rbind(dt.final, dt.copula)
-    dt.rownames <- c(dt.rownames, copula_ind)
+
+  x <- which(approach == "copula")
+  if (length(x) > 0) {
+    if (approach[1] == "copula") x <- c(0, x)
+    l$copula <- which(n_features %in% x)
+
   }
-  if (!one.obs.only) {
-    rownames(dt.final) <- dt.rownames
-    dt.final <- dt.final[order(dt.rownames), ]
-  }
-  return(dt.final)
+  return(l)
 }

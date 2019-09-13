@@ -79,7 +79,7 @@ devtools::install_github("NorskRegnesentral/shapr")
 The following example shows how a simple `xgboost` model is trained using the *Boston Housing Data*, and how `shapr` explains the individual predictions. 
 
 
-```{r basic_example}
+```{r basic_example,warning=F}
 
 library(MASS)
 library(xgboost)
@@ -110,9 +110,9 @@ model <- xgboost(
 
 
 # Prepare the data for explanation
-l <- prepare_kshap(
+explainer <- shapr(
   x_train,
-  x_test
+  model
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
@@ -120,17 +120,18 @@ pred_zero <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation <- compute_kshap(
-  model = model,
-  l = l,
-  pred_zero = pred_zero
+explanation <- explain(
+  x_test,
+  approach='empirical',
+  explainer = explainer,
+  prediction_zero = pred_zero
 )
 
 # Printing the Shapley values for the test data
-explanation$Kshap
+explanation
 
 # Finally we plot the resulting explanations
-plot_kshap(explanation, x_test)
+plot_kshap(explanation, x_test, model)
 ```
 
 ## References
