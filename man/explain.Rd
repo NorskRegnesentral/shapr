@@ -31,7 +31,7 @@ predictions ought to be explained (test data).}
 See \code{\link{shapr}}.}
 
 \item{approach}{Character. Note that \code{1 <= length(approach) <= n_features}, where
-\code{n_features} where equals the total number of features in the model. All elements should
+\code{n_features} equals the total number of features in the model. All elements should
 either be \code{gaussian}, \code{copula} or \code{empirical}. See details for more information.}
 
 \item{prediction_zero}{The prediction value for unseen data, typically equal to the mean of
