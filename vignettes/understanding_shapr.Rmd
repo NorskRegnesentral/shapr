@@ -52,12 +52,12 @@ Here is an overview of the main functions. You can read their documentation and 
 ----------------------------- ------------------------------------------------------
 Function Name                 Description
 ----------------------------- ------------------------------------------------------
-`compute_kshap`               Computes kernel SHAP values for test data.
+`explain`                     Computes kernel SHAP values for test data.
 
 `plot_kshap`                  Plots the individual prediction explanations. Uses facet_wrap of ggplot. 
 
-`prepare_kshap`               Get Shapley weights for test data.
-------------------- --------------------------------------------------
+`shapr`                       Get Shapley weights for test data.
+----------------------------- --------------------------------------------------
 
 : Main functions in the `shapr` package.
 
@@ -123,7 +123,7 @@ The number of samples $K$ to be used in the approximate prediction can for insta
 
 `shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome. 
 
-The following example shows how a simple `xgboost` model is trained using the Boston Housing Data, and how `shapr` can be used to explain the individual predictions. Note that empirical conditional distribution approach is the default, and that the Gaussian and Gaussian copula approaches can be used instead by setting the argument `cond_approach` to either 'Gaussian' or 'copula'.   
+The following example shows how a simple `xgboost` model is trained using the Boston Housing Data, and how `shapr` can be used to explain the individual predictions. Note that empirical conditional distribution approach is the default, and that the Gaussian and Gaussian copula approaches can be used instead by setting the argument `approach` to either 'Gaussian' or 'copula'.   
 
 ```{r,warning=FALSE}
 library(MASS)
@@ -150,9 +150,9 @@ model <- xgboost(
 )
 
 # Prepare the data for explanation
-l <- prepare_kshap(
-  Xtrain = x_train,
-  Xtest = x_test
+explainer <- shapr(
+  x_train,
+  model
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
@@ -160,64 +160,71 @@ pred_zero <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation <- compute_kshap(
-  model = model,
-  l = l,
-  pred_zero = pred_zero
+explanation <- explain(
+  x_test,
+  approach='empirical',
+  explainer = explainer,
+  prediction_zero = pred_zero
 )
 
 # Printing the Shapley values for the test data
-explanation$Kshap
+explanation
 
-# Plot the resulting explanations for observations 1 and 6, excluding the no-covariate effect
-plot_kshap(explanation, l, plot_phi0 = F, plot_which_Xtest = c(1,6))
+# Plot the resulting explanations for observations 1 and 6
+plot_kshap(explanation, x_test, model, plot_phi0 = F,plot_which_Xtest = c(1,6))
+
+
 ``` 
 
 The Gaussian approach is used as follows:
 
 ```{r}
 # Use the Gaussian approach
-explanation_Gauss <- compute_kshap(
-  model = model,
-  l = l,
-  cond_approach = 'Gaussian',
-  pred_zero = pred_zero
+
+explanation_Gauss <- explain(
+  x_test,
+  approach='gaussian',
+  explainer = explainer,
+  prediction_zero = pred_zero
 )
 
-# Plot the resulting explanations for observations 1 and 6, excluding the no-covariate effect
-plot_kshap(explanation_Gauss, l, plot_phi0 = F, plot_which_Xtest = c(1,6))
+# Plot the resulting explanations for observations 1 and 6
+plot_kshap(explanation_Gauss, x_test,model,  plot_phi0 = F,plot_which_Xtest = c(1,6))
 ```
 
 The Gaussian copula approach is used as follows:
 
 ```{r}
 # Use the Gaussian copula approach
-explanation_copula <- compute_kshap(
-  model = model,
-  l = l,
-  cond_approach = 'copula',
-  pred_zero = pred_zero
+explanation_copula <- explain(
+  x_test,
+  approach='copula',
+  explainer = explainer,
+  prediction_zero = pred_zero
 )
 
 # Plot the resulting explanations for observations 1 and 6, excluding the no-covariate effect
-plot_kshap(explanation_copula, l, plot_phi0 = F,plot_which_Xtest = c(1,6))
+plot_kshap(explanation_copula, x_test,model, plot_phi0 = F,plot_which_Xtest = c(1,6))
 
 ```
 
-## Main arguments in `prepare_kshap`
-When using `prepare_kshap`, the the default behavior is to use all feature combinations in the Shapley formula. Kernel SHAPs sampling based approach may be used by setting `exact=FALSE`, and specifying the number of samples by the argument `noSamp`. The computation time grows approximately exponentially with this number. The Mahalanobis based distance matrices are also computed in this step. If one does not intend to use the empirical approach for all feature combinations, one can skip unnecessary computations (and save memory) through the argument `compute_distances_for_no_var`. Setting this to say $c(1,2,3)$ computes distances only when conditioning on 1, 2 or 3 features. Setting `compute_distances_for_no_var` to `NULL` does not compute any distances.
+## Main arguments in `shapr`
+When using `shapr`, the the default behavior is to use all feature combinations in the Shapley formula. Kernel SHAPs sampling based approach may be used by specifying `n_combinations`, which is the number of feature combinations to sample. If not specified, the exact method is used. The computation time grows approximately exponentially with the number of samples. The data frame of the training data and the model whose predictions we wish to explain must be provided through the arguments \code{x} and \code{model}. 
+ 
 
-## Main arguments in `compute_kshap`
-When computing the kernel SHAP values by `compute_kshap`, the maximum number of samples to use in the Monte Carlo integration for every conditional expectation is controlled by the argument `noSamp_MC`, by deafult set to be 1000. 
-The computation time grows approximately linear with this number. As seen in the code above, the argument `pred_zero` for the prediction value of the unseen data is required. We recommend setting this equal to the mean of the response, but other values, like the mean prediction of a large test data set is also a possibility.
-If the empirical method is used, specific settings for that approach, like a fixed $\sigma$ value or the use of the AICc method for estimating $\sigma$, can be specified through the argument `empirical_settings`, see the documentation of `compute_kshap` for details. If the Gaussian approach is used, we may specify the mean vector and covariance matrix of the data generating distribution by the arguments `mu` and `Sigma`. If not specified, they are estimated from the training data.  
+## Main arguments in `explain`
+
+The data frame \code{x} of test data whose predicted values we wish to explain must be provided. One must also provide the list returned by \code{shapr} through the argument \code{explainer}. The approach to use when computing the Shapley values must also be specified through the argument \code{approach}, either equal to \code{empirical}, \code{gaussian} or \code{copula}, or a vector of them. If a vector, a combined approach is used, and element \code{i} indicates the approach to use when conditioning on \code{i} variables. Similarly, \code{type} is only applicable if the empirical approach to use, and indicates the type of empirical approach to use. It is either `independence`, `fixed_sigma`(default) or `gaussian`. 
+
+When computing the kernel SHAP values by `explain`, the maximum number of samples to use in the Monte Carlo integration for every conditional expectation is controlled by the argument `n_samples`, by deafult set to be 1000. The computation time grows approximately linear with this number. As seen in the code above, the argument `prediction_zero` for the prediction value of the unseen data is required. We recommend setting this equal to the mean of the response, but other values, like the mean prediction of a large test data set is also a possibility.
+If the empirical method is used, specific settings for that approach, like a fixed $\sigma$ value of vector can be specified through the argument \code{sigma_vec}. If the Gaussian approach is used, we may specify the mean vector and covariance matrix of the data generating distribution by the arguments `mu` and `Sigma`. If not specified, they are estimated from the training data.  
 
 
 <a id="compare"></a>
 
 # Comparison to Lundberg & Lee's implementation
 
-As mentioned above, the original (independence assuming) Kernel SHAP implementation can be approximated by setting a large $\sigma$ value using our empirical approach. If we specify the distances to *all* training observations should be used (i.e. setting `w_threshold = 1` under `empirical_settings` in `prepare_kernelshap`), we can approximate the original method arbitrarily well by increasing $\sigma$. For completeness of the present `R`-package, we have also implemented a version the original method, which samples training observations independently of their distance to the observation to the explained, i.e. without the large-$\sigma$ approximation. This method is available setting `type=independence` under `empirical_settings` in `prepare_kernelshap`. Below we compare the results using these two variants with the original implementation of @lundberg2017unified, available through the Python library `shap`, here [github.com/slundberg/shap](https://github.com/slundberg/shap). 
+As mentioned above, the original (independence assuming) Kernel SHAP implementation can be approximated by setting a large $\sigma$ value using our empirical approach. If we specify the distances to *all* training observations should be used (i.e. setting `w_threshold = 1` under `empirical_settings` in `prepare_kernelshap`), we can approximate the original method arbitrarily well by increasing $\sigma$. For completeness of the present `R`-package, we have also implemented a version the original method, which samples training observations independently of their distance to the observation to the explained, i.e. without the large-$\sigma$ approximation. This method is available setting `type=independence` in `explain`. Below we compare the results using these two variants with the original implementation of @lundberg2017unified, available through the Python library `shap`, here [github.com/slundberg/shap](https://github.com/slundberg/shap). 
 
 As above, we use the Boston housing data, trained via `xgboost`. We specify that *all* training observations should be used when explaining all of the 6 test observations. To run the individual explanation method in the `shap` Python library we use the `reticulate` `R`-package, allowing Python code to run within `R`. As this requires installation of Python package, the below comparison code and results is not automatically evaluated in this vignette. As indicated by the (commented out) results in the code below both methods in our `R`-package give (up to numerical approximation error) identical results to the original implementation in the Python  `shap` library. For this specific example, we also produce results about 1 second (10\% faster).
 
@@ -256,9 +263,9 @@ pred_zero <- mean(predict(model,x_train))# adjustment from the standard mean(y_t
 
 time_R_start <- proc.time()
 # Prepare the data for explanation
-l <- prepare_kshap(
-  Xtrain = x_train,
-  Xtest = x_test
+l <- shapr(
+  x_train,
+  model
 )
 
 time_R_prepare <- proc.time()
@@ -266,23 +273,26 @@ time_R_prepare <- proc.time()
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation_independence <- compute_kshap(
-  model = model,
-  l = l,
-  pred_zero = pred_zero,
-  empirical_settings = list(type = "independence",
-                            w_threshold = 1)
+explanation_independence <- explain(
+  x_test,
+  approach='empirical',
+  explainer = explainer,
+  prediction_zero = pred_zero,
+  type='independence',
+  w_threshold=1
 )
 
 time_R_indep0 <- proc.time()
 
 
-explanation_largesigma <- compute_kshap(
-  model = model,
-  l = l,
-  pred_zero = pred_zero,
-  cond_approach = "empirical",
-  empirical_settings = list(type ="fixed_sigma", fixed_sigma_vec = 10000, w_threshold = 1)
+explanation_largesigma <- explain(
+  x_test,
+  approach='empirical',
+  explainer = explainer,
+  prediction_zero = pred_zero,
+  type='fixed_sigma',
+  fixed_sigma_vec=10000,
+  w_threshold=1
 )
 
 time_R_largesigma0 <- proc.time()
@@ -292,8 +302,8 @@ time_R_largesigma <- (time_R_largesigma0 - time_R_indep0) + (time_R_prepare- tim
 
 
 # Printing the Shapley values for the test data
-Kshap_indep <- explanation_independence$Kshap
-Kshap_largesigma <- explanation_largesigma$Kshap
+Kshap_indep <- explanation_independence
+Kshap_largesigma <- explanation_largesigma
 
 head(Kshap_indep)
 #> Kshap_indep
