@@ -27,6 +27,7 @@ arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat,
     int m = Xtrain_mat.n_cols;
     int p = featureList.size();
 
+
     arma::mat mcov0;
     arma::mat cholDec;
     arma::mat mu0;
@@ -41,10 +42,13 @@ arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat,
     uint32_t icol, irow, ii;
     double S_scale;
     double rowsum;
+    IntegerVector temp;
 
-
-    for (int k = 1; k < p; ++k){ // Ignoring the first List element (assuming it contains en empty vector)
-
+    for (int k = 0; k < p; ++k){ // Ignoring the first List element (assuming it contains en empty vector)
+        temp = featureList[k];
+        if(temp.length() == 0) {
+            continue;
+        }
         arma::uvec theseFeatures = featureList[k];
         theseFeatures = theseFeatures-1;
 
