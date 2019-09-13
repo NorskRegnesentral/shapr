@@ -17,8 +17,11 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
   ## Remove training data with small weight
   setkey(DT, comb, w)
   DT[, w := w / sum(w), comb]
-  DT[, wcum := cumsum(w), comb]
-  DT <- DT[wcum > 1 - w_threshold][, wcum := NULL]
+  if (w_threshold < 1) {
+    DT[, wcum := cumsum(w), comb]
+    DT <- DT[wcum > 1 - w_threshold][, wcum := NULL]
+  }
+
   DT <- DT[, tail(.SD, noSamp_MC), comb]
   DT[, comb := gsub(comb, pattern = "V", replacement = ""), comb]
   DT[, wcomb := as.integer(comb), comb][, comb := NULL]
@@ -58,22 +61,15 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   if (is.null(index_features)) {
     index_features <- x$X[, .I]
   }
-  #larger.index=F
-  # Avoid error wrt D matrix
-  #if(all(index_features>1)){
-   # larger.index=T
-  #  index_features = c((index_features[1]-1),index_features)
-  #}
+
   x$D <- distance_matrix(
     x$x_train,
     x$x_test,
     x$X$features[index_features]
   )
-  #if(larger.index){
-   # x$D=x$D[,,-1,drop=F]
-    #index_features = index_features[-1]
-  #}
+
   # Setup
+  if (!is.null(seed)) set.seed(seed)
   n_col <- nrow(x$x_test)
   no_empirical <- nrow(x$S[index_features, ])
 
@@ -106,7 +102,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
     h_optim_vec[is.na(h_optim_vec)] <- 1
 
     if (kernel_metric == "independence") {
-      D <- D[sample(nrow(D)), ]
+      D <- D[sample.int(nrow(D)), ]
       h_optim_vec <- mean(D) * 1000
     }
 
@@ -129,6 +125,11 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  dt[, keep := TRUE]
+  first_element <- dt[, tail(.I, 1), .(id, wcomb)][wcomb %in% c(1, 2^ncol(x$x_test)), V1]
+  dt[wcomb %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
+  dt[first_element, keep := TRUE]
+  dt <- dt[keep == TRUE]
   dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
@@ -140,8 +141,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
-  print(seed)
-  print(n_samples)
   if (!is.null(seed)) set.seed(seed)
   if (is.null(index_features)) {
     features <- x$X$features
@@ -193,7 +192,7 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
       noSamp_MC = n_samples,
       mu = x$mu,
       Sigma = x$cov_mat,
-      p = x$n_features,
+      p = ncol(x$x_test),
       Xtest = x$x_test[i, , drop = FALSE],
       Xtrain = as.matrix(x$x_train),
       Xtest_Gauss_trans = x_test[i, , drop = FALSE]

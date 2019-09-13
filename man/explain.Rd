@@ -21,10 +21,7 @@ explain(x, explainer, approach, prediction_zero, ...)
 \method{explain}{copula}(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{combined}(x, explainer, prediction_zero,
-  approach = NULL, empirical.types = NULL, fixed_sigma_vec = 0.1,
-  AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-  AIC_optim_startval = 0.1, w_threshold = 0.95, mu = NULL,
-  cov_mat = NULL, ...)
+  approach = NULL, mu = NULL, cov_mat = NULL, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
