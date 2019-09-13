@@ -58,21 +58,13 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   if (is.null(index_features)) {
     index_features <- x$X[, .I]
   }
-  #larger.index=F
-  # Avoid error wrt D matrix
-  #if(all(index_features>1)){
-   # larger.index=T
-  #  index_features = c((index_features[1]-1),index_features)
-  #}
+
   x$D <- distance_matrix(
     x$x_train,
     x$x_test,
     x$X$features[index_features]
   )
-  #if(larger.index){
-   # x$D=x$D[,,-1,drop=F]
-    #index_features = index_features[-1]
-  #}
+
   # Setup
   n_col <- nrow(x$x_test)
   no_empirical <- nrow(x$S[index_features, ])
