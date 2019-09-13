@@ -12,7 +12,7 @@ test_that("Test new", {
 
   x_train <- as.matrix(tail(Boston[, x_var], -6))
   y_train <- tail(Boston[, y_var], -6)
-  x_test <- as.matrix(head(Boston[, x_var], 3))
+  x_test <- as.matrix(head(Boston[, x_var], 2))
 
   model <- xgboost::xgboost(
     data = x_train,
