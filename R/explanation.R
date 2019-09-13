@@ -10,7 +10,7 @@
 #'
 #' @param approach Character vector of length \code{1} or \code{n_features}.
 #' \code{n_features} equals the total number of features in the model. All elements should
-#' either be \code{gaussian}, \code{copula} or \code{empirical}. See details for more information.
+#' either be \code{"gaussian"}, \code{"copula"} or \code{"empirical"}. See details for more information.
 #'
 #' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
 #' the response.
