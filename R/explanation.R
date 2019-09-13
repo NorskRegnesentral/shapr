@@ -8,7 +8,7 @@
 #' @param explainer An \code{explainer} object to use for exaplaining the observations.
 #' See \code{\link{shapr}}.
 #'
-#' @param approach Character. Note that \code{1 <= length(approach) <= n_features}, where
+#' @param approach Character vector of length \code{1} or \code{n_features}.
 #' \code{n_features} equals the total number of features in the model. All elements should
 #' either be \code{gaussian}, \code{copula} or \code{empirical}. See details for more information.
 #'
