@@ -1,15 +1,14 @@
 #' Explain the output of machine learning models with more accurately estimated Shapley values
 #'
-#' @description TODO: Add a more detailed description
 #'
 #' @param x A matrix or data.frame. Contains the the features, whose
 #' predictions ought to be explained (test data).
 #'
-#' @param explainer An \code{explainer} object to use for exaplaining the observations.
+#' @param explainer An list returned by \code{shapr} whose elements are used to explain the observations.
 #' See \code{\link{shapr}}.
 #'
-#' @param approach Character. Note that \code{1 <= length(approach) <= n_features}, where
-#' \code{n_features} where equals the total number of features in the model. All elements should
+#' @param approach Character or List. The method to use when computing the Shapley values. If a list, a combined approach is used where element \code{i} indicates the approach to use when conditioning on \code{i} variables. Note that \code{1 <= length(approach) <= n_features}, where
+#' \code{n_features} equals the total number of features in the model. All elements should
 #' either be \code{gaussian}, \code{copula} or \code{empirical}. See details for more information.
 #'
 #' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
@@ -18,16 +17,13 @@
 #' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation.
 #'
-#' @param seed Positive integer. If \code{NULL} a random seed will be used.
+#' @param seed Positive integer. If \code{NULL} a random seed will be used. Useful for debugging.
 #'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
-#' @details
-#' TODO: Add information about approach.
-#' TODO: Some additional details about the returned object
 #'
 #' @return data.frame. Contains the estimated Shapley values for the test data. Note that
-#' the dimensions of the data.frame equals \code{n x (p+1)}, where \code{n} equals the number
+#' the dimensions of the data.frame equals \code{ntest x (p+1)}, where \code{ntest} equals the number
 #' of test observations, and \code{p} equals the total number of features.
 #'
 #' @export
@@ -65,7 +61,7 @@ explain <- function(x, explainer, approach='empirical', prediction_zero, ...) {
 }
 
 #' @param type String or list. Only applicable when \code{approach='empirical'}. If a string, the
-#' type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a
+#' type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma' (default). If a
 #' list, the elements in the list refers to the rows in \code{x} that ought to be included in
 #' each of the empirical approaches.
 #'
@@ -74,16 +70,16 @@ explain <- function(x, explainer, approach='empirical', prediction_zero, ...) {
 #'
 #' @param AICc_no_samp_per_optim Positive integer. Only applicable when
 #' \code{approach='empirical'} and \code{type='AICc_each_k'} or
-#' \code{type='AICc_full'}. Number of samples to consider in AICc optimization.
+#' \code{type='AICc_full'}. Number of samples to consider in AICc optimization. Default value \code{1000}.
 #'
 #' @param AIC_optim_max_eval Positive integer. Only applicable when \code{approach='empirical'}
 #' and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Numeric. Maximum value when
-#' optimizing the AICc.
+#' optimizing the AICc. Default value \code{20}.
 #'
 #' @param AIC_optim_startval Numeric. Only applicable when \code{approach='empirical'} and
-#' \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.
+#' \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc. Default value \code{0.1}.
 #'
-#' @param w_threshold Postive integer between 0 and 1.
+#' @param w_threshold Postive integer between 0 and 1. Default value \code{0.95}. We choose the number \code{K} of observations to use so that they account for this fraction of the total weight.
 #'
 #' @rdname explain
 #' @name explain
