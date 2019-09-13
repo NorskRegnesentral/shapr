@@ -204,7 +204,7 @@ test_that("Test new", {
   )
   expect_true(all(abs(e15_new - e15_old$Kshap) < 1e-4))
 
-  Ex 16: gaussian and empirical XX (works now)
+  # Ex 16: gaussian and empirical XX (works now)
   e16_new <- explain(x_test, explainer, approach = c(rep("gaussian", 1),rep("empirical",3)), prediction_zero = mean(y_train), n_samples = 1e4)
   e16_old <- compute_kshap(
     model = model,
