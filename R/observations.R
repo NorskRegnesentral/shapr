@@ -129,7 +129,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   first_element <- dt[, tail(.I, 1), .(id, wcomb)][wcomb %in% c(1, 2^ncol(x$x_test)), V1]
   dt[wcomb %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
   dt[first_element, keep := TRUE]
-  dt <- dt[keep == TRUE]
+  dt <- dt[keep == TRUE][, keep := NULL]
   dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
