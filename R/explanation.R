@@ -43,7 +43,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   # Check input for approach
   if (!(is.vector(approach) &&
         is.atomic(approach) &&
-        (length(approach) <= ncol(x)) &&
+        (length(approach) == 1 | length(approach) == ncol(x)) &&
         all(is.element(approach, c("empirical", "gaussian", "copula"))))
   ) {
     stop(
@@ -240,6 +240,7 @@ explain.combined <- function(x, explainer, prediction_zero, approach = NULL, mu 
 get_list_approaches <- function(n_features, approach) {
 
   l <- list()
+  approach[length(approach)] <- approach[length(approach) - 1]
 
   x <- which(approach == "empirical")
   if (length(x) > 0) {
