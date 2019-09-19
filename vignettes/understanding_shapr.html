@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Camilla LingjÃ¦rde, Martin Jullum &amp; Nikolai Sellereite" />
+
+
+<title>shapr: Explaining individual machine learning predictions with Shapley values</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore"><code>shapr</code>: Explaining individual machine learning predictions with Shapley values</h1>
+<h4 class="author"><em>Camilla LingjÃ¦rde, Martin Jullum &amp; Nikolai Sellereite</em></h4>
+
+
+
+<blockquote>
+<p><a href="#intro">Introduction</a></p>
+</blockquote>
+<blockquote>
+<p><a href="#overview">Overview of Package</a></p>
+</blockquote>
+<blockquote>
+<p><a href="#KSHAP">The Kernel SHAP Method</a></p>
+</blockquote>
+<blockquote>
+<p><a href="#ex">An Example</a></p>
+</blockquote>
+<blockquote>
+<p><a href="#compare">Comparison to Lundberg &amp; Lee’s implementation</a></p>
+</blockquote>
+<p><a id="intro"></a></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The <code>shapr</code> package implements an extended version of the Kernel SHAP method for approximating Shapley values (<span class="citation">Lundberg and Lee (2017)</span>), in which dependence between the features is taken into account (<span class="citation">Aas, Jullum, and Løland (2019)</span>). Estimation of Shapley values is of interest when attempting to explain complex machine learning models. Of existing work on interpreting individual predictions, Shapley values is regarded to be the only model-agnostic explanation method with a solid theoretical foundation (<span class="citation">Lundberg and Lee (2017)</span>). Kernel SHAP is a computationally efficient approximation to Shapley values in higher dimensions, but it assumes independent features. <span class="citation">Aas, Jullum, and Løland (2019)</span> extend the Kernel SHAP method to handle dependent features, resulting in more accurate approximations to the true Shapley values. <a href="https://arxiv.org/abs/1903.10464">See the paper for further details</a>.</p>
+<p><a id="overview"></a></p>
+</div>
+<div id="overview-of-package" class="section level1">
+<h1>Overview of Package</h1>
+<div id="functions" class="section level2">
+<h2>Functions</h2>
+<p>Here is an overview of the main functions. You can read their documentation and see examples with <code>?function_name</code>.</p>
+<table>
+<caption>Main functions in the <code>shapr</code> package.</caption>
+<colgroup>
+<col width="35%"></col>
+<col width="64%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Function Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>compute_kshap</code></td>
+<td align="left">Computes kernel SHAP values for test data.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>plot_kshap</code></td>
+<td align="left">Plots the individual prediction explanations. Uses facet_wrap of ggplot.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>prepare_kshap</code></td>
+<td align="left">Get Shapley weights for test data.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="KSHAP"></a></p>
+</div>
+</div>
+<div id="the-kernel-shap-method" class="section level1">
+<h1>The Kernel SHAP Method</h1>
+<p>Assume a predictive model <span class="math inline">\(f(\boldsymbol{x})\)</span> for a response value <span class="math inline">\(y\)</span> with features <span class="math inline">\(\boldsymbol{x}\in \mathbb{R}^M\)</span>, trained on a training set, and that we want to explain the predictions for new sets of features. This may be done using ideas from cooperative game theory, letting a single prediction take the place of the game being played and the features the place of the players. Letting <span class="math inline">\(N\)</span> denote the set of all <span class="math inline">\(M\)</span> players, and <span class="math inline">\(S \subseteq N\)</span> be a subset of <span class="math inline">\(|S|\)</span> players, the “contribution” function <span class="math inline">\(v(S)\)</span> describes the total expected sum of payoffs the members of <span class="math inline">\(S\)</span> can obtain by cooperation. The Shapley value (<span class="citation">Shapley (1953)</span>) is one way to distribute the total gains to the players, assuming that they all collaborate. The amount that player <span class="math inline">\(i\)</span> gets is then</p>
+<p><span class="math display">\[\phi_i(v) = \phi_i = \sum_{S \subseteq N \setminus\{i\}} \frac{|S| ! (M-| S| - 1)!}{M!}(v(S\cup \{i\})-v(S)),\]</span></p>
+<p>that is, a weighted mean over all subsets <span class="math inline">\(S\)</span> of players not containing player <span class="math inline">\(i\)</span>. <span class="citation">Lundberg and Lee (2017)</span> define the contribution function for a certain subset <span class="math inline">\(S\)</span> of these features <span class="math inline">\(\boldsymbol{x}_S\)</span> as <span class="math inline">\(v(S) = \mbox{E}[f(\boldsymbol{x})|\boldsymbol{x}_S]\)</span>, the expected output of the predictive model conditional on the feature values of the subset. <span class="citation">Lundberg and Lee (2017)</span> names this type of Shapley values SHAP (SHapley Additive exPlanation) values. Since the conditional expectations can be written as</p>
+<span class="math display">\[\begin{equation}
+\label{eq:CondExp}
+E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*] = \int f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S^*)\,p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)d\boldsymbol{x}_{\bar{S}},
+\end{equation}\]</span>
+<p>the conditional distributions <span class="math inline">\(p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)\)</span> are needed to compute the contributions. The Kernel SHAP method of <span class="citation">Lundberg and Lee (2017)</span> assumes feature independence, so that <span class="math inline">\(p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)=p(\boldsymbol{x}_{\bar{S}})\)</span>. If samples <span class="math inline">\(\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K\)</span>, from <span class="math inline">\(p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)\)</span> are available, the conditional expectation in above can be approximated by</p>
+<span class="math display">\[\begin{equation}
+  v_{\text{KerSHAP}}(S) = \frac{1}{K}\sum_{k=1}^K f(\boldsymbol{x}_{\bar{S}}^{k},\boldsymbol{x}_S^*).
+\end{equation}\]</span>
+<p>In Kernel SHAP, <span class="math inline">\(\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K\)</span> are sampled from the <span class="math inline">\(\bar{S}\)</span>-part of the training data, <em>independently</em> of <span class="math inline">\(\boldsymbol{x}_{S}\)</span>. This is motivated by using the training set as the empirical distribution of <span class="math inline">\(\boldsymbol{x}_{\bar{S}}\)</span>, and assuming that <span class="math inline">\(\boldsymbol{x}_{\bar{S}}\)</span> is independent of <span class="math inline">\(\boldsymbol{x}_S=\boldsymbol{x}_S^*\)</span>. Due to the indpendencde assumption, if the features in a given model are highly dependent, the Kernel SHAP method may give a completely wrong answer. This can be avoided by estimating the conditional distribution <span class="math inline">\(p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)\)</span> directly and generating samples from this distribution. With this small change, the contributions and Shapley values may then be approximated as in the ordinary Kernel SHAP framework. <span class="citation">Aas, Jullum, and Løland (2019)</span> propose three different approaches for estimating the conditional probabilities. The methods may also be combined, such that e.g. one method is used when conditioning on a small number of features, while another method is used otherwise.</p>
+<div id="multivariate-gaussian-distribution-approach" class="section level2">
+<h2>Multivariate Gaussian Distribution Approach</h2>
+<p>The first approach arises from the assumption that the feature vector <span class="math inline">\(\boldsymbol{x}\)</span> stems from a multivariate Gaussian distribution with some mean vector <span class="math inline">\(\boldsymbol{\mu}\)</span> and covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span>. Under this assumption, the conditional distribution <span class="math inline">\(p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)\)</span> is also multivariate Gaussian <span class="math inline">\(\text{N}_{|\bar{\mathcal{S}}|}(\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}},\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}})\)</span>, with analytical expressions for the conditional mean vector <span class="math inline">\(\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}\)</span> and covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}\)</span>, see <span class="citation">Aas, Jullum, and Løland (2019)</span> for details. Hence, instead of sampling from the marginal empirical distribution of <span class="math inline">\(\boldsymbol{x}_{\bar{\mathcal{S}}}\)</span> approximated by the training data, we can sample from the Gaussian conditional distribution, which is fitted using the training data. Using the resulting samples <span class="math inline">\(\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K\)</span>, the conditional expectations be approximated as in the Kernel SHAP.</p>
+</div>
+<div id="gaussian-copula-approach" class="section level2">
+<h2>Gaussian Copula Approach</h2>
+<p>If the features are far from multivariate Gaussian, an alternative approach is to instead represent the marginals by their empirical distributions, and model the dependence structure by a Gaussian copula. Assuming a Gaussian copula, we may convert the marginals of the training data to Gaussian features using their empirical distributions, and then fit a multivariate Gaussian distribution to these.</p>
+<p>To produce samples from the conditional distribution <span class="math inline">\(p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)\)</span>, we convert the marginals of <span class="math inline">\(\boldsymbol{x}_{\mathcal{S}}\)</span> to Gaussians, sample from the conditional Gaussian distribution as above, and convert the marginals of thesamples back to the original distribution. Those samples are then used to approximate the</p>
+<p>sample from the resulting multivariate Gaussian conditional distribution. While other copulas may be used, the Gaussian copula has the benefit that we may use the analytical expressions for the conditionals <span class="math inline">\(\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}\)</span> and <span class="math inline">\(\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}\)</span>. Finally, we may convert the marginals back to their original distribution, and use the resulting samples to approximate the conditional expectations as in the Kernel SHAP.</p>
+</div>
+<div id="empirical-conditional-distribution-approach" class="section level2">
+<h2>Empirical Conditional Distribution Approach</h2>
+<p>If both the dependence structure and the marginal distributions of <span class="math inline">\(\boldsymbol{x}\)</span> are very far from the Gaussian, neither of the two aforementioned methods will work very well. Few methods exists for the non-parametric estimation of conditional densities, and the classic kernel estimator (<span class="citation">Rosenblatt (1956)</span>) for non-parametric density estimation suffers greatly from the curse of dimensionality and does not provide a way to generate samples from the estimated distribution. For such situations, <span class="citation">Aas, Jullum, and Løland (2019)</span> propose an empirical conditional approach to sample approximately from <span class="math inline">\(p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)\)</span>. The idea is to compute weights <span class="math inline">\(w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^i),\ i=1,...,n_{\text{train}}\)</span> for all training instances based on their Mahalanobis distances (in the <span class="math inline">\(S\)</span> subset only) to the instance <span class="math inline">\(\boldsymbol{x}^*\)</span> to be explained. Instead of sampling from this weighted (conditional) empirical distribution, <span class="citation">Aas, Jullum, and Løland (2019)</span> suggests a more efficient varient, using only the <span class="math inline">\(K\)</span> instances with the largest weights:</p>
+<p><span class="math display">\[v_{\text{condKerSHAP}}(\mathcal{S}) = \frac{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^{[k]}) f(\boldsymbol{x}_{\bar{\mathcal{S}}}^{[k]},\boldsymbol{x}_{\mathcal{S}}^*)}{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^{[k]})},\]</span></p>
+<p>The number of samples <span class="math inline">\(K\)</span> to be used in the approximate prediction can for instance be chosen such that the <span class="math inline">\(K\)</span> largest weights accounts for a fraction <span class="math inline">\(\eta\)</span>, for example <span class="math inline">\(0.9\)</span>, of the total weight. If <span class="math inline">\(K\)</span> exceeds a certain limit, for instance <span class="math inline">\(5,000\)</span>, it might be set to that limit. A bandwidth parameter <span class="math inline">\(\sigma\)</span> used to scale the weights, must also be specified. This choice may be viewed as a bias-variance trade-off. A small <span class="math inline">\(\sigma\)</span> puts most of the weight to a few of the closest training observations and thereby gives low bias, but high variance. When <span class="math inline">\(\sigma \rightarrow \infty\)</span>, this method converges to the original Kernel SHAP assuming feature independence. Typically, when the features are highly dependent, a small <span class="math inline">\(\sigma\)</span> is typically needed such that the bias does not dominate. <span class="citation">Aas, Jullum, and Løland (2019)</span> show that a proper criterion for selecting <span class="math inline">\(\sigma\)</span> is a small-sample-size corrected version of the AIC known as AICc. As calculation of it is computationally intensive, an approximate version of the selection criterion is also suggested. Details on this is found in <span class="citation">Aas, Jullum, and Løland (2019)</span>.</p>
+<p><a id="ex"></a></p>
+</div>
+</div>
+<div id="an-example" class="section level1">
+<h1>An Example</h1>
+<p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.</p>
+<p>The following example shows how a simple <code>xgboost</code> model is trained using the Boston Housing Data, and how <code>shapr</code> can be used to explain the individual predictions. Note that empirical conditional distribution approach is the default, and that the Gaussian and Gaussian copula approaches can be used instead by setting the argument <code>cond_approach</code> to either ‘Gaussian’ or ‘copula’.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(MASS)
+<span class="kw">library</span>(xgboost)
+<span class="kw">library</span>(shapr)
+<span class="kw">library</span>(data.table)
+<span class="kw">library</span>(ggplot2)
+
+<span class="kw">data</span>(<span class="st">&quot;Boston&quot;</span>)
+
+x_var &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;lstat&quot;</span>, <span class="st">&quot;rm&quot;</span>, <span class="st">&quot;dis&quot;</span>, <span class="st">&quot;indus&quot;</span>)
+y_var &lt;-<span class="st"> &quot;medv&quot;</span>
+
+x_train &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(Boston[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), x_var])
+y_train &lt;-<span class="st"> </span>Boston[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), y_var]
+x_test &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(Boston[<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, x_var])
+
+<span class="co"># Fitting a basic xgboost model to the training data</span>
+model &lt;-<span class="st"> </span><span class="kw">xgboost</span>(
+  <span class="dt">data =</span> x_train,
+  <span class="dt">label =</span> y_train,
+  <span class="dt">nround =</span> <span class="dv">20</span>,
+  <span class="dt">verbose =</span> F
+)
+
+<span class="co"># Prepare the data for explanation</span>
+l &lt;-<span class="st"> </span><span class="kw">prepare_kshap</span>(
+  <span class="dt">Xtrain =</span> x_train,
+  <span class="dt">Xtest =</span> x_test
+)
+
+<span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span>
+pred_zero &lt;-<span class="st"> </span><span class="kw">mean</span>(y_train)
+
+<span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
+<span class="co"># the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)</span>
+explanation &lt;-<span class="st"> </span><span class="kw">compute_kshap</span>(
+  <span class="dt">model =</span> model,
+  <span class="dt">l =</span> l,
+  <span class="dt">pred_zero =</span> pred_zero
+)
+
+<span class="co"># Printing the Shapley values for the test data</span>
+explanation<span class="op">$</span>Kshap
+<span class="co">#&gt;      none     lstat         rm       dis      indus</span>
+<span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span>
+<span class="co">#&gt; 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871</span>
+<span class="co">#&gt; 3: 22.446 5.9888016  5.5450861 0.5660136 -1.4304350</span>
+<span class="co">#&gt; 4: 22.446 8.2142203  0.7507569 0.1893368  1.8298305</span>
+<span class="co">#&gt; 5: 22.446 0.5059890  5.6875106 0.8432240  2.2471152</span>
+<span class="co">#&gt; 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531</span>
+
+<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding the no-covariate effect</span>
+<span class="kw">plot_kshap</span>(explanation, l, <span class="dt">plot_phi0 =</span> F, <span class="dt">plot_which_Xtest =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">6</span>))</code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAEgCAMAAABcujGyAAABy1BMVEUAAAAAADoAAGYAOjoAOmYAOpAAZrYZGT8ZGWIZP2IZP4EZYp8aGhozMzM6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZmY6ZpA6ZrY6kLY6kNs/GRk/GT8/GWI/P2I/P4E/gb1GgrRNTU1NTW5NTY5Nbo5NbqtNjshiGRliGT9iGWJiPxliP4FiYj9in9lmAABmADpmAGZmOgBmOjpmOmZmZmZmkLZmkNtmtrZmtttmtv9uTU1uTW5uTY5ubo5ubqtuq6tuq8huq+SBPxmBPz+BP2KBYhmBgT+BgZ+Bn4GBvb2BvdmOTU2OTW6OTY6Obk2ObquOyP+QOgCQOjqQZgCQZjqQZmaQkDqQkGaQkLaQtpCQtraQttuQ27aQ2/+fYhmfYmKf2dmrbk2rbm6rbo6rjk2rq46ryKur5OSr5P+wxN62ZgC2Zjq2kDq2kGa2tpC2ttu225C229u22/+2/9u2//+9gT+92dnIjk3I/+TI///Zn2LZvYHZ2Z/Z2b3Z2dnbkDrbkGbbtmbbtpDb25Db27bb29vb2//b/7bb/9vb///kq27k///r6+vy8vL/tmb/yI7/25D/27b/29v/5Kv//7b//8j//9v//+T///+CcLdgAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAWb0lEQVR4nO2djX8cR3nHV459pKCKAAnlUoqjOHUCxUpFX4jsxsXhPSaORF8oDTK2C0VcW0pdO8JvEU5bgpRwlpEs7Z/beWbm2Z3dW+3N7uzczmp/v0/sO+3svDy//d7M7Cp+LoohKGBFbQ8AgsoEQKGgBUChoAVAoaAFQKGgBUChoAVAoaAFQKGg1TNAD/7jU1H01F9ti3drp7ZLzistdT09X3mQa2D3L27Vb9KiolP7M1a/AD1Yi6TEtQkZ0K0TfgF1an/G6heg4+jUzTh+vBatBAZoVgSQQ3NWgHZF/QJ0a26dXvaX5Jz1wXI099f080Ox7tO7/aXheCE6uc5X+fFyFH3mJnG9ImsNVSPy8lIbSUU6XVVRtHHFWPWWtjrYik7cNIofioL/SmbQh/I0Oc0P0xGcvCk7+MWn9GiluImtaEjjG+aHbowsqaiPWbUfjPoF6Dga8tuDtZPLtNqv0EWO1Lv9pecWxJu5dXWVd+kH+knCGI8V3eLwSqygTSrmAE0qSpmtPrUgthdpsWzg5LIGdKwOGwCN+Uzem6zo0e+mBSdu7S/Rn8zQjZElFfmYTfvhqF+Axv8WzT33z7+hd+KSiCv064jgEJOauOQDgVI02D7492igiZt7LY7fF8fjEU2aI710KhLFobRiFlCjIslslT4gafH+0tw7tOFI+luPH9IZvEcU579GYMl3A8JON2n0MI7ErLwyMfR0ZFwxPTa9/YDUM0Dj//17MWnQ1aWpRy/Ucfx/v/iHhYiAkQxK9miik9MtXc2xRIBn361kUuWKWUCNiiSzVTqUFqt3TLg+HqcA7SrGRzSrGqONMz2MIsIqO3RzZJNhTm8/IPUNUKGD978ipqmJFVkCKi/QFl2wU9tjterxGs8rvMJDbkuTillAjYqkbKuxUaz2tnwXr7YO8tQEIHlkzDWT2ymzh90F+jvXSWZk+TCntx+Qegho/p5GrI7P/dN/frBUAijNTKPk5pgKadFPK7YJ6FjuHLOdZEeWDxOAhiq9DhoroVqR6TKpPag6xkt8esswjr6arPCEwY+WBrFRUTY24lXSrJj0yq3GRrFaqfUzhSlLfAYgo4f9pZPL8sMyOfRkZLkwp7cfkHoFqNivfZaeqTxcyG4Zxf3B4+VITjyfy9wkvUMPTYm7g7VPJys8XeW/VCs8V1SARvIRjrxJSirG8ibJaDU2isVN0mtcRd8k7RJoW/pm3LyJyQBk9LBFE/Ew10luZLkwp7cfkPoFqLiMvDSaN93866X9padon8a/Z9ELqbofiYyH26KGopYrpqfTM6NMReo006pZnFQx+lMPhCYeA2UBSppQsySxbnaSG1kuTIv2w1G/AFW/i5/77M3YvCTyafU7I7rKA3HJ0tJdUfDUa7Li7oJ57fTzmKSiOv3Xou5v5TU2KsolPNOqWfz+cnTyv80H9fSAId5fjga/TUZwMjtaJW5ipO6TBrlOciPLhmnTfjDqGaDlKnnMMq7/DHsmD29CfELUiACooaOv8uPl+r9sB6AuAqCGjrrKtHUdFpa4tNqoAGgfdNRVFvcXf9R8q40KgEJQGwKgUNACoFDQAqBQ0AKgUNCaCaDv9U2w0FkcOAD1IVjoLA4cgPoQLHQWBw5AfQgWOosDB6A+BAudxYEDUB+Chc7iwAGoD8FCZ3HgANSHYKGzOHAA6kOw0FkceKcAvff5a/Ty4I1z+UNHyjxX6u78/NPXzJr6wP2X5z/+blMD7ZCFD96Y/9ibpVUmLLz3/Pz8ObNEHCALb8+ztw2IA+8UoFqGY3enOZJ3ly7Q7U8YNfUBOk8eb0QdsvDquffuln8y8xbef+XN9+79MUF9W3FKB26LNq6eK6peUxx4pwAlmMRM9wdfOqcngqsf+04yg97/4rdoLrj3J196+po4Sc+K4tzCZsyadOD+F69NnY3t1R0LKe5Edhbepc8xwSjOkyX3vvAutfPg6+UzcTVx4J0D9OppMfkVLfH3X/74u3efvnbveVEoTqLpMDlXLOPz80ktNVMaOIoD0uRXmnK4Oxbe+8I30yXe3kKy6sHXv/uGOYMKlufnG5tEOfCuAUqf+OI96P2XzwnP3pRThHBMnJg/V9d4Xl2QpKY8QMtcTwDN2EIw0odTytZCcei0+Fif5hK1f6dlv7lZlAPvGqASq6uFgBJeV8/pNWxezAv5c98zzzRnUHGgRzNoxpZM3LYW3n/5tKypASUy7+p7gcb2oRx41wAtmUHlqqM+/mpjlZ6bXZ+Ui+aO8+q5Hu1BMxbe/7McoBYWyi2AvGefnz9NRcbq03tAy/agnyCr1Gf+tHQtdy4pNVPX1Ado0erDXfyEhVczS7yNhYpPUnYGpdMffKPXj5nIuQdvGHfx6pC+H33ly/IW9PPq3pM2murcbBu35+fTPah8xqQO9Og5aMZCdbdexcLbyVxKgNLJd5WFibVNiAPvFKBH6cfK3SafcrgJFjqLAz8OgD74Nv0doruwsLY48OMAaHiChc7iwAGoD8FCZ3HgANSHYKGzOHAA6kOw0FkcOAD1IVjoLA58JoB+FH90hCoXNNeSzy5goXMBBw5AfbQEC50LOHAA6qMlWOhcwIEDUB8twULnAg4cgPpoCRY6F3DgxwbQF1pXgbteLPy5LwFQn6G3jScAdakAQAEoALVy11vobeMJQF0qAFAACkCt3PUWett4AlCXCgAUgAJQK3e9hd42ngDUpQIABaAA1Mpdb6G3jScAdakAQAHosQV072/ulLxLdHh9VRWdXzxzJ3mZcNdb6G3j6Qzo4fXFFzdMMx8tFlsIQLOyBHRnUQL65PJqvPOnHz753ga9TLrrLfS28XQGdHM1fsSOkZnk8c5ZAGoFqPwwP7ks/hIz4+KqfJc76/UrEtC9ix/Ggk758hafA0ATk8786sZPFxcvCUMvZctSt1IzjYkAgJYBSuaJDzO9EzOjeFHGCZeFpJWHN3523QQ0nUH/UGhqHw2obTxfeGH6GPfOr4rVWxh5/myct3Dv4k94iU/M1DNozkJ/gIYoO0C/t6Hf0YvAdWKJ37mk96ByiRdGi0k2WeExg6ZWCvo25B/taVom4KVPt2Hm3vlkU4oZtBRQuuV5cUMBukmrfR5Q4axxk/S1Gxt7FzbiR2ewxFcAVC09WTPTkwBoKaBCYgNPc+nl1aIlfke+412VmGJpu1/orrfQ28azHqCphU/eZsdMMzdXAagFoISbAlROpxc2jn7MJDefZ2PMoHaAGtpMlnhl5pGfcQA66apc14VtZ+6Ij/dLV1bpXQGg+oafNp/ipXAD5S30tvF0BlQ9GlEffflp3znCQgDauABokxYCUJ/uegu9bTwBqEsFAApAAaiVu95CbxtPAOpSAYACUABq5a630NvGE4C6VACgABSAWrnrLfS28QSgLhV6AGhQXcBC5wIOHID6aAkWOhdw4ADUR0uw0LmAAz82gLa65TzK3T5b6DhYDhyANnABAGi5P3UGy4ED0AYuAAAt96fOYDlwANrABQCg5f7UGSwHDkAbuAAAtNyfOoPlwAFoAxcAgJb7U2ewHDgAbeACANByf+oMlgPPAroVRStbp7bhbrULAEDL/akzWA48A+jo1AdLKwdrA7hb7QIA0HJ/6gyWAzcB3V9aEf/F4xO3eu9utQsAQMv9qTNYDhyANnABAGi5P3UGy4FnlvgtWuL3l4Zwt9oFAKDl/tQZLAeevUkaR0Kaz2xyBk7GcoRk0jv5LslqadTvnrvVLsBR7ta0UFfseIpVx8EWA3q0yt2VSe8ubGhrZU62R512t9oFsJtBbS3U3nU9xarjYIsAPVhbMX6iRDcXfyI/1U8uUzoRmfaGk4Vm3X1ESG6an//NF/8VM2hNC5V3XU+x6jjYIkDpDikL6PlLMkXQpnhZZHd1stA4kx80NjOxqVK9vh3b/KAWY6ptIZ3X9RSrDQ0qd5NkPKPnVGHKT7E+8U/5pEJKh9d1cjvOaok9aG0LlXcdT7HqONgiQPeXIin1mCl1V+UFTdYnlSw0pyeX05TWOs0lAK1toU4i2OkEgY6DLQI0q6M+/lSmsv0b6xPlB04lt1IAtL6Fcp/a8RSrjoOtAqjeQMlN0RlOFpo9NzE3tRWA1rQwxgz6UbUlnr7CR9yCUsLKv32Lk4VmpJICywkiyWoJQOtaqL3reIpVx8EWAaoxfXV94pijuudutQuA3ySV+1NnsBx4wRI/bvz/t+ueu9UuAAAt96fOYDnwIkDxP4tUvAAAtNyfOoPlwAsAHWEGrXgBAGi5P3UGy4EX3CTNYQ9a8QIA0HJ/6gyWA8e/SWrgAgDQcn/qDJYDL/hdPPagVS8AAC33p85gOXAA2sAFAKDl/tQZLAeeAroVsTr5j+aC6qJpA3ts4dH/ux3crV8AC50LOPBjc5MUVBew0LmAA88Aurtg/C4+NHe7mGA9MAunVKi+zZwxoAdrw4O1FQ8LPQANw8IpFYIHlNAcDUP9XTwA9R1fJwDdGoT6mAmA+o4veEDjkaSz+exhADQMC6dUCB9QsQmNR6H+Lh6A+o4vfEB9CYCGYeGUCgDUKRIA6ju+DgAacgJbAOo7vvABDTqBLQD1HV/wgIadHxSA+o4PgDpFAkB9xxc8oA4JbA+v87/hpn/ffeaOh+SWHQY0TRFQ9E5LGxcbmUJDTy0w+5skM4FtJW2ucqoMlUHQQ3LL4w7oppnjTmYKDT7FaliPmfZev3LmVzd+urh46ZH4ky1L81ge3lBpRZpPbtlxQGVK0CeXxV9ygpTvzHO0cXGaKTT8FKuBAXp+VazkZ8XrWf3xTzNfUZpWtcQL4+mQh+SW0wANWGlKUJ17kfPdGRZq47Qy6a2CzQ86i0ElgE79v+xkhiHxMac/+QSXBC9NmrFcm+QZjSe37PYMqh3TyAlc80s8GyelM4ViD5oHtOwGvhTQi2aqQEqE2Xxqtm4DqlOCqjyhtNpP7EGVcfKFM4UCUDdAjfXp7RygHpJbdhzQWKampLn08mrREm8AmmRiBKBNzaDkrFriiczDf7mDGTRnnU4JygkZL2zkZ1BtnMknAG0OUHVTauQHbT65ZbcB1SlBD6+fuSMceunKKr3LnKSME6fupPeeALQCoA7qO6ChWDilQuiAJokb8KtO14KG/WvKwikVwgbUpwBoGBZOqQBAnSIBoL7jA6BOkQBQ3/EBUKdIAKjv+ACoUyQA1Hd8ANQpEgDqOz4A2kAkzbUEQP0VAFCfBQA0hC44cADqoyVY6FzAgR8bQHlb5LGL4w5o8T6z0S4AqM8uAKhzFwDUZxcA1LkLAOqzCwDq3AUA9dkFAHXuAoD67AKAOncBQH12AUCduwCgPrsAoM5dAFCfXQBQ5y4AqM8uAKhzFwDUZxcA1LkLAOqzCwDq3IVfQA+vrxYmbOFC+aqTMjWfH3RKhW4AWmJhmmJVW5geAKDWgB5duKMSuNA5O2djyu/ScH7QKRU6A+hRRUmKVW2hkXN1thZ2FFDxsX7pymqS6TJfvPf6FZW59i2ZYCSbTQyATrcwzaaqLUwPAFAbbV4Stq6mmS7jTOarwxs/U3ODJjMFdMbJLWfRVV2VWpimWE0s5AOt5gedRcdlsgWUPFUbqIm8TKSdS3rx0mnt5BL/ImZQewvTFKvawvTAjC3s5gyqEluuppkus6UXPzzMzKB00tduANBKFnJe5fwiBEAtlH786Se1eU/XJ5WQ7VKcbKC4CgC1tTBNscp70LcBaAVA0w2UznSZL9czKCWvprt4ylF/lssAqIWFSYpVbWF6AIDa6PA634JuFt3FS0CpVD/EE1NDwznqp1ToAKDlFqYpVrWFmS8CAaA+BUC7ZCEAdYkEgPqLD4A2EAkA9RcfAG0gEgDqLz4A2kAkANRffAC0gUgAqL/4AGgDkQBQf/EB0AYiAaD+4gOgDUTSXEsA1F8BAPVZAEBD6IIDB6A+WoKFzgUcOAD10RIsdC7gwAGoj5ZgoXMBBz4TQOPq/2Khco0gu2hQQcY3gy4AqM8uGlSQ8QHQjnfRoIKM79gACkE1BUChoAVAoaAFQKGgBUChoDUjQEvzjhVo77zOqWMn/e8g/XVAqhpDw+qphTMCdKdaKDI3yYWCFDvF4nxw3jqQqhhD0+qphbMBlHPf2eoRWbVpXcVIZ+KnA1LVGBpWXy2cCaBJ7rsqKkxSVqxsGiMPHcQ1Y2hOvbVwJoAmue8qiBLA2Erng/PXQVwvhgbVWwt9A7q5uHg2zX1nW4P27BVir/Pxr9SBmb9v5uq3hbOYQdPcd9ai5Jj2qr6BqthBrRiaVH8tDPMxU8XYOR+ctw50L116zHRcLAwT0J00ubiVKj/Eq9oBqVuAHhcL8ZskKGgBUChoAVAoaAFQKGgBUChoAVAoaAFQKGgBUChoAVAXHaxFUisTJY9v1miOK+1+cl38N1E2cawPAqAuOlgbFhfUYsmslG+gl3CSAKiLAKh3AVAXpYDSYn/ilgBpQaz4Q/p7KJmi1fqZfxRFfAKfPEhfdz/5Q3H+iqpEJ/+SlvgfRNGp7Vg38kNuMFulrbhnKADqogTQgzVBzdap7f0lAc3WiVvEUgLowiA9gU+mE+mV/uwuiONcaWGgK53almXciGowX6XN4GcjAOoifZM0jMfEioDu90RgypNmTUDLJ8RxulzLY+IveQJX4vfGMaPBfJU2g5+NAKiLkhl0K9KkxmPxMpcFlF7TEzSY9EoT6iSEel+ggM4DmqvSWuQzEwB1UQqoWrwFUnPrE6xJQPUJJABaQQDURQmg4zm9ahNA44IZlE8gJUs8HRurvWch1QVLfK7KzCOeuQCoi4ybJEGmoIcA2l2YW6fd5v7SUBxXsCYnqJMHmT9MG1VKN67qJokb0WX5Km0GPxsBUBdlHzMRfiPx8iMB0ygayEdOX31V/1KIT+CTM4+ZNG2iUjpj/kCdoxvhsnyVYy8ACgUtAAoFLQAKBS0ACgUtAAoFLQAKBS0ACgUtAAoFLQAKBS0ACgUtAAoFLQAKBS0ACgUtAAoFLQAKBS0ACgUtAAoFLQAKBS0ACgUtAAoFLQAKBS0ACgUtAAoFLQAKBS0ACgUtAGqnF4r0u2ba/nmhmmm78wKgdgKgLQmA2gmAtiQAaicA2pIAqJ0AaEsCoHYCoC0JgNoJgLYkAGqnUkBlQvn6KgdUfvNSL74SqVAA1E4tAvpM+gU2PRQAtdM0QHef/Ts5ze0v0ZfQfGb5xC3xjr96bkV+O436piT5Mk6/dS62AjTefXabK9fporsCoHaaCujCkL7i42BtRbz8D33N1mgYbw3i/VfXqXj/z2/RT3xQ/6RlAyi1oyrX6qK7AqB2mgqowEi/KKYIG6JESLzQT3HMB/VPLBtAD76/rivX6qK7AqB2sgX02e1Y07MUJd/7IdZasQyLH/ig+ollOYPqyrW66K4AqJ2qz6B6aqPvN1L3UGIHoA/qn/itDaBp5VpddFcA1E6WgNIGcfeZXxIuI7kplcfVVxjSH3WQf9KyvYsfJdvcyl10VwDUTpaA6lvsZ/hmW36L7MnlFb0K88FRlbv45Dmorlyni+4KgNqpFFBHlQPacwFQOwHQlgRA7QRAWxIAtRMAbUkA1E4AtCUBUDv9rlDht915AVAoaAFQKGgBUChoAVAoaAFQKGgBUChoAVAoaAFQKGgBUChoAVAoaAFQKGgBUChoAVAoaAFQKGgBUCho/T9/aB0H6sksZAAAAABJRU5ErkJggg==" /><!-- --></p>
+<p>The Gaussian approach is used as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use the Gaussian approach</span>
+explanation_Gauss &lt;-<span class="st"> </span><span class="kw">compute_kshap</span>(
+  <span class="dt">model =</span> model,
+  <span class="dt">l =</span> l,
+  <span class="dt">cond_approach =</span> <span class="st">'Gaussian'</span>,
+  <span class="dt">pred_zero =</span> pred_zero
+)
+
+<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding the no-covariate effect</span>
+<span class="kw">plot_kshap</span>(explanation_Gauss, l, <span class="dt">plot_phi0 =</span> F, <span class="dt">plot_which_Xtest =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">6</span>))</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The Gaussian copula approach is used as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use the Gaussian copula approach</span>
+explanation_copula &lt;-<span class="st"> </span><span class="kw">compute_kshap</span>(
+  <span class="dt">model =</span> model,
+  <span class="dt">l =</span> l,
+  <span class="dt">cond_approach =</span> <span class="st">'copula'</span>,
+  <span class="dt">pred_zero =</span> pred_zero
+)
+
+<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding the no-covariate effect</span>
+<span class="kw">plot_kshap</span>(explanation_copula, l, <span class="dt">plot_phi0 =</span> F,<span class="dt">plot_which_Xtest =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">6</span>))</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><a id="compare"></a></p>
+</div>
+<div id="comparison-to-lundberg-lees-implementation" class="section level1">
+<h1>Comparison to Lundberg &amp; Lee’s implementation</h1>
+<p>As mentioned above, the original (independence assuming) Kernel SHAP implementation can be approximated by setting a large <span class="math inline">\(\sigma\)</span> value using our empirical approach. If we specify the distances to <em>all</em> training observations should be used (i.e. setting <code>w_threshold = 1</code> under <code>empirical_settings</code> in <code>prepare_kernelshap</code>), we can approximate the original method arbitrarily well by increasing <span class="math inline">\(\sigma\)</span>. For completeness of the present <code>R</code>-package, we have also implemented a version the original method, which samples training observations independently of their distance to the observation to the explained, i.e. without the large-<span class="math inline">\(\sigma\)</span> approximation. This method is available setting <code>type=independence</code> under <code>empirical_settings</code> in <code>prepare_kernelshap</code>. Below we compare the results using these two variants with the original implementation of <span class="citation">Lundberg and Lee (2017)</span>, available through the Python library <code>shap</code>, here <a href="https://github.com/slundberg/shap">github.com/slundberg/shap</a>.</p>
+<p>As above, we use the Boston housing data, trained via <code>xgboost</code>. We specify that <em>all</em> training observations should be used when explaining all of the 6 test observations. To run the individual explanation method in the <code>shap</code> Python library we use the <code>reticulate</code> <code>R</code>-package, allowing Python code to run within <code>R</code>. As this requires installation of Python package, the below comparison code and results is not automatically evaluated in this vignette. As indicated by the (commented out) results in the code below both methods in our <code>R</code>-package give (up to numerical approximation error) identical results to the original implementation in the Python <code>shap</code> library. For this specific example, we also produce results about 1 second (10% faster).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(MASS)
+<span class="kw">library</span>(xgboost)
+<span class="kw">library</span>(shapr)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(data.table)
+
+<span class="kw">data</span>(<span class="st">&quot;Boston&quot;</span>)
+
+x_var &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;lstat&quot;</span>, <span class="st">&quot;rm&quot;</span>, <span class="st">&quot;dis&quot;</span>, <span class="st">&quot;indus&quot;</span>)
+y_var &lt;-<span class="st"> &quot;medv&quot;</span>
+
+x_train &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">tail</span>(Boston[, x_var], <span class="op">-</span><span class="dv">6</span>))
+y_train &lt;-<span class="st"> </span><span class="kw">tail</span>(Boston[, y_var], <span class="op">-</span><span class="dv">6</span>)
+x_test &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">head</span>(Boston[, x_var], <span class="dv">6</span>))
+
+<span class="co"># Creating a larger test data set (300 observations) for more realistic function time calls.</span>
+<span class="co"># Modifying x_test to repeat the 6 test observations 50 times</span>
+x_test =<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>,<span class="dv">50</span>) <span class="op">%x%</span><span class="st"> </span>x_test
+<span class="kw">colnames</span>(x_test) &lt;-<span class="st"> </span><span class="kw">colnames</span>(x_train)
+
+<span class="co"># Fitting a basic xgboost model to the training data</span>
+model &lt;-<span class="st"> </span><span class="kw">xgboost</span>(
+  <span class="dt">data =</span> x_train,
+  <span class="dt">label =</span> y_train,
+  <span class="dt">nround =</span> <span class="dv">20</span>
+)
+
+pred_test &lt;-<span class="st"> </span><span class="kw">predict</span>(model,x_test)
+
+<span class="co"># Spedifying the phi_0, i.e. the expected prediction without any features</span>
+pred_zero &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">predict</span>(model,x_train))<span class="co"># adjustment from the standard mean(y_train) to comply with the shap implementation</span>
+
+time_R_start &lt;-<span class="st"> </span><span class="kw">proc.time</span>()
+<span class="co"># Prepare the data for explanation</span>
+l &lt;-<span class="st"> </span><span class="kw">prepare_kshap</span>(
+  <span class="dt">Xtrain =</span> x_train,
+  <span class="dt">Xtest =</span> x_test
+)
+
+time_R_prepare &lt;-<span class="st"> </span><span class="kw">proc.time</span>()
+
+
+<span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
+<span class="co"># the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)</span>
+explanation_independence &lt;-<span class="st"> </span><span class="kw">compute_kshap</span>(
+  <span class="dt">model =</span> model,
+  <span class="dt">l =</span> l,
+  <span class="dt">pred_zero =</span> pred_zero,
+  <span class="dt">empirical_settings =</span> <span class="kw">list</span>(<span class="dt">type =</span> <span class="st">&quot;independence&quot;</span>,
+                            <span class="dt">w_threshold =</span> <span class="dv">1</span>)
+)
+
+time_R_indep0 &lt;-<span class="st"> </span><span class="kw">proc.time</span>()
+
+
+explanation_largesigma &lt;-<span class="st"> </span><span class="kw">compute_kshap</span>(
+  <span class="dt">model =</span> model,
+  <span class="dt">l =</span> l,
+  <span class="dt">pred_zero =</span> pred_zero,
+  <span class="dt">cond_approach =</span> <span class="st">&quot;empirical&quot;</span>,
+  <span class="dt">empirical_settings =</span> <span class="kw">list</span>(<span class="dt">type =</span><span class="st">&quot;fixed_sigma&quot;</span>, <span class="dt">fixed_sigma_vec =</span> <span class="dv">10000</span>, <span class="dt">w_threshold =</span> <span class="dv">1</span>)
+)
+
+time_R_largesigma0 &lt;-<span class="st"> </span><span class="kw">proc.time</span>()
+
+time_R_indep &lt;-<span class="st"> </span>time_R_indep0 <span class="op">-</span><span class="st"> </span>time_R_start
+time_R_largesigma &lt;-<span class="st"> </span>(time_R_largesigma0 <span class="op">-</span><span class="st"> </span>time_R_indep0) <span class="op">+</span><span class="st"> </span>(time_R_prepare<span class="op">-</span><span class="st"> </span>time_R_start)
+
+
+<span class="co"># Printing the Shapley values for the test data</span>
+Kshap_indep &lt;-<span class="st"> </span>explanation_independence<span class="op">$</span>Kshap
+Kshap_largesigma &lt;-<span class="st"> </span>explanation_largesigma<span class="op">$</span>Kshap
+
+<span class="kw">head</span>(Kshap_indep)
+<span class="co">#&gt; Kshap_indep</span>
+<span class="co">#       none    lstat         rm         dis     indus</span>
+<span class="co">#1: 22,41355 7,116128  0,5203017 -1,91427784 3,1657530</span>
+<span class="co">#2: 22,41355 2,173011 -1,2201068 -0,47653736 0,3620256</span>
+<span class="co">#3: 22,41355 8,280909  3,7869719 -1,96968536 0,6037250</span>
+<span class="co">#4: 22,41355 8,384073  2,9590225 -2,19376523 1,8672685</span>
+<span class="co">#5: 22,41355 4,212031  3,8319436 -0,06695137 1,3392699</span>
+<span class="co">#6: 22,41355 3,295275 -1,2450126 -0,70618891 1,0924035</span>
+
+<span class="kw">head</span>(Kshap_largesigma)
+<span class="co">#&gt; Kshap_largesigma</span>
+<span class="co">#       none    lstat         rm        dis     indus</span>
+<span class="co">#1: 22,41355 7,116128  0,5203018 -1,9142779 3,1657530</span>
+<span class="co">#2: 22,41355 2,173011 -1,2201069 -0,4765373 0,3620255</span>
+<span class="co">#3: 22,41355 8,280910  3,7869718 -1,9696854 0,6037249</span>
+<span class="co">#4: 22,41355 8,384073  2,9590226 -2,1937652 1,8672685</span>
+<span class="co">#5: 22,41355 4,212031  3,8319435 -0,0669514 1,3392700</span>
+<span class="co">#6: 22,41355 3,295275 -1,2450126 -0,7061889 1,0924036</span>
+
+
+<span class="co"># Checking the difference between the methods</span>
+<span class="kw">mean</span>(<span class="kw">abs</span>(<span class="kw">as.matrix</span>(Kshap_indep)<span class="op">-</span><span class="kw">as.matrix</span>(Kshap_largesigma)))
+<span class="co">#[1] 6.752507e-08  # Numerically identical</span>
+
+
+<span class="kw">xgb.save</span>(<span class="dt">model=</span>model,<span class="dt">fname =</span> <span class="st">&quot;inst/compare_lundberg.xgb.obj&quot;</span>) <span class="co"># Need to wait a bit after saving and then loading this in python</span>
+
+#### Running shap from Python ####
+
+<span class="co"># Python settings</span>
+<span class="kw">library</span>(reticulate)
+<span class="co">#virtualenv_create(&quot;py3_6-virtualenv&quot;, python = &quot;/usr/bin/python3.6&quot;) # Creating virtual environment with Python 3.6</span>
+<span class="kw">use_virtualenv</span>(<span class="st">&quot;py3_6-virtualenv&quot;</span>)
+<span class="co">#py_install(&quot;xgboost&quot;,envname = &quot;py3_6-virtualenv&quot;)</span>
+<span class="co">#py_install(&quot;shap&quot;,envname = &quot;py3_6-virtualenv&quot;)</span>
+
+
+
+reticulate<span class="op">::</span><span class="kw">repl_python</span>()
+#### Python code ####
+import xgboost as xgb
+import shap
+import numpy as np
+import pandas as pd
+import time
+
+model =<span class="st"> </span><span class="kw">xgb.Booster</span>()  <span class="co"># init model</span>
+<span class="kw">model.load_model</span>(<span class="st">&quot;inst/compare_lundberg.xgb.obj&quot;</span>)
+
+## kernel shap sends data as numpy array which has no column names, so we fix it
+def <span class="kw">xgb_predict</span>(data_asarray)<span class="op">:</span>
+<span class="st">  </span>data_asDmatrix =<span class="st">  </span><span class="kw">xgb.DMatrix</span>(data_asarray)
+  return <span class="kw">model.predict</span>(data_asDmatrix)
+
+py_pred_test =<span class="st"> </span><span class="kw">xgb_predict</span>(r.x_test) <span class="co"># Test predictions in python</span>
+
+<span class="kw">sum</span>((py_pred_test<span class="op">-</span>r.pred_test)<span class="op">**</span><span class="dv">2</span>) <span class="co"># checking equality with r predictions</span>
+
+#### Applying kernelshap
+
+time_py_start =<span class="st"> </span><span class="kw">time.perf_counter</span>()
+
+shap_kernel_explainer =<span class="st"> </span><span class="kw">shap.KernelExplainer</span>(xgb_predict, r.x_train)
+Kshap_shap0 =<span class="st"> </span><span class="kw">shap_kernel_explainer.shap_values</span>(r.x_test,<span class="dt">nsamples =</span> <span class="kw">int</span>(<span class="dv">100000</span>),<span class="dt">l1_reg=</span><span class="dv">0</span>)
+
+time_py_end =<span class="st"> </span><span class="kw">time.perf_counter</span>()
+
+time_py =<span class="st"> </span>time_py_end<span class="op">-</span>time_py_start
+
+<span class="kw">getattr</span>(shap_kernel_explainer,<span class="st">'expected_value'</span>) <span class="co"># This is phi0, not used at all below</span>
+
+Kshap_shap =<span class="st"> </span><span class="kw">pd.DataFrame</span>(Kshap_shap0,<span class="dt">columns =</span> r.x_var)
+
+<span class="kw">Kshap_shap.insert</span>(<span class="dv">0</span>,<span class="st">&quot;none&quot;</span>,<span class="kw">getattr</span>(shap_kernel_explainer,<span class="st">'expected_value'</span>),True) <span class="co"># Adding the none column</span>
+
+
+exit
+#### Exit python code ####
+
+<span class="kw">head</span>(Kshap_indep)
+<span class="co">#&gt; Kshap_indep</span>
+<span class="co">#       none    lstat         rm         dis     indus</span>
+<span class="co">#1: 22,41355 7,116128  0,5203017 -1,91427784 3,1657530</span>
+<span class="co">#2: 22,41355 2,173011 -1,2201068 -0,47653736 0,3620256</span>
+<span class="co">#3: 22,41355 8,280909  3,7869719 -1,96968536 0,6037250</span>
+<span class="co">#4: 22,41355 8,384073  2,9590225 -2,19376523 1,8672685</span>
+<span class="co">#5: 22,41355 4,212031  3,8319436 -0,06695137 1,3392699</span>
+<span class="co">#6: 22,41355 3,295275 -1,2450126 -0,70618891 1,0924035</span>
+
+<span class="kw">head</span>(py<span class="op">$</span>Kshap_shap)
+<span class="co">#&gt; py$Kshap_shap</span>
+<span class="co">#      none    lstat         rm         dis     indus</span>
+<span class="co">#1 22,41355 7,116128  0,5203018 -1,91427784 3,1657530</span>
+<span class="co">#2 22,41355 2,173011 -1,2201069 -0,47653727 0,3620255</span>
+<span class="co">#3 22,41355 8,280910  3,7869719 -1,96968537 0,6037250</span>
+<span class="co">#4 22,41355 8,384073  2,9590226 -2,19376508 1,8672686</span>
+<span class="co">#5 22,41355 4,212031  3,8319435 -0,06695135 1,3392701</span>
+<span class="co">#6 22,41355 3,295275 -1,2450126 -0,70618891 1,0924036</span>
+
+
+<span class="co"># Checking difference between our R implementtaion and the shap implementation i Python</span>
+<span class="kw">mean</span>(<span class="kw">abs</span>(<span class="kw">as.matrix</span>(Kshap_indep)<span class="op">-</span><span class="kw">as.matrix</span>(py<span class="op">$</span>Kshap_shap)))
+<span class="co">#[1] 1,151811e-07 # Numerically identical</span>
+
+<span class="co"># Checking the running time of the different methods</span>
+time_R_indep[<span class="dv">3</span>]
+time_R_largesigma[<span class="dv">3</span>]
+py<span class="op">$</span>time_py
+<span class="co">#&gt; time_R_indep[3]</span>
+<span class="co">#elapsed</span>
+<span class="co">#9,908</span>
+<span class="co">#&gt; time_R_largesigma[3]</span>
+<span class="co">#elapsed</span>
+<span class="co">#9,768</span>
+<span class="co">#&gt; py$time_py</span>
+<span class="co">#[1] 10,75703</span>
+
+<span class="co"># Our R implementation is about 1 second = 10% faster.</span>
+<span class="co"># Might be some overhead by calling Python from R, but I don't think it's that much.</span></code></pre></div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-aas2019explaining">
+<p>Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>arXiv Preprint arXiv:1903.10464</em>.</p>
+</div>
+<div id="ref-lundberg2017unified">
+<p>Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.</p>
+</div>
+<div id="ref-rosenblatt1956">
+<p>Rosenblatt, Murray. 1956. “Remarks on Some Nonparametric Estimates of a Density Function.” <em>The Annals of Mathematical Statistics</em> 27: 832–37.</p>
+</div>
+<div id="ref-Shapley53">
+<p>Shapley, Lloyd S. 1953. “A Value for N-Person Games.” <em>Contributions to the Theory of Games</em> 2: 307–17.</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
