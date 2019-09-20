@@ -2,34 +2,26 @@
 % Please edit documentation in R/shapley.R
 \name{shapr}
 \alias{shapr}
-\title{Create an explainer object}
+\title{Create an explainer object with Shapley weights for test data.}
 \usage{
 shapr(x, model, n_combinations = NULL)
 }
 \arguments{
-\item{x}{A numeric matrix or data.frame. Contains the variables used for training the model
+\item{x}{An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total number of explanatory variables).Contains the variables used for training the model
 (i.e. the explanatory variables). Note that the response variable should not be part of
 \code{x}.}
 
-\item{n_combinations}{Integer. The number of feature combinations to sample. If ´\code{NULL},
+\item{model}{The model whose predictions we want to explain.}
+
+\item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
 the exact method is used and all combinations are considered. The maximum number of
-combinations equlas \code{2^p}, where \code{p = ncol(x)} (total number of explanatory variables).}
+combinations equals \code{2^p}.}
 }
 \value{
-List
+A list to be used by \code{explain} to compute the kernel SHAP values (\code{Kshap}).
 }
 \description{
-Create an explainer object
-}
-\details{
-TODO: Write a better description of this function.
-
-TODO: Write about missing values and categorical variables
-TODO: Write about the different elements that are returned
-}
-\examples{
-#TODO: Add simple example
-
+Create an explainer object with Shapley weights for test data.
 }
 \author{
 Nikolai Sellereite
