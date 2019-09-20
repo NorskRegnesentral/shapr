@@ -17,8 +17,11 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
   ## Remove training data with small weight
   setkey(DT, comb, w)
   DT[, w := w / sum(w), comb]
-  DT[, wcum := cumsum(w), comb]
-  DT <- DT[wcum > 1 - w_threshold][, wcum := NULL]
+  if (w_threshold < 1) {
+    DT[, wcum := cumsum(w), comb]
+    DT <- DT[wcum > 1 - w_threshold][, wcum := NULL]
+  }
+
   DT <- DT[, tail(.SD, noSamp_MC), comb]
   DT[, comb := gsub(comb, pattern = "V", replacement = ""), comb]
   DT[, wcomb := as.integer(comb), comb][, comb := NULL]
@@ -52,11 +55,23 @@ prepare_data <- function(x, ...) {
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, ...) {
+prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+
+  # Get distance matrix ----------------
+  if (is.null(index_features)) {
+    index_features <- x$X[, .I]
+  }
+
+  x$D <- distance_matrix(
+    x$x_train,
+    x$x_test,
+    x$X$features[index_features]
+  )
 
   # Setup
+  if (!is.null(seed)) set.seed(seed)
   n_col <- nrow(x$x_test)
-  no_empirical <- nrow(x$S)
+  no_empirical <- nrow(x$S[index_features, ])
 
   h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
   h_optim_DT <- as.data.table(h_optim_mat)
@@ -87,13 +102,13 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, ...) {
     h_optim_vec[is.na(h_optim_vec)] <- 1
 
     if (kernel_metric == "independence") {
-      D <- D[sample(nrow(D)), ]
+      D <- D[sample.int(nrow(D)), ]
       h_optim_vec <- mean(D) * 1000
     }
 
     val <- t(t(-0.5 * D) / h_optim_vec^2)
     W_kernel <- exp(val)
-    S <- x$S
+    S <- x$S[index_features, ]
 
     ## Get imputed data
     dt_l[[i]] <- observation_impute(
@@ -104,26 +119,39 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, ...) {
       w_threshold = x$w_threshold,
       noSamp_MC = n_samples
     )
+
     dt_l[[i]][, id := i]
+    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
+  dt[, keep := TRUE]
+  first_element <- dt[, tail(.I, 1), .(id, wcomb)][wcomb %in% c(1, 2^ncol(x$x_test)), V1]
+  dt[wcomb %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
+  dt[first_element, keep := TRUE]
+  dt <- dt[keep == TRUE][, keep := NULL]
+  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, ...) {
+prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)
+  if (is.null(index_features)) {
+    features <- x$X$features
+  } else {
+    features <- x$X$features[index_features]
+  }
+
   for (i in seq(n_xtest)) {
 
     l <- lapply(
-      X = x$X$features,
+      X = features,
       FUN = sample_gaussian,
       noSamp_MC = n_samples,
       mu = x$mu,
@@ -136,28 +164,35 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, ...) {
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
+    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
+  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, ...) {
+prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)
+  if (is.null(index_features)) {
+    features <- x$X$features
+  } else {
+    features <- x$X$features[index_features]
+  }
+
   for (i in seq(n_xtest)) {
     l <- lapply(
-      X = x$X$features,
+      X = features,
       FUN = sample_copula,
       noSamp_MC = n_samples,
       mu = x$mu,
       Sigma = x$cov_mat,
-      p = x$n_features,
+      p = ncol(x$x_test),
       Xtest = x$x_test[i, , drop = FALSE],
       Xtrain = as.matrix(x$x_train),
       Xtest_Gauss_trans = x_test[i, , drop = FALSE]
@@ -166,9 +201,10 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, ...) {
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
+    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, max(wcomb)), w := 1.0]
+  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 

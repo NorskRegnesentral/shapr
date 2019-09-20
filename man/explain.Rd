@@ -21,10 +21,7 @@ explain(x, explainer, approach, prediction_zero, ...)
 \method{explain}{copula}(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{combined}(x, explainer, prediction_zero,
-  approach = NULL, empirical.types = NULL, fixed_sigma_vec = 0.1,
-  AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-  AIC_optim_startval = 0.1, w_threshold = 0.95, mu = NULL,
-  cov_mat = NULL, ...)
+  approach = NULL, mu = NULL, cov_mat = NULL, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -33,15 +30,14 @@ predictions ought to be explained (test data).}
 \item{explainer}{An \code{explainer} object to use for exaplaining the observations.
 See \code{\link{shapr}}.}
 
-\item{approach}{String or list. If a String, the approach to use when computing the Shapley
-values. Equal to 'empirical', 'gaussian' or 'copula'. If a list, the elements in the list
-refers to the rows in \code{x} that ought to be included in each of the approaches.}
+\item{approach}{Character vector of length \code{1} or \code{n_features}.
+\code{n_features} equals the total number of features in the model. All elements should
+either be \code{"gaussian"}, \code{"copula"} or \code{"empirical"}. See details for more information.}
 
 \item{prediction_zero}{The prediction value for unseen data, typically equal to the mean of
 the response.}
 
-\item{...}{Additional arguments passed to \code{explain.empirical}, \code{explain.gaussian} or
-\code{explain.copula}.}
+\item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 
 \item{type}{String or list. Only applicable when \code{approach='empirical'}. If a string, the
 type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a
@@ -86,6 +82,7 @@ of test observations, and \code{p} equals the total number of features.
 TODO: Add a more detailed description
 }
 \details{
+TODO: Add information about approach.
 TODO: Some additional details about the returned object
 }
 \author{
