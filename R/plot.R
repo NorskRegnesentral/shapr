@@ -2,11 +2,10 @@
 #'
 #' Plots the individual prediction explanations. Uses facet_wrap of ggplot
 #'
-#' @param explanation The output from compute_kshap
-#' @param Xtest Data.table. Contains the covariates of the test data
+#' @param x An \code{shapr} object. See \code{\link{explain}}.
 #' @param digits Integer. Number of significant digits to use in the feature description
 #' @param plot_phi0 Logical. Whether to include phi0 in the plot
-#' @param plot_which_Xtest Integer vector. Which of the test observations to plot
+#' @param index_x_test Integer vector. Which of the test observations to plot
 #' @param top_k_features Integer. How many features to include in the plot
 #'
 #' @inheritParams global_arguments

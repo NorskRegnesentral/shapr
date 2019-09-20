@@ -8,17 +8,15 @@
   index_x_test = NULL, top_k_features = NULL)
 }
 \arguments{
+\item{x}{An \code{shapr} object. See \code{\link{explain}}.}
+
 \item{digits}{Integer. Number of significant digits to use in the feature description}
 
 \item{plot_phi0}{Logical. Whether to include phi0 in the plot}
 
+\item{index_x_test}{Integer vector. Which of the test observations to plot}
+
 \item{top_k_features}{Integer. How many features to include in the plot}
-
-\item{explanation}{The output from compute_kshap}
-
-\item{Xtest}{Data.table. Contains the covariates of the test data}
-
-\item{plot_which_Xtest}{Integer vector. Which of the test observations to plot}
 }
 \value{
 ggplot object with plots of the Shapley value explanations
