@@ -109,9 +109,9 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   if (!is.null(explainer$return)) return(dt)
 
   # Predict
-  dt_kshap <- prediction(dt, prediction_zero, explainer)
+  r <- prediction(dt, prediction_zero, explainer)
 
-  return(dt_kshap)
+  return(r)
 }
 
 #' @inheritParams explain
@@ -159,8 +159,9 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
   if (!is.null(explainer$return)) return(dt)
 
   # Predict
-  dt_kshap <- prediction(dt, prediction_zero, explainer)
-  return(dt_kshap)
+  r <- prediction(dt, prediction_zero, explainer)
+
+  return(r)
 }
 
 #' @rdname explain
@@ -202,8 +203,9 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
   if (!is.null(explainer$return)) return(dt)
 
   # Predict
-  dt_kshap <- prediction(dt, prediction_zero, explainer)
-  return(dt_kshap)
+  r <- prediction(dt, prediction_zero, explainer)
+
+  return(r)
 }
 
 #' @rdname explain
@@ -231,8 +233,9 @@ explain.combined <- function(x, explainer, prediction_zero, approach = NULL, mu 
 
   dt <- data.table::rbindlist(list(dt_e, dt_g, dt_c), use.names = TRUE)
 
-  dt_kshap <- prediction(dt, prediction_zero, explainer)
-  return(dt_kshap)
+  r <- prediction(dt, prediction_zero, explainer)
+
+  return(r)
 
 }
 
