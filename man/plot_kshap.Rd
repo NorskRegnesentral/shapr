@@ -4,13 +4,16 @@
 \alias{plot_kshap}
 \title{Plot of the Shapley value explanations}
 \usage{
-plot_kshap(explanation, Xtest, no_desc_digits = 3, plot_phi0 = T,
-  plot_which_Xtest = 1:nrow(Xtest), top_k_features = ncol(Xtest) + 1)
+plot_kshap(explanation, Xtest, model, no_desc_digits = 3,
+  plot_phi0 = T, plot_which_Xtest = 1:nrow(Xtest),
+  top_k_features = ncol(Xtest) + 1)
 }
 \arguments{
 \item{explanation}{The output from compute_kshap}
 
 \item{Xtest}{Data.table. Contains the covariates of the test data}
+
+\item{model}{Model object. Fitted model that is used to produce the predictions}
 
 \item{no_desc_digits}{Integer. Number of significant digits to use in the feature description}
 
