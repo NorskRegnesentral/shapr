@@ -24,45 +24,54 @@
 #' # TODO: Add simple example
 #'
 #' @author Nikolai Sellereite
-observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {
-  stopifnot(!is.null(dim(W_kernel)))
-  stopifnot(!is.null(dim(S)))
-  stopifnot(all(dim(W_kernel) == c(nrow(Xtrain),nrow(S))))
-  stopifnot(all(S%in%c(0,1)))
+observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n_samples = 1e3) {
 
-  ## Find weights for all combinations and training data
-  DT <- as.data.table(W_kernel)
-  DT[, ID := .I]
-  DT <- data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
+  # Check input
+  stopifnot(is.matrix(W_kernel) & is.matrix(S))
+  stopifnot(nrow(W_kernel) == nrow(x_train))
+  stopifnot(ncol(W_kernel) == nrow(S))
+  stopifnot(all(S %in% c(0,1)))
 
-  ## Remove training data with small weight
-  setkey(DT, comb, w)
-  DT[, w := w / sum(w), comb]
+  # Find weights for all combinations and training data
+  dt <- data.table::as.data.table(W_kernel)
+  nms_vec <- seq(ncol(dt))
+  names(nms_vec) <- colnames(dt)
+  dt[, index_x_train := .I]
+  dt_melt <- data.table::melt(
+    dt,
+    id.vars = "index_x_train",
+    variable.name = "id_combination",
+    value.name = "weight",
+    variable.factor = FALSE
+  )
+  dt_melt[, index_s := nms_vec[id_combination]]
+
+  # Remove training data with small weight
+  knms <- c("index_s", "weight")
+  data.table::setkeyv(dt_melt, knms)
+  dt_melt[, weight := weight / sum(weight), index_s]
   if (w_threshold < 1) {
-    DT[, wcum := cumsum(w), comb]
-    DT <- DT[wcum > 1 - w_threshold][, wcum := NULL]
+    dt_melt[, wcum := cumsum(weight), index_s]
+    dt_melt <- dt_melt[wcum > 1 - w_threshold][, wcum := NULL]
   }
+  dt_melt <- dt_melt[, tail(.SD, n_samples), index_s]
 
-  DT <- DT[, tail(.SD, noSamp_MC), comb]
-  DT[, comb := gsub(comb, pattern = "V", replacement = ""), comb]
-  DT[, wcomb := as.integer(comb), comb][, comb := NULL]
-
-  ## Generate data used for prediction
-  DTp <- observation_impute_cpp(
-    index_xtrain = DT[["ID"]],
-    index_s = DT[["wcomb"]],
-    xtrain = Xtrain,
-    xtest = Xtest,
+  # Generate data used for prediction
+  dt_p <- observation_impute_cpp(
+    index_xtrain = dt_melt[["index_x_train"]],
+    index_s = dt_melt[["index_s"]],
+    xtrain = x_train,
+    xtest = x_test,
     S = S
   )
 
-  ## Add keys
-  DTp <- as.data.table(DTp)
-  setnames(DTp, colnames(Xtrain))
-  DTp[, wcomb := DT[["wcomb"]]]
-  DTp[, w := DT[["w"]]]
+  # Add keys
+  dt_p <- data.table::as.data.table(dt_p)
+  data.table::setnames(dt_p, colnames(x_train))
+  dt_p[, wcomb := dt_melt[["index_s"]]]
+  dt_p[, w := dt_melt[["weight"]]]
 
-  return(DTp)
+  return(dt_p)
 }
 
 #' Generate data used for predictions
@@ -135,10 +144,10 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
     dt_l[[i]] <- observation_impute(
       W_kernel = W_kernel,
       S = S,
-      Xtrain = as.matrix(x$x_train),
-      Xtest = x$x_test[i, , drop = FALSE],
+      x_train = as.matrix(x$x_train),
+      x_test = x$x_test[i, , drop = FALSE],
       w_threshold = x$w_threshold,
-      noSamp_MC = n_samples
+      n_samples = n_samples
     )
 
     dt_l[[i]][, id := i]

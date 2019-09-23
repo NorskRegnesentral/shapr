@@ -126,10 +126,10 @@ predictions <- function(model,
     DTp.empirical <- observation_impute(
       W_kernel = W_kernel,
       S = S[these_wcomb, ],
-      Xtrain = Xtrain,
-      Xtest = Xtest,
+      x_train = Xtrain,
+      x_test = Xtest,
       w_threshold = w_threshold,
-      noSamp_MC = noSamp_MC
+      n_samples = noSamp_MC
     )
     DTp.empirical[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
   }
