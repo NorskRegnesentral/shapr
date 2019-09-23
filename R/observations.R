@@ -153,11 +153,11 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     l <- lapply(
       X = features,
       FUN = sample_gaussian,
-      noSamp_MC = n_samples,
+      n_samples = n_samples,
       mu = x$mu,
-      Sigma = x$cov_mat,
+      sigma = x$cov_mat,
       p = ncol(x$x_test),
-      Xtest = x$x_test[i, , drop = FALSE],
+      x_test = x$x_test[i, , drop = FALSE],
       ensure_condcov_symmetry = FALSE
     )
 

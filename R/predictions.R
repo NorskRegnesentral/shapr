@@ -77,11 +77,11 @@ predictions <- function(model,
     samp_list <- lapply(
       X = feature_list[these_wcomb],
       FUN = sample_gaussian,
-      noSamp_MC = noSamp_MC,
+      n_samples = noSamp_MC,
       mu = mu,
-      Sigma = Sigma,
+      sigma = Sigma,
       p = p,
-      Xtest = Xtest,
+      x_test = Xtest,
       ensure_condcov_symmetry = ensure_condcov_symmetry
     )
     DTp.Gaussian <- rbindlist(samp_list, idcol = "wcomb")
