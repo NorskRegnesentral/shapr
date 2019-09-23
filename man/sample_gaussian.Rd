@@ -31,6 +31,11 @@ data.table with \code{noSamp_MC} (conditional) Gaussian samples
 \description{
 Sample conditional Gaussian variables
 }
+\examples{
+# TODO: Add simple example
+
+}
 \author{
 Martin Jullum
 }
+\keyword{internal}

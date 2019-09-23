@@ -27,6 +27,11 @@ Data.frame. Contains \code{nsamples} rows of re-sampled train and test observati
 Helper function to sample a combination of training and testing rows, which does not risk
 getting the same observation twice. Need to improve this help file.
 }
+\examples{
+# TODO: Add simple example
+
+}
 \author{
 Martin Jullum
 }
+\keyword{internal}
