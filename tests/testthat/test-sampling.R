@@ -56,40 +56,40 @@ test_that("test sample_gaussian", {
   # Example 1 -----------
   # Check that the given features are not resampled, but kept as is.
   m <- 10
-  noSamp <- 50
+  n_samples <- 50
   mu <- rep(1, m)
-  Sigma <- cov(matrix(rnorm(noSamp * m), noSamp, m))
-  Xtest <- MASS::mvrnorm(1, mu, Sigma)
-  given.ind <- 4
+  sigma <- cov(matrix(rnorm(n_samples * m), n_samples, m))
+  x_test <- MASS::mvrnorm(1, mu, sigma)
+  index_mu <- 4
   set.seed(1)
-  ret <- sample_gaussian(given.ind, noSamp, mu, Sigma, m, Xtest)
-  X_given <- Xtest[given.ind]
-  res1.1 <- as.data.table(matrix(rep(X_given, each = noSamp), byrow = T))
-  res1.2 <- as.data.table(ret[, ..given.ind])
+  ret <- sample_gaussian(index_mu, n_samples, mu, sigma, m, x_test)
+  X_given <- x_test[index_mu]
+  res1.1 <- as.data.table(matrix(rep(X_given, each = n_samples), byrow = T))
+  res1.2 <- as.data.table(ret[, ..index_mu])
   colnames(res1.1) <- colnames(res1.2)
 
   # Example 2 -------------
   # Check that conditioning upon all variables simply returns the test observation.
-  given.ind <- 1:m
-  x2 <- as.data.table(matrix(Xtest, ncol = m, nrow = 1))
-  res2 <- sample_gaussian(given.ind, noSamp, mu, Sigma, m, Xtest)
+  index_mu <- 1:m
+  x2 <- as.data.table(matrix(x_test, ncol = m, nrow = 1))
+  res2 <- sample_gaussian(index_mu, n_samples, mu, sigma, m, x_test)
 
   # Example 3 -------------
   # Check that ensuring conditional covariance matrix symmetry is FALSE by default.
-  given.ind <- 4:7
+  index_mu <- 4:7
   set.seed(1)
-  res3.1 <- sample_gaussian(given.ind, noSamp, mu, Sigma, m, Xtest, ensure_condcov_symmetry = F)
+  res3.1 <- sample_gaussian(index_mu, n_samples, mu, sigma, m, x_test, ensure_condcov_symmetry = F)
   set.seed(1)
-  res3.2 <- sample_gaussian(given.ind, noSamp, mu, Sigma, m, Xtest)
+  res3.2 <- sample_gaussian(index_mu, n_samples, mu, sigma, m, x_test)
   set.seed(1)
-  res3.3 <- sample_gaussian(given.ind, noSamp, mu, Sigma, m, Xtest, ensure_condcov_symmetry = T)
+  res3.3 <- sample_gaussian(index_mu, n_samples, mu, sigma, m, x_test, ensure_condcov_symmetry = T)
 
   # Tests ------------------
   expect_equal(res1.1, res1.2)
   expect_equal(x2, res2)
   expect_identical(res3.1, res3.2)
   expect_false(sum(res3.1 != res3.3) == 0) # Expect different results
-  expect_error(sample_gaussian(m + 1, noSamp, mu, Sigma, m, Xtest))
+  expect_error(sample_gaussian(m + 1, n_samples, mu, sigma, m, x_test))
   expect_true(data.table::is.data.table(res3.2))
 })
 
@@ -98,37 +98,37 @@ test_that("test sample_copula", {
   # Check that the given features are not resampled, but kept as is.
   m <- 10
   n <- 40
-  noSamp <- 50
+  n_samples <- 50
   mu <- rep(1, m)
-  Sigma <- cov(matrix(rnorm(n * m), n, m))
-  Xtrain <- MASS::mvrnorm(n, mu, Sigma)
-  Xtest <- MASS::mvrnorm(1, mu, Sigma)
-  Xtest_Gauss <- MASS::mvrnorm(1, mu, Sigma)
-  given.ind <- 3:6
+  sigma <- cov(matrix(rnorm(n * m), n, m))
+  x_train <- MASS::mvrnorm(n, mu, sigma)
+  x_test <- MASS::mvrnorm(1, mu, sigma)
+  x_test_gaussian <- MASS::mvrnorm(1, mu, sigma)
+  index_mu <- 3:6
   set.seed(1)
-  ret <- sample_copula(given.ind, noSamp, mu, Sigma, m, Xtest_Gauss, Xtrain, Xtest)
-  X_given <- Xtest[given.ind]
-  res1.1 <- as.data.table(matrix(rep(X_given, each = noSamp), nrow = noSamp))
-  res1.2 <- as.data.table(ret[, ..given.ind])
+  ret <- sample_copula(index_mu, n_samples, mu, sigma, m, x_test_gaussian, x_train, x_test)
+  X_given <- x_test[index_mu]
+  res1.1 <- as.data.table(matrix(rep(X_given, each = n_samples), nrow = n_samples))
+  res1.2 <- as.data.table(ret[, ..index_mu])
   colnames(res1.1) <- colnames(res1.2)
 
   # Example 2 --------------
   # Check that conditioning upon all variables simply returns the test observation.
-  given.ind <- 1:m
-  x2 <- as.data.table(matrix(Xtest, ncol = m, nrow = 1))
-  res2 <- sample_copula(given.ind, noSamp, mu, Sigma, m, Xtest_Gauss, Xtrain, Xtest)
+  index_mu <- 1:m
+  x2 <- as.data.table(matrix(x_test, ncol = m, nrow = 1))
+  res2 <- sample_copula(index_mu, n_samples, mu, sigma, m, x_test_gaussian, x_train, x_test)
 
   # Example 3 --------------
   # Check that the colnames are preserved.
-  given.ind <- c(1, 2, 3, 5, 6)
-  Xtest <- t(as.data.frame(Xtest))
-  colnames(Xtest) <- 1:m
-  res3 <- sample_copula(given.ind, noSamp, mu, Sigma, m, Xtest_Gauss, Xtrain, Xtest)
+  index_mu <- c(1, 2, 3, 5, 6)
+  x_test <- t(as.data.frame(x_test))
+  colnames(x_test) <- 1:m
+  res3 <- sample_copula(index_mu, n_samples, mu, sigma, m, x_test_gaussian, x_train, x_test)
 
   # Tests ------------------
   expect_equal(res1.1, res1.2)
   expect_equal(x2, res2)
-  expect_identical(colnames(res3), colnames(Xtest))
-  expect_error(sample_copula(m + 1, noSamp, mu, Sigma, m, Xtest_Gauss, Xtrain, Xtest))
+  expect_identical(colnames(res3), colnames(x_test))
+  expect_error(sample_copula(m + 1, n_samples, mu, sigma, m, x_test_gaussian, x_train, x_test))
   expect_true(data.table::is.data.table(res2))
 })

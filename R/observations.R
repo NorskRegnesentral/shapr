@@ -189,13 +189,13 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
     l <- lapply(
       X = features,
       FUN = sample_copula,
-      noSamp_MC = n_samples,
+      n_samples = n_samples,
       mu = x$mu,
-      Sigma = x$cov_mat,
+      sigma = x$cov_mat,
       p = ncol(x$x_test),
-      Xtest = x$x_test[i, , drop = FALSE],
-      Xtrain = as.matrix(x$x_train),
-      Xtest_Gauss_trans = x_test[i, , drop = FALSE]
+      x_test = x$x_test[i, , drop = FALSE],
+      x_train = as.matrix(x$x_train),
+      x_test_gaussian = x_test[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
