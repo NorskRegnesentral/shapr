@@ -2,38 +2,40 @@
 % Please edit documentation in R/observations.R
 \name{observation_impute}
 \alias{observation_impute}
-\title{Generate permutated data for empirical}
+\title{Generate permutations of training data using test observations}
 \usage{
 observation_impute(W_kernel, S, Xtrain, Xtest, w_threshold = 0.7,
   noSamp_MC = 1000)
 }
 \arguments{
-\item{W_kernel}{Array. Contains all nonscaled weights between training and testing observations
-for all combinations. Dimension \code{ntrain x nfeatures}.}
+\item{W_kernel}{Numeric matrix. Contains all nonscaled weights between training and test
+observations for all feature combinations. The dimension equals \code{n_train x n_features}.}
 
-\item{S}{Integer matrix of dimension \code{ncomb x nfeatures}, where \code{ncomb} equals the
-total number of sampled/non-sampled feature combinations and \code{nfeatures} equals the
-total number of unique features. Note that \code{nfeatures = ncol(xtrain)}.}
+\item{S}{Integer matrix of dimension \code{ncomb x n_features}, where \code{ncomb} equals the
+total number of sampled/non-sampled feature combinations and \code{n_features} equals the
+total number of unique features. Note that \code{n_features = ncol(xtrain)}.}
 
-\item{Xtrain}{Matrix, data.frame or data.table with the features from the training data.
+\item{Xtrain}{A matrix or data.frame with the features from the training data.
 Dimension \code{ntrain x nfeatures}.}
 
 \item{Xtest}{Matrix, data.frame or data.table with the features of the observation whose
 predictions ought to be explained (test data). Dimension \code{1 x nfeatures} or
 \code{nfeatures x 1}.}
 
-\item{w_threshold}{Numeric. The number of samples to use is chosen to be the number of the
-largest weights needed to account for this fraction of the total weight.}
-
-\item{noSamp_MC}{Positive integer. Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation (previously called \code{n_threshold})}
+\item{w_threshold}{Numeric vector of length 1. The number of samples to use is chosen to be
+the number of the largest weights needed to account for this fraction of the total weight.}
 }
 \value{
-List
+data.table
 }
 \description{
 TODO: Add a description text
 }
+\examples{
+# TODO: Add simple example
+
+}
 \author{
 Nikolai Sellereite
 }
+\keyword{internal}
