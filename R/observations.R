@@ -8,9 +8,9 @@
 #' @param S Integer matrix of dimension \code{ncomb x n_features}, where \code{ncomb} equals the
 #' total number of sampled/non-sampled feature combinations and \code{n_features} equals the
 #' total number of unique features. Note that \code{n_features = ncol(xtrain)}.
-#' @param Xtrain A matrix or data.frame with the features from the training data.
+#' @param x_train A matrix or data.frame with the features from the training data.
 #' Dimension \code{ntrain x nfeatures}.
-#' @param Xtest Matrix, data.frame or data.table with the features of the observation whose
+#' @param x_test Matrix, data.frame or data.table with the features of the observation whose
 #' predictions ought to be explained (test data). Dimension \code{1 x nfeatures} or
 #' \code{nfeatures x 1}.
 #' @param w_threshold Numeric vector of length 1. The number of samples to use is chosen to be
