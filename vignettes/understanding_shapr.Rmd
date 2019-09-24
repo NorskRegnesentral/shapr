@@ -206,14 +206,11 @@ and how `shapr` can be used to explain the individual predictions. Note that emp
 distribution approach is the default, and that the Gaussian and Gaussian copula approaches can be 
 used instead by setting the argument `approach` to either 'Gaussian' or 'copula'.   
 
-```{r,warning=FALSE}
-library(MASS)
+```{r, warning=FALSE}
 library(xgboost)
 library(shapr)
-library(data.table)
-library(ggplot2)
 
-data("Boston")
+data("Boston", package = "MASS")
 
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
@@ -227,14 +224,11 @@ model <- xgboost(
   data = x_train,
   label = y_train,
   nround = 20,
-  verbose = F
+  verbose = FALSE
 )
 
 # Prepare the data for explanation
-explainer <- shapr(
-  x_train,
-  model
-)
+explainer <- shapr(x_train, model)
 
 # Specifying the phi_0, i.e. the expected prediction without any features
 pred_zero <- mean(y_train)
@@ -253,9 +247,7 @@ explanation <- explain(
 explanation$dt
 
 # Plot the resulting explanations for observations 1 and 6
-plot(explanation, plot_phi0 = FALSE ,index_x_test = c(1,6))
-
-
+plot(explanation, plot_phi0 = FALSE, index_x_test = c(1,6))
 ``` 
 
 The Gaussian approach is used as follows:
@@ -270,7 +262,7 @@ explanation_gaussian <- explain(
 )
 
 # Plot the resulting explanations for observations 1 and 6
-plot(explanation_gaussian, plot_phi0 = FALSE,, index_x_test = c(1,6))
+plot(explanation_gaussian, plot_phi0 = FALSE, index_x_test = c(1,6))
 ```
 
 The Gaussian copula approach is used as follows:
@@ -287,7 +279,6 @@ explanation_copula <- explain(
 # Plot the resulting explanations for observations 1 and 6, excluding 
 # the no-covariate effect
 plot(explanation_copula, plot_phi0 = FALSE, index_x_test = c(1,6))
-
 ```
 
 ## Main arguments in `shapr`
