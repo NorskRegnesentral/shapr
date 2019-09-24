@@ -203,8 +203,9 @@ numeric features and produces a numeric outcome.
 
 The following example shows how a simple `xgboost` model is trained using the Boston Housing Data, 
 and how `shapr` can be used to explain the individual predictions. Note that empirical conditional 
-distribution approach is the default, and that the Gaussian and Gaussian copula approaches can be 
-used instead by setting the argument `approach` to either 'Gaussian' or 'copula'.   
+distribution approach is the default (i.e. `approach = "empirical"`), and that the Gaussian and 
+Gaussian copula approaches can be used instead by setting the argument `approach` to either 
+`"gaussian"` or `"copula"`.
 
 ```{r, warning=FALSE}
 library(xgboost)
