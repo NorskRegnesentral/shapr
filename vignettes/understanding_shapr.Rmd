@@ -29,7 +29,7 @@ library(shapr)
 
 > [The Kernel SHAP Method](#KSHAP)
 
-> [An Example](#ex)
+> [Examples](#ex)
 
 > [Comparison to Lundberg & Lee's implementation](#compare)
 
