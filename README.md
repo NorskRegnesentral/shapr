@@ -59,6 +59,7 @@ The following methodology/features are currently implemented:
     (1998) when optimizing the bandwidth parameter in the empirical
     (conditional) approach of Aas, Jullum, and Løland (2019).
   - Functionality for visualizing the explanations.
+  - Support for models not supported natively.
 
 <!--
 Current methodological restrictions:
@@ -70,10 +71,8 @@ Current methodological restrictions:
 
 Future releases will include:
 
-  - Support for models not supported natively.
   - Support for parallelization over explanations, Monte Carlo sampling
     and features subsets for non-parallelizable prediction functions.
-  - Simplify the use of the combination method.
   - Computational improvement of the AICc optimization approach
   - Adaptive selection of method to account for the feature dependence
 

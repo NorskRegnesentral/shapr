@@ -42,7 +42,8 @@ The following methodology/features are currently implemented:
 -   Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of @aas2019explaining.
 -   Combine any of the three methods.
 -   Optional use of the AICc criterion of @hurvich1998smoothing when optimizing the bandwidth parameter in the empirical (conditional) approach of @aas2019explaining.
-- Functionality for visualizing the explanations.
+-   Functionality for visualizing the explanations.
+-   Support for models not supported natively.
 
 <!--
 Current methodological restrictions:
@@ -54,9 +55,7 @@ Current methodological restrictions:
 
 Future releases will include:
 
--   Support for models not supported natively.
 -   Support for parallelization over explanations, Monte Carlo sampling and features subsets for non-parallelizable prediction functions.
--   Simplify the use of the combination method.
 -   Computational improvement of the AICc optimization approach
 -   Adaptive selection of method to account for the feature dependence
 
