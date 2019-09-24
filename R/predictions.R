@@ -33,7 +33,10 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", cnms)
 
-  return(dt_kshap)
+  r <- list(dt = dt_kshap, model = explainer$model, p = p_all, x_test = explainer$x_test)
+  attr(r, "class") <- c("shapr", "list")
+
+  return(r)
 }
 
 #' Note that this function is deprecated, but we'll keep it for a week
