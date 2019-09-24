@@ -128,10 +128,10 @@ explanation <- explain(
 )
 
 # Printing the Shapley values for the test data
-explanation
+print(explanation$dt)
 
 # Finally we plot the resulting explanations
-plot_kshap(explanation, x_test, model)
+plot(explanation)
 ```
 
 ## References
