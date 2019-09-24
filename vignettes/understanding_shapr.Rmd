@@ -262,8 +262,7 @@ The Gaussian approach is used as follows:
 
 ```{r}
 # Use the Gaussian approach
-
-explanation_Gauss <- explain(
+explanation_gaussian <- explain(
   x_test,
   approach="gaussian",
   explainer = explainer,
@@ -271,7 +270,7 @@ explanation_Gauss <- explain(
 )
 
 # Plot the resulting explanations for observations 1 and 6
-plot(explanation_Gauss, plot_phi0 = FALSE,, index_x_test = c(1,6))
+plot(explanation_gaussian, plot_phi0 = FALSE,, index_x_test = c(1,6))
 ```
 
 The Gaussian copula approach is used as follows:
