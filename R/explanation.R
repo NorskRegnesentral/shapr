@@ -15,11 +15,6 @@
 #' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
 #' the response.
 #'
-#' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
-#' Monte Carlo integration for every conditional expectation.
-#'
-#' @param seed Positive integer. If \code{NULL} a random seed will be used.
-#'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
 #' @details
@@ -210,7 +205,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
 #' @rdname explain
 #' @export
-explain.combined <- function(x, explainer, prediction_zero, approach = NULL, mu = NULL, cov_mat = NULL, ...) {
+explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
 
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$nfeatures, approach)

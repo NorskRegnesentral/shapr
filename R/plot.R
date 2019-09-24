@@ -7,6 +7,7 @@
 #' @param plot_phi0 Logical. Whether to include phi0 in the plot
 #' @param index_x_test Integer vector. Which of the test observations to plot
 #' @param top_k_features Integer. How many features to include in the plot
+#' @param ... Currently not used.
 #'
 #' @inheritParams global_arguments
 #'
@@ -19,7 +20,8 @@ plot.shapr <- function(x,
                        digits = 3,
                        plot_phi0 = TRUE,
                        index_x_test = NULL,
-                       top_k_features = NULL) {
+                       top_k_features = NULL,
+                       ...) {
 
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
