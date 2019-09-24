@@ -302,24 +302,24 @@ the arguments \code{x} and \code{model}.
 ## Main arguments in `explain`
 
 The data frame \code{x} of test data whose predicted values we wish to explain must be provided. 
-One must also provide the list returned by \code{shapr} through the argument \code{explainer}. 
+One must also provide the object returned by `shapr` through the argument `explainer`. 
 The approach to use when computing the Shapley values must also be specified through the argument 
-\code{approach}, either equal to \code{empirical}, \code{gaussian} or \code{copula}, or a vector 
-of them. If a vector, a combined approach is used, and element \code{i} indicates the approach to 
-use when conditioning on \code{i} variables. Similarly, \code{type} is only applicable if the 
-empirical approach to use, and indicates the type of empirical approach to use. It is either 
-`independence`, `fixed_sigma`(default) or `gaussian`. 
+`approach`, either equal to `"empirical"`, `"gaussian"` or `"copula"`, or a vector 
+of them. If a vector, a combined approach is used, and element `i` indicates the approach to 
+use when conditioning on `i` variables. Similarly, `type` is only applicable if the 
+`approach = "empirical"`, and indicates the type of empirical approach to use. It is either 
+`"independence"`, `"fixed_sigma"` or `"gaussian"`.
 
 When computing the kernel SHAP values by `explain`, the maximum number of samples to use in the 
-Monte Carlo integration for every conditional expectation is controlled by the argument `n_samples`, 
-by deafult set to be 1000. The computation time grows approximately linear with this number. As 
+Monte Carlo integration for every conditional expectation is controlled by the argument `n_samples` 
+(default equals `1000`). The computation time grows approximately linear with this number. As 
 seen in the code above, the argument `prediction_zero` for the prediction value of the unseen 
 data is required. We recommend setting this equal to the mean of the response, but other values, 
 like the mean prediction of a large test data set is also a possibility.
 If the empirical method is used, specific settings for that approach, like a fixed $\sigma$ value 
-of vector can be specified through the argument \code{sigma_vec}. If the Gaussian approach is used,
+of vector can be specified through the argument `sigma_vec`. If the `approach = "gaussian"`,
 we may specify the mean vector and covariance matrix of the data generating distribution by the 
-arguments `mu` and `Sigma`. If not specified, they are estimated from the training data.  
+arguments `mu` and `sigma`. If not specified, they are estimated from the training data.  
 
 <a id="compare"></a>
 
