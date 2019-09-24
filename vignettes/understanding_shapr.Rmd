@@ -4,25 +4,25 @@ author: "Camilla Lingjærde, Martin Jullum & Nikolai Sellereite"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 vignette: >
-%\VignetteIndexEntry{Understanding shapr}
+  %\VignetteIndexEntry{Understanding shapr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  ---
-  
-  ```{r, include = FALSE}
+---
+
+```{r, include = FALSE}
 knitr::opts_chunk$set(
-collapse = TRUE,
-comment = "#>",
-fig.width =7,
-fig.height = 3
+  collapse = TRUE,
+  comment = "#>",
+  fig.width =7,
+  fig.height = 3
 )
 ```
 
 ```{r setup, include=FALSE, warning=FALSE}
 library(shapr)
 ```
-
-
+ 
+ 
 > [Introduction](#intro)
 
 > [Overview of Package](#overview)
@@ -36,8 +36,8 @@ library(shapr)
 <a id="intro"></a>
 
 # Introduction
-
-
+ 
+ 
 The `shapr` package implements an extended version of the Kernel SHAP method for approximating 
 Shapley values (@lundberg2017unified), in which dependence between the features is taken into 
 account (@aas2019explaining). Estimation of Shapley values is of interest when attempting to 
@@ -112,7 +112,7 @@ If samples $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$, from $p(\boldsymbol{x}_
 are available, the conditional expectation in above can be approximated by 
 
 \begin{equation}
-v_{\text{KerSHAP}}(S) = \frac{1}{K}\sum_{k=1}^K f(\boldsymbol{x}_{\bar{S}}^{k},\boldsymbol{x}_S^*).
+  v_{\text{KerSHAP}}(S) = \frac{1}{K}\sum_{k=1}^K f(\boldsymbol{x}_{\bar{S}}^{k},\boldsymbol{x}_S^*).
 \end{equation}
 
 In Kernel SHAP, $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$ are sampled from the $\bar{S}$-part of 
@@ -298,7 +298,7 @@ is the number of feature combinations to sample. If not specified, the exact met
 The computation time grows approximately exponentially with the number of samples. The data frame 
 of the training data and the model whose predictions we wish to explain must be provided through 
 the arguments \code{x} and \code{model}. 
-
+ 
 
 ## Main arguments in `explain`
 
