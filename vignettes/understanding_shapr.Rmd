@@ -295,7 +295,8 @@ missing values.
 
 ## Main arguments in `explain`
 
-The data frame \code{x} of test data whose predicted values we wish to explain must be provided. 
+The test data given by `x`, whose predicted values we wish to explain, must be provided. Note that 
+`x` must be a `data.frame` or a `matrix,` where all elements are finite numerical values.
 One must also provide the object returned by `shapr` through the argument `explainer`. 
 The approach to use when computing the Shapley values must also be specified through the argument 
 `approach`, either equal to `"empirical"`, `"gaussian"` or `"copula"`, or a vector 
