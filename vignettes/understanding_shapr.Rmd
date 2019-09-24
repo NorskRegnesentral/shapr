@@ -4,25 +4,25 @@ author: "Camilla Lingjærde, Martin Jullum & Nikolai Sellereite"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 vignette: >
-  %\VignetteIndexEntry{Understanding shapr}
+%\VignetteIndexEntry{Understanding shapr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
----
-
-```{r, include = FALSE}
+  ---
+  
+  ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.width =7,
-  fig.height = 3
+collapse = TRUE,
+comment = "#>",
+fig.width =7,
+fig.height = 3
 )
 ```
 
 ```{r setup, include=FALSE, warning=FALSE}
 library(shapr)
 ```
- 
- 
+
+
 > [Introduction](#intro)
 
 > [Overview of Package](#overview)
@@ -36,18 +36,29 @@ library(shapr)
 <a id="intro"></a>
 
 # Introduction
- 
- 
-The `shapr` package implements an extended version of the Kernel SHAP method for approximating Shapley values (@lundberg2017unified), in which dependence between the features is taken into account (@aas2019explaining). Estimation of Shapley values is of interest when attempting to explain complex machine learning models. Of existing work on interpreting individual predictions, Shapley values is regarded to be the only model-agnostic explanation method with a solid theoretical foundation (@lundberg2017unified). Kernel SHAP is a computationally efficient approximation to Shapley values in higher dimensions, but it assumes independent features. @aas2019explaining extend the Kernel SHAP method to handle dependent features, resulting in more accurate approximations to the true Shapley values. [See the paper for further details](https://arxiv.org/abs/1903.10464).
+
+
+The `shapr` package implements an extended version of the Kernel SHAP method for approximating 
+Shapley values (@lundberg2017unified), in which dependence between the features is taken into 
+account (@aas2019explaining). Estimation of Shapley values is of interest when attempting to 
+explain complex machine learning models. Of existing work on interpreting individual predictions, 
+Shapley values is regarded to be the only model-agnostic explanation method with a solid theoretical 
+foundation (@lundberg2017unified). Kernel SHAP is a computationally efficient approximation to 
+Shapley values in higher dimensions, but it assumes independent features. @aas2019explaining extend 
+the Kernel SHAP method to handle dependent features, resulting in more accurate approximations to 
+the true Shapley values. [See the paper for further details](https://arxiv.org/abs/1903.10464).
 
 
 <a id="overview"></a>
+
+<br>
 
 # Overview of Package
 
 ## Functions
 
-Here is an overview of the main functions. You can read their documentation and see examples with `?function_name`.
+Here is an overview of the main functions. You can read their documentation and see examples 
+with `?function_name`.
 
 ----------------------------- ------------------------------------------------------
 Function Name                 Description
@@ -65,65 +76,135 @@ Function Name                 Description
 
 <a id="KSHAP"></a>
 
+<br>
+
 # The Kernel SHAP Method
 
-Assume a predictive model $f(\boldsymbol{x})$ for a response value $y$ with features $\boldsymbol{x}\in \mathbb{R}^M$, trained on a training set, and that we want to explain the predictions for new sets of features. This may be done using ideas from cooperative game theory, letting a single prediction take the place of the game being played and the features the place of the players. Letting $N$ denote the set of all $M$ players, and $S \subseteq N$ be a subset of $|S|$ players, the "contribution" function $v(S)$ describes the total expected sum of payoffs the members of $S$ can obtain by cooperation. The Shapley value (@Shapley53) is one way to distribute the total gains to the players, assuming that they all collaborate. The amount that player $i$ gets is then
+Assume a predictive model $f(\boldsymbol{x})$ for a response value $y$ with features 
+$\boldsymbol{x}\in \mathbb{R}^M$, trained on a training set, and that we want to explain the 
+predictions for new sets of features. This may be done using ideas from cooperative game theory, 
+letting a single prediction take the place of the game being played and the features the place of 
+the players. Letting $N$ denote the set of all $M$ players, and $S \subseteq N$ be a subset 
+of $|S|$ players, the "contribution" function $v(S)$ describes the total expected sum of payoffs 
+the members of $S$ can obtain by cooperation. The Shapley value (@Shapley53) is one way to 
+distribute the total gains to the players, assuming that they all collaborate. The amount that 
+player $i$ gets is then
 
 $$\phi_i(v) = \phi_i = \sum_{S \subseteq N \setminus\{i\}} \frac{|S| ! (M-| S| - 1)!}{M!}(v(S\cup \{i\})-v(S)),$$
 
 
-that is, a weighted mean over all subsets $S$ of players not containing player $i$. @lundberg2017unified define the contribution function for a certain subset $S$ of these features $\boldsymbol{x}_S$ as $v(S) = \mbox{E}[f(\boldsymbol{x})|\boldsymbol{x}_S]$, the expected output of the predictive model conditional on the feature values of the subset. @lundberg2017unified names this type of Shapley values SHAP (SHapley Additive exPlanation) values. Since the conditional expectations can be written as 
+that is, a weighted mean over all subsets $S$ of players not containing player $i$. 
+@lundberg2017unified define the contribution function for a certain subset $S$ of these features 
+$\boldsymbol{x}_S$ as $v(S) = \mbox{E}[f(\boldsymbol{x})|\boldsymbol{x}_S]$, the expected output 
+of the predictive model conditional on the feature values of the subset. @lundberg2017unified names
+this type of Shapley values SHAP (SHapley Additive exPlanation) values. Since the conditional 
+expectations can be written as 
 
 \begin{equation}
 \label{eq:CondExp}
 E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*] = \int f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S^*)\,p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)d\boldsymbol{x}_{\bar{S}},
 \end{equation}
 
-the conditional distributions $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ are needed to compute the contributions. The Kernel SHAP method of @lundberg2017unified assumes feature independence, so that $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)=p(\boldsymbol{x}_{\bar{S}})$. 
-If samples $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$, from $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ are available, the conditional expectation in above can be approximated by 
+the conditional distributions $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ are 
+needed to compute the contributions. The Kernel SHAP method of @lundberg2017unified assumes feature 
+independence, so that $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)=p(\boldsymbol{x}_{\bar{S}})$. 
+If samples $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$, from $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ 
+are available, the conditional expectation in above can be approximated by 
 
 \begin{equation}
-  v_{\text{KerSHAP}}(S) = \frac{1}{K}\sum_{k=1}^K f(\boldsymbol{x}_{\bar{S}}^{k},\boldsymbol{x}_S^*).
+v_{\text{KerSHAP}}(S) = \frac{1}{K}\sum_{k=1}^K f(\boldsymbol{x}_{\bar{S}}^{k},\boldsymbol{x}_S^*).
 \end{equation}
 
-In Kernel SHAP, $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$ are sampled from the $\bar{S}$-part of the training data, *independently* of $\boldsymbol{x}_{S}$. This is motivated by using the training set as the empirical distribution of $\boldsymbol{x}_{\bar{S}}$, and assuming that $\boldsymbol{x}_{\bar{S}}$ is independent of $\boldsymbol{x}_S=\boldsymbol{x}_S^*$.
-Due to the indpendencde assumption, if the features in a given model are highly dependent, the Kernel SHAP method may give a completely wrong answer. This can be avoided by estimating the conditional distribution $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ directly and 
-generating samples from this distribution. With this small change, the contributions and Shapley values may then be approximated as in the ordinary Kernel SHAP framework. @aas2019explaining propose three different approaches for estimating the conditional probabilities. The methods may also be combined, such that e.g. one method is used when conditioning on a small number of features, while another method is used otherwise.
+In Kernel SHAP, $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$ are sampled from the $\bar{S}$-part of 
+the training data, *independently* of $\boldsymbol{x}_{S}$. This is motivated by using the 
+training set as the empirical distribution of $\boldsymbol{x}_{\bar{S}}$, and assuming that 
+$\boldsymbol{x}_{\bar{S}}$ is independent of $\boldsymbol{x}_S=\boldsymbol{x}_S^*$.
+Due to the indpendencde assumption, if the features in a given model are highly dependent, the 
+Kernel SHAP method may give a completely wrong answer. This can be avoided by estimating the 
+conditional distribution $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ directly 
+and generating samples from this distribution. With this small change, the contributions and 
+Shapley values may then be approximated as in the ordinary Kernel SHAP framework. @aas2019explaining 
+propose three different approaches for estimating the conditional probabilities. The methods may 
+also be combined, such that e.g. one method is used when conditioning on a small number of features, 
+while another method is used otherwise.
 
 
 ## Multivariate Gaussian Distribution Approach
 
-The first approach arises from the assumption that the feature vector $\boldsymbol{x}$ stems from a multivariate Gaussian distribution with some mean vector $\boldsymbol{\mu}$ and covariance matrix $\boldsymbol{\Sigma}$. Under this assumption, the conditional distribution $p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)$ is also multivariate Gaussian  $\text{N}_{|\bar{\mathcal{S}}|}(\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}},\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}})$, with analytical expressions for the conditional mean vector $\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}$ and covariance matrix $\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}$, see @aas2019explaining for details.
-Hence, instead of sampling from the marginal empirical distribution of $\boldsymbol{x}_{\bar{\mathcal{S}}}$ approximated by the training data, we can sample from the Gaussian conditional distribution, which is fitted using the training data. Using the resulting samples  $\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K$, the conditional expectations be approximated as in the Kernel SHAP. 
+The first approach arises from the assumption that the feature vector $\boldsymbol{x}$ stems from a 
+multivariate Gaussian distribution with some mean vector $\boldsymbol{\mu}$ and covariance matrix 
+$\boldsymbol{\Sigma}$. Under this assumption, the conditional distribution 
+$p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)$ 
+is also multivariate Gaussian  $\text{N}_{|\bar{\mathcal{S}}|}(\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}},\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}})$, 
+with analytical expressions for the conditional mean vector $\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}$ 
+and covariance matrix $\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}$, see @aas2019explaining for details.
+Hence, instead of sampling from the marginal empirical distribution of $\boldsymbol{x}_{\bar{\mathcal{S}}}$ 
+approximated by the training data, we can sample from the Gaussian conditional distribution, which is fitted 
+using the training data. Using the resulting samples 
+$\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K$, the conditional expectations be approximated 
+as in the Kernel SHAP. 
 
 
 ## Gaussian Copula Approach
 
-If the features are far from multivariate Gaussian, an alternative approach is to instead represent the marginals by their empirical distributions, and model the dependence structure by a Gaussian copula. Assuming a Gaussian copula, we may convert the marginals of the training data to Gaussian features using their empirical distributions, and then fit a multivariate Gaussian distribution to these. 
+If the features are far from multivariate Gaussian, an alternative approach is to instead represent 
+the marginals by their empirical distributions, and model the dependence structure by a Gaussian 
+copula. Assuming a Gaussian copula, we may convert the marginals of the training data to Gaussian 
+features using their empirical distributions, and then fit a multivariate Gaussian distribution to these. 
 
-To produce samples from the conditional distribution $p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)$, we convert the marginals of $\boldsymbol{x}_{\mathcal{S}}$ to Gaussians, sample from the conditional Gaussian distribution as above, and convert the marginals of thesamples back to the original distribution. Those samples are then used to approximate the 
-
-sample from the resulting multivariate Gaussian conditional distribution. While other copulas may be used, the Gaussian copula has the benefit that we may use the analytical expressions for the conditionals $\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}$ and $\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}$. Finally, we may convert the marginals back to their original distribution, and use the resulting samples to approximate the conditional expectations as in the Kernel SHAP.  
+To produce samples from the conditional distribution $p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)$, 
+we convert the marginals of $\boldsymbol{x}_{\mathcal{S}}$ to Gaussians, sample from the conditional
+Gaussian distribution as above, and convert the marginals of thesamples back to the original 
+distribution. Those samples are then used to approximate thesample from the resulting multivariate 
+Gaussian conditional distribution. While other copulas may be used, the Gaussian copula has the 
+benefit that we may use the analytical expressions for the conditionals 
+$\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}$ and $\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}$. 
+Finally, we may convert the marginals back to their original distribution, and use the resulting 
+samples to approximate the conditional expectations as in the Kernel SHAP.  
 
 ## Empirical Conditional Distribution Approach
 
-If both the dependence structure and the marginal distributions of $\boldsymbol{x}$ are very far from the Gaussian, neither of the two aforementioned methods will work very well. Few methods exists for the non-parametric estimation of conditional densities, and the classic kernel estimator (@rosenblatt1956) for non-parametric density estimation suffers greatly from the curse of dimensionality and does not provide a way to generate samples from the estimated distribution. For such situations, @aas2019explaining propose an empirical conditional approach to sample approximately from $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$. The idea is to compute weights $w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^i),\ i=1,...,n_{\text{train}}$ for all training instances based on their Mahalanobis distances (in the $S$ subset only) to the instance $\boldsymbol{x}^*$ to be explained. Instead of sampling from this weighted (conditional) empirical distribution, @aas2019explaining suggests a more efficient variant, using only the $K$ instances with the largest weights:
+If both the dependence structure and the marginal distributions of $\boldsymbol{x}$ are very far 
+from the Gaussian, neither of the two aforementioned methods will work very well. Few methods 
+exists for the non-parametric estimation of conditional densities, and the classic kernel 
+estimator (@rosenblatt1956) for non-parametric density estimation suffers greatly from the 
+curse of dimensionality and does not provide a way to generate samples from the estimated 
+distribution. For such situations, @aas2019explaining propose an empirical conditional approach 
+to sample approximately from $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$. 
+The idea is to compute weights $w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^i),\ i=1,...,n_{\text{train}}$ 
+for all training instances based on their Mahalanobis distances (in the $S$ subset only) to the 
+instance $\boldsymbol{x}^*$ to be explained. Instead of sampling from this weighted (conditional) 
+empirical distribution, @aas2019explaining suggests a more efficient variant, using only the $K$ 
+instances with the largest weights:
 
 $$v_{\text{condKerSHAP}}(\mathcal{S}) = \frac{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^{[k]}) f(\boldsymbol{x}_{\bar{\mathcal{S}}}^{[k]},\boldsymbol{x}_{\mathcal{S}}^*)}{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^{[k]})},$$ 
 
-The number of samples $K$ to be used in the approximate prediction can for instance be chosen such that the $K$ largest weights accounts for a fraction $\eta$, for example $0.9$, of the total weight. If $K$ exceeds a certain limit, for instance $5,000$, it might be set to that limit. A bandwidth parameter $\sigma$ used to scale the weights, must also be specified. This choice may be viewed as a bias-variance trade-off. A small $\sigma$ puts most of the weight to a few of the closest training observations and thereby gives low bias, but high variance. When $\sigma \rightarrow \infty$, this method converges to the original Kernel SHAP assuming feature independence. Typically, when the features are highly dependent, a small $\sigma$ is typically needed such that the bias does not dominate. @aas2019explaining show that a proper criterion for selecting $\sigma$ is a small-sample-size corrected version of the AIC known as AICc. As calculation of it is computationally intensive, an approximate version of the selection criterion is also suggested. Details on this is found in @aas2019explaining.
-
-
-
-
+The number of samples $K$ to be used in the approximate prediction can for instance be chosen such 
+that the $K$ largest weights accounts for a fraction $\eta$, for example $0.9$, of the total weight. 
+If $K$ exceeds a certain limit, for instance $5,000$, it might be set to that limit. A bandwidth
+parameter $\sigma$ used to scale the weights, must also be specified. This choice may be viewed as 
+a bias-variance trade-off. A small $\sigma$ puts most of the weight to a few of the closest 
+training observations and thereby gives low bias, but high variance. When $\sigma \rightarrow \infty$, 
+this method converges to the original Kernel SHAP assuming feature independence. Typically, when 
+the features are highly dependent, a small $\sigma$ is typically needed such that the bias does 
+not dominate. @aas2019explaining show that a proper criterion for selecting $\sigma$ is a 
+small-sample-size corrected version of the AIC known as AICc. As calculation of it is 
+computationally intensive, an approximate version of the selection criterion is also suggested. 
+Details on this is found in @aas2019explaining.
 
 <a id="ex"></a>
 
-# An Example
+<br>
 
-`shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome. 
+# Examples
 
-The following example shows how a simple `xgboost` model is trained using the Boston Housing Data, and how `shapr` can be used to explain the individual predictions. Note that empirical conditional distribution approach is the default, and that the Gaussian and Gaussian copula approaches can be used instead by setting the argument `approach` to either 'Gaussian' or 'copula'.   
+`shapr` supports computation of Shapley values with any predictive model which takes a set of 
+numeric features and produces a numeric outcome. 
+
+The following example shows how a simple `xgboost` model is trained using the Boston Housing Data, 
+and how `shapr` can be used to explain the individual predictions. Note that empirical conditional 
+distribution approach is the default, and that the Gaussian and Gaussian copula approaches can be 
+used instead by setting the argument `approach` to either 'Gaussian' or 'copula'.   
 
 ```{r,warning=FALSE}
 library(MASS)
@@ -158,11 +239,12 @@ explainer <- shapr(
 # Specifying the phi_0, i.e. the expected prediction without any features
 pred_zero <- mean(y_train)
 
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
+# Computing the actual Shapley values with kernelSHAP accounting for feature 
+# dependence using the empirical (conditional) distribution approach with 
+# bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(
   x_test,
-  approach = 'empirical',
+  approach = "empirical",
   explainer = explainer,
   prediction_zero = pred_zero
 )
@@ -183,7 +265,7 @@ The Gaussian approach is used as follows:
 
 explanation_Gauss <- explain(
   x_test,
-  approach='gaussian',
+  approach="gaussian",
   explainer = explainer,
   prediction_zero = pred_zero
 )
@@ -198,237 +280,76 @@ The Gaussian copula approach is used as follows:
 # Use the Gaussian copula approach
 explanation_copula <- explain(
   x_test,
-  approach='copula',
+  approach="copula",
   explainer = explainer,
   prediction_zero = pred_zero
 )
 
-# Plot the resulting explanations for observations 1 and 6, excluding the no-covariate effect
+# Plot the resulting explanations for observations 1 and 6, excluding 
+# the no-covariate effect
 plot(explanation_copula, plot_phi0 = FALSE, index_x_test = c(1,6))
 
 ```
 
 ## Main arguments in `shapr`
-When using `shapr`, the the default behavior is to use all feature combinations in the Shapley formula. Kernel SHAPs sampling based approach may be used by specifying `n_combinations`, which is the number of feature combinations to sample. If not specified, the exact method is used. The computation time grows approximately exponentially with the number of samples. The data frame of the training data and the model whose predictions we wish to explain must be provided through the arguments \code{x} and \code{model}. 
- 
+When using `shapr`, the the default behavior is to use all feature combinations in the Shapley 
+formula. Kernel SHAPs sampling based approach may be used by specifying `n_combinations`, which 
+is the number of feature combinations to sample. If not specified, the exact method is used. 
+The computation time grows approximately exponentially with the number of samples. The data frame 
+of the training data and the model whose predictions we wish to explain must be provided through 
+the arguments \code{x} and \code{model}. 
+
 
 ## Main arguments in `explain`
 
-The data frame \code{x} of test data whose predicted values we wish to explain must be provided. One must also provide the list returned by \code{shapr} through the argument \code{explainer}. The approach to use when computing the Shapley values must also be specified through the argument \code{approach}, either equal to \code{empirical}, \code{gaussian} or \code{copula}, or a vector of them. If a vector, a combined approach is used, and element \code{i} indicates the approach to use when conditioning on \code{i} variables. Similarly, \code{type} is only applicable if the empirical approach to use, and indicates the type of empirical approach to use. It is either `independence`, `fixed_sigma`(default) or `gaussian`. 
+The data frame \code{x} of test data whose predicted values we wish to explain must be provided. 
+One must also provide the list returned by \code{shapr} through the argument \code{explainer}. 
+The approach to use when computing the Shapley values must also be specified through the argument 
+\code{approach}, either equal to \code{empirical}, \code{gaussian} or \code{copula}, or a vector 
+of them. If a vector, a combined approach is used, and element \code{i} indicates the approach to 
+use when conditioning on \code{i} variables. Similarly, \code{type} is only applicable if the 
+empirical approach to use, and indicates the type of empirical approach to use. It is either 
+`independence`, `fixed_sigma`(default) or `gaussian`. 
 
-When computing the kernel SHAP values by `explain`, the maximum number of samples to use in the Monte Carlo integration for every conditional expectation is controlled by the argument `n_samples`, by deafult set to be 1000. The computation time grows approximately linear with this number. As seen in the code above, the argument `prediction_zero` for the prediction value of the unseen data is required. We recommend setting this equal to the mean of the response, but other values, like the mean prediction of a large test data set is also a possibility.
-If the empirical method is used, specific settings for that approach, like a fixed $\sigma$ value of vector can be specified through the argument \code{sigma_vec}. If the Gaussian approach is used, we may specify the mean vector and covariance matrix of the data generating distribution by the arguments `mu` and `Sigma`. If not specified, they are estimated from the training data.  
-
+When computing the kernel SHAP values by `explain`, the maximum number of samples to use in the 
+Monte Carlo integration for every conditional expectation is controlled by the argument `n_samples`, 
+by deafult set to be 1000. The computation time grows approximately linear with this number. As 
+seen in the code above, the argument `prediction_zero` for the prediction value of the unseen 
+data is required. We recommend setting this equal to the mean of the response, but other values, 
+like the mean prediction of a large test data set is also a possibility.
+If the empirical method is used, specific settings for that approach, like a fixed $\sigma$ value 
+of vector can be specified through the argument \code{sigma_vec}. If the Gaussian approach is used,
+we may specify the mean vector and covariance matrix of the data generating distribution by the 
+arguments `mu` and `Sigma`. If not specified, they are estimated from the training data.  
 
 <a id="compare"></a>
 
+<br>
+
 # Comparison to Lundberg & Lee's implementation
 
-As mentioned above, the original (independence assuming) Kernel SHAP implementation can be approximated by setting a large $\sigma$ value using our empirical approach. If we specify the distances to *all* training observations should be used (i.e. setting `w_threshold = 1` under `empirical_settings` in `prepare_kernelshap`), we can approximate the original method arbitrarily well by increasing $\sigma$. For completeness of the present `R`-package, we have also implemented a version the original method, which samples training observations independently of their distance to the observation to the explained, i.e. without the large-$\sigma$ approximation. This method is available setting `type=independence` in `explain`. Below we compare the results using these two variants with the original implementation of @lundberg2017unified, available through the Python library `shap`, here [github.com/slundberg/shap](https://github.com/slundberg/shap). 
+As mentioned above, the original (independence assuming) Kernel SHAP implementation can be 
+approximated by setting a large $\sigma$ value using our empirical approach. If we specify that the 
+distances to *all* training observations should be used (i.e. setting `approach = "empirical"` and
+`w_threshold = 1` when using `explain`, we can approximate the original method arbitrarily 
+well by increasing $\sigma$. For completeness of the `shapr`, we have also implemented 
+a version of the original method, which samples training observations independently with respect to 
+their distances to test observations (i.e. without the large-$\sigma$ approximation). This method is 
+available by using `approach = "empirical"` and `type = "independence"` in `explain`. 
 
-As above, we use the Boston housing data, trained via `xgboost`. We specify that *all* training observations should be used when explaining all of the 6 test observations. To run the individual explanation method in the `shap` Python library we use the `reticulate` `R`-package, allowing Python code to run within `R`. As this requires installation of Python package, the below comparison code and results is not automatically evaluated in this vignette. As indicated by the (commented out) results in the code below both methods in our `R`-package give (up to numerical approximation error) identical results to the original implementation in the Python  `shap` library. For this specific example, we also produce results about 1 second (10\% faster).
+We have compared the results using these two variants with the original implementation of 
+@lundberg2017unified, available through the Python library `shap`, here 
+[github.com/slundberg/shap](https://github.com/slundberg/shap). As above, we used the Boston housing 
+data, trained via `xgboost`. We specify that *all* training observations should be used when 
+explaining all of the 6 test observations. To run the individual explanation method in the `shap` 
+Python library we use the `reticulate` `R`-package, allowing Python code to run within `R`. 
+As this requires installation of Python package, the comparison code and results is not included 
+in this vignette, but can be found [here](https://github.com/NorskRegnesentral/shapr/blob/master/inst/scripts/compare_lundberg.R).
+As indicated by the (commented out) results in the file above both methods in our
+`R`-package give (up to numerical approximation error) identical results to the original 
+implementation in the Python  `shap` library. 
 
-```{r,eval = FALSE}
-library(MASS)
-library(xgboost)
-library(shapr)
-library(ggplot2)
-library(data.table)
-
-data("Boston")
-
-x_var <- c("lstat", "rm", "dis", "indus")
-y_var <- "medv"
-
-x_train <- as.matrix(tail(Boston[, x_var], -6))
-y_train <- tail(Boston[, y_var], -6)
-x_test <- as.matrix(head(Boston[, x_var], 6))
-
-# Creating a larger test data set (300 observations) for more realistic function time calls.
-# Modifying x_test to repeat the 6 test observations 50 times
-x_test = rep(1,50) %x% x_test
-colnames(x_test) <- colnames(x_train)
-
-# Fitting a basic xgboost model to the training data
-model <- xgboost(
-  data = x_train,
-  label = y_train,
-  nround = 20
-)
-
-pred_test <- predict(model,x_test)
-
-# Spedifying the phi_0, i.e. the expected prediction without any features
-pred_zero <- mean(predict(model,x_train))# adjustment from the standard mean(y_train) to comply with the shap implementation
-
-time_R_start <- proc.time()
-# Prepare the data for explanation
-l <- shapr(
-  x_train,
-  model
-)
-
-time_R_prepare <- proc.time()
-
-
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation_independence <- explain(
-  x_test,
-  approach='empirical',
-  explainer = explainer,
-  prediction_zero = pred_zero,
-  type='independence',
-  w_threshold=1
-)
-
-time_R_indep0 <- proc.time()
-
-
-explanation_largesigma <- explain(
-  x_test,
-  approach='empirical',
-  explainer = explainer,
-  prediction_zero = pred_zero,
-  type='fixed_sigma',
-  fixed_sigma_vec=10000,
-  w_threshold=1
-)
-
-time_R_largesigma0 <- proc.time()
-
-time_R_indep <- time_R_indep0 - time_R_start
-time_R_largesigma <- (time_R_largesigma0 - time_R_indep0) + (time_R_prepare- time_R_start)
-
-
-# Printing the Shapley values for the test data
-Kshap_indep <- explanation_independence$dt
-Kshap_largesigma <- explanation_largesigma$dt
-
-head(Kshap_indep)
-#> Kshap_indep
-#       none    lstat         rm         dis     indus
-#1: 22,41355 7,116128  0,5203017 -1,91427784 3,1657530
-#2: 22,41355 2,173011 -1,2201068 -0,47653736 0,3620256
-#3: 22,41355 8,280909  3,7869719 -1,96968536 0,6037250
-#4: 22,41355 8,384073  2,9590225 -2,19376523 1,8672685
-#5: 22,41355 4,212031  3,8319436 -0,06695137 1,3392699
-#6: 22,41355 3,295275 -1,2450126 -0,70618891 1,0924035
-
-head(Kshap_largesigma)
-#> Kshap_largesigma
-#       none    lstat         rm        dis     indus
-#1: 22,41355 7,116128  0,5203018 -1,9142779 3,1657530
-#2: 22,41355 2,173011 -1,2201069 -0,4765373 0,3620255
-#3: 22,41355 8,280910  3,7869718 -1,9696854 0,6037249
-#4: 22,41355 8,384073  2,9590226 -2,1937652 1,8672685
-#5: 22,41355 4,212031  3,8319435 -0,0669514 1,3392700
-#6: 22,41355 3,295275 -1,2450126 -0,7061889 1,0924036
-
-
-# Checking the difference between the methods
-mean(abs(as.matrix(Kshap_indep)-as.matrix(Kshap_largesigma)))
-#[1] 6.752507e-08  # Numerically identical
-
-
-xgb.save(model=model,fname = "inst/compare_lundberg.xgb.obj") # Need to wait a bit after saving and then loading this in python
-
-#### Running shap from Python ####
-
-# Python settings
-library(reticulate)
-#virtualenv_create("py3_6-virtualenv", python = "/usr/bin/python3.6") # Creating virtual environment with Python 3.6
-use_virtualenv("py3_6-virtualenv")
-#py_install("xgboost",envname = "py3_6-virtualenv")
-#py_install("shap",envname = "py3_6-virtualenv")
-
-
-
-reticulate::repl_python()
-#### Python code ####
-import xgboost as xgb
-import shap
-import numpy as np
-import pandas as pd
-import time
-
-model = xgb.Booster()  # init model
-model.load_model("inst/compare_lundberg.xgb.obj")
-
-## kernel shap sends data as numpy array which has no column names, so we fix it
-def xgb_predict(data_asarray):
-  data_asDmatrix =  xgb.DMatrix(data_asarray)
-  return model.predict(data_asDmatrix)
-
-py_pred_test = xgb_predict(r.x_test) # Test predictions in python
-
-sum((py_pred_test-r.pred_test)**2) # checking equality with r predictions
-
-#### Applying kernelshap
-
-time_py_start = time.perf_counter()
-
-shap_kernel_explainer = shap.KernelExplainer(xgb_predict, r.x_train)
-Kshap_shap0 = shap_kernel_explainer.shap_values(r.x_test,nsamples = int(100000),l1_reg=0)
-
-time_py_end = time.perf_counter()
-
-time_py = time_py_end-time_py_start
-
-getattr(shap_kernel_explainer,'expected_value') # This is phi0, not used at all below
-
-Kshap_shap = pd.DataFrame(Kshap_shap0,columns = r.x_var)
-
-Kshap_shap.insert(0,"none",getattr(shap_kernel_explainer,'expected_value'),True) # Adding the none column
-
-
-exit
-#### Exit python code ####
-
-head(Kshap_indep)
-#> Kshap_indep
-#       none    lstat         rm         dis     indus
-#1: 22,41355 7,116128  0,5203017 -1,91427784 3,1657530
-#2: 22,41355 2,173011 -1,2201068 -0,47653736 0,3620256
-#3: 22,41355 8,280909  3,7869719 -1,96968536 0,6037250
-#4: 22,41355 8,384073  2,9590225 -2,19376523 1,8672685
-#5: 22,41355 4,212031  3,8319436 -0,06695137 1,3392699
-#6: 22,41355 3,295275 -1,2450126 -0,70618891 1,0924035
-
-head(py$Kshap_shap)
-#> py$Kshap_shap
-#      none    lstat         rm         dis     indus
-#1 22,41355 7,116128  0,5203018 -1,91427784 3,1657530
-#2 22,41355 2,173011 -1,2201069 -0,47653727 0,3620255
-#3 22,41355 8,280910  3,7869719 -1,96968537 0,6037250
-#4 22,41355 8,384073  2,9590226 -2,19376508 1,8672686
-#5 22,41355 4,212031  3,8319435 -0,06695135 1,3392701
-#6 22,41355 3,295275 -1,2450126 -0,70618891 1,0924036
-
-
-# Checking difference between our R implementtaion and the shap implementation i Python
-mean(abs(as.matrix(Kshap_indep)-as.matrix(py$Kshap_shap)))
-#[1] 1,151811e-07 # Numerically identical
-
-# Checking the running time of the different methods
-time_R_indep[3]
-time_R_largesigma[3]
-py$time_py
-#> time_R_indep[3]
-#elapsed
-#9,908
-#> time_R_largesigma[3]
-#elapsed
-#9,768
-#> py$time_py
-#[1] 10,75703
-
-# Our R implementation is about 1 second = 10% faster.
-# Might be some overhead by calling Python from R, but I don't think it's that much.
-
-```
-
-
+<br>
 
 # References
 
