@@ -52,11 +52,11 @@ Here is an overview of the main functions. You can read their documentation and 
 ----------------------------- ------------------------------------------------------
 Function Name                 Description
 ----------------------------- ------------------------------------------------------
+`shapr`                       Get Shapley weights for test data.
+
 `explain`                     Computes kernel SHAP values for test data.
 
-`plot_kshap`                  Plots the individual prediction explanations. Uses facet_wrap of ggplot. 
-
-`shapr`                       Get Shapley weights for test data.
+`plot.shapr`                  Plots the individual prediction explanations. Uses facet_wrap of ggplot. 
 ----------------------------- --------------------------------------------------
 
 : Main functions in the `shapr` package.
@@ -162,16 +162,16 @@ pred_zero <- mean(y_train)
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(
   x_test,
-  approach='empirical',
+  approach = 'empirical',
   explainer = explainer,
   prediction_zero = pred_zero
 )
 
 # Printing the Shapley values for the test data
-explanation
+explanation$dt
 
 # Plot the resulting explanations for observations 1 and 6
-plot_kshap(explanation, x_test, model, plot_phi0 = F,plot_which_Xtest = c(1,6))
+plot(explanation, plot_phi0 = FALSE ,index_x_test = c(1,6))
 
 
 ``` 
@@ -189,7 +189,7 @@ explanation_Gauss <- explain(
 )
 
 # Plot the resulting explanations for observations 1 and 6
-plot_kshap(explanation_Gauss, x_test,model,  plot_phi0 = F,plot_which_Xtest = c(1,6))
+plot(explanation_Gauss, plot_phi0 = FALSE,, index_x_test = c(1,6))
 ```
 
 The Gaussian copula approach is used as follows:
@@ -204,7 +204,7 @@ explanation_copula <- explain(
 )
 
 # Plot the resulting explanations for observations 1 and 6, excluding the no-covariate effect
-plot_kshap(explanation_copula, x_test,model, plot_phi0 = F,plot_which_Xtest = c(1,6))
+plot(explanation_copula, plot_phi0 = FALSE, index_x_test = c(1,6))
 
 ```
 
@@ -302,8 +302,8 @@ time_R_largesigma <- (time_R_largesigma0 - time_R_indep0) + (time_R_prepare- tim
 
 
 # Printing the Shapley values for the test data
-Kshap_indep <- explanation_independence
-Kshap_largesigma <- explanation_largesigma
+Kshap_indep <- explanation_independence$dt
+Kshap_largesigma <- explanation_largesigma$dt
 
 head(Kshap_indep)
 #> Kshap_indep
