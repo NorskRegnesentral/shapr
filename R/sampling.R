@@ -1,6 +1,6 @@
 #' Sample conditional variables using the Gaussian copula approach
 #'
-#' @param index_mu Vector. The indices of the features to condition upon.
+#' @param index_given Vector. The indices of the features to condition upon.
 #' @param p Positive integer. The number of features.
 #' @param x_test_gaussian Vector with the Gaussian transformed features of the observation whose
 #' predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
@@ -17,19 +17,19 @@
 #' # TODO: Add simple example
 #'
 #' @author Martin Jullum
-sample_copula <- function(index_mu, n_samples, mu, cov_mat, p, x_test_gaussian, x_train, x_test) {
+sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussian, x_train, x_test) {
   # Handles the unconditional and full conditional separtely when predicting
-  if (length(index_mu) %in% c(0, p)) {
+  if (length(index_given) %in% c(0, p)) {
     ret <- matrix(x_test, ncol = p, nrow = 1)
   } else {
-    dependent_ind <- (1:length(mu))[-index_mu]
+    dependent_ind <- (1:length(mu))[-index_given]
 
     tmp <- condMVNorm::condMVN(
       mean = mu,
       sigma = cov_mat,
       dependent.ind = dependent_ind,
-      given.ind = index_mu,
-      X.given = x_test_gaussian[index_mu]
+      given.ind = index_given,
+      X.given = x_test_gaussian[index_given]
     )
 
     ret0_z <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
@@ -42,7 +42,7 @@ sample_copula <- function(index_mu, n_samples, mu, cov_mat, p, x_test_gaussian, 
     )
 
     ret <- matrix(NA, ncol = p, nrow = n_samples)
-    ret[, index_mu] <- rep(x_test[index_mu], each = n_samples)
+    ret[, index_given] <- rep(x_test[index_given], each = n_samples)
     ret[, dependent_ind] <- ret0_x
   }
   colnames(ret) <- colnames(x_test)
@@ -52,7 +52,7 @@ sample_copula <- function(index_mu, n_samples, mu, cov_mat, p, x_test_gaussian, 
 
 #' Sample conditional Gaussian variables
 #'
-#' @param index_mu Vector. The indices of the features to condition upon.
+#' @param index_given Vector. The indices of the features to condition upon.
 #' @param p Positive integer. The number of features.
 #' @param ensure_condcov_symmetry Logical. If \code{true}, \code{symmpart} is used on the
 #' conditional covariance matrix to ensure symmetry.
@@ -69,20 +69,20 @@ sample_copula <- function(index_mu, n_samples, mu, cov_mat, p, x_test_gaussian, 
 #' # TODO: Add simple example
 #'
 #' @author Martin Jullum
-sample_gaussian <- function(index_mu, n_samples, mu, cov_mat, p, x_test, ensure_condcov_symmetry = F) {
+sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test, ensure_condcov_symmetry = F) {
 
   # Handles the unconditional and full conditional separtely when predicting
   cnms <- colnames(x_test)
-  if (length(index_mu) %in% c(0, p)) {
+  if (length(index_given) %in% c(0, p)) {
     ret <- matrix(x_test, ncol = p, nrow = 1)
   } else {
-    dependent_ind <- (1:length(mu))[-index_mu]
-    x_test_gaussian <- x_test[index_mu]
+    dependent_ind <- (1:length(mu))[-index_given]
+    x_test_gaussian <- x_test[index_given]
     tmp <- condMVNorm::condMVN(
       mean = mu,
       sigma = cov_mat,
       dependent.ind = dependent_ind,
-      given.ind = index_mu,
+      given.ind = index_given,
       X.given = x_test_gaussian
     )
     if (ensure_condcov_symmetry) {
@@ -92,7 +92,7 @@ sample_gaussian <- function(index_mu, n_samples, mu, cov_mat, p, x_test, ensure_
     ret0 <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
 
     ret <- matrix(NA, ncol = p, nrow = n_samples)
-    ret[, index_mu] <- rep(x_test_gaussian, each = n_samples)
+    ret[, index_given] <- rep(x_test_gaussian, each = n_samples)
     ret[, dependent_ind] <- ret0
   }
   colnames(ret) <- cnms
