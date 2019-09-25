@@ -91,9 +91,6 @@ mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S
 }
 
 #' @keywords internal
-#'
-#' @export
-#'
 sample_features_cpp <- function(m, nfeatures) {
     .Call(`_shapr_sample_features_cpp`, m, nfeatures)
 }
