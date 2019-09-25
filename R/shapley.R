@@ -8,13 +8,12 @@
 #'
 #' @author Nikolai Sellereite
 shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
-
   x <- (m - 1) / (N * s * (m - s))
   x[!is.finite(x)] <- weight_zero_m
   x
 }
 
-#' Get weighted matrix
+#' Calculate weighted matrix
 #'
 #' @param X data.table
 #'
@@ -23,7 +22,7 @@ shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 #' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-weight_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights = T) {
+weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weights = TRUE) {
   if (use_shapley_weights_in_W) {
     w <- X[["shapley_weight"]] * X[["no"]]
   } else {
@@ -45,26 +44,120 @@ weight_matrix <- function(X, use_shapley_weights_in_W = T, normalize_W_weights =
   return(W)
 }
 
-#' Computes kernel SHAP values for test data
+
+#' Create an explainer object with Shapley weights for test data.
 #'
 #' @inheritParams global_arguments
-#' @param empirical_settings List. Specifying the settings when using the empirical method to
-#' compute the conditional expectations.
-#' @param pred_zero The prediction value for unseen data, typically equal to the mean of the
-#' response
-#' @param ensure_condcov_symmetry Logical. Whether to ensure that the conditional covariance
-#' matrices in the Gaussian and copula approaches are symmetric. Typically only needed if the
-#' original covariance is just barely positive definite.
 #'
-#' @details If \code{cond_approach} is a list, the elements in the list refers to the rows in
-#' \code{l$X} that ought to be included in each of the approaches!
+#' @param x An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total number of explanatory variables).Contains the variables used for training the model
+#' (i.e. the explanatory variables). Note that the response variable should not be part of
+#' \code{x}.
 #'
-#' @return List with kernel SHAP values (\code{Kshap}) and other object used to perform
-#' the computation (helpful for debugging etc.)
+#' @param model The model whose predictions we want to explain.
+#'
+#' @param n_combinations Integer. The number of feature combinations to sample. If \code{NULL},
+#' the exact method is used and all combinations are considered. The maximum number of
+#' combinations equals \code{2^p}.
+#'
+#' @return A list to be used by \code{explain} to compute the kernel SHAP values (\code{Kshap}).
 #'
 #' @export
 #'
-#' @author Martin Jullum
+#' @author Nikolai Sellereite
+#'
+shapr <- function(x,
+                  model,
+                  n_combinations = NULL) {
+
+  # Checks input argument
+  if (!is.matrix(x) & !is.data.frame(x)) {
+    stop("x should be a matrix or a dataframe.")
+  }
+
+  # Setup
+  explainer <- as.list(environment())
+  explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
+  explainer$n_features <- ncol(x)
+  explainer$model_type <- model_type(model)
+
+  # Test that the input is valid
+  if (!all(colnames(x) %in% model$feature_names)) {
+    stop("Features of X must match model")
+  }
+
+  # Create data.table --------------
+  if (!data.table::is.data.table(x)) {
+    x_train <- data.table::as.data.table(x)
+  }
+
+  # Get all combinations ----------------
+  dt_combinations <- feature_combinations(
+    m = explainer$n_features,
+    exact = explainer$exact,
+    noSamp = n_combinations,
+    shapley_weight_inf_replacement = 10^6,
+    reduce_dim = TRUE
+  )
+
+  # Get weighted matrix ----------------
+  weighted_mat <- weight_matrix(
+    X = dt_combinations,
+    use_shapley_weights_in_W = ifelse(explainer$exact, TRUE, FALSE),
+    normalize_W_weights = TRUE
+  )
+
+  ## Get feature matrix ---------
+  feature_matrix <- feature_matrix_cpp(
+    features = dt_combinations[["features"]],
+    nfeatures = explainer$n_features
+  )
+
+  explainer$S <- feature_matrix
+  explainer$W <- weighted_mat
+  explainer$X <- dt_combinations
+  explainer$x_train <- x_train
+  explainer$x <- NULL
+
+  attr(explainer, "class") <- c("explainer", "list")
+
+  return(explainer)
+}
+
+#' @keywords internal
+distance_matrix <- function(x_train, x_test = NULL, list_features) {
+  if (is.null(x_test)) return(NULL)
+
+  # Get covariance matrix
+  mcov <- stats::cov(x_train)
+  if (is.null(dim(x_test))) {
+    x_test <- t(as.matrix(x_test))
+  }
+  # Note that D equals D_S(,)^2 in the paper
+  D <- mahalanobis_distance_cpp(
+    featureList = list_features,
+    Xtrain_mat = as.matrix(x_train),
+    Xtest_mat = as.matrix(x_test),
+    mcov = mcov,
+    S_scale_dist = TRUE
+  )
+
+  # Normalize distance rows to ensure numerical stability in later operations
+  colmin <- apply(X = D, MARGIN = c(2, 3), FUN = min)
+  for (i in 1:dim(D)[3]) {
+    D[, , i] <- t(t(D[, , i]) - colmin[, i])
+  }
+
+  return(D)
+}
+
+#' Note that this function is deprecated, but we'll keep it for a week
+#' to check that results are stable.
+#'
+#' TODO: Delete this function from the codebase
+#'
+#' @keywords internal
+#'
+#' @export
 compute_kshap <- function(model,
                           l,
                           noSamp_MC = 1e3,
@@ -96,6 +189,7 @@ compute_kshap <- function(model,
 
   if ("empirical" %in% names(cond_approach_list)) {
     these_empirical <- cond_approach_list$empirical
+
     exclude_emp <- (these_empirical %in% c(1, nrow(l$S)))
 
     these_empirical <- these_empirical[!exclude_emp]
@@ -110,14 +204,14 @@ compute_kshap <- function(model,
     }
 
     # Reducing and re-ordering the D-array
-    l$D <- l$D[, , match(these_empirical, l$D_for_these_varcomb),drop=FALSE]
+    l$D <- l$D[, , match(these_empirical, l$D_for_these_varcomb)]
     # Note that the D-array corresponds to exactly the covariate combinations specified in
     # these_empirical
 
 
     if (empirical_settings$type == "independence") {
       kernel_metric <- "independence"
-      empirical_settings$w_threshold = 1
+      empirical_settings$w_threshold <- 1
       paste0("empirical_settings$w_threshold force set to 1 for empirical_settings$type = 'independence'")
     } else {
       kernel_metric <- "Gaussian"
@@ -153,7 +247,6 @@ compute_kshap <- function(model,
 
           for (i in these_k) {
             these_cond <- l$X[ID %in% these_empirical][nfeatures == i, ID]
-
             cutters <- 1:empirical_settings$AICc_no_samp_per_optim
             no_cond <- length(these_cond)
 
@@ -229,7 +322,6 @@ compute_kshap <- function(model,
             }
           }
         }
-
         if (empirical_settings$type == "AICc_full") {
           for (i in these_empirical) {
             S <- l$S[i, ]
@@ -285,14 +377,12 @@ compute_kshap <- function(model,
         }
       }
     }
-
     h_optim_DT <- data.table(varcomb = these_empirical, h_optim_mat)
     colnames(h_optim_DT)[-1] <- paste0("Testobs_", 1:nrow(l$Xtest))
   } else {
     h_optim_mat <- NULL
     h_optim_DT <- NULL
   }
-
   if (is.null(mu)) {
     # Using the mean of the training data in the Gaussian approach if not provided directly
     mu <- colMeans(l$Xtrain)
@@ -317,13 +407,16 @@ compute_kshap <- function(model,
     FUN = gaussian_transform_separate,
     n_y = nrow(l$Xtest)
   )
-
+  if (is.null(dim(Xtest_Gauss_trans))) {
+    Xtest_Gauss_trans <- t(as.matrix(Xtest_Gauss_trans))
+  }
   mu_Gauss_trans <- rep(0, ncol(l$Xtrain))
   Sigma_Gauss_trans <- stats::cov(Xtrain_Gauss_trans)
+
   if (any(eigen(Sigma_Gauss_trans)$values <= 1e-06)) {
     Sigma_Gauss_trans <- as.matrix(Matrix::nearPD(Sigma_Gauss_trans)$mat)
   }
-
+  set.seed(1)
   for (i in l$Xtest[, .I]) {
     # This may be parallelized when the prediction function is not parallelized.
     if (verbose > 0) {
@@ -354,6 +447,7 @@ compute_kshap <- function(model,
     ll[[i]][, id := i]
   }
 
+
   DT <- rbindlist(ll)
 
   Kshap <- matrix(0, nrow = nrow(l$Xtest), ncol = nrow(l$W))
@@ -379,16 +473,9 @@ compute_kshap <- function(model,
   return(ret_list)
 }
 
-#' Get Shapley weights for test data
-#'
-#' @inheritParams global_arguments
-#' @param compute_distances_for_no_var  If equal to \code{NULL} no distances are computed
-#'
-#' @return Matrix
-#'
+#' DELETE
+#' @keywords interal
 #' @export
-#'
-#' @author Nikolai Sellereite
 prepare_kshap <- function(Xtrain,
                           Xtest,
                           exact = TRUE,
@@ -439,14 +526,11 @@ prepare_kshap <- function(Xtrain,
   } else {
     D <- NULL
   }
-
-
-  ## Get feature matrix ---------
+  # Get feature matrix
   S <- feature_matrix_cpp(
     features = X[["features"]],
     nfeatures = ncol(Xtrain)
   )
-
   return(list(
     D = D, S = S, W = W, X = X, Xtrain = Xtrain, Xtest = Xtest,
     D_for_these_varcomb = X[nfeatures %in% compute_distances_for_no_var, which = TRUE]

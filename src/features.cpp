@@ -2,9 +2,6 @@
 using namespace Rcpp;
 
 //' @keywords internal
-//'
-//' @export
-//'
 // [[Rcpp::export]]
 List sample_features_cpp(int m, IntegerVector nfeatures) {
 

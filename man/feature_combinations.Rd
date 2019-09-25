@@ -40,3 +40,4 @@ The returned data.table contains the following columns
 \author{
 Nikolai Sellereite, Martin Jullum
 }
+\keyword{internal}

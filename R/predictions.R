@@ -1,14 +1,52 @@
-#' Get predictions
+#' Calculate shapley weights
 #'
-#' @param feature_list List
-#' @param pred_zero Numeric
-#' @inheritParams global_arguments
+#' @description
+#' TODO: Write a better description
 #'
-#' @return List
+#' @param dt data.table
+#' @param prediction_zero Positive integer between 0 & 1.
+#' @param explainer An object of class \code{explainer}
+#'
+#' @details
+#' TODO: Write details about how this is done (reference to paper)
+#'
+#' @examples
+#' # TODO: Add simple examples
+#'
+#' @author Nikolai Sellereite
+prediction <- function(dt, prediction_zero, explainer) {
+
+  # Predictions
+  cnms <- colnames(explainer$x_test)
+  data.table::setkeyv(dt, c("id", "wcomb"))
+  dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
+  dt[wcomb == 1, p_hat := prediction_zero]
+  p_all <- predict_model(explainer$model, newdata = explainer$x_test)
+  dt[wcomb == max(wcomb), p_hat := p_all[id]]
+
+  # Calculate contributions
+  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
+  data.table::setkeyv(dt_res, c("id", "wcomb"))
+  dt_mat <- data.table::dcast(dt_res, wcomb ~ id, value.var = "k")
+  dt_mat[, wcomb := NULL]
+  kshap <-  t(explainer$W %*% as.matrix(dt_mat))
+  dt_kshap <- data.table::as.data.table(kshap)
+  colnames(dt_kshap) <- c("none", cnms)
+
+  r <- list(dt = dt_kshap, model = explainer$model, p = p_all, x_test = explainer$x_test)
+  attr(r, "class") <- c("shapr", "list")
+
+  return(r)
+}
+
+#' Note that this function is deprecated, but we'll keep it for a week
+#' to check that results are stable.
+#'
+#' TODO: Delete this function from the codebase
+#'
+#' @keywords internal
 #'
 #' @export
-#'
-#' @author Nikolai Sellereite, Martin Jullum
 predictions <- function(model,
                         D,
                         h_optim_vec,
@@ -36,7 +74,6 @@ predictions <- function(model,
     ## Assume Gaussian distributed variables and sample from the various conditional distributions
     these_wcomb <- cond_approach_list$Gaussian
     these_wcomb <- these_wcomb[!(these_wcomb %in% c(1, nrow(S)))]
-
     samp_list <- lapply(
       X = feature_list[these_wcomb],
       FUN = sample_gaussian,
@@ -47,7 +84,6 @@ predictions <- function(model,
       Xtest = Xtest,
       ensure_condcov_symmetry = ensure_condcov_symmetry
     )
-
     DTp.Gaussian <- rbindlist(samp_list, idcol = "wcomb")
     DTp.Gaussian[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
     DTp.Gaussian[, w := 1 / noSamp_MC]
@@ -55,7 +91,6 @@ predictions <- function(model,
   if ("copula" %in% names(cond_approach_list)) {
     these_wcomb <- cond_approach_list$copula
     these_wcomb <- these_wcomb[!(these_wcomb %in% c(1, nrow(S)))]
-
 
     samp_list <- lapply(
       X = feature_list[these_wcomb],
@@ -83,8 +118,8 @@ predictions <- function(model,
     # Handle the computation of all training-test weights for ALL combinations here, before looping
     if (kernel_metric == "independence") {
       # Just random noise to "fake" a distance between observations
-      D <- D[sample.int(n=nrow(D)),] # Randomly reordering the distance
-      h_optim_vec <- mean(D)*1000 # Setting a very large bandwidth to give all used observation identical weight
+      D <- D[sample.int(n = nrow(D)), ] # Randomly reordering the distance
+      h_optim_vec <- mean(D) * 1000 # Setting a very large bandwidth to give all used observation identical weight
     }
     # Common for both Gaussan and independence
     val <- t(t(-0.5 * D) / h_optim_vec^2)
@@ -117,6 +152,5 @@ predictions <- function(model,
   ## Get mean probability
   DTres <- DTp[, .(k = sum((p_hat * w) / sum(w))), wcomb]
   setkey(DTres, wcomb)
-
   return(DTres)
 }
