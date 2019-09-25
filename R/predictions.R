@@ -11,7 +11,7 @@
 #' TODO: Write details about how this is done (reference to paper)
 #'
 #' @examples
-#' TODO: Add simple examples
+#' # TODO: Add simple examples
 #'
 #' @author Nikolai Sellereite
 prediction <- function(dt, prediction_zero, explainer) {

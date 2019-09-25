@@ -20,8 +20,8 @@ explain(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{copula}(x, explainer, approach, prediction_zero, ...)
 
-\method{explain}{combined}(x, explainer, prediction_zero,
-  approach = NULL, mu = NULL, cov_mat = NULL, ...)
+\method{explain}{combined}(x, explainer, approach, prediction_zero,
+  mu = NULL, cov_mat = NULL, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -67,11 +67,6 @@ when \code{approach = "gaussian"}.}
 \item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. \code{NULL} means it is estimated from the data if needed
 (in the Gaussian approach).}
-
-\item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation.}
-
-\item{seed}{Positive integer. If \code{NULL} a random seed will be used.}
 }
 \value{
 data.frame. Contains the estimated Shapley values for the test data. Note that

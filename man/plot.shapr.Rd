@@ -5,7 +5,7 @@
 \title{Plot of the Shapley value explanations}
 \usage{
 \method{plot}{shapr}(x, digits = 3, plot_phi0 = TRUE,
-  index_x_test = NULL, top_k_features = NULL)
+  index_x_test = NULL, top_k_features = NULL, ...)
 }
 \arguments{
 \item{x}{An \code{shapr} object. See \code{\link{explain}}.}
@@ -17,6 +17,8 @@
 \item{index_x_test}{Integer vector. Which of the test observations to plot}
 
 \item{top_k_features}{Integer. How many features to include in the plot}
+
+\item{...}{Currently not used.}
 }
 \value{
 ggplot object with plots of the Shapley value explanations
