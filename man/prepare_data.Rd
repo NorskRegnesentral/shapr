@@ -18,6 +18,16 @@ prepare_data(x, ...)
 \method{prepare_data}{copula}(x, x_test = 1, seed = 1,
   n_samples = 1000, index_features = NULL, ...)
 }
+\arguments{
+\item{...}{Currently not used.}
+
+\item{seed}{Positive integer. If \code{NULL} a random seed will be used.}
+
+\item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation.}
+
+\item{index_features}{Positive integer vector. Only used internally.}
+}
 \description{
 Generate data used for predictions
 }

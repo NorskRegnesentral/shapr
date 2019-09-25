@@ -45,7 +45,18 @@ observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noS
 }
 
 #' Generate data used for predictions
+#'
+#' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
+#' Monte Carlo integration for every conditional expectation.
+#'
+#' @param seed Positive integer. If \code{NULL} a random seed will be used.
+#'
+#' @param index_features Positive integer vector. Only used internally.
+#'
+#' @param ... Currently not used.
+#'
 #' @name prepare_data
+#'
 #' @export
 prepare_data <- function(x, ...) {
   class(x) <- x$approach
@@ -208,7 +219,7 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
   return(dt)
 }
 
-#' @export
+#' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
@@ -297,7 +308,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
 }
 
 
-#' @export
+#' @keywords internal
 compute_AICc_full <- function(x, h_optim_mat) {
   ntest <- nrow(x$x_test)
   if (is.null(dim(x$x_test))) {
