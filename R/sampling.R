@@ -17,7 +17,7 @@
 #' # TODO: Add simple example
 #'
 #' @author Martin Jullum
-sample_copula <- function(index_mu, n_samples, mu, sigma, p, x_test_gaussian, x_train, x_test) {
+sample_copula <- function(index_mu, n_samples, mu, cov_mat, p, x_test_gaussian, x_train, x_test) {
   # Handles the unconditional and full conditional separtely when predicting
   if (length(index_mu) %in% c(0, p)) {
     ret <- matrix(x_test, ncol = p, nrow = 1)
@@ -26,7 +26,7 @@ sample_copula <- function(index_mu, n_samples, mu, sigma, p, x_test_gaussian, x_
 
     tmp <- condMVNorm::condMVN(
       mean = mu,
-      sigma = sigma,
+      sigma = cov_mat,
       dependent.ind = dependent_ind,
       given.ind = index_mu,
       X.given = x_test_gaussian[index_mu]
@@ -69,7 +69,7 @@ sample_copula <- function(index_mu, n_samples, mu, sigma, p, x_test_gaussian, x_
 #' # TODO: Add simple example
 #'
 #' @author Martin Jullum
-sample_gaussian <- function(index_mu, n_samples, mu, sigma, p, x_test, ensure_condcov_symmetry = F) {
+sample_gaussian <- function(index_mu, n_samples, mu, cov_mat, p, x_test, ensure_condcov_symmetry = F) {
 
   # Handles the unconditional and full conditional separtely when predicting
   cnms <- colnames(x_test)
@@ -80,7 +80,7 @@ sample_gaussian <- function(index_mu, n_samples, mu, sigma, p, x_test, ensure_co
     x_test_gaussian <- x_test[index_mu]
     tmp <- condMVNorm::condMVN(
       mean = mu,
-      sigma = sigma,
+      sigma = cov_mat,
       dependent.ind = dependent_ind,
       given.ind = index_mu,
       X.given = x_test_gaussian

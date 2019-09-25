@@ -4,7 +4,7 @@
 \alias{sample_gaussian}
 \title{Sample conditional Gaussian variables}
 \usage{
-sample_gaussian(index_mu, n_samples, mu, sigma, p, x_test,
+sample_gaussian(index_mu, n_samples, mu, cov_mat, p, x_test,
   ensure_condcov_symmetry = F)
 }
 \arguments{
@@ -12,8 +12,6 @@ sample_gaussian(index_mu, n_samples, mu, sigma, p, x_test,
 
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 NULL means it is estimated from the data if needed (in the Gaussian approach).}
-
-\item{sigma}{Numeric}
 
 \item{p}{Positive integer. The number of features.}
 

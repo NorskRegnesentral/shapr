@@ -166,7 +166,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
       FUN = sample_gaussian,
       n_samples = n_samples,
       mu = x$mu,
-      sigma = x$cov_mat,
+      cov_mat = x$cov_mat,
       p = ncol(x$x_test),
       x_test = x$x_test[i, , drop = FALSE],
       ensure_condcov_symmetry = FALSE
@@ -202,7 +202,7 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
       FUN = sample_copula,
       n_samples = n_samples,
       mu = x$mu,
-      sigma = x$cov_mat,
+      cov_mat = x$cov_mat,
       p = ncol(x$x_test),
       x_test = x$x_test[i, , drop = FALSE],
       x_train = as.matrix(x$x_train),
