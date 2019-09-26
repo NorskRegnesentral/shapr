@@ -314,7 +314,7 @@ like the mean prediction of a large test data set is also a possibility.
 If the empirical method is used, specific settings for that approach, like a fixed $\sigma$ value 
 of vector can be specified through the argument `sigma_vec`. If the `approach = "gaussian"`,
 we may specify the mean vector and covariance matrix of the data generating distribution by the 
-arguments `mu` and `sigma`. If not specified, they are estimated from the training data.  
+arguments `mu` and `cov_mat`. If not specified, they are estimated from the training data.  
 
 <a id="compare"></a>
 
