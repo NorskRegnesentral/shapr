@@ -47,7 +47,7 @@ jobs:
       - run:
           name: Code coverage
           when: on_success
-          command: R -e 'covr::package_coverage()'
+          command: R -e '#covr::package_coverage()'
       - run:
           name: Install package
           when: on_success
