@@ -41,6 +41,7 @@ Suggests:
     pcaPP,
     knitr,
     rmarkdown,
+    pkgdown,
     ggplot2
 LinkingTo: 
     RcppArmadillo,
