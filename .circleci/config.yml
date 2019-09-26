@@ -22,6 +22,9 @@ jobs:
           name: Install lib2git-dev
           command: apt-get update && apt-get install -y libgit2-dev
       - run:
+          name: Install libxml2-dev
+          command: apt-get update && apt-get install -y libxml2-dev
+      - run:
           name: Install devtools
           command: R -e 'install.packages("devtools")'
       - run:
@@ -49,8 +52,6 @@ jobs:
           name: Build webiste
           when: on_success
           command: R -e 'pkgdown::build_site()'
-      - persist_to_workspace:
-          root: docs/
       - store_test_results:
           path: /tmp/Rcheck/tests/
           when: always
