@@ -257,7 +257,7 @@ The Gaussian approach is used as follows:
 # Use the Gaussian approach
 explanation_gaussian <- explain(
   x_test,
-  approach="gaussian",
+  approach = "gaussian",
   explainer = explainer,
   prediction_zero = pred_zero
 )
@@ -272,7 +272,7 @@ The Gaussian copula approach is used as follows:
 # Use the Gaussian copula approach
 explanation_copula <- explain(
   x_test,
-  approach="copula",
+  approach = "copula",
   explainer = explainer,
   prediction_zero = pred_zero
 )
