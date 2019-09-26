@@ -59,4 +59,5 @@ jobs:
           path: /tmp/Rcheck
           when: always
       - persist_to_workspace:
-          root: docs/
+          root: ./
+          paths: docs
