@@ -28,6 +28,9 @@ jobs:
           name: Install devtools
           command: R -e 'install.packages("devtools")'
       - run:
+          name: Install roxygen2
+          command: R -e 'install.packages("roxygen2")'
+      - run:
           name: Install dependencies
           command: R -e 'devtools::install_deps(dependencies = TRUE, upgrade = "always")'
       - save_cache:
