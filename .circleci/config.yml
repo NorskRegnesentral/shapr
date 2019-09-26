@@ -51,7 +51,7 @@ jobs:
       - run:
           name: Build website
           when: on_success
-          command: R -e 'pkgdown::build_site(devel = FALSE)'
+          command: R -e 'pkgdown::build_site(document = FALSE)'
       - store_test_results:
           path: /tmp/Rcheck/tests/
           when: always
