@@ -61,7 +61,7 @@ jobs:
       - persist_to_workspace:
           root: ./
           paths: docs
-    docs-deploy:
+  docs-deploy:
     docker:
       - image: node:8.10.0
     steps:
