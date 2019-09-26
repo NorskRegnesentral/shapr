@@ -91,4 +91,3 @@ workflows:
       - docs-deploy:
           requires:
             - build
-            - docs-build
