@@ -19,8 +19,9 @@ the total number of unique features, respectively. Note that \code{n_features = 
 
 \item{x_test}{Numeric matrix}
 
-\item{w_threshold}{Numeric vector of length 1. Represents the number of samples to use is chosen to be
-the number of the largest weights needed to account for this fraction of the total weight.}
+\item{w_threshold}{Numeric vector of length 1, where \code{w_threshold > 0} and
+\code{w_threshold <= 1}. If \code{w_threshold = .8} we will choose the \code{K} samples with
+the largest weight so that the sum of the weights accounts for 80\% of the total weight.}
 }
 \value{
 data.table
