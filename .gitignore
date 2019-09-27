@@ -26,3 +26,5 @@ paper_experiments/res/single_res/
 
 paper_experiments/res/single_res_old/
 inst/doc
+
+docs/*
