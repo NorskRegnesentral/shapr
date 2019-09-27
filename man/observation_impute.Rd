@@ -26,7 +26,7 @@ the number of the largest weights needed to account for this fraction of the tot
 data.table
 }
 \description{
-TODO: Add a description text
+Generate permutations of training data using test observations
 }
 \examples{
 # TODO: Add simple example

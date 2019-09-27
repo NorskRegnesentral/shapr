@@ -1,8 +1,5 @@
 #' Generate permutations of training data using test observations
 #'
-#' @description
-#' TODO: Add a description text
-#'
 #' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
 #' observations for all feature combinations. The dimension equals \code{n_train x n_features}.
 #' @param S Integer matrix of dimension \code{n_combinations x n_features}, where \code{n_combinations}
