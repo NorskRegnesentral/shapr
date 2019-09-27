@@ -39,7 +39,12 @@ Suggests:
     maptree,
     corrplot,
     pcaPP,
+    knitr,
+    rmarkdown,
+    pkgdown,
+    roxygen2,
     ggplot2
 LinkingTo: 
     RcppArmadillo,
     Rcpp
+VignetteBuilder: knitr

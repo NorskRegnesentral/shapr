@@ -59,6 +59,7 @@ The following methodology/features are currently implemented:
     (1998) when optimizing the bandwidth parameter in the empirical
     (conditional) approach of Aas, Jullum, and Løland (2019).
   - Functionality for visualizing the explanations.
+  - Support for models not supported natively.
 
 <!--
 Current methodological restrictions:
@@ -70,10 +71,8 @@ Current methodological restrictions:
 
 Future releases will include:
 
-  - Support for models not supported natively.
   - Support for parallelization over explanations, Monte Carlo sampling
     and features subsets for non-parallelizable prediction functions.
-  - Simplify the use of the combination method.
   - Computational improvement of the AICc optimization approach
   - Adaptive selection of method to account for the feature dependence
 
@@ -94,7 +93,7 @@ To install the current development version, use
 devtools::install_github("NorskRegnesentral/shapr")
 ```
 
-## An example
+## Example
 
 `shapr` supports computation of Shapley values with any predictive model
 which takes a set of numeric features and produces a numeric outcome.
@@ -104,14 +103,10 @@ using the *Boston Housing Data*, and how `shapr` explains the individual
 predictions.
 
 ``` r
-
-library(MASS)
 library(xgboost)
 library(shapr)
-library(data.table)
-library(ggplot2)
 
-data("Boston")
+data("Boston", package = "MASS")
 
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
@@ -121,7 +116,6 @@ y_train <- Boston[-(1:6), y_var]
 x_test <- as.matrix(Boston[1:6, x_var])
 
 # Looking at the dependence between the features
-
 cor(x_train)
 #>            lstat         rm        dis      indus
 #> lstat  1.0000000 -0.6108040 -0.4928126  0.5986263
@@ -134,29 +128,26 @@ model <- xgboost(
   data = x_train,
   label = y_train,
   nround = 20,
-  verbose = F
+  verbose = FALSE
 )
-
 
 # Prepare the data for explanation
-l <- prepare_kshap(
-  x_train,
-  x_test
-)
+explainer <- shapr(x_train, model)
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-pred_zero <- mean(y_train)
+p <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation <- compute_kshap(
-  model = model,
-  l = l,
-  pred_zero = pred_zero
+explanation <- explain(
+  x_test,
+  approach = "empirical",
+  explainer = explainer,
+  prediction_zero = p
 )
 
 # Printing the Shapley values for the test data
-explanation$Kshap
+print(explanation$dt)
 #>      none     lstat         rm       dis      indus
 #> 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644
 #> 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871
@@ -166,7 +157,7 @@ explanation$Kshap
 #> 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531
 
 # Finally we plot the resulting explanations
-plot_kshap(explanation, x_test)
+plot(explanation)
 ```
 
 <img src="man/figures/README-basic_example-1.png" width="100%" />

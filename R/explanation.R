@@ -15,11 +15,6 @@
 #' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
 #' the response.
 #'
-#' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
-#' Monte Carlo integration for every conditional expectation.
-#'
-#' @param seed Positive integer. If \code{NULL} a random seed will be used.
-#'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
 #' @details
@@ -109,9 +104,9 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   if (!is.null(explainer$return)) return(dt)
 
   # Predict
-  dt_kshap <- prediction(dt, prediction_zero, explainer)
+  r <- prediction(dt, prediction_zero, explainer)
 
-  return(dt_kshap)
+  return(r)
 }
 
 #' @inheritParams explain
@@ -159,8 +154,9 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
   if (!is.null(explainer$return)) return(dt)
 
   # Predict
-  dt_kshap <- prediction(dt, prediction_zero, explainer)
-  return(dt_kshap)
+  r <- prediction(dt, prediction_zero, explainer)
+
+  return(r)
 }
 
 #' @rdname explain
@@ -202,13 +198,14 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
   if (!is.null(explainer$return)) return(dt)
 
   # Predict
-  dt_kshap <- prediction(dt, prediction_zero, explainer)
-  return(dt_kshap)
+  r <- prediction(dt, prediction_zero, explainer)
+
+  return(r)
 }
 
 #' @rdname explain
 #' @export
-explain.combined <- function(x, explainer, prediction_zero, approach = NULL, mu = NULL, cov_mat = NULL, ...) {
+explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
 
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$nfeatures, approach)
@@ -231,8 +228,9 @@ explain.combined <- function(x, explainer, prediction_zero, approach = NULL, mu 
 
   dt <- data.table::rbindlist(list(dt_e, dt_g, dt_c), use.names = TRUE)
 
-  dt_kshap <- prediction(dt, prediction_zero, explainer)
-  return(dt_kshap)
+  r <- prediction(dt, prediction_zero, explainer)
+
+  return(r)
 
 }
 

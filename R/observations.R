@@ -72,7 +72,18 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 }
 
 #' Generate data used for predictions
+#'
+#' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
+#' Monte Carlo integration for every conditional expectation.
+#'
+#' @param seed Positive integer. If \code{NULL} a random seed will be used.
+#'
+#' @param index_features Positive integer vector. Only used internally.
+#'
+#' @param ... Currently not used.
+#'
 #' @name prepare_data
+#'
 #' @export
 prepare_data <- function(x, ...) {
   class(x) <- x$approach
@@ -180,11 +191,11 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     l <- lapply(
       X = features,
       FUN = sample_gaussian,
-      noSamp_MC = n_samples,
+      n_samples = n_samples,
       mu = x$mu,
-      Sigma = x$cov_mat,
+      cov_mat = x$cov_mat,
       p = ncol(x$x_test),
-      Xtest = x$x_test[i, , drop = FALSE],
+      x_test = x$x_test[i, , drop = FALSE],
       ensure_condcov_symmetry = FALSE
     )
 
@@ -216,13 +227,13 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
     l <- lapply(
       X = features,
       FUN = sample_copula,
-      noSamp_MC = n_samples,
+      n_samples = n_samples,
       mu = x$mu,
-      Sigma = x$cov_mat,
+      cov_mat = x$cov_mat,
       p = ncol(x$x_test),
-      Xtest = x$x_test[i, , drop = FALSE],
-      Xtrain = as.matrix(x$x_train),
-      Xtest_Gauss_trans = x_test[i, , drop = FALSE]
+      x_test = x$x_test[i, , drop = FALSE],
+      x_train = as.matrix(x$x_train),
+      x_test_gaussian = x_test[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
@@ -235,7 +246,7 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
   return(dt)
 }
 
-#' @export
+#' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
@@ -324,7 +335,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
 }
 
 
-#' @export
+#' @keywords internal
 compute_AICc_full <- function(x, h_optim_mat) {
   ntest <- nrow(x$x_test)
   if (is.null(dim(x$x_test))) {
