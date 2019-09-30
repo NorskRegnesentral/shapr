@@ -6,40 +6,31 @@ test_that("Test prediction", {
 
   # Example -----------
   data("Boston", package = "MASS")
-  x_var <- c("lstat", "rm", "dis", "indus")
-  y_var <- "medv"
-  dt <- data.table::as.data.table(Boston)
+  dt_train <- data.table::as.data.table(Boston)
+  features <- c("lstat", "rm", "dis", "indus")
+  n_combinations <- 10
+  n_features <- 4
   prediction_zero <- .5
   explainer <- list()
-  explainer$model <- stats::lm(formula = "medv ~ lstat + rm + dis + indus", data = head(dt, -10))
-  explainer$x_test <- tail(dt, 10)
-  explainer$W <- matrix()
+  explainer$model <- stats::lm(formula = "medv ~ lstat + rm + dis + indus", data = head(dt_train, -10))
+  explainer$x_test <- tail(dt_train[, .SD, .SDcols = features], 10)
+  explainer$W <- matrix(1, nrow = n_features + 1, ncol = n_combinations)
+  dt <- dt_train[rep(1:.N, 4)]
+  dt[, id := rep_len(1:8, .N)]
+  dt[, wcomb := rep_len(1:n_combinations, .N), id]
+  dt[, w := runif(.N)]
+  x <- prediction(dt, prediction_zero, explainer)
 
   # Test -----------
+  lnms <- c("dt", "model", "p", "x_test")
+  expect_equal(class(x), c("shapr", "list"))
+  expect_equal(names(x), lnms)
+  expect_equal(x$model, explainer$model)
+  expect_equal(x$x_test, explainer$x_test)
+  expect_equal(x$p, predict_model(explainer$model, explainer$x_test))
+  expect_true(data.table::is.data.table(x$dt))
+  expect_equal(ncol(x$dt), n_features + 1)
+  expect_equal(nrow(x$dt), dt[, max(id)])
+  expect_equal(colnames(x$dt), c("none", features))
 
 })
-
-prediction <- function(dt, prediction_zero, explainer) {
-
-  # Predictions
-  cnms <- colnames(explainer$x_test)
-  data.table::setkeyv(dt, c("id", "wcomb"))
-  dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
-  dt[wcomb == 1, p_hat := prediction_zero]
-  p_all <- predict_model(explainer$model, newdata = explainer$x_test)
-  dt[wcomb == max(wcomb), p_hat := p_all[id]]
-
-  # Calculate contributions
-  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, wcomb)]
-  data.table::setkeyv(dt_res, c("id", "wcomb"))
-  dt_mat <- data.table::dcast(dt_res, wcomb ~ id, value.var = "k")
-  dt_mat[, wcomb := NULL]
-  kshap <-  t(explainer$W %*% as.matrix(dt_mat))
-  dt_kshap <- data.table::as.data.table(kshap)
-  colnames(dt_kshap) <- c("none", cnms)
-
-  r <- list(dt = dt_kshap, model = explainer$model, p = p_all, x_test = explainer$x_test)
-  attr(r, "class") <- c("shapr", "list")
-
-  return(r)
-}
