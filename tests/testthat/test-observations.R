@@ -50,7 +50,6 @@ test_that("Test observation_impute", {
   expect_true(data.table::is.data.table(r))
   expect_true(ncol(r) == m + 2)
   expect_true(all(colnames(r) == cnms))
-  expect_true(all(colnames(r) == cnms))
   expect_true(all(unlist(lapply(r, is.numeric))))
   expect_true(is.integer(r$wcomb))
 
