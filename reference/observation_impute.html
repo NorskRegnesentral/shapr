@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get predictions — observation_impute • shapr</title>
+<title>Generate permutations of training data using test observations — observation_impute • shapr</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Get predictions — observation_impute" />
+<meta property="og:title" content="Generate permutations of training data using test observations — observation_impute" />
 
-<meta property="og:description" content="Get predictions" />
+<meta property="og:description" content="Generate permutations of training data using test observations" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -114,53 +114,59 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get predictions</h1>
+    <h1>Generate permutations of training data using test observations</h1>
     <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/observations.R'><code>R/observations.R</code></a></small>
     <div class="hidden name"><code>observation_impute.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Get predictions</p>
+    <p>Generate permutations of training data using test observations</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>observation_impute</span>(<span class='no'>W_kernel</span>, <span class='no'>S</span>, <span class='no'>Xtrain</span>, <span class='no'>Xtest</span>, <span class='kw'>w_threshold</span> <span class='kw'>=</span> <span class='fl'>0.7</span>,
-  <span class='kw'>noSamp_MC</span> <span class='kw'>=</span> <span class='fl'>1000</span>)</pre>
+    <pre class="usage"><span class='fu'>observation_impute</span>(<span class='no'>W_kernel</span>, <span class='no'>S</span>, <span class='no'>x_train</span>, <span class='no'>x_test</span>, <span class='kw'>w_threshold</span> <span class='kw'>=</span> <span class='fl'>0.7</span>,
+  <span class='kw'>n_samples</span> <span class='kw'>=</span> <span class='fl'>1000</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>W_kernel</th>
-      <td><p>Array. Contains all nonscaled weights between training and testing observations
-for all combinations.</p></td>
+      <td><p>Numeric matrix. Contains all nonscaled weights between training and test
+observations for all feature combinations. The dimension equals <code>n_train x n_features</code>.</p></td>
     </tr>
     <tr>
       <th>S</th>
-      <td><p>Matrix</p></td>
+      <td><p>Integer matrix of dimension <code>n_combinations x n_features</code>, where <code>n_combinations</code>
+and <code>n_features</code> equals the total number of sampled/non-sampled feature combinations and
+the total number of unique features, respectively. Note that <code>n_features = ncol(x_train)</code>.</p></td>
     </tr>
     <tr>
-      <th>Xtrain</th>
-      <td><p>Matrix, data.frame or data.table with the features from the training data</p></td>
+      <th>x_train</th>
+      <td><p>Numeric matrix</p></td>
     </tr>
     <tr>
-      <th>Xtest</th>
-      <td><p>Matrix, data.frame or data.table with the features, whose predictions ought to
-be explained (test data)</p></td>
+      <th>x_test</th>
+      <td><p>Numeric matrix</p></td>
     </tr>
     <tr>
-      <th>noSamp_MC</th>
-      <td><p>Positive integer. Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation (previously called <code>n_threshold</code>)</p></td>
+      <th>w_threshold</th>
+      <td><p>Numeric vector of length 1, where <code>w_threshold &gt; 0</code> and
+<code>w_threshold &lt;= 1</code>. If <code>w_threshold = .8</code> we will choose the <code>K</code> samples with
+the largest weight so that the sum of the weights accounts for 80% of the total weight.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>List</p>
+    <p>data.table</p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'># TODO: Add simple example
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -168,7 +174,9 @@ Monte Carlo integration for every conditional expectation (previously called <co
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
     <h2>Author</h2>
     <p>Nikolai Sellereite</p>
