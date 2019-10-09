@@ -25,6 +25,8 @@
 #' the dimensions of the data.frame equals \code{n x (p+1)}, where \code{n} equals the number
 #' of test observations, and \code{p} equals the total number of features.
 #'
+#' # TODO: Move n_samples argument into explain (from prepare_data)
+#'
 #' @export
 #'
 #' @author Camilla Lingjaerde
@@ -59,6 +61,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   UseMethod("explain", x)
 }
 
+#' TODO: Fix documentation for type
 #' @param type String or list. Only applicable when \code{approach='empirical'}. If a string, the
 #' type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a
 #' list, the elements in the list refers to the rows in \code{x} that ought to be included in
@@ -213,6 +216,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
   explainer$x_test <- as.matrix(x)
   dt_e <- dt_g <- dt_c <- NULL
 
+  # TODO: Don't copy code
   if (!is.null(l$empirical)) {
     dt_e <- explain(x, explainer, approach = "empirical", prediction_zero, index_features = l$empirical, ...)
   }

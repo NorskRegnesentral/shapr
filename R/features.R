@@ -21,6 +21,7 @@ feature_combinations <- function(m, exact = TRUE, noSamp = 200, shapley_weight_i
   # Not supported for m > 30
   if (m > 30) {
     stop("Currently we are not supporting cases where m > 30.")
+    # TODO: Add better message, and change noSamp to n_combinations
   }
 
   if (!exact && noSamp > (2^m - 2) && !reduce_dim) {
