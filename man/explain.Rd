@@ -40,7 +40,7 @@ the response.}
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 
 \item{type}{Character. Should be equal to either \code{"independence"},
-\code{"fixed_sigma"}, \code{AICc_each_k} or \code{AICc_full}.}
+\code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
 \item{fixed_sigma_vec}{Vector or numeric. Only applicable when \code{approach='empirical'} and
 \code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}}
