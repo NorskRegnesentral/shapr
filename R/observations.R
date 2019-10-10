@@ -207,7 +207,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
   return(dt)
 }
 
-#' TODO: Change name of x_test (x_transform-ish)
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export

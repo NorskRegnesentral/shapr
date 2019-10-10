@@ -30,6 +30,4 @@ Monte Carlo integration for every conditional expectation.}
 }
 \description{
 Generate data used for predictions
-
-TODO: Change name of x_test (x_transform-ish)
 }
