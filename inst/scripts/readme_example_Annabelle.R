@@ -36,7 +36,7 @@ p <- mean(y_train)
 x = x_test
 explanation <- explain(
   x_test,
-  approach = "gaussian",
+  approach = "ctree",
   explainer = explainer,
   prediction_zero = p
 )
