@@ -50,6 +50,10 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     )
   }
 
+  # Check that x contains correct variables
+  explainer$p <- predict_model(explainer$model, head(x, 1))
+  explainer$p <- NULL
+
   if (length(approach) > 1) {
     class(x) <- "combined"
   } else {

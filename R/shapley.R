@@ -82,7 +82,6 @@ shapr <- function(x,
 
   # Checks model and features
   explainer$p <- predict_model(model, head(x))
-  explainer$p <- NULL
 
   # Create data.table --------------
   if (!data.table::is.data.table(x)) {
@@ -116,6 +115,7 @@ shapr <- function(x,
   explainer$X <- dt_combinations
   explainer$x_train <- x_train
   explainer$x <- NULL
+  explainer$p <- NULL
 
   attr(explainer, "class") <- c("explainer", "list")
 
