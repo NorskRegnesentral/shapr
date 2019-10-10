@@ -97,7 +97,7 @@ shapr <- function(x,
   dt_combinations <- feature_combinations(
     m = explainer$n_features,
     exact = explainer$exact,
-    noSamp = n_combinations,
+    n_combinations = n_combinations,
     shapley_weight_inf_replacement = 10^6,
     reduce_dim = TRUE
   )
@@ -498,7 +498,7 @@ prepare_kshap <- function(Xtrain,
   X <- feature_combinations(
     m = ncol(Xtrain),
     exact = exact,
-    noSamp = noSamp,
+    n_combinations = noSamp,
     shapley_weight_inf_replacement = shapley_weight_inf_replacement,
     reduce_dim = TRUE
   )

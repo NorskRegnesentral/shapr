@@ -14,21 +14,21 @@ test_that("Test feature_combinations", {
   # Example 2 -----------
   m <- 10
   exact <- FALSE
-  noSamp <- 50
+  n_combinations <- 50
   w <- 10^6
   reduce_dim <- TRUE
   set.seed(1)
   y1 <- feature_combinations(
     m = m,
     exact = exact,
-    noSamp = noSamp,
+    n_combinations = n_combinations,
     shapley_weight_inf_replacement = w,
     reduce_dim = reduce_dim
   )
   set.seed(1)
   y2 <- feature_not_exact(
     m = m,
-    noSamp = noSamp,
+    n_combinations = n_combinations,
     shapley_weight_inf_replacement = w,
     reduce_dim = reduce_dim
   )
@@ -36,14 +36,14 @@ test_that("Test feature_combinations", {
   # Example 3 -----------
   m <- 3
   exact <- FALSE
-  noSamp <- 1e4
+  n_combinations <- 1e4
   w <- 10^6
   reduce_dim <- TRUE
   set.seed(1)
   y3 <- feature_combinations(
     m = m,
     exact = exact,
-    noSamp = noSamp,
+    n_combinations = n_combinations,
     shapley_weight_inf_replacement = w,
     reduce_dim = FALSE
   )
@@ -94,13 +94,13 @@ test_that("Test feature_not_exact", {
   # Example -----------
   m <- 10
   exact <- FALSE
-  noSamp <- 50
+  n_combinations <- 50
   w <- 10^6
   reduce_dim <- FALSE
   set.seed(1)
   x <- feature_not_exact(
     m = m,
-    noSamp = noSamp,
+    n_combinations = n_combinations,
     shapley_weight_inf_replacement = w,
     reduce_dim = reduce_dim
   )
@@ -116,7 +116,7 @@ test_that("Test feature_not_exact", {
   expect_true(data.table::is.data.table(x))
   expect_equal(names(x), cnms)
   expect_equal(unname(sapply(x, typeof)), classes)
-  expect_equal(nrow(x), noSamp + 2)
+  expect_equal(nrow(x), n_combinations + 2)
   expect_equal(x[["ID"]], seq(nrow(x)))
   for (i in x[, .I]) {
     f <- x[["features"]][[i]]
