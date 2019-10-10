@@ -18,6 +18,17 @@
 #' @author Nikolai Sellereite, Martin Jullum
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
 
+  # Force user to use a natural number for n_combinations if m > 10
+  if (m > 10 & is.null(n_combinations)) {
+    stop(
+      paste(
+        "If the number of features is greater than 10, you need to choose a natural number\n ",
+        "for argument n_combinations. You can still use the exact method by setting\n ",
+        "n_combinations equal to 2^m, where m is the number of features."
+      )
+    )
+  }
+
   # Not supported for m > 30
   if (m > 30) {
     stop("Currently we are not supporting cases where the number of features is greater than 30.")
