@@ -171,12 +171,6 @@ compute_kshap <- function(model,
                             AIC_optim_startval = 0.1,
                             w_threshold = 0.95
                           ),
-                          ctree_settings = list(
-                            mincriterion = 0.95,
-                            minsplit = 20,
-                            minbucket = 7,
-                            comb = NULL
-                          ),
                           pred_zero,
                           mu = NULL,
                           Sigma = NULL,
@@ -423,27 +417,6 @@ compute_kshap <- function(model,
     Sigma_Gauss_trans <- as.matrix(Matrix::nearPD(Sigma_Gauss_trans)$mat)
   }
 
-  all_tress = NULL # new
-  ## this fits all 2^10 trees (if X_dim = 10)
-  if ("ctree" %in% names(cond_approach_list)) {
-    S = l$S
-
-    these_wcomb <- cond_approach_list$ctree
-    these_wcomb <- these_wcomb[!(these_wcomb %in% c(1, nrow(S)))]
-
-    feature_list <- l$X$features
-
-    p <- ncol(Xtrain)
-
-    ## this is the list of all 2^10 trees (if X_dim = 10)
-    all_trees <- lapply(X = feature_list[these_wcomb], # remove first and last row!
-                        FUN = simulateAllTrees,
-                        data = l$Xtrain,
-                        noSAMP_MC = noSAMP_MC,
-                        p = p,
-                        ctree_settings = ctree_settings) # this is NEW
-  }
-
 
   set.seed(1)
   for (i in l$Xtest[, .I]) {
@@ -466,7 +439,6 @@ compute_kshap <- function(model,
       cond_approach_list = cond_approach_list,
       feature_list = l$X$features,
       pred_zero = pred_zero,
-      trees = all_tress, # new
       mu = mu,
       Sigma = Sigma,
       mu_Gauss_trans = mu_Gauss_trans,

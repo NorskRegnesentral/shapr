@@ -33,7 +33,6 @@ p <- mean(y_train)
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 
 
-x = x_test
 explanation <- explain(
   x_test,
   approach = "ctree",

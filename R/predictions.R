@@ -68,7 +68,7 @@ predictions <- function(model,
                         ensure_condcov_symmetry = F) {
   p <- ncol(Xtrain)
 
-  DTp.Gaussian <- DTp.copula <- DTp.empirical <- DTp.ctree <- NULL
+  DTp.Gaussian <- DTp.copula <- DTp.empirical <- NULL
 
   if ("Gaussian" %in% names(cond_approach_list)) {
     ## Assume Gaussian distributed variables and sample from the various conditional distributions
@@ -137,31 +137,10 @@ predictions <- function(model,
     DTp.empirical[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
   }
 
-  if ("ctree" %in% names(cond_approach_list)) {
-    these_wcomb <- cond_approach_list$ctree
-    these_wcomb <- these_wcomb[!(these_wcomb %in% c(1, nrow(S)))]
-
-    # samp_list_fit <- lapply(X = feature_list[these_wcomb], # remove first and last row!
-    #                         FUN = onceTreesAreFit,
-    #                         trees = trees,
-    #                         Xtest = Xtest,
-    #                         data = l$Xtrain)
-
-    samp_list <- lapply(X = trees, # remove first and last row!
-                        FUN = onceTreesAreFit,
-                        Xtest = Xtest,
-                        data = l$Xtrain)
-
-
-    DTp.ctree <- rbindlist(samp_list, idcol = "wcomb")
-    DTp.ctree[, wcomb := these_wcomb[wcomb]]  # Correcting originally assigned wcomb
-    DTp.ctree[, w := 1 / n_threshold]
-  }
-
   ## Performing prediction
   nms <- colnames(Xtest)
 
-  DTp <- rbind(DTp.Gaussian, DTp.copula, DTp.empirical, DTp.ctree)
+  DTp <- rbind(DTp.Gaussian, DTp.copula, DTp.empirical)
   DTp <- merge(DTp, data.table(wcomb = c(1, 2^p), w = 1), all = T)
   setkey(DTp, wcomb)
 
