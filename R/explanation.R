@@ -211,22 +211,13 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
   l <- get_list_approaches(explainer$X$nfeatures, approach)
   explainer$return <- TRUE
   explainer$x_test <- as.matrix(x)
-  dt_e <- dt_g <- dt_c <- NULL
 
-  if (!is.null(l$empirical)) {
-    dt_e <- explain(x, explainer, approach = "empirical", prediction_zero, index_features = l$empirical, ...)
+  r <- list()
+  for (i in seq_along(l)) {
+    r[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], ...)
   }
 
-  if (!is.null(l$gaussian)) {
-    dt_g <- explain(x, explainer, approach = "gaussian", prediction_zero, index_features = l$gaussian, ...)
-
-  }
-
-  if (!is.null(l$copula)) {
-    dt_c <- explain(x, explainer, approach = "copula", prediction_zero, index_features = l$copula, ...)
-  }
-
-  dt <- data.table::rbindlist(list(dt_e, dt_g, dt_c), use.names = TRUE)
+  dt <- data.table::rbindlist(r, use.names = TRUE)
 
   r <- prediction(dt, prediction_zero, explainer)
 
