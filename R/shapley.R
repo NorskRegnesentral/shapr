@@ -80,13 +80,9 @@ shapr <- function(x,
   explainer$n_features <- ncol(x)
   explainer$model_type <- model_type(model)
 
-  # Add check for single prediction to see if names correspond
-
-  # Test that the input is valid
-  # TODO: Fix this
-  if (!all(colnames(x) %in% model$feature_names)) {
-    stop("Features of X must match model")
-  }
+  # Checks model and features
+  explainer$p <- predict_model(model, head(x))
+  explainer$p <- NULL
 
   # Create data.table --------------
   if (!data.table::is.data.table(x)) {

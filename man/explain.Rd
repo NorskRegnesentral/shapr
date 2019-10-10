@@ -72,6 +72,8 @@ generating distribution. \code{NULL} means it is estimated from the data if need
 data.frame. Contains the estimated Shapley values for the test data. Note that
 the dimensions of the data.frame equals \code{n x (p+1)}, where \code{n} equals the number
 of test observations, and \code{p} equals the total number of features.
+
+# TODO: Move n_samples argument into explain (from prepare_data)
 }
 \description{
 TODO: Add a more detailed description
