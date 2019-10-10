@@ -202,6 +202,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
   }
+
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
@@ -239,6 +240,53 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
   }
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  return(dt)
+}
+
+prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+
+  n_xtest <- nrow(x$x_test)
+  dt_l <- list()
+  if (!is.null(seed)) set.seed(seed)
+  if (is.null(index_features)) {
+    features <- x$X$features
+  } else {
+    features <- x$X$features[index_features]
+  }
+
+  # don't need this anymore! ----- # features_subset = features[-1]
+  # features_subset = features_subset[-(length(features_subset))]
+
+  ## this is the list of all 2^10 trees (if X_dim = 10)
+  all_trees <- lapply(X = features, # don't remove first and last row!
+                      FUN = simulateAllTrees,
+                      x_train = x$x_train,
+                      comb = x$comb,
+                      minbucket = x$minbucket,
+                      mincriterion = x$mincriterion,
+                      minsplit = x$minsplit)# this is NEW
+
+
+  for (i in seq(n_xtest)) {
+    # options(warn=2)
+    l <- lapply(
+      X = all_trees,
+      FUN = sample_ctree,
+      n_samples = n_samples,
+      x_test = x$x_test[i, , drop = FALSE],
+      x_train = as.matrix(x$x_train),
+      features = features,
+      p = ncol(x$x_test)
+    )
+
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]][, w := 1 / n_samples]
+    dt_l[[i]][, id := i]
+    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+  }
+
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)

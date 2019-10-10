@@ -9,7 +9,9 @@ compute_kshap(model, l, noSamp_MC = 1000, verbose = FALSE,
   cond_approach = "empirical", empirical_settings = list(type =
   "fixed_sigma", fixed_sigma_vec = 0.1, AICc_no_samp_per_optim = 1000,
   AIC_optim_max_eval = 20, AIC_optim_startval = 0.1, w_threshold = 0.95),
-  pred_zero, mu = NULL, Sigma = NULL, ensure_condcov_symmetry = F)
+  ctree_settings = list(mincriterion = 0.95, minsplit = 20, minbucket =
+  7, comb = NULL), pred_zero, mu = NULL, Sigma = NULL,
+  ensure_condcov_symmetry = F)
 }
 \description{
 TODO: Delete this function from the codebase

@@ -215,5 +215,3 @@ explanation.orig <- compute_kshap(
   )
 
 explanation.orig$Kshap
-
-

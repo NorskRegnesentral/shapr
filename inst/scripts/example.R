@@ -1,6 +1,17 @@
+
+## only do this the first time
+# library(devtools)
+# devtools::install("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr")
+
+#### -- didn't use this ---- devtools::install_github("NorskRegnesentral/shapr")
+####
+
 library(data.table)
-library(mvnfast)
+library(mvtnorm)
 library(shapr)
+# library(mvnfast)
+
+## --------------------------------
 
 ### Defining sampling data and model
 dimX <- 5

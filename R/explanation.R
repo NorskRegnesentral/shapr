@@ -39,7 +39,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   if (!(is.vector(approach) &&
         is.atomic(approach) &&
         (length(approach) == 1 | length(approach) == ncol(x)) &&
-        all(is.element(approach, c("empirical", "gaussian", "copula"))))
+        all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
   ) {
     stop(
       paste(
@@ -256,7 +256,35 @@ get_list_approaches <- function(n_features, approach) {
   if (length(x) > 0) {
     if (approach[1] == "copula") x <- c(0, x)
     l$copula <- which(n_features %in% x)
+  }
 
+  x <- which(approach == "ctree")
+  if (length(x) > 0) {
+    if (approach[1] == "ctree") x <- c(0, x)
+    l$ctree <- which(n_features %in% x)
   }
   return(l)
+}
+
+#' @rdname explain
+#' @export
+explain.ctree <- function(x, explainer, approach, prediction_zero, comb = NULL, mincriterion = 0.95,
+                          minsplit = 20, minbucket = 7, ...){
+
+  # Add arguments to explainer object
+  explainer$x_test <- as.matrix(x)
+  explainer$approach <- approach
+  explainer$comb <- comb
+  explainer$mincriterion <- mincriterion
+  explainer$minsplit <- minsplit
+  explainer$minbucket <- minbucket
+
+  # Generate data
+  dt <- prepare_data(explainer, ...)
+  if (!is.null(explainer$return)) return(dt)
+
+  # Predict
+  r <- prediction(dt, prediction_zero, explainer)
+  return(r)
+
 }

@@ -2,6 +2,7 @@
 
 S3method(explain,combined)
 S3method(explain,copula)
+S3method(explain,ctree)
 S3method(explain,empirical)
 S3method(explain,gaussian)
 S3method(model_type,default)

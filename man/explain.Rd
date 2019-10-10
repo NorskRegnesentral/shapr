@@ -6,6 +6,7 @@
 \alias{explain.gaussian}
 \alias{explain.copula}
 \alias{explain.combined}
+\alias{explain.ctree}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(x, explainer, approach, prediction_zero, ...)
@@ -22,6 +23,10 @@ explain(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{combined}(x, explainer, approach, prediction_zero,
   mu = NULL, cov_mat = NULL, ...)
+
+\method{explain}{ctree}(x, explainer, approach, prediction_zero,
+  comb = NULL, mincriterion = 0.95, minsplit = 20, minbucket = 7,
+  ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose

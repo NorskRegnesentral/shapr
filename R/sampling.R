@@ -159,3 +159,166 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 
   return(ret)
 }
+
+#' Sample ctree variables
+#'
+#' @param tree
+#' @param n_samples
+#' @param x_test
+#' @param x_train
+#' @param features
+#' @param p
+#'
+#' @inheritParams global_arguments
+#'
+#' @return data.table with \code{n_samples} (conditional) Gaussian samples
+#'
+#' @keywords internal
+#'
+#' @examples
+#' # TODO: Add simple example
+#'
+#' @author Annabelle Redelmeier
+
+sample_ctree <- function(tree,
+                         n_samples,
+                         x_test,
+                         x_train,
+                         features,
+                         p) {
+
+
+  datact <- tree$tree
+  # print(tree$given_ind)
+
+
+  cnms <- colnames(x_test)
+  if (length(tree$given_ind) %in% c(0, p)) {
+    ret <- matrix(x_test, ncol = p, nrow = 1)
+  } else {
+    given_ind <- tree$given_ind
+    given_ind.vec <- rep(0, length(x_test))
+    given_ind.vec[given_ind] <- 1
+
+    dependent_ind <- tree$dependent_ind
+
+    x_test_given <- x_test[given_ind]
+
+    xp <- data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given)))
+    colnames(xp) <- paste0("V", given_ind) # this is important for where() below
+
+    # x0 <- x_test
+    # dependent_ind <- (1:dim(x_train)[2])[-given.ind.vec]
+    # X_given <- x_test[given.ind]
+
+    # xp <- data.table(matrix(x_test, nrow = 1, ncol = length(X_given)))
+    # colnames(xp) <- paste0("V", given.ind)
+
+    fit.nodes <- where(datact)
+    nodes <- unique(fit.nodes)
+    no.nodes <- length(nodes)
+    pred.nodes <- where(object = datact, newdata = xp) ## newdata must be a data.frame and have the same colnames as x
+
+    rowno <- 1:dim(x_train)[1]
+    # newrowno <- vector("integer", n_samples)
+
+    newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
+
+    depDT <- data.table(matrix(x_train[newrowno, dependent_ind], ncol = length(dependent_ind)))
+    givenDT <- data.table(matrix(x_test[1, given_ind], ncol = length(given_ind)))
+
+    ret <- data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
+    ret[, paste0("V", dependent_ind) := depDT]
+    ret[, paste0("V", given_ind) := givenDT]
+
+  }
+  colnames(ret) <- cnms
+
+  return(as.data.table(ret))
+
+}
+
+#' Make all conditional inference trees
+#'
+#' @param given_ind
+#' @param x_train
+#' @param comb
+#' @param minbucket
+#' @param mincriterion
+#' @param minsplit
+#'
+#' @inheritParams global_arguments
+#'
+#' @return data.table with \code{n_samples} (conditional) Gaussian samples
+#'
+#' @keywords internal
+#'
+#' @examples
+#' # TODO: Add simple example
+#'
+#' @author Annabelle Redelmeier
+#'
+simulateAllTrees <- function(given_ind,
+                             x_train,
+                             comb,
+                             minbucket,
+                             mincriterion,
+                             minsplit){
+
+  if (length(given_ind) %in% c(0, ncol(x_train))) {
+    # ret <- matrix(Xtest, ncol = p, nrow = 1)
+    datact = list()
+    dependent_ind <- (1:dim(x_train)[2])[-given_ind]
+  } else {
+
+
+    # x0 <- Xtest
+    dependent_ind <- (1:dim(x_train)[2])[-given_ind]
+    # X_given <- Xtest[given_ind]
+
+    ## for ctree model
+    if(!is.null(comb)){
+      if(length(given_ind) <= comb$comb_indici){
+        mincriterion <- comb$comb_mincriterion[1] # alpha = 0.05 - split tree if p < 0.05
+      } else {
+        mincriterion <- comb$comb_mincriterion[2] # alpha = 0.20 - split tree if p < 0.20
+      }
+    }
+
+    ## model
+    if(length(dependent_ind) == 1){
+
+      x <- x_train[, given_ind, with = FALSE]
+      y <- x_train[, dependent_ind, with = FALSE]
+      # xp <- data.table(matrix(X_given, ncol = length(X_given), nrow = 1))
+
+      df <- data.table(cbind(y, x))
+
+      colnames(df) <- c("Y", paste0("V", given_ind))
+      # colnames(xp) <- paste0("V", given_ind)
+
+      datact <- party::ctree(Y ~ ., data = df, controls = ctree_control(minbucket = minbucket, mincriterion = mincriterion))
+
+    } else{
+
+      x <- x_train[, given_ind, with = FALSE]
+      y <- x_train[, dependent_ind, with = FALSE]
+      # xp <- data.table(matrix(X_given, nrow = 1, ncol = length(X_given)))
+
+      df <- data.table(cbind(y, x))
+
+      colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
+      # colnames(xp) <- paste0("V", given_ind)
+
+      ## this was changed
+      ynam <- paste0("Y", 1:ncol(y)) # ncol(y)
+      fmla <- as.formula(paste(paste(ynam, collapse= "+"), "~ ."))
+
+      datact <- party::ctree(fmla, data = df, controls = ctree_control(minbucket = minbucket, mincriterion = mincriterion))
+
+    }
+
+  }
+
+  return(list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)) # return the whole tree
+}
