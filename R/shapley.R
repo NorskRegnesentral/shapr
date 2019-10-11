@@ -80,11 +80,6 @@ shapr <- function(x,
   explainer$n_features <- ncol(x)
   explainer$model_type <- model_type(model)
 
-  # Test that the input is valid
-  if (!all(colnames(x) %in% model$feature_names)) {
-    stop("Features of X must match model")
-  }
-
   # Create data.table --------------
   if (!data.table::is.data.table(x)) {
     x_train <- data.table::as.data.table(x)
