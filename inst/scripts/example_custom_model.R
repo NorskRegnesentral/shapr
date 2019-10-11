@@ -1,13 +1,10 @@
 rm(list = ls())
 
-library(MASS)
 library(caret)
 library(shapr)
-library(ggplot2)
-library(data.table)
 
 # Load data
-data("Boston")
+data("Boston", package = "MASS")
 
 # Create test- and training data
 x_var <- c("lstat", "rm", "dis", "indus")
@@ -26,32 +23,44 @@ model <- train(
   verbose = FALSE
 )
 
-# Create custom function
+# Create custom function of model_type for caret
+model_type.train <- function(x) {
+  ifelse(
+    x$modelType[[1]] == "Classification",
+    "classification",
+    "regression"
+  )
+}
+
+# Create custom function of predict_model for caret
 predict_model.train <- function(x, newdata) {
 
-    if (!requireNamespace('caret', quietly = TRUE)) {
-      stop('The caret package is required for predicting train models')
-    }
+  if (!requireNamespace('caret', quietly = TRUE)) {
+    stop('The caret package is required for predicting train models')
+  }
+  model_type <- model_type(x)
+
+  if (model_type == "classification") {
+
+    predict(x, newdata, type = "prob")
+  } else {
 
     predict(x, newdata)
+  }
 }
 
 # Prepare the data for explanation
-l <- prepare_kshap(
-  Xtrain = x_train,
-  Xtest = x_test
-)
+explainer <- shapr(x_train, model)
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
-pred_zero <- mean(y_train)
+p0 <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation <- compute_kshap(
-  model = model,
-  l = l,
-  pred_zero = pred_zero
-)
+explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
 
 # Printing the Shapley values for the test data
-explanation$Kshap
+explanation$dt
+
+# Plot results
+plot(explanation)
