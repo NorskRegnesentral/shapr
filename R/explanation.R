@@ -212,12 +212,12 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
   explainer$return <- TRUE
   explainer$x_test <- as.matrix(x)
 
-  r <- list()
+  dt_l <- list()
   for (i in seq_along(l)) {
-    r[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], ...)
+    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], ...)
   }
 
-  dt <- data.table::rbindlist(r, use.names = TRUE)
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 
   r <- prediction(dt, prediction_zero, explainer)
 
