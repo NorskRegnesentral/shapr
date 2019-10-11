@@ -266,15 +266,31 @@ get_list_approaches <- function(n_features, approach) {
   return(l)
 }
 
+
+#' @param comb_indici Numeric value. (Optional) Contains the splitting point corresponding to where to change the
+#' \code{comb_mincriterion}. Right now, this is only implemented for one splitting value. Could potentially make more splits later.
+#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
+#' @param comb_mincriterion Numeric vector. (Optional) Contains the different mincriterions to use for each
+#' combination.
+#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
+#' @param mincriterion equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+#' If \code{comb_indici} and \code{comb_mincriterion} are both not \code{NULL}, then \code{mincriterion} can be set
+#' to \code{NULL}. Otherwise, it needs to be filled out.
+#' @param minsplit is the value that the sum of the left and right daughter nodes need to exceed.
+#' @param minbucket is equal to the minimum sum of weights in a terminal node.
+
+
 #' @rdname explain
 #' @export
-explain.ctree <- function(x, explainer, approach, prediction_zero, comb = NULL, mincriterion = 0.95,
+explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici = NULL, comb_mincriterion = NULL,
+                          mincriterion = 0.95,
                           minsplit = 20, minbucket = 7, ...){
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(x)
   explainer$approach <- approach
-  explainer$comb <- comb
+  explainer$comb_indici <- comb_indici
+  explainer$comb_mincriterion <- comb_mincriterion
   explainer$mincriterion <- mincriterion
   explainer$minsplit <- minsplit
   explainer$minbucket <- minbucket

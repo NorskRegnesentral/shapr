@@ -2,20 +2,27 @@
 % Please edit documentation in R/sampling.R
 \name{sample_ctree}
 \alias{sample_ctree}
-\title{Sample ctree variables}
+\title{Sample ctree variables from a given conditional inference tree}
 \usage{
-sample_ctree(tree, n_samples, x_test, x_train, features, p)
+sample_ctree(tree, n_samples, x_test, x_train, p)
 }
 \arguments{
-\item{features}{List.}
+\item{tree}{ctree built from the party package. This includes the indices of the features to condition upon.}
 
-\item{p}{}
+\item{n_samples}{Numeric. Indicates how many samples to use for MCMC.}
+
+\item{x_test}{Matrix, data.frame or data.table with the features of the observation whose
+predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.}
+
+\item{x_train}{Matrix, data.frame or data.table with training data.}
+
+\item{p}{Positive integer. The number of features.}
 }
 \value{
 data.table with \code{n_samples} (conditional) Gaussian samples
 }
 \description{
-Sample ctree variables
+Sample ctree variables from a given conditional inference tree
 }
 \examples{
 # TODO: Add simple example

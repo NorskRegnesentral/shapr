@@ -4,14 +4,32 @@
 \alias{simulateAllTrees}
 \title{Make all conditional inference trees}
 \usage{
-simulateAllTrees(given_ind, x_train, comb, minbucket, mincriterion,
-  minsplit)
+simulateAllTrees(given_ind, x_train, comb_indici, comb_mincriterion,
+  mincriterion, minsplit, minbucket)
 }
 \arguments{
-\item{minsplit}{}
+\item{given_ind}{which features are conditioned on}
+
+\item{x_train}{specific values of features for individual i}
+
+\item{comb_indici}{Numeric value. (Optional) Contains the splitting point corresponding to where to change the
+\code{comb_mincriterion}. Right now, this is only implemented for one splitting value. Could potentially make more splits later.
+If \code{NULL}, the \code{mincriterion} is constant for every combination.}
+
+\item{comb_mincriterion}{Numeric vector. (Optional) Contains the different mincriterions to use for each
+combination.
+If \code{NULL}, the \code{mincriterion} is constant for every combination.}
+
+\item{mincriterion}{equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+If \code{comb_indici} and \code{comb_mincriterion} are both not \code{NULL}, then \code{mincriterion} can be set
+to \code{NULL}. Otherwise, it needs to be filled out.}
+
+\item{minsplit}{is the value that the sum of the left and right daughter nodes need to exceed.}
+
+\item{minbucket}{is equal to the minimum sum of weights in a terminal node.}
 }
 \value{
-data.table with \code{n_samples} (conditional) Gaussian samples
+list with conditional inference tree and variables conditioned/not conditioned on
 }
 \description{
 Make all conditional inference trees

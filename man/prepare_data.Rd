@@ -5,6 +5,7 @@
 \alias{prepare_data.empirical}
 \alias{prepare_data.gaussian}
 \alias{prepare_data.copula}
+\alias{prepare_data.ctree}
 \title{Generate data used for predictions}
 \usage{
 prepare_data(x, ...)
@@ -17,6 +18,9 @@ prepare_data(x, ...)
 
 \method{prepare_data}{copula}(x, x_test = 1, seed = 1,
   n_samples = 1000, index_features = NULL, ...)
+
+\method{prepare_data}{ctree}(x, seed = 1, n_samples = 1000,
+  index_features = NULL, ...)
 }
 \arguments{
 \item{...}{Currently not used.}

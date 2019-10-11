@@ -245,6 +245,9 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
   return(dt)
 }
 
+#' @rdname prepare_data
+#' @name prepare_data
+#' @export
 prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
   n_xtest <- nrow(x$x_test)
@@ -256,17 +259,15 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
     features <- x$X$features[index_features]
   }
 
-  # don't need this anymore! ----- # features_subset = features[-1]
-  # features_subset = features_subset[-(length(features_subset))]
-
-  ## this is the list of all 2^10 trees (if X_dim = 10)
-  all_trees <- lapply(X = features, # don't remove first and last row!
+  ## this is the list of all 2^10 trees (if number of features = 10)
+  all_trees <- lapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
                       FUN = simulateAllTrees,
                       x_train = x$x_train,
-                      comb = x$comb,
-                      minbucket = x$minbucket,
+                      comb_indici = x$comb_indici,
+                      comb_mincriterion = x$comb_mincriterion,
                       mincriterion = x$mincriterion,
-                      minsplit = x$minsplit)# this is NEW
+                      minsplit = x$minsplit,
+                      minbucket = x$minbucket)
 
 
   for (i in seq(n_xtest)) {
@@ -277,7 +278,6 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
       n_samples = n_samples,
       x_test = x$x_test[i, , drop = FALSE],
       x_train = as.matrix(x$x_train),
-      features = features,
       p = ncol(x$x_test)
     )
 

@@ -160,14 +160,14 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
   return(ret)
 }
 
-#' Sample ctree variables
+#' Sample ctree variables from a given conditional inference tree
 #'
-#' @param tree
-#' @param n_samples
-#' @param x_test
-#' @param x_train
-#' @param features
-#' @param p
+#' @param tree ctree built from the party package. This includes the indices of the features to condition upon.
+#' @param n_samples Numeric. Indicates how many samples to use for MCMC.
+#' @param x_test Matrix, data.frame or data.table with the features of the observation whose
+#' predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
+#' @param x_train Matrix, data.frame or data.table with training data.
+#' @param p Positive integer. The number of features.
 #'
 #' @inheritParams global_arguments
 #'
@@ -184,13 +184,11 @@ sample_ctree <- function(tree,
                          n_samples,
                          x_test,
                          x_train,
-                         features,
                          p) {
 
 
   datact <- tree$tree
   # print(tree$given_ind)
-
 
   cnms <- colnames(x_test)
   if (length(tree$given_ind) %in% c(0, p)) {
@@ -240,16 +238,23 @@ sample_ctree <- function(tree,
 
 #' Make all conditional inference trees
 #'
-#' @param given_ind
-#' @param x_train
-#' @param comb
-#' @param minbucket
-#' @param mincriterion
-#' @param minsplit
+#' @param given_ind which features are conditioned on
+#' @param x_train specific values of features for individual i
+#' @param comb_indici Numeric value. (Optional) Contains the splitting point corresponding to where to change the
+#' \code{comb_mincriterion}. Right now, this is only implemented for one splitting value. Could potentially make more splits later.
+#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
+#' @param comb_mincriterion Numeric vector. (Optional) Contains the different mincriterions to use for each
+#' combination.
+#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
+#' @param mincriterion equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+#' If \code{comb_indici} and \code{comb_mincriterion} are both not \code{NULL}, then \code{mincriterion} can be set
+#' to \code{NULL}. Otherwise, it needs to be filled out.
+#' @param minsplit is the value that the sum of the left and right daughter nodes need to exceed.
+#' @param minbucket is equal to the minimum sum of weights in a terminal node.
 #'
 #' @inheritParams global_arguments
 #'
-#' @return data.table with \code{n_samples} (conditional) Gaussian samples
+#' @return list with conditional inference tree and variables conditioned/not conditioned on
 #'
 #' @keywords internal
 #'
@@ -260,42 +265,36 @@ sample_ctree <- function(tree,
 #'
 simulateAllTrees <- function(given_ind,
                              x_train,
-                             comb,
-                             minbucket,
+                             comb_indici,
+                             comb_mincriterion,
                              mincriterion,
-                             minsplit){
+                             minsplit,
+                             minbucket){
+
+  dependent_ind <- (1:dim(x_train)[2])[-given_ind]
 
   if (length(given_ind) %in% c(0, ncol(x_train))) {
-    # ret <- matrix(Xtest, ncol = p, nrow = 1)
     datact = list()
-    dependent_ind <- (1:dim(x_train)[2])[-given_ind]
   } else {
 
-
-    # x0 <- Xtest
-    dependent_ind <- (1:dim(x_train)[2])[-given_ind]
-    # X_given <- Xtest[given_ind]
-
-    ## for ctree model
-    if(!is.null(comb)){
+    ## currently no tests made to make sure that comb_indici and comb_mincriterion both exist
+    ## if only one is provided, no split is made.
+    if(!is.null(comb_indici) & !is.null(comb_mincriterion) ){
       if(length(given_ind) <= comb$comb_indici){
-        mincriterion <- comb$comb_mincriterion[1] # alpha = 0.05 - split tree if p < 0.05
+        mincriterion <- comb$comb_mincriterion[1] # if alpha = 0.05 --> split tree if p < 0.05
       } else {
-        mincriterion <- comb$comb_mincriterion[2] # alpha = 0.20 - split tree if p < 0.20
+        mincriterion <- comb$comb_mincriterion[2] # if alpha = 0.20 --> split tree if p < 0.20
       }
     }
 
-    ## model
     if(length(dependent_ind) == 1){
 
       x <- x_train[, given_ind, with = FALSE]
       y <- x_train[, dependent_ind, with = FALSE]
-      # xp <- data.table(matrix(X_given, ncol = length(X_given), nrow = 1))
 
       df <- data.table(cbind(y, x))
 
       colnames(df) <- c("Y", paste0("V", given_ind))
-      # colnames(xp) <- paste0("V", given_ind)
 
       datact <- party::ctree(Y ~ ., data = df, controls = ctree_control(minbucket = minbucket, mincriterion = mincriterion))
 
@@ -303,19 +302,15 @@ simulateAllTrees <- function(given_ind,
 
       x <- x_train[, given_ind, with = FALSE]
       y <- x_train[, dependent_ind, with = FALSE]
-      # xp <- data.table(matrix(X_given, nrow = 1, ncol = length(X_given)))
 
       df <- data.table(cbind(y, x))
 
       colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
-      # colnames(xp) <- paste0("V", given_ind)
 
-      ## this was changed
       ynam <- paste0("Y", 1:ncol(y)) # ncol(y)
       fmla <- as.formula(paste(paste(ynam, collapse= "+"), "~ ."))
 
       datact <- party::ctree(fmla, data = df, controls = ctree_control(minbucket = minbucket, mincriterion = mincriterion))
-
     }
 
   }

@@ -25,8 +25,8 @@ explain(x, explainer, approach, prediction_zero, ...)
   mu = NULL, cov_mat = NULL, ...)
 
 \method{explain}{ctree}(x, explainer, approach, prediction_zero,
-  comb = NULL, mincriterion = 0.95, minsplit = 20, minbucket = 7,
-  ...)
+  comb_indici = NULL, comb_mincriterion = NULL, mincriterion = 0.95,
+  minsplit = 20, minbucket = 7, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -72,6 +72,22 @@ when \code{approach = "gaussian"}.}
 \item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. \code{NULL} means it is estimated from the data if needed
 (in the Gaussian approach).}
+
+\item{comb_indici}{Numeric value. (Optional) Contains the splitting point corresponding to where to change the
+\code{comb_mincriterion}. Right now, this is only implemented for one splitting value. Could potentially make more splits later.
+If \code{NULL}, the \code{mincriterion} is constant for every combination.}
+
+\item{comb_mincriterion}{Numeric vector. (Optional) Contains the different mincriterions to use for each
+combination.
+If \code{NULL}, the \code{mincriterion} is constant for every combination.}
+
+\item{mincriterion}{equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+If \code{comb_indici} and \code{comb_mincriterion} are both not \code{NULL}, then \code{mincriterion} can be set
+to \code{NULL}. Otherwise, it needs to be filled out.}
+
+\item{minsplit}{is the value that the sum of the left and right daughter nodes need to exceed.}
+
+\item{minbucket}{is equal to the minimum sum of weights in a terminal node.}
 }
 \value{
 data.frame. Contains the estimated Shapley values for the test data. Note that
