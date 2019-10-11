@@ -5,7 +5,7 @@
 #' @param x A matrix or data.frame. Contains the the features, whose
 #' predictions ought to be explained (test data).
 #'
-#' @param explainer An \code{explainer} object to use for exaplaining the observations.
+#' @param explainer An \code{explainer} object to use for explaining the observations.
 #' See \code{\link{shapr}}.
 #'
 #' @param approach Character vector of length \code{1} or \code{n_features}.
@@ -78,7 +78,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' @param AIC_optim_startval Numeric. Only applicable when \code{approach='empirical'} and
 #' \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.
 #'
-#' @param w_threshold Postive integer between 0 and 1.
+#' @param w_threshold Positive integer between 0 and 1.
 #'
 #' @rdname explain
 #' @name explain

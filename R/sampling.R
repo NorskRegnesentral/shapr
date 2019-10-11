@@ -76,6 +76,7 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test, ensu
   if (length(index_given) %in% c(0, p)) {
     ret <- matrix(x_test, ncol = p, nrow = 1)
   } else {
+    browser()
     dependent_ind <- (1:length(mu))[-index_given]
     x_test_gaussian <- x_test[index_given]
     tmp <- condMVNorm::condMVN(
