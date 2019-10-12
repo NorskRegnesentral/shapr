@@ -36,7 +36,7 @@ Let's call the features \code{x1, x2, x3} and take a closer look at the combinat
 represented by \code{s = c(x1, x2)}. If this combination is represented by the second row,
 the following is true: \code{S[2, 1:3] = c(1, 1, 0)}.
 
-The returned object, \code{X}, is a numerix matrix where
+The returned object, \code{X}, is a numeric matrix where
 \code{dim(X) = c(length(index_xtrain), ncol(xtrain))}. If feature \code{j} is present in
 the k-th observation, that is \code{S[index_[k], j] == 1}, \code{X[k, j] = xtest[1, j]}.
 Otherwise \code{X[k, j] = xtrain[index_xtrain[k], j]}.
