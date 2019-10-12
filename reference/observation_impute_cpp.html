@@ -169,7 +169,7 @@ are <code>2^3 = 8</code> unique ways to combine the features. In this case <code
 Let's call the features <code>x1, x2, x3</code> and take a closer look at the combination
 represented by <code>s = c(x1, x2)</code>. If this combination is represented by the second row,
 the following is true: <code>S[2, 1:3] = c(1, 1, 0)</code>.</p>
-<p>The returned object, <code>X</code>, is a numerix matrix where
+<p>The returned object, <code>X</code>, is a numeric matrix where
 <code>dim(X) = c(length(index_xtrain), ncol(xtrain))</code>. If feature <code>j</code> is present in
 the k-th observation, that is <code>S[index_[k], j] == 1</code>, <code>X[k, j] = xtest[1, j]</code>.
 Otherwise <code>X[k, j] = xtrain[index_xtrain[k], j]</code>.</p>
