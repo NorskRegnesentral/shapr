@@ -39,10 +39,8 @@ the response.}
 
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 
-\item{type}{String or list. Only applicable when \code{approach='empirical'}. If a string, the
-type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a
-list, the elements in the list refers to the rows in \code{x} that ought to be included in
-each of the empirical approaches.}
+\item{type}{Character. Should be equal to either \code{"independence"},
+\code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
 \item{fixed_sigma_vec}{Vector or numeric. Only applicable when \code{approach='empirical'} and
 \code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}}

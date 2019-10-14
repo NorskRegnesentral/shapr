@@ -43,6 +43,7 @@ Suggests:
     rmarkdown,
     pkgdown,
     roxygen2,
+    MASS,
     ggplot2
 LinkingTo: 
     RcppArmadillo,

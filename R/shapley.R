@@ -80,6 +80,9 @@ shapr <- function(x,
   explainer$n_features <- ncol(x)
   explainer$model_type <- model_type(model)
 
+  # Checks model and features
+  explainer$p <- predict_model(model, head(x))
+
   # Create data.table --------------
   if (!data.table::is.data.table(x)) {
     x_train <- data.table::as.data.table(x)
@@ -89,7 +92,7 @@ shapr <- function(x,
   dt_combinations <- feature_combinations(
     m = explainer$n_features,
     exact = explainer$exact,
-    noSamp = n_combinations,
+    n_combinations = n_combinations,
     shapley_weight_inf_replacement = 10^6,
     reduce_dim = TRUE
   )
@@ -112,6 +115,7 @@ shapr <- function(x,
   explainer$X <- dt_combinations
   explainer$x_train <- x_train
   explainer$x <- NULL
+  explainer$p <- NULL
 
   attr(explainer, "class") <- c("explainer", "list")
 
@@ -490,7 +494,7 @@ prepare_kshap <- function(Xtrain,
   X <- feature_combinations(
     m = ncol(Xtrain),
     exact = exact,
-    noSamp = noSamp,
+    n_combinations = noSamp,
     shapley_weight_inf_replacement = shapley_weight_inf_replacement,
     reduce_dim = TRUE
   )

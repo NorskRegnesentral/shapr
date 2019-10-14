@@ -50,6 +50,10 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     )
   }
 
+  # Check that x contains correct variables
+  explainer$p <- predict_model(explainer$model, head(x, 1))
+  explainer$p <- NULL
+
   if (length(approach) > 1) {
     class(x) <- "combined"
   } else {
@@ -59,10 +63,8 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   UseMethod("explain", x)
 }
 
-#' @param type String or list. Only applicable when \code{approach='empirical'}. If a string, the
-#' type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a
-#' list, the elements in the list refers to the rows in \code{x} that ought to be included in
-#' each of the empirical approaches.
+#' @param type Character. Should be equal to either \code{"independence"},
+#' \code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.
 #'
 #' @param fixed_sigma_vec Vector or numeric. Only applicable when \code{approach='empirical'} and
 #' \code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}
