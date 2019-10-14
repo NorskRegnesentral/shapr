@@ -20,7 +20,7 @@ bug, create an associated issue and illustrate the bug with a minimal
 ### Pull request process
 
 *  We recommend that you create a Git branch for each pull request (PR).  
-*  Look at the Travis and AppVeyor build status before and after making changes.
+*  Look at the CircleCI build status before and after making changes.
 The `README` should contain badges for any continuous integration services used
 by the package.  
 *  New code should follow the tidyverse [style guide](http://style.tidyverse.org).
