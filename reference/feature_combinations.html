@@ -125,7 +125,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>feature_combinations</span>(<span class='no'>m</span>, <span class='kw'>exact</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>noSamp</span> <span class='kw'>=</span> <span class='fl'>200</span>,
+    <pre class="usage"><span class='fu'>feature_combinations</span>(<span class='no'>m</span>, <span class='kw'>exact</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='fl'>200</span>,
   <span class='kw'>shapley_weight_inf_replacement</span> <span class='kw'>=</span> <span class='fl'>10</span>^<span class='fl'>6</span>, <span class='kw'>reduce_dim</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -139,11 +139,6 @@
       <th>exact</th>
       <td><p>Logical. If TRUE, uses the full sum in the Shapley formula, if FALSE, uses a
 sampling approach to approximate the sum</p></td>
-    </tr>
-    <tr>
-      <th>noSamp</th>
-      <td><p>Integer. How many samples to use when approximating the sum in the Shapley formula
-(previously called <code>nrows</code>)</p></td>
     </tr>
     <tr>
       <th>shapley_weight_inf_replacement</th>
