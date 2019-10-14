@@ -119,7 +119,7 @@ In Kernel SHAP, $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$ are sampled from th
 the training data, *independently* of $\boldsymbol{x}_{S}$. This is motivated by using the 
 training set as the empirical distribution of $\boldsymbol{x}_{\bar{S}}$, and assuming that 
 $\boldsymbol{x}_{\bar{S}}$ is independent of $\boldsymbol{x}_S=\boldsymbol{x}_S^*$.
-Due to the indpendencde assumption, if the features in a given model are highly dependent, the 
+Due to the independence assumption, if the features in a given model are highly dependent, the 
 Kernel SHAP method may give a completely wrong answer. This can be avoided by estimating the 
 conditional distribution $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ directly 
 and generating samples from this distribution. With this small change, the contributions and 
@@ -154,8 +154,8 @@ features using their empirical distributions, and then fit a multivariate Gaussi
 
 To produce samples from the conditional distribution $p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)$, 
 we convert the marginals of $\boldsymbol{x}_{\mathcal{S}}$ to Gaussians, sample from the conditional
-Gaussian distribution as above, and convert the marginals of thesamples back to the original 
-distribution. Those samples are then used to approximate thesample from the resulting multivariate 
+Gaussian distribution as above, and convert the marginals of the samples back to the original 
+distribution. Those samples are then used to approximate the sample from the resulting multivariate 
 Gaussian conditional distribution. While other copulas may be used, the Gaussian copula has the 
 benefit that we may use the analytical expressions for the conditionals 
 $\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}$ and $\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}$. 

@@ -7,7 +7,7 @@ Description: Complex machine learning models are often hard to interpret. Howeve
   with a solid theoretical foundation. Previously known methods for estimating the Shapley 
   values do, however, assume feature independence. This package implements the method 
   described in Aas, Jullum and Løland (2019) <arXiv:1903.10464>, which accounts for any feature 
-  dependence, and thereby produces more accuracte estimates of the true Shapley values.
+  dependence, and thereby produces more accurate estimates of the true Shapley values.
 Authors@R: c(
     person("Nikolai", "Sellereite", email = "Nikolai.Sellereite@nr.no", role = "cre"),
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = "aut"),  
@@ -43,6 +43,7 @@ Suggests:
     rmarkdown,
     pkgdown,
     roxygen2,
+    MASS,
     ggplot2
 LinkingTo: 
     RcppArmadillo,
