@@ -27,7 +27,7 @@ explain(x, explainer, approach, prediction_zero, ...)
 \item{x}{A matrix or data.frame. Contains the the features, whose
 predictions ought to be explained (test data).}
 
-\item{explainer}{An \code{explainer} object to use for exaplaining the observations.
+\item{explainer}{An \code{explainer} object to use for explaining the observations.
 See \code{\link{shapr}}.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
@@ -56,7 +56,7 @@ optimizing the AICc.}
 \item{AIC_optim_startval}{Numeric. Only applicable when \code{approach='empirical'} and
 \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.}
 
-\item{w_threshold}{Postive integer between 0 and 1.}
+\item{w_threshold}{Positive integer between 0 and 1.}
 
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 If \code{NULL} the expected values are estimated from the data. Note that this is only used
