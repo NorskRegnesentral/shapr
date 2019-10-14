@@ -69,15 +69,15 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' @param fixed_sigma_vec Vector or numeric. Only applicable when \code{approach='empirical'} and
 #' \code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}
 #'
-#' @param AICc_no_samp_per_optim Positive integer. Only applicable when
+#' @param n_samples_aicc Positive integer. Only applicable when
 #' \code{approach='empirical'} and \code{type='AICc_each_k'} or
 #' \code{type='AICc_full'}. Number of samples to consider in AICc optimization.
 #'
-#' @param AIC_optim_max_eval Positive integer. Only applicable when \code{approach='empirical'}
+#' @param eval_max_aicc Positive integer. Only applicable when \code{approach='empirical'}
 #' and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Numeric. Maximum value when
 #' optimizing the AICc.
 #'
-#' @param AIC_optim_startval Numeric. Only applicable when \code{approach='empirical'} and
+#' @param start_aicc Numeric. Only applicable when \code{approach='empirical'} and
 #' \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.
 #'
 #' @param w_threshold Positive integer between 0 and 1.
@@ -88,17 +88,17 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
-                              AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-                              AIC_optim_startval = 0.1, w_threshold = 0.95, ...) {
+                              n_samples_aicc = 1000, eval_max_aicc = 20,
+                              start_aicc = 0.1, w_threshold = 0.95, ...) {
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(x)
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec
-  explainer$AICc_no_samp_per_optim <- AICc_no_samp_per_optim
-  explainer$AIC_optim_max_eval <- AIC_optim_max_eval
-  explainer$AIC_optim_startval <- AIC_optim_startval
+  explainer$n_samples_aicc <- n_samples_aicc
+  explainer$eval_max_aicc <- eval_max_aicc
+  explainer$start_aicc <- start_aicc
   explainer$w_threshold <- w_threshold
 
   # Generate data

@@ -165,9 +165,9 @@ compute_kshap <- function(model,
                           empirical_settings = list(
                             type = "fixed_sigma",
                             fixed_sigma_vec = 0.1,
-                            AICc_no_samp_per_optim = 1000,
-                            AIC_optim_max_eval = 20,
-                            AIC_optim_startval = 0.1,
+                            n_samples_aicc = 1000,
+                            eval_max_aicc = 20,
+                            start_aicc = 0.1,
                             w_threshold = 0.95
                           ),
                           pred_zero,
@@ -229,12 +229,12 @@ compute_kshap <- function(model,
         optimsamp <- sample_combinations(
           ntrain = nrow(l$Xtrain),
           ntest = nrow(l$Xtest),
-          nsamples = empirical_settings$AICc_no_samp_per_optim,
+          nsamples = empirical_settings$n_samples_aicc,
           joint_sampling = FALSE
         )
 
         # Updating parameter (only if it is larger than nTrain*nTest)
-        empirical_settings$AICc_no_samp_per_optim <- nrow(optimsamp)
+        empirical_settings$n_samples_aicc <- nrow(optimsamp)
 
         nloops <- nrow(l$Xtest)
 
@@ -246,7 +246,7 @@ compute_kshap <- function(model,
 
           for (i in these_k) {
             these_cond <- l$X[ID %in% these_empirical][nfeatures == i, ID]
-            cutters <- 1:empirical_settings$AICc_no_samp_per_optim
+            cutters <- 1:empirical_settings$n_samples_aicc
             no_cond <- length(these_cond)
 
             cond_samp <- cut(
@@ -301,7 +301,7 @@ compute_kshap <- function(model,
 
               ## Doing the numerical optimization -------
               nlm.obj <- suppressWarnings(stats::nlminb(
-                start = empirical_settings$AIC_optim_startval,
+                start = empirical_settings$start_aicc,
                 objective = aicc_full_cpp,
                 X_list = X_list,
                 mcov_list = mcov_list,
@@ -310,7 +310,7 @@ compute_kshap <- function(model,
                 negative = F,
                 lower = 0,
                 control = list(
-                  eval.max = empirical_settings$AIC_optim_max_eval,
+                  eval.max = empirical_settings$eval_max_aicc,
                   trace = verbose
                 )
               ))
@@ -355,7 +355,7 @@ compute_kshap <- function(model,
               ## Running the nonlinear optimization
 
               nlm.obj <- suppressWarnings(stats::nlminb(
-                start = empirical_settings$AIC_optim_startval,
+                start = empirical_settings$start_aicc,
                 objective = aicc_full_cpp,
                 X_list = X_list,
                 mcov_list = mcov_list,
@@ -364,7 +364,7 @@ compute_kshap <- function(model,
                 negative = F,
                 lower = 0,
                 control = list(
-                  eval.max = empirical_settings$AIC_optim_max_eval,
+                  eval.max = empirical_settings$eval_max_aicc,
                   trace = verbose
                 )
               ))
