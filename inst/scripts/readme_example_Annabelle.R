@@ -36,14 +36,12 @@ p <- mean(y_train)
 
 library(profvis)
 
-x = x_test
-
 profvis({explanation <- explain(
   x_test,
   approach = 'ctree',
   explainer = explainer,
   prediction_zero = p,
-  sample = FALSE)
+  sample = TRUE)
 })
 
 # Printing the Shapley values for the test data
