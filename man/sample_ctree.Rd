@@ -4,7 +4,7 @@
 \alias{sample_ctree}
 \title{Sample ctree variables from a given conditional inference tree}
 \usage{
-sample_ctree(tree, n_samples, x_test, x_train, p)
+sample_ctree(tree, n_samples, x_test, x_train, p, sample)
 }
 \arguments{
 \item{tree}{ctree built from the party package. This includes the indices of the features to condition upon.}

@@ -26,7 +26,7 @@ explain(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{ctree}(x, explainer, approach, prediction_zero,
   comb_indici = NULL, comb_mincriterion = NULL, mincriterion = 0.95,
-  minsplit = 20, minbucket = 7, ...)
+  minsplit = 20, minbucket = 7, sample = TRUE, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -88,6 +88,8 @@ to \code{NULL}. Otherwise, it needs to be filled out.}
 \item{minsplit}{is the value that the sum of the left and right daughter nodes need to exceed.}
 
 \item{minbucket}{is equal to the minimum sum of weights in a terminal node.}
+
+\item{sample}{whether to sample from the node or just take all observations}
 }
 \value{
 data.frame. Contains the estimated Shapley values for the test data. Note that

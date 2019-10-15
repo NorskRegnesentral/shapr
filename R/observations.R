@@ -278,7 +278,8 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
       n_samples = n_samples,
       x_test = x$x_test[i, , drop = FALSE],
       x_train = as.matrix(x$x_train),
-      p = ncol(x$x_test)
+      p = ncol(x$x_test),
+      sample = x$sample
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
@@ -289,6 +290,13 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+
+  ## only return unique dt
+
+
+  dt[, w := sum(w), by = c("wcomb", colnames(x_test), "id")]
+  dt <- unique(dt)
+
   return(dt)
 }
 

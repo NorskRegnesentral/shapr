@@ -278,13 +278,15 @@ get_list_approaches <- function(n_features, approach) {
 #' to \code{NULL}. Otherwise, it needs to be filled out.
 #' @param minsplit is the value that the sum of the left and right daughter nodes need to exceed.
 #' @param minbucket is equal to the minimum sum of weights in a terminal node.
+#' @param sample whether to sample from the node or just take all observations
 
 
 #' @rdname explain
 #' @export
 explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici = NULL, comb_mincriterion = NULL,
                           mincriterion = 0.95,
-                          minsplit = 20, minbucket = 7, ...){
+                          minsplit = 20, minbucket = 7,
+                          sample = TRUE, ...){
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(x)
@@ -294,6 +296,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
   explainer$mincriterion <- mincriterion
   explainer$minsplit <- minsplit
   explainer$minbucket <- minbucket
+  explainer$sample <- sample
 
   # Generate data
   dt <- prepare_data(explainer, ...)
