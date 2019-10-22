@@ -6,6 +6,7 @@ library(party)
 
 data("Boston", package = "MASS")
 
+# x_var <- c("lstat", "rm", "age", "tax", "dis", "indus", "crim", "nox", "ptratio", "black")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
@@ -33,16 +34,12 @@ p <- mean(y_train)
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 
-
-library(profvis)
-
-profvis({explanation <- explain(
-  x_test,
-  approach = 'ctree',
-  explainer = explainer,
-  prediction_zero = p,
-  sample = TRUE)
-})
+explanation <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE)
 
 # Printing the Shapley values for the test data
 print(explanation$dt)
