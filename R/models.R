@@ -92,8 +92,13 @@ predict_model.xgb.Booster <- function(x, newdata) {
   if (!requireNamespace('stats', quietly = TRUE)) {
     stop('The xgboost package is required for predicting xgboost models')
   }
+  if(model_type(x)=="cat_regression"){
+    newdata_dummy <- predict(x$dummyfunc, newdata = newdata)
+    predict(x, as.matrix(newdata_dummy))
+  } else {
+    predict(x, as.matrix(newdata))
+  }
 
-  predict(x, as.matrix(newdata))
 }
 
 #' @rdname predict_model
@@ -165,6 +170,8 @@ model_type.xgb.Booster <- function(x) {
   ifelse(
     !is.null(x$treetype) && x$treetype == "Probability estimation",
     "classification",
-    "regression"
+    ifelse(is.null(x$dummyfunc), "regression","cat_regression")
   )
+
+
 }

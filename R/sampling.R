@@ -193,7 +193,7 @@ sample_ctree <- function(tree,
 
   cnms <- colnames(x_test)
   if (length(tree$given_ind) %in% c(0, p)) {
-    ret <- matrix(x_test, ncol = p, nrow = 1)
+    ret <- x_test#matrix(x_test, ncol = p, nrow = 1)
   } else {
     given_ind <- tree$given_ind
     given_ind.vec <- rep(0, length(x_test))
@@ -201,9 +201,9 @@ sample_ctree <- function(tree,
 
     dependent_ind <- tree$dependent_ind
 
-    x_test_given <- x_test[given_ind]
+    x_test_given <- x_test[,given_ind,drop=F]
 
-    xp <- data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given)))
+    xp <- x_test_given#data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given)))
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
     fit.nodes <- where(object = datact)
@@ -223,8 +223,8 @@ sample_ctree <- function(tree,
 
     if(!sample){
       if(length(rowno[fit.nodes == pred.nodes]) <= n_samples){
-        depDT <- data.table::data.table(matrix(x_train[rowno[fit.nodes == pred.nodes], dependent_ind], ncol = length(dependent_ind)))
-        givenDT <- data.table::data.table(matrix(x_test[1, given_ind], ncol = length(given_ind)))
+        depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], ..dependent_ind,drop=F])
+        givenDT <- data.table::data.table(x_test[1, given_ind,drop = F])
 
         ret <- data.table::data.table(matrix(0, nrow = length(rowno[fit.nodes == pred.nodes]), ncol = length(x_test)))
         ret[, paste0("V", dependent_ind) := depDT]
@@ -232,8 +232,8 @@ sample_ctree <- function(tree,
       } else {
         newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
 
-        depDT <- data.table::data.table(matrix(x_train[newrowno, dependent_ind], ncol = length(dependent_ind)))
-        givenDT <- data.table::data.table(matrix(x_test[1, given_ind], ncol = length(given_ind)))
+        depDT <- data.table::data.table(x_train[newrowno, ..dependent_ind,drop = F])
+        givenDT <- data.table::data.table(x_test[1, ..given_ind,drop=F])
 
         ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
         ret[, paste0("V", dependent_ind) := depDT]
@@ -243,8 +243,8 @@ sample_ctree <- function(tree,
 
       newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
 
-      depDT <- data.table::data.table(matrix(x_train[newrowno, dependent_ind], ncol = length(dependent_ind)))
-      givenDT <- data.table::data.table(matrix(x_test[1, given_ind], ncol = length(given_ind)))
+      depDT <- data.table::data.table(x_train[newrowno, ..dependent_ind,drop = F])
+      givenDT <- data.table::data.table(x_test[1, ..given_ind,drop=F])
 
       ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
       ret[, paste0("V", dependent_ind) := depDT]

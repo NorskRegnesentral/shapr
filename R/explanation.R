@@ -282,7 +282,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
                           sample = TRUE, ...){
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(x)
+  explainer$x_test <- x
   explainer$approach <- approach
   explainer$comb_indici <- comb_indici
   explainer$comb_mincriterion <- comb_mincriterion

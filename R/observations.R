@@ -277,7 +277,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
       FUN = sample_ctree,
       n_samples = n_samples,
       x_test = x$x_test[i, , drop = FALSE],
-      x_train = as.matrix(x$x_train),
+      x_train = x$x_train,
       p = ncol(x$x_test),
       sample = x$sample
     )
