@@ -201,7 +201,7 @@ sample_ctree <- function(tree,
 
     dependent_ind <- tree$dependent_ind
 
-    x_test_given <- x_test[,given_ind,drop=F]
+    x_test_given <- x_test[,..given_ind,drop=F]
 
     xp <- x_test_given # data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given)))  # this is changed by Martin
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
@@ -224,7 +224,7 @@ sample_ctree <- function(tree,
     if(!sample){
       if(length(rowno[fit.nodes == pred.nodes]) <= n_samples){
         depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], ..dependent_ind,drop=F])
-        givenDT <- data.table::data.table(x_test[1, given_ind,drop = F])
+        givenDT <- data.table::data.table(x_test[1, ..given_ind,drop = F])
 
         ret <- cbind(depDT, givenDT)
         setcolorder(ret, colnames(x_train))
@@ -322,8 +322,8 @@ simulateAllTrees <- function(given_ind,
 
     if(length(dependent_ind) == 1){
 
-      x <- x_train[, given_ind, with = FALSE]
-      y <- x_train[, dependent_ind, with = FALSE]
+      x <- x_train[, ..given_ind, with = FALSE]
+      y <- x_train[, ..dependent_ind, with = FALSE]
 
       df <- data.table(cbind(y, x))
 
@@ -333,8 +333,8 @@ simulateAllTrees <- function(given_ind,
 
     } else{
 
-      x <- x_train[, given_ind, with = FALSE]
-      y <- x_train[, dependent_ind, with = FALSE]
+      x <- x_train[, ..given_ind, with = FALSE]
+      y <- x_train[, ..dependent_ind, with = FALSE]
 
       df <- data.table::data.table(cbind(y, x))
 
