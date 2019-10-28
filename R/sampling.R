@@ -203,6 +203,7 @@ sample_ctree <- function(tree,
 
     x_test_given <- x_test[, ..given_ind,drop=F]
 
+
     xp <- x_test_given # data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given)))  # this is changed by Martin
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
@@ -322,8 +323,8 @@ simulateAllTrees <- function(given_ind,
 
     if(length(dependent_ind) == 1){
 
-      x <- x_train[, given_ind, with = FALSE]
-      y <- x_train[, dependent_ind, with = FALSE]
+      x <- x_train[, ..given_ind, with = FALSE]
+      y <- x_train[, ..dependent_ind, with = FALSE]
 
       df <- data.table(cbind(y, x))
 
@@ -333,8 +334,8 @@ simulateAllTrees <- function(given_ind,
 
     } else{
 
-      x <- x_train[, given_ind, with = FALSE]
-      y <- x_train[, dependent_ind, with = FALSE]
+      x <- x_train[, ..given_ind, with = FALSE]
+      y <- x_train[, ..dependent_ind, with = FALSE]
 
       df <- data.table::data.table(cbind(y, x))
 

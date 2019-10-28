@@ -86,6 +86,8 @@ shapr <- function(x,
   # Create data.table --------------
   if (!data.table::is.data.table(x)) {
     x_train <- data.table::as.data.table(x)
+  } else {
+    x_train <- x
   }
 
   # Get all combinations ----------------
