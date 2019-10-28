@@ -203,7 +203,7 @@ sample_ctree <- function(tree,
 
     x_test_given <- x_test[,given_ind,drop=F]
 
-    xp <- x_test_given#data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given)))
+    xp <- x_test_given # data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given)))  # this is changed by Martin
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
     fit.nodes <- where(object = datact)
@@ -226,18 +226,25 @@ sample_ctree <- function(tree,
         depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], ..dependent_ind,drop=F])
         givenDT <- data.table::data.table(x_test[1, given_ind,drop = F])
 
-        ret <- data.table::data.table(matrix(0, nrow = length(rowno[fit.nodes == pred.nodes]), ncol = length(x_test)))
-        ret[, paste0("V", dependent_ind) := depDT]
-        ret[, paste0("V", given_ind) := givenDT]
+        ret <- cbind(depDT, givenDT)
+        setcolorder(ret, colnames(x_train))
+
+        # ret <- data.table::data.table(matrix(0, nrow = length(rowno[fit.nodes == pred.nodes]), ncol = length(x_test)))
+        # ret[, paste0("V", dependent_ind) := depDT]
+        # ret[, paste0("V", given_ind) := givenDT]
       } else {
         newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
 
         depDT <- data.table::data.table(x_train[newrowno, ..dependent_ind,drop = F])
         givenDT <- data.table::data.table(x_test[1, ..given_ind,drop=F])
 
-        ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
-        ret[, paste0("V", dependent_ind) := depDT]
-        ret[, paste0("V", given_ind) := givenDT]
+        # ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
+        # ret[, paste0("V", dependent_ind) := depDT]
+        # ret[, paste0("V", given_ind) := givenDT]
+
+        ret <- cbind(depDT, givenDT)
+        setcolorder(ret, colnames(x_train))
+
       }
     } else {
 
@@ -246,9 +253,13 @@ sample_ctree <- function(tree,
       depDT <- data.table::data.table(x_train[newrowno, ..dependent_ind,drop = F])
       givenDT <- data.table::data.table(x_test[1, ..given_ind,drop=F])
 
-      ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
-      ret[, paste0("V", dependent_ind) := depDT]
-      ret[, paste0("V", given_ind) := givenDT]
+      # ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
+      # ret[, paste0("V", dependent_ind) := depDT]
+      # ret[, paste0("V", given_ind) := givenDT]
+
+      ret <- cbind(depDT, givenDT)
+      setcolorder(ret, colnames(x_train))
+
     }
   }
   colnames(ret) <- cnms

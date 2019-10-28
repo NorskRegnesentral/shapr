@@ -7,11 +7,12 @@ library(shapr)
 library(data.table)
 library(party)
 
-
 data("Boston", package = "MASS")
 
-# x_var <- c("lstat", "rm", "age", "tax", "dis", "indus", "crim", "nox", "ptratio", "black")
-x_var <- c("lstat", "rm", "dis", "indus","rad")
+
+x_var <- c("lstat", "rm", "dis", "indus", "rad")
+# x_var <- c("lstat", "rm", "dis", "indus")
+
 y_var <- "medv"
 
 Boston$rad = as.factor(Boston$rad)
@@ -23,9 +24,9 @@ x_test <- Boston[1:6, x_var]
 
 ### SPECIAL STUFF  STARTS ###
 library(caret)
-dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train,x_test))
-x_train_dummy=predict(dummyfunc, newdata = x_train)
-x_test_dummy=predict(dummyfunc, newdata = x_test)
+dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train, x_test))
+x_train_dummy <- predict(dummyfunc, newdata = x_train)
+x_test_dummy <- predict(dummyfunc, newdata = x_test)
 ### SPECIAL STUFF ENDS ###
 
 
@@ -52,5 +53,11 @@ explanation <- explain(
   prediction_zero = p,
   sample = FALSE)
 
+
+# Printing the Shapley values for the test data
+print(explanation$dt)
+
+# Finally we plot the resulting explanations
+plot(explanation)
 
 
