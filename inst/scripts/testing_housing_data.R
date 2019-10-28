@@ -45,7 +45,7 @@ test_data <- read.table(file = "test.csv", sep = ",", header = TRUE, stringsAsFa
 
 ## first we remove the columns with NA
 train_noNA <- train_data[, sapply(X = 1:ncol(train_data), FUN = check_for_col_NA, data = train_data)]
-names(train_noNA)[-length(train_noNA)]
+# names(train_noNA)[-length(train_noNA)]
 
 ## then we keep only the columns from the train data
 test_noNA0 <- test_data[, names(train_noNA)[-length(train_noNA)]]
@@ -94,6 +94,19 @@ explanation <- explain(
   explainer = explainer,
   prediction_zero = p,
   sample = FALSE)
+
+##        none   MSSubClass      MSZoning      LotArea        Street
+# 1: 0.1809212  0.002035604 -0.0181289541  0.050419428 -4.421495e-04
+# 2: 0.1809212  0.004978804  0.0028594295  0.076544900  1.281169e-04
+# 3: 0.1809212  0.049614544  0.0013229458  0.030647468  4.802960e-04
+# 4: 0.1809212  0.065409112 -0.0005392566  0.034090890  5.155915e-04
+# 5: 0.1809212  0.039462031  0.0060510941 -0.008906204 -4.031790e-03
+# ---
+#   1443: 0.1809212 -0.012370053 -0.0182184710 -0.042392534 -5.778365e-04
+# 1444: 0.1809212 -0.012753544 -0.0186019623 -0.042776025  5.726370e-04
+# 1445: 0.1809212 -0.016221998  0.0020150212  0.044441587  8.794181e-05
+# 1446: 0.1809212 -0.032160189  0.0045814492 -0.001777592  6.406629e-04
+# 1447: 0.1809212  0.045843928  0.0011496367 -0.007289328  5.202563e-04
 
 plot(explanation)
 
