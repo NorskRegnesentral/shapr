@@ -11,6 +11,7 @@ test_that("Test sample_combinations", {
   joint_sampling <- FALSE
   cnms <- c("samp_train", "samp_test")
 
+  set.seed(123) # Ensuring consistency in every test
   x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
   # Tests -----------
@@ -58,8 +59,10 @@ test_that("test sample_gaussian", {
   m <- 10
   n_samples <- 50
   mu <- rep(1, m)
+  set.seed(123) # Setting seed to avoid sampling a cov_mat which is exactly symmetric in certain dimensions,
+                # such that ensure_condcov_symmetry would not affect the results
   cov_mat <- cov(matrix(rnorm(n_samples * m), n_samples, m))
-  x_test <- MASS::mvrnorm(1, mu, cov_mat)
+  x_test <- MASS::mvrnorm(2, mu, cov_mat)[1,,drop=F] # sample_gaussian requires x_test to be a matrix
   index_given <- 4
   set.seed(1)
   ret <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
@@ -100,6 +103,7 @@ test_that("test sample_copula", {
   n <- 40
   n_samples <- 50
   mu <- rep(1, m)
+  set.seed(123) # Ensuring consistency in every test
   cov_mat <- cov(matrix(rnorm(n * m), n, m))
   x_train <- MASS::mvrnorm(n, mu, cov_mat)
   x_test <- MASS::mvrnorm(1, mu, cov_mat)
