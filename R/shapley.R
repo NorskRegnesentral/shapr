@@ -70,8 +70,8 @@ shapr <- function(x,
                   n_combinations = NULL) {
 
   # Checks input argument
-  if (!is.matrix(x) & !is.data.frame(x)) {
-    stop("x should be a matrix or a dataframe.")
+  if (!is.data.frame(x)) {
+    stop("x should be a dataframe.")
   }
 
   # Setup
@@ -81,7 +81,7 @@ shapr <- function(x,
   explainer$model_type <- model_type(model)
 
   # Checks model and features
-  explainer$p <- predict_model(model, head(x))
+  explainer$p <- predict_model(model, head(x, 1))
 
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)

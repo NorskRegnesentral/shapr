@@ -31,8 +31,8 @@
 explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Check input for x
-  if (!is.matrix(x) & !is.data.frame(x)) {
-    stop("x should be a matrix or a dataframe.")
+  if (!is.data.frame(x)) {
+    stop("x should be a dataframe.")
   }
 
   # Check input for approach
