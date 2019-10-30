@@ -49,7 +49,7 @@ the response.}
 \code{type='AICc_full'}. Number of samples to consider in AICc optimization.}
 
 \item{eval_max_aicc}{Positive integer. Only applicable when \code{approach='empirical'}
-and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Numeric. Maximum value when
+and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Maximum number of iterations when
 optimizing the AICc.}
 
 \item{start_aicc}{Numeric. Only applicable when \code{approach='empirical'} and
