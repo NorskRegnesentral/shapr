@@ -130,9 +130,9 @@ to check that results are stable.</h1>
 
     <pre class="usage"><span class='fu'>compute_kshap</span>(<span class='no'>model</span>, <span class='no'>l</span>, <span class='kw'>noSamp_MC</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>cond_approach</span> <span class='kw'>=</span> <span class='st'>"empirical"</span>, <span class='kw'>empirical_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>type</span> <span class='kw'>=</span>
-  <span class='st'>"fixed_sigma"</span>, <span class='kw'>fixed_sigma_vec</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>AICc_no_samp_per_optim</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>AIC_optim_max_eval</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>AIC_optim_startval</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>w_threshold</span> <span class='kw'>=</span> <span class='fl'>0.95</span>),
-  <span class='no'>pred_zero</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>Sigma</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ensure_condcov_symmetry</span> <span class='kw'>=</span> <span class='no'>F</span>)</pre>
+  <span class='st'>"fixed_sigma"</span>, <span class='kw'>fixed_sigma_vec</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>n_samples_aicc</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>eval_max_aicc</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>start_aicc</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>w_threshold</span> <span class='kw'>=</span> <span class='fl'>0.95</span>), <span class='no'>pred_zero</span>,
+  <span class='kw'>mu</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>Sigma</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ensure_condcov_symmetry</span> <span class='kw'>=</span> <span class='no'>F</span>)</pre>
         
 
   </div>

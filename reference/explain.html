@@ -129,9 +129,8 @@
 
 <span class='co'># S3 method for empirical</span>
 <span class='fu'>explain</span>(<span class='no'>x</span>, <span class='no'>explainer</span>, <span class='no'>approach</span>, <span class='no'>prediction_zero</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"fixed_sigma"</span>, <span class='kw'>fixed_sigma_vec</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-  <span class='kw'>AICc_no_samp_per_optim</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>AIC_optim_max_eval</span> <span class='kw'>=</span> <span class='fl'>20</span>,
-  <span class='kw'>AIC_optim_startval</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>w_threshold</span> <span class='kw'>=</span> <span class='fl'>0.95</span>, <span class='no'>...</span>)
+  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"fixed_sigma"</span>, <span class='kw'>fixed_sigma_vec</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>n_samples_aicc</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>eval_max_aicc</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>start_aicc</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>w_threshold</span> <span class='kw'>=</span> <span class='fl'>0.95</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for gaussian</span>
 <span class='fu'>explain</span>(<span class='no'>x</span>, <span class='no'>explainer</span>, <span class='no'>approach</span>, <span class='no'>prediction_zero</span>,
@@ -183,19 +182,19 @@ the response.</p></td>
 <code>type='fixed_sigma'</code>. The bandwidth to use. Default value <code>0.1</code></p></td>
     </tr>
     <tr>
-      <th>AICc_no_samp_per_optim</th>
+      <th>n_samples_aicc</th>
       <td><p>Positive integer. Only applicable when
 <code>approach='empirical'</code> and <code>type='AICc_each_k'</code> or
 <code>type='AICc_full'</code>. Number of samples to consider in AICc optimization.</p></td>
     </tr>
     <tr>
-      <th>AIC_optim_max_eval</th>
+      <th>eval_max_aicc</th>
       <td><p>Positive integer. Only applicable when <code>approach='empirical'</code>
-and <code>type='AICc_each_k'</code> or <code>type='AICc_full'</code>. Numeric. Maximum value when
+and <code>type='AICc_each_k'</code> or <code>type='AICc_full'</code>. Maximum number of iterations when
 optimizing the AICc.</p></td>
     </tr>
     <tr>
-      <th>AIC_optim_startval</th>
+      <th>start_aicc</th>
       <td><p>Numeric. Only applicable when <code>approach='empirical'</code> and
 <code>type='AICc_each_k'</code> or <code>type='AICc_full'</code>. Starting value when optimizing the AICc.</p></td>
     </tr>
