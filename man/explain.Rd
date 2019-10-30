@@ -11,9 +11,8 @@
 explain(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{empirical}(x, explainer, approach, prediction_zero,
-  type = "fixed_sigma", fixed_sigma_vec = 0.1,
-  AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-  AIC_optim_startval = 0.1, w_threshold = 0.95, ...)
+  type = "fixed_sigma", fixed_sigma_vec = 0.1, n_samples_aicc = 1000,
+  eval_max_aicc = 20, start_aicc = 0.1, w_threshold = 0.95, ...)
 
 \method{explain}{gaussian}(x, explainer, approach, prediction_zero,
   mu = NULL, cov_mat = NULL, ...)
@@ -45,15 +44,15 @@ the response.}
 \item{fixed_sigma_vec}{Vector or numeric. Only applicable when \code{approach='empirical'} and
 \code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}}
 
-\item{AICc_no_samp_per_optim}{Positive integer. Only applicable when
+\item{n_samples_aicc}{Positive integer. Only applicable when
 \code{approach='empirical'} and \code{type='AICc_each_k'} or
 \code{type='AICc_full'}. Number of samples to consider in AICc optimization.}
 
-\item{AIC_optim_max_eval}{Positive integer. Only applicable when \code{approach='empirical'}
-and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Numeric. Maximum value when
+\item{eval_max_aicc}{Positive integer. Only applicable when \code{approach='empirical'}
+and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Maximum number of iterations when
 optimizing the AICc.}
 
-\item{AIC_optim_startval}{Numeric. Only applicable when \code{approach='empirical'} and
+\item{start_aicc}{Numeric. Only applicable when \code{approach='empirical'} and
 \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.}
 
 \item{w_threshold}{Positive integer between 0 and 1.}

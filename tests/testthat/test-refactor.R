@@ -71,9 +71,9 @@ test_that("Test new", {
   empirical_settings <- list(
     type = "AICc_each_k",
     fixed_sigma_vec = 0.1,
-    AICc_no_samp_per_optim = 20,
-    AIC_optim_max_eval = 20,
-    AIC_optim_startval = 0.1,
+    n_samples_aicc = 20,
+    eval_max_aicc = 20,
+    start_aicc = 0.1,
     w_threshold = 0.95
   )
   e5_new <- explain(x_test, explainer, approach = "empirical", prediction_zero = mean(y_train), type = "AICc_each_k")
@@ -89,9 +89,9 @@ test_that("Test new", {
   empirical_settings <- list(
     type = "AICc_full",
     fixed_sigma_vec = 0.1,
-    AICc_no_samp_per_optim = 20,
-    AIC_optim_max_eval = 20,
-    AIC_optim_startval = 0.1,
+    n_samples_aicc = 20,
+    eval_max_aicc = 20,
+    start_aicc = 0.1,
     w_threshold = 0.95
   )
   e6_new <- explain(x_test, explainer, approach = "empirical", prediction_zero = mean(y_train), type = "AICc_full")

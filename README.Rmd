@@ -62,8 +62,6 @@ Future releases will include:
 Note that both the features and the prediction must be numeric. The approach is constructed for continuous features. Discrete features may also work just fine with the empirical (conditional) distribution approach.
 Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease the interpretability, i.e. not via log odds transformations.
 
-All feedback and suggestions are very welcome.
-
 ## Installation
 
 To install the current development version, use
@@ -123,6 +121,15 @@ print(explanation$dt)
 # Finally we plot the resulting explanations
 plot(explanation)
 ```
+
+## Contribution
+
+All feedback and suggestions are very welcome. Details on how to contribute can be found 
+[here](./github/CONTRIBUTING.md)
+
+Please note that the 'shapr' project is released with a
+[Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+By contributing to this project, you agree to abide by its terms.
 
 ## References
 
