@@ -229,7 +229,7 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
       mu = x$mu,
       cov_mat = x$cov_mat,
       p = ncol(x$x_test),
-      x_test = x$x_test[i, , drop = FALSE],
+      x_test = as.matrix(x$x_test[i, , drop = FALSE]),
       x_train = as.matrix(x$x_train),
       x_test_gaussian = x_test[i, , drop = FALSE]
     )

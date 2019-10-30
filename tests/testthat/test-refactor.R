@@ -10,12 +10,12 @@ test_that("Test new", {
   x_var <- c("lstat", "rm", "dis", "indus")
   y_var <- "medv"
 
-  x_train <- as.matrix(tail(Boston[, x_var], -6))
+  x_train <- tail(Boston[, x_var], -6)
   y_train <- tail(Boston[, y_var], -6)
-  x_test <- as.matrix(head(Boston[, x_var], 2))
+  x_test <- head(Boston[, x_var], 2)
 
   model <- xgboost::xgboost(
-    data = x_train,
+    data = as.matrix(x_train),
     label = y_train,
     nround = 20,
     verbose = FALSE

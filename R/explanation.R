@@ -2,7 +2,7 @@
 #'
 #' @description TODO: Add a more detailed description
 #'
-#' @param x A matrix or data.frame. Contains the the features, whose
+#' @param x A data.frame. Contains the the features, whose
 #' predictions ought to be explained (test data).
 #'
 #' @param explainer An \code{explainer} object to use for explaining the observations.

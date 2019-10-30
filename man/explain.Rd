@@ -24,7 +24,7 @@ explain(x, explainer, approach, prediction_zero, ...)
   mu = NULL, cov_mat = NULL, ...)
 }
 \arguments{
-\item{x}{A matrix or data.frame. Contains the the features, whose
+\item{x}{A data.frame. Contains the the features, whose
 predictions ought to be explained (test data).}
 
 \item{explainer}{An \code{explainer} object to use for explaining the observations.
