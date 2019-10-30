@@ -83,12 +83,8 @@ shapr <- function(x,
   # Checks model and features
   explainer$p <- predict_model(model, head(x))
 
-  # Create data.table --------------
-  if (!data.table::is.data.table(x)) {
-    x_train <- data.table::as.data.table(x)
-  } else {
-    x_train <- x
-  }
+  # Converts to data.table, otherwise copy to x_train  --------------
+  x_train <- data.table::as.data.table(x)
 
   # Get all combinations ----------------
   dt_combinations <- feature_combinations(
