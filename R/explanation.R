@@ -168,7 +168,6 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Setup
   explainer$x_test <- as.matrix(x)
-  explainer$x_test <- x
   explainer$approach <- approach
 
   # Prepare transformed data
@@ -177,14 +176,15 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
     MARGIN = 2,
     FUN = gaussian_transform
   )
-  x_test <- apply(
+  x_test_gaussian <- apply(
     X = rbind(explainer$x_test, explainer$x_train),
     MARGIN = 2,
     FUN = gaussian_transform_separate,
     n_y = nrow(explainer$x_test)
   )
-  if (is.null(dim(x))) {
-    x_test <- t(as.matrix(x))
+
+  if (is.null(dim(x_test_gaussian))) {
+    x_test_gaussian <- t(as.matrix(x_test_gaussian))
   }
 
   explainer$mu <- rep(0, ncol(explainer$x_train))
@@ -196,7 +196,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
     explainer$cov_mat <- cov_mat
   }
   # Generate data
-  dt <- prepare_data(explainer, x_test = x_test, ...)
+  dt <- prepare_data(explainer, x_test_gaussian = x_test_gaussian, ...)
   if (!is.null(explainer$return)) return(dt)
 
   # Predict
