@@ -31,34 +31,15 @@ test_that("Test functions in explanation.R", {
   Ex.list[[2]] <- explain(x_test, explainer, approach = "copula", prediction_zero = mean(y_train))
 
   # Ex 3: Explain predictions (empirical, independence):
-  empirical_settings <- list(type = "independence", fixed_sigma_vec = 0.1, w_threshold = 0.95)
   Ex.list[[3]] <- explain(x_test, explainer, approach = "empirical", prediction_zero = mean(y_train), type = "independence")
 
   # Ex 4: Explain predictions (empirical, fixed sigma)
-  empirical_settings <- list(type = "fixed_sigma", fixed_sigma_vec = 0.1, w_threshold = 0.95)
   Ex.list[[4]] <- explain(x_test, explainer, approach = "empirical", prediction_zero = mean(y_train), type = "fixed_sigma")
 
-
   # Ex 5: Explain predictions (empirical, AICc)
-  empirical_settings <- list(
-    type = "AICc_each_k",
-    fixed_sigma_vec = 0.1,
-    n_samples_aicc = 20,
-    eval_max_aicc = 20,
-    start_aicc = 0.1,
-    w_threshold = 0.95
-  )
   Ex.list[[5]] <- explain(x_test, explainer, approach = "empirical", prediction_zero = mean(y_train), type = "AICc_each_k")
 
   # Ex 6: Explain predictions (empirical, AICc full)
-  empirical_settings <- list(
-    type = "AICc_full",
-    fixed_sigma_vec = 0.1,
-    n_samples_aicc = 20,
-    eval_max_aicc = 20,
-    start_aicc = 0.1,
-    w_threshold = 0.95
-  )
   Ex.list[[6]] <- explain(x_test, explainer, approach = "empirical", prediction_zero = mean(y_train), type = "AICc_full")
 
   # Ex 7: Explain combined - empirical and gaussian
