@@ -54,8 +54,6 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussia
 #'
 #' @param index_given Vector. The indices of the features to condition upon.
 #' @param p Positive integer. The number of features.
-#' @param ensure_condcov_symmetry Logical. If \code{true}, \code{symmpart} is used on the
-#' conditional covariance matrix to ensure symmetry.
 #' @param x_test Matrix, data.frame or data.table with the features of the observation whose
 #' predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
 #'
@@ -69,7 +67,7 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussia
 #' # TODO: Add simple example
 #'
 #' @author Martin Jullum
-sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test, ensure_condcov_symmetry = F) {
+sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test) {
 
   # Check input
   stopifnot(is.matrix(x_test))
@@ -87,10 +85,6 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test, ensu
     given.ind = index_given,
     X.given = x_test_gaussian
   )
-  if (ensure_condcov_symmetry) {
-
-    tmp[["condVar"]] <- Matrix::symmpart(tmp$condVar)
-  }
 
   ret0 <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
 
