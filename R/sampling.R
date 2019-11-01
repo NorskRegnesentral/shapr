@@ -67,7 +67,7 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussia
 #' # TODO: Add simple example
 #'
 #' @author Martin Jullum
-sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test) {
+sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test, ensure_condcov_symmetry = FALSE) {
 
   # Check input
   stopifnot(is.matrix(x_test))
@@ -85,6 +85,20 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test) {
     given.ind = index_given,
     X.given = x_test_gaussian
   )
+  print(sprintf("tmp[['condVar']] is symmetric: %d", isSymmetric(tmp[["condVar"]])))
+  eigenvalues <- eigen(tmp[["condVar"]], only.values = TRUE)$values
+  print(sprintf("tmp[['condVar']] is positive-definite: %d", any(eigenvalues < 1e-08)))
+
+  if (ensure_condcov_symmetry) {
+
+    if (!isSymmetric(tmp[["condVar"]])) {
+      eigenvalues <- eigen(tmp[["condVar"]], only.values = TRUE)$values
+      if (any(eigenvalues < 1e-08)) {
+        print("Changed matrix")
+        tmp[["condVar"]] <- Matrix::symmpart(tmp$condVar)
+      }
+    }
+  }
 
   ret0 <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
 
