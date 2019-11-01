@@ -85,16 +85,12 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test, ensu
     given.ind = index_given,
     X.given = x_test_gaussian
   )
-  print(sprintf("tmp[['condVar']] is symmetric: %d", isSymmetric(tmp[["condVar"]])))
-  eigenvalues <- eigen(tmp[["condVar"]], only.values = TRUE)$values
-  print(sprintf("tmp[['condVar']] is positive-definite: %d", any(eigenvalues < 1e-08)))
 
   if (ensure_condcov_symmetry) {
 
     if (!isSymmetric(tmp[["condVar"]])) {
       eigenvalues <- eigen(tmp[["condVar"]], only.values = TRUE)$values
       if (any(eigenvalues < 1e-08)) {
-        print("Changed matrix")
         tmp[["condVar"]] <- Matrix::symmpart(tmp$condVar)
       }
     }
