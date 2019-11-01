@@ -1,4 +1,4 @@
-library(xgboost)
+library(xgboost)  # Version: 0.71.2
 
 # Load data -----------
 data("Boston", package = "MASS")
