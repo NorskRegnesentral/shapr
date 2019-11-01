@@ -2,6 +2,8 @@ library(testthat)
 library(shapr)
 library(xgboost)
 
+context("test-explanation.R")
+
 test_that("Test functions in explanation.R", {
 
   # Load data -----------
