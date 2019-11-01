@@ -4,7 +4,8 @@
 \alias{sample_gaussian}
 \title{Sample conditional Gaussian variables}
 \usage{
-sample_gaussian(index_given, n_samples, mu, cov_mat, p, x_test)
+sample_gaussian(index_given, n_samples, mu, cov_mat, p, x_test,
+  ensure_condcov_symmetry = FALSE)
 }
 \arguments{
 \item{index_given}{Vector. The indices of the features to condition upon.}
