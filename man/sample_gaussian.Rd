@@ -17,6 +17,10 @@ NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
 \item{x_test}{Matrix, data.frame or data.table with the features of the observation whose
 predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.}
+
+\item{ensure_condcov_symmetry}{Logical. If \code{TRUE}, \code{\link[Matrix]{symmpart}}
+is used on the conditional covariance matrix if and only if the conditional covariance matrix
+is not symmetric and positive-definite.}
 }
 \value{
 data.table with \code{n_samples} (conditional) Gaussian samples

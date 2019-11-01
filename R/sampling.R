@@ -54,6 +54,9 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussia
 #'
 #' @param index_given Vector. The indices of the features to condition upon.
 #' @param p Positive integer. The number of features.
+#' @param ensure_condcov_symmetry Logical. If \code{TRUE}, \code{\link[Matrix]{symmpart}}
+#' is used on the conditional covariance matrix if and only if the conditional covariance matrix
+#' is not symmetric and positive-definite.
 #' @param x_test Matrix, data.frame or data.table with the features of the observation whose
 #' predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
 #'
