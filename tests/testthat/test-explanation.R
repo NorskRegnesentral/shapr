@@ -24,7 +24,7 @@ test_that("Test functions in explanation.R", {
   Ex.list <- list()
 
   # Using Random number generator settings as in R version 3.5.0. Seed set internally for reproducability
-  suppressWarnings(RNGversion("3.5.0")) # Testthat gives the warning for using "non-uniform 'Rounding' sampler". Suppress this to complete test
+#  suppressWarnings(RNGversion("3.5.0")) # Testthat gives the warning for using "non-uniform 'Rounding' sampler". Suppress this to complete test
 
   # Ex 1: Explain predictions (gaussian)
   Ex.list[[1]] <- explain(x_test, explainer, approach = "gaussian", prediction_zero = mean(y_train))

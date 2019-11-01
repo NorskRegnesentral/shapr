@@ -11,7 +11,7 @@ x_test <- as.matrix(head(Boston[, x_var], 2))
 
 
 # Fitting a basic xgboost model to the training data
-suppressWarnings(RNGversion("3.5.0"))
+#suppressWarnings(RNGversion("3.5.0"))
 set.seed(123)
 model <- xgboost::xgboost(
   data = x_train,
