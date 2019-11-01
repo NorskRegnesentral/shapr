@@ -1,6 +1,5 @@
 library(testthat)
 library(shapr)
-library(xgboost)
 
 context("test-explanation.R")
 
@@ -11,20 +10,14 @@ test_that("Test functions in explanation.R", {
   x_var <- c("lstat", "rm", "dis", "indus")
   y_var <- "medv"
 
-#  x_train <- as.matrix(tail(Boston[, x_var], 50))
   y_train <- tail(Boston[, y_var], 50)
   x_test <- as.matrix(head(Boston[, x_var], 2))
-
-  #setwd("./tests/testthat") # Uncomment when running manually
 
   # Prepare the data for explanation. Path needs to be relative to testthat directory in the package
   explainer <- readRDS(file = "test_objects/shapley_explainer_obj.rds")
 
   # Creating list with lots of different explainer objects
   Ex.list <- list()
-
-  # Using Random number generator settings as in R version 3.5.0. Seed set internally for reproducability
-#  suppressWarnings(RNGversion("3.5.0")) # Testthat gives the warning for using "non-uniform 'Rounding' sampler". Suppress this to complete test
 
   # Ex 1: Explain predictions (gaussian)
   Ex.list[[1]] <- explain(x_test, explainer, approach = "gaussian", prediction_zero = mean(y_train))
