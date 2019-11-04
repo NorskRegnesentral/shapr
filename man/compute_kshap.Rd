@@ -9,7 +9,7 @@ compute_kshap(model, l, noSamp_MC = 1000, verbose = FALSE,
   cond_approach = "empirical", empirical_settings = list(type =
   "fixed_sigma", fixed_sigma_vec = 0.1, n_samples_aicc = 1000,
   eval_max_aicc = 20, start_aicc = 0.1, w_threshold = 0.95), pred_zero,
-  mu = NULL, Sigma = NULL, ensure_condcov_symmetry = F)
+  mu = NULL, Sigma = NULL)
 }
 \description{
 TODO: Delete this function from the codebase
