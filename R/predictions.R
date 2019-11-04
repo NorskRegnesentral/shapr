@@ -77,11 +77,11 @@ predictions <- function(model,
     samp_list <- lapply(
       X = feature_list[these_wcomb],
       FUN = sample_gaussian,
-      noSamp_MC = noSamp_MC,
+      n_samples = noSamp_MC,
       mu = mu,
-      Sigma = Sigma,
+      cov_mat = Sigma,
       p = p,
-      Xtest = Xtest,
+      x_test = Xtest,
       ensure_condcov_symmetry = ensure_condcov_symmetry
     )
     DTp.Gaussian <- rbindlist(samp_list, idcol = "wcomb")
@@ -95,13 +95,13 @@ predictions <- function(model,
     samp_list <- lapply(
       X = feature_list[these_wcomb],
       FUN = sample_copula,
-      noSamp_MC = noSamp_MC,
+      n_samples = noSamp_MC,
       mu = mu_Gauss_trans,
-      Sigma = Sigma_Gauss_trans,
+      cov_mat = Sigma_Gauss_trans,
       p = p,
-      Xtest_Gauss_trans = Xtest_Gauss_trans,
-      Xtrain = Xtrain,
-      Xtest = Xtest
+      x_test_gaussian = Xtest_Gauss_trans,
+      x_train = Xtrain,
+      x_test = Xtest
     )
 
     DTp.copula <- rbindlist(samp_list, idcol = "wcomb")
@@ -129,10 +129,10 @@ predictions <- function(model,
     DTp.empirical <- observation_impute(
       W_kernel = W_kernel,
       S = S[these_wcomb, ],
-      Xtrain = Xtrain,
-      Xtest = Xtest,
+      x_train = Xtrain,
+      x_test = Xtest,
       w_threshold = w_threshold,
-      noSamp_MC = noSamp_MC
+      n_samples = noSamp_MC
     )
     DTp.empirical[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb
   }

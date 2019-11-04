@@ -1,47 +1,72 @@
-#' Get predictions
+#' Generate permutations of training data using test observations
 #'
-#' @inheritParams global_arguments
+#' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
+#' observations for all feature combinations. The dimension equals \code{n_train x n_features}.
+#' @param S Integer matrix of dimension \code{n_combinations x n_features}, where \code{n_combinations}
+#' and \code{n_features} equals the total number of sampled/non-sampled feature combinations and
+#' the total number of unique features, respectively. Note that \code{n_features = ncol(x_train)}.
+#' @param x_train Numeric matrix
+#' @param x_test Numeric matrix
+#' @param w_threshold Numeric vector of length 1, where \code{w_threshold > 0} and
+#' \code{w_threshold <= 1}. If \code{w_threshold = .8} we will choose the \code{K} samples with
+#' the largest weight so that the sum of the weights accounts for 80\% of the total weight.
 #'
-#' @return List
+#' @return data.table
 #'
-#' @export
+#' @keywords internal
+#'
+#' @examples
+#' # TODO: Add simple example
 #'
 #' @author Nikolai Sellereite
-observation_impute <- function(W_kernel, S, Xtrain, Xtest, w_threshold = .7, noSamp_MC = 1e3) {
+observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n_samples = 1e3) {
 
-  ## Find weights for all combinations and training data
-  DT <- as.data.table(W_kernel)
-  DT[, ID := .I]
-  DT <- data.table::melt(data = DT, id.vars = "ID", variable.name = "comb", value.name = "w", variable.factor = FALSE)
+  # Check input
+  stopifnot(is.matrix(W_kernel) & is.matrix(S))
+  stopifnot(nrow(W_kernel) == nrow(x_train))
+  stopifnot(ncol(W_kernel) == nrow(S))
+  stopifnot(all(S %in% c(0,1)))
 
-  ## Remove training data with small weight
-  setkey(DT, comb, w)
-  DT[, w := w / sum(w), comb]
+  # Find weights for all combinations and training data
+  dt <- data.table::as.data.table(W_kernel)
+  nms_vec <- seq(ncol(dt))
+  names(nms_vec) <- colnames(dt)
+  dt[, index_x_train := .I]
+  dt_melt <- data.table::melt(
+    dt,
+    id.vars = "index_x_train",
+    variable.name = "id_combination",
+    value.name = "weight",
+    variable.factor = FALSE
+  )
+  dt_melt[, index_s := nms_vec[id_combination]]
+
+  # Remove training data with small weight
+  knms <- c("index_s", "weight")
+  data.table::setkeyv(dt_melt, knms)
+  dt_melt[, weight := weight / sum(weight), index_s]
   if (w_threshold < 1) {
-    DT[, wcum := cumsum(w), comb]
-    DT <- DT[wcum > 1 - w_threshold][, wcum := NULL]
+    dt_melt[, wcum := cumsum(weight), index_s]
+    dt_melt <- dt_melt[wcum > 1 - w_threshold][, wcum := NULL]
   }
+  dt_melt <- dt_melt[, tail(.SD, n_samples), index_s]
 
-  DT <- DT[, tail(.SD, noSamp_MC), comb]
-  DT[, comb := gsub(comb, pattern = "V", replacement = ""), comb]
-  DT[, wcomb := as.integer(comb), comb][, comb := NULL]
-
-  ## Generate data used for prediction
-  DTp <- observation_impute_cpp(
-    index_xtrain = DT[["ID"]],
-    index_s = DT[["wcomb"]],
-    xtrain = Xtrain,
-    xtest = Xtest,
+  # Generate data used for prediction
+  dt_p <- observation_impute_cpp(
+    index_xtrain = dt_melt[["index_x_train"]],
+    index_s = dt_melt[["index_s"]],
+    xtrain = x_train,
+    xtest = x_test,
     S = S
   )
 
-  ## Add keys
-  DTp <- as.data.table(DTp)
-  setnames(DTp, colnames(Xtrain))
-  DTp[, wcomb := DT[["wcomb"]]]
-  DTp[, w := DT[["w"]]]
+  # Add keys
+  dt_p <- data.table::as.data.table(dt_p)
+  data.table::setnames(dt_p, colnames(x_train))
+  dt_p[, wcomb := dt_melt[["index_s"]]]
+  dt_p[, w := dt_melt[["weight"]]]
 
-  return(DTp)
+  return(dt_p)
 }
 
 #' Generate data used for predictions
@@ -125,10 +150,10 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
     dt_l[[i]] <- observation_impute(
       W_kernel = W_kernel,
       S = S,
-      Xtrain = as.matrix(x$x_train),
-      Xtest = x$x_test[i, , drop = FALSE],
+      x_train = as.matrix(x$x_train),
+      x_test = x$x_test[i, , drop = FALSE],
       w_threshold = x$w_threshold,
-      noSamp_MC = n_samples
+      n_samples = n_samples
     )
 
     dt_l[[i]][, id := i]
@@ -164,11 +189,11 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     l <- lapply(
       X = features,
       FUN = sample_gaussian,
-      noSamp_MC = n_samples,
+      n_samples = n_samples,
       mu = x$mu,
-      Sigma = x$cov_mat,
+      cov_mat = x$cov_mat,
       p = ncol(x$x_test),
-      Xtest = x$x_test[i, , drop = FALSE],
+      x_test = x$x_test[i, , drop = FALSE],
       ensure_condcov_symmetry = FALSE
     )
 
@@ -185,7 +210,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -200,13 +225,13 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
     l <- lapply(
       X = features,
       FUN = sample_copula,
-      noSamp_MC = n_samples,
+      n_samples = n_samples,
       mu = x$mu,
-      Sigma = x$cov_mat,
+      cov_mat = x$cov_mat,
       p = ncol(x$x_test),
-      Xtest = x$x_test[i, , drop = FALSE],
-      Xtrain = as.matrix(x$x_train),
-      Xtest_Gauss_trans = x_test[i, , drop = FALSE]
+      x_test = x$x_test[i, , drop = FALSE],
+      x_train = as.matrix(x$x_train),
+      x_test_gaussian = x_test_gaussian[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
@@ -224,10 +249,10 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
     ntest = nrow(x$x_test),
-    nsamples = x$AICc_no_samp_per_optim,
+    nsamples = x$n_samples_aicc,
     joint_sampling = FALSE
   )
-  x$AICc_no_samp_per_optim <- nrow(optimsamp)
+  x$n_samples_aicc <- nrow(optimsamp)
   nloops <- nrow(x$x_test) # No of observations in test data
 
   # Optimization is done only once for all distributions which conditions on
@@ -236,7 +261,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
 
   for (i in these_k) {
     these_cond <- x$X[nfeatures == i, ID]
-    cutters <- 1:x$AICc_no_samp_per_optim
+    cutters <- 1:x$n_samples_aicc
     no_cond <- length(these_cond)
     cond_samp <- cut(
       x = cutters,
@@ -289,7 +314,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
       names(y_list) <- NULL
       ## Doing the numerical optimization -------
       nlm.obj <- suppressWarnings(stats::nlminb(
-        start = x$AIC_optim_startval,
+        start = x$start_aicc,
         objective = aicc_full_cpp,
         X_list = X_list,
         mcov_list = mcov_list,
@@ -298,7 +323,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
         negative = F,
         lower = 0,
         control = list(
-          eval.max = x$AIC_optim_max_eval
+          eval.max = x$eval_max_aicc
         )
       ))
       h_optim_mat[these_cond, loop] <- nlm.obj$par
@@ -318,10 +343,10 @@ compute_AICc_full <- function(x, h_optim_mat) {
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
     ntest = ntest,
-    nsamples = x$AICc_no_samp_per_optim,
+    nsamples = x$n_samples_aicc,
     joint_sampling = FALSE
   )
-  x$AICc_no_samp_per_optim <- nrow(optimsamp)
+  x$n_samples_aicc <- nrow(optimsamp)
   nloops <- nrow(x$x_test) # No of observations in test data
 
   ind_of_vars_to_cond_on <- 2:(nrow(x$S) - 1)
@@ -360,7 +385,7 @@ compute_AICc_full <- function(x, h_optim_mat) {
 
       ## Running the nonlinear optimization
       nlm.obj <- suppressWarnings(stats::nlminb(
-        start = x$AIC_optim_startval,
+        start = x$start_aicc,
         objective = aicc_full_cpp,
         X_list = X_list,
         mcov_list = mcov_list,
@@ -369,7 +394,7 @@ compute_AICc_full <- function(x, h_optim_mat) {
         negative = F,
         lower = 0,
         control = list(
-          eval.max = x$AIC_optim_max_eval
+          eval.max = x$eval_max_aicc
         )
       ))
 

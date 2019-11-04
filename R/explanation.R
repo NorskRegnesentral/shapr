@@ -5,7 +5,7 @@
 #' @param x A matrix or data.frame. Contains the the features, whose
 #' predictions ought to be explained (test data).
 #'
-#' @param explainer An \code{explainer} object to use for exaplaining the observations.
+#' @param explainer An \code{explainer} object to use for explaining the observations.
 #' See \code{\link{shapr}}.
 #'
 #' @param approach Character vector of length \code{1} or \code{n_features}.
@@ -50,6 +50,10 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     )
   }
 
+  # Check that x contains correct variables
+  explainer$p <- predict_model(explainer$model, head(x, 1))
+  explainer$p <- NULL
+
   if (length(approach) > 1) {
     class(x) <- "combined"
   } else {
@@ -59,26 +63,24 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   UseMethod("explain", x)
 }
 
-#' @param type String or list. Only applicable when \code{approach='empirical'}. If a string, the
-#' type of empirical approach to use,  equal to 'independence, 'gaussian' or 'fixed_sigma'. If a
-#' list, the elements in the list refers to the rows in \code{x} that ought to be included in
-#' each of the empirical approaches.
+#' @param type Character. Should be equal to either \code{"independence"},
+#' \code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.
 #'
 #' @param fixed_sigma_vec Vector or numeric. Only applicable when \code{approach='empirical'} and
 #' \code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}
 #'
-#' @param AICc_no_samp_per_optim Positive integer. Only applicable when
+#' @param n_samples_aicc Positive integer. Only applicable when
 #' \code{approach='empirical'} and \code{type='AICc_each_k'} or
 #' \code{type='AICc_full'}. Number of samples to consider in AICc optimization.
 #'
-#' @param AIC_optim_max_eval Positive integer. Only applicable when \code{approach='empirical'}
-#' and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Numeric. Maximum value when
+#' @param eval_max_aicc Positive integer. Only applicable when \code{approach='empirical'}
+#' and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Maximum number of iterations when
 #' optimizing the AICc.
 #'
-#' @param AIC_optim_startval Numeric. Only applicable when \code{approach='empirical'} and
+#' @param start_aicc Numeric. Only applicable when \code{approach='empirical'} and
 #' \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.
 #'
-#' @param w_threshold Postive integer between 0 and 1.
+#' @param w_threshold Positive integer between 0 and 1.
 #'
 #' @rdname explain
 #' @name explain
@@ -86,17 +88,17 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
-                              AICc_no_samp_per_optim = 1000, AIC_optim_max_eval = 20,
-                              AIC_optim_startval = 0.1, w_threshold = 0.95, ...) {
+                              n_samples_aicc = 1000, eval_max_aicc = 20,
+                              start_aicc = 0.1, w_threshold = 0.95, ...) {
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(x)
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec
-  explainer$AICc_no_samp_per_optim <- AICc_no_samp_per_optim
-  explainer$AIC_optim_max_eval <- AIC_optim_max_eval
-  explainer$AIC_optim_startval <- AIC_optim_startval
+  explainer$n_samples_aicc <- n_samples_aicc
+  explainer$eval_max_aicc <- eval_max_aicc
+  explainer$start_aicc <- start_aicc
   explainer$w_threshold <- w_threshold
 
   # Generate data
@@ -166,7 +168,6 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Setup
   explainer$x_test <- as.matrix(x)
-  explainer$x_test <- x
   explainer$approach <- approach
 
   # Prepare transformed data
@@ -175,14 +176,15 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
     MARGIN = 2,
     FUN = gaussian_transform
   )
-  x_test <- apply(
+  x_test_gaussian <- apply(
     X = rbind(explainer$x_test, explainer$x_train),
     MARGIN = 2,
     FUN = gaussian_transform_separate,
     n_y = nrow(explainer$x_test)
   )
-  if (is.null(dim(x))) {
-    x_test <- t(as.matrix(x))
+
+  if (is.null(dim(x_test_gaussian))) {
+    x_test_gaussian <- t(as.matrix(x_test_gaussian))
   }
 
   explainer$mu <- rep(0, ncol(explainer$x_train))
@@ -194,7 +196,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
     explainer$cov_mat <- cov_mat
   }
   # Generate data
-  dt <- prepare_data(explainer, x_test = x_test, ...)
+  dt <- prepare_data(explainer, x_test_gaussian = x_test_gaussian, ...)
   if (!is.null(explainer$return)) return(dt)
 
   # Predict
@@ -211,22 +213,13 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
   l <- get_list_approaches(explainer$X$nfeatures, approach)
   explainer$return <- TRUE
   explainer$x_test <- as.matrix(x)
-  dt_e <- dt_g <- dt_c <- NULL
 
-  if (!is.null(l$empirical)) {
-    dt_e <- explain(x, explainer, approach = "empirical", prediction_zero, index_features = l$empirical, ...)
+  dt_l <- list()
+  for (i in seq_along(l)) {
+    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], ...)
   }
 
-  if (!is.null(l$gaussian)) {
-    dt_g <- explain(x, explainer, approach = "gaussian", prediction_zero, index_features = l$gaussian, ...)
-
-  }
-
-  if (!is.null(l$copula)) {
-    dt_c <- explain(x, explainer, approach = "copula", prediction_zero, index_features = l$copula, ...)
-  }
-
-  dt <- data.table::rbindlist(list(dt_e, dt_g, dt_c), use.names = TRUE)
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 
   r <- prediction(dt, prediction_zero, explainer)
 
