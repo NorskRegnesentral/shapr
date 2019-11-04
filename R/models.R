@@ -46,10 +46,10 @@ predict_model.default <- function(x, newdata) {
 predict_model.lm <- function(x, newdata) {
 
   if (!requireNamespace('stats', quietly = TRUE)) {
-    stop('The stats package is required for predicting stats models')
+    stop("The stats package is required for predicting stats models")
   }
 
-  predict(x, newdata)
+  predict(x, as.data.frame(newdata))
 }
 
 #' @rdname predict_model
@@ -58,13 +58,13 @@ predict_model.lm <- function(x, newdata) {
 predict_model.glm <- function(x, newdata) {
 
   if (!requireNamespace('stats', quietly = TRUE)) {
-    stop('The stats package is required for predicting stats models')
+    stop("The stats package is required for predicting stats models")
   }
 
   if (x$family[[1]] == "binomial") {
-    predict(x, newdata, type = "response")
+    predict(x, as.data.frame(newdata), type = "response")
   } else {
-    predict(x, newdata)
+    predict(x, as.data.frame(newdata))
   }
 }
 
@@ -74,7 +74,18 @@ predict_model.glm <- function(x, newdata) {
 predict_model.ranger <- function(x, newdata) {
 
   if (!requireNamespace('ranger', quietly = TRUE)) {
-    stop('The ranger package is required for predicting ranger models')
+    stop("The ranger package is required for predicting ranger models")
+  }
+
+  if (x$treetype == "Classification") {
+    stop(
+      paste0(
+        "\n",
+        "We currently don't support standard classification using ranger.\n",
+        "You'll need to grow a probability forest by setting probability = TRUE\n",
+        "in ranger::ranger(), while training a classification model using the ranger package."
+      )
+    )
   }
 
   if (x$treetype == "Probability estimation") {
@@ -90,7 +101,7 @@ predict_model.ranger <- function(x, newdata) {
 predict_model.xgb.Booster <- function(x, newdata) {
 
   if (!requireNamespace('stats', quietly = TRUE)) {
-    stop('The xgboost package is required for predicting xgboost models')
+    stop("The xgboost package is required for predicting xgboost models")
   }
 
   predict(x, as.matrix(newdata))
@@ -102,7 +113,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
 predict_model.mgcv <- function(x, newdata) {
 
   if (!requireNamespace('mgcv', quietly = TRUE)) {
-    stop('The mgcv package is required for predicting mgcv models')
+    stop("The mgcv package is required for predicting mgcv models")
   }
 
   predict(x, newdata)
@@ -143,8 +154,20 @@ model_type.glm <- function(x) {
 #' @name model_type
 #' @export
 model_type.ranger <- function(x) {
+
+  if (x$treetype == "Classification") {
+    stop(
+      paste0(
+        "\n",
+        "We currently don't support standard classification using ranger.\n",
+        "You'll need to grow a probability forest by setting probability = TRUE\n",
+        "in ranger::ranger(), while training a classification model using the ranger package."
+      )
+    )
+  }
+
   ifelse(
-    x$forest$treetype == "Classification",
+    x$treetype == "Probability estimation",
     "classification",
     "regression"
   )
@@ -163,7 +186,7 @@ model_type.mgcv <- function(x) {
 model_type.xgb.Booster <- function(x) {
 
   ifelse(
-    !is.null(x$treetype) && x$treetype == "Probability estimation",
+    !is.null(x$params$objective) && x$params$objective == "binary:logistic",
     "classification",
     "regression"
   )
