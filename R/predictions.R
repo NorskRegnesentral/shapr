@@ -64,8 +64,7 @@ predictions <- function(model,
                         Sigma,
                         mu_Gauss_trans = mu_Gauss_trans,
                         Sigma_Gauss_trans = Sigma_Gauss_trans,
-                        Xtest_Gauss_trans,
-                        ensure_condcov_symmetry = F) {
+                        Xtest_Gauss_trans) {
   p <- ncol(Xtrain)
 
   DTp.Gaussian <- DTp.copula <- DTp.empirical <- NULL
@@ -81,8 +80,7 @@ predictions <- function(model,
       mu = mu,
       cov_mat = Sigma,
       p = p,
-      x_test = Xtest,
-      ensure_condcov_symmetry = ensure_condcov_symmetry
+      x_test = Xtest
     )
     DTp.Gaussian <- rbindlist(samp_list, idcol = "wcomb")
     DTp.Gaussian[, wcomb := these_wcomb[wcomb]] # Correcting originally assigned wcomb

@@ -170,8 +170,7 @@ compute_kshap <- function(model,
                           ),
                           pred_zero,
                           mu = NULL,
-                          Sigma = NULL,
-                          ensure_condcov_symmetry = F) {
+                          Sigma = NULL) {
   tt <- proc.time()
 
   ll <- list()
@@ -438,8 +437,7 @@ compute_kshap <- function(model,
       Sigma = Sigma,
       mu_Gauss_trans = mu_Gauss_trans,
       Sigma_Gauss_trans = Sigma_Gauss_trans,
-      Xtest_Gauss_trans = Xtest_Gauss_trans[i, , drop = FALSE],
-      ensure_condcov_symmetry = ensure_condcov_symmetry
+      Xtest_Gauss_trans = Xtest_Gauss_trans[i, , drop = FALSE]
     )
     ll[[i]][, id := i]
   }
