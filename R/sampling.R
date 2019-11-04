@@ -54,9 +54,6 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussia
 #'
 #' @param index_given Vector. The indices of the features to condition upon.
 #' @param p Positive integer. The number of features.
-#' @param ensure_condcov_symmetry Logical. If \code{TRUE}, \code{\link[Matrix]{symmpart}}
-#' is used on the conditional covariance matrix if and only if the conditional covariance matrix
-#' is not symmetric and positive-definite.
 #' @param x_test Numeric matrix of dimension 1 x p.
 #'
 #' @inheritParams global_arguments
@@ -69,7 +66,7 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussia
 #' # TODO: Add simple example
 #'
 #' @author Martin Jullum
-sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test, ensure_condcov_symmetry = FALSE) {
+sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test) {
 
   # Check input
   stopifnot(is.matrix(x_test))
@@ -88,14 +85,9 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test, ensu
     X.given = x_test_gaussian
   )
 
-  if (ensure_condcov_symmetry) {
-
-    if (!isSymmetric(tmp[["condVar"]])) {
-      eigenvalues <- eigen(tmp[["condVar"]], only.values = TRUE)$values
-      if (any(eigenvalues < 1e-08)) {
-        tmp[["condVar"]] <- Matrix::symmpart(tmp$condVar)
-      }
-    }
+  # Makes the conditional covariance matrix symmetric in the rare case where numerical instability made it unsymmetric
+  if (!isSymmetric(tmp[["condVar"]])) {
+    tmp[["condVar"]] <- Matrix::symmpart(tmp$condVar)
   }
 
   ret0 <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
