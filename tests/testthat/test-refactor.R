@@ -14,12 +14,7 @@ test_that("Test new", {
   y_train <- tail(Boston[, y_var], -6)
   x_test <- as.matrix(head(Boston[, x_var], 2))
 
-  model <- xgboost::xgboost(
-    data = x_train,
-    label = y_train,
-    nround = 20,
-    verbose = FALSE
-  )
+  model <- stats::lm(formula = "y_train ~ .", data = data.frame(cbind(y_train, x_train)))
 
   # Prepare the data for explanation
   explainer <- shapr(x_train, model)
