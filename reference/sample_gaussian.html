@@ -126,7 +126,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>sample_gaussian</span>(<span class='no'>index_given</span>, <span class='no'>n_samples</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>, <span class='no'>p</span>, <span class='no'>x_test</span>,
-  <span class='kw'>ensure_condcov_symmetry</span> <span class='kw'>=</span> <span class='no'>F</span>)</pre>
+  <span class='kw'>ensure_condcov_symmetry</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,13 +146,13 @@ NULL means it is estimated from the data if needed (in the Gaussian approach).</
     </tr>
     <tr>
       <th>x_test</th>
-      <td><p>Matrix, data.frame or data.table with the features of the observation whose
-predictions ought to be explained (test data). Dimension <code>1xp</code> or <code>px1</code>.</p></td>
+      <td><p>Numeric matrix of dimension 1 x p.</p></td>
     </tr>
     <tr>
       <th>ensure_condcov_symmetry</th>
-      <td><p>Logical. If <code>true</code>, <code>symmpart</code> is used on the
-conditional covariance matrix to ensure symmetry.</p></td>
+      <td><p>Logical. If <code>TRUE</code>, <code><a href='https://www.rdocumentation.org/packages/Matrix/topics/symmpart'>symmpart</a></code>
+is used on the conditional covariance matrix if and only if the conditional covariance matrix
+is not symmetric and positive-definite.</p></td>
     </tr>
     </table>
     
