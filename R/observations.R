@@ -193,8 +193,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
       mu = x$mu,
       cov_mat = x$cov_mat,
       p = ncol(x$x_test),
-      x_test = x$x_test[i, , drop = FALSE],
-      ensure_condcov_symmetry = FALSE
+      x_test = x$x_test[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
@@ -210,7 +209,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -231,7 +230,7 @@ prepare_data.copula <- function(x, x_test = 1, seed = 1, n_samples = 1e3, index_
       p = ncol(x$x_test),
       x_test = x$x_test[i, , drop = FALSE],
       x_train = as.matrix(x$x_train),
-      x_test_gaussian = x_test[i, , drop = FALSE]
+      x_test_gaussian = x_test_gaussian[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
@@ -249,10 +248,10 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
     ntest = nrow(x$x_test),
-    nsamples = x$AICc_no_samp_per_optim,
+    nsamples = x$n_samples_aicc,
     joint_sampling = FALSE
   )
-  x$AICc_no_samp_per_optim <- nrow(optimsamp)
+  x$n_samples_aicc <- nrow(optimsamp)
   nloops <- nrow(x$x_test) # No of observations in test data
 
   # Optimization is done only once for all distributions which conditions on
@@ -261,7 +260,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
 
   for (i in these_k) {
     these_cond <- x$X[nfeatures == i, ID]
-    cutters <- 1:x$AICc_no_samp_per_optim
+    cutters <- 1:x$n_samples_aicc
     no_cond <- length(these_cond)
     cond_samp <- cut(
       x = cutters,
@@ -314,7 +313,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
       names(y_list) <- NULL
       ## Doing the numerical optimization -------
       nlm.obj <- suppressWarnings(stats::nlminb(
-        start = x$AIC_optim_startval,
+        start = x$start_aicc,
         objective = aicc_full_cpp,
         X_list = X_list,
         mcov_list = mcov_list,
@@ -323,7 +322,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
         negative = F,
         lower = 0,
         control = list(
-          eval.max = x$AIC_optim_max_eval
+          eval.max = x$eval_max_aicc
         )
       ))
       h_optim_mat[these_cond, loop] <- nlm.obj$par
@@ -343,10 +342,10 @@ compute_AICc_full <- function(x, h_optim_mat) {
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
     ntest = ntest,
-    nsamples = x$AICc_no_samp_per_optim,
+    nsamples = x$n_samples_aicc,
     joint_sampling = FALSE
   )
-  x$AICc_no_samp_per_optim <- nrow(optimsamp)
+  x$n_samples_aicc <- nrow(optimsamp)
   nloops <- nrow(x$x_test) # No of observations in test data
 
   ind_of_vars_to_cond_on <- 2:(nrow(x$S) - 1)
@@ -385,7 +384,7 @@ compute_AICc_full <- function(x, h_optim_mat) {
 
       ## Running the nonlinear optimization
       nlm.obj <- suppressWarnings(stats::nlminb(
-        start = x$AIC_optim_startval,
+        start = x$start_aicc,
         objective = aicc_full_cpp,
         X_list = X_list,
         mcov_list = mcov_list,
@@ -394,7 +393,7 @@ compute_AICc_full <- function(x, h_optim_mat) {
         negative = F,
         lower = 0,
         control = list(
-          eval.max = x$AIC_optim_max_eval
+          eval.max = x$eval_max_aicc
         )
       ))
 

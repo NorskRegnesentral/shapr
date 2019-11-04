@@ -9,8 +9,7 @@ predictions(model, D, h_optim_vec, kernel_metric, S, Xtrain, Xtest,
   w_threshold = 0.7, noSamp_MC = 1000, verbose = FALSE,
   cond_approach_list, feature_list, pred_zero, mu, Sigma,
   mu_Gauss_trans = mu_Gauss_trans,
-  Sigma_Gauss_trans = Sigma_Gauss_trans, Xtest_Gauss_trans,
-  ensure_condcov_symmetry = F)
+  Sigma_Gauss_trans = Sigma_Gauss_trans, Xtest_Gauss_trans)
 }
 \description{
 TODO: Delete this function from the codebase
