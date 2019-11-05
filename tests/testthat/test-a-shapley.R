@@ -12,7 +12,7 @@ test_that("Test functions in shapley.R", {
 
   # Load premade lm model. Path needs to be relative to testthat directory in the package
   print(getwd())
-  model <- readRDS("../../inst/model_objects/lm_model_object.rds")
+  model <- readRDS("model_objects/lm_model_object.rds")
 
   # Prepare the data for explanation
   explainer <- shapr(x_train, model)
