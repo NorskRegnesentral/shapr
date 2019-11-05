@@ -1,7 +1,5 @@
 #' Get combinations
 #'
-#' @inheritParams global_arguments
-#'
 #' @details
 #' The returned data.table contains the following columns
 #' \describe{

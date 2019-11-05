@@ -114,7 +114,20 @@ predict_model.mgcv <- function(x, newdata) {
   predict(x, newdata)
 }
 
-#' TODO: Add title & description
+#' Define type of model
+#'
+#' @description The function checks whether the model given by \code{x} is
+#' supported, and if it is a regression- or a classification model. If \code{x} is
+#' not a supported model the function will return an error message, otherwise it will
+#' return either \code{"regression"} or \code{"classification"}.
+#'
+#' @inheritParams predict_model
+#'
+#' @details See \code{\link{predict_model}} for more information about
+#' what type of models \code{shapr} currently supports.
+#'
+#' @return Character.
+#'
 #' @export
 model_type <- function(x) {
   UseMethod("model_type")

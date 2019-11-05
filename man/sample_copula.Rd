@@ -10,9 +10,6 @@ sample_copula(index_given, n_samples, mu, cov_mat, p, x_test_gaussian,
 \arguments{
 \item{index_given}{Vector. The indices of the features to condition upon.}
 
-\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
-NULL means it is estimated from the data if needed (in the Gaussian approach).}
-
 \item{p}{Positive integer. The number of features.}
 
 \item{x_test_gaussian}{Vector with the Gaussian transformed features of the observation whose

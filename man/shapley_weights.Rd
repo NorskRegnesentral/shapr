@@ -7,11 +7,13 @@
 shapley_weights(m, N, s, weight_zero_m = 10^6)
 }
 \arguments{
-\item{m}{Integer. Total number of features}
+\item{m}{Positive integer}
 
-\item{N}{Integer. Number of combinations}
+\item{N}{Positive integer}
 
-\item{s}{Integer. Number of chosen}
+\item{s}{Positive integer}
+
+\item{weight_zero_m}{Positive integer}
 }
 \value{
 Numeric

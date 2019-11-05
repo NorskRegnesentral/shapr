@@ -19,6 +19,8 @@ prepare_data(x, ...)
   n_samples = 1000, index_features = NULL, ...)
 }
 \arguments{
+\item{x}{Explainer object}
+
 \item{...}{Currently not used.}
 
 \item{seed}{Positive integer. If \code{NULL} a random seed will be used.}
@@ -27,6 +29,8 @@ prepare_data(x, ...)
 Monte Carlo integration for every conditional expectation.}
 
 \item{index_features}{Positive integer vector. Only used internally.}
+
+\item{x_test_gaussian}{Matrix}
 }
 \description{
 Generate data used for predictions

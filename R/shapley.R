@@ -1,6 +1,9 @@
 #' Calculate Shapley weight
 #'
-#' @inheritParams global_arguments
+#' @param m Positive integer
+#' @param N Positive integer
+#' @param s Positive integer
+#' @param weight_zero_m Positive integer
 #'
 #' @return Numeric
 #'
@@ -16,6 +19,8 @@ shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 #' Calculate weighted matrix
 #'
 #' @param X data.table
+#' @param use_shapley_weights_in_W Logical
+#' @param normalize_W_weights Logical
 #'
 #' @return Matrix
 #'
@@ -46,8 +51,6 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 
 
 #' Create an explainer object with Shapley weights for test data.
-#'
-#' @inheritParams global_arguments
 #'
 #' @param x An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total number of explanatory variables).Contains the variables used for training the model
 #' (i.e. the explanatory variables). Note that the response variable should not be part of

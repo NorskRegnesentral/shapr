@@ -111,8 +111,6 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   return(r)
 }
 
-#' @inheritParams explain
-#'
 #' @param mu Numeric vector. (Optional) Containing the mean of the data generating distribution.
 #' If \code{NULL} the expected values are estimated from the data. Note that this is only used
 #' when \code{approach = "gaussian"}.

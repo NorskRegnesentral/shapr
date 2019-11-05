@@ -71,12 +71,16 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 
 #' Generate data used for predictions
 #'
+#' @param x Explainer object
+#'
 #' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation.
 #'
 #' @param seed Positive integer. If \code{NULL} a random seed will be used.
 #'
 #' @param index_features Positive integer vector. Only used internally.
+#'
+#' @param x_test_gaussian Matrix
 #'
 #' @param ... Currently not used.
 #'

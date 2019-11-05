@@ -9,8 +9,6 @@
 #' @param top_k_features Integer. How many features to include in the plot
 #' @param ... Currently not used.
 #'
-#' @inheritParams global_arguments
-#'
 #' @return ggplot object with plots of the Shapley value explanations
 #'
 #' @export

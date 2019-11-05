@@ -7,8 +7,6 @@
 #' @param x_test Matrix, data.frame or data.table with the features of the observation whose
 #' predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
 #'
-#' @inheritParams global_arguments
-#'
 #' @return data.table with \code{n_samples} (conditional) Gaussian samples
 #'
 #' @keywords internal
@@ -55,8 +53,6 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussia
 #' @param index_given Vector. The indices of the features to condition upon.
 #' @param p Positive integer. The number of features.
 #' @param x_test Numeric matrix of dimension 1 x p.
-#'
-#' @inheritParams global_arguments
 #'
 #' @return data.table with \code{n_samples} (conditional) Gaussian samples
 #'
