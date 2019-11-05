@@ -32,12 +32,12 @@ predict_model <- function(x, newdata) {
 #' @export
 predict_model.default <- function(x, newdata) {
 
-    str_error <- paste(
-      "It seems that you passed a non-valid model object.",
-      "See more information about which models that are supported",
-      "by running ?predict_model."
-    )
-    stop(str_error)
+  str_error <- paste(
+    "It seems that you passed a non-valid model object.",
+    "See more information about which models that are supported",
+    "by running ?predict_model."
+  )
+  stop(str_error)
 }
 
 #' @rdname predict_model
@@ -81,9 +81,9 @@ predict_model.ranger <- function(x, newdata) {
     stop(
       paste0(
         "\n",
-        "We currently don't support standard classification using ranger.\n",
-        "You'll need to grow a probability forest by setting probability = TRUE\n",
-        "in ranger::ranger(), while training a classification model using the ranger package."
+        "We currently don't support standard classification, which predicts the class directly.\n",
+        "To train a ranger model predicting the class probabilities, you'll need to grow a\n",
+        "probability forest by setting probability = TRUE in ranger::ranger()."
       )
     )
   }
@@ -159,9 +159,9 @@ model_type.ranger <- function(x) {
     stop(
       paste0(
         "\n",
-        "We currently don't support standard classification using ranger.\n",
-        "You'll need to grow a probability forest by setting probability = TRUE\n",
-        "in ranger::ranger(), while training a classification model using the ranger package."
+        "We currently don't support standard classification, which predicts the class directly.\n",
+        "To train a ranger model predicting the class probabilities, you'll need to grow a\n",
+        "probability forest by setting probability = TRUE in ranger::ranger()."
       )
     )
   }
