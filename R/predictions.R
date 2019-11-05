@@ -16,9 +16,14 @@
 #' @author Nikolai Sellereite
 prediction <- function(dt, prediction_zero, explainer) {
 
-  # Predictions
+  # Setup
   cnms <- colnames(explainer$x_test)
   data.table::setkeyv(dt, c("id", "wcomb"))
+
+  # Check that the number of test observations equals max(id)
+  stopifnot(nrow(explainer$x_test) == dt[, max(id)])
+
+  # Predictions
   dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
   dt[wcomb == 1, p_hat := prediction_zero]
   p_all <- predict_model(explainer$model, newdata = explainer$x_test)

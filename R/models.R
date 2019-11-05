@@ -32,12 +32,12 @@ predict_model <- function(x, newdata) {
 #' @export
 predict_model.default <- function(x, newdata) {
 
-    str_error <- paste(
-      "It seems that you passed a non-valid model object.",
-      "See more information about which models that are supported",
-      "by running ?predict_model."
-    )
-    stop(str_error)
+  str_error <- paste(
+    "It seems that you passed a non-valid model object.",
+    "See more information about which models that are supported",
+    "by running ?predict_model."
+  )
+  stop(str_error)
 }
 
 #' @rdname predict_model
@@ -46,9 +46,10 @@ predict_model.default <- function(x, newdata) {
 predict_model.lm <- function(x, newdata) {
 
   if (!requireNamespace('stats', quietly = TRUE)) {
-    stop('The stats package is required for predicting stats models')
+    stop("The stats package is required for predicting stats models")
   }
-  predict(x, newdata = as.data.frame(newdata))
+
+  predict(x, as.data.frame(newdata))
 }
 
 #' @rdname predict_model
@@ -57,13 +58,13 @@ predict_model.lm <- function(x, newdata) {
 predict_model.glm <- function(x, newdata) {
 
   if (!requireNamespace('stats', quietly = TRUE)) {
-    stop('The stats package is required for predicting stats models')
+    stop("The stats package is required for predicting stats models")
   }
 
   if (x$family[[1]] == "binomial") {
-    predict(x, newdata, type = "response")
+    predict(x, as.data.frame(newdata), type = "response")
   } else {
-    predict(x, newdata)
+    predict(x, as.data.frame(newdata))
   }
 }
 
@@ -73,8 +74,11 @@ predict_model.glm <- function(x, newdata) {
 predict_model.ranger <- function(x, newdata) {
 
   if (!requireNamespace('ranger', quietly = TRUE)) {
-    stop('The ranger package is required for predicting ranger models')
+    stop("The ranger package is required for predicting ranger models")
   }
+
+  # Test model type
+  model_type <- model_type(x)
 
   if (x$treetype == "Probability estimation") {
     predict(x, newdata)$predictions[, 2]
@@ -89,8 +93,11 @@ predict_model.ranger <- function(x, newdata) {
 predict_model.xgb.Booster <- function(x, newdata) {
 
   if (!requireNamespace('stats', quietly = TRUE)) {
-    stop('The xgboost package is required for predicting xgboost models')
+    stop("The xgboost package is required for predicting xgboost models")
   }
+
+  # Test model type
+  model_type <- model_type(x)
 
   predict(x, as.matrix(newdata))
 }
@@ -101,7 +108,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
 predict_model.mgcv <- function(x, newdata) {
 
   if (!requireNamespace('mgcv', quietly = TRUE)) {
-    stop('The mgcv package is required for predicting mgcv models')
+    stop("The mgcv package is required for predicting mgcv models")
   }
 
   predict(x, newdata)
@@ -142,11 +149,33 @@ model_type.glm <- function(x) {
 #' @name model_type
 #' @export
 model_type.ranger <- function(x) {
-  ifelse(
-    x$forest$treetype == "Classification",
-    "classification",
+
+  if (x$treetype == "Classification") {
+    stop(
+      paste0(
+        "\n",
+        "We currently don't support standard classification, which predicts the class directly.\n",
+        "To train a ranger model predicting the class probabilities, you'll need to grow a\n",
+        "probability forest by setting probability = TRUE in ranger::ranger()."
+      )
+    )
+  }
+
+  if (x$treetype == "Probability estimation") {
+    if (length(x$forest$levels) == 2) {
+      "classification"
+    } else {
+      stop(
+        paste0(
+          "\n",
+          "We currently don't support multi-classification using ranger, i.e.\n",
+          "where length(model$forest$levels) is greater than 2."
+        )
+      )
+    }
+  } else {
     "regression"
-  )
+  }
 }
 
 #' @rdname model_type
@@ -161,8 +190,31 @@ model_type.mgcv <- function(x) {
 #' @export
 model_type.xgb.Booster <- function(x) {
 
+  if (!is.null(x$params$objective) &&
+      (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
+  ) {
+    stop(
+      paste0(
+        "\n",
+        "We currently don't support multi-classification using xgboost, i.e.\n",
+        "where num_class is greater than 2."
+      )
+    )
+  }
+
+  if (!is.null(x$params$objective) && x$params$objective == "reg:logistic") {
+    stop(
+      paste0(
+        "\n",
+        "We currently don't support standard classification, which predicts the class directly.\n",
+        "To train an xgboost model predicting the class probabilities, you'll need to change \n",
+        "the objective to 'binary:logistic'"
+      )
+    )
+  }
+
   ifelse(
-    !is.null(x$treetype) && x$treetype == "Probability estimation",
+    !is.null(x$params$objective) && x$params$objective == "binary:logistic",
     "classification",
     "regression"
   )
