@@ -1,7 +1,6 @@
 library(MASS)
 library(xgboost)
 library(shapr)
-library(ggplot2)
 library(data.table)
 
 data("Boston")
@@ -28,32 +27,27 @@ model <- xgboost(
 pred_test <- predict(model,x_test)
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
-pred_zero <- mean(predict(model,x_train))# adjustment from the standard mean(y_train) to comply with the shap implementation
+p0 <- mean(predict(model,x_train))# adjustment from the standard mean(y_train) to comply with the shap implementation
 
 time_R_start <- proc.time()
 # Prepare the data for explanation
+explainer <- shapr(x_train, model)
+
+time_R_prepare <- proc.time()
+
+#### TO be deleted ####
 l <- prepare_kshap(
   Xtrain = x_train,
   Xtest = x_test
 )
-
-time_R_prepare <- proc.time()
-
-
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation_independence <- compute_kshap(
+explanation_independence0 <- compute_kshap(
   model = model,
   l = l,
   pred_zero = pred_zero,
   empirical_settings = list(type = "independence",
                             w_threshold = 1)
 )
-
-time_R_indep0 <- proc.time()
-
-
-explanation_largesigma <- compute_kshap(
+explanation_largesigma0 <- compute_kshap(
   model = model,
   l = l,
   pred_zero = pred_zero,
@@ -61,15 +55,28 @@ explanation_largesigma <- compute_kshap(
   empirical_settings = list(type ="fixed_sigma", fixed_sigma_vec = 10000, w_threshold = 1)
 )
 
+### END TO BE DELETED ####
+
+# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
+# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
+explanation_independence <- explain(x_test, explainer, approach = "empirical", type = "independence", prediction_zero = p0)
+
+time_R_indep0 <- proc.time()
+
+explanation_largesigma <- explain(x_test, explainer, approach = "empirical", type = "fixed_sigma",
+                                  fixed_sigma_vec = 10000, w_threshold = 1, prediction_zero = p0)
+
 time_R_largesigma0 <- proc.time()
+
+
 
 time_R_indep <- time_R_indep0 - time_R_start
 time_R_largesigma <- (time_R_largesigma0 - time_R_indep0) + (time_R_prepare- time_R_start)
 
 
 # Printing the Shapley values for the test data
-Kshap_indep <- explanation_independence$Kshap
-Kshap_largesigma <- explanation_largesigma$Kshap
+Kshap_indep <- explanation_independence$dt
+Kshap_largesigma <- explanation_largesigma$dt
 
 head(Kshap_indep)
 #> Kshap_indep
@@ -94,7 +101,7 @@ head(Kshap_largesigma)
 
 # Checking the difference between the methods
 mean(abs(as.matrix(Kshap_indep)-as.matrix(Kshap_largesigma)))
-#[1] 6.752507e-08  # Numerically identical
+#[1] 8.404487e-08  # Numerically identical
 
 
 xgb.save(model=model,fname = "inst/compare_lundberg.xgb.obj") # Need to wait a bit after saving and then loading this in python
@@ -174,7 +181,7 @@ head(py$Kshap_shap)
 
 # Checking difference between our R implementtaion and the shap implementation i Python
 mean(abs(as.matrix(Kshap_indep)-as.matrix(py$Kshap_shap)))
-#[1] 1,151811e-07 # Numerically identical
+#[1] 1,300368e-07 # Numerically identical
 
 # Checking the running time of the different methods
 time_R_indep[3]
