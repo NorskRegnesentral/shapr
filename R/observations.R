@@ -259,7 +259,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   }
 
   ## this is the list of all 2^10 trees (if number of features = 10)
-  all_trees <- lapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
+  all_trees <- parallel::mclapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
                       FUN = simulateAllTrees,
                       x_train = x$x_train,
                       comb_indici = x$comb_indici,
@@ -271,7 +271,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 
   for (i in seq(n_xtest)) {
     # options(warn=2)
-    l <- lapply(
+    l <- parallel::mclapply(
       X = all_trees,
       FUN = sample_ctree,
       n_samples = n_samples,
