@@ -10,8 +10,6 @@
 #'
 #' @return Numeric
 #'
-#' @export
-#'
 #' @author Nikolai Sellereite
 shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
   x <- (m - 1) / (N * s * (m - s))
@@ -26,8 +24,6 @@ shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 #' @param normalize_W_weights Logical
 #'
 #' @return Matrix of dimension
-#'
-#' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weights = TRUE) {
@@ -79,7 +75,6 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #'   \item{X}{Second item}
 #'   \item{x_train}{Second item}
 #' }
-#'
 #'
 #' @export
 #'
