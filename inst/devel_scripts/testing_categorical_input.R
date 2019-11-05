@@ -11,7 +11,7 @@ data("Boston", package = "MASS")
 
 
 x_var <- c("lstat", "rm", "dis", "indus", "rad")
- x_var <- c("lstat","black","indus","ptratio","tax","rad")#,"age","dis","rm","nox")
+ x_var <- c("lstat","black","indus","ptratio","tax","rad","age","dis","rm","nox")
 
 y_var <- "medv"
 
@@ -80,7 +80,7 @@ timing <- microbenchmark(explanation <- explain(
   times = 10)
 
 
-timing <- microbenchmark(explanation <- explain(
+timing2 <- microbenchmark(explanation <- explain(
   x_test,
   approach = 'ctree',
   explainer = explainer,
@@ -112,13 +112,49 @@ timing <- microbenchmark(explanation <- explain(
     mc.cores_sample_ctree = 1),
   times = 10)
 
+timing3 <- microbenchmark(explanation <- explain(
+  x_test,
+  approach = 'ctree',
+  explainer = explainer,
+  prediction_zero = p,
+  sample = FALSE),
+  explanation.mc1_2 <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc.cores_simulateAllTrees = 1,
+    mc.cores_sample_ctree = 2),
+  explanation.mc4 <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc.cores_simulateAllTrees = 1,
+    mc.cores_sample_ctree = 4),
+  explanation.mc8 <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc.cores_simulateAllTrees = 1,
+    mc.cores_sample_ctree = 8),
+  times = 10)
+
 
 
 all.equal(explanation,explanation.mc2)
 all.equal(explanation,explanation.mc4)
 all.equal(explanation,explanation.mc8)
 
-timing
+timing # Almost identical for dimension 6. Slower for dimension smaller than 6
+timing2 # Almost identical for dimension 6. Slower for dimension smaller than 6
+timing3 # Almost identical for dimension 6. Slower for dimension smaller than 6
+
+
 
 # Printing the Shapley values for the test data
 print(explanation$dt)
