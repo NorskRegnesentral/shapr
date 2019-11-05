@@ -11,6 +11,7 @@ test_that("Test sample_combinations", {
   joint_sampling <- FALSE
   cnms <- c("samp_train", "samp_test")
 
+  set.seed(123) # Ensuring consistency in every test
   x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
   # Tests -----------
@@ -53,44 +54,51 @@ test_that("Test sample_combinations", {
 })
 
 test_that("test sample_gaussian", {
-  # Example 1 -----------
-  # Check that the given features are not resampled, but kept as is.
+
+  # Example -----------
   m <- 10
   n_samples <- 50
   mu <- rep(1, m)
   cov_mat <- cov(matrix(rnorm(n_samples * m), n_samples, m))
-  x_test <- MASS::mvrnorm(1, mu, cov_mat)
-  index_given <- 4
-  set.seed(1)
-  ret <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
-  X_given <- x_test[index_given]
-  res1.1 <- as.data.table(matrix(rep(X_given, each = n_samples), byrow = T))
-  res1.2 <- as.data.table(ret[, ..index_given])
-  colnames(res1.1) <- colnames(res1.2)
+  x_test <- matrix(MASS::mvrnorm(1, mu, cov_mat), nrow = 1)
+  cnms <- paste0("x", seq(m))
+  colnames(x_test) <- cnms
+  index_given <- c(4, 7)
+  r <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
+
+  # Test output format ------------------
+  expect_true(data.table::is.data.table(r))
+  expect_equal(ncol(r), m)
+  expect_equal(nrow(r), n_samples)
+  expect_equal(colnames(r), cnms)
+
+  # Check that the given features are not resampled, but kept as is.
+  for (i in seq(m)) {
+    var_name <- cnms[i]
+
+    if (i %in% index_given) {
+      expect_equal(
+        unique(r[[var_name]]), x_test[, var_name][[1]]
+      )
+    } else {
+      expect_true(
+        length(unique(r[[var_name]])) == n_samples
+      )
+    }
+  }
 
   # Example 2 -------------
   # Check that conditioning upon all variables simply returns the test observation.
-  index_given <- 1:m
-  x2 <- as.data.table(matrix(x_test, ncol = m, nrow = 1))
-  res2 <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
+  r <- sample_gaussian(1:m, n_samples, mu, cov_mat, m, x_test)
+  expect_identical(r, data.table::as.data.table(x_test))
 
-  # Example 3 -------------
-  # Check that ensuring conditional covariance matrix symmetry is FALSE by default.
-  index_given <- 4:7
-  set.seed(1)
-  res3.1 <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test, ensure_condcov_symmetry = F)
-  set.seed(1)
-  res3.2 <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
-  set.seed(1)
-  res3.3 <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test, ensure_condcov_symmetry = T)
-
-  # Tests ------------------
-  expect_equal(res1.1, res1.2)
-  expect_equal(x2, res2)
-  expect_identical(res3.1, res3.2)
-  expect_false(sum(res3.1 != res3.3) == 0) # Expect different results
-  expect_error(sample_gaussian(m + 1, n_samples, mu, cov_mat, m, x_test))
-  expect_true(data.table::is.data.table(res3.2))
+  # Tests for errors ------------------
+  expect_error(
+    sample_gaussian(m + 1, n_samples, mu, cov_mat, m, x_test)
+  )
+  expect_error(
+    sample_gaussian(m + 1, n_samples, mu, cov_mat, m, as.vector(x_test))
+  )
 })
 
 test_that("test sample_copula", {
@@ -100,6 +108,7 @@ test_that("test sample_copula", {
   n <- 40
   n_samples <- 50
   mu <- rep(1, m)
+  set.seed(123) # Ensuring consistency in every test
   cov_mat <- cov(matrix(rnorm(n * m), n, m))
   x_train <- MASS::mvrnorm(n, mu, cov_mat)
   x_test <- MASS::mvrnorm(1, mu, cov_mat)

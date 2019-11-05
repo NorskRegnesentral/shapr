@@ -193,8 +193,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
       mu = x$mu,
       cov_mat = x$cov_mat,
       p = ncol(x$x_test),
-      x_test = x$x_test[i, , drop = FALSE],
-      ensure_condcov_symmetry = FALSE
+      x_test = x$x_test[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
