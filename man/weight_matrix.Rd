@@ -15,7 +15,7 @@ weight_matrix(X, use_shapley_weights_in_W = TRUE,
 \item{normalize_W_weights}{Logical}
 }
 \value{
-Matrix
+Matrix of dimension
 }
 \description{
 Calculate weighted matrix

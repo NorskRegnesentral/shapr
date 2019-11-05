@@ -1,9 +1,12 @@
 #' Calculate Shapley weight
 #'
-#' @param m Positive integer
-#' @param N Positive integer
-#' @param s Positive integer
-#' @param weight_zero_m Positive integer
+#' @param m Positive integer. Total number of features.
+#' @param s Positive integer. Represents the number of features you want to sample from a feature
+#' space consisting of \code{m} unique features. Note that \code{s>= 0} and \code{s <= m}.
+#' @param N Positive integer. The number of unique combinations when sampling \code{s} features,
+#' without replacement, from a sample space consisting of \code{m} different features.
+#' @param weight_zero_m Positive integer. Represents the Shapley weigth for two special
+#' cases, i.e. the case where you have either \code{0} or \code{m} features.
 #'
 #' @return Numeric
 #'
@@ -22,7 +25,7 @@ shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 #' @param use_shapley_weights_in_W Logical
 #' @param normalize_W_weights Logical
 #'
-#' @return Matrix
+#' @return Matrix of dimension
 #'
 #' @export
 #'
@@ -49,10 +52,10 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
   return(W)
 }
 
-
 #' Create an explainer object with Shapley weights for test data.
 #'
-#' @param x An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total number of explanatory variables).Contains the variables used for training the model
+#' @param x An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total
+#' number of explanatory variables).Contains the variables used for training the model
 #' (i.e. the explanatory variables). Note that the response variable should not be part of
 #' \code{x}.
 #'
@@ -67,7 +70,6 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #' @export
 #'
 #' @author Nikolai Sellereite
-#'
 shapr <- function(x,
                   model,
                   n_combinations = NULL) {

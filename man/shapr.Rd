@@ -7,7 +7,8 @@
 shapr(x, model, n_combinations = NULL)
 }
 \arguments{
-\item{x}{An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total number of explanatory variables).Contains the variables used for training the model
+\item{x}{An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total
+number of explanatory variables).Contains the variables used for training the model
 (i.e. the explanatory variables). Note that the response variable should not be part of
 \code{x}.}
 
