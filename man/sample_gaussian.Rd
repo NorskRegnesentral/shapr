@@ -4,8 +4,7 @@
 \alias{sample_gaussian}
 \title{Sample conditional Gaussian variables}
 \usage{
-sample_gaussian(index_given, n_samples, mu, cov_mat, p, x_test,
-  ensure_condcov_symmetry = FALSE)
+sample_gaussian(index_given, n_samples, mu, cov_mat, p, x_test)
 }
 \arguments{
 \item{index_given}{Vector. The indices of the features to condition upon.}
@@ -16,10 +15,6 @@ NULL means it is estimated from the data if needed (in the Gaussian approach).}
 \item{p}{Positive integer. The number of features.}
 
 \item{x_test}{Numeric matrix of dimension 1 x p.}
-
-\item{ensure_condcov_symmetry}{Logical. If \code{TRUE}, \code{\link[Matrix]{symmpart}}
-is used on the conditional covariance matrix if and only if the conditional covariance matrix
-is not symmetric and positive-definite.}
 }
 \value{
 data.table with \code{n_samples} (conditional) Gaussian samples
