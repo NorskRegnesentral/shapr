@@ -77,16 +77,8 @@ predict_model.ranger <- function(x, newdata) {
     stop("The ranger package is required for predicting ranger models")
   }
 
-  if (x$treetype == "Classification") {
-    stop(
-      paste0(
-        "\n",
-        "We currently don't support standard classification, which predicts the class directly.\n",
-        "To train a ranger model predicting the class probabilities, you'll need to grow a\n",
-        "probability forest by setting probability = TRUE in ranger::ranger()."
-      )
-    )
-  }
+  # Test model type
+  model_type <- model_type(x)
 
   if (x$treetype == "Probability estimation") {
     predict(x, newdata)$predictions[, 2]
