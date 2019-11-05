@@ -11,7 +11,7 @@ Description: Complex machine learning models are often hard to interpret. Howeve
 Authors@R: c(
     person("Nikolai", "Sellereite", email = "Nikolai.Sellereite@nr.no", role = "cre"),
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = "aut"),  
-    person("Anders", "Løland", email = "Anders.Løland@nr.no", role = "ctb"), 
+    person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
     person("Jens Christian", "Wahl", email = "Jens.Christian.Wahl@nr.no", role = "ctb"), 
     person("Camilla", "Lingjærde", role = "ctb"))
 URL: https://norskregnesentral.github.io/shapr/, https://github.com/NorskRegnesentral/shapr
