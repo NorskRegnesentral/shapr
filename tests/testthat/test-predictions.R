@@ -11,12 +11,13 @@ test_that("Test prediction", {
   n_combinations <- 10
   n_features <- 4
   prediction_zero <- .5
+  n_xtest <- 8
   explainer <- list()
-  explainer$model <- stats::lm(formula = "medv ~ lstat + rm + dis + indus", data = head(dt_train, -10))
-  explainer$x_test <- tail(dt_train[, .SD, .SDcols = features], 10)
+  explainer$model <- stats::lm(formula = "medv ~ lstat + rm + dis + indus", data = head(dt_train, -n_xtest))
+  explainer$x_test <- tail(dt_train[, .SD, .SDcols = features], n_xtest)
   explainer$W <- matrix(1, nrow = n_features + 1, ncol = n_combinations)
   dt <- dt_train[rep(1:.N, 4)]
-  dt[, id := rep_len(1:8, .N)]
+  dt[, id := rep_len(1:n_xtest, .N)]
   dt[, wcomb := rep_len(1:n_combinations, .N), id]
   dt[, w := runif(.N)]
   x <- prediction(dt, prediction_zero, explainer)
@@ -30,7 +31,10 @@ test_that("Test prediction", {
   expect_equal(x$p, predict_model(explainer$model, explainer$x_test))
   expect_true(data.table::is.data.table(x$dt))
   expect_equal(ncol(x$dt), n_features + 1)
-  expect_equal(nrow(x$dt), dt[, max(id)])
+  expect_equal(nrow(x$dt), nrow(explainer$x_test))
   expect_equal(colnames(x$dt), c("none", features))
+
+  # Tets errors
+  expect_error(prediction(dt[id < n_xtest], prediction_zero, explainer))
 
 })
