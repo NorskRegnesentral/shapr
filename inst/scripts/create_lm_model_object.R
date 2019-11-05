@@ -6,4 +6,4 @@ df <- tail(Boston, 50)
 set.seed(123)
 model <- lm(medv ~ lstat + rm + dis + indus, data = df)
 
-saveRDS(object = model,"tests/testthat/test_objects/lm_model_object.rds")
+saveRDS(object = model,"inst/model_objects/lm_model_object.rds")
