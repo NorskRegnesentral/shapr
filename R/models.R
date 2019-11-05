@@ -162,14 +162,14 @@ model_type.ranger <- function(x) {
   }
 
   if (x$treetype == "Probability estimation") {
-    if (length(x$fores$levels) == 2) {
+    if (length(x$forest$levels) == 2) {
       "classification"
     } else {
       stop(
         paste0(
           "\n",
           "We currently don't support multi-classification using ranger, i.e.\n",
-          "where length(model$fores$levels) is greater than 2."
+          "where length(model$forest$levels) is greater than 2."
         )
       )
     }
