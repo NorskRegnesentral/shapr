@@ -247,7 +247,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, mc.cores = 1,...) {
+prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, mc.cores = 1, ...) {
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -258,8 +258,10 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
     features <- x$X$features[index_features]
   }
 
+  mc.cores_simulateAllTrees <- ifelse(exists("mc.cores_simulateAllTrees"),mc.cores_simulateAllTrees,mc.cores)
+  mc.cores_sample_ctree <- ifelse(exists("mc.cores_sample_ctree"),mc.cores_sample_ctree,mc.cores)
+
   ## this is the list of all 2^10 trees (if number of features = 10)
-  aa=proc.time()
   all_trees <- parallel::mclapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
                       FUN = simulateAllTrees,
                       x_train = x$x_train,
@@ -268,11 +270,11 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
                       mincriterion = x$mincriterion,
                       minsplit = x$minsplit,
                       minbucket = x$minbucket,
-                      mc.cores = mc.cores)
-  proc.time()-aa
+                      mc.cores = mc.cores_simulateAllTrees)
 
   for (i in seq(n_xtest)) {
     # options(warn=2)
+
     l <- parallel::mclapply(
       X = all_trees,
       FUN = sample_ctree,
@@ -281,7 +283,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
       x_train = x$x_train,
       p = ncol(x$x_test),
       sample = x$sample,
-      mc.cores = mc.cores
+      mc.cores = mc.cores_sample_ctree
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")

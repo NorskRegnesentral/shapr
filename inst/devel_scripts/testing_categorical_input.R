@@ -11,11 +11,13 @@ data("Boston", package = "MASS")
 
 
 x_var <- c("lstat", "rm", "dis", "indus", "rad")
- x_var <- c("lstat", "rm", "dis", "indus")
+ x_var <- c("lstat","black","indus","ptratio","tax","rad")#,"age","dis","rm","nox")
 
 y_var <- "medv"
 
 Boston$rad = as.factor(Boston$rad)
+Boston$chas = as.factor(Boston$chas)
+
 
 x_train <- Boston[-(1:6), x_var]
 y_train <- Boston[-(1:6), y_var]
@@ -46,13 +48,77 @@ explainer <- shapr(x_train, model)
 
 p <- mean(y_train)
 
-explanation <- explain(
+library(microbenchmark)
+
+timing <- microbenchmark(explanation <- explain(
   x_test,
   approach = 'ctree',
   explainer = explainer,
   prediction_zero = p,
-  sample = FALSE)
+  sample = FALSE),
+  explanation.mc2 <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc.cores = 2),
+  explanation.mc4 <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc.cores = 4),
+  explanation.mc8 <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc.cores = 8),
+  times = 10)
 
+
+timing <- microbenchmark(explanation <- explain(
+  x_test,
+  approach = 'ctree',
+  explainer = explainer,
+  prediction_zero = p,
+  sample = FALSE),
+  explanation.mc1_2 <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc.cores_simulateAllTrees = 2,
+    mc.cores_sample_ctree = 1),
+  explanation.mc4 <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc.cores_simulateAllTrees = 4,
+    mc.cores_sample_ctree = 1),
+  explanation.mc8 <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc.cores_simulateAllTrees = 8,
+    mc.cores_sample_ctree = 1),
+  times = 10)
+
+
+
+all.equal(explanation,explanation.mc2)
+all.equal(explanation,explanation.mc4)
+all.equal(explanation,explanation.mc8)
+
+timing
 
 # Printing the Shapley values for the test data
 print(explanation$dt)
