@@ -84,7 +84,7 @@ mean(abs(as.matrix(Kshap_indep)-as.matrix(Kshap_largesigma)))
 
 
 #### Running shap from Python ####
-reticulate::py_run_file("inst/scripts/Kshap_python.py")
+reticulate::py_run_file("inst/scripts/shap_python_script.py")
 # Writes Python objects to the list py #
 
 # Checking that the predictions are identical
@@ -122,12 +122,12 @@ py$time_py
 
 #> time_R_indep[3]
 #elapsed
-#4,214
+#7,417
 #> time_R_largesigma[3]
 #elapsed
-#3,144
+#6,271
 #> py$time_py
-#[1] 10,58093
+#[1] 21,23536
 
 # Our R implementation is about 3 times faster than the the shap package on this task.
 # Might be some overhead by calling Python from R, but it shouldn't be even close to that much.
