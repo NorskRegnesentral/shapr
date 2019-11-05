@@ -96,6 +96,9 @@ predict_model.xgb.Booster <- function(x, newdata) {
     stop("The xgboost package is required for predicting xgboost models")
   }
 
+  # Test model type
+  model_type <- model_type(x)
+
   predict(x, as.matrix(newdata))
 }
 
@@ -158,11 +161,21 @@ model_type.ranger <- function(x) {
     )
   }
 
-  ifelse(
-    x$treetype == "Probability estimation",
-    "classification",
+  if (x$treetype == "Probability estimation") {
+    if (length(x$fores$levels) == 2) {
+      "classification"
+    } else {
+      stop(
+        paste0(
+          "\n",
+          "We currently don't support multi-classification using ranger, i.e.\n",
+          "where length(model$fores$levels) is greater than 2."
+        )
+      )
+    }
+  } else {
     "regression"
-  )
+  }
 }
 
 #' @rdname model_type
@@ -176,6 +189,29 @@ model_type.mgcv <- function(x) {
 #' @name model_type
 #' @export
 model_type.xgb.Booster <- function(x) {
+
+  if (!is.null(x$params$objective) &&
+      (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
+  ) {
+    stop(
+      paste0(
+        "\n",
+        "We currently don't support multi-classification using xgboost, i.e.\n",
+        "where num_class is greater than 2."
+      )
+    )
+  }
+
+  if (!is.null(x$params$objective) && x$params$objective == "reg:logistic") {
+    stop(
+      paste0(
+        "\n",
+        "We currently don't support standard classification, which predicts the class directly.\n",
+        "To train an xgboost model predicting the class probabilities, you'll need to change \n",
+        "the objective to 'binary:logistic'"
+      )
+    )
+  }
 
   ifelse(
     !is.null(x$params$objective) && x$params$objective == "binary:logistic",
