@@ -11,7 +11,8 @@ test_that("Test functions in shapley.R", {
   x_train <- tail(Boston[, x_var], 50)
 
   # Load premade lm model. Path needs to be relative to testthat directory in the package
-  model <- readRDS("../../inst/model_objects/lm_model_object.rds")
+  print(getwd())
+  model <- readRDS("../inst/model_objects/lm_model_object.rds")
 
   # Prepare the data for explanation
   explainer <- shapr(x_train, model)
