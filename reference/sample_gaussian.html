@@ -125,8 +125,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>sample_gaussian</span>(<span class='no'>index_given</span>, <span class='no'>n_samples</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>, <span class='no'>p</span>, <span class='no'>x_test</span>,
-  <span class='kw'>ensure_condcov_symmetry</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>sample_gaussian</span>(<span class='no'>index_given</span>, <span class='no'>n_samples</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>, <span class='no'>p</span>, <span class='no'>x_test</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,12 +146,6 @@ NULL means it is estimated from the data if needed (in the Gaussian approach).</
     <tr>
       <th>x_test</th>
       <td><p>Numeric matrix of dimension 1 x p.</p></td>
-    </tr>
-    <tr>
-      <th>ensure_condcov_symmetry</th>
-      <td><p>Logical. If <code>TRUE</code>, <code><a href='https://www.rdocumentation.org/packages/Matrix/topics/symmpart'>symmpart</a></code>
-is used on the conditional covariance matrix if and only if the conditional covariance matrix
-is not symmetric and positive-definite.</p></td>
     </tr>
     </table>
     
