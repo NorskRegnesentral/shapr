@@ -247,7 +247,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, mc.cores = 1,...) {
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -259,6 +259,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   }
 
   ## this is the list of all 2^10 trees (if number of features = 10)
+  aa=proc.time()
   all_trees <- parallel::mclapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
                       FUN = simulateAllTrees,
                       x_train = x$x_train,
@@ -266,8 +267,9 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
                       comb_mincriterion = x$comb_mincriterion,
                       mincriterion = x$mincriterion,
                       minsplit = x$minsplit,
-                      minbucket = x$minbucket)
-
+                      minbucket = x$minbucket,
+                      mc.cores = mc.cores)
+  proc.time()-aa
 
   for (i in seq(n_xtest)) {
     # options(warn=2)
@@ -278,7 +280,8 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
       x_test = x$x_test[i, , drop = FALSE],
       x_train = x$x_train,
       p = ncol(x$x_test),
-      sample = x$sample
+      sample = x$sample,
+      mc.cores = mc.cores
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
