@@ -65,11 +65,55 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #' the exact method is used and all combinations are considered. The maximum number of
 #' combinations equals \code{2^p}.
 #'
-#' @return A list to be used by \code{explain} to compute the kernel SHAP values (\code{Kshap}).
+#' @details TODO: Write details about n_combinations
+#'
+#' @return Named list that contains the follwing items:
+#' \describe{
+#'   \item{model}{First item}
+#'   \item{n_combinations}{Second item}
+#'   \item{exact}{Second item}
+#'   \item{n_features}{Second item}
+#'   \item{model_type}{Second item}
+#'   \item{S}{Second item}
+#'   \item{W}{Second item}
+#'   \item{X}{Second item}
+#'   \item{x_train}{Second item}
+#' }
+#'
 #'
 #' @export
 #'
 #' @author Nikolai Sellereite
+#'
+#' @examples
+#' # Load example data
+#' data("Boston", package = "MASS")
+#'
+#' # Example using the exact method
+#' x_var <- c("lstat", "rm", "dis", "indus")
+#' y_var <- "medv"
+#' df1 <- df[, x_var]
+#' model <- lm(medv ~ lstat + rm + dis + indus, data = df)
+#' explainer <- shapr(df1, model)
+#' print(nrow(explainer$X))
+#' # 16 (which equals 2^4)
+#'
+#' # Example using approximation
+#' y_var <- "medv"
+#' x_var <- setdiff(colnames(df), y_var)
+#' model <- lm(medv ~ ., data = df)
+#' df2 <- df[, x_var]
+#' explainer <- shapr(df2, model, n_combinations = 1e3)
+#' print(nrow(explainer$X))
+#'
+#' # Example using approximation where n_combinations > 2^m
+#' x_var <- c("lstat", "rm", "dis", "indus")
+#' y_var <- "medv"
+#' df3 <- df[, x_var]
+#' model <- lm(medv ~ lstat + rm + dis + indus, data = df)
+#' explainer <- shapr(df1, model, n_combinations = 1e3)
+#' print(nrow(explainer$X))
+#' # 16 (which equals 2^4)
 shapr <- function(x,
                   model,
                   n_combinations = NULL) {
