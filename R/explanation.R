@@ -54,21 +54,21 @@
 #' p <- mean(y_train[, 1])
 #'
 #' # Empirical approach
-#' x1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p)
+#' explain1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p)
 #'
 #' # Gaussian approach
-#' x2 <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p)
+#' explain2 <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p)
 #'
 #' # Gaussian copula approach
-#' x3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p)
+#' explain3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p)
 #'
 #' # Combined approach
 #' approach <- c("gaussian", "gaussian", "empirical", "empirical")
-#' x4 <- explain(x_test, explainer, approach = approach, prediction_zero = p)
+#' explain4 <- explain(x_test, explainer, approach = approach, prediction_zero = p)
 #'
 #' # Plot the results
 #' \dontrun{
-#' plot(x1)
+#' plot(explain1)
 #' }
 explain <- function(x, explainer, approach, prediction_zero, ...) {
 
