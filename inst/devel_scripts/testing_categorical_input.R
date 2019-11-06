@@ -11,7 +11,7 @@ data("Boston", package = "MASS")
 
 
 x_var <- c("lstat", "rm", "dis", "indus", "rad")
- x_var <- c("lstat","black","indus","ptratio","tax","rad","age","dis","rm","nox")
+ x_var_org <- c("lstat","black","indus","ptratio","tax","rad","age","dis","rm","nox")
 # x_var <- c("lstat","black","indus")#"ptratio")#,"tax","rad")#,"age","dis","rm","nox")
 
  y_var <- "medv"
@@ -25,7 +25,7 @@ timing_list <- list()
 
 for (i in 1:length(loop_no_var)){
 
-  x_var <- x_var[1:loop_no_var]
+  x_var <- x_var_org[1:loop_no_var[i]]
 
 
 x_train <- Boston[-(1:6), x_var]
@@ -135,7 +135,7 @@ timing <- microbenchmark(explanation_list[[1]] <- explain(
     sample = FALSE,
     mc_cores_simulateAllTrees = 8,
     mc_cores_sample_ctree = 1),
-  times = 3)
+  times = 10)
 
 
 # Checking that all are equal
@@ -145,6 +145,8 @@ print(timing)
 
 timing_list[[i]] <- timing
 }
+
+
 # Printing the Shapley values for the test data
 print(explanation$dt)
 
