@@ -84,7 +84,7 @@ mean(abs(as.matrix(Kshap_indep)-as.matrix(Kshap_largesigma)))
 
 
 #### Running shap from Python ####
-reticulate::py_run_file("inst/scripts/shap_python_script.py")
+reticulate::py_run_file(system.file("scripts", "shap_python_script.py", package = "shapr"))
 # Writes Python objects to the list py #
 
 # Checking that the predictions are identical
