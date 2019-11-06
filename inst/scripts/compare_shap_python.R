@@ -25,7 +25,7 @@ x_test = rep(1,100) %x% x_test
 colnames(x_test) <- colnames(x_train)
 
 # Reading the R format version of the xgboost model to avoid crash reading same xgboost model in R and Python
-model <- readRDS("inst/model_objects/xgboost_model_object.rds")
+model <- readRDS(system.file("model_objects", "xgboost_model_object.rds", package = "shapr"))
 
 pred_test <- predict(model,x_test)
 
@@ -84,7 +84,7 @@ mean(abs(as.matrix(Kshap_indep)-as.matrix(Kshap_largesigma)))
 
 
 #### Running shap from Python ####
-reticulate::py_run_file("inst/scripts/shap_python_script.py")
+reticulate::py_run_file(system.file("scripts", "shap_python_script.py", package = "shapr"))
 # Writes Python objects to the list py #
 
 # Checking that the predictions are identical
