@@ -5,7 +5,7 @@
 \title{Sample conditional Gaussian variables}
 \usage{
 sample_gaussian(index_given, n_samples, mu, cov_mat, p, x_test,
-  ensure_condcov_symmetry = F)
+  ensure_condcov_symmetry = FALSE)
 }
 \arguments{
 \item{index_given}{Vector. The indices of the features to condition upon.}
@@ -15,11 +15,11 @@ NULL means it is estimated from the data if needed (in the Gaussian approach).}
 
 \item{p}{Positive integer. The number of features.}
 
-\item{x_test}{Matrix, data.frame or data.table with the features of the observation whose
-predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.}
+\item{x_test}{Numeric matrix of dimension 1 x p.}
 
-\item{ensure_condcov_symmetry}{Logical. If \code{true}, \code{symmpart} is used on the
-conditional covariance matrix to ensure symmetry.}
+\item{ensure_condcov_symmetry}{Logical. If \code{TRUE}, \code{\link[Matrix]{symmpart}}
+is used on the conditional covariance matrix if and only if the conditional covariance matrix
+is not symmetric and positive-definite.}
 }
 \value{
 data.table with \code{n_samples} (conditional) Gaussian samples

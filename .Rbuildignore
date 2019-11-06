@@ -7,3 +7,5 @@
 ^\.covrignore$
 ^LICENSE\.md$
 inst/compare_lundberg\.xgb\.obj
+^\.github$
+^CODE_OF_CONDUCT\.md$

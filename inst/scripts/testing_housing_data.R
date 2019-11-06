@@ -29,8 +29,10 @@ check_for_row_NA <- function(row_ind, data){
 ## ------------------------- data ------------------------
 
 dataDir <- paste(projDir, "BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/", sep = "/")
+dataDirMJ <- ".."
 
-setwd(dataDir)
+
+setwd(dataDirMJ)
 
 ## read csv
 train_data <- read.table(file = "train.csv", sep = ",", header = TRUE, stringsAsFactors = TRUE)
@@ -51,6 +53,9 @@ test_noNA <- test_noNA0[sapply(X = 1:nrow(test_noNA0), FUN = check_for_row_NA, d
 x_var <- c("MSSubClass", "MSZoning", "LotArea", "Street")
 y_var <- "SalePrice"
 
+#### Run xgboost with all variables to find the most influential categorical variables ####
+x_var <- colnames(train_noNA)[-which(colnames(train_noNA)%in%c("Id","SalePrice"))]
+
 ## ----------------------------------------- ##
 
 x_train <- train_noNA[, x_var]
@@ -62,19 +67,66 @@ y_train <- y_train / 1000000 ## convert to millions
 
 ### SPECIAL STUFF  STARTS ###
 library(caret)
-dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train, x_test))
+dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train, x_test),fullRank=T)
 x_train_dummy <- predict(dummyfunc, newdata = x_train)
 x_test_dummy <- predict(dummyfunc, newdata = x_test)
 ### SPECIAL STUFF ENDS ###
 
+aa=sapply(x_train,class)
+bb = names(aa[aa=="factor"])
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost(
   data = x_train_dummy,
   label = y_train,
-  nround = 20,
+  nround = 50,
   verbose = FALSE
 )
+
+imp <- xgb.importance(model=model)
+
+these <- strsplit(imp$Feature,split = ".",fixed = T)
+orgnam <- sapply(these,FUN = function(x){x[[1]]})
+
+imp[,orgnam:=..orgnam]
+imp[,isfact:=orgnam %in% ..bb]
+
+x_var_cat_2 <- head(imp[isfact==TRUE,orgnam],2)
+
+#### The two most influential categorical variables ####
+#> x_var_cat_2
+#[1] "Neighborhood" "ExterQual"
+
+#### refined model starts ####
+x_var <- c("MSSubClass", "LotArea", x_var_cat_2)
+y_var <- "SalePrice"
+
+x_train <- train_noNA[, x_var]
+x_test <- test_noNA[, x_var]
+
+y_train <- train_noNA[, y_var]
+y_train <- y_train / 1000000 ## convert to millions
+
+
+### SPECIAL STUFF  STARTS ###
+library(caret)
+dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train, x_test),fullRank=T)
+x_train_dummy <- predict(dummyfunc, newdata = x_train)
+x_test_dummy <- predict(dummyfunc, newdata = x_test)
+### SPECIAL STUFF ENDS ###
+
+# Fitting a basic xgboost model to the training data
+model <- xgboost(
+  data = x_train_dummy,
+  label = y_train,
+  nround = 50,
+  verbose = FALSE
+)
+
+xgb.importance(model=model)
+
+### refined model ends ####
+
 
 ### SPECIAL STUFF STARTS ###
 model$dummyfunc <- dummyfunc
@@ -85,8 +137,8 @@ explainer <- shapr(x_train, model)
 p <- mean(y_train)
 
 start_time <- Sys.time()
-explanation <- explain(
-  x = as.data.table(x_test[1:6,]),
+explanation <- explain( ## this takes a very long time to run = 21.55 minutes?
+  x = as.data.table(x_test)[sample.int(n = nrow(x_test),size = 10),],
   approach = 'ctree',
   explainer = explainer,
   prediction_zero = p,
@@ -95,6 +147,7 @@ explanation <- explain(
 end_time <- Sys.time()
 end_time - start_time
 
+explanation$dt
 
 print(explanation$dt)
 
@@ -106,5 +159,5 @@ print(explanation$dt)
 # 5: 0.1809212 0.039462031  0.0060510941 -8.906204e-03 -0.0040317896
 # 6: 0.1809212 0.046030168 -0.0001414244  9.982445e-05  0.0004323340
 
-plot(explanation) ## this doesn't work?
+shapr:::plot.shapr(explanation,plot_phi0 = F) ## this doesn't work?
 

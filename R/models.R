@@ -48,8 +48,7 @@ predict_model.lm <- function(x, newdata) {
   if (!requireNamespace('stats', quietly = TRUE)) {
     stop('The stats package is required for predicting stats models')
   }
-
-  predict(x, newdata)
+  predict(x, newdata = as.data.frame(newdata))
 }
 
 #' @rdname predict_model
