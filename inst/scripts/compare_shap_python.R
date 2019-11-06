@@ -1,8 +1,14 @@
 library(MASS)
 library(xgboost)
 library(shapr)
-library(ggplot2)
 library(data.table)
+
+# Python settings
+library(reticulate)
+#virtualenv_create("py3_6-virtualenv", python = "/usr/bin/python3.6") # Creating virtual environment with Python 3.6
+use_virtualenv("py3_6-virtualenv")
+#py_install("xgboost",envname = "py3_6-virtualenv")
+#py_install("shap",envname = "py3_6-virtualenv")
 
 data("Boston")
 
@@ -13,63 +19,42 @@ x_train <- as.matrix(tail(Boston[, x_var], -6))
 y_train <- tail(Boston[, y_var], -6)
 x_test <- as.matrix(head(Boston[, x_var], 6))
 
-# Creating a larger test data set (300 observations) for more realistic function time calls.
+# Creating a larger test data set (600 observations) for more realistic function time calls.
 # Modifying x_test to repeat the 6 test observations 50 times
-x_test = rep(1,50) %x% x_test
+x_test = rep(1,100) %x% x_test
 colnames(x_test) <- colnames(x_train)
 
-# Fitting a basic xgboost model to the training data
-model <- xgboost(
-  data = x_train,
-  label = y_train,
-  nround = 20
-)
+# Reading the R format version of the xgboost model to avoid crash reading same xgboost model in R and Python
+model <- readRDS(system.file("model_objects", "xgboost_model_object.rds", package = "shapr"))
 
 pred_test <- predict(model,x_test)
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
-pred_zero <- mean(predict(model,x_train))# adjustment from the standard mean(y_train) to comply with the shap implementation
+p0 <- mean(predict(model,x_train))# adjustment from the standard mean(y_train) to comply with the shap implementation
 
 time_R_start <- proc.time()
 # Prepare the data for explanation
-l <- prepare_kshap(
-  Xtrain = x_train,
-  Xtest = x_test
-)
+explainer <- shapr(x_train, model)
 
 time_R_prepare <- proc.time()
 
-
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation_independence <- compute_kshap(
-  model = model,
-  l = l,
-  pred_zero = pred_zero,
-  empirical_settings = list(type = "independence",
-                            w_threshold = 1)
-)
+explanation_independence <- explain(x_test, explainer, approach = "empirical", type = "independence", prediction_zero = p0)
 
 time_R_indep0 <- proc.time()
 
-
-explanation_largesigma <- compute_kshap(
-  model = model,
-  l = l,
-  pred_zero = pred_zero,
-  cond_approach = "empirical",
-  empirical_settings = list(type ="fixed_sigma", fixed_sigma_vec = 10000, w_threshold = 1)
-)
+explanation_largesigma <- explain(x_test, explainer, approach = "empirical", type = "fixed_sigma",
+                                  fixed_sigma_vec = 10000, w_threshold = 1, prediction_zero = p0)
 
 time_R_largesigma0 <- proc.time()
 
 time_R_indep <- time_R_indep0 - time_R_start
 time_R_largesigma <- (time_R_largesigma0 - time_R_indep0) + (time_R_prepare- time_R_start)
 
-
 # Printing the Shapley values for the test data
-Kshap_indep <- explanation_independence$Kshap
-Kshap_largesigma <- explanation_largesigma$Kshap
+Kshap_indep <- explanation_independence$dt
+Kshap_largesigma <- explanation_largesigma$dt
 
 head(Kshap_indep)
 #> Kshap_indep
@@ -94,62 +79,16 @@ head(Kshap_largesigma)
 
 # Checking the difference between the methods
 mean(abs(as.matrix(Kshap_indep)-as.matrix(Kshap_largesigma)))
-#[1] 6.752507e-08  # Numerically identical
+#[1] 8.404487e-08  # Numerically identical
 
 
-xgb.save(model=model,fname = "inst/compare_lundberg.xgb.obj") # Need to wait a bit after saving and then loading this in python
 
 #### Running shap from Python ####
+reticulate::py_run_file(system.file("scripts", "shap_python_script.py", package = "shapr"))
+# Writes Python objects to the list py #
 
-# Python settings
-library(reticulate)
-#virtualenv_create("py3_6-virtualenv", python = "/usr/bin/python3.6") # Creating virtual environment with Python 3.6
-use_virtualenv("py3_6-virtualenv")
-#py_install("xgboost",envname = "py3_6-virtualenv")
-#py_install("shap",envname = "py3_6-virtualenv")
-
-
-
-reticulate::repl_python()
-#### Python code ####
-import xgboost as xgb
-import shap
-import numpy as np
-import pandas as pd
-import time
-
-model = xgb.Booster()  # init model
-model.load_model("inst/compare_lundberg.xgb.obj")
-
-## kernel shap sends data as numpy array which has no column names, so we fix it
-def xgb_predict(data_asarray):
-  data_asDmatrix =  xgb.DMatrix(data_asarray)
-  return model.predict(data_asDmatrix)
-
-py_pred_test = xgb_predict(r.x_test) # Test predictions in python
-
-sum((py_pred_test-r.pred_test)**2) # checking equality with r predictions
-
-#### Applying kernelshap
-
-time_py_start = time.perf_counter()
-
-shap_kernel_explainer = shap.KernelExplainer(xgb_predict, r.x_train)
-Kshap_shap0 = shap_kernel_explainer.shap_values(r.x_test,nsamples = int(100000),l1_reg=0)
-
-time_py_end = time.perf_counter()
-
-time_py = time_py_end-time_py_start
-
-getattr(shap_kernel_explainer,'expected_value') # This is phi0, not used at all below
-
-Kshap_shap = pd.DataFrame(Kshap_shap0,columns = r.x_var)
-
-Kshap_shap.insert(0,"none",getattr(shap_kernel_explainer,'expected_value'),True) # Adding the none column
-
-
-exit
-#### Exit python code ####
+# Checking that the predictions are identical
+sum((pred_test-py$py_pred_test)^2)
 
 head(Kshap_indep)
 #> Kshap_indep
@@ -174,20 +113,27 @@ head(py$Kshap_shap)
 
 # Checking difference between our R implementtaion and the shap implementation i Python
 mean(abs(as.matrix(Kshap_indep)-as.matrix(py$Kshap_shap)))
-#[1] 1,151811e-07 # Numerically identical
+#[1] 1,300368e-07 # Numerically identical
 
 # Checking the running time of the different methods
 time_R_indep[3]
 time_R_largesigma[3]
 py$time_py
+
 #> time_R_indep[3]
 #elapsed
-#9,908
+#7,417
 #> time_R_largesigma[3]
 #elapsed
-#9,768
+#6,271
 #> py$time_py
-#[1] 10,75703
+#[1] 21,23536
 
-# Our R implementation is about 1 second = 10% faster.
-# Might be some overhead by calling Python from R, but I don't think it's that much.
+# Our R implementation is about 3 times faster than the the shap package on this task.
+# Might be some overhead by calling Python from R, but it shouldn't be even close to that much.
+
+
+
+
+
+
