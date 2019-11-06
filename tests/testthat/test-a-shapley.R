@@ -3,7 +3,7 @@ library(shapr)
 
 context("test-shapley.R")
 
-if (as.numeric(version$minor) >= 6.0) RNGkind(sample.kind="Rounding")
+if (as.numeric(version$minor) >= 6.0) RNGkind(sample.kind = "Rounding")
 
 test_that("Test functions in shapley.R", {
 
@@ -13,7 +13,6 @@ test_that("Test functions in shapley.R", {
   x_train <- tail(Boston[, x_var], 50)
 
   # Load premade lm model. Path needs to be relative to testthat directory in the package
-  print(getwd())
   model <- readRDS("model_objects/lm_model_object.rds")
 
   # Prepare the data for explanation
