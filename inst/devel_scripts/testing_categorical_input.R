@@ -132,8 +132,8 @@ timing3 <- microbenchmark(explanation <- explain(
     explainer = explainer,
     prediction_zero = p,
     sample = FALSE,
-    mc.cores_simulateAllTrees = 1,
-    mc.cores_sample_ctree = 4),
+    mc_cores_simulateAllTrees = 1,
+    mc_cores_sample_ctree = 4),
   explanation.mc8 <- explain(
     x_test,
     approach = 'ctree',
@@ -143,6 +143,20 @@ timing3 <- microbenchmark(explanation <- explain(
     mc.cores_simulateAllTrees = 1,
     mc.cores_sample_ctree = 8),
   times = 10)
+
+
+breakfunc <- function(breaks = 10){
+  print(breaks)
+}
+
+ myhist <- function(x, border="blue", ...){
+   breakfunc(...)
+   	hist(x, border=border, ...)
+   }
+set.seed(5)
+myhist(rnorm(1000), breaks=30)
+set.seed(5)
+myhist(rnorm(1000))
 
 
 

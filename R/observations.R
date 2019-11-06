@@ -88,6 +88,8 @@ prepare_data <- function(x, ...) {
   UseMethod("prepare_data", x)
 }
 
+
+
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
@@ -247,7 +249,8 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' @rdname prepare_data
 #' @name prepare_data
 #' @export
-prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, mc.cores = 1, ...) {
+prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
+                               mc_cores = 1, mc_cores_simulateAllTrees = mc_cores, mc_cores_sample_ctree = mc_cores, ...) {
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -258,8 +261,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
     features <- x$X$features[index_features]
   }
 
-  mc.cores_simulateAllTrees <- ifelse(exists("mc.cores_simulateAllTrees"),mc.cores_simulateAllTrees,mc.cores)
-  mc.cores_sample_ctree <- ifelse(exists("mc.cores_sample_ctree"),mc.cores_sample_ctree,mc.cores)
+#  mc_cores_list <- set_ind_mc_cores(mc_cores = mc_cores ,...)
 
   ## this is the list of all 2^10 trees (if number of features = 10)
   all_trees <- parallel::mclapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
@@ -270,7 +272,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
                       mincriterion = x$mincriterion,
                       minsplit = x$minsplit,
                       minbucket = x$minbucket,
-                      mc.cores = mc.cores_simulateAllTrees)
+                      mc.cores = mc_cores_simulateAllTrees)
 
   for (i in seq(n_xtest)) {
     # options(warn=2)
@@ -283,7 +285,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
       x_train = x$x_train,
       p = ncol(x$x_test),
       sample = x$sample,
-      mc.cores = mc.cores_sample_ctree
+      mc.cores = mc_cores_sample_ctree
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
@@ -301,6 +303,28 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 
   return(dt2)
 }
+
+#' Helper function to set the number of cores for specific function
+#'
+#' @param mc_cores Integer. The overall number of mc_cores, to be used if nothing else is specified in ...
+#'
+#' @param ... mc_cores_simulateAllTrees (Integer) and exist_mc_cores_sample_ctree (Integer) to override mc_cores if specified, otherwise use mc_cores
+#'
+#' @name set_ind_mc_cores
+#'
+#' @export
+set_ind_mc_cores <- function(mc_cores = 1 , ...){
+  these_args <- list(...)
+  exist_mc_cores_simulateAllTrees <- "mc_cores_simulateAllTrees" %in% names(these_args)
+  exist_mc_cores_sample_ctree <- "mc_cores_sample_ctree" %in% names(these_args)
+
+  mc_cores_simulateAllTrees <- ifelse(exist_mc_cores_simulateAllTrees,mc_cores_simulateAllTrees,mc_cores)
+  mc_cores_sample_ctree <- ifelse(exist_mc_cores_sample_ctree,mc_cores_sample_ctree,mc_cores)
+
+  return(list(mc_cores_simulateAllTrees = mc_cores_simulateAllTrees,
+              mc_cores_sample_ctree = mc_cores_sample_ctree))
+}
+
 
 #' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {
