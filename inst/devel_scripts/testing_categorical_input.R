@@ -12,11 +12,20 @@ data("Boston", package = "MASS")
 
 x_var <- c("lstat", "rm", "dis", "indus", "rad")
  x_var <- c("lstat","black","indus","ptratio","tax","rad","age","dis","rm","nox")
+# x_var <- c("lstat","black","indus")#"ptratio")#,"tax","rad")#,"age","dis","rm","nox")
 
-y_var <- "medv"
+ y_var <- "medv"
 
-Boston$rad = as.factor(Boston$rad)
-Boston$chas = as.factor(Boston$chas)
+ Boston$rad = as.factor(Boston$rad)
+ Boston$chas = as.factor(Boston$chas)
+
+loop_no_var <- c(3,4,5,6,7,8,9,10)
+
+timing_list <- list()
+
+for (i in 1:length(loop_no_var)){
+
+  x_var <- x_var[1:loop_no_var]
 
 
 x_train <- Boston[-(1:6), x_var]
@@ -49,84 +58,44 @@ explainer <- shapr(x_train, model)
 p <- mean(y_train)
 
 library(microbenchmark)
+explanation_list <- list()
 
-timing <- microbenchmark(explanation <- explain(
+timing <- microbenchmark(explanation_list[[1]] <- explain(
   x_test,
   approach = 'ctree',
   explainer = explainer,
   prediction_zero = p,
   sample = FALSE),
-  explanation.mc2 <- explain(
+  explanation_list[[2]]  <- explain(
     x_test,
     approach = 'ctree',
     explainer = explainer,
     prediction_zero = p,
     sample = FALSE,
-    mc.cores = 2),
-  explanation.mc4 <- explain(
+    mc_cores = 2),
+  explanation_list[[3]]  <- explain(
     x_test,
     approach = 'ctree',
     explainer = explainer,
     prediction_zero = p,
     sample = FALSE,
-    mc.cores = 4),
-  explanation.mc8 <- explain(
+    mc_cores = 4),
+  explanation_list[[4]]  <- explain(
     x_test,
     approach = 'ctree',
     explainer = explainer,
     prediction_zero = p,
     sample = FALSE,
-    mc.cores = 8),
-  times = 10)
-
-
-timing2 <- microbenchmark(explanation <- explain(
-  x_test,
-  approach = 'ctree',
-  explainer = explainer,
-  prediction_zero = p,
-  sample = FALSE),
-  explanation.mc1_2 <- explain(
+    mc_cores = 8),
+  explanation_list[[5]]  <- explain(
     x_test,
     approach = 'ctree',
     explainer = explainer,
     prediction_zero = p,
     sample = FALSE,
-    mc.cores_simulateAllTrees = 2,
-    mc.cores_sample_ctree = 1),
-  explanation.mc4 <- explain(
-    x_test,
-    approach = 'ctree',
-    explainer = explainer,
-    prediction_zero = p,
-    sample = FALSE,
-    mc.cores_simulateAllTrees = 4,
-    mc.cores_sample_ctree = 1),
-  explanation.mc8 <- explain(
-    x_test,
-    approach = 'ctree',
-    explainer = explainer,
-    prediction_zero = p,
-    sample = FALSE,
-    mc.cores_simulateAllTrees = 8,
-    mc.cores_sample_ctree = 1),
-  times = 10)
-
-timing3 <- microbenchmark(explanation <- explain(
-  x_test,
-  approach = 'ctree',
-  explainer = explainer,
-  prediction_zero = p,
-  sample = FALSE),
-  explanation.mc1_2 <- explain(
-    x_test,
-    approach = 'ctree',
-    explainer = explainer,
-    prediction_zero = p,
-    sample = FALSE,
-    mc.cores_simulateAllTrees = 1,
-    mc.cores_sample_ctree = 2),
-  explanation.mc4 <- explain(
+    mc_cores_simulateAllTrees = 1,
+    mc_cores_sample_ctree = 2),
+  explanation_list[[6]]  <- explain(
     x_test,
     approach = 'ctree',
     explainer = explainer,
@@ -134,42 +103,48 @@ timing3 <- microbenchmark(explanation <- explain(
     sample = FALSE,
     mc_cores_simulateAllTrees = 1,
     mc_cores_sample_ctree = 4),
-  explanation.mc8 <- explain(
+  explanation_list[[7]]  <- explain(
     x_test,
     approach = 'ctree',
     explainer = explainer,
     prediction_zero = p,
     sample = FALSE,
-    mc.cores_simulateAllTrees = 1,
-    mc.cores_sample_ctree = 8),
-  times = 10)
+    mc_cores_simulateAllTrees = 1,
+    mc_cores_sample_ctree = 8),
+  explanation_list[[8]]  <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc_cores_simulateAllTrees = 2,
+    mc_cores_sample_ctree = 1),
+  explanation_list[[9]]  <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc_cores_simulateAllTrees = 4,
+    mc_cores_sample_ctree = 1),
+  explanation_list[[10]]  <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    mc_cores_simulateAllTrees = 8,
+    mc_cores_sample_ctree = 1),
+  times = 3)
 
 
-breakfunc <- function(breaks = 10){
-  print(breaks)
+# Checking that all are equal
+print(length(unique(explanation_list)))
+
+print(timing)
+
+timing_list[[i]] <- timing
 }
-
- myhist <- function(x, border="blue", ...){
-   breakfunc(...)
-   	hist(x, border=border, ...)
-   }
-set.seed(5)
-myhist(rnorm(1000), breaks=30)
-set.seed(5)
-myhist(rnorm(1000))
-
-
-
-all.equal(explanation,explanation.mc2)
-all.equal(explanation,explanation.mc4)
-all.equal(explanation,explanation.mc8)
-
-timing # Almost identical for dimension 6. Slower for dimension smaller than 6
-timing2 # Almost identical for dimension 6. Slower for dimension smaller than 6
-timing3 # Almost identical for dimension 6. Slower for dimension smaller than 6
-
-
-
 # Printing the Shapley values for the test data
 print(explanation$dt)
 

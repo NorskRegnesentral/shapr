@@ -20,7 +20,9 @@ prepare_data(x, ...)
   n_samples = 1000, index_features = NULL, ...)
 
 \method{prepare_data}{ctree}(x, seed = 1, n_samples = 1000,
-  index_features = NULL, mc_cores = 1, ...)
+  index_features = NULL, mc_cores = 1,
+  mc_cores_simulateAllTrees = mc_cores,
+  mc_cores_sample_ctree = mc_cores, ...)
 }
 \arguments{
 \item{...}{Currently not used.}

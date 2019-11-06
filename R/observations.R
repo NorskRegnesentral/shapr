@@ -261,7 +261,6 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
     features <- x$X$features[index_features]
   }
 
-#  mc_cores_list <- set_ind_mc_cores(mc_cores = mc_cores ,...)
 
   ## this is the list of all 2^10 trees (if number of features = 10)
   all_trees <- parallel::mclapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
@@ -302,27 +301,6 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   setnames(dt2, "V1", "w")
 
   return(dt2)
-}
-
-#' Helper function to set the number of cores for specific function
-#'
-#' @param mc_cores Integer. The overall number of mc_cores, to be used if nothing else is specified in ...
-#'
-#' @param ... mc_cores_simulateAllTrees (Integer) and exist_mc_cores_sample_ctree (Integer) to override mc_cores if specified, otherwise use mc_cores
-#'
-#' @name set_ind_mc_cores
-#'
-#' @export
-set_ind_mc_cores <- function(mc_cores = 1 , ...){
-  these_args <- list(...)
-  exist_mc_cores_simulateAllTrees <- "mc_cores_simulateAllTrees" %in% names(these_args)
-  exist_mc_cores_sample_ctree <- "mc_cores_sample_ctree" %in% names(these_args)
-
-  mc_cores_simulateAllTrees <- ifelse(exist_mc_cores_simulateAllTrees,mc_cores_simulateAllTrees,mc_cores)
-  mc_cores_sample_ctree <- ifelse(exist_mc_cores_sample_ctree,mc_cores_sample_ctree,mc_cores)
-
-  return(list(mc_cores_simulateAllTrees = mc_cores_simulateAllTrees,
-              mc_cores_sample_ctree = mc_cores_sample_ctree))
 }
 
 
