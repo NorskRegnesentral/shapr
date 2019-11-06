@@ -1,9 +1,14 @@
-#' Get combinations
+#' Define feature combinations, and fetch additional information about each unique combination
 #'
 #' @details
+#' E.g. you have fitted a regression model using 4 different numerical features. In this specific
+#' case there are 16 (2^4) unique ways to combine the features. Let's imagine that the features
+#' are called \code{x1}, \code{x2}, \code{x3} and \code{x4}. Then all the combinations can be
+#' found by
+#'
 #' The returned data.table contains the following columns
 #' \describe{
-#' \item{ID}{Positive integer. Unique key for combination}
+#' \item{ID}{Positive integer. Unique key for a specific combination}
 #' \item{features}{List of integer vectors}
 #' \item{nfeatures}{Positive integer}
 #' \item{N}{Positive integer}
