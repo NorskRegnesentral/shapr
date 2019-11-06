@@ -33,7 +33,7 @@ See \code{\link{shapr}}.}
 \code{n_features} equals the total number of features in the model. All elements should
 either be \code{"gaussian"}, \code{"copula"} or \code{"empirical"}. See details for more information.}
 
-\item{prediction_zero}{The prediction value for unseen data, typically equal to the mean of
+\item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
 
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
@@ -41,19 +41,21 @@ the response.}
 \item{type}{Character. Should be equal to either \code{"independence"},
 \code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
-\item{fixed_sigma_vec}{Vector or numeric. Only applicable when \code{approach='empirical'} and
-\code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}}
+\item{fixed_sigma_vec}{Numeric. Represents the kernel bandwith. Note that this argument is only
+applicable when \code{approach = "empirical"}, and \code{type = "fixed_sigma"}}
 
-\item{n_samples_aicc}{Positive integer. Only applicable when
-\code{approach='empirical'} and \code{type='AICc_each_k'} or
-\code{type='AICc_full'}. Number of samples to consider in AICc optimization.}
+\item{n_samples_aicc}{Positive integer. Number of samples to consider in AICc optimization.
+Note that this argument is only applicable when \code{approach = 'empirical'}, and \code{type}
+is either equal to \code{"AICc_each_k"} or \code{"AICc_full"}}
 
-\item{eval_max_aicc}{Positive integer. Only applicable when \code{approach='empirical'}
-and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Maximum number of iterations when
-optimizing the AICc.}
+\item{eval_max_aicc}{Positive integer. Maximum number of iterations when
+optimizing the AICc. Note that this argument is only applicable when
+\code{approach = "empirical"}, and \code{type} is either equal to
+\code{"AICc_each_k"} or \code{"AICc_full"}}
 
-\item{start_aicc}{Numeric. Only applicable when \code{approach='empirical'} and
-\code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.}
+\item{start_aicc}{Numeric. Start value when optimizing the AICc. Note that this argument
+is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
+\code{"AICc_each_k"} or \code{"AICc_full"}}
 
 \item{w_threshold}{Positive integer between 0 and 1.}
 
