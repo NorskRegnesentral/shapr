@@ -315,10 +315,10 @@ simulateAllTrees <- function(given_ind,
     ## currently no tests made to make sure that comb_indici and comb_mincriterion both exist
     ## if only one is provided, no split is made.
     if(!is.null(comb_indici) & !is.null(comb_mincriterion) ){
-      if(length(given_ind) <= comb$comb_indici){
-        mincriterion <- comb$comb_mincriterion[1] # if alpha = 0.05 --> split tree if p < 0.05
+      if(length(given_ind) <= comb_indici){
+        mincriterion <- comb_mincriterion[1] # if alpha = 0.05 --> split tree if p < 0.05
       } else {
-        mincriterion <- comb$comb_mincriterion[2] # if alpha = 0.20 --> split tree if p < 0.20
+        mincriterion <- comb_mincriterion[2] # if alpha = 0.20 --> split tree if p < 0.20
       }
     }
 

@@ -257,9 +257,21 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   } else {
     features <- x$X$features[index_features]
   }
+  if(!is.null(x$comb_indici)){
+    stopifnot(x$comb_indici >= 0)
+    stopifnot(x$comb_indici <= ncol(x$x_train))
+    stopifnot(length(x$comb_indici) == 1)
+    stopifnot(!is.null(x$comb_mincriterion))
+  }
+  if(!is.null(x$comb_mincriterion)){
+    stopifnot(!is.null(x$comb_indici))
+    stopifnot(length(x$comb_mincriterion) == 2)
+    stopifnot(all(x$comb_mincriterion <= 1))
+    stopifnot(all(x$comb_mincriterion >= 0))
+  }
 
   ## this is the list of all 2^10 trees (if number of features = 10)
-  all_trees <- lapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
+  all_trees <- lapply(X = features,
                       FUN = simulateAllTrees,
                       x_train = x$x_train,
                       comb_indici = x$comb_indici,

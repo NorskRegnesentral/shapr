@@ -281,8 +281,13 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
                           minsplit = 20, minbucket = 7,
                           sample = TRUE, ...){
 
+  # Checks input argument
+  if (!is.matrix(x) & !is.data.frame(x)) {
+    stop("x should be a matrix or a dataframe.")
+  }
+
   # Add arguments to explainer object
-  explainer$x_test <- data.table::as.data.table(x) # TODO: Add test x_test takes an appropriate form
+  explainer$x_test <- data.table::as.data.table(x)
   explainer$approach <- approach
   explainer$comb_indici <- comb_indici
   explainer$comb_mincriterion <- comb_mincriterion

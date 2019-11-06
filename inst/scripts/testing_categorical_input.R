@@ -11,7 +11,7 @@ data("Boston", package = "MASS")
 
 
 x_var <- c("lstat", "rm", "dis", "indus", "rad")
- x_var <- c("lstat", "rm", "dis", "indus")
+x_var <- c("lstat", "rm", "dis", "indus")
 
 y_var <- "medv"
 
