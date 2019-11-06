@@ -3,6 +3,8 @@ library(shapr)
 
 context("test-explanation.R")
 
+if (as.numeric(version$minor) >= 3.6) RNGkind(sample.kind="Rounding")
+
 test_that("Test functions in explanation.R", {
 
   # Load data -----------
