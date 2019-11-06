@@ -66,9 +66,13 @@ generating distribution. \code{NULL} means it is estimated from the data if need
 (in the Gaussian approach).}
 }
 \value{
-data.frame. Contains the estimated Shapley values for the test data. Note that
-the dimensions of the data.frame equals \code{n x (p+1)}, where \code{n} equals the number
-of test observations, and \code{p} equals the total number of features.
+Object of class \code{c("shapr", "list")}. Contains the following items:
+\describe{
+  \item{dt}{First item}
+  \item{model}{Second item}
+  \item{p}{Second item}
+  \item{x_test}{Second item}
+}
 }
 \description{
 TODO: Add a more detailed description
@@ -77,6 +81,44 @@ TODO: Add a more detailed description
 TODO: Add information about approach.
 TODO: Some additional details about the returned object
 }
+\examples{
+# Load example data
+data("Boston", package = "MASS")
+
+# Split data into test- and training data
+x_var <- c("lstat", "rm", "dis", "indus")
+y_var <- "medv"
+x_train <- head(Boston[, x_var], -3)
+y_train <- head(Boston[, y_var, drop = FALSE], -3)
+x_test <- tail(Boston[, x_var], 3)
+
+# Fit a linear model
+model <- lm(medv ~ lstat + rm + dis + indus, data = cbind(y_train, x_train))
+
+# Create an explainer object
+explainer <- shapr(x_train, model)
+
+# Explain predictions
+p <- mean(y_train[, 1])
+
+# Empirical approach
+x1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p)
+
+# Gaussian approach
+x2 <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p)
+
+# Gaussian copula approach
+x3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p)
+
+# Combined approach
+approach <- c("gaussian", "gaussian", "empirical", "empirical")
+x4 <- explain(x_test, explainer, approach = approach, prediction_zero = p)
+
+# Plot the results
+\dontrun{
+plot(x1)
+}
+}
 \author{
-Camilla Lingjaerde
+Camilla Lingjaerde, Nikolai Sellereite
 }
