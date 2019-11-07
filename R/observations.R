@@ -80,7 +80,6 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #'
 #' @param ... Currently not used.
 #'
-#' @name prepare_data
 #'
 #' @export
 prepare_data <- function(x, ...) {
@@ -91,7 +90,6 @@ prepare_data <- function(x, ...) {
 
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -173,7 +171,6 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
 }
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -210,7 +207,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 }
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -245,9 +241,17 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
   dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
-
+#' @param  mc_cores Integer. Only for class \code{ctree}. The number of cores to use in paralellization of the
+#' tree building and tree prediction Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
+#' work on Windows systems.
+#'
+#' @param  mc_cores_simulateAllTrees Integer. As for \code{mc_cores}, but specific for the tree building function
+#' #' Defaults to \code{mc_cores}.
+#'
+#' @param  mc_cores_simulateAllTrees Integer. As for \code{mc_cores}, but specific for the tree building prediction function.
+#' Defaults to \code{mc_cores}.
+#'
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
                                mc_cores = 1, mc_cores_simulateAllTrees = mc_cores, mc_cores_sample_ctree = mc_cores, ...) {
