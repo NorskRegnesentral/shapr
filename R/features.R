@@ -1,10 +1,10 @@
 #' Define feature combinations, and fetch additional information about each unique combination
 #'
 #' @details
-#' E.g. you have fitted a regression model using 4 different numerical features. In this specific
-#' case there are 16 (2^4) unique ways to combine the features. Let's imagine that the features
-#' are called \code{x1}, \code{x2}, \code{x3} and \code{x4}. Then all the combinations can be
-#' found by
+#' E.g. you have fitted a regression model using 3 different numerical features (\code{x1},
+#' \code{x2} and \code{x3}). In this specific case there are 8 (2^3) unique
+#' ways to combine the features. All the combinations are then represented by \code{S}, where
+#' \code{S = {integer(0), x1, x2, x3, c(x1, x2), c(x1, x3), c(x2, x3), c(x1, x2, x3)}}.
 #'
 #' The returned data.table contains the following columns
 #' \describe{

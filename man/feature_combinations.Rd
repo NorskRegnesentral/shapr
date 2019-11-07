@@ -2,7 +2,7 @@
 % Please edit documentation in R/features.R
 \name{feature_combinations}
 \alias{feature_combinations}
-\title{Get combinations}
+\title{Define feature combinations, and fetch additional information about each unique combination}
 \usage{
 feature_combinations(m, exact = TRUE, n_combinations = 200,
   shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE)
@@ -11,12 +11,17 @@ feature_combinations(m, exact = TRUE, n_combinations = 200,
 data.table
 }
 \description{
-Get combinations
+Define feature combinations, and fetch additional information about each unique combination
 }
 \details{
+E.g. you have fitted a regression model using 3 different numerical features (\code{x1},
+\code{x2} and \code{x3}). In this specific case there are 8 (2^3) unique
+ways to combine the features. All the combinations are then represented by \code{S}, where
+\code{S = {integer(0), x1, x2, x3, c(x1, x2), c(x1, x3), c(x2, x3), c(x1, x2, x3)}}.
+
 The returned data.table contains the following columns
 \describe{
-\item{ID}{Positive integer. Unique key for combination}
+\item{ID}{Positive integer. Unique key for a specific combination}
 \item{features}{List of integer vectors}
 \item{nfeatures}{Positive integer}
 \item{N}{Positive integer}
