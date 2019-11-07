@@ -146,11 +146,16 @@ print(timing)
 timing_list[[i]] <- timing
 }
 
+saveRDS(timing_list,"inst/devel_scripts/parallelization_results.rds")
+
+# For nfeatures > 6, one should do paralellization of both parameters
+# For nfeatures = 6, is eems that doing only for the sample_tree function is the best
+# For nfeatues < 6, one is better of not doing any paralellization
 
 # Printing the Shapley values for the test data
-print(explanation$dt)
+print(explanation_list[[1]]$dt)
 
 # Finally we plot the resulting explanations
-plot(explanation)
+plot(explanation_list[[1]])
 
 
