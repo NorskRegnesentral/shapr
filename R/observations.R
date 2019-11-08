@@ -252,11 +252,13 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)
+
   if (is.null(index_features)) {
     features <- x$X$features
   } else {
     features <- x$X$features[index_features]
   }
+
   if(!is.null(x$comb_indici)){
     stopifnot(x$comb_indici >= 0)
     stopifnot(x$comb_indici <= ncol(x$x_train))

@@ -10,7 +10,7 @@
 #'
 #' @param approach Character vector of length \code{1} or \code{n_features}.
 #' \code{n_features} equals the total number of features in the model. All elements should
-#' either be \code{"gaussian"}, \code{"copula"} or \code{"empirical"}. See details for more information.
+#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more information.
 #'
 #' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
 #' the response.
@@ -29,6 +29,7 @@
 #'
 #' @author Camilla Lingjaerde
 explain <- function(x, explainer, approach, prediction_zero, ...) {
+  extras <- list(...)
 
   # Check input for x
   if (!is.matrix(x) & !is.data.frame(x)) {
@@ -44,7 +45,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     stop(
       paste(
         "It seems that you passed a non-valid value for approach.",
-        "It should be either 'empirical', 'gaussian', 'copula' or",
+        "It should be either 'empirical', 'gaussian', 'copula', 'ctree' or",
         "a vector of length=ncol(x) with only the above characters."
       )
     )
@@ -56,7 +57,9 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   if (length(approach) > 1) {
     class(x) <- "combined"
-  } else {
+  } else if (length(extras$mincriterion) > 1) {
+    class(x) <- "combinedparameters"
+  } else{
     class(x) <- approach
   }
 
@@ -163,6 +166,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
 #' @rdname explain
 #' @name explain
+#'
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
@@ -205,7 +209,58 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
   return(r)
 }
 
+
+#' @param comb_indici Numeric value. (Optional) Contains the splitting point corresponding to where to change the
+#' \code{comb_mincriterion}. Right now, this is only implemented for one splitting value. Could potentially make more splits later.
+#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
+#' @param comb_mincriterion Numeric vector. (Optional) Contains the different mincriterions to use for each
+#' combination.
+#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
+#' @param mincriterion equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+#' If \code{comb_indici} and \code{comb_mincriterion} are both not \code{NULL}, then \code{mincriterion} can be set
+#' to \code{NULL}. Otherwise, it needs to be filled out.
+#' @param minsplit is the value that the sum of the left and right daughter nodes need to exceed.
+#' @param minbucket is equal to the minimum sum of weights in a terminal node.
+#' @param sample whether to sample from the terminal node in the tree or just take all observations
+#'
 #' @rdname explain
+#' @name explain
+#'
+#' @export
+explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici = NULL, comb_mincriterion = NULL,
+                          mincriterion = 0.95, minsplit = 20, minbucket = 7, sample = TRUE, ...){
+
+  # Checks input argument
+  if (!is.matrix(x) & !is.data.frame(x)) {
+    stop("x should be a matrix or a dataframe.")
+  }
+
+  # Add arguments to explainer object
+  explainer$x_test <- data.table::as.data.table(x)
+  explainer$approach <- approach
+  explainer$comb_indici <- comb_indici
+  explainer$comb_mincriterion <- comb_mincriterion
+  explainer$mincriterion <- mincriterion
+  explainer$minsplit <- minsplit
+  explainer$minbucket <- minbucket
+  explainer$sample <- sample
+
+  # Generate data
+  dt <- prepare_data(explainer, ...)
+
+  if (!is.null(explainer$return)) return(dt) ## when using a combined method, you return here
+
+  # Predict
+  r <- prediction(dt, prediction_zero, explainer)
+  # r$dt2 <- prepare_data(explainer, ...)
+
+  return(r)
+
+}
+
+#' @rdname explain
+#' @name explain
+#'
 #' @export
 explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
 
@@ -218,13 +273,11 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
   for (i in seq_along(l)) {
     dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], ...)
   }
-
   dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 
   r <- prediction(dt, prediction_zero, explainer)
 
   return(r)
-
 }
 
 #' @keywords internal
@@ -259,49 +312,41 @@ get_list_approaches <- function(n_features, approach) {
   return(l)
 }
 
-
-#' @param comb_indici Numeric value. (Optional) Contains the splitting point corresponding to where to change the
-#' \code{comb_mincriterion}. Right now, this is only implemented for one splitting value. Could potentially make more splits later.
-#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
-#' @param comb_mincriterion Numeric vector. (Optional) Contains the different mincriterions to use for each
-#' combination.
-#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
-#' @param mincriterion equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
-#' If \code{comb_indici} and \code{comb_mincriterion} are both not \code{NULL}, then \code{mincriterion} can be set
-#' to \code{NULL}. Otherwise, it needs to be filled out.
-#' @param minsplit is the value that the sum of the left and right daughter nodes need to exceed.
-#' @param minbucket is equal to the minimum sum of weights in a terminal node.
-#' @param sample whether to sample from the node or just take all observations
-
-
 #' @rdname explain
+#' @name explain
+#'
 #' @export
-explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici = NULL, comb_mincriterion = NULL,
-                          mincriterion = 0.95,
-                          minsplit = 20, minbucket = 7,
-                          sample = TRUE, ...){
+explain.combinedparameters <- function(x, explainer, approach, prediction_zero, mincriterion, sample, ...) {
 
-  # Checks input argument
-  if (!is.matrix(x) & !is.data.frame(x)) {
-    stop("x should be a matrix or a dataframe.")
+  # Get indices of combinations
+  l <- get_list_parameters(explainer$X$nfeatures, mincriterion)
+  explainer$return <- TRUE # this is important so that you don't use prediction() twice
+  explainer$x_test <- as.matrix(x)
+
+  dt_l <- list()
+  for (i in seq_along(l)) {
+    dt_l[[i]] <- explain(x, explainer, approach, prediction_zero, index_features = l[[i]], mincriterion = as.numeric(names(l[i])), ...)
   }
 
-  # Add arguments to explainer object
-  explainer$x_test <- data.table::as.data.table(x)
-  explainer$approach <- approach
-  explainer$comb_indici <- comb_indici
-  explainer$comb_mincriterion <- comb_mincriterion
-  explainer$mincriterion <- mincriterion
-  explainer$minsplit <- minsplit
-  explainer$minbucket <- minbucket
-  explainer$sample <- sample
+  dt <- data.table::rbindlist(dt_l_new, use.names = TRUE)
 
-  # Generate data
-  dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) return(dt)
-
-  # Predict
   r <- prediction(dt, prediction_zero, explainer)
+  # r$dt2 <- data.table::rbindlist(dt_l_new, use.names = TRUE)
   return(r)
 
 }
+
+#' @keywords internal
+get_list_parameters <- function(n_features, mincriterion) {
+
+  l <- list()
+
+  for(k in 1:length(unique(mincriterion))){
+    x <- which(mincriterion == unique(mincriterion)[k])
+    nn <- as.character(unique(mincriterion)[k])
+    if (length(l) == 0) x <- c(0, x)
+    l[[nn]] <- which(n_features %in% x)
+  }
+  return(l)
+}
+

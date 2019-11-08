@@ -5,8 +5,9 @@
 \alias{explain.empirical}
 \alias{explain.gaussian}
 \alias{explain.copula}
-\alias{explain.combined}
 \alias{explain.ctree}
+\alias{explain.combined}
+\alias{explain.combinedparameters}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(x, explainer, approach, prediction_zero, ...)
@@ -20,12 +21,15 @@ explain(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{copula}(x, explainer, approach, prediction_zero, ...)
 
-\method{explain}{combined}(x, explainer, approach, prediction_zero,
-  mu = NULL, cov_mat = NULL, ...)
-
 \method{explain}{ctree}(x, explainer, approach, prediction_zero,
   comb_indici = NULL, comb_mincriterion = NULL, mincriterion = 0.95,
   minsplit = 20, minbucket = 7, sample = TRUE, ...)
+
+\method{explain}{combined}(x, explainer, approach, prediction_zero,
+  mu = NULL, cov_mat = NULL, ...)
+
+\method{explain}{combinedparameters}(x, explainer, approach,
+  prediction_zero, mincriterion, sample, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -36,7 +40,7 @@ See \code{\link{shapr}}.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should
-either be \code{"gaussian"}, \code{"copula"} or \code{"empirical"}. See details for more information.}
+either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more information.}
 
 \item{prediction_zero}{The prediction value for unseen data, typically equal to the mean of
 the response.}
@@ -86,7 +90,7 @@ to \code{NULL}. Otherwise, it needs to be filled out.}
 
 \item{minbucket}{is equal to the minimum sum of weights in a terminal node.}
 
-\item{sample}{whether to sample from the node or just take all observations}
+\item{sample}{whether to sample from the terminal node in the tree or just take all observations}
 }
 \value{
 data.frame. Contains the estimated Shapley values for the test data. Note that

@@ -2,6 +2,7 @@ library(xgboost)
 library(shapr)
 library(data.table)
 library(party)
+library(ggplot2)
 
 
 data("Boston", package = "MASS")
@@ -10,12 +11,12 @@ data("Boston", package = "MASS")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:6), x_var])
-y_train <- Boston[-(1:6), y_var]
-x_test <- as.matrix(Boston[1:6, x_var])
+x_train <- as.matrix(Boston[-(1), x_var])
+y_train <- Boston[-(1), y_var]
+x_test <- as.matrix(Boston[1, x_var])
 
 # Looking at the dependence between the features
-cor(x_train)
+# cor(x_train)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost(
@@ -34,34 +35,60 @@ p <- mean(y_train)
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 
+
+## --------------------------
+explanation <- explain(
+  x_test,
+  explainer = explainer,
+  approach = "ctree",
+  prediction_zero = p,
+  sample = FALSE,
+  comb_indici = 2,
+  comb_mincriterion = c(0.95, 0.05)
+)
+
+print(explanation$dt)
+plot(explanation)
+
+
+## the hope is that these two models should give the same Shapley values
+## but they do not
+## and now I am trying to find out why
 explanation <- explain(
     x_test,
-    approach = "ctree",
     explainer = explainer,
+    approach = "ctree",
     prediction_zero = p,
     sample = FALSE,
-    comb_mincriterion = c(0.95, 0.95),
-    comb_indici = 2
+    mincriterion = c(rep(0.95, 4))
 )
 
 explanation2 <- explain(
   x_test,
-  approach = "ctree",
   explainer = explainer,
+  approach = "ctree",
   prediction_zero = p,
   sample = FALSE,
   mincriterion = 0.95
 )
 
-all((explain(x_test, explainer, approach = "ctree", prediction_zero = p, sample = TRUE, comb_indici = 2, comb_mincriterion = c(0.05, 0.95)))$dt ==
-      (explain(x_test, explainer, approach = "ctree", prediction_zero = p, sample = TRUE, mincriterion = 0.95))$dt)
-
-
 # Printing the Shapley values for the test data
 print(explanation$dt)
+print(explanation2$dt)
+
+##
+print(explanation$dt2)
+print(explanation2$dt2)
+
+##
+explanation$dt2[, .(.N), by = .(wcomb)]
+explanation2$dt2[, .(.N), by = .(wcomb)]
+
 
 # Finally we plot the resulting explanations
 plot(explanation)
+
+plot(explanation2)
 
 ## only ctree
 ##    none      lstat         rm        dis     indus
