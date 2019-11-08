@@ -56,9 +56,22 @@ explanation2 <- explain(
   seed = 1
 )
 
+explanation3 <- explain(
+  x_test,
+  explainer = explainer,
+  approach = "ctree",
+  prediction_zero = p,
+  sample = FALSE,
+  comb_mincriterion = c(0.95, 0.95),
+  seed = 1,
+  comb_indici = 2
+)
+
 # Printing the Shapley values for the test data
 print(explanation$dt)
 print(explanation2$dt)
+print(explanation3$dt)
+
 
 ##
 print(explanation$dt2)

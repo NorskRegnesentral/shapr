@@ -143,7 +143,20 @@ test_that("Test functions in explanation.R", {
 
   # Ex 40: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
   ex_list[[40]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 0, comb_mincriterion = c(0.05, 0.95)))$dt ==
+                         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = rep(0.95, 4)))$dt)
+
+  # Ex 41: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[41]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 0, comb_mincriterion = c(0.05, 0.95)))$dt ==
                          (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = 0.95))$dt)
+
+  # Ex 42: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[42]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = rep(0.95, 4)))$dt ==
+                         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = 0.95))$dt)
+
+  # Ex 43: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[43]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = c(rep(0.95, 2), rep(0.92, 2))))$dt ==
+                         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = 0.95))$dt)
+
 
 
   # Checking that all explain objects produce the same as before
