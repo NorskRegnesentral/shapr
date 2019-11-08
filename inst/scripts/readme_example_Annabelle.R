@@ -37,18 +37,6 @@ p <- mean(y_train)
 
 
 ## --------------------------
-explanation <- explain(
-  x_test,
-  explainer = explainer,
-  approach = "ctree",
-  prediction_zero = p,
-  sample = FALSE,
-  comb_indici = 2,
-  comb_mincriterion = c(0.95, 0.05)
-)
-
-print(explanation$dt)
-plot(explanation)
 
 
 ## the hope is that these two models should give the same Shapley values
@@ -60,8 +48,10 @@ explanation <- explain(
     approach = "ctree",
     prediction_zero = p,
     sample = FALSE,
-    mincriterion = c(rep(0.95, 4))
+    comb_indici = 2,
+    comb_mincriterion = c(0.95, 0.5)
 )
+
 
 explanation2 <- explain(
   x_test,
@@ -85,10 +75,32 @@ explanation$dt2[, .(.N), by = .(wcomb)]
 explanation2$dt2[, .(.N), by = .(wcomb)]
 
 
-# Finally we plot the resulting explanations
+##
 plot(explanation)
-
 plot(explanation2)
+
+
+## --------------- more tests -----------
+N <- 100
+C <- matrix(NA, nrow = N, ncol = 5)
+
+for(i in 1:N){
+  explanation <- explain(
+    x_test,
+    explainer = explainer,
+    approach = "ctree",
+    prediction_zero = p,
+    sample = FALSE,
+    mincriterion = rep(0.95, 4),
+    seed = 1)
+
+  C[i,1] <- explanation$dt[[1]]
+  C[i,2] <- explanation$dt[[2]]
+  C[i,3] <- explanation$dt[[3]]
+  C[i,4] <- explanation$dt[[4]]
+  C[i,5] <- explanation$dt[[5]]
+}
+
 
 ## only ctree
 ##    none      lstat         rm        dis     indus

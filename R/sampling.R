@@ -206,11 +206,11 @@ sample_ctree <- function(tree,
     xp <- x_test_given # data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given)))  # this is changed by Martin
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
-    fit.nodes <- where(object = datact)
+    fit.nodes <- party::where(object = datact)
     ## I don't think you actually need this?
     # nodes <- unique(fit.nodes)
     # no.nodes <- length(nodes)
-    pred.nodes <- where(object = datact, newdata = xp) ## newdata must be a data.frame and have the same colnames as x
+    pred.nodes <- party::where(object = datact, newdata = xp) ## newdata must be a data.frame and have the same colnames as x
 
     rowno <- 1:dim(x_train)[1]
 
@@ -329,7 +329,7 @@ simulateAllTrees <- function(given_ind,
 
       colnames(df) <- c("Y", paste0("V", given_ind))
 
-      datact <- party::ctree(Y ~ ., data = df, controls = ctree_control(minbucket = minbucket, mincriterion = mincriterion))
+      datact <- party::ctree(Y ~ ., data = df, controls = party::ctree_control(minbucket = minbucket, mincriterion = mincriterion))
 
     } else{
 
@@ -343,7 +343,7 @@ simulateAllTrees <- function(given_ind,
       ynam <- paste0("Y", 1:ncol(y)) # ncol(y)
       fmla <- as.formula(paste(paste(ynam, collapse= "+"), "~ ."))
 
-      datact <- party::ctree(fmla, data = df, controls = ctree_control(minbucket = minbucket, mincriterion = mincriterion))
+      datact <- party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = minbucket, mincriterion = mincriterion))
     }
 
   }

@@ -231,9 +231,9 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
                           mincriterion = 0.95, minsplit = 20, minbucket = 7, sample = TRUE, ...){
 
   # Checks input argument
-  if (!is.matrix(x) & !is.data.frame(x)) {
-    stop("x should be a matrix or a dataframe.")
-  }
+  # if (!is.matrix(x) & !is.data.frame(x)) {
+  #   stop("x should be a matrix or a dataframe.")
+  # }
 
   # Add arguments to explainer object
   explainer$x_test <- data.table::as.data.table(x)
@@ -328,7 +328,7 @@ explain.combinedparameters <- function(x, explainer, approach, prediction_zero, 
     dt_l[[i]] <- explain(x, explainer, approach, prediction_zero, index_features = l[[i]], mincriterion = as.numeric(names(l[i])), ...)
   }
 
-  dt <- data.table::rbindlist(dt_l_new, use.names = TRUE)
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 
   r <- prediction(dt, prediction_zero, explainer)
   # r$dt2 <- data.table::rbindlist(dt_l_new, use.names = TRUE)
