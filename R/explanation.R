@@ -229,11 +229,10 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #' @export
 explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici = NULL, comb_mincriterion = NULL,
                           mincriterion = 0.95, minsplit = 20, minbucket = 7, sample = TRUE, ...){
-
   # Checks input argument
-  # if (!is.matrix(x) & !is.data.frame(x)) {
-  #   stop("x should be a matrix or a dataframe.")
-  # }
+  if (!is.matrix(x) & !is.data.frame(x)) {
+    stop("x should be a matrix or a dataframe.")
+  }
 
   # Add arguments to explainer object
   explainer$x_test <- data.table::as.data.table(x)
@@ -252,7 +251,6 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
-  # r$dt2 <- prepare_data(explainer, ...)
 
   return(r)
 
@@ -263,7 +261,6 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
 #'
 #' @export
 explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
-
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$nfeatures, approach)
   explainer$return <- TRUE
@@ -316,7 +313,7 @@ get_list_approaches <- function(n_features, approach) {
 #' @name explain
 #'
 #' @export
-explain.combinedparameters <- function(x, explainer, approach, prediction_zero, mincriterion, sample, ...) {
+explain.combinedparameters <- function(x, explainer, approach, prediction_zero, mincriterion, ...) {
 
   # Get indices of combinations
   l <- get_list_parameters(explainer$X$nfeatures, mincriterion)
@@ -331,7 +328,6 @@ explain.combinedparameters <- function(x, explainer, approach, prediction_zero, 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 
   r <- prediction(dt, prediction_zero, explainer)
-  # r$dt2 <- data.table::rbindlist(dt_l_new, use.names = TRUE)
   return(r)
 
 }

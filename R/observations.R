@@ -248,7 +248,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' @name prepare_data
 #' @export
 prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
-
+  # browser()
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)

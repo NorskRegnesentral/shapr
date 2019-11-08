@@ -4,7 +4,6 @@ library(data.table)
 library(party)
 library(ggplot2)
 
-
 data("Boston", package = "MASS")
 
 # x_var <- c("lstat", "rm", "age", "tax", "dis", "indus", "crim", "nox", "ptratio", "black")
@@ -35,23 +34,17 @@ p <- mean(y_train)
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 
-
 ## --------------------------
 
-
-## the hope is that these two models should give the same Shapley values
-## but they do not
-## and now I am trying to find out why
 explanation <- explain(
-    x_test,
-    explainer = explainer,
-    approach = "ctree",
-    prediction_zero = p,
-    sample = FALSE,
-    comb_indici = 2,
-    comb_mincriterion = c(0.95, 0.5)
+  x_test,
+  explainer = explainer,
+  approach = "ctree",
+  prediction_zero = p,
+  sample = FALSE,
+  mincriterion = 0.95,
+  seed = 1
 )
-
 
 explanation2 <- explain(
   x_test,
@@ -59,7 +52,8 @@ explanation2 <- explain(
   approach = "ctree",
   prediction_zero = p,
   sample = FALSE,
-  mincriterion = 0.95
+  mincriterion = rep(0.95, 4),
+  seed = 1
 )
 
 # Printing the Shapley values for the test data
@@ -82,9 +76,44 @@ plot(explanation2)
 
 ## --------------- more tests -----------
 N <- 100
-C <- matrix(NA, nrow = N, ncol = 5)
+old_ctree <- matrix(NA, nrow = N, ncol = 5)
+old_ctree_diff_seeds <- matrix(NA, nrow = N, ncol = 5)
+
+new_ctree <- matrix(NA, nrow = N, ncol = 5)
+new_ctree_diff_seeds <- matrix(NA, nrow = N, ncol = 5)
 
 for(i in 1:N){
+  explanation <- explain(
+    x_test,
+    explainer = explainer,
+    approach = "ctree",
+    prediction_zero = p,
+    sample = FALSE,
+    mincriterion = 0.95,
+    seed = 1)
+
+  old_ctree[i,1] <- explanation$dt[[1]]
+  old_ctree[i,2] <- explanation$dt[[2]]
+  old_ctree[i,3] <- explanation$dt[[3]]
+  old_ctree[i,4] <- explanation$dt[[4]]
+  old_ctree[i,5] <- explanation$dt[[5]]
+
+
+  explanation <- explain(
+    x_test,
+    explainer = explainer,
+    approach = "ctree",
+    prediction_zero = p,
+    sample = FALSE,
+    mincriterion = 0.95,
+    seed = i)
+
+  old_ctree_diff_seeds[i,1] <- explanation$dt[[1]]
+  old_ctree_diff_seeds[i,2] <- explanation$dt[[2]]
+  old_ctree_diff_seeds[i,3] <- explanation$dt[[3]]
+  old_ctree_diff_seeds[i,4] <- explanation$dt[[4]]
+  old_ctree_diff_seeds[i,5] <- explanation$dt[[5]]
+
   explanation <- explain(
     x_test,
     explainer = explainer,
@@ -94,11 +123,29 @@ for(i in 1:N){
     mincriterion = rep(0.95, 4),
     seed = 1)
 
-  C[i,1] <- explanation$dt[[1]]
-  C[i,2] <- explanation$dt[[2]]
-  C[i,3] <- explanation$dt[[3]]
-  C[i,4] <- explanation$dt[[4]]
-  C[i,5] <- explanation$dt[[5]]
+  new_ctree[i,1] <- explanation$dt[[1]]
+  new_ctree[i,2] <- explanation$dt[[2]]
+  new_ctree[i,3] <- explanation$dt[[3]]
+  new_ctree[i,4] <- explanation$dt[[4]]
+  new_ctree[i,5] <- explanation$dt[[5]]
+
+
+  explanation <- explain(
+    x_test,
+    explainer = explainer,
+    approach = "ctree",
+    prediction_zero = p,
+    sample = FALSE,
+    mincriterion = rep(0.95, 4),
+    seed = i)
+
+  new_ctree_diff_seeds[i,1] <- explanation$dt[[1]]
+  new_ctree_diff_seeds[i,2] <- explanation$dt[[2]]
+  new_ctree_diff_seeds[i,3] <- explanation$dt[[3]]
+  new_ctree_diff_seeds[i,4] <- explanation$dt[[4]]
+  new_ctree_diff_seeds[i,5] <- explanation$dt[[5]]
+
+
 }
 
 
