@@ -7,25 +7,43 @@
 feature_combinations(m, exact = TRUE, n_combinations = 200,
   shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE)
 }
-\value{
-data.table
-}
-\description{
-Define feature combinations, and fetch additional information about each unique combination
-}
-\details{
-E.g. you have fitted a regression model using 3 different numerical features (\code{x1},
-\code{x2} and \code{x3}). In this specific case there are 8 (2^3) unique
-ways to combine the features. All the combinations are then represented by \code{S}, where
-\code{S = {integer(0), x1, x2, x3, c(x1, x2), c(x1, x3), c(x2, x3), c(x1, x2, x3)}}.
+\arguments{
+\item{m}{Positive integer. Total number of features.}
 
-The returned data.table contains the following columns
+\item{exact}{Logical. If \code{TRUE} we generate all \code{2^m} combinations, otherwise a
+subsample of the combinations.}
+
+\item{n_combinations}{Positive integer.}
+
+\item{shapley_weight_inf_replacement}{Numeric.}
+
+\item{reduce_dim}{Logical.}
+}
+\value{
+A data.table that contains the following columns:
 \describe{
-\item{ID}{Positive integer. Unique key for a specific combination}
-\item{features}{List of integer vectors}
-\item{nfeatures}{Positive integer}
+\item{ID}{Positive integer. Represents a unique key for each combination. The table
+is sorted by \code{ID}, so \code{x[[ID]] = 1:nrow(x)} }
+\item{features}{List. If combination \code{i} is represented by \code{features[[i]]} is an
+integer vector of representing feature combination \code{i}}
+\item{nfeatures}{Positive integer. \code{nfeatures[i]} equals the number of features in combination
+\code{i}, i.e. \code{nfeatures[i] = length(features[[i]])}}
 \item{N}{Positive integer}
 }
+}
+\description{
+
+}
+\details{
+TODO: Write some additional information about exact
+}
+\examples{
+# All combinations
+x <- feature_combinations(m = 5)
+nrow(x) # Equals 2^5 = 32
+
+# Subsample of combinations
+x <- feature_combinations(m = 13, n_combinations = 1e3)
 }
 \author{
 Nikolai Sellereite, Martin Jullum

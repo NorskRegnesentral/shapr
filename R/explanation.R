@@ -127,7 +127,6 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' @param w_threshold Positive integer between 0 and 1.
 #'
 #' @rdname explain
-#' @name explain
 #'
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
@@ -164,7 +163,6 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #' (in the Gaussian approach).
 #'
 #' @rdname explain
-#' @name explain
 #'
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
@@ -204,7 +202,6 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 }
 
 #' @rdname explain
-#' @name explain
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
@@ -269,7 +266,26 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
 }
 
+#' Helper function used in \code{\link{explain.combined}}
+#'
+#' @param n_features Integer vector. Note that
+#' \code{length(n_combinations) <= 2^m}, where \code{m} equals the number
+#' of features.
+#' @param approach Character vector of length \code{m}. All elements should be
+#' either \code{"empirical"}, \code{"gaussian"} or \code{"copula"}.
+#'
 #' @keywords internal
+#'
+#' @author Nikolai Sellereite
+#'
+#' @return Named list. See details for more information.
+#'
+#' @examples
+#' m <- 3
+#' n_features <- c(0, 1, 1, 1, 2, 2, 2, 3)
+#' approach <- c("gaussian", "copula", "copula")
+#' l <- get_list_approaches(n_features, approach)
+#' str(l)
 get_list_approaches <- function(n_features, approach) {
 
   l <- list()
