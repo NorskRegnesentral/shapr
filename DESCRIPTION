@@ -44,7 +44,8 @@ Suggests:
     pkgdown,
     roxygen2,
     MASS,
-    ggplot2
+    ggplot2,
+    party
 LinkingTo: 
     RcppArmadillo,
     Rcpp

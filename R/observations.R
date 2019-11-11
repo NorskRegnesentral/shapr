@@ -259,12 +259,25 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)
+
   if (is.null(index_features)) {
     features <- x$X$features
   } else {
     features <- x$X$features[index_features]
   }
 
+  if(!is.null(x$comb_indici)){
+    stopifnot(x$comb_indici >= 0)
+    stopifnot(x$comb_indici <= ncol(x$x_train))
+    stopifnot(length(x$comb_indici) == 1)
+    stopifnot(!is.null(x$comb_mincriterion))
+  }
+  if(!is.null(x$comb_mincriterion)){
+    stopifnot(!is.null(x$comb_indici))
+    stopifnot(length(x$comb_mincriterion) == 2)
+    stopifnot(all(x$comb_mincriterion <= 1))
+    stopifnot(all(x$comb_mincriterion >= 0))
+  }
 
   ## this is the list of all 2^10 trees (if number of features = 10)
   all_trees <- parallel::mclapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
@@ -301,7 +314,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
 
   ## only return unique dt
-  dt2 <- dt[, sum(w), by = c("wcomb", colnames(x_test), "id")]
+  dt2 <- dt[, sum(w), by = c("wcomb", colnames(x$x_test), "id")]
   setnames(dt2, "V1", "w")
 
   return(dt2)

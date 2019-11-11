@@ -32,7 +32,7 @@ dataDir <- paste(projDir, "BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/d
 dataDirMJ <- ".."
 
 
-setwd(dataDirMJ)
+setwd(dataDir)
 
 ## read csv
 train_data <- read.table(file = "train.csv", sep = ",", header = TRUE, stringsAsFactors = TRUE)
@@ -67,13 +67,13 @@ y_train <- y_train / 1000000 ## convert to millions
 
 ### SPECIAL STUFF  STARTS ###
 library(caret)
-dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train, x_test),fullRank=T)
+dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train, x_test), fullRank = TRUE)
 x_train_dummy <- predict(dummyfunc, newdata = x_train)
 x_test_dummy <- predict(dummyfunc, newdata = x_test)
 ### SPECIAL STUFF ENDS ###
 
-aa=sapply(x_train,class)
-bb = names(aa[aa=="factor"])
+all_classes = sapply(x_train, class)
+just_factors = names(all_classes[all_classes == "factor"])
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost(
@@ -83,15 +83,16 @@ model <- xgboost(
   verbose = FALSE
 )
 
-imp <- xgb.importance(model=model)
+imp <- xgb.importance(model = model) # this is a data.table
 
-these <- strsplit(imp$Feature,split = ".",fixed = T)
-orgnam <- sapply(these,FUN = function(x){x[[1]]})
+these <- strsplit(imp$Feature, split = ".", fixed = TRUE) # this is a list
+org_name <- sapply(these, FUN = function(x){x[[1]]}) # these are characters
 
-imp[,orgnam:=..orgnam]
-imp[,isfact:=orgnam %in% ..bb]
 
-x_var_cat_2 <- head(imp[isfact==TRUE,orgnam],2)
+imp[, org_name := ..org_name] # adds a column of names
+imp[, isfact := org_name %in% ..just_factors] # adds column of TRUE and FALSE if is a factor
+
+x_var_cat_2 <- head(imp[isfact == TRUE, org_name], 2) # gets the top two influential factors
 
 #### The two most influential categorical variables ####
 #> x_var_cat_2
@@ -109,8 +110,7 @@ y_train <- y_train / 1000000 ## convert to millions
 
 
 ### SPECIAL STUFF  STARTS ###
-library(caret)
-dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train, x_test),fullRank=T)
+dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train, x_test), fullRank = TRUE)
 x_train_dummy <- predict(dummyfunc, newdata = x_train)
 x_test_dummy <- predict(dummyfunc, newdata = x_test)
 ### SPECIAL STUFF ENDS ###
@@ -122,9 +122,6 @@ model <- xgboost(
   nround = 50,
   verbose = FALSE
 )
-
-xgb.importance(model=model)
-
 ### refined model ends ####
 
 
@@ -136,31 +133,28 @@ explainer <- shapr(x_train, model)
 
 p <- mean(y_train)
 
-start_time <- Sys.time()
 explanation <- explain( ## this takes a very long time to run = 21.55 minutes?
-  x = as.data.table(x_test)[sample.int(n = nrow(x_test),size = 10),],
+  x = as.data.table(x_test)[sample.int(n = nrow(x_test), size = 10),],
   approach = 'ctree',
   explainer = explainer,
   prediction_zero = p,
   sample = FALSE)
 
-end_time <- Sys.time()
-end_time - start_time
-
 explanation$dt
 
-##        none   MSSubClass      MSZoning      LotArea        Street
-# 1: 0.1809212  0.002035604 -0.0181289541  0.050419428 -4.421495e-04
-# 2: 0.1809212  0.004978804  0.0028594295  0.076544900  1.281169e-04
-# 3: 0.1809212  0.049614544  0.0013229458  0.030647468  4.802960e-04
-# 4: 0.1809212  0.065409112 -0.0005392566  0.034090890  5.155915e-04
-# 5: 0.1809212  0.039462031  0.0060510941 -0.008906204 -4.031790e-03
-# ---
-#   1443: 0.1809212 -0.012370053 -0.0182184710 -0.042392534 -5.778365e-04
-# 1444: 0.1809212 -0.012753544 -0.0186019623 -0.042776025  5.726370e-04
-# 1445: 0.1809212 -0.016221998  0.0020150212  0.044441587  8.794181e-05
-# 1446: 0.1809212 -0.032160189  0.0045814492 -0.001777592  6.406629e-04
-# 1447: 0.1809212  0.045843928  0.0011496367 -0.007289328  5.202563e-04
+print(explanation$dt)
 
-shapr:::plot.shapr(explanation,plot_phi0 = F) ## this doesn't work?
+##        none    MSSubClass      LotArea  Neighborhood   ExterQual
+# 1: 0.1809212 -0.0015896353 -0.001297028 -0.0184937379 -0.01887452
+# 2: 0.1809212 -0.0015896353 -0.001297028 -0.0184937379 -0.01887452
+# 3: 0.1809212  0.0013136252 -0.002913748 -0.0400191850  0.05876679
+# 4: 0.1809212 -0.0177548338 -0.014128103 -0.0074718145 -0.01329531
+# 5: 0.1809212 -0.0111758481  0.106600967  0.0209405020 -0.02426726
+# 6: 0.1809212 -0.0012980537  0.010658637 -0.0133954487  0.03129612
+# 7: 0.1809212 -0.0011562300 -0.020129375 -0.0407791503  0.03772138
+# 8: 0.1809212 -0.0274628245 -0.018296157  0.0160902201  0.01797039
+# 9: 0.1809212  0.0009630143 -0.027619531  0.0003228987  0.03130924
+# 10: 0.1809212  0.0077905131  0.027156874 -0.0179940605 -0.01797191
+
+shapr:::plot.shapr(explanation, plot_phi0 = FALSE) ## removes the 'none' possibility
 

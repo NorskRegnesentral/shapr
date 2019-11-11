@@ -71,8 +71,93 @@ test_that("Test functions in explanation.R", {
   # Ex 17: gaussian and empirical XX (works now!)
   ex_list[[17]] <- explain(x_test, explainer, approach = c(rep("gaussian", 2), rep("empirical", 2)), prediction_zero = p0)
 
-  # Ex 8: Explain combined II - all empirical
+  # Ex 18: Explain combined II - all empirical
   ex_list[[18]] <- explain(x_test, explainer, approach = c(rep("empirical", 4)), prediction_zero = p0)
+
+  # Ex 19: Explain predictions (ctree, sample = FALSE, default parameters)
+  ex_list[[19]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE)
+
+  # Ex 20: Explain predictions (ctree, sample = TRUE, default parameters)
+  ex_list[[20]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE)
+
+  # Ex 21: Explain predictions (ctree, sample = FALSE, other ctree parameters)
+  ex_list[[21]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = 0.9, minsplit = 20, minbucket = 25)
+
+  # Ex 22: Explain predictions (ctree, sample = TRUE, other ctree parameters)
+  ex_list[[21]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = 0.9, minsplit = 20, minbucket = 25)
+
+  # Ex 22: Explain combined - ctree and gaussian, sample = FALSE
+  ex_list[[22]] <- explain(x_test, explainer, approach = c("ctree", rep("gaussian", 3)), prediction_zero = p0, sample = FALSE)
+
+  # Ex 23: Explain combined II - ctree and gaussian, sample = FALSE
+  ex_list[[23]] <- explain(x_test, explainer, approach = c(rep("ctree", 2), rep("gaussian", 2)), prediction_zero = p0, sample = FALSE)
+
+  # Ex 24: Explain combined III - ctree and gaussian, sample = FALSE
+  ex_list[[24]] <- explain(x_test, explainer, approach = c(rep("ctree", 3), rep("gaussian", 1)), prediction_zero = p0, sample = FALSE)
+
+  # Ex 25: Explain combined IV - ctree all, sample = FALSE
+  ex_list[[25]] <- explain(x_test, explainer, approach = c(rep("ctree", 4)), prediction_zero = p0, sample = FALSE)
+
+  # Ex 26: Explain combined - ctree and empirical, sample = FALSE
+  ex_list[[26]] <- explain(x_test, explainer, approach = c("ctree", rep("empirical", 3)), prediction_zero = p0, sample = FALSE)
+
+  # Ex 27: Explain combined II - ctree and empirical, sample = FALSE
+  ex_list[[27]] <- explain(x_test, explainer, approach = c(rep("ctree", 2), rep("empirical", 2)), prediction_zero = p0, sample = FALSE)
+
+  # Ex 28: Explain combined III - ctree and empirical, sample = FALSE
+  ex_list[[28]] <- explain(x_test, explainer, approach = c(rep("ctree", 3), rep("empirical", 1)), prediction_zero = p0, sample = FALSE)
+
+  # Ex 29: Explain combined - ctree and gaussian, sample = TRUE
+  ex_list[[29]] <- explain(x_test, explainer, approach = c("ctree", rep("gaussian", 3)), prediction_zero = p0, sample = TRUE)
+
+  # Ex 30: Explain combined II - ctree and gaussian, sample = TRUE
+  ex_list[[30]] <- explain(x_test, explainer, approach = c(rep("ctree", 2), rep("gaussian", 2)), prediction_zero = p0, sample = TRUE)
+
+  # Ex 31: Explain combined III - ctree and gaussian, sample = TRUE
+  ex_list[[31]] <- explain(x_test, explainer, approach = c(rep("ctree", 3), rep("gaussian", 1)), prediction_zero = p0, sample = TRUE)
+
+  # Ex 32: Explain combined IV - ctree all, sample = TRUE
+  ex_list[[32]] <- explain(x_test, explainer, approach = c(rep("ctree", 4)), prediction_zero = p0, sample = TRUE)
+
+  # Ex 33: Explain combined - ctree and empirical, sample = TRUE
+  ex_list[[33]] <- explain(x_test, explainer, approach = c("ctree", rep("empirical", 3)), prediction_zero = p0, sample = TRUE)
+
+  # Ex 34: Explain combined II - ctree and empirical, sample = TRUE
+  ex_list[[34]] <- explain(x_test, explainer, approach = c(rep("ctree", 2), rep("empirical", 2)), prediction_zero = p0, sample = TRUE)
+
+  # Ex 35: Explain combined III - ctree and empirical, sample = TRUE
+  ex_list[[35]] <- explain(x_test, explainer, approach = c(rep("ctree", 3), rep("empirical", 1)), prediction_zero = p0, sample = TRUE)
+
+  # Ex 36: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[36]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 2, comb_mincriterion = c(0.05, 0.95))
+
+  # Ex 37: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[37]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 2, comb_mincriterion = c(0.95, 0.95))
+
+  # Ex 38: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[38]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 0, comb_mincriterion = c(0.95, 0.95))
+
+  # Ex 39: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[39]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 2, comb_mincriterion = c(0.95, 0.95)))$dt ==
+    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = 0.95))$dt)
+
+  # Ex 40: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[40]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 0, comb_mincriterion = c(0.05, 0.95)))$dt ==
+                         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = rep(0.95, 4)))$dt)
+
+  # Ex 41: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[41]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 0, comb_mincriterion = c(0.05, 0.95)))$dt ==
+                         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = 0.95))$dt)
+
+  # Ex 42: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[42]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = rep(0.95, 4)))$dt ==
+                         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = 0.95))$dt)
+
+  # Ex 43: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[43]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = c(rep(0.95, 2), rep(0.92, 2))))$dt ==
+                         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = 0.95))$dt)
+
+
 
   # Checking that all explain objects produce the same as before
   expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")

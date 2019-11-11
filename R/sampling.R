@@ -190,29 +190,27 @@ sample_ctree <- function(tree,
 
 
   datact <- tree$tree
-  # print(tree$given_ind)
 
   cnms <- colnames(x_test)
   if (length(tree$given_ind) %in% c(0, p)) {
     ret <- x_test#matrix(x_test, ncol = p, nrow = 1)
   } else {
     given_ind <- tree$given_ind
-    given_ind.vec <- rep(0, length(x_test))
-    given_ind.vec[given_ind] <- 1
+    # given_ind_vec <- rep(0, length(x_test)) ## I don't think we actually use this?
+    # given_ind_vec[given_ind] <- 1
 
     dependent_ind <- tree$dependent_ind
 
-    x_test_given <- x_test[, ..given_ind,drop=F]
-
+    x_test_given <- x_test[, ..given_ind, drop = FALSE]
 
     xp <- x_test_given # data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given)))  # this is changed by Martin
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
-    fit.nodes <- where(object = datact)
+    fit.nodes <- party::where(object = datact)
     ## I don't think you actually need this?
     # nodes <- unique(fit.nodes)
     # no.nodes <- length(nodes)
-    pred.nodes <- where(object = datact, newdata = xp) ## newdata must be a data.frame and have the same colnames as x
+    pred.nodes <- party::where(object = datact, newdata = xp) ## newdata must be a data.frame and have the same colnames as x
 
     rowno <- 1:dim(x_train)[1]
 
@@ -225,8 +223,8 @@ sample_ctree <- function(tree,
 
     if(!sample){
       if(length(rowno[fit.nodes == pred.nodes]) <= n_samples){
-        depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], ..dependent_ind,drop=F])
-        givenDT <- data.table::data.table(x_test[1, ..given_ind,drop = F])
+        depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], ..dependent_ind, drop = FALSE])
+        givenDT <- data.table::data.table(x_test[1, ..given_ind, drop = FALSE])
 
         ret <- cbind(depDT, givenDT)
         setcolorder(ret, colnames(x_train))
@@ -237,8 +235,8 @@ sample_ctree <- function(tree,
       } else {
         newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
 
-        depDT <- data.table::data.table(x_train[newrowno, ..dependent_ind,drop = F])
-        givenDT <- data.table::data.table(x_test[1, ..given_ind,drop=F])
+        depDT <- data.table::data.table(x_train[newrowno, ..dependent_ind, drop = FALSE])
+        givenDT <- data.table::data.table(x_test[1, ..given_ind, drop = FALSE])
 
         # ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
         # ret[, paste0("V", dependent_ind) := depDT]
@@ -252,8 +250,8 @@ sample_ctree <- function(tree,
 
       newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
 
-      depDT <- data.table::data.table(x_train[newrowno, ..dependent_ind,drop = F])
-      givenDT <- data.table::data.table(x_test[1, ..given_ind,drop=F])
+      depDT <- data.table::data.table(x_train[newrowno, ..dependent_ind, drop = FALSE])
+      givenDT <- data.table::data.table(x_test[1, ..given_ind, drop = FALSE])
 
       # ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
       # ret[, paste0("V", dependent_ind) := depDT]
@@ -315,10 +313,10 @@ simulateAllTrees <- function(given_ind,
     ## currently no tests made to make sure that comb_indici and comb_mincriterion both exist
     ## if only one is provided, no split is made.
     if(!is.null(comb_indici) & !is.null(comb_mincriterion) ){
-      if(length(given_ind) <= comb$comb_indici){
-        mincriterion <- comb$comb_mincriterion[1] # if alpha = 0.05 --> split tree if p < 0.05
+      if(length(given_ind) <= comb_indici){
+        mincriterion <- comb_mincriterion[1] # if alpha = 0.05 --> split tree if p < 0.05
       } else {
-        mincriterion <- comb$comb_mincriterion[2] # if alpha = 0.20 --> split tree if p < 0.20
+        mincriterion <- comb_mincriterion[2] # if alpha = 0.20 --> split tree if p < 0.20
       }
     }
 
@@ -331,7 +329,7 @@ simulateAllTrees <- function(given_ind,
 
       colnames(df) <- c("Y", paste0("V", given_ind))
 
-      datact <- party::ctree(Y ~ ., data = df, controls = ctree_control(minbucket = minbucket, mincriterion = mincriterion))
+      datact <- party::ctree(Y ~ ., data = df, controls = party::ctree_control(minbucket = minbucket, mincriterion = mincriterion))
 
     } else{
 
@@ -345,7 +343,7 @@ simulateAllTrees <- function(given_ind,
       ynam <- paste0("Y", 1:ncol(y)) # ncol(y)
       fmla <- as.formula(paste(paste(ynam, collapse= "+"), "~ ."))
 
-      datact <- party::ctree(fmla, data = df, controls = ctree_control(minbucket = minbucket, mincriterion = mincriterion))
+      datact <- party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = minbucket, mincriterion = mincriterion))
     }
 
   }
