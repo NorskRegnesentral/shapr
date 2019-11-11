@@ -29,7 +29,7 @@ explain(x, explainer, approach, prediction_zero, ...)
   mu = NULL, cov_mat = NULL, ...)
 
 \method{explain}{combinedparameters}(x, explainer, approach,
-  prediction_zero, mincriterion, sample, ...)
+  prediction_zero, mincriterion, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
