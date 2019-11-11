@@ -80,7 +80,6 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #'
 #' @param ... Currently not used.
 #'
-#' @name prepare_data
 #'
 #' @export
 prepare_data <- function(x, ...) {
@@ -88,8 +87,9 @@ prepare_data <- function(x, ...) {
   UseMethod("prepare_data", x)
 }
 
+
+
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -171,7 +171,6 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
 }
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -208,7 +207,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 }
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -243,12 +241,21 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
   dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
-
+#' @param  mc_cores Integer. Only for class \code{ctree}. The number of cores to use in paralellization of the
+#' tree building and tree prediction Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
+#' work on Windows systems.
+#'
+#' @param  mc_cores_simulateAllTrees Integer. As for \code{mc_cores}, but specific for the tree building function
+#' #' Defaults to \code{mc_cores}.
+#'
+#' @param  mc_cores_simulateAllTrees Integer. As for \code{mc_cores}, but specific for the tree building prediction function.
+#' Defaults to \code{mc_cores}.
+#'
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
-prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
-  # browser()
+prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
+                               mc_cores = 1, mc_cores_simulateAllTrees = mc_cores, mc_cores_sample_ctree = mc_cores, ...) {
+
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)
@@ -273,26 +280,31 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   }
 
   ## this is the list of all 2^10 trees (if number of features = 10)
-  all_trees <- lapply(X = features,
-                      FUN = simulateAllTrees,
-                      x_train = x$x_train,
-                      comb_indici = x$comb_indici,
-                      comb_mincriterion = x$comb_mincriterion,
-                      mincriterion = x$mincriterion,
-                      minsplit = x$minsplit,
-                      minbucket = x$minbucket)
-
+  all_trees <- parallel::mclapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
+                                  FUN = simulateAllTrees,
+                                  x_train = x$x_train,
+                                  comb_indici = x$comb_indici,
+                                  comb_mincriterion = x$comb_mincriterion,
+                                  mincriterion = x$mincriterion,
+                                  minsplit = x$minsplit,
+                                  minbucket = x$minbucket,
+                                  mc.cores = mc_cores_simulateAllTrees,
+                                  mc.set.seed = FALSE
+  )
 
   for (i in seq(n_xtest)) {
     # options(warn=2)
-    l <- lapply(
+
+    l <- parallel::mclapply(
       X = all_trees,
       FUN = sample_ctree,
       n_samples = n_samples,
       x_test = x$x_test[i, , drop = FALSE],
       x_train = x$x_train,
       p = ncol(x$x_test),
-      sample = x$sample
+      sample = x$sample,
+      mc.cores = mc_cores_sample_ctree,
+      mc.set.seed = FALSE
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
@@ -310,6 +322,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 
   return(dt2)
 }
+
 
 #' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {

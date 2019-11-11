@@ -20,7 +20,9 @@ prepare_data(x, ...)
   n_samples = 1000, index_features = NULL, ...)
 
 \method{prepare_data}{ctree}(x, seed = 1, n_samples = 1000,
-  index_features = NULL, ...)
+  index_features = NULL, mc_cores = 1,
+  mc_cores_simulateAllTrees = mc_cores,
+  mc_cores_sample_ctree = mc_cores, ...)
 }
 \arguments{
 \item{...}{Currently not used.}
@@ -31,6 +33,16 @@ prepare_data(x, ...)
 Monte Carlo integration for every conditional expectation.}
 
 \item{index_features}{Positive integer vector. Only used internally.}
+
+\item{mc_cores}{Integer. Only for class \code{ctree}. The number of cores to use in paralellization of the
+tree building and tree prediction Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
+work on Windows systems.}
+
+\item{mc_cores_simulateAllTrees}{Integer. As for \code{mc_cores}, but specific for the tree building function
+#' Defaults to \code{mc_cores}.}
+
+\item{mc_cores_simulateAllTrees}{Integer. As for \code{mc_cores}, but specific for the tree building prediction function.
+Defaults to \code{mc_cores}.}
 }
 \description{
 Generate data used for predictions
