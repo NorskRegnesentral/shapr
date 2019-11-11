@@ -281,14 +281,16 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 
   ## this is the list of all 2^10 trees (if number of features = 10)
   all_trees <- parallel::mclapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
-                      FUN = simulateAllTrees,
-                      x_train = x$x_train,
-                      comb_indici = x$comb_indici,
-                      comb_mincriterion = x$comb_mincriterion,
-                      mincriterion = x$mincriterion,
-                      minsplit = x$minsplit,
-                      minbucket = x$minbucket,
-                      mc.cores = mc_cores_simulateAllTrees)
+                                  FUN = simulateAllTrees,
+                                  x_train = x$x_train,
+                                  comb_indici = x$comb_indici,
+                                  comb_mincriterion = x$comb_mincriterion,
+                                  mincriterion = x$mincriterion,
+                                  minsplit = x$minsplit,
+                                  minbucket = x$minbucket,
+                                  mc.cores = mc_cores_simulateAllTrees,
+                                  mc.set.seed = FALSE
+  )
 
   for (i in seq(n_xtest)) {
     # options(warn=2)
@@ -301,7 +303,8 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
       x_train = x$x_train,
       p = ncol(x$x_test),
       sample = x$sample,
-      mc.cores = mc_cores_sample_ctree
+      mc.cores = mc_cores_sample_ctree,
+      mc.set.seed = FALSE
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
