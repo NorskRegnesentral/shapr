@@ -140,24 +140,25 @@ test_that("Test functions in explanation.R", {
   # Ex 38: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
   ex_list[[38]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 0, comb_mincriterion = c(0.95, 0.95))
 
-  # Ex 39: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
-  ex_list[[39]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 2, comb_mincriterion = c(0.95, 0.95)))$dt ==
-    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = 0.95))$dt)
-
-  # Ex 40: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
-  ex_list[[40]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 0, comb_mincriterion = c(0.05, 0.95)))$dt ==
-                         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = rep(0.95, 4)))$dt)
-
-  # Ex 41: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
-  ex_list[[41]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 0, comb_mincriterion = c(0.05, 0.95)))$dt ==
+  # Ex 39: Test that ctree with comb_mincriterion equal to same probability twice gives the same as only passing one probability to mincriterion
+  testthat::expect_equal((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 2, comb_mincriterion = c(0.95, 0.95)))$dt,
                          (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = 0.95))$dt)
 
-  # Ex 42: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
-  ex_list[[42]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = rep(0.95, 4)))$dt ==
+  # Ex 40: Test that ctree with comb_indici equal to zero gives the same as passing the same (second) probability four times (the second probability is used if comb_indici = 0)
+  testthat::expect_equal((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 0, comb_mincriterion = c(0.05, 0.95)))$dt,
+                         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = rep(0.95, 4)))$dt)
+
+  # Ex 41: Test that ctree with comb_mincriterion equal to same probability twice gives the same as only passing one probability to mincriterion
+  testthat::expect_equal((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, comb_indici = 0, comb_mincriterion = c(0.05, 0.95)))$dt,
+                         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE, mincriterion = 0.95))$dt)
+
+  # Ex 42: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion only once
+  testthat::expect_equal((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = rep(0.95, 4)))$dt,
                          (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = 0.95))$dt)
 
-  # Ex 43: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
-  ex_list[[43]] <- all((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = c(rep(0.95, 2), rep(0.92, 2))))$dt ==
+
+  # Ex 43: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion only once
+  testthat::expect_equal((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = c(rep(0.95, 2), rep(0.95, 2))))$dt,
                          (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = 0.95))$dt)
 
   # Checking that explanations with different paralellizations gives the same result
