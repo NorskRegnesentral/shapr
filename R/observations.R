@@ -241,14 +241,18 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
   dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
-#' @param  mc_cores Integer. Only for class \code{ctree}. The number of cores to use in paralellization of the
-#' tree building and tree prediction Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
+
+#' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are used
+#' for different numbers of conditoned features, this will be a list with the features to pass.
+#'
+#' @param  mc_cores Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
+#' tree building and tree prediction. Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
 #' work on Windows systems.
 #'
-#' @param  mc_cores_simulateAllTrees Integer. As for \code{mc_cores}, but specific for the tree building function
+#' @param  mc_cores_simulateAllTrees Integer. Same as \code{mc_cores}, but specific for the tree building function
 #' #' Defaults to \code{mc_cores}.
 #'
-#' @param  mc_cores_simulateAllTrees Integer. As for \code{mc_cores}, but specific for the tree building prediction function.
+#' @param  mc_cores_simulateAllTrees Integer. Same as \code{mc_cores}, but specific for the tree building prediction function.
 #' Defaults to \code{mc_cores}.
 #'
 #' @rdname prepare_data
@@ -280,7 +284,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   }
 
   ## this is the list of all 2^10 trees (if number of features = 10)
-  all_trees <- parallel::mclapply(X = features, # don't remove first and last row! - we deal with this in sample_ctree
+  all_trees <- parallel::mclapply(X = features,
                                   FUN = simulateAllTrees,
                                   x_train = x$x_train,
                                   comb_indici = x$comb_indici,
@@ -293,8 +297,6 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   )
 
   for (i in seq(n_xtest)) {
-    # options(warn=2)
-
     l <- parallel::mclapply(
       X = all_trees,
       FUN = sample_ctree,

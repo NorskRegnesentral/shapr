@@ -211,17 +211,24 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
 
 #' @param comb_indici Numeric value. (Optional) Contains the splitting point corresponding to where to change the
-#' \code{comb_mincriterion}. Right now, this is only implemented for one splitting value. Could potentially make more splits later.
+#' \code{comb_mincriterion}.
 #' If \code{NULL}, the \code{mincriterion} is constant for every combination.
+#' This is a depreciated method and will be deleted later.
+#'
 #' @param comb_mincriterion Numeric vector. (Optional) Contains the different mincriterions to use for each
 #' combination.
 #' If \code{NULL}, the \code{mincriterion} is constant for every combination.
-#' @param mincriterion equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
-#' If \code{comb_indici} and \code{comb_mincriterion} are both not \code{NULL}, then \code{mincriterion} can be set
-#' to \code{NULL}. Otherwise, it needs to be filled out.
-#' @param minsplit is the value that the sum of the left and right daughter nodes need to exceed.
-#' @param minbucket is equal to the minimum sum of weights in a terminal node.
-#' @param sample whether to sample from the terminal node in the tree or just take all observations
+#' This is a depreciated method and will be deleted later.
+#'
+#' @param mincriterion Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+#' Can also be a vector equal to the length of the number of features indicating which mincriterion to use
+#' when conditioning on various numbers of features.
+#'
+#' @param minsplit Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.
+#'
+#' @param minbucket Numeric value. Equal to the minimum sum of weights in a terminal node.
+#'
+#' @param sample Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all observations in the node.
 #'
 #' @rdname explain
 #' @name explain

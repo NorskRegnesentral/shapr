@@ -163,12 +163,20 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 
 #' Sample ctree variables from a given conditional inference tree
 #'
-#' @param tree ctree built from the party package. This includes the indices of the features to condition upon.
+#' @param tree List. Contains tree which is an object of type ctree built from the party package.
+#' Also contains given_ind, the features to condition upon.
+#'
 #' @param n_samples Numeric. Indicates how many samples to use for MCMC.
+#'
 #' @param x_test Matrix, data.frame or data.table with the features of the observation whose
 #' predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
+#'
 #' @param x_train Matrix, data.frame or data.table with training data.
+#'
 #' @param p Positive integer. The number of features.
+#'
+#' @param sample Boolean. True indicates that the method samples from the terminal node
+#' of the tree whereas False indicates that the method takes all the samples if it is less than n_samples.
 #'
 #' @inheritParams global_arguments
 #'
@@ -180,7 +188,6 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #' # TODO: Add simple example
 #'
 #' @author Annabelle Redelmeier
-
 sample_ctree <- function(tree,
                          n_samples,
                          x_test,
@@ -270,23 +277,31 @@ sample_ctree <- function(tree,
 
 #' Make all conditional inference trees
 #'
-#' @param given_ind which features are conditioned on
-#' @param x_train specific values of features for individual i
+#' @param given_ind Numeric value. Indicates which features are conditioned on.
+#'
+#' @param x_train Numeric vector. Indicates the specific values of features for individual i.
+#'
 #' @param comb_indici Numeric value. (Optional) Contains the splitting point corresponding to where to change the
-#' \code{comb_mincriterion}. Right now, this is only implemented for one splitting value. Could potentially make more splits later.
+#' \code{comb_mincriterion}.
 #' If \code{NULL}, the \code{mincriterion} is constant for every combination.
+#' This is depreciated and will be deleted soon.
+#'
 #' @param comb_mincriterion Numeric vector. (Optional) Contains the different mincriterions to use for each
 #' combination.
 #' If \code{NULL}, the \code{mincriterion} is constant for every combination.
-#' @param mincriterion equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
-#' If \code{comb_indici} and \code{comb_mincriterion} are both not \code{NULL}, then \code{mincriterion} can be set
-#' to \code{NULL}. Otherwise, it needs to be filled out.
-#' @param minsplit is the value that the sum of the left and right daughter nodes need to exceed.
-#' @param minbucket is equal to the minimum sum of weights in a terminal node.
+#' This is depreciated and will be deleted soon.
+#'
+#' @param mincriterion Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+#' Can also be a vector equal to the length of the number of features indicating which mincriterion to use
+#' when conditioning on various numbers of features.
+#'
+#' @param minsplit Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.
+#'
+#' @param minbucket Numeric value. Equal to the minimum sum of weights in a terminal node.
 #'
 #' @inheritParams global_arguments
 #'
-#' @return list with conditional inference tree and variables conditioned/not conditioned on
+#' @return List with conditional inference tree and the variables conditioned/not conditioned on.
 #'
 #' @keywords internal
 #'
@@ -316,7 +331,7 @@ simulateAllTrees <- function(given_ind,
       if(length(given_ind) <= comb_indici){
         mincriterion <- comb_mincriterion[1] # if alpha = 0.05 --> split tree if p < 0.05
       } else {
-        mincriterion <- comb_mincriterion[2] # if alpha = 0.20 --> split tree if p < 0.20
+        mincriterion <- comb_mincriterion[2]
       }
     }
 
@@ -340,7 +355,7 @@ simulateAllTrees <- function(given_ind,
 
       colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
 
-      ynam <- paste0("Y", 1:ncol(y)) # ncol(y)
+      ynam <- paste0("Y", 1:ncol(y))
       fmla <- as.formula(paste(paste(ynam, collapse= "+"), "~ ."))
 
       datact <- party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = minbucket, mincriterion = mincriterion))
