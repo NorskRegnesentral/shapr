@@ -41,6 +41,7 @@ TODO: Write details about n_combinations
 \examples{
 # Load example data
 data("Boston", package = "MASS")
+df <- Boston
 
 # Example using the exact method
 x_var <- c("lstat", "rm", "dis", "indus")

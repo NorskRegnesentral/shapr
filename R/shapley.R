@@ -83,6 +83,7 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #' @examples
 #' # Load example data
 #' data("Boston", package = "MASS")
+#' df <- Boston
 #'
 #' # Example using the exact method
 #' x_var <- c("lstat", "rm", "dis", "indus")

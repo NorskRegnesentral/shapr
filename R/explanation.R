@@ -278,7 +278,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
 #'
 #' @author Nikolai Sellereite
 #'
-#' @return Named list. See details for more information.
+#' @return List
 #'
 #' @examples
 #' m <- 3

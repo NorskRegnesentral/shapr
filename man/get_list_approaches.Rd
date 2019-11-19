@@ -15,7 +15,7 @@ of features.}
 either \code{"empirical"}, \code{"gaussian"} or \code{"copula"}.}
 }
 \value{
-Named list. See details for more information.
+List
 }
 \description{
 Helper function used in \code{\link{explain.combined}}
