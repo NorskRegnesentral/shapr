@@ -2,21 +2,22 @@
 % Please edit documentation in R/transformation.R
 \name{gaussian_transform}
 \alias{gaussian_transform}
-\title{Transforms a sample to standardized normal (dimension 1)}
+\title{Transforms a sample to standardized normal distribution}
 \usage{
 gaussian_transform(x)
 }
 \arguments{
-\item{x}{Vector of data to transform}
+\item{x}{Numeric vector}
 }
 \value{
-Vector of transformed data
+Numeric vector of length \code{length(x)}
 }
 \description{
-Transforms a sample to standardized normal (dimension 1)
+Transforms a sample to standardized normal distribution
 }
 \examples{
-# TODO: Add simple example
+y <- rnorm(50)
+x <- gaussian_transform(y)
 
 }
 \author{
