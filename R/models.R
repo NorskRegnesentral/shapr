@@ -1,9 +1,10 @@
-#' Predict on vector form
+#' Generate predictions for different model classes
 #'
 #' @description Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-#' \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous response.
+#' \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous
+#' response. See details for more information.
 #'
-#' @param x Object of class inheriting from one of the supported models. See details.
+#' @param x Object of class inheriting from one of the supported models.
 #' @param newdata A data frame (or matrix) in which to look for variables with which to predict.
 #'
 #' @details The following models are currently supported:
@@ -14,6 +15,15 @@
 #' \item \code{\link[mgcv]{mgcv}}
 #' \item \code{\link[xgboost]{xgboost}}
 #' }
+#'
+#' The returned object \code{p} always satisfies the following properties:
+#' \itemize{
+#' \item \code{is.atomic(p)} equals \code{TRUE}
+#' \item \code{is.double(p)} equals \code{TRUE}
+#' }
+#'
+#' If you have a binary classification model we'll always return the probability prediction
+#' for a single class.
 #'
 #' For more details on how to use a custom model see the package vignette:
 #' \code{vignette("understanding_shapr", package = "shapr")}
@@ -28,7 +38,6 @@ predict_model <- function(x, newdata) {
 }
 
 #' @rdname predict_model
-#' @name predict_model
 #' @export
 predict_model.default <- function(x, newdata) {
 
@@ -41,7 +50,6 @@ predict_model.default <- function(x, newdata) {
 }
 
 #' @rdname predict_model
-#' @name predict_model
 #' @export
 predict_model.lm <- function(x, newdata) {
 
@@ -53,7 +61,6 @@ predict_model.lm <- function(x, newdata) {
 }
 
 #' @rdname predict_model
-#' @name predict_model
 #' @export
 predict_model.glm <- function(x, newdata) {
 
@@ -69,7 +76,6 @@ predict_model.glm <- function(x, newdata) {
 }
 
 #' @rdname predict_model
-#' @name predict_model
 #' @export
 predict_model.ranger <- function(x, newdata) {
 
@@ -88,7 +94,6 @@ predict_model.ranger <- function(x, newdata) {
 }
 
 #' @rdname predict_model
-#' @name predict_model
 #' @export
 predict_model.xgb.Booster <- function(x, newdata) {
 
@@ -103,7 +108,6 @@ predict_model.xgb.Booster <- function(x, newdata) {
 }
 
 #' @rdname predict_model
-#' @name predict_model
 #' @export
 predict_model.mgcv <- function(x, newdata) {
 
@@ -124,7 +128,7 @@ predict_model.mgcv <- function(x, newdata) {
 #' @inheritParams predict_model
 #'
 #' @details See \code{\link{predict_model}} for more information about
-#' what type of models \code{shapr} currently supports.
+#' what type of models \code{shapr} currently support.
 #'
 #' @return Character.
 #'
@@ -134,21 +138,18 @@ model_type <- function(x) {
 }
 
 #' @rdname model_type
-#' @name model_type
 #' @export
 model_type.default <- function(x) {
   stop("The model you passed to shapr is currently not supported.")
 }
 
 #' @rdname model_type
-#' @name model_type
 #' @export
 model_type.lm <- function(x) {
   "regression"
 }
 
 #' @rdname model_type
-#' @name model_type
 #' @export
 model_type.glm <- function(x) {
   ifelse(
@@ -192,14 +193,12 @@ model_type.ranger <- function(x) {
 }
 
 #' @rdname model_type
-#' @name model_type
 #' @export
 model_type.mgcv <- function(x) {
   "regression"
 }
 
 #' @rdname model_type
-#' @name model_type
 #' @export
 model_type.xgb.Booster <- function(x) {
 

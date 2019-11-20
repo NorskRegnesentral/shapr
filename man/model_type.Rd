@@ -25,7 +25,7 @@ model_type(x)
 \method{model_type}{xgb.Booster}(x)
 }
 \arguments{
-\item{x}{Object of class inheriting from one of the supported models. See details.}
+\item{x}{Object of class inheriting from one of the supported models.}
 }
 \value{
 Character.
@@ -38,5 +38,5 @@ return either \code{"regression"} or \code{"classification"}.
 }
 \details{
 See \code{\link{predict_model}} for more information about
-what type of models \code{shapr} currently supports.
+what type of models \code{shapr} currently support.
 }
