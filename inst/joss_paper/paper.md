@@ -9,7 +9,7 @@ tags:
   - feature dependence
 authors:
   - name: Nikolai Sellereite
-    orcid: 0000-0000-0000-0000
+#    orcid: 0000-0000-0000-0000
     affiliation: 1 # (Multiple affiliations must be quoted)
   - name: Martin Jullum
     orcid: 0000-0003-3908-5155
