@@ -17,13 +17,13 @@ authors:
 affiliations:
  - name: Norwegian Computing Center
    index: 1
-#citation_author: Sellereite and Jullum
-date: 20 November 2018
-#year: 2018
-#formatted_doi: XX.XXXXX/joss.XXXXX
+citation_author: Sellereite and Jullum
+date: 20 November 2019
+year: 2019
+formatted_doi: XX.XXXXX/joss.XXXXX
 bibliography: paper.bib
 output: rticles::joss_article
-#csl: apa.csl
+csl: apa.csl
 journal: JOSS
 ---
 

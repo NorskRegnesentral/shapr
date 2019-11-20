@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6630 64-bit) (preloaded format=xelatex 2019.11.20)  20 NOV 2019 21:44
+This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6630 64-bit) (preloaded format=xelatex 2019.11.20)  20 NOV 2019 21:46
 entering extended mode
 **./paper.tex
 (paper.tex
@@ -1495,11 +1495,11 @@ Package Fancyhdr Warning: \headheight is too small (62.59596pt):
  This may cause the page layout to be inconsistent, however.
 
 [2]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 312.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 312.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 311.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 311.
 (paper.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 312.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 312.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 311.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 311.
 Package logreq Info: Writing requests to 'paper.run.xml'.
 \openout1 = `paper.run.xml'.
 
@@ -1507,7 +1507,7 @@ Package logreq Info: Writing requests to 'paper.run.xml'.
 Here is how much of TeX's memory you used:
  42298 strings out of 427836
  819550 string characters out of 3148509
- 1303077 words of memory out of 3000000
+ 1303203 words of memory out of 3000000
  45817 multiletter control sequences out of 15000+200000
  537479 words of font info for 60 fonts, out of 3000000 for 9000
  1328 hyphenation exceptions out of 8191
