@@ -50,8 +50,8 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 
 #' Create an explainer object with Shapley weights for test data.
 #'
-#' @param x Numeric matrix or data.frame. Contains the variables used for training the model
-#' (i.e. the explanatory variables). Note that the response variable should not be part of
+#' @param x Numeric matrix or data.frame. Contains the variables used for training the model,
+#' i.e. the explanatory variables. Note that the response variable should not be part of
 #' \code{x}, and that \code{ncol(x) = p} equals the total number of features.
 #'
 #' @param model The model whose predictions we want to explain. See \code{\link{predict_model}}
@@ -63,18 +63,18 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #'
 #' @return Named list that contains the follwing items:
 #' \describe{
-#'   \item{exact}{Equals \code{TRUE} if \code{n_combinations = NULL} or
+#'   \item{exact}{Boolean. Equals \code{TRUE} if \code{n_combinations = NULL} or
 #'   \code{n_combinations < 2^p}, otherwise \code{FALSE}.}
-#'   \item{n_features}{The number of columns in \code{x}}
-#'   \item{model_type}{Returned value after calling \code{model_type(model)}}
+#'   \item{n_features}{Positive integer. The number of columns in \code{x}}
+#'   \item{model_type}{Character. Returned value after calling \code{model_type(model)}}
 #'   \item{S}{Binary matrix. The number of rows equals the number of unique combinations and
 #'   the number of columns equals the total number of features. I.e. let's say we have a case with
 #'   three features. In that case we have \code{2^3 = 8} unique combinations. If the j-th
-#'   observation for the i-th row equals \code{1} it indicates that the j-th feture is present in
+#'   observation for the i-th row equals \code{1} it indicates that the j-th feature is present in
 #'   the i-th combination. Otherwise it equals \code{0}.}
 #'   \item{W}{Second item}
-#'   \item{X}{Returned object from \code{\link{feature_combinations}}}
-#'   \item{x_train}{Equals data.table::as.data.table(x)}
+#'   \item{X}{data.table. Returned object from \code{\link{feature_combinations}}}
+#'   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
 #' }
 #'
 #' In addition to the items above \code{model} and \code{n_combinations} is also present in the
@@ -95,6 +95,7 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #' df1 <- df[, x_var]
 #' model <- lm(medv ~ lstat + rm + dis + indus, data = df)
 #' explainer <- shapr(df1, model)
+#'
 #' print(nrow(explainer$X))
 #' # 16 (which equals 2^4)
 #'
@@ -104,6 +105,7 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #' model <- lm(medv ~ ., data = df)
 #' df2 <- df[, x_var]
 #' explainer <- shapr(df2, model, n_combinations = 1e3)
+#'
 #' print(nrow(explainer$X))
 #'
 #' # Example using approximation where n_combinations > 2^m
@@ -112,6 +114,7 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #' df3 <- df[, x_var]
 #' model <- lm(medv ~ lstat + rm + dis + indus, data = df)
 #' explainer <- shapr(df1, model, n_combinations = 1e3)
+#'
 #' print(nrow(explainer$X))
 #' # 16 (which equals 2^4)
 shapr <- function(x,
