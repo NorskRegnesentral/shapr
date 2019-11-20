@@ -19,7 +19,7 @@ prepare_data(x, ...)
   n_samples = 1000, index_features = NULL, ...)
 }
 \arguments{
-\item{x}{Explainer object}
+\item{x}{Explainer object. See \code{\link{explain}} for more information.}
 
 \item{...}{Currently not used.}
 
@@ -30,7 +30,7 @@ Monte Carlo integration for every conditional expectation.}
 
 \item{index_features}{Positive integer vector. Only used internally.}
 
-\item{x_test_gaussian}{Matrix}
+\item{x_test_gaussian}{Matrix. Only applicable if \code{approach = "empirical"}.}
 }
 \description{
 Generate data used for predictions
