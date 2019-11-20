@@ -45,7 +45,7 @@ predict_model.default <- function(x, newdata) {
 #' @export
 predict_model.lm <- function(x, newdata) {
 
-  if (!requireNamespace('stats', quietly = TRUE)) {
+  if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The stats package is required for predicting stats models")
   }
 
@@ -57,7 +57,7 @@ predict_model.lm <- function(x, newdata) {
 #' @export
 predict_model.glm <- function(x, newdata) {
 
-  if (!requireNamespace('stats', quietly = TRUE)) {
+  if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The stats package is required for predicting stats models")
   }
 
@@ -73,7 +73,7 @@ predict_model.glm <- function(x, newdata) {
 #' @export
 predict_model.ranger <- function(x, newdata) {
 
-  if (!requireNamespace('ranger', quietly = TRUE)) {
+  if (!requireNamespace("ranger", quietly = TRUE)) {
     stop("The ranger package is required for predicting ranger models")
   }
 
@@ -92,7 +92,7 @@ predict_model.ranger <- function(x, newdata) {
 #' @export
 predict_model.xgb.Booster <- function(x, newdata) {
 
-  if (!requireNamespace('stats', quietly = TRUE)) {
+  if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The xgboost package is required for predicting xgboost models")
   }
 
@@ -107,7 +107,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
 #' @export
 predict_model.mgcv <- function(x, newdata) {
 
-  if (!requireNamespace('mgcv', quietly = TRUE)) {
+  if (!requireNamespace("mgcv", quietly = TRUE)) {
     stop("The mgcv package is required for predicting mgcv models")
   }
 

@@ -16,7 +16,8 @@
 #' @keywords internal
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-feature_combinations <- function(m, exact = TRUE, n_combinations = 200, shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
+feature_combinations <- function(m, exact = TRUE, n_combinations = 200,
+                                 shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
 
   # Force user to use a natural number for n_combinations if m > 10
   if (m > 12 & is.null(n_combinations)) {

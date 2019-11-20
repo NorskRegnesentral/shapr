@@ -45,6 +45,11 @@ jobs:
           command: mv ${RCHECK_DIR} /tmp/Rcheck
           when: always
       - run:
+          name: Lints
+          when: on_success
+          command: |
+            export CI=""; R -e 'lints <- lintr::lint_package(); print(lints); if(length(lints) > 0) stop("Package contains lints")'
+      - run:
           name: Code coverage
           when: on_success
           command: R -e 'covr::package_coverage()'

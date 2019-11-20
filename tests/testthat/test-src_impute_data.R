@@ -15,7 +15,7 @@ test_that("Test observation_impute_cpp", {
   mtcars <- mtcars[1:15, seq(nfeatures)]
   ntrain <- 14
   xtrain <- mtcars[seq(ntrain), ]
-  xtest <- mtcars[-seq(ntrain),, drop = FALSE]
+  xtest <- mtcars[-seq(ntrain), , drop = FALSE]
   S <- matrix(0L, ncomb, nfeatures)
   features <- list(
     integer(), 1, 2, 3, c(1, 2), c(1, 3), c(2, 3), c(1, 2, 3)
@@ -48,8 +48,8 @@ test_that("Test observation_impute_cpp", {
   )
 
   # Tests (valid input) -----------
-  index_xtrain = c(1, 2)
-  index_s = c(4, 5)
+  index_xtrain <- c(1, 2)
+  index_s <- c(4, 5)
   x <- observation_impute_cpp(
     index_xtrain = index_xtrain,
     index_s = index_s,
