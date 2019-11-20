@@ -65,6 +65,8 @@ Shapley values (@Shapley53) is a concept from cooperative game theory used to fa
 
 The package relies on the Kernel SHAP (@lundberg2017unified) methodology for efficiently dealing with combinatorial problems related to Shapley values. 
 
+
+
 Different methods (Gauss, copula nad empirical), user flexibiloty to choose method tailored for specific need, but with good default values.
 
 Which models handled natively -- support from custom models

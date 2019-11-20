@@ -1,7 +1,7 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6630 64-bit) (preloaded format=xelatex 2019.11.20)  20 NOV 2019 21:36
+This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6630 64-bit) (preloaded format=xelatex 2019.11.20)  20 NOV 2019 21:42
 entering extended mode
-**./joss_paper.tex
-(joss_paper.tex
+**./paper.tex
+(paper.tex
 LaTeX2e <2017-04-15>
 Babel <3.18> and hyphenation patterns for 75 language(s) loaded.
 ("C:\Users\marti\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\article.cls"
@@ -1324,8 +1324,8 @@ File: english.lbx 2019/08/31 v3.13a biblatex localization (PK/MW)
 )
 \@quotelevel=\count436
 \@quotereset=\count437
-(joss_paper.aux)
-\openout1 = `joss_paper.aux'.
+(paper.aux)
+\openout1 = `paper.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 190.
 LaTeX Font Info:    ... okay on input line 190.
@@ -1369,9 +1369,9 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 190.
 LaTeX Info: Redefining \pageref on input line 190.
 LaTeX Info: Redefining \nameref on input line 190.
-(joss_paper.out) (joss_paper.out)
+(paper.out) (paper.out)
 \@outlinefile=\write7
-\openout7 = `joss_paper.out'.
+\openout7 = `paper.out'.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
@@ -1379,11 +1379,11 @@ Package biblatex Info: XeTeX detected.
 (biblatex)             Assuming input encoding 'utf8'.
 Package biblatex Info: Automatic encoding selection.
 (biblatex)             Assuming data encoding 'utf8'.
-\openout6 = `joss_paper.bcf'.
+\openout6 = `paper.bcf'.
 
 Package biblatex Info: Trying to load bibliographic data...
-Package biblatex Info: ... file 'joss_paper.bbl' not found.
-No file joss_paper.bbl.
+Package biblatex Info: ... file 'paper.bbl' not found.
+No file paper.bbl.
 Package biblatex Info: Reference section=0 on input line 190.
 Package biblatex Info: Reference segment=0 on input line 190.
 *geometry* detected driver: pdftex
@@ -1497,20 +1497,20 @@ Package Fancyhdr Warning: \headheight is too small (62.59596pt):
 [2]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 312.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 312.
-(joss_paper.aux)
+(paper.aux)
 Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 312.
 Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 312.
-Package logreq Info: Writing requests to 'joss_paper.run.xml'.
-\openout1 = `joss_paper.run.xml'.
+Package logreq Info: Writing requests to 'paper.run.xml'.
+\openout1 = `paper.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
  42298 strings out of 427836
- 819630 string characters out of 3148509
- 1303112 words of memory out of 3000000
+ 819550 string characters out of 3148509
+ 1303077 words of memory out of 3000000
  45817 multiletter control sequences out of 15000+200000
  537479 words of font info for 60 fonts, out of 3000000 for 9000
  1328 hyphenation exceptions out of 8191
- 55i,13n,73p,798b,791s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 55i,13n,73p,793b,791s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on joss_paper.pdf (2 pages).
+Output written on paper.pdf (2 pages).
