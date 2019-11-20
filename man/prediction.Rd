@@ -13,6 +13,9 @@ prediction(dt, prediction_zero, explainer)
 
 \item{explainer}{An object of class \code{explainer}. See \code{\link{shapr}}.}
 }
+\value{
+An object of class \code{c("shapr", "list")}. For more details see \code{\link{explain}}.
+}
 \description{
 This function should only be called internally, and not used as
 a stand-alone function.
