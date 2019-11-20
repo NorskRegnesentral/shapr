@@ -13,6 +13,9 @@
 #' \code{top_k_features = 1:5}.
 #' @param ... Currently not used.
 #'
+#' @details See \code{vignette("understanding_shapr", package = "shapr")} for an example of
+#' how you should use the function.
+#'
 #' @return ggplot object with plots of the Shapley value explanations
 #'
 #' @export

@@ -30,6 +30,10 @@ ggplot object with plots of the Shapley value explanations
 \description{
 Plots the individual prediction explanations.
 }
+\details{
+See \code{vignette("understanding_shapr", package = "shapr")} for an example of
+how you should use the function.
+}
 \author{
 Martin Jullum
 }
