@@ -28,7 +28,7 @@ model_type(x)
 \item{x}{Object of class inheriting from one of the supported models.}
 }
 \value{
-Character.
+Either \code{"classification"} or \code{"regression"}.
 }
 \description{
 The function checks whether the model given by \code{x} is

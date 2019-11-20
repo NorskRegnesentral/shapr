@@ -130,7 +130,7 @@ predict_model.mgcv <- function(x, newdata) {
 #' @details See \code{\link{predict_model}} for more information about
 #' what type of models \code{shapr} currently support.
 #'
-#' @return Character.
+#' @return Either \code{"classification"} or \code{"regression"}.
 #'
 #' @export
 model_type <- function(x) {
