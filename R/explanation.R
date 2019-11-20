@@ -1,7 +1,5 @@
 #' Explain the output of machine learning models with more accurately estimated Shapley values
 #'
-#' @description TODO: Add a more detailed description
-#'
 #' @param x A matrix or data.frame. Contains the the features, whose
 #' predictions ought to be explained (test data).
 #'
@@ -17,17 +15,40 @@
 #'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
-#' @details
-#' TODO: Add information about approach.
-#' TODO: Some additional details about the returned object
+#' @details The most important thing to notice is that \code{shapr} has implemented three different
+#' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
+#' \code{"gassuian"} and \code{"copula"}.
+#'
+#' In addition to this the user will also have the option of combining the three approaches.
+#' E.g. if you're in a situation where you have trained a model the consists of 10 features,
+#' and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
+#' the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
+#' if you condition on more than 5 features this can be done by simply passing
+#' \code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
+#' \code{"approach[i]" = "gaussian"} it means that you'd like to use the \code{"gaussian"} approach
+#' when conditiong on \code{i} features.
 #'
 #' @return Object of class \code{c("shapr", "list")}. Contains the following items:
 #' \describe{
-#'   \item{dt}{First item}
-#'   \item{model}{Second item}
-#'   \item{p}{Second item}
-#'   \item{x_test}{Second item}
+#'   \item{dt}{data.table}
+#'   \item{model}{Model object}
+#'   \item{p}{Numeric vector}
+#'   \item{x_test}{data.table}
 #' }
+#'
+#' Note that the items \code{model}, \code{p} amd \code{x_test} is mostly addded due
+#' to the implementation of \code{plot.shapr}. If you'd like to look at the numerical results
+#' it sufficient to focus on \code{dt}. \code{dt} is a data.table where the number of rows equals
+#' the number of observations you'd like to explain, and the number of columns equals \code{m +1},
+#' where \code{m} equals the total number of features in your model.
+#'
+#' If \code{dt[i, j + 1] > 0} it indicates that the j-th feature increased the prediction for
+#' the i-th observation. Likewise, if \code{dt[i, j + 1] < 0} it indicates that the j-th feature
+#' decreased the prediction for the i-th observation. The magnitude of the value is also important
+#' to notice. E.g. if \code{dt[i, k + 1]} and \code{dt[i, j + 1]} are greater than \code{0},
+#' where \code{j != k}, and \code{dt[i, k + 1]} > \code{dt[i, j + 1]} this indicates that feature
+#' \code{j} and \code{k} increased the value of the prediction, but that the effect of the k-th
+#' feature was larger than the j-th feature.
 #'
 #' @export
 #'
