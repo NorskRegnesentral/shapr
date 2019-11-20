@@ -10,10 +10,12 @@ feature_combinations(m, exact = TRUE, n_combinations = 200,
 \arguments{
 \item{m}{Positive integer. Total number of features.}
 
-\item{exact}{Logical. If \code{TRUE} we generate all \code{2^m} combinations, otherwise a
-subsample of the combinations.}
+\item{exact}{Logical. If \code{TRUE} all \code{2^m} combinations are generated, otherwise a
+subsample of the combinations is used.}
 
-\item{n_combinations}{Positive integer.}
+\item{n_combinations}{Positive integer. Note that if \code{exact} equals \code{TRUE},
+\code{n_combinations} is ignored. However, if \code{m > 12} you'll need to add a positive integer
+value for \code{n_combinations}.}
 
 \item{shapley_weight_inf_replacement}{Numeric.}
 
@@ -22,20 +24,19 @@ subsample of the combinations.}
 \value{
 A data.table that contains the following columns:
 \describe{
-\item{ID}{Positive integer. Represents a unique key for each combination. The table
-is sorted by \code{ID}, so \code{x[[ID]] = 1:nrow(x)} }
-\item{features}{List. If combination \code{i} is represented by \code{features[[i]]} is an
-integer vector of representing feature combination \code{i}}
+\item{ID}{Positive integer. Represents a unique key for each combination. Note that the table
+is sorted by \code{ID}, so that is always equal to \code{x[["ID"]] = 1:nrow(x)}.}
+\item{features}{List. Each item of the list is an integer vector where \code{features[[i]]}
+represents the indices of the features included in combination \code{i}. Note that all the items
+are sorted such that \code{features[[i]] == sort(features[[i]])} is always true.}
 \item{nfeatures}{Positive integer. \code{nfeatures[i]} equals the number of features in combination
-\code{i}, i.e. \code{nfeatures[i] = length(features[[i]])}}
-\item{N}{Positive integer}
+\code{i}, i.e. \code{nfeatures[i] = length(features[[i]])}.}.
+\item{N}{Positive integer. The number of unique ways to sample \code{nfeatures[i]} features
+from \code{m} different features, without replacement.}
 }
 }
 \description{
-
-}
-\details{
-TODO: Write some additional information about exact
+Define feature combinations, and fetch additional information about each unique combination
 }
 \examples{
 # All combinations
