@@ -23,7 +23,7 @@ shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 #' @param use_shapley_weights_in_W Logical
 #' @param normalize_W_weights Logical
 #'
-#' @return Matrix of dimension
+#' @return Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weights = TRUE) {
@@ -50,31 +50,35 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 
 #' Create an explainer object with Shapley weights for test data.
 #'
-#' @param x An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total
-#' number of explanatory variables).Contains the variables used for training the model
+#' @param x Numeric matrix or data.frame. Contains the variables used for training the model
 #' (i.e. the explanatory variables). Note that the response variable should not be part of
-#' \code{x}.
+#' \code{x}, and that \code{ncol(x) = p} equals the total number of features.
 #'
-#' @param model The model whose predictions we want to explain.
+#' @param model The model whose predictions we want to explain. See \code{\link{predict_model}}
+#' for more information about which models \code{shapr} supports.
 #'
 #' @param n_combinations Integer. The number of feature combinations to sample. If \code{NULL},
 #' the exact method is used and all combinations are considered. The maximum number of
 #' combinations equals \code{2^p}.
 #'
-#' @details TODO: Write details about n_combinations
-#'
 #' @return Named list that contains the follwing items:
 #' \describe{
-#'   \item{model}{First item}
-#'   \item{n_combinations}{Second item}
-#'   \item{exact}{Second item}
-#'   \item{n_features}{Second item}
-#'   \item{model_type}{Second item}
-#'   \item{S}{Second item}
+#'   \item{exact}{Equals \code{TRUE} if \code{n_combinations = NULL} or
+#'   \code{n_combinations < 2^p}, otherwise \code{FALSE}.}
+#'   \item{n_features}{The number of columns in \code{x}}
+#'   \item{model_type}{Returned value after calling \code{model_type(model)}}
+#'   \item{S}{Binary matrix. The number of rows equals the number of unique combinations and
+#'   the number of columns equals the total number of features. I.e. let's say we have a case with
+#'   three features. In that case we have \code{2^3 = 8} unique combinations. If the j-th
+#'   observation for the i-th row equals \code{1} it indicates that the j-th feture is present in
+#'   the i-th combination. Otherwise it equals \code{0}.}
 #'   \item{W}{Second item}
-#'   \item{X}{Second item}
-#'   \item{x_train}{Second item}
+#'   \item{X}{Returned object from \code{\link{feature_combinations}}}
+#'   \item{x_train}{Equals data.table::as.data.table(x)}
 #' }
+#'
+#' In addition to the items above \code{model} and \code{n_combinations} is also present in the
+#' returned object.
 #'
 #' @export
 #'
