@@ -7,20 +7,30 @@
 sample_gaussian(index_given, n_samples, mu, cov_mat, p, x_test)
 }
 \arguments{
-\item{index_given}{Vector. The indices of the features to condition upon.}
+\item{index_given}{Integer vector. The indices of the features to condition upon. Note that
+\code{min(index_given) >= 1} and \code{max(index_given) <= p}.}
 
 \item{p}{Positive integer. The number of features.}
 
-\item{x_test}{Numeric matrix of dimension 1 x p.}
+\item{x_test}{Numeric matrix. Contains the features of the observation whose
+predictions ought to be explained (test data).}
 }
 \value{
-data.table with \code{n_samples} (conditional) Gaussian samples
+data.table
 }
 \description{
 Sample conditional Gaussian variables
 }
 \examples{
-# TODO: Add simple example
+m <- 10
+n_samples <- 50
+mu <- rep(1, m)
+cov_mat <- cov(matrix(rnorm(n_samples * m), n_samples, m))
+x_test <- matrix(MASS::mvrnorm(1, mu, cov_mat), nrow = 1)
+cnms <- paste0("x", seq(m))
+colnames(x_test) <- cnms
+index_given <- c(4, 7)
+r <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
 
 }
 \author{
