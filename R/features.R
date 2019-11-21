@@ -1,25 +1,43 @@
-#' Get combinations
+#' Define feature combinations, and fetch additional information about each unique combination
 #'
-#' @inheritParams global_arguments
+#' @param m Positive integer. Total number of features.
+#' @param exact Logical. If \code{TRUE} all \code{2^m} combinations are generated, otherwise a
+#' subsample of the combinations is used.
+#' @param n_combinations Positive integer. Note that if \code{exact = TRUE},
+#' \code{n_combinations} is ignored. However, if \code{m > 12} you'll need to add a positive integer
+#' value for \code{n_combinations}.
+#' @param shapley_weight_inf_replacement Numeric. The value to use as a replacement for infinite combination
+#' weights when doing numerical operations.
+#' @param reduce_dim Logical.
 #'
-#' @details
-#' The returned data.table contains the following columns
+#' @return A data.table that contains the following columns:
 #' \describe{
-#' \item{ID}{Positive integer. Unique key for combination}
-#' \item{features}{List of integer vectors}
-#' \item{nfeatures}{Positive integer}
-#' \item{N}{Positive integer}
+#' \item{ID}{Positive integer. Represents a unique key for each combination. Note that the table
+#' is sorted by \code{ID}, so that is always equal to \code{x[["ID"]] = 1:nrow(x)}.}
+#' \item{features}{List. Each item of the list is an integer vector where \code{features[[i]]}
+#' represents the indices of the features included in combination \code{i}. Note that all the items
+#' are sorted such that \code{features[[i]] == sort(features[[i]])} is always true.}
+#' \item{nfeatures}{Positive integer. \code{nfeatures[i]} equals the number of features in combination
+#' \code{i}, i.e. \code{nfeatures[i] = length(features[[i]])}.}.
+#' \item{N}{Positive integer. The number of unique ways to sample \code{nfeatures[i]} features
+#' from \code{m} different features, without replacement.}
 #' }
-#'
-#' @return data.table
 #'
 #' @keywords internal
 #'
 #' @author Nikolai Sellereite, Martin Jullum
+#'
+#' @examples
+#' # All combinations
+#' x <- shapr:::feature_combinations(m = 5)
+#' nrow(x) # Equals 2^5 = 32
+#'
+#' # Subsample of combinations
+#' x <- shapr:::feature_combinations(m = 13, n_combinations = 1e3)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200,
                                  shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
 
-  # Force user to use a natural number for n_combinations if m > 10
+  # Force user to use a natural number for n_combinations if m > 12
   if (m > 12 & is.null(n_combinations)) {
     stop(
       paste0(

@@ -7,19 +7,22 @@
 gaussian_transform_separate(yx, n_y)
 }
 \arguments{
-\item{yx}{Vector where the first part is the new data to transform,
-and last part is the data with the original transformation}
+\item{yx}{Numeric vector. The first \code{n_y} items is the data that is transformed, and last
+part is the data with the original transformation.}
 
-\item{n_y}{How many elements of \code{yx} that belongs to the y-part (Gaussian data)}
+\item{n_y}{Positive integer. Number of elements of \code{yx} that belongs to the gaussian data.}
 }
 \value{
 Vector of back-transformed Gaussian data
 }
 \description{
-Handled in this way in order to allow using the apply function over this function
+Transforms new data to standardized normal (dimension 1) based on other data transformations
 }
 \examples{
-# TODO: Add simple example
+yx <- rnorm(50)
+n_y <- 30
+x <- shapr:::gaussian_transform_separate(yx, n_y)
+str(x)
 
 }
 \author{

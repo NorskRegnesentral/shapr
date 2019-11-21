@@ -20,10 +20,11 @@ hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
 #'
 #' @param H Matrix. Output from \code{\link{hat_matrix_cpp}}
 #' @param y Vector, i.e. representing the response variable
-#' @param ret_log Logical. Indicates whether to return the logarithm of \code{sigma_sq}
+#'
 #' @export
 #'
 #' @return Scalar
+#'
 #' @author Martin Jullum
 rss_cpp <- function(H, y) {
     .Call(`_shapr_rss_cpp`, H, y)
@@ -59,15 +60,16 @@ aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
 
 #'  AICc formula for several sets, alternative definition
 #'
-#' @param h numeric specifying the scaling (sigma)
-#' @param X matrix with "covariates"
-#' @param mcov covariance matrix
-#' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
-#' @param y vector with the "response variable"
-#'
-#' @export
+#' @param h Numeric. Specifies the scaling (sigma)
+#' @param X_list List
+#' @param mcov_list List
+#' @param S_scale_dist Logical. Indicates whether Mahalanobis distance should be scaled with the
+#' number of variables
+#' @param y_list List.
+#' @param negative Logical.
 #'
 #' @return Scalar with the numeric value of the AICc formula
+#'
 #' @author Martin Jullum
 aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) {
     .Call(`_shapr_aicc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
@@ -81,6 +83,8 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 #' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
 #' \code{diag(m)} gives the Euclidean distance.
 #' @param S_scale_dist Logical indicating
+#' @param Xtrain_mat Matrix
+#' @param Xtest_mat Matrix
 #'
 #' @export
 #'

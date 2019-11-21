@@ -77,10 +77,11 @@ arma::mat hat_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double 
 //'
 //' @param H Matrix. Output from \code{\link{hat_matrix_cpp}}
 //' @param y Vector, i.e. representing the response variable
-//' @param ret_log Logical. Indicates whether to return the logarithm of \code{sigma_sq}
+//'
 //' @export
 //'
 //' @return Scalar
+//'
 //' @author Martin Jullum
 // [[Rcpp::export]]
 double rss_cpp(arma::mat H, arma::vec y) {
@@ -118,7 +119,6 @@ double correction_matrix_cpp(double tr_H,int n) {
     return(out);
 }
 
-
 //'  Temp-function for computing the full AICc with several X's etc
 //'
 //' @param X matrix with "covariates"
@@ -148,19 +148,18 @@ arma::vec aicc_full_single_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, d
     return(out);
 }
 
-
-
 //'  AICc formula for several sets, alternative definition
 //'
-//' @param h numeric specifying the scaling (sigma)
-//' @param X matrix with "covariates"
-//' @param mcov covariance matrix
-//' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
-//' @param y vector with the "response variable"
-//'
-//' @export
+//' @param h Numeric. Specifies the scaling (sigma)
+//' @param X_list List
+//' @param mcov_list List
+//' @param S_scale_dist Logical. Indicates whether Mahalanobis distance should be scaled with the
+//' number of variables
+//' @param y_list List.
+//' @param negative Logical.
 //'
 //' @return Scalar with the numeric value of the AICc formula
+//'
 //' @author Martin Jullum
 // [[Rcpp::export]]
 double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_scale_dist, Rcpp::List y_list, bool negative) {
@@ -185,9 +184,6 @@ double aicc_full_cpp(double h, Rcpp::List X_list, Rcpp::List mcov_list, bool S_s
 
     return(out);
 }
-
-
-
 
 // //' sigma_hat_sq-function
 // //'

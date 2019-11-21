@@ -7,15 +7,15 @@
 correlation_rectangles(corr, cluster, k = 2, col = "yellow", lwd = 6)
 }
 \arguments{
-\item{corr}{correlation matrix}
+\item{corr}{Numeric matrix. Needs to satisfy the conditions for a correlation matrix.}
 
 \item{cluster}{An object of class \code{hclust}. See \code{\link[stats]{hclust}}}
 
-\item{k}{number of clusters}
+\item{k}{Integer. Number of clusters}
 
-\item{col}{box color}
+\item{col}{Character. Represents the box color.}
 
-\item{lwd}{box line width}
+\item{lwd}{Integer. Represents box line width.}
 }
 \description{
 Draw rectangles on the correlation matrix graph

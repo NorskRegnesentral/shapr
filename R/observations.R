@@ -16,7 +16,25 @@
 #' @keywords internal
 #'
 #' @examples
-#' # TODO: Add simple example
+#' # Setup
+#' n <- 20 # Sample size of training data
+#' m <- 2 # Number of features
+#' sigma <- cov(matrix(MASS::mvrnorm(m * n, 0, 1), nrow = n))
+#'
+#' # Create training- and test data
+#' x_train <- as.matrix(MASS::mvrnorm(n, mu = rep(0, m), Sigma = sigma), ncol = m)
+#' x_test <- t(as.matrix(MASS::mvrnorm(1, mu = rep(0, m), sigma)))
+#' colnames(x_train) <- colnames(x_test) <- paste0("X", seq(m))
+#'
+#' # Binary matrix which represents the feature combinations
+#' S <- matrix(c(1, 0, 0, 1), nrow = m)
+#'
+#' # Kernel matrix
+#' W_kernel <- matrix(rnorm(n * ncol(S), mean = 1 / n, sd = 1 / n^2), nrow = n)
+#'
+#' # Generate permutations of training data using test observations
+#' r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
+#' str(r)
 #'
 #' @author Nikolai Sellereite
 observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n_samples = 1e3) {
@@ -71,16 +89,20 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 
 #' Generate data used for predictions
 #'
+#' @param x Explainer object. See \code{\link{explain}} for more information.
+#'
 #' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation.
 #'
-#' @param seed Positive integer. If \code{NULL} a random seed will be used.
+#' @param seed Positive integer. If \code{NULL} the seed will be inherited from the calling environment.
 #'
-#' @param index_features Positive integer vector. Only used internally.
+#' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
+#' \code{NULL} means all combinations. Only used internally.
+#'
+#' @param x_test_gaussian Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
+#' \code{approach = "empirical"}.
 #'
 #' @param ... Currently not used.
-#'
-#' @name prepare_data
 #'
 #' @export
 prepare_data <- function(x, ...) {
@@ -89,7 +111,6 @@ prepare_data <- function(x, ...) {
 }
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -171,7 +192,6 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
 }
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -207,7 +227,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 }
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
