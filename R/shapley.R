@@ -55,7 +55,7 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #' \code{x}, and that \code{ncol(x) = p} equals the total number of features.
 #'
 #' @param model The model whose predictions we want to explain. See \code{\link{predict_model}}
-#' for more information about which models \code{shapr} supports.
+#' for more information about which models \code{shapr} supports natively.
 #'
 #' @param n_combinations Integer. The number of feature combinations to sample. If \code{NULL},
 #' the exact method is used and all combinations are considered. The maximum number of
