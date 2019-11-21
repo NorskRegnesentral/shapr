@@ -2,7 +2,7 @@
 #'
 #' @param m Positive integer. Total number of features.
 #' @param s Positive integer. Represents the number of features you want to sample from a feature
-#' space consisting of \code{m} unique features. Note that \code{s>= 0} and \code{s <= m}.
+#' space consisting of \code{m} unique features. Note that \code{ 0 < = s  <= m}.
 #' @param N Positive integer. The number of unique combinations when sampling \code{s} features,
 #' without replacement, from a sample space consisting of \code{m} different features.
 #' @param weight_zero_m Positive integer. Represents the Shapley weight for two special
