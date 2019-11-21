@@ -19,7 +19,7 @@ the exact method is used and all combinations are considered. The maximum number
 combinations equals \code{2^p}.}
 }
 \value{
-Named list that contains the follwing items:
+Named list that contains the following items:
 \describe{
   \item{exact}{Boolean. Equals \code{TRUE} if \code{n_combinations = NULL} or
   \code{n_combinations < 2^p}, otherwise \code{FALSE}.}

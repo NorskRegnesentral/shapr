@@ -13,7 +13,7 @@ correlation_rectangles(corr, cluster, k = 2, col = "yellow", lwd = 6)
 
 \item{k}{Integer. Number of clusters}
 
-\item{col}{Character. Represents the box colour.}
+\item{col}{Character. Represents the box color.}
 
 \item{lwd}{Integer. Represents box line width.}
 }

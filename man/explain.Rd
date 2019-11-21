@@ -41,7 +41,7 @@ the response.}
 \item{type}{Character. Should be equal to either \code{"independence"},
 \code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
-\item{fixed_sigma_vec}{Numeric. Represents the kernel bandwith. Note that this argument is only
+\item{fixed_sigma_vec}{Numeric. Represents the kernel bandwidth. Note that this argument is only
 applicable when \code{approach = "empirical"}, and \code{type = "fixed_sigma"}}
 
 \item{n_samples_aicc}{Positive integer. Number of samples to consider in AICc optimization.
@@ -76,7 +76,7 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
   \item{x_test}{data.table}
 }
 
-Note that the returned items \code{model}, \code{p} and \code{x_test} are mostly addded due
+Note that the returned items \code{model}, \code{p} and \code{x_test} are mostly added due
 to the implementation of \code{plot.shapr}. If you only want to look at the numerical results
 it is sufficient to focus on \code{dt}. \code{dt} is a data.table where the number of rows equals
 the number of observations you'd like to explain, and the number of columns equals \code{m +1},
@@ -105,7 +105,7 @@ the \code{"empirical"} approach if you condition on 2-5 features, and \code{"cop
 if you condition on more than 5 features this can be done by simply passing
 \code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
 \code{"approach[i]" = "gaussian"} it means that you'd like to use the \code{"gaussian"} approach
-when conditiong on \code{i} features.
+when conditioning on \code{i} features.
 }
 \examples{
 # Load example data

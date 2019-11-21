@@ -97,7 +97,7 @@ cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
 #' @param corr Numeric matrix. Needs to satisfy the conditions for a correlation matrix.
 #' @param cluster An object of class \code{hclust}. See \code{\link[stats]{hclust}}
 #' @param k Integer. Number of clusters
-#' @param col Character. Represents the box colour.
+#' @param col Character. Represents the box color.
 #' @param lwd Integer. Represents box line width.
 #'
 #' @keywords internal

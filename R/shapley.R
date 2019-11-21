@@ -5,7 +5,7 @@
 #' space consisting of \code{m} unique features. Note that \code{s>= 0} and \code{s <= m}.
 #' @param N Positive integer. The number of unique combinations when sampling \code{s} features,
 #' without replacement, from a sample space consisting of \code{m} different features.
-#' @param weight_zero_m Positive integer. Represents the Shapley weigth for two special
+#' @param weight_zero_m Positive integer. Represents the Shapley weight for two special
 #' cases, i.e. the case where you have either \code{0} or \code{m} features.
 #'
 #' @return Numeric
@@ -61,7 +61,7 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #' the exact method is used and all combinations are considered. The maximum number of
 #' combinations equals \code{2^p}.
 #'
-#' @return Named list that contains the follwing items:
+#' @return Named list that contains the following items:
 #' \describe{
 #'   \item{exact}{Boolean. Equals \code{TRUE} if \code{n_combinations = NULL} or
 #'   \code{n_combinations < 2^p}, otherwise \code{FALSE}.}
