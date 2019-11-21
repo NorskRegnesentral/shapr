@@ -1,6 +1,6 @@
 #' Transforms new data to a standardized normal distribution
 #'
-#' @param zx Numeric vector. The first \code{n_z} items is the Gaussian data, and last part is
+#' @param zx Numeric vector. The first \code{n_z} items are the Gaussian data, and the last part is
 #' the data with the original transformation.
 #' @param n_z Positive integer. Number of elements of \code{zx} that belongs to new data.
 #' @param type Integer between \code{1} and \code{9}. See \code{\link[stats]{quantile}} for more
