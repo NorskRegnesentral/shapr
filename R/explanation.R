@@ -47,7 +47,7 @@
 #' decreased the prediction for the i-th observation. The magnitude of the value is also important
 #' to notice. E.g. if \code{dt[i, k + 1]} and \code{dt[i, j + 1]} are greater than \code{0},
 #' where \code{j != k}, and \code{dt[i, k + 1]} > \code{dt[i, j + 1]} this indicates that feature
-#' \code{j} and \code{k} increased the value of the prediction, but that the effect of the k-th
+#' \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
 #' feature was larger than the j-th feature.
 #'
 #' @export
