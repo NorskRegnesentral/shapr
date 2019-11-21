@@ -4,14 +4,10 @@
 \alias{weight_matrix}
 \title{Calculate weighted matrix}
 \usage{
-weight_matrix(X, use_shapley_weights_in_W = TRUE,
-  normalize_W_weights = TRUE)
+weight_matrix(X, normalize_W_weights = TRUE)
 }
 \arguments{
 \item{X}{data.table}
-
-\item{use_shapley_weights_in_W}{Logical. Whether to use direct formula based (\code{TRUE}) or sampling
-based (\code{FALSE}) weights for the combinations.}
 
 \item{normalize_W_weights}{Logical. Whether to normalize the weights for the combinations to sum to 1 for
 increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations

@@ -91,13 +91,11 @@ test_that("Test feature_not_exact", {
   exact <- FALSE
   n_combinations <- 50
   w <- 10^6
-  reduce_dim <- FALSE
   set.seed(1)
   x <- feature_not_exact(
     m = m,
     n_combinations = n_combinations,
-    weight_zero_m = w,
-    reduce_dim = reduce_dim
+    weight_zero_m = w
   )
   set.seed(1)
 
@@ -111,7 +109,7 @@ test_that("Test feature_not_exact", {
   expect_true(data.table::is.data.table(x))
   expect_equal(names(x), cnms)
   expect_equal(unname(sapply(x, typeof)), classes)
-  expect_equal(nrow(x), n_combinations + 2)
+  expect_true(nrow(x) <= n_combinations + 2)
   expect_equal(x[["ID"]], seq(nrow(x)))
   for (i in x[, .I]) {
     f <- x[["features"]][[i]]

@@ -76,13 +76,13 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
   dt[, nfeatures := length(features[[1]]), ID]
   dt[, N := .N, nfeatures]
   dt[, shapley_weight := shapley_weights(m = m, N = N, s = nfeatures, weight_zero_m)]
-  dt[, no := 1]
+  dt[, no := 1] # TODO: Remove this after updating test objects
 
   return(dt)
 }
 
 #' @keywords internal
-feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, reduce_dim = TRUE) {
+feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 
   # Find weights for given number of features ----------
   nfeatures <- seq(m - 1)
@@ -117,12 +117,11 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, red
 
   # Populate table and remove duplicated rows -------
   X[, features := feature_sample]
-  if (reduce_dim && any(X[["is_duplicate"]])) {
+  if (any(X[["is_duplicate"]])) {
     X <- X[is_duplicate == FALSE]
-    X[, no := 1]
   }
   X[, is_duplicate := NULL]
-  nms <- c("ID", "nfeatures", "features", "no")
+  nms <- c("ID", "nfeatures", "features")
   data.table::setcolorder(X, nms)
 
   # Add shapley weight and number of combinations
@@ -134,11 +133,12 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, red
   X[, ind := NULL]
 
   # Set column order and key table
-  nms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "no")
+  nms <- c("ID", "features", "nfeatures", "N", "shapley_weight")
   data.table::setcolorder(X, nms)
   data.table::setkey(X, nfeatures)
   X[, ID := .I]
   X[, N := as.integer(N)]
+  X[, no := 1] # TODO: Remove this after updating test objects
 
   return(X)
 }

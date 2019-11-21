@@ -20,8 +20,6 @@ shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 #' Calculate weighted matrix
 #'
 #' @param X data.table
-#' @param use_shapley_weights_in_W Logical. Whether to use direct formula based (\code{TRUE}) or sampling
-#' based (\code{FALSE}) weights for the combinations.
 #' @param normalize_W_weights Logical. Whether to normalize the weights for the combinations to sum to 1 for
 #' increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations
 #' except combination \code{1} and \code{2^m}.
@@ -29,13 +27,10 @@ shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 #' @return Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weights = TRUE) {
-  if (use_shapley_weights_in_W) {
-    w <- X[["shapley_weight"]] * X[["no"]]
-  } else {
-    w <- X[["no"]]
-    w[c(1, length(w))] <- X[["shapley_weight"]][c(1, length(w))]
-  }
+weight_matrix <- function(X, normalize_W_weights = TRUE) {
+
+  # Fetch weights
+  w <- X[["shapley_weight"]]
 
   if (normalize_W_weights) {
     w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
@@ -146,14 +141,12 @@ shapr <- function(x,
     m = explainer$n_features,
     exact = explainer$exact,
     n_combinations = n_combinations,
-    weight_zero_m = 10^6,
-    reduce_dim = TRUE
+    weight_zero_m = 10^6
   )
 
   # Get weighted matrix ----------------
   weighted_mat <- weight_matrix(
     X = dt_combinations,
-    use_shapley_weights_in_W = ifelse(explainer$exact, TRUE, FALSE),
     normalize_W_weights = TRUE
   )
 
