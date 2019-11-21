@@ -4,16 +4,13 @@
 \alias{inv_gaussian_transform}
 \title{Transforms new data to a standardized normal distribution}
 \usage{
-inv_gaussian_transform(zx, n_z, type = 7)
+inv_gaussian_transform(zx, n_z)
 }
 \arguments{
 \item{zx}{Numeric vector. The first \code{n_z} items are the Gaussian data, and the last part is
 the data with the original transformation.}
 
 \item{n_z}{Positive integer. Number of elements of \code{zx} that belongs to new data.}
-
-\item{type}{Integer between \code{1} and \code{9}. See \code{\link[stats]{quantile}} for more
-information.}
 }
 \value{
 Numeric vector of length \code{n_z}

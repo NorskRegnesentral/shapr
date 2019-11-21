@@ -7,9 +7,8 @@ test_that("Test inv_gaussian_transform", {
   # Example -----------
   zx <- rnorm(50)
   n_z <- 30
-  type <- 7
 
-  x <- inv_gaussian_transform(zx, n_z, type)
+  x <- inv_gaussian_transform(zx, n_z)
 
   # Tests -----------
   expect_true(is.atomic(x))
