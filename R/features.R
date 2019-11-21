@@ -3,7 +3,7 @@
 #' @param m Positive integer. Total number of features.
 #' @param exact Logical. If \code{TRUE} all \code{2^m} combinations are generated, otherwise a
 #' subsample of the combinations is used.
-#' @param n_combinations Positive integer. Note that if \code{exact} equals \code{TRUE},
+#' @param n_combinations Positive integer. Note that if \code{exact = TRUE},
 #' \code{n_combinations} is ignored. However, if \code{m > 12} you'll need to add a positive integer
 #' value for \code{n_combinations}.
 #' @param shapley_weight_inf_replacement Numeric.
