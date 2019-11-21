@@ -3,8 +3,8 @@
 #' @param index_given Integer vector. The indices of the features to condition upon. Note that
 #' \code{min(index_given) >= 1} and \code{max(index_given) <= p}.
 #' @param p Positive integer. The number of features.
-#' @param x_test_gaussian Numeric matrix. Contains the Gaussian transformed features of the
-#' observation whose predictions ought to be explained (test data).
+#' @param x_test_gaussian Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
+#' after quantile-transforming them to standard Gaussian variables.
 #' @param x_test Numeric matrix. Contains the features of the observation whose
 #' predictions ought to be explained (test data).
 #'
