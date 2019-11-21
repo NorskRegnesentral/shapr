@@ -290,7 +290,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
 #' Helper function used in \code{\link{explain.combined}}
 #'
 #' @param n_features Integer vector. Note that
-#' \code{length(n_combinations) <= 2^m}, where \code{m} equals the number
+#' \code{length(n_features) <= 2^m}, where \code{m} equals the number
 #' of features.
 #' @param approach Character vector of length \code{m}. All elements should be
 #' either \code{"empirical"}, \code{"gaussian"} or \code{"copula"}.
