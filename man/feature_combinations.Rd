@@ -5,7 +5,7 @@
 \title{Define feature combinations, and fetch additional information about each unique combination}
 \usage{
 feature_combinations(m, exact = TRUE, n_combinations = 200,
-  shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE)
+  weight_zero_m = 10^6, reduce_dim = TRUE)
 }
 \arguments{
 \item{m}{Positive integer. Total number of features.}
@@ -17,7 +17,7 @@ subsample of the combinations is used.}
 \code{n_combinations} is ignored. However, if \code{m > 12} you'll need to add a positive integer
 value for \code{n_combinations}.}
 
-\item{shapley_weight_inf_replacement}{Numeric. The value to use as a replacement for infinite combination
+\item{weight_zero_m}{Numeric. The value to use as a replacement for infinite combination
 weights when doing numerical operations.}
 
 \item{reduce_dim}{Logical.}
