@@ -4,7 +4,7 @@
 #' a stand-alone function.
 #'
 #' @param dt data.table
-#' @param prediction_zero Numeric
+#' @param prediction_zero Numeric. The value to use for \code{phi_0}.
 #' @param explainer An object of class \code{explainer}. See \code{\link{shapr}}.
 #'
 #' @details If \code{dt} does not contain three columns called \code{id}, \code{wcomb} and \code{w}
