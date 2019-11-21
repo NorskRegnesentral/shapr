@@ -3,6 +3,9 @@ library(shapr)
 
 context("test-explanation.R")
 
+# For using same Random numer generator as CircelCI (R version 3.5.x)
+if (as.numeric(version$minor) >= 6.0) RNGkind(sample.kind = "Rounding")
+
 test_that("Test functions in explanation.R", {
 
   # Load data -----------
@@ -48,31 +51,40 @@ test_that("Test functions in explanation.R", {
   ex_list[[9]] <- explain(x_test, explainer, approach = rep("copula", 4), prediction_zero = p0)
 
   # Ex 10: gaussian and copula XX (works with seed)
-  ex_list[[10]] <- explain(x_test, explainer, approach = c(rep("gaussian", 2), rep("copula", 2)), prediction_zero = p0)
+  approach <- c(rep("gaussian", 2), rep("copula", 2))
+  ex_list[[10]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Ex 11: empirical and gaussian
-  ex_list[[11]] <- explain(x_test, explainer, approach = c(rep("empirical", 2), rep("gaussian", 2)), prediction_zero = p0)
+  approach <- c(rep("empirical", 2), rep("gaussian", 2))
+  ex_list[[11]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Ex 12: empirical and copula
-  ex_list[[12]] <- explain(x_test, explainer, approach = c(rep("empirical", 2), rep("copula", 2)), prediction_zero = p0)
+  approach <- c(rep("empirical", 2), rep("copula", 2))
+  ex_list[[12]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Ex 13: copula and empirical XX (works now)
-  ex_list[[13]] <- explain(x_test, explainer, approach = c(rep("copula", 2), rep("empirical", 2)), prediction_zero = p0)
+  approach <- c(rep("copula", 2), rep("empirical", 2))
+  ex_list[[13]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Ex 14: gaussian and copula XX (works with seed)
-  ex_list[[14]] <- explain(x_test, explainer, approach = c(rep("gaussian", 1), rep("copula", 3)), prediction_zero = p0)
+  approach <- c(rep("gaussian", 1), rep("copula", 3))
+  ex_list[[14]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Ex 15: empirical and copula
-  ex_list[[15]] <- explain(x_test, explainer, approach = c(rep("empirical", 1), rep("copula", 3)), prediction_zero = p0)
+  approach <- c(rep("empirical", 1), rep("copula", 3))
+  ex_list[[15]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Ex 16: gaussian and empirical XX (works now)
-  ex_list[[16]] <- explain(x_test, explainer, approach = c(rep("gaussian", 1), rep("empirical", 3)), prediction_zero = p0)
+  approach <- c(rep("gaussian", 1), rep("empirical", 3))
+  ex_list[[16]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Ex 17: gaussian and empirical XX (works now!)
-  ex_list[[17]] <- explain(x_test, explainer, approach = c(rep("gaussian", 2), rep("empirical", 2)), prediction_zero = p0)
+  approach <- c(rep("gaussian", 2), rep("empirical", 2))
+  ex_list[[17]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Ex 8: Explain combined II - all empirical
-  ex_list[[18]] <- explain(x_test, explainer, approach = c(rep("empirical", 4)), prediction_zero = p0)
+  approach <- c(rep("empirical", 4))
+  ex_list[[18]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Checking that all explain objects produce the same as before
   expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")

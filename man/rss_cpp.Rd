@@ -10,8 +10,6 @@ rss_cpp(H, y)
 \item{H}{Matrix. Output from \code{\link{hat_matrix_cpp}}}
 
 \item{y}{Vector, i.e. representing the response variable}
-
-\item{ret_log}{Logical. Indicates whether to return the logarithm of \code{sigma_sq}}
 }
 \value{
 Scalar

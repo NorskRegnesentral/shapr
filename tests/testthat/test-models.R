@@ -85,7 +85,13 @@ test_that("Test predict_model (binary classification)", {
   l <- list(
     suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")),
     ranger::ranger(str_formula, data = train_df, probability = TRUE),
-    xgboost::xgboost(data = as.matrix(x_train), label = as.integer(y_train) - 1, nrounds = 2, verbose = FALSE, objective = "binary:logistic")
+    xgboost::xgboost(
+      data = as.matrix(x_train),
+      label = as.integer(y_train) - 1,
+      nrounds = 2,
+      verbose = FALSE,
+      objective = "binary:logistic"
+    )
   )
 
   # Tests

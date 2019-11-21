@@ -12,11 +12,15 @@
 
 \item{digits}{Integer. Number of significant digits to use in the feature description}
 
-\item{plot_phi0}{Logical. Whether to include phi0 in the plot}
+\item{plot_phi0}{Logical. Whether to include \code{phi0} in the plot}
 
-\item{index_x_test}{Integer vector. Which of the test observations to plot}
+\item{index_x_test}{Integer vector. Which of the test observations to plot. E.g. if you have
+explained 10 observations using \code{\link{explain}}, you can generate a plot for the first 5
+observations by setting \code{index_x_test = 1:5}.}
 
-\item{top_k_features}{Integer. How many features to include in the plot}
+\item{top_k_features}{Integer. How many features to include in the plot. E.g. if you have 15
+features in your model you can plot the 5 most important features, for each explanation, by setting
+\code{top_k_features = 1:5}.}
 
 \item{...}{Currently not used.}
 }
@@ -24,7 +28,11 @@
 ggplot object with plots of the Shapley value explanations
 }
 \description{
-Plots the individual prediction explanations. Uses facet_wrap of ggplot
+Plots the individual prediction explanations.
+}
+\details{
+See \code{vignette("understanding_shapr", package = "shapr")} for an example of
+how you should use the function.
 }
 \author{
 Martin Jullum

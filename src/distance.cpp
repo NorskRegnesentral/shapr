@@ -1,8 +1,6 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
-
-
 //' (Generalized) Mahalanobis distance
 //'
 //' Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
@@ -11,6 +9,8 @@ using namespace Rcpp;
 //' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
 //' \code{diag(m)} gives the Euclidean distance.
 //' @param S_scale_dist Logical indicating
+//' @param Xtrain_mat Matrix
+//' @param Xtest_mat Matrix
 //'
 //' @export
 //'
@@ -93,4 +93,3 @@ arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat,
 
     return out;
 }
-

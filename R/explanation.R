@@ -1,7 +1,5 @@
 #' Explain the output of machine learning models with more accurately estimated Shapley values
 #'
-#' @description TODO: Add a more detailed description
-#'
 #' @param x A matrix or data.frame. Contains the the features, whose
 #' predictions ought to be explained (test data).
 #'
@@ -12,22 +10,87 @@
 #' \code{n_features} equals the total number of features in the model. All elements should
 #' either be \code{"gaussian"}, \code{"copula"} or \code{"empirical"}. See details for more information.
 #'
-#' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
+#' @param prediction_zero Numeric. The prediction value for unseen data, typically equal to the mean of
 #' the response.
 #'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
-#' @details
-#' TODO: Add information about approach.
-#' TODO: Some additional details about the returned object
+#' @details The most important thing to notice is that \code{shapr} has implemented three different
+#' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
+#' \code{"gassuian"} and \code{"copula"}.
 #'
-#' @return data.frame. Contains the estimated Shapley values for the test data. Note that
-#' the dimensions of the data.frame equals \code{n x (p+1)}, where \code{n} equals the number
-#' of test observations, and \code{p} equals the total number of features.
+#' In addition to this the user will also have the option of combining the three approaches.
+#' E.g. if you're in a situation where you have trained a model the consists of 10 features,
+#' and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
+#' the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
+#' if you condition on more than 5 features this can be done by simply passing
+#' \code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
+#' \code{"approach[i]" = "gaussian"} it means that you'd like to use the \code{"gaussian"} approach
+#' when conditioning on \code{i} features.
+#'
+#' @return Object of class \code{c("shapr", "list")}. Contains the following items:
+#' \describe{
+#'   \item{dt}{data.table}
+#'   \item{model}{Model object}
+#'   \item{p}{Numeric vector}
+#'   \item{x_test}{data.table}
+#' }
+#'
+#' Note that the returned items \code{model}, \code{p} and \code{x_test} are mostly added due
+#' to the implementation of \code{plot.shapr}. If you only want to look at the numerical results
+#' it is sufficient to focus on \code{dt}. \code{dt} is a data.table where the number of rows equals
+#' the number of observations you'd like to explain, and the number of columns equals \code{m +1},
+#' where \code{m} equals the total number of features in your model.
+#'
+#' If \code{dt[i, j + 1] > 0} it indicates that the j-th feature increased the prediction for
+#' the i-th observation. Likewise, if \code{dt[i, j + 1] < 0} it indicates that the j-th feature
+#' decreased the prediction for the i-th observation. The magnitude of the value is also important
+#' to notice. E.g. if \code{dt[i, k + 1]} and \code{dt[i, j + 1]} are greater than \code{0},
+#' where \code{j != k}, and \code{dt[i, k + 1]} > \code{dt[i, j + 1]} this indicates that feature
+#' \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
+#' feature was larger than the j-th feature.
 #'
 #' @export
 #'
-#' @author Camilla Lingjaerde
+#' @author Camilla Lingjaerde, Nikolai Sellereite
+#'
+#' @examples
+#' # Load example data
+#' data("Boston", package = "MASS")
+#'
+#' # Split data into test- and training data
+#' x_var <- c("lstat", "rm", "dis", "indus")
+#' y_var <- "medv"
+#' x_train <- head(Boston[, x_var], -3)
+#' y_train <- head(Boston[, y_var, drop = FALSE], -3)
+#' x_test <- tail(Boston[, x_var], 3)
+#'
+#' # Fit a linear model
+#' model <- lm(medv ~ lstat + rm + dis + indus, data = cbind(y_train, x_train))
+#'
+#' # Create an explainer object
+#' explainer <- shapr(x_train, model)
+#'
+#' # Explain predictions
+#' p <- mean(y_train[, 1])
+#'
+#' # Empirical approach
+#' explain1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p)
+#'
+#' # Gaussian approach
+#' explain2 <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p)
+#'
+#' # Gaussian copula approach
+#' explain3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p)
+#'
+#' # Combined approach
+#' approach <- c("gaussian", "gaussian", "empirical", "empirical")
+#' explain4 <- explain(x_test, explainer, approach = approach, prediction_zero = p)
+#'
+#' # Plot the results
+#' \dontrun{
+#' plot(explain1)
+#' }
 explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Check input for x
@@ -66,24 +129,25 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' @param type Character. Should be equal to either \code{"independence"},
 #' \code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.
 #'
-#' @param fixed_sigma_vec Vector or numeric. Only applicable when \code{approach='empirical'} and
-#' \code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}
+#' @param fixed_sigma_vec Numeric. Represents the kernel bandwidth. Note that this argument is only
+#' applicable when \code{approach = "empirical"}, and \code{type = "fixed_sigma"}
 #'
-#' @param n_samples_aicc Positive integer. Only applicable when
-#' \code{approach='empirical'} and \code{type='AICc_each_k'} or
-#' \code{type='AICc_full'}. Number of samples to consider in AICc optimization.
+#' @param n_samples_aicc Positive integer. Number of samples to consider in AICc optimization.
+#' Note that this argument is only applicable when \code{approach = "empirical"}, and \code{type}
+#' is either equal to \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
-#' @param eval_max_aicc Positive integer. Only applicable when \code{approach='empirical'}
-#' and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Maximum number of iterations when
-#' optimizing the AICc.
+#' @param eval_max_aicc Positive integer. Maximum number of iterations when
+#' optimizing the AICc. Note that this argument is only applicable when
+#' \code{approach = "empirical"}, and \code{type} is either equal to
+#' \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
-#' @param start_aicc Numeric. Only applicable when \code{approach='empirical'} and
-#' \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.
+#' @param start_aicc Numeric. Start value of \code{sigma} when optimizing the AICc. Note that this argument
+#' is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
+#' \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
 #' @param w_threshold Positive integer between 0 and 1.
 #'
 #' @rdname explain
-#' @name explain
 #'
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
@@ -111,8 +175,6 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   return(r)
 }
 
-#' @inheritParams explain
-#'
 #' @param mu Numeric vector. (Optional) Containing the mean of the data generating distribution.
 #' If \code{NULL} the expected values are estimated from the data. Note that this is only used
 #' when \code{approach = "gaussian"}.
@@ -122,7 +184,6 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #' (in the Gaussian approach).
 #'
 #' @rdname explain
-#' @name explain
 #'
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
@@ -162,7 +223,6 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 }
 
 #' @rdname explain
-#' @name explain
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
@@ -227,7 +287,26 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
 }
 
+#' Helper function used in \code{\link{explain.combined}}
+#'
+#' @param n_features Integer vector. Note that
+#' \code{length(n_features) <= 2^m}, where \code{m} equals the number
+#' of features.
+#' @param approach Character vector of length \code{m}. All elements should be
+#' either \code{"empirical"}, \code{"gaussian"} or \code{"copula"}.
+#'
 #' @keywords internal
+#'
+#' @author Nikolai Sellereite
+#'
+#' @return List
+#'
+#' @examples
+#' m <- 3
+#' n_features <- c(0, 1, 1, 1, 2, 2, 2, 3)
+#' approach <- c("gaussian", "copula", "copula")
+#' l <- shapr:::get_list_approaches(n_features, approach)
+#' str(l)
 get_list_approaches <- function(n_features, approach) {
 
   l <- list()
