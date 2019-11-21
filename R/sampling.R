@@ -22,7 +22,8 @@
 #' x_test <- MASS::mvrnorm(1, mu, cov_mat)
 #' x_test_gaussian <- MASS::mvrnorm(1, mu, cov_mat)
 #' index_given <- 3:6
-#' ret <- sample_copula(index_given, n_samples, mu, cov_mat, p = m, x_test_gaussian, x_train, x_test)
+#' ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat, p = m,
+#'                              x_test_gaussian, x_train, x_test)
 #'
 #' @author Martin Jullum
 sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussian, x_train, x_test) {
@@ -75,7 +76,7 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussia
 #' cnms <- paste0("x", seq(m))
 #' colnames(x_test) <- cnms
 #' index_given <- c(4, 7)
-#' r <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
+#' r <- shapr:::sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
 #'
 #' @author Martin Jullum
 sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test) {
@@ -137,7 +138,7 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test) {
 #' nsamples <- 7
 #' joint_sampling <- FALSE
 #' cnms <- c("samp_train", "samp_test")
-#' x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
+#' x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 #'
 #' @author Martin Jullum
 sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) {

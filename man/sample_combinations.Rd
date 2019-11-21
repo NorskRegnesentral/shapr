@@ -33,7 +33,7 @@ ntest <- 10
 nsamples <- 7
 joint_sampling <- FALSE
 cnms <- c("samp_train", "samp_test")
-x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
+x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
 }
 \author{

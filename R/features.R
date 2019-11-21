@@ -29,11 +29,11 @@
 #'
 #' @examples
 #' # All combinations
-#' x <- feature_combinations(m = 5)
+#' x <- shapr:::feature_combinations(m = 5)
 #' nrow(x) # Equals 2^5 = 32
 #'
 #' # Subsample of combinations
-#' x <- feature_combinations(m = 13, n_combinations = 1e3)
+#' x <- shapr:::feature_combinations(m = 13, n_combinations = 1e3)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200,
                                  shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE) {
 

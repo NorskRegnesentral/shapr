@@ -21,7 +21,7 @@ Transforms new data to standardized normal (dimension 1) based on other data tra
 \examples{
 yx <- rnorm(50)
 n_y <- 30
-x <- gaussian_transform_separate(yx, n_y)
+x <- shapr:::gaussian_transform_separate(yx, n_y)
 str(x)
 
 }

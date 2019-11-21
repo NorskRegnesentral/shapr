@@ -17,7 +17,7 @@ Transforms a sample to standardized normal distribution
 }
 \examples{
 y <- rnorm(50)
-x <- gaussian_transform(y)
+x <- shapr:::gaussian_transform(y)
 
 }
 \author{

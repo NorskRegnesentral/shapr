@@ -30,7 +30,7 @@ x_test <- matrix(MASS::mvrnorm(1, mu, cov_mat), nrow = 1)
 cnms <- paste0("x", seq(m))
 colnames(x_test) <- cnms
 index_given <- c(4, 7)
-r <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
+r <- shapr:::sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
 
 }
 \author{
