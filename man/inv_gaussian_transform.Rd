@@ -7,7 +7,7 @@
 inv_gaussian_transform(zx, n_z, type = 7)
 }
 \arguments{
-\item{zx}{Numeric vector. The first \code{n_z} items is the Gaussian data, and last part is
+\item{zx}{Numeric vector. The first \code{n_z} items are the Gaussian data, and the last part is
 the data with the original transformation.}
 
 \item{n_z}{Positive integer. Number of elements of \code{zx} that belongs to new data.}
