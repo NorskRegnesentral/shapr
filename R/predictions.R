@@ -1,6 +1,6 @@
 #' Calculate Shapley weights for test data
 #'
-#' @description This function should only be called internally, and not used as
+#' @description This function should only be called internally, and not be used as
 #' a stand-alone function.
 #'
 #' @param dt data.table
