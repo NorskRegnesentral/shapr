@@ -31,7 +31,7 @@ Monte Carlo integration for every conditional expectation.}
 \item{index_features}{Positive integer vector. Specifies the indices of combinations to apply to the present method.
 \code{NULL} means all combinations. Only used internally.}
 
-\item{x_test_gaussian}{Matrix. Only applicable if \code{approach = "empirical"}.}
+\item{x_test_gaussian}{Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if \code{approach = "empirical"}.}
 }
 \description{
 Generate data used for predictions

@@ -12,7 +12,7 @@ i.e. the explanatory variables. Note that the response variable should not be pa
 \code{x}, and that \code{ncol(x) = p} equals the total number of features.}
 
 \item{model}{The model whose predictions we want to explain. See \code{\link{predict_model}}
-for more information about which models \code{shapr} supports.}
+for more information about which models \code{shapr} supports natively.}
 
 \item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
 the exact method is used and all combinations are considered. The maximum number of
