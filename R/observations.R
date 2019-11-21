@@ -99,7 +99,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
 #' \code{NULL} means all combinations. Only used internally.
 #'
-#' @param x_test_gaussian Matrix. Only applicable if \code{approach = "empirical"}.
+#' @param x_test_gaussian Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if \code{approach = "empirical"}.
 #'
 #' @param ... Currently not used.
 #'
