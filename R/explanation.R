@@ -141,7 +141,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' \code{approach = "empirical"}, and \code{type} is either equal to
 #' \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
-#' @param start_aicc Numeric. Start value when optimizing the AICc. Note that this argument
+#' @param start_aicc Numeric. Start value of \code{sigma} when optimizing the AICc. Note that this argument
 #' is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
 #' \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
