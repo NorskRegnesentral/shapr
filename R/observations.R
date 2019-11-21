@@ -94,7 +94,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation.
 #'
-#' @param seed Positive integer. If \code{NULL} a random seed will be used.
+#' @param seed Positive integer. If \code{NULL} the seed will be inherited from the calling environment.
 #'
 #' @param index_features Positive integer vector. Only used internally.
 #'
