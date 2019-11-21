@@ -36,7 +36,7 @@
 #'   \item{x_test}{data.table}
 #' }
 #'
-#' Note that the items \code{model}, \code{p} amd \code{x_test} is mostly addded due
+#' Note that the returned items \code{model}, \code{p} and \code{x_test} are mostly addded due
 #' to the implementation of \code{plot.shapr}. If you'd like to look at the numerical results
 #' it sufficient to focus on \code{dt}. \code{dt} is a data.table where the number of rows equals
 #' the number of observations you'd like to explain, and the number of columns equals \code{m +1},
