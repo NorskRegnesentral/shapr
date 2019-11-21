@@ -49,7 +49,8 @@ weight_matrix <- function(X, use_shapley_weights_in_W = TRUE, normalize_W_weight
 #'
 #' @inheritParams global_arguments
 #'
-#' @param x An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total number of explanatory variables).Contains the variables used for training the model
+#' @param x An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total
+#' number of explanatory variables).Contains the variables used for training the model
 #' (i.e. the explanatory variables). Note that the response variable should not be part of
 #' \code{x}.
 #'

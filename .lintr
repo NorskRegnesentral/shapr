@@ -1,4 +1,14 @@
 linters: with_defaults(
-        line_length_linter = lintr::line_length_linter(120)
+        line_length_linter = lintr::line_length_linter(120),
+        object_name_linter = NULL,
+        object_usage_linter = NULL,
+        seq_linter = NULL
     )
-exclusions: list("inst/scripts/example.R", "R/RcppExports.R")
+exclusions: list(
+        "inst/scripts/example.R",
+        "inst/scripts/compare_shap_python.R",
+        "inst/scripts/create_xgboost_model_object.R",
+        "inst/scripts/example_custom_model.R",
+        "R/RcppExports.R",
+        "R/zzz.R"
+    )
