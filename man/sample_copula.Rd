@@ -13,8 +13,8 @@ sample_copula(index_given, n_samples, mu, cov_mat, p, x_test_gaussian,
 
 \item{p}{Positive integer. The number of features.}
 
-\item{x_test_gaussian}{Numeric matrix. Contains the Gaussian transformed features of the
-observation whose predictions ought to be explained (test data).}
+\item{x_test_gaussian}{Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
+after quantile-transforming them to standard Gaussian variables.}
 
 \item{x_test}{Numeric matrix. Contains the features of the observation whose
 predictions ought to be explained (test data).}

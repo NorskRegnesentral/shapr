@@ -7,7 +7,7 @@
 gaussian_transform(x)
 }
 \arguments{
-\item{x}{Numeric vector}
+\item{x}{Numeric vector.The data which should be transformed to a standard normal distribution.}
 }
 \value{
 Numeric vector of length \code{length(x)}

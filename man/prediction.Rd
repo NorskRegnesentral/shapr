@@ -9,7 +9,7 @@ prediction(dt, prediction_zero, explainer)
 \arguments{
 \item{dt}{data.table}
 
-\item{prediction_zero}{Numeric}
+\item{prediction_zero}{Numeric. The value to use for \code{phi_0}.}
 
 \item{explainer}{An object of class \code{explainer}. See \code{\link{shapr}}.}
 }
@@ -17,7 +17,7 @@ prediction(dt, prediction_zero, explainer)
 An object of class \code{c("shapr", "list")}. For more details see \code{\link{explain}}.
 }
 \description{
-This function should only be called internally, and not used as
+This function should only be called internally, and not be used as
 a stand-alone function.
 }
 \details{
