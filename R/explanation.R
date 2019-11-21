@@ -133,7 +133,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' applicable when \code{approach = "empirical"}, and \code{type = "fixed_sigma"}
 #'
 #' @param n_samples_aicc Positive integer. Number of samples to consider in AICc optimization.
-#' Note that this argument is only applicable when \code{approach = 'empirical'}, and \code{type}
+#' Note that this argument is only applicable when \code{approach = "empirical"}, and \code{type}
 #' is either equal to \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
 #' @param eval_max_aicc Positive integer. Maximum number of iterations when
