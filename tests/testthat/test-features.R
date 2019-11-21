@@ -16,21 +16,17 @@ test_that("Test feature_combinations", {
   exact <- FALSE
   n_combinations <- 50
   w <- 10^6
-  reduce_dim <- TRUE
   set.seed(1)
   y1 <- feature_combinations(
     m = m,
     exact = exact,
     n_combinations = n_combinations,
-    weight_zero_m = w,
-    reduce_dim = reduce_dim
-  )
+    weight_zero_m = w)
   set.seed(1)
   y2 <- feature_not_exact(
     m = m,
     n_combinations = n_combinations,
-    weight_zero_m = w,
-    reduce_dim = reduce_dim
+    weight_zero_m = w
   )
 
   # Example 3 -----------
@@ -38,14 +34,12 @@ test_that("Test feature_combinations", {
   exact <- FALSE
   n_combinations <- 1e4
   w <- 10^6
-  reduce_dim <- TRUE
   set.seed(1)
   y3 <- feature_combinations(
     m = m,
     exact = exact,
     n_combinations = n_combinations,
-    weight_zero_m = w,
-    reduce_dim = FALSE
+    weight_zero_m = w
   )
 
   # Test results -----------

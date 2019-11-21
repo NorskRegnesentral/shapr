@@ -5,7 +5,7 @@
 \title{Define feature combinations, and fetch additional information about each unique combination}
 \usage{
 feature_combinations(m, exact = TRUE, n_combinations = 200,
-  weight_zero_m = 10^6, reduce_dim = TRUE)
+  weight_zero_m = 10^6)
 }
 \arguments{
 \item{m}{Positive integer. Total number of features.}
@@ -19,8 +19,6 @@ value for \code{n_combinations}.}
 
 \item{weight_zero_m}{Numeric. The value to use as a replacement for infinite combination
 weights when doing numerical operations.}
-
-\item{reduce_dim}{Logical.}
 }
 \value{
 A data.table that contains the following columns:

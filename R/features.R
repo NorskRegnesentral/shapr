@@ -8,7 +8,6 @@
 #' value for \code{n_combinations}.
 #' @param weight_zero_m Numeric. The value to use as a replacement for infinite combination
 #' weights when doing numerical operations.
-#' @param reduce_dim Logical.
 #'
 #' @return A data.table that contains the following columns:
 #' \describe{
@@ -34,8 +33,7 @@
 #'
 #' # Subsample of combinations
 #' x <- shapr:::feature_combinations(m = 13, n_combinations = 1e3)
-feature_combinations <- function(m, exact = TRUE, n_combinations = 200,
-                                 weight_zero_m = 10^6, reduce_dim = TRUE) {
+feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6) {
 
   # Force user to use a natural number for n_combinations if m > 12
   if (m > 12 & is.null(n_combinations)) {
@@ -54,15 +52,16 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200,
     stop("Currently we are not supporting cases where the number of features is greater than 30.")
   }
 
-  if (!exact && n_combinations > (2^m - 2) && !reduce_dim) {
+  if (!exact && n_combinations > (2^m - 2)) {
     n_combinations <- 2^m - 2
+    exact <- TRUE
     cat(sprintf("n_combinations is larger than or equal to 2^m = %d. Using exact instead.", 2^m))
   }
 
   if (exact) {
     dt <- feature_exact(m, weight_zero_m)
   } else {
-    dt <- feature_not_exact(m, n_combinations, weight_zero_m, reduce_dim)
+    dt <- feature_not_exact(m, n_combinations, weight_zero_m)
   }
 
   return(dt)
