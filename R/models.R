@@ -4,7 +4,7 @@
 #' \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous
 #' response. See details for more information.
 #'
-#' @param x Object of class inheriting from one of the supported models.
+#' @param x Model object for the model to be explained.
 #' @param newdata A data frame (or matrix) in which to look for variables with which to predict.
 #'
 #' @details The following models are currently supported:
