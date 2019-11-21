@@ -6,7 +6,7 @@
 #' @param n_combinations Positive integer. Note that if \code{exact = TRUE},
 #' \code{n_combinations} is ignored. However, if \code{m > 12} you'll need to add a positive integer
 #' value for \code{n_combinations}.
-#' @param shapley_weight_inf_replacement Numeric.
+#' @param shapley_weight_inf_replacement Numeric. The value to use as a replacement for infinite combination weights when doing numerical operations.
 #' @param reduce_dim Logical.
 #'
 #' @return A data.table that contains the following columns:
