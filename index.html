@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Explain the output of machine learning models with more accurately estimated Shapley values  • shapr</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Explain the output of machine learning models with more accurately estimated Shapley values ">
 <meta property="og:description" content="Complex machine learning models are often hard to interpret. However, in 
   many situations it is crucial to understand and explain why a model made a specific 
@@ -24,7 +25,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-article">
+    <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -44,7 +45,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -70,7 +71,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/NorskRegnesentral/shapr">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -83,13 +84,9 @@
 <!--/.navbar -->
 
       
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    
 
-    
-    
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+      </header><div class="row">
+  <div class="contents col-md-9">
 <div id="shapr" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#shapr" class="anchor"></a>shapr <img src="reference/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px">
@@ -97,16 +94,17 @@
 <!-- badges: start -->
 
 <p>The most common task of machine learning is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features. When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction. However, explaining predictions from complex, or seemingly simple, machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable explanations.</p>
-<p>Shapley values is the only prediction explanation framework with a solid theoretical foundation (<span class="citation">Lundberg and Lee (2017)</span>). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. Popular methods like Shapley Sampling Values (<span class="citation">Štrumbelj and Kononenko (2014)</span>), SHAP/Kernel SHAP (<span class="citation">Lundberg and Lee (2017)</span>), and to some extent TreeSHAP (<span class="citation">Lundberg, Erion, and Lee (2018)</span>), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. <span class="citation">Aas, Jullum, and Løland (2019)</span> extends and improves the Kernel SHAP method of <span class="citation">Lundberg and Lee (2017)</span> to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. <a href="https://arxiv.org/abs/1903.10464">See the paper for details</a>.</p>
-<p>This package implements the methodology of <span class="citation">Aas, Jullum, and Løland (2019)</span>.</p>
+<p>Shapley values is the only prediction explanation framework with a solid theoretical foundation (Lundberg and Lee (2017)). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. Popular methods like Shapley Sampling Values (Štrumbelj and Kononenko (2014)), SHAP/Kernel SHAP (Lundberg and Lee (2017)), and to some extent TreeSHAP (Lundberg, Erion, and Lee (2018)), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. Aas, Jullum, and Løland (2019) extends and improves the Kernel SHAP method of Lundberg and Lee (2017) to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. <a href="https://arxiv.org/abs/1903.10464">See the paper for details</a>.</p>
+<p>This package implements the methodology of Aas, Jullum, and Løland (2019).</p>
 <p>The following methodology/features are currently implemented:</p>
 <ul>
-<li>Native support of explanation of predictions with the following model classes <code><a href="https://www.rdocumentation.org/packages/stats/topics/glm">stats::glm</a></code>, <code><a href="https://www.rdocumentation.org/packages/stats/topics/lm">stats::lm</a></code>,<code><a href="https://www.rdocumentation.org/packages/ranger/topics/ranger">ranger::ranger</a></code>, <code><a href="https://www.rdocumentation.org/packages/xgboost/topics/xgb.train">xgboost::xgboost</a></code> and <code><a href="https://www.rdocumentation.org/packages/mgcv/topics/gam">mgcv::gam</a></code>.</li>
-<li>Accounting for feature dependence assuming the features are Gaussian (<span class="citation">Aas, Jullum, and Løland (2019)</span>).</li>
-<li>Accounting for feature dependence with a Gaussian copula (Gaussian dependence structure, any marginal) (<span class="citation">Aas, Jullum, and Løland (2019)</span>).</li>
-<li>Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of <span class="citation">Aas, Jullum, and Løland (2019)</span>.</li>
+<li>Native support of explanation of predictions with the following model classes <code><a href="https://rdrr.io/r/stats/glm.html">stats::glm</a></code>, <code><a href="https://rdrr.io/r/stats/lm.html">stats::lm</a></code>,<code><a href="https://rdrr.io/pkg/ranger/man/ranger.html">ranger::ranger</a></code>, <code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost::xgboost</a></code> and <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html">mgcv::gam</a></code>.</li>
+<li>Accounting for feature dependence assuming the features are Gaussian (Aas, Jullum, and Løland (2019)).</li>
+<li>Accounting for feature dependence with a Gaussian copula (Gaussian dependence structure, any marginal) (Aas, Jullum, and Løland (2019)).</li>
+<li>Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of Aas, Jullum, and Løland (2019).</li>
 <li>Combine any of the three methods.</li>
-<li>Optional use of the AICc criterion of <span class="citation">Hurvich, Simonoff, and Tsai (1998)</span> when optimizing the bandwidth parameter in the empirical (conditional) approach of <span class="citation">Aas, Jullum, and Løland (2019)</span>.</li>
+<li>Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai
+(1998) when optimizing the bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2019).</li>
 <li>Functionality for visualizing the explanations.</li>
 <li>Support for models not supported natively.</li>
 </ul>
@@ -127,27 +125,27 @@ Current methodological restrictions:
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>To install the current development version, use</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/reexports.html">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>)</code></pre></div>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.</p>
 <p>The following example shows how a simple <code>xgboost</code> model is trained using the <em>Boston Housing Data</em>, and how <code>shapr</code> explains the individual predictions.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(xgboost)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(shapr)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(xgboost)
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(shapr)
 
-<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(<span class="st">"Boston"</span>, <span class="dt">package =</span> <span class="st">"MASS"</span>)
+<span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"Boston"</span>, <span class="dt">package =</span> <span class="st">"MASS"</span>)
 
-x_var &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span>)
+x_var &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span>)
 y_var &lt;-<span class="st"> "medv"</span>
 
-x_train &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(Boston[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), x_var])
+x_train &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(Boston[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), x_var])
 y_train &lt;-<span class="st"> </span>Boston[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), y_var]
-x_test &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(Boston[<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, x_var])
+x_test &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(Boston[<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, x_var])
 
 <span class="co"># Looking at the dependence between the features</span>
-<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cor</a></span>(x_train)
+<span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(x_train)
 <span class="co">#&gt;            lstat         rm        dis      indus</span>
 <span class="co">#&gt; lstat  1.0000000 -0.6108040 -0.4928126  0.5986263</span>
 <span class="co">#&gt; rm    -0.6108040  1.0000000  0.1999130 -0.3870571</span>
@@ -155,7 +153,7 @@ x_test &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocu
 <span class="co">#&gt; indus  0.5986263 -0.3870571 -0.7060903  1.0000000</span>
 
 <span class="co"># Fitting a basic xgboost model to the training data</span>
-model &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/xgboost/topics/xgb.train">xgboost</a></span>(
+model &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost</a></span>(
   <span class="dt">data =</span> x_train,
   <span class="dt">label =</span> y_train,
   <span class="dt">nround =</span> <span class="dv">20</span>,
@@ -166,7 +164,7 @@ model &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocum
 explainer &lt;-<span class="st"> </span><span class="kw"><a href="reference/shapr.html">shapr</a></span>(x_train, model)
 
 <span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span>
-p &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(y_train)
+p &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(y_train)
 
 <span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
 <span class="co"># the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)</span>
@@ -178,17 +176,17 @@ explanation &lt;-<span class="st"> </span><span class="kw"><a href="reference/ex
 )
 
 <span class="co"># Printing the Shapley values for the test data</span>
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(explanation<span class="op">$</span>dt)
+<span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(explanation<span class="op">$</span>dt)
 <span class="co">#&gt;      none     lstat         rm       dis      indus</span>
 <span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span>
 <span class="co">#&gt; 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871</span>
 <span class="co">#&gt; 3: 22.446 5.9888016  5.5450861 0.5660136 -1.4304350</span>
 <span class="co">#&gt; 4: 22.446 8.2142203  0.7507569 0.1893368  1.8298305</span>
 <span class="co">#&gt; 5: 22.446 0.5059890  5.6875106 0.8432240  2.2471152</span>
-<span class="co">#&gt; 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510530</span>
+<span class="co">#&gt; 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531</span>
 
 <span class="co"># Finally we plot the resulting explanations</span>
-<span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(explanation)</code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(explanation)</code></pre></div>
 <p><img src="reference/figures/README-basic_example-1.png" width="100%"></p>
 </div>
 <div id="contribution" class="section level2">
@@ -197,25 +195,53 @@ explanation &lt;-<span class="st"> </span><span class="kw"><a href="reference/ex
 <p>All feedback and suggestions are very welcome. Details on how to contribute can be found <a href="./github/CONTRIBUTING.html">here</a></p>
 <p>Please note that the ‘shapr’ project is released with a <a href="CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
-<div id="references" class="section level2 unnumbered">
+<div id="references" class="section level2">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
+
 <div id="ref-aas2019explaining">
-<p>Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>arXiv Preprint arXiv:1903.10464</em>.</p>
+
+Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining
+Individual Predictions When Features Are Dependent: More Accurate
+Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
+
 </div>
+
 <div id="ref-hurvich1998smoothing">
-<p>Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998. “Smoothing Parameter Selection in Nonparametric Regression Using an Improved Akaike Information Criterion.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 60 (2). Wiley Online Library: 271–93.</p>
+
+Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998.
+“Smoothing Parameter Selection in Nonparametric Regression Using an
+Improved Akaike Information Criterion.” *Journal of the Royal
+Statistical Society: Series B (Statistical Methodology)* 60 (2). Wiley
+Online Library: 271–93.
+
 </div>
-<div id="ref-lundberg2017unified">
-<p>Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.</p>
-</div>
+
 <div id="ref-lundberg2018consistent">
-<p>Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent Individualized Feature Attribution for Tree Ensembles.” <em>arXiv Preprint arXiv:1802.03888</em>.</p>
+
+Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent
+Individualized Feature Attribution for Tree Ensembles.” *arXiv Preprint
+arXiv:1802.03888*.
+
 </div>
+
+<div id="ref-lundberg2017unified">
+
+Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to
+Interpreting Model Predictions.” In *Advances in Neural Information
+Processing Systems*, 4765–74.
+
+</div>
+
 <div id="ref-vstrumbelj2014explaining">
-<p>Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models and Individual Predictions with Feature Contributions.” <em>Knowledge and Information Systems</em> 41 (3). Springer: 647–65.</p>
+
+Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models
+and Individual Predictions with Feature Contributions.” *Knowledge and
+Information Systems* 41 (3). Springer: 647–65.
+
 </div>
+
 </div>
 </div>
 </div>
@@ -238,6 +264,13 @@ explanation &lt;-<span class="st"> </span><span class="kw"><a href="reference/ex
 <li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
+<div class="community">
+<h2>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+</ul>
+</div>
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
@@ -247,7 +280,7 @@ explanation &lt;-<span class="st"> </span><span class="kw"><a href="reference/ex
 </ul>
 </div>
 
-      <div class="dev-status">
+  <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://circleci.com/gh/NorskRegnesentral/shapr"><img src="https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg" alt="CircleCI"></a></li>
@@ -256,7 +289,6 @@ explanation &lt;-<span class="st"> </span><span class="kw"><a href="reference/ex
 </ul>
 </div>
 </div>
-
 </div>
 
 
@@ -265,12 +297,14 @@ explanation &lt;-<span class="st"> </span><span class="kw"><a href="reference/ex
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>
