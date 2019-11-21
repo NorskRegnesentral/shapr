@@ -163,12 +163,15 @@ doing optimization over every test observation when <code>nsamples &gt; ntrain</
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Data.frame. Contains <code>nsamples</code> rows of re-sampled train and test observations.</p>
+    <p>data.frame</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'># TODO: Add simple example
-
-</div></pre>
+    <pre class="examples"><div class='input'><span class='no'>ntrain</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
+<span class='no'>ntest</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
+<span class='no'>nsamples</span> <span class='kw'>&lt;-</span> <span class='fl'>7</span>
+<span class='no'>joint_sampling</span> <span class='kw'>&lt;-</span> <span class='fl'>FALSE</span>
+<span class='no'>cnms</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"samp_train"</span>, <span class='st'>"samp_test"</span>)
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/sample_combinations.html'>sample_combinations</a></span>(<span class='no'>ntrain</span>, <span class='no'>ntest</span>, <span class='no'>nsamples</span>, <span class='no'>joint_sampling</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

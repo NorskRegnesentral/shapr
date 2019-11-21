@@ -147,12 +147,16 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>x</th>
+      <td><p>Explainer object. See <code><a href='explain.html'>explain</a></code> for more information.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>Currently not used.</p></td>
     </tr>
     <tr>
       <th>seed</th>
-      <td><p>Positive integer. If <code>NULL</code> a random seed will be used.</p></td>
+      <td><p>Positive integer. If <code>NULL</code> the seed will be inherited from the calling environment.</p></td>
     </tr>
     <tr>
       <th>n_samples</th>
@@ -161,7 +165,13 @@ Monte Carlo integration for every conditional expectation.</p></td>
     </tr>
     <tr>
       <th>index_features</th>
-      <td><p>Positive integer vector. Only used internally.</p></td>
+      <td><p>Positive integer vector. Specifies the indices of combinations to apply to the present method.
+<code>NULL</code> means all combinations. Only used internally.</p></td>
+    </tr>
+    <tr>
+      <th>x_test_gaussian</th>
+      <td><p>Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
+<code>approach = "empirical"</code>.</p></td>
     </tr>
     </table>
 

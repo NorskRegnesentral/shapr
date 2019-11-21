@@ -136,33 +136,82 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>An <code>ntrain x p</code> numeric matrix or data.frame, where <code>p = ncol(x)</code> (total
-number of explanatory variables).Contains the variables used for training the model
-(i.e. the explanatory variables). Note that the response variable should not be part of
-<code>x</code>.</p></td>
+      <td><p>Numeric matrix or data.frame. Contains the variables used for training the model,
+i.e. the explanatory variables. Note that the response variable should not be part of
+<code>x</code>, and that <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(x)</a></code> should be equal to the number of features in the model.</p></td>
     </tr>
     <tr>
       <th>model</th>
-      <td><p>The model whose predictions we want to explain.</p></td>
+      <td><p>The model whose predictions we want to explain. See <code><a href='predict_model.html'>predict_model</a></code>
+for more information about which models <code>shapr</code> supports natively.</p></td>
     </tr>
     <tr>
       <th>n_combinations</th>
       <td><p>Integer. The number of feature combinations to sample. If <code>NULL</code>,
 the exact method is used and all combinations are considered. The maximum number of
-combinations equals <code>2^p</code>.</p></td>
+combinations equals <code>2^ncol(x)</code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list to be used by <code>explain</code> to compute the kernel SHAP values (<code>Kshap</code>).</p>
+    <p>Named list that contains the following items:</p><dl class='dl-horizontal'>
+  <dt>exact</dt><dd><p>Boolean. Equals <code>TRUE</code> if <code>n_combinations = NULL</code> or
+  <code>n_combinations &lt; 2^ncol(x)</code>, otherwise <code>FALSE</code>.</p></dd>
+  <dt>n_features</dt><dd><p>Positive integer. The number of columns in <code>x</code></p></dd>
+  <dt>model_type</dt><dd><p>Character. Returned value after calling <code><a href='model_type.html'>model_type(model)</a></code></p></dd>
+  <dt>S</dt><dd><p>Binary matrix. The number of rows equals the number of unique combinations, and
+  the number of columns equals the total number of features. I.e. let's say we have a case with
+  three features. In that case we have <code>2^3 = 8</code> unique combinations. If the j-th
+  observation for the i-th row equals <code>1</code> it indicates that the j-th feature is present in
+  the i-th combination. Otherwise it equals <code>0</code>.</p></dd>
+  <dt>W</dt><dd><p>Second item</p></dd>
+  <dt>X</dt><dd><p>data.table. Returned object from <code><a href='feature_combinations.html'>feature_combinations</a></code></p></dd>
+  <dt>x_train</dt><dd><p>data.table. Transformed <code>x</code> into a data.table.</p></dd>
 
+</dl>
+
+<p>In addition to the items above <code>model</code> and <code>n_combinations</code> is also present in the
+returned object.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># Load example data</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"Boston"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"MASS"</span>)
+<span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='no'>Boston</span>
+
+<span class='co'># Example using the exact method</span>
+<span class='no'>x_var</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"lstat"</span>, <span class='st'>"rm"</span>, <span class='st'>"dis"</span>, <span class='st'>"indus"</span>)
+<span class='no'>y_var</span> <span class='kw'>&lt;-</span> <span class='st'>"medv"</span>
+<span class='no'>df1</span> <span class='kw'>&lt;-</span> <span class='no'>df</span>[, <span class='no'>x_var</span>]
+<span class='no'>model</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='no'>medv</span> ~ <span class='no'>lstat</span> + <span class='no'>rm</span> + <span class='no'>dis</span> + <span class='no'>indus</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>df</span>)
+<span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'>shapr</span>(<span class='no'>df1</span>, <span class='no'>model</span>)
+
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>explainer</span>$<span class='no'>X</span>))</div><div class='output co'>#&gt; [1] 16</div><div class='input'><span class='co'># 16 (which equals 2^4)</span>
+
+<span class='co'># Example using approximation</span>
+<span class='no'>y_var</span> <span class='kw'>&lt;-</span> <span class='st'>"medv"</span>
+<span class='no'>x_var</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sets.html'>setdiff</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>df</span>), <span class='no'>y_var</span>)
+<span class='no'>model</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='no'>medv</span> ~ <span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>df</span>)
+<span class='no'>df2</span> <span class='kw'>&lt;-</span> <span class='no'>df</span>[, <span class='no'>x_var</span>]
+<span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'>shapr</span>(<span class='no'>df2</span>, <span class='no'>model</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='fl'>1e3</span>)
+
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>explainer</span>$<span class='no'>X</span>))</div><div class='output co'>#&gt; [1] 568</div><div class='input'>
+<span class='co'># Example using approximation where n_combinations &gt; 2^m</span>
+<span class='no'>x_var</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"lstat"</span>, <span class='st'>"rm"</span>, <span class='st'>"dis"</span>, <span class='st'>"indus"</span>)
+<span class='no'>y_var</span> <span class='kw'>&lt;-</span> <span class='st'>"medv"</span>
+<span class='no'>df3</span> <span class='kw'>&lt;-</span> <span class='no'>df</span>[, <span class='no'>x_var</span>]
+<span class='no'>model</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='no'>medv</span> ~ <span class='no'>lstat</span> + <span class='no'>rm</span> + <span class='no'>dis</span> + <span class='no'>indus</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>df</span>)
+<span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'>shapr</span>(<span class='no'>df1</span>, <span class='no'>model</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='fl'>1e3</span>)
+
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>explainer</span>$<span class='no'>X</span>))</div><div class='output co'>#&gt; [1] 16</div><div class='input'># 16 (which equals 2^4)
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
     <h2>Author</h2>

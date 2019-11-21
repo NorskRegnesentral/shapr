@@ -139,11 +139,22 @@
       <th>X</th>
       <td><p>data.table</p></td>
     </tr>
+    <tr>
+      <th>use_shapley_weights_in_W</th>
+      <td><p>Logical. Whether to use direct formula based (<code>TRUE</code>) or sampling
+based (<code>FALSE</code>) weights for the combinations.</p></td>
+    </tr>
+    <tr>
+      <th>normalize_W_weights</th>
+      <td><p>Logical. Whether to normalize the weights for the combinations to sum to 1 for
+increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations
+except combination <code>1</code> and <code>2^m</code>.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Matrix</p>
+    <p>Numeric matrix. See <code><a href='weight_matrix_cpp.html'>weight_matrix_cpp</a></code> for more information.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

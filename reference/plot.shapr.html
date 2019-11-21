@@ -36,7 +36,7 @@
 
 
 <meta property="og:title" content="Plot of the Shapley value explanations — plot.shapr" />
-<meta property="og:description" content="Plots the individual prediction explanations. Uses facet_wrap of ggplot" />
+<meta property="og:description" content="Plots the individual prediction explanations." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,7 +126,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Plots the individual prediction explanations. Uses facet_wrap of ggplot</p>
+    <p>Plots the individual prediction explanations.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for shapr</span>
@@ -146,15 +146,19 @@
     </tr>
     <tr>
       <th>plot_phi0</th>
-      <td><p>Logical. Whether to include phi0 in the plot</p></td>
+      <td><p>Logical. Whether to include <code>phi0</code> in the plot</p></td>
     </tr>
     <tr>
       <th>index_x_test</th>
-      <td><p>Integer vector. Which of the test observations to plot</p></td>
+      <td><p>Integer vector. Which of the test observations to plot. E.g. if you have
+explained 10 observations using <code><a href='explain.html'>explain</a></code>, you can generate a plot for the first 5
+observations by setting <code>index_x_test = 1:5</code>.</p></td>
     </tr>
     <tr>
       <th>top_k_features</th>
-      <td><p>Integer. How many features to include in the plot</p></td>
+      <td><p>Integer. How many features to include in the plot. E.g. if you have 15
+features in your model you can plot the 5 most important features, for each explanation, by setting
+<code>top_k_features = 1:5</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -165,6 +169,10 @@
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>ggplot object with plots of the Shapley value explanations</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>See <code><a href='../articles/understanding_shapr.html'>vignette("understanding_shapr", package = "shapr")</a></code> for an example of
+how you should use the function.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -172,6 +180,7 @@
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
     </ul>
 
     <h2>Author</h2>

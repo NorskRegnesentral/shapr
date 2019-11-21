@@ -136,15 +136,22 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>m</th>
-      <td><p>Integer. Total number of features</p></td>
+      <td><p>Positive integer. Total number of features.</p></td>
     </tr>
     <tr>
       <th>N</th>
-      <td><p>Integer. Number of combinations</p></td>
+      <td><p>Positive integer. The number of unique combinations when sampling <code>s</code> features,
+without replacement, from a sample space consisting of <code>m</code> different features.</p></td>
     </tr>
     <tr>
       <th>s</th>
-      <td><p>Integer. Number of chosen</p></td>
+      <td><p>Positive integer. Represents the number of features you want to sample from a feature
+space consisting of <code>m</code> unique features. Note that <code> 0 &lt; = s  &lt;= m</code>.</p></td>
+    </tr>
+    <tr>
+      <th>weight_zero_m</th>
+      <td><p>Positive integer. Represents the Shapley weight for two special
+cases, i.e. the case where you have either <code>0</code> or <code>m</code> features.</p></td>
     </tr>
     </table>
 

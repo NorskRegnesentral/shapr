@@ -36,7 +36,7 @@
 
 
 <meta property="og:title" content="Transforms new data to standardized normal (dimension 1) based on other data transformations — gaussian_transform_separate" />
-<meta property="og:description" content="Handled in this way in order to allow using the apply function over this function" />
+<meta property="og:description" content="Transforms new data to standardized normal (dimension 1) based on other data transformations" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,7 +126,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Handled in this way in order to allow using the apply function over this function</p>
+    <p>Transforms new data to standardized normal (dimension 1) based on other data transformations</p>
     </div>
 
     <pre class="usage"><span class='fu'>gaussian_transform_separate</span>(<span class='no'>yx</span>, <span class='no'>n_y</span>)</pre>
@@ -136,12 +136,12 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>yx</th>
-      <td><p>Vector where the first part is the new data to transform,
-and last part is the data with the original transformation</p></td>
+      <td><p>Numeric vector. The first <code>n_y</code> items is the data that is transformed, and last
+part is the data with the original transformation.</p></td>
     </tr>
     <tr>
       <th>n_y</th>
-      <td><p>How many elements of <code>yx</code> that belongs to the y-part (Gaussian data)</p></td>
+      <td><p>Positive integer. Number of elements of <code>yx</code> that belongs to the gaussian data.</p></td>
     </tr>
     </table>
 
@@ -150,8 +150,10 @@ and last part is the data with the original transformation</p></td>
     <p>Vector of back-transformed Gaussian data</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'># TODO: Add simple example
-
+    <pre class="examples"><div class='input'><span class='no'>yx</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>50</span>)
+<span class='no'>n_y</span> <span class='kw'>&lt;-</span> <span class='fl'>30</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/gaussian_transform_separate.html'>gaussian_transform_separate</a></span>(<span class='no'>yx</span>, <span class='no'>n_y</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt;  num [1:30] 0.366 -1.981 1.18 0.241 1.981 ...</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

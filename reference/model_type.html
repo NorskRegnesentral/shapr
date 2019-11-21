@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>TODO: Add title &amp; description — model_type • shapr</title>
+<title>Define type of model — model_type • shapr</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,11 @@
 
 
 
-<meta property="og:title" content="TODO: Add title &amp; description — model_type" />
-<meta property="og:description" content="TODO: Add title &amp;amp; description" />
+<meta property="og:title" content="Define type of model — model_type" />
+<meta property="og:description" content="The function checks whether the model given by x is
+supported, and if it is a regression- or a classification model. If x is
+not a supported model the function will return an error message, otherwise it will
+return either &quot;regression&quot; or &quot;classification&quot;." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,13 +123,16 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>TODO: Add title &amp; description</h1>
+    <h1>Define type of model</h1>
     <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/models.R'><code>R/models.R</code></a></small>
     <div class="hidden name"><code>model_type.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>TODO: Add title &amp; description</p>
+    <p>The function checks whether the model given by <code>x</code> is
+supported, and if it is a regression- or a classification model. If <code>x</code> is
+not a supported model the function will return an error message, otherwise it will
+return either <code>"regression"</code> or <code>"classification"</code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>model_type</span>(<span class='no'>x</span>)
@@ -149,12 +155,30 @@
 <span class='co'># S3 method for xgb.Booster</span>
 <span class='fu'>model_type</span>(<span class='no'>x</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>Model object for the model to be explained.</p></td>
+    </tr>
+    </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Either <code>"classification"</code> or <code>"regression"</code>.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>See <code><a href='predict_model.html'>predict_model</a></code> for more information about
+what type of models <code>shapr</code> currently support.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
     </ul>
 
   </div>

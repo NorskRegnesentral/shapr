@@ -136,22 +136,31 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x_mat</th>
-      <td><p>optional data matrix, ignores <code>cor_mat</code> if included</p></td>
+      <td><p>Numeric matrix. Ignored if <code>cor_mat</code> is included.</p></td>
     </tr>
     <tr>
       <th>cor_mat</th>
-      <td><p>optional correlation matrix, ignores <code>x_mat</code> if included. Either <code>x_mat</code> or
-<code>cor_mat</code> must be included</p></td>
+      <td><p>Numeric matrix. Note that <code>x_mat</code> or <code>cor_mat</code> must be included,
+otherwise the function will return an error message.</p></td>
     </tr>
     <tr>
       <th>alpha</th>
-      <td><p>optional tuning parameter for optimal number of clusters</p></td>
+      <td><p>Numeric. Weight for number of clusters. See <code><a href='https://rdrr.io/pkg/maptree/man/kgs.html'>kgs</a></code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>List</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The returned list contains the following items</p><dl class='dl-horizontal'>
+  <dt>cor_mat</dt><dd><p>TODO: Add information</p></dd>
+  <dt>which_k</dt><dd><p>TODO: Add information</p></dd>
+  <dt>cluster</dt><dd><p>TODO: Add information</p></dd>
+
+</dl>
+
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -159,6 +168,7 @@
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
     </ul>
 
     <h2>Author</h2>

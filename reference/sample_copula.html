@@ -137,12 +137,8 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>index_given</th>
-      <td><p>Vector. The indices of the features to condition upon.</p></td>
-    </tr>
-    <tr>
-      <th>mu</th>
-      <td><p>Numeric vector. (Optional) Containing the mean of the data generating distribution.
-NULL means it is estimated from the data if needed (in the Gaussian approach).</p></td>
+      <td><p>Integer vector. The indices of the features to condition upon. Note that
+<code>min(index_given) &gt;= 1</code> and <code>max(index_given) &lt;= p</code>.</p></td>
     </tr>
     <tr>
       <th>p</th>
@@ -150,24 +146,32 @@ NULL means it is estimated from the data if needed (in the Gaussian approach).</
     </tr>
     <tr>
       <th>x_test_gaussian</th>
-      <td><p>Vector with the Gaussian transformed features of the observation whose
-predictions ought to be explained (test data). Dimension <code>1xp</code> or <code>px1</code>.</p></td>
+      <td><p>Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
+after quantile-transforming them to standard Gaussian variables.</p></td>
     </tr>
     <tr>
       <th>x_test</th>
-      <td><p>Matrix, data.frame or data.table with the features of the observation whose
-predictions ought to be explained (test data). Dimension <code>1xp</code> or <code>px1</code>.</p></td>
+      <td><p>Numeric matrix. Contains the features of the observation whose
+predictions ought to be explained (test data).</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>data.table with <code>n_samples</code> (conditional) Gaussian samples</p>
+    <p>data.table</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'># TODO: Add simple example
-
-</div></pre>
+    <pre class="examples"><div class='input'><span class='no'>m</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
+<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>40</span>
+<span class='no'>n_samples</span> <span class='kw'>&lt;-</span> <span class='fl'>50</span>
+<span class='no'>mu</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='no'>m</span>)
+<span class='no'>cov_mat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cov</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>m</span>), <span class='no'>n</span>, <span class='no'>m</span>))
+<span class='no'>x_train</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>MASS</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='no'>n</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>)
+<span class='no'>x_test</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>MASS</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>)
+<span class='no'>x_test_gaussian</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>MASS</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>)
+<span class='no'>index_given</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>:<span class='fl'>6</span>
+<span class='no'>ret</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/sample_copula.html'>sample_copula</a></span>(<span class='no'>index_given</span>, <span class='no'>n_samples</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>, <span class='kw'>p</span> <span class='kw'>=</span> <span class='no'>m</span>,
+                             <span class='no'>x_test_gaussian</span>, <span class='no'>x_train</span>, <span class='no'>x_test</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

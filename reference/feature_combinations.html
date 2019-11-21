@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get combinations — feature_combinations • shapr</title>
+<title>Define feature combinations, and fetch additional information about each unique combination — feature_combinations • shapr</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Get combinations — feature_combinations" />
-<meta property="og:description" content="Get combinations" />
+<meta property="og:title" content="Define feature combinations, and fetch additional information about each unique combination — feature_combinations" />
+<meta property="og:description" content="Define feature combinations, and fetch additional information about each unique combination" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,13 +120,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get combinations</h1>
+    <h1>Define feature combinations, and fetch additional information about each unique combination</h1>
     <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/features.R'><code>R/features.R</code></a></small>
     <div class="hidden name"><code>feature_combinations.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get combinations</p>
+    <p>Define feature combinations, and fetch additional information about each unique combination</p>
     </div>
 
     <pre class="usage"><span class='fu'>feature_combinations</span>(<span class='no'>m</span>, <span class='kw'>exact</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='fl'>200</span>,
@@ -137,46 +137,59 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>m</th>
-      <td><p>Integer. Total number of features</p></td>
+      <td><p>Positive integer. Total number of features.</p></td>
     </tr>
     <tr>
       <th>exact</th>
-      <td><p>Logical. If TRUE, uses the full sum in the Shapley formula, if FALSE, uses a
-sampling approach to approximate the sum</p></td>
+      <td><p>Logical. If <code>TRUE</code> all <code>2^m</code> combinations are generated, otherwise a
+subsample of the combinations is used.</p></td>
+    </tr>
+    <tr>
+      <th>n_combinations</th>
+      <td><p>Positive integer. Note that if <code>exact = TRUE</code>,
+<code>n_combinations</code> is ignored. However, if <code>m &gt; 12</code> you'll need to add a positive integer
+value for <code>n_combinations</code>.</p></td>
     </tr>
     <tr>
       <th>shapley_weight_inf_replacement</th>
-      <td><p>Numeric. Indicating which weight to use for the full
-conditional and unconditional expectations in kernel SHAPs weighted least squares formulation.</p></td>
+      <td><p>Numeric. The value to use as a replacement for infinite combination
+weights when doing numerical operations.</p></td>
     </tr>
     <tr>
       <th>reduce_dim</th>
-      <td><p>Logical. Indicating whether to reduce the dimension of the weighted least
-squares problem by merging identical columns and adjusting their weights.</p></td>
+      <td><p>Logical.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>data.table</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The returned data.table contains the following columns</p><dl class='dl-horizontal'>
-<dt>ID</dt><dd><p>Positive integer. Unique key for combination</p></dd>
-<dt>features</dt><dd><p>List of integer vectors</p></dd>
-<dt>nfeatures</dt><dd><p>Positive integer</p></dd>
-<dt>N</dt><dd><p>Positive integer</p></dd>
+    <p>A data.table that contains the following columns:</p><dl class='dl-horizontal'>
+<dt>ID</dt><dd><p>Positive integer. Represents a unique key for each combination. Note that the table
+is sorted by <code>ID</code>, so that is always equal to <code>x[["ID"]] = 1:nrow(x)</code>.</p></dd>
+<dt>features</dt><dd><p>List. Each item of the list is an integer vector where <code>features[[i]]</code>
+represents the indices of the features included in combination <code>i</code>. Note that all the items
+are sorted such that <code>features[[i]] == sort(features[[i]])</code> is always true.</p></dd>
+<dt>nfeatures</dt><dd><p>Positive integer. <code>nfeatures[i]</code> equals the number of features in combination
+<code>i</code>, i.e. <code>nfeatures[i] = length(features[[i]])</code>.</p></dd>.
+<dt>N</dt><dd><p>Positive integer. The number of unique ways to sample <code>nfeatures[i]</code> features
+from <code>m</code> different features, without replacement.</p></dd>
 
 </dl>
 
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># All combinations</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/feature_combinations.html'>feature_combinations</a></span>(<span class='kw'>m</span> <span class='kw'>=</span> <span class='fl'>5</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>x</span>) <span class='co'># Equals 2^5 = 32</span></div><div class='output co'>#&gt; [1] 32</div><div class='input'>
+<span class='co'># Subsample of combinations</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/feature_combinations.html'>feature_combinations</a></span>(<span class='kw'>m</span> <span class='kw'>=</span> <span class='fl'>13</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='fl'>1e3</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
     <h2>Author</h2>

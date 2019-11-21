@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Transforms new data to a standardized normal distribution — inv_gaussian_transform • shapr</title>
+<title>Helper function used in <code><a href='explain.html'>explain.combined</a></code> — get_list_approaches • shapr</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Transforms new data to a standardized normal distribution — inv_gaussian_transform" />
-<meta property="og:description" content="Transforms new data to a standardized normal distribution" />
+<meta property="og:title" content="Helper function used in <code><a href='explain.html'>explain.combined</a></code> — get_list_approaches" />
+<meta property="og:description" content="Helper function used in explain.combined" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,46 +120,45 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Transforms new data to a standardized normal distribution</h1>
-    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/transformation.R'><code>R/transformation.R</code></a></small>
-    <div class="hidden name"><code>inv_gaussian_transform.Rd</code></div>
+    <h1>Helper function used in <code><a href='explain.html'>explain.combined</a></code></h1>
+    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/explanation.R'><code>R/explanation.R</code></a></small>
+    <div class="hidden name"><code>get_list_approaches.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Transforms new data to a standardized normal distribution</p>
+    <p>Helper function used in <code><a href='explain.html'>explain.combined</a></code></p>
     </div>
 
-    <pre class="usage"><span class='fu'>inv_gaussian_transform</span>(<span class='no'>zx</span>, <span class='no'>n_z</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fl'>7</span>)</pre>
+    <pre class="usage"><span class='fu'>get_list_approaches</span>(<span class='no'>n_features</span>, <span class='no'>approach</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>zx</th>
-      <td><p>Numeric vector. The first <code>n_z</code> items are the Gaussian data, and the last part is
-the data with the original transformation.</p></td>
+      <th>n_features</th>
+      <td><p>Integer vector. Note that
+<code>length(n_features) &lt;= 2^m</code>, where <code>m</code> equals the number
+of features.</p></td>
     </tr>
     <tr>
-      <th>n_z</th>
-      <td><p>Positive integer. Number of elements of <code>zx</code> that belongs to new data.</p></td>
-    </tr>
-    <tr>
-      <th>type</th>
-      <td><p>Integer between <code>1</code> and <code>9</code>. See <code><a href='https://rdrr.io/r/stats/quantile.html'>quantile</a></code> for more
-information.</p></td>
+      <th>approach</th>
+      <td><p>Character vector of length <code>m</code>. All elements should be
+either <code>"empirical"</code>, <code>"gaussian"</code> or <code>"copula"</code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Numeric vector of length <code>n_z</code></p>
+    <p>List</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>zx</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>50</span>)
-<span class='no'>n_z</span> <span class='kw'>&lt;-</span> <span class='fl'>30</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/inv_gaussian_transform.html'>inv_gaussian_transform</a></span>(<span class='no'>zx</span>, <span class='no'>n_z</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt;  num [1:30] -0.673 -0.621 -0.62 0.428 -0.57 ...</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='no'>m</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
+<span class='no'>n_features</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>3</span>)
+<span class='no'>approach</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"copula"</span>, <span class='st'>"copula"</span>)
+<span class='no'>l</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/get_list_approaches.html'>get_list_approaches</a></span>(<span class='no'>n_features</span>, <span class='no'>approach</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>l</span>)</div><div class='output co'>#&gt; List of 2
+#&gt;  $ gaussian: int [1:4] 1 2 3 4
+#&gt;  $ copula  : int [1:4] 5 6 7 8</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -170,7 +169,7 @@ information.</p></td>
     </ul>
 
     <h2>Author</h2>
-    <p>Martin Jullum</p>
+    <p>Nikolai Sellereite</p>
   </div>
 </div>
 

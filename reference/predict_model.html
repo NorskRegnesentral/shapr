@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Predict on vector form — predict_model • shapr</title>
+<title>Generate predictions for different model classes — predict_model • shapr</title>
 
 
 <!-- jquery -->
@@ -35,9 +35,10 @@
 
 
 
-<meta property="og:title" content="Predict on vector form — predict_model" />
+<meta property="og:title" content="Generate predictions for different model classes — predict_model" />
 <meta property="og:description" content="Performs prediction of response lm, glm,
-ranger and xgboost with binary or continuous response." />
+ranger and xgboost with binary or continuous
+response. See details for more information." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -121,14 +122,15 @@ ranger and xgboost with binary or continuous response." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Predict on vector form</h1>
+    <h1>Generate predictions for different model classes</h1>
     <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/models.R'><code>R/models.R</code></a></small>
     <div class="hidden name"><code>predict_model.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>Performs prediction of response <code><a href='https://rdrr.io/r/stats/lm.html'>lm</a></code>, <code><a href='https://rdrr.io/r/stats/glm.html'>glm</a></code>,
-<code><a href='https://rdrr.io/pkg/ranger/man/ranger.html'>ranger</a></code> and <code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost</a></code> with binary or continuous response.</p>
+<code><a href='https://rdrr.io/pkg/ranger/man/ranger.html'>ranger</a></code> and <code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost</a></code> with binary or continuous
+response. See details for more information.</p>
     </div>
 
     <pre class="usage"><span class='fu'>predict_model</span>(<span class='no'>x</span>, <span class='no'>newdata</span>)
@@ -156,7 +158,7 @@ ranger and xgboost with binary or continuous response." />
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>Object of class inheriting from one of the supported models. See details.</p></td>
+      <td><p>Model object for the model to be explained.</p></td>
     </tr>
     <tr>
       <th>newdata</th>
@@ -177,6 +179,13 @@ ranger and xgboost with binary or continuous response." />
 <li><p><code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost</a></code></p></li>
 </ul>
 
+<p>The returned object <code>p</code> always satisfies the following properties:</p><ul>
+<li><p><code><a href='https://rdrr.io/r/base/is.recursive.html'>is.atomic(p)</a></code> equals <code>TRUE</code></p></li>
+<li><p><code><a href='https://rdrr.io/r/base/double.html'>is.double(p)</a></code> equals <code>TRUE</code></p></li>
+</ul>
+
+<p>If you have a binary classification model we'll always return the probability prediction
+for a single class.</p>
 <p>For more details on how to use a custom model see the package vignette:
 <code><a href='../articles/understanding_shapr.html'>vignette("understanding_shapr", package = "shapr")</a></code></p>
 
