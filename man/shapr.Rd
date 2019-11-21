@@ -9,23 +9,23 @@ shapr(x, model, n_combinations = NULL)
 \arguments{
 \item{x}{Numeric matrix or data.frame. Contains the variables used for training the model,
 i.e. the explanatory variables. Note that the response variable should not be part of
-\code{x}, and that \code{ncol(x) = p} equals the total number of features.}
+\code{x}, and that \code{ncol(x)} should be equal to the number of features in the model.}
 
 \item{model}{The model whose predictions we want to explain. See \code{\link{predict_model}}
 for more information about which models \code{shapr} supports natively.}
 
 \item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
 the exact method is used and all combinations are considered. The maximum number of
-combinations equals \code{2^p}.}
+combinations equals \code{2^ncol(x)}.}
 }
 \value{
 Named list that contains the following items:
 \describe{
   \item{exact}{Boolean. Equals \code{TRUE} if \code{n_combinations = NULL} or
-  \code{n_combinations < 2^p}, otherwise \code{FALSE}.}
+  \code{n_combinations < 2^ncol(x)}, otherwise \code{FALSE}.}
   \item{n_features}{Positive integer. The number of columns in \code{x}}
   \item{model_type}{Character. Returned value after calling \code{model_type(model)}}
-  \item{S}{Binary matrix. The number of rows equals the number of unique combinations and
+  \item{S}{Binary matrix. The number of rows equals the number of unique combinations, and
   the number of columns equals the total number of features. I.e. let's say we have a case with
   three features. In that case we have \code{2^3 = 8} unique combinations. If the j-th
   observation for the i-th row equals \code{1} it indicates that the j-th feature is present in
