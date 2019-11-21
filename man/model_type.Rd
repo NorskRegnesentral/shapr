@@ -25,7 +25,7 @@ model_type(x)
 \method{model_type}{xgb.Booster}(x)
 }
 \arguments{
-\item{x}{Object of class inheriting from one of the supported models.}
+\item{x}{Model object for the model to be explained.}
 }
 \value{
 Either \code{"classification"} or \code{"regression"}.

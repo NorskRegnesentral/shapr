@@ -8,7 +8,7 @@ get_list_approaches(n_features, approach)
 }
 \arguments{
 \item{n_features}{Integer vector. Note that
-\code{length(n_combinations) <= 2^m}, where \code{m} equals the number
+\code{length(n_features) <= 2^m}, where \code{m} equals the number
 of features.}
 
 \item{approach}{Character vector of length \code{m}. All elements should be

@@ -23,12 +23,13 @@ prepare_data(x, ...)
 
 \item{...}{Currently not used.}
 
-\item{seed}{Positive integer. If \code{NULL} a random seed will be used.}
+\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 
 \item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation.}
 
-\item{index_features}{Positive integer vector. Only used internally.}
+\item{index_features}{Positive integer vector. Specifies the indices of combinations to apply to the present method.
+\code{NULL} means all combinations. Only used internally.}
 
 \item{x_test_gaussian}{Matrix. Only applicable if \code{approach = "empirical"}.}
 }

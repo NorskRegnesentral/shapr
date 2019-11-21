@@ -45,7 +45,7 @@ the response.}
 applicable when \code{approach = "empirical"}, and \code{type = "fixed_sigma"}}
 
 \item{n_samples_aicc}{Positive integer. Number of samples to consider in AICc optimization.
-Note that this argument is only applicable when \code{approach = 'empirical'}, and \code{type}
+Note that this argument is only applicable when \code{approach = "empirical"}, and \code{type}
 is either equal to \code{"AICc_each_k"} or \code{"AICc_full"}}
 
 \item{eval_max_aicc}{Positive integer. Maximum number of iterations when
@@ -53,7 +53,7 @@ optimizing the AICc. Note that this argument is only applicable when
 \code{approach = "empirical"}, and \code{type} is either equal to
 \code{"AICc_each_k"} or \code{"AICc_full"}}
 
-\item{start_aicc}{Numeric. Start value when optimizing the AICc. Note that this argument
+\item{start_aicc}{Numeric. Start value of \code{sigma} when optimizing the AICc. Note that this argument
 is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
 \code{"AICc_each_k"} or \code{"AICc_full"}}
 
@@ -76,9 +76,9 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
   \item{x_test}{data.table}
 }
 
-Note that the items \code{model}, \code{p} amd \code{x_test} is mostly addded due
-to the implementation of \code{plot.shapr}. If you'd like to look at the numerical results
-it sufficient to focus on \code{dt}. \code{dt} is a data.table where the number of rows equals
+Note that the returned items \code{model}, \code{p} and \code{x_test} are mostly addded due
+to the implementation of \code{plot.shapr}. If you only want to look at the numerical results
+it is sufficient to focus on \code{dt}. \code{dt} is a data.table where the number of rows equals
 the number of observations you'd like to explain, and the number of columns equals \code{m +1},
 where \code{m} equals the total number of features in your model.
 
@@ -87,7 +87,7 @@ the i-th observation. Likewise, if \code{dt[i, j + 1] < 0} it indicates that the
 decreased the prediction for the i-th observation. The magnitude of the value is also important
 to notice. E.g. if \code{dt[i, k + 1]} and \code{dt[i, j + 1]} are greater than \code{0},
 where \code{j != k}, and \code{dt[i, k + 1]} > \code{dt[i, j + 1]} this indicates that feature
-\code{j} and \code{k} increased the value of the prediction, but that the effect of the k-th
+\code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
 feature was larger than the j-th feature.
 }
 \description{

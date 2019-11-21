@@ -13,11 +13,12 @@ feature_combinations(m, exact = TRUE, n_combinations = 200,
 \item{exact}{Logical. If \code{TRUE} all \code{2^m} combinations are generated, otherwise a
 subsample of the combinations is used.}
 
-\item{n_combinations}{Positive integer. Note that if \code{exact} equals \code{TRUE},
+\item{n_combinations}{Positive integer. Note that if \code{exact = TRUE},
 \code{n_combinations} is ignored. However, if \code{m > 12} you'll need to add a positive integer
 value for \code{n_combinations}.}
 
-\item{shapley_weight_inf_replacement}{Numeric.}
+\item{shapley_weight_inf_replacement}{Numeric. The value to use as a replacement for infinite combination
+weights when doing numerical operations.}
 
 \item{reduce_dim}{Logical.}
 }

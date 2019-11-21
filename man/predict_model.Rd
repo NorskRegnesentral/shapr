@@ -25,7 +25,7 @@ predict_model(x, newdata)
 \method{predict_model}{mgcv}(x, newdata)
 }
 \arguments{
-\item{x}{Object of class inheriting from one of the supported models.}
+\item{x}{Model object for the model to be explained.}
 
 \item{newdata}{A data frame (or matrix) in which to look for variables with which to predict.}
 }
