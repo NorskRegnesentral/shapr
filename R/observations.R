@@ -97,7 +97,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #' @param seed Positive integer. If \code{NULL} the seed will be inherited from the calling environment.
 #'
 #' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
-#' \code{NULL} means all combinations Only used internally.
+#' \code{NULL} means all combinations. Only used internally.
 #'
 #' @param x_test_gaussian Matrix. Only applicable if \code{approach = "empirical"}.
 #'
