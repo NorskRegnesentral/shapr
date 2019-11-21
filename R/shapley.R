@@ -146,7 +146,7 @@ shapr <- function(x,
     m = explainer$n_features,
     exact = explainer$exact,
     n_combinations = n_combinations,
-    shapley_weight_inf_replacement = 10^6,
+    weight_zero_m = 10^6,
     reduce_dim = TRUE
   )
 
