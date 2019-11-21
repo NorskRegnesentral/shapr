@@ -43,7 +43,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   stopifnot(is.matrix(W_kernel) & is.matrix(S))
   stopifnot(nrow(W_kernel) == nrow(x_train))
   stopifnot(ncol(W_kernel) == nrow(S))
-  stopifnot(all(S %in% c(0,1)))
+  stopifnot(all(S %in% c(0, 1)))
 
   # Find weights for all combinations and training data
   dt <- data.table::as.data.table(W_kernel)

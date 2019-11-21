@@ -34,7 +34,7 @@ Suggests:
     xgboost,
     mgcv,
     testthat, 
-    lintr,
+    lintr (>= 2.0.0),
     covr,
     maptree,
     corrplot,
