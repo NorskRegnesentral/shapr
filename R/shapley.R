@@ -21,7 +21,7 @@ shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
 #'
 #' @param X data.table
 #' @param use_shapley_weights_in_W Logical
-#' @param normalize_W_weights Logical
+#' @param normalize_W_weights Logical. Whether to normalize the weights for the combinations to sum to 1 for increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations except combination \code{1} and \code{2^m}.
 #'
 #' @return Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
 #'
