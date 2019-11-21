@@ -57,7 +57,7 @@ gaussian_transform_separate <- function(yx, n_y) {
 
 #' Transforms a sample to standardized normal distribution
 #'
-#' @param x Numeric vector
+#' @param x Numeric vector.The data which should be transformed to a standard normal distribution.
 #'
 #' @return Numeric vector of length \code{length(x)}
 #'
