@@ -9,7 +9,7 @@
 #' explained 10 observations using \code{\link{explain}}, you can generate a plot for the first 5
 #' observations by setting \code{index_x_test = 1:5}.
 #' @param top_k_features Integer. How many features to include in the plot. E.g. if you have 15
-#' features in your model you can plot the 5 most important features by setting
+#' features in your model you can plot the 5 most important features, for each explanation, by setting
 #' \code{top_k_features = 1:5}.
 #' @param ... Currently not used.
 #'
