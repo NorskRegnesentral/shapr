@@ -28,6 +28,7 @@ test_that("Test feature_combinations", {
     n_combinations = n_combinations,
     weight_zero_m = w
   )
+  y2[, p := NULL]
 
   # Example 3 -----------
   m <- 3
