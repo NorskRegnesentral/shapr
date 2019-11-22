@@ -76,7 +76,6 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
   dt[, nfeatures := length(features[[1]]), ID]
   dt[, N := .N, nfeatures]
   dt[, shapley_weight := shapley_weights(m = m, N = N, s = nfeatures, weight_zero_m)]
-  dt[, no := 1] # TODO: Remove this after updating test objects
 
   return(dt)
 }
@@ -111,7 +110,6 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 
   # Get number of occurences and duplicated rows-------
   r <- helper_feature(m, feature_sample)
-  X[, no := r[["no"]]]
   X[, is_duplicate := r[["is_duplicate"]]]
   X[, ID := .I]
 
@@ -138,7 +136,6 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   data.table::setkey(X, nfeatures)
   X[, ID := .I]
   X[, N := as.integer(N)]
-  X[, no := 1] # TODO: Remove this after updating test objects
 
   return(X)
 }
@@ -150,7 +147,6 @@ helper_feature <- function(m, feature_sample) {
   dt <- data.table::data.table(x)
   cnms <- paste0("V", seq(m))
   data.table::setnames(dt, cnms)
-  dt[, no := as.integer(.N), by = cnms]
   dt[, is_duplicate := duplicated(dt)]
   dt[, (cnms) := NULL]
 

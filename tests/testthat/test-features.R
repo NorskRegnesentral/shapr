@@ -58,8 +58,8 @@ test_that("Test feature_exact", {
   x <- feature_exact(m, weight_zero_m)
 
   # Define results -----------
-  cnms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "no")
-  classes <- c("integer", "list", "integer", "integer", "double", "double")
+  cnms <- c("ID", "features", "nfeatures", "N", "shapley_weight")
+  classes <- c("integer", "list", "integer", "integer", "double")
   lfeatures <- list(
     integer(0),
     1L,
@@ -81,7 +81,6 @@ test_that("Test feature_exact", {
   expect_equal(x[["features"]], lfeatures)
   expect_equal(x[["nfeatures"]], nfeatures)
   expect_equal(x[["N"]], n)
-  expect_equal(x[["no"]], rep(1, nrow(x)))
 })
 
 test_that("Test feature_not_exact", {
@@ -99,8 +98,8 @@ test_that("Test feature_not_exact", {
   )
   set.seed(1)
 
-  cnms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "no")
-  classes <- c("integer", "list", "integer", "integer", "double", "integer")
+  cnms <- c("ID", "features", "nfeatures", "N", "shapley_weight")
+  classes <- c("integer", "list", "integer", "integer", "double")
   n <- sapply(seq(m - 1), choose, n = m)
   w_all <- shapley_weights(m = m, N = n, s = seq(m - 1)) * n
   w_default <- w_all / sum(w_all)
@@ -117,14 +116,12 @@ test_that("Test feature_not_exact", {
       expect_equal(x[["nfeatures"]][[i]], 0)
       expect_equal(x[["N"]][[i]], 1)
       expect_equal(x[["shapley_weight"]][[i]], w)
-      expect_equal(x[["no"]][[i]], 1)
 
     } else if (length(f) == m) {
       expect_equal(f, seq(m))
       expect_equal(x[["nfeatures"]][[i]], m)
       expect_equal(x[["N"]][[i]], 1)
       expect_equal(x[["shapley_weight"]][[i]], w)
-      expect_equal(x[["no"]][[i]], 1)
 
     } else {
       k <- length(f)
@@ -132,7 +129,6 @@ test_that("Test feature_not_exact", {
       expect_equal(x[["nfeatures"]][[i]], k)
       expect_equal(x[["N"]][[i]], choose(m, k))
       expect_equal(x[["shapley_weight"]][[i]], w_default[x[["nfeatures"]][[i]]])
-      # TODO: add test for no column
     }
   }
 })
@@ -151,17 +147,15 @@ test_that("Test helper_feature", {
   x <- helper_feature(m, feature_sample)
 
   # Define results -----------
-  x2 <- c(1, 2, 1, 2, 1)
   x3 <- c(FALSE, FALSE, FALSE, TRUE, FALSE)
 
   # Test results -----------
-  cnms <- c("no", "is_duplicate")
-  classes <- c("integer", "logical")
+  cnms <- "is_duplicate"
+  classes <- "logical"
   expect_true(data.table::is.data.table(x))
   expect_equal(names(x), cnms)
   expect_equal(nrow(x), length(feature_sample))
   expect_equal(classes, unname(sapply(x, typeof)))
-  expect_equal(x[["no"]], x2)
   expect_equal(x[["is_duplicate"]], x3)
 
 })
