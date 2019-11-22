@@ -3,8 +3,6 @@
 #' @param zx Numeric vector. The first \code{n_z} items are the Gaussian data, and the last part is
 #' the data with the original transformation.
 #' @param n_z Positive integer. Number of elements of \code{zx} that belongs to new data.
-#' @param type Integer between \code{1} and \code{9}. See \code{\link[stats]{quantile}} for more
-#' information.
 #'
 #' @return Numeric vector of length \code{n_z}
 #'
@@ -17,13 +15,13 @@
 #' str(x)
 #'
 #' @author Martin Jullum
-inv_gaussian_transform <- function(zx, n_z, type = 7) {
+inv_gaussian_transform <- function(zx, n_z) {
   if (n_z >= length(zx)) stop("n_z should be less than length(zx)")
   ind <- 1:n_z
   z <- zx[ind]
   x <- zx[-ind]
   u <- stats::pnorm(z)
-  x_new <- stats::quantile(x, probs = u, type = type)
+  x_new <- stats::quantile(x, probs = u)
   return(as.double(x_new))
 }
 
