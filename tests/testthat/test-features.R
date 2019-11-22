@@ -98,8 +98,8 @@ test_that("Test feature_not_exact", {
   )
   set.seed(1)
 
-  cnms <- c("ID", "features", "nfeatures", "N", "shapley_weight")
-  classes <- c("integer", "list", "integer", "integer", "double")
+  cnms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "p")
+  classes <- c("integer", "list", "integer", "integer", "integer", "double")
   n <- sapply(seq(m - 1), choose, n = m)
   w_all <- shapley_weights(m = m, N = n, s = seq(m - 1)) * n
   w_default <- w_all / sum(w_all)
@@ -116,19 +116,22 @@ test_that("Test feature_not_exact", {
       expect_equal(x[["nfeatures"]][[i]], 0)
       expect_equal(x[["N"]][[i]], 1)
       expect_equal(x[["shapley_weight"]][[i]], w)
+      expect_equal(x[["p"]][[i]], NA_real_)
 
     } else if (length(f) == m) {
       expect_equal(f, seq(m))
       expect_equal(x[["nfeatures"]][[i]], m)
       expect_equal(x[["N"]][[i]], 1)
       expect_equal(x[["shapley_weight"]][[i]], w)
+      expect_equal(x[["p"]][[i]], NA_real_)
 
     } else {
       k <- length(f)
       expect_equal(f, sort(f))
       expect_equal(x[["nfeatures"]][[i]], k)
       expect_equal(x[["N"]][[i]], choose(m, k))
-      expect_equal(x[["shapley_weight"]][[i]], w_default[x[["nfeatures"]][[i]]])
+      expect_equal(x[["p"]][[i]], w_default[x[["nfeatures"]][[i]]])
+      expect_equal(between(x[["shapley_weight"]][[i]], 1L, n_combinations), TRUE)
     }
   }
 })
@@ -147,15 +150,17 @@ test_that("Test helper_feature", {
   x <- helper_feature(m, feature_sample)
 
   # Define results -----------
+  x2 <- c(1, 2, 1, 2, 1)
   x3 <- c(FALSE, FALSE, FALSE, TRUE, FALSE)
 
   # Test results -----------
-  cnms <- "is_duplicate"
-  classes <- "logical"
+  cnms <- c("sample_frequence", "is_duplicate")
+  classes <- c("integer", "logical")
   expect_true(data.table::is.data.table(x))
   expect_equal(names(x), cnms)
   expect_equal(nrow(x), length(feature_sample))
   expect_equal(classes, unname(sapply(x, typeof)))
+  expect_equal(x[["sample_frequence"]], x2)
   expect_equal(x[["is_duplicate"]], x3)
 
 })

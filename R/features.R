@@ -62,6 +62,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     dt <- feature_exact(m, weight_zero_m)
   } else {
     dt <- feature_not_exact(m, n_combinations, weight_zero_m)
+    dt[, p := NULL]
   }
 
   return(dt)
@@ -111,7 +112,10 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   # Get number of occurences and duplicated rows-------
   r <- helper_feature(m, feature_sample)
   X[, is_duplicate := r[["is_duplicate"]]]
-  X[, ID := .I]
+
+  # When we sample combinations the Shapley weight is equal
+  # to the frequency of the given combination
+  X[, shapley_weight := r[["sample_frequence"]]]
 
   # Populate table and remove duplicated rows -------
   X[, features := feature_sample]
@@ -119,23 +123,21 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
     X <- X[is_duplicate == FALSE]
   }
   X[, is_duplicate := NULL]
-  nms <- c("ID", "nfeatures", "features")
-  data.table::setcolorder(X, nms)
 
   # Add shapley weight and number of combinations
-  X[, shapley_weight := weight_zero_m]
+  X[c(1, .N), shapley_weight := weight_zero_m]
   X[, N := 1]
   X[between(nfeatures, 1, m - 1), ind := TRUE]
-  X[ind == TRUE, shapley_weight := p[nfeatures]]
+  X[ind == TRUE, p := p[nfeatures]]
   X[ind == TRUE, N := n[nfeatures]]
   X[, ind := NULL]
 
   # Set column order and key table
-  nms <- c("ID", "features", "nfeatures", "N", "shapley_weight")
-  data.table::setcolorder(X, nms)
   data.table::setkey(X, nfeatures)
   X[, ID := .I]
   X[, N := as.integer(N)]
+  nms <- c("ID", "features", "nfeatures", "N", "shapley_weight")
+  data.table::setcolorder(X, nms)
 
   return(X)
 }
@@ -147,6 +149,7 @@ helper_feature <- function(m, feature_sample) {
   dt <- data.table::data.table(x)
   cnms <- paste0("V", seq(m))
   data.table::setnames(dt, cnms)
+  dt[, sample_frequence := as.integer(.N), by = cnms]
   dt[, is_duplicate := duplicated(dt)]
   dt[, (cnms) := NULL]
 
