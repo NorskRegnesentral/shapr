@@ -136,7 +136,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   data.table::setkey(X, nfeatures)
   X[, ID := .I]
   X[, N := as.integer(N)]
-  nms <- c("ID", "features", "nfeatures", "N", "shapley_weight")
+  nms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "p")
   data.table::setcolorder(X, nms)
 
   return(X)
