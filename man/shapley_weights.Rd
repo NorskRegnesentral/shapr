@@ -4,7 +4,7 @@
 \alias{shapley_weights}
 \title{Calculate Shapley weight}
 \usage{
-shapley_weights(m, N, s, weight_zero_m = 10^6)
+shapley_weights(m, N, n_features, weight_zero_m = 10^6)
 }
 \arguments{
 \item{m}{Positive integer. Total number of features.}
@@ -12,7 +12,7 @@ shapley_weights(m, N, s, weight_zero_m = 10^6)
 \item{N}{Positive integer. The number of unique combinations when sampling \code{s} features,
 without replacement, from a sample space consisting of \code{m} different features.}
 
-\item{s}{Positive integer. Represents the number of features you want to sample from a feature
+\item{n_features}{Positive integer. Represents the number of features you want to sample from a feature
 space consisting of \code{m} unique features. Note that \code{ 0 < = s  <= m}.}
 
 \item{weight_zero_m}{Positive integer. Represents the Shapley weight for two special

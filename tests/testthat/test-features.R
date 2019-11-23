@@ -102,7 +102,7 @@ test_that("Test feature_not_exact", {
   cnms <- c("ID", "features", "n_features", "N", "shapley_weight", "p")
   classes <- c("integer", "list", "integer", "integer", "integer", "double")
   n <- sapply(seq(m - 1), choose, n = m)
-  w_all <- shapley_weights(m = m, N = n, s = seq(m - 1)) * n
+  w_all <- shapley_weights(m = m, N = n, n_features = seq(m - 1)) * n
   w_default <- w_all / sum(w_all)
 
   # Test results -----------

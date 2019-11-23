@@ -1,7 +1,7 @@
 #' Calculate Shapley weight
 #'
 #' @param m Positive integer. Total number of features.
-#' @param s Positive integer. Represents the number of features you want to sample from a feature
+#' @param n_features Positive integer. Represents the number of features you want to sample from a feature
 #' space consisting of \code{m} unique features. Note that \code{ 0 < = s  <= m}.
 #' @param N Positive integer. The number of unique combinations when sampling \code{s} features,
 #' without replacement, from a sample space consisting of \code{m} different features.
@@ -11,8 +11,8 @@
 #' @return Numeric
 #'
 #' @author Nikolai Sellereite
-shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
-  x <- (m - 1) / (N * s * (m - s))
+shapley_weights <- function(m, N, n_features, weight_zero_m = 10^6) {
+  x <- (m - 1) / (N * n_features * (m - n_features))
   x[!is.finite(x)] <- weight_zero_m
   x
 }

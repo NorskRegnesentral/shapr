@@ -76,7 +76,7 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
   dt[, features := unlist(combinations, recursive = FALSE)]
   dt[, n_features := length(features[[1]]), ID]
   dt[, N := .N, n_features]
-  dt[, shapley_weight := shapley_weights(m = m, N = N, s = n_features, weight_zero_m)]
+  dt[, shapley_weight := shapley_weights(m = m, N = N, n_features, weight_zero_m)]
 
   return(dt)
 }
@@ -87,7 +87,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   # Find weights for given number of features ----------
   n_features <- seq(m - 1)
   n <- sapply(n_features, choose, n = m)
-  w <- shapley_weights(m = m, N = n, s = n_features) * n
+  w <- shapley_weights(m = m, N = n, n_features) * n
   p <- w / sum(w)
 
   # Sample number of chosen features ----------
