@@ -120,7 +120,7 @@ Current methodological restrictions:
 <li>Computational improvement of the AICc optimization approach</li>
 <li>Adaptive selection of method to account for the feature dependence</li>
 </ul>
-<p>Note that both the features and the prediction must be numeric. The approach is constructed for continuous features. Discrete features may also work just fine with the empirical (conditional) distribution approach. Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease the interpretability, i.e. not via log odds transformations.</p>
+<p>Note that both the features and the prediction must be numeric. The approach is constructed for continuous features. Discrete features may also work just fine with the empirical (conditional) distribution approach. Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease the interpretability, i.e. not via log odds transformations. The application programming interface (API) of <code>shapr</code> is inspired by Pedersen and Benesty (2019).</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -232,6 +232,15 @@ Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to
 Interpreting Model Predictions.” In *Advances in Neural Information
 Processing Systems*, 4765–74.
 
+</div>
+
+<div id="ref-lime_api">
+
+Pedersen, Thomas Lin, and Michaël Benesty. 2019. *Lime: Local
+Interpretable Model-Agnostic Explanations*.
+<https:>.
+
+</https:>
 </div>
 
 <div id="ref-vstrumbelj2014explaining">
