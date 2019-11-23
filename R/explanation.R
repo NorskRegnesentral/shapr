@@ -270,7 +270,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
 
   # Get indices of combinations
-  l <- get_list_approaches(explainer$X$nfeatures, approach)
+  l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
   explainer$x_test <- as.matrix(x)
 

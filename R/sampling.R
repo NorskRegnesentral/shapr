@@ -1,8 +1,8 @@
 #' Sample conditional variables using the Gaussian copula approach
 #'
 #' @param index_given Integer vector. The indices of the features to condition upon. Note that
-#' \code{min(index_given) >= 1} and \code{max(index_given) <= p}.
-#' @param p Positive integer. The number of features.
+#' \code{min(index_given) >= 1} and \code{max(index_given) <= m}.
+#' @param m Positive integer. The total number of features.
 #' @param x_test_gaussian Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
 #' after quantile-transforming them to standard Gaussian variables.
 #' @param x_test Numeric matrix. Contains the features of the observation whose
@@ -22,14 +22,14 @@
 #' x_test <- MASS::mvrnorm(1, mu, cov_mat)
 #' x_test_gaussian <- MASS::mvrnorm(1, mu, cov_mat)
 #' index_given <- 3:6
-#' ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat, p = m,
+#' ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat, m = m,
 #'                              x_test_gaussian, x_train, x_test)
 #'
 #' @author Martin Jullum
-sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussian, x_train, x_test) {
+sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_test_gaussian, x_train, x_test) {
   # Handles the unconditional and full conditional separtely when predicting
-  if (length(index_given) %in% c(0, p)) {
-    ret <- matrix(x_test, ncol = p, nrow = 1)
+  if (length(index_given) %in% c(0, m)) {
+    ret <- matrix(x_test, ncol = m, nrow = 1)
   } else {
     dependent_ind <- (1:length(mu))[-index_given]
 
@@ -50,7 +50,7 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussia
       n_z = n_samples
     )
 
-    ret <- matrix(NA, ncol = p, nrow = n_samples)
+    ret <- matrix(NA, ncol = m, nrow = n_samples)
     ret[, index_given] <- rep(x_test[index_given], each = n_samples)
     ret[, dependent_ind] <- ret0_x
   }
@@ -79,14 +79,14 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, p, x_test_gaussia
 #' r <- shapr:::sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
 #'
 #' @author Martin Jullum
-sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test) {
+sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_test) {
 
   # Check input
   stopifnot(is.matrix(x_test))
 
   # Handles the unconditional and full conditional separtely when predicting
   cnms <- colnames(x_test)
-  if (length(index_given) %in% c(0, p)) return(data.table::as.data.table(x_test))
+  if (length(index_given) %in% c(0, m)) return(data.table::as.data.table(x_test))
 
   dependent_ind <- (1:length(mu))[-index_given]
   x_test_gaussian <- x_test[index_given]
@@ -105,7 +105,7 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, p, x_test) {
 
   ret0 <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
 
-  ret <- matrix(NA, ncol = p, nrow = n_samples)
+  ret <- matrix(NA, ncol = m, nrow = n_samples)
   ret[, index_given] <- rep(x_test_gaussian, each = n_samples)
   ret[, dependent_ind] <- ret0
 

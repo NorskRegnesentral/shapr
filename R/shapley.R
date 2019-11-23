@@ -1,9 +1,9 @@
 #' Calculate Shapley weight
 #'
 #' @param m Positive integer. Total number of features.
-#' @param s Positive integer. Represents the number of features you want to sample from a feature
-#' space consisting of \code{m} unique features. Note that \code{ 0 < = s  <= m}.
-#' @param N Positive integer. The number of unique combinations when sampling \code{s} features,
+#' @param n_features Positive integer. Represents the number of features you want to sample from a feature
+#' space consisting of \code{m} unique features. Note that \code{ 0 < = n_features <= m}.
+#' @param N Positive integer. The number of unique combinations when sampling \code{n_features} features,
 #' without replacement, from a sample space consisting of \code{m} different features.
 #' @param weight_zero_m Positive integer. Represents the Shapley weight for two special
 #' cases, i.e. the case where you have either \code{0} or \code{m} features.
@@ -11,8 +11,8 @@
 #' @return Numeric
 #'
 #' @author Nikolai Sellereite
-shapley_weights <- function(m, N, s, weight_zero_m = 10^6) {
-  x <- (m - 1) / (N * s * (m - s))
+shapley_weights <- function(m, N, n_features, weight_zero_m = 10^6) {
+  x <- (m - 1) / (N * n_features * (m - n_features))
   x[!is.finite(x)] <- weight_zero_m
   x
 }
@@ -38,7 +38,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 
   W <- weight_matrix_cpp(
     features = X[["features"]],
-    m = X[.N][["nfeatures"]],
+    m = X[.N][["n_features"]],
     n = X[, .N],
     w = w
   )
@@ -153,7 +153,7 @@ shapr <- function(x,
   ## Get feature matrix ---------
   feature_matrix <- feature_matrix_cpp(
     features = dt_combinations[["features"]],
-    nfeatures = explainer$n_features
+    m = explainer$n_features
   )
 
   explainer$S <- feature_matrix
