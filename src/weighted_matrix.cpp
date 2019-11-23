@@ -86,16 +86,16 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
 NumericMatrix feature_matrix_cpp(List features, int m) {
 
     // Define variables
-    int ncomb;
-    ncomb = features.length();
-    NumericMatrix A(ncomb, m);
+    int n_combinations;
+    n_combinations = features.length();
+    NumericMatrix A(n_combinations, m);
 
     // Error-check
     IntegerVector features_zero = features[0];
     if (features_zero.length() > 0)
         Rcpp::stop("The first element of features should be an empty vector, i.e. integer(0)");
 
-    for (int i = 1; i < ncomb; ++i) {
+    for (int i = 1; i < n_combinations; ++i) {
 
         NumericVector feature_vec = features[i];
 

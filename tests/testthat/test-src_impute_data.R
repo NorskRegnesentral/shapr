@@ -11,12 +11,12 @@ test_that("Test observation_impute_cpp", {
 
   # Example -----------
   m <- 3
-  ncomb <- 2^m
+  n_combinations <- 2^m
   mtcars <- mtcars[1:15, seq(m)]
   ntrain <- 14
   xtrain <- mtcars[seq(ntrain), ]
   xtest <- mtcars[-seq(ntrain), , drop = FALSE]
-  S <- matrix(0L, ncomb, m)
+  S <- matrix(0L, n_combinations, m)
   features <- list(
     integer(), 1, 2, 3, c(1, 2), c(1, 3), c(2, 3), c(1, 2, 3)
   )
