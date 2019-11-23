@@ -4,14 +4,14 @@
 \alias{sample_copula}
 \title{Sample conditional variables using the Gaussian copula approach}
 \usage{
-sample_copula(index_given, n_samples, mu, cov_mat, p, x_test_gaussian,
+sample_copula(index_given, n_samples, mu, cov_mat, m, x_test_gaussian,
   x_train, x_test)
 }
 \arguments{
 \item{index_given}{Integer vector. The indices of the features to condition upon. Note that
-\code{min(index_given) >= 1} and \code{max(index_given) <= p}.}
+\code{min(index_given) >= 1} and \code{max(index_given) <= m}.}
 
-\item{p}{Positive integer. The number of features.}
+\item{m}{Positive integer. The total number of features.}
 
 \item{x_test_gaussian}{Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
 after quantile-transforming them to standard Gaussian variables.}
@@ -35,7 +35,7 @@ x_train <- MASS::mvrnorm(n, mu, cov_mat)
 x_test <- MASS::mvrnorm(1, mu, cov_mat)
 x_test_gaussian <- MASS::mvrnorm(1, mu, cov_mat)
 index_given <- 3:6
-ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat, p = m,
+ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat, m = m,
                              x_test_gaussian, x_train, x_test)
 
 }
