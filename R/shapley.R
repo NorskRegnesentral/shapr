@@ -38,7 +38,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 
   W <- weight_matrix_cpp(
     features = X[["features"]],
-    m = X[.N][["nfeatures"]],
+    m = X[.N][["n_features"]],
     n = X[, .N],
     w = w
   )
@@ -153,7 +153,7 @@ shapr <- function(x,
   ## Get feature matrix ---------
   feature_matrix <- feature_matrix_cpp(
     features = dt_combinations[["features"]],
-    nfeatures = explainer$n_features
+    m = explainer$n_features
   )
 
   explainer$S <- feature_matrix

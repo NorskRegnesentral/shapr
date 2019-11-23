@@ -275,10 +275,10 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
 
   # Optimization is done only once for all distributions which conditions on
   # exactly k variables
-  these_k <- unique(x$X$nfeatures[-c(1, nrow(x$S))])
+  these_k <- unique(x$X$n_features[-c(1, nrow(x$S))])
 
   for (i in these_k) {
-    these_cond <- x$X[nfeatures == i, ID]
+    these_cond <- x$X[n_features == i, ID]
     cutters <- 1:x$n_samples_aicc
     no_cond <- length(these_cond)
     cond_samp <- cut(

@@ -132,14 +132,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // feature_matrix_cpp
-NumericMatrix feature_matrix_cpp(List features, int nfeatures);
-RcppExport SEXP _shapr_feature_matrix_cpp(SEXP featuresSEXP, SEXP nfeaturesSEXP) {
+NumericMatrix feature_matrix_cpp(List features, int m);
+RcppExport SEXP _shapr_feature_matrix_cpp(SEXP featuresSEXP, SEXP mSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type features(featuresSEXP);
-    Rcpp::traits::input_parameter< int >::type nfeatures(nfeaturesSEXP);
-    rcpp_result_gen = Rcpp::wrap(feature_matrix_cpp(features, nfeatures));
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(feature_matrix_cpp(features, m));
     return rcpp_result_gen;
 END_RCPP
 }

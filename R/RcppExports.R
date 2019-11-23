@@ -158,13 +158,13 @@ weight_matrix_cpp <- function(features, m, n, w) {
 #' Get feature matrix
 #'
 #' @param features List
-#' @param nfeatures Positive integer. Total number of features
+#' @param m Positive integer. Total number of features
 #'
 #' @export
 #'
 #' @return Matrix
 #' @author Nikolai Sellereite
-feature_matrix_cpp <- function(features, nfeatures) {
-    .Call(`_shapr_feature_matrix_cpp`, features, nfeatures)
+feature_matrix_cpp <- function(features, m) {
+    .Call(`_shapr_feature_matrix_cpp`, features, m)
 }
 
