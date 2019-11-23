@@ -113,7 +113,7 @@ sample_features_cpp <- function(m, n_features) {
 #'
 #' @param S Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations} equals
 #' the total number of sampled/non-sampled feature combinations and \code{m} equals
-#' the total number of unique features. Note that \code{nfeature = ncol(xtrain)}. See details
+#' the total number of unique features. Note that \code{m = ncol(xtrain)}. See details
 #' for more information.
 #'
 #' @details \code{S(i, j) = 1} if and only if feature \code{j} is present in feature
