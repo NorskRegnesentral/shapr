@@ -81,7 +81,8 @@ approach is constructed for continuous features. Discrete features may
 also work just fine with the empirical (conditional) distribution
 approach. Unlike SHAP and TreeSHAP, we decompose probability predictions
 directly to ease the interpretability, i.e. not via log odds
-transformations.
+transformations. The application programming interface (API) of `shapr`
+is inspired by Pedersen and Benesty (2019).
 
 ## Installation
 
@@ -204,6 +205,14 @@ arXiv:1802.03888*.
 Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to
 Interpreting Model Predictions.” In *Advances in Neural Information
 Processing Systems*, 4765–74.
+
+</div>
+
+<div id="ref-lime_api">
+
+Pedersen, Thomas Lin, and Michaël Benesty. 2019. *Lime: Local
+Interpretable Model-Agnostic Explanations*.
+<https://CRAN.R-project.org/package=lime>.
 
 </div>
 
