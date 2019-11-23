@@ -165,9 +165,9 @@ is sorted by <code>ID</code>, so that is always equal to <code>x[["ID"]] = 1:nro
 <dt>features</dt><dd><p>List. Each item of the list is an integer vector where <code>features[[i]]</code>
 represents the indices of the features included in combination <code>i</code>. Note that all the items
 are sorted such that <code>features[[i]] == sort(features[[i]])</code> is always true.</p></dd>
-<dt>nfeatures</dt><dd><p>Positive integer. <code>nfeatures[i]</code> equals the number of features in combination
-<code>i</code>, i.e. <code>nfeatures[i] = length(features[[i]])</code>.</p></dd>.
-<dt>N</dt><dd><p>Positive integer. The number of unique ways to sample <code>nfeatures[i]</code> features
+<dt>n_features</dt><dd><p>Vector of positive integers. <code>n_features[i]</code> equals the number of features in combination
+<code>i</code>, i.e. <code>n_features[i] = length(features[[i]])</code>.</p></dd>.
+<dt>N</dt><dd><p>Positive integer. The number of unique ways to sample <code>n_features[i]</code> features
 from <code>m</code> different features, without replacement.</p></dd>
 
 </dl>

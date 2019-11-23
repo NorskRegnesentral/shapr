@@ -129,7 +129,7 @@
     <p>Sample conditional variables using the Gaussian copula approach</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sample_copula</span>(<span class='no'>index_given</span>, <span class='no'>n_samples</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>, <span class='no'>p</span>, <span class='no'>x_test_gaussian</span>,
+    <pre class="usage"><span class='fu'>sample_copula</span>(<span class='no'>index_given</span>, <span class='no'>n_samples</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>, <span class='no'>m</span>, <span class='no'>x_test_gaussian</span>,
   <span class='no'>x_train</span>, <span class='no'>x_test</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -138,11 +138,11 @@
     <tr>
       <th>index_given</th>
       <td><p>Integer vector. The indices of the features to condition upon. Note that
-<code>min(index_given) &gt;= 1</code> and <code>max(index_given) &lt;= p</code>.</p></td>
+<code>min(index_given) &gt;= 1</code> and <code>max(index_given) &lt;= m</code>.</p></td>
     </tr>
     <tr>
-      <th>p</th>
-      <td><p>Positive integer. The number of features.</p></td>
+      <th>m</th>
+      <td><p>Positive integer. The total number of features.</p></td>
     </tr>
     <tr>
       <th>x_test_gaussian</th>
@@ -170,7 +170,7 @@ predictions ought to be explained (test data).</p></td>
 <span class='no'>x_test</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>MASS</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>)
 <span class='no'>x_test_gaussian</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>MASS</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>)
 <span class='no'>index_given</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>:<span class='fl'>6</span>
-<span class='no'>ret</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/sample_copula.html'>sample_copula</a></span>(<span class='no'>index_given</span>, <span class='no'>n_samples</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>, <span class='kw'>p</span> <span class='kw'>=</span> <span class='no'>m</span>,
+<span class='no'>ret</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/sample_copula.html'>sample_copula</a></span>(<span class='no'>index_given</span>, <span class='no'>n_samples</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>, <span class='kw'>m</span> <span class='kw'>=</span> <span class='no'>m</span>,
                              <span class='no'>x_test_gaussian</span>, <span class='no'>x_train</span>, <span class='no'>x_test</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

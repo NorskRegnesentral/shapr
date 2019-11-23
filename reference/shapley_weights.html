@@ -129,7 +129,7 @@
     <p>Calculate Shapley weight</p>
     </div>
 
-    <pre class="usage"><span class='fu'>shapley_weights</span>(<span class='no'>m</span>, <span class='no'>N</span>, <span class='no'>s</span>, <span class='kw'>weight_zero_m</span> <span class='kw'>=</span> <span class='fl'>10</span>^<span class='fl'>6</span>)</pre>
+    <pre class="usage"><span class='fu'>shapley_weights</span>(<span class='no'>m</span>, <span class='no'>N</span>, <span class='no'>n_features</span>, <span class='kw'>weight_zero_m</span> <span class='kw'>=</span> <span class='fl'>10</span>^<span class='fl'>6</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -140,13 +140,13 @@
     </tr>
     <tr>
       <th>N</th>
-      <td><p>Positive integer. The number of unique combinations when sampling <code>s</code> features,
+      <td><p>Positive integer. The number of unique combinations when sampling <code>n_features</code> features,
 without replacement, from a sample space consisting of <code>m</code> different features.</p></td>
     </tr>
     <tr>
-      <th>s</th>
+      <th>n_features</th>
       <td><p>Positive integer. Represents the number of features you want to sample from a feature
-space consisting of <code>m</code> unique features. Note that <code> 0 &lt; = s  &lt;= m</code>.</p></td>
+space consisting of <code>m</code> unique features. Note that <code> 0 &lt; = n_features &lt;= m</code>.</p></td>
     </tr>
     <tr>
       <th>weight_zero_m</th>

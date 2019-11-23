@@ -138,13 +138,13 @@
     <tr>
       <th>W_kernel</th>
       <td><p>Numeric matrix. Contains all nonscaled weights between training and test
-observations for all feature combinations. The dimension equals <code>n_train x n_features</code>.</p></td>
+observations for all feature combinations. The dimension equals <code>n_train x m</code>.</p></td>
     </tr>
     <tr>
       <th>S</th>
-      <td><p>Integer matrix of dimension <code>n_combinations x n_features</code>, where <code>n_combinations</code>
-and <code>n_features</code> equals the total number of sampled/non-sampled feature combinations and
-the total number of unique features, respectively. Note that <code>n_features = ncol(x_train)</code>.</p></td>
+      <td><p>Integer matrix of dimension <code>n_combinations x m</code>, where <code>n_combinations</code>
+and <code>m</code> equals the total number of sampled/non-sampled feature combinations and
+the total number of unique features, respectively. Note that <code>m = ncol(x_train)</code>.</p></td>
     </tr>
     <tr>
       <th>x_train</th>

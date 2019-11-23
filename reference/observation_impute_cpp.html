@@ -154,9 +154,9 @@ i.e. <code>min(index_s) &gt;= 1</code> and <code>max(index_s) &lt;= nrow(S)</cod
     </tr>
     <tr>
       <th>S</th>
-      <td><p>Integer matrix of dimension <code>ncomb x nfeatures</code>, where <code>ncomb</code> equals
-the total number of sampled/non-sampled feature combinations and <code>nfeatures</code> equals
-the total number of unique features. Note that <code>nfeature = ncol(xtrain)</code>. See details
+      <td><p>Integer matrix of dimension <code>n_combinations x m</code>, where <code>n_combinations</code> equals
+the total number of sampled/non-sampled feature combinations and <code>m</code> equals
+the total number of unique features. Note that <code>m = ncol(xtrain)</code>. See details
 for more information.</p></td>
     </tr>
     </table>
@@ -167,7 +167,7 @@ for more information.</p></td>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code>S(i, j) = 1</code> if and only if feature <code>j</code> is present in feature
-combination <code>i</code>, otherwise <code>S(i, j) = 0</code>. I.e. if <code>nfeatures = 3</code>, there
+combination <code>i</code>, otherwise <code>S(i, j) = 0</code>. I.e. if <code>m = 3</code>, there
 are <code>2^3 = 8</code> unique ways to combine the features. In this case <code>dim(S) = c(8, 3)</code>.
 Let's call the features <code>x1, x2, x3</code> and take a closer look at the combination
 represented by <code>s = c(x1, x2)</code>. If this combination is represented by the second row,
