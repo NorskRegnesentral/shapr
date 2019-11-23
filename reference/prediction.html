@@ -155,20 +155,20 @@ a stand-alone function.</p>
     <p>An object of class <code><a href='https://rdrr.io/r/base/c.html'>c("shapr", "list")</a></code>. For more details see <code><a href='explain.html'>explain</a></code>.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>If <code>dt</code> does not contain three columns called <code>id</code>, <code>wcomb</code> and <code>w</code>
+    <p>If <code>dt</code> does not contain three columns called <code>id</code>, <code>id_combination</code> and <code>w</code>
 the function will fail. <code>id</code> represents a unique key for a given test observation,
-and <code>wcomb</code> is a unique key for which feature combination the row represents. <code>w</code>
-represents the Shapley value of feature combination given by <code>wcomb</code>. In addition
+and <code>id_combination</code> is a unique key for which feature combination the row represents. <code>w</code>
+represents the Shapley value of feature combination given by <code>id_combination</code>. In addition
 to these three columns, <code>dt</code> should also have columns which matches the variables used
 when training the model.</p>
 <p>I.e. you have fitted a linear model using the features <code>x1</code>,
 <code>x2</code> and <code>x3</code>, and you want to explain 5 test observations using the exact method, i.e.
 setting <code>exact = TRUE</code> in <code><a href='shapr.html'>shapr</a></code>, the following properties should be satisfied</p><ol>
-<li><p><code><a href='https://rdrr.io/r/base/colnames.html'>colnames(dt)</a></code> equals <code>c("x1", "x2", "x3", "id", "wcomb", ""w)</code></p></li>
+<li><p><code><a href='https://rdrr.io/r/base/colnames.html'>colnames(dt)</a></code> equals <code>c("x1", "x2", "x3", "id", "id_combination", ""w)</code></p></li>
 <li><p><code>dt[, max(id)]</code> equals the number of test observations</p></li>
 <li><p><code>dt[, min(id)]</code> equals 1L.</p></li>
-<li><p><code>dt[, max(wcomb)]</code> equals <code>2^m</code> where m equals the number of features.</p></li>
-<li><p><code>dt[, min(wcomb)]</code> equals 1L.</p></li>
+<li><p><code>dt[, max(id_combination)]</code> equals <code>2^m</code> where m equals the number of features.</p></li>
+<li><p><code>dt[, min(id_combination)]</code> equals 1L.</p></li>
 <li><p><code>dt[, type(w)]</code> equals <code>double</code>.</p></li>
 </ol>
 

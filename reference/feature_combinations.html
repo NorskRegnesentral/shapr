@@ -160,8 +160,8 @@ weights when doing numerical operations.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A data.table that contains the following columns:</p><dl class='dl-horizontal'>
-<dt>ID</dt><dd><p>Positive integer. Represents a unique key for each combination. Note that the table
-is sorted by <code>ID</code>, so that is always equal to <code>x[["ID"]] = 1:nrow(x)</code>.</p></dd>
+<dt>id_combination</dt><dd><p>Positive integer. Represents a unique key for each combination. Note that the table
+is sorted by <code>id_combination</code>, so that is always equal to <code>x[["id_combination"]] = 1:nrow(x)</code>.</p></dd>
 <dt>features</dt><dd><p>List. Each item of the list is an integer vector where <code>features[[i]]</code>
 represents the indices of the features included in combination <code>i</code>. Note that all the items
 are sorted such that <code>features[[i]] == sort(features[[i]])</code> is always true.</p></dd>
