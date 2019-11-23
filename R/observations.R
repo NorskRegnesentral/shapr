@@ -278,7 +278,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
   these_k <- unique(x$X$n_features[-c(1, nrow(x$S))])
 
   for (i in these_k) {
-    these_cond <- x$X[n_features == i, ID]
+    these_cond <- x$X[n_features == i, id_combination]
     cutters <- 1:x$n_samples_aicc
     no_cond <- length(these_cond)
     cond_samp <- cut(
