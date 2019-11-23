@@ -10,13 +10,13 @@ test_that("Test observation_impute_cpp", {
   mtcars <- as.matrix(mtcars)
 
   # Example -----------
-  nfeatures <- 3
-  ncomb <- 2^nfeatures
-  mtcars <- mtcars[1:15, seq(nfeatures)]
+  m <- 3
+  ncomb <- 2^m
+  mtcars <- mtcars[1:15, seq(m)]
   ntrain <- 14
   xtrain <- mtcars[seq(ntrain), ]
   xtest <- mtcars[-seq(ntrain), , drop = FALSE]
-  S <- matrix(0L, ncomb, nfeatures)
+  S <- matrix(0L, ncomb, m)
   features <- list(
     integer(), 1, 2, 3, c(1, 2), c(1, 3), c(2, 3), c(1, 2, 3)
   )
@@ -67,7 +67,7 @@ test_that("Test observation_impute_cpp", {
 
     feature_i <- features[[index_s[i]]]
 
-    for (j in seq(nfeatures)) {
+    for (j in seq(m)) {
 
       if (j %in% feature_i) {
         expect_equal(x[i, j], unname(xtest[1, j]))
