@@ -81,7 +81,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   # Add keys
   dt_p <- data.table::as.data.table(dt_p)
   data.table::setnames(dt_p, colnames(x_train))
-  dt_p[, wcomb := dt_melt[["index_s"]]]
+  dt_p[, id_combination := dt_melt[["index_s"]]]
   dt_p[, w := dt_melt[["weight"]]]
 
   return(dt_p)
@@ -178,16 +178,16 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
     )
 
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[, keep := TRUE]
-  first_element <- dt[, tail(.I, 1), .(id, wcomb)][wcomb %in% c(1, 2^ncol(x$x_test)), V1]
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
+  first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, 2^ncol(x$x_test)), V1]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
   dt[first_element, keep := TRUE]
   dt <- dt[keep == TRUE][, keep := NULL]
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
@@ -216,13 +216,13 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
       x_test = x$x_test[i, , drop = FALSE]
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
@@ -252,13 +252,13 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
       x_test_gaussian = x_test_gaussian[i, , drop = FALSE]
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
