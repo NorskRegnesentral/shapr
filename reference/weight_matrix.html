@@ -129,8 +129,7 @@
     <p>Calculate weighted matrix</p>
     </div>
 
-    <pre class="usage"><span class='fu'>weight_matrix</span>(<span class='no'>X</span>, <span class='kw'>use_shapley_weights_in_W</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>normalize_W_weights</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>weight_matrix</span>(<span class='no'>X</span>, <span class='kw'>normalize_W_weights</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -138,11 +137,6 @@
     <tr>
       <th>X</th>
       <td><p>data.table</p></td>
-    </tr>
-    <tr>
-      <th>use_shapley_weights_in_W</th>
-      <td><p>Logical. Whether to use direct formula based (<code>TRUE</code>) or sampling
-based (<code>FALSE</code>) weights for the combinations.</p></td>
     </tr>
     <tr>
       <th>normalize_W_weights</th>

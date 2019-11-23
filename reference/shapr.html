@@ -201,8 +201,7 @@ returned object.</p>
 <span class='no'>y_var</span> <span class='kw'>&lt;-</span> <span class='st'>"medv"</span>
 <span class='no'>df3</span> <span class='kw'>&lt;-</span> <span class='no'>df</span>[, <span class='no'>x_var</span>]
 <span class='no'>model</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='no'>medv</span> ~ <span class='no'>lstat</span> + <span class='no'>rm</span> + <span class='no'>dis</span> + <span class='no'>indus</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>df</span>)
-<span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'>shapr</span>(<span class='no'>df1</span>, <span class='no'>model</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='fl'>1e3</span>)
-
+<span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'>shapr</span>(<span class='no'>df1</span>, <span class='no'>model</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='fl'>1e3</span>)</div><div class='output co'>#&gt; n_combinations is larger than or equal to 2^m = 16. Using exact instead.</div><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>explainer</span>$<span class='no'>X</span>))</div><div class='output co'>#&gt; [1] 16</div><div class='input'># 16 (which equals 2^4)
 </div></pre>
   </div>
