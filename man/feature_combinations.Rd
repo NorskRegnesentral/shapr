@@ -28,7 +28,7 @@ is sorted by \code{ID}, so that is always equal to \code{x[["ID"]] = 1:nrow(x)}.
 \item{features}{List. Each item of the list is an integer vector where \code{features[[i]]}
 represents the indices of the features included in combination \code{i}. Note that all the items
 are sorted such that \code{features[[i]] == sort(features[[i]])} is always true.}
-\item{n_features}{Positive integer. \code{n_features[i]} equals the number of features in combination
+\item{n_features}{Vector of positive integers. \code{n_features[i]} equals the number of features in combination
 \code{i}, i.e. \code{n_features[i] = length(features[[i]])}.}.
 \item{N}{Positive integer. The number of unique ways to sample \code{n_features[i]} features
 from \code{m} different features, without replacement.}
