@@ -34,9 +34,10 @@ plot.shapr <- function(x,
 
   if (is.null(index_x_test)) index_x_test <- seq(nrow(x$x_test))
   if (is.null(top_k_features)) top_k_features <- ncol(x$x_test) + 1
-  cnms <- colnames(x$x_test)
+  id <- phi <- NULL # due to NSE notes in R CMD check
 
   # melting Kshap
+  cnms <- colnames(x$x_test)
   KshapDT <- data.table::copy(x$dt)
   KshapDT[, id := .I]
   meltKshap <- data.table::melt(KshapDT, id.vars = "id", value.name = "phi")
@@ -58,13 +59,14 @@ plot.shapr <- function(x,
   plotting_dt <- merge(plotting_dt, predDT, by = "id")
 
   # Adding header for each individual plot
+  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
 
   if (!plot_phi0) {
     plotting_dt <- plotting_dt[variable != "none"]
   }
   plotting_dt <- plotting_dt[id %in% index_x_test]
-  plotting_dt[, rank := data.table::frank(-abs(phi)), by = id]
+  plotting_dt[, rank := data.table::frank(-abs(phi)), by = "id"]
   plotting_dt <- plotting_dt[rank <= top_k_features]
   plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
 
