@@ -3,7 +3,7 @@
 #' @param m Positive integer. Total number of features.
 #' @param n_features Positive integer. Represents the number of features you want to sample from a feature
 #' space consisting of \code{m} unique features. Note that \code{ 0 < = n_features <= m}.
-#' @param N Positive integer. The number of unique combinations when sampling \code{s} features,
+#' @param N Positive integer. The number of unique combinations when sampling \code{n_features} features,
 #' without replacement, from a sample space consisting of \code{m} different features.
 #' @param weight_zero_m Positive integer. Represents the Shapley weight for two special
 #' cases, i.e. the case where you have either \code{0} or \code{m} features.
