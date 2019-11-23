@@ -11,8 +11,8 @@
 #'
 #' @return A data.table that contains the following columns:
 #' \describe{
-#' \item{ID}{Positive integer. Represents a unique key for each combination. Note that the table
-#' is sorted by \code{ID}, so that is always equal to \code{x[["ID"]] = 1:nrow(x)}.}
+#' \item{id_combination}{Positive integer. Represents a unique key for each combination. Note that the table
+#' is sorted by \code{id_combination}, so that is always equal to \code{x[["id_combination"]] = 1:nrow(x)}.}
 #' \item{features}{List. Each item of the list is an integer vector where \code{features[[i]]}
 #' represents the indices of the features included in combination \code{i}. Note that all the items
 #' are sorted such that \code{features[[i]] == sort(features[[i]])} is always true.}
@@ -71,10 +71,10 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
 #' @keywords internal
 feature_exact <- function(m, weight_zero_m = 10^6) {
 
-  dt <- data.table::data.table(ID = seq(2^m))
+  dt <- data.table::data.table(id_combination = seq(2^m))
   combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
   dt[, features := unlist(combinations, recursive = FALSE)]
-  dt[, n_features := length(features[[1]]), ID]
+  dt[, n_features := length(features[[1]]), id_combination]
   dt[, N := .N, n_features]
   dt[, shapley_weight := shapley_weights(m = m, N = N, n_features, weight_zero_m)]
 
@@ -134,9 +134,9 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 
   # Set column order and key table
   data.table::setkey(X, n_features)
-  X[, ID := .I]
+  X[, id_combination := .I]
   X[, N := as.integer(N)]
-  nms <- c("ID", "features", "n_features", "N", "shapley_weight", "p")
+  nms <- c("id_combination", "features", "n_features", "N", "shapley_weight", "p")
   data.table::setcolorder(X, nms)
 
   return(X)
