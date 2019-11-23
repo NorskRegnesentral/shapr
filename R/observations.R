@@ -1,10 +1,10 @@
 #' Generate permutations of training data using test observations
 #'
 #' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
-#' observations for all feature combinations. The dimension equals \code{n_train x n_features}.
-#' @param S Integer matrix of dimension \code{n_combinations x n_features}, where \code{n_combinations}
-#' and \code{n_features} equals the total number of sampled/non-sampled feature combinations and
-#' the total number of unique features, respectively. Note that \code{n_features = ncol(x_train)}.
+#' observations for all feature combinations. The dimension equals \code{n_train x m}.
+#' @param S Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations}
+#' and \code{m} equals the total number of sampled/non-sampled feature combinations and
+#' the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.
 #' @param x_train Numeric matrix
 #' @param x_test Numeric matrix
 #' @param w_threshold Numeric vector of length 1, where \code{w_threshold > 0} and

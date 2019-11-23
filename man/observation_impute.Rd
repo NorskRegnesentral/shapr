@@ -9,11 +9,11 @@ observation_impute(W_kernel, S, x_train, x_test, w_threshold = 0.7,
 }
 \arguments{
 \item{W_kernel}{Numeric matrix. Contains all nonscaled weights between training and test
-observations for all feature combinations. The dimension equals \code{n_train x n_features}.}
+observations for all feature combinations. The dimension equals \code{n_train x m}.}
 
-\item{S}{Integer matrix of dimension \code{n_combinations x n_features}, where \code{n_combinations}
-and \code{n_features} equals the total number of sampled/non-sampled feature combinations and
-the total number of unique features, respectively. Note that \code{n_features = ncol(x_train)}.}
+\item{S}{Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations}
+and \code{m} equals the total number of sampled/non-sampled feature combinations and
+the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.}
 
 \item{x_train}{Numeric matrix}
 

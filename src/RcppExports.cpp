@@ -91,14 +91,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // sample_features_cpp
-List sample_features_cpp(int m, IntegerVector nfeatures);
-RcppExport SEXP _shapr_sample_features_cpp(SEXP mSEXP, SEXP nfeaturesSEXP) {
+List sample_features_cpp(int m, IntegerVector n_features);
+RcppExport SEXP _shapr_sample_features_cpp(SEXP mSEXP, SEXP n_featuresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type nfeatures(nfeaturesSEXP);
-    rcpp_result_gen = Rcpp::wrap(sample_features_cpp(m, nfeatures));
+    Rcpp::traits::input_parameter< IntegerVector >::type n_features(n_featuresSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_features_cpp(m, n_features));
     return rcpp_result_gen;
 END_RCPP
 }
