@@ -23,14 +23,14 @@ weights when doing numerical operations.}
 \value{
 A data.table that contains the following columns:
 \describe{
-\item{ID}{Positive integer. Represents a unique key for each combination. Note that the table
-is sorted by \code{ID}, so that is always equal to \code{x[["ID"]] = 1:nrow(x)}.}
+\item{id_combination}{Positive integer. Represents a unique key for each combination. Note that the table
+is sorted by \code{id_combination}, so that is always equal to \code{x[["id_combination"]] = 1:nrow(x)}.}
 \item{features}{List. Each item of the list is an integer vector where \code{features[[i]]}
 represents the indices of the features included in combination \code{i}. Note that all the items
 are sorted such that \code{features[[i]] == sort(features[[i]])} is always true.}
-\item{nfeatures}{Positive integer. \code{nfeatures[i]} equals the number of features in combination
-\code{i}, i.e. \code{nfeatures[i] = length(features[[i]])}.}.
-\item{N}{Positive integer. The number of unique ways to sample \code{nfeatures[i]} features
+\item{n_features}{Vector of positive integers. \code{n_features[i]} equals the number of features in combination
+\code{i}, i.e. \code{n_features[i] = length(features[[i]])}.}.
+\item{N}{Positive integer. The number of unique ways to sample \code{n_features[i]} features
 from \code{m} different features, without replacement.}
 }
 }

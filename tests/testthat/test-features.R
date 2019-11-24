@@ -59,7 +59,7 @@ test_that("Test feature_exact", {
   x <- feature_exact(m, weight_zero_m)
 
   # Define results -----------
-  cnms <- c("ID", "features", "nfeatures", "N", "shapley_weight")
+  cnms <- c("id_combination", "features", "n_features", "N", "shapley_weight")
   classes <- c("integer", "list", "integer", "integer", "double")
   lfeatures <- list(
     integer(0),
@@ -71,16 +71,16 @@ test_that("Test feature_exact", {
     c(2L, 3L),
     c(1L, 2L, 3L)
   )
-  nfeatures <- c(0, rep(1, 3), rep(2, 3), 3)
+  n_features <- c(0, rep(1, 3), rep(2, 3), 3)
   n <- c(1, rep(3, 6), 1)
 
   # Tests -----------
   expect_true(data.table::is.data.table(x))
   expect_equal(names(x), cnms)
   expect_equal(unname(sapply(x, typeof)), classes)
-  expect_equal(x[["ID"]], seq(nrow(x)))
+  expect_equal(x[["id_combination"]], seq(nrow(x)))
   expect_equal(x[["features"]], lfeatures)
-  expect_equal(x[["nfeatures"]], nfeatures)
+  expect_equal(x[["n_features"]], n_features)
   expect_equal(x[["N"]], n)
 })
 
@@ -99,10 +99,10 @@ test_that("Test feature_not_exact", {
   )
   set.seed(1)
 
-  cnms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "p")
+  cnms <- c("id_combination", "features", "n_features", "N", "shapley_weight", "p")
   classes <- c("integer", "list", "integer", "integer", "integer", "double")
   n <- sapply(seq(m - 1), choose, n = m)
-  w_all <- shapley_weights(m = m, N = n, s = seq(m - 1)) * n
+  w_all <- shapley_weights(m = m, N = n, n_features = seq(m - 1)) * n
   w_default <- w_all / sum(w_all)
 
   # Test results -----------
@@ -110,18 +110,18 @@ test_that("Test feature_not_exact", {
   expect_equal(names(x), cnms)
   expect_equal(unname(sapply(x, typeof)), classes)
   expect_true(nrow(x) <= n_combinations + 2)
-  expect_equal(x[["ID"]], seq(nrow(x)))
+  expect_equal(x[["id_combination"]], seq(nrow(x)))
   for (i in x[, .I]) {
     f <- x[["features"]][[i]]
     if (length(f) == 0) {
-      expect_equal(x[["nfeatures"]][[i]], 0)
+      expect_equal(x[["n_features"]][[i]], 0)
       expect_equal(x[["N"]][[i]], 1)
       expect_equal(x[["shapley_weight"]][[i]], w)
       expect_equal(x[["p"]][[i]], NA_real_)
 
     } else if (length(f) == m) {
       expect_equal(f, seq(m))
-      expect_equal(x[["nfeatures"]][[i]], m)
+      expect_equal(x[["n_features"]][[i]], m)
       expect_equal(x[["N"]][[i]], 1)
       expect_equal(x[["shapley_weight"]][[i]], w)
       expect_equal(x[["p"]][[i]], NA_real_)
@@ -129,9 +129,9 @@ test_that("Test feature_not_exact", {
     } else {
       k <- length(f)
       expect_equal(f, sort(f))
-      expect_equal(x[["nfeatures"]][[i]], k)
+      expect_equal(x[["n_features"]][[i]], k)
       expect_equal(x[["N"]][[i]], choose(m, k))
-      expect_equal(x[["p"]][[i]], w_default[x[["nfeatures"]][[i]]])
+      expect_equal(x[["p"]][[i]], w_default[x[["n_features"]][[i]]])
       expect_equal(between(x[["shapley_weight"]][[i]], 1L, n_combinations), TRUE)
     }
   }

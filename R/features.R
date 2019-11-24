@@ -11,14 +11,14 @@
 #'
 #' @return A data.table that contains the following columns:
 #' \describe{
-#' \item{ID}{Positive integer. Represents a unique key for each combination. Note that the table
-#' is sorted by \code{ID}, so that is always equal to \code{x[["ID"]] = 1:nrow(x)}.}
+#' \item{id_combination}{Positive integer. Represents a unique key for each combination. Note that the table
+#' is sorted by \code{id_combination}, so that is always equal to \code{x[["id_combination"]] = 1:nrow(x)}.}
 #' \item{features}{List. Each item of the list is an integer vector where \code{features[[i]]}
 #' represents the indices of the features included in combination \code{i}. Note that all the items
 #' are sorted such that \code{features[[i]] == sort(features[[i]])} is always true.}
-#' \item{nfeatures}{Positive integer. \code{nfeatures[i]} equals the number of features in combination
-#' \code{i}, i.e. \code{nfeatures[i] = length(features[[i]])}.}.
-#' \item{N}{Positive integer. The number of unique ways to sample \code{nfeatures[i]} features
+#' \item{n_features}{Vector of positive integers. \code{n_features[i]} equals the number of features in combination
+#' \code{i}, i.e. \code{n_features[i] = length(features[[i]])}.}.
+#' \item{N}{Positive integer. The number of unique ways to sample \code{n_features[i]} features
 #' from \code{m} different features, without replacement.}
 #' }
 #'
@@ -71,12 +71,12 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
 #' @keywords internal
 feature_exact <- function(m, weight_zero_m = 10^6) {
 
-  dt <- data.table::data.table(ID = seq(2^m))
+  dt <- data.table::data.table(id_combination = seq(2^m))
   combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
   dt[, features := unlist(combinations, recursive = FALSE)]
-  dt[, nfeatures := length(features[[1]]), ID]
-  dt[, N := .N, nfeatures]
-  dt[, shapley_weight := shapley_weights(m = m, N = N, s = nfeatures, weight_zero_m)]
+  dt[, n_features := length(features[[1]]), id_combination]
+  dt[, N := .N, n_features]
+  dt[, shapley_weight := shapley_weights(m = m, N = N, n_features, weight_zero_m)]
 
   return(dt)
 }
@@ -85,17 +85,17 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 
   # Find weights for given number of features ----------
-  nfeatures <- seq(m - 1)
-  n <- sapply(nfeatures, choose, n = m)
-  w <- shapley_weights(m = m, N = n, s = nfeatures) * n
+  n_features <- seq(m - 1)
+  n <- sapply(n_features, choose, n = m)
+  w <- shapley_weights(m = m, N = n, n_features) * n
   p <- w / sum(w)
 
   # Sample number of chosen features ----------
   X <- data.table::data.table(
-    nfeatures = c(
+    n_features = c(
       0,
       sample(
-        x = nfeatures,
+        x = n_features,
         size = n_combinations,
         replace = TRUE,
         prob = p
@@ -103,11 +103,11 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
       m
     )
   )
-  X[, nfeatures := as.integer(nfeatures)]
+  X[, n_features := as.integer(n_features)]
 
   # Sample specific set of features -------
-  data.table::setkey(X, nfeatures)
-  feature_sample <- sample_features_cpp(m, X[["nfeatures"]])
+  data.table::setkey(X, n_features)
+  feature_sample <- sample_features_cpp(m, X[["n_features"]])
 
   # Get number of occurences and duplicated rows-------
   r <- helper_feature(m, feature_sample)
@@ -127,16 +127,16 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   # Add shapley weight and number of combinations
   X[c(1, .N), shapley_weight := weight_zero_m]
   X[, N := 1]
-  X[between(nfeatures, 1, m - 1), ind := TRUE]
-  X[ind == TRUE, p := p[nfeatures]]
-  X[ind == TRUE, N := n[nfeatures]]
+  X[between(n_features, 1, m - 1), ind := TRUE]
+  X[ind == TRUE, p := p[n_features]]
+  X[ind == TRUE, N := n[n_features]]
   X[, ind := NULL]
 
   # Set column order and key table
-  data.table::setkey(X, nfeatures)
-  X[, ID := .I]
+  data.table::setkey(X, n_features)
+  X[, id_combination := .I]
   X[, N := as.integer(N)]
-  nms <- c("ID", "features", "nfeatures", "N", "shapley_weight", "p")
+  nms <- c("id_combination", "features", "n_features", "N", "shapley_weight", "p")
   data.table::setcolorder(X, nms)
 
   return(X)

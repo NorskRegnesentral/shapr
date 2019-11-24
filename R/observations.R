@@ -1,10 +1,10 @@
 #' Generate permutations of training data using test observations
 #'
 #' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
-#' observations for all feature combinations. The dimension equals \code{n_train x n_features}.
-#' @param S Integer matrix of dimension \code{n_combinations x n_features}, where \code{n_combinations}
-#' and \code{n_features} equals the total number of sampled/non-sampled feature combinations and
-#' the total number of unique features, respectively. Note that \code{n_features = ncol(x_train)}.
+#' observations for all feature combinations. The dimension equals \code{n_train x m}.
+#' @param S Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations}
+#' and \code{m} equals the total number of sampled/non-sampled feature combinations and
+#' the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.
 #' @param x_train Numeric matrix
 #' @param x_test Numeric matrix
 #' @param w_threshold Numeric vector of length 1, where \code{w_threshold > 0} and
@@ -81,7 +81,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   # Add keys
   dt_p <- data.table::as.data.table(dt_p)
   data.table::setnames(dt_p, colnames(x_train))
-  dt_p[, wcomb := dt_melt[["index_s"]]]
+  dt_p[, id_combination := dt_melt[["index_s"]]]
   dt_p[, w := dt_melt[["weight"]]]
 
   return(dt_p)
@@ -178,16 +178,16 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
     )
 
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[, keep := TRUE]
-  first_element <- dt[, tail(.I, 1), .(id, wcomb)][wcomb %in% c(1, 2^ncol(x$x_test)), V1]
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
+  first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, 2^ncol(x$x_test)), V1]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
   dt[first_element, keep := TRUE]
   dt <- dt[keep == TRUE][, keep := NULL]
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
@@ -212,17 +212,17 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
       n_samples = n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
-      p = ncol(x$x_test),
+      m = ncol(x$x_test),
       x_test = x$x_test[i, , drop = FALSE]
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
@@ -246,19 +246,19 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
       n_samples = n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
-      p = ncol(x$x_test),
+      m = ncol(x$x_test),
       x_test = x$x_test[i, , drop = FALSE],
       x_train = as.matrix(x$x_train),
       x_test_gaussian = x_test_gaussian[i, , drop = FALSE]
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
@@ -275,10 +275,10 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
 
   # Optimization is done only once for all distributions which conditions on
   # exactly k variables
-  these_k <- unique(x$X$nfeatures[-c(1, nrow(x$S))])
+  these_k <- unique(x$X$n_features[-c(1, nrow(x$S))])
 
   for (i in these_k) {
-    these_cond <- x$X[nfeatures == i, ID]
+    these_cond <- x$X[n_features == i, id_combination]
     cutters <- 1:x$n_samples_aicc
     no_cond <- length(these_cond)
     cond_samp <- cut(

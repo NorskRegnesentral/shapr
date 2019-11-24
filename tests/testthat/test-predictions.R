@@ -18,7 +18,7 @@ test_that("Test prediction", {
   explainer$W <- matrix(1, nrow = n_features + 1, ncol = n_combinations)
   dt <- dt_train[rep(1:.N, 4)]
   dt[, id := rep_len(1:n_xtest, .N)]
-  dt[, wcomb := rep_len(1:n_combinations, .N), id]
+  dt[, id_combination := rep_len(1:n_combinations, .N), id]
   dt[, w := runif(.N)]
   x <- prediction(dt, prediction_zero, explainer)
 
