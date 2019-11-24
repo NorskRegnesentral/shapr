@@ -31,7 +31,10 @@ library(shapr)
 
 > [Examples](#ex)
 
+> [Advanced usage](#advanced)
+
 > [Comparison to Lundberg & Lee's implementation](#compare)
+
 
 <a id="intro"></a>
 
@@ -46,7 +49,7 @@ Shapley values is regarded to be the only model-agnostic explanation method with
 foundation (@lundberg2017unified). Kernel SHAP is a computationally efficient approximation to 
 Shapley values in higher dimensions, but it assumes independent features. @aas2019explaining extend 
 the Kernel SHAP method to handle dependent features, resulting in more accurate approximations to 
-the true Shapley values. [See the paper for further details](https://arxiv.org/abs/1903.10464).
+the true Shapley values. [See the paper (@aas2019explaining) for further details](https://arxiv.org/abs/1903.10464).
 
 
 <a id="overview"></a>
@@ -128,6 +131,7 @@ propose three different approaches for estimating the conditional probabilities.
 also be combined, such that e.g. one method is used when conditioning on a small number of features, 
 while another method is used otherwise.
 
+<a id="gaussian"></a>
 
 ## Multivariate Gaussian Distribution Approach
 
@@ -144,6 +148,7 @@ using the training data. Using the resulting samples
 $\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K$, the conditional expectations be approximated 
 as in the Kernel SHAP. 
 
+<a id="copula"></a>
 
 ## Gaussian Copula Approach
 
@@ -161,6 +166,8 @@ benefit that we may use the analytical expressions for the conditionals
 $\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}$ and $\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}$. 
 Finally, we may convert the marginals back to their original distribution, and use the resulting 
 samples to approximate the conditional expectations as in the Kernel SHAP.  
+
+<a id="empirical"></a>
 
 ## Empirical Conditional Distribution Approach
 
@@ -301,9 +308,10 @@ One must also provide the object returned by `shapr` through the argument `expla
 The approach to use when computing the Shapley values must also be specified through the argument 
 `approach`, either equal to `"empirical"`, `"gaussian"` or `"copula"`, or a vector 
 of them. If a vector, a combined approach is used, and element `i` indicates the approach to 
-use when conditioning on `i` variables. Similarly, `type` is only applicable if the 
+use when conditioning on `i` variables, see [Combined approach](#combined) below.
+Similarly, `type` is only applicable if the 
 `approach = "empirical"`, and indicates the type of empirical approach to use. It is either 
-`"independence"`, `"fixed_sigma"` or `"gaussian"`.
+`"independence"`, `"fixed_sigma"` or `"gaussian"`. 
 
 When computing the kernel SHAP values by `explain`, the maximum number of samples to use in the 
 Monte Carlo integration for every conditional expectation is controlled by the argument `n_samples` 
@@ -315,6 +323,114 @@ If the empirical method is used, specific settings for that approach, like a fix
 of vector can be specified through the argument `sigma_vec`. If the `approach = "gaussian"`,
 we may specify the mean vector and covariance matrix of the data generating distribution by the 
 arguments `mu` and `cov_mat`. If not specified, they are estimated from the training data.  
+
+<a id="advanced"></a>
+
+<br>
+
+# Advanced usage
+
+
+<a id="combined"></a>
+
+## Combined approach
+
+In addition to let the user select one of the three aforementioned approaches for estimating the conditional distribution of the data (by letting `approach` be equal to either [`"gaussian"`](#gaussian), [`"copula"`](#copula) or  [`"empirical"`](#empirical)), the package allows the user to combine the three approaches. To simplify the usage, the flexibility is restricted so that the same approach is used when conditioning on the same number of features. This is also in line @aas2019explaining[, Section 3.4]. 
+
+The approach can be applied by passing a vector of length equal to the number of features in the model to the `approach` argument. Consider, e.g. a situation where you have trained a model the consists of 10 features, and you'd like to use the `"empirical"` approach when you condition on 1-3 feature, the `"copula"` approach when you condition on 4-5 features, and the `"gaussian"` approach when conditioning on 6 or more features. This can be applied by simply passing `approach = c("gaussian", rep("empirical", 4), rep("copula", 5))`, i.e. `approach[i]` determines which method you can to use when conditioning on `i` features. The below code exemplifies this approach for the four features, with `"empirical", "copula"` and `"gaussian"` when conditioning on respectively 1, 2 and 3-4 features (note that it does not matter what method you specify when conditioning on all features, as that equals the actual prediction regardless of the specified approach):
+
+```{r}
+# Use the combined approach
+explanation_combined <- explain(
+  x_test,
+  approach = c("empirical","copula","gaussian","gaussian"),
+  explainer = explainer,
+  prediction_zero = pred_zero
+)
+
+# Plot the resulting explanations for observations 1 and 6, excluding 
+# the no-covariate effect
+plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1,6))
+```
+
+
+
+## Explain custom models
+
+The package currently supportes explanation of the following models natively:
+
+* `lm`
+* `glm` 
+* `ranger`
+* `mgcv`
+* `xgboost`
+
+Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above.
+Moreover, essentially any feature dependent prediction model can be explained by the package by specifiying two simple additional functions to the class your model to be explained belongs to. The first class function is `model_type`, taking the model object as input, and  outputting whether the model is a (continuous response) `"regression"` model, or a (binary) `"classification"` model. The second is `predict_model`, taking the model and data (as a `matrix` or `data.frame`) as input and giving the corresponding prediction as numeric vector as output. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a `gbm` model using the `caret` package, and fitted to the same Boston data set as used above:
+
+
+```{r}
+# Fitting a gbm model using caret
+set.seed(825)
+model <- caret::train(
+  x_train,
+  y = y_train,
+  method = "gbm",
+  verbose = FALSE
+)
+
+# Create custom function of model_type for caret
+model_type.train <- function(x) {
+  ifelse(
+    x$modelType[[1]] == "Classification",
+    "classification",
+    "regression"
+  )
+}
+
+# Create custom function of predict_model for caret
+predict_model.train <- function(x, newdata) {
+
+  if (!requireNamespace('caret', quietly = TRUE)) {
+    stop('The caret package is required for predicting train models')
+  }
+  model_type <- model_type(x)
+
+  if (model_type == "classification") {
+
+    predict(x, newdata, type = "prob")
+  } else {
+
+    predict(x, newdata)
+  }
+}
+
+# Prepare the data for explanation
+explainer <- shapr(x_train, model)
+
+# Spedifying the phi_0, i.e. the expected prediction without any features
+p0 <- mean(y_train)
+
+# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
+# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
+explanation <- explain(
+  x_test,
+  explainer,
+  approach = "empirical",
+  prediction_zero = p0)
+
+# Plot the resulting explanations for observations 1 and 6, excluding 
+# the no-covariate effect. 
+plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1,6))
+# Note that this is an explanation of a different model that the xgboost model explained above!
+
+
+```
+
+
+
+
+
 
 <a id="compare"></a>
 
@@ -338,7 +454,7 @@ data, trained via `xgboost`. We specify that *all* training observations should 
 explaining all of the 6 test observations. To run the individual explanation method in the `shap` 
 Python library we use the `reticulate` `R`-package, allowing Python code to run within `R`. 
 As this requires installation of Python package, the comparison code and results is not included 
-in this vignette, but can be found [here](https://github.com/NorskRegnesentral/shapr/blob/master/inst/scripts/compare_lundberg.R).
+in this vignette, but can be found [here](https://github.com/NorskRegnesentral/shapr/blob/master/inst/scripts/compare_shap_python.R).
 As indicated by the (commented out) results in the file above both methods in our
 `R`-package give (up to numerical approximation error) identical results to the original 
 implementation in the Python  `shap` library. 
