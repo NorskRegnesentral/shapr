@@ -46,7 +46,8 @@ Suggests:
     roxygen2,
     MASS,
     ggplot2,
-    caret
+    caret,
+    gbm
 LinkingTo: 
     RcppArmadillo,
     Rcpp
