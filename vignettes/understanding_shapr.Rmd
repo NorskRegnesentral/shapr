@@ -335,9 +335,9 @@ arguments `mu` and `cov_mat`. If not specified, they are estimated from the trai
 
 ## Combined approach
 
-In addition to let the user select one of the three aforementioned approaches for estimating the conditional distribution of the data (by letting `approach` be equal to either [`"gaussian"`](#gaussian), [`"copula"`](#copula) or  [`"empirical"`](#empirical)), the package allows the user to combine the three approaches. To simplify the usage, the flexibility is restricted so that the same approach is used when conditioning on the same number of features. This is also in line @aas2019explaining[, Section 3.4]. 
+In addition to letting the user select one of the three aforementioned approaches for estimating the conditional distribution of the data (by letting `approach` equal either [`"gaussian"`](#gaussian), [`"copula"`](#copula) or  [`"empirical"`](#empirical)), the package allows the user to combine the three approaches. To simplify the usage, the flexibility is restricted such that the same approach is used when conditioning on the same number of features. This is also in line @aas2019explaining[, Section 3.4]. 
 
-The approach can be applied by passing a vector of length equal to the number of features in the model to the `approach` argument. Consider, e.g. a situation where you have trained a model the consists of 10 features, and you'd like to use the `"empirical"` approach when you condition on 1-3 feature, the `"copula"` approach when you condition on 4-5 features, and the `"gaussian"` approach when conditioning on 6 or more features. This can be applied by simply passing `approach = c("gaussian", rep("empirical", 4), rep("copula", 5))`, i.e. `approach[i]` determines which method you can to use when conditioning on `i` features. The below code exemplifies this approach for the four features, with `"empirical", "copula"` and `"gaussian"` when conditioning on respectively 1, 2 and 3-4 features (note that it does not matter what method you specify when conditioning on all features, as that equals the actual prediction regardless of the specified approach):
+The approach can be applied by passing a vector of length equal to the number of features in the model to the `approach` argument. Consider, e.g., a situation where you have trained a model that consists of 10 features, and you would like to use the `"empirical"` approach when you condition on 1-3 features, the `"copula"` approach when you condition on 4-5 features, and the `"gaussian"` approach when conditioning on 6 or more features. This can be applied by simply passing `approach = c(rep("empirical", 3), rep("copula", 2), rep("gaussian", 5))`, i.e. `approach[i]` determines which method to use when conditioning on `i` features. The below code exemplifies this approach for the four features, using `"empirical", "copula"` and `"gaussian"` when conditioning on respectively 1, 2 and 3-4 features. (Note that it does not matter what method that is specified when conditioning on all features, as that equals the actual prediction regardless of the specified approach.):
 
 ```{r}
 # Use the combined approach
@@ -357,7 +357,7 @@ plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1,6))
 
 ## Explain custom models
 
-The package currently supportes explanation of the following models natively:
+The package currently supports explanation of the following models natively:
 
 * `lm`
 * `glm` 
@@ -366,7 +366,7 @@ The package currently supportes explanation of the following models natively:
 * `xgboost`
 
 Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above.
-Moreover, essentially any feature dependent prediction model can be explained by the package by specifiying two simple additional functions to the class your model to be explained belongs to. The first class function is `model_type`, taking the model object as input, and  outputting whether the model is a (continuous response) `"regression"` model, or a (binary) `"classification"` model. The second is `predict_model`, taking the model and data (as a `matrix` or `data.frame`) as input and giving the corresponding prediction as numeric vector as output. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a `gbm` model using the `caret` package, and fitted to the same Boston data set as used above:
+Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple additional functions to the class your model belongs to. The first class function is `model_type`, taking the model object as input, and outputting a character indicating whether the model is a (continuous response) `"regression"` model, or a (binary) `"classification"` model. The second function is `predict_model`, taking the model and data (as a `matrix` or `data.frame`) as input and outputting the corresponding prediction as a numeric vector. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a `gbm` model using the `caret` package, fitted to the same Boston data set as used above:
 
 
 ```{r}
@@ -422,7 +422,7 @@ explanation <- explain(
 # Plot the resulting explanations for observations 1 and 6, excluding 
 # the no-covariate effect. 
 plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1,6))
-# Note that this is an explanation of a different model that the xgboost model explained above!
+# Note that this is an explanation of a different (but similar) model that the xgboost model explained above!
 
 
 ```
