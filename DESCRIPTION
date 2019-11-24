@@ -45,7 +45,8 @@ Suggests:
     pkgdown,
     roxygen2,
     MASS,
-    ggplot2
+    ggplot2,
+    caret
 LinkingTo: 
     RcppArmadillo,
     Rcpp
