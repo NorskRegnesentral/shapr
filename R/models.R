@@ -1,7 +1,7 @@
 #' Generate predictions for different model classes
 #'
-#' @description Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-#' \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous
+#' @description Performs prediction of models \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
+#' \code{\link[ranger]{ranger}}, \code{\link[mgcv]{gam}} and \code{\link[xgboost]{xgboost}} with binary or continuous
 #' response. See details for more information.
 #'
 #' @param x Model object for the model to be explained.
@@ -12,7 +12,7 @@
 #' \item \code{\link[stats]{lm}}
 #' \item \code{\link[stats]{glm}}
 #' \item \code{\link[ranger]{ranger}}
-#' \item \code{\link[mgcv]{mgcv}}
+#' \item \code{\link[mgcv]{gam}}
 #' \item \code{\link[xgboost]{xgboost}}
 #' }
 #'
@@ -109,10 +109,10 @@ predict_model.xgb.Booster <- function(x, newdata) {
 
 #' @rdname predict_model
 #' @export
-predict_model.mgcv <- function(x, newdata) {
+predict_model.gam <- function(x, newdata) {
 
   if (!requireNamespace("mgcv", quietly = TRUE)) {
-    stop("The mgcv package is required for predicting mgcv models")
+    stop("The mgcv package is required for predicting gam models")
   }
 
   predict(x, newdata)
@@ -194,7 +194,7 @@ model_type.ranger <- function(x) {
 
 #' @rdname model_type
 #' @export
-model_type.mgcv <- function(x) {
+model_type.gam <- function(x) {
   "regression"
 }
 
