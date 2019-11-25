@@ -71,7 +71,7 @@ Established methods and implementations for explaining predictions with Shapley 
 Sampling Values (@vstrumbelj2014explaining), SHAP/Kernel SHAP (@lundberg2017unified), and to some extent TreeSHAP 
 (@lundberg2018consistent), assume that the features are independent when approximating the Shapley values for prediction
 explanation. 
-This `R`-package implements methodology proposed by @aas2019explaining to explain predictions by accounting for the 
+The `R`-package `shapr` implements the methodology proposed by @aas2019explaining, where predictions are explained while accounting for the 
 dependence between the features, resulting in significantly more accurate approximations to the Shapley values. 
 
 
