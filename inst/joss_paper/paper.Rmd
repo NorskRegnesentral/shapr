@@ -79,7 +79,7 @@ dependence between the features, resulting in significantly more accurate approx
 # Implementation
 
 The package implements a variant of the Kernel SHAP (@lundberg2017unified) methodology for efficiently dealing with the 
-combinatorial problem related to Shapley value formula. 
+combinatorial problem related to the Shapley value formula. 
 The main methodological contribution of @aas2019explaining is three different methods to estimate certain conditional 
 expectation quantities, referred to as the `empirical`, `gaussian` and `copula` approach. Additionaly, the user has
 the option of combining the three approaches. 
@@ -110,5 +110,4 @@ This work was supported by the Norwegian Research Council grant 237718 (Big Insi
 
 
 # References
-
 
