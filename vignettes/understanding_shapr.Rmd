@@ -373,13 +373,13 @@ plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1,6))
 
 ## Explain custom models
 
-`shapr` currently supports explanation of the following models natively:
+`shapr` currently supports explanation of the following models classes natively:
 
-* `lm`
-* `glm` 
-* `ranger`
-* `mgcv`
-* `xgboost`
+* `stats::lm`
+* `stats::glm` 
+* `ranger::ranger`
+* `mgcv::gam`
+* `xgboost::xgb.Booster`
 
 Any continuous response regression model or binary classification model of these model classes, can be explained with 
 the package directly as exemplified above.
