@@ -323,7 +323,7 @@ need to pass a numeric value for the argument `prediction_zero`, which represent
 unseen data. We recommend setting this equal to the mean of the response, but other values, like the mean prediction 
 of a large test data set is also a possibility. If the empirical method is used, specific settings for that approach, 
 like a fixed $\sigma$ value of vector can be specified through the argument `sigma_vec`. See `?explain` for more 
-information. If the `approach = "gaussian"`, we may specify the mean vector and covariance matrix of the data 
+information. If `approach = "gaussian"`, we may specify the mean vector and covariance matrix of the data 
 generating distribution by the arguments `mu` and `cov_mat`. If not specified, they are estimated from the training data.  
 
 <a id="advanced"></a>
