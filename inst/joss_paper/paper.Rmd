@@ -99,7 +99,7 @@ Our implementation has methodological improvements to the Kernel SHAP methodolog
 In addition to our package's ability to account for the feature dependence (which the `shap` package does not), 
 basic tests suggest our implementation is about 3-4 times faster. 
 
-For more information about the underlying methodology of the package, we refer to the 
+For a detailed description of the underlying methodology of the package, we refer to the 
 [paper](https://arxiv.org/abs/1903.10464) (@aas2019explaining).
 For getting started with the package, we refer to the package vignette and introductory examples available at the 
 package's [pkgdown site](https://norskregnesentral.github.io/shapr/). 
