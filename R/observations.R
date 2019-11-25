@@ -1,10 +1,10 @@
 #' Generate permutations of training data using test observations
 #'
 #' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
-#' observations for all feature combinations. The dimension equals \code{n_train x n_features}.
-#' @param S Integer matrix of dimension \code{n_combinations x n_features}, where \code{n_combinations}
-#' and \code{n_features} equals the total number of sampled/non-sampled feature combinations and
-#' the total number of unique features, respectively. Note that \code{n_features = ncol(x_train)}.
+#' observations for all feature combinations. The dimension equals \code{n_train x m}.
+#' @param S Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations}
+#' and \code{m} equals the total number of sampled/non-sampled feature combinations and
+#' the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.
 #' @param x_train Numeric matrix
 #' @param x_test Numeric matrix
 #' @param w_threshold Numeric vector of length 1, where \code{w_threshold > 0} and
@@ -16,7 +16,25 @@
 #' @keywords internal
 #'
 #' @examples
-#' # TODO: Add simple example
+#' # Setup
+#' n <- 20 # Sample size of training data
+#' m <- 2 # Number of features
+#' sigma <- cov(matrix(MASS::mvrnorm(m * n, 0, 1), nrow = n))
+#'
+#' # Create training- and test data
+#' x_train <- as.matrix(MASS::mvrnorm(n, mu = rep(0, m), Sigma = sigma), ncol = m)
+#' x_test <- t(as.matrix(MASS::mvrnorm(1, mu = rep(0, m), sigma)))
+#' colnames(x_train) <- colnames(x_test) <- paste0("X", seq(m))
+#'
+#' # Binary matrix which represents the feature combinations
+#' S <- matrix(c(1, 0, 0, 1), nrow = m)
+#'
+#' # Kernel matrix
+#' W_kernel <- matrix(rnorm(n * ncol(S), mean = 1 / n, sd = 1 / n^2), nrow = n)
+#'
+#' # Generate permutations of training data using test observations
+#' r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
+#' str(r)
 #'
 #' @author Nikolai Sellereite
 observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n_samples = 1e3) {
@@ -25,7 +43,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   stopifnot(is.matrix(W_kernel) & is.matrix(S))
   stopifnot(nrow(W_kernel) == nrow(x_train))
   stopifnot(ncol(W_kernel) == nrow(S))
-  stopifnot(all(S %in% c(0,1)))
+  stopifnot(all(S %in% c(0, 1)))
 
   # Find weights for all combinations and training data
   dt <- data.table::as.data.table(W_kernel)
@@ -63,7 +81,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   # Add keys
   dt_p <- data.table::as.data.table(dt_p)
   data.table::setnames(dt_p, colnames(x_train))
-  dt_p[, wcomb := dt_melt[["index_s"]]]
+  dt_p[, id_combination := dt_melt[["index_s"]]]
   dt_p[, w := dt_melt[["weight"]]]
 
   return(dt_p)
@@ -71,16 +89,20 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 
 #' Generate data used for predictions
 #'
+#' @param x Explainer object. See \code{\link{explain}} for more information.
+#'
 #' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation.
 #'
-#' @param seed Positive integer. If \code{NULL} a random seed will be used.
+#' @param seed Positive integer. If \code{NULL} the seed will be inherited from the calling environment.
 #'
-#' @param index_features Positive integer vector. Only used internally.
+#' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
+#' \code{NULL} means all combinations. Only used internally.
+#'
+#' @param x_test_gaussian Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
+#' \code{approach = "empirical"}.
 #'
 #' @param ... Currently not used.
-#'
-#' @name prepare_data
 #'
 #' @export
 prepare_data <- function(x, ...) {
@@ -89,7 +111,6 @@ prepare_data <- function(x, ...) {
 }
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -157,21 +178,20 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
     )
 
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[, keep := TRUE]
-  first_element <- dt[, tail(.I, 1), .(id, wcomb)][wcomb %in% c(1, 2^ncol(x$x_test)), V1]
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
+  first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, 2^ncol(x$x_test)), V1]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
   dt[first_element, keep := TRUE]
   dt <- dt[keep == TRUE][, keep := NULL]
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -192,22 +212,21 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
       n_samples = n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
-      p = ncol(x$x_test),
+      m = ncol(x$x_test),
       x_test = x$x_test[i, , drop = FALSE]
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
 #' @rdname prepare_data
-#' @name prepare_data
 #' @export
 prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
@@ -227,19 +246,19 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
       n_samples = n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
-      p = ncol(x$x_test),
+      m = ncol(x$x_test),
       x_test = x$x_test[i, , drop = FALSE],
       x_train = as.matrix(x$x_train),
       x_test_gaussian = x_test_gaussian[i, , drop = FALSE]
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
@@ -256,10 +275,10 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
 
   # Optimization is done only once for all distributions which conditions on
   # exactly k variables
-  these_k <- unique(x$X$nfeatures[-c(1, nrow(x$S))])
+  these_k <- unique(x$X$n_features[-c(1, nrow(x$S))])
 
   for (i in these_k) {
-    these_cond <- x$X[nfeatures == i, ID]
+    these_cond <- x$X[n_features == i, id_combination]
     cutters <- 1:x$n_samples_aicc
     no_cond <- length(these_cond)
     cond_samp <- cut(

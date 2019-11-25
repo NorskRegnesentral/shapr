@@ -21,14 +21,19 @@ if \code{nsamples > ntrain}. Note that this solution is not optimal. Be careful 
 doing optimization over every test observation when \code{nsamples > ntrain}.}
 }
 \value{
-Data.frame. Contains \code{nsamples} rows of re-sampled train and test observations.
+data.frame
 }
 \description{
 Helper function to sample a combination of training and testing rows, which does not risk
 getting the same observation twice. Need to improve this help file.
 }
 \examples{
-# TODO: Add simple example
+ntrain <- 10
+ntest <- 10
+nsamples <- 7
+joint_sampling <- FALSE
+cnms <- c("samp_train", "samp_test")
+x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
 }
 \author{

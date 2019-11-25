@@ -14,7 +14,7 @@ Authors@R: c(
     person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
     person("Jens Christian", "Wahl", email = "Jens.Christian.Wahl@nr.no", role = "ctb"), 
     person("Camilla", "Lingjærde", role = "ctb"))
-URL: https://github.com/NorskRegnesentral/shapr
+URL: https://norskregnesentral.github.io/shapr/, https://github.com/NorskRegnesentral/shapr
 BugReports: https://github.com/NorskRegnesentral/shapr/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -22,6 +22,7 @@ LazyData: true
 ByteCompile: true
 Language: en-US
 RoxygenNote: 6.1.1
+Depends: R (>= 3.5.0)
 Imports: 
     stats,
     data.table,
@@ -34,7 +35,7 @@ Suggests:
     xgboost,
     mgcv,
     testthat, 
-    lintr,
+    lintr (>= 2.0.0),
     covr,
     maptree,
     corrplot,
