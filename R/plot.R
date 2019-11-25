@@ -1,15 +1,20 @@
 #' Plot of the Shapley value explanations
 #'
-#' Plots the individual prediction explanations. Uses facet_wrap of ggplot
+#' @description Plots the individual prediction explanations.
 #'
 #' @param x An \code{shapr} object. See \code{\link{explain}}.
 #' @param digits Integer. Number of significant digits to use in the feature description
-#' @param plot_phi0 Logical. Whether to include phi0 in the plot
-#' @param index_x_test Integer vector. Which of the test observations to plot
-#' @param top_k_features Integer. How many features to include in the plot
+#' @param plot_phi0 Logical. Whether to include \code{phi0} in the plot
+#' @param index_x_test Integer vector. Which of the test observations to plot. E.g. if you have
+#' explained 10 observations using \code{\link{explain}}, you can generate a plot for the first 5
+#' observations by setting \code{index_x_test = 1:5}.
+#' @param top_k_features Integer. How many features to include in the plot. E.g. if you have 15
+#' features in your model you can plot the 5 most important features, for each explanation, by setting
+#' \code{top_k_features = 1:5}.
 #' @param ... Currently not used.
 #'
-#' @inheritParams global_arguments
+#' @details See \code{vignette("understanding_shapr", package = "shapr")} for an example of
+#' how you should use the function.
 #'
 #' @return ggplot object with plots of the Shapley value explanations
 #'

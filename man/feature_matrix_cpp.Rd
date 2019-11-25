@@ -4,12 +4,12 @@
 \alias{feature_matrix_cpp}
 \title{Get feature matrix}
 \usage{
-feature_matrix_cpp(features, nfeatures)
+feature_matrix_cpp(features, m)
 }
 \arguments{
 \item{features}{List}
 
-\item{nfeatures}{Positive integer. Total number of features}
+\item{m}{Positive integer. Total number of features}
 }
 \value{
 Matrix
