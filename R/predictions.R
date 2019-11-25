@@ -31,6 +31,15 @@
 #' @author Nikolai Sellereite
 prediction <- function(dt, prediction_zero, explainer) {
 
+  # Checks on input data
+  id <- w <- id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
+  stopifnot(
+    data.table::is.data.table(dt),
+    !is.null(dt[["id"]]),
+    !is.null(dt[["id_combination"]]),
+    !is.null(dt[["w"]])
+  )
+
   # Setup
   cnms <- colnames(explainer$x_test)
   data.table::setkeyv(dt, c("id", "id_combination"))

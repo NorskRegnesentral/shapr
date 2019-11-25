@@ -44,6 +44,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   stopifnot(nrow(W_kernel) == nrow(x_train))
   stopifnot(ncol(W_kernel) == nrow(S))
   stopifnot(all(S %in% c(0, 1)))
+  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- NULL # due to NSE notes in R CMD check
 
   # Find weights for all combinations and training data
   dt <- data.table::as.data.table(W_kernel)
@@ -62,12 +63,12 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   # Remove training data with small weight
   knms <- c("index_s", "weight")
   data.table::setkeyv(dt_melt, knms)
-  dt_melt[, weight := weight / sum(weight), index_s]
+  dt_melt[, weight := weight / sum(weight), by = "index_s"]
   if (w_threshold < 1) {
-    dt_melt[, wcum := cumsum(weight), index_s]
+    dt_melt[, wcum := cumsum(weight), by = "index_s"]
     dt_melt <- dt_melt[wcum > 1 - w_threshold][, wcum := NULL]
   }
-  dt_melt <- dt_melt[, tail(.SD, n_samples), index_s]
+  dt_melt <- dt_melt[, tail(.SD, n_samples), by = "index_s"]
 
   # Generate data used for prediction
   dt_p <- observation_impute_cpp(
@@ -114,6 +115,8 @@ prepare_data <- function(x, ...) {
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+
   # Get distance matrix ----------------
   if (is.null(index_features)) {
     index_features <- x$X[, .I]
@@ -133,6 +136,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
   h_optim_DT <- as.data.table(h_optim_mat)
   data.table::setnames(h_optim_DT, paste0("Testobs_", seq(nrow(x$x_test))))
+  varcomb <- NULL # due to NSE notes in R CMD check
   h_optim_DT[, varcomb := .I]
   kernel_metric <- ifelse(x$type == "independence", x$type, "gaussian")
 
@@ -182,6 +186,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  V1 <- keep <- NULL # due to NSE notes in R CMD check
   dt[, keep := TRUE]
   first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, 2^ncol(x$x_test)), V1]
   dt[id_combination %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
@@ -194,6 +199,8 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
 #' @rdname prepare_data
 #' @export
 prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -230,6 +237,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 #' @export
 prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)
@@ -264,6 +272,14 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 
 #' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {
+
+  id_combination <- n_features <- NULL # due to NSE notes in R CMD check
+  stopifnot(
+    data.table::is.data.table(x$X),
+    !is.null(x$X[["id_combination"]]),
+    !is.null(x$X[["n_features"]])
+  )
+
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
     ntest = nrow(x$x_test),
@@ -302,7 +318,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
         these_test <- this.optimsamp$samp_test[these_inds]
 
         these_train <- 1:nrow(x$x_train)
-        these_test <- sample(x = these_test, size = nrow(x$x_train), replace = T)
+        these_test <- sample(x = these_test, size = nrow(x$x_train), replace = TRUE)
         current_cond_samp <- rep(unique(cond_samp), each = nrow(x$x_train))
 
         S <- x$S[this_cond, ]
