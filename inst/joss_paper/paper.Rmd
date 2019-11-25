@@ -101,7 +101,7 @@ basic tests suggest our implementation is about 3-4 times faster.
 
 For a detailed description of the underlying methodology of the package, we refer to the 
 [paper](https://arxiv.org/abs/1903.10464) (@aas2019explaining).
-For getting started with the package, we refer to the package vignette and introductory examples available at the 
+For getting started with the package, we recommend the user to go through the package vignette and introductory examples available at the 
 package's [pkgdown site](https://norskregnesentral.github.io/shapr/). 
 
 # Acknowledgement
