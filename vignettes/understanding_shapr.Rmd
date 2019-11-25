@@ -312,7 +312,7 @@ The test data given by `x`, whose predicted values we wish to explain, must be p
 `x` must be a `data.frame` or a `matrix,` where all elements are finite numerical values.
 One must also provide the object returned by `shapr` through the argument `explainer`. 
 The default approach when computing the Shapley values equals the empirical approach (i.e. `approach = "empirical"`). 
-If you'd like to use a different approach you'll need set `approach` equal to either `copula` or `gaussian`, or a 
+If you'd like to use a different approach you'll need to set `approach` equal to either `copula` or `gaussian`, or a 
 vector of them. If a vector, a combined approach is used, and element `i` indicates the approach to 
 use when conditioning on `i` variables. For more details see [Combined approach](#combined) below.
 
