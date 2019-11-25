@@ -94,7 +94,7 @@ and which method should be used to estimate the aforementioned conditional expec
 
 The majority of the code is plain `R`, while the most time consuming parts of the code has been coded in `C++` through 
 the `Rcpp` package for computational speed up. 
-Our implementation has some minor methodological improvements to the Kernel SHAP methodology as implemented in the 
+Our implementation has methodological improvements to the Kernel SHAP methodology as implemented in the 
 `Python` package `shap` (@shapPythonpackage). 
 In addition to our package's ability to account for the feature dependence (which the `shap` package does not), 
 basic tests suggest our implementation is about 3-4 times faster. 
@@ -110,4 +110,3 @@ This work was supported by the Norwegian Research Council grant 237718 (Big Insi
 
 
 # References
-
