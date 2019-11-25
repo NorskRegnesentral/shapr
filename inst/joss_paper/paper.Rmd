@@ -67,7 +67,7 @@ Shapley values (@Shapley53) is a concept from cooperative game theory used to fa
 cooperating players. 
 @kononenko2010efficient and later @lundberg2017unified proposed to use the Shapley value framework to explain 
 predictions by distributing the prediction value on the input features. 
-Unfortunately, established methods and implementations for explaining predictions with Shapley values like Shapley 
+Established methods and implementations for explaining predictions with Shapley values like Shapley 
 Sampling Values (@vstrumbelj2014explaining), SHAP/Kernel SHAP (@lundberg2017unified), and to some extent TreeSHAP 
 (@lundberg2018consistent), assume that the features are independent when approximating the Shapley values for prediction
 explanation. 
@@ -110,6 +110,5 @@ This work was supported by the Norwegian Research Council grant 237718 (Big Insi
 
 
 # References
-
 
 
