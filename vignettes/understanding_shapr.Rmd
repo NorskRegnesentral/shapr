@@ -105,13 +105,15 @@ expectations can be written as
 
 \begin{equation}
 \label{eq:CondExp}
-E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*] = \int f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S^*)\,p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)d\boldsymbol{x}_{\bar{S}},
+E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*] = 
+\int f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S^*)\,p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)d\boldsymbol{x}_{\bar{S}},
 \end{equation}
 
 the conditional distributions $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ are 
 needed to compute the contributions. The Kernel SHAP method of @lundberg2017unified assumes feature 
 independence, so that $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)=p(\boldsymbol{x}_{\bar{S}})$. 
-If samples $\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$, from $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ 
+If samples 
+$\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K$, from $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ 
 are available, the conditional expectation in above can be approximated by 
 
 \begin{equation}
@@ -139,7 +141,8 @@ The first approach arises from the assumption that the feature vector $\boldsymb
 multivariate Gaussian distribution with some mean vector $\boldsymbol{\mu}$ and covariance matrix 
 $\boldsymbol{\Sigma}$. Under this assumption, the conditional distribution 
 $p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)$ 
-is also multivariate Gaussian  $\text{N}_{|\bar{\mathcal{S}}|}(\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}},\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}})$, 
+is also multivariate Gaussian  
+$\text{N}_{|\bar{\mathcal{S}}|}(\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}},\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}})$, 
 with analytical expressions for the conditional mean vector $\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}$ 
 and covariance matrix $\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}$, see @aas2019explaining for details.
 Hence, instead of sampling from the marginal empirical distribution of $\boldsymbol{x}_{\bar{\mathcal{S}}}$ 
@@ -157,7 +160,8 @@ the marginals by their empirical distributions, and model the dependence structu
 copula. Assuming a Gaussian copula, we may convert the marginals of the training data to Gaussian 
 features using their empirical distributions, and then fit a multivariate Gaussian distribution to these. 
 
-To produce samples from the conditional distribution $p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)$, 
+To produce samples from the conditional distribution 
+$p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)$, 
 we convert the marginals of $\boldsymbol{x}_{\mathcal{S}}$ to Gaussians, sample from the conditional
 Gaussian distribution as above, and convert the marginals of the samples back to the original 
 distribution. Those samples are then used to approximate the sample from the resulting multivariate 
@@ -184,7 +188,9 @@ instance $\boldsymbol{x}^*$ to be explained. Instead of sampling from this weigh
 empirical distribution, @aas2019explaining suggests a more efficient variant, using only the $K$ 
 instances with the largest weights:
 
-$$v_{\text{condKerSHAP}}(\mathcal{S}) = \frac{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^{[k]}) f(\boldsymbol{x}_{\bar{\mathcal{S}}}^{[k]},\boldsymbol{x}_{\mathcal{S}}^*)}{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^{[k]})},$$ 
+$$v_{\text{condKerSHAP}}(\mathcal{S}) = \frac{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,
+\boldsymbol{x}^{[k]}) f(\boldsymbol{x}_{\bar{\mathcal{S}}}^{[k]},
+\boldsymbol{x}_{\mathcal{S}}^*)}{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^{[k]})},$$ 
 
 The number of samples $K$ to be used in the approximate prediction can for instance be chosen such 
 that the $K$ largest weights accounts for a fraction $\eta$, for example $0.9$, of the total weight. 
@@ -335,9 +341,21 @@ arguments `mu` and `cov_mat`. If not specified, they are estimated from the trai
 
 ## Combined approach
 
-In addition to letting the user select one of the three aforementioned approaches for estimating the conditional distribution of the data (by letting `approach` equal either [`"gaussian"`](#gaussian), [`"copula"`](#copula) or  [`"empirical"`](#empirical)), the package allows the user to combine the three approaches. To simplify the usage, the flexibility is restricted such that the same approach is used when conditioning on the same number of features. This is also in line @aas2019explaining[, Section 3.4]. 
+In addition to letting the user select one of the three aforementioned approaches for estimating the conditional 
+distribution of the data (by letting `approach` equal either [`"gaussian"`](#gaussian), [`"copula"`](#copula) or 
+[`"empirical"`](#empirical)), the package allows the user to combine the three approaches. To simplify the usage, 
+the flexibility is restricted such that the same approach is used when conditioning on the same number of features. 
+This is also in line @aas2019explaining[, Section 3.4]. 
 
-The approach can be applied by passing a vector of length equal to the number of features in the model to the `approach` argument. Consider, e.g., a situation where you have trained a model that consists of 10 features, and you would like to use the `"empirical"` approach when you condition on 1-3 features, the `"copula"` approach when you condition on 4-5 features, and the `"gaussian"` approach when conditioning on 6 or more features. This can be applied by simply passing `approach = c(rep("empirical", 3), rep("copula", 2), rep("gaussian", 5))`, i.e. `approach[i]` determines which method to use when conditioning on `i` features. The below code exemplifies this approach for the four features, using `"empirical", "copula"` and `"gaussian"` when conditioning on respectively 1, 2 and 3-4 features. (Note that it does not matter what method that is specified when conditioning on all features, as that equals the actual prediction regardless of the specified approach.):
+The approach can be applied by passing a vector of length equal to the number of features in the model to the `approach`
+argument. Consider, e.g., a situation where you have trained a model that consists of 10 features, and you would like to
+use the `"empirical"` approach when you condition on 1-3 features, the `"copula"` approach when you condition on 4-5 
+features, and the `"gaussian"` approach when conditioning on 6 or more features. This can be applied by simply passing 
+`approach = c(rep("empirical", 3), rep("copula", 2), rep("gaussian", 5))`, i.e. `approach[i]` determines which method to
+use when conditioning on `i` features. The below code exemplifies this approach for the four features, using 
+`"empirical", "copula"` and `"gaussian"` when conditioning on respectively 1, 2 and 3-4 features. (Note that it does not
+matter what method that is specified when conditioning on all features, as that equals the actual prediction regardless 
+of the specified approach.):
 
 ```{r}
 # Use the combined approach
@@ -365,8 +383,17 @@ The package currently supports explanation of the following models natively:
 * `mgcv`
 * `xgboost`
 
-Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above.
-Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple additional functions to the class your model belongs to. The first class function is `model_type`, taking the model object as input, and outputting a character indicating whether the model is a (continuous response) `"regression"` model, or a (binary) `"classification"` model. The second function is `predict_model`, taking the model and data (as a `matrix` or `data.frame`) as input and outputting the corresponding prediction as a numeric vector. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a `gbm` model using the `caret` package, fitted to the same Boston data set as used above:
+Any continuous response regression model or binary classification model of these model classes, can be explained with 
+the package directly as exemplified above.
+Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple 
+additional functions to the class your model belongs to. 
+The first class function is `model_type`, taking the model object as input, and outputting a character indicating 
+whether the model is a (continuous response) `"regression"` model, or a (binary) `"classification"` model. 
+The second function is `predict_model`, taking the model and data (as a `matrix` or `data.frame`) as input and 
+outputting the corresponding prediction as a numeric vector. 
+Once these two class functions are created, one can explain predictions from this model class as before.
+Below we exemplify this process by explaining a `gbm` model using the `caret` package, fitted to the same Boston data 
+set as used above:
 
 
 ```{r}
@@ -454,7 +481,8 @@ data, trained via `xgboost`. We specify that *all* training observations should 
 explaining all of the 6 test observations. To run the individual explanation method in the `shap` 
 Python library we use the `reticulate` `R`-package, allowing Python code to run within `R`. 
 As this requires installation of Python package, the comparison code and results is not included 
-in this vignette, but can be found [here](https://github.com/NorskRegnesentral/shapr/blob/master/inst/scripts/compare_shap_python.R).
+in this vignette, but can be found 
+[here](https://github.com/NorskRegnesentral/shapr/blob/master/inst/scripts/compare_shap_python.R).
 As indicated by the (commented out) results in the file above both methods in our
 `R`-package give (up to numerical approximation error) identical results to the original 
 implementation in the Python  `shap` library. 
