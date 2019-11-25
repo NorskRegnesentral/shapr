@@ -301,7 +301,7 @@ formula. Kernel SHAPs sampling based approach may be used by specifying `n_combi
 is the number of feature combinations to sample. If not specified, the exact method is used. 
 The computation time grows approximately exponentially with the number of samples. The training data 
 and the model whose predictions we wish to explain must be provided through 
-the arguments \code{x} and \code{model}. Note that `x` must be a `data.frame` or a `matrix`, and all
+the arguments `x` and `model`. Note that `x` must be a `data.frame` or a `matrix`, and all
 elements must be finite numerical values. Currently we do not support categorical features or 
 missing values.
  
