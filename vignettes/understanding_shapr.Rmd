@@ -313,7 +313,7 @@ The test data given by `x`, whose predicted values we wish to explain, must be p
 One must also provide the object returned by `shapr` through the argument `explainer`. 
 The default approach when computing the Shapley values is the empirical approach (i.e. `approach = "empirical"`). 
 If you'd like to use a different approach you'll need to set `approach` equal to either `copula` or `gaussian`, or a 
-vector of them. If a vector, a combined approach is used, and element `i` indicates the approach to 
+vector of them, with length equal to the number of features. If a vector, a combined approach is used, and element `i` indicates the approach to 
 use when conditioning on `i` variables. For more details see [Combined approach](#combined) below.
 
 When computing the kernel SHAP values by `explain`, the maximum number of samples to use in the 
