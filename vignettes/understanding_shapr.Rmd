@@ -418,7 +418,7 @@ model_type.train <- function(x) {
 # Create custom function of predict_model for caret
 predict_model.train <- function(x, newdata) {
 
-  if (!requireNamespace('caret', quietly = TRUE)) {
+  if (!requireNamespace("caret", quietly = TRUE)) {
     stop('The caret package is required for predicting train models')
   }
   model_type <- model_type(x)
@@ -490,4 +490,3 @@ implementation in the Python  `shap` library.
 <br>
 
 # References
-
