@@ -319,7 +319,7 @@ use when conditioning on `i` variables. For more details see [Combined approach]
 When computing the kernel SHAP values by `explain`, the maximum number of samples to use in the 
 Monte Carlo integration for every conditional expectation is controlled by the argument `n_samples` 
 (default equals `1000`). The computation time grows approximately linear with this number. You will also 
-need to pass a numeric value for the argument `prediction_zero`, which represents the prediction value of the 
+need to pass a numeric value for the argument `prediction_zero`, which represents the prediction value when not conditioning on any features.
 unseen data. We recommend setting this equal to the mean of the response, but other values, like the mean prediction 
 of a large test data set is also a possibility. If the empirical method is used, specific settings for that approach, 
 like a vector of fixed $\sigma$ values can be specified through the argument `sigma_vec`. See `?explain` for more 
