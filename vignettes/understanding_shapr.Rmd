@@ -49,7 +49,7 @@ Shapley values is regarded to be the only model-agnostic explanation method with
 foundation (@lundberg2017unified). Kernel SHAP is a computationally efficient approximation to 
 Shapley values in higher dimensions, but it assumes independent features. @aas2019explaining extend 
 the Kernel SHAP method to handle dependent features, resulting in more accurate approximations to 
-the true Shapley values. See the [paper](https://arxiv.org/abs/1903.10464)(@aas2019explaining) for further details.
+the true Shapley values. See the [paper](https://arxiv.org/abs/1903.10464) (@aas2019explaining) for further details.
 
 
 <a id="overview"></a>
@@ -439,7 +439,8 @@ explainer <- shapr(x_train, model)
 p0 <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
+# the empirical (conditional) distribution approach with 
+# bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(
   x_test,
   explainer,
@@ -449,11 +450,8 @@ explanation <- explain(
 # Plot the resulting explanations for observations 1 and 6, excluding 
 # the no-covariate effect. 
 plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1,6))
-# Note that this is an explanation of a different (but similar) model that the xgboost model explained above!
-
-
 ```
-
+Note that this explains a different (but similar) model than the above xgboost model!
 
 
 
