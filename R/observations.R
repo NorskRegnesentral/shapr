@@ -65,7 +65,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   data.table::setkeyv(dt_melt, knms)
   dt_melt[, weight := weight / sum(weight), by = "index_s"]
   if (w_threshold < 1) {
-    dt_melt[, wcum := cumsum(weight), index_s]
+    dt_melt[, wcum := cumsum(weight), by = "index_s"]
     dt_melt <- dt_melt[wcum > 1 - w_threshold][, wcum := NULL]
   }
   dt_melt <- dt_melt[, tail(.SD, n_samples), by = "index_s"]

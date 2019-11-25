@@ -135,16 +135,14 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   X[, is_duplicate := NULL]
 
   # Add shapley weight and number of combinations
-  ind <- NULL # due to NSE notes in R CMD check
   X[c(1, .N), shapley_weight := weight_zero_m]
   X[, N := 1]
-  X[between(n_features, 1, m - 1), ind := TRUE]
-  X[ind == TRUE, p := p[n_features]]
-  X[ind == TRUE, N := n[n_features]]
-  X[, ind := NULL]
+  ind <- X[, .I[between(n_features, 1, m - 1)]]
+  X[ind, p := p[n_features]]
+  X[ind, N := n[n_features]]
 
   # Set column order and key table
-  data.table::setkey(X, n_features)
+  data.table::setkeyv(X, "n_features")
   X[, id_combination := .I]
   X[, N := as.integer(N)]
   nms <- c("id_combination", "features", "n_features", "N", "shapley_weight", "p")
