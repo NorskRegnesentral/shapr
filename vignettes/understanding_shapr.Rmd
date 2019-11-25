@@ -419,7 +419,7 @@ model_type.train <- function(x) {
 predict_model.train <- function(x, newdata) {
 
   if (!requireNamespace("caret", quietly = TRUE)) {
-    stop('The caret package is required for predicting train models')
+    stop("The caret package is required for predicting train models")
   }
   model_type <- model_type(x)
 
