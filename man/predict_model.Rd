@@ -33,7 +33,7 @@ predict_model(x, newdata)
 Numeric
 }
 \description{
-Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
+Performs prediction of models \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
 \code{\link[ranger]{ranger}}, \code{\link[mgcv]{gam}} and \code{\link[xgboost]{xgboost}} with binary or continuous
 response. See details for more information.
 }
