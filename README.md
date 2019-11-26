@@ -43,9 +43,9 @@ This package implements the methodology of Aas, Jullum, and Løland
 
 The following methodology/features are currently implemented:
 
-  - Native support of explanation of predictions with the following
-    model classes `stats::glm`, `stats::lm`,`ranger::ranger`,
-    `xgboost::xgboost` and `mgcv::gam`.
+  - Native support of explanation of predictions from models fitted with
+    the following functions `stats::glm`, `stats::lm`,`ranger::ranger`,
+    `xgboost::xgboost`/`xgboost::xgb.train` and `mgcv::gam`.
   - Accounting for feature dependence assuming the features are Gaussian
     (Aas, Jullum, and Løland (2019)).
   - Accounting for feature dependence with a Gaussian copula (Gaussian
@@ -157,6 +157,11 @@ print(explanation$dt)
 
 # Finally we plot the resulting explanations
 plot(explanation)
+#> Registered S3 methods overwritten by 'ggplot2':
+#>   method         from 
+#>   [.quosures     rlang
+#>   c.quosures     rlang
+#>   print.quosures rlang
 ```
 
 <img src="man/figures/README-basic_example-1.png" width="100%" />
