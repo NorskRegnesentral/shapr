@@ -109,13 +109,22 @@ predict_model.xgb.Booster <- function(x, newdata) {
 
 #' @rdname predict_model
 #' @export
-predict_model.mgcv <- function(x, newdata) {
+predict_model.gam <- function(x, newdata) {
 
   if (!requireNamespace("mgcv", quietly = TRUE)) {
-    stop("The mgcv package is required for predicting mgcv models")
+    stop("The mgcv package is required for predicting gam models")
   }
 
-  predict(x, newdata)
+  if (x$family[[1]] == "binomial") {
+    as.vector(
+      predict(x, as.data.frame(newdata), type = "response")
+    )
+  } else {
+    as.vector(
+      predict(x, as.data.frame(newdata))
+    )
+  }
+
 }
 
 #' Define type of model
@@ -194,8 +203,12 @@ model_type.ranger <- function(x) {
 
 #' @rdname model_type
 #' @export
-model_type.mgcv <- function(x) {
-  "regression"
+model_type.gam <- function(x) {
+  ifelse(
+    x$family[[1]] == "binomial",
+    "classification",
+    "regression"
+  )
 }
 
 #' @rdname model_type
