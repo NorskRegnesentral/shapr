@@ -157,11 +157,6 @@ print(explanation$dt)
 
 # Finally we plot the resulting explanations
 plot(explanation)
-#> Registered S3 methods overwritten by 'ggplot2':
-#>   method         from 
-#>   [.quosures     rlang
-#>   c.quosures     rlang
-#>   print.quosures rlang
 ```
 
 <img src="man/figures/README-basic_example-1.png" width="100%" />
