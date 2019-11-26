@@ -1,19 +1,19 @@
 #' Generate predictions for different model classes
 #'
 #' @description Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-#' \code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous
-#' response. See details for more information.
+#' \code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and \code{\link[xgboost]{xgboost}} with binary or
+#' continuous response. See details for more information.
 #'
 #' @param x Model object for the model to be explained.
 #' @param newdata A data frame (or matrix) in which to look for variables with which to predict.
 #'
 #' @details The following models are currently supported:
 #' \itemize{
-#' \item \code{\link[stats]{lm}}
-#' \item \code{\link[stats]{glm}}
-#' \item \code{\link[ranger]{ranger}}
-#' \item \code{\link[mgcv]{mgcv}}
-#' \item \code{\link[xgboost]{xgboost}}
+#' \item \code{\link[stats:lm]{stats::lm}}
+#' \item \code{\link[stats:glm]{stats::glm}}
+#' \item \code{\link[ranger:ranger]{ranger::ranger}}
+#' \item \code{\link[mgcv:gam]{mgcv::gam}}
+#' \item \code{\link[xgboost:xgboost]{xgboost::xgboost/xgboost::xgb.train}}
 #' }
 #'
 #' The returned object \code{p} always satisfies the following properties:
@@ -109,13 +109,22 @@ predict_model.xgb.Booster <- function(x, newdata) {
 
 #' @rdname predict_model
 #' @export
-predict_model.mgcv <- function(x, newdata) {
+predict_model.gam <- function(x, newdata) {
 
   if (!requireNamespace("mgcv", quietly = TRUE)) {
-    stop("The mgcv package is required for predicting mgcv models")
+    stop("The mgcv package is required for predicting gam models")
   }
 
-  predict(x, newdata)
+  if (x$family[[1]] == "binomial") {
+    as.vector(
+      predict(x, as.data.frame(newdata), type = "response")
+    )
+  } else {
+    as.vector(
+      predict(x, as.data.frame(newdata))
+    )
+  }
+
 }
 
 #' Define type of model
@@ -194,8 +203,12 @@ model_type.ranger <- function(x) {
 
 #' @rdname model_type
 #' @export
-model_type.mgcv <- function(x) {
-  "regression"
+model_type.gam <- function(x) {
+  ifelse(
+    x$family[[1]] == "binomial",
+    "classification",
+    "regression"
+  )
 }
 
 #' @rdname model_type
