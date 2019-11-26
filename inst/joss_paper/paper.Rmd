@@ -85,7 +85,7 @@ The main methodological contribution of @aas2019explaining is three different me
 expectation quantities, referred to as the `empirical`, `gaussian` and `copula` approach. Additionaly, the user has
 the option of combining the three approaches. 
 The implementation supports explanation of the following models natively: `stats::lm`, `stats::glm`, `ranger::ranger`, 
-`mgcv::gam` and `xgboost::xgboost`. 
+`mgcv::gam` and `xgboost::xgboost`/`xgboost::xgb.train`. 
 Moreover, the package supports explanation of custom models by supplying two simple additional class functions.
 
 For reference, the package also includes a benchmark implementation of the original (independence assuming) version of
