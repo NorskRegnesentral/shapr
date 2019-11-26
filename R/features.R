@@ -62,6 +62,11 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     dt <- feature_exact(m, weight_zero_m)
   } else {
     dt <- feature_not_exact(m, n_combinations, weight_zero_m)
+    stopifnot(
+      data.table::is.data.table(dt),
+      !is.null(dt[["p"]])
+    )
+    p <- NULL # due to NSE notes in R CMD check
     dt[, p := NULL]
   }
 
@@ -70,6 +75,8 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
 
 #' @keywords internal
 feature_exact <- function(m, weight_zero_m = 10^6) {
+
+  features <- id_combination <- n_features <- shapley_weight <- N <- NULL # due to NSE notes in R CMD check
 
   dt <- data.table::data.table(id_combination = seq(2^m))
   combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
@@ -83,6 +90,8 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 
 #' @keywords internal
 feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
+
+  features <- id_combination <- n_features <- shapley_weight <- N <- NULL # due to NSE notes in R CMD check
 
   # Find weights for given number of features ----------
   n_features <- seq(m - 1)
@@ -106,10 +115,11 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   X[, n_features := as.integer(n_features)]
 
   # Sample specific set of features -------
-  data.table::setkey(X, n_features)
+  data.table::setkeyv(X, "n_features")
   feature_sample <- sample_features_cpp(m, X[["n_features"]])
 
   # Get number of occurences and duplicated rows-------
+  is_duplicate <- NULL # due to NSE notes in R CMD check
   r <- helper_feature(m, feature_sample)
   X[, is_duplicate := r[["is_duplicate"]]]
 
@@ -127,13 +137,12 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   # Add shapley weight and number of combinations
   X[c(1, .N), shapley_weight := weight_zero_m]
   X[, N := 1]
-  X[between(n_features, 1, m - 1), ind := TRUE]
-  X[ind == TRUE, p := p[n_features]]
-  X[ind == TRUE, N := n[n_features]]
-  X[, ind := NULL]
+  ind <- X[, .I[between(n_features, 1, m - 1)]]
+  X[ind, p := p[n_features]]
+  X[ind, N := n[n_features]]
 
   # Set column order and key table
-  data.table::setkey(X, n_features)
+  data.table::setkeyv(X, "n_features")
   X[, id_combination := .I]
   X[, N := as.integer(N)]
   nms <- c("id_combination", "features", "n_features", "N", "shapley_weight", "p")
@@ -144,6 +153,8 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 
 #' @keywords internal
 helper_feature <- function(m, feature_sample) {
+
+  sample_frequence <- is_duplicate <- NULL  # due to NSE notes in R CMD check
 
   x <- feature_matrix_cpp(feature_sample, m)
   dt <- data.table::data.table(x)
