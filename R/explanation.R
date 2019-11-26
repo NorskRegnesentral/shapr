@@ -117,6 +117,10 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   explainer$p <- predict_model(explainer$model, head(x, 1))
   explainer$p <- NULL
 
+  # Remove variables that were not used for training
+  ind_keep <- which(is.element(explainer$feature_labels, colnames(x)))
+  if (length(ind_keep) < ncol(x)) x <- x[, ind_keep]
+
   if (length(approach) > 1) {
     class(x) <- "combined"
   } else {

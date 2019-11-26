@@ -48,9 +48,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 
 #' Create an explainer object with Shapley weights for test data.
 #'
-#' @param x Numeric matrix or data.frame. Contains the variables used for training the model,
-#' i.e. the explanatory variables. Note that the response variable should not be part of
-#' \code{x}, and that \code{ncol(x)} should be equal to the number of features in the model.
+#' @param x Numeric matrix or data.frame. Contains the data used for training the model.
 #'
 #' @param model The model whose predictions we want to explain. See \code{\link{predict_model}}
 #' for more information about which models \code{shapr} supports natively.
@@ -58,6 +56,9 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' @param n_combinations Integer. The number of feature combinations to sample. If \code{NULL},
 #' the exact method is used and all combinations are considered. The maximum number of
 #' combinations equals \code{2^ncol(x)}.
+#'
+#' @param feature_labels Character. The label of the features used for training the model. If \code{NULL} it is
+#' assumed that the features are represented by all columns in \code{x}.
 #'
 #' @return Named list that contains the following items:
 #' \describe{
@@ -75,7 +76,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
 #' }
 #'
-#' In addition to the items above \code{model} and \code{n_combinations} is also present in the
+#' In addition to the items above \code{model}, \code{feature_labels} and \code{n_combinations} is also present in the
 #' returned object.
 #'
 #' @export
@@ -117,17 +118,30 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' # 16 (which equals 2^4)
 shapr <- function(x,
                   model,
-                  n_combinations = NULL) {
+                  n_combinations = NULL,
+                  feature_labels = NULL) {
 
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
     stop("x should be a matrix or a dataframe.")
   }
 
+  # Checks input argument
+  if (is.null(feature_labels)) {
+    feature_labels <- colnames(x)
+    warning(
+      paste0(
+        "You did not pass a value for 'feature_labels'. It is\n",
+        "therefore assumed that the explanatory variables used\n",
+        "for training the model is represented by all columns in 'x'."
+      )
+    )
+  }
+
   # Setup
   explainer <- as.list(environment())
   explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
-  explainer$n_features <- ncol(x)
+  explainer$n_features <- length(feature_labels)
   explainer$model_type <- model_type(model)
 
   # Checks model and features
@@ -135,6 +149,10 @@ shapr <- function(x,
 
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)
+
+  # Removes variables that are not included in model   --------------
+  cnms_remove <- setdiff(colnames(x), feature_labels)
+  if (length(cnms_remove) > 0) x_train[, (cnms_remove) := NULL]
 
   # Get all combinations ----------------
   dt_combinations <- feature_combinations(
@@ -160,6 +178,7 @@ shapr <- function(x,
   explainer$W <- weighted_mat
   explainer$X <- dt_combinations
   explainer$x_train <- x_train
+  explainer$feature_labels <- feature_labels
   explainer$x <- NULL
   explainer$p <- NULL
 
