@@ -100,7 +100,7 @@ and which method should be used to estimate the aforementioned conditional expec
 
 The majority of the code is plain `R` (@rCore), while the most time consuming operations has been coded in `C++` 
 through the `Rcpp` package (@rcppRpackage) for computational speed up. 
-For RAM efficiency and computational seed up of typical bookeeping operations in `R`, we utilize the `data.table` 
+For RAM efficiency and computational speed up of typical bookeeping operations in `R`, we utilize the `data.table` 
 package (@datatableRpackage) which does operations "by reference", i.e. without memory copies.
 
 <!--In addition to our package's ability to account for the feature dependence (which the `shap` package does not), 
