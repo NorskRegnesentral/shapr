@@ -6,7 +6,7 @@
 \alias{model_type.lm}
 \alias{model_type.glm}
 \alias{model_type.ranger}
-\alias{model_type.mgcv}
+\alias{model_type.gam}
 \alias{model_type.xgb.Booster}
 \title{Define type of model}
 \usage{
@@ -20,7 +20,7 @@ model_type(x)
 
 \method{model_type}{ranger}(x)
 
-\method{model_type}{mgcv}(x)
+\method{model_type}{gam}(x)
 
 \method{model_type}{xgb.Booster}(x)
 }

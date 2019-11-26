@@ -7,7 +7,7 @@
 \alias{predict_model.glm}
 \alias{predict_model.ranger}
 \alias{predict_model.xgb.Booster}
-\alias{predict_model.mgcv}
+\alias{predict_model.gam}
 \title{Generate predictions for different model classes}
 \usage{
 predict_model(x, newdata)
@@ -22,7 +22,7 @@ predict_model(x, newdata)
 
 \method{predict_model}{xgb.Booster}(x, newdata)
 
-\method{predict_model}{mgcv}(x, newdata)
+\method{predict_model}{gam}(x, newdata)
 }
 \arguments{
 \item{x}{Model object for the model to be explained.}
