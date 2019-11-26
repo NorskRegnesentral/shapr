@@ -319,13 +319,15 @@ explanation_combined &lt;-<span class="st"> </span><span class="kw"><a href="../
 <div id="explain-custom-models" class="section level2">
 <h2 class="hasAnchor">
 <a href="#explain-custom-models" class="anchor"></a>Explain custom models</h2>
-<p><code>shapr</code> currently supports explanation of the following models classes natively:</p>
+<p><code>shapr</code> currently supports explanation of predictions from models fitted with the following functions:</p>
 <ul>
 <li><code><a href="https://rdrr.io/r/stats/lm.html">stats::lm</a></code></li>
 <li><code><a href="https://rdrr.io/r/stats/glm.html">stats::glm</a></code></li>
 <li><code><a href="https://rdrr.io/pkg/ranger/man/ranger.html">ranger::ranger</a></code></li>
 <li><code><a href="https://rdrr.io/pkg/mgcv/man/gam.html">mgcv::gam</a></code></li>
-<li><code>xgboost::xgb.Booster</code></li>
+<li>
+<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost::xgboost</a></code>/<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost::xgb.train</a></code>
+</li>
 </ul>
 <p>Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above. Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple additional functions to the class your model belongs to. The first class function is <code>model_type</code>, taking the model object as input, and outputting a character indicating whether the model is a (continuous response) <code>"regression"</code> model, or a (binary) <code>"classification"</code> model. The second function is <code>predict_model</code>, taking the model and data (as a <code>matrix</code> or <code>data.frame</code>) as input and outputting the corresponding prediction as a numeric vector. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a <code>gbm</code> model using the <code>caret</code> package, fitted to the same Boston data set as used above.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Fitting a gbm model using caret</span>

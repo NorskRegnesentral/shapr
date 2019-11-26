@@ -37,8 +37,8 @@
 
 <meta property="og:title" content="Generate predictions for different model classes — predict_model" />
 <meta property="og:description" content="Performs prediction of response lm, glm,
-ranger and xgboost with binary or continuous
-response. See details for more information." />
+ranger,  mgcv::gam and xgboost with binary or
+continuous response. See details for more information." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -129,8 +129,8 @@ response. See details for more information." />
 
     <div class="ref-description">
     <p>Performs prediction of response <code><a href='https://rdrr.io/r/stats/lm.html'>lm</a></code>, <code><a href='https://rdrr.io/r/stats/glm.html'>glm</a></code>,
-<code><a href='https://rdrr.io/pkg/ranger/man/ranger.html'>ranger</a></code> and <code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost</a></code> with binary or continuous
-response. See details for more information.</p>
+<code><a href='https://rdrr.io/pkg/ranger/man/ranger.html'>ranger</a></code>,  <code><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>mgcv::gam</a></code> and <code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost</a></code> with binary or
+continuous response. See details for more information.</p>
     </div>
 
     <pre class="usage"><span class='fu'>predict_model</span>(<span class='no'>x</span>, <span class='no'>newdata</span>)
@@ -172,11 +172,11 @@ response. See details for more information.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The following models are currently supported:</p><ul>
-<li><p><code><a href='https://rdrr.io/r/stats/lm.html'>lm</a></code></p></li>
-<li><p><code><a href='https://rdrr.io/r/stats/glm.html'>glm</a></code></p></li>
-<li><p><code><a href='https://rdrr.io/pkg/ranger/man/ranger.html'>ranger</a></code></p></li>
-<li><p><code><a href='https://rdrr.io/pkg/mgcv/man/mgcv-package.html'>mgcv</a></code></p></li>
-<li><p><code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost</a></code></p></li>
+<li><p><code><a href='https://rdrr.io/r/stats/lm.html'>stats::lm</a></code></p></li>
+<li><p><code><a href='https://rdrr.io/r/stats/glm.html'>stats::glm</a></code></p></li>
+<li><p><code><a href='https://rdrr.io/pkg/ranger/man/ranger.html'>ranger::ranger</a></code></p></li>
+<li><p><code><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>mgcv::gam</a></code></p></li>
+<li><p><code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost::xgboost/xgboost::xgb.train</a></code></p></li>
 </ul>
 
 <p>The returned object <code>p</code> always satisfies the following properties:</p><ul>
