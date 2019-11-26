@@ -5,8 +5,10 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
 
   nms <- colnames(explainer$x_train)
 
-  cutoff[, 1] <- cutoff[, 1] - 10
-  cutoff[, 4] <- cutoff[, 4] + 10
+  if(!is.null(dim(cutoff))){
+    cutoff[, 1] <- cutoff[, 1] - 10
+    cutoff[, 4] <- cutoff[, 4] + 10
+  }
 
   set.seed(1)
   sim <- mvrnorm(n = N_shapley, mu = mu, Sigma = Sigma)
@@ -23,6 +25,8 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
   dt <- data.table(dt)
 
   setnames(dt, c("V1", "V2", "V3"), nms)
+
+  prop <- c(table(dt$feat1) / N_shapley, table(dt$feat3) / N_shapley, table(dt$feat3) / N_shapley  )
 
   dt[, feat1 := as.factor(feat1)]
   dt[, feat2 := as.factor(feat2)]
@@ -46,9 +50,9 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
   joint_prob_dt <- joint_prob_dt0[, ..nms][, lapply(.SD, as.factor)]
   joint_prob_dt <- cbind(joint_prob_dt, joint_prob_dt0[, .(N)])
 
-  joint_prob_dt[, p := mn]
+  # joint_prob_dt[, p := mn]
 
-  return(joint_prob_dt)
+  return(list(joint_prob_dt, mn, prop))
 }
 
 marg_prob <- function(joint_prob_dt, explainer){
@@ -92,7 +96,6 @@ marg_prob <- function(joint_prob_dt, explainer){
             mat[, feat[2]] <- as.factor(mat[, feat[2]])
           }
 
-
         } else if (ncol(v) == 3){
 
           v1 <- as.numeric(v[[1]])
@@ -112,7 +115,7 @@ marg_prob <- function(joint_prob_dt, explainer){
 
         }
       }
-      mat <- cbind(mat, data.frame(p = joint_prob_dt$p[1:nrow(mat)]))
+      # mat <- cbind(mat, data.frame(p = joint_prob_dt$p[1:nrow(mat)]))
       marg_list[[i]] <- mat
     }
   }
@@ -175,14 +178,14 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer){
 
 
 ## function to calculate conditional expectation
-cond_expec <- function(x_test, cond_list, explainer){ ## removed prediction_zero
+cond_expec <- function(x_test, cond_list, explainer, prediction_zero){ ## removed prediction_zero
 
   nms <- colnames(explainer$x_train)
 
   cond_expec <- NULL
   for(i in 1:nrow(explainer$S)){
     if(i == 1){
-      cond_expec <- c(cond_expec, cond_list[[2]]$p[1])
+      cond_expec <- c(cond_expec, prediction_zero) #
     } else if(i > 1){ ## this is the conditional distribution we're interested in i.e f(V2, V3 | V1) = f(V1, V2, V3) / f(V1)
       feat <- nms[as.logical(explainer$S[i, ])]
       v <- x_test[as.logical(explainer$S[i, ])]
@@ -229,13 +232,13 @@ true_Kshap <- function(explainer, cond_expec, x_test){
 }
 
 
-linear_Kshap <- function(x_test_onehot, beta, dt){
+linear_Kshap <- function(x_test_onehot, beta, dt, prop){
 
-  prop <- c(0, apply(dt[, .(feat12, feat13)], 2, sum) / nrow(dt), 0, apply(dt[, .(feat22, feat23)], 2, sum) / nrow(dt), 0, apply(dt[, .(feat32, feat33)], 2, sum) / nrow(dt))
+  # prop <- c(0, apply(dt[, .(feat12, feat13)], 2, sum) / nrow(dt), 0, apply(dt[, .(feat22, feat23)], 2, sum) / nrow(dt), 0, apply(dt[, .(feat32, feat33)], 2, sum) / nrow(dt))
 
-  for(i in c(1, 4, 7)){
-    prop[i] <- 1 - prop[i + 1] - prop[i + 2]
-  }
+  # for(i in c(1, 4, 7)){
+  #   prop[i] <- 1 - prop[i + 1] - prop[i + 2]
+  # }
   phi0 <- NULL
   phi0 <- c(phi0, beta[1] + sum(beta[2:10] * prop))
 
@@ -340,16 +343,16 @@ simulate_data <- function(parameters_list){
 
   ## 6. calculate the true shapley values
   joint_prob_dt <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod) ## 1 min for 10 mill
-  marg_list <- marg_prob(joint_prob_dt, explainer)
-  cond_list <- cond_prob(marg_list, joint_prob_dt, explainer)
-  cond_expec_mat <- t(apply(x_test, 1, FUN = cond_expec, cond_list, explainer))
+  marg_list <- marg_prob(joint_prob_dt[[1]], explainer)
+  cond_list <- cond_prob(marg_list, joint_prob_dt[[1]], explainer)
+  cond_expec_mat <- t(apply(x_test, 1, FUN = cond_expec, cond_list, explainer, prediction_zero = joint_prob_dt[[2]]))
   true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
 
   ## 7. calculate true shapley under linear model and independence assumption (only if correlation is 0)
   x_test_onehot <- dt[(1:N_testing), .(feat12, feat13, feat22, feat23, feat32, feat33)]
   if(explainer$model_type == 'regression'){
     if(parameters_list$corr == 0){
-      true_linear <- t(apply(x_test_onehot, 1, FUN = linear_Kshap, beta, dt))
+      true_linear <- t(apply(x_test_onehot, 1, FUN = linear_Kshap, beta, dt, prop = joint_prob_dt[[3]]))
     } else{
       true_linear <- NULL
     }

@@ -12,21 +12,16 @@ source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/sha
 #                                    beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
 #                                    beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
 #                         fit_mod = "regression",
-#                         methods = c("empirical","empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "empirical","empirical_ind", "gaussian", "ctree_onehot", "ctree"
+#                         methods = c("empirical"), # "empirical","empirical_ind", "gaussian", "ctree_onehot", "ctree"
 #                         name = 'corr0, mu0',
-#                         cutoff = NULL, # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
-#                         N_training = 10000,
+#                         cutoff = c(-200, 0, 1, 200), # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
+#                         N_training = 1000,
 #                         N_testing = 1000)
 #
 # ll <- simulate_data(parameters_list)
-# # 1:21 - 1:40
-# print(Sys.time())
-#
-#
-# ll$true_shapley
-# ll$true_linear
-#
-# MAE(ll$true_shapley, ll$true_linear) # 0.0056
+# head(ll$true_shapley)
+# head(ll$true_linear)
+# MAE(ll$true_shapley, ll$true_linear) # 0.00095050 for 10000 obs / 0.0009436
 # MAE(ll$true_shapley, ll$methods[['gaussian']]$dt_sum) # 0.01729
 # MAE(ll$true_shapley, ll$methods[['empirical']]$dt_sum) # 0.0179
 # MAE(ll$true_shapley, ll$methods[['ctree']]$dt) # 0.016423
@@ -44,15 +39,15 @@ parameters_list[[1]] <- list(Sigma_diag = 1,
                              beta = c(1, 1, 2, 3, 1, 2, 3, 1, 2, 3),
                              N_shapley = 1000000,
                              noise = FALSE,
-                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, noise, beta){
+                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
                                return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
                                         beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
-                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + noise)},
+                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
                              fit_mod = "regression",
-                             methods = c("empirical", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
+                             methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
                              name = 'corr0',
-                             cutoff = NULL,
-                             N_training = 10000,
+                             cutoff = c(-200, 0, 1, 200),
+                             N_training = 1000,
                              N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
 
 parameters_list[[2]] <- list(Sigma_diag = 1,
@@ -61,15 +56,15 @@ parameters_list[[2]] <- list(Sigma_diag = 1,
                              beta = c(1, 1, 2, 3, 1, 2, 3, 1, 2, 3),
                              N_shapley = 1000000,
                              noise = FALSE,
-                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, noise, beta){
+                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
                                return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
                                         beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
-                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + noise)},
+                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
                              fit_mod = "regression",
-                             methods = c("empirical", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
+                             methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
                              name = 'corr1',
-                             cutoff = NULL,
-                             N_training = 10000,
+                             cutoff = c(-200, 0, 1, 200),
+                             N_training = 1000,
                              N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
 
 parameters_list[[3]] <- list(Sigma_diag = 1,
@@ -78,15 +73,15 @@ parameters_list[[3]] <- list(Sigma_diag = 1,
                              beta = c(1, 1, 2, 3, 1, 2, 3, 1, 2, 3),
                              N_shapley = 1000000,
                              noise = FALSE,
-                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, noise, beta){
+                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
                                return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
                                         beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
-                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + noise)},
+                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
                              fit_mod = "regression",
-                             methods = c("empirical", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
+                             methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
                              name = 'corr2',
-                             cutoff = NULL,
-                             N_training = 10000,
+                             cutoff = c(-200, 0, 1, 200),
+                             N_training = 1000,
                              N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
 
 parameters_list[[4]] <- list(Sigma_diag = 1,
@@ -95,15 +90,15 @@ parameters_list[[4]] <- list(Sigma_diag = 1,
                              beta = c(1, 1, 2, 3, 1, 2, 3, 1, 2, 3),
                              N_shapley = 1000000,
                              noise = FALSE,
-                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, noise, beta){
+                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
                                return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
                                         beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
-                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + noise)},
+                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
                              fit_mod = "regression",
-                             methods = c("empirical", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
+                             methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
                              name = 'corr5',
-                             cutoff = NULL,
-                             N_training = 10000,
+                             cutoff = c(-200, 0, 1, 200),
+                             N_training = 1000,
                              N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
 
 
@@ -113,21 +108,109 @@ parameters_list[[5]] <- list(Sigma_diag = 1,
                              beta = c(1, 1, 2, 3, 1, 2, 3, 1, 2, 3),
                              N_shapley = 1000000,
                              noise = FALSE,
-                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, noise, beta){
+                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
                                return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
                                         beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
-                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + noise)},
+                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
                              fit_mod = "regression",
-                             methods = c("empirical", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
+                             methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
                              name = 'corr9',
-                             cutoff = NULL,
-                             N_training = 10000,
+                             cutoff = c(-200, 0, 1, 200),
+                             N_training = 1000,
                              N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
 
 
+parameters_list[[6]] <- list(Sigma_diag = 1,
+                             corr = 0.01,
+                             mu = c(0, 0, 0),
+                             beta = c(1, 1, 2, 3, 1, 2, 3, 1, 2, 3),
+                             N_shapley = 1000000,
+                             noise = FALSE,
+                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
+                               return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
+                                        beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
+                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
+                             fit_mod = "regression",
+                             methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
+                             name = 'corr01',
+                             cutoff = c(-200, 0, 1, 200),
+                             N_training = 1000,
+                             N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
+
+parameters_list[[7]] <- list(Sigma_diag = 1,
+                             corr = 0,
+                             mu = c(0, 0, 0),
+                             beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
+                             N_shapley = 1000000,
+                             noise = FALSE,
+                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
+                               return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
+                                        beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
+                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
+                             fit_mod = "regression",
+                             methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
+                             name = 'corr0_diffbeta',
+                             cutoff = c(-200, 0, 1, 200),
+                             N_training = 1000,
+                             N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
+
+parameters_list[[8]] <- list(Sigma_diag = 1,
+                             corr = 0.1,
+                             mu = c(0, 0, 0),
+                             beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
+                             N_shapley = 1000000,
+                             noise = FALSE,
+                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
+                               return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
+                                        beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
+                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
+                             fit_mod = "regression",
+                             methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
+                             name = 'corr1_diffbeta',
+                             cutoff = c(-200, 0, 1, 200),
+                             N_training = 1000,
+                             N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
+
+parameters_list[[9]] <- list(Sigma_diag = 1,
+                             corr = 0.5,
+                             mu = c(0, 0, 0),
+                             beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
+                             N_shapley = 1000000,
+                             noise = FALSE,
+                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
+                               return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
+                                        beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
+                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
+                             fit_mod = "regression",
+                             methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
+                             name = 'corr5_diffbeta',
+                             cutoff = c(-200, 0, 1, 200),
+                             N_training = 1000,
+                             N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
+
+parameters_list[[10]] <- list(Sigma_diag = 1,
+                             corr = 0.9,
+                             mu = c(0, 0, 0),
+                             beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
+                             N_shapley = 1000000,
+                             noise = FALSE,
+                             response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
+                               return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
+                                        beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
+                                        beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)},
+                             fit_mod = "regression",
+                             methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
+                             name = 'corr9_diffbeta',
+                             cutoff = c(-200, 0, 1, 200),
+                             N_training = 1000,
+                             N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
+
+tm <- Sys.time()
 all_methods <- list()
 for(i in 1:length(parameters_list)){
   all_methods[[i]] <- simulate_data(parameters_list[[i]])
+  nm = paste('22_11_19_results_', i,".rds", sep = "")
+  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/", nm, sep = ""))
 }
 
 MAE_truth <- NULL
@@ -156,8 +239,14 @@ for(i in 1:length(parameters_list)){
 
 results <- data.frame(MAE_methods, MAE_methods_names, MAE_parameters)
 
-saveRDS(results, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/21_11_19results.rds")
+saveRDS(results, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/22_11_19results.rds")
 
 library(ggplot2)
-ggplot(data = results, aes(y = MAE_methods, x = MAE_parameters, col = as.factor(MAE_methods_names))) + geom_point()
+p1 <- ggplot(data = results, aes(y = MAE_methods, x = MAE_parameters, col = as.factor(MAE_methods_names))) + geom_point()
 
+ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/categorical_shapley/22_11_19_MAE.pdf", plot = p1, device = NULL, path = NULL,
+       scale = 1, width = 25, height = 30, units = "cm",
+       dpi = 300, limitsize = TRUE)
+
+tm2 <- Sys.time()
+print(tm2 - tm)
