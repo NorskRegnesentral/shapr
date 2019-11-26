@@ -67,41 +67,47 @@ Shapley values (@Shapley53) is a concept from cooperative game theory used to fa
 cooperating players. 
 @kononenko2010efficient and later @lundberg2017unified proposed to use the Shapley value framework to explain 
 predictions by distributing the prediction value on the input features. 
-Unfortunately, established methods and implementations for explaining predictions with Shapley values like Shapley 
+Established methods and implementations for explaining predictions with Shapley values like Shapley 
 Sampling Values (@vstrumbelj2014explaining), SHAP/Kernel SHAP (@lundberg2017unified), and to some extent TreeSHAP 
 (@lundberg2018consistent), assume that the features are independent when approximating the Shapley values for prediction
 explanation. 
-This `R`-package implements methodology proposed by @aas2019explaining to explain predictions by accounting for the 
-dependence between the features, resulting in significantly more accurate approximations to the Shapley values. 
+The `R`-package `shapr` implements the methodology proposed by @aas2019explaining, where predictions are explained while
+accounting for the dependence between the features, resulting in significantly more accurate approximations to the 
+Shapley values. 
 
 
 
 # Implementation
 
-The package implements a variant of the Kernel SHAP (@lundberg2017unified) methodology for efficiently dealing with the 
-combinatorial problem related to Shapley value formula. 
+`shapr` implements a variant of the Kernel SHAP (@lundberg2017unified) methodology for efficiently dealing with the 
+combinatorial problem related to the Shapley value formula.
 The main methodological contribution of @aas2019explaining is three different methods to estimate certain conditional 
 expectation quantities, referred to as the `empirical`, `gaussian` and `copula` approach. Additionaly, the user has
 the option of combining the three approaches. 
 The implementation supports explanation of the following models natively: `stats::lm`, `stats::glm`, `ranger::ranger`, 
 `mgcv::gam` and `xgboost::xgboost`. 
 Moreover, the package supports explanation of custom models by supplying two simple additional class functions.
+For reference, the package also includes a benchmark implementation of the original (independence assuming) version of
+Kernel SHAP (@lundberg2017unified), providing identical results to the "official" Kernel SHAP `Python` package `shap` 
+(@shapPythonpackage). 
+This allows the user to easily see the effect and importance of accounting for the feature dependence.
 
 The user interface in the package has largely been adopted from the `R`-package `lime` (@limeRpackage). 
 The user first sets up the explainability framework for the model to explain with the `shapr` function. 
 Then the output from `shapr` is provided to the `explain` function, along with the data to explain the prediction for
 and which method should be used to estimate the aforementioned conditional expectations.
 
-The majority of the code is plain `R`, while the most time consuming parts of the code has been coded in `C++` through 
-the `Rcpp` package for computational speed up. 
-Our implementation has some minor methodological improvements to the Kernel SHAP methodology as implemented in the 
-`Python` package `shap` (@shapPythonpackage). 
-In addition to our package's ability to account for the feature dependence (which the `shap` package does not), 
-basic tests suggest our implementation is about 3-4 times faster. 
+The majority of the code is plain `R` (@rCore), while the most time consuming operations has been coded in `C++` 
+through the `Rcpp` package (@rcppRpackage) for computational speed up. 
+For RAM efficiency and computational seed up of typical bookeeping operations in `R`, we utilize the `data.table` 
+package (@datatableRpackage) which does operations "by reference", i.e. without memory copies.
 
-For more information about the underlying methodology of the package, we refer to the 
+<!--In addition to our package's ability to account for the feature dependence (which the `shap` package does not), 
+basic tests suggest our implementation is about 3-4 times faster. -->
+
+For a detailed description of the underlying methodology of the package, we refer to the 
 [paper](https://arxiv.org/abs/1903.10464) (@aas2019explaining).
-For getting started with the package, we refer to the package vignette and introductory examples available at the 
+For getting started with the package, we recommend the user to go through the package vignette and introductory examples available at the 
 package's [pkgdown site](https://norskregnesentral.github.io/shapr/). 
 
 # Acknowledgement
@@ -110,6 +116,3 @@ This work was supported by the Norwegian Research Council grant 237718 (Big Insi
 
 
 # References
-
-
-
