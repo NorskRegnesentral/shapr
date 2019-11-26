@@ -112,6 +112,9 @@ test_that("Test predict_model (binary classification)", {
     expect_true(
       length(predict_model(l[[i]], x_test)) == nrow(x_test)
     )
+    expect_true(
+      all(data.table::between(predict_model(l[[i]], x_test), 0, 1))
+    )
 
     # Input equals matrix
     expect_true(
@@ -125,6 +128,9 @@ test_that("Test predict_model (binary classification)", {
     )
     expect_true(
       length(predict_model(l[[i]], as.matrix(x_test))) == nrow(x_test)
+    )
+    expect_true(
+      all(data.table::between(predict_model(l[[i]], as.matrix(x_test)), 0, 1))
     )
 
     # Check that output is equal
