@@ -87,6 +87,7 @@ the option of combining the three approaches.
 The implementation supports explanation of the following models natively: `stats::lm`, `stats::glm`, `ranger::ranger`, 
 `mgcv::gam` and `xgboost::xgboost`. 
 Moreover, the package supports explanation of custom models by supplying two simple additional class functions.
+
 For reference, the package also includes a benchmark implementation of the original (independence assuming) version of
 Kernel SHAP (@lundberg2017unified), providing identical results to the "official" Kernel SHAP `Python` package `shap` 
 (@shapPythonpackage). 
