@@ -115,7 +115,9 @@ predict_model.gam <- function(x, newdata) {
     stop("The mgcv package is required for predicting gam models")
   }
 
-  predict(x, newdata)
+  as.vector(
+    predict(x, as.data.frame(newdata))
+  )
 }
 
 #' Define type of model
@@ -195,7 +197,11 @@ model_type.ranger <- function(x) {
 #' @rdname model_type
 #' @export
 model_type.gam <- function(x) {
-  "regression"
+  ifelse(
+    x$family[[1]] == "binomial",
+    "classification",
+    "regression"
+  )
 }
 
 #' @rdname model_type

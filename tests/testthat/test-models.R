@@ -20,7 +20,8 @@ test_that("Test predict_model (regression)", {
     stats::lm(str_formula, data = train_df),
     stats::glm(str_formula, data = train_df),
     ranger::ranger(str_formula, data = train_df),
-    xgboost::xgboost(data = as.matrix(x_train), label = y_train, nrounds = 3, verbose = FALSE)
+    xgboost::xgboost(data = as.matrix(x_train), label = y_train, nrounds = 3, verbose = FALSE),
+    mgcv::gam(as.formula(str_formula), data = train_df)
   )
 
   # Tests
@@ -84,6 +85,7 @@ test_that("Test predict_model (binary classification)", {
   # List of models
   l <- list(
     suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")),
+    suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial")),
     ranger::ranger(str_formula, data = train_df, probability = TRUE),
     xgboost::xgboost(
       data = as.matrix(x_train),
