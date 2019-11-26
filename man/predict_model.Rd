@@ -33,18 +33,18 @@ predict_model(x, newdata)
 Numeric
 }
 \description{
-Performs prediction of models \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-\code{\link[ranger]{ranger}}, \code{\link[mgcv]{gam}} and \code{\link[xgboost]{xgboost}} with binary or continuous
-response. See details for more information.
+Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
+\code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and \code{\link[xgboost]{xgboost}} with binary or
+continuous response. See details for more information.
 }
 \details{
 The following models are currently supported:
 \itemize{
-\item \code{\link[stats]{lm}}
-\item \code{\link[stats]{glm}}
-\item \code{\link[ranger]{ranger}}
-\item \code{\link[mgcv]{gam}}
-\item \code{\link[xgboost]{xgboost}}
+\item \code{\link[stats:lm]{stats::lm}}
+\item \code{\link[stats:glm]{stats::glm}}
+\item \code{\link[ranger:ranger]{ranger::ranger}}
+\item \code{\link[mgcv:gam]{mgcv::gam}}
+\item \code{\link[xgboost:xgboost]{xgboost::xgboost/xgboost::xgb.train}}
 }
 
 The returned object \code{p} always satisfies the following properties:
