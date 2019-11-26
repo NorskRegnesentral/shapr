@@ -153,6 +153,7 @@ shapr <- function(x,
   # Removes variables that are not included in model   --------------
   cnms_remove <- setdiff(colnames(x), feature_labels)
   if (length(cnms_remove) > 0) x_train[, (cnms_remove) := NULL]
+  data.table::setcolorder(x_train, feature_labels)
 
   # Get all combinations ----------------
   dt_combinations <- feature_combinations(
