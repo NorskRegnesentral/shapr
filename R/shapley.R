@@ -129,7 +129,7 @@ shapr <- function(x,
   # Checks input argument
   if (is.null(feature_labels)) {
     feature_labels <- colnames(x)
-    warning(
+    message(
       paste0(
         "You did not pass a value for 'feature_labels'. It is\n",
         "therefore assumed that the explanatory variables used\n",
