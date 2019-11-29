@@ -24,7 +24,6 @@ arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat,
     // Define variables
     int ntrain = Xtrain_mat.n_rows;
     int ntest = Xtest_mat.n_rows;
-    int m = Xtrain_mat.n_cols;
     int p = featureList.size();
 
 
@@ -41,7 +40,6 @@ arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat,
     double acc;
     uint32_t icol, irow, ii;
     double S_scale;
-    double rowsum;
     IntegerVector temp;
 
     for (int k = 0; k < p; ++k){
