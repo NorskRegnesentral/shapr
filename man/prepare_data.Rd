@@ -9,14 +9,18 @@
 \usage{
 prepare_data(x, ...)
 
-\method{prepare_data}{empirical}(x, seed = 1, n_samples = 1000,
-  index_features = NULL, ...)
+\method{prepare_data}{empirical}(x, seed = 1, n_samples = 1000, index_features = NULL, ...)
 
-\method{prepare_data}{gaussian}(x, seed = 1, n_samples = 1000,
-  index_features = NULL, ...)
+\method{prepare_data}{gaussian}(x, seed = 1, n_samples = 1000, index_features = NULL, ...)
 
-\method{prepare_data}{copula}(x, x_test_gaussian = 1, seed = 1,
-  n_samples = 1000, index_features = NULL, ...)
+\method{prepare_data}{copula}(
+  x,
+  x_test_gaussian = 1,
+  seed = 1,
+  n_samples = 1000,
+  index_features = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{Explainer object. See \code{\link{explain}} for more information.}
