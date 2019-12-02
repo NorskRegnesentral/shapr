@@ -62,7 +62,7 @@ jobs:
         run: |
           mkdir -p ~/.R
           # Fill with appropriate flag statements
-          cat <<- EOF > .R/Makevars
+          cat <<- EOF > ~/.R/Makevars
           # clang: start
           CFLAGS=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
           CCFLAGS=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
