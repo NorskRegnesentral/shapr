@@ -55,8 +55,10 @@ jobs:
       - name: Check compiler
         if: matrix.config.os == 'macOS-latest'
         run: |
-          which xcode-select
           gcc --version
+          which gcc
+          clang --version
+          which clang
       - name: Update paths
         if: matrix.config.os == 'macOS-latest'
         run: |
