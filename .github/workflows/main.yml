@@ -73,6 +73,8 @@ jobs:
           SHLIB_CXXLDFLAGS+=-Wl,-rpath,${R_HOME}/lib ${R_HOME}/lib/libc++abi.1.dylib
           # clang: end
           EOF
+          touch ~/.Renviron
+          echo 'PATH="/usr/local/clang7/bin:${PATH}"' >> ~/.Renviron
       - name: Install dependencies
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
 
