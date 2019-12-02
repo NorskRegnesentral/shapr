@@ -88,4 +88,18 @@ test_that("Test functions in explanation.R", {
 
   # Checking that all explain objects produce the same as before
   expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
+
+  # Checks that an error is returned
+  expect_error(
+    explain(1, explainer, approach = "gaussian", prediction_zero = p0)
+  )
+  expect_error(
+    explain(list(), explainer, approach = "gaussian", prediction_zero = p0)
+  )
+  expect_error(
+    explain(x_test, explainer, approach = "Gaussian", prediction_zero = p0)
+  )
+  expect_error(
+    explain(x_test, explainer, approach = rep("gaussian", ncol(x_test) + 1), prediction_zero = p0)
+  )
 })
