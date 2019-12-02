@@ -52,22 +52,6 @@ jobs:
           Rscript -e "install.packages('remotes')" -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
-
-      - name: Set paths for MacOS
-        if: matrix.config.os == 'macOS-latest'
-        run: |
-          mkdir -p ~/.R
-          cat <<- EOF > ~/.R/Makevars
-          # clang: start
-          CFLAGS=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
-          CCFLAGS=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
-          CXXFLAGS=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
-          CPPFLAGS=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include $(CXX_TYPE)
-          SHLIB_CXXLDFLAGS+=-Wl,-rpath,${R_HOME}/lib ${R_HOME}/lib/libc++abi.1.dylib
-          # clang: end
-          EOF
-          touch ~/.Renviron
-          echo 'PATH="/usr/local/clang7/bin:${PATH}"' >> ~/.Renviron
       - name: Install dependencies
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
 
