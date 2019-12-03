@@ -20,7 +20,7 @@ jobs:
         - { os: windows-latest, args: "--no-manual"}
         - { os: macOS-latest}
         - { os: ubuntu-16.04, cran: "https://demo.rstudiopm.com/all/__linux__/xenial/latest", args: "--no-manual" }
-        - { os: ubuntu-latest, cran: "http://cran.rstudio.com", args: "--no-manual" }
+        - { os: ubuntu-latest, cran: "https://demo.rstudiopm.com/all/__linux__/bionic/latest", args: "--no-manual" }
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -45,13 +45,13 @@ jobs:
           key: ${{ runner.os }}-r-${{ matrix.r-version }}-${{ hashFiles('DESCRIPTION') }}
 
       - name: Install system dependencies
-        if: matrix.config.os == 'ubuntu-16.04'
-        env:
-          RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
+        if: runner.os == 'Linux'
         run: |
-          Rscript -e "install.packages('remotes')" -e "remotes::install_github('r-hub/sysreqs')"
-          sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
-          sudo -s eval "$sysreqs"
+            sudo apt-get update && apt-get install -y --no-install-recommends \
+            libxml2-dev \
+            libssl-dev \
+            libcurl4-openssl-dev
+
       - name: Install dependencies
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
 
