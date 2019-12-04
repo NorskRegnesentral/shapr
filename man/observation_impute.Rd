@@ -4,8 +4,14 @@
 \alias{observation_impute}
 \title{Generate permutations of training data using test observations}
 \usage{
-observation_impute(W_kernel, S, x_train, x_test, w_threshold = 0.7,
-  n_samples = 1000)
+observation_impute(
+  W_kernel,
+  S,
+  x_train,
+  x_test,
+  w_threshold = 0.7,
+  n_samples = 1000
+)
 }
 \arguments{
 \item{W_kernel}{Numeric matrix. Contains all nonscaled weights between training and test

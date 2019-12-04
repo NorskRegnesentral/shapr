@@ -4,8 +4,12 @@
 \alias{feature_combinations}
 \title{Define feature combinations, and fetch additional information about each unique combination}
 \usage{
-feature_combinations(m, exact = TRUE, n_combinations = 200,
-  weight_zero_m = 10^6)
+feature_combinations(
+  m,
+  exact = TRUE,
+  n_combinations = 200,
+  weight_zero_m = 10^6
+)
 }
 \arguments{
 \item{m}{Positive integer. Total number of features.}
