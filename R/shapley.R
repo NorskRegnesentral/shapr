@@ -58,7 +58,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' combinations equals \code{2^ncol(x)}.
 #'
 #' @param feature_labels Character. The label of the features used for training the model. Only applicable if
-#' you are using a custom model.
+#' Only applicable if you are using a custom model. Otherwise the features in use are extracted from \code{model}.
 #'
 #' @return Named list that contains the following items:
 #' \describe{
