@@ -244,3 +244,52 @@ model_type.xgb.Booster <- function(x) {
     "regression"
   )
 }
+
+features <- function(x) {
+  UseMethod("model_type")
+}
+
+#' @rdname features
+features.default <- function(x) {
+
+}
+
+#' @rdname features
+features.lm <- function(x) {
+  nms <- names(x$coefficients)
+  if (nms[1] == "(Intercept)") {
+    tail(nms, -1)
+  } else {
+    nms
+  }
+}
+
+#' @rdname features
+features.glm <- function(x) {
+  nms <- names(x$coefficients)
+  if (nms[1] == "(Intercept)") {
+    tail(nms, -1)
+  } else {
+    nms
+  }
+}
+
+#' @rdname features
+features.ranger <- function(x) {
+  x$forest$independent.variable.names
+}
+
+#' @rdname features
+features.gam <- function(x) {
+  nms <- names(x$coefficients)
+  if (nms[1] == "(Intercept)") {
+    tail(nms, -1)
+  } else {
+    nms
+  }
+}
+
+#' @rdname features
+features.xgb.Booster <- function(x) {
+  x$feature_names
+}
