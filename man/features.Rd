@@ -27,8 +27,8 @@ features(x, feature_labels = NULL)
 \arguments{
 \item{x}{Numeric matrix or data.frame. Contains the data used for training the model.}
 
-\item{feature_labels}{Character. The label of the features used for training the model. Only applicable if
-you are using a custom model.}
+\item{feature_labels}{Character vector. The labels/names of the features used for training the model.
+Only applicable if you are using a custom model. Otherwise the features in use are extracted from \code{model}.}
 }
 \description{
 Fetch feature labels from model object
