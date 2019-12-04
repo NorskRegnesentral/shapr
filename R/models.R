@@ -288,7 +288,7 @@ features.ranger <- function(x, feature_labels) {
   if (is.null(x$forest)) {
     stop(
       paste0(
-        "\nIt looks the like model was fitted without saving the forest. Please set\n",
+        "\nIt looks like the model was fitted without saving the forest. Please set\n",
         "write.forest = TRUE when fitting a model using ranger::ranger()."
       )
     )
