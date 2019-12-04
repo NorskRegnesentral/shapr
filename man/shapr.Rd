@@ -16,8 +16,8 @@ for more information about which models \code{shapr} supports natively.}
 the exact method is used and all combinations are considered. The maximum number of
 combinations equals \code{2^ncol(x)}.}
 
-\item{feature_labels}{Character. The label of the features used for training the model. If \code{NULL} it is
-assumed that the features are represented by all columns in \code{x}.}
+\item{feature_labels}{Character. The label of the features used for training the model. Only applicable if
+you are using a custom model.}
 }
 \value{
 Named list that contains the following items:

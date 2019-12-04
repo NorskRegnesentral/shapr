@@ -249,14 +249,15 @@ test_that("Test features (regression)", {
   x_train <- tail(Boston, -6)
   y_train <- tail(Boston[, y_var], -6)
   str_formula <- "y_train ~ lstat + rm + dis + indus"
+  train_df <- cbind(y_train, x_train)
 
   # List of models
   l <- list(
-    stats::lm(str_formula, data = x_train),
-    stats::glm(str_formula, data = x_train),
-    ranger::ranger(str_formula, data = x_train),
+    stats::lm(str_formula, data = train_df),
+    stats::glm(str_formula, data = train_df),
+    ranger::ranger(str_formula, data = train_df),
     xgboost::xgboost(data = as.matrix(x_train[, x_var]), label = y_train, nrounds = 3, verbose = FALSE),
-    mgcv::gam(as.formula(str_formula), data = x_train)
+    mgcv::gam(as.formula(str_formula), data = train_df)
   )
 
   for (i in seq_along(l)) {
@@ -277,12 +278,13 @@ test_that("Test features (binary classification)", {
   x_train <- tail(iris, -6)
   y_train <- tail(iris[, y_var], -6)
   str_formula <- "y_train ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width"
+  train_df <- cbind(y_train, x_train)
 
   # List of models
   l <- list(
-    suppressWarnings(stats::glm(str_formula, data = x_train, family = "binomial")),
-    suppressWarnings(mgcv::gam(as.formula(str_formula), data = x_train, family = "binomial")),
-    ranger::ranger(str_formula, data = x_train, probability = TRUE),
+    suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")),
+    suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial")),
+    ranger::ranger(str_formula, data = train_df, probability = TRUE),
     xgboost::xgboost(
       data = as.matrix(x_train[, x_var]),
       label = as.integer(y_train) - 1,

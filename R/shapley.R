@@ -57,8 +57,8 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' the exact method is used and all combinations are considered. The maximum number of
 #' combinations equals \code{2^ncol(x)}.
 #'
-#' @param feature_labels Character. The label of the features used for training the model. If \code{NULL} it is
-#' assumed that the features are represented by all columns in \code{x}.
+#' @param feature_labels Character. The label of the features used for training the model. Only applicable if
+#' you are using a custom model.
 #'
 #' @return Named list that contains the following items:
 #' \describe{
@@ -126,16 +126,14 @@ shapr <- function(x,
     stop("x should be a matrix or a dataframe.")
   }
 
-  # Checks input argument
-  if (is.null(feature_labels)) {
-    feature_labels <- features(x = model, NULL)
-  }
-
   # Setup
   explainer <- as.list(environment())
   explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
-  explainer$n_features <- length(feature_labels)
   explainer$model_type <- model_type(model)
+
+  # Checks input argument
+  feature_labels <- features(model, NULL)
+  explainer$n_features <- length(feature_labels)
 
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)

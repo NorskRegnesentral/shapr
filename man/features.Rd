@@ -14,21 +14,21 @@ features(x, feature_labels = NULL)
 
 \method{features}{default}(x, feature_labels)
 
-\method{features}{lm}(x)
+\method{features}{lm}(x, feature_labels)
 
-\method{features}{glm}(x)
+\method{features}{glm}(x, feature_labels)
 
-\method{features}{ranger}(x)
+\method{features}{ranger}(x, feature_labels)
 
-\method{features}{gam}(x)
+\method{features}{gam}(x, feature_labels)
 
-\method{features}{xgb.Booster}(x)
+\method{features}{xgb.Booster}(x, feature_labels)
 }
 \arguments{
 \item{x}{Numeric matrix or data.frame. Contains the data used for training the model.}
 
-\item{feature_labels}{Character. The label of the features used for training the model. If \code{NULL} it is
-assumed that the features are represented by all columns in \code{x}.}
+\item{feature_labels}{Character. The label of the features used for training the model. Only applicable if
+you are using a custom model.}
 }
 \description{
 Fetch feature labels from model object

@@ -266,20 +266,22 @@ features.default <- function(x, feature_labels) {
       )
     )
   }
+
+  feature_labels
 }
 
 #' @rdname features
-features.lm <- function(x) {
+features.lm <- function(x, feature_labels) {
   tail(all.vars(x$terms), -1)
 }
 
 #' @rdname features
-features.glm <- function(x) {
+features.glm <- function(x, feature_labels) {
   tail(all.vars(x$terms), -1)
 }
 
 #' @rdname features
-features.ranger <- function(x) {
+features.ranger <- function(x, feature_labels) {
 
   nms <- x$forest$independent.variable.names
 
@@ -295,11 +297,11 @@ features.ranger <- function(x) {
 }
 
 #' @rdname features
-features.gam <- function(x) {
+features.gam <- function(x, feature_labels) {
   tail(all.vars(x$terms), -1)
 }
 
 #' @rdname features
-features.xgb.Booster <- function(x) {
+features.xgb.Booster <- function(x, feature_labels) {
   x$feature_names
 }
