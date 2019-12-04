@@ -128,14 +128,7 @@ shapr <- function(x,
 
   # Checks input argument
   if (is.null(feature_labels)) {
-    feature_labels <- colnames(x)
-    message(
-      paste0(
-        "You did not pass a value for 'feature_labels'. It is\n",
-        "therefore assumed that the explanatory variables used\n",
-        "for training the model is represented by all columns in 'x'."
-      )
-    )
+    feature_labels <- features(x = model, NULL)
   }
 
   # Setup
@@ -144,9 +137,6 @@ shapr <- function(x,
   explainer$n_features <- length(feature_labels)
   explainer$model_type <- model_type(model)
 
-  # Checks model and features
-  explainer$p <- predict_model(model, head(x))
-
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)
 
@@ -154,6 +144,9 @@ shapr <- function(x,
   cnms_remove <- setdiff(colnames(x), feature_labels)
   if (length(cnms_remove) > 0) x_train[, (cnms_remove) := NULL]
   data.table::setcolorder(x_train, feature_labels)
+
+  # Checks model and features
+  explainer$p <- predict_model(model, head(x))
 
   # Get all combinations ----------------
   dt_combinations <- feature_combinations(

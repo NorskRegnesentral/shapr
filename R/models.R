@@ -245,16 +245,29 @@ model_type.xgb.Booster <- function(x) {
   )
 }
 
-features <- function(x) {
-  UseMethod("model_type")
+#' Fetch feature labels from model object
+#'
+#' @inheritParams shapr
+#'
+#' @keywords internal
+features <- function(x, feature_labels = NULL) {
+  UseMethod("features", x)
 }
 
 #' @rdname features
-features.default <- function(x) {
+features.default <- function(x, feature_labels) {
 
+  if (is.null(feature_labels)) {
+    stop(
+      paste0(
+        "\nIt looks like you are using a custom model, and forgot to pass\n",
+        "a valid value for the argument feature_labels when calling shapr().\n",
+        "See ?shapr::shapr for more information about the argument."
+      )
+    )
+  }
 }
 
-x <- l[[3]]
 #' @rdname features
 features.lm <- function(x) {
   tail(all.vars(x$terms), -1)
@@ -273,7 +286,8 @@ features.ranger <- function(x) {
   if (is.null(x$forest)) {
     stop(
       paste0(
-        "write.forest needs to be equal to TRUE"
+        "\nIt looks the like model was fitted without saving the forest. Please set\n",
+        "write.forest = TRUE when fitting a model using ranger::ranger()."
       )
     )
   }
@@ -282,12 +296,7 @@ features.ranger <- function(x) {
 
 #' @rdname features
 features.gam <- function(x) {
-  nms <- names(x$coefficients)
-  if (nms[1] == "(Intercept)") {
-    tail(nms, -1)
-  } else {
-    nms
-  }
+  tail(all.vars(x$terms), -1)
 }
 
 #' @rdname features
