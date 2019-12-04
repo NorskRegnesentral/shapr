@@ -57,7 +57,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' the exact method is used and all combinations are considered. The maximum number of
 #' combinations equals \code{2^ncol(x)}.
 #'
-#' @param feature_labels Character. The label of the features used for training the model. Only applicable if
+#' @param feature_labels Character vector. The labels/names of the features used for training the model.
 #' Only applicable if you are using a custom model. Otherwise the features in use are extracted from \code{model}.
 #'
 #' @return Named list that contains the following items:
