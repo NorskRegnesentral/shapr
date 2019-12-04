@@ -12,7 +12,7 @@ test_that("Test predict_model (regression)", {
   x_train <- tail(Boston[, x_var], -6)
   y_train <- tail(Boston[, y_var], -6)
   x_test <- head(Boston[, x_var], 6)
-  str_formula <- "y_train ~ lstat + rm + dis + indus"
+  str_formula <- "y_train ~ lstat + rm + dis + indus + indus*dis"
   train_df <- cbind(y_train, x_train)
 
   # List of models

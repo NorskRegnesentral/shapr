@@ -254,29 +254,30 @@ features.default <- function(x) {
 
 }
 
+x <- l[[3]]
 #' @rdname features
 features.lm <- function(x) {
-  nms <- names(x$coefficients)
-  if (nms[1] == "(Intercept)") {
-    tail(nms, -1)
-  } else {
-    nms
-  }
+  tail(all.vars(x$terms), -1)
 }
 
 #' @rdname features
 features.glm <- function(x) {
-  nms <- names(x$coefficients)
-  if (nms[1] == "(Intercept)") {
-    tail(nms, -1)
-  } else {
-    nms
-  }
+  tail(all.vars(x$terms), -1)
 }
 
 #' @rdname features
 features.ranger <- function(x) {
-  x$forest$independent.variable.names
+
+  nms <- x$forest$independent.variable.names
+
+  if (is.null(x$forest)) {
+    stop(
+      paste0(
+        "write.forest needs to be equal to TRUE"
+      )
+    )
+  }
+  unique_features(nms)
 }
 
 #' @rdname features
