@@ -57,8 +57,8 @@ jobs:
         if: matrix.config.os == 'macOS-latest'
         run: rm src/Makevars
 
-      - name: Reinstall stringi for latest version of ubuntu
-        if: matrix.config.os == 'ubuntu-18.04'
+      - name: Reinstall stringi for ubuntu-latest
+        if: matrix.config.os == 'ubuntu-latest'
         run: Rscript -e "install.packages('stringi', repos = 'http://cran.rstudio.com')"
 
       - name: Install dependencies
