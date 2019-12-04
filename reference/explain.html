@@ -132,20 +132,44 @@
     <pre class="usage"><span class='fu'>explain</span>(<span class='no'>x</span>, <span class='no'>explainer</span>, <span class='no'>approach</span>, <span class='no'>prediction_zero</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for empirical</span>
-<span class='fu'>explain</span>(<span class='no'>x</span>, <span class='no'>explainer</span>, <span class='no'>approach</span>, <span class='no'>prediction_zero</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"fixed_sigma"</span>, <span class='kw'>fixed_sigma_vec</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>n_samples_aicc</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>eval_max_aicc</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>start_aicc</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>w_threshold</span> <span class='kw'>=</span> <span class='fl'>0.95</span>, <span class='no'>...</span>)
+<span class='fu'>explain</span>(
+  <span class='no'>x</span>,
+  <span class='no'>explainer</span>,
+  <span class='no'>approach</span>,
+  <span class='no'>prediction_zero</span>,
+  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"fixed_sigma"</span>,
+  <span class='kw'>fixed_sigma_vec</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>n_samples_aicc</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>eval_max_aicc</span> <span class='kw'>=</span> <span class='fl'>20</span>,
+  <span class='kw'>start_aicc</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>w_threshold</span> <span class='kw'>=</span> <span class='fl'>0.95</span>,
+  <span class='no'>...</span>
+)
 
 <span class='co'># S3 method for gaussian</span>
-<span class='fu'>explain</span>(<span class='no'>x</span>, <span class='no'>explainer</span>, <span class='no'>approach</span>, <span class='no'>prediction_zero</span>,
-  <span class='kw'>mu</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cov_mat</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+<span class='fu'>explain</span>(
+  <span class='no'>x</span>,
+  <span class='no'>explainer</span>,
+  <span class='no'>approach</span>,
+  <span class='no'>prediction_zero</span>,
+  <span class='kw'>mu</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cov_mat</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>...</span>
+)
 
 <span class='co'># S3 method for copula</span>
 <span class='fu'>explain</span>(<span class='no'>x</span>, <span class='no'>explainer</span>, <span class='no'>approach</span>, <span class='no'>prediction_zero</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for combined</span>
-<span class='fu'>explain</span>(<span class='no'>x</span>, <span class='no'>explainer</span>, <span class='no'>approach</span>, <span class='no'>prediction_zero</span>,
-  <span class='kw'>mu</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cov_mat</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>explain</span>(
+  <span class='no'>x</span>,
+  <span class='no'>explainer</span>,
+  <span class='no'>approach</span>,
+  <span class='no'>prediction_zero</span>,
+  <span class='kw'>mu</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cov_mat</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
