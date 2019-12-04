@@ -4,8 +4,14 @@
 \alias{plot.shapr}
 \title{Plot of the Shapley value explanations}
 \usage{
-\method{plot}{shapr}(x, digits = 3, plot_phi0 = TRUE,
-  index_x_test = NULL, top_k_features = NULL, ...)
+\method{plot}{shapr}(
+  x,
+  digits = 3,
+  plot_phi0 = TRUE,
+  index_x_test = NULL,
+  top_k_features = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{An \code{shapr} object. See \code{\link{explain}}.}

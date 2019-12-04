@@ -4,8 +4,16 @@
 \alias{sample_copula}
 \title{Sample conditional variables using the Gaussian copula approach}
 \usage{
-sample_copula(index_given, n_samples, mu, cov_mat, m, x_test_gaussian,
-  x_train, x_test)
+sample_copula(
+  index_given,
+  n_samples,
+  mu,
+  cov_mat,
+  m,
+  x_test_gaussian,
+  x_train,
+  x_test
+)
 }
 \arguments{
 \item{index_given}{Integer vector. The indices of the features to condition upon. Note that
