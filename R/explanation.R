@@ -332,10 +332,17 @@ get_list_approaches <- function(n_features, approach) {
 #' @keywords internal
 explainer_x_test <- function(x_test, feature_labels) {
 
+  if (ncol(x_test) == length(feature_labels)) {
+
+    if (all.equal(colnames(x_test), feature_labels))
+      return(as.matrix(x_test))
+  }
+
   # Remove variables that were not used for training
   x <- data.table::as.data.table(x_test)
   cnms_remove <- setdiff(colnames(x), feature_labels)
   if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
   data.table::setcolorder(x, feature_labels)
-  as.matrix(x)
+
+  return(as.matrix(x))
 }
