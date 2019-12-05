@@ -276,16 +276,24 @@ features.default <- function(x, feature_labels) {
 
 #' @rdname features
 features.lm <- function(x, feature_labels) {
+
+  if(!is.null(feature_labels)) feautures_message()
+
   tail(all.vars(x$terms), -1)
 }
 
 #' @rdname features
 features.glm <- function(x, feature_labels) {
+
+  if(!is.null(feature_labels)) feautures_message()
+
   tail(all.vars(x$terms), -1)
 }
 
 #' @rdname features
 features.ranger <- function(x, feature_labels) {
+
+  if(!is.null(feature_labels)) feautures_message()
 
   nms <- x$forest$independent.variable.names
 
@@ -302,10 +310,27 @@ features.ranger <- function(x, feature_labels) {
 
 #' @rdname features
 features.gam <- function(x, feature_labels) {
+
+  if(!is.null(feature_labels)) feautures_message()
+
   tail(all.vars(x$terms), -1)
 }
 
 #' @rdname features
 features.xgb.Booster <- function(x, feature_labels) {
+
+  if(!is.null(feature_labels)) feautures_message()
+
   x$feature_names
+}
+
+#' @keywords internal
+feautures_message <- function(x) {
+  message(
+    paste0(
+      "\nYou have passed a supported model object, and therefore\n",
+      "features_labels is ignored. The argument is only applicable when\n",
+      "using a custom model. For more information see ?shapr::shapr."
+    )
+  )
 }
