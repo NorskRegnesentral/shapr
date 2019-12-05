@@ -24,11 +24,11 @@ model <- xgboost::xgboost(
 
 df <- tail(Boston, 50)
 
-model2 <- lm(medv ~ lstat + rm + dis + indus, data = df)
+model2 <- lm(medv ~ lstat + rm + dis + indus + nox, data = df)
 model3 <- ranger::ranger(formula = medv ~ lstat + rm + dis + indus, data = df, num.trees = 50)
 
 explainer <- shapr(x_train, model)
-explainer2 <- shapr(df, model2, feature_labels = c("lstat", "rm"))
+explainer2 <- shapr(df, model2, feature_labels = c("lstat", "nox"))
 explainer3 <- shapr(df, model3, feature_labels = c("lstat", "rm"))
 
 
@@ -40,6 +40,13 @@ p0 <- mean(y_train)
 explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
 
 explanation <- explain(df, explainer, approach = "empirical", prediction_zero = p0)
+
+explanation <- explain(x_test, explainer2, approach = "empirical", prediction_zero = p0)
+
+x_test_2 = x_test
+colnames(x_test_2)[1:2] =colnames(x_test_2)[2:1]
+explanation <- explain(x_test_2, explainer, approach = "empirical", prediction_zero = p0)
+
 
 # DEBUGGING
 
