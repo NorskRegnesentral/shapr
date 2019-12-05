@@ -244,3 +244,64 @@ model_type.xgb.Booster <- function(x) {
     "regression"
   )
 }
+
+#' Fetch feature labels from model object
+#'
+#' @inheritParams shapr
+#'
+#' @keywords internal
+features <- function(x, feature_labels = NULL) {
+  UseMethod("features", x)
+}
+
+#' @rdname features
+features.default <- function(x, feature_labels) {
+
+  if (is.null(feature_labels)) {
+    stop(
+      paste0(
+        "\nIt looks like you are using a custom model, and forgot to pass\n",
+        "a valid value for the argument feature_labels when calling shapr().\n",
+        "See ?shapr::shapr for more information about the argument."
+      )
+    )
+  }
+
+  feature_labels
+}
+
+#' @rdname features
+features.lm <- function(x, feature_labels) {
+  tail(all.vars(x$terms), -1)
+}
+
+#' @rdname features
+features.glm <- function(x, feature_labels) {
+  tail(all.vars(x$terms), -1)
+}
+
+#' @rdname features
+features.ranger <- function(x, feature_labels) {
+
+  nms <- x$forest$independent.variable.names
+
+  if (is.null(x$forest)) {
+    stop(
+      paste0(
+        "\nIt looks like the model was fitted without saving the forest. Please set\n",
+        "write.forest = TRUE when fitting a model using ranger::ranger()."
+      )
+    )
+  }
+  unique_features(nms)
+}
+
+#' @rdname features
+features.gam <- function(x, feature_labels) {
+  tail(all.vars(x$terms), -1)
+}
+
+#' @rdname features
+features.xgb.Booster <- function(x, feature_labels) {
+  x$feature_names
+}

@@ -117,6 +117,12 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   explainer$p <- predict_model(explainer$model, head(x, 1))
   explainer$p <- NULL
 
+  # Remove variables that were not used for training
+  x <- data.table::as.data.table(x)
+  cnms_remove <- setdiff(colnames(x), explainer$feature_labels)
+  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
+  data.table::setcolorder(x, explainer$feature_labels)
+
   if (length(approach) > 1) {
     class(x) <- "combined"
   } else {
