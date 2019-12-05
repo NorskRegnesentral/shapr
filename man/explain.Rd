@@ -10,17 +10,41 @@
 \usage{
 explain(x, explainer, approach, prediction_zero, ...)
 
-\method{explain}{empirical}(x, explainer, approach, prediction_zero,
-  type = "fixed_sigma", fixed_sigma_vec = 0.1, n_samples_aicc = 1000,
-  eval_max_aicc = 20, start_aicc = 0.1, w_threshold = 0.95, ...)
+\method{explain}{empirical}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  type = "fixed_sigma",
+  fixed_sigma_vec = 0.1,
+  n_samples_aicc = 1000,
+  eval_max_aicc = 20,
+  start_aicc = 0.1,
+  w_threshold = 0.95,
+  ...
+)
 
-\method{explain}{gaussian}(x, explainer, approach, prediction_zero,
-  mu = NULL, cov_mat = NULL, ...)
+\method{explain}{gaussian}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  mu = NULL,
+  cov_mat = NULL,
+  ...
+)
 
 \method{explain}{copula}(x, explainer, approach, prediction_zero, ...)
 
-\method{explain}{combined}(x, explainer, approach, prediction_zero,
-  mu = NULL, cov_mat = NULL, ...)
+\method{explain}{combined}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  mu = NULL,
+  cov_mat = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
