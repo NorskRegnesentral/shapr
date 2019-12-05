@@ -9,3 +9,5 @@
 inst/compare_lundberg\.xgb\.obj
 ^\.github$
 ^CODE_OF_CONDUCT\.md$
+^cran-comments\.md$
+^docs$
