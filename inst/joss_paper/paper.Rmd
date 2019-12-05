@@ -56,22 +56,21 @@ for word counting in the Rmarkdwon document (250-1000 words)
 
 # Summary
 
-A common task within machine learning is to train a model which is able to predict an unknown outcome 
+A common task within machine learning is to train a model to predict an unknown outcome 
 (response variable) based on a set of known input variables/features.
 When using such models for real life applications, it is often crucial to understand why a certain set of features lead 
-to exactly a specific prediction.
-Most machine learning models are however so complicated and hard to understand that they are often viewed as 
-"black-boxes" producing some output when provided some input.
+to a specific prediction.
+Most machine learning models are, however, complicated and hard to understand, so that they are often viewed as 
+"black-boxes", that produce some output from some input.
 
-Shapley values [@Shapley53] is a concept from cooperative game theory used to fairly distribute a joint payoff among the
+Shapley values [@Shapley53] is a concept from cooperative game theory used to distribute fairly a joint payoff among the
 cooperating players. 
 @kononenko2010efficient and later @lundberg2017unified proposed to use the Shapley value framework to explain 
 predictions by distributing the prediction value on the input features. 
 Established methods and implementations for explaining predictions with Shapley values like Shapley 
 Sampling Values [@vstrumbelj2014explaining], SHAP/Kernel SHAP [@lundberg2017unified], and to some extent TreeSHAP 
-[@lundberg2018consistent], assume that the features are independent when approximating the Shapley values for prediction
-explanation. 
-The `R`-package `shapr` implements the methodology proposed by @aas2019explaining, where predictions are explained while
+[@lundberg2018consistent], assume that the features are independent when approximating the Shapley values. 
+The `R`-package `shapr`, however, implements the methodology proposed by @aas2019explaining, where predictions are explained while
 accounting for the dependence between the features, resulting in significantly more accurate approximations to the 
 Shapley values. 
 
@@ -82,7 +81,7 @@ Shapley values.
 `shapr` implements a variant of the Kernel SHAP methodology [@lundberg2017unified] for efficiently dealing with the 
 combinatorial problem related to the Shapley value formula.
 The main methodological contribution of @aas2019explaining is three different methods to estimate certain conditional 
-expectation quantities, referred to as the `empirical`, `gaussian` and `copula` approach. Additionaly, the user has
+expectation quantities, referred to as the  _empirical_, _Gaussian_ and _copula_ approach. Additionaly, the user has
 the option of combining the three approaches. 
 The implementation supports explanation of models fitted with the functions natively: `stats::lm`, `stats::glm`, 
 `ranger::ranger`, `mgcv::gam` and `xgboost::xgboost`/`xgboost::xgb.train`. 
@@ -94,11 +93,11 @@ Kernel SHAP [@lundberg2017unified], providing identical results to the "official
 This allows the user to easily see the effect and importance of accounting for the feature dependence.
 
 The user interface in the package has largely been adopted from the `R`-package `lime` [@limeRpackage]. 
-The user first sets up the explainability framework for the model to explain with the `shapr` function. 
-Then the output from `shapr` is provided to the `explain` function, along with the data to explain the prediction for
-and which method should be used to estimate the aforementioned conditional expectations.
+The user first sets up the explainability framework with the `shapr` function. 
+Then the output from `shapr` is provided to the `explain` function, along with the data to explain the prediction 
+and the method that should be used to estimate the aforementioned conditional expectations.
 
-The majority of the code is in plain `R` [@rCore], while the most time consuming operations has been coded in `C++` 
+The majority of the code is in plain `R` [@rCore], while the most time consuming operations are coded in `C++` 
 through the `Rcpp` package [@rcppRpackage] for computational speed up. 
 For RAM efficiency and computational speed up of typical bookeeping operations, we utilize the `data.table` 
 package [@datatableRpackage] which does operations "by reference", i.e. without memory copies.
@@ -106,10 +105,10 @@ package [@datatableRpackage] which does operations "by reference", i.e. without 
 <!--In addition to our package's ability to account for the feature dependence (which the `shap` package does not), 
 basic tests suggest our implementation is about 3-4 times faster. -->
 
-For a detailed description of the underlying methodology of the package, we refer to the 
+For a detailed description of the underlying methodology that the package implements, we refer to the 
 [paper](https://arxiv.org/abs/1903.10464) [@aas2019explaining] which uses the package in examples and simulation 
 studies.
-For getting started with the package, we recommend the user to go through the package vignette and introductory examples
+To get started with the package, we recommend going through the package vignette and introductory examples
 available at the package's [pkgdown site](https://norskregnesentral.github.io/shapr/). 
 
 # Acknowledgement
