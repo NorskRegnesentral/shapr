@@ -113,9 +113,6 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     )
   }
 
-  # Check that x contains correct variables
-  explainer$p <- predict_model(explainer$model, head(x, 1))
-  explainer$p <- NULL
 
   # Remove variables that were not used for training
   x <- data.table::as.data.table(x)
@@ -123,13 +120,17 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
   data.table::setcolorder(x, explainer$feature_labels)
 
+  # Check that x contains correct variables
+  explainer$p <- predict_model(explainer$model, head(x, 1))
+  explainer$p <- NULL
+
   if (length(approach) > 1) {
     class(x) <- "combined"
   } else {
     class(x) <- approach
   }
 
-  UseMethod("explain", x)
+  UseMethod("explain", x) # Something wrong around here I think, the x being passed further appears to not be the updated one...
 }
 
 #' @param type Character. Should be equal to either \code{"independence"},
