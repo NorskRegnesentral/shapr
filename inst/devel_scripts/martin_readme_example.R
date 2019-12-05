@@ -1,6 +1,6 @@
 library(shapr)
 
-rm(list=ls())
+rm(list = ls())
 
 data("Boston", package = "MASS")
 
@@ -25,11 +25,11 @@ model <- xgboost::xgboost(
 df <- tail(Boston, 50)
 
 model2 <- lm(medv ~ lstat + rm + dis + indus, data = df)
-model3 <- ranger::ranger(formula = medv ~ lstat + rm + dis + indus,data = df,num.trees = 50)
+model3 <- ranger::ranger(formula = medv ~ lstat + rm + dis + indus, data = df, num.trees = 50)
 
 explainer <- shapr(x_train, model)
-explainer2 <- shapr(df, model2,feature_labels = c("lstat","rm"))
-explainer3 <- shapr(df, model3,feature_labels = c("lstat","rm"))
+explainer2 <- shapr(df, model2, feature_labels = c("lstat", "rm"))
+explainer3 <- shapr(df, model3, feature_labels = c("lstat", "rm"))
 
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
@@ -49,7 +49,7 @@ explainer$x_train
 
 # Prepare the data for explanation
 
-x = df
+x <- df
 # Remove variables that were not used for training
 x <- data.table::as.data.table(x)
 cnms_remove <- setdiff(colnames(x), explainer$feature_labels)
