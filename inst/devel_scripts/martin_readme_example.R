@@ -48,6 +48,45 @@ colnames(x_test_2)[1:2] =colnames(x_test_2)[2:1]
 explanation <- explain(x_test_2, explainer, approach = "empirical", prediction_zero = p0)
 
 
+#### Custom model ####
+
+library(caret)
+model <- train(
+  x_train,
+  y = y_train,
+  method = "gbm",
+  verbose = FALSE
+)
+
+# Create custom function of model_type for caret
+model_type.train <- function(x) {
+  ifelse(
+    x$modelType[[1]] == "Classification",
+    "classification",
+    "regression"
+  )
+}
+
+# Create custom function of predict_model for caret
+predict_model.train <- function(x, newdata) {
+
+  if (!requireNamespace('caret', quietly = TRUE)) {
+    stop('The caret package is required for predicting train models')
+  }
+  model_type <- model_type(x)
+
+  if (model_type == "classification") {
+
+    predict(x, newdata, type = "prob")
+  } else {
+
+    predict(x, newdata)
+  }
+}
+
+explainer <- shapr(x_train, model,feature_labels = colnames(x_train))
+
+
 # DEBUGGING
 
 
