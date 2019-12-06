@@ -12,17 +12,17 @@
 \usage{
 features(x, feature_labels = NULL)
 
-\method{features}{default}(x, feature_labels)
+\method{features}{default}(x, feature_labels = NULL)
 
-\method{features}{lm}(x, feature_labels)
+\method{features}{lm}(x, feature_labels = NULL)
 
-\method{features}{glm}(x, feature_labels)
+\method{features}{glm}(x, feature_labels = NULL)
 
-\method{features}{ranger}(x, feature_labels)
+\method{features}{ranger}(x, feature_labels = NULL)
 
-\method{features}{gam}(x, feature_labels)
+\method{features}{gam}(x, feature_labels = NULL)
 
-\method{features}{xgb.Booster}(x, feature_labels)
+\method{features}{xgb.Booster}(x, feature_labels = NULL)
 }
 \arguments{
 \item{x}{Numeric matrix or data.frame. Contains the data used for training the model.}

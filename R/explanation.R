@@ -111,7 +111,15 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   }
 
   # Check that x contains correct variables
-  invisible(predict_model(explainer$model, head(x, 1)))
+  if (!all(explainer$feature_labels %in% colnames(x))) {
+    stop(
+      paste0(
+        "\nThe test data, x, does not contain all features necessary for\n",
+        "generating predictions. Please modify x so that all labels given\n",
+        "by explainer$feature_labels is present in colnames(x)."
+      )
+    )
+  }
 
   if (length(approach) > 1) {
     class(x) <- "combined"
