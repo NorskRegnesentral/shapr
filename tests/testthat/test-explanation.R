@@ -155,20 +155,7 @@ test_that("Testing data input to explain in explanation.R", {
 
   # Just making up a fictive model class
   model4 <- "cumstom_testmodel"
-  class(model4) = "testclass"
-
-  # Create custom function of model_type for caret
-  model_type.testclass <- function(x) {
-    "regression"
-  }
-
-  # Create custom function of predict_model for caret
-  predict_model.testclass <- function(x, newdata) {
-    if (!any(colnames(newdata)=="lstat")){
-      stop("lstat not in newdata")
-    }
-    newdata[,which(colnames(newdata)=="lstat")]
-  }
+  class(model4) = "testclass" # Class objects defined in helper-testclass.R
 
   #### Running tests ####
   p0 <- mean(y_train)
@@ -227,6 +214,12 @@ test_that("Testing data input to explain in explanation.R", {
                                                  prediction_zero = p0))
   expect_equal(explanation3_success,explanation3_success2) # FAILS due to first lines in explain_x_test. Remove those
   expect_equal(explanation3_success2,explanation3_success3)
+
+
+  explain(x_test,
+          explainer4,
+          approach = "empirical",
+          prediction_zero = p0)
 
   # expect silent for explainer 1, using correct data, reordered data and bigger data set, then identical results
   expect_silent(explanation4_success <- explain(x_test,

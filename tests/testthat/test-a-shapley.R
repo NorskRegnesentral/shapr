@@ -68,20 +68,8 @@ test_that("Testing data input to shapr in shapley.R", {
 
   # Just making up a fictive model class
   model4 <- "cumstom_testmodel"
-  class(model4) = "testclass"
+  class(model4) = "testclass" # Class objects defined in helper-testclass.R
 
-  # Create custom function of model_type for caret
-  model_type.testclass <- function(x) {
-    "regression"
-  }
-
-  # Create custom function of predict_model for caret
-  predict_model.testclass <- function(x, newdata) {
-    if (!any(colnames(newdata)=="lstat")){
-      stop("lstat not in newdata")
-    }
-    newdata[,which(colnames(newdata)=="lstat")]
-  }
 
   #### Running tests ####
 
