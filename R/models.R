@@ -273,7 +273,7 @@ features.default <- function(x, feature_labels = NULL) {
 #' @rdname features
 features.lm <- function(x, feature_labels = NULL) {
 
-  if(!is.null(feature_labels)) features_message()
+  if (!is.null(feature_labels)) features_message()
 
   tail(all.vars(x$terms), -1)
 }
@@ -281,7 +281,7 @@ features.lm <- function(x, feature_labels = NULL) {
 #' @rdname features
 features.glm <- function(x, feature_labels = NULL) {
 
-  if(!is.null(feature_labels)) features_message()
+  if (!is.null(feature_labels)) features_message()
 
   tail(all.vars(x$terms), -1)
 }
@@ -289,7 +289,7 @@ features.glm <- function(x, feature_labels = NULL) {
 #' @rdname features
 features.ranger <- function(x, feature_labels = NULL) {
 
-  if(!is.null(feature_labels)) features_message()
+  if (!is.null(feature_labels)) features_message()
 
   nms <- x$forest$independent.variable.names
 
@@ -307,7 +307,7 @@ features.ranger <- function(x, feature_labels = NULL) {
 #' @rdname features
 features.gam <- function(x, feature_labels = NULL) {
 
-  if(!is.null(feature_labels)) features_message()
+  if (!is.null(feature_labels)) features_message()
 
   tail(all.vars(x$terms), -1)
 }
@@ -315,13 +315,13 @@ features.gam <- function(x, feature_labels = NULL) {
 #' @rdname features
 features.xgb.Booster <- function(x, feature_labels = NULL) {
 
-  if(!is.null(feature_labels)) features_message()
+  if (!is.null(feature_labels)) features_message()
 
   x$feature_names
 }
 
 #' @keywords internal
-features_message <- function(x) {
+features_message <- function() {
   message(
     paste0(
       "\nYou have passed a supported model object, and therefore\n",
