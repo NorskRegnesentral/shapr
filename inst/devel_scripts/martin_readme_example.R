@@ -33,7 +33,7 @@ explainer3 <- shapr(df, model3, feature_labels = c("lstat", "rm"))
 
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
-p0 <- mean(y_train)
+  p0 <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
@@ -50,41 +50,8 @@ explanation <- explain(x_test_2, explainer, approach = "empirical", prediction_z
 
 #### Custom model ####
 
-library(caret)
-model <- train(
-  x_train,
-  y = y_train,
-  method = "gbm",
-  verbose = FALSE
-)
 
-# Create custom function of model_type for caret
-model_type.train <- function(x) {
-  ifelse(
-    x$modelType[[1]] == "Classification",
-    "classification",
-    "regression"
-  )
-}
-
-# Create custom function of predict_model for caret
-predict_model.train <- function(x, newdata) {
-
-  if (!requireNamespace('caret', quietly = TRUE)) {
-    stop('The caret package is required for predicting train models')
-  }
-  model_type <- model_type(x)
-
-  if (model_type == "classification") {
-
-    predict(x, newdata, type = "prob")
-  } else {
-
-    predict(x, newdata)
-  }
-}
-
-explainer <- shapr(x_train, model,feature_labels = colnames(x_train))
+explainer <- shapr(x_train, model,feature_labels = c("dsad",colnames(x_train)))
 
 
 # DEBUGGING

@@ -39,37 +39,18 @@ model3 <- ranger::ranger(formula = formula,
                          data = xy_train_full_df,
                          num.trees = 50)
 
-model4 <- caret::train(
-  x_train,
-  y = y_train,
-  method = "gbm",
-  verbose = FALSE
-)
+# Just making up a fictive model class
+model4 <- "cumstom_testmodel"
+class(model4) = "testclass"
 
 # Create custom function of model_type for caret
-model_type.train <- function(x) {
-  ifelse(
-    x$modelType[[1]] == "Classification",
-    "classification",
-    "regression"
-  )
-}
+model_type.testclass <- function(x) {
+  "regression"
+  }
 
 # Create custom function of predict_model for caret
-predict_model.train <- function(x, newdata) {
-
-  if (!requireNamespace('caret', quietly = TRUE)) {
-    stop('The caret package is required for predicting train models')
-  }
-  model_type <- model_type(x)
-
-  if (model_type == "classification") {
-
-    predict(x, newdata, type = "prob")
-  } else {
-
-    predict(x, newdata)
-  }
+predict_model.testclass <- function(x, newdata) {
+  newdata[,1] # Always giving the first argument of newdata as the prediction
 }
 
 
