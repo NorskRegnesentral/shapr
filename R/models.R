@@ -104,11 +104,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
   # Test model type
   model_type <- model_type(x)
 
-  if (ncol(newdata) > length(x$feature_names)) {
-    predict(x, as.matrix(newdata)[, x$feature_names, drop = FALSE])
-  } else {
-    predict(x, as.matrix(newdata))
-  }
+  predict(x, as.matrix(newdata))
 }
 
 #' @rdname predict_model
