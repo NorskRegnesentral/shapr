@@ -92,7 +92,7 @@
 <a href="#shapr" class="anchor"></a>shapr <img src="reference/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px">
 </h1></div>
 <!-- badges: start -->
-<p><a href="https://circleci.com/gh/NorskRegnesentral/shapr"><img src="https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg" alt="CircleCI"></a> <img src="https://github.com/NorskRegnesentral/shapr/workflows/.github/workflows/main.yml/badge.svg"><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a> <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a> <!-- badges: end --></p>
+
 <p>The most common task of machine learning is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features. When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction. However, explaining predictions from complex, or seemingly simple, machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable explanations.</p>
 <p>Shapley values is the only prediction explanation framework with a solid theoretical foundation (Lundberg and Lee (2017)). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. Popular methods like Shapley Sampling Values (Štrumbelj and Kononenko (2014)), SHAP/Kernel SHAP (Lundberg and Lee (2017)), and to some extent TreeSHAP (Lundberg, Erion, and Lee (2018)), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. Aas, Jullum, and Løland (2019) extends and improves the Kernel SHAP method of Lundberg and Lee (2017) to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. <a href="https://arxiv.org/abs/1903.10464">See the paper for details</a>.</p>
 <p>This package implements the methodology of Aas, Jullum, and Løland (2019).</p>
@@ -289,7 +289,16 @@ Information Systems* 41 (3). Springer: 647–65.
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://circleci.com/gh/NorskRegnesentral/shapr"><img src="https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg" alt="CircleCI"></a></li>
+<li><a href="https://github.com/NorskRegnesentral/shapr/actions?workflow=R-CMD-check"><img src="https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+<li><a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
