@@ -342,7 +342,7 @@ explainer_x_test <- function(x_test, feature_labels) {
 
   if (ncol(x_test) == length(feature_labels)) {
 
-    if (all.equal(colnames(x_test), feature_labels))
+    if (identical(colnames(x_test), feature_labels))
       return(as.matrix(x_test))
   }
 
