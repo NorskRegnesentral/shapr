@@ -71,7 +71,10 @@ test_that("Testing data input to shapr in shapley.R", {
 
   # Create custom function of predict_model for caret
   predict_model.testclass <- function(x, newdata) {
-    newdata[,1] # Always giving the first argument of newdata as the prediction
+    if (!any(colnames(newdata)=="lstat")){
+      stop("lstat not in newdata")
+    }
+    newdata[,which(colnames(newdata)=="lstat")] # Always giving the first argument of newdata as the prediction
   }
 
   #### Running tests ####
@@ -89,12 +92,12 @@ test_that("Testing data input to shapr in shapley.R", {
   expect_message(shapr(xy_train_full_df, model3, feature_labels = x_var_sub))
 
   # Expect error, giving error message that throws indicates that the x misses columns used by the model
-  expect_error(shapr(xy_train_missing_lstat_df, model1)) # Should give better error message
-  expect_error(shapr(xy_train_missing_lstat_df, model2)) # Should give better error message
+  expect_error(shapr(xy_train_missing_lstat_df, model1))
+  expect_error(shapr(xy_train_missing_lstat_df, model2))
 
   # Expect error that feature_labels is not in training data or used by the model
-  expect_error(shapr(xy_train_full_df, model4,feature_labels = not_x_var)) # Should throw an error, does not do that
-  expect_error(shapr(xy_train_full_df, model4,feature_labels = not_even_var)) # Should give better error message
+  expect_error(shapr(xy_train_full_df, model4,feature_labels = not_x_var))
+  expect_error(shapr(xy_train_full_df, model4,feature_labels = not_even_var))
 
   # Expect error, that feature_labels is missing
   expect_error(shapr(xy_train_full_df, model4))
