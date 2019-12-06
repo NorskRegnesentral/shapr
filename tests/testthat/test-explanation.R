@@ -165,7 +165,7 @@ test_that("Testing data input to explain in explanation.R", {
     if (!any(colnames(newdata)=="lstat")){
       stop("lstat not in newdata")
     }
-    newdata[,which(colnames(newdata)=="lstat")] # Always giving the first argument of newdata as the prediction
+    newdata[,which(colnames(newdata)=="lstat")]
   }
 
   #### Running tests ####
