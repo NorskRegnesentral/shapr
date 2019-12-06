@@ -36,8 +36,8 @@ Named list that contains the following items:
   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
 }
 
-In addition to the items above \code{model}, \code{feature_labels} and \code{n_combinations} is also present in the
-returned object.
+In addition to the items above \code{model}, \code{feature_labels} (updated with the names actually used by the
+model) and \code{n_combinations} is also present in the returned object.
 }
 \description{
 Create an explainer object with Shapley weights for test data.
