@@ -76,7 +76,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
 #' }
 #'
-#' In addition to the items above \code{model}, \code{feature_labels} and \code{n_combinations} is also present in the
+#' In addition to the items above \code{model}, \code{feature_labels} (updated with the names actually used by the model) 
  #' and \code{n_combinations} is also present in the returned object.
 #'
 #' @export
