@@ -115,8 +115,6 @@ test_that("Test functions in explanation.R", {
 
 test_that("Testing data input to explain in explanation.R", {
 
-  data("Boston", package = "MASS")
-
   x_var <- c("lstat", "rm", "dis", "indus")
   y_var <- "medv"
   x_var_sub <- x_var[1:2]
@@ -128,6 +126,8 @@ test_that("Testing data input to explain in explanation.R", {
 
   xy_train_full_df <- tail(Boston[, ], -6)
   xy_train_missing_lstat_df <- xy_train_full_df[,!(colnames(xy_train_full_df) == "lstat")]
+  xy_train_full_df_no_colnames <- xy_train_full_df
+  colnames(xy_train_full_df_no_colnames) <- NULL
 
 
   x_test <- as.matrix(head(Boston[, x_var], 6))
@@ -135,6 +135,8 @@ test_that("Testing data input to explain in explanation.R", {
   x_test_reordered <- as.matrix(head(Boston[, rev(x_var)], 6))
   xy_test_full_df <- head(Boston[, ], 6)
   xy_test_missing_lstat_df <- xy_test_full_df[,!(colnames(xy_test_full_df) == "lstat")]
+  xy_test_full_df_no_colnames <- xy_test_full_df
+  colnames(xy_test_full_df_no_colnames) <- NULL
 
   # Fitting models
   model1 <- xgboost::xgboost(
@@ -259,6 +261,25 @@ test_that("Testing data input to explain in explanation.R", {
                                              explainer4,
                                              approach = "empirical",
                                              prediction_zero = p0))
+
+  # expect error when test data misses used variable
+  expect_error(explanation1_error2 <- explain(xy_test_full_df_no_colnames,
+                                             explainer1,
+                                             approach = "empirical",
+                                             prediction_zero = p0))
+  expect_error(explanation2_error2 <- explain(xy_test_full_df_no_colnames,
+                                             explainer2,
+                                             approach = "empirical",
+                                             prediction_zero = p0))
+  expect_error(explanation3_error2 <- explain(xy_test_full_df_no_colnames,
+                                             explainer3,
+                                             approach = "empirical",
+                                             prediction_zero = p0))
+  expect_error(explanation4_error2 <- explain(xy_test_full_df_no_colnames,
+                                             explainer4,
+                                             approach = "empirical",
+                                             prediction_zero = p0))
+
 
 })
 

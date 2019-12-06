@@ -37,6 +37,8 @@ test_that("Testing data input to shapr in shapley.R", {
 
   xy_train_full_df <- tail(Boston[, ], -6)
   xy_train_missing_lstat_df <- xy_train_full_df[,!(colnames(xy_train_full_df) == "lstat")]
+  xy_train_full_df_no_colnames <- xy_train_full_df
+  colnames(xy_train_full_df_no_colnames) <- NULL
 
 
   x_test <- as.matrix(head(Boston[, x_var], 6))
@@ -44,6 +46,10 @@ test_that("Testing data input to shapr in shapley.R", {
   x_test_reordered <- as.matrix(head(Boston[, rev(x_var)], 6))
   xy_test_full_df <- head(Boston[, ], 6)
   xy_test_missing_lstat_df <- xy_test_full_df[,!(colnames(xy_test_full_df) == "lstat")]
+  xy_test_full_df_no_colnames <- xy_test_full_df
+  colnames(xy_test_full_df_no_colnames) <- NULL
+
+
 
   # Fitting models
   model1 <- xgboost::xgboost(
@@ -88,6 +94,7 @@ test_that("Testing data input to shapr in shapley.R", {
   # Expect message that feature_labels is ignored
   expect_message(shapr(xy_train_full_df, model1, feature_labels = x_var_sub))
   expect_message(shapr(xy_train_full_df, model1, feature_labels = x_var))
+
   expect_message(shapr(xy_train_full_df, model2, feature_labels = x_var_sub))
   expect_message(shapr(xy_train_full_df, model3, feature_labels = x_var_sub))
 
@@ -101,5 +108,11 @@ test_that("Testing data input to shapr in shapley.R", {
 
   # Expect error, that feature_labels is missing
   expect_error(shapr(xy_train_full_df, model4))
+
+  # Expect error when x_train don't have column names
+  expect_error(shapr(xy_train_full_df_no_colnames, model1, feature_labels = x_var_sub))
+  expect_error(shapr(xy_train_full_df_no_colnames, model2, feature_labels = x_var_sub))
+  expect_error(shapr(xy_train_full_df_no_colnames, model3, feature_labels = x_var_sub))
+  expect_error(shapr(xy_train_full_df_no_colnames, model4, feature_labels = x_var_sub))
 
 })
