@@ -8,29 +8,30 @@
 \alias{features.ranger}
 \alias{features.gam}
 \alias{features.xgb.Booster}
-\title{Fetch feature labels from model object}
+\title{Fetches feature labels from a given model object}
 \usage{
-features(x, feature_labels = NULL)
+features(x, cnms, feature_labels = NULL)
 
-\method{features}{default}(x, feature_labels = NULL)
+\method{features}{default}(x, cnms, feature_labels = NULL)
 
-\method{features}{lm}(x, feature_labels = NULL)
+\method{features}{lm}(x, cnms, feature_labels = NULL)
 
-\method{features}{glm}(x, feature_labels = NULL)
+\method{features}{glm}(x, cnms, feature_labels = NULL)
 
-\method{features}{ranger}(x, feature_labels = NULL)
+\method{features}{ranger}(x, cnms, feature_labels = NULL)
 
-\method{features}{gam}(x, feature_labels = NULL)
+\method{features}{gam}(x, cnms, feature_labels = NULL)
 
-\method{features}{xgb.Booster}(x, feature_labels = NULL)
+\method{features}{xgb.Booster}(x, cnms, feature_labels = NULL)
 }
 \arguments{
-\item{x}{Numeric matrix or data.frame. Contains the data used for training the model.}
+\item{x}{Model object for the model to be explained.}
 
-\item{feature_labels}{Character vector. The labels/names of the features used for training the model.
-Only applicable if you are using a custom model. Otherwise the features in use are extracted from \code{model}.}
+\item{cnms}{Character vector. Represents the names of the columns in the data used for training/explaining.}
+
+\item{feature_labels}{Character vector. Represents the labels of the features used for prediction.}
 }
 \description{
-Fetch feature labels from model object
+Fetches feature labels from a given model object
 }
 \keyword{internal}

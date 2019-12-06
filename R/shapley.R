@@ -132,7 +132,7 @@ shapr <- function(x,
   explainer$model_type <- model_type(model)
 
   # Checks input argument
-  feature_labels <- features(model, feature_labels)
+  feature_labels <- features(model, colnames(x), feature_labels)
   explainer$n_features <- length(feature_labels)
 
   # Converts to data.table, otherwise copy to x_train  --------------
@@ -204,15 +204,4 @@ distance_matrix <- function(x_train, x_test = NULL, list_features) {
   }
 
   return(D)
-}
-
-#' @keywords internal
-check_feaure_labels <- function() {
-  stop(
-    paste0(
-      "\nThere is mismatch between the column names in x and\n",
-      "feature_labels. All elements in feature_labels should\n",
-      "be present in colnames(x)."
-    )
-  )
 }
