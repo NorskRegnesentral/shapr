@@ -255,7 +255,7 @@ features <- function(x, feature_labels = NULL) {
 }
 
 #' @rdname features
-features.default <- function(x, feature_labels) {
+features.default <- function(x, feature_labels = NULL) {
 
   if (is.null(feature_labels)) {
     stop(
@@ -271,7 +271,7 @@ features.default <- function(x, feature_labels) {
 }
 
 #' @rdname features
-features.lm <- function(x, feature_labels) {
+features.lm <- function(x, feature_labels = NULL) {
 
   if(!is.null(feature_labels)) features_message()
 
@@ -279,7 +279,7 @@ features.lm <- function(x, feature_labels) {
 }
 
 #' @rdname features
-features.glm <- function(x, feature_labels) {
+features.glm <- function(x, feature_labels = NULL) {
 
   if(!is.null(feature_labels)) features_message()
 
@@ -287,7 +287,7 @@ features.glm <- function(x, feature_labels) {
 }
 
 #' @rdname features
-features.ranger <- function(x, feature_labels) {
+features.ranger <- function(x, feature_labels = NULL) {
 
   if(!is.null(feature_labels)) features_message()
 
@@ -305,7 +305,7 @@ features.ranger <- function(x, feature_labels) {
 }
 
 #' @rdname features
-features.gam <- function(x, feature_labels) {
+features.gam <- function(x, feature_labels = NULL) {
 
   if(!is.null(feature_labels)) features_message()
 
@@ -313,7 +313,7 @@ features.gam <- function(x, feature_labels) {
 }
 
 #' @rdname features
-features.xgb.Booster <- function(x, feature_labels) {
+features.xgb.Booster <- function(x, feature_labels = NULL) {
 
   if(!is.null(feature_labels)) features_message()
 
