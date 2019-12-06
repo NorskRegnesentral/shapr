@@ -77,7 +77,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' }
 #'
 #' In addition to the items above \code{model}, \code{feature_labels} and \code{n_combinations} is also present in the
-#' returned object.
+ #' and \code{n_combinations} is also present in the returned object.
 #'
 #' @export
 #'
