@@ -59,20 +59,17 @@
 #' data("Boston", package = "MASS")
 #'
 #' # Split data into test- and training data
-#' x_var <- c("lstat", "rm", "dis", "indus")
-#' y_var <- "medv"
-#' x_train <- head(Boston[, x_var], -3)
-#' y_train <- head(Boston[, y_var, drop = FALSE], -3)
-#' x_test <- tail(Boston[, x_var], 3)
+#' x_train <- head(Boston, -3)
+#' x_test <- tail(Boston, 3)
 #'
 #' # Fit a linear model
-#' model <- lm(medv ~ lstat + rm + dis + indus, data = cbind(y_train, x_train))
+#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 #'
 #' # Create an explainer object
 #' explainer <- shapr(x_train, model)
 #'
 #' # Explain predictions
-#' p <- mean(y_train[, 1])
+#' p <- mean(x_train$medv)
 #'
 #' # Empirical approach
 #' explain1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p, n_samples = 1e2)
@@ -101,7 +98,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   # Check input for approach
   if (!(is.vector(approach) &&
         is.atomic(approach) &&
-        (length(approach) == 1 | length(approach) == ncol(x)) &&
+        (length(approach) == 1 | length(approach) == length(explainer$feature_labels)) &&
         all(is.element(approach, c("empirical", "gaussian", "copula"))))
   ) {
     stop(
@@ -114,8 +111,15 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   }
 
   # Check that x contains correct variables
-  explainer$p <- predict_model(explainer$model, head(x, 1))
-  explainer$p <- NULL
+  if (!all(explainer$feature_labels %in% colnames(x))) {
+    stop(
+      paste0(
+        "\nThe test data, x, does not contain all features necessary for\n",
+        "generating predictions. Please modify x so that all labels given\n",
+        "by explainer$feature_labels is present in colnames(x)."
+      )
+    )
+  }
 
   if (length(approach) > 1) {
     class(x) <- "combined"
@@ -156,7 +160,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
                               start_aicc = 0.1, w_threshold = 0.95, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(x)
+  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec
@@ -189,7 +193,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(x)
+  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
   explainer$approach <- approach
 
   # If mu is not provided directly, use mean of training data
@@ -227,7 +231,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Setup
-  explainer$x_test <- as.matrix(x)
+  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
   explainer$approach <- approach
 
   # Prepare transformed data
@@ -272,7 +276,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
-  explainer$x_test <- as.matrix(x)
+  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
 
   dt_l <- list()
   for (i in seq_along(l)) {
@@ -331,4 +335,16 @@ get_list_approaches <- function(n_features, approach) {
 
   }
   return(l)
+}
+
+#' @keywords internal
+explainer_x_test <- function(x_test, feature_labels) {
+
+  # Remove variables that were not used for training
+  x <- data.table::as.data.table(x_test)
+  cnms_remove <- setdiff(colnames(x), feature_labels)
+  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
+  data.table::setcolorder(x, feature_labels)
+
+  return(as.matrix(x))
 }
