@@ -91,8 +91,8 @@ test_that("Test functions in explanation.R", {
 
   ### Additional test that only the produced shapley values are the same as before
   fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")
-  for (i in 1:length(ex_list)){
-    expect_equal(ex_list[[i]]$dt,fixed_explain_obj_list[[i]]$dt)
+  for (i in 1:length(ex_list)) {
+    expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
   }
 
 
@@ -111,169 +111,133 @@ test_that("Test functions in explanation.R", {
   )
 })
 
-
-
 test_that("Testing data input to explain in explanation.R", {
 
+  # Setup for training data and explainer object
+  data("Boston", package = "MASS")
   x_var <- c("lstat", "rm", "dis", "indus")
   y_var <- "medv"
-  x_var_sub <- x_var[1:2]
-  not_x_var <- "crim"
-  not_even_var <- "not_a_column_name"
 
+  # Training data
   x_train <- as.matrix(tail(Boston[, x_var], -6))
   y_train <- tail(Boston[, y_var], -6)
-
   xy_train_full_df <- tail(Boston[, ], -6)
-  xy_train_missing_lstat_df <- xy_train_full_df[,!(colnames(xy_train_full_df) == "lstat")]
-  xy_train_full_df_no_colnames <- xy_train_full_df
-  colnames(xy_train_full_df_no_colnames) <- NULL
 
-
+  # Test data
   x_test <- as.matrix(head(Boston[, x_var], 6))
   x_test_full <- as.matrix(head(Boston[, ], 6))
   x_test_reordered <- as.matrix(head(Boston[, rev(x_var)], 6))
   xy_test_full_df <- head(Boston[, ], 6)
-  xy_test_missing_lstat_df <- xy_test_full_df[,!(colnames(xy_test_full_df) == "lstat")]
+  xy_test_missing_lstat_df <- xy_test_full_df[, !(colnames(xy_test_full_df) == "lstat")]
   xy_test_full_df_no_colnames <- xy_test_full_df
   colnames(xy_test_full_df_no_colnames) <- NULL
 
   # Fitting models
+  formula <- as.formula(paste0("medv ~ ", paste0(x_var, collapse = "+")))
   model1 <- xgboost::xgboost(
     data = x_train,
     label = y_train,
-    nround = 20,
+    nround = 5,
     verbose = FALSE
   )
 
-  formula <- as.formula(paste0("medv ~ ",paste0(x_var,collapse="+")))
-  model2 <- lm(formula = formula,
-               data = xy_train_full_df)
-  model3 <- ranger::ranger(formula = formula,
-                           data = xy_train_full_df,
-                           num.trees = 50)
+  model2 <- lm(
+    formula = formula,
+    data = xy_train_full_df
+  )
 
-  # Just making up a fictive model class
-  model4 <- "cumstom_testmodel"
-  class(model4) = "testclass" # Class objects defined in helper-testclass.R
+  model3 <- ranger::ranger(
+    formula = formula,
+    data = xy_train_full_df,
+    num.trees = 50
+  )
 
-  #### Running tests ####
   p0 <- mean(y_train)
 
-  # expect_success
-  explainer1 <- shapr(x_train, model1)
-  explainer2 <- shapr(xy_train_full_df, model2)
-  explainer3<- shapr(xy_train_full_df, model3)
-  explainer4 <- shapr(xy_train_full_df, model4,feature_labels = x_var)
+  # Get explainer objects
+  all_explainers <- lapply(list(model1, model2, model3), shapr, x = x_train)
 
+  # Test data
+  all_test_data <- list(
+    x_test,
+    x_test_reordered,
+    x_test_full
+  )
 
-  # expect silent for explainer 1, using correct data, reordered data and bigger data set, then identical results
-  expect_silent(explanation1_success <- explain(x_test,
-                                                explainer1,
-                                                approach = "empirical",
-                                                prediction_zero = p0))
-  expect_silent(explanation1_success2 <- explain(x_test_reordered,
-                                                 explainer1,
-                                                 approach = "empirical",
-                                                 prediction_zero = p0))
-  expect_silent(explanation1_success3 <- explain(x_test_full,
-                                                 explainer1,
-                                                 approach = "empirical",
-                                                 prediction_zero = p0))
-  expect_equal(explanation1_success,explanation1_success2) # FAILS due to first lines in explain_x_test. Remove those
-  expect_equal(explanation1_success2,explanation1_success3)
+  # Expect silent for explainer 1, using correct, reordered and full data set, then identical results
+  l <- list()
+  for (i in seq_along(all_test_data)) {
+    l[[i]] <- expect_silent(
+      explain(
+        all_test_data[[i]],
+        all_explainers[[1]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
+  for (i in 2:length(l)) {
+    expect_equal(l[[i - 1]], l[[i]])
+  }
 
-  # expect silent for explainer 2, using correct data, reordered data and bigger data set, then identical results
-  expect_silent(explanation2_success <- explain(x_test,
-                                                explainer2,
-                                                approach = "empirical",
-                                                prediction_zero = p0))
-  expect_silent(explanation2_success2 <- explain(x_test_reordered,
-                                                 explainer2,
-                                                 approach = "empirical",
-                                                 prediction_zero = p0))
-  expect_silent(explanation2_success3 <- explain(x_test_full,
-                                                 explainer2,
-                                                 approach = "empirical",
-                                                 prediction_zero = p0))
-  expect_equal(explanation2_success,explanation2_success2) # FAILS due to first lines in explain_x_test. Remove those
-  expect_equal(explanation2_success2,explanation2_success3)
+  # Expect silent for explainer 2, using correct, reordered and bigger data set, then identical results
+  l <- list()
+  for (i in seq_along(all_test_data)) {
+    l[[i]] <- expect_silent(
+      explain(
+        all_test_data[[i]],
+        all_explainers[[2]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
+  for (i in 2:length(l)) {
+    expect_equal(l[[i - 1]], l[[i]])
+  }
 
-  # expect silent for explainer 1, using correct data, reordered data and bigger data set, then identical results
-  expect_silent(explanation3_success <- explain(x_test,
-                                                explainer3,
-                                                approach = "empirical",
-                                                prediction_zero = p0))
-  expect_silent(explanation3_success2 <- explain(x_test_reordered,
-                                                 explainer3,
-                                                 approach = "empirical",
-                                                 prediction_zero = p0))
-  expect_silent(explanation3_success3 <- explain(x_test_full,
-                                                 explainer3,
-                                                 approach = "empirical",
-                                                 prediction_zero = p0))
-  expect_equal(explanation3_success,explanation3_success2) # FAILS due to first lines in explain_x_test. Remove those
-  expect_equal(explanation3_success2,explanation3_success3)
+  # Expect silent for explainer 1, using correct, reordered and bigger data set, then identical results
+  l <- list()
+  for (i in seq_along(all_test_data)) {
+    l[[i]] <- expect_silent(
+      explain(
+        all_test_data[[i]],
+        all_explainers[[3]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
+  for (i in 2:length(l)) {
+    expect_equal(l[[i - 1]], l[[i]])
+  }
 
+  # Expect error when test data misses used variable
+  for (i in seq_along(all_explainers)) {
+    expect_error(
+      explain(
+        xy_test_missing_lstat_df,
+        all_explainers[[i]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
 
-  explain(x_test,
-          explainer4,
-          approach = "empirical",
-          prediction_zero = p0)
-
-  # expect silent for explainer 1, using correct data, reordered data and bigger data set, then identical results
-  expect_silent(explanation4_success <- explain(x_test,
-                                                explainer4,
-                                                approach = "empirical",
-                                                prediction_zero = p0))
-  expect_silent(explanation4_success2 <- explain(x_test_reordered,
-                                                 explainer4,
-                                                 approach = "empirical",
-                                                 prediction_zero = p0))
-  expect_silent(explanation4_success3 <- explain(x_test_full,
-                                                 explainer4,
-                                                 approach = "empirical",
-                                                 prediction_zero = p0))
-  expect_equal(explanation4_success,explanation4_success2) # FAILS due to first lines in explain_x_test. Remove those
-  expect_equal(explanation4_success2,explanation4_success3)
-
-  # expect error when test data misses used variable
-  expect_error(explanation1_error <- explain(xy_test_missing_lstat_df,
-                                             explainer1,
-                                             approach = "empirical",
-                                             prediction_zero = p0))
-  expect_error(explanation2_error <- explain(xy_test_missing_lstat_df,
-                                             explainer2,
-                                             approach = "empirical",
-                                             prediction_zero = p0))
-  expect_error(explanation3_error <- explain(xy_test_missing_lstat_df,
-                                             explainer3,
-                                             approach = "empirical",
-                                             prediction_zero = p0))
-  expect_error(explanation4_error <- explain(xy_test_missing_lstat_df,
-                                             explainer4,
-                                             approach = "empirical",
-                                             prediction_zero = p0))
-
-  # expect error when test data misses used variable
-  expect_error(explanation1_error2 <- explain(xy_test_full_df_no_colnames,
-                                             explainer1,
-                                             approach = "empirical",
-                                             prediction_zero = p0))
-  expect_error(explanation2_error2 <- explain(xy_test_full_df_no_colnames,
-                                             explainer2,
-                                             approach = "empirical",
-                                             prediction_zero = p0))
-  expect_error(explanation3_error2 <- explain(xy_test_full_df_no_colnames,
-                                             explainer3,
-                                             approach = "empirical",
-                                             prediction_zero = p0))
-  expect_error(explanation4_error2 <- explain(xy_test_full_df_no_colnames,
-                                             explainer4,
-                                             approach = "empirical",
-                                             prediction_zero = p0))
-
-
+  # Expect error when test data misses column names
+  for (i in seq_along(all_explainers)) {
+    expect_error(
+      explain(
+        xy_test_full_df_no_colnames,
+        all_explainers[[i]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
 })
-
-
