@@ -198,7 +198,7 @@ test_that("Testing data input to explain in explanation.R", {
     expect_equal(l[[i - 1]], l[[i]])
   }
 
-  # Expect silent for explainer 1, using correct, reordered and bigger data set, then identical results
+  # Expect silent for explainer 3, using correct, reordered and bigger data set, then identical results
   l <- list()
   for (i in seq_along(all_test_data)) {
     l[[i]] <- expect_silent(
