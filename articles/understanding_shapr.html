@@ -368,7 +368,7 @@ predict_model.train &lt;-<span class="st"> </span><span class="cf">function</spa
 }
 
 <span class="co"># Prepare the data for explanation</span>
-explainer &lt;-<span class="st"> </span><span class="kw"><a href="../reference/shapr.html">shapr</a></span>(x_train, model)
+explainer &lt;-<span class="st"> </span><span class="kw"><a href="../reference/shapr.html">shapr</a></span>(x_train, model, <span class="dt">feature_labels =</span> x_var)
 
 <span class="co"># Spedifying the phi_0, i.e. the expected prediction without any features</span>
 p0 &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(y_train)

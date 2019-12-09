@@ -129,16 +129,14 @@
     <p>Create an explainer object with Shapley weights for test data.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>shapr</span>(<span class='no'>x</span>, <span class='no'>model</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>shapr</span>(<span class='no'>x</span>, <span class='no'>model</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>feature_labels</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>Numeric matrix or data.frame. Contains the variables used for training the model,
-i.e. the explanatory variables. Note that the response variable should not be part of
-<code>x</code>, and that <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(x)</a></code> should be equal to the number of features in the model.</p></td>
+      <td><p>Numeric matrix or data.frame. Contains the data used for training the model.</p></td>
     </tr>
     <tr>
       <th>model</th>
@@ -150,6 +148,11 @@ for more information about which models <code>shapr</code> supports natively.</p
       <td><p>Integer. The number of feature combinations to sample. If <code>NULL</code>,
 the exact method is used and all combinations are considered. The maximum number of
 combinations equals <code>2^ncol(x)</code>.</p></td>
+    </tr>
+    <tr>
+      <th>feature_labels</th>
+      <td><p>Character vector. The labels/names of the features used for training the model.
+Only applicable if you are using a custom model. Otherwise the features in use are extracted from <code>model</code>.</p></td>
     </tr>
     </table>
 
@@ -171,8 +174,8 @@ combinations equals <code>2^ncol(x)</code>.</p></td>
 
 </dl>
 
-<p>In addition to the items above <code>model</code> and <code>n_combinations</code> is also present in the
-returned object.</p>
+<p>In addition to the items above <code>model</code>, <code>feature_labels</code> (updated with the names actually used by the
+model) and <code>n_combinations</code> is also present in the returned object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Load example data</span>

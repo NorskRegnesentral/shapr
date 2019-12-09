@@ -287,20 +287,17 @@ when conditioning on <code>i</code> features.</p>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"Boston"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"MASS"</span>)
 
 <span class='co'># Split data into test- and training data</span>
-<span class='no'>x_var</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"lstat"</span>, <span class='st'>"rm"</span>, <span class='st'>"dis"</span>, <span class='st'>"indus"</span>)
-<span class='no'>y_var</span> <span class='kw'>&lt;-</span> <span class='st'>"medv"</span>
-<span class='no'>x_train</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>Boston</span>[, <span class='no'>x_var</span>], -<span class='fl'>3</span>)
-<span class='no'>y_train</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>Boston</span>[, <span class='no'>y_var</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>], -<span class='fl'>3</span>)
-<span class='no'>x_test</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='no'>Boston</span>[, <span class='no'>x_var</span>], <span class='fl'>3</span>)
+<span class='no'>x_train</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>Boston</span>, -<span class='fl'>3</span>)
+<span class='no'>x_test</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='no'>Boston</span>, <span class='fl'>3</span>)
 
 <span class='co'># Fit a linear model</span>
-<span class='no'>model</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='no'>medv</span> ~ <span class='no'>lstat</span> + <span class='no'>rm</span> + <span class='no'>dis</span> + <span class='no'>indus</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='no'>y_train</span>, <span class='no'>x_train</span>))
+<span class='no'>model</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='no'>medv</span> ~ <span class='no'>lstat</span> + <span class='no'>rm</span> + <span class='no'>dis</span> + <span class='no'>indus</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>x_train</span>)
 
 <span class='co'># Create an explainer object</span>
 <span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='shapr.html'>shapr</a></span>(<span class='no'>x_train</span>, <span class='no'>model</span>)
 
 <span class='co'># Explain predictions</span>
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>y_train</span>[, <span class='fl'>1</span>])
+<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>x_train</span>$<span class='no'>medv</span>)
 
 <span class='co'># Empirical approach</span>
 <span class='no'>explain1</span> <span class='kw'>&lt;-</span> <span class='fu'>explain</span>(<span class='no'>x_test</span>, <span class='no'>explainer</span>, <span class='kw'>approach</span> <span class='kw'>=</span> <span class='st'>"empirical"</span>, <span class='kw'>prediction_zero</span> <span class='kw'>=</span> <span class='no'>p</span>)
