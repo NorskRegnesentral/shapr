@@ -89,6 +89,13 @@ test_that("Test functions in explanation.R", {
   # Checking that all explain objects produce the same as before
   expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
 
+  ### Additional test that only the produced shapley values are the same as before
+  fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")
+  for (i in 1:length(ex_list)) {
+    expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+  }
+
+
   # Checks that an error is returned
   expect_error(
     explain(1, explainer, approach = "gaussian", prediction_zero = p0)
@@ -102,4 +109,134 @@ test_that("Test functions in explanation.R", {
   expect_error(
     explain(x_test, explainer, approach = rep("gaussian", ncol(x_test) + 1), prediction_zero = p0)
   )
+})
+
+test_that("Testing data input to explain in explanation.R", {
+
+  # Setup for training data and explainer object
+  data("Boston", package = "MASS")
+  x_var <- c("lstat", "rm", "dis", "indus")
+  y_var <- "medv"
+
+  # Training data
+  x_train <- as.matrix(tail(Boston[, x_var], -6))
+  y_train <- tail(Boston[, y_var], -6)
+  xy_train_full_df <- tail(Boston[, ], -6)
+
+  # Test data
+  x_test <- as.matrix(head(Boston[, x_var], 6))
+  x_test_full <- as.matrix(head(Boston[, ], 6))
+  x_test_reordered <- as.matrix(head(Boston[, rev(x_var)], 6))
+  xy_test_full_df <- head(Boston[, ], 6)
+  xy_test_missing_lstat_df <- xy_test_full_df[, !(colnames(xy_test_full_df) == "lstat")]
+  xy_test_full_df_no_colnames <- xy_test_full_df
+  colnames(xy_test_full_df_no_colnames) <- NULL
+
+  # Fitting models
+  formula <- as.formula(paste0("medv ~ ", paste0(x_var, collapse = "+")))
+  model1 <- xgboost::xgboost(
+    data = x_train,
+    label = y_train,
+    nround = 5,
+    verbose = FALSE
+  )
+
+  model2 <- lm(
+    formula = formula,
+    data = xy_train_full_df
+  )
+
+  model3 <- ranger::ranger(
+    formula = formula,
+    data = xy_train_full_df,
+    num.trees = 50
+  )
+
+  p0 <- mean(y_train)
+
+  # Get explainer objects
+  all_explainers <- lapply(list(model1, model2, model3), shapr, x = x_train)
+
+  # Test data
+  all_test_data <- list(
+    x_test,
+    x_test_reordered,
+    x_test_full
+  )
+
+  # Expect silent for explainer 1, using correct, reordered and full data set, then identical results
+  l <- list()
+  for (i in seq_along(all_test_data)) {
+    l[[i]] <- expect_silent(
+      explain(
+        all_test_data[[i]],
+        all_explainers[[1]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
+  for (i in 2:length(l)) {
+    expect_equal(l[[i - 1]], l[[i]])
+  }
+
+  # Expect silent for explainer 2, using correct, reordered and bigger data set, then identical results
+  l <- list()
+  for (i in seq_along(all_test_data)) {
+    l[[i]] <- expect_silent(
+      explain(
+        all_test_data[[i]],
+        all_explainers[[2]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
+  for (i in 2:length(l)) {
+    expect_equal(l[[i - 1]], l[[i]])
+  }
+
+  # Expect silent for explainer 3, using correct, reordered and bigger data set, then identical results
+  l <- list()
+  for (i in seq_along(all_test_data)) {
+    l[[i]] <- expect_silent(
+      explain(
+        all_test_data[[i]],
+        all_explainers[[3]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
+  for (i in 2:length(l)) {
+    expect_equal(l[[i - 1]], l[[i]])
+  }
+
+  for (i in seq_along(all_explainers)) {
+
+    # Expect error when test data misses used variable
+    expect_error(
+      explain(
+        xy_test_missing_lstat_df,
+        all_explainers[[i]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+
+    # Expect error when test data misses column names
+    expect_error(
+      explain(
+        xy_test_full_df_no_colnames,
+        all_explainers[[i]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
 })

@@ -431,7 +431,7 @@ predict_model.train <- function(x, newdata) {
 }
 
 # Prepare the data for explanation
-explainer <- shapr(x_train, model)
+explainer <- shapr(x_train, model, feature_labels = x_var)
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
