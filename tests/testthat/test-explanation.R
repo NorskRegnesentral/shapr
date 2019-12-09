@@ -215,8 +215,9 @@ test_that("Testing data input to explain in explanation.R", {
     expect_equal(l[[i - 1]], l[[i]])
   }
 
-  # Expect error when test data misses used variable
   for (i in seq_along(all_explainers)) {
+
+    # Expect error when test data misses used variable
     expect_error(
       explain(
         xy_test_missing_lstat_df,
@@ -226,10 +227,8 @@ test_that("Testing data input to explain in explanation.R", {
         n_samples = 1e2
       )
     )
-  }
 
-  # Expect error when test data misses column names
-  for (i in seq_along(all_explainers)) {
+    # Expect error when test data misses column names
     expect_error(
       explain(
         xy_test_full_df_no_colnames,
