@@ -76,8 +76,8 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
 #' }
 #'
-#' In addition to the items above \code{model}, \code{feature_labels} and \code{n_combinations} is also present in the
-#' returned object.
+#' In addition to the items above \code{model}, \code{feature_labels} (updated with the names actually used by the
+#' model) and \code{n_combinations} is also present in the returned object.
 #'
 #' @export
 #'
@@ -132,7 +132,7 @@ shapr <- function(x,
   explainer$model_type <- model_type(model)
 
   # Checks input argument
-  feature_labels <- features(model, feature_labels)
+  feature_labels <- features(model, colnames(x), feature_labels)
   explainer$n_features <- length(feature_labels)
 
   # Converts to data.table, otherwise copy to x_train  --------------
@@ -144,7 +144,7 @@ shapr <- function(x,
   data.table::setcolorder(x_train, feature_labels)
 
   # Checks model and features
-  explainer$p <- predict_model(model, head(x))
+  explainer$p <- predict_model(model, head(x_train))
 
   # Get all combinations ----------------
   dt_combinations <- feature_combinations(

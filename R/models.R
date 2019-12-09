@@ -245,17 +245,21 @@ model_type.xgb.Booster <- function(x) {
   )
 }
 
-#' Fetch feature labels from model object
+#' Fetches feature labels from a given model object
 #'
-#' @inheritParams shapr
+#' @inheritParams predict_model
+#' @param cnms Character vector. Represents the names of the columns in the data used for training/explaining.
+#' @param feature_labels Character vector. Represents the labels of the features used for prediction.
 #'
 #' @keywords internal
-features <- function(x, feature_labels = NULL) {
+#'
+#' @export
+features <- function(x, cnms, feature_labels = NULL) {
   UseMethod("features", x)
 }
 
 #' @rdname features
-features.default <- function(x, feature_labels) {
+features.default <- function(x, cnms, feature_labels = NULL) {
 
   if (is.null(feature_labels)) {
     stop(
@@ -267,21 +271,45 @@ features.default <- function(x, feature_labels) {
     )
   }
 
+  if (!all(feature_labels %in% cnms)) {
+    stop(
+      paste0(
+        "\nThere is mismatch between the column names in x and\n",
+        "feature_labels. All elements in feature_labels should\n",
+        "be present in colnames(x)."
+      )
+    )
+  }
+
   feature_labels
 }
 
 #' @rdname features
-features.lm <- function(x, feature_labels) {
-  tail(all.vars(x$terms), -1)
+features.lm <- function(x, cnms, feature_labels = NULL) {
+
+  if (!is.null(feature_labels)) message_features_labels()
+
+  nms <- tail(all.vars(x$terms), -1)
+  if (!all(nms %in% cnms)) error_feature_labels()
+
+  return(nms)
 }
 
 #' @rdname features
-features.glm <- function(x, feature_labels) {
-  tail(all.vars(x$terms), -1)
+features.glm <- function(x, cnms, feature_labels = NULL) {
+
+  if (!is.null(feature_labels)) message_features_labels()
+
+  nms <- tail(all.vars(x$terms), -1)
+  if (!all(nms %in% cnms)) error_feature_labels()
+
+  return(nms)
 }
 
 #' @rdname features
-features.ranger <- function(x, feature_labels) {
+features.ranger <- function(x, cnms, feature_labels = NULL) {
+
+  if (!is.null(feature_labels)) message_features_labels()
 
   nms <- x$forest$independent.variable.names
 
@@ -293,15 +321,57 @@ features.ranger <- function(x, feature_labels) {
       )
     )
   }
-  unique_features(nms)
+  nms <- unique_features(nms)
+
+  if (!all(nms %in% cnms)) error_feature_labels()
+
+  return(nms)
+
 }
 
 #' @rdname features
-features.gam <- function(x, feature_labels) {
-  tail(all.vars(x$terms), -1)
+features.gam <- function(x, cnms, feature_labels = NULL) {
+
+  if (!is.null(feature_labels)) message_features_labels()
+
+  nms <- tail(all.vars(x$terms), -1)
+
+  if (!all(nms %in% cnms)) error_feature_labels()
+
+  return(nms)
 }
 
 #' @rdname features
-features.xgb.Booster <- function(x, feature_labels) {
-  x$feature_names
+features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
+
+  if (!is.null(feature_labels)) message_features_labels()
+
+  nms <- x$feature_names
+
+  if (!all(nms %in% cnms)) error_feature_labels()
+
+  return(nms)
+}
+
+#' @keywords internal
+message_features_labels <- function() {
+  message(
+    paste0(
+      "\nYou have passed a supported model object, and therefore\n",
+      "features_labels is ignored. The argument is only applicable when\n",
+      "using a custom model. For more information see ?shapr::shapr."
+    )
+  )
+}
+
+#' @keywords internal
+error_feature_labels <- function() {
+  stop(
+    paste0(
+      "\nThere is mismatch between the column names in x and\n",
+      "the returned elements from features(model). All elements\n",
+      "from features(model) should be present in colnames(x).\n",
+      "For more information see ?shapr::features"
+    )
+  )
 }

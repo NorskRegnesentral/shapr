@@ -136,20 +136,17 @@ when conditioning on \code{i} features.
 data("Boston", package = "MASS")
 
 # Split data into test- and training data
-x_var <- c("lstat", "rm", "dis", "indus")
-y_var <- "medv"
-x_train <- head(Boston[, x_var], -3)
-y_train <- head(Boston[, y_var, drop = FALSE], -3)
-x_test <- tail(Boston[, x_var], 3)
+x_train <- head(Boston, -3)
+x_test <- tail(Boston, 3)
 
 # Fit a linear model
-model <- lm(medv ~ lstat + rm + dis + indus, data = cbind(y_train, x_train))
+model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 
 # Create an explainer object
 explainer <- shapr(x_train, model)
 
 # Explain predictions
-p <- mean(y_train[, 1])
+p <- mean(x_train$medv)
 
 # Empirical approach
 explain1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p)
