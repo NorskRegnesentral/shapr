@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -300,17 +300,17 @@ when conditioning on <code>i</code> features.</p>
 <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>x_train</span>$<span class='no'>medv</span>)
 
 <span class='co'># Empirical approach</span>
-<span class='no'>explain1</span> <span class='kw'>&lt;-</span> <span class='fu'>explain</span>(<span class='no'>x_test</span>, <span class='no'>explainer</span>, <span class='kw'>approach</span> <span class='kw'>=</span> <span class='st'>"empirical"</span>, <span class='kw'>prediction_zero</span> <span class='kw'>=</span> <span class='no'>p</span>)
+<span class='no'>explain1</span> <span class='kw'>&lt;-</span> <span class='fu'>explain</span>(<span class='no'>x_test</span>, <span class='no'>explainer</span>, <span class='kw'>approach</span> <span class='kw'>=</span> <span class='st'>"empirical"</span>, <span class='kw'>prediction_zero</span> <span class='kw'>=</span> <span class='no'>p</span>, <span class='kw'>n_samples</span> <span class='kw'>=</span> <span class='fl'>1e2</span>)
 
 <span class='co'># Gaussian approach</span>
-<span class='no'>explain2</span> <span class='kw'>&lt;-</span> <span class='fu'>explain</span>(<span class='no'>x_test</span>, <span class='no'>explainer</span>, <span class='kw'>approach</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>, <span class='kw'>prediction_zero</span> <span class='kw'>=</span> <span class='no'>p</span>)
+<span class='no'>explain2</span> <span class='kw'>&lt;-</span> <span class='fu'>explain</span>(<span class='no'>x_test</span>, <span class='no'>explainer</span>, <span class='kw'>approach</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>, <span class='kw'>prediction_zero</span> <span class='kw'>=</span> <span class='no'>p</span>, <span class='kw'>n_samples</span> <span class='kw'>=</span> <span class='fl'>1e2</span>)
 
 <span class='co'># Gaussian copula approach</span>
-<span class='no'>explain3</span> <span class='kw'>&lt;-</span> <span class='fu'>explain</span>(<span class='no'>x_test</span>, <span class='no'>explainer</span>, <span class='kw'>approach</span> <span class='kw'>=</span> <span class='st'>"copula"</span>, <span class='kw'>prediction_zero</span> <span class='kw'>=</span> <span class='no'>p</span>)
+<span class='no'>explain3</span> <span class='kw'>&lt;-</span> <span class='fu'>explain</span>(<span class='no'>x_test</span>, <span class='no'>explainer</span>, <span class='kw'>approach</span> <span class='kw'>=</span> <span class='st'>"copula"</span>, <span class='kw'>prediction_zero</span> <span class='kw'>=</span> <span class='no'>p</span>, <span class='kw'>n_samples</span> <span class='kw'>=</span> <span class='fl'>1e2</span>)
 
 <span class='co'># Combined approach</span>
 <span class='no'>approach</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"gaussian"</span>, <span class='st'>"empirical"</span>, <span class='st'>"empirical"</span>)
-<span class='no'>explain4</span> <span class='kw'>&lt;-</span> <span class='fu'>explain</span>(<span class='no'>x_test</span>, <span class='no'>explainer</span>, <span class='kw'>approach</span> <span class='kw'>=</span> <span class='no'>approach</span>, <span class='kw'>prediction_zero</span> <span class='kw'>=</span> <span class='no'>p</span>)
+<span class='no'>explain4</span> <span class='kw'>&lt;-</span> <span class='fu'>explain</span>(<span class='no'>x_test</span>, <span class='no'>explainer</span>, <span class='kw'>approach</span> <span class='kw'>=</span> <span class='no'>approach</span>, <span class='kw'>prediction_zero</span> <span class='kw'>=</span> <span class='no'>p</span>, <span class='kw'>n_samples</span> <span class='kw'>=</span> <span class='fl'>1e2</span>)
 
 <span class='co'># Plot the results</span>
 <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
