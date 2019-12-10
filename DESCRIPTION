@@ -1,5 +1,5 @@
 Package: shapr
-Version: 0.0.0.9000
+Version: 0.1.0
 Title: Explain the output of machine learning models with more accurately estimated Shapley values 
 Description: Complex machine learning models are often hard to interpret. However, in 
   many situations it is crucial to understand and explain why a model made a specific 
@@ -9,7 +9,7 @@ Description: Complex machine learning models are often hard to interpret. Howeve
   described in Aas, Jullum and Løland (2019) <arXiv:1903.10464>, which accounts for any feature 
   dependence, and thereby produces more accurate estimates of the true Shapley values.
 Authors@R: c(
-    person("Nikolai", "Sellereite", email = "Nikolai.Sellereite@nr.no", role = c("cre", "aut"), comment = c(ORCID = 0000-0002-4671-0337)),
+    person("Nikolai", "Sellereite", email = "nikolaisellereite@gmail.com", role = c("cre", "aut"), comment = c(ORCID = 0000-0002-4671-0337)),
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = "aut", comment = c(ORCID = 0000-0003-3908-5155)),  
     person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
     person("Jens Christian", "Wahl", email = "Jens.Christian.Wahl@nr.no", role = "ctb"), 
