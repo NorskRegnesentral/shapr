@@ -6,6 +6,7 @@
 * Added vignette that gives an introduction to the package
 * Added webpage for package using [pkgdown](https://github.com/r-lib/pkgdown)
 * Improved API for end user
+* Various bugfixes
 
 # shapr 0.0.0.9000
 
