@@ -62,7 +62,7 @@ jobs:
         run: Rscript -e "install.packages('stringi', repos = 'http://cran.rstudio.com')"
 
       - name: Install dependencies
-        run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
+        run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE, type = 'binary')" -e "remotes::install_cran('rcmdcheck')"
 
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--no-examples'), error_on = 'note', check_dir = 'check')"
