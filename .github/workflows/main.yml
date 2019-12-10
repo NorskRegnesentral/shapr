@@ -17,10 +17,10 @@ jobs:
       matrix:
         r-version: [3.5.1, 3.6.1]
         config:
-        - { os: windows-latest, args: "--no-manual"}
-        - { os: macOS-latest}
-        - { os: ubuntu-16.04, cran: "https://demo.rstudiopm.com/all/__linux__/xenial/latest", args: "--no-manual" }
-        - { os: ubuntu-latest, cran: "https://demo.rstudiopm.com/all/__linux__/bionic/latest", args: "--no-manual" }
+        - { os: windows-latest, args: "--no-manual", type : "binary"}
+        - { os: macOS-latest, type : "binary"}
+        - { os: ubuntu-16.04, cran: "https://demo.rstudiopm.com/all/__linux__/xenial/latest", args: "--no-manual" , type : "source"}
+        - { os: ubuntu-latest, cran: "https://demo.rstudiopm.com/all/__linux__/bionic/latest", args: "--no-manual", type : "source"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -62,7 +62,7 @@ jobs:
         run: Rscript -e "install.packages('stringi', repos = 'http://cran.rstudio.com')"
 
       - name: Install dependencies
-        run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
+        run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE, type = '${{ matrix.config.type }}')" -e "remotes::install_cran('rcmdcheck')"
 
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--no-examples'), error_on = 'note', check_dir = 'check')"
