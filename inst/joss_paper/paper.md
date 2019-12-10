@@ -28,32 +28,6 @@ journal: JOSS
 ---
 
 
-<!-- What should my paper contain? -->
-<!-- Important -->
-
-<!-- Begin your paper with a summary of the high-level functionality of your software for a non-specialist reader. Avoid jargon in this section. -->
-
-<!-- JOSS welcomes submissions from broadly diverse research areas. For this reason, we require that authors include in the paper some sentences that explain the software functionality and domain of use to a non-specialist reader. We also require that authors explain the research applications of the software. The paper should be between 250-1000 words. -->
-
-<!-- Your paper should include: -->
-
-<!-- A list of the authors of the software and their affiliations, using the correct format (see the example below). -->
-<!-- A summary describing the high-level functionality and purpose of the software for a diverse, non-specialist audience. -->
-<!-- A clear Statement of Need that illustrates the research purpose of the software. -->
-<!-- A list of key references, including to other software addressing related needs. -->
-<!-- Mention (if applicable) of any past or ongoing research projects using the software and recent scholarly publications enabled by it. -->
-<!-- Acknowledgement of any financial support. -->
-<!-- As this short list shows, JOSS papers are only expected to contain a limited set of metadata (see example below), a Statement of Need, Summary, Acknowledgements, and References sections. You can look at an example accepted paper. Given this format, a “full length” paper is not permitted, and software documentation such as API (Application Programming Interface) functionality should not be in the paper and instead should be outlined in the software documentation. 
-
-USE: devtools::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
-
-for word counting in the Rmarkdwon document (250-1000 words)
-
--->
-
-
-
-
 # Summary
 
 A common task within machine learning is to train a model to predict an unknown outcome 
@@ -101,9 +75,6 @@ The majority of the code is in plain `R` [@rCore], while the most time consuming
 through the `Rcpp` package [@rcppRpackage] for computational speed up. 
 For RAM efficiency and computational speed up of typical bookeeping operations, we utilize the `data.table` 
 package [@datatableRpackage] which does operations "by reference", i.e. without memory copies.
-
-<!--In addition to our package's ability to account for the feature dependence (which the `shap` package does not), 
-basic tests suggest our implementation is about 3-4 times faster. -->
 
 For a detailed description of the underlying methodology that the package implements, we refer to the 
 [paper](https://arxiv.org/abs/1903.10464) [@aas2019explaining] which uses the package in examples and simulation 
