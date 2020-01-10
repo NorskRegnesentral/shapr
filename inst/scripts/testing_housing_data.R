@@ -31,7 +31,6 @@ check_for_row_NA <- function(row_ind, data){
 dataDir <- paste(projDir, "BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/", sep = "/")
 dataDirMJ <- ".."
 
-
 setwd(dataDir)
 
 ## read csv
@@ -54,7 +53,7 @@ x_var <- c("MSSubClass", "MSZoning", "LotArea", "Street")
 y_var <- "SalePrice"
 
 #### Run xgboost with all variables to find the most influential categorical variables ####
-x_var <- colnames(train_noNA)[-which(colnames(train_noNA)%in%c("Id","SalePrice"))]
+x_var <- colnames(train_noNA)[-which(colnames(train_noNA) %in% c("Id","SalePrice"))]
 
 ## ----------------------------------------- ##
 

@@ -1,5 +1,22 @@
-
-## -------------------- some functions ----------------------
+#' Function to simulate Normal random variables with true mu and Sigma parameters.
+#'
+#' @description
+#'
+#' @param mu Numeric or vector indicating the true mean of the Normal or joint Normal random variables used to calculate
+#' the true Shapley values.
+#' @param Sigma Numeric (if mu is Numeric) or matrix with values used for covariance matrix of the random variables used to
+#' calculate the true Shapley values.
+#' @param beta Numeric or vector. These are the true coefficients of the response modelthat we are trying to explain with the
+#' Shapley values.
+#' @param N_shapley Numeric indicating how many Normal or joint Normal random variables to simulate. Default 10000.
+#' @param explainer explainer object from shapr package.
+#' @param cutoff vector of Numerics. This indicates where to cutoff the Normal random variables to make levels.
+#' @param response_mod function. The true response model that indicates how the features relate to the response.
+#' @details
+#'
+#' @return list
+#'
+#' @export
 
 sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutoff, response_mod){
 
@@ -54,6 +71,17 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
 
   return(list(joint_prob_dt, mn, prop))
 }
+
+#' Function to calculate marginal probabilities of the cutoff jointly Normal random variables
+#'
+#' @description
+#'
+#' @param joint_prob_dt list. Calculated using the \code{sim_true_Normal} function.
+#' @param explainer explainer object from shapr package.
+#'
+#' @return list
+#'
+#' @export
 
 marg_prob <- function(joint_prob_dt, explainer){
 
@@ -122,6 +150,18 @@ marg_prob <- function(joint_prob_dt, explainer){
   return(marg_list)
 }
 
+#' Function to calculate conditional probabilities of the cutoff jointly Normal random variables
+#'
+#' @description
+#'
+#' @param marg_list list. Contains the marginal probabilities calculated using the \code{marg_prob} function.
+#' @param joint_prob_dt list. Calculated using the \code{sim_true_Normal} function.
+#' @param explainer explainer object from shapr package.
+#'
+#' @return list
+#'
+#' @export
+
 cond_prob <- function(marg_list, joint_prob_dt, explainer){
 
   nms <- colnames(explainer$x_train)
@@ -176,8 +216,19 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer){
   return(cond_list)
 }
 
+#' Function to calculate conditional expectations of the cutoff jointly Normal random variables
+#'
+#' @description
+#'
+#' @param x_test vector of test observations. Has the same dimension as the number of joint Normal random variables calculated in \code{sim_true_Normal} function.
+#' @param cond_list list. Calculated using the \code{cond_prob} function.
+#' @param explainer explainer object from shapr package.
+#' @param prediction_zero Numeric. Number to assigned to phi_0 in Shapley framework.
+#'
+#' @return list
+#'
+#' @export
 
-## function to calculate conditional expectation
 cond_expec <- function(x_test, cond_list, explainer, prediction_zero){ ## removed prediction_zero
 
   nms <- colnames(explainer$x_train)
@@ -219,6 +270,18 @@ cond_expec <- function(x_test, cond_list, explainer, prediction_zero){ ## remove
   return(cond_expec)
 }
 
+#' Function to calculate the true Shapley values based on the conditional expectations calculated using \code{cond_expec}
+#'
+#' @description
+#'
+#' @param explainer explainer object from shapr package.
+#' @param cond_expec list. Calculated using \code{cond_expec} function.
+#' @param x_test vector of test observations. Has the same dimension as the number of joint Normal random variables calculated in \code{sim_true_Normal} function.
+#'
+#' @return vector of Shapley values.
+#'
+#' @export
+
 true_Kshap <- function(explainer, cond_expec, x_test){
 
   Kshap <- matrix(0, nrow = nrow(x_test), ncol = nrow(explainer$W))
@@ -231,6 +294,18 @@ true_Kshap <- function(explainer, cond_expec, x_test){
   return(Kshap)
 }
 
+#' Function to calculate the true Shapley values under the strict conditions that the features are independent and the response function is linear.
+#'
+#' @description
+#'
+#' @param x_test_onehot vector of Numerics. The testing observations, one-hot encoded
+#' @param beta vector of Numerics. The coefficients of the linear model.
+#' @param dt
+#' @param prop
+#'
+#' @return vector of Shapley values.
+#'
+#' @export
 
 linear_Kshap <- function(x_test_onehot, beta, dt, prop){
 
@@ -257,10 +332,30 @@ linear_Kshap <- function(x_test_onehot, beta, dt, prop){
 
 # shapley_method <- true_linear
 
+#' Function to calculate the mean average error (MAE) between the true Shapley values and the estimated Shapley values
+#'
+#' @description
+#'
+#' @param true_shapley vector of Numerics. The vector of true Shapley values.
+#' @param shapley_method vector of Numerics. The vector of estimated Shapley values
+#'
+#' @return vector of Shapley values.
+#'
+#' @export
+
 MAE <- function(true_shapley, shapley_method){
   mean(apply(abs(true_shapley - shapley_method), 2, mean)[-1])
 }
 
+#' Function to simulate the data and calculate the estimated Shapley value as well as simulate the random variables to calculate the true Shapley values
+#'
+#' @description
+#'
+#' @param parameters_list list. List of all the parameters needed for simulating the data and calcualting the true and estimated Shapley values.
+#'
+#' @return vector of Shapley values.
+#'
+#' @export
 
 library(lqmm) ## to check if Sigma is positive definite
 simulate_data <- function(parameters_list){
@@ -287,7 +382,7 @@ simulate_data <- function(parameters_list){
   N_testing <- parameters_list$N_testing
   N_training <- parameters_list$N_training
 
-  ## 1. calculate training and testing data
+  ## 1. simulate training and testing data
   x <- mvrnorm(n = N_testing + N_training, mu = mu, Sigma = Sigma)
 
   dt <- NULL
@@ -299,7 +394,7 @@ simulate_data <- function(parameters_list){
     cutoff <- t(matrix(cutoff, ncol = 3))
   } else{
     for(i in 1:ncol(x)){
-      dt <- cbind(dt, cut(x[, i], cutoff, labels=c(1:3)))
+      dt <- cbind(dt, cut(x[, i], cutoff, labels = c(1:3)))
     }
   }
 
@@ -314,7 +409,7 @@ simulate_data <- function(parameters_list){
   dt[, feat3 := as.factor(feat3)]
 
   if(noise == TRUE){
-    dt[, epsilon := rnorm(N_data, 0, 0.1^2)] #
+    dt[, epsilon := rnorm(N_testing + N_training, 0, 0.1^2)] #
   } else{
     dt[, epsilon := 0]
   }
@@ -363,6 +458,8 @@ simulate_data <- function(parameters_list){
   ## 8. calculate approximate shapley value with different methods
   p <- mean(y_train$response) # since y_train is no longer a matrix
 
+  timeit <- list()
+
   explanation_list <- list()
   for(m in methods){
     if(m == 'empirical' | m == 'empirical_ind' |  m == 'gaussian' | m == 'ctree_onehot'){
@@ -377,13 +474,17 @@ simulate_data <- function(parameters_list){
       explainer_onehot <- shapr(x_train_onehot, model_onehot)
 
       if(m == 'ctree_onehot'){
+        tm <- Sys.time()
         explanation_list[[m]] <- explain(
           x_test_onehot,
           approach = 'ctree',
           explainer = explainer_onehot,
           prediction_zero = p,
           sample = FALSE)
+        tm2 <- Sys.time()
+        timeit['ctree_onehot'] <- (tm2 - tm)
       } else if(m == 'empirical_ind'){
+        tm <- Sys.time()
         explanation_list[[m]] <- explain(
           x_test_onehot,
           approach = "empirical",
@@ -391,13 +492,18 @@ simulate_data <- function(parameters_list){
           explainer = explainer_onehot,
           prediction_zero = p,
           sample = FALSE)
+        tm2 <- Sys.time()
+        timeit['empirical_ind'] <- (tm2 - tm)
       } else{
+        tm <- Sys.time()
         explanation_list[[m]] <- explain(
           x_test_onehot,
           approach = m,
           explainer = explainer_onehot,
           prediction_zero = p,
           sample = FALSE)
+        tm2 <- Sys.time()
+        timeit[m] <- (tm2 - tm)
       }
       explanation_list[[m]]$dt_sum <- cbind(NULL, explanation_list[[m]]$dt[, 1])
       for(i in c(2, 4, 6)){
@@ -406,12 +512,15 @@ simulate_data <- function(parameters_list){
       setnames(explanation_list[[m]]$dt_sum, c("none", "feat1", "feat2", "feat3"))
 
     } else { ## for ctree without one-hot encoding
+      tm <- Sys.time()
       explanation_list[[m]] <- explain(
         x_test,
         approach = m,
         explainer = explainer,
         prediction_zero = p,
         sample = FALSE)
+      tm2 <- Sys.time()
+      timeit[m] <- (tm2 - tm)
     }
   }
 
@@ -419,7 +528,7 @@ simulate_data <- function(parameters_list){
   return_list[['true_shapley']] <- true_shapley
   return_list[['true_linear']] <- true_linear
   return_list[['methods']] <- explanation_list
-
+  return_list[['timing']] <- timeit
   return(return_list)
 
 }
