@@ -47,7 +47,7 @@ Suggests:
     MASS,
     ggplot2,
     caret,
-    gbm
+    gbm,
     party
 LinkingTo: 
     RcppArmadillo,

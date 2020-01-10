@@ -7,7 +7,8 @@
 sample_ctree(tree, n_samples, x_test, x_train, p, sample)
 }
 \arguments{
-\item{tree}{ctree built from the party package. This includes the indices of the features to condition upon.}
+\item{tree}{List. Contains tree which is an object of type ctree built from the party package.
+Also contains given_ind, the features to condition upon.}
 
 \item{n_samples}{Numeric. Indicates how many samples to use for MCMC.}
 
@@ -17,6 +18,9 @@ predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1
 \item{x_train}{Matrix, data.frame or data.table with training data.}
 
 \item{p}{Positive integer. The number of features.}
+
+\item{sample}{Boolean. True indicates that the method samples from the terminal node
+of the tree whereas False indicates that the method takes all the samples if it is less than n_samples.}
 }
 \value{
 data.table with \code{n_samples} (conditional) Gaussian samples

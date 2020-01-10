@@ -38,17 +38,20 @@ explain(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{copula}(x, explainer, approach, prediction_zero, ...)
 
-<<<<<<< HEAD
-\method{explain}{ctree}(x, explainer, approach, prediction_zero,
-  comb_indici = NULL, comb_mincriterion = NULL, mincriterion = 0.95,
-  minsplit = 20, minbucket = 7, sample = TRUE, ...)
+\method{explain}{ctree}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  comb_indici = NULL,
+  comb_mincriterion = NULL,
+  mincriterion = 0.95,
+  minsplit = 20,
+  minbucket = 7,
+  sample = TRUE,
+  ...
+)
 
-\method{explain}{combined}(x, explainer, approach, prediction_zero,
-  mu = NULL, cov_mat = NULL, ...)
-
-\method{explain}{combinedparameters}(x, explainer, approach,
-  prediction_zero, mincriterion, ...)
-=======
 \method{explain}{combined}(
   x,
   explainer,
@@ -58,7 +61,8 @@ explain(x, explainer, approach, prediction_zero, ...)
   cov_mat = NULL,
   ...
 )
->>>>>>> master
+
+\method{explain}{combinedparameters}(x, explainer, approach, prediction_zero, mincriterion, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -106,22 +110,24 @@ generating distribution. \code{NULL} means it is estimated from the data if need
 (in the Gaussian approach).}
 
 \item{comb_indici}{Numeric value. (Optional) Contains the splitting point corresponding to where to change the
-\code{comb_mincriterion}. Right now, this is only implemented for one splitting value. Could potentially make more splits later.
-If \code{NULL}, the \code{mincriterion} is constant for every combination.}
+\code{comb_mincriterion}.
+If \code{NULL}, the \code{mincriterion} is constant for every combination.
+This is a depreciated method and will be deleted later.}
 
 \item{comb_mincriterion}{Numeric vector. (Optional) Contains the different mincriterions to use for each
 combination.
-If \code{NULL}, the \code{mincriterion} is constant for every combination.}
+If \code{NULL}, the \code{mincriterion} is constant for every combination.
+This is a depreciated method and will be deleted later.}
 
-\item{mincriterion}{equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
-If \code{comb_indici} and \code{comb_mincriterion} are both not \code{NULL}, then \code{mincriterion} can be set
-to \code{NULL}. Otherwise, it needs to be filled out.}
+\item{mincriterion}{Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+Can also be a vector equal to the length of the number of features indicating which mincriterion to use
+when conditioning on various numbers of features.}
 
-\item{minsplit}{is the value that the sum of the left and right daughter nodes need to exceed.}
+\item{minsplit}{Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.}
 
-\item{minbucket}{is equal to the minimum sum of weights in a terminal node.}
+\item{minbucket}{Numeric value. Equal to the minimum sum of weights in a terminal node.}
 
-\item{sample}{whether to sample from the terminal node in the tree or just take all observations}
+\item{sample}{Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all observations in the node.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
