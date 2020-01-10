@@ -7,18 +7,26 @@
 cluster_features(x_mat = NULL, cor_mat = NULL, alpha = 1)
 }
 \arguments{
-\item{x_mat}{optional data matrix, ignores \code{cor_mat} if included}
+\item{x_mat}{Numeric matrix. Ignored if \code{cor_mat} is included.}
 
-\item{cor_mat}{optional correlation matrix, ignores \code{x_mat} if included. Either \code{x_mat} or
-\code{cor_mat} must be included}
+\item{cor_mat}{Numeric matrix. Note that \code{x_mat} or \code{cor_mat} must be included,
+otherwise the function will return an error message.}
 
-\item{alpha}{optional tuning parameter for optimal number of clusters}
+\item{alpha}{Numeric. Weight for number of clusters. See \code{\link[maptree]{kgs}}.}
 }
 \value{
 List
 }
 \description{
 Group variables according to matrix of Kendall's tau
+}
+\details{
+The returned list contains the following items
+\describe{
+  \item{cor_mat}{TODO: Add information}
+  \item{which_k}{TODO: Add information}
+  \item{cluster}{TODO: Add information}
+}
 }
 \author{
 Anders Løland

@@ -4,14 +4,19 @@
 \alias{shapley_weights}
 \title{Calculate Shapley weight}
 \usage{
-shapley_weights(m, N, s, weight_zero_m = 10^6)
+shapley_weights(m, N, n_features, weight_zero_m = 10^6)
 }
 \arguments{
-\item{m}{Integer. Total number of features}
+\item{m}{Positive integer. Total number of features.}
 
-\item{N}{Integer. Number of combinations}
+\item{N}{Positive integer. The number of unique combinations when sampling \code{n_features} features,
+without replacement, from a sample space consisting of \code{m} different features.}
 
-\item{s}{Integer. Number of chosen}
+\item{n_features}{Positive integer. Represents the number of features you want to sample from a feature
+space consisting of \code{m} unique features. Note that \code{ 0 < = n_features <= m}.}
+
+\item{weight_zero_m}{Positive integer. Represents the Shapley weight for two special
+cases, i.e. the case where you have either \code{0} or \code{m} features.}
 }
 \value{
 Numeric

@@ -39,7 +39,7 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
     // i.e. section 3.2.
 
     // Define objects
-    int nfeatures;
+    int n_features;
     IntegerVector feature_vec;
     arma::mat Z(n, m + 1, arma::fill::zeros), X(n, m + 1, arma::fill::zeros);
     arma::mat R(m + 1, n, arma::fill::zeros);
@@ -52,9 +52,9 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
 
         // Extract features combinations
         feature_vec = features[i];
-        nfeatures = feature_vec.length();
-        if (nfeatures > 0) {
-            for (int j = 0; j < nfeatures; j++)
+        n_features = feature_vec.length();
+        if (n_features > 0) {
+            for (int j = 0; j < n_features; j++)
                 Z(i, feature_vec[j]) = 1;
         }
     }
@@ -76,26 +76,26 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
 //' Get feature matrix
 //'
 //' @param features List
-//' @param nfeatures Positive integer. Total number of features
+//' @param m Positive integer. Total number of features
 //'
 //' @export
 //'
 //' @return Matrix
 //' @author Nikolai Sellereite
 // [[Rcpp::export]]
-NumericMatrix feature_matrix_cpp(List features, int nfeatures) {
+NumericMatrix feature_matrix_cpp(List features, int m) {
 
     // Define variables
-    int ncomb;
-    ncomb = features.length();
-    NumericMatrix A(ncomb, nfeatures);
+    int n_combinations;
+    n_combinations = features.length();
+    NumericMatrix A(n_combinations, m);
 
     // Error-check
     IntegerVector features_zero = features[0];
     if (features_zero.length() > 0)
         Rcpp::stop("The first element of features should be an empty vector, i.e. integer(0)");
 
-    for (int i = 1; i < ncomb; ++i) {
+    for (int i = 1; i < n_combinations; ++i) {
 
         NumericVector feature_vec = features[i];
 

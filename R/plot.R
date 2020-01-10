@@ -1,15 +1,20 @@
 #' Plot of the Shapley value explanations
 #'
-#' Plots the individual prediction explanations. Uses facet_wrap of ggplot
+#' @description Plots the individual prediction explanations.
 #'
 #' @param x An \code{shapr} object. See \code{\link{explain}}.
 #' @param digits Integer. Number of significant digits to use in the feature description
-#' @param plot_phi0 Logical. Whether to include phi0 in the plot
-#' @param index_x_test Integer vector. Which of the test observations to plot
-#' @param top_k_features Integer. How many features to include in the plot
+#' @param plot_phi0 Logical. Whether to include \code{phi0} in the plot
+#' @param index_x_test Integer vector. Which of the test observations to plot. E.g. if you have
+#' explained 10 observations using \code{\link{explain}}, you can generate a plot for the first 5
+#' observations by setting \code{index_x_test = 1:5}.
+#' @param top_k_features Integer. How many features to include in the plot. E.g. if you have 15
+#' features in your model you can plot the 5 most important features, for each explanation, by setting
+#' \code{top_k_features = 1:5}.
 #' @param ... Currently not used.
 #'
-#' @inheritParams global_arguments
+#' @details See \code{vignette("understanding_shapr", package = "shapr")} for an example of
+#' how you should use the function.
 #'
 #' @return ggplot object with plots of the Shapley value explanations
 #'
@@ -29,9 +34,10 @@ plot.shapr <- function(x,
 
   if (is.null(index_x_test)) index_x_test <- seq(nrow(x$x_test))
   if (is.null(top_k_features)) top_k_features <- ncol(x$x_test) + 1
-  cnms <- colnames(x$x_test)
+  id <- phi <- NULL # due to NSE notes in R CMD check
 
   # melting Kshap
+  cnms <- colnames(x$x_test)
   KshapDT <- data.table::copy(x$dt)
   KshapDT[, id := .I]
   meltKshap <- data.table::melt(KshapDT, id.vars = "id", value.name = "phi")
@@ -53,13 +59,14 @@ plot.shapr <- function(x,
   plotting_dt <- merge(plotting_dt, predDT, by = "id")
 
   # Adding header for each individual plot
+  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
 
   if (!plot_phi0) {
     plotting_dt <- plotting_dt[variable != "none"]
   }
   plotting_dt <- plotting_dt[id %in% index_x_test]
-  plotting_dt[, rank := data.table::frank(-abs(phi)), by = id]
+  plotting_dt[, rank := data.table::frank(-abs(phi)), by = "id"]
   plotting_dt <- plotting_dt[rank <= top_k_features]
   plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
 

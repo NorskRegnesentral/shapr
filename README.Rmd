@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![CircleCI](https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg)](https://circleci.com/gh/NorskRegnesentral/shapr)
+[![R build status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
@@ -36,7 +37,8 @@ This package implements the methodology of @aas2019explaining.
 
 The following methodology/features are currently implemented:
 
--   Native support of explanation of predictions with the following model classes `stats::glm`, `stats::lm`,`ranger::ranger`, `xgboost::xgboost` and `mgcv::gam`.
+-   Native support of explanation of predictions from models fitted with the following functions 
+`stats::glm`, `stats::lm`,`ranger::ranger`, `xgboost::xgboost`/`xgboost::xgb.train` and `mgcv::gam`.
 -   Accounting for feature dependence assuming the features are Gaussian (@aas2019explaining).
 -   Accounting for feature dependence with a Gaussian copula (Gaussian dependence structure, any marginal) (@aas2019explaining).
 -   Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of @aas2019explaining.
@@ -61,6 +63,7 @@ Future releases will include:
 
 Note that both the features and the prediction must be numeric. The approach is constructed for continuous features. Discrete features may also work just fine with the empirical (conditional) distribution approach.
 Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease the interpretability, i.e. not via log odds transformations.
+The application programming interface (API) of `shapr` is inspired by @lime_api.
 
 ## Installation
 
@@ -125,7 +128,7 @@ plot(explanation)
 ## Contribution
 
 All feedback and suggestions are very welcome. Details on how to contribute can be found 
-[here](./github/CONTRIBUTING.md)
+[here](./.github/CONTRIBUTING.md)
 
 Please note that the 'shapr' project is released with a
 [Contributor Code of Conduct](CODE_OF_CONDUCT.md).

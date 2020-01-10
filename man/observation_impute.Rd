@@ -4,16 +4,22 @@
 \alias{observation_impute}
 \title{Generate permutations of training data using test observations}
 \usage{
-observation_impute(W_kernel, S, x_train, x_test, w_threshold = 0.7,
-  n_samples = 1000)
+observation_impute(
+  W_kernel,
+  S,
+  x_train,
+  x_test,
+  w_threshold = 0.7,
+  n_samples = 1000
+)
 }
 \arguments{
 \item{W_kernel}{Numeric matrix. Contains all nonscaled weights between training and test
-observations for all feature combinations. The dimension equals \code{n_train x n_features}.}
+observations for all feature combinations. The dimension equals \code{n_train x m}.}
 
-\item{S}{Integer matrix of dimension \code{n_combinations x n_features}, where \code{n_combinations}
-and \code{n_features} equals the total number of sampled/non-sampled feature combinations and
-the total number of unique features, respectively. Note that \code{n_features = ncol(x_train)}.}
+\item{S}{Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations}
+and \code{m} equals the total number of sampled/non-sampled feature combinations and
+the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.}
 
 \item{x_train}{Numeric matrix}
 
@@ -30,7 +36,25 @@ data.table
 Generate permutations of training data using test observations
 }
 \examples{
-# TODO: Add simple example
+# Setup
+n <- 20 # Sample size of training data
+m <- 2 # Number of features
+sigma <- cov(matrix(MASS::mvrnorm(m * n, 0, 1), nrow = n))
+
+# Create training- and test data
+x_train <- as.matrix(MASS::mvrnorm(n, mu = rep(0, m), Sigma = sigma), ncol = m)
+x_test <- t(as.matrix(MASS::mvrnorm(1, mu = rep(0, m), sigma)))
+colnames(x_train) <- colnames(x_test) <- paste0("X", seq(m))
+
+# Binary matrix which represents the feature combinations
+S <- matrix(c(1, 0, 0, 1), nrow = m)
+
+# Kernel matrix
+W_kernel <- matrix(rnorm(n * ncol(S), mean = 1 / n, sd = 1 / n^2), nrow = n)
+
+# Generate permutations of training data using test observations
+r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
+str(r)
 
 }
 \author{

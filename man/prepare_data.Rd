@@ -10,12 +10,11 @@
 \usage{
 prepare_data(x, ...)
 
-\method{prepare_data}{empirical}(x, seed = 1, n_samples = 1000,
-  index_features = NULL, ...)
+\method{prepare_data}{empirical}(x, seed = 1, n_samples = 1000, index_features = NULL, ...)
 
-\method{prepare_data}{gaussian}(x, seed = 1, n_samples = 1000,
-  index_features = NULL, ...)
+\method{prepare_data}{gaussian}(x, seed = 1, n_samples = 1000, index_features = NULL, ...)
 
+<<<<<<< HEAD
 \method{prepare_data}{copula}(x, x_test_gaussian = 1, seed = 1,
   n_samples = 1000, index_features = NULL, ...)
 
@@ -23,15 +22,28 @@ prepare_data(x, ...)
   index_features = NULL, mc_cores = 1,
   mc_cores_simulateAllTrees = mc_cores,
   mc_cores_sample_ctree = mc_cores, ...)
+=======
+\method{prepare_data}{copula}(
+  x,
+  x_test_gaussian = 1,
+  seed = 1,
+  n_samples = 1000,
+  index_features = NULL,
+  ...
+)
+>>>>>>> master
 }
 \arguments{
+\item{x}{Explainer object. See \code{\link{explain}} for more information.}
+
 \item{...}{Currently not used.}
 
-\item{seed}{Positive integer. If \code{NULL} a random seed will be used.}
+\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 
 \item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation.}
 
+<<<<<<< HEAD
 \item{index_features}{Positive integer vector. Only used internally.}
 
 \item{mc_cores}{Integer. Only for class \code{ctree}. The number of cores to use in paralellization of the
@@ -43,6 +55,13 @@ work on Windows systems.}
 
 \item{mc_cores_simulateAllTrees}{Integer. As for \code{mc_cores}, but specific for the tree building prediction function.
 Defaults to \code{mc_cores}.}
+=======
+\item{index_features}{Positive integer vector. Specifies the indices of combinations to apply to the present method.
+\code{NULL} means all combinations. Only used internally.}
+
+\item{x_test_gaussian}{Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
+\code{approach = "empirical"}.}
+>>>>>>> master
 }
 \description{
 Generate data used for predictions

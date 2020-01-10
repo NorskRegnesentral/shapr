@@ -1,9 +1,16 @@
 #' Group variables according to matrix of Kendall's tau
 #'
-#' @param x_mat optional data matrix, ignores \code{cor_mat} if included
-#' @param cor_mat optional correlation matrix, ignores \code{x_mat} if included. Either \code{x_mat} or
-#' \code{cor_mat} must be included
-#' @param alpha optional tuning parameter for optimal number of clusters
+#' @param x_mat Numeric matrix. Ignored if \code{cor_mat} is included.
+#' @param cor_mat Numeric matrix. Note that \code{x_mat} or \code{cor_mat} must be included,
+#' otherwise the function will return an error message.
+#' @param alpha Numeric. Weight for number of clusters. See \code{\link[maptree]{kgs}}.
+#'
+#' @details The returned list contains the following items
+#' \describe{
+#'   \item{cor_mat}{TODO: Add information}
+#'   \item{which_k}{TODO: Add information}
+#'   \item{cluster}{TODO: Add information}
+#' }
 #'
 #' @return List
 #'
@@ -87,11 +94,11 @@ cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
 
 #' Draw rectangles on the correlation matrix graph
 #'
-#' @param corr correlation matrix
+#' @param corr Numeric matrix. Needs to satisfy the conditions for a correlation matrix.
 #' @param cluster An object of class \code{hclust}. See \code{\link[stats]{hclust}}
-#' @param k number of clusters
-#' @param col box color
-#' @param lwd box line width
+#' @param k Integer. Number of clusters
+#' @param col Character. Represents the box color.
+#' @param lwd Integer. Represents box line width.
 #'
 #' @keywords internal
 #'

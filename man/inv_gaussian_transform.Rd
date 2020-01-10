@@ -2,26 +2,27 @@
 % Please edit documentation in R/transformation.R
 \name{inv_gaussian_transform}
 \alias{inv_gaussian_transform}
-\title{Transforms new data to standardized normal (dimension 1) based on other data transformations}
+\title{Transforms new data to a standardized normal distribution}
 \usage{
-inv_gaussian_transform(zx, n_z, type = 7)
+inv_gaussian_transform(zx, n_z)
 }
 \arguments{
-\item{zx}{Vector where the first part is the Gaussian data, and last part is
-the data with the original transformation}
+\item{zx}{Numeric vector. The first \code{n_z} items are the Gaussian data, and the last part is
+the data with the original transformation.}
 
-\item{n_z}{How many elements of \code{zx} that belongs to the z-part (new data)}
-
-\item{type}{The quantile type used when back-transforming. 7 (default) is the default in \code{stats::quantile()}.}
+\item{n_z}{Positive integer. Number of elements of \code{zx} that belongs to new data.}
 }
 \value{
-Vector of transformed new data
+Numeric vector of length \code{n_z}
 }
 \description{
-Handled in this way in order to allow using the apply function over this function
+Transforms new data to a standardized normal distribution
 }
 \examples{
-# TODO: Add simple example
+zx <- rnorm(50)
+n_z <- 30
+x <- shapr:::inv_gaussian_transform(zx, n_z)
+str(x)
 
 }
 \author{

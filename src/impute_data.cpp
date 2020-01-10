@@ -13,13 +13,13 @@ using namespace Rcpp;
 //'
 //' @param xtest Numeric matrix. Represents a single test observation.
 //'
-//' @param S Integer matrix of dimension \code{ncomb x nfeatures}, where \code{ncomb} equals
-//' the total number of sampled/non-sampled feature combinations and \code{nfeatures} equals
-//' the total number of unique features. Note that \code{nfeature = ncol(xtrain)}. See details
+//' @param S Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations} equals
+//' the total number of sampled/non-sampled feature combinations and \code{m} equals
+//' the total number of unique features. Note that \code{m = ncol(xtrain)}. See details
 //' for more information.
 //'
 //' @details \code{S(i, j) = 1} if and only if feature \code{j} is present in feature
-//' combination \code{i}, otherwise \code{S(i, j) = 0}. I.e. if \code{nfeatures = 3}, there
+//' combination \code{i}, otherwise \code{S(i, j) = 0}. I.e. if \code{m = 3}, there
 //' are \code{2^3 = 8} unique ways to combine the features. In this case \code{dim(S) = c(8, 3)}.
 //' Let's call the features \code{x1, x2, x3} and take a closer look at the combination
 //' represented by \code{s = c(x1, x2)}. If this combination is represented by the second row,
