@@ -417,7 +417,7 @@ explainer_x_test <- function(x_test, feature_labels) {
 explain.combinedparameters <- function(x, explainer, approach, prediction_zero, mincriterion, ...) {
 
   # Get indices of combinations
-  l <- get_list_parameters(explainer$X$nfeatures, mincriterion)
+  l <- get_list_parameters(explainer$X$n_features, mincriterion)
   explainer$return <- TRUE # this is important so that you don't use prediction() twice
   explainer$x_test <- as.matrix(x)
 

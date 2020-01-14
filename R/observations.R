@@ -341,17 +341,17 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
       mc.set.seed = FALSE
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
 
   ## only return unique dt
-  dt2 <- dt[, sum(w), by = c("wcomb", colnames(x$x_test), "id")]
+  dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id")]
   setnames(dt2, "V1", "w")
 
   return(dt2)

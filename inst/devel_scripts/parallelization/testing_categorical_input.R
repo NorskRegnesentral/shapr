@@ -148,9 +148,9 @@ for (i in 1:length(loop_no_var)){
 
 saveRDS(timing_list,"inst/devel_scripts/parallelization_results_Annabelle_100.rds")
 
-# For nfeatures > 6, one should do paralellization of both parameters
-# For nfeatures = 6, is eems that doing only for the sample_tree function is the best
-# For nfeatues < 6, one is better off not doing any paralellization
+# For n_features > 6, one should do paralellization of both parameters
+# For n_features = 6, is eems that doing only for the sample_tree function is the best
+# For n_featues < 6, one is better off not doing any paralellization
 
 # Printing the Shapley values for the test data
 print(explanation_list[[1]]$dt)

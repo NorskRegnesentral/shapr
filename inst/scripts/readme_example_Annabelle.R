@@ -78,8 +78,8 @@ print(explanation$dt2)
 print(explanation2$dt2)
 
 ##
-explanation$dt2[, .(.N), by = .(wcomb)]
-explanation2$dt2[, .(.N), by = .(wcomb)]
+explanation$dt2[, .(.N), by = .(id_combination)]
+explanation2$dt2[, .(.N), by = .(id_combination)]
 
 
 ##
