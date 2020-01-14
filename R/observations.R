@@ -284,7 +284,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' @param  mc_cores_simulateAllTrees Integer. Same as \code{mc_cores}, but specific for the tree building function
 #' #' Defaults to \code{mc_cores}.
 #'
-#' @param  mc_cores_simulateAllTrees Integer. Same as \code{mc_cores}, but specific for the tree building prediction function.
+#' @param  mc_cores_sample_ctree Integer. Same as \code{mc_cores}, but specific for the tree building prediction function.
 #' Defaults to \code{mc_cores}.
 #'
 #' @rdname prepare_data
