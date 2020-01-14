@@ -201,17 +201,15 @@ test_that("Test functions in explanation.R", {
     explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,mc_cores = 2)
   )
 
-
-
   # Checking that all explain objects produce the same as before
   expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
+
 
   ### Additional test that only the produced shapley values are the same as before
   fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")
   for (i in 1:length(ex_list)) {
     expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
   }
-
 
   # Checks that an error is returned
   expect_error(
