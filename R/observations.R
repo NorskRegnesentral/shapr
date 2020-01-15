@@ -269,8 +269,8 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
   return(dt)
 }
 
-#' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are used
-#' for different numbers of conditoned features, this will be a list with the features to pass.
+#' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
+#' used for different numbers of conditoned features, this will be a list with the features to pass.
 #'
 #' @param  mc_cores Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
 #' tree building and tree prediction. Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
@@ -279,13 +279,15 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' @param  mc_cores_simulateAllTrees Integer. Same as \code{mc_cores}, but specific for the tree building function
 #' #' Defaults to \code{mc_cores}.
 #'
-#' @param  mc_cores_sample_ctree Integer. Same as \code{mc_cores}, but specific for the tree building prediction function.
+#' @param  mc_cores_sample_ctree Integer. Same as \code{mc_cores}, but specific for the tree building prediction
+#' function.
 #' Defaults to \code{mc_cores}.
 #'
 #' @rdname prepare_data
 #' @export
 prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
-                               mc_cores = 1, mc_cores_simulateAllTrees = mc_cores, mc_cores_sample_ctree = mc_cores, ...) {
+                               mc_cores = 1, mc_cores_simulateAllTrees = mc_cores,
+                               mc_cores_sample_ctree = mc_cores, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)

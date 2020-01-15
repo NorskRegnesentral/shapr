@@ -8,7 +8,8 @@
 #'
 #' @param approach Character vector of length \code{1} or \code{n_features}.
 #' \code{n_features} equals the total number of features in the model. All elements should
-#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more information.
+#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
+#' information.
 #'
 #' @param prediction_zero Numeric. The prediction value for unseen data, typically equal to the mean of
 #' the response.
@@ -289,7 +290,8 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #' If \code{NULL}, the \code{mincriterion} is constant for every combination.
 #' This is a depreciated method and will be deleted later.
 #'
-#' @param mincriterion Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+#' @param mincriterion Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional
+#' independence tests.
 #' Can also be a vector equal to the length of the number of features indicating which mincriterion to use
 #' when conditioning on various numbers of features.
 #'
@@ -297,7 +299,8 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #'
 #' @param minbucket Numeric value. Equal to the minimum sum of weights in a terminal node.
 #'
-#' @param sample Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all observations in the node.
+#' @param sample Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all
+#'  observations in the node.
 #'
 #' @rdname explain
 #' @name explain
@@ -429,7 +432,8 @@ explain.combinedparameters <- function(x, explainer, approach, prediction_zero, 
 
   dt_l <- list()
   for (i in seq_along(l)) {
-    dt_l[[i]] <- explain(x, explainer, approach, prediction_zero, index_features = l[[i]], mincriterion = as.numeric(names(l[i])), ...)
+    dt_l[[i]] <- explain(x, explainer, approach, prediction_zero, index_features = l[[i]],
+                         mincriterion = as.numeric(names(l[i])), ...)
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE)
