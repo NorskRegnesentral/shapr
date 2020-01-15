@@ -86,7 +86,9 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_test) {
 
   # Handles the unconditional and full conditional separtely when predicting
   cnms <- colnames(x_test)
-  if (length(index_given) %in% c(0, m)) return(data.table::as.data.table(x_test))
+  if (length(index_given) %in% c(0, m)) {
+    return(data.table::as.data.table(x_test))
+  }
 
   dependent_ind <- (1:length(mu))[-index_given]
   x_test_gaussian <- x_test[index_given]
@@ -324,7 +326,7 @@ simulateAllTrees <- function(given_ind,
   dependent_ind <- (1:dim(x_train)[2])[-given_ind]
 
   if (length(given_ind) %in% c(0, ncol(x_train))) {
-    datact = list()
+    datact <- list()
   } else {
 
     ## currently no tests made to make sure that comb_indici and comb_mincriterion both exist

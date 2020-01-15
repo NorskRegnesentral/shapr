@@ -174,7 +174,9 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) return(dt)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -221,7 +223,9 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) return(dt)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -264,7 +268,9 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
   }
   # Generate data
   dt <- prepare_data(explainer, x_test_gaussian = x_test_gaussian, ...)
-  if (!is.null(explainer$return)) return(dt)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -317,7 +323,9 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
   # Generate data
   dt <- prepare_data(explainer, ...)
 
-  if (!is.null(explainer$return)) return(dt) ## when using a combined method, you return here
+  if (!is.null(explainer$return)) {
+    return(dt)
+  } ## when using a combined method, you return here
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
