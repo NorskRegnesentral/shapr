@@ -36,5 +36,4 @@ test_that("Test prediction", {
 
   # Tets errors
   expect_error(prediction(dt[id < n_xtest], prediction_zero, explainer))
-
 })

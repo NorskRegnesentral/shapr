@@ -263,7 +263,6 @@ test_that("Test features (regression)", {
   for (i in seq_along(l)) {
     expect_equal(features(l[[i]], cnms = colnames(train_df)), x_var)
   }
-
 })
 
 test_that("Test features (binary classification)", {
@@ -297,5 +296,4 @@ test_that("Test features (binary classification)", {
   for (i in seq_along(l)) {
     expect_equal(features(l[[i]], cnms = colnames(train_df)), x_var)
   }
-
 })

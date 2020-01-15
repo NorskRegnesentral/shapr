@@ -23,7 +23,6 @@ test_that("Basic test functions in shapley.R", {
 
 
 test_that("Testing data input to shapr in shapley.R", {
-
   data("Boston", package = "MASS")
 
   x_var <- c("lstat", "rm", "dis", "indus")

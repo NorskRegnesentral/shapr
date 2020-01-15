@@ -98,9 +98,9 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Check input for approach
   if (!(is.vector(approach) &&
-        is.atomic(approach) &&
-        (length(approach) == 1 | length(approach) == length(explainer$feature_labels)) &&
-        all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
+    is.atomic(approach) &&
+    (length(approach) == 1 | length(approach) == length(explainer$feature_labels)) &&
+    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
   ) {
     stop(
       paste(
@@ -126,7 +126,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     class(x) <- "combined"
   } else if (length(extras$mincriterion) > 1) {
     class(x) <- "combinedparameters"
-  } else{
+  } else {
     class(x) <- approach
   }
 
@@ -298,7 +298,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #'
 #' @export
 explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici = NULL, comb_mincriterion = NULL,
-                          mincriterion = 0.95, minsplit = 20, minbucket = 7, sample = TRUE, ...){
+                          mincriterion = 0.95, minsplit = 20, minbucket = 7, sample = TRUE, ...) {
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
     stop("x should be a matrix or a dataframe.")
@@ -323,7 +323,6 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
   r <- prediction(dt, prediction_zero, explainer)
 
   return(r)
-
 }
 
 #' @rdname explain
@@ -368,7 +367,6 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
 #' l <- shapr:::get_list_approaches(n_features, approach)
 #' str(l)
 get_list_approaches <- function(n_features, approach) {
-
   l <- list()
   approach[length(approach)] <- approach[length(approach) - 1]
 
@@ -430,15 +428,13 @@ explain.combinedparameters <- function(x, explainer, approach, prediction_zero, 
 
   r <- prediction(dt, prediction_zero, explainer)
   return(r)
-
 }
 
 #' @keywords internal
 get_list_parameters <- function(n_features, mincriterion) {
-
   l <- list()
 
-  for(k in 1:length(unique(mincriterion))){
+  for (k in 1:length(unique(mincriterion))) {
     x <- which(mincriterion == unique(mincriterion)[k])
     nn <- as.character(unique(mincriterion)[k])
     if (length(l) == 0) x <- c(0, x)
@@ -446,4 +442,3 @@ get_list_parameters <- function(n_features, mincriterion) {
   }
   return(l)
 }
-

@@ -22,9 +22,10 @@
 #' x_test <- MASS::mvrnorm(1, mu, cov_mat)
 #' x_test_gaussian <- MASS::mvrnorm(1, mu, cov_mat)
 #' index_given <- 3:6
-#' ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat, m = m,
-#'                              x_test_gaussian, x_train, x_test)
-#'
+#' ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat,
+#'   m = m,
+#'   x_test_gaussian, x_train, x_test
+#' )
 #' @author Martin Jullum
 sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_test_gaussian, x_train, x_test) {
   # Handles the unconditional and full conditional separtely when predicting
@@ -77,7 +78,6 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_test_gaussia
 #' colnames(x_test) <- cnms
 #' index_given <- c(4, 7)
 #' r <- shapr:::sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
-#'
 #' @author Martin Jullum
 sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_test) {
 
@@ -139,10 +139,8 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_test) {
 #' joint_sampling <- FALSE
 #' cnms <- c("samp_train", "samp_test")
 #' x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
-#'
 #' @author Martin Jullum
 sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) {
-
   if (!joint_sampling) {
 
     # Sample training data
@@ -159,7 +157,6 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
       replace = ifelse(nsamples < ntrain, nsamples > ntest, TRUE)
     )
   } else {
-
     n <- ntrain * ntest
     if (nsamples < n) {
       input_samp <- sample(
@@ -202,7 +199,6 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #'
 #' @examples
 #' # TODO: Add simple example
-#'
 #' @author Annabelle Redelmeier
 sample_ctree <- function(tree,
                          n_samples,
@@ -210,13 +206,11 @@ sample_ctree <- function(tree,
                          x_train,
                          p,
                          sample) {
-
-
   datact <- tree$tree
 
   cnms <- colnames(x_test)
   if (length(tree$given_ind) %in% c(0, p)) {
-    ret <- x_test#matrix(x_test, ncol = p, nrow = 1)
+    ret <- x_test # matrix(x_test, ncol = p, nrow = 1)
   } else {
     given_ind <- tree$given_ind
     # given_ind_vec <- rep(0, length(x_test)) ## I don't think we actually use this?
@@ -244,8 +238,8 @@ sample_ctree <- function(tree,
     # ret[, paste0("V", dependent_ind) := depDT]
     # ret[, paste0("V", given_ind) := givenDT]
 
-    if(!sample){
-      if(length(rowno[fit.nodes == pred.nodes]) <= n_samples){
+    if (!sample) {
+      if (length(rowno[fit.nodes == pred.nodes]) <= n_samples) {
         depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], dependent_ind, drop = FALSE, with = FALSE])
         givenDT <- data.table::data.table(x_test[1, given_ind, drop = FALSE, with = FALSE])
 
@@ -267,10 +261,8 @@ sample_ctree <- function(tree,
 
         ret <- cbind(depDT, givenDT)
         setcolorder(ret, colnames(x_train))
-
       }
     } else {
-
       newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
 
       depDT <- data.table::data.table(x_train[newrowno, dependent_ind, drop = FALSE, with = FALSE])
@@ -282,13 +274,11 @@ sample_ctree <- function(tree,
 
       ret <- cbind(depDT, givenDT)
       setcolorder(ret, colnames(x_train))
-
     }
   }
   colnames(ret) <- cnms
 
   return(as.data.table(ret))
-
 }
 
 #' Make all conditional inference trees
@@ -321,7 +311,6 @@ sample_ctree <- function(tree,
 #'
 #' @examples
 #' # TODO: Add simple example
-#'
 #' @author Annabelle Redelmeier
 #'
 #' @export
@@ -331,8 +320,7 @@ simulateAllTrees <- function(given_ind,
                              comb_mincriterion,
                              mincriterion,
                              minsplit,
-                             minbucket){
-
+                             minbucket) {
   dependent_ind <- (1:dim(x_train)[2])[-given_ind]
 
   if (length(given_ind) %in% c(0, ncol(x_train))) {
@@ -341,16 +329,15 @@ simulateAllTrees <- function(given_ind,
 
     ## currently no tests made to make sure that comb_indici and comb_mincriterion both exist
     ## if only one is provided, no split is made.
-    if(!is.null(comb_indici) & !is.null(comb_mincriterion) ){
-      if(length(given_ind) <= comb_indici){
+    if (!is.null(comb_indici) & !is.null(comb_mincriterion)) {
+      if (length(given_ind) <= comb_indici) {
         mincriterion <- comb_mincriterion[1] # if alpha = 0.05 --> split tree if p < 0.05
       } else {
         mincriterion <- comb_mincriterion[2]
       }
     }
 
-    if(length(dependent_ind) == 1){
-
+    if (length(dependent_ind) == 1) {
       x <- x_train[, given_ind, with = FALSE]
       y <- x_train[, dependent_ind, with = FALSE]
 
@@ -359,9 +346,7 @@ simulateAllTrees <- function(given_ind,
       colnames(df) <- c("Y", paste0("V", given_ind))
 
       datact <- party::ctree(Y ~ ., data = df, controls = party::ctree_control(minbucket = minbucket, mincriterion = mincriterion))
-
-    } else{
-
+    } else {
       x <- x_train[, given_ind, with = FALSE]
       y <- x_train[, dependent_ind, with = FALSE]
 
@@ -370,11 +355,10 @@ simulateAllTrees <- function(given_ind,
       colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
 
       ynam <- paste0("Y", 1:ncol(y))
-      fmla <- as.formula(paste(paste(ynam, collapse= "+"), "~ ."))
+      fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
 
       datact <- party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = minbucket, mincriterion = mincriterion))
     }
-
   }
 
   return(list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)) # return the whole tree

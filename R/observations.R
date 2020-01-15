@@ -35,7 +35,6 @@
 #' # Generate permutations of training data using test observations
 #' r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
 #' str(r)
-#'
 #' @author Nikolai Sellereite
 observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n_samples = 1e3) {
 
@@ -117,7 +116,6 @@ prepare_data <- function(x, ...) {
 #' @rdname prepare_data
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
-
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   # Get distance matrix ----------------
@@ -202,7 +200,6 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
 #' @rdname prepare_data
 #' @export
 prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
-
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
@@ -215,7 +212,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
   }
 
   for (i in seq(n_xtest)) {
-
     l <- lapply(
       X = features,
       FUN = sample_gaussian,
@@ -240,7 +236,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 #' @rdname prepare_data
 #' @export
 prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
-
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -291,7 +286,6 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' @export
 prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
                                mc_cores = 1, mc_cores_simulateAllTrees = mc_cores, mc_cores_sample_ctree = mc_cores, ...) {
-
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
@@ -304,13 +298,13 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
     features <- x$X$features[index_features]
   }
 
-  if(!is.null(x$comb_indici)){
+  if (!is.null(x$comb_indici)) {
     stopifnot(x$comb_indici >= 0)
     stopifnot(x$comb_indici <= ncol(x$x_train))
     stopifnot(length(x$comb_indici) == 1)
     stopifnot(!is.null(x$comb_mincriterion))
   }
-  if(!is.null(x$comb_mincriterion)){
+  if (!is.null(x$comb_mincriterion)) {
     stopifnot(!is.null(x$comb_indici))
     stopifnot(length(x$comb_mincriterion) == 2)
     stopifnot(all(x$comb_mincriterion <= 1))
@@ -318,16 +312,17 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   }
 
   ## this is the list of all 2^10 trees (if number of features = 10)
-  all_trees <- parallel::mclapply(X = features,
-                                  FUN = simulateAllTrees,
-                                  x_train = x$x_train,
-                                  comb_indici = x$comb_indici,
-                                  comb_mincriterion = x$comb_mincriterion,
-                                  mincriterion = x$mincriterion,
-                                  minsplit = x$minsplit,
-                                  minbucket = x$minbucket,
-                                  mc.cores = mc_cores_simulateAllTrees,
-                                  mc.set.seed = FALSE
+  all_trees <- parallel::mclapply(
+    X = features,
+    FUN = simulateAllTrees,
+    x_train = x$x_train,
+    comb_indici = x$comb_indici,
+    comb_mincriterion = x$comb_mincriterion,
+    mincriterion = x$mincriterion,
+    minsplit = x$minsplit,
+    minbucket = x$minbucket,
+    mc.cores = mc_cores_simulateAllTrees,
+    mc.set.seed = FALSE
   )
 
   for (i in seq(n_xtest)) {
@@ -362,7 +357,6 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 
 #' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {
-
   id_combination <- n_features <- NULL # due to NSE notes in R CMD check
   stopifnot(
     data.table::is.data.table(x$X),
