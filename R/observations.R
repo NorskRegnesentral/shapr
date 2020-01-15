@@ -292,6 +292,8 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
                                mc_cores = 1, mc_cores_simulateAllTrees = mc_cores, mc_cores_sample_ctree = mc_cores, ...) {
 
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)

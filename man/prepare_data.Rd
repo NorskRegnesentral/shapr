@@ -54,7 +54,10 @@ for different numbers of conditoned features, this will be a list with the featu
 tree building and tree prediction. Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
 work on Windows systems.}
 
-\item{mc_cores_simulateAllTrees}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction function.
+\item{mc_cores_simulateAllTrees}{Integer. Same as \code{mc_cores}, but specific for the tree building function
+#' Defaults to \code{mc_cores}.}
+
+\item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction function.
 Defaults to \code{mc_cores}.}
 }
 \description{

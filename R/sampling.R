@@ -196,8 +196,6 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #' @param sample Boolean. True indicates that the method samples from the terminal node
 #' of the tree whereas False indicates that the method takes all the samples if it is less than n_samples.
 #'
-#' @inheritParams global_arguments
-#'
 #' @return data.table with \code{n_samples} (conditional) Gaussian samples
 #'
 #' @keywords internal
@@ -226,7 +224,7 @@ sample_ctree <- function(tree,
 
     dependent_ind <- tree$dependent_ind
 
-    x_test_given <- x_test[, ..given_ind, drop = FALSE]
+    x_test_given <- x_test[, given_ind, drop = FALSE, with = FALSE]
 
     xp <- x_test_given # data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given)))  # this is changed by Martin
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
@@ -248,8 +246,8 @@ sample_ctree <- function(tree,
 
     if(!sample){
       if(length(rowno[fit.nodes == pred.nodes]) <= n_samples){
-        depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], ..dependent_ind, drop = FALSE])
-        givenDT <- data.table::data.table(x_test[1, ..given_ind, drop = FALSE])
+        depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], dependent_ind, drop = FALSE, with = FALSE])
+        givenDT <- data.table::data.table(x_test[1, given_ind, drop = FALSE, with = FALSE])
 
         ret <- cbind(depDT, givenDT)
         setcolorder(ret, colnames(x_train))
@@ -260,8 +258,8 @@ sample_ctree <- function(tree,
       } else {
         newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
 
-        depDT <- data.table::data.table(x_train[newrowno, ..dependent_ind, drop = FALSE])
-        givenDT <- data.table::data.table(x_test[1, ..given_ind, drop = FALSE])
+        depDT <- data.table::data.table(x_train[newrowno, dependent_ind, drop = FALSE, with = FALSE])
+        givenDT <- data.table::data.table(x_test[1, given_ind, drop = FALSE, with = FALSE])
 
         # ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
         # ret[, paste0("V", dependent_ind) := depDT]
@@ -275,8 +273,8 @@ sample_ctree <- function(tree,
 
       newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
 
-      depDT <- data.table::data.table(x_train[newrowno, ..dependent_ind, drop = FALSE])
-      givenDT <- data.table::data.table(x_test[1, ..given_ind, drop = FALSE])
+      depDT <- data.table::data.table(x_train[newrowno, dependent_ind, drop = FALSE, with = FALSE])
+      givenDT <- data.table::data.table(x_test[1, given_ind, drop = FALSE, with = FALSE])
 
       # ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
       # ret[, paste0("V", dependent_ind) := depDT]
@@ -317,8 +315,6 @@ sample_ctree <- function(tree,
 #'
 #' @param minbucket Numeric value. Equal to the minimum sum of weights in a terminal node.
 #'
-#' @inheritParams global_arguments
-#'
 #' @return List with conditional inference tree and the variables conditioned/not conditioned on.
 #'
 #' @keywords internal
@@ -355,8 +351,8 @@ simulateAllTrees <- function(given_ind,
 
     if(length(dependent_ind) == 1){
 
-      x <- x_train[, ..given_ind, with = FALSE]
-      y <- x_train[, ..dependent_ind, with = FALSE]
+      x <- x_train[, given_ind, with = FALSE]
+      y <- x_train[, dependent_ind, with = FALSE]
 
       df <- data.table(cbind(y, x))
 
@@ -366,8 +362,8 @@ simulateAllTrees <- function(given_ind,
 
     } else{
 
-      x <- x_train[, ..given_ind, with = FALSE]
-      y <- x_train[, ..dependent_ind, with = FALSE]
+      x <- x_train[, given_ind, with = FALSE]
+      y <- x_train[, dependent_ind, with = FALSE]
 
       df <- data.table::data.table(cbind(y, x))
 
