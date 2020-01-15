@@ -169,37 +169,44 @@ test_that("Test functions in explanation.R", {
   testthat::expect_equal((explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = c(rep(0.95, 2), rep(0.95, 2))))$dt,
                          (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE, mincriterion = 0.95))$dt)
 
-  # Checking that explanations with different paralellizations gives the same result
-  explain_base_nosample <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE)
 
-  testthat::expect_equal(
-    explain_base_nosample,
-    explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,mc_cores = 2)
-  )
+  # Checking that explanations with different paralellizations gives the same result (only unix systems!)
 
-  testthat::expect_equal(
-    explain_base_nosample,
-    explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,mc_cores_simulateAllTrees = 1,mc_cores_sample_ctree = 2)
-  )
+  if (.Platform$OS.type == "unix"){
+    explain_base_nosample <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE)
 
-  testthat::expect_equal(
-    explain_base_nosample,
-    explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,mc_cores_simulateAllTrees = 2,mc_cores_sample_ctree = 1)
-  )
+    multicore <- 2
 
-  explain_base_sample <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE)
+    testthat::expect_equal(
+      explain_base_nosample,
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,mc_cores = multicore)
+    )
 
-  # Seed consistent when only paralellizing simulateAllTrees, and not sample_ctree
-  testthat::expect_equal(
-    explain_base_sample,
-    explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,mc_cores_simulateAllTrees = 2,mc_cores_sample_ctree = 1)
-  )
+    testthat::expect_equal(
+      explain_base_nosample,
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,mc_cores_simulateAllTrees = 1,mc_cores_sample_ctree = multicore)
+    )
 
-  # Seed consistent, when run twice with same seed
-  testthat::expect_equal(
-    explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,mc_cores = 2),
-    explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,mc_cores = 2)
-  )
+    testthat::expect_equal(
+      explain_base_nosample,
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,mc_cores_simulateAllTrees = multicore,mc_cores_sample_ctree = 1)
+    )
+
+    explain_base_sample <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE)
+
+    # Seed consistent when only paralellizing simulateAllTrees, and not sample_ctree
+    testthat::expect_equal(
+      explain_base_sample,
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,mc_cores_simulateAllTrees = multicore,mc_cores_sample_ctree = 1)
+    )
+
+    # Seed consistent, when run twice with same seed
+    testthat::expect_equal(
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,mc_cores = multicore),
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,mc_cores = multicore)
+    )
+
+  }
 
   # Checking that all explain objects produce the same as before
   expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
