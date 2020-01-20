@@ -55,7 +55,6 @@ W_kernel <- matrix(rnorm(n * ncol(S), mean = 1 / n, sd = 1 / n^2), nrow = n)
 # Generate permutations of training data using test observations
 r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
 str(r)
-
 }
 \author{
 Nikolai Sellereite

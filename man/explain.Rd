@@ -73,7 +73,8 @@ See \code{\link{shapr}}.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should
-either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more information.}
+either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
+information.}
 
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
@@ -119,7 +120,8 @@ combination.
 If \code{NULL}, the \code{mincriterion} is constant for every combination.
 This is a depreciated method and will be deleted later.}
 
-\item{mincriterion}{Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+\item{mincriterion}{Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional
+independence tests.
 Can also be a vector equal to the length of the number of features indicating which mincriterion to use
 when conditioning on various numbers of features.}
 
@@ -127,7 +129,8 @@ when conditioning on various numbers of features.}
 
 \item{minbucket}{Numeric value. Equal to the minimum sum of weights in a terminal node.}
 
-\item{sample}{Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all observations in the node.}
+\item{sample}{Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all
+observations in the node.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:

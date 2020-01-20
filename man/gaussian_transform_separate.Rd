@@ -23,7 +23,6 @@ yx <- rnorm(50)
 n_y <- 30
 x <- shapr:::gaussian_transform_separate(yx, n_y)
 str(x)
-
 }
 \author{
 Martin Jullum

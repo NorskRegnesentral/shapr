@@ -43,9 +43,10 @@ x_train <- MASS::mvrnorm(n, mu, cov_mat)
 x_test <- MASS::mvrnorm(1, mu, cov_mat)
 x_test_gaussian <- MASS::mvrnorm(1, mu, cov_mat)
 index_given <- 3:6
-ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat, m = m,
-                             x_test_gaussian, x_train, x_test)
-
+ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat,
+  m = m,
+  x_test_gaussian, x_train, x_test
+)
 }
 \author{
 Martin Jullum

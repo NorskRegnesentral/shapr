@@ -44,8 +44,8 @@ prepare_data(x, ...)
 \item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation.}
 
-\item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are used
-for different numbers of conditoned features, this will be a list with the features to pass.}
+\item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
+used for different numbers of conditoned features, this will be a list with the features to pass.}
 
 \item{x_test_gaussian}{Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
 \code{approach = "empirical"}.}
@@ -57,7 +57,8 @@ work on Windows systems.}
 \item{mc_cores_simulateAllTrees}{Integer. Same as \code{mc_cores}, but specific for the tree building function
 #' Defaults to \code{mc_cores}.}
 
-\item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction function.
+\item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction
+function.
 Defaults to \code{mc_cores}.}
 }
 \description{

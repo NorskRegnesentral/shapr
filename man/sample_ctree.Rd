@@ -30,7 +30,6 @@ Sample ctree variables from a given conditional inference tree
 }
 \examples{
 # TODO: Add simple example
-
 }
 \author{
 Annabelle Redelmeier
