@@ -4,39 +4,48 @@
 \alias{simulateAllTrees}
 \title{Make all conditional inference trees}
 \usage{
-simulateAllTrees(given_ind, x_train, comb_indici, comb_mincriterion,
-  mincriterion, minsplit, minbucket)
+simulateAllTrees(
+  given_ind,
+  x_train,
+  comb_indici,
+  comb_mincriterion,
+  mincriterion,
+  minsplit,
+  minbucket
+)
 }
 \arguments{
-\item{given_ind}{which features are conditioned on}
+\item{given_ind}{Numeric value. Indicates which features are conditioned on.}
 
-\item{x_train}{specific values of features for individual i}
+\item{x_train}{Numeric vector. Indicates the specific values of features for individual i.}
 
 \item{comb_indici}{Numeric value. (Optional) Contains the splitting point corresponding to where to change the
-\code{comb_mincriterion}. Right now, this is only implemented for one splitting value. Could potentially make more splits later.
-If \code{NULL}, the \code{mincriterion} is constant for every combination.}
+\code{comb_mincriterion}.
+If \code{NULL}, the \code{mincriterion} is constant for every combination.
+This is depreciated and will be deleted soon.}
 
 \item{comb_mincriterion}{Numeric vector. (Optional) Contains the different mincriterions to use for each
 combination.
-If \code{NULL}, the \code{mincriterion} is constant for every combination.}
+If \code{NULL}, the \code{mincriterion} is constant for every combination.
+This is depreciated and will be deleted soon.}
 
-\item{mincriterion}{equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
-If \code{comb_indici} and \code{comb_mincriterion} are both not \code{NULL}, then \code{mincriterion} can be set
-to \code{NULL}. Otherwise, it needs to be filled out.}
+\item{mincriterion}{Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional
+independence tests.
+Can also be a vector equal to the length of the number of features indicating which mincriterion to use
+when conditioning on various numbers of features.}
 
-\item{minsplit}{is the value that the sum of the left and right daughter nodes need to exceed.}
+\item{minsplit}{Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.}
 
-\item{minbucket}{is equal to the minimum sum of weights in a terminal node.}
+\item{minbucket}{Numeric value. Equal to the minimum sum of weights in a terminal node.}
 }
 \value{
-list with conditional inference tree and variables conditioned/not conditioned on
+List with conditional inference tree and the variables conditioned/not conditioned on.
 }
 \description{
 Make all conditional inference trees
 }
 \examples{
 # TODO: Add simple example
-
 }
 \author{
 Annabelle Redelmeier

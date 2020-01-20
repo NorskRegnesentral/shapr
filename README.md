@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![CircleCI](https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg)](https://circleci.com/gh/NorskRegnesentral/shapr)
+[![R build
+status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License:
@@ -43,9 +45,9 @@ This package implements the methodology of Aas, Jullum, and Løland
 
 The following methodology/features are currently implemented:
 
-  - Native support of explanation of predictions with the following
-    model classes `stats::glm`, `stats::lm`,`ranger::ranger`,
-    `xgboost::xgboost` and `mgcv::gam`.
+  - Native support of explanation of predictions from models fitted with
+    the following functions `stats::glm`, `stats::lm`,`ranger::ranger`,
+    `xgboost::xgboost`/`xgboost::xgb.train` and `mgcv::gam`.
   - Accounting for feature dependence assuming the features are Gaussian
     (Aas, Jullum, and Løland (2019)).
   - Accounting for feature dependence with a Gaussian copula (Gaussian
@@ -81,7 +83,8 @@ approach is constructed for continuous features. Discrete features may
 also work just fine with the empirical (conditional) distribution
 approach. Unlike SHAP and TreeSHAP, we decompose probability predictions
 directly to ease the interpretability, i.e. not via log odds
-transformations.
+transformations. The application programming interface (API) of `shapr`
+is inspired by Pedersen and Benesty (2019).
 
 ## Installation
 
@@ -163,7 +166,7 @@ plot(explanation)
 ## Contribution
 
 All feedback and suggestions are very welcome. Details on how to
-contribute can be found [here](./github/CONTRIBUTING.md)
+contribute can be found [here](./.github/CONTRIBUTING.md)
 
 Please note that the ‘shapr’ project is released with a [Contributor
 Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
@@ -204,6 +207,14 @@ arXiv:1802.03888*.
 Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to
 Interpreting Model Predictions.” In *Advances in Neural Information
 Processing Systems*, 4765–74.
+
+</div>
+
+<div id="ref-lime_api">
+
+Pedersen, Thomas Lin, and Michaël Benesty. 2019. *Lime: Local
+Interpretable Model-Agnostic Explanations*.
+<https://CRAN.R-project.org/package=lime>.
 
 </div>
 

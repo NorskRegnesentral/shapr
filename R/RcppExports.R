@@ -20,10 +20,11 @@ hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
 #'
 #' @param H Matrix. Output from \code{\link{hat_matrix_cpp}}
 #' @param y Vector, i.e. representing the response variable
-#' @param ret_log Logical. Indicates whether to return the logarithm of \code{sigma_sq}
+#'
 #' @export
 #'
 #' @return Scalar
+#'
 #' @author Martin Jullum
 rss_cpp <- function(H, y) {
     .Call(`_shapr_rss_cpp`, H, y)
@@ -59,15 +60,16 @@ aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
 
 #'  AICc formula for several sets, alternative definition
 #'
-#' @param h numeric specifying the scaling (sigma)
-#' @param X matrix with "covariates"
-#' @param mcov covariance matrix
-#' @param S_scale_dist logical indicating whether the Mahalanobis distance should be scaled with the number of variables
-#' @param y vector with the "response variable"
-#'
-#' @export
+#' @param h Numeric. Specifies the scaling (sigma)
+#' @param X_list List
+#' @param mcov_list List
+#' @param S_scale_dist Logical. Indicates whether Mahalanobis distance should be scaled with the
+#' number of variables
+#' @param y_list List.
+#' @param negative Logical.
 #'
 #' @return Scalar with the numeric value of the AICc formula
+#'
 #' @author Martin Jullum
 aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) {
     .Call(`_shapr_aicc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
@@ -81,6 +83,8 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 #' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
 #' \code{diag(m)} gives the Euclidean distance.
 #' @param S_scale_dist Logical indicating
+#' @param Xtrain_mat Matrix
+#' @param Xtest_mat Matrix
 #'
 #' @export
 #'
@@ -91,8 +95,8 @@ mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S
 }
 
 #' @keywords internal
-sample_features_cpp <- function(m, nfeatures) {
-    .Call(`_shapr_sample_features_cpp`, m, nfeatures)
+sample_features_cpp <- function(m, n_features) {
+    .Call(`_shapr_sample_features_cpp`, m, n_features)
 }
 
 #' Get imputed data
@@ -107,13 +111,13 @@ sample_features_cpp <- function(m, nfeatures) {
 #'
 #' @param xtest Numeric matrix. Represents a single test observation.
 #'
-#' @param S Integer matrix of dimension \code{ncomb x nfeatures}, where \code{ncomb} equals
-#' the total number of sampled/non-sampled feature combinations and \code{nfeatures} equals
-#' the total number of unique features. Note that \code{nfeature = ncol(xtrain)}. See details
+#' @param S Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations} equals
+#' the total number of sampled/non-sampled feature combinations and \code{m} equals
+#' the total number of unique features. Note that \code{m = ncol(xtrain)}. See details
 #' for more information.
 #'
 #' @details \code{S(i, j) = 1} if and only if feature \code{j} is present in feature
-#' combination \code{i}, otherwise \code{S(i, j) = 0}. I.e. if \code{nfeatures = 3}, there
+#' combination \code{i}, otherwise \code{S(i, j) = 0}. I.e. if \code{m = 3}, there
 #' are \code{2^3 = 8} unique ways to combine the features. In this case \code{dim(S) = c(8, 3)}.
 #' Let's call the features \code{x1, x2, x3} and take a closer look at the combination
 #' represented by \code{s = c(x1, x2)}. If this combination is represented by the second row,
@@ -154,13 +158,13 @@ weight_matrix_cpp <- function(features, m, n, w) {
 #' Get feature matrix
 #'
 #' @param features List
-#' @param nfeatures Positive integer. Total number of features
+#' @param m Positive integer. Total number of features
 #'
 #' @export
 #'
 #' @return Matrix
 #' @author Nikolai Sellereite
-feature_matrix_cpp <- function(features, nfeatures) {
-    .Call(`_shapr_feature_matrix_cpp`, features, nfeatures)
+feature_matrix_cpp <- function(features, m) {
+    .Call(`_shapr_feature_matrix_cpp`, features, m)
 }
 

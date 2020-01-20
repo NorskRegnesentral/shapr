@@ -2,7 +2,7 @@
 ## variables on housing data set (January 2020)
 
 ## install ctree specific branch of shapr package from Github
-devtools::install_github(repo = "NorskRegnesentral/shapr",ref = "ctree")
+devtools::install_github(repo = "NorskRegnesentral/shapr", ref = "ctree")
 
 library(xgboost)
 library(shapr)
@@ -28,7 +28,7 @@ library(caret)
 ## Set the working directory accordingly.
 
 ## (Remove this when we send to NAV) -----
-if(.Platform$OS.type=="windows"){
+if (.Platform$OS.type == "windows") {
   projDir <- "M:"
 } else {
   projDir <- "/nr/project/stat"
@@ -71,10 +71,10 @@ explainer <- shapr::shapr(x_train, model)
 
 p <- mean(y_train)
 
-subs <- data.table::as.data.table(x_test)[sample.int(n = nrow(x_test), size = 10),]
+subs <- data.table::as.data.table(x_test)[sample.int(n = nrow(x_test), size = 10), ]
 explanation <- shapr::explain(
   x = subs,
-  approach = 'ctree',
+  approach = "ctree",
   explainer = explainer,
   prediction_zero = p,
   sample = FALSE)

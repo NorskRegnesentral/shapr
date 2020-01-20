@@ -1,7 +1,5 @@
 #' Explain the output of machine learning models with more accurately estimated Shapley values
 #'
-#' @description TODO: Add a more detailed description
-#'
 #' @param x A matrix or data.frame. Contains the the features, whose
 #' predictions ought to be explained (test data).
 #'
@@ -10,24 +8,87 @@
 #'
 #' @param approach Character vector of length \code{1} or \code{n_features}.
 #' \code{n_features} equals the total number of features in the model. All elements should
-#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more information.
+#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
+#' information.
 #'
-#' @param prediction_zero The prediction value for unseen data, typically equal to the mean of
+#' @param prediction_zero Numeric. The prediction value for unseen data, typically equal to the mean of
 #' the response.
 #'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
-#' @details
-#' TODO: Add information about approach.
-#' TODO: Some additional details about the returned object
+#' @details The most important thing to notice is that \code{shapr} has implemented three different
+#' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
+#' \code{"gassuian"} and \code{"copula"}.
 #'
-#' @return data.frame. Contains the estimated Shapley values for the test data. Note that
-#' the dimensions of the data.frame equals \code{n x (p+1)}, where \code{n} equals the number
-#' of test observations, and \code{p} equals the total number of features.
+#' In addition to this the user will also have the option of combining the three approaches.
+#' E.g. if you're in a situation where you have trained a model the consists of 10 features,
+#' and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
+#' the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
+#' if you condition on more than 5 features this can be done by simply passing
+#' \code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
+#' \code{"approach[i]" = "gaussian"} it means that you'd like to use the \code{"gaussian"} approach
+#' when conditioning on \code{i} features.
+#'
+#' @return Object of class \code{c("shapr", "list")}. Contains the following items:
+#' \describe{
+#'   \item{dt}{data.table}
+#'   \item{model}{Model object}
+#'   \item{p}{Numeric vector}
+#'   \item{x_test}{data.table}
+#' }
+#'
+#' Note that the returned items \code{model}, \code{p} and \code{x_test} are mostly added due
+#' to the implementation of \code{plot.shapr}. If you only want to look at the numerical results
+#' it is sufficient to focus on \code{dt}. \code{dt} is a data.table where the number of rows equals
+#' the number of observations you'd like to explain, and the number of columns equals \code{m +1},
+#' where \code{m} equals the total number of features in your model.
+#'
+#' If \code{dt[i, j + 1] > 0} it indicates that the j-th feature increased the prediction for
+#' the i-th observation. Likewise, if \code{dt[i, j + 1] < 0} it indicates that the j-th feature
+#' decreased the prediction for the i-th observation. The magnitude of the value is also important
+#' to notice. E.g. if \code{dt[i, k + 1]} and \code{dt[i, j + 1]} are greater than \code{0},
+#' where \code{j != k}, and \code{dt[i, k + 1]} > \code{dt[i, j + 1]} this indicates that feature
+#' \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
+#' feature was larger than the j-th feature.
 #'
 #' @export
 #'
-#' @author Camilla Lingjaerde
+#' @author Camilla Lingjaerde, Nikolai Sellereite
+#'
+#' @examples
+#' # Load example data
+#' data("Boston", package = "MASS")
+#'
+#' # Split data into test- and training data
+#' x_train <- head(Boston, -3)
+#' x_test <- tail(Boston, 3)
+#'
+#' # Fit a linear model
+#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#'
+#' # Create an explainer object
+#' explainer <- shapr(x_train, model)
+#'
+#' # Explain predictions
+#' p <- mean(x_train$medv)
+#'
+#' # Empirical approach
+#' explain1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p, n_samples = 1e2)
+#'
+#' # Gaussian approach
+#' explain2 <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p, n_samples = 1e2)
+#'
+#' # Gaussian copula approach
+#' explain3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p, n_samples = 1e2)
+#'
+#' # Combined approach
+#' approach <- c("gaussian", "gaussian", "empirical", "empirical")
+#' explain4 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
+#'
+#' # Plot the results
+#' \dontrun{
+#' plot(explain1)
+#' }
 explain <- function(x, explainer, approach, prediction_zero, ...) {
   extras <- list(...)
 
@@ -38,9 +99,9 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Check input for approach
   if (!(is.vector(approach) &&
-        is.atomic(approach) &&
-        (length(approach) == 1 | length(approach) == ncol(x)) &&
-        all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
+    is.atomic(approach) &&
+    (length(approach) == 1 | length(approach) == length(explainer$feature_labels)) &&
+    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
   ) {
     stop(
       paste(
@@ -52,14 +113,21 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   }
 
   # Check that x contains correct variables
-  explainer$p <- predict_model(explainer$model, head(x, 1))
-  explainer$p <- NULL
+  if (!all(explainer$feature_labels %in% colnames(x))) {
+    stop(
+      paste0(
+        "\nThe test data, x, does not contain all features necessary for\n",
+        "generating predictions. Please modify x so that all labels given\n",
+        "by explainer$feature_labels is present in colnames(x)."
+      )
+    )
+  }
 
   if (length(approach) > 1) {
     class(x) <- "combined"
   } else if (length(extras$mincriterion) > 1) {
     class(x) <- "combinedparameters"
-  } else{
+  } else {
     class(x) <- approach
   }
 
@@ -69,24 +137,25 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' @param type Character. Should be equal to either \code{"independence"},
 #' \code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.
 #'
-#' @param fixed_sigma_vec Vector or numeric. Only applicable when \code{approach='empirical'} and
-#' \code{type='fixed_sigma'}. The bandwidth to use. Default value \code{0.1}
+#' @param fixed_sigma_vec Numeric. Represents the kernel bandwidth. Note that this argument is only
+#' applicable when \code{approach = "empirical"}, and \code{type = "fixed_sigma"}
 #'
-#' @param n_samples_aicc Positive integer. Only applicable when
-#' \code{approach='empirical'} and \code{type='AICc_each_k'} or
-#' \code{type='AICc_full'}. Number of samples to consider in AICc optimization.
+#' @param n_samples_aicc Positive integer. Number of samples to consider in AICc optimization.
+#' Note that this argument is only applicable when \code{approach = "empirical"}, and \code{type}
+#' is either equal to \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
-#' @param eval_max_aicc Positive integer. Only applicable when \code{approach='empirical'}
-#' and \code{type='AICc_each_k'} or \code{type='AICc_full'}. Maximum number of iterations when
-#' optimizing the AICc.
+#' @param eval_max_aicc Positive integer. Maximum number of iterations when
+#' optimizing the AICc. Note that this argument is only applicable when
+#' \code{approach = "empirical"}, and \code{type} is either equal to
+#' \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
-#' @param start_aicc Numeric. Only applicable when \code{approach='empirical'} and
-#' \code{type='AICc_each_k'} or \code{type='AICc_full'}. Starting value when optimizing the AICc.
+#' @param start_aicc Numeric. Start value of \code{sigma} when optimizing the AICc. Note that this argument
+#' is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
+#' \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
 #' @param w_threshold Positive integer between 0 and 1.
 #'
 #' @rdname explain
-#' @name explain
 #'
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
@@ -95,7 +164,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
                               start_aicc = 0.1, w_threshold = 0.95, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(x)
+  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec
@@ -106,7 +175,9 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) return(dt)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -114,8 +185,6 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   return(r)
 }
 
-#' @inheritParams explain
-#'
 #' @param mu Numeric vector. (Optional) Containing the mean of the data generating distribution.
 #' If \code{NULL} the expected values are estimated from the data. Note that this is only used
 #' when \code{approach = "gaussian"}.
@@ -125,13 +194,12 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #' (in the Gaussian approach).
 #'
 #' @rdname explain
-#' @name explain
 #'
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(x)
+  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
   explainer$approach <- approach
 
   # If mu is not provided directly, use mean of training data
@@ -156,7 +224,9 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) return(dt)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -165,13 +235,11 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 }
 
 #' @rdname explain
-#' @name explain
-#'
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Setup
-  explainer$x_test <- as.matrix(x)
+  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
   explainer$approach <- approach
 
   # Prepare transformed data
@@ -201,7 +269,9 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
   }
   # Generate data
   dt <- prepare_data(explainer, x_test_gaussian = x_test_gaussian, ...)
-  if (!is.null(explainer$return)) return(dt)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -220,7 +290,8 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #' If \code{NULL}, the \code{mincriterion} is constant for every combination.
 #' This is a depreciated method and will be deleted later.
 #'
-#' @param mincriterion Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional independence tests.
+#' @param mincriterion Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional
+#' independence tests.
 #' Can also be a vector equal to the length of the number of features indicating which mincriterion to use
 #' when conditioning on various numbers of features.
 #'
@@ -228,14 +299,15 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #'
 #' @param minbucket Numeric value. Equal to the minimum sum of weights in a terminal node.
 #'
-#' @param sample Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all observations in the node.
+#' @param sample Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all
+#'  observations in the node.
 #'
 #' @rdname explain
 #' @name explain
 #'
 #' @export
 explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici = NULL, comb_mincriterion = NULL,
-                          mincriterion = 0.95, minsplit = 20, minbucket = 7, sample = TRUE, ...){
+                          mincriterion = 0.95, minsplit = 20, minbucket = 7, sample = TRUE, ...) {
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
     stop("x should be a matrix or a dataframe.")
@@ -254,13 +326,14 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
   # Generate data
   dt <- prepare_data(explainer, ...)
 
-  if (!is.null(explainer$return)) return(dt) ## when using a combined method, you return here
+  if (!is.null(explainer$return)) {
+    return(dt)
+  } ## when using a combined method, you return here
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
 
   return(r)
-
 }
 
 #' @rdname explain
@@ -269,9 +342,9 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
 #' @export
 explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
   # Get indices of combinations
-  l <- get_list_approaches(explainer$X$nfeatures, approach)
+  l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
-  explainer$x_test <- as.matrix(x)
+  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
 
   dt_l <- list()
   for (i in seq_along(l)) {
@@ -284,9 +357,27 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
   return(r)
 }
 
+#' Helper function used in \code{\link{explain.combined}}
+#'
+#' @param n_features Integer vector. Note that
+#' \code{length(n_features) <= 2^m}, where \code{m} equals the number
+#' of features.
+#' @param approach Character vector of length \code{m}. All elements should be
+#' either \code{"empirical"}, \code{"gaussian"} or \code{"copula"}.
+#'
 #' @keywords internal
+#'
+#' @author Nikolai Sellereite
+#'
+#' @return List
+#'
+#' @examples
+#' m <- 3
+#' n_features <- c(0, 1, 1, 1, 2, 2, 2, 3)
+#' approach <- c("gaussian", "copula", "copula")
+#' l <- shapr:::get_list_approaches(n_features, approach)
+#' str(l)
 get_list_approaches <- function(n_features, approach) {
-
   l <- list()
   approach[length(approach)] <- approach[length(approach) - 1]
 
@@ -316,6 +407,18 @@ get_list_approaches <- function(n_features, approach) {
   return(l)
 }
 
+#' @keywords internal
+explainer_x_test <- function(x_test, feature_labels) {
+
+  # Remove variables that were not used for training
+  x <- data.table::as.data.table(x_test)
+  cnms_remove <- setdiff(colnames(x), feature_labels)
+  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
+  data.table::setcolorder(x, feature_labels)
+
+  return(as.matrix(x))
+}
+
 #' @rdname explain
 #' @name explain
 #'
@@ -323,28 +426,27 @@ get_list_approaches <- function(n_features, approach) {
 explain.combinedparameters <- function(x, explainer, approach, prediction_zero, mincriterion, ...) {
 
   # Get indices of combinations
-  l <- get_list_parameters(explainer$X$nfeatures, mincriterion)
+  l <- get_list_parameters(explainer$X$n_features, mincriterion)
   explainer$return <- TRUE # this is important so that you don't use prediction() twice
   explainer$x_test <- as.matrix(x)
 
   dt_l <- list()
   for (i in seq_along(l)) {
-    dt_l[[i]] <- explain(x, explainer, approach, prediction_zero, index_features = l[[i]], mincriterion = as.numeric(names(l[i])), ...)
+    dt_l[[i]] <- explain(x, explainer, approach, prediction_zero, index_features = l[[i]],
+                         mincriterion = as.numeric(names(l[i])), ...)
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 
   r <- prediction(dt, prediction_zero, explainer)
   return(r)
-
 }
 
 #' @keywords internal
 get_list_parameters <- function(n_features, mincriterion) {
-
   l <- list()
 
-  for(k in 1:length(unique(mincriterion))){
+  for (k in 1:length(unique(mincriterion))) {
     x <- which(mincriterion == unique(mincriterion)[k])
     nn <- as.character(unique(mincriterion)[k])
     if (length(l) == 0) x <- c(0, x)
@@ -352,4 +454,3 @@ get_list_parameters <- function(n_features, mincriterion) {
   }
   return(l)
 }
-

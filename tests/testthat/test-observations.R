@@ -30,13 +30,13 @@ test_that("Test observation_impute", {
   # Test that w_threshold reduces number of rows
   expect_true(
     nrow(observation_impute(W_kernel, S, x_train, x_test, w_threshold = .7)) >
-    nrow(observation_impute(W_kernel, S, x_train, x_test, w_threshold = 0.5))
+      nrow(observation_impute(W_kernel, S, x_train, x_test, w_threshold = 0.5))
   )
 
   # Test that n_samples reduces number of rows
   expect_true(
     nrow(observation_impute(W_kernel, S, x_train, x_test)) >
-    nrow(observation_impute(W_kernel, S, x_train, x_test, n_samples = 10))
+      nrow(observation_impute(W_kernel, S, x_train, x_test, n_samples = 10))
   )
 
   # Tests error
@@ -46,11 +46,10 @@ test_that("Test observation_impute", {
   expect_error(observation_impute(tail(W_kernel, -1), S, x_train, x_test))
 
   # Test single result
-  cnms <- c(colnames(x_train), "wcomb", "w")
+  cnms <- c(colnames(x_train), "id_combination", "w")
   expect_true(data.table::is.data.table(r))
   expect_true(ncol(r) == m + 2)
   expect_true(all(colnames(r) == cnms))
   expect_true(all(unlist(lapply(r, is.numeric))))
-  expect_true(is.integer(r$wcomb))
-
+  expect_true(is.integer(r$id_combination))
 })

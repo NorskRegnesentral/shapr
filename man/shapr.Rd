@@ -4,24 +4,77 @@
 \alias{shapr}
 \title{Create an explainer object with Shapley weights for test data.}
 \usage{
-shapr(x, model, n_combinations = NULL)
+shapr(x, model, n_combinations = NULL, feature_labels = NULL)
 }
 \arguments{
-\item{x}{An \code{ntrain x p} numeric matrix or data.frame, where \code{p = ncol(x)} (total number of explanatory variables).Contains the variables used for training the model
-(i.e. the explanatory variables). Note that the response variable should not be part of
-\code{x}.}
+\item{x}{Numeric matrix or data.frame. Contains the data used for training the model.}
 
-\item{model}{The model whose predictions we want to explain.}
+\item{model}{The model whose predictions we want to explain. See \code{\link{predict_model}}
+for more information about which models \code{shapr} supports natively.}
 
 \item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
 the exact method is used and all combinations are considered. The maximum number of
-combinations equals \code{2^p}.}
+combinations equals \code{2^ncol(x)}.}
+
+\item{feature_labels}{Character vector. The labels/names of the features used for training the model.
+Only applicable if you are using a custom model. Otherwise the features in use are extracted from \code{model}.}
 }
 \value{
-A list to be used by \code{explain} to compute the kernel SHAP values (\code{Kshap}).
+Named list that contains the following items:
+\describe{
+  \item{exact}{Boolean. Equals \code{TRUE} if \code{n_combinations = NULL} or
+  \code{n_combinations < 2^ncol(x)}, otherwise \code{FALSE}.}
+  \item{n_features}{Positive integer. The number of columns in \code{x}}
+  \item{model_type}{Character. Returned value after calling \code{model_type(model)}}
+  \item{S}{Binary matrix. The number of rows equals the number of unique combinations, and
+  the number of columns equals the total number of features. I.e. let's say we have a case with
+  three features. In that case we have \code{2^3 = 8} unique combinations. If the j-th
+  observation for the i-th row equals \code{1} it indicates that the j-th feature is present in
+  the i-th combination. Otherwise it equals \code{0}.}
+  \item{W}{Second item}
+  \item{X}{data.table. Returned object from \code{\link{feature_combinations}}}
+  \item{x_train}{data.table. Transformed \code{x} into a data.table.}
+}
+
+In addition to the items above \code{model}, \code{feature_labels} (updated with the names actually used by the
+model) and \code{n_combinations} is also present in the returned object.
 }
 \description{
 Create an explainer object with Shapley weights for test data.
+}
+\examples{
+# Load example data
+data("Boston", package = "MASS")
+df <- Boston
+
+# Example using the exact method
+x_var <- c("lstat", "rm", "dis", "indus")
+y_var <- "medv"
+df1 <- df[, x_var]
+model <- lm(medv ~ lstat + rm + dis + indus, data = df)
+explainer <- shapr(df1, model)
+
+print(nrow(explainer$X))
+# 16 (which equals 2^4)
+
+# Example using approximation
+y_var <- "medv"
+x_var <- setdiff(colnames(df), y_var)
+model <- lm(medv ~ ., data = df)
+df2 <- df[, x_var]
+explainer <- shapr(df2, model, n_combinations = 1e3)
+
+print(nrow(explainer$X))
+
+# Example using approximation where n_combinations > 2^m
+x_var <- c("lstat", "rm", "dis", "indus")
+y_var <- "medv"
+df3 <- df[, x_var]
+model <- lm(medv ~ lstat + rm + dis + indus, data = df)
+explainer <- shapr(df1, model, n_combinations = 1e3)
+
+print(nrow(explainer$X))
+# 16 (which equals 2^4)
 }
 \author{
 Nikolai Sellereite

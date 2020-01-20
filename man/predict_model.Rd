@@ -7,8 +7,8 @@
 \alias{predict_model.glm}
 \alias{predict_model.ranger}
 \alias{predict_model.xgb.Booster}
-\alias{predict_model.mgcv}
-\title{Predict on vector form}
+\alias{predict_model.gam}
+\title{Generate predictions for different model classes}
 \usage{
 predict_model(x, newdata)
 
@@ -22,10 +22,10 @@ predict_model(x, newdata)
 
 \method{predict_model}{xgb.Booster}(x, newdata)
 
-\method{predict_model}{mgcv}(x, newdata)
+\method{predict_model}{gam}(x, newdata)
 }
 \arguments{
-\item{x}{Object of class inheriting from one of the supported models. See details.}
+\item{x}{Model object for the model to be explained.}
 
 \item{newdata}{A data frame (or matrix) in which to look for variables with which to predict.}
 }
@@ -34,17 +34,27 @@ Numeric
 }
 \description{
 Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-\code{\link[ranger]{ranger}} and \code{\link[xgboost]{xgboost}} with binary or continuous response.
+\code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and \code{\link[xgboost]{xgboost}} with binary or
+continuous response. See details for more information.
 }
 \details{
 The following models are currently supported:
 \itemize{
-\item \code{\link[stats]{lm}}
-\item \code{\link[stats]{glm}}
-\item \code{\link[ranger]{ranger}}
-\item \code{\link[mgcv]{mgcv}}
-\item \code{\link[xgboost]{xgboost}}
+\item \code{\link[stats:lm]{stats::lm}}
+\item \code{\link[stats:glm]{stats::glm}}
+\item \code{\link[ranger:ranger]{ranger::ranger}}
+\item \code{\link[mgcv:gam]{mgcv::gam}}
+\item \code{\link[xgboost:xgboost]{xgboost::xgboost/xgboost::xgb.train}}
 }
+
+The returned object \code{p} always satisfies the following properties:
+\itemize{
+\item \code{is.atomic(p)} equals \code{TRUE}
+\item \code{is.double(p)} equals \code{TRUE}
+}
+
+If you have a binary classification model we'll always return the probability prediction
+for a single class.
 
 For more details on how to use a custom model see the package vignette:
 \code{vignette("understanding_shapr", package = "shapr")}

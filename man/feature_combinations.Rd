@@ -2,37 +2,52 @@
 % Please edit documentation in R/features.R
 \name{feature_combinations}
 \alias{feature_combinations}
-\title{Get combinations}
+\title{Define feature combinations, and fetch additional information about each unique combination}
 \usage{
-feature_combinations(m, exact = TRUE, n_combinations = 200,
-  shapley_weight_inf_replacement = 10^6, reduce_dim = TRUE)
+feature_combinations(
+  m,
+  exact = TRUE,
+  n_combinations = 200,
+  weight_zero_m = 10^6
+)
 }
 \arguments{
-\item{m}{Integer. Total number of features}
+\item{m}{Positive integer. Total number of features.}
 
-\item{exact}{Logical. If TRUE, uses the full sum in the Shapley formula, if FALSE, uses a
-sampling approach to approximate the sum}
+\item{exact}{Logical. If \code{TRUE} all \code{2^m} combinations are generated, otherwise a
+subsample of the combinations is used.}
 
-\item{shapley_weight_inf_replacement}{Numeric. Indicating which weight to use for the full
-conditional and unconditional expectations in kernel SHAPs weighted least squares formulation.}
+\item{n_combinations}{Positive integer. Note that if \code{exact = TRUE},
+\code{n_combinations} is ignored. However, if \code{m > 12} you'll need to add a positive integer
+value for \code{n_combinations}.}
 
-\item{reduce_dim}{Logical. Indicating whether to reduce the dimension of the weighted least
-squares problem by merging identical columns and adjusting their weights.}
+\item{weight_zero_m}{Numeric. The value to use as a replacement for infinite combination
+weights when doing numerical operations.}
 }
 \value{
-data.table
+A data.table that contains the following columns:
+\describe{
+\item{id_combination}{Positive integer. Represents a unique key for each combination. Note that the table
+is sorted by \code{id_combination}, so that is always equal to \code{x[["id_combination"]] = 1:nrow(x)}.}
+\item{features}{List. Each item of the list is an integer vector where \code{features[[i]]}
+represents the indices of the features included in combination \code{i}. Note that all the items
+are sorted such that \code{features[[i]] == sort(features[[i]])} is always true.}
+\item{n_features}{Vector of positive integers. \code{n_features[i]} equals the number of features in combination
+\code{i}, i.e. \code{n_features[i] = length(features[[i]])}.}.
+\item{N}{Positive integer. The number of unique ways to sample \code{n_features[i]} features
+from \code{m} different features, without replacement.}
+}
 }
 \description{
-Get combinations
+Define feature combinations, and fetch additional information about each unique combination
 }
-\details{
-The returned data.table contains the following columns
-\describe{
-\item{ID}{Positive integer. Unique key for combination}
-\item{features}{List of integer vectors}
-\item{nfeatures}{Positive integer}
-\item{N}{Positive integer}
-}
+\examples{
+# All combinations
+x <- shapr:::feature_combinations(m = 5)
+nrow(x) # Equals 2^5 = 32
+
+# Subsample of combinations
+x <- shapr:::feature_combinations(m = 13, n_combinations = 1e3)
 }
 \author{
 Nikolai Sellereite, Martin Jullum

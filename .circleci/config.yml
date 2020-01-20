@@ -29,7 +29,7 @@ jobs:
           command: R -e 'install.packages("devtools")'
       - run:
           name: Install dependencies
-          command: R -e 'devtools::install_deps(dependencies = TRUE, upgrade = "always")'
+          command: R -e 'devtools::install_deps(dependencies = TRUE, upgrade = "always", repos = "https://cran.rstudio.com/")'
       - save_cache:
           key: deps01-{{ .Branch }}-{{ checksum "DESCRIPTION" }}
           paths:
@@ -44,6 +44,11 @@ jobs:
           name: Move files
           command: mv ${RCHECK_DIR} /tmp/Rcheck
           when: always
+      - run:
+          name: Lints
+          when: on_success
+          command: |
+            export CI=""; R -e 'lints <- lintr::lint_package(); print(lints); if(length(lints) > 0) stop("Package contains lints")'
       - run:
           name: Code coverage
           when: on_success

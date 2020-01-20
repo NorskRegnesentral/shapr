@@ -6,9 +6,9 @@
 \alias{model_type.lm}
 \alias{model_type.glm}
 \alias{model_type.ranger}
-\alias{model_type.mgcv}
+\alias{model_type.gam}
 \alias{model_type.xgb.Booster}
-\title{TODO: Add title & description}
+\title{Define type of model}
 \usage{
 model_type(x)
 
@@ -20,10 +20,23 @@ model_type(x)
 
 \method{model_type}{ranger}(x)
 
-\method{model_type}{mgcv}(x)
+\method{model_type}{gam}(x)
 
 \method{model_type}{xgb.Booster}(x)
 }
+\arguments{
+\item{x}{Model object for the model to be explained.}
+}
+\value{
+Either \code{"classification"} or \code{"regression"}.
+}
 \description{
-TODO: Add title & description
+The function checks whether the model given by \code{x} is
+supported, and if it is a regression- or a classification model. If \code{x} is
+not a supported model the function will return an error message, otherwise it will
+return either \code{"regression"} or \code{"classification"}.
+}
+\details{
+See \code{\link{predict_model}} for more information about
+what type of models \code{shapr} currently support.
 }

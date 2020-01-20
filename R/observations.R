@@ -1,10 +1,10 @@
 #' Generate permutations of training data using test observations
 #'
 #' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
-#' observations for all feature combinations. The dimension equals \code{n_train x n_features}.
-#' @param S Integer matrix of dimension \code{n_combinations x n_features}, where \code{n_combinations}
-#' and \code{n_features} equals the total number of sampled/non-sampled feature combinations and
-#' the total number of unique features, respectively. Note that \code{n_features = ncol(x_train)}.
+#' observations for all feature combinations. The dimension equals \code{n_train x m}.
+#' @param S Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations}
+#' and \code{m} equals the total number of sampled/non-sampled feature combinations and
+#' the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.
 #' @param x_train Numeric matrix
 #' @param x_test Numeric matrix
 #' @param w_threshold Numeric vector of length 1, where \code{w_threshold > 0} and
@@ -16,8 +16,25 @@
 #' @keywords internal
 #'
 #' @examples
-#' # TODO: Add simple example
+#' # Setup
+#' n <- 20 # Sample size of training data
+#' m <- 2 # Number of features
+#' sigma <- cov(matrix(MASS::mvrnorm(m * n, 0, 1), nrow = n))
 #'
+#' # Create training- and test data
+#' x_train <- as.matrix(MASS::mvrnorm(n, mu = rep(0, m), Sigma = sigma), ncol = m)
+#' x_test <- t(as.matrix(MASS::mvrnorm(1, mu = rep(0, m), sigma)))
+#' colnames(x_train) <- colnames(x_test) <- paste0("X", seq(m))
+#'
+#' # Binary matrix which represents the feature combinations
+#' S <- matrix(c(1, 0, 0, 1), nrow = m)
+#'
+#' # Kernel matrix
+#' W_kernel <- matrix(rnorm(n * ncol(S), mean = 1 / n, sd = 1 / n^2), nrow = n)
+#'
+#' # Generate permutations of training data using test observations
+#' r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
+#' str(r)
 #' @author Nikolai Sellereite
 observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n_samples = 1e3) {
 
@@ -25,7 +42,8 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   stopifnot(is.matrix(W_kernel) & is.matrix(S))
   stopifnot(nrow(W_kernel) == nrow(x_train))
   stopifnot(ncol(W_kernel) == nrow(S))
-  stopifnot(all(S %in% c(0,1)))
+  stopifnot(all(S %in% c(0, 1)))
+  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- NULL # due to NSE notes in R CMD check
 
   # Find weights for all combinations and training data
   dt <- data.table::as.data.table(W_kernel)
@@ -44,12 +62,12 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   # Remove training data with small weight
   knms <- c("index_s", "weight")
   data.table::setkeyv(dt_melt, knms)
-  dt_melt[, weight := weight / sum(weight), index_s]
+  dt_melt[, weight := weight / sum(weight), by = "index_s"]
   if (w_threshold < 1) {
-    dt_melt[, wcum := cumsum(weight), index_s]
+    dt_melt[, wcum := cumsum(weight), by = "index_s"]
     dt_melt <- dt_melt[wcum > 1 - w_threshold][, wcum := NULL]
   }
-  dt_melt <- dt_melt[, tail(.SD, n_samples), index_s]
+  dt_melt <- dt_melt[, tail(.SD, n_samples), by = "index_s"]
 
   # Generate data used for prediction
   dt_p <- observation_impute_cpp(
@@ -63,7 +81,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   # Add keys
   dt_p <- data.table::as.data.table(dt_p)
   data.table::setnames(dt_p, colnames(x_train))
-  dt_p[, wcomb := dt_melt[["index_s"]]]
+  dt_p[, id_combination := dt_melt[["index_s"]]]
   dt_p[, w := dt_melt[["weight"]]]
 
   return(dt_p)
@@ -71,12 +89,18 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 
 #' Generate data used for predictions
 #'
+#' @param x Explainer object. See \code{\link{explain}} for more information.
+#'
 #' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation.
 #'
-#' @param seed Positive integer. If \code{NULL} a random seed will be used.
+#' @param seed Positive integer. If \code{NULL} the seed will be inherited from the calling environment.
 #'
-#' @param index_features Positive integer vector. Only used internally.
+#' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
+#' \code{NULL} means all combinations. Only used internally.
+#'
+#' @param x_test_gaussian Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
+#' \code{approach = "empirical"}.
 #'
 #' @param ... Currently not used.
 #'
@@ -92,6 +116,7 @@ prepare_data <- function(x, ...) {
 #' @rdname prepare_data
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   # Get distance matrix ----------------
   if (is.null(index_features)) {
@@ -112,6 +137,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
   h_optim_DT <- as.data.table(h_optim_mat)
   data.table::setnames(h_optim_DT, paste0("Testobs_", seq(nrow(x$x_test))))
+  varcomb <- NULL # due to NSE notes in R CMD check
   h_optim_DT[, varcomb := .I]
   kernel_metric <- ifelse(x$type == "independence", x$type, "gaussian")
 
@@ -157,22 +183,24 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
     )
 
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  V1 <- keep <- NULL # due to NSE notes in R CMD check
   dt[, keep := TRUE]
-  first_element <- dt[, tail(.I, 1), .(id, wcomb)][wcomb %in% c(1, 2^ncol(x$x_test)), V1]
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
+  first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, 2^ncol(x$x_test)), V1]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
   dt[first_element, keep := TRUE]
   dt <- dt[keep == TRUE][, keep := NULL]
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
 #' @rdname prepare_data
 #' @export
 prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -184,32 +212,31 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
   }
 
   for (i in seq(n_xtest)) {
-
     l <- lapply(
       X = features,
       FUN = sample_gaussian,
       n_samples = n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
-      p = ncol(x$x_test),
+      m = ncol(x$x_test),
       x_test = x$x_test[i, , drop = FALSE]
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
 #' @rdname prepare_data
 #' @export
 prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
-
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)
@@ -226,24 +253,24 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
       n_samples = n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
-      p = ncol(x$x_test),
+      m = ncol(x$x_test),
       x_test = x$x_test[i, , drop = FALSE],
       x_train = as.matrix(x$x_train),
       x_test_gaussian = x_test_gaussian[i, , drop = FALSE]
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
-#' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are used
-#' for different numbers of conditoned features, this will be a list with the features to pass.
+#' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
+#' used for different numbers of conditoned features, this will be a list with the features to pass.
 #'
 #' @param  mc_cores Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
 #' tree building and tree prediction. Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
@@ -252,13 +279,16 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' @param  mc_cores_simulateAllTrees Integer. Same as \code{mc_cores}, but specific for the tree building function
 #' #' Defaults to \code{mc_cores}.
 #'
-#' @param  mc_cores_simulateAllTrees Integer. Same as \code{mc_cores}, but specific for the tree building prediction function.
+#' @param  mc_cores_sample_ctree Integer. Same as \code{mc_cores}, but specific for the tree building prediction
+#' function.
 #' Defaults to \code{mc_cores}.
 #'
 #' @rdname prepare_data
 #' @export
 prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
-                               mc_cores = 1, mc_cores_simulateAllTrees = mc_cores, mc_cores_sample_ctree = mc_cores, ...) {
+                               mc_cores = 1, mc_cores_simulateAllTrees = mc_cores,
+                               mc_cores_sample_ctree = mc_cores, ...) {
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -270,13 +300,13 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
     features <- x$X$features[index_features]
   }
 
-  if(!is.null(x$comb_indici)){
+  if (!is.null(x$comb_indici)) {
     stopifnot(x$comb_indici >= 0)
     stopifnot(x$comb_indici <= ncol(x$x_train))
     stopifnot(length(x$comb_indici) == 1)
     stopifnot(!is.null(x$comb_mincriterion))
   }
-  if(!is.null(x$comb_mincriterion)){
+  if (!is.null(x$comb_mincriterion)) {
     stopifnot(!is.null(x$comb_indici))
     stopifnot(length(x$comb_mincriterion) == 2)
     stopifnot(all(x$comb_mincriterion <= 1))
@@ -284,16 +314,17 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   }
 
   ## this is the list of all 2^10 trees (if number of features = 10)
-  all_trees <- parallel::mclapply(X = features,
-                                  FUN = simulateAllTrees,
-                                  x_train = x$x_train,
-                                  comb_indici = x$comb_indici,
-                                  comb_mincriterion = x$comb_mincriterion,
-                                  mincriterion = x$mincriterion,
-                                  minsplit = x$minsplit,
-                                  minbucket = x$minbucket,
-                                  mc.cores = mc_cores_simulateAllTrees,
-                                  mc.set.seed = FALSE
+  all_trees <- parallel::mclapply(
+    X = features,
+    FUN = simulateAllTrees,
+    x_train = x$x_train,
+    comb_indici = x$comb_indici,
+    comb_mincriterion = x$comb_mincriterion,
+    mincriterion = x$mincriterion,
+    minsplit = x$minsplit,
+    minbucket = x$minbucket,
+    mc.cores = mc_cores_simulateAllTrees,
+    mc.set.seed = FALSE
   )
 
   for (i in seq(n_xtest)) {
@@ -309,17 +340,17 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
       mc.set.seed = FALSE
     )
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "wcomb")
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
     dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, wcomb := index_features[wcomb]]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[wcomb %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
 
   ## only return unique dt
-  dt2 <- dt[, sum(w), by = c("wcomb", colnames(x$x_test), "id")]
+  dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id")]
   setnames(dt2, "V1", "w")
 
   return(dt2)
@@ -328,6 +359,13 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 
 #' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {
+  id_combination <- n_features <- NULL # due to NSE notes in R CMD check
+  stopifnot(
+    data.table::is.data.table(x$X),
+    !is.null(x$X[["id_combination"]]),
+    !is.null(x$X[["n_features"]])
+  )
+
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
     ntest = nrow(x$x_test),
@@ -339,10 +377,10 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
 
   # Optimization is done only once for all distributions which conditions on
   # exactly k variables
-  these_k <- unique(x$X$nfeatures[-c(1, nrow(x$S))])
+  these_k <- unique(x$X$n_features[-c(1, nrow(x$S))])
 
   for (i in these_k) {
-    these_cond <- x$X[nfeatures == i, ID]
+    these_cond <- x$X[n_features == i, id_combination]
     cutters <- 1:x$n_samples_aicc
     no_cond <- length(these_cond)
     cond_samp <- cut(
@@ -366,7 +404,7 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
         these_test <- this.optimsamp$samp_test[these_inds]
 
         these_train <- 1:nrow(x$x_train)
-        these_test <- sample(x = these_test, size = nrow(x$x_train), replace = T)
+        these_test <- sample(x = these_test, size = nrow(x$x_train), replace = TRUE)
         current_cond_samp <- rep(unique(cond_samp), each = nrow(x$x_train))
 
         S <- x$S[this_cond, ]
