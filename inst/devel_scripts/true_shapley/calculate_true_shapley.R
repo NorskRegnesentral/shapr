@@ -357,13 +357,13 @@ MAE <- function(true_shapley, shapley_method){
 #'
 #' @export
 
-library(lqmm) ## to check if Sigma is positive definite
+
 simulate_data <- function(parameters_list){
 
   ## make sure Sigma is positive definite
   Sigma <- matrix(rep(parameters_list$corr, 9), 3, 3)
   Sigma[1, 1] <- Sigma[2, 2] <- Sigma[3, 3] <- parameters_list$Sigma_diag
-  if(!is.positive.definite(Sigma)) {
+  if(!lqmm::is.positive.definite(Sigma)) {
     print("Covariance matrix is not positive definite but will be converted.")
     Sigma <- make.positive.definite(Sigma)
     print("New Sigma matrix:")
@@ -383,10 +383,12 @@ simulate_data <- function(parameters_list){
   N_training <- parameters_list$N_training
 
   ## 1. simulate training and testing data
+  tm_current <- Sys.time()
+  print("Simulating training and testing data", quote = FALSE, right = FALSE)
   x <- mvrnorm(n = N_testing + N_training, mu = mu, Sigma = Sigma)
 
   dt <- NULL
-  if(is.null(cutoff)){ ## to get equal proportion in eqch level
+  if(is.null(cutoff)){ ## to get equal proportion in each level
     for(i in 1:ncol(x)){
       dt <- cbind(dt, cut(x[, i], quantile(x[, i], probs = c(0, 0.33, 0.66, 1)), labels = 1:3, include.lowest = TRUE)) # without include.lowest, you get NA at the boundaries
       cutoff <- c(cutoff, quantile(x[, i], probs = c(0, 0.33, 0.66, 1)))
@@ -414,13 +416,19 @@ simulate_data <- function(parameters_list){
     dt[, epsilon := 0]
   }
 
-  ## 2. One hot encoding of training data
+  ## 2. One-hot encoding of training data
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  print("One-hot encoding training data", quote = FALSE, right = FALSE)
   dt <- cbind(dt, data.table(model.matrix(~., data = dt[, .(feat1, feat2, feat3)])))
 
   ## 3. Calculate response
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  print("Calculating response of training data", quote = FALSE, right = FALSE)
   dt[, response := response_mod(feat12, feat13, feat22, feat23, feat32, feat33, epsilon, beta)]
 
   ## 4. Fit model
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  print("Fitting model of training data", quote = FALSE, right = FALSE)
   if(fit_mod == 'regression'){
     model <- lm(response ~ feat1 + feat2 + feat3, data = dt[-(1:N_testing), .(feat1, feat2, feat3, response)])
   }
@@ -431,19 +439,37 @@ simulate_data <- function(parameters_list){
   # x_test <- as.matrix(dt[(1:6), .(feat1, feat2, feat3)]) ## used in cond_expec_mat()
   # y_train <- as.matrix(dt[-(1:6), .(response)]) ## used in cond_expec_mat()
 
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  print("Initializing shapr object with trained model", quote = FALSE, right = FALSE)
   x_train <- dt[-(1:N_testing), .(feat1, feat2, feat3)] ## used in explainer()
   x_test <- dt[(1:N_testing), .(feat1, feat2, feat3)] ## used in cond_expec_mat()
   y_train <- dt[-(1:N_testing), .(response)] ## used in cond_expec_mat()
   explainer <- shapr(x_train, model)
 
   ## 6. calculate the true shapley values
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  print("Simulating Normal random variables to calculate true Shapley value", quote = FALSE, right = FALSE)
   joint_prob_dt <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod) ## 1 min for 10 mill
+
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  print("Calculating marginal probability distributions", quote = FALSE, right = FALSE)
   marg_list <- marg_prob(joint_prob_dt[[1]], explainer)
+
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  print("Calculating conditional probability distributions", quote = FALSE, right = FALSE)
   cond_list <- cond_prob(marg_list, joint_prob_dt[[1]], explainer)
+
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  print("Calculating conditional expectations", quote = FALSE, right = FALSE)
   cond_expec_mat <- t(apply(x_test, 1, FUN = cond_expec, cond_list, explainer, prediction_zero = joint_prob_dt[[2]]))
+
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  print("Calculating true Shapley values", quote = FALSE, right = FALSE)
   true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
 
   ## 7. calculate true shapley under linear model and independence assumption (only if correlation is 0)
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  print("Calculating Shapley value under linear model and indepdent variables assumption", quote = FALSE, right = FALSE)
   x_test_onehot <- dt[(1:N_testing), .(feat12, feat13, feat22, feat23, feat32, feat33)]
   if(explainer$model_type == 'regression'){
     if(parameters_list$corr == 0){
@@ -456,12 +482,15 @@ simulate_data <- function(parameters_list){
   }
 
   ## 8. calculate approximate shapley value with different methods
+
   p <- mean(y_train$response) # since y_train is no longer a matrix
 
   timeit <- list()
 
   explanation_list <- list()
   for(m in methods){
+    tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+    print(paste0("Estimating Shapley value with ", m, "method"), quote = FALSE, right = FALSE)
     if(m == 'empirical' | m == 'empirical_ind' |  m == 'gaussian' | m == 'ctree_onehot'){
 
       x_train_onehot <- as.matrix(dt[-(1:N_testing), .(feat12, feat13, feat22, feat23, feat32, feat33)])
@@ -529,6 +558,7 @@ simulate_data <- function(parameters_list){
   return_list[['true_linear']] <- true_linear
   return_list[['methods']] <- explanation_list
   return_list[['timing']] <- timeit
+  print("--- End ---")
   return(return_list)
 
 }
