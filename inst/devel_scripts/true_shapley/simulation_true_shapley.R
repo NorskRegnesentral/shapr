@@ -1,17 +1,18 @@
 
-tod_date <- '03_12_19'
-
 library(shapr)
 library(data.table)
 library(MASS)
+library(lqmm) ## to check if Sigma is positive definite
 
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley.R")
+
+tod_date <- '13_01_20'
 
 parameters_list <- list(Sigma_diag = 1,
                         corr = 0,
                         mu = c(0, 0, 0),
                         beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
-                        N_shapley = 1000000,
+                        N_shapley = 10000000,
                         noise = FALSE,
                         response_mod = function(feat12, feat13, feat22, feat23, feat32, feat33, epsilon = 0, beta){
                           return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
@@ -172,7 +173,7 @@ for(i in 1:length(parameters_list)){ # length(parameters_list)
   saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/", nm, sep = ""))
 }
 
-# mydata <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/02_12_19_results_7.rds")
+mydata <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/02_12_19_results_7.rds")
 
 
 MAE_truth <- NULL
