@@ -17,7 +17,7 @@
 #'
 #' @details The most important thing to notice is that \code{shapr} has implemented three different
 #' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-#' \code{"gassuian"} and \code{"copula"}.
+#' \code{"gaussian"} and \code{"copula"}.
 #'
 #' In addition to this the user will also have the option of combining the three approaches.
 #' E.g. if you're in a situation where you have trained a model the consists of 10 features,
