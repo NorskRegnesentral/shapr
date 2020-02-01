@@ -395,6 +395,9 @@ set as used above.
 
 
 ```{r}
+library(caret)
+library(gbm)
+
 # Fitting a gbm model using caret
 set.seed(825)
 model <- caret::train(
