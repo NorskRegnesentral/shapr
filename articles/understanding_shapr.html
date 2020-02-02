@@ -330,7 +330,13 @@ explanation_combined &lt;-<span class="st"> </span><span class="kw"><a href="../
 </li>
 </ul>
 <p>Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above. Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple additional functions to the class your model belongs to. The first class function is <code>model_type</code>, taking the model object as input, and outputting a character indicating whether the model is a (continuous response) <code>"regression"</code> model, or a (binary) <code>"classification"</code> model. The second function is <code>predict_model</code>, taking the model and data (as a <code>matrix</code> or <code>data.frame</code>) as input and outputting the corresponding prediction as a numeric vector. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a <code>gbm</code> model using the <code>caret</code> package, fitted to the same Boston data set as used above.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Fitting a gbm model using caret</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(caret)
+<span class="co">#&gt; Loading required package: lattice</span>
+<span class="co">#&gt; Loading required package: ggplot2</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(gbm)
+<span class="co">#&gt; Loaded gbm 2.1.5</span>
+
+<span class="co"># Fitting a gbm model using caret</span>
 <span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">825</span>)
 model &lt;-<span class="st"> </span>caret<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/caret/man/train.html">train</a></span>(
   x_train,
@@ -338,8 +344,6 @@ model &lt;-<span class="st"> </span>caret<span class="op">::</span><span class="
   <span class="dt">method =</span> <span class="st">"gbm"</span>,
   <span class="dt">verbose =</span> <span class="ot">FALSE</span>
 )
-<span class="co">#&gt; Loading required package: lattice</span>
-<span class="co">#&gt; Loading required package: ggplot2</span>
 
 <span class="co"># Create custom function of model_type for caret</span>
 model_type.train &lt;-<span class="st"> </span><span class="cf">function</span>(x) {
