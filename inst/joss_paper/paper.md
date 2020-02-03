@@ -42,8 +42,9 @@ cooperating players.
 @kononenko2010efficient and later @lundberg2017unified proposed to use the Shapley value framework to explain 
 predictions by distributing the prediction value on the input features. 
 Established methods and implementations for explaining predictions with Shapley values like Shapley 
-Sampling Values [@vstrumbelj2014explaining], SHAP/Kernel SHAP [@lundberg2017unified], and to some extent TreeSHAP 
-[@lundberg2018consistent], assume that the features are independent when approximating the Shapley values. 
+Sampling Values [@vstrumbelj2014explaining], SHAP/Kernel SHAP [@lundberg2017unified], and to some extent 
+TreeSHAP/TreeExplainer [@lundberg2018consistent; @Lundberg2020], assume that the features are independent when 
+approximating the Shapley values. 
 The `R`-package `shapr`, however, implements the methodology proposed by @aas2019explaining, where predictions are explained while
 accounting for the dependence between the features, resulting in significantly more accurate approximations to the 
 Shapley values. 
@@ -62,8 +63,7 @@ The implementation supports explanation of models fitted with the functions nati
 Moreover, the package supports explanation of custom models by supplying two simple additional class functions.
 
 For reference, the package also includes a benchmark implementation of the original (independence assuming) version of
-Kernel SHAP [@lundberg2017unified], providing identical results to the "official" Kernel SHAP `Python` package `shap` 
-[@shapPythonpackage]. 
+Kernel SHAP [@lundberg2017unified], providing identical results to the "official" Kernel SHAP `Python` package `shap`. 
 This allows the user to easily see the effect and importance of accounting for the feature dependence.
 
 The user interface in the package has largely been adopted from the `R`-package `lime` [@limeRpackage]. 
