@@ -33,14 +33,15 @@
 #'
 #' # Subsample of combinations
 #' x <- shapr:::feature_combinations(m = 13, n_combinations = 1e3)
-feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6) {
+feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group = NULL) {
 
   # Force user to use a natural number for n_combinations if m > 12
-  if (m > 12 & is.null(n_combinations)) {
+  if (m > 12 & is.null(n_combinations) & is.null(group)) {
     stop(
       paste0(
         "Due to computational complexity, we recommend setting n_combinations = 10 000\n",
-        "if the number of features is larger than 12. Note that you can force the use of the exact\n",
+        "if the number of features is larger than 12 if feature wise Shapley values are\n",
+        "to be chosen (ie. without grouping). Note that you can force the use of the exact\n",
         "method (i.e. n_combinations = NULL) by setting n_combinations equal to 2^m,\n",
         "where m is the number of features."
       )
@@ -48,30 +49,76 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   }
 
   # Not supported for m > 30
-  if (m > 30) {
-    stop("Currently we are not supporting cases where the number of features is greater than 30.")
+  if (m > 30 & is.null(group)) {
+    stop(paste0(
+      "Currently we are not supporting cases where the number of features is greater than 30\n",
+      "for feature wise Shapley values (i.e. without grouping)."
+      )
+    )
   }
 
-  if (!exact && n_combinations > (2^m - 2)) {
+  if (!exact && n_combinations > (2^m - 2) & is.null(group)) {
     n_combinations <- 2^m - 2
     exact <- TRUE
     cat(sprintf("n_combinations is larger than or equal to 2^m = %d. Using exact instead.", 2^m))
   }
 
-  if (exact) {
-    dt <- feature_exact(m, weight_zero_m)
+  if(is.null(group)){
+    if (exact) {
+      dt <- feature_exact(m, weight_zero_m)
+    } else {
+      dt <- feature_not_exact(m, n_combinations, weight_zero_m)
+      stopifnot(
+        data.table::is.data.table(dt),
+        !is.null(dt[["p"]])
+      )
+      p <- NULL # due to NSE notes in R CMD check
+      dt[, p := NULL]
+    }
   } else {
-    dt <- feature_not_exact(m, n_combinations, weight_zero_m)
-    stopifnot(
-      data.table::is.data.table(dt),
-      !is.null(dt[["p"]])
-    )
-    p <- NULL # due to NSE notes in R CMD check
-    dt[, p := NULL]
+    dt <- feature_group(group, weight_zero_m)
   }
 
   return(dt)
 }
+
+#' @keywords internal
+group_fun <- function(x,group){
+  if (length(x) != 0){
+    unlist(group[x])
+  } else {
+    integer(0)
+  }
+}
+
+#' @keywords internal
+group_fun_helper <- function(y,m,group){
+  if (y !=0){
+    utils::combn(x = m, m = y, FUN = group_fun, group = group, simplify = FALSE)
+  } else {
+    list(integer(0))
+  }
+}
+
+#' @keywords internal
+feature_group <- function(group, weight_zero_m = 10^6) {
+
+  features <- id_combination <- n_features <- shapley_weight <- N <- NULL # due to NSE notes in R CMD check
+
+  m <- length(group)
+  dt <- data.table::data.table(id_combination = seq(2^m))
+  combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
+
+  dt[, groups := unlist(combinations, recursive = FALSE)]
+  dt[, features := lapply(groups,FUN = group_fun, group = group)]
+  dt[, n_groups := length(groups[[1]]), id_combination]
+  dt[, n_features := length(features[[1]]), id_combination]
+  dt[, N := .N, n_groups]
+  dt[, shapley_weight := shapley_weights(m = m, N = N, n_features = n_groups, weight_zero_m)]
+
+  return(dt)
+}
+
 
 #' @keywords internal
 feature_exact <- function(m, weight_zero_m = 10^6) {

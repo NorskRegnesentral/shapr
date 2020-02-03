@@ -27,7 +27,7 @@ shapley_weights <- function(m, N, n_features, weight_zero_m = 10^6) {
 #' @return Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-weight_matrix <- function(X, normalize_W_weights = TRUE) {
+weight_matrix <- function(X, normalize_W_weights = TRUE, group = NULL) {
 
   # Fetch weights
   w <- X[["shapley_weight"]]
@@ -36,12 +36,21 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
     w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
   }
 
-  W <- weight_matrix_cpp(
-    features = X[["features"]],
-    m = X[.N][["n_features"]],
-    n = X[, .N],
-    w = w
-  )
+  if (is.null(group)){
+    W <- weight_matrix_cpp(
+      features = X[["features"]],
+      m = X[.N][["n_features"]], # Reversing 2^m (generalized version of X[.N][["n_features"]], also working for groups)
+      n = X[, .N],
+      w = w
+    )
+  } else {
+    W <- weight_matrix_cpp(
+      features = X[["groups"]],
+      m = as.integer(log2(X[, .N])), # Reversing 2^m (generalized version of X[.N][["n_features"]], also working for groups)
+      n = X[, .N],
+      w = w
+    )
+  }
 
   return(W)
 }
@@ -119,7 +128,8 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 shapr <- function(x,
                   model,
                   n_combinations = NULL,
-                  feature_labels = NULL) {
+                  feature_labels = NULL,
+                  group = NULL) {
 
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
@@ -146,23 +156,36 @@ shapr <- function(x,
   # Checks model and features
   explainer$p <- predict_model(model, head(x_train))
 
+  # Group handling
+  if (!is.null(group)){
+    if (is.null(names(group))){
+      group_names <- paste0("group",seq(length(group)))
+    } else {
+      group_names <- names(group)
+    }
+  } else {
+    group_names <- NULL
+  }
+
   # Get all combinations ----------------
-  dt_combinations <- feature_combinations(
+  dt_combinations <- feature_combinations( # MJMJ: This builds the dt_combinations. The naming and structure of this is key below.
     m = explainer$n_features,
     exact = explainer$exact,
     n_combinations = n_combinations,
-    weight_zero_m = 10^6
+    weight_zero_m = 10^6,
+    group = group
   )
 
   # Get weighted matrix ----------------
-  weighted_mat <- weight_matrix(
+  weighted_mat <- weight_matrix( # MJMJ: Here I need the group list
     X = dt_combinations,
-    normalize_W_weights = TRUE
+    normalize_W_weights = TRUE,
+    group = group
   )
 
   ## Get feature matrix ---------
   feature_matrix <- feature_matrix_cpp(
-    features = dt_combinations[["features"]],
+    features = dt_combinations[["features"]], # MJMJ: Here it seems like I need the features also for grouped approach
     m = explainer$n_features
   )
 
@@ -173,6 +196,8 @@ shapr <- function(x,
   explainer$feature_labels <- feature_labels
   explainer$x <- NULL
   explainer$p <- NULL
+  explainer$group <- group
+  explainer$group_names <- group_names
 
   attr(explainer, "class") <- c("explainer", "list")
 

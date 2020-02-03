@@ -4,7 +4,7 @@
 \alias{shapr}
 \title{Create an explainer object with Shapley weights for test data.}
 \usage{
-shapr(x, model, n_combinations = NULL, feature_labels = NULL)
+shapr(x, model, n_combinations = NULL, feature_labels = NULL, group = NULL)
 }
 \arguments{
 \item{x}{Numeric matrix or data.frame. Contains the data used for training the model.}

@@ -8,7 +8,8 @@ feature_combinations(
   m,
   exact = TRUE,
   n_combinations = 200,
-  weight_zero_m = 10^6
+  weight_zero_m = 10^6,
+  group = NULL
 )
 }
 \arguments{

@@ -41,14 +41,20 @@ prediction <- function(dt, prediction_zero, explainer) {
   )
 
   # Setup
-  cnms <- colnames(explainer$x_test)
   data.table::setkeyv(dt, c("id", "id_combination"))
+  feature_names <- colnames(explainer$x_test)
+
+  if(is.null(explainer$group)){
+    shap_names <- feature_names
+  } else {
+    shap_names <- explainer$group_names
+  }
 
   # Check that the number of test observations equals max(id)
   stopifnot(nrow(explainer$x_test) == dt[, max(id)])
 
   # Predictions
-  dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
+  dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
   dt[id_combination == 1, p_hat := prediction_zero]
   p_all <- predict_model(explainer$model, newdata = explainer$x_test)
   dt[id_combination == max(id_combination), p_hat := p_all[id]]
@@ -60,7 +66,7 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt_mat[, id_combination := NULL]
   kshap <-  t(explainer$W %*% as.matrix(dt_mat))
   dt_kshap <- data.table::as.data.table(kshap)
-  colnames(dt_kshap) <- c("none", cnms)
+  colnames(dt_kshap) <- c("none", shap_names)
 
   r <- list(dt = dt_kshap, model = explainer$model, p = p_all, x_test = explainer$x_test)
   attr(r, "class") <- c("shapr", "list")

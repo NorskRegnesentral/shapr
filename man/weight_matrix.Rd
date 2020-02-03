@@ -4,7 +4,7 @@
 \alias{weight_matrix}
 \title{Calculate weighted matrix}
 \usage{
-weight_matrix(X, normalize_W_weights = TRUE)
+weight_matrix(X, normalize_W_weights = TRUE, group = NULL)
 }
 \arguments{
 \item{X}{data.table}
