@@ -48,6 +48,14 @@ explanation <- explain(x_test, explainer, approach = "empirical", prediction_zer
 explanation$dt
 
 
+explanation <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p0)
+explanation$dt
+
+
+explanation <- explain(x_test, explainer, approach = "copula", prediction_zero = p0)
+explanation$dt
+
+# All are quite differnet
 
 
 # TODO in the end
