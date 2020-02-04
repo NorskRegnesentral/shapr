@@ -112,8 +112,8 @@ data("Boston", package = "MASS")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:6), x_var])
-y_train <- Boston[-(1:6), y_var]
+x_train <- as.matrix(Boston[-1:-6, x_var])
+y_train <- Boston[-1:-6, y_var]
 x_test <- as.matrix(Boston[1:6, x_var])
 
 # Looking at the dependence between the features
