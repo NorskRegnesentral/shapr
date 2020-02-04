@@ -94,6 +94,24 @@ To install the current development version, use
 devtools::install_github("NorskRegnesentral/shapr")
 ```
 
+If you would like to install all packages of the models we currently
+support, use
+
+``` r
+devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
+```
+
+If you would also like to build and view the vignette locally,
+use
+
+``` r
+devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
+vignette("understanding_shapr", "shapr")
+```
+
+You can always check out the latest version of the vignette
+[here](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html).
+
 ## Example
 
 `shapr` supports computation of Shapley values with any predictive model
