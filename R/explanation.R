@@ -54,7 +54,7 @@
 #' (\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}})
 #' It's equal for all observations and set by the user through the argument \code{prediction_zero}.
 #' In theory this value should be the expected prediction without conditioning on any features.
-#' Typically we set this value to the mean of the response in our training data, but other choices
+#' Typically we set this value equal to the mean of the response variable in our training data, but other choices
 #' such as the mean of the predictions in the training data are also reasonable.
 #'
 #' @export
