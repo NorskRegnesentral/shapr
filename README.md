@@ -148,9 +148,7 @@ explanation <- explain(
 )
 
 # Printing the Shapley values for the test data.
-# Each row contains the Shapley values decomposition of each prediction.
-# The first column contains phi_0, the Shapley value not assigned to any features, defined as p above.
-# The remaining columns contain the Shapley values specific to the corresponding features.
+# For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$dt)
 #>      none     lstat         rm       dis      indus
 #> 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644

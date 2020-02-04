@@ -119,9 +119,7 @@ explanation <- explain(
 )
 
 # Printing the Shapley values for the test data.
-# Each row contains the Shapley values decomposition of each prediction.
-# The first column contains phi_0, the Shapley value not assigned to any features, defined as p above.
-# The remaining columns contain the Shapley values specific to the corresponding features.
+# For more information about the interpretation of the values in the table, see ?shapr::explain.  
 print(explanation$dt)
 
 # Finally we plot the resulting explanations
