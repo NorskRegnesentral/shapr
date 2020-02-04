@@ -211,8 +211,8 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 x_var &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span>)
 y_var &lt;-<span class="st"> "medv"</span>
 
-x_train &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(Boston[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), x_var])
-y_train &lt;-<span class="st"> </span>Boston[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), y_var]
+x_train &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(Boston[<span class="op">-</span><span class="dv">1</span><span class="op">:-</span><span class="dv">6</span>, x_var])
+y_train &lt;-<span class="st"> </span>Boston[<span class="op">-</span><span class="dv">1</span><span class="op">:-</span><span class="dv">6</span>, y_var]
 x_test &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(Boston[<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, x_var])
 
 <span class="co"># Fitting a basic xgboost model to the training data</span>
@@ -227,20 +227,20 @@ model &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pk
 explainer &lt;-<span class="st"> </span><span class="kw"><a href="../reference/shapr.html">shapr</a></span>(x_train, model)
 
 <span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span>
-pred_zero &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(y_train)
+p &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(y_train)
 
-<span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature </span>
-<span class="co"># dependence using the empirical (conditional) distribution approach with </span>
-<span class="co"># bandwidth parameter sigma = 0.1 (default)</span>
+<span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
+<span class="co"># the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)</span>
 explanation &lt;-<span class="st"> </span><span class="kw"><a href="../reference/explain.html">explain</a></span>(
   x_test,
   <span class="dt">approach =</span> <span class="st">"empirical"</span>,
   <span class="dt">explainer =</span> explainer,
-  <span class="dt">prediction_zero =</span> pred_zero
+  <span class="dt">prediction_zero =</span> p
 )
 
-<span class="co"># Printing the Shapley values for the test data</span>
-explanation<span class="op">$</span>dt
+<span class="co"># Printing the Shapley values for the test data. </span>
+<span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.  </span>
+<span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(explanation<span class="op">$</span>dt)
 <span class="co">#&gt;      none     lstat         rm       dis      indus</span>
 <span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span>
 <span class="co">#&gt; 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871</span>
@@ -258,7 +258,7 @@ explanation_gaussian &lt;-<span class="st"> </span><span class="kw"><a href="../
   x_test,
   <span class="dt">approach =</span> <span class="st">"gaussian"</span>,
   <span class="dt">explainer =</span> explainer,
-  <span class="dt">prediction_zero =</span> pred_zero
+  <span class="dt">prediction_zero =</span> p
 )
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6</span>
@@ -270,7 +270,7 @@ explanation_copula &lt;-<span class="st"> </span><span class="kw"><a href="../re
   x_test,
   <span class="dt">approach =</span> <span class="st">"copula"</span>,
   <span class="dt">explainer =</span> explainer,
-  <span class="dt">prediction_zero =</span> pred_zero
+  <span class="dt">prediction_zero =</span> p
 )
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6, excluding </span>
@@ -308,7 +308,7 @@ explanation_combined &lt;-<span class="st"> </span><span class="kw"><a href="../
   x_test,
   <span class="dt">approach =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"empirical"</span>,<span class="st">"copula"</span>,<span class="st">"gaussian"</span>,<span class="st">"gaussian"</span>),
   <span class="dt">explainer =</span> explainer,
-  <span class="dt">prediction_zero =</span> pred_zero
+  <span class="dt">prediction_zero =</span> p
 )
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6, excluding </span>

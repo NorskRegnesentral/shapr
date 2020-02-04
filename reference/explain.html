@@ -268,6 +268,12 @@ to notice. E.g. if <code>dt[i, k + 1]</code> and <code>dt[i, j + 1]</code> are g
 where <code>j != k</code>, and <code>dt[i, k + 1]</code> &gt; <code>dt[i, j + 1]</code> this indicates that feature
 <code>j</code> and <code>k</code> both increased the value of the prediction, but that the effect of the k-th
 feature was larger than the j-th feature.</p>
+<p>The value in <code>dt[i, 1]</code> is the prediction value not assigned to any of the features
+(\(\phi\)<sub>0</sub>).
+It's equal for all observations and set by the user through the argument <code>prediction_zero</code>.
+In theory this value should be the expected prediction without conditioning on any features.
+Typically we set this value equal to the mean of the response variable in our training data, but other choices
+such as the mean of the predictions in the training data are also reasonable.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The most important thing to notice is that <code>shapr</code> has implemented three different

@@ -146,9 +146,10 @@ Current methodological restrictions:
 x_var &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span>)
 y_var &lt;-<span class="st"> "medv"</span>
 
-x_train &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(Boston[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), x_var])
-y_train &lt;-<span class="st"> </span>Boston[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), y_var]
-x_test &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(Boston[<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, x_var])
+ind_x_test &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">6</span>
+x_train &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(Boston[<span class="op">-</span>ind_x_test, x_var])
+y_train &lt;-<span class="st"> </span>Boston[<span class="op">-</span>ind_x_test, y_var]
+x_test &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(Boston[ind_x_test, x_var])
 
 <span class="co"># Looking at the dependence between the features</span>
 <span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(x_train)
@@ -181,7 +182,8 @@ explanation &lt;-<span class="st"> </span><span class="kw"><a href="reference/ex
   <span class="dt">prediction_zero =</span> p
 )
 
-<span class="co"># Printing the Shapley values for the test data</span>
+<span class="co"># Printing the Shapley values for the test data.</span>
+<span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span>
 <span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(explanation<span class="op">$</span>dt)
 <span class="co">#&gt;      none     lstat         rm       dis      indus</span>
 <span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span>
@@ -204,7 +206,7 @@ explanation &lt;-<span class="st"> </span><span class="kw"><a href="reference/ex
 <div id="references" class="section level2">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 
 <div id="ref-aas2019explaining">
 
@@ -219,8 +221,7 @@ Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
 Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998.
 “Smoothing Parameter Selection in Nonparametric Regression Using an
 Improved Akaike Information Criterion.” *Journal of the Royal
-Statistical Society: Series B (Statistical Methodology)* 60 (2). Wiley
-Online Library: 271–93.
+Statistical Society: Series B (Statistical Methodology)* 60 (2): 271–93.
 
 </div>
 
@@ -253,7 +254,7 @@ Interpretable Model-Agnostic Explanations*.
 
 Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models
 and Individual Predictions with Feature Contributions.” *Knowledge and
-Information Systems* 41 (3). Springer: 647–65.
+Information Systems* 41 (3): 647–65.
 
 </div>
 
