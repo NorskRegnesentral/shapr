@@ -58,7 +58,7 @@ combinatorial problem related to the Shapley value formula.
 The main methodological contribution of @aas2019explaining is three different methods to estimate certain conditional 
 expectation quantities, referred to as the  _empirical_, _Gaussian_ and _copula_ approach. Additionaly, the user has
 the option of combining the three approaches. 
-The implementation supports explanation of models fitted with the functions natively: `stats::lm` [@rCore], `stats::glm` [@rCore], 
+The implementation supports explanation of models fitted with the following functions natively: `stats::lm` [@rCore], `stats::glm` [@rCore], 
 `ranger::ranger` [@ranger], `mgcv::gam` [@mgcv] and `xgboost::xgboost`/`xgboost::xgb.train` [@xgboost]. 
 Moreover, the package supports explanation of custom models by supplying two simple additional class functions.
 
