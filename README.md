@@ -94,6 +94,28 @@ To install the current development version, use
 devtools::install_github("NorskRegnesentral/shapr")
 ```
 
+If you would like to install all packages of the models we currently
+support, use
+
+``` r
+devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
+```
+
+Note that if you would also like to build the vignette locally, use
+
+``` r
+devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
+```
+
+You can view the vignette via
+
+``` r
+vignette("understanding_shapr", "shapr")
+```
+
+or check out the latest version
+[here](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html).
+
 ## Example
 
 `shapr` supports computation of Shapley values with any predictive model
@@ -176,7 +198,7 @@ you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 
 <div id="ref-aas2019explaining">
 
@@ -191,8 +213,7 @@ Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
 Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998.
 “Smoothing Parameter Selection in Nonparametric Regression Using an
 Improved Akaike Information Criterion.” *Journal of the Royal
-Statistical Society: Series B (Statistical Methodology)* 60 (2). Wiley
-Online Library: 271–93.
+Statistical Society: Series B (Statistical Methodology)* 60 (2): 271–93.
 
 </div>
 
@@ -224,7 +245,7 @@ Interpretable Model-Agnostic Explanations*.
 
 Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models
 and Individual Predictions with Feature Contributions.” *Knowledge and
-Information Systems* 41 (3). Springer: 647–65.
+Information Systems* 41 (3): 647–65.
 
 </div>
 
