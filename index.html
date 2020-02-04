@@ -126,6 +126,12 @@ Current methodological restrictions:
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>To install the current development version, use</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/reexports.html">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>)</code></pre></div>
+<p>If you would like to install all packages of the models we currently support, use</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/reexports.html">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p>If you would also like to build and view the vignette locally, use</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/reexports.html">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
+<span class="kw"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span>(<span class="st">"understanding_shapr"</span>, <span class="st">"shapr"</span>)</code></pre></div>
+<p>You can always check out the latest version of the vignette <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html">here</a>.</p>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
