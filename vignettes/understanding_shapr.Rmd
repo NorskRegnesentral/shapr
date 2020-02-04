@@ -85,7 +85,7 @@ Function Name                 Description
 
 Assume a predictive model $f(\boldsymbol{x})$ for a response value $y$ with features 
 $\boldsymbol{x}\in \mathbb{R}^M$, trained on a training set, and that we want to explain the 
-predictions for new sets of features. This may be done using ideas from cooperative game theory, 
+predictions for new sets of data. This may be done using ideas from cooperative game theory, 
 letting a single prediction take the place of the game being played and the features the place of 
 the players. Letting $N$ denote the set of all $M$ players, and $S \subseteq N$ be a subset 
 of $|S|$ players, the "contribution" function $v(S)$ describes the total expected sum of payoffs 
