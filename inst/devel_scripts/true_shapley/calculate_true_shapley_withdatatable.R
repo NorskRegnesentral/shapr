@@ -439,7 +439,10 @@ simulate_data <- function(parameters_list){
   print("One-hot encoding training data", quote = FALSE, right = FALSE)
   # dt <- cbind(dt, data.table(model.matrix(~., data = dt[, .(feat1, feat2, feat3)])))
   mod_matrix <- model.matrix(~., data = dt[, 1:dim])
-  dt <- cbind(dt, data.table(mod_matrix))
+  mod_matrix_MJ <- model.matrix(~., data = dt[, 1:dim],
+                                contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
+
+    dt <- cbind(dt, data.table(mod_matrix))
   onehot_names <- names(dt[, (dim + 3):ncol(dt)])
 
 
