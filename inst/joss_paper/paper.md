@@ -72,7 +72,7 @@ Then the output from `shapr` is provided to the `explain` function, along with t
 and the method that should be used to estimate the aforementioned conditional expectations.
 
 The majority of the code is in plain `R` [@rCore], while the most time consuming operations are coded in `C++` 
-through the `Rcpp` package [@rcppRpackage] for computational speed up. 
+through the `Rcpp` package [@rcppRpackage] and `RcppArmadillo` package [@eddelbuettel2014rcpparmadillo] for computational speed up. 
 For RAM efficiency and computational speed up of typical bookeeping operations, we utilize the `data.table` 
 package [@datatableRpackage] which does operations "by reference", i.e. without memory copies.
 
