@@ -50,6 +50,13 @@
 #' \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
 #' feature was larger than the j-th feature.
 #'
+#' The value in \code{dt[i, 1]} is the prediction value  not assigned to any of the features
+#' (\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}})
+#' This is the same for all prediction and set by the user through the argument \code{prediction_zero}.
+#' In theory this value should be the expected prediction without conditioning on any features.
+#' Typically we set this value to the mean of the response in our training data, but other choices,
+#' such as the mean of the predictions in the training data, is also possible.
+#'
 #' @export
 #'
 #' @author Camilla Lingjaerde, Nikolai Sellereite

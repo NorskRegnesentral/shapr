@@ -113,6 +113,13 @@ to notice. E.g. if \code{dt[i, k + 1]} and \code{dt[i, j + 1]} are greater than 
 where \code{j != k}, and \code{dt[i, k + 1]} > \code{dt[i, j + 1]} this indicates that feature
 \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
 feature was larger than the j-th feature.
+
+The value in \code{dt[i, 1]} is the prediction value  not assigned to any of the features
+(\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}})
+This is the same for all prediction and set by the user through the argument \code{prediction_zero}.
+In theory this value should be the expected prediction without conditioning on any features.
+Typically we set this value to the mean of the response in our training data, but other choices,
+such as the mean of the predictions in the training data, is also possible.
 }
 \description{
 Explain the output of machine learning models with more accurately estimated Shapley values
