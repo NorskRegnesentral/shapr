@@ -115,7 +115,7 @@ where \code{j != k}, and \code{dt[i, k + 1]} > \code{dt[i, j + 1]} this indicate
 feature was larger than the j-th feature.
 
 The value in \code{dt[i, 1]} is the prediction value not assigned to any of the features
-(\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}})
+(\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
 It's equal for all observations and set by the user through the argument \code{prediction_zero}.
 In theory this value should be the expected prediction without conditioning on any features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
