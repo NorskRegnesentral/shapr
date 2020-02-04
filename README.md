@@ -101,8 +101,7 @@ support, use
 devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 ```
 
-If you would also like to build and view the vignette locally,
-use
+If you would also like to build and view the vignette locally, use
 
 ``` r
 devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
@@ -130,9 +129,10 @@ data("Boston", package = "MASS")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-1:-6, x_var])
-y_train <- Boston[-1:-6, y_var]
-x_test <- as.matrix(Boston[1:6, x_var])
+ind_x_test <- 1:6
+x_train <- as.matrix(Boston[-ind_x_test, x_var])
+y_train <- Boston[-ind_x_test, y_var]
+x_test <- as.matrix(Boston[ind_x_test, x_var])
 
 # Looking at the dependence between the features
 cor(x_train)
@@ -195,7 +195,7 @@ you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 
 <div id="ref-aas2019explaining">
 
@@ -210,8 +210,7 @@ Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
 Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998.
 “Smoothing Parameter Selection in Nonparametric Regression Using an
 Improved Akaike Information Criterion.” *Journal of the Royal
-Statistical Society: Series B (Statistical Methodology)* 60 (2). Wiley
-Online Library: 271–93.
+Statistical Society: Series B (Statistical Methodology)* 60 (2): 271–93.
 
 </div>
 
@@ -243,7 +242,7 @@ Interpretable Model-Agnostic Explanations*.
 
 Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models
 and Individual Predictions with Feature Contributions.” *Knowledge and
-Information Systems* 41 (3). Springer: 647–65.
+Information Systems* 41 (3): 647–65.
 
 </div>
 
