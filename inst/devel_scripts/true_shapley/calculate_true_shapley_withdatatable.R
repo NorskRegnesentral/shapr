@@ -439,12 +439,9 @@ simulate_data <- function(parameters_list){
   print("One-hot encoding training data", quote = FALSE, right = FALSE)
   # dt <- cbind(dt, data.table(model.matrix(~., data = dt[, .(feat1, feat2, feat3)])))
   mod_matrix <- model.matrix(~., data = dt[, 1:dim])
-  mod_matrix_MJ <- model.matrix(~., data = dt[, 1:dim],
-                                contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
 
-    dt <- cbind(dt, data.table(mod_matrix))
+  dt <- cbind(dt, data.table(mod_matrix))
   onehot_names <- names(dt[, (dim + 3):ncol(dt)])
-
 
   ## 3. Calculate response
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
@@ -452,7 +449,13 @@ simulate_data <- function(parameters_list){
 
   cnms <- c(onehot_names, "epsilon")
 
-  dt[, response := response_mod(tbl = .SD, beta = beta, mod_matrix = mod_matrix), .SDcols = cnms]
+  #dt[, response := response_mod(tbl = .SD, beta = beta, mod_matrix = mod_matrix), .SDcols = cnms]
+  # Edit
+  mod_matrix_full <- model.matrix(~., data = dt[, 1:dim],
+                                  contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
+
+  dt[, response := as.vector(mod_matrix_full %*% beta),] # Checked for identity
+
 
   ## 4. Fit model
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
