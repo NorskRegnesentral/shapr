@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        r-version: [3.5.1, 3.6.1]
+        r-version: [3.5.1, 3.6.1, devel]
         config:
         - { os: windows-latest, args: "--no-manual", type : "binary"}
         - { os: macOS-latest, type : "binary"}
