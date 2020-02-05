@@ -50,7 +50,7 @@
 #' \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
 #' feature was larger than the j-th feature.
 #'
-#' The value in \code{dt[i, 1]} is the prediction value not assigned to any of the features
+#' The first column in \code{dt}, called `none`, is the prediction value not assigned to any of the features
 #' (\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
 #' It's equal for all observations and set by the user through the argument \code{prediction_zero}.
 #' In theory this value should be the expected prediction without conditioning on any features.
