@@ -202,7 +202,7 @@ cond_expec <- function(cond_list, explainer){
 
   all_levels <- list()
   for(i in 1:dim){
-    all_levels[[i]] <- as.numeric(levels(cond_expec[, get(paste0("feat", i))]))
+    all_levels[[i]] <- as.numeric(levels(cond_expec[, get(feat_names[i])]))
   }
   mat <- do.call(CJ, all_levels)
   setnames(mat, 1:ncol(mat), feat_names)
@@ -540,15 +540,12 @@ simulate_data <- function(parameters_list){
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
   print("Calculating Shapley value under linear model and indepdent variables assumption", quote = FALSE, right = FALSE)
 
-  x_test_onehot <- dt[(1:N_testing), -c(1:(dim + 2), ncol(dt)), with = FALSE]
 
-
-  # x_test_onehot <- dt[(1:N_testing), .(feat12, feat13, feat22, feat23, feat32, feat33)]
   if(explainer$model_type == 'regression'){
     if(parameters_list$corr == 0){
 #      true_linear <- t(apply(x_test_onehot, 1, FUN = linear_Kshap_old, beta = beta, dt = dt, prop = joint_prob_dt[[3]]))
-      x_test_onehot_full <- mod_matrix_full[1:N_testing,]
-      true_linear <-linear_Kshap(x_test_onehot_full = x_test_onehot_full,
+      x_test_onehot_full <- dt[(1:N_testing), ..full_onehot_names]
+      true_linear <-linear_Kshap(x_test_onehot_full = cbind(1,x_test_onehot_full),
                                  beta = beta,
                                  prop = joint_prob_dt[[3]],
                                  beta_matcher = beta_matcher,
