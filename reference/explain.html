@@ -268,7 +268,7 @@ to notice. E.g. if <code>dt[i, k + 1]</code> and <code>dt[i, j + 1]</code> are g
 where <code>j != k</code>, and <code>dt[i, k + 1]</code> &gt; <code>dt[i, j + 1]</code> this indicates that feature
 <code>j</code> and <code>k</code> both increased the value of the prediction, but that the effect of the k-th
 feature was larger than the j-th feature.</p>
-<p>The value in <code>dt[i, 1]</code> is the prediction value not assigned to any of the features
+<p>The first column in <code>dt</code>, called `none`, is the prediction value not assigned to any of the features
 (\(\phi\)<sub>0</sub>).
 It's equal for all observations and set by the user through the argument <code>prediction_zero</code>.
 In theory this value should be the expected prediction without conditioning on any features.
