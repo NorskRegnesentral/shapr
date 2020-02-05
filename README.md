@@ -12,6 +12,7 @@ status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.s
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
 The most common task of machine learning is to train a model which is
