@@ -41,7 +41,7 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
     }
   }
   dt <- data.table(dt)
-  setnames(dt, names(dt), paste0("feat", 1:dim))
+  setnames(dt, names(dt), paste0("feat_", 1:dim,"_"))
 
   ## this is for the list being returned
   prop <- NULL
@@ -52,23 +52,18 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
   ## everything below here is to get the mean of the responses i.e 'mn' -------
   dt <- dt[, lapply(.SD, as.factor)]
 
-  mod_matrix <- model.matrix(~., data = dt[, 1:dim])
   # dt_response <- copy(dt) # you need this copy otherwise you affect dt when you change dt_response
   dt[, 'epsilon' := 0]
   dt <- cbind(dt, data.table(mod_matrix))
 
   ## 3. Calculate response
-  onehot_names <- names(dt[, (dim + 3):ncol(dt)])
-  cnms <- c(onehot_names, "epsilon")
-#  dt[, response_old := response_mod_old(tbl = .SD, beta = beta, mod_matrix = mod_matrix), .SDcols = cnms]
-
-  mod_matrix_full <- model.matrix(~., data = dt[, 1:dim],
-                                  contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
-  dt[, response := response_mod(mod_matrix_full = mod_matrix_full,
+  mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim],
+                             contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
+  all_responses <- response_mod(mod_matrix_full = cbind(1,mod_matrix),
                                 beta = beta,
-                                epsilon = epsilon)]
+                                epsilon = dt$epsilon)
+  mn <- mean(all_responses)
 
-  mn <- mean(dt$response)
   ## -------
 
   joint_prob <- table(dt[, ..feat_names])  / N_shapley
@@ -468,7 +463,7 @@ simulate_data <- function(parameters_list){
   }
 
   dt <- data.table(dt)
-  setnames(dt, names(dt), paste0("feat", 1:dim))
+  setnames(dt, names(dt), paste0("feat_", 1:dim,"_"))
   feat_names <- names(dt[, 1:dim])
 
   dt <- dt[, lapply(.SD, as.factor)]
@@ -483,22 +478,19 @@ simulate_data <- function(parameters_list){
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
   print("One-hot encoding training data", quote = FALSE, right = FALSE)
   # dt <- cbind(dt, data.table(model.matrix(~., data = dt[, .(feat1, feat2, feat3)])))
-  mod_matrix <- model.matrix(~., data = dt[, 1:dim])
+  mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim],
+                             contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
+
 
   dt <- cbind(dt, data.table(mod_matrix))
-  onehot_names <- names(dt[, (dim + 3):ncol(dt)])
+  full_onehot_names <- colnames(mod_matrix)
+  reduced_onehot_names <- full_onehot_names[-grep("_1$",full_onehot_names)] # names without reference levels
+
 
   ## 3. Calculate response
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
   print("Calculating response of training data", quote = FALSE, right = FALSE)
-
-  cnms <- c(onehot_names, "epsilon")
-
-  #dt[, response := response_mod(tbl = .SD, beta = beta, mod_matrix = mod_matrix), .SDcols = cnms]
-  # Edit
-  mod_matrix_full <- model.matrix(~., data = dt[, 1:dim],
-                                  contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
-  dt[, response := response_mod(mod_matrix_full = mod_matrix_full,
+  dt[, response := response_mod(mod_matrix_full = cbind(1,mod_matrix),
                                 beta = beta,
                                 epsilon = epsilon)]
 

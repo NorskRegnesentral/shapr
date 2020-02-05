@@ -33,9 +33,9 @@ parameters_list <- list(Sigma_diag = 1,
                         corr = 0,
                         mu = c(0, 0, 0),
                         beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
-                        N_shapley = 1000,
-                        N_training = 100,
-                        N_testing = 100,
+                        N_shapley = 10000,
+                        N_training = 1000,
+                        N_testing = 1000,
                         cutoff = c(-200, 0, 1, 200),
                         noise = FALSE,
                         response_mod = response_mod,
@@ -43,15 +43,15 @@ parameters_list <- list(Sigma_diag = 1,
                         methods = c("empirical"), # "gaussian", "ctree"
                         name = 'corr0')
 
-# ll <- simulate_data(parameters_list)
-# head(ll$true_shapley)
-# head(ll$true_linear)
-# MAE(ll$true_shapley, ll$true_linear) # 0.00095050 for 10000 obs and 1000 for training and testing / 0.0009436
-# MAE(ll$true_shapley, ll$methods[['gaussian']]$dt_sum) # 0.01729 # 2.68 minutes
-# MAE(ll$true_shapley, ll$methods[['empirical']]$dt_sum) # 0.0179 # 1.06 minutes
-# MAE(ll$true_shapley, ll$methods[['ctree']]$dt) # 0.016423 #
-# MAE(ll$true_shapley, ll$methods[['ctree_onehot']]$dt_sum) # 0.013 5.46 minutes
-# MAE(ll$true_shapley, ll$methods[['empirical_ind']]$dt_sum) # 0.01876 # 2.10 minutes
+ ll <- simulate_data(parameters_list)
+ head(ll$true_shapley)
+ head(ll$true_linear)
+ MAE(ll$true_shapley, ll$true_linear) # 0.00095050 for 10000 obs and 1000 for training and testing / 0.0009436
+ MAE(ll$true_shapley, ll$methods[['gaussian']]$dt_sum) # 0.01729 # 2.68 minutes
+ MAE(ll$true_shapley, ll$methods[['empirical']]$dt_sum) # 0.0179 # 1.06 minutes
+ MAE(ll$true_shapley, ll$methods[['ctree']]$dt) # 0.016423 #
+ MAE(ll$true_shapley, ll$methods[['ctree_onehot']]$dt_sum) # 0.013 5.46 minutes
+ MAE(ll$true_shapley, ll$methods[['empirical_ind']]$dt_sum) # 0.01876 # 2.10 minutes
 
 
 ##
