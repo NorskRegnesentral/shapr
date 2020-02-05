@@ -12,6 +12,7 @@ status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.s
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
 The most common task of machine learning is to train a model which is
@@ -94,6 +95,23 @@ To install the current development version, use
 devtools::install_github("NorskRegnesentral/shapr")
 ```
 
+If you would like to install all packages of the models we currently
+support, use
+
+``` r
+devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
+```
+
+If you would also like to build and view the vignette locally, use
+
+``` r
+devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
+vignette("understanding_shapr", "shapr")
+```
+
+You can always check out the latest version of the vignette
+[here](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html).
+
 ## Example
 
 `shapr` supports computation of Shapley values with any predictive model
@@ -112,9 +130,10 @@ data("Boston", package = "MASS")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:6), x_var])
-y_train <- Boston[-(1:6), y_var]
-x_test <- as.matrix(Boston[1:6, x_var])
+ind_x_test <- 1:6
+x_train <- as.matrix(Boston[-ind_x_test, x_var])
+y_train <- Boston[-ind_x_test, y_var]
+x_test <- as.matrix(Boston[ind_x_test, x_var])
 
 # Looking at the dependence between the features
 cor(x_train)
@@ -147,7 +166,8 @@ explanation <- explain(
   prediction_zero = p
 )
 
-# Printing the Shapley values for the test data
+# Printing the Shapley values for the test data.
+# For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$dt)
 #>      none     lstat         rm       dis      indus
 #> 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644
@@ -166,7 +186,9 @@ plot(explanation)
 ## Contribution
 
 All feedback and suggestions are very welcome. Details on how to
-contribute can be found [here](./.github/CONTRIBUTING.md)
+contribute can be found [here](./.github/CONTRIBUTING.md). If you have
+any questions or comments, feel free to open an issue
+[here](https://github.com/NorskRegnesentral/shapr/issues).
 
 Please note that the ‘shapr’ project is released with a [Contributor
 Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
@@ -174,7 +196,7 @@ you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 
 <div id="ref-aas2019explaining">
 
@@ -189,8 +211,7 @@ Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
 Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998.
 “Smoothing Parameter Selection in Nonparametric Regression Using an
 Improved Akaike Information Criterion.” *Journal of the Royal
-Statistical Society: Series B (Statistical Methodology)* 60 (2). Wiley
-Online Library: 271–93.
+Statistical Society: Series B (Statistical Methodology)* 60 (2): 271–93.
 
 </div>
 
@@ -222,7 +243,7 @@ Interpretable Model-Agnostic Explanations*.
 
 Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models
 and Individual Predictions with Feature Contributions.” *Knowledge and
-Information Systems* 41 (3). Springer: 647–65.
+Information Systems* 41 (3): 647–65.
 
 </div>
 
