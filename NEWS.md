@@ -1,3 +1,10 @@
+# shapr 0.1.1
+
+* Journal of Open Source Software release
+* Improved installation instructions in README and community guidelines
+* Improved documentation
+* Some bugfixes
+
 # shapr 0.1.0
 
 * Support for custom models
