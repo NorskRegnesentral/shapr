@@ -580,7 +580,7 @@ simulate_data <- function(parameters_list){
     print(paste0("Estimating Shapley value with ", m, "method"), quote = FALSE, right = FALSE)
     if(m == 'empirical' | m == 'empirical_ind' |  m == 'gaussian' | m == 'ctree_onehot'){
 
-      x_train_onehot <- as.matrix(x_test_onehot) #  # dt[-(1:N_testing), .(feat12, feat13, feat22, feat23, feat32, feat33)]
+      x_train_onehot <- as.matrix( dt[-(1:N_testing), -c(1:(dim + 2), ncol(dt)), with = FALSE]) # bugfix
 
       if(fit_mod == 'regression'){
         fmla <- as.formula(paste("response ~", paste(colnames(x_train_onehot), collapse = " + ")))
