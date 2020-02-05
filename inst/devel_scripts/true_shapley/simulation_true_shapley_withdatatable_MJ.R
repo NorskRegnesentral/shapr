@@ -10,7 +10,7 @@ source("inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
 
 tod_date <- '17_01_20'
 
-response_mod = function(tbl, beta, mod_matrix){
+response_mod_old = function(tbl, beta, mod_matrix){
   # beta <- c(1.0, 1,  0.0,  0,  0,  0,  0,  0,  0, 0)
   nms <- colnames(mod_matrix)[-1]
 
@@ -25,6 +25,9 @@ response_mod = function(tbl, beta, mod_matrix){
            beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)
 }
 
+response_mod <- function(mod_matrix_full,beta,epsilon){
+  as.vector(mod_matrix_full %*% beta) + epsilon
+}
 
 parameters_list <- list(Sigma_diag = 1,
                         corr = 0,

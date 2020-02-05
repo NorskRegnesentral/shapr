@@ -60,7 +60,13 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
   ## 3. Calculate response
   onehot_names <- names(dt[, (dim + 3):ncol(dt)])
   cnms <- c(onehot_names, "epsilon")
-  dt[, response := response_mod(tbl = .SD, beta = beta, mod_matrix = mod_matrix), .SDcols = cnms]
+#  dt[, response_old := response_mod_old(tbl = .SD, beta = beta, mod_matrix = mod_matrix), .SDcols = cnms]
+
+  mod_matrix_full <- model.matrix(~., data = dt[, 1:dim],
+                                  contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
+  dt[, response := response_mod(mod_matrix_full = mod_matrix_full,
+                                beta = beta,
+                                epsilon = epsilon)]
 
   mn <- mean(dt$response)
   ## -------
@@ -453,8 +459,9 @@ simulate_data <- function(parameters_list){
   # Edit
   mod_matrix_full <- model.matrix(~., data = dt[, 1:dim],
                                   contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
-
-  dt[, response := as.vector(mod_matrix_full %*% beta),] # Checked for identity
+  dt[, response := response_mod(mod_matrix_full = mod_matrix_full,
+                                beta = beta,
+                                epsilon = epsilon)]
 
 
   ## 4. Fit model
