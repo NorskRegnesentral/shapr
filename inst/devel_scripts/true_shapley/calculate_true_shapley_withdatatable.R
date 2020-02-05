@@ -302,7 +302,7 @@ true_Kshap <- function(explainer, cond_expec_mat, x_test){
 #'
 #' @export
 
-linear_Kshap <- function(x_test_onehot, beta, dt, prop){
+linear_Kshap_old <- function(x_test_onehot, beta, dt, prop){
 
   # prop <- c(0, apply(dt[, .(feat12, feat13)], 2, sum) / nrow(dt), 0, apply(dt[, .(feat22, feat23)], 2, sum) / nrow(dt), 0, apply(dt[, .(feat32, feat33)], 2, sum) / nrow(dt))
 
@@ -310,7 +310,7 @@ linear_Kshap <- function(x_test_onehot, beta, dt, prop){
   #   prop[i] <- 1 - prop[i + 1] - prop[i + 2]
   # }
   phi0 <- NULL
-  phi0 <- c(phi0, beta[1] + sum(beta[2:10] * prop))
+  phi0 <- c(phi0, beta[1] + sum(beta[-1] * prop))
 
   x_test0 <- x_test_onehot
 
@@ -324,6 +324,37 @@ linear_Kshap <- function(x_test_onehot, beta, dt, prop){
 
   return(phi)
 }
+
+#' Function to calculate the true Shapley values under the strict conditions that the features are independent and the response function is linear.
+#'
+#' @description
+#'
+#' @param x_test_onehot vector of Numerics. The testing observations, one-hot encoded
+#' @param beta vector of Numerics. The coefficients of the linear model.
+#' @param dt
+#' @param prop
+#'
+#' @return vector of Shapley values.
+#'
+#' @export
+
+linear_Kshap <- function(x_test_onehot_full, beta, prop, beta_matcher, no_features){
+
+  phi0 <- beta[1] + sum(beta[-1] * prop)
+
+  mult <- (t(x_test_onehot_full[,-1]) - matrix(prop,nrow=length(prop),ncol=nrow(x_test_onehot_full)))
+  phi_raw <- t(mult*beta[-1])
+  phi <- matrix(NA,nrow=nrow(phi_raw),ncol=no_features)
+  for (i in 1:no_features){
+    phi[,i] <- rowSums(phi_raw[,which(beta_matcher==i)-1])
+  }
+  phi <- cbind(phi0,phi)
+  colnames(phi) <- NULL
+
+  return(phi)
+}
+
+
 
 # shapley_method <- true_linear
 
@@ -409,6 +440,14 @@ simulate_data <- function(parameters_list){
     print(Sigma)
   }
 
+  ## Creating a vector matching the beta elements to each features
+
+  no_features <- length(mu)
+  no_categories <- length(cutoff)-1
+  beta_matcher <- c(0,rep(1:no_features,each=no_categories))
+  if(length(beta)!=length(beta_matcher)){
+    stop("The length of beta is not consistent with the lengths of mu and cutoff.")
+  }
 
   ## 1. simulate training and testing data
   tm_current <- Sys.time()
@@ -511,10 +550,18 @@ simulate_data <- function(parameters_list){
 
   x_test_onehot <- dt[(1:N_testing), -c(1:(dim + 2), ncol(dt)), with = FALSE]
 
+
   # x_test_onehot <- dt[(1:N_testing), .(feat12, feat13, feat22, feat23, feat32, feat33)]
   if(explainer$model_type == 'regression'){
     if(parameters_list$corr == 0){
-      true_linear <- t(apply(x_test_onehot, 1, FUN = linear_Kshap, beta, dt, prop = joint_prob_dt[[3]]))
+#      true_linear <- t(apply(x_test_onehot, 1, FUN = linear_Kshap_old, beta = beta, dt = dt, prop = joint_prob_dt[[3]]))
+      x_test_onehot_full <- mod_matrix_full[1:N_testing,]
+      true_linear <-linear_Kshap(x_test_onehot_full = x_test_onehot_full,
+                                 beta = beta,
+                                 prop = joint_prob_dt[[3]],
+                                 beta_matcher = beta_matcher,
+                                 no_features = no_features)
+
     } else{
       true_linear <- NULL
     }
