@@ -79,17 +79,18 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
     cutoff[, 1] <- cutoff[, 1] - 10
     cutoff[, 4] <- cutoff[, 4] + 10
   }
+  no_categories <- length(cutoff) -1
 
   set.seed(1)
   sim <- mvrnorm(n = N_shapley, mu = mu, Sigma = Sigma)
   dt <- NULL
   if(is.matrix(cutoff)){
     for(i in 1:dim){
-      dt <- cbind(dt, cut(sim[, i], cutoff[i, ], labels = c(1:dim), include.lowest = TRUE))
+      dt <- cbind(dt, cut(sim[, i], cutoff[i, ], labels = c(1:no_categories), include.lowest = TRUE))
     }
-  } else{
+  } else{ # This has been checked, but the if code chunk above has not
     for(i in 1:dim){
-      dt <- cbind(dt, cut(sim[, i], cutoff, labels = c(1:dim)))
+      dt <- cbind(dt, cut(sim[, i], cutoff, labels = c(1:no_categories)))
     }
   }
   dt <- data.table(dt)
@@ -467,11 +468,11 @@ simulate_data <- function(parameters_list){
   dt <- NULL
   if(is.null(cutoff)){ ## to get equal proportion in each level
     for(i in 1:dim){
-      dt <- cbind(dt, cut(x[, i], quantile(x[, i], probs = (1 / dim * seq(0, dim, by = 1))), labels = 1:dim, include.lowest = TRUE)) # without include.lowest, you get NA at the boundaries
+      dt <- cbind(dt, cut(x[, i], quantile(x[, i], probs = (1 / dim * seq(0, dim, by = 1))), labels = 1:no_categories, include.lowest = TRUE)) # without include.lowest, you get NA at the boundaries
       cutoff <- c(cutoff, quantile(x[, i], probs = (1 / dim * seq(0, dim, by = 1))))
     }
     cutoff <- matrix(cutoff, nrow = dim, byrow = TRUE)
-  } else{
+  } else{ # This has been checked, but the if code chunk above has not
     for(i in 1:dim){
       dt <- cbind(dt, cut(x[, i], cutoff, labels = 1:no_categories))
     }
@@ -625,11 +626,16 @@ simulate_data <- function(parameters_list){
         tm2 <- Sys.time()
         timeit[m] <- (tm2 - tm)
       }
-      explanation_list[[m]]$dt_sum <- cbind(NULL, explanation_list[[m]]$dt[, 1])
-      for(i in c(2, 4, 6)){
-        explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt_sum, apply(explanation_list[[m]]$dt[, i:(i + 1)], 1, sum))
+
+      beta_matcher <- as.numeric(getstr(full_onehot_names))
+      no_features <- max(beta_matcher)
+      phi_sum_mat <- matrix(NA,nrow=N_testing,ncol=no_features)
+      for (i in 1:no_features){
+        phi_sum_mat[,i] <- rowSums(subset(explanation_list[[m]]$dt,select = which(beta_matcher==1)+1))
       }
-      setnames(explanation_list[[m]]$dt_sum, c("none", feat_names))
+      colnames(phi_sum_mat) <- feat_names
+
+      explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1],phi_sum_mat)
 
     } else { ## for ctree without one-hot encoding
       tm <- Sys.time()
