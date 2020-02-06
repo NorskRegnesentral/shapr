@@ -9,6 +9,7 @@ source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/sha
 
 tod_date <- '6_02_20'
 
+<<<<<<< HEAD
 response_mod = function(tbl, beta, mod_matrix){
   nms <- colnames(mod_matrix)[-1]
 
@@ -22,6 +23,10 @@ response_mod = function(tbl, beta, mod_matrix){
   return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
            beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
            beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)
+=======
+response_mod <- function(mod_matrix_full,beta,epsilon){
+  as.vector(mod_matrix_full %*% beta) + epsilon
+>>>>>>> 443b8420f3904e49db90234260c513a8f921489d
 }
 
 
