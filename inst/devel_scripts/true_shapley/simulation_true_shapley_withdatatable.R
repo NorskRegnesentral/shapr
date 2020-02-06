@@ -11,20 +11,8 @@ source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/sha
 
 tod_date <- '21_01_20'
 
-response_mod = function(tbl, beta, mod_matrix){
-  # beta <- c(1.0, 1,  0.0,  0,  0,  0,  0,  0,  0, 0)
-  nms <- colnames(mod_matrix)[-1]
-
-  for(i in 1:length(nms)){
-    assign(nms[i], tbl[, nms[i], with = FALSE])
-  }
-
-  epsilon <- tbl[, "epsilon"]
-
-
-  return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
-           beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
-           beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)
+response_mod <- function(mod_matrix_full,beta,epsilon){
+  as.vector(mod_matrix_full %*% beta) + epsilon
 }
 
 

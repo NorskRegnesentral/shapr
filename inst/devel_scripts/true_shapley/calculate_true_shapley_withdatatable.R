@@ -1,3 +1,55 @@
+#' String extraction function
+#'
+#' Function extracting string between two specific characters, minor customization of this one
+#' http://www.r-bloggers.com/how-to-extract-a-string-between-2-characters-in-r-and-sas/
+#'
+#' @param mystring Character vector to extract from.
+#' @param initial.character Character determining the starting point of extractions
+#' @param final.character Character determining the end point of extractions
+#' @return snippet
+#' @export
+
+
+getstr = function(mystring, initial.character="_", final.character="_")
+{
+  # check that all 3 inputs are character variables
+  if (!is.character(mystring))
+  {
+    stop('The parent string must be a character variable.')
+  }
+
+  if (!is.character(initial.character))
+  {
+    stop('The initial character must be a character variable.')
+  }
+
+
+  if (!is.character(final.character))
+  {
+    stop('The final character must be a character variable.')
+  }
+
+  add=0
+  if(initial.character==final.character){add=1}
+
+  # pre-allocate a vector to store the extracted strings
+  snippet = rep(0, length(mystring))
+
+  for (i in 1:length(mystring))
+  {
+    # extract the initial position
+    initial.position = gregexpr(initial.character, mystring[i])[[1]][1] + 1
+
+    # extract the final position
+    final.position = gregexpr(final.character, mystring[i])[[1]][1+add] - 1
+
+    # extract the substring between the initial and final positions, inclusively
+    snippet[i] = substr(mystring[i], initial.position, final.position)
+  }
+  return(snippet)
+}
+
+
 #' Function to simulate Normal random variables with true mu and Sigma parameters.
 #'
 #' @description
@@ -27,21 +79,22 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
     cutoff[, 1] <- cutoff[, 1] - 10
     cutoff[, 4] <- cutoff[, 4] + 10
   }
+  no_categories <- length(cutoff) -1
 
   set.seed(1)
   sim <- mvrnorm(n = N_shapley, mu = mu, Sigma = Sigma)
   dt <- NULL
   if(is.matrix(cutoff)){
     for(i in 1:dim){
-      dt <- cbind(dt, cut(sim[, i], cutoff[i, ], labels = c(1:dim), include.lowest = TRUE))
+      dt <- cbind(dt, cut(sim[, i], cutoff[i, ], labels = c(1:no_categories), include.lowest = TRUE))
     }
-  } else{
+  } else{ # This has been checked, but the if code chunk above has not
     for(i in 1:dim){
-      dt <- cbind(dt, cut(sim[, i], cutoff, labels = c(1:dim)))
+      dt <- cbind(dt, cut(sim[, i], cutoff, labels = c(1:no_categories)))
     }
   }
   dt <- data.table(dt)
-  setnames(dt, names(dt), paste0("feat", 1:dim))
+  setnames(dt, names(dt), paste0("feat_", 1:dim,"_"))
 
   ## this is for the list being returned
   prop <- NULL
@@ -52,17 +105,18 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
   ## everything below here is to get the mean of the responses i.e 'mn' -------
   dt <- dt[, lapply(.SD, as.factor)]
 
-  mod_matrix <- model.matrix(~., data = dt[, 1:dim])
-  # dt_response <- copy(dt) # you need this copy otherwise you affect dt when you change dt_response
   dt[, 'epsilon' := 0]
+
+  mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim],
+                             contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
   dt <- cbind(dt, data.table(mod_matrix))
 
   ## 3. Calculate response
-  onehot_names <- names(dt[, (dim + 3):ncol(dt)])
-  cnms <- c(onehot_names, "epsilon")
-  dt[, response := response_mod(tbl = .SD, beta = beta, mod_matrix = mod_matrix), .SDcols = cnms]
+  all_responses <- response_mod(mod_matrix_full = cbind(1,mod_matrix),
+                                beta = beta,
+                                epsilon = dt$epsilon)
+  mn <- mean(all_responses)
 
-  mn <- mean(dt$response)
   ## -------
 
   joint_prob <- table(dt[, ..feat_names])  / N_shapley
@@ -201,7 +255,7 @@ cond_expec <- function(cond_list, explainer){
 
   all_levels <- list()
   for(i in 1:dim){
-    all_levels[[i]] <- as.numeric(levels(cond_expec[, get(paste0("feat", i))]))
+    all_levels[[i]] <- as.numeric(levels(cond_expec[, get(feat_names[i])]))
   }
   mat <- do.call(CJ, all_levels)
   setnames(mat, 1:ncol(mat), feat_names)
@@ -296,28 +350,26 @@ true_Kshap <- function(explainer, cond_expec_mat, x_test){
 #'
 #' @export
 
-linear_Kshap <- function(x_test_onehot, beta, dt, prop){
+linear_Kshap <- function(x_test_onehot_full, beta, prop){
 
-  # prop <- c(0, apply(dt[, .(feat12, feat13)], 2, sum) / nrow(dt), 0, apply(dt[, .(feat22, feat23)], 2, sum) / nrow(dt), 0, apply(dt[, .(feat32, feat33)], 2, sum) / nrow(dt))
+  beta_matcher <- as.numeric(getstr(colnames(x_test_onehot_full)))
+  no_features <- max(beta_matcher)
 
-  # for(i in c(1, 4, 7)){
-  #   prop[i] <- 1 - prop[i + 1] - prop[i + 2]
-  # }
-  phi0 <- NULL
-  phi0 <- c(phi0, beta[1] + sum(beta[2:10] * prop))
+  phi0 <- beta[1] + sum(beta[-1] * prop)
 
-  x_test0 <- x_test_onehot
-
-  # x_test1 <- cbind((1 - x_test0[1, 1]) * (1 - x_test0[1, 2]),  x_test0[1, 1:2], (1 - x_test0[1, 3]) * (1 - x_test0[1, 4]), x_test0[1, 3:4], (1 - x_test0[1, 5]) * (1 - x_test0[1, 6]), x_test0[1, 5:6])
-
-  x_test1 <- c((1 - x_test0[1]) * (1 - x_test0[2]),  x_test0[1:2], (1 - x_test0[3]) * (1 - x_test0[4]), x_test0[3:4], (1 - x_test0[5]) * (1 - x_test0[6]), x_test0[5:6])
-  for(i in 1:length(prop)){
-    phi0 <- c(phi0, beta[i + 1] * (x_test1[[i]] - prop[i]) )
+  mult <- (t(x_test_onehot_full) - matrix(prop,nrow=length(prop),ncol=nrow(x_test_onehot_full)))
+  phi_raw <- t(mult*beta[-1])
+  phi <- matrix(NA,nrow=nrow(phi_raw),ncol=no_features)
+  for (i in 1:no_features){
+    phi[,i] <- rowSums(phi_raw[,which(beta_matcher==i)])
   }
-  phi <- c(phi0[1], sum(phi0[2:4]), sum(phi0[5:7]), sum(phi0[8:10]))
+  phi <- cbind(phi0,phi)
+  colnames(phi)[-1] <- paste0("phi",1:no_features)
 
   return(phi)
 }
+
+
 
 # shapley_method <- true_linear
 
@@ -361,6 +413,7 @@ simulate_data <- function(parameters_list){
   fit_mod <- parameters_list$fit_mod
   methods <- parameters_list$methods
   seed <- parameters_list$seed
+  no_categories <- parameters_list$no_categories
   if(is.null(seed)) seed <- 1
   dim <- length(mu)
 
@@ -386,9 +439,9 @@ simulate_data <- function(parameters_list){
   if(!((length(beta) - 1) %% dim == 0)){
     stop("beta variable - 1 must be divisible by length of mu parameter.")
   }
-  if((length(cutoff) - 1) != dim){
+  if((length(cutoff) - 1) != no_categories){
     if(!is.null(cutoff)){
-      stop("cutoff vector must either be length of mu plus 1 or be NULL.")
+      stop("cutoff vector must either be length of no_categories plus 1 or be NULL.")
     }
   }
 
@@ -405,6 +458,7 @@ simulate_data <- function(parameters_list){
   }
 
 
+
   ## 1. simulate training and testing data
   tm_current <- Sys.time()
   print("Simulating training and testing data", quote = FALSE, right = FALSE)
@@ -414,18 +468,18 @@ simulate_data <- function(parameters_list){
   dt <- NULL
   if(is.null(cutoff)){ ## to get equal proportion in each level
     for(i in 1:dim){
-      dt <- cbind(dt, cut(x[, i], quantile(x[, i], probs = (1 / dim * seq(0, dim, by = 1))), labels = 1:dim, include.lowest = TRUE)) # without include.lowest, you get NA at the boundaries
+      dt <- cbind(dt, cut(x[, i], quantile(x[, i], probs = (1 / dim * seq(0, dim, by = 1))), labels = 1:no_categories, include.lowest = TRUE)) # without include.lowest, you get NA at the boundaries
       cutoff <- c(cutoff, quantile(x[, i], probs = (1 / dim * seq(0, dim, by = 1))))
     }
     cutoff <- matrix(cutoff, nrow = dim, byrow = TRUE)
-  } else{
+  } else{ # This has been checked, but the if code chunk above has not
     for(i in 1:dim){
-      dt <- cbind(dt, cut(x[, i], cutoff, labels = 1:dim))
+      dt <- cbind(dt, cut(x[, i], cutoff, labels = 1:no_categories))
     }
   }
 
   dt <- data.table(dt)
-  setnames(dt, names(dt), paste0("feat", 1:dim))
+  setnames(dt, names(dt), paste0("feat_", 1:dim,"_"))
   feat_names <- names(dt[, 1:dim])
 
   dt <- dt[, lapply(.SD, as.factor)]
@@ -440,20 +494,21 @@ simulate_data <- function(parameters_list){
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
   print("One-hot encoding training data", quote = FALSE, right = FALSE)
   # dt <- cbind(dt, data.table(model.matrix(~., data = dt[, .(feat1, feat2, feat3)])))
-  mod_matrix <- model.matrix(~., data = dt[, 1:dim])
+  mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim],
+                             contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
+
+
   dt <- cbind(dt, data.table(mod_matrix))
-  onehot_names <- names(dt[, (dim + 3):ncol(dt)])
+  full_onehot_names <- colnames(mod_matrix)
+  reduced_onehot_names <- full_onehot_names[-grep("_1$",full_onehot_names)] # names without reference levels
 
 
   ## 3. Calculate response
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
   print("Calculating response of training data", quote = FALSE, right = FALSE)
-
-  cnms <- c(onehot_names, "epsilon")
-  dt[, response := response_mod(tbl = .SD, beta = beta, mod_matrix = mod_matrix), .SDcols = cnms]
-
-  # mat <- do.call(CJ, all_levels)
-  # setnames(mat, 1:ncol(mat), feat_names)
+  dt[, response := response_mod(mod_matrix_full = cbind(1,mod_matrix),
+                                beta = beta,
+                                epsilon = epsilon)]
 
 
   ## 4. Fit model
@@ -501,12 +556,19 @@ simulate_data <- function(parameters_list){
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
   print("Calculating Shapley value under linear model and indepdent variables assumption", quote = FALSE, right = FALSE)
 
-  x_test_onehot <- dt[(1:N_testing), -c(1:(dim + 2), ncol(dt)), with = FALSE]
+  # For computing the true Shapley values (with correlation 0)
+  x_test_onehot_full <- dt[(1:N_testing), ..full_onehot_names]
 
-  # x_test_onehot <- dt[(1:N_testing), .(feat12, feat13, feat22, feat23, feat32, feat33)]
+  # For modelling
+  x_test_onehot_reduced <- dt[(1:N_testing), ..reduced_onehot_names]
+  x_train_onehot_reduced <- dt[-(1:N_testing), ..reduced_onehot_names]
+
   if(explainer$model_type == 'regression'){
     if(parameters_list$corr == 0){
-      true_linear <- t(apply(x_test_onehot, 1, FUN = linear_Kshap, beta, dt, prop = joint_prob_dt[[3]]))
+      true_linear <-linear_Kshap(x_test_onehot_full = x_test_onehot_full,
+                                 beta = beta,
+                                 prop = joint_prob_dt[[3]])
+
     } else{
       true_linear <- NULL
     }
@@ -522,22 +584,20 @@ simulate_data <- function(parameters_list){
   explanation_list <- list()
   for(m in methods){
     tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
-    print(paste0("Estimating Shapley value with ", m, "method"), quote = FALSE, right = FALSE)
+    print(paste0("Estimating Shapley value with ", m, " method"), quote = FALSE, right = FALSE)
     if(m == 'empirical' | m == 'empirical_ind' |  m == 'gaussian' | m == 'ctree_onehot'){
 
-      x_train_onehot <- as.matrix(x_test_onehot) #  # dt[-(1:N_testing), .(feat12, feat13, feat22, feat23, feat32, feat33)]
-
       if(fit_mod == 'regression'){
-        fmla <- as.formula(paste("response ~", paste(colnames(x_train_onehot), collapse = " + ")))
-        model_onehot <- lm(fmla, data = dt[(1:N_testing), -c(1:(dim + 1)), with = FALSE]) # dt[-(1:N_testing), !c("feat1", "feat2", "feat3", "epsilon")])
-      }
+        fmla <- as.formula(paste("response ~", paste(reduced_onehot_names, collapse = " + ")))
+        model_onehot <- lm(fmla, data = dt[-(1:N_testing)]) # dt[-(1:N_testing), !c("feat1", "feat2", "feat3", "epsilon")])
+        }
 
-      explainer_onehot <- shapr(x_train_onehot, model_onehot)
+      explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
 
       if(m == 'ctree_onehot'){
         tm <- Sys.time()
         explanation_list[[m]] <- explain(
-          x_test_onehot,
+          x_test_onehot_reduced,
           approach = 'ctree',
           explainer = explainer_onehot,
           prediction_zero = p,
@@ -547,7 +607,7 @@ simulate_data <- function(parameters_list){
       } else if(m == 'empirical_ind'){
         tm <- Sys.time()
         explanation_list[[m]] <- explain(
-          x_test_onehot,
+          x_test_onehot_reduced,
           approach = "empirical",
           type = "independence",
           explainer = explainer_onehot,
@@ -558,7 +618,7 @@ simulate_data <- function(parameters_list){
       } else{
         tm <- Sys.time()
         explanation_list[[m]] <- explain(
-          x_test_onehot,
+          x_test_onehot_reduced,
           approach = m,
           explainer = explainer_onehot,
           prediction_zero = p,
@@ -566,11 +626,16 @@ simulate_data <- function(parameters_list){
         tm2 <- Sys.time()
         timeit[m] <- (tm2 - tm)
       }
-      explanation_list[[m]]$dt_sum <- cbind(NULL, explanation_list[[m]]$dt[, 1])
-      for(i in c(2, 4, 6)){
-        explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt_sum, apply(explanation_list[[m]]$dt[, i:(i + 1)], 1, sum))
+
+      beta_matcher <- as.numeric(getstr(full_onehot_names))
+      no_features <- max(beta_matcher)
+      phi_sum_mat <- matrix(NA,nrow=N_testing,ncol=no_features)
+      for (i in 1:no_features){
+        phi_sum_mat[,i] <- rowSums(subset(explanation_list[[m]]$dt,select = which(beta_matcher==1)+1))
       }
-      setnames(explanation_list[[m]]$dt_sum, c("none", feat_names))
+      colnames(phi_sum_mat) <- feat_names
+
+      explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1],phi_sum_mat)
 
     } else { ## for ctree without one-hot encoding
       tm <- Sys.time()
