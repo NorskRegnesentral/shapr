@@ -349,42 +349,6 @@ true_Kshap <- function(explainer, cond_expec_mat, x_test){
 #'
 #' @export
 
-linear_Kshap_old <- function(x_test_onehot, beta, dt, prop){
-
-  # prop <- c(0, apply(dt[, .(feat12, feat13)], 2, sum) / nrow(dt), 0, apply(dt[, .(feat22, feat23)], 2, sum) / nrow(dt), 0, apply(dt[, .(feat32, feat33)], 2, sum) / nrow(dt))
-
-  # for(i in c(1, 4, 7)){
-  #   prop[i] <- 1 - prop[i + 1] - prop[i + 2]
-  # }
-  phi0 <- NULL
-  phi0 <- c(phi0, beta[1] + sum(beta[-1] * prop))
-
-  x_test0 <- x_test_onehot
-
-  # x_test1 <- cbind((1 - x_test0[1, 1]) * (1 - x_test0[1, 2]),  x_test0[1, 1:2], (1 - x_test0[1, 3]) * (1 - x_test0[1, 4]), x_test0[1, 3:4], (1 - x_test0[1, 5]) * (1 - x_test0[1, 6]), x_test0[1, 5:6])
-
-  x_test1 <- c((1 - x_test0[1]) * (1 - x_test0[2]),  x_test0[1:2], (1 - x_test0[3]) * (1 - x_test0[4]), x_test0[3:4], (1 - x_test0[5]) * (1 - x_test0[6]), x_test0[5:6])
-  for(i in 1:length(prop)){
-    phi0 <- c(phi0, beta[i + 1] * (x_test1[[i]] - prop[i]) )
-  }
-  phi <- c(phi0[1], sum(phi0[2:4]), sum(phi0[5:7]), sum(phi0[8:10]))
-
-  return(phi)
-}
-
-#' Function to calculate the true Shapley values under the strict conditions that the features are independent and the response function is linear.
-#'
-#' @description
-#'
-#' @param x_test_onehot vector of Numerics. The testing observations, one-hot encoded
-#' @param beta vector of Numerics. The coefficients of the linear model.
-#' @param dt
-#' @param prop
-#'
-#' @return vector of Shapley values.
-#'
-#' @export
-
 linear_Kshap <- function(x_test_onehot_full, beta, prop){
 
   beta_matcher <- as.numeric(getstr(colnames(x_test_onehot_full)))
