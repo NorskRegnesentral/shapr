@@ -401,6 +401,8 @@ MAE <- function(true_shapley, shapley_method){
 
 simulate_data <- function(parameters_list){
 
+  timeit <- list()
+
   # parameters
   mu <- parameters_list$mu
   beta <- parameters_list$beta
@@ -461,7 +463,7 @@ simulate_data <- function(parameters_list){
 
   ## 1. simulate training and testing data
   tm_current <- Sys.time()
-  print("Simulating training and testing data", quote = FALSE, right = FALSE)
+  # print("Simulating training and testing data", quote = FALSE, right = FALSE)
   set.seed(seed)
   x <- mvrnorm(n = N_testing + N_training, mu = mu, Sigma = Sigma)
 
@@ -491,36 +493,39 @@ simulate_data <- function(parameters_list){
   }
 
   ## 2. One-hot encoding of training data
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
-  print("One-hot encoding training data", quote = FALSE, right = FALSE)
-  # dt <- cbind(dt, data.table(model.matrix(~., data = dt[, .(feat1, feat2, feat3)])))
+  tm_now <- Sys.time(); # print(tm_now - tm_current);
+  tm_current <- Sys.time()
+  # print("One-hot encoding training data", quote = FALSE, right = FALSE)
   mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim],
                              contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
 
 
   dt <- cbind(dt, data.table(mod_matrix))
   full_onehot_names <- colnames(mod_matrix)
-  reduced_onehot_names <- full_onehot_names[-grep("_1$",full_onehot_names)] # names without reference levels
+  reduced_onehot_names <- full_onehot_names[-grep("_1$", full_onehot_names)] # names without reference levels
 
 
   ## 3. Calculate response
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
-  print("Calculating response of training data", quote = FALSE, right = FALSE)
+  tm_now <- Sys.time(); # print(tm_now - tm_current);
+  tm_current <- Sys.time()
+  # print("Calculating response of training data", quote = FALSE, right = FALSE)
   dt[, response := response_mod(mod_matrix_full = cbind(1,mod_matrix),
                                 beta = beta,
                                 epsilon = epsilon)]
 
 
   ## 4. Fit model
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
-  print("Fitting model of training data", quote = FALSE, right = FALSE)
+  tm_now <- Sys.time(); # print(tm_now - tm_current);
+  tm_current <- Sys.time()
+  # print("Fitting model on training data", quote = FALSE, right = FALSE)
   if(fit_mod == 'regression'){
     form <- as.formula(paste0("response~", paste(feat_names, collapse= "+")))
     model <- lm(formula = form, data = dt[-(1:N_testing), ])
   }
 
   ## 5. initalize shapr object with trained model -- this is used for calculating true shapley
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  tm_now <- Sys.time(); # print(tm_now - tm_current);
+  tm_current <- Sys.time()
   print("Initializing shapr object with trained model", quote = FALSE, right = FALSE)
   x_train <- dt[-(1:N_testing), ..feat_names] ## used in explainer()
   x_test <- dt[(1:N_testing), ..feat_names] ## used in cond_expec_mat()
@@ -528,7 +533,7 @@ simulate_data <- function(parameters_list){
   explainer <- shapr(x_train, model)
 
   ## 6. calculate the true shapley values
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Initialize_shapr'] <- difftime(tm_now, tm_current, units = "mins"); tm_current <- Sys.time()
   print("Simulating Normal random variables to calculate true Shapley value", quote = FALSE, right = FALSE)
   joint_prob_dt <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)
 
@@ -536,25 +541,26 @@ simulate_data <- function(parameters_list){
   print("Calculating marginal probability distributions", quote = FALSE, right = FALSE)
   marg_list <- marg_prob(joint_prob_dt[[1]], explainer)
 
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Calculate_marginal'] <- difftime(tm_now, tm_current, units = "mins"); tm_current <- Sys.time()
   print("Calculating conditional probability distributions", quote = FALSE, right = FALSE)
   cond_list <- cond_prob(marg_list, joint_prob_dt[[1]], explainer)
 
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Calculate_conditional_probability'] <- difftime(tm_now, tm_current, units = "mins"); tm_current <- Sys.time()
   print("Calculating all conditional expectations", quote = FALSE, right = FALSE)
   cond_expec_dt <- cond_expec(cond_list, explainer)
 
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
-  print("Extracting conditional expectations", quote = FALSE, right = FALSE)
+  tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Calculate_conditional_expectation'] <- difftime(tm_now, tm_current, units = "mins");  tm_current <- Sys.time()
+  # print("Extracting conditional expectations", quote = FALSE, right = FALSE)
   cond_expec_mat <- extract_cond_expec(x_test, cond_expec_dt, prediction_zero = joint_prob_dt[[2]])
 
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  tm_now <- Sys.time(); # print(tm_now - tm_current);
+  tm_current <- Sys.time()
   print("Calculating true Shapley values", quote = FALSE, right = FALSE)
   true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
 
   ## 7. calculate true shapley under linear model and independence assumption (only if correlation is 0)
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
-  print("Calculating Shapley value under linear model and indepdent variables assumption", quote = FALSE, right = FALSE)
+  tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Calculate_true_Shapley'] <- difftime(tm_now, tm_current, units = "mins"); tm_current <- Sys.time()
+  # print("Calculating Shapley value under linear model and indepdent variables assumption", quote = FALSE, right = FALSE)
 
   # For computing the true Shapley values (with correlation 0)
   x_test_onehot_full <- dt[(1:N_testing), ..full_onehot_names]
@@ -579,7 +585,7 @@ simulate_data <- function(parameters_list){
   ## 8. calculate approximate shapley value with different methods
   p <- mean(y_train$response) # since y_train is no longer a matrix
 
-  timeit <- list()
+  # timeit <- list()
 
   explanation_list <- list()
   for(m in methods){
@@ -589,7 +595,7 @@ simulate_data <- function(parameters_list){
 
       if(fit_mod == 'regression'){
         fmla <- as.formula(paste("response ~", paste(reduced_onehot_names, collapse = " + ")))
-        model_onehot <- lm(fmla, data = dt[-(1:N_testing)]) # dt[-(1:N_testing), !c("feat1", "feat2", "feat3", "epsilon")])
+        model_onehot <- lm(fmla, data = dt[-(1:N_testing)])
         }
 
       explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
@@ -603,7 +609,7 @@ simulate_data <- function(parameters_list){
           prediction_zero = p,
           sample = FALSE)
         tm2 <- Sys.time()
-        timeit['ctree_onehot'] <- (tm2 - tm)
+        timeit['ctree_onehot'] <- difftime(tm2, tm, units = "mins")
       } else if(m == 'empirical_ind'){
         tm <- Sys.time()
         explanation_list[[m]] <- explain(
@@ -614,7 +620,7 @@ simulate_data <- function(parameters_list){
           prediction_zero = p,
           sample = FALSE)
         tm2 <- Sys.time()
-        timeit['empirical_ind'] <- (tm2 - tm)
+        timeit['empirical_ind'] <- difftime(tm2, tm, units = "mins")
       } else{
         tm <- Sys.time()
         explanation_list[[m]] <- explain(
@@ -624,7 +630,7 @@ simulate_data <- function(parameters_list){
           prediction_zero = p,
           sample = FALSE)
         tm2 <- Sys.time()
-        timeit[m] <- (tm2 - tm)
+        timeit[m] <- difftime(tm2, tm, units = "mins")
       }
 
       beta_matcher <- as.numeric(getstr(full_onehot_names))
@@ -646,7 +652,7 @@ simulate_data <- function(parameters_list){
         prediction_zero = p,
         sample = FALSE)
       tm2 <- Sys.time()
-      timeit[m] <- (tm2 - tm)
+      timeit[m] <- difftime(tm2, tm, units = "mins")
     }
   }
 
@@ -660,76 +666,4 @@ simulate_data <- function(parameters_list){
   return(return_list)
 
 }
-
-
-# EXTRA STUFF
-
-## Annabelle's method
-# cond_expec0[, max_levels := pmax(get(paste0("levels", 1:dim)))] # only for Annabelle's function
-
-# for(i in 1:dim){
-#   cond_expec0[, paste0("levels", i) := nlevels(as.factor(get(paste0('feat', i))))][]
-# }
-
-# row_fun <- function(tbl){
-#   dim <- (ncol(tbl) - 1) / 2
-#   sum_levels <- 0
-#   max_levels <- unique(tbl[, max_levels])
-#   # max_levels <- 0
-#   for(i in 1:dim){
-#     assign(paste0("levels", i), tbl[, i + dim, with = FALSE])
-#     assign(paste0("v", i), tbl[, i, with = FALSE])
-#     sum_levels <- sum_levels + get(paste0("levels", i))[[1]]
-#     # max_levels <- pmax(max_levels, get(paste0("levels", i))[[1]])
-#   }
-#   ans <- matrix(NA, nrow = dim, ncol = max_levels)
-#   for(j in 1:(dim - 1)){ # loop through 1:(dim - 1) columns
-#     tmp <- 1
-#     for(k in (j + 1):dim){
-#       tmp <- tmp * get(paste0("levels", k))[[1]]
-#     }
-#     if(is.na(get(paste0("v", j)))[[1]]){
-#       for(l in 1:(get(paste0("levels", j)))[[1]]){
-#         ans[j, l] <- (l - 1) * tmp
-#       }
-#     } else{
-#       ans[j, 1:max_levels] <- (get(paste0("v", j))[[1]] - 1) * tmp
-#     }
-#   }
-#   if(is.na(get(paste0("v", dim))[[1]])){ # this is for the last column
-#     for(l in 1:dim){
-#       ans[dim, l] <- l - 1
-#     }
-#   } else{
-#     ans[dim, 1:max_levels] <- (get(paste0("v", dim))[[1]] - 1)
-#   }
-#     ans2 <- apply(X = ans, MARGIN = 2, FUN = sum, na.rm = TRUE)
-#
-#     truth <- ans
-#
-#     for(row in 1:nrow(ans)){
-#       for(shift in 1:(max_levels)){
-#         tmp <- ans
-#         for(col in 1:(ncol(ans) - 1)){
-#           tmp[row, col] <- ans[row, col + 1]
-#         }
-#         tmp[row, ncol(ans)] <- ans[row, 1]
-#         ans <- tmp
-#         ans2 <- c(ans2, apply(X = tmp, MARGIN = 2, FUN = sum, na.rm = TRUE))
-#       }
-#     }
-#     ans3 <- unique(ans2)
-#
-#   if(is.vector(ans3)){
-#     ans3 <- sort(ans3 + 1)
-#     return(paste(ans3, collapse = ", "))
-#   } else{
-#     return(ans3 + 1)
-#   }
-# }
-#
-# for(i in 1:nrow(cond_expec0)){
-#   cond_expec0[i, rownum := row_fun(.SD), .SDcol = c(paste0("feat", 1:dim), paste0("levels", 1:dim), "max_levels"), .I]
-# }
-
 

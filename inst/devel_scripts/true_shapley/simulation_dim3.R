@@ -8,7 +8,7 @@ library(ggplot2)
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
 
 tod_date <- '6_02_20'
-dim <- 4
+dim <- 3
 ##
 
 response_mod <- function(mod_matrix_full, beta, epsilon){
@@ -29,7 +29,7 @@ k <- 1
 for(j in corr){
   parameters_list[[k]] <- list(Sigma_diag = 1,
                                corr = j,
-                               mu = rep(0, dim), # this needs to be changed
+                               mu = rep(0, dim),
                                beta = beta, # c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1)
                                N_shapley = 100,
                                noise = TRUE,
