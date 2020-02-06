@@ -132,8 +132,8 @@ explainer <- shapr(x_train, model)
 
 p <- mean(y_train)
 
-explanation <- explain( ## this takes a very long time to run = 21.55 minutes?
-  x = as.data.table(x_test)[sample.int(n = nrow(x_test), size = 10),],
+explanation <- explain(
+  x = as.data.table(x_test)[sample.int(n = nrow(x_test), size = 2),],
   approach = 'ctree',
   explainer = explainer,
   prediction_zero = p,
@@ -141,7 +141,27 @@ explanation <- explain( ## this takes a very long time to run = 21.55 minutes?
 
 explanation$dt
 
+
+names(explanation$dt) <- c("none", "Age", "Gender", "Occupation", "Income bracket")
+
+names(explanation$x_test) <- c("Age", "Gender", "Occupation", "Income bracket")
+
+explanation$x_test[,2] <- c("Woman", "Man")
+
+explanation$x_test[,3] <- c("None", "Plumber")
+explanation$x_test[,4] <- c("Medium", "High")
+
+explanation$p <- c(500, 750)
+
 print(explanation$dt)
+
+# shapr:::
+p0 <- plot.shapr(explanation, plot_phi0 = FALSE) ## removes the 'none' possibility
+
+ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree_Paper/example_carinsurance.pdf",
+       plot = p0, device = NULL, path = NULL,
+       scale = 1, width = 45, height = 30, units = "cm",
+       dpi = 300, limitsize = TRUE)
 
 ##        none    MSSubClass      LotArea  Neighborhood   ExterQual
 # 1: 0.1809212 -0.0015896353 -0.001297028 -0.0184937379 -0.01887452
@@ -155,5 +175,7 @@ print(explanation$dt)
 # 9: 0.1809212  0.0009630143 -0.027619531  0.0003228987  0.03130924
 # 10: 0.1809212  0.0077905131  0.027156874 -0.0179940605 -0.01797191
 
-shapr:::plot.shapr(explanation, plot_phi0 = FALSE) ## removes the 'none' possibility
+
+
+
 

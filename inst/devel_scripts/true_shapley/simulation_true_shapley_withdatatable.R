@@ -5,14 +5,11 @@ library(lqmm) ## to check if Sigma is positive definite
 library(rapportools) # for testing booleans
 library(ggplot2)
 
-# source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley.R")
-
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
 
-tod_date <- '21_01_20'
+tod_date <- '6_02_20'
 
 response_mod = function(tbl, beta, mod_matrix){
-  # beta <- c(1.0, 1,  0.0,  0,  0,  0,  0,  0,  0, 0)
   nms <- colnames(mod_matrix)[-1]
 
   for(i in 1:length(nms)){
@@ -57,9 +54,9 @@ MAE(ll$true_shapley, ll$methods[['empirical_ind']]$dt_sum) # 0.01876 # 2.10 minu
 
 parameters_list <- list()
 
-seed <- 1:5
-corr <- c(seq(0, 0.5, by = 0.02))
-# c(0, 0.01, 0.03, 0.05, 0.07, 0.1)
+seed <- 1
+# corr <- c(seq(0, 0.9, by = 0.2))
+corr <- c(0, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9)
 
 k <- 1
 for(i in seed){
@@ -72,7 +69,7 @@ for(i in seed){
                                  noise = TRUE,
                                  response_mod = response_mod,
                                  fit_mod = "regression",
-                                 methods = c("empirical_ind", "ctree"), # "gaussian", "ctree"
+                                 methods = c("empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree"),
                                  name = paste0('corr', j),
                                  cutoff = c(-200, 0, 1, 200),
                                  N_training = 1000,
@@ -82,71 +79,14 @@ for(i in seed){
   }
 }
 
-# parameters_list[[4]] <- list(Sigma_diag = 1,
-#                              corr = 0.2,
-#                              mu = c(0, 0, 0),
-#                              beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
-#                              N_shapley = 10000000,
-#                              noise = TRUE,
-#                              response_mod = response_mod,
-#                              fit_mod = "regression",
-#                              methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
-#                              name = 'corr2',
-#                              cutoff = c(-200, 0, 1, 200),
-#                              N_training = 1000,
-#                              N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
-#
-# parameters_list[[5]] <- list(Sigma_diag = 1,
-#                              corr = 0.5,
-#                              mu = c(0, 0, 0),
-#                              beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
-#                              N_shapley = 10000000,
-#                              noise = TRUE,
-#                              response_mod = response_mod,
-#                              fit_mod = "regression",
-#                              methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
-#                              name = 'corr5',
-#                              cutoff = c(-200, 0, 1, 200),
-#                              N_training = 1000,
-#                              N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
-#
-#
-# parameters_list[[6]] <- list(Sigma_diag = 1,
-#                              corr = 0.8,
-#                              mu = c(0, 0, 0),
-#                              beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
-#                              N_shapley = 10000000,
-#                              noise = TRUE,
-#                              response_mod = response_mod,
-#                              fit_mod = "regression",
-#                              methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
-#                              name = 'corr8',
-#                              cutoff = c(-200, 0, 1, 200),
-#                              N_training = 1000,
-#                              N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
-#
-#
-# parameters_list[[7]] <- list(Sigma_diag = 1,
-#                              corr = 0.9,
-#                              mu = c(0, 0, 0),
-#                              beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
-#                              N_shapley = 10000000,
-#                              noise = TRUE,
-#                              response_mod = response_mod,
-#                              fit_mod = "regression",
-#                              methods = c("empirical", "empirical_ind", "gaussian", "ctree_onehot", "ctree"), # "gaussian", "ctree"
-#                              name = 'corr9',
-#                              cutoff = c(-200, 0, 1, 200),
-#                              N_training = 1000,
-#                              N_testing = 1000) # cutoff = c(-200, 0, 1, 200) ## if null, makes cutoffs based on 0.33 and 0.66 quantiles
 
 
 tm <- Sys.time()
 all_methods <- list()
-for(i in 1:length(parameters_list)){ # length(parameters_list)
+for(i in 1:length(parameters_list)){
   all_methods[[i]] <- simulate_data(parameters_list[[i]])
   nm = paste(tod_date, '_results_', i, "_finerscale" , ".rds", sep = "")
-  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/", nm, sep = ""))
+  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/higher_dimensions/", nm, sep = ""))
 }
 
 # mydata <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/1_12_19_results.rds")
