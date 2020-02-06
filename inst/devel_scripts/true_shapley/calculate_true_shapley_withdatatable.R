@@ -1,3 +1,55 @@
+#' String extraction function
+#'
+#' Function extracting string between two specific characters, minor customization of this one
+#' http://www.r-bloggers.com/how-to-extract-a-string-between-2-characters-in-r-and-sas/
+#'
+#' @param mystring Character vector to extract from.
+#' @param initial.character Character determining the starting point of extractions
+#' @param final.character Character determining the end point of extractions
+#' @return snippet
+#' @export
+
+
+getstr = function(mystring, initial.character="_", final.character="_")
+{
+  # check that all 3 inputs are character variables
+  if (!is.character(mystring))
+  {
+    stop('The parent string must be a character variable.')
+  }
+
+  if (!is.character(initial.character))
+  {
+    stop('The initial character must be a character variable.')
+  }
+
+
+  if (!is.character(final.character))
+  {
+    stop('The final character must be a character variable.')
+  }
+
+  add=0
+  if(initial.character==final.character){add=1}
+
+  # pre-allocate a vector to store the extracted strings
+  snippet = rep(0, length(mystring))
+
+  for (i in 1:length(mystring))
+  {
+    # extract the initial position
+    initial.position = gregexpr(initial.character, mystring[i])[[1]][1] + 1
+
+    # extract the final position
+    final.position = gregexpr(final.character, mystring[i])[[1]][1+add] - 1
+
+    # extract the substring between the initial and final positions, inclusively
+    snippet[i] = substr(mystring[i], initial.position, final.position)
+  }
+  return(snippet)
+}
+
+
 #' Function to simulate Normal random variables with true mu and Sigma parameters.
 #'
 #' @description
@@ -52,13 +104,13 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
   ## everything below here is to get the mean of the responses i.e 'mn' -------
   dt <- dt[, lapply(.SD, as.factor)]
 
-  # dt_response <- copy(dt) # you need this copy otherwise you affect dt when you change dt_response
   dt[, 'epsilon' := 0]
+
+  mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim],
+                             contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
   dt <- cbind(dt, data.table(mod_matrix))
 
   ## 3. Calculate response
-  mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim],
-                             contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
   all_responses <- response_mod(mod_matrix_full = cbind(1,mod_matrix),
                                 beta = beta,
                                 epsilon = dt$epsilon)
@@ -333,18 +385,21 @@ linear_Kshap_old <- function(x_test_onehot, beta, dt, prop){
 #'
 #' @export
 
-linear_Kshap <- function(x_test_onehot_full, beta, prop, beta_matcher, no_features){
+linear_Kshap <- function(x_test_onehot_full, beta, prop){
+
+  beta_matcher <- as.numeric(getstr(colnames(x_test_onehot_full)))
+  no_features <- max(beta_matcher)
 
   phi0 <- beta[1] + sum(beta[-1] * prop)
 
-  mult <- (t(x_test_onehot_full[,-1]) - matrix(prop,nrow=length(prop),ncol=nrow(x_test_onehot_full)))
+  mult <- (t(x_test_onehot_full) - matrix(prop,nrow=length(prop),ncol=nrow(x_test_onehot_full)))
   phi_raw <- t(mult*beta[-1])
   phi <- matrix(NA,nrow=nrow(phi_raw),ncol=no_features)
   for (i in 1:no_features){
-    phi[,i] <- rowSums(phi_raw[,which(beta_matcher==i)-1])
+    phi[,i] <- rowSums(phi_raw[,which(beta_matcher==i)])
   }
   phi <- cbind(phi0,phi)
-  colnames(phi) <- NULL
+  colnames(phi)[-1] <- paste0("phi",1:no_features)
 
   return(phi)
 }
@@ -435,14 +490,7 @@ simulate_data <- function(parameters_list){
     print(Sigma)
   }
 
-  ## Creating a vector matching the beta elements to each features
 
-  no_features <- length(mu)
-  no_categories <- length(cutoff)-1
-  beta_matcher <- c(0,rep(1:no_features,each=no_categories))
-  if(length(beta)!=length(beta_matcher)){
-    stop("The length of beta is not consistent with the lengths of mu and cutoff.")
-  }
 
   ## 1. simulate training and testing data
   tm_current <- Sys.time()
@@ -540,16 +588,18 @@ simulate_data <- function(parameters_list){
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
   print("Calculating Shapley value under linear model and indepdent variables assumption", quote = FALSE, right = FALSE)
 
+  # For computing the true Shapley values (with correlation 0)
+  x_test_onehot_full <- dt[(1:N_testing), ..full_onehot_names]
+
+  # For modelling
+  x_test_onehot_reduced <- dt[(1:N_testing), ..reduced_onehot_names]
+  x_train_onehot_reduced <- dt[-(1:N_testing), ..reduced_onehot_names]
 
   if(explainer$model_type == 'regression'){
     if(parameters_list$corr == 0){
-#      true_linear <- t(apply(x_test_onehot, 1, FUN = linear_Kshap_old, beta = beta, dt = dt, prop = joint_prob_dt[[3]]))
-      x_test_onehot_full <- dt[(1:N_testing), ..full_onehot_names]
-      true_linear <-linear_Kshap(x_test_onehot_full = cbind(1,x_test_onehot_full),
+      true_linear <-linear_Kshap(x_test_onehot_full = x_test_onehot_full,
                                  beta = beta,
-                                 prop = joint_prob_dt[[3]],
-                                 beta_matcher = beta_matcher,
-                                 no_features = no_features)
+                                 prop = joint_prob_dt[[3]])
 
     } else{
       true_linear <- NULL
@@ -566,22 +616,20 @@ simulate_data <- function(parameters_list){
   explanation_list <- list()
   for(m in methods){
     tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
-    print(paste0("Estimating Shapley value with ", m, "method"), quote = FALSE, right = FALSE)
+    print(paste0("Estimating Shapley value with ", m, " method"), quote = FALSE, right = FALSE)
     if(m == 'empirical' | m == 'empirical_ind' |  m == 'gaussian' | m == 'ctree_onehot'){
 
-      x_train_onehot <- as.matrix( dt[-(1:N_testing), -c(1:(dim + 2), ncol(dt)), with = FALSE]) # bugfix
-
       if(fit_mod == 'regression'){
-        fmla <- as.formula(paste("response ~", paste(colnames(x_train_onehot), collapse = " + ")))
-        model_onehot <- lm(fmla, data = dt[(1:N_testing), -c(1:(dim + 1)), with = FALSE]) # dt[-(1:N_testing), !c("feat1", "feat2", "feat3", "epsilon")])
-      }
+        fmla <- as.formula(paste("response ~", paste(reduced_onehot_names, collapse = " + ")))
+        model_onehot <- lm(fmla, data = dt[-(1:N_testing)]) # dt[-(1:N_testing), !c("feat1", "feat2", "feat3", "epsilon")])
+        }
 
-      explainer_onehot <- shapr(x_train_onehot, model_onehot)
+      explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
 
       if(m == 'ctree_onehot'){
         tm <- Sys.time()
         explanation_list[[m]] <- explain(
-          x_test_onehot,
+          x_test_onehot_reduced,
           approach = 'ctree',
           explainer = explainer_onehot,
           prediction_zero = p,
@@ -591,7 +639,7 @@ simulate_data <- function(parameters_list){
       } else if(m == 'empirical_ind'){
         tm <- Sys.time()
         explanation_list[[m]] <- explain(
-          x_test_onehot,
+          x_test_onehot_reduced,
           approach = "empirical",
           type = "independence",
           explainer = explainer_onehot,
@@ -602,7 +650,7 @@ simulate_data <- function(parameters_list){
       } else{
         tm <- Sys.time()
         explanation_list[[m]] <- explain(
-          x_test_onehot,
+          x_test_onehot_reduced,
           approach = m,
           explainer = explainer_onehot,
           prediction_zero = p,

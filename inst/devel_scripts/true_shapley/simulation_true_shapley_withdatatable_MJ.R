@@ -10,21 +10,6 @@ source("inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
 
 tod_date <- '17_01_20'
 
-response_mod_old = function(tbl, beta, mod_matrix){
-  # beta <- c(1.0, 1,  0.0,  0,  0,  0,  0,  0,  0, 0)
-  nms <- colnames(mod_matrix)[-1]
-
-  for(i in 1:length(nms)){
-    assign(nms[i], tbl[, nms[i], with = FALSE])
-  }
-
-  epsilon <- tbl[, "epsilon"]
-
-  return(beta[1] + beta[2] * ((1 - feat12) * (1 - feat13)) +  beta[3] * feat12 + beta[4] * feat13 +
-           beta[5] * ((1 - feat22) * (1 - feat23)) + beta[6] * feat22 + beta[7] * feat23 +
-           beta[8] * ((1 - feat32) * (1 - feat33)) + beta[9] * feat32 + beta[10] * feat33 + epsilon)
-}
-
 response_mod <- function(mod_matrix_full,beta,epsilon){
   as.vector(mod_matrix_full %*% beta) + epsilon
 }
@@ -43,10 +28,15 @@ parameters_list <- list(Sigma_diag = 1,
                         methods = c("empirical"), # "gaussian", "ctree"
                         name = 'corr0')
 
+set.seed(123)
  ll <- simulate_data(parameters_list)
+
  head(ll$true_shapley)
  head(ll$true_linear)
  MAE(ll$true_shapley, ll$true_linear) # 0.00095050 for 10000 obs and 1000 for training and testing / 0.0009436
+ MAE(ll$true_shapley, ll$methods[['empirical']]$dt_sum) # 0.0179 # 1.06 minutes
+
+
  MAE(ll$true_shapley, ll$methods[['gaussian']]$dt_sum) # 0.01729 # 2.68 minutes
  MAE(ll$true_shapley, ll$methods[['empirical']]$dt_sum) # 0.0179 # 1.06 minutes
  MAE(ll$true_shapley, ll$methods[['ctree']]$dt) # 0.016423 #
