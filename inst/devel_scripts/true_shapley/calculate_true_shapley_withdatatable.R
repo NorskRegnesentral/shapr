@@ -412,6 +412,7 @@ simulate_data <- function(parameters_list){
   fit_mod <- parameters_list$fit_mod
   methods <- parameters_list$methods
   seed <- parameters_list$seed
+  no_categories <- parameters_list$no_categories
   if(is.null(seed)) seed <- 1
   dim <- length(mu)
 
@@ -437,9 +438,9 @@ simulate_data <- function(parameters_list){
   if(!((length(beta) - 1) %% dim == 0)){
     stop("beta variable - 1 must be divisible by length of mu parameter.")
   }
-  if((length(cutoff) - 1) != dim){
+  if((length(cutoff) - 1) != no_categories){
     if(!is.null(cutoff)){
-      stop("cutoff vector must either be length of mu plus 1 or be NULL.")
+      stop("cutoff vector must either be length of no_categories plus 1 or be NULL.")
     }
   }
 
@@ -472,7 +473,7 @@ simulate_data <- function(parameters_list){
     cutoff <- matrix(cutoff, nrow = dim, byrow = TRUE)
   } else{
     for(i in 1:dim){
-      dt <- cbind(dt, cut(x[, i], cutoff, labels = 1:dim))
+      dt <- cbind(dt, cut(x[, i], cutoff, labels = 1:no_categories))
     }
   }
 
