@@ -360,7 +360,8 @@ simulate_data <- function(parameters_list){
   response_mod <- parameters_list$response_mod
   fit_mod <- parameters_list$fit_mod
   methods <- parameters_list$methods
-
+  seed <- parameters_list$seed
+  if(is.null(seed)) seed <- 1
   dim <- length(mu)
 
   # check correct input
@@ -407,6 +408,7 @@ simulate_data <- function(parameters_list){
   ## 1. simulate training and testing data
   tm_current <- Sys.time()
   print("Simulating training and testing data", quote = FALSE, right = FALSE)
+  set.seed(seed)
   x <- mvrnorm(n = N_testing + N_training, mu = mu, Sigma = Sigma)
 
   dt <- NULL
@@ -448,8 +450,11 @@ simulate_data <- function(parameters_list){
   print("Calculating response of training data", quote = FALSE, right = FALSE)
 
   cnms <- c(onehot_names, "epsilon")
-
   dt[, response := response_mod(tbl = .SD, beta = beta, mod_matrix = mod_matrix), .SDcols = cnms]
+
+  # mat <- do.call(CJ, all_levels)
+  # setnames(mat, 1:ncol(mat), feat_names)
+
 
   ## 4. Fit model
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
@@ -585,6 +590,7 @@ simulate_data <- function(parameters_list){
   return_list[['true_linear']] <- true_linear
   return_list[['methods']] <- explanation_list
   return_list[['timing']] <- timeit
+  return_list[['seed']] <- seed
   print("--- End ---")
   return(return_list)
 
