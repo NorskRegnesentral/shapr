@@ -10,41 +10,36 @@
 #' @export
 
 
-getstr = function(mystring, initial.character="_", final.character="_")
-{
+getstr = function(mystring, initial.character = "_", final.character = "_") {
   # check that all 3 inputs are character variables
-  if (!is.character(mystring))
-  {
+  if (!is.character(mystring)) {
     stop('The parent string must be a character variable.')
   }
 
-  if (!is.character(initial.character))
-  {
+  if (!is.character(initial.character)) {
     stop('The initial character must be a character variable.')
   }
 
 
-  if (!is.character(final.character))
-  {
+  if (!is.character(final.character)) {
     stop('The final character must be a character variable.')
   }
 
-  add=0
-  if(initial.character==final.character){add=1}
+  add = 0
+  if(initial.character == final.character){add=1}
 
   # pre-allocate a vector to store the extracted strings
   snippet = rep(0, length(mystring))
 
-  for (i in 1:length(mystring))
-  {
+  for (i in 1:length(mystring)) {
     # extract the initial position
-    initial.position = gregexpr(initial.character, mystring[i])[[1]][1] + 1
+    initial.position <- gregexpr(initial.character, mystring[i])[[1]][1] + 1
 
     # extract the final position
-    final.position = gregexpr(final.character, mystring[i])[[1]][1+add] - 1
+    final.position <- gregexpr(final.character, mystring[i])[[1]][1+add] - 1
 
     # extract the substring between the initial and final positions, inclusively
-    snippet[i] = substr(mystring[i], initial.position, final.position)
+    snippet[i] <- substr(mystring[i], initial.position, final.position)
   }
   return(snippet)
 }
@@ -403,7 +398,7 @@ simulate_data <- function(parameters_list){
 
   timeit <- list()
 
-  # parameters
+  #
   mu <- parameters_list$mu
   beta <- parameters_list$beta
   N_shapley <- parameters_list$N_shapley # number of var to simulate to calc true Shapley
@@ -418,6 +413,7 @@ simulate_data <- function(parameters_list){
   no_categories <- parameters_list$no_categories
   if(is.null(seed)) seed <- 1
   dim <- length(mu)
+
 
   # check correct input
   if(!all(is.numeric(mu))){
@@ -459,7 +455,14 @@ simulate_data <- function(parameters_list){
     print(Sigma)
   }
 
-
+  aa <- paste0("Dimension: ", dim)
+  ab <- paste0("N_shapley: ", N_shapley)
+  ac <- paste0("N_training: ", N_training)
+  ad <- paste0("N_testing: ", N_testing)
+  print(aa, quote = FALSE, right = FALSE)
+  print(ab, quote = FALSE, right = FALSE)
+  print(ac, quote = FALSE, right = FALSE)
+  print(ad, quote = FALSE, right = FALSE)
 
   ## 1. simulate training and testing data
   tm_current <- Sys.time()
@@ -599,7 +602,7 @@ simulate_data <- function(parameters_list){
         }
 
       explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
-
+      print("shapr one-hot function finished.", quote = FALSE, right = FALSE)
       if(m == 'ctree_onehot'){
         tm <- Sys.time()
         explanation_list[[m]] <- explain(
@@ -633,13 +636,15 @@ simulate_data <- function(parameters_list){
         timeit[m] <- difftime(tm2, tm, units = "mins")
       }
 
-      beta_matcher <- as.numeric(getstr(full_onehot_names))
+      beta_matcher <- as.numeric(getstr(reduced_onehot_names))
       no_features <- max(beta_matcher)
       phi_sum_mat <- matrix(NA,nrow=N_testing,ncol=no_features)
       for (i in 1:no_features){
-        phi_sum_mat[,i] <- rowSums(subset(explanation_list[[m]]$dt,select = which(beta_matcher==1)+1))
+        phi_sum_mat[,i] <-
+          rowSums(subset(explanation_list[[m]]$dt,select = which(beta_matcher==i)+1))
       }
       colnames(phi_sum_mat) <- feat_names
+
 
       explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1],phi_sum_mat)
 
@@ -662,6 +667,7 @@ simulate_data <- function(parameters_list){
   return_list[['methods']] <- explanation_list
   return_list[['timing']] <- timeit
   return_list[['seed']] <- seed
+  return_list[['parameters']] <- parameters_list
   print("--- End ---")
   return(return_list)
 
