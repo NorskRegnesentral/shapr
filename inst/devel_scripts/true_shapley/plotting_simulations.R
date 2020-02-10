@@ -8,14 +8,30 @@ library(stringr)
 
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
 
+<<<<<<< Updated upstream
 tod_date <- '8_02_20'
 dim <- 6
+=======
+tod_date <- '10_02_20'
+dim <- 10
+>>>>>>> Stashed changes
 ##
 
 ## load data
 
-nm <- paste0(tod_date, "_results_", 5, "_dim_", dim, ".rds")
-all_methods <- readRDS(paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/higher_dimensions/", nm))
+nm1 <- "7_02_20_results_2_dim_10_corr0_01.rds"
+nm2 <- "7_02_20_results_1_dim_10_corr09.rds"
+nm3 <- "7_02_20_results_1_dim_10.rds"
+
+all_methods_1 <- readRDS(paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/higher_dimensions/", nm1))
+all_methods_2 <- readRDS(paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/higher_dimensions/", nm2))
+all_methods_3 <- readRDS(paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/higher_dimensions/", nm3))
+
+all_methods <- list(all_methods_1[[1]],
+                    all_methods_1[[2]],
+                    all_methods_2[[1]],
+                    all_methods_3[[1]])
+
 
 
 ## Mean average error
