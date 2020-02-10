@@ -171,14 +171,9 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer){
   cond_list <- list()
   cond_list[[1]] <- NA
 
-
   for(i in 2:nrow(explainer$S)){
     col_names <- feat_names[as.logical(explainer$S[i, ])]
-#    col <- joint_prob_dt[, ..col_names]
-#    nb_unique_comb <- nrow(unique(col))
 
-    # working on this
-    #mat0 <- joint_prob_dt[, .(marg_prob = sum(joint_prob)), by = col_names]
     mat0 <- marg_list[[i]]
     setkeyv(mat0, col_names)
     setkeyv(joint_prob_dt, col_names)
@@ -187,11 +182,7 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer){
     mat[, conditioned_on := paste(col_names, collapse = ", ")]
 
     cond_list[[i]] <- mat
-    print(i)
-
   }
-
-
 
   return(cond_list)
 }
@@ -243,6 +234,7 @@ cond_expec <- function(cond_list, explainer){
     # tmp[, conditioned_on := paste(col_names, collapse = ", ")]
     setnames(tmp, "V1", "cond_expec")
     cond_expec_list[[i]] <- tmp
+    print(i)
   }
 
   cond_expec <- rbindlist(l = cond_expec_list, fill = TRUE)
@@ -268,7 +260,7 @@ cond_expec <- function(cond_list, explainer){
 
   select_cols <- c(feat_names, "i.cond_expec", "i.colnum") # Martin's help
   tmp <- list()
-  for (i in 1:nrow(cond_expec)){
+  for (i in 1:nrow(cond_expec)){ # THIS IS VERY SLOW FOR LARGE DIMS (BIG LOOP), CAN WE DO SOMETHING?
     on_cols <- feat_names[!is.na(subset(cond_expec[i,], select = feat_names))]
     # OLD: tmp[[i]] <- mat[cond_expec[i, ], .(feat1, feat2, feat3, cond_expec = i.cond_expec, colnum = i.colnum), on = on_cols]
     # NEW
@@ -277,6 +269,7 @@ cond_expec <- function(cond_list, explainer){
   }
   tmp_dt <- rbindlist(tmp)
 
+  # THIS IS ALSO EXTREMELY SLOW, WILL REMOVING fun.aggregate make it faster?
   # The fun.aggregate function here is just to get it work when I got wrong column numbers.
   final_dt <- dcast(tmp_dt, formula = paste0(paste0(feat_names, collapse = "+"), "~colnum"), value.var = "cond_expec", fun.aggregate = mean)
 

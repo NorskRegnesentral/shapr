@@ -5,7 +5,7 @@ library(lqmm) ## to check if Sigma is positive definite
 library(rapportools) # for testing booleans
 library(ggplot2)
 
-source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
+source("inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
 
 tod_date <- '7_02_20'
 dim <- 10
@@ -20,7 +20,9 @@ response_mod <- function(mod_matrix_full, beta, epsilon){
 parameters_list <- list()
 
 # seed <- 1
-corr <- c(0, 0.1, 0.5, 0.8, 0.9)
+#corr <- c(0, 0.1, 0.5, 0.8, 0.9)
+corr <- 0.5#rev(c(0.5, 0.8, 0.9))
+
 no_categories <- 3
 set.seed(1)
 beta <- round(rnorm(dim * no_categories + 1), 1)
@@ -50,7 +52,7 @@ tm <- Sys.time()
 all_methods <- list()
 for(i in 1:length(parameters_list)){
   nm0 <- paste(tod_date, '_results_', i, "_dim_" , dim, sep = "")
-  all_methods[[i]] <- simulate_data(parameters_list[[i]],tmp_folder = nm0)
+  all_methods[[i]] <- simulate_data(parameters_list[[i]])#,tmp_folder = nm0)
   nm <- paste0(nm0,".rds")
   saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/higher_dimensions/", nm, sep = ""))
 }
