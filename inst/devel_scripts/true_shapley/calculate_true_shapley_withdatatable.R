@@ -380,6 +380,25 @@ MAE <- function(true_shapley, shapley_method){
   mean(apply(abs(true_shapley - shapley_method), 2, mean)[-1])
 }
 
+
+#' Function to calculate the mean average error (MAE) between the true Shapley values and the estimated Shapley values
+#'
+#' @description
+#'
+#' @param true_shapley vector of Numerics. The vector of true Shapley values.
+#' @param shapley_method vector of Numerics. The vector of estimated Shapley values
+#'
+#' @return vector of Shapley values.
+#'
+#' @export
+
+AE <- function(true_shapley, shapley_method){
+  apply(abs(true_shapley - shapley_method)[,-1], 1, mean)
+}
+
+
+
+
 #' Function to simulate the data and calculate the estimated Shapley value as well as simulate the random variables to calculate the true Shapley values
 #'
 #' @description

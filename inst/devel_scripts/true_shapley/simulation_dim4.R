@@ -7,8 +7,15 @@ library(ggplot2)
 
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
 
-tod_date <- '6_02_20'
+# tod_date <- '8_02_20'
 dim <- 4
+
+clock_seed_0 <- round(as.numeric(Sys.time())*1000)
+clock_seed <- signif(clock_seed_0) - clock_seed_0
+set.seed(clock_seed)
+rand_string <- stringi::stri_rand_strings(1,5)
+print(rand_string)
+tod_date <- paste0(tod_date,"_",rand_string)
 ##
 
 response_mod <- function(mod_matrix_full, beta, epsilon){
@@ -29,9 +36,9 @@ k <- 1
 for(j in corr){
   parameters_list[[k]] <- list(Sigma_diag = 1,
                                corr = j,
-                               mu = rep(0, dim), # this needs to be changed
-                               beta = beta, # c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1)
-                               N_shapley = 100,
+                               mu = rep(0, dim),
+                               beta = beta,
+                               N_shapley = 100000,
                                noise = TRUE,
                                response_mod = response_mod,
                                fit_mod = "regression",
