@@ -9,36 +9,35 @@ source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/sha
 
 tod_date <- '6_02_20'
 
-
 response_mod <- function(mod_matrix_full,beta,epsilon){
   as.vector(mod_matrix_full %*% beta) + epsilon
 }
 
 
-parameters_list <- list(Sigma_diag = 1,
-                        corr = 0,
-                        mu = c(0, 0, 0),
-                        beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
-                        N_shapley = 10000,
-                        N_training = 1000,
-                        N_testing = 1000,
-                        cutoff = c(-200, 0, 1, 200),
-                        noise = FALSE,
-                        response_mod = response_mod,
-                        fit_mod = "regression",
-                        methods = c("empirical"), # "gaussian", "ctree"
-                        name = 'corr0')
-
-ll <- simulate_data(parameters_list)
-head(ll$true_shapley)
-head(ll$true_linear)
-MAE(ll$true_shapley, ll$true_linear) # 0.00095050 for 10000 obs and 1000 for training and testing / 0.0009436
-MAE(ll$true_shapley, ll$methods[['gaussian']]$dt_sum) # 0.01729 # 2.68 minutes
-MAE(ll$true_shapley, ll$methods[['empirical']]$dt_sum) # 0.0179 # 1.06 minutes
-MAE(ll$true_shapley, ll$methods[['ctree']]$dt) # 0.016423 #
-MAE(ll$true_shapley, ll$methods[['ctree_onehot']]$dt_sum) # 0.013 5.46 minutes
-MAE(ll$true_shapley, ll$methods[['empirical_ind']]$dt_sum) # 0.01876 # 2.10 minutes
-
+# parameters_list <- list(Sigma_diag = 1,
+#                         corr = 0,
+#                         mu = c(0, 0, 0),
+#                         beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
+#                         N_shapley = 10000000,
+#                         N_training = 1000,
+#                         N_testing = 1000,
+#                         cutoff = c(-200, 0, 1, 200),
+#                         noise = FALSE,
+#                         response_mod = response_mod,
+#                         fit_mod = "regression",
+#                         methods = c("empirical"), # "gaussian", "ctree"
+#                         name = 'corr0')
+#
+# ll <- simulate_data(parameters_list)
+# head(ll$true_shapley)
+# head(ll$true_linear)
+# MAE(ll$true_shapley, ll$true_linear) # 0.00095050 for 10000 obs and 1000 for training and testing / 0.0009436
+# MAE(ll$true_shapley, ll$methods[['gaussian']]$dt_sum) # 0.01729 # 2.68 minutes
+# MAE(ll$true_shapley, ll$methods[['empirical']]$dt_sum) # 0.0179 # 1.06 minutes
+# MAE(ll$true_shapley, ll$methods[['ctree']]$dt) # 0.016423 #
+# MAE(ll$true_shapley, ll$methods[['ctree_onehot']]$dt_sum) # 0.013 5.46 minutes
+# MAE(ll$true_shapley, ll$methods[['empirical_ind']]$dt_sum) # 0.01876 # 2.10 minutes
+#
 
 ##
 
@@ -64,7 +63,8 @@ for(i in seed){
                                  cutoff = c(-200, 0, 1, 200),
                                  N_training = 1000,
                                  N_testing = 1000,
-                                 seed = i)
+                                 seed = i,
+                                 no_categories = 3)
     k <- k + 1
   }
 }
@@ -75,11 +75,9 @@ tm <- Sys.time()
 all_methods <- list()
 for(i in 1:length(parameters_list)){
   all_methods[[i]] <- simulate_data(parameters_list[[i]])
-  nm = paste(tod_date, '_results_', i, "_finerscale" , ".rds", sep = "")
-  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/higher_dimensions/", nm, sep = ""))
+  nm = paste(tod_date, '_results_', i , ".rds", sep = "")
+  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/", nm, sep = ""))
 }
-
-# mydata <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/1_12_19_results.rds")
 
 
 MAE_truth <- NULL
@@ -113,38 +111,29 @@ results[, correlation := paste0("", str_sub(MAE_parameters, start = 5, end = -1)
 corr <- results[, lapply(.SD, FUN = as.numeric), .SDcol = "correlation"]
 results0 <- cbind(results[, correlation := NULL], corr)
 
-nm = paste(tod_date, '_results_finerscale', '.rds', sep = "")
+nm = paste(tod_date, '_results', '.rds', sep = "")
 saveRDS(results0, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/", nm, sep = ""))
 
-nm = paste(tod_date, '_all_methods_finerscale', '.rds', sep = "")
+nm = paste(tod_date, '_all_methods', '.rds', sep = "")
 saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/", nm, sep = ""))
 
 
-p1 <- ggplot(data = results0, aes(y = MAE_methods, x = correlation, col = as.factor(MAE_seed))) +
-  geom_point(size = 2, stroke = 1.5, shape = as.factor(MAE_methods_names))  + scale_x_continuous(breaks = seq(0,  0.5, by = 0.05)) + # scale_x_continuous(breaks = seq(0,  1, by = 0.2)
-  theme_grey(base_size = 22) + xlab("correlation") + ylab("Mean aveerage error (MAE)") +
-  scale_color_discrete(name = "Seed") +
-  scale_shape_discrete(name = "Method") + # labels = c("Ctree", "Ctree one-hot", "Empirical", "Empirical independence", "Gaussian")
-  ggtitle("circle = ctree, triangle = empirical independence") + geom_hline(yintercept = 0.045)
-
-
-
-
-# library(ggplot2)
-## Old plot
-
-mydata <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/1_12_19_results.rds")
+# p1 <- ggplot(data = results0, aes(y = MAE_methods, x = correlation, col = as.factor(MAE_seed))) +
+#   geom_point(size = 2, stroke = 1.5, shape = as.factor(MAE_methods_names))  + scale_x_continuous(breaks = seq(0,  0.5, by = 0.05)) + # scale_x_continuous(breaks = seq(0,  1, by = 0.2)
+#   theme_grey(base_size = 22) + xlab("correlation") + ylab("Mean aveerage error (MAE)") +
+#   scale_color_discrete(name = "Seed") +
+#   scale_shape_discrete(name = "Method") + # labels = c("Ctree", "Ctree one-hot", "Empirical", "Empirical independence", "Gaussian")
+#   ggtitle("circle = ctree, triangle = empirical independence") + geom_hline(yintercept = 0.045)
 
 
 p2 <- ggplot(data = results0, aes(y = MAE_methods, x = MAE_parameters, col = as.factor(MAE_methods_names ))) +
   geom_point(size = 4, stroke = 1.5) +
-  scale_x_discrete(labels = c("corr0" = "0", "corr01" = "0.01", "corr1" = "0.1", "corr2" = "0.2", "corr5" = "0.5", "corr8" = "0.8", "corr9" = "0.9")) +
+  scale_x_discrete(labels = c("corr0" = "0", "corr0.01" = "0.01", "corr0.1" = "0.1", "corr0.2" = "0.2", "corr0.5" = "0.5", "corr0.8" = "0.8", "corr0.9" = "0.9")) +
   theme_bw(base_size = 22) + xlab("correlation") +
   ylab("Mean average error (MAE)") +
   scale_color_discrete(name = "Method", labels = c("Ctree", "Ctree one-hot", "Empirical", "Empirical independence", "Gaussian") ) +
   ggtitle("")
 
-# tod_date = '6_02_20'
 
 nm = paste(tod_date, '_MAE', '.png', sep = "")
 ggsave(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/categorical_shapley/", nm, sep = ""), plot = p1, device = NULL, path = NULL,
