@@ -171,30 +171,7 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer){
   cond_list <- list()
   cond_list[[1]] <- NA
 
-  start <- proc.time()# MJ
-  for(i in 2:nrow(explainer$S)){
-    col_names <- feat_names[as.logical(explainer$S[i, ])]
-    col <- joint_prob_dt[, ..col_names]
-    nb_unique_comb <- nrow(unique(col))
 
-    # working on this
-    mat0 <- joint_prob_dt[, .(marg_prob = sum(joint_prob)), by = col_names]
-    setkeyv(mat0, col_names)
-    setkeyv(joint_prob_dt, col_names)
-    mat <- merge(mat0, joint_prob_dt, all.x = TRUE)
-    mat[, cond_prob := joint_prob / marg_prob]
-    mat[, conditioned_on := paste(col_names, collapse = ", ")]
-
-    cond_list[[i]] <- mat
-
-    print(i)
-  }
-  end <- proc.time()# MJ
-  end-start # MJ
-#  user  system elapsed
-#  245.459   6.473  25.739
-
-  ### MJ testing ####
   for(i in 2:nrow(explainer$S)){
     col_names <- feat_names[as.logical(explainer$S[i, ])]
 #    col <- joint_prob_dt[, ..col_names]
@@ -210,9 +187,9 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer){
     mat[, conditioned_on := paste(col_names, collapse = ", ")]
 
     cond_list[[i]] <- mat
+    print(i)
 
   }
-
 
 
 
