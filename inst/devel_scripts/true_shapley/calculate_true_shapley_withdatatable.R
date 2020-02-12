@@ -234,11 +234,11 @@ cond_expec <- function(cond_list, explainer){
     # tmp[, conditioned_on := paste(col_names, collapse = ", ")]
     setnames(tmp, "V1", "cond_expec")
     cond_expec_list[[i]] <- tmp
-    print(i)
+#    print(i)
   }
 
-  cond_expec <- rbindlist(l = cond_expec_list, fill = TRUE)
-  setcolorder(cond_expec, c(feat_names, "cond_expec")) # "conditioned_on"
+  cond_expec_dt <- rbindlist(l = cond_expec_list, fill = TRUE)
+  setcolorder(cond_expec_dt, c(feat_names, "cond_expec")) # "conditioned_on"
 
   S_dt <- data.table(explainer$S)
   S_dt[, id := 0:(nrow(S_dt) - 1)]
@@ -246,32 +246,61 @@ cond_expec <- function(cond_list, explainer){
 
   all_levels <- list()
   for(i in 1:dim){
-    all_levels[[i]] <- as.numeric(levels(cond_expec[, get(feat_names[i])]))
+    all_levels[[i]] <- as.numeric(levels(cond_expec_dt[, get(feat_names[i])]))
   }
   mat <- do.call(CJ, all_levels)
   setnames(mat, 1:ncol(mat), feat_names)
   mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names]
 
-  # as.numeric is just in case the factors are not 1, 2, 3
-  # cond_expec0 <- cbind(cond_expec[, lapply(.SD, as.numeric), .SDcol = 1:dim], cond_expec[, -(1:dim)])
-
-  cond_expec[, colnum := col_fun(.SD, S_dt), .SDcol = feat_names]
-  # cond_expec1 <- cond_expec[,  c(feat_names, "cond_expec", "colnum"), with = FALSE]
+  cond_expec_dt[, colnum := col_fun(.SD, S_dt), .SDcol = feat_names]
 
   select_cols <- c(feat_names, "i.cond_expec", "i.colnum") # Martin's help
   tmp <- list()
-  for (i in 1:nrow(cond_expec)){ # THIS IS VERY SLOW FOR LARGE DIMS (BIG LOOP), CAN WE DO SOMETHING?
-    on_cols <- feat_names[!is.na(subset(cond_expec[i,], select = feat_names))]
-    # OLD: tmp[[i]] <- mat[cond_expec[i, ], .(feat1, feat2, feat3, cond_expec = i.cond_expec, colnum = i.colnum), on = on_cols]
-    # NEW
-    tmp[[i]] <- mat[cond_expec[i, ], ..select_cols, on = on_cols]
+  for (i in 1:nrow(cond_expec_dt)){ # THIS IS VERY SLOW FOR LARGE DIMS (BIG LOOP), CAN WE DO SOMETHING?
+    on_cols <- feat_names[!is.na(subset(cond_expec_dt[i,], select = feat_names))]
+    tmp[[i]] <- mat[cond_expec_dt[i, ], ..select_cols, on = on_cols]
     setnames(tmp[[i]], c("i.cond_expec","i.colnum"), c("cond_expec","colnum"))
   }
   tmp_dt <- rbindlist(tmp)
 
-  # THIS IS ALSO EXTREMELY SLOW, WILL REMOVING fun.aggregate make it faster?
-  # The fun.aggregate function here is just to get it work when I got wrong column numbers.
-  final_dt <- dcast(tmp_dt, formula = paste0(paste0(feat_names, collapse = "+"), "~colnum"), value.var = "cond_expec", fun.aggregate = mean)
+#   ### MJ TESTING STARTS ####
+# #  cond_expec_dt <- cond_expec_dt[, lapply(.SD, as.integer), .SDcol = feat_names]
+#
+#  # cond_expec_dt
+#
+# # Potential things to do
+#   # Processs on_cols outside the loop and then just feed it in later (10-20% time to save?)
+#   # The main point is that we cannot loop over all the rows in cond_expec_dt (2^(dim*2))
+#
+#
+#   tmp <- list()
+#   start <- proc.time()
+#   for (i in 1:1000){ # THIS IS VERY SLOW FOR LARGE DIMS (BIG LOOP), CAN WE DO SOMETHING?
+#     on_cols <- feat_names[!is.na(subset(cond_expec_dt[i,], select = feat_names))] # Could do this outside
+#    tmp[[i]] <- mat[cond_expec_dt[i, ], ..select_cols, on = on_cols]
+#     print(i)
+#   }
+#   end <- proc.time()
+#   end-start
+#
+#
+#   select_cols <- c(feat_names, "i.cond_expec", "i.colnum") # Martin's help
+#   tmp <- list()
+#   start <- proc.time()
+#   for (i in 1:1000){ # THIS IS VERY SLOW FOR LARGE DIMS (BIG LOOP), CAN WE DO SOMETHING?
+#     on_cols <- feat_names[!is.na(subset(cond_expec_dt[i,], select = feat_names))]
+# #    tmp[[i]] <- mat[cond_expec_dt[i, ], ..select_cols, on = on_cols]
+#     print(i)
+# #    setnames(tmp[[i]], c("i.cond_expec","i.colnum"), c("cond_expec","colnum"))
+#   }
+#   end <- proc.time()
+#   end-start
+#
+#
+#   ##### MJ TESTING ENDS ####
+
+  tmp_dt <- rbindlist(tmp)
+  final_dt <- dcast(tmp_dt, formula = paste0(paste0(feat_names, collapse = "+"), "~colnum"), value.var = "cond_expec")
 
   return(final_dt)
 }
@@ -301,6 +330,7 @@ extract_cond_expec <- function(x_test, cond_expec_dt, prediction_zero){
   results_dt <- rbindlist(results)[, -(1:dim)]
   results_dt <- cbind(rep(prediction_zero, nrow(results_dt)), results_dt)
   setnames(results_dt, "V1", "0")
+  results_dt
 }
 
 
@@ -531,7 +561,6 @@ simulate_data <- function(parameters_list){
   dt[, response := response_mod(mod_matrix_full = cbind(1,mod_matrix),
                                 beta = beta,
                                 epsilon = epsilon)]
-
 
   ## 4. Fit model
   tm_now <- Sys.time(); # print(tm_now - tm_current);
