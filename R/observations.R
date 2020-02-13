@@ -194,7 +194,12 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   dt[first_element, keep := TRUE]
   dt <- dt[keep == TRUE][, keep := NULL]
   dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
-  return(dt)
+
+  ## only return unique dt
+  dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id")]
+  setnames(dt2, "V1", "w")
+
+  return(dt2)
 }
 
 #' @rdname prepare_data
