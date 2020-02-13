@@ -120,6 +120,7 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
   joint_prob_dt <- cbind(joint_prob_dt, joint_prob_dt0[, .(N)])
   setnames(joint_prob_dt,"N", "joint_prob")
 
+  joint_prob_dt[, feat_comb_id:=.I]
 
   return(list(joint_prob_dt, mn, prop))
 }
@@ -144,8 +145,6 @@ marg_prob <- function(joint_prob_dt, explainer){
   marg_list[[1]] <- NA
   for(i in 2:nrow(explainer$S)){
     col_names <- feat_names[as.logical(explainer$S[i, ])]
-    col <- joint_prob_dt[, ..col_names]
-    nb_unique_comb <- nrow(unique(col))
 
     mat <- joint_prob_dt[, .(marg_prob = sum(joint_prob)), by = col_names]
 
@@ -175,20 +174,17 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer){
 
   for(i in 2:nrow(explainer$S)){
     col_names <- feat_names[as.logical(explainer$S[i, ])]
-    col <- joint_prob_dt[, ..col_names]
-    nb_unique_comb <- nrow(unique(col))
 
-    # working on this
-    mat0 <- joint_prob_dt[, .(marg_prob = sum(joint_prob)), by = col_names]
+    mat0 <- marg_list[[i]]
     setkeyv(mat0, col_names)
     setkeyv(joint_prob_dt, col_names)
     mat <- merge(mat0, joint_prob_dt, all.x = TRUE)
     mat[, cond_prob := joint_prob / marg_prob]
-    mat[, conditioned_on := paste(col_names, collapse = ", ")]
+    #mat[, conditioned_on := paste(col_names, collapse = ", ")]
 
     cond_list[[i]] <- mat
-
   }
+
   return(cond_list)
 }
 
@@ -239,10 +235,11 @@ cond_expec <- function(cond_list, explainer){
     # tmp[, conditioned_on := paste(col_names, collapse = ", ")]
     setnames(tmp, "V1", "cond_expec")
     cond_expec_list[[i]] <- tmp
+#    print(i)
   }
 
-  cond_expec <- rbindlist(l = cond_expec_list, fill = TRUE)
-  setcolorder(cond_expec, c(feat_names, "cond_expec")) # "conditioned_on"
+  cond_expec_dt <- rbindlist(l = cond_expec_list, fill = TRUE)
+  setcolorder(cond_expec_dt, c(feat_names, "cond_expec")) # "conditioned_on"
 
   S_dt <- data.table(explainer$S)
   S_dt[, id := 0:(nrow(S_dt) - 1)]
@@ -250,31 +247,23 @@ cond_expec <- function(cond_list, explainer){
 
   all_levels <- list()
   for(i in 1:dim){
-    all_levels[[i]] <- as.numeric(levels(cond_expec[, get(feat_names[i])]))
+    all_levels[[i]] <- as.numeric(levels(cond_expec_dt[, get(feat_names[i])]))
   }
   mat <- do.call(CJ, all_levels)
   setnames(mat, 1:ncol(mat), feat_names)
   mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names]
 
-  # as.numeric is just in case the factors are not 1, 2, 3
-  # cond_expec0 <- cbind(cond_expec[, lapply(.SD, as.numeric), .SDcol = 1:dim], cond_expec[, -(1:dim)])
-
-  cond_expec[, colnum := col_fun(.SD, S_dt), .SDcol = feat_names]
-  # cond_expec1 <- cond_expec[,  c(feat_names, "cond_expec", "colnum"), with = FALSE]
+  cond_expec_dt[, colnum := col_fun(.SD, S_dt), .SDcol = feat_names]
 
   select_cols <- c(feat_names, "i.cond_expec", "i.colnum") # Martin's help
   tmp <- list()
-  for (i in 1:nrow(cond_expec)){
-    on_cols <- feat_names[!is.na(subset(cond_expec[i,], select = feat_names))]
-    # OLD: tmp[[i]] <- mat[cond_expec[i, ], .(feat1, feat2, feat3, cond_expec = i.cond_expec, colnum = i.colnum), on = on_cols]
-    # NEW
-    tmp[[i]] <- mat[cond_expec[i, ], ..select_cols, on = on_cols]
+  for (i in 1:nrow(cond_expec_dt)){ # THIS IS VERY SLOW FOR LARGE DIMS (BIG LOOP), CAN WE DO SOMETHING?
+    on_cols <- feat_names[!is.na(subset(cond_expec_dt[i,], select = feat_names))]
+    tmp[[i]] <- mat[cond_expec_dt[i, ], ..select_cols, on = on_cols]
     setnames(tmp[[i]], c("i.cond_expec","i.colnum"), c("cond_expec","colnum"))
   }
   tmp_dt <- rbindlist(tmp)
-
-  # The fun.aggregate function here is just to get it work when I got wrong column numbers.
-  final_dt <- dcast(tmp_dt, formula = paste0(paste0(feat_names, collapse = "+"), "~colnum"), value.var = "cond_expec", fun.aggregate = mean)
+  final_dt <- dcast(tmp_dt, formula = paste0(paste0(feat_names, collapse = "+"), "~colnum"), value.var = "cond_expec")
 
   return(final_dt)
 }
@@ -304,8 +293,62 @@ extract_cond_expec <- function(x_test, cond_expec_dt, prediction_zero){
   results_dt <- rbindlist(results)[, -(1:dim)]
   results_dt <- cbind(rep(prediction_zero, nrow(results_dt)), results_dt)
   setnames(results_dt, "V1", "0")
+  results_dt
 }
 
+#' Function to calculate conditional expectations of the cutoff jointly Normal random variables
+#' for the x_test observations. I.e. doing what cond_expec + extract_cond_expec does together,
+#' just much faster.
+#'
+#' @description
+#'
+#' @param cond_list List. Calculated using the \code{cond_prob} function.
+#' @param explainer explainer object from shapr package.
+#' @param x_test Matrix. Consists of all the test observations. Has the same dimension
+#' as the number of joint Normal random variables calculated in \code{sim_true_Normal} function.
+#' @param cond_expec_dt data.table. Calculated using the \code{cond_expec} function.
+#' @param prediction_zero Numeric. Number to assigned to phi_0 in Shapley framework.
+#' @param joint_prob_dt data.table The first element in the list calculated using the \code{sim_true_Normal}.
+#'
+#' @return data.table
+#'
+#' @export
+
+cond_expec_new <- function(cond_list,explainer,x_test, prediction_zero,joint_prob_dt){
+
+  feat_names <- colnames(explainer$x_train)
+  dim <- length(feat_names)
+
+  S_dt <- data.table(explainer$S)
+  S_dt[, id := 0:(nrow(S_dt) - 1)]
+  setnames(S_dt, c(feat_names, "id"))
+
+  mat <- unique(x_test)
+  mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names] # To be removed later
+  mat[,rowid:=.I] # Adding identifyer to match on
+
+  cond_expec_list <- list()
+  cond_expec_list[[1]] <- NULL
+
+  joint_prob_dt[,predict := predict_model(explainer$model, newdata = .SD), .SDcols = feat_names]
+
+  for(i in 2:nrow(explainer$S)){
+    col_names <- feat_names[as.logical(explainer$S[i, ])]
+    cond_list[[i]] <- merge(cond_list[[i]],joint_prob_dt[,.(feat_comb_id,predict)],by="feat_comb_id")
+    cond_list[[i]][, expected_value := predict * cond_prob]
+    cond_expec_list[[i]] <- cond_list[[i]][, list(cond_expec=sum(expected_value)), by = col_names]
+    tmp[[i]] <- cbind(cond_expec_list[[i]][mat, .(rowid,cond_expec), on = col_names,allow.cartesian=TRUE],
+                      colnum = i-1)
+  }
+  tmp_dt <- rbindlist(tmp,use.names = T)
+
+  final_dt <- dcast(tmp_dt, formula = "rowid~colnum", value.var = "cond_expec")
+  x_test_id <- mat[x_test, on = feat_names]
+  S_char_vec <- as.character(1:(nrow(explainer$S)-1))
+  final_dt_x_test <- cbind("0"=prediction_zero, final_dt[x_test_id,..S_char_vec,on="rowid"])
+
+  return(final_dt_x_test)
+}
 
 
 #' Function to calculate the true Shapley values based on the conditional expectations calculated using \code{cond_expec}
@@ -535,7 +578,6 @@ simulate_data <- function(parameters_list){
                                 beta = beta,
                                 epsilon = epsilon)]
 
-
   ## 4. Fit model
   tm_now <- Sys.time(); # print(tm_now - tm_current);
   tm_current <- Sys.time()
@@ -557,25 +599,22 @@ simulate_data <- function(parameters_list){
   ## 6. calculate the true shapley values
   tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Initialize_shapr'] <- difftime(tm_now, tm_current, units = "mins"); tm_current <- Sys.time()
   print("Simulating Normal random variables to calculate true Shapley value", quote = FALSE, right = FALSE)
-  joint_prob_dt <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)
+  joint_prob_dt_list <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)
 
   tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
   print("Calculating marginal probability distributions", quote = FALSE, right = FALSE)
-  marg_list <- marg_prob(joint_prob_dt[[1]], explainer)
+  marg_list <- marg_prob(joint_prob_dt_list[[1]], explainer)
 
   tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Calculate_marginal'] <- difftime(tm_now, tm_current, units = "mins"); tm_current <- Sys.time()
   print("Calculating conditional probability distributions", quote = FALSE, right = FALSE)
-  cond_list <- cond_prob(marg_list, joint_prob_dt[[1]], explainer)
-
-  tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Calculate_conditional_probability'] <- difftime(tm_now, tm_current, units = "mins"); tm_current <- Sys.time()
-  print("Calculating all conditional expectations", quote = FALSE, right = FALSE)
-  cond_expec_dt <- cond_expec(cond_list, explainer)
+  cond_list <- cond_prob(marg_list, joint_prob_dt_list[[1]], explainer)
 
   tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Calculate_conditional_expectation'] <- difftime(tm_now, tm_current, units = "mins");  tm_current <- Sys.time()
   # print("Extracting conditional expectations", quote = FALSE, right = FALSE)
-  cond_expec_mat <- extract_cond_expec(x_test, cond_expec_dt, prediction_zero = joint_prob_dt[[2]])
+  cond_expec_mat <- cond_expec_new(cond_list, explainer, x_test, prediction_zero = joint_prob_dt_list[[2]],
+                                   joint_prob_dt=joint_prob_dt_list[[1]])
+  tm_now <- Sys.time();  print(tm_now - tm_current);
 
-  tm_now <- Sys.time(); # print(tm_now - tm_current);
   tm_current <- Sys.time()
   print("Calculating true Shapley values", quote = FALSE, right = FALSE)
   true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
@@ -650,10 +689,10 @@ simulate_data <- function(parameters_list){
           approach = m,
           explainer = explainer_onehot,
           prediction_zero = p,
-          sample = FALSE)
+          sample = FALSE, w_threshold = 1)
         tm2 <- proc.time()
         timeit[m] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
-      }
+     }
 
       beta_matcher <- as.numeric(getstr(reduced_onehot_names))
       no_features <- max(beta_matcher)
@@ -674,7 +713,7 @@ simulate_data <- function(parameters_list){
         approach = m,
         explainer = explainer,
         prediction_zero = p,
-        sample = FALSE)
+        sample = FALSE, w_threshold = 1)
       tm2 <- proc.time()
       timeit[m] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
     }
