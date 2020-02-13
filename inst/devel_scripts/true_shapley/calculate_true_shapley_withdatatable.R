@@ -263,44 +263,6 @@ cond_expec <- function(cond_list, explainer){
     setnames(tmp[[i]], c("i.cond_expec","i.colnum"), c("cond_expec","colnum"))
   }
   tmp_dt <- rbindlist(tmp)
-
-#   ### MJ TESTING STARTS ####
-# #  cond_expec_dt <- cond_expec_dt[, lapply(.SD, as.integer), .SDcol = feat_names]
-#
-#  # cond_expec_dt
-#
-# # Potential things to do
-#   # Processs on_cols outside the loop and then just feed it in later (10-20% time to save?)
-#   # The main point is that we cannot loop over all the rows in cond_expec_dt (2^(dim*2))
-#
-#
-#   tmp <- list()
-#   start <- proc.time()
-#   for (i in 1:1000){ # THIS IS VERY SLOW FOR LARGE DIMS (BIG LOOP), CAN WE DO SOMETHING?
-#     on_cols <- feat_names[!is.na(subset(cond_expec_dt[i,], select = feat_names))] # Could do this outside
-#    tmp[[i]] <- mat[cond_expec_dt[i, ], ..select_cols, on = on_cols]
-#     print(i)
-#   }
-#   end <- proc.time()
-#   end-start
-#
-#
-#   select_cols <- c(feat_names, "i.cond_expec", "i.colnum") # Martin's help
-#   tmp <- list()
-#   start <- proc.time()
-#   for (i in 1:1000){ # THIS IS VERY SLOW FOR LARGE DIMS (BIG LOOP), CAN WE DO SOMETHING?
-#     on_cols <- feat_names[!is.na(subset(cond_expec_dt[i,], select = feat_names))]
-# #    tmp[[i]] <- mat[cond_expec_dt[i, ], ..select_cols, on = on_cols]
-#     print(i)
-# #    setnames(tmp[[i]], c("i.cond_expec","i.colnum"), c("cond_expec","colnum"))
-#   }
-#   end <- proc.time()
-#   end-start
-#
-#
-#   ##### MJ TESTING ENDS ####
-
-  tmp_dt <- rbindlist(tmp)
   final_dt <- dcast(tmp_dt, formula = paste0(paste0(feat_names, collapse = "+"), "~colnum"), value.var = "cond_expec")
 
   return(final_dt)
