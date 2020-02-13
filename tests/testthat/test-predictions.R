@@ -18,7 +18,14 @@ test_that("Test prediction", {
   explainer$W <- matrix(1, nrow = n_features + 1, ncol = n_combinations)
   dt <- dt_train[rep(1:.N, 4)]
   dt[, id := rep_len(1:n_xtest, .N)]
-  dt[, id_combination := rep_len(1:n_combinations, .N), id]
+  dt[, id_combination := rep_len(2:(n_combinations-1), .N), id]
+
+  # To handle the special cases with the smallest and largest combinations, having a single row per observations, only
+  dt2 <- copy(dt[1:(n_xtest*2)])
+  dt2[, id := rep_len(1:n_xtest, .N)]
+  dt2[, id_combination := rep_len(c(1,n_combinations),.N), id]
+  dt <- rbind(dt,dt2)
+
   dt[, w := runif(.N)]
   x <- prediction(dt, prediction_zero, explainer)
 
