@@ -56,6 +56,9 @@ prediction <- function(dt, prediction_zero, explainer) {
   # Overrides value zero-prediction
   dt[id_combination == 1, p_hat := prediction_zero]
 
+  # Prediction for test data
+  p_all <- predict_model(explainer$model, newdata = explainer$x_test)
+
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
   data.table::setkeyv(dt_res, c("id", "id_combination"))
