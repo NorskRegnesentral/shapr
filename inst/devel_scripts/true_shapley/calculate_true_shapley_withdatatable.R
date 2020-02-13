@@ -623,17 +623,17 @@ simulate_data <- function(parameters_list){
       explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
       print("shapr one-hot function finished.", quote = FALSE, right = FALSE)
       if(m == 'ctree_onehot'){
-        tm <- Sys.time()
+        tm <- proc.time()
         explanation_list[[m]] <- explain(
           x_test_onehot_reduced,
           approach = 'ctree',
           explainer = explainer_onehot,
           prediction_zero = p,
           sample = FALSE)
-        tm2 <- Sys.time()
-        timeit['ctree_onehot'] <- difftime(tm2, tm, units = "mins")
+        tm2 <- proc.time()
+        timeit['ctree_onehot'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
       } else if(m == 'empirical_ind'){
-        tm <- Sys.time()
+        tm <- proc.time()
         explanation_list[[m]] <- explain(
           x_test_onehot_reduced,
           approach = "empirical",
@@ -641,18 +641,18 @@ simulate_data <- function(parameters_list){
           explainer = explainer_onehot,
           prediction_zero = p,
           sample = FALSE)
-        tm2 <- Sys.time()
-        timeit['empirical_ind'] <- difftime(tm2, tm, units = "mins")
+        tm2 <- proc.time()
+        timeit['empirical_ind'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
       } else{
-        tm <- Sys.time()
+        tm <- proc.time()
         explanation_list[[m]] <- explain(
           x_test_onehot_reduced,
           approach = m,
           explainer = explainer_onehot,
           prediction_zero = p,
           sample = FALSE)
-        tm2 <- Sys.time()
-        timeit[m] <- difftime(tm2, tm, units = "mins")
+        tm2 <- proc.time()
+        timeit[m] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
       }
 
       beta_matcher <- as.numeric(getstr(reduced_onehot_names))
@@ -668,15 +668,15 @@ simulate_data <- function(parameters_list){
       explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1],phi_sum_mat)
 
     } else { ## for ctree without one-hot encoding
-      tm <- Sys.time()
+      tm <- proc.time()
       explanation_list[[m]] <- explain(
         x_test,
         approach = m,
         explainer = explainer,
         prediction_zero = p,
         sample = FALSE)
-      tm2 <- Sys.time()
-      timeit[m] <- difftime(tm2, tm, units = "mins")
+      tm2 <- proc.time()
+      timeit[m] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
     }
   }
 

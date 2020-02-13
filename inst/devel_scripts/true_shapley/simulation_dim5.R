@@ -5,6 +5,10 @@ library(lqmm) ## to check if Sigma is positive definite
 library(rapportools) # for testing booleans
 library(ggplot2)
 
+source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
+
+tod_date <- "11_02_20"
+
 clock_seed_0 <- round(as.numeric(Sys.time())*1000)
 clock_seed <- signif(clock_seed_0) - clock_seed_0
 set.seed(clock_seed)
@@ -12,10 +16,6 @@ rand_string <- stringi::stri_rand_strings(1,5)
 print(rand_string)
 tod_date <- paste0(tod_date,"_",rand_string)
 
-
-source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
-
-# tod_date <- '9_02_20'
 dim <- 5
 ##
 
@@ -51,7 +51,7 @@ for(j in corr){
   k <- k + 1
 }
 
-
+# parameters_list <- parameters_list[[1]]
 tm <- Sys.time()
 all_methods <- list()
 for(i in 1:length(parameters_list)){
