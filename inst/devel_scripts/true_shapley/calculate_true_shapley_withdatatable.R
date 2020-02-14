@@ -689,7 +689,8 @@ simulate_data <- function(parameters_list){
           approach = m,
           explainer = explainer_onehot,
           prediction_zero = p,
-          sample = FALSE, w_threshold = 1)
+          sample = FALSE,
+          w_threshold = 1)
         tm2 <- proc.time()
         timeit[m] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
      }
@@ -713,7 +714,8 @@ simulate_data <- function(parameters_list){
         approach = m,
         explainer = explainer,
         prediction_zero = p,
-        sample = FALSE, w_threshold = 1)
+        sample = FALSE,
+        w_threshold = 1)
       tm2 <- proc.time()
       timeit[m] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
     }
