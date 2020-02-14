@@ -235,7 +235,7 @@ cond_expec <- function(cond_list, explainer){
     # tmp[, conditioned_on := paste(col_names, collapse = ", ")]
     setnames(tmp, "V1", "cond_expec")
     cond_expec_list[[i]] <- tmp
-#    print(i)
+    #    print(i)
   }
 
   cond_expec_dt <- rbindlist(l = cond_expec_list, fill = TRUE)
@@ -332,6 +332,7 @@ cond_expec_new <- function(cond_list,explainer,x_test, prediction_zero,joint_pro
 
   joint_prob_dt[,predict := predict_model(explainer$model, newdata = .SD), .SDcols = feat_names]
 
+  tmp <- list() # Annabelle added this
   for(i in 2:nrow(explainer$S)){
     col_names <- feat_names[as.logical(explainer$S[i, ])]
     cond_list[[i]] <- merge(cond_list[[i]],joint_prob_dt[,.(feat_comb_id,predict)],by="feat_comb_id")
@@ -458,6 +459,7 @@ AE <- function(true_shapley, shapley_method){
 
 simulate_data <- function(parameters_list){
 
+  print("Using newest version of simulate_data!",quote = F)
   timeit <- list()
 
   #
@@ -555,6 +557,12 @@ simulate_data <- function(parameters_list){
     dt[, epsilon := rnorm(N_testing + N_training, 0, 0.1^2)] #
   } else{
     dt[, epsilon := 0]
+    dt_test = dt[1:N_testing,]
+    dt_test = unique(dt_test)
+    dt_train = dt[-(1:N_testing),]
+    N_testing = nrow(dt_test)
+
+    dt = rbind(dt_test,dt_train)
   }
 
   ## 2. One-hot encoding of training data
@@ -634,7 +642,7 @@ simulate_data <- function(parameters_list){
     if(parameters_list$corr == 0){
       true_linear <-linear_Kshap(x_test_onehot_full = x_test_onehot_full,
                                  beta = beta,
-                                 prop = joint_prob_dt[[3]])
+                                 prop = joint_prob_dt_list[[3]]) # I'm not sure if this is correct?
 
     } else{
       true_linear <- NULL
@@ -646,80 +654,153 @@ simulate_data <- function(parameters_list){
   ## 8. calculate approximate shapley value with different methods
   p <- mean(y_train$response) # since y_train is no longer a matrix
 
-  # timeit <- list()
 
   explanation_list <- list()
-  for(m in methods){
-    tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
-    print(paste0("Estimating Shapley value with ", m, " method"), quote = FALSE, right = FALSE)
-    if(m == 'empirical' | m == 'empirical_ind' |  m == 'gaussian' | m == 'ctree_onehot'){
-
-      if(fit_mod == 'regression'){
-        fmla <- as.formula(paste("response ~", paste(reduced_onehot_names, collapse = " + ")))
-        model_onehot <- lm(fmla, data = dt[-(1:N_testing)])
-        }
-
-      explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
-      print("shapr one-hot function finished.", quote = FALSE, right = FALSE)
-      if(m == 'ctree_onehot'){
-        tm <- proc.time()
-        explanation_list[[m]] <- explain(
-          x_test_onehot_reduced,
-          approach = 'ctree',
-          explainer = explainer_onehot,
-          prediction_zero = p,
-          sample = FALSE)
-        tm2 <- proc.time()
-        timeit['ctree_onehot'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
-      } else if(m == 'empirical_ind'){
-        tm <- proc.time()
-        explanation_list[[m]] <- explain(
-          x_test_onehot_reduced,
-          approach = "empirical",
-          type = "independence",
-          explainer = explainer_onehot,
-          prediction_zero = p,
-          sample = FALSE)
-        tm2 <- proc.time()
-        timeit['empirical_ind'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
-      } else{
-        tm <- proc.time()
-        explanation_list[[m]] <- explain(
-          x_test_onehot_reduced,
-          approach = m,
-          explainer = explainer_onehot,
-          prediction_zero = p,
-          sample = FALSE,
-          w_threshold = 1)
-        tm2 <- proc.time()
-        timeit[m] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
-     }
-
-      beta_matcher <- as.numeric(getstr(reduced_onehot_names))
-      no_features <- max(beta_matcher)
-      phi_sum_mat <- matrix(NA,nrow=N_testing,ncol=no_features)
-      for (i in 1:no_features){
-        phi_sum_mat[,i] <-
-          rowSums(subset(explanation_list[[m]]$dt,select = which(beta_matcher==i)+1))
-      }
-      colnames(phi_sum_mat) <- feat_names
-
-
-      explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1],phi_sum_mat)
-
-    } else { ## for ctree without one-hot encoding
-      tm <- proc.time()
-      explanation_list[[m]] <- explain(
-        x_test,
-        approach = m,
-        explainer = explainer,
-        prediction_zero = p,
-        sample = FALSE,
-        w_threshold = 1)
-      tm2 <- proc.time()
-      timeit[m] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
-    }
+  ##
+  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
+  if(fit_mod == 'regression'){
+    fmla <- as.formula(paste("response ~", paste(reduced_onehot_names, collapse = " + ")))
+    model_onehot <- lm(fmla, data = dt[-(1:N_testing)])
   }
+  explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
+
+
+
+  # empirical independence
+  # n_samples = 100
+  print(paste0("Estimating Shapley value with empirical ind method, n_samples = 100"), quote = FALSE, right = FALSE)
+  tm <- proc.time()
+  explanation_list[['empirical_ind_nsamples100']] <- explain(
+    x_test_onehot_reduced,
+    approach = "empirical",
+    type = "independence",
+    explainer = explainer_onehot,
+    prediction_zero = p,
+    sample = FALSE,
+    n_samples = 100,
+    w_threshold = 1)
+  tm2 <- proc.time()
+  timeit['empirical_ind_nsamples100'] <- list((tm2 - tm))
+
+  # n_samples = 100
+  print(paste0("Estimating Shapley value with empirical ind method, n_samples = 1000"), quote = FALSE, right = FALSE)
+  tm <- proc.time()
+  explanation_list[['empirical_ind_nsamples1000']] <- explain(
+    x_test_onehot_reduced,
+    approach = "empirical",
+    type = "independence",
+    explainer = explainer_onehot,
+    prediction_zero = p,
+    sample = FALSE,
+    n_samples = 1000,
+    w_threshold = 1)
+  tm2 <- proc.time()
+  timeit['empirical_ind_nsamples1000'] <- list((tm2 - tm))
+
+
+  # empirical
+  # n_samples = 100
+  print(paste0("Estimating Shapley value with empirical method, n_samples = 100"), quote = FALSE, right = FALSE)
+  tm <- proc.time()
+  explanation_list[['empirical_nsamples100']] <- explain(
+    x_test_onehot_reduced,
+    approach = 'empirical',
+    explainer = explainer_onehot,
+    prediction_zero = p,
+    sample = FALSE,
+    w_threshold = 1,
+    n_samples = 100)
+  tm2 <- proc.time()
+  timeit['empirical_nsamples100'] <- list((tm2 - tm))
+
+  # n_samples = 1000
+  print(paste0("Estimating Shapley value with empirical ind method, n_samples = 1000"), quote = FALSE, right = FALSE)
+  tm <- proc.time()
+  explanation_list[['empirical_nsamples1000']] <- explain(
+    x_test_onehot_reduced,
+    approach = 'empirical',
+    explainer = explainer_onehot,
+    prediction_zero = p,
+    sample = FALSE,
+    w_threshold = 1,
+    n_samples = 1000)
+  tm2 <- proc.time()
+  timeit['empirical_nsamples1000'] <- list((tm2 - tm))
+
+
+  # gaussian
+  # n_samples = 100
+  print(paste0("Estimating Shapley value with Gaussian method, n_samples = 100"), quote = FALSE, right = FALSE)
+  tm <- proc.time()
+  explanation_list[['gaussian_nsamples100']] <- explain(
+    x_test_onehot_reduced,
+    approach = 'gaussian',
+    explainer = explainer_onehot,
+    prediction_zero = p,
+    sample = FALSE,
+    w_threshold = 1,
+    n_samples = 100)
+  tm2 <- proc.time()
+  timeit['gaussian_nsamples100'] <- list((tm2 - tm))
+
+  # n_samples = 1000
+  print(paste0("Estimating Shapley value with Gaussian method, n_samples = 1000"), quote = FALSE, right = FALSE)
+  tm <- proc.time()
+  explanation_list[['gaussian_nsamples1000']] <- explain(
+    x_test_onehot_reduced,
+    approach = 'gaussian',
+    explainer = explainer_onehot,
+    prediction_zero = p,
+    sample = FALSE,
+    w_threshold = 1,
+    n_samples = 1000)
+  tm2 <- proc.time()
+  timeit['gaussian_nsamples1000'] <- list((tm2 - tm))
+
+  # ctree
+  # mincriterion= 0.80
+  print(paste0("Estimating Shapley value with ctree method, mincriterion 0.80"), quote = FALSE, right = FALSE)
+  tm <- proc.time()
+  explanation_list[['ctree_mincriterion0.80']] <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    w_threshold = 1,
+    mincriterion = 0.80)
+  tm2 <- proc.time()
+  timeit['ctree_mincriterion0.80'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
+
+
+  # mincriterion= 0.95
+  print(paste0("Estimating Shapley value with ctree method, mincriterion 0.95"), quote = FALSE, right = FALSE)
+  tm <- proc.time()
+  explanation_list[['ctree_mincriterion0.95']] <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    w_threshold = 1,
+    mincriterion = 0.95)
+  tm2 <- proc.time()
+  timeit['ctree_mincriterion0.95'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
+
+  # mincriterion= 0.99
+  print(paste0("Estimating Shapley value with ctree method, mincriterion 0.99"), quote = FALSE, right = FALSE)
+  tm <- proc.time()
+  explanation_list[['ctree_mincriterion0.99']] <- explain(
+    x_test,
+    approach = 'ctree',
+    explainer = explainer,
+    prediction_zero = p,
+    sample = FALSE,
+    w_threshold = 1,
+    mincriterion = 0.99)
+  tm2 <- proc.time()
+  timeit['ctree_mincriterion0.99'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
+
 
   return_list <- list()
   return_list[['true_shapley']] <- true_shapley
