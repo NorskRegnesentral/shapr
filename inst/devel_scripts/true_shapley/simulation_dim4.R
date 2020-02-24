@@ -7,7 +7,7 @@ library(ggplot2)
 
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
 
-# tod_date <- '8_02_20'
+tod_date <- '8_02_20'
 dim <- 4
 
 clock_seed_0 <- round(as.numeric(Sys.time())*1000)
@@ -38,7 +38,7 @@ for(j in corr){
                                corr = j,
                                mu = rep(0, dim),
                                beta = beta,
-                               N_shapley = 100000,
+                               N_shapley = 1e+07,
                                noise = TRUE,
                                response_mod = response_mod,
                                fit_mod = "regression",
