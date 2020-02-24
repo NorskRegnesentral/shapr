@@ -24,7 +24,7 @@ MAE(true_shapley, data[[i]]$methods$empirical$dt_sum)
 # old old
 MAE(data[[i]]$true_shapley, data[[i]]$methods$empirical$dt_sum)
 
-
+# START HERE
 # old results
 results_old <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/higher_dimensions/8_02_20_dim_3/8_02_20_results_dim_3.rds")
 results_old[results_old$MAE_methods_names == 'empirical',]
@@ -46,10 +46,12 @@ data[[i]]$parameters$corr
 # data[[i]]$methods$empirical_ind$x_test == explanation_list[['empirical_nsamples1000']]$x_test
 ##
 
-head(data[[i]]$methods$empirical_ind$x_test)
-head(x_test)
+head(data[[i]]$methods$empirical$x_test)
+# head(x_test)
 
-dt <- data.table(data[[i]]$methods$empirical$x_test)
+# dt <- data.table(data[[i]]$methods$empirical$x_test)
+dt <- data.table(data[[i]]$methods$gaussian$x_test)
+
 dt[, id := 1:nrow(dt)]
 dt_order <- dt[order(feat_1_2, feat_1_3, feat_2_2, feat_2_3, feat_3_2, feat_3_3 ),]
 
@@ -58,20 +60,26 @@ dt_order <- dt[order(feat_1_2, feat_1_3, feat_2_2, feat_2_3, feat_3_2, feat_3_3 
 # unique(dt, by = c("feat_1_2", "feat_1_3", "feat_2_2", "feat_2_3", "feat_3_2", "feat_3_3"))
 
 
-dt_sum_empirical <- data.table(data[[i]]$methods$empirical$dt_sum)
+# dt_sum_empirical <- data.table(data[[i]]$methods$empirical$dt_sum)
+dt_sum_gaussian <- data.table(data[[i]]$methods$gaussian$dt_sum)
 
 # cols <- c("feat_1_2", "feat_1_3", "feat_2_2", "feat_2_3", "feat_3_2", "feat_3_3")
 cols <- c("feat_1_", "feat_2_", "feat_3_")
 
 ## IF YOU DON'T ROUND YOU GET WEIRD ROUNDING ERRORS WHEN YOU DO UNIQUE LATER
-dt_sum_empirical[,(cols) := round(.SD, 5), .SDcols = cols]
-dt_sum_empirical[, id := 1:nrow(dt_sum_empirical)]
+# dt_sum_empirical[,(cols) := round(.SD, 5), .SDcols = cols]
+# dt_sum_empirical[, id := 1:nrow(dt_sum_empirical)]
 
+dt_sum_gaussian[,(cols) := round(.SD, 5), .SDcols = cols]
+dt_sum_gaussian[, id := 1:nrow(dt_sum_gaussian)]
 
 # then we merge with all combinations
-dt_merge <- merge(dt, dt_sum_empirical, by = "id", sort = TRUE)
+# dt_merge <- merge(dt, dt_sum_empirical, by = "id", sort = TRUE)
+dt_merge <- merge(dt, dt_sum_gaussian, by = "id", sort = TRUE)
+
 # the strange this is that we get 45 unique rows - we should still only get 27
 # hypothesis: probably a rounding error
+# for Gaussian: impossible to do this - you still get 1000 rows!
 dt_merge_unique <- unique(dt_merge, by = c("feat_1_", "feat_2_", "feat_3_"))
 
 dt_trueShapley <- data.table(data[[i]]$true_shapley)
@@ -80,34 +88,46 @@ trueShapley_unique <- unique(dt_trueShapley[, id := 1:nrow(dt_trueShapley)],  by
 # Try to calculate the MAE - you need to round above to get 27 rows for the "estimated Shapleys"
 # first way:
 mean(apply(abs(dt_merge_unique[, c("feat_1_", "feat_2_", "feat_3_")] - trueShapley_unique[, c("feat_1_", "feat_2_", "feat_3_")]), 1, mean))
+
 # i = 1, empirical = 0.02966
 # i = 2, empirical = 0.03479
 # i = 3, empirical = 0.04351
 # i = 4, empirical = 0.067
 # i = 5, empirical = 0.0919
+
 # alternate way
 trueShapley_merge <- merge(trueShapley_unique, dt_merge, by = "id")
 mean(apply(abs(trueShapley_merge[, c("feat_1_.x", "feat_2_.x", "feat_3_.x")] - trueShapley_merge[, c("feat_1_.y", "feat_2_.y", "feat_3_.y")]), 2, mean))
 # i = 1, empirical =  0.02966492
 # i = 2, empirical =  0.03479
-# i = 3, empirical =
-# i = 4, empirical =
+# i = 3, empirical = 0.0435
+# i = 4, empirical = 0.06652
 
-results0 <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/higher_dimensions/8_02_20_dim_3/8_02_20_results_dim_3.rds")
-results0[results0[, MAE_methods_names == 'empirical'], ]
-# i = 1, empirical = 0.02826028
-# i = 2, empirical = 0.02992401
-# i = 3,
+# i = 1, gaussian = 0.0264
+# i = 2, gaussian =  0.0314
+# i = 3, gaussian = 0.0424
+# i = 4, gaussian = 0.0807
+# i = 5, gaussian = 0.0808
+
+
+
+
+
+
+
+
+
+
 
 # new data
 # new <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/19_02_20_6kbYr_dim_3/19_02_20_6kbYr_dim_3_results_4.rds")
 new <-  readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/24_02_20_KKuq1_dim_3/24_02_20_KKuq1_dim_3_results_5.rds")
 
-i = 5
+i = 4
 y <- new[[i]]$true_shapley
 head(y)
 
-x <- new[[i]]$methods$empirical$dt_sum
+x <- new[[i]]$methods$gaussian_nsamples1000$dt_sum
 head(x)
 
 mean(apply(abs(y[, c("feat_1_", "feat_2_", "feat_3_")] - x[, c("feat_1_", "feat_2_", "feat_3_")]), 2, mean))
@@ -116,6 +136,12 @@ mean(apply(abs(y[, c("feat_1_", "feat_2_", "feat_3_")] - x[, c("feat_1_", "feat_
 # i = 3, empirical = 0.046
 # i = 4, empirical = 0.0660
 # i = 5, empirical = 0.109
+
+# i = 1, gaussian = 0.031
+# i = 2, gaussian = 0.0278
+# i = 3, gaussian = 0.04657
+# i = 4, gaussian = 0.0919
+# i = 5, gaussian = 0.132
 
 
 MAE(new[[i]][['true_shapley']], new[[i]][['methods']][['empirical']]$dt_sum)
