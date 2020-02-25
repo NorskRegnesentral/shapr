@@ -46,36 +46,36 @@ data[[i]]$parameters$corr
 # data[[i]]$methods$empirical_ind$x_test == explanation_list[['empirical_nsamples1000']]$x_test
 ##
 
-head(data[[i]]$methods$empirical$x_test)
+data[[i]]$methods$empirical$x_test
 # head(x_test)
 
-# dt <- data.table(data[[i]]$methods$empirical$x_test)
-dt <- data.table(data[[i]]$methods$gaussian$x_test)
+dt <- data.table(data[[i]]$methods$empirical$x_test)
+# dt <- data.table(data[[i]]$methods$gaussian$x_test)
 
 dt[, id := 1:nrow(dt)]
 dt_order <- dt[order(feat_1_2, feat_1_3, feat_2_2, feat_2_3, feat_3_2, feat_3_3 ),]
 
 # for i = 1, 2, 3 when we call unique, we get 27 rows - this is to be expected
 # but for i = 4, we only get 26 rows??
-# unique(dt, by = c("feat_1_2", "feat_1_3", "feat_2_2", "feat_2_3", "feat_3_2", "feat_3_3"))
+unique(dt, by = c("feat_1_2", "feat_1_3", "feat_2_2", "feat_2_3", "feat_3_2", "feat_3_3"))
 
 
-# dt_sum_empirical <- data.table(data[[i]]$methods$empirical$dt_sum)
-dt_sum_gaussian <- data.table(data[[i]]$methods$gaussian$dt_sum)
+dt_sum_empirical <- data.table(data[[i]]$methods$empirical$dt_sum)
+# dt_sum_gaussian <- data.table(data[[i]]$methods$gaussian$dt_sum)
 
 # cols <- c("feat_1_2", "feat_1_3", "feat_2_2", "feat_2_3", "feat_3_2", "feat_3_3")
 cols <- c("feat_1_", "feat_2_", "feat_3_")
 
 ## IF YOU DON'T ROUND YOU GET WEIRD ROUNDING ERRORS WHEN YOU DO UNIQUE LATER
-# dt_sum_empirical[,(cols) := round(.SD, 5), .SDcols = cols]
-# dt_sum_empirical[, id := 1:nrow(dt_sum_empirical)]
+dt_sum_empirical[,(cols) := round(.SD, 5), .SDcols = cols]
+dt_sum_empirical[, id := 1:nrow(dt_sum_empirical)]
 
-dt_sum_gaussian[,(cols) := round(.SD, 5), .SDcols = cols]
-dt_sum_gaussian[, id := 1:nrow(dt_sum_gaussian)]
+# dt_sum_gaussian[,(cols) := round(.SD, 5), .SDcols = cols]
+# dt_sum_gaussian[, id := 1:nrow(dt_sum_gaussian)]
 
 # then we merge with all combinations
-# dt_merge <- merge(dt, dt_sum_empirical, by = "id", sort = TRUE)
-dt_merge <- merge(dt, dt_sum_gaussian, by = "id", sort = TRUE)
+dt_merge <- merge(dt, dt_sum_empirical, by = "id", sort = TRUE)
+# dt_merge <- merge(dt, dt_sum_gaussian, by = "id", sort = TRUE)
 
 # the strange this is that we get 45 unique rows - we should still only get 27
 # hypothesis: probably a rounding error
@@ -102,6 +102,7 @@ mean(apply(abs(trueShapley_merge[, c("feat_1_.x", "feat_2_.x", "feat_3_.x")] - t
 # i = 2, empirical =  0.03479
 # i = 3, empirical = 0.0435
 # i = 4, empirical = 0.06652
+# i = 5, empirical = 0.09
 
 # i = 1, gaussian = 0.0264
 # i = 2, gaussian =  0.0314
@@ -114,28 +115,23 @@ mean(apply(abs(trueShapley_merge[, c("feat_1_.x", "feat_2_.x", "feat_3_.x")] - t
 
 
 
-
-
-
-
-
 # new data
 # new <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/19_02_20_6kbYr_dim_3/19_02_20_6kbYr_dim_3_results_4.rds")
 new <-  readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/24_02_20_KKuq1_dim_3/24_02_20_KKuq1_dim_3_results_5.rds")
 
-i = 4
+i = 2
 y <- new[[i]]$true_shapley
 head(y)
-
-x <- new[[i]]$methods$gaussian_nsamples1000$dt_sum
+x <- new[[i]]$methods$empirical$dt_sum
+# x <- new[[i]]$methods$gaussian_nsamples1000$dt_sum
 head(x)
 
 mean(apply(abs(y[, c("feat_1_", "feat_2_", "feat_3_")] - x[, c("feat_1_", "feat_2_", "feat_3_")]), 2, mean))
-# i = 1
-# i = 2, empirical = 0.03
-# i = 3, empirical = 0.046
-# i = 4, empirical = 0.0660
-# i = 5, empirical = 0.109
+# i = 1, empirical = 0.0302 ----------- 0.03084548
+# i = 2, empirical = 0.0364 ----------- 0.02766051
+# i = 3, empirical = 0.046 ---------- 0.03724191
+# i = 4, empirical = 0.0660 --------- 0.04193204
+# i = 5, empirical = 0.109 ---------- 0.04305615
 
 # i = 1, gaussian = 0.031
 # i = 2, gaussian = 0.0278

@@ -7,15 +7,17 @@ library(ggplot2)
 
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
 
-tod_date0 <- '24_02_20'
+tod_date0 <- format(Sys.Date(), "%d_%m_%y")
+
 dim <- 3
+no_categories <- 3
 
 clock_seed_0 <- round(as.numeric(Sys.time())*1000)
 clock_seed <- signif(clock_seed_0) - clock_seed_0
 set.seed(clock_seed)
 rand_string <- stringi::stri_rand_strings(1,5)
 print(rand_string)
-tod_date <- paste0(tod_date0, "_", rand_string, "_dim_", dim)
+tod_date <- paste0(tod_date0, "_", rand_string, "_dim_", dim, "_nb_cat_", no_categories)
 
 dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/", tod_date, sep = ""))
 dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations/", tod_date, sep = ""))
@@ -30,7 +32,6 @@ response_mod <- function(mod_matrix_full, beta, epsilon){
 
 parameters_list <- list()
 
-no_categories <- 3
 set.seed(1); beta <- round(rnorm(dim * no_categories + 1), 1)
 corr <- c(0, 0.1, 0.5, 0.8, 0.9)
 k <- 1
@@ -51,22 +52,19 @@ for(j in corr){
                                No_train_obs = 1000,
                                N_sample_gaussian = c(100, 1000),
                                seed = 1,
-                               no_categories = 3)
+                               no_categories = no_categories)
   k <- k + 1
 }
-# parameters_list = parameters_list[[1]]
 
-
-tm <- Sys.time()
 all_methods <- list()
 for(i in 1:length(parameters_list)){
   all_methods[[i]] <- simulate_data(parameters_list[[i]])
-  nm = paste(tod_date, '_results_', i , ".rds", sep = "")
+  nm = paste(tod_date, '_rho_', parameters_list[[i]]$corr, ".rds", sep = "")
   saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", tod_date, nm, sep = "/"))
 }
 
 # to read old data
-# all_methods <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/19_02_20_6kbYr_results_5.rds")
+# all_methods <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/24_02_20_KKuq1_dim_3/24_02_20_KKuq1_dim_3_results_5.rds")
 
 
 MAE_truth <- NULL
@@ -77,24 +75,25 @@ MAE_seed <- NULL
 
 for(i in 1:length(all_methods)){
   if(!is.null(all_methods[[i]][['true_linear']])){
-    MAE_truth <- c(MAE_truth, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['true_linear']]))
+    MAE_truth <- c(MAE_truth, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['true_linear']], weights = all_methods[[i]]$join_prob_true[[dim + 1]]))
   }
-  for(m in parameters_list[[i]]$methods){
+  for(m in names(all_methods[[1]]$methods)){
 
     if(m == 'gaussian'){
-      for(gauss in parameters_list[[i]]$N_sample_gaussian){
-        MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[paste0('gaussian_nsamples', gauss)]]$dt_sum))
+      for(gauss in all_methods[[1]]$parameters$N_sample_gaussian){
+        MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[paste0('gaussian_nsamples', gauss)]]$dt_sum,
+                                          weights = all_methods[[i]]$join_prob_true[[dim + 1]]))
         MAE_methods_names <- c(MAE_methods_names, paste0('gaussian_nsamples', gauss))
         MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
         MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
       }
     } else if(m != 'ctree'){
-      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum))
+      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum, weights = all_methods[[i]]$join_prob_true[[dim + 1]]))
       MAE_methods_names <- c(MAE_methods_names, m)
       MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
       MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
     } else{
-      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt))
+      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt, weights = all_methods[[i]]$join_prob_true[[dim + 1]]))
       MAE_methods_names <- c(MAE_methods_names, m)
       MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
       MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
@@ -112,9 +111,6 @@ results0 <- cbind(results[, correlation := NULL], corr)
 nm = paste(tod_date, '_results', '.rds', sep = "")
 saveRDS(results0, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", tod_date, nm, sep = "/"))
 
-nm = paste(tod_date, '_all_methods', '.rds', sep = "")
-saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", tod_date, nm, sep = "/"))
-
 
 p1 <- ggplot(data = results0, aes(y = MAE_methods, x = MAE_parameters, col = as.factor(MAE_methods_names ))) +
   geom_point(size = 4, stroke = 1.5) +
@@ -129,8 +125,7 @@ nm = paste(tod_date, '_MAE', '.png', sep = "")
 ggsave(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations", tod_date, nm, sep = "/"), plot = p1, device = NULL, path = NULL,
        scale = 1, width = 45, height = 30, units = "cm",
        dpi = 300, limitsize = TRUE)
-tm2 <- Sys.time()
-print(tm2 - tm)
+
 
 
 
@@ -148,8 +143,8 @@ nm = paste(tod_date, '_MAE', '.png', sep = "")
 ggsave(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/categorical_shapley/", nm, sep = ""), plot = p2, device = NULL, path = NULL,
        scale = 1, width = 45, height = 30, units = "cm",
        dpi = 300, limitsize = TRUE)
-tm2 <- Sys.time()
-print(tm2 - tm)
+
+
 
 
 

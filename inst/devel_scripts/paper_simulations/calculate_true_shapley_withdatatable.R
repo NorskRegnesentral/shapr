@@ -331,8 +331,10 @@ linear_Kshap <- function(x_test_onehot_full, beta, prop){
 #'
 #' @export
 
-MAE <- function(true_shapley, shapley_method){
-  mean(apply(abs(true_shapley - shapley_method), 2, mean)[-1])
+# MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum,
+
+MAE <- function(true_shapley, shapley_method, weights){
+  mean(apply(abs((true_shapley - shapley_method) * weights), 2, sum)[-1])
 }
 
 
@@ -350,8 +352,6 @@ MAE <- function(true_shapley, shapley_method){
 AE <- function(true_shapley, shapley_method){
   apply(abs(true_shapley - shapley_method)[,-1], 1, mean)
 }
-
-
 
 
 #' Function to simulate the data and calculate the estimated Shapley value as well as simulate the random variables to calculate the true Shapley values
@@ -431,6 +431,7 @@ simulate_data <- function(parameters_list){
   }
 
   print(paste0("Dimension: ", dim), quote = FALSE, right = FALSE)
+  print(paste0("Number of categories: ", no_categories), quote = FALSE, right = FALSE)
   print(paste0("N_shapley: ", N_shapley), quote = FALSE, right = FALSE)
   print(paste0("No_train_obs: ", No_train_obs), quote = FALSE, right = FALSE)
 
@@ -489,7 +490,6 @@ simulate_data <- function(parameters_list){
   full_onehot_names <- colnames(mod_matrix)
   reduced_onehot_names <- full_onehot_names[-grep("_1$", full_onehot_names)] # names without reference levels
 
-
   ## 3. Calculate response
   dt[, response := response_mod(mod_matrix_full = cbind(1, mod_matrix), beta = beta, epsilon = epsilon)]
 
@@ -511,13 +511,16 @@ simulate_data <- function(parameters_list){
   # For computing the true Shapley values (with correlation 0)
   x_test_onehot_full <- dt[-(1:No_train_obs), ..full_onehot_names]
 
+
   # For modelling
   x_test_onehot_reduced <- dt[-(1:No_train_obs), ..reduced_onehot_names]
   x_train_onehot_reduced <- dt[(1:No_train_obs), ..reduced_onehot_names]
 
   ##
   explainer <- shapr(x_train, model)
-  explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
+  if(!all(methods == 'ctree')){
+    explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
+  }
   ##
 
   ## 6. calculate the true shapley values
@@ -692,6 +695,7 @@ simulate_data <- function(parameters_list){
   return_list <- list()
   return_list[['true_shapley']] <- true_shapley
   return_list[['true_linear']] <- true_linear
+  return_list[['join_prob_true']] <- joint_prob_dt_list[[1]]
   return_list[['methods']] <- explanation_list
   return_list[['timing']] <- timeit
   return_list[['seed']] <- seed
