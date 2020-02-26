@@ -5,7 +5,9 @@ library(lqmm) ## to check if Sigma is positive definite
 library(rapportools) # for testing booleans
 library(ggplot2)
 
-source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
+# source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
+source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable_KernelSHAP.R")
+
 
 tod_date0 <- format(Sys.Date(), "%d_%m_%y")
 
@@ -17,10 +19,10 @@ clock_seed <- signif(clock_seed_0) - clock_seed_0
 set.seed(clock_seed)
 rand_string <- stringi::stri_rand_strings(1,5)
 print(rand_string)
-tod_date <- paste0(tod_date0, "_", rand_string, "_dim_", dim, "_nb_cat_", no_categories)
+tod_date <- paste0(tod_date0, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
 
-dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/", tod_date, sep = ""))
-dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations/", tod_date, sep = ""))
+# dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/", tod_date, sep = ""))
+# dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations/", tod_date, sep = ""))
 
 ##
 
@@ -44,7 +46,7 @@ for(j in corr){
                                noise = TRUE,
                                response_mod = response_mod,
                                fit_mod = "regression",
-                               methods = c("empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree"),
+                               methods = c("empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP"),
                                name = paste0('corr', j),
                                cutoff = c(-200, 0, 1, 200),
                                Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
@@ -55,6 +57,8 @@ for(j in corr){
                                no_categories = no_categories)
   k <- k + 1
 }
+
+# parameters_list = parameters_list[[1]]
 
 all_methods <- list()
 for(i in 1:length(parameters_list)){
@@ -87,11 +91,11 @@ for(i in 1:length(all_methods)){
         MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
         MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
       }
-    } else if(m != 'ctree'){
-      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum, weights = all_methods[[i]]$join_prob_true[[dim + 1]]))
-      MAE_methods_names <- c(MAE_methods_names, m)
-      MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
-      MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
+    } else if(m != 'ctree' & m != 'kernelSHAP'){
+        MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum, weights = all_methods[[i]]$join_prob_true[[dim + 1]]))
+        MAE_methods_names <- c(MAE_methods_names, m)
+        MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
+        MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
     } else{
       MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt, weights = all_methods[[i]]$join_prob_true[[dim + 1]]))
       MAE_methods_names <- c(MAE_methods_names, m)
@@ -117,9 +121,9 @@ p1 <- ggplot(data = results0, aes(y = MAE_methods, x = MAE_parameters, col = as.
   scale_x_discrete(labels = c("corr0" = "0", "corr0.05" = "0.05", "corr0.1" = "0.1", "corr0.3" = "0.3", "corr0.5" = "0.5", "corr0.8" = "0.8", "corr0.9" = "0.9")) +
   theme_bw(base_size = 22) + xlab("correlation") +
   ylab("Mean average error (MAE)") +
-  scale_color_discrete(name = "Method", labels = c("Ctree", "Ctree one-hot", "Empirical", "Empirical independence", "Gaussian_100", "Gaussian_1000") ) +
+  scale_color_discrete(name = "Method" ) +
   ggtitle("")
-
+#  labels = c("Ctree", "Ctree one-hot", "Empirical", "Empirical independence", "Gaussian_100", "Gaussian_1000", "kernelSHAP")
 
 nm = paste(tod_date, '_MAE', '.png', sep = "")
 ggsave(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations", tod_date, nm, sep = "/"), plot = p1, device = NULL, path = NULL,
