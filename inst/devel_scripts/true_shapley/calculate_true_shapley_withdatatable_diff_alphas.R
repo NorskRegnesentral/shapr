@@ -641,8 +641,7 @@ simulate_data <- function(parameters_list){
   if(explainer$model_type == 'regression'){
     if(parameters_list$corr == 0){
       true_linear <-linear_Kshap(x_test_onehot_full = x_test_onehot_full,
-                                 beta = beta,
-                                 prop = joint_prob_dt_list[[3]])
+                                 beta = beta, prop = joint_prob_dt_list[[3]])
 
     } else{
       true_linear <- NULL
@@ -653,6 +652,7 @@ simulate_data <- function(parameters_list){
 
   ## 8. calculate approximate shapley value with different methods
   p <- mean(y_train$response) # since y_train is no longer a matrix
+
 
   ## to compute sum of Shapley values - only for one-hot encoded variables
   beta_matcher <- as.numeric(getstr(reduced_onehot_names))
@@ -685,6 +685,7 @@ simulate_data <- function(parameters_list){
     w_threshold = 1)
   tm2 <- proc.time()
   timeit['empirical_ind_nsamples100'] <- list((tm2 - tm))
+
   for (i in 1:no_features){
     phi_sum_mat[, i] <- rowSums(subset(explanation_list[['empirical_ind_nsamples100']]$dt, select = which(beta_matcher == i) + 1))
   }
@@ -706,11 +707,13 @@ simulate_data <- function(parameters_list){
   tm2 <- proc.time()
   timeit['empirical_ind_nsamples1000'] <- list((tm2 - tm))
 
+
   for (i in 1:no_features){
     phi_sum_mat[, i] <- rowSums(subset(explanation_list[['empirical_ind_nsamples1000']]$dt, select = which(beta_matcher == i) + 1))
   }
   colnames(phi_sum_mat) <- feat_names
   explanation_list[['empirical_ind_nsamples1000']]$dt_sum <- cbind(explanation_list[['empirical_ind_nsamples1000']]$dt[, 1], phi_sum_mat)
+
 
 
 
@@ -729,11 +732,13 @@ simulate_data <- function(parameters_list){
   tm2 <- proc.time()
   timeit['empirical_nsamples100'] <- list((tm2 - tm))
 
+
   for (i in 1:no_features){
     phi_sum_mat[, i] <- rowSums(subset(explanation_list[['empirical_nsamples100']]$dt, select = which(beta_matcher == i) + 1))
   }
   colnames(phi_sum_mat) <- feat_names
   explanation_list[['empirical_nsamples100']]$dt_sum <- cbind(explanation_list[['empirical_nsamples100']]$dt[, 1], phi_sum_mat)
+
 
   # n_samples = 1000
   print(paste0("Estimating Shapley value with empirical ind method, n_samples = 1000"), quote = FALSE, right = FALSE)
@@ -748,6 +753,7 @@ simulate_data <- function(parameters_list){
     n_samples = 1000)
   tm2 <- proc.time()
   timeit['empirical_nsamples1000'] <- list((tm2 - tm))
+
 
   for (i in 1:no_features){
     phi_sum_mat[, i] <- rowSums(subset(explanation_list[['empirical_nsamples1000']]$dt, select = which(beta_matcher == i) + 1))
@@ -769,6 +775,7 @@ simulate_data <- function(parameters_list){
     n_samples = 100)
   tm2 <- proc.time()
   timeit['gaussian_nsamples100'] <- list((tm2 - tm))
+
 
   for (i in 1:no_features){
     phi_sum_mat[, i] <- rowSums(subset(explanation_list[['gaussian_nsamples100']]$dt, select = which(beta_matcher == i) + 1))
@@ -812,12 +819,12 @@ simulate_data <- function(parameters_list){
   tm2 <- proc.time()
   timeit['ctree_mincriterion0.80'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
 
+
   for (i in 1:no_features){
     phi_sum_mat[, i] <- rowSums(subset(explanation_list[['ctree_mincriterion0.80']]$dt, select = which(beta_matcher == i) + 1))
   }
   colnames(phi_sum_mat) <- feat_names
   explanation_list[['ctree_mincriterion0.80']]$dt_sum <- cbind(explanation_list[['ctree_mincriterion0.80']]$dt[, 1], phi_sum_mat)
-
 
   # mincriterion= 0.95
   print(paste0("Estimating Shapley value with ctree method, mincriterion 0.95"), quote = FALSE, right = FALSE)
@@ -833,11 +840,13 @@ simulate_data <- function(parameters_list){
   tm2 <- proc.time()
   timeit['ctree_mincriterion0.95'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
 
+
   for (i in 1:no_features){
     phi_sum_mat[, i] <- rowSums(subset(explanation_list[['ctree_mincriterion0.95']]$dt, select = which(beta_matcher == i) + 1))
   }
   colnames(phi_sum_mat) <- feat_names
   explanation_list[['ctree_mincriterion0.95']]$dt_sum <- cbind(explanation_list[['ctree_mincriterion0.95']]$dt[, 1], phi_sum_mat)
+
 
   # mincriterion= 0.99
   print(paste0("Estimating Shapley value with ctree method, mincriterion 0.99"), quote = FALSE, right = FALSE)
@@ -853,11 +862,13 @@ simulate_data <- function(parameters_list){
   tm2 <- proc.time()
   timeit['ctree_mincriterion0.99'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
 
+
   for (i in 1:no_features){
     phi_sum_mat[, i] <- rowSums(subset(explanation_list[['ctree_mincriterion0.99']]$dt, select = which(beta_matcher == i) + 1))
   }
   colnames(phi_sum_mat) <- feat_names
   explanation_list[['ctree_mincriterion0.99']]$dt_sum <- cbind(explanation_list[['ctree_mincriterion0.99']]$dt[, 1], phi_sum_mat)
+
 
   return_list <- list()
   return_list[['true_shapley']] <- true_shapley
