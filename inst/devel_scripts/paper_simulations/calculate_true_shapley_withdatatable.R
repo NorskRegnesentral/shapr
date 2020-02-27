@@ -331,7 +331,7 @@ linear_Kshap <- function(x_test_onehot_full, beta, prop){
 #'
 #' @export
 
-# MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum,
+# all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[paste0('gaussian_nsamples', gauss)]]$dt_sum
 
 MAE <- function(true_shapley, shapley_method, weights){
   mean(apply(abs((true_shapley - shapley_method) * weights), 2, sum)[-1])
@@ -374,8 +374,8 @@ simulate_data <- function(parameters_list){
   beta <- parameters_list$beta
   N_shapley <- parameters_list$N_shapley # number of var to simulate to calc true Shapley
   Sample_test <- parameters_list$Sample_test
-  No_test_sample <- parameters_list$No_test_sample
   No_train_obs <- parameters_list$No_train_obs
+  No_test_sample <- parameters_list$No_test_sample
   N_sample_gaussian <- parameters_list$N_sample_gaussian
   cutoff <- parameters_list$cutoff
   noise <- parameters_list$noise
@@ -438,7 +438,8 @@ simulate_data <- function(parameters_list){
   ## 1. simulate training data
   tm_current <- Sys.time()
   set.seed(seed)
-  x <- mvrnorm(n =  No_train_obs, mu = mu, Sigma = Sigma)
+  x1 <- mvrnorm(n =  No_train_obs, mu = mu, Sigma = Sigma)
+  x <- x1
 
   dt <- NULL
   if(is.null(cutoff)){ ## to get equal proportion in each level
@@ -475,16 +476,25 @@ simulate_data <- function(parameters_list){
   setnames(dt, names(dt), paste0("feat_", 1:dim,"_"))
   feat_names <- names(dt[, 1:dim])
 
+  dt_numeric <- dt
   dt <- dt[, lapply(.SD, as.factor)]
 
+  set.seed(seed)
   if(noise == TRUE){
-    dt[, epsilon := rnorm(No_test_obs + No_train_obs, 0, 0.1^2)] #
+
+    epsilon1 <- rnorm(No_train_obs, 0, 0.1^2)
+    epsilon2 <- rnorm(No_test_obs, 0, 0.1^2)
+    epsilon <- c(epsilon1, epsilon2)
+
+    dt_numeric[, epsilon := epsilon]
+    dt[, epsilon := epsilon]
   } else{
+    dt_numeric[, epsilon := 0]
     dt[, epsilon := 0]
   }
 
   ## 2. One-hot encoding of training data
-  mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim], contrasts,contrasts = FALSE))
+  mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim], contrasts, contrasts = FALSE))
 
   dt <- cbind(dt, data.table(mod_matrix))
   full_onehot_names <- colnames(mod_matrix)
@@ -492,6 +502,8 @@ simulate_data <- function(parameters_list){
 
   ## 3. Calculate response
   dt[, response := response_mod(mod_matrix_full = cbind(1, mod_matrix), beta = beta, epsilon = epsilon)]
+  dt_numeric[, response := dt[['response']]]
+
 
   ## 4. Fit model
   if(fit_mod == 'regression'){
@@ -507,22 +519,48 @@ simulate_data <- function(parameters_list){
   x_test <- dt[-(1:No_train_obs), ..feat_names] ## used in cond_expec_mat()
   y_train <- dt[(1:No_train_obs), .(response)] ## used in cond_expec_mat()
 
+  x_train_numeric <- dt_numeric[(1:No_train_obs), ..feat_names] ## used in explainer()
+  x_test_numeric <- dt_numeric[-(1:No_train_obs), ..feat_names] ## used in cond_expec_mat()
 
   # For computing the true Shapley values (with correlation 0)
   x_test_onehot_full <- dt[-(1:No_train_obs), ..full_onehot_names]
 
-
-  # For modelling
   x_test_onehot_reduced <- dt[-(1:No_train_obs), ..reduced_onehot_names]
   x_train_onehot_reduced <- dt[(1:No_train_obs), ..reduced_onehot_names]
 
   ##
-  explainer <- shapr(x_train, model)
+  explainer <- shapr(x_train, model) # print(class(model)) # "lm"
+
   if(!all(methods == 'ctree')){
     explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
   }
-  ##
 
+  ## NEW
+  # Create custom function of model_type for lm
+  model_type.numeric_lm <<- function(x) {
+  }
+
+  features.numeric_lm <<- function(x, cnms, feature_labels = NULL) {
+    if (!is.null(feature_labels)) message_features_labels()
+
+    nms <- tail(all.vars(x$terms), -1)
+    if (!all(nms %in% cnms)) error_feature_labels()
+    return(nms)
+  }
+
+  # Create custom function of predict_model for caret
+  predict_model.numeric_lm <<- function(x, newdata) {
+    newdata <- as.data.table(newdata)
+    newdata0 <- newdata[, lapply(.SD, as.factor)]
+    class(x) <- "lm"
+    predict(x, newdata0)
+  }
+  class(model) <- "numeric_lm"
+
+  explainer_numeric <- shapr(x_train_numeric, model)
+  ## END
+
+  set.seed(10)
   ## 6. calculate the true shapley values
   tm_true_Shapley <- Sys.time();
   print("Started to calculate true Shapley values.", quote = FALSE, right = FALSE)
@@ -574,10 +612,8 @@ simulate_data <- function(parameters_list){
   no_features <- max(beta_matcher)
   phi_sum_mat <- matrix(NA, nrow = No_test_obs, ncol = no_features)
 
-
   tm_now <- proc.time();
   print("Started to estimate Shapley values with various methods.", quote = FALSE, right = FALSE)
-
 
   explanation_list <- list()
   for(m in methods){
@@ -687,7 +723,26 @@ simulate_data <- function(parameters_list){
       timeit[m] <- list((tm1 - tm0))
 
     }
+    else if(m == 'kernelSHAP'){
+      tm0 <- proc.time()
+      explanation_list[[m]] <- explain(
+        x_test_numeric,
+        approach = "empirical",
+        type = "independence",
+        explainer = explainer_numeric,
+        prediction_zero = p,
+        sample = FALSE,
+        w_threshold = 1,
+        mincriterion = 0.95)
+      tm1 <- proc.time()
+      print(paste0("Finished estimating Shapley value with ", m, " method."), quote = FALSE, right = FALSE)
+      print(tm1 - tm0)
+      timeit[m] <- list((tm1 - tm0))
+
+    }
   }
+
+
   tm_now1 <- proc.time();
   print("Ended estimating Shapley values with various methods.", quote = FALSE, right = FALSE)
 
@@ -695,7 +750,8 @@ simulate_data <- function(parameters_list){
   return_list <- list()
   return_list[['true_shapley']] <- true_shapley
   return_list[['true_linear']] <- true_linear
-  return_list[['join_prob_true']] <- joint_prob_dt_list[[1]]
+  return_list[['joint_prob_true']] <- joint_prob_dt_list[[1]]
+  return_list[['x_train-y_train']] <- cbind(x_train, y_train)
   return_list[['methods']] <- explanation_list
   return_list[['timing']] <- timeit
   return_list[['seed']] <- seed

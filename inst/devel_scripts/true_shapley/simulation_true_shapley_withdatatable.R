@@ -7,76 +7,57 @@ library(ggplot2)
 
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/true_shapley/calculate_true_shapley_withdatatable.R")
 
-tod_date <- '6_02_20'
+tod_date0 <- format(Sys.Date(), "%d_%m_%y")
+
+dim <- 3
+no_categories <- 3
+
+clock_seed_0 <- round(as.numeric(Sys.time())*1000)
+clock_seed <- signif(clock_seed_0) - clock_seed_0
+set.seed(clock_seed)
+rand_string <- stringi::stri_rand_strings(1, 5)
+print(rand_string)
+tod_date <- paste0(tod_date0, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
+
+dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/", tod_date, sep = ""))
+dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/categorical_shapley/", tod_date, sep = ""))
+
 
 response_mod <- function(mod_matrix_full,beta,epsilon){
   as.vector(mod_matrix_full %*% beta) + epsilon
 }
 
-
-# parameters_list <- list(Sigma_diag = 1,
-#                         corr = 0,
-#                         mu = c(0, 0, 0),
-#                         beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
-#                         N_shapley = 10000000,
-#                         N_training = 1000,
-#                         N_testing = 1000,
-#                         cutoff = c(-200, 0, 1, 200),
-#                         noise = FALSE,
-#                         response_mod = response_mod,
-#                         fit_mod = "regression",
-#                         methods = c("empirical"), # "gaussian", "ctree"
-#                         name = 'corr0')
-#
-# ll <- simulate_data(parameters_list)
-# head(ll$true_shapley)
-# head(ll$true_linear)
-# MAE(ll$true_shapley, ll$true_linear) # 0.00095050 for 10000 obs and 1000 for training and testing / 0.0009436
-# MAE(ll$true_shapley, ll$methods[['gaussian']]$dt_sum) # 0.01729 # 2.68 minutes
-# MAE(ll$true_shapley, ll$methods[['empirical']]$dt_sum) # 0.0179 # 1.06 minutes
-# MAE(ll$true_shapley, ll$methods[['ctree']]$dt) # 0.016423 #
-# MAE(ll$true_shapley, ll$methods[['ctree_onehot']]$dt_sum) # 0.013 5.46 minutes
-# MAE(ll$true_shapley, ll$methods[['empirical_ind']]$dt_sum) # 0.01876 # 2.10 minutes
-#
-
-##
-
 parameters_list <- list()
-
+set.seed(1); beta <- round(rnorm(dim * no_categories + 1), 1)
 seed <- 1
-# corr <- c(seq(0, 0.9, by = 0.2))
-corr <- c(0, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9)
-
+corr <- c(0, 0.1, 0.5, 0.8, 0.9)
 k <- 1
-for(i in seed){
-  for(j in corr){
-    parameters_list[[k]] <- list(Sigma_diag = 1,
-                                 corr = j,
-                                 mu = c(0, 0, 0),
-                                 beta = c(1, -1, 0, 1, 1, 1, 0.5, 0.5, 1, -1),
-                                 N_shapley = 10000000,
-                                 noise = TRUE,
-                                 response_mod = response_mod,
-                                 fit_mod = "regression",
-                                 methods = c("empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree"),
-                                 name = paste0('corr', j),
-                                 cutoff = c(-200, 0, 1, 200),
-                                 N_training = 1000,
-                                 N_testing = 1000,
-                                 seed = i,
-                                 no_categories = 3)
-    k <- k + 1
-  }
+for(j in corr){
+  parameters_list[[k]] <- list(Sigma_diag = 1,
+                               corr = j,
+                               mu = rep(0, dim),
+                               beta = beta, # -0.6  0.2 -0.8  1.6  0.3 -0.8  0.5  0.7  0.6 -0.3
+                               N_shapley = 1e+07,
+                               noise = TRUE,
+                               response_mod = response_mod,
+                               fit_mod = "regression",
+                               methods = c("empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree"),
+                               name = paste0('corr', j),
+                               cutoff = c(-200, 0, 1, 200),
+                               No_train_obs = 1000,
+                               No_test_obs = 1000,
+                               N_sample_gaussian = c(1000),
+                               seed = 1,
+                               no_categories = no_categories)
+  k <- k + 1
 }
 
 
-
-tm <- Sys.time()
 all_methods <- list()
 for(i in 1:length(parameters_list)){
   all_methods[[i]] <- simulate_data(parameters_list[[i]])
-  nm = paste(tod_date, '_results_', i , ".rds", sep = "")
-  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/", nm, sep = ""))
+  nm = paste(tod_date, '_rho_',  parameters_list[[i]]$corr, ".rds", sep = "")
+  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE", tod_date, nm, sep = "/"))
 }
 
 
@@ -86,25 +67,39 @@ MAE_methods_names <- NULL
 MAE_parameters <- NULL
 MAE_seed <- NULL
 
-for(i in 1:length(parameters_list)){
-  if(!is.null(all_methods[[i]][['true_linear']])){
-    MAE_truth <- c(MAE_truth, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['true_linear']]))
-  }
-  for(m in parameters_list[[i]]$methods){
+N <- nrow(all_methods[[i]][['true_shapley']])
 
-    if(m != 'ctree'){
-      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum))
+for(i in 1:length(all_methods)){
+  if(!is.null(all_methods[[i]][['true_linear']])){
+    MAE_truth <- c(MAE_truth, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['true_linear']], weights = all_methods[[i]]$join_prob_true[[dim + 1]]))
+  }
+  for(m in names(all_methods[[1]]$methods)){
+
+    if(m == 'gaussian'){
+      for(gauss in all_methods[[1]]$parameters$N_sample_gaussian){
+        MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[paste0('gaussian_nsamples', gauss)]]$dt_sum,
+                                          weights = rep(1/N, N) ))
+        MAE_methods_names <- c(MAE_methods_names, paste0('gaussian_nsamples', gauss))
+        MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
+        MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
+      }
+    } else if(m != 'ctree' & m != 'kernelSHAP'){
+      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum,
+                                        weights = rep(1/N, N) ))
       MAE_methods_names <- c(MAE_methods_names, m)
-      MAE_parameters <- c(MAE_parameters, parameters_list[[i]]$name)
+      MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
+      MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
     } else{
-      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt))
+      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt,
+                                        weights = rep(1/N, N) ))
+
       MAE_methods_names <- c(MAE_methods_names, m)
-      MAE_parameters <- c(MAE_parameters, parameters_list[[i]]$name)
+      MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
+      MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
     }
-    MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
+
   }
 }
-
 
 results <- data.table(MAE_methods, MAE_methods_names, MAE_parameters, MAE_seed)
 results[, correlation := paste0("", str_sub(MAE_parameters, start = 5, end = -1))]
@@ -112,33 +107,21 @@ corr <- results[, lapply(.SD, FUN = as.numeric), .SDcol = "correlation"]
 results0 <- cbind(results[, correlation := NULL], corr)
 
 nm = paste(tod_date, '_results', '.rds', sep = "")
-saveRDS(results0, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/", nm, sep = ""))
-
-nm = paste(tod_date, '_all_methods', '.rds', sep = "")
-saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE/", nm, sep = ""))
+saveRDS(results0, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/MAE", tod_date, nm, sep = "/"))
 
 
-# p1 <- ggplot(data = results0, aes(y = MAE_methods, x = correlation, col = as.factor(MAE_seed))) +
-#   geom_point(size = 2, stroke = 1.5, shape = as.factor(MAE_methods_names))  + scale_x_continuous(breaks = seq(0,  0.5, by = 0.05)) + # scale_x_continuous(breaks = seq(0,  1, by = 0.2)
-#   theme_grey(base_size = 22) + xlab("correlation") + ylab("Mean aveerage error (MAE)") +
-#   scale_color_discrete(name = "Seed") +
-#   scale_shape_discrete(name = "Method") + # labels = c("Ctree", "Ctree one-hot", "Empirical", "Empirical independence", "Gaussian")
-#   ggtitle("circle = ctree, triangle = empirical independence") + geom_hline(yintercept = 0.045)
-
-
-p2 <- ggplot(data = results0, aes(y = MAE_methods, x = MAE_parameters, col = as.factor(MAE_methods_names ))) +
+p1 <- ggplot(data = results0, aes(y = MAE_methods, x = MAE_parameters, col = as.factor(MAE_methods_names ))) +
   geom_point(size = 4, stroke = 1.5) +
-  scale_x_discrete(labels = c("corr0" = "0", "corr0.01" = "0.01", "corr0.1" = "0.1", "corr0.2" = "0.2", "corr0.5" = "0.5", "corr0.8" = "0.8", "corr0.9" = "0.9")) +
+  scale_x_discrete(labels = c("corr0" = "0", "corr0.05" = "0.05", "corr0.1" = "0.1", "corr0.3" = "0.3", "corr0.5" = "0.5", "corr0.8" = "0.8", "corr0.9" = "0.9")) +
   theme_bw(base_size = 22) + xlab("correlation") +
   ylab("Mean average error (MAE)") +
-  scale_color_discrete(name = "Method", labels = c("Ctree", "Ctree one-hot", "Empirical", "Empirical independence", "Gaussian") ) +
+  scale_color_discrete(name = "Method" ) +
   ggtitle("")
-
+#  labels = c("Ctree", "Ctree one-hot", "Empirical", "Empirical independence", "Gaussian_100", "Gaussian_1000", "kernelSHAP")
 
 nm = paste(tod_date, '_MAE', '.png', sep = "")
-ggsave(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/categorical_shapley/", nm, sep = ""), plot = p1, device = NULL, path = NULL,
+ggsave(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/categorical_shapley", tod_date, nm, sep = "/"), plot = p1, device = NULL, path = NULL,
        scale = 1, width = 45, height = 30, units = "cm",
        dpi = 300, limitsize = TRUE)
-tm2 <- Sys.time()
-print(tm2 - tm)
+
 
