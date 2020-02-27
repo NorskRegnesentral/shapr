@@ -172,44 +172,72 @@ x_test_C_upper[,(cont_cols):= lapply(.SD,function(x){x+eps}),.SDcols=cont_cols]
 x_test_C_upper[,(cat_cols):= lapply(.SD,function(x){cat_cutoff[as.numeric(x)+1]}),.SDcols=cat_cols]
 
 
-
-obs_to_C <- function(obs_row,cat_cutoff,eps = 10^(-6)){
-  cont_cols <- names(obs_row)[grep("cont",names(obs_row))]
-  cat_cols <- names(obs_row)[grep("cat",names(obs_row))]
-
-  obs_row[,(cont_cols):=lapply()]
-}
-
-cat_to_C <- function(cat,cat_cutoff){
-  cat <- as.numeric(unlist(cat))
-  lower <- cat_cutoff[cat]
-  upper <- cat_cutoff[cat+1]
-  return(rbind(lower,upper))
-}
-cont_to_C <- function(cont,eps = 10^(-6)){
-  lower <- cont - eps
-  upper <- cont + eps
-  return(rbind(lower,upper))
-}
-
-
-
-# Just soem testing values
+# Just some testing values
+C_lower <- x_test_C_lower[1,-1]
+C_upper <- x_test_C_upper[1,-1]
 Omega <- Sigma
-C <- cbind(cont_to_C(x_test[1,..cont_cols]),
-           cat_to_C(x_test[1,..cat_cols],cat_cutoff))
+xi <- rep(0,4)
+algorithm <- mvtnorm::Miwa(steps = 128)
 
-dens_x_given_S_is_C_func <- function(x,C,Omega) {
+dens_x_given_S_is_C_func <- function(x,C_lower,C_upper,xi,Omega,algorithm) {
   # Formula in equation (13) in this paper
   # https://www.jstor.org/stable/pdf/20445223.pdf?refreqid=excelsior%3A9fdbaaf0a8fe22e64418448ad4f8090b
   # letting V = x, and U correspond to the dimensions specified in C
-  # C is a matrix of dimension 2 times dim, where dim is the dimension of U. 1. row is upper limit, 2. is lower limit
-  # Omega is the joint covariance matrix of x and the dimensions of C
+  # C_lower is a vector of length dim with lower bounds for each dimension, C_upper similalry contains the upper bounds
+  # Omega is the joint covariance matrix of x and the length of C_lower and C_upper (dim)
+  # xi is the mean vector of x and the length of C_lower and C_upper (dim)
   # Note: x is always one dimensional
 
+  these_U <- (1:length(C_lower))+1
+  these_V <- 1
 
+  Omega_U <- Omega[these_U,these_U,drop=F]
+  Omega_V <- Omega[these_V,these_V,drop=F]
+  Delta <- Omega[these_V,these_U,drop=F]
+
+  xi_U <- xi[these_U]
+  xi_V <- xi[these_V]
+
+  C_lower <- unlist(C_lower)
+  C_upper <- unlist(C_upper)
+
+  mean_above <- as.vector(t(Delta)%*%solve(Omega_V)%*%(x-xi_V) + xi_U)
+  sigma_above <- Omega_U - t(Delta)%*%solve(Omega_V)%*%Delta
+
+  mean_below <- xi_U
+  sigma_below <- Omega_U
+
+
+  above <- mvtnorm::pmvnorm(lower = C_lower,upper = C_upper,
+                            mean = mean_above,
+                            sigma = sigma_above,
+                            algorithm = algorithm)
+
+
+  below <- mvtnorm::pmvnorm(lower = C_lower,upper = C_upper,
+                            mean = mean_below,
+                            sigma = sigma_below,
+                            algorithm = algorithm)
+
+  left <- dnorm(x,mean=xi_V,sd = sqrt(Omega_V))
+
+  dens <- left*above/below
+
+  return(dens)
 
 }
+
+
+vec_dens_x_given_S_is_C_func <- Vectorize(dens_x_given_S_is_C_func,vectorize.args="x")
+
+
+x_vec <- seq(-2,2,0.01)
+val <- vec_dens_x_given_S_is_C_func(x_vec,
+                             C_lower, C_upper,xi,Omega,algorithm)
+
+plot(x_vec,val)
+
+
 
 
 
