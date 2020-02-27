@@ -227,17 +227,90 @@ dens_x_given_S_is_C_func <- function(x,C_lower,C_upper,xi,Omega,algorithm) {
 
 }
 
+# Splitting the main function in two to make it more efficient
+# Here is the preparation function
+prep_dens_x_given_S_is_C_func <- function(C_lower,C_upper,xi,Omega,algorithm) {
 
+  these_U <- (1:length(C_lower))+1
+  these_V <- 1
+
+  Omega_U <- Omega[these_U,these_U,drop=F]
+  Omega_V <- Omega[these_V,these_V,drop=F]
+  Delta <- Omega[these_V,these_U,drop=F]
+
+  xi_U <- xi[these_U]
+  xi_V <- xi[these_V]
+
+  C_lower <- unlist(C_lower)
+  C_upper <- unlist(C_upper)
+
+  mean_above_mult <- t(Delta)%*%solve(Omega_V)
+  mean_above_add <- xi_U - t(Delta)%*%solve(Omega_V)%*%xi_V
+  sigma_above <- Omega_U - t(Delta)%*%solve(Omega_V)%*%Delta
+
+  mean_below <- xi_U
+  sigma_below <- Omega_U
+
+  below <- mvtnorm::pmvnorm(lower = C_lower,upper = C_upper,
+                            mean = mean_below,
+                            sigma = sigma_below,
+                            algorithm = algorithm)
+
+
+  left_mean <- xi_V
+  left_sd <- sqrt(Omega_V)
+
+  ret <- list(algorithm = algorithm,
+              C_lower = C_lower,
+              C_upper = C_upper,
+              mean_above_mult = mean_above_mult,
+              mean_above_add = mean_above_add,
+              sigma_above = sigma_above,
+              below = below,
+              left_mean = left_mean,
+              left_sd = left_sd)
+
+  return(ret)
+
+}
+
+# Here is the computation function, taking the preparation values as input
+compute_dens_x_given_S_is_C_func <- function(x,ret_list) {
+
+  mean_above <- as.vector(ret_list$mean_above_mult%*%x+ret_list$mean_above_add)
+
+
+  above <- mvtnorm::pmvnorm(lower = ret_list$C_lower,upper = ret_list$C_upper,
+                            mean = mean_above,
+                            sigma = ret_list$sigma_above,
+                            algorithm = algorithm)
+
+  left <- dnorm(x,mean=ret_list$left_mean,sd = ret_list$left_sd)
+
+  dens <- left*above/ret_list$below
+
+  return(dens)
+
+}
+
+
+# Vectorizing the two functions and checking that they give the same result
 vec_dens_x_given_S_is_C_func <- Vectorize(dens_x_given_S_is_C_func,vectorize.args="x")
 
+vec_compute_dens_x_given_S_is_C_func = Vectorize(compute_dens_x_given_S_is_C_func,vectorize.args = "x")
 
-x_vec <- seq(-2,2,0.01)
+x_vec <- seq(-3,3,0.01)
+start <- proc.time()
 val <- vec_dens_x_given_S_is_C_func(x_vec,
-                             C_lower, C_upper,xi,Omega,algorithm)
+                                    C_lower, C_upper,xi,Omega,algorithm)
+end <- proc.time()
+end-start
 
-plot(x_vec,val)
+x_vec <- seq(-3,3,0.01)
+start <- proc.time()
+val2 <- vec_compute_dens_x_given_S_is_C_func(x_vec,prep_list)
+end <- proc.time()
+end-start
 
-
-
-
-
+all.equal(val,val2)
+# The prep/compute version is twive as fast
