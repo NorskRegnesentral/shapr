@@ -20,8 +20,8 @@ rand_string <- stringi::stri_rand_strings(1,5)
 print(rand_string)
 tod_date <- paste0(tod_date0, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
 
-dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/", tod_date, sep = ""))
-dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations/", tod_date, sep = ""))
+dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations_Annabelle/", tod_date, sep = ""))
+dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations_Annabelle/", tod_date, sep = ""))
 
 ##
 
@@ -45,7 +45,7 @@ for(j in corr){
                                noise = TRUE,
                                response_mod = response_mod,
                                fit_mod = "regression",
-                               methods = c("empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP")
+                               methods = c("kernelSHAP"), # "empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP"
                                name = paste0('corr', j),
                                cutoff = c(-200, 0, 1, 200),
                                Sample_test = TRUE,
@@ -63,7 +63,7 @@ all_methods <- list()
 for(i in 1:length(parameters_list)){
   all_methods[[i]] <- simulate_data(parameters_list[[i]])
   nm = paste(tod_date, '_rho_', parameters_list[[i]]$corr, ".rds", sep = "")
-  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", tod_date, nm, sep = "/"))
+  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations_Annabelle/", tod_date, nm, sep = "/"))
 }
 
 
@@ -81,10 +81,6 @@ for(i in 1:length(all_methods)){
   gauss_mat2[[i]] <- gauss_mat2[[i]][, .(none = mean(none), feat_1_ = mean(feat_1_), feat_2_ = mean(feat_2_), feat_3_ = mean(feat_3_)), by = .(id)]
   gauss_mat2[[i]] = gauss_mat2[[i]][, id := NULL]
 }
-
-
-
-
 
 MAE_truth <- NULL
 MAE_methods <- NULL

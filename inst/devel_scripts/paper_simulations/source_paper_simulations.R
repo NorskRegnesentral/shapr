@@ -4,7 +4,7 @@ clock_seed <- signif(clock_seed_0) - clock_seed_0
 set.seed(clock_seed)
 rand_string <- stringi::stri_rand_strings(1, 5)
 print(rand_string)
-folder <- paste0(tod_date, "_", rand_string, "_dim_", dim, "_nb_cat_", no_categories)
+folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
 
 dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/", folder, sep = ""))
 dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations/", folder, sep = ""))
@@ -33,7 +33,7 @@ if(test){
                                  fit_mod = "regression",
                                  methods = methods,
                                  name = paste0('corr', j),
-                                 cutoff = c(-200, -0.5, 0, 1, 200),
+                                 cutoff = cutoff,
                                  Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
                                  No_test_sample = 20,
                                  No_train_obs = 20,
@@ -58,7 +58,7 @@ if(test){
                                  fit_mod = "regression",
                                  methods = methods,
                                  name = paste0('corr', j),
-                                 cutoff = c(-200, -0.5, 0, 1, 200),
+                                 cutoff = cutoff,
                                  Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
                                  No_test_sample = 1000,
                                  No_train_obs = 1000,
@@ -74,5 +74,5 @@ all_methods <- list()
 for(i in 1:length(parameters_list)){
   all_methods[[i]] <- simulate_data(parameters_list[[i]])
   nm = paste(folder, '_rho_', parameters_list[[i]]$corr, ".rds", sep = "")
-  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", tod_date, nm, sep = "/"))
+  saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
 }
