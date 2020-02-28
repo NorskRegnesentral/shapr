@@ -46,7 +46,7 @@ for(j in corr){
                                cutoff = c(-200, 0, 1, 200),
                                No_train_obs = 1000,
                                No_test_obs = 1000,
-                               N_sample_gaussian = c(1000),
+                               N_sample_gaussian = c(100, 1000),
                                seed = 1,
                                no_categories = no_categories)
   k <- k + 1

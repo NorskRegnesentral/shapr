@@ -5,7 +5,7 @@ library(lqmm) ## to check if Sigma is positive definite
 library(rapportools) # for testing booleans
 library(ggplot2)
 
-source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
+source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
 
 tod_date <- format(Sys.Date(), "%d_%m_%y")
 
@@ -44,12 +44,12 @@ for(j in corr){
                                noise = TRUE,
                                response_mod = response_mod,
                                fit_mod = "regression",
-                               methods = c("empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree"),
+                               methods = c( "empirical", "gaussian",  "ctree_onehot", "ctree", "kernelSHAP"),
                                name = paste0('corr', j),
                                cutoff = c(-200, -0.5, 0, 1, 200),
                                Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
                                No_test_sample = 1000,
-                               No_train_obs = 1000,
+                               No_train_obs = 1000, # 1000,
                                N_sample_gaussian = c(100, 1000),
                                seed = 1,
                                no_categories = no_categories)

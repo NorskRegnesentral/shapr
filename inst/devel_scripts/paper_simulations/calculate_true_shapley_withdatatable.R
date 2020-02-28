@@ -481,7 +481,6 @@ simulate_data <- function(parameters_list){
 
   set.seed(seed)
   if(noise == TRUE){
-
     epsilon1 <- rnorm(No_train_obs, 0, 0.1^2)
     epsilon2 <- rnorm(No_test_obs, 0, 0.1^2)
     epsilon <- c(epsilon1, epsilon2)
@@ -531,9 +530,14 @@ simulate_data <- function(parameters_list){
   ##
   explainer <- shapr(x_train, model) # print(class(model)) # "lm"
 
-  if(!all(methods == 'ctree')){
+  if(any(grepl("empirical", methods))){
+    explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
+  } else if(any(grepl("gaussian", methods))){
+    explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
+  } else if((any(grepl("ctree_onehot", methods)))){
     explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
   }
+
 
   ## NEW
   # Create custom function of model_type for lm
@@ -555,8 +559,8 @@ simulate_data <- function(parameters_list){
     class(x) <- "lm"
     predict(x, newdata0)
   }
-  class(model) <- "numeric_lm"
 
+  class(model) <- "numeric_lm"
   explainer_numeric <- shapr(x_train_numeric, model)
   ## END
 
@@ -596,7 +600,7 @@ simulate_data <- function(parameters_list){
 
   if(explainer$model_type == 'regression'){
     if(parameters_list$corr == 0){
-      true_linear <-linear_Kshap(x_test_onehot_full = x_test_onehot_full, beta = beta, prop = joint_prob_dt_list[[3]])
+      true_linear <- linear_Kshap(x_test_onehot_full = x_test_onehot_full, beta = beta, prop = joint_prob_dt_list[[3]])
     } else{
       true_linear <- NULL
     }
@@ -662,10 +666,17 @@ simulate_data <- function(parameters_list){
       timeit[m] <- list((tm1 - tm0))
 
     } else if(m == 'gaussian'){
+
+      x_test_onehot_gaussian = x_test_onehot_reduced[, id := 1:nrow(x_test_onehot_reduced)]
+      x_test_onehot_gaussian[, no_times := 10]
+      x_test_onehot_gaussian_rep <- x_test_onehot_gaussian[rep(1:.N, no_times)][, Indx := 1:.N, by = id]
+      #
+      phi_sum_mat_gauss <- matrix(NA, nrow = nrow(x_test_onehot_gaussian_rep), ncol = no_features)
+      #
       for(j in N_sample_gaussian){
         tm0 <- proc.time()
         explanation_list[[paste0(m, "_nsamples", j)]] <- explain(
-          x_test_onehot_reduced,
+          x_test_onehot_gaussian_rep,
           approach = m,
           explainer = explainer_onehot,
           prediction_zero = p,
@@ -674,12 +685,11 @@ simulate_data <- function(parameters_list){
           n_samples = j)
         tm1 <- proc.time()
 
-
         for (i in 1:no_features){
-          phi_sum_mat[, i] <- rowSums(subset(explanation_list[[paste0(m, "_nsamples", j)]]$dt, select = which(beta_matcher == i) + 1))
+          phi_sum_mat_gauss[, i] <- rowSums(subset(explanation_list[[paste0(m, "_nsamples", j)]]$dt, select = which(beta_matcher == i) + 1))
         }
-        colnames(phi_sum_mat) <- feat_names
-        explanation_list[[paste0(m, "_nsamples", j)]]$dt_sum <- cbind(explanation_list[[paste0(m, "_nsamples", j)]]$dt[, 1], phi_sum_mat)
+        colnames(phi_sum_mat_gauss) <- feat_names
+        explanation_list[[paste0(m, "_nsamples", j)]]$dt_sum <- cbind(explanation_list[[paste0(m, "_nsamples", j)]]$dt[, 1], phi_sum_mat_gauss)
 
         print(paste0("Finished estimating Shapley value with ", paste0(m, "_nsamples", j), " method."), quote = FALSE, right = FALSE)
         print(tm1 - tm0)
@@ -688,6 +698,9 @@ simulate_data <- function(parameters_list){
       }
     } else if(m == 'ctree_onehot'){
       tm0 <- proc.time()
+      x_test_onehot_reduced[, id := NULL]
+      x_test_onehot_reduced[, no_times := NULL]
+      x_test_onehot_reduced[, Indx := NULL]
       explanation_list[[m]] <- explain(
         x_test_onehot_reduced,
         approach = 'ctree',

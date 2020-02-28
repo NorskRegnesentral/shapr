@@ -40,15 +40,15 @@ for(j in corr){
   parameters_list[[k]] <- list(Sigma_diag = 1,
                                corr = j,
                                mu = rep(0, dim),
-                               beta = beta, # -0.6  0.2 -0.8  1.6  0.3 -0.8  0.5  0.7  0.6 -0.3
+                               beta = beta,
                                N_shapley = 1e+07,
                                noise = TRUE,
                                response_mod = response_mod,
                                fit_mod = "regression",
-                               methods = c("empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP"),
+                               methods = c("empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP")
                                name = paste0('corr', j),
                                cutoff = c(-200, 0, 1, 200),
-                               Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
+                               Sample_test = TRUE,
                                No_train_obs = 1000,
                                No_test_sample = 1000,
                                N_sample_gaussian = c(100, 1000),
@@ -66,8 +66,25 @@ for(i in 1:length(parameters_list)){
   saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", tod_date, nm, sep = "/"))
 }
 
-# to read old data
-# all_methods <- readRDS("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/25_02_20_qVh5Y_dim_3_nb_cat_3/25_02_20_qVh5Y_dim_3_nb_cat_3_rho_0.rds")
+
+# for gaussian stuff
+gauss_mat <- list()
+for(i in 1:length(all_methods)){
+  gauss_mat[[i]] <- all_methods[[i]]$methods$gaussian_nsamples100$dt_sum[, id := rep(1:dim^no_categories, each = 50)]
+  gauss_mat[[i]] <- gauss_mat[[i]][, .(none = mean(none), feat_1_ = mean(feat_1_), feat_2_ = mean(feat_2_), feat_3_ = mean(feat_3_)), by = .(id)]
+  gauss_mat[[i]] = gauss_mat[[i]][, id := NULL]
+}
+
+gauss_mat2 <- list()
+for(i in 1:length(all_methods)){
+  gauss_mat2[[i]] <- all_methods[[i]]$methods$gaussian_nsamples1000$dt_sum[, id := rep(1:dim^no_categories, each = 50)]
+  gauss_mat2[[i]] <- gauss_mat2[[i]][, .(none = mean(none), feat_1_ = mean(feat_1_), feat_2_ = mean(feat_2_), feat_3_ = mean(feat_3_)), by = .(id)]
+  gauss_mat2[[i]] = gauss_mat2[[i]][, id := NULL]
+}
+
+
+
+
 
 MAE_truth <- NULL
 MAE_methods <- NULL
@@ -81,20 +98,22 @@ for(i in 1:length(all_methods)){
   }
   for(m in names(all_methods[[1]]$methods)){
 
-    if(m == 'gaussian'){
-      for(gauss in all_methods[[1]]$parameters$N_sample_gaussian){
-        MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[paste0('gaussian_nsamples', gauss)]]$dt_sum,
-                                          weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
-        MAE_methods_names <- c(MAE_methods_names, paste0('gaussian_nsamples', gauss))
-        MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
-        MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
-      }
+    if(m == 'gaussian_nsamples100'){
+      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], gauss_mat[[i]], weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+      MAE_methods_names <- c(MAE_methods_names, m)
+      MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
+      MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
+    } else if (m == 'gaussian_nsamples1000'){
+      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], gauss_mat2[[i]], weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+      MAE_methods_names <- c(MAE_methods_names, m)
+      MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
+      MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
     } else if(m != 'ctree' & m != 'kernelSHAP'){
-        MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum,
-                                          weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
-        MAE_methods_names <- c(MAE_methods_names, m)
-        MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
-        MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
+      MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum,
+                                        weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+      MAE_methods_names <- c(MAE_methods_names, m)
+      MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
+      MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
     } else{
       MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt,
                                         weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
@@ -151,6 +170,35 @@ ggsave(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabel
 
 
 
+## OLD
 
-
-
+# for(i in 1:length(all_methods)){
+#   if(!is.null(all_methods[[i]][['true_linear']])){
+#     MAE_truth <- c(MAE_truth, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['true_linear']], weights = all_methods[[i]]$join_prob_true[[dim + 1]]))
+#   }
+#   for(m in names(all_methods[[1]]$methods)){
+#
+#     if(m == 'gaussian'){
+#       for(gauss in all_methods[[1]]$parameters$N_sample_gaussian){
+#         MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[paste0('gaussian_nsamples', gauss)]]$dt_sum,
+#                                           weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+#         MAE_methods_names <- c(MAE_methods_names, paste0('gaussian_nsamples', gauss))
+#         MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
+#         MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
+#       }
+#     } else if(m != 'ctree' & m != 'kernelSHAP'){
+#         MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt_sum,
+#                                           weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+#         MAE_methods_names <- c(MAE_methods_names, m)
+#         MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
+#         MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
+#     } else{
+#       MAE_methods <- c(MAE_methods, MAE(all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[m]]$dt,
+#                                         weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+#       MAE_methods_names <- c(MAE_methods_names, m)
+#       MAE_parameters <- c(MAE_parameters, all_methods[[i]]$parameters$name)
+#       MAE_seed <- c(MAE_seed, all_methods[[i]]$seed)
+#     }
+#
+#   }
+# }
