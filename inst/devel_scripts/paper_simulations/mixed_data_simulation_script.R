@@ -345,6 +345,24 @@ vec_dens_x_given_S_is_C_func <- Vectorize(dens_x_given_S_is_C_func,vectorize.arg
 
 vec_compute_dens_x_given_S_is_C_func = Vectorize(compute_dens_x_given_S_is_C_func,vectorize.args = "x")
 
+vec_compute_dens_x_given_S_is_C_func_2 = Vectorize(compute_dens_x_given_S_is_C_func)
+
+
+aa=outer(x_int_grid,prep_list_all_x_test_C,FUN=vec_compute_dens_x_given_S_is_C_func_2)
+
+vec_compute_dens_x_given_S_is_C_func_rev <- function(ret_list,x){
+  vec_compute_dens_x_given_S_is_C_func(x,ret_list)
+}
+
+range_x_int <- c(min(mu)-4*sqrt(max(diag(Sigma))),max(mu)+4*sqrt(max(diag(Sigma))))
+no_int_eval <- 500
+h <- diff(range_x_int)/no_int_eval
+x_int_grid <- seq(range_x_int[1]+h/2,range_x_int[2]-h/2,by=h)
+
+x_int_grid_cat <- as.numeric(cut(x_int_grid, cat_cutoff, labels = c(1:no_levels)))
+
+
+
 for (i in 2:(nrow(S)-1)){
   S_i <-   which(as.logical(S[i,]))
   Sbar_i <-   which(as.logical(1-S[i,]))
@@ -357,16 +375,46 @@ for (i in 2:(nrow(S)-1)){
 
 
   for (j in Sbar_i){
-    case <- case_matrix[i,j]
+    j_is_cont <- j %in% ind_cont_cols
 
     Omega <- Sigma[c(j,S_i),c(j,S_i)]
     xi <- mu[c(j,S_i)]
+
+
+
 
     prep_list_all_x_test_C <- mapply(prep_dens_x_given_S_is_C_func,
                                      C_lower =x_test_C_lower_S_i_list,
                                      C_upper = x_test_C_upper_S_i_list,
                                      MoreArgs = list(xi = xi, Omega = Omega, algorithm = algorithm),
                                      SIMPLIFY = FALSE)
+
+    intval_list_no_x=parallel::mclapply(X = prep_list_all_x_test_C,FUN = vec_compute_dens_x_given_S_is_C_func_rev,x=x_int_grid,
+                                        mc.cores = 6)
+
+
+  if (j_is_cont){
+    ## Continuous expectation
+    expectation_vec <- rep(NA,No_test_obs)
+    for(i in 1:No_test_obs){
+      expectation_vec[i] <- h*sum(intval_list_no_x[[i]]*x_int_grid)
+    }
+
+
+
+  } else {
+    # categorical expectation
+    prob_mat <- matrix(NA,nrow=No_test_obs,ncol=no_levels)
+    for(i in 1:No_test_obs){
+      for (j in 1:no_levels){
+        prob_mat[i,j] <- h*sum(intval_list_no_x[[i]][x_int_grid_cat==j])
+      }
+      prob_mat[i,] <- prob_mat[i,]/sum(prob_mat[i,])
+    }
+
+
+
+  }
 
 
     if(case == 1){}
