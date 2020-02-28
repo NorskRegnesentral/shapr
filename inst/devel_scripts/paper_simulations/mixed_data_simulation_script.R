@@ -139,6 +139,10 @@ S <- explainer$S
 ind_cont_cols <- which(names(x_train) %in% cont_cols)
 ind_cat_cols <- which(names(x_train) %in% cat_cols)
 
+ind_cont_cols_logical <- names(x_train) %in% cont_cols
+ind_cat_cols_logical <- names(x_train) %in% cat_cols
+
+
 case_matrix <- NA*S
 
 for (i in 2:(nrow(S)-1)){
@@ -146,23 +150,24 @@ for (i in 2:(nrow(S)-1)){
   S_is_cont <-  any(S_i %in% ind_cont_cols)
   S_is_cat <-  any(S_i %in% ind_cat_cols)
   S_is_cont_and_cat <- as.logical(S_is_cont*S_is_cat)
+  Sbar_i_logical <- as.logical(1-S[i,])
 
   if(S_is_cont_and_cat){
-    case_matrix[i,ind_cont_cols] <- 5
-    case_matrix[i,ind_cat_cols] <- 6
+    case_matrix[i,which(ind_cont_cols_logical &Sbar_i_logical)] <- 5
+    case_matrix[i,which(ind_cat_cols_logical &Sbar_i_logical)] <- 6
   } else {
     if(S_is_cont){
-      case_matrix[i,ind_cont_cols] <- 1
-      case_matrix[i,ind_cat_cols] <- 4
+      case_matrix[i,which(ind_cont_cols_logical &Sbar_i_logical)] <- 1
+      case_matrix[i,which(ind_cat_cols_logical &Sbar_i_logical)] <- 4
     }
     if(S_is_cat){
-      case_matrix[i,ind_cont_cols] <- 2
-      case_matrix[i,ind_cat_cols] <- 3
+      case_matrix[i,which(ind_cont_cols_logical &Sbar_i_logical)] <- 2
+      case_matrix[i,which(ind_cat_cols_logical &Sbar_i_logical)] <- 3
     }
   }
 }
 
-eps <- 10^-6
+eps <- 10^-6 # Very low sensitivity to this value, just don't set it smaller than 10^-6 as that might give NaN's
 x_test_C_lower <- copy(x_test)
 x_test_C_lower[,(cont_cols):= lapply(.SD,function(x){x-eps}),.SDcols=cont_cols]
 x_test_C_lower[,(cat_cols):= lapply(.SD,function(x){cat_cutoff[as.numeric(x)]}),.SDcols=cat_cols]
@@ -172,12 +177,6 @@ x_test_C_upper[,(cont_cols):= lapply(.SD,function(x){x+eps}),.SDcols=cont_cols]
 x_test_C_upper[,(cat_cols):= lapply(.SD,function(x){cat_cutoff[as.numeric(x)+1]}),.SDcols=cat_cols]
 
 
-# Just some testing values
-C_lower <- x_test_C_lower[1,-1]
-C_upper <- x_test_C_upper[1,-1]
-Omega <- Sigma
-xi <- rep(0,4)
-algorithm <- mvtnorm::Miwa(steps = 128)
 
 dens_x_given_S_is_C_func <- function(x,C_lower,C_upper,xi,Omega,algorithm) {
   # Formula in equation (13) in this paper
@@ -185,7 +184,7 @@ dens_x_given_S_is_C_func <- function(x,C_lower,C_upper,xi,Omega,algorithm) {
   # letting V = x, and U correspond to the dimensions specified in C
   # C_lower is a vector of length dim with lower bounds for each dimension, C_upper similalry contains the upper bounds
   # Omega is the joint covariance matrix of x and the length of C_lower and C_upper (dim)
-  # xi is the mean vector of x and the length of C_lower and C_upper (dim)
+  # xi is the joint mean vector of x and the length of C_lower and C_upper (dim)
   # Note: x is always one dimensional
 
   these_U <- (1:length(C_lower))+1
@@ -274,6 +273,53 @@ prep_dens_x_given_S_is_C_func <- function(C_lower,C_upper,xi,Omega,algorithm) {
 
 }
 
+prep_dens_x_given_S_is_C_func_v2 <- function(C_lower, C_upper,xi,Omega,algorithm) {
+
+  C_lower <- unlist(C_lower)
+  C_upper <- unlist(C_upper)
+
+  these_U <- (1:length(C_lower))+1
+  these_V <- 1
+
+  Omega_U <- Omega[these_U,these_U,drop=F]
+  Omega_V <- Omega[these_V,these_V,drop=F]
+  Delta <- Omega[these_V,these_U,drop=F]
+
+  xi_U <- xi[these_U]
+  xi_V <- xi[these_V]
+
+
+  mean_above_mult <- t(Delta)%*%solve(Omega_V)
+  mean_above_add <- xi_U - t(Delta)%*%solve(Omega_V)%*%xi_V
+  sigma_above <- Omega_U - t(Delta)%*%solve(Omega_V)%*%Delta
+
+  mean_below <- xi_U
+  sigma_below <- Omega_U
+
+  below <- mvtnorm::pmvnorm(lower = C_lower,upper = C_upper,
+                            mean = mean_below,
+                            sigma = sigma_below,
+                            algorithm = algorithm)
+
+
+  left_mean <- xi_V
+  left_sd <- sqrt(Omega_V)
+
+  ret <- list(algorithm = algorithm,
+              C_lower = C_lower,
+              C_upper = C_upper,
+              mean_above_mult = mean_above_mult,
+              mean_above_add = mean_above_add,
+              sigma_above = sigma_above,
+              below = below,
+              left_mean = left_mean,
+              left_sd = left_sd)
+
+  return(ret)
+
+}
+
+
 # Here is the computation function, taking the preparation values as input
 compute_dens_x_given_S_is_C_func <- function(x,ret_list) {
 
@@ -299,6 +345,44 @@ vec_dens_x_given_S_is_C_func <- Vectorize(dens_x_given_S_is_C_func,vectorize.arg
 
 vec_compute_dens_x_given_S_is_C_func = Vectorize(compute_dens_x_given_S_is_C_func,vectorize.args = "x")
 
+for (i in 2:(nrow(S)-1)){
+  S_i <-   which(as.logical(S[i,]))
+  Sbar_i <-   which(as.logical(1-S[i,]))
+
+  S_features <- feat_names[S_i]
+
+
+  x_test_C_lower_S_i_list <- split(x_test_C_lower[,..S_features],f=1:No_test_obs)
+  x_test_C_upper_S_i_list <- split(x_test_C_upper[,..S_features],f=1:No_test_obs)
+
+
+  for (j in Sbar_i){
+    case <- case_matrix[i,j]
+
+    Omega <- Sigma[c(j,S_i),c(j,S_i)]
+    xi <- mu[c(j,S_i)]
+
+    prep_list_all_x_test_C <- mapply(prep_dens_x_given_S_is_C_func,
+                                     C_lower =x_test_C_lower_S_i_list,
+                                     C_upper = x_test_C_upper_S_i_list,
+                                     MoreArgs = list(xi = xi, Omega = Omega, algorithm = algorithm),
+                                     SIMPLIFY = FALSE)
+
+
+    if(case == 1){}
+  }
+
+
+#### Testing the functions -- and they work! ####
+
+# Just some testing values
+C_lower <- x_test_C_lower[1,-1]
+C_upper <- x_test_C_upper[1,-1]
+Omega <- Sigma
+xi <- rep(0,4)
+algorithm <- mvtnorm::Miwa(steps = 128)
+
+
 x_vec <- seq(-3,3,0.01)
 start <- proc.time()
 val <- vec_dens_x_given_S_is_C_func(x_vec,
@@ -308,9 +392,31 @@ end-start
 
 x_vec <- seq(-3,3,0.01)
 start <- proc.time()
+prep_list <- prep_dens_x_given_S_is_C_func(C_lower,C_upper,xi,Omega,algorithm=mvtnorm::Miwa(steps = 128))
 val2 <- vec_compute_dens_x_given_S_is_C_func(x_vec,prep_list)
 end <- proc.time()
 end-start
 
+x_vec <- seq(-3,3,0.01)
+start <- proc.time()
+prep_list <- prep_dens_x_given_S_is_C_func(C_lower,C_upper,xi,Omega,algorithm=mvtnorm::Miwa(steps = 256))
+val3 <- vec_compute_dens_x_given_S_is_C_func(x_vec,prep_list)
+end <- proc.time()
+end-start
+
+x_vec <- seq(-3,3,0.01)
+start <- proc.time()
+prep_list <- prep_dens_x_given_S_is_C_func(C_lower,C_upper,xi,Omega,algorithm=mvtnorm::GenzBretz())
+val4 <- vec_compute_dens_x_given_S_is_C_func(x_vec,prep_list)
+end <- proc.time()
+end-start
+
+
 all.equal(val,val2)
 # The prep/compute version is twive as fast
+
+all.equal(val2,val3)
+# number of step with Miwa does not matter
+
+plot(x_vec,val2,type="l")
+lines(x_vec,val4,col=2,lty=2)
