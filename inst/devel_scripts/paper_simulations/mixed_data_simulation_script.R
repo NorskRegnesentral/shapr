@@ -35,6 +35,7 @@ name = 'testing'
 seed <- 123
 
 
+
 # Basic tests #
 
 if(length(beta)!=1+no_cont_var + no_cat_var*no_levels){
@@ -347,8 +348,7 @@ vec_compute_dens_x_given_S_is_C_func = Vectorize(compute_dens_x_given_S_is_C_fun
 
 vec_compute_dens_x_given_S_is_C_func_2 = Vectorize(compute_dens_x_given_S_is_C_func)
 
-
-aa=outer(x_int_grid,prep_list_all_x_test_C,FUN=vec_compute_dens_x_given_S_is_C_func_2)
+#aa=outer(x_int_grid,prep_list_all_x_test_C,FUN=vec_compute_dens_x_given_S_is_C_func_2)
 
 vec_compute_dens_x_given_S_is_C_func_rev <- function(ret_list,x){
   vec_compute_dens_x_given_S_is_C_func(x,ret_list)
@@ -362,6 +362,45 @@ x_int_grid <- seq(range_x_int[1]+h/2,range_x_int[2]-h/2,by=h)
 x_int_grid_cat <- as.numeric(cut(x_int_grid, cat_cutoff, labels = c(1:no_levels)))
 
 
+### Restructuring the beta vector per feature
+beta_list <- list()
+for(i in 1:no_cont_var){
+  beta_list[[i]] <- beta_cont[i]
+}
+k <- 1
+for(i in (no_cont_var+1):no_tot_var){
+  beta_list[[i]] <- beta_cat[(k-1)*no_levels+(1:no_levels)]
+  k <- k + 1
+}
+
+# Restructuring one_hot test data per feature
+x_test_onehot_full_list <- list()
+for(i in 1:no_cont_var){
+  x_test_onehot_full_list[[i]] <- x_test_onehot_full[,..i]
+}
+k <- 1
+for(i in (no_cont_var+1):no_tot_var){
+  this_col <- no_cont_var+(k-1)*no_levels+(1:no_levels)
+  x_test_onehot_full_list[[i]] <- x_test_onehot_full[,..this_col]
+  k <- k + 1
+}
+
+phi_0_contrib <- rep(NA,no_tot_var)
+for(i in 1:no_cont_var){
+  phi_0_contrib[i] <- beta_list[[i]]*mu[i]
+}
+for(i in (no_cont_var+1):no_tot_var){
+  phi_0_contrib[i] <- t(beta_list[[i]])%*%diff(pnorm(q = cat_cutoff,mean = mu[i], sd=sqrt(Sigma[i,i])))
+}
+
+phi0 <- beta[1] + sum(phi_0_contrib)
+
+
+Vs_mat <- matrix(NA,ncol = No_test_obs, nrow = nrow(S))
+
+Vs_mat[1,] <-   phi0
+Vs_mat[nrow(S),] <- predict(model,x_test)
+
 
 for (i in 2:(nrow(S)-1)){
   S_i <-   which(as.logical(S[i,]))
@@ -369,19 +408,18 @@ for (i in 2:(nrow(S)-1)){
 
   S_features <- feat_names[S_i]
 
+  x_test_S_i <- x_test[,..S_features]
 
   x_test_C_lower_S_i_list <- split(x_test_C_lower[,..S_features],f=1:No_test_obs)
   x_test_C_upper_S_i_list <- split(x_test_C_upper[,..S_features],f=1:No_test_obs)
 
+  Vs_sum_contrib_mat <- matrix(NA,ncol=no_tot_var,nrow=No_test_obs)
 
   for (j in Sbar_i){
     j_is_cont <- j %in% ind_cont_cols
 
     Omega <- Sigma[c(j,S_i),c(j,S_i)]
     xi <- mu[c(j,S_i)]
-
-
-
 
     prep_list_all_x_test_C <- mapply(prep_dens_x_given_S_is_C_func,
                                      C_lower =x_test_C_lower_S_i_list,
@@ -392,33 +430,54 @@ for (i in 2:(nrow(S)-1)){
     intval_list_no_x=parallel::mclapply(X = prep_list_all_x_test_C,FUN = vec_compute_dens_x_given_S_is_C_func_rev,x=x_int_grid,
                                         mc.cores = 6)
 
-
   if (j_is_cont){
     ## Continuous expectation
     expectation_vec <- rep(NA,No_test_obs)
-    for(i in 1:No_test_obs){
-      expectation_vec[i] <- h*sum(intval_list_no_x[[i]]*x_int_grid)
+    for(k in 1:No_test_obs){
+      expectation_vec[k] <- h*sum(intval_list_no_x[[k]]*x_int_grid)
     }
-
+    Vs_sum_contrib_vec <- beta_list[[j]]*expectation_vec
 
 
   } else {
     # categorical expectation
     prob_mat <- matrix(NA,nrow=No_test_obs,ncol=no_levels)
-    for(i in 1:No_test_obs){
-      for (j in 1:no_levels){
-        prob_mat[i,j] <- h*sum(intval_list_no_x[[i]][x_int_grid_cat==j])
+    for(k in 1:No_test_obs){
+      for (l in 1:no_levels){
+        prob_mat[k,l] <- h*sum(intval_list_no_x[[k]][x_int_grid_cat==l])
       }
-      prob_mat[i,] <- prob_mat[i,]/sum(prob_mat[i,])
+      prob_mat[k,] <- prob_mat[k,]/sum(prob_mat[k,])
     }
+    Vs_sum_contrib_vec <- as.vector(beta_list[[j]]%*%t(prob_mat))
 
+  }
+
+    Vs_sum_contrib_mat[,j] <- Vs_sum_contrib_vec
 
 
   }
 
-
-    if(case == 1){}
+  for (j in S_i){
+    Vs_sum_contrib_mat[,j] <- beta_list[[j]]%*%t(x_test_onehot_full_list[[j]])
   }
+  Vs_mat[i,] <- rowSums(Vs_sum_contrib_mat)
+  print(i)
+}
+
+exactShap <- matrix(NA,ncol=no_tot_var+1,nrow=No_test_obs)
+for (i in 1:No_test_obs){
+  exactShap[i,] <- c(explainer$W %*% Vs_mat[,i])
+}
+
+exactShap
+
+max(abs(rowSums(exactShap)-predict(model,x_test))) #
+
+#### Code for computing exact shapley values is done!
+# Not tested properly though
+# also, probably needs speedup for simplified calling of density function for one large (500 or 1000) specific set of x-values
+
+
 
 
 #### Testing the functions -- and they work! ####
