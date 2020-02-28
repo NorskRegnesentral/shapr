@@ -194,7 +194,7 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer){
 #' @description
 #'
 #' @param tbl Data.table. Consists of all possible x_test values.
-#'
+#' @param S_dt ??
 #' @return list of column numbers
 #'
 #' @export
@@ -207,94 +207,6 @@ col_fun <- function(tbl, S_dt){
   return(colnum)
 }
 
-#' Function to calculate conditional expectations of the cutoff jointly Normal random variables
-#'
-#' @description
-#'
-#' @param cond_list List. Calculated using the \code{cond_prob} function.
-#' @param explainer explainer object from shapr package.
-#'
-#' @return list
-#'
-#' @export
-
-cond_expec <- function(cond_list, explainer){
-
-  feat_names <- colnames(explainer$x_train)
-  dim <- length(feat_names)
-
-  cond_expec_list <- list()
-  cond_expec_list[[1]] <- NULL
-
-  for(i in 2:nrow(explainer$S)){
-    col_names <- feat_names[as.logical(explainer$S[i, ])]
-    tmp0 <- cond_list[[i]]
-    tmp0[, predict := predict_model(explainer$model, newdata = .SD), .SDcols = feat_names]
-    tmp0[, expected_value := predict * cond_prob]
-    tmp <- tmp0[, sum(expected_value), by = col_names]
-    # tmp[, conditioned_on := paste(col_names, collapse = ", ")]
-    setnames(tmp, "V1", "cond_expec")
-    cond_expec_list[[i]] <- tmp
-#    print(i)
-  }
-
-  cond_expec_dt <- rbindlist(l = cond_expec_list, fill = TRUE)
-  setcolorder(cond_expec_dt, c(feat_names, "cond_expec")) # "conditioned_on"
-
-  S_dt <- data.table(explainer$S)
-  S_dt[, id := 0:(nrow(S_dt) - 1)]
-  setnames(S_dt, c(feat_names, "id"))
-
-  all_levels <- list()
-  for(i in 1:dim){
-    all_levels[[i]] <- as.numeric(levels(cond_expec_dt[, get(feat_names[i])]))
-  }
-  mat <- do.call(CJ, all_levels)
-  setnames(mat, 1:ncol(mat), feat_names)
-  mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names]
-
-  cond_expec_dt[, colnum := col_fun(.SD, S_dt), .SDcol = feat_names]
-
-  select_cols <- c(feat_names, "i.cond_expec", "i.colnum") # Martin's help
-  tmp <- list()
-  for (i in 1:nrow(cond_expec_dt)){ # THIS IS VERY SLOW FOR LARGE DIMS (BIG LOOP), CAN WE DO SOMETHING?
-    on_cols <- feat_names[!is.na(subset(cond_expec_dt[i,], select = feat_names))]
-    tmp[[i]] <- mat[cond_expec_dt[i, ], ..select_cols, on = on_cols]
-    setnames(tmp[[i]], c("i.cond_expec","i.colnum"), c("cond_expec","colnum"))
-  }
-  tmp_dt <- rbindlist(tmp)
-  final_dt <- dcast(tmp_dt, formula = paste0(paste0(feat_names, collapse = "+"), "~colnum"), value.var = "cond_expec")
-
-  return(final_dt)
-}
-# x_test <- c(1, 1, 2)
-# 2.019000 1.323062 2.130058 2.652778 1.428016 1.933333 2.747191 2.000000 - old stuff
-# 2.019000 1.323062 2.360063 3.368715 - new stuff
-
-#' Function to extrac the correct conditional expectation vector for each x_test
-#'
-#' @description
-#'
-#' @param x_test Matrix. Consists of all the test observations. Has the same dimension as the number of joint Normal random variables calculated in \code{sim_true_Normal} function.
-#' @param cond_expec_dt data.table. Calculated using the \code{cond_expec} function.
-#' @param prediction_zero Numeric. Number to assigned to phi_0 in Shapley framework.
-#'
-#' @return list
-#'
-#' @export
-
-extract_cond_expec <- function(x_test, cond_expec_dt, prediction_zero){
-  on_cols <- names(x_test)
-  dim <- length(on_cols)
-  results <- list()
-  for(i in 1:nrow(x_test)){
-    results[[i]] <- cond_expec_dt[x_test[i, ],, on = on_cols]
-  }
-  results_dt <- rbindlist(results)[, -(1:dim)]
-  results_dt <- cbind(rep(prediction_zero, nrow(results_dt)), results_dt)
-  setnames(results_dt, "V1", "0")
-  results_dt
-}
 
 #' Function to calculate conditional expectations of the cutoff jointly Normal random variables
 #' for the x_test observations. I.e. doing what cond_expec + extract_cond_expec does together,
@@ -303,18 +215,18 @@ extract_cond_expec <- function(x_test, cond_expec_dt, prediction_zero){
 #' @description
 #'
 #' @param cond_list List. Calculated using the \code{cond_prob} function.
-#' @param explainer explainer object from shapr package.
+#' @param explainer explainer object from \code{shapr} package.
 #' @param x_test Matrix. Consists of all the test observations. Has the same dimension
 #' as the number of joint Normal random variables calculated in \code{sim_true_Normal} function.
 #' @param cond_expec_dt data.table. Calculated using the \code{cond_expec} function.
 #' @param prediction_zero Numeric. Number to assigned to phi_0 in Shapley framework.
-#' @param joint_prob_dt data.table The first element in the list calculated using the \code{sim_true_Normal}.
+#' @param joint_prob_dt data.table The first element in the list calculated using the \code{sim_true_Normal} function.
 #'
 #' @return data.table
 #'
 #' @export
 
-cond_expec_new <- function(cond_list,explainer,x_test, prediction_zero,joint_prob_dt){
+cond_expec_new <- function(cond_list, explainer, x_test, prediction_zero, joint_prob_dt){
 
   feat_names <- colnames(explainer$x_train)
   dim <- length(feat_names)
@@ -325,27 +237,28 @@ cond_expec_new <- function(cond_list,explainer,x_test, prediction_zero,joint_pro
 
   mat <- unique(x_test)
   mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names] # To be removed later
-  mat[,rowid:=.I] # Adding identifyer to match on
+  mat[, rowid := .I] # Adding identifyer to match on
 
   cond_expec_list <- list()
   cond_expec_list[[1]] <- NULL
 
-  joint_prob_dt[,predict := predict_model(explainer$model, newdata = .SD), .SDcols = feat_names]
+  joint_prob_dt[, predict := predict_model(explainer$model, newdata = .SD), .SDcols = feat_names]
 
+  tmp <- NULL
   for(i in 2:nrow(explainer$S)){
     col_names <- feat_names[as.logical(explainer$S[i, ])]
-    cond_list[[i]] <- merge(cond_list[[i]],joint_prob_dt[,.(feat_comb_id,predict)],by="feat_comb_id")
+    cond_list[[i]] <- merge(cond_list[[i]], joint_prob_dt[, .(feat_comb_id,predict)], by = "feat_comb_id")
     cond_list[[i]][, expected_value := predict * cond_prob]
     cond_expec_list[[i]] <- cond_list[[i]][, list(cond_expec=sum(expected_value)), by = col_names]
-    tmp[[i]] <- cbind(cond_expec_list[[i]][mat, .(rowid,cond_expec), on = col_names,allow.cartesian=TRUE],
-                      colnum = i-1)
+    tmp[[i]] <- cbind(cond_expec_list[[i]][mat, .(rowid,cond_expec), on = col_names, allow.cartesian = TRUE],
+                      colnum = i - 1)
   }
   tmp_dt <- rbindlist(tmp,use.names = T)
 
   final_dt <- dcast(tmp_dt, formula = "rowid~colnum", value.var = "cond_expec")
   x_test_id <- mat[x_test, on = feat_names]
-  S_char_vec <- as.character(1:(nrow(explainer$S)-1))
-  final_dt_x_test <- cbind("0"=prediction_zero, final_dt[x_test_id,..S_char_vec,on="rowid"])
+  S_char_vec <- as.character(1:(nrow(explainer$S) - 1))
+  final_dt_x_test <- cbind("0" = prediction_zero, final_dt[x_test_id, ..S_char_vec,on = "rowid"])
 
   return(final_dt_x_test)
 }
@@ -356,7 +269,7 @@ cond_expec_new <- function(cond_list,explainer,x_test, prediction_zero,joint_pro
 #' @description
 #'
 #' @param explainer explainer object from shapr package.
-#' @param cond_expec list. Calculated using \code{cond_expec} function.
+#' @param cond_expec_mat list. Calculated using \code{cond_expec_new} function.
 #' @param x_test vector of test observations. Has the same dimension as the number of joint Normal random variables calculated in \code{sim_true_Normal} function.
 #'
 #' @return vector of Shapley values.
@@ -395,22 +308,18 @@ linear_Kshap <- function(x_test_onehot_full, beta, prop){
 
   phi0 <- beta[1] + sum(beta[-1] * prop)
 
-  mult <- (t(x_test_onehot_full) - matrix(prop,nrow=length(prop),ncol=nrow(x_test_onehot_full)))
+  mult <- (t(x_test_onehot_full) - matrix(prop, nrow = length(prop), ncol = nrow(x_test_onehot_full)))
   phi_raw <- t(mult*beta[-1])
-  phi <- matrix(NA,nrow=nrow(phi_raw),ncol=no_features)
+  phi <- matrix(NA, nrow = nrow(phi_raw), ncol = no_features)
   for (i in 1:no_features){
-    phi[,i] <- rowSums(phi_raw[,which(beta_matcher==i)])
+    phi[, i] <- rowSums(phi_raw[, which(beta_matcher == i)])
   }
   phi <- cbind(phi0,phi)
-  colnames(phi)[-1] <- paste0("phi",1:no_features)
+  colnames(phi)[-1] <- paste0("phi", 1:no_features)
 
   return(phi)
 }
 
-
-
-# shapley_method <- true_linear
-
 #' Function to calculate the mean average error (MAE) between the true Shapley values and the estimated Shapley values
 #'
 #' @description
@@ -422,27 +331,11 @@ linear_Kshap <- function(x_test_onehot_full, beta, prop){
 #'
 #' @export
 
-MAE <- function(true_shapley, shapley_method){
-  mean(apply(abs(true_shapley - shapley_method), 2, mean)[-1])
+# all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[paste0('gaussian_nsamples', gauss)]]$dt_sum
+
+MAE <- function(true_shapley, shapley_method, weights){
+  mean(apply(abs((true_shapley - shapley_method) * weights), 2, sum)[-1])
 }
-
-
-#' Function to calculate the mean average error (MAE) between the true Shapley values and the estimated Shapley values
-#'
-#' @description
-#'
-#' @param true_shapley vector of Numerics. The vector of true Shapley values.
-#' @param shapley_method vector of Numerics. The vector of estimated Shapley values
-#'
-#' @return vector of Shapley values.
-#'
-#' @export
-
-AE <- function(true_shapley, shapley_method){
-  apply(abs(true_shapley - shapley_method)[,-1], 1, mean)
-}
-
-
 
 
 #' Function to simulate the data and calculate the estimated Shapley value as well as simulate the random variables to calculate the true Shapley values
@@ -464,8 +357,9 @@ simulate_data <- function(parameters_list){
   mu <- parameters_list$mu
   beta <- parameters_list$beta
   N_shapley <- parameters_list$N_shapley # number of var to simulate to calc true Shapley
-  N_testing <- parameters_list$N_testing
-  N_training <- parameters_list$N_training
+  No_train_obs <- parameters_list$No_train_obs
+  No_test_obs <- parameters_list$No_test_obs
+  N_sample_gaussian <- parameters_list$N_sample_gaussian
   cutoff <- parameters_list$cutoff
   noise <- parameters_list$noise
   response_mod <- parameters_list$response_mod
@@ -487,11 +381,11 @@ simulate_data <- function(parameters_list){
   if(!is.numeric(N_shapley)){
     stop("N_shapley must be a numeric.")
   }
-  if(!is.numeric(N_testing)){
-    stop("N_testing must be a numeric.")
+  if(!is.numeric(No_test_obs)){
+    stop("No_test_obs must be a numeric.")
   }
-  if(!is.numeric(N_training)){
-    stop("N_training must be a numeric.")
+  if(!is.numeric(No_train_obs)){
+    stop("No_train_obs must be a numeric.")
   }
   if(!is.boolean(noise)){
     stop("noise must be a boolean.")
@@ -517,29 +411,27 @@ simulate_data <- function(parameters_list){
     print(Sigma)
   }
 
-  aa <- paste0("Dimension: ", dim)
-  ab <- paste0("N_shapley: ", N_shapley)
-  ac <- paste0("N_training: ", N_training)
-  ad <- paste0("N_testing: ", N_testing)
-  print(aa, quote = FALSE, right = FALSE)
-  print(ab, quote = FALSE, right = FALSE)
-  print(ac, quote = FALSE, right = FALSE)
-  print(ad, quote = FALSE, right = FALSE)
+  print(paste0("Dimension: ", dim), quote = FALSE, right = FALSE)
+  print(paste0("Number of categories: ", no_categories), quote = FALSE, right = FALSE)
+  print(paste0("N_shapley: ", N_shapley), quote = FALSE, right = FALSE)
+  print(paste0("No_train_obs: ", No_train_obs), quote = FALSE, right = FALSE)
+  print(paste0("No_test_obs: ", No_test_obs), quote = FALSE, right = FALSE)
 
   ## 1. simulate training and testing data
   tm_current <- Sys.time()
-  # print("Simulating training and testing data", quote = FALSE, right = FALSE)
   set.seed(seed)
-  x <- mvrnorm(n = N_testing + N_training, mu = mu, Sigma = Sigma)
+  x1 <- mvrnorm(n = No_train_obs, mu = mu, Sigma = Sigma)
+  x2 <- mvrnorm(n = No_test_obs, mu = mu, Sigma = Sigma)
+  x <- rbind(x1, x2)
 
   dt <- NULL
   if(is.null(cutoff)){ ## to get equal proportion in each level
-    for(i in 1:dim){
-      dt <- cbind(dt, cut(x[, i], quantile(x[, i], probs = (1 / dim * seq(0, dim, by = 1))), labels = 1:no_categories, include.lowest = TRUE)) # without include.lowest, you get NA at the boundaries
-      cutoff <- c(cutoff, quantile(x[, i], probs = (1 / dim * seq(0, dim, by = 1))))
+    for(i in 1:no_categories){
+      dt <- cbind(dt, cut(x[, i], quantile(x[, i], probs = (1 / no_categories * seq(0, no_categories, by = 1))), labels = 1:no_categories, include.lowest = TRUE)) # without include.lowest, you get NA at the boundaries
+      cutoff <- c(cutoff, quantile(x[, i], probs = (1 / no_categories * seq(0, no_categories, by = 1))))
     }
-    cutoff <- matrix(cutoff, nrow = dim, byrow = TRUE)
-  } else{ # This has been checked, but the if code chunk above has not
+    cutoff <- matrix(cutoff, nrow = dim, ncol = no_categories, byrow = TRUE)
+  } else{ # Annabelle checked the code chunk above
     for(i in 1:dim){
       dt <- cbind(dt, cut(x[, i], cutoff, labels = 1:no_categories))
     }
@@ -551,19 +443,19 @@ simulate_data <- function(parameters_list){
 
   dt <- dt[, lapply(.SD, as.factor)]
 
+  set.seed(seed)
   if(noise == TRUE){
-    dt[, epsilon := rnorm(N_testing + N_training, 0, 0.1^2)] #
+    epsilon1 <- rnorm(No_train_obs, 0, 0.1^2)
+    epsilon2 <- rnorm(No_test_obs, 0, 0.1^2)
+    epsilon <- c(epsilon1, epsilon2)
+
+    dt[, epsilon := epsilon] #
   } else{
     dt[, epsilon := 0]
   }
 
   ## 2. One-hot encoding of training data
-  tm_now <- Sys.time(); # print(tm_now - tm_current);
-  tm_current <- Sys.time()
-  # print("One-hot encoding training data", quote = FALSE, right = FALSE)
-  mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim],
-                             contrasts.arg = lapply(dt[, 1:dim],contrasts,contrasts=FALSE))
-
+  mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim], contrasts, contrasts = FALSE))
 
   dt <- cbind(dt, data.table(mod_matrix))
   full_onehot_names <- colnames(mod_matrix)
@@ -571,71 +463,73 @@ simulate_data <- function(parameters_list){
 
 
   ## 3. Calculate response
-  tm_now <- Sys.time(); # print(tm_now - tm_current);
-  tm_current <- Sys.time()
-  # print("Calculating response of training data", quote = FALSE, right = FALSE)
-  dt[, response := response_mod(mod_matrix_full = cbind(1,mod_matrix),
-                                beta = beta,
-                                epsilon = epsilon)]
+  dt[, response := response_mod(mod_matrix_full = cbind(1, mod_matrix), beta = beta, epsilon = epsilon)]
 
   ## 4. Fit model
-  tm_now <- Sys.time(); # print(tm_now - tm_current);
-  tm_current <- Sys.time()
-  # print("Fitting model on training data", quote = FALSE, right = FALSE)
   if(fit_mod == 'regression'){
     form <- as.formula(paste0("response~", paste(feat_names, collapse= "+")))
-    model <- lm(formula = form, data = dt[-(1:N_testing), ])
+    model <- lm(formula = form, data = dt[(1:No_train_obs), ])
+
+    form_onehot <- as.formula(paste("response ~", paste(reduced_onehot_names, collapse = " + ")))
+    model_onehot <- lm(form_onehot, data = dt[(1:No_train_obs), ])
   }
 
+
   ## 5. initalize shapr object with trained model -- this is used for calculating true shapley
-  tm_now <- Sys.time(); # print(tm_now - tm_current);
-  tm_current <- Sys.time()
-  print("Initializing shapr object with trained model", quote = FALSE, right = FALSE)
-  x_train <- dt[-(1:N_testing), ..feat_names] ## used in explainer()
-  x_test <- dt[(1:N_testing), ..feat_names] ## used in cond_expec_mat()
-  y_train <- dt[-(1:N_testing), .(response)] ## used in cond_expec_mat()
-  explainer <- shapr(x_train, model)
-
-  ## 6. calculate the true shapley values
-  tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Initialize_shapr'] <- difftime(tm_now, tm_current, units = "mins"); tm_current <- Sys.time()
-  print("Simulating Normal random variables to calculate true Shapley value", quote = FALSE, right = FALSE)
-  joint_prob_dt_list <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)
-
-  tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
-  print("Calculating marginal probability distributions", quote = FALSE, right = FALSE)
-  marg_list <- marg_prob(joint_prob_dt_list[[1]], explainer)
-
-  tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Calculate_marginal'] <- difftime(tm_now, tm_current, units = "mins"); tm_current <- Sys.time()
-  print("Calculating conditional probability distributions", quote = FALSE, right = FALSE)
-  cond_list <- cond_prob(marg_list, joint_prob_dt_list[[1]], explainer)
-
-  tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Calculate_conditional_expectation'] <- difftime(tm_now, tm_current, units = "mins");  tm_current <- Sys.time()
-  # print("Extracting conditional expectations", quote = FALSE, right = FALSE)
-  cond_expec_mat <- cond_expec_new(cond_list, explainer, x_test, prediction_zero = joint_prob_dt_list[[2]],
-                                   joint_prob_dt=joint_prob_dt_list[[1]])
-  tm_now <- Sys.time();  print(tm_now - tm_current);
-
-  tm_current <- Sys.time()
-  print("Calculating true Shapley values", quote = FALSE, right = FALSE)
-  true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
-
-  ## 7. calculate true shapley under linear model and independence assumption (only if correlation is 0)
-  tm_now <- Sys.time(); print(tm_now - tm_current); timeit['Calculate_true_Shapley'] <- difftime(tm_now, tm_current, units = "mins"); tm_current <- Sys.time()
-  # print("Calculating Shapley value under linear model and indepdent variables assumption", quote = FALSE, right = FALSE)
+  x_train <- dt[(1:No_train_obs), ..feat_names] ## used in explainer()
+  x_test <- dt[-(1:No_train_obs), ..feat_names] ## used in cond_expec_mat()
+  y_train <- dt[(1:No_train_obs), .(response)] ## used in cond_expec_mat()
 
   # For computing the true Shapley values (with correlation 0)
-  x_test_onehot_full <- dt[(1:N_testing), ..full_onehot_names]
+  x_test_onehot_full <- dt[-(1:No_train_obs), ..full_onehot_names]
 
   # For modelling
-  x_test_onehot_reduced <- dt[(1:N_testing), ..reduced_onehot_names]
-  x_train_onehot_reduced <- dt[-(1:N_testing), ..reduced_onehot_names]
+  x_train_onehot_reduced <- dt[(1:No_train_obs), ..reduced_onehot_names]
+  x_test_onehot_reduced <- dt[-(1:No_train_obs), ..reduced_onehot_names]
+
+  explainer <- shapr(x_train, model)
+
+  if(!all(methods == 'ctree')){
+    explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
+  }
+
+  ## 6. calculate the true shapley values
+  tm_true_Shapley <- Sys.time();
+  print("Started to calculate true Shapley values.", quote = FALSE, right = FALSE)
+
+  set.seed(10)
+  tm0 <- proc.time();
+  joint_prob_dt_list <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)
+  tm1 <- proc.time();
+  timeit['Simulate_true_Normal'] <- list((tm1 - tm0))
+
+  tm0 <- proc.time();
+  marg_list <- marg_prob(joint_prob_dt_list[[1]], explainer)
+  tm1 <- proc.time();
+  timeit['Calculate_marginal_distributions'] <- list((tm1 - tm0))
+
+  tm0 <- proc.time();
+  cond_list <- cond_prob(marg_list, joint_prob_dt_list[[1]], explainer)
+  tm1 <- proc.time();
+  timeit['Calculate_conditional_distributions'] <- list((tm1 - tm0))
+
+  tm0 <- proc.time();
+  cond_expec_mat <- cond_expec_new(cond_list, explainer, x_test, prediction_zero = joint_prob_dt_list[[2]], joint_prob_dt = joint_prob_dt_list[[1]])
+  tm1 <- proc.time();
+  timeit['Calculate_expectations_distributions'] <- list((tm1 - tm0))
+
+  tm0 <- proc.time();
+  true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
+  tm1 <- proc.time();
+  timeit['Calculate_true_Shapley'] <- list((tm1 - tm0))
+
+  tm_true_Shapley1 <- Sys.time();
+  print("Finished calculating true Shapley values.", quote = FALSE, right = FALSE)
+  print(tm_true_Shapley1 - tm_true_Shapley)
 
   if(explainer$model_type == 'regression'){
     if(parameters_list$corr == 0){
-      true_linear <-linear_Kshap(x_test_onehot_full = x_test_onehot_full,
-                                 beta = beta,
-                                 prop = joint_prob_dt[[3]])
-
+      true_linear <-linear_Kshap(x_test_onehot_full = x_test_onehot_full, beta = beta, prop = joint_prob_dt_list[[3]])
     } else{
       true_linear <- NULL
     }
@@ -643,87 +537,135 @@ simulate_data <- function(parameters_list){
     true_linear <- NULL
   }
 
+
   ## 8. calculate approximate shapley value with different methods
-  p <- mean(y_train$response) # since y_train is no longer a matrix
+  p <- mean(y_train$response)
 
-  # timeit <- list()
+  ## to compute sum of Shapley values - only for one-hot encoded variables
+  beta_matcher <- as.numeric(getstr(reduced_onehot_names))
+  no_features <- max(beta_matcher)
+  phi_sum_mat <- matrix(NA, nrow = No_test_obs, ncol = no_features)
 
+  tm_now <- proc.time();
+  print("Started to estimate Shapley values with various methods.", quote = FALSE, right = FALSE)
+
+  # NEW
   explanation_list <- list()
   for(m in methods){
-    tm_now <- Sys.time(); print(tm_now - tm_current); tm_current <- Sys.time()
-    print(paste0("Estimating Shapley value with ", m, " method"), quote = FALSE, right = FALSE)
-    if(m == 'empirical' | m == 'empirical_ind' |  m == 'gaussian' | m == 'ctree_onehot'){
+    if(m == 'empirical_ind'){
+      tm0 <- proc.time()
+      explanation_list[[m]] <- explain(
+        x_test_onehot_reduced,
+        approach = "empirical",
+        type = "independence",
+        explainer = explainer_onehot,
+        prediction_zero = p,
+        sample = FALSE,
+        n_samples = 1000)
+      tm1 <- proc.time()
 
-      if(fit_mod == 'regression'){
-        fmla <- as.formula(paste("response ~", paste(reduced_onehot_names, collapse = " + ")))
-        model_onehot <- lm(fmla, data = dt[-(1:N_testing)])
-        }
+      for (i in 1:no_features){
+        phi_sum_mat[, i] <- rowSums(subset(explanation_list[[m]]$dt, select = which(beta_matcher == i) + 1))
+      }
+      colnames(phi_sum_mat) <- feat_names
+      explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1], phi_sum_mat)
 
-      explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
-      print("shapr one-hot function finished.", quote = FALSE, right = FALSE)
-      if(m == 'ctree_onehot'){
-        tm <- proc.time()
-        explanation_list[[m]] <- explain(
-          x_test_onehot_reduced,
-          approach = 'ctree',
-          explainer = explainer_onehot,
-          prediction_zero = p,
-          sample = FALSE)
-        tm2 <- proc.time()
-        timeit['ctree_onehot'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
-      } else if(m == 'empirical_ind'){
-        tm <- proc.time()
-        explanation_list[[m]] <- explain(
-          x_test_onehot_reduced,
-          approach = "empirical",
-          type = "independence",
-          explainer = explainer_onehot,
-          prediction_zero = p,
-          sample = FALSE)
-        tm2 <- proc.time()
-        timeit['empirical_ind'] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
-      } else{
-        tm <- proc.time()
-        explanation_list[[m]] <- explain(
+      print(paste0("Finished estimating Shapley value with ", m, " method."), quote = FALSE, right = FALSE)
+      print(tm1 - tm0)
+      timeit[m] <- list((tm1 - tm0))
+
+    } else if(m == 'empirical'){
+      tm0 <- proc.time()
+      explanation_list[[m]] <- explain(
+        x_test_onehot_reduced,
+        approach = m,
+        explainer = explainer_onehot,
+        prediction_zero = p,
+        sample = FALSE,
+        w_threshold = 1,
+        n_samples = 1000)
+      tm1 <- proc.time()
+
+      for (i in 1:no_features){
+        phi_sum_mat[, i] <- rowSums(subset(explanation_list[[m]]$dt, select = which(beta_matcher == i) + 1))
+      }
+      colnames(phi_sum_mat) <- feat_names
+      explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1], phi_sum_mat)
+
+      print(paste0("Finished estimating Shapley value with ", m, " method."), quote = FALSE, right = FALSE)
+      print(tm1 - tm0)
+      timeit[m] <- list((tm1 - tm0))
+
+    } else if(m == 'gaussian'){
+      for(j in N_sample_gaussian){
+        tm0 <- proc.time()
+        explanation_list[[paste0(m, "_nsamples", j)]] <- explain(
           x_test_onehot_reduced,
           approach = m,
           explainer = explainer_onehot,
           prediction_zero = p,
           sample = FALSE,
-          w_threshold = 1)
-        tm2 <- proc.time()
-        timeit[m] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
-     }
+          w_threshold = 1,
+          n_samples = j)
+        tm1 <- proc.time()
 
-      beta_matcher <- as.numeric(getstr(reduced_onehot_names))
-      no_features <- max(beta_matcher)
-      phi_sum_mat <- matrix(NA,nrow=N_testing,ncol=no_features)
+
+        for (i in 1:no_features){
+          phi_sum_mat[, i] <- rowSums(subset(explanation_list[[paste0(m, "_nsamples", j)]]$dt, select = which(beta_matcher == i) + 1))
+        }
+        colnames(phi_sum_mat) <- feat_names
+        explanation_list[[paste0(m, "_nsamples", j)]]$dt_sum <- cbind(explanation_list[[paste0(m, "_nsamples", j)]]$dt[, 1], phi_sum_mat)
+
+        print(paste0("Finished estimating Shapley value with ", paste0(m, "_nsamples", j), " method."), quote = FALSE, right = FALSE)
+        print(tm1 - tm0)
+        timeit[paste0(m, "_nsamples", j)] <- list((tm1 - tm0))
+
+      }
+    } else if(m == 'ctree_onehot'){
+      tm0 <- proc.time()
+      explanation_list[[m]] <- explain(
+        x_test_onehot_reduced,
+        approach = 'ctree',
+        explainer = explainer_onehot,
+        prediction_zero = p,
+        sample = FALSE,
+        mincriterion = 0.95)
+      tm1 <- proc.time()
+
       for (i in 1:no_features){
-        phi_sum_mat[,i] <-
-          rowSums(subset(explanation_list[[m]]$dt,select = which(beta_matcher==i)+1))
+        phi_sum_mat[, i] <- rowSums(subset(explanation_list[[m]]$dt, select = which(beta_matcher == i) + 1))
       }
       colnames(phi_sum_mat) <- feat_names
+      explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1], phi_sum_mat)
 
+      print(paste0("Finished estimating Shapley value with ", m, " method."), quote = FALSE, right = FALSE)
+      print(tm1 - tm0)
+      timeit[m] <- list((tm1 - tm0))
 
-      explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1],phi_sum_mat)
-
-    } else { ## for ctree without one-hot encoding
-      tm <- proc.time()
+    } else if(m == 'ctree'){
+      tm0 <- proc.time()
       explanation_list[[m]] <- explain(
         x_test,
         approach = m,
         explainer = explainer,
         prediction_zero = p,
         sample = FALSE,
-        w_threshold = 1)
-      tm2 <- proc.time()
-      timeit[m] <- list((tm2 - tm)) # difftime(tm2, tm, units = "mins")
+        w_threshold = 1,
+        mincriterion = 0.95)
+      tm1 <- proc.time()
+      print(paste0("Finished estimating Shapley value with ", m, " method."), quote = FALSE, right = FALSE)
+      print(tm1 - tm0)
+      timeit[m] <- list((tm1 - tm0))
+
     }
   }
+
 
   return_list <- list()
   return_list[['true_shapley']] <- true_shapley
   return_list[['true_linear']] <- true_linear
+  return_list[['joint_prob_true']] <- joint_prob_dt_list[[1]]
+  return_list[['x_train-y_train']] <- cbind(x_train, y_train)
   return_list[['methods']] <- explanation_list
   return_list[['timing']] <- timeit
   return_list[['seed']] <- seed
