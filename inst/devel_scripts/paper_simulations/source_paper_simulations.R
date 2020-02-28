@@ -18,7 +18,7 @@ response_mod <- function(mod_matrix_full, beta, epsilon){
 parameters_list <- list()
 
 if(test){
-  print("HERE")
+  print("Testing.")
   set.seed(1); beta <- round(rnorm(dim * no_categories + 1), 1)
   corr <- c(0, 0.1)
   k <- 1
@@ -31,13 +31,13 @@ if(test){
                                  noise = TRUE,
                                  response_mod = response_mod,
                                  fit_mod = "regression",
-                                 methods = c("kernelSHAP", "gaussian", "ctree"), # "empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP"
+                                 methods = methods,
                                  name = paste0('corr', j),
                                  cutoff = c(-200, -0.5, 0, 1, 200),
                                  Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
                                  No_test_sample = 20,
-                                 No_train_obs = 20, # 1000,
-                                 N_sample_gaussian = c(50), # 100, 1000
+                                 No_train_obs = 20,
+                                 N_sample_gaussian = c(50),
                                  seed = 1,
                                  no_categories = no_categories)
     k <- k + 1
@@ -61,8 +61,8 @@ if(test){
                                  cutoff = c(-200, -0.5, 0, 1, 200),
                                  Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
                                  No_test_sample = 1000,
-                                 No_train_obs = 1000, # 1000,
-                                 N_sample_gaussian = c(100, 1000), # 100, 1000
+                                 No_train_obs = 1000,
+                                 N_sample_gaussian = c(100, 1000),
                                  seed = 1,
                                  no_categories = no_categories)
     k <- k + 1
