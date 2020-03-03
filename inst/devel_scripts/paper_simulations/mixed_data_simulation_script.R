@@ -11,6 +11,8 @@ response_mod <- function(mod_matrix_full, beta, epsilon){
   as.vector(mod_matrix_full %*% beta) + epsilon
 }
 
+source("inst/devel_scripts/paper_simulations/mixed_data_simulation_functions.R")
+
 
 no_cont_var <- 2
 no_cat_var <- 2
@@ -27,7 +29,6 @@ beta_cat <- c(1,0,-1,
               2,3,-1)
 
 beta <- c(beta_0,beta_cont,beta_cat)
-N_shapley = 10000
 No_train_obs = 100
 No_test_obs = 20
 cat_cutoff = c(-200, 0, 1, 200)
@@ -172,9 +173,6 @@ explainer_numeric <- shapr(x_train_numeric, model_numeric)
 
 #### 6. calculate the true shapley values
 
-### TO DO
-# Define C vector/matricies for every combination
-# Implement the arellano-valle function
 
 S <- explainer$S
 
@@ -218,183 +216,6 @@ x_test_C_upper <- copy(x_test)
 x_test_C_upper[,(cont_cols):= lapply(.SD,function(x){x+eps}),.SDcols=cont_cols]
 x_test_C_upper[,(cat_cols):= lapply(.SD,function(x){cat_cutoff[as.numeric(x)+1]}),.SDcols=cat_cols]
 
-
-
-dens_x_given_S_is_C_func <- function(x,C_lower,C_upper,xi,Omega,algorithm) {
-  # Formula in equation (13) in this paper
-  # https://www.jstor.org/stable/pdf/20445223.pdf?refreqid=excelsior%3A9fdbaaf0a8fe22e64418448ad4f8090b
-  # letting V = x, and U correspond to the dimensions specified in C
-  # C_lower is a vector of length dim with lower bounds for each dimension, C_upper similalry contains the upper bounds
-  # Omega is the joint covariance matrix of x and the length of C_lower and C_upper (dim)
-  # xi is the joint mean vector of x and the length of C_lower and C_upper (dim)
-  # Note: x is always one dimensional
-
-  these_U <- (1:length(C_lower))+1
-  these_V <- 1
-
-  Omega_U <- Omega[these_U,these_U,drop=F]
-  Omega_V <- Omega[these_V,these_V,drop=F]
-  Delta <- Omega[these_V,these_U,drop=F]
-
-  xi_U <- xi[these_U]
-  xi_V <- xi[these_V]
-
-  C_lower <- unlist(C_lower)
-  C_upper <- unlist(C_upper)
-
-  mean_above <- as.vector(t(Delta)%*%solve(Omega_V)%*%(x-xi_V) + xi_U)
-  sigma_above <- Omega_U - t(Delta)%*%solve(Omega_V)%*%Delta
-
-  mean_below <- xi_U
-  sigma_below <- Omega_U
-
-
-  above <- mvtnorm::pmvnorm(lower = C_lower,upper = C_upper,
-                            mean = mean_above,
-                            sigma = sigma_above,
-                            algorithm = algorithm)
-
-
-  below <- mvtnorm::pmvnorm(lower = C_lower,upper = C_upper,
-                            mean = mean_below,
-                            sigma = sigma_below,
-                            algorithm = algorithm)
-
-  left <- dnorm(x,mean=xi_V,sd = sqrt(Omega_V))
-
-  dens <- left*above/below
-
-  return(dens)
-
-}
-
-# Splitting the main function in two to make it more efficient
-# Here is the preparation function
-prep_dens_x_given_S_is_C_func <- function(C_lower,C_upper,xi,Omega,algorithm) {
-
-  these_U <- (1:length(C_lower))+1
-  these_V <- 1
-
-  Omega_U <- Omega[these_U,these_U,drop=F]
-  Omega_V <- Omega[these_V,these_V,drop=F]
-  Delta <- Omega[these_V,these_U,drop=F]
-
-  xi_U <- xi[these_U]
-  xi_V <- xi[these_V]
-
-  C_lower <- unlist(C_lower)
-  C_upper <- unlist(C_upper)
-
-  mean_above_mult <- t(Delta)%*%solve(Omega_V)
-  mean_above_add <- xi_U - t(Delta)%*%solve(Omega_V)%*%xi_V
-  sigma_above <- Omega_U - t(Delta)%*%solve(Omega_V)%*%Delta
-
-  mean_below <- xi_U
-  sigma_below <- Omega_U
-
-  below <- mvtnorm::pmvnorm(lower = C_lower,upper = C_upper,
-                            mean = mean_below,
-                            sigma = sigma_below,
-                            algorithm = algorithm)
-
-
-  left_mean <- xi_V
-  left_sd <- sqrt(Omega_V)
-
-  ret <- list(algorithm = algorithm,
-              C_lower = C_lower,
-              C_upper = C_upper,
-              mean_above_mult = mean_above_mult,
-              mean_above_add = mean_above_add,
-              sigma_above = sigma_above,
-              below = below,
-              left_mean = left_mean,
-              left_sd = left_sd)
-
-  return(ret)
-
-}
-
-prep_dens_x_given_S_is_C_func_v2 <- function(C_lower, C_upper,xi,Omega,algorithm) {
-
-  C_lower <- unlist(C_lower)
-  C_upper <- unlist(C_upper)
-
-  these_U <- (1:length(C_lower))+1
-  these_V <- 1
-
-  Omega_U <- Omega[these_U,these_U,drop=F]
-  Omega_V <- Omega[these_V,these_V,drop=F]
-  Delta <- Omega[these_V,these_U,drop=F]
-
-  xi_U <- xi[these_U]
-  xi_V <- xi[these_V]
-
-
-  mean_above_mult <- t(Delta)%*%solve(Omega_V)
-  mean_above_add <- xi_U - t(Delta)%*%solve(Omega_V)%*%xi_V
-  sigma_above <- Omega_U - t(Delta)%*%solve(Omega_V)%*%Delta
-
-  mean_below <- xi_U
-  sigma_below <- Omega_U
-
-  below <- mvtnorm::pmvnorm(lower = C_lower,upper = C_upper,
-                            mean = mean_below,
-                            sigma = sigma_below,
-                            algorithm = algorithm)
-
-
-  left_mean <- xi_V
-  left_sd <- sqrt(Omega_V)
-
-  ret <- list(algorithm = algorithm,
-              C_lower = C_lower,
-              C_upper = C_upper,
-              mean_above_mult = mean_above_mult,
-              mean_above_add = mean_above_add,
-              sigma_above = sigma_above,
-              below = below,
-              left_mean = left_mean,
-              left_sd = left_sd)
-
-  return(ret)
-
-}
-
-
-# Here is the computation function, taking the preparation values as input
-compute_dens_x_given_S_is_C_func <- function(x,ret_list) {
-
-  mean_above <- as.vector(ret_list$mean_above_mult%*%x+ret_list$mean_above_add)
-
-
-  above <- mvtnorm::pmvnorm(lower = ret_list$C_lower,upper = ret_list$C_upper,
-                            mean = mean_above,
-                            sigma = ret_list$sigma_above,
-                            algorithm = algorithm)
-
-  left <- dnorm(x,mean=ret_list$left_mean,sd = ret_list$left_sd)
-
-  dens <- left*above/ret_list$below
-
-  return(dens)
-
-}
-
-
-# Vectorizing the two functions and checking that they give the same result
-vec_dens_x_given_S_is_C_func <- Vectorize(dens_x_given_S_is_C_func,vectorize.args="x")
-
-vec_compute_dens_x_given_S_is_C_func = Vectorize(compute_dens_x_given_S_is_C_func,vectorize.args = "x")
-
-vec_compute_dens_x_given_S_is_C_func_2 = Vectorize(compute_dens_x_given_S_is_C_func)
-
-#aa=outer(x_int_grid,prep_list_all_x_test_C,FUN=vec_compute_dens_x_given_S_is_C_func_2)
-
-vec_compute_dens_x_given_S_is_C_func_rev <- function(ret_list,x){
-  vec_compute_dens_x_given_S_is_C_func(x,ret_list)
-}
-
 range_x_int <- c(min(mu)-4*sqrt(max(diag(Sigma))),max(mu)+4*sqrt(max(diag(Sigma))))
 no_int_eval <- 500
 h <- diff(range_x_int)/no_int_eval
@@ -437,10 +258,15 @@ for(i in (no_cont_var+1):no_tot_var){
 phi0 <- beta[1] + sum(phi_0_contrib)
 
 
+#### Building the Vs_mat here ####
+
 Vs_mat <- matrix(NA,ncol = No_test_obs, nrow = nrow(S))
 
 Vs_mat[1,] <-   phi0
 Vs_mat[nrow(S),] <- predict(model,x_test)
+
+#algorithm <- mvtnorm::GenzBretz() # Not exact and slower for small dimensions
+algorithm <- mvtnorm::Miwa()
 
 
 for (i in 2:(nrow(S)-1)){
@@ -514,9 +340,50 @@ exactShap
 
 max(abs(rowSums(exactShap)-predict(model,x_test))) #
 
-#### Code for computing exact shapley values is done!
-# Not tested properly though
-# Testing when the features are independent
+### Estimating the Shapley values ####
+
+p <- mean(y_train$response) # since y_train is no longer a matrix
+
+
+methods = c("ctree","kernelShap")
+
+explanation_list <- list()
+m = "ctree"
+explanation_list[[m]] <- explain(
+  x_test,
+  approach = m,
+  explainer = explainer,
+  prediction_zero = p,
+  sample = FALSE,
+  w_threshold = 1,
+  mincriterion = 0.95)
+
+m = "kernelShap"
+explanation_list[[m]] <- explain(
+    x_test_numeric,
+    approach = "empirical",
+    type = "independence",
+    explainer = explainer_numeric,
+    prediction_zero = p,
+    sample = FALSE,
+    w_threshold = 1,
+    mincriterion = 0.95)
+
+exactShap
+explanation_list$ctree$dt
+explanation_list$kernelShap$dt
+
+MAE <- function(true_shapley, shapley_method, weights = rep(1/nrow(true_shapley),nrow(true_shapley))){
+  mean(apply(abs((true_shapley - shapley_method) * weights), 2, sum)[-1])
+}
+
+
+MAE(exactShap,explanation_list$ctree$dt)
+MAE(exactShap,explanation_list$kernelShap$dt)
+
+
+
+# Just brute force testing when the features are independent for dim_cont = 2, and dim_cat = 2, no_cat = 3
 
 xj_start_mat <- mod_matrix[test_obs,]
 Exj_vec <- c(0,0,diff(pnorm(q = cat_cutoff,mean = mu[1], sd=sqrt(Sigma[1,1]))),diff(pnorm(q = cat_cutoff,mean = mu[1], sd=sqrt(Sigma[1,1]))))
@@ -550,98 +417,4 @@ exactShap-SHAP # Close enough!
 # 118 -4.971156e-07 0.002440432 0.002440431 0.0004880857 -0.005368950
 # 119 -4.971156e-07 0.002440432 0.002440431 0.0004880861 -0.005368950
 # 120 -4.971156e-07 0.002440431 0.002440431 0.0004880859 -0.005368949
-
-#### Estimating the Shapley values ####
-
-p <- mean(y_train$response) # since y_train is no longer a matrix
-
-
-methods = c("ctree","kernelShap")
-
-explanation_list <- list()
-m = "ctree"
-explanation_list[[m]] <- explain(
-  x_test,
-  approach = m,
-  explainer = explainer,
-  prediction_zero = p,
-  sample = FALSE,
-  w_threshold = 1,
-  mincriterion = 0.95)
-
-m = "kernelShap"
-explanation_list[[m]] <- explain(
-    x_test_numeric,
-    approach = "empirical",
-    type = "independence",
-    explainer = explainer_numeric,
-    prediction_zero = p,
-    sample = FALSE,
-    w_threshold = 1,
-    mincriterion = 0.95)
-
-exactShap
-explanation_list$ctree$dt
-explanation_list$kernelShap$dt
-
-# also, probably needs speedup for simplified calling of density function for one large (500 or 1000) specific set of x-values
-
-MAE <- function(true_shapley, shapley_method, weights = rep(1/nrow(true_shapley),nrow(true_shapley))){
-  mean(apply(abs((true_shapley - shapley_method) * weights), 2, sum)[-1])
-}
-
-
-MAE(exactShap,explanation_list$ctree$dt)
-MAE(exactShap,explanation_list$kernelShap$dt)
-
-
-#### Testing the functions -- and they work! ####
-
-# Just some testing values
-C_lower <- x_test_C_lower[1,-1]
-C_upper <- x_test_C_upper[1,-1]
-Omega <- Sigma
-xi <- rep(0,4)
-algorithm <- mvtnorm::Miwa(steps = 128)
-
-
-x_vec <- seq(-3,3,0.01)
-start <- proc.time()
-val <- vec_dens_x_given_S_is_C_func(x_vec,
-                                    C_lower, C_upper,xi,Omega,algorithm)
-end <- proc.time()
-end-start
-
-x_vec <- seq(-3,3,0.01)
-start <- proc.time()
-prep_list <- prep_dens_x_given_S_is_C_func(C_lower,C_upper,xi,Omega,algorithm=mvtnorm::Miwa(steps = 128))
-val2 <- vec_compute_dens_x_given_S_is_C_func(x_vec,prep_list)
-end <- proc.time()
-end-start
-
-x_vec <- seq(-3,3,0.01)
-start <- proc.time()
-prep_list <- prep_dens_x_given_S_is_C_func(C_lower,C_upper,xi,Omega,algorithm=mvtnorm::Miwa(steps = 256))
-val3 <- vec_compute_dens_x_given_S_is_C_func(x_vec,prep_list)
-end <- proc.time()
-end-start
-
-x_vec <- seq(-3,3,0.01)
-start <- proc.time()
-prep_list <- prep_dens_x_given_S_is_C_func(C_lower,C_upper,xi,Omega,algorithm=mvtnorm::GenzBretz())
-val4 <- vec_compute_dens_x_given_S_is_C_func(x_vec,prep_list)
-end <- proc.time()
-end-start
-
-
-all.equal(val,val2)
-# The prep/compute version is twive as fast
-
-all.equal(val2,val3)
-# number of step with Miwa does not matter
-
-plot(x_vec,val2,type="l")
-lines(x_vec,val4,col=2,lty=2)
-
-
 
