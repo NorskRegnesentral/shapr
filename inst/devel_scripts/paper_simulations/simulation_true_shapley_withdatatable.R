@@ -20,8 +20,8 @@ rand_string <- stringi::stri_rand_strings(1,5)
 print(rand_string)
 tod_date <- paste0(tod_date0, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
 
-dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations_Annabelle/", tod_date, sep = ""))
-dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations_Annabelle/", tod_date, sep = ""))
+# dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations_Annabelle/", tod_date, sep = ""))
+# dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations_Annabelle/", tod_date, sep = ""))
 
 ##
 
@@ -45,7 +45,7 @@ for(j in corr){
                                noise = TRUE,
                                response_mod = response_mod,
                                fit_mod = "regression",
-                               methods = c("kernelSHAP"), # "empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP"
+                               methods = c("empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP"), # "empirical_ind", "empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP"
                                name = paste0('corr', j),
                                cutoff = c(-200, 0, 1, 200),
                                Sample_test = TRUE,

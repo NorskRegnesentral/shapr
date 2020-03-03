@@ -666,35 +666,29 @@ simulate_data <- function(parameters_list){
       timeit[m] <- list((tm1 - tm0))
 
     } else if(m == 'gaussian'){
-
-      x_test_onehot_gaussian = x_test_onehot_reduced[, id := 1:nrow(x_test_onehot_reduced)]
-      x_test_onehot_gaussian[, no_times := 10]
-      x_test_onehot_gaussian_rep <- x_test_onehot_gaussian[rep(1:.N, no_times)][, Indx := 1:.N, by = id]
-      #
-      phi_sum_mat_gauss <- matrix(NA, nrow = nrow(x_test_onehot_gaussian_rep), ncol = no_features)
-      #
       for(j in N_sample_gaussian){
         tm0 <- proc.time()
-        explanation_list[[paste0(m, "_nsamples", j)]] <- explain(
-          x_test_onehot_gaussian_rep,
-          approach = m,
-          explainer = explainer_onehot,
-          prediction_zero = p,
-          sample = FALSE,
-          w_threshold = 1,
-          n_samples = j)
-        tm1 <- proc.time()
+        for(k in 1:10){
+          explanation_list[[paste0(m, "_nsamples", j, "_trial", k)]] <- explain(
+            x_test_onehot_reduced,
+            approach = m,
+            explainer = explainer_onehot,
+            prediction_zero = p,
+            sample = FALSE,
+            w_threshold = 1,
+            n_samples = j)
 
-        for (i in 1:no_features){
-          phi_sum_mat_gauss[, i] <- rowSums(subset(explanation_list[[paste0(m, "_nsamples", j)]]$dt, select = which(beta_matcher == i) + 1))
+          for (i in 1:no_features){
+            phi_sum_mat[, i] <- rowSums(subset(explanation_list[[paste0(m, "_nsamples", j, "_trial", k)]]$dt, select = which(beta_matcher == i) + 1))
+          }
+          colnames(phi_sum_mat) <- feat_names
+          explanation_list[[paste0(m, "_nsamples", j, "_trial", k)]]$dt_sum <- cbind(explanation_list[[paste0(m, "_nsamples", j, "_trial", k)]]$dt[, 1], phi_sum_mat)
         }
-        colnames(phi_sum_mat_gauss) <- feat_names
-        explanation_list[[paste0(m, "_nsamples", j)]]$dt_sum <- cbind(explanation_list[[paste0(m, "_nsamples", j)]]$dt[, 1], phi_sum_mat_gauss)
+        tm1 <- proc.time()
 
         print(paste0("Finished estimating Shapley value with ", paste0(m, "_nsamples", j), " method."), quote = FALSE, right = FALSE)
         print(tm1 - tm0)
         timeit[paste0(m, "_nsamples", j)] <- list((tm1 - tm0))
-
       }
     } else if(m == 'ctree_onehot'){
       tm0 <- proc.time()
@@ -754,11 +748,8 @@ simulate_data <- function(parameters_list){
 
     }
   }
-
-
   tm_now1 <- proc.time();
   print("Ended estimating Shapley values with various methods.", quote = FALSE, right = FALSE)
-
 
   return_list <- list()
   return_list[['true_shapley']] <- true_shapley
