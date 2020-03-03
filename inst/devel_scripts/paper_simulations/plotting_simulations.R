@@ -9,16 +9,16 @@ library(stringr)
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
 
 tod_date <- "28_02_20"
-rand_string <- "3tNj9"
-dim <- 3
-no_categories <- 3
+rand_string <- "WbMlD"
+dim <- 5
+no_categories <- 6
 
 folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
 
 ##
 
 ## load data
-nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.1.rds")
+nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.9.rds")
 all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations_Annabelle", folder, nm, sep = "/"))
 
 # for gaussian stuff
@@ -86,7 +86,8 @@ corr <- results[, lapply(.SD, FUN = as.numeric), .SDcol = "correlation"]
 results0 <- cbind(results[, correlation := NULL], corr)
 
 nm = paste(tod_date, '_results', '.rds', sep = "")
-saveRDS(results0, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", tod_date, nm, sep = "/"))
+folder <- paste0(tod_date, "_WbMlD", "_dim", dim, "_nbcat", no_categories)
+saveRDS(results0, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations_Annabelle", folder, nm, sep = "/"))
 
 
 p1 <- ggplot(data = results0, aes(y = MAE_methods, x = MAE_parameters, col = as.factor(MAE_methods_names ))) +
@@ -99,7 +100,7 @@ p1 <- ggplot(data = results0, aes(y = MAE_methods, x = MAE_parameters, col = as.
 #  labels = c("Ctree", "Ctree one-hot", "Empirical", "Empirical independence", "Gaussian_100", "Gaussian_1000", "kernelSHAP")
 
 nm = paste(tod_date, '_MAE', '.png', sep = "")
-ggsave(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations", tod_date, nm, sep = "/"), plot = p1, device = NULL, path = NULL,
+ggsave(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations_Annabelle", folder, nm, sep = "/"), plot = p1, device = NULL, path = NULL,
        scale = 1, width = 45, height = 30, units = "cm",
        dpi = 300, limitsize = TRUE)
 
