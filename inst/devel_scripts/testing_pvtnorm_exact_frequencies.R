@@ -298,7 +298,7 @@ print("Started to calculate true Shapley values.", quote = FALSE, right = FALSE)
 
 ##### CODE I WANT TO REPLACE ####
 
-N_shapley <- 10^7
+N_shapley <- 10^5
 
 start = proc.time()
 joint_prob_dt_list <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)

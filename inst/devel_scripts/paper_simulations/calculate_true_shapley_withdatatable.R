@@ -125,6 +125,19 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
   return(list(joint_prob_dt, mn, prop))
 }
 
+
+# Helper functions
+upper_func <- function(x,cutoff){
+  cutoff[as.numeric(x)+1]
+}
+
+# Helper functions
+lower_func <- function(x,cutoff){
+  cutoff[as.numeric(x)]
+}
+
+
+
 #' Function to compute exact multivariate Normal probabilitites with true mu and Sigma parameters.
 #'
 #' @description
@@ -197,7 +210,9 @@ create_exact_joint_prob <- function(mu,Sigma, beta, explainer, cutoff, response_
   all_probs <- parallel::mcmapply(FUN = mvtnorm::pmvnorm,
                                   lower = lower_dt_list,
                                   upper = upper_dt_list,
-                                  MoreArgs = list(mean = mu,corr = corr),
+                                  MoreArgs = list(mean = mu,
+                                                  corr = corr,
+                                                  algorithm = algorithm),
                                   mc.cores = mc.cores)
 
   all_probs <- all_probs/sum(all_probs)
