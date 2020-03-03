@@ -6,8 +6,8 @@ rand_string <- stringi::stri_rand_strings(1, 5)
 print(rand_string)
 folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
 
-dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/", folder, sep = ""))
-dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations/", folder, sep = ""))
+# dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/", folder, sep = ""))
+# dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations/", folder, sep = ""))
 
 ##
 response_mod <- function(mod_matrix_full, beta, epsilon){
@@ -45,7 +45,7 @@ if(test){
 
 } else{
   set.seed(1); beta <- round(rnorm(dim * no_categories + 1), 1)
-  corr <- c(0, 0.1, 0.5, 0.8, 0.9)
+  # corr <- c(0, 0.1, 0.5, 0.8, 0.9)
   k <- 1
   for(j in corr){
     parameters_list[[k]] <- list(Sigma_diag = 1,

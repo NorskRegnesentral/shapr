@@ -383,6 +383,8 @@ simulate_data <- function(parameters_list){
   fit_mod <- parameters_list$fit_mod
   methods <- parameters_list$methods
   seed <- parameters_list$seed
+  corr <- parameters_list$corr
+  Sigma_diag <- parameters_list$Sigma_diag
   no_categories <- parameters_list$no_categories
   if(is.null(seed)) seed <- 1
   dim <- length(mu)
@@ -419,9 +421,9 @@ simulate_data <- function(parameters_list){
   }
 
   ## make sure Sigma is positive definite
-  Sigma <- matrix(rep(parameters_list$corr, dim^2), dim, dim)
+  Sigma <- matrix(rep(corr, dim^2), nrow = dim, ncol = dim)
   for(i in 1:dim){
-    Sigma[i, i] <- parameters_list$Sigma_diag
+    Sigma[i, i] <- Sigma_diag
   }
   if(!lqmm::is.positive.definite(Sigma)) {
     print("Covariance matrix is not positive definite but will be converted.")
@@ -432,6 +434,7 @@ simulate_data <- function(parameters_list){
 
   print(paste0("Dimension: ", dim), quote = FALSE, right = FALSE)
   print(paste0("Number of categories: ", no_categories), quote = FALSE, right = FALSE)
+  print(paste0("Correlation: ", corr), quote = FALSE, right = FALSE)
   print(paste0("N_shapley: ", N_shapley), quote = FALSE, right = FALSE)
   print(paste0("No_train_obs: ", No_train_obs), quote = FALSE, right = FALSE)
 
