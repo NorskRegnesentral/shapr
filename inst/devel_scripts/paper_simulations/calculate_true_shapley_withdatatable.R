@@ -786,7 +786,8 @@ simulate_data <- function(parameters_list){
             prediction_zero = p,
             sample = FALSE,
             w_threshold = 1,
-            n_samples = j)
+            n_samples = j,
+            seed = k)
 
           for (i in 1:no_features){
             phi_sum_mat[, i] <- rowSums(subset(explanation_list[[paste0(m, "_nsamples", j, "_trial", k)]]$dt, select = which(beta_matcher == i) + 1))
