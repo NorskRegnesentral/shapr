@@ -5,6 +5,7 @@
 
 library(shapr)
 library(data.table)
+library(MASS)
 
 response_mod <- function(mod_matrix_full, beta, epsilon){
   as.vector(mod_matrix_full %*% beta) + epsilon
@@ -18,7 +19,7 @@ no_levels <- 3
 no_tot_var <- no_cont_var + no_cat_var
 
 Sigma_diag = 1
-corr = 0.2
+corr = 0.5
 mu = rep(0, no_tot_var)
 beta_0 <- 1
 beta_cont <- c(1,-1)
@@ -92,8 +93,11 @@ cont_cols <- names(dt)[grep("cont",names(dt))]
 cat_cols <- names(dt)[grep("cat",names(dt))]
 feat_names <- c(cont_cols,cat_cols)
 
+dt_numeric <- copy(dt)
+dt_numeric[, (cat_cols) := lapply(.SD, as.numeric),.SDcols = cat_cols]
 
-dt[, (cat_cols) := lapply(.SD, as.factor),.SDcols = cat_cols]
+
+dt[, (cat_cols) := lapply(.SD, as.factor),.SDcols = cat_cols] # It is actually already a factor
 
 train_obs <- 1:No_train_obs
 test_obs <- (No_train_obs+1):(No_train_obs+No_test_obs)
@@ -108,6 +112,7 @@ reduced_onehot_names <- full_onehot_names[-grep("_1$", full_onehot_names)] # nam
 
 ## 3. Calculate response
 dt[, response := response_mod(mod_matrix_full = cbind(1, mod_matrix), beta = beta, epsilon = epsilon)]
+dt_numeric[, response := dt[['response']]]
 
 ## 4. Fit model
 
@@ -121,6 +126,10 @@ x_train <- dt[train_obs, ..feat_names] ## used in explainer()
 x_test <- dt[test_obs, ..feat_names] ## used in cond_expec_mat()
 y_train <- dt[train_obs, .(response)] ## used in cond_expec_mat()
 
+x_train_numeric <- dt_numeric[train_obs, ..feat_names] ## used in explainer()
+x_test_numeric <- dt_numeric[test_obs, ..feat_names] ## used in cond_expec_mat()
+
+
 x_test_onehot_full <- dt[test_obs, ..full_onehot_names]
 
 x_test_onehot_reduced <- dt[test_obs, ..reduced_onehot_names]
@@ -128,6 +137,38 @@ x_train_onehot_reduced <- dt[train_obs, ..reduced_onehot_names]
 
 ##
 explainer <- shapr(x_train, model) # print(class(model)) # "lm"
+
+## NEW
+# Create custom function of model_type for lm
+model_type.numeric_lm <- function(x) {
+}
+
+features.numeric_lm <- function(x, cnms, feature_labels = NULL) {
+  if (!is.null(feature_labels)) message_features_labels()
+
+  nms <- tail(all.vars(x$terms), -1)
+  if (!all(nms %in% cnms)) error_feature_labels()
+  return(nms)
+}
+
+# Create custom function of predict_model for caret
+predict_model.numeric_lm <- function(x, newdata) {
+  newdata <- as.data.table(newdata)
+
+  cat_cols <- names(newdata)[grep("cat",names(newdata))]
+  newdata[, (cat_cols) := lapply(.SD, as.factor),.SDcols = cat_cols]
+
+#  newdata0 <- newdata[, lapply(.SD, as.factor)]
+  class(x) <- "lm"
+  predict(x, newdata)
+}
+
+model_numeric <- model
+class(model_numeric) <- "numeric_lm"
+explainer_numeric <- shapr(x_train_numeric, model_numeric)
+## END
+
+
 
 #### 6. calculate the true shapley values
 
@@ -475,9 +516,83 @@ max(abs(rowSums(exactShap)-predict(model,x_test))) #
 
 #### Code for computing exact shapley values is done!
 # Not tested properly though
+# Testing when the features are independent
+
+xj_start_mat <- mod_matrix[test_obs,]
+Exj_vec <- c(0,0,diff(pnorm(q = cat_cutoff,mean = mu[1], sd=sqrt(Sigma[1,1]))),diff(pnorm(q = cat_cutoff,mean = mu[1], sd=sqrt(Sigma[1,1]))))
+
+# True shapley values Assuming independence
+tab <- t(beta[-1]*t(xj_start_mat- matrix(Exj_vec,ncol=length(Exj_vec),nrow=nrow(xj_start_mat),byrow = T)))
+SHAP <- cbind(phi0,tab[,1:2],rowSums(tab[,3:5]),rowSums(tab[,6:8]))
+
+rowSums(SHAP)
+predict(model,x_test)
+
+exactShap-SHAP # Close enough!
+# phi0     cont_1_     cont_2_
+# 101 -4.971156e-07 0.002440432 0.002440431 0.0004880859 -0.005368950
+# 102 -4.971156e-07 0.002440431 0.002440431 0.0004880860 -0.005368949
+# 103 -4.971156e-07 0.002440431 0.002440431 0.0004880860 -0.005368949
+# 104 -4.971156e-07 0.002440431 0.002440431 0.0004880859 -0.005368949
+# 105 -4.971156e-07 0.002440431 0.002440431 0.0004880861 -0.005368949
+# 106 -4.971156e-07 0.002440431 0.002440431 0.0004880862 -0.005368950
+# 107 -4.971156e-07 0.002440431 0.002440431 0.0004880858 -0.005368949
+# 108 -4.971156e-07 0.002440432 0.002440431 0.0004880859 -0.005368950
+# 109 -4.971156e-07 0.002440431 0.002440432 0.0004880859 -0.005368950
+# 110 -4.971156e-07 0.002440432 0.002440431 0.0004880861 -0.005368950
+# 111 -4.971156e-07 0.002440432 0.002440431 0.0004880861 -0.005368950
+# 112 -4.971156e-07 0.002440432 0.002440431 0.0004880859 -0.005368949
+# 113 -4.971156e-07 0.002440431 0.002440431 0.0004880859 -0.005368949
+# 114 -4.971156e-07 0.002440431 0.002440431 0.0004880862 -0.005368949
+# 115 -4.971156e-07 0.002440431 0.002440431 0.0004880860 -0.005368949
+# 116 -4.971156e-07 0.002440431 0.002440431 0.0004880863 -0.005368950
+# 117 -4.971156e-07 0.002440432 0.002440431 0.0004880860 -0.005368950
+# 118 -4.971156e-07 0.002440432 0.002440431 0.0004880857 -0.005368950
+# 119 -4.971156e-07 0.002440432 0.002440431 0.0004880861 -0.005368950
+# 120 -4.971156e-07 0.002440431 0.002440431 0.0004880859 -0.005368949
+
+#### Estimating the Shapley values ####
+
+p <- mean(y_train$response) # since y_train is no longer a matrix
+
+
+methods = c("ctree","kernelShap")
+
+explanation_list <- list()
+m = "ctree"
+explanation_list[[m]] <- explain(
+  x_test,
+  approach = m,
+  explainer = explainer,
+  prediction_zero = p,
+  sample = FALSE,
+  w_threshold = 1,
+  mincriterion = 0.95)
+
+m = "kernelShap"
+explanation_list[[m]] <- explain(
+    x_test_numeric,
+    approach = "empirical",
+    type = "independence",
+    explainer = explainer_numeric,
+    prediction_zero = p,
+    sample = FALSE,
+    w_threshold = 1,
+    mincriterion = 0.95)
+
+exactShap
+explanation_list$ctree$dt
+explanation_list$kernelShap$dt
+
 # also, probably needs speedup for simplified calling of density function for one large (500 or 1000) specific set of x-values
 
+MAE <- function(true_shapley, shapley_method, weights = rep(1/nrow(true_shapley),nrow(true_shapley))){
+  mean(apply(abs((true_shapley - shapley_method) * weights), 2, sum)[-1])
+}
 
+
+MAE(exactShap,explanation_list$ctree$dt)
+MAE(exactShap,explanation_list$kernelShap$dt)
 
 
 #### Testing the functions -- and they work! ####
@@ -527,3 +642,6 @@ all.equal(val2,val3)
 
 plot(x_vec,val2,type="l")
 lines(x_vec,val4,col=2,lty=2)
+
+
+
