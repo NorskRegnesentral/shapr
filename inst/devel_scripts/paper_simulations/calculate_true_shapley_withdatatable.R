@@ -125,6 +125,112 @@ sim_true_Normal <- function(mu, Sigma, beta, N_shapley = 10000, explainer, cutof
   return(list(joint_prob_dt, mn, prop))
 }
 
+
+# Helper functions
+upper_func <- function(x,cutoff){
+  cutoff[as.numeric(x)+1]
+}
+
+# Helper functions
+lower_func <- function(x,cutoff){
+  cutoff[as.numeric(x)]
+}
+
+
+
+#' Function to compute exact multivariate Normal probabilitites with true mu and Sigma parameters.
+#'
+#' @description
+#'
+#' @param mu Numeric or vector indicating the true mean of the Normal or joint Normal random variables used to calculate
+#' the true Shapley values.
+#' @param Sigma Numeric (if mu is Numeric) or matrix with values used for covariance matrix of the random variables used to
+#' calculate the true Shapley values.
+#' @param beta Numeric or vector. These are the true coefficients of the response modelthat we are trying to explain with the
+#' Shapley values.
+#' @param explainer explainer object from shapr package.
+#' @param cutoff vector of Numerics. This indicates where to cutoff the Normal random variables to make levels.
+#' @param response_mod function. The true response model that indicates how the features relate to the response.
+#' @param algorithm function. The algorithm to produce the multivariate normal probabilitites using mvtnorm. Either
+#' mvtnorm::GenzBretz() or mvtnorm::Miwa(). The former (default) is slightly seed dependent, but general and much faster
+#' for large dimensions. For dim 3 and 4 Miwa may be slightly faster, but there speed is not an issue.
+#' @param mc.cores Integer. The number of cores to use when parallelizing the normal probability calculation. 16 is the
+#' default (using 90 sec on dim 10 on a 16 cored computer).
+#' @details
+#'
+#' @return list First component is a data.table with the joint probability of each level. Second component is the mean of the responses of
+#' the simulated Normal random variables. Third component is a Numeric vector with the proportion in each level of each variable.
+#'
+#' @export
+
+create_exact_joint_prob <- function(mu,Sigma, beta, explainer, cutoff, response_mod, algorithm = mvtnorm::GenzBretz(),
+                                    mc.cores = 16){
+
+  feat_names <- colnames(explainer$x_train)
+  dim <- length(feat_names)
+  no_categories <- length(cutoff) - 1
+
+  all_x_list <- list()
+  for(i in 1:dim){
+    all_x_list[[i]] <- 1:no_categories
+  }
+  all_x_dt <- do.call(CJ, all_x_list)
+  names(all_x_dt) <- feat_names
+
+
+
+  all_x_dt[, (feat_names) := lapply(.SD, as.factor),.SDcols = feat_names]
+
+  ## Response comptutation
+
+  mod_matrix <- model.matrix(~.-1, data = all_x_dt,
+                             contrasts.arg = lapply(all_x_dt[, 1:dim],contrasts,contrasts=FALSE))
+
+  all_responses <- response_mod(mod_matrix_full = cbind(1,mod_matrix),
+                                beta = beta,
+                                epsilon = rep(0,nrow(mod_matrix)))
+
+  prop <- NULL
+  for (i in 1:dim){
+    prop <- c(prop,diff(pnorm(cutoff,mean=mu[i],sd = sqrt(Sigma[i,i]))))
+  }
+  names(prop) = rep(1:no_categories,times = dim)
+
+
+  # Lists with vectors containing the lower and upper combinations
+
+  upper_dt <- all_x_dt[,lapply(.SD,upper_func,cutoff=cutoff),.SDcols = feat_names]
+  lower_dt <- all_x_dt[,lapply(.SD,lower_func,cutoff=cutoff),.SDcols = feat_names]
+
+  upper_dt_list=as.list(as.data.table(t(upper_dt)))
+  lower_dt_list=as.list(as.data.table(t(lower_dt)))
+
+  corr <- cov2cor(Sigma)
+
+  all_probs <- parallel::mcmapply(FUN = mvtnorm::pmvnorm,
+                                  lower = lower_dt_list,
+                                  upper = upper_dt_list,
+                                  MoreArgs = list(mean = mu,
+                                                  corr = corr,
+                                                  algorithm = algorithm),
+                                  mc.cores = mc.cores)
+
+  all_probs <- all_probs/sum(all_probs)
+
+
+  all_x_dt[,joint_prob := all_probs]
+
+  setkeyv(all_x_dt,rev(feat_names)) # To get same ordering as previous version
+  all_x_dt[, feat_comb_id:=.I]
+
+  mn <- sum(all_responses*all_probs)
+
+  return(list(all_x_dt, mn, prop))
+}
+
+
+
+
 #' Function to calculate marginal probabilities of the cutoff jointly Normal random variables
 #'
 #' @description
@@ -573,7 +679,8 @@ simulate_data <- function(parameters_list){
   print("Started to calculate true Shapley values.", quote = FALSE, right = FALSE)
 
   tm0 <- proc.time();
-  joint_prob_dt_list <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)
+#  joint_prob_dt_list <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)
+  joint_prob_dt_list <- create_exact_joint_prob(mu,Sigma, beta, explainer, cutoff, response_mod)
   tm1 <- proc.time();
   timeit['Simulate_true_Normal'] <- list((tm1 - tm0))
 
