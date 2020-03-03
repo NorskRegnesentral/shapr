@@ -37,6 +37,7 @@ Suggests:
     testthat, 
     lintr (>= 2.0.0),
     covr,
+    maptree,
     corrplot,
     pcaPP,
     knitr,
