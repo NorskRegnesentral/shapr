@@ -12,7 +12,7 @@ library(ggplot2)
 test <- FALSE
 tod_date <- format(Sys.Date(), "%d_%m_%y")
 
-dim <- 8
+dim <- 4
 no_categories <- 3
 cutoff = c(-200, 0, 1, 200)
 methods <- c("empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP")
@@ -80,7 +80,7 @@ if(test){
                                  name = paste0('corr', j),
                                  cutoff = cutoff,
                                  Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
-                                 No_test_sample = 1000,
+                                 No_test_sample = 20,
                                  No_train_obs = 1000,
                                  N_sample_gaussian = c(100, 1000),
                                  seed = 1,
@@ -298,143 +298,61 @@ print("Started to calculate true Shapley values.", quote = FALSE, right = FALSE)
 
 ##### CODE I WANT TO REPLACE ####
 
-N_shapley <- 10^5
+N_shapley <- 10^7
 
+start = proc.time()
 joint_prob_dt_list <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)
+end <- proc.time()
+end-start
+tm0 <- proc.time();
+marg_list <- marg_prob(joint_prob_dt_list[[1]], explainer)
+tm1 <- proc.time();
+timeit['Calculate_marginal_distributions'] <- list((tm1 - tm0))
 
-# Helper functions
-upper_func <- function(x,cutoff){
-  cutoff[as.numeric(x)+1]
-}
+tm0 <- proc.time();
+cond_list <- cond_prob(marg_list, joint_prob_dt_list[[1]], explainer)
+tm1 <- proc.time();
+timeit['Calculate_conditional_distributions'] <- list((tm1 - tm0))
 
-lower_func <- function(x,cutoff){
-  cutoff[as.numeric(x)]
-}
+tm0 <- proc.time();
+cond_expec_mat <- cond_expec_new(cond_list, explainer, x_test, prediction_zero = joint_prob_dt_list[[2]], joint_prob_dt = joint_prob_dt_list[[1]])
+tm1 <- proc.time();
+timeit['Calculate_expectations_distributions'] <- list((tm1 - tm0))
 
+tm0 <- proc.time();
+true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
+tm1 <- proc.time();
+timeit['Calculate_true_Shapley'] <- list((tm1 - tm0))
 
-create_exact_joint_prob <- function(mu,Sigma, beta, explainer, cutoff, response_mod, algorithm = mvtnorm::GenzBretz()){
+true_shapley_old = true_shapley
 
-  feat_names <- colnames(explainer$x_train)
-  dim <- length(feat_names)
-  no_categories <- length(cutoff) - 1
+start = proc.time()
+joint_prob_dt_list_exact <- create_exact_joint_prob(mu,Sigma, beta, explainer, cutoff, response_mod)
+end <- proc.time()
 
-  all_x_list <- list()
-  for(i in 1:dim){
-    all_x_list[[i]] <- 1:no_categories
-  }
-  all_x_dt <- do.call(CJ, all_x_list)
-  names(all_x_dt) <- feat_names
-  upper_cols <- paste0("upper_",feat_names)
-  lower_cols <- paste0("lower_",feat_names)
+joint_prob_dt_list <- joint_prob_dt_list_exact
 
-  # Lists with vectors containing the lower and upper combinations
-  upper_dt_list=as.list(as.data.table(t(upper_dt)))
-  lower_dt_list=as.list(as.data.table(t(lower_dt)))
+tm0 <- proc.time();
+marg_list <- marg_prob(joint_prob_dt_list[[1]], explainer)
+tm1 <- proc.time();
+timeit['Calculate_marginal_distributions'] <- list((tm1 - tm0))
 
+tm0 <- proc.time();
+cond_list <- cond_prob(marg_list, joint_prob_dt_list[[1]], explainer)
+tm1 <- proc.time();
+timeit['Calculate_conditional_distributions'] <- list((tm1 - tm0))
 
-  all_probs <- parallel::mcmapply(FUN = mvtnorm::pmvnorm,
-                                  lower = lower_dt_list,
-                                  upper = upper_dt_list,
-                                  MoreArgs = list(mean = mu,corr = corr),
-                                  mc.cores = 16)
+tm0 <- proc.time();
+cond_expec_mat <- cond_expec_new(cond_list, explainer, x_test, prediction_zero = joint_prob_dt_list[[2]], joint_prob_dt = joint_prob_dt_list[[1]])
+tm1 <- proc.time();
+timeit['Calculate_expectations_distributions'] <- list((tm1 - tm0))
 
-  all_x_dt[,probs := all_probs]
+tm0 <- proc.time();
+true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
+tm1 <- proc.time();
+timeit['Calculate_true_Shapley'] <- list((tm1 - tm0))
 
-
-
-
-  prep_list_all_x_test_C <- mapply(prep_dens_x_given_S_is_C_func,
-                                   C_lower =x_test_C_lower_S_i_list,
-                                   C_upper = x_test_C_upper_S_i_list,
-                                   MoreArgs = list(xi = xi, Omega = Omega, algorithm = algorithm),
-                                   SIMPLIFY = FALSE)
-
-  intval_list_no_x=parallel::mclapply(X = prep_list_all_x_test_C,FUN = vec_compute_dens_x_given_S_is_C_func_rev,x=x_int_grid,
-                                      mc.cores = 6)
-
-
-
-  #### TESTING ####
-  lower = rep(c(-200,1),4)
-  upper = rep(c(0,200),4)
-  corr <- cov2cor(Sigma)
-
-  start <- proc.time()
-  for(i in 1:1000){
-    ee=mvtnorm::pmvnorm(lower = lower,upper = upper,mean = mu,corr = corr)
-  }
-  end <- proc.time()
-  end-start
-
-  start <- proc.time()
-  for(i in 1:1000){
-    dd=mvtnorm:::mvt(lower = lower,upper = upper,df = 0,corr = corr, delta = mu,algorithm = mvtnorm::Miwa()) # FASTEST
-  }
-  end <- proc.time()
-  end-start
-
-  start <- proc.time()
-  for(i in 1:1000){
-    cc=mvtnorm:::mvt(lower = lower,upper = upper,df = 0,corr = corr, delta = mu,algorithm = mvtnorm::GenzBretz())
-  }
-  end <- proc.time()
-  end-start
-
-
-
-  corrF <- matrix(as.vector(corr), ncol=dim, byrow=TRUE)
-  corrF <- corrF[upper.tri(corrF)]
-
-  start <- proc.time()
-  for(i in 1:1000){
-    bb=mvtnorm:::probval.Miwa(x = mvtnorm::Miwa(),
-                                n = dim,
-                                df = 0 ,
-                                lower = lower,
-                                upper = upper,
-                                infin = rep(2, dim), # We never have true infinite limits
-                                corr = corr,
-                                corrF = corrF,
-                                delta = mu)
-  }
-  end <- proc.time()
-  end-start
-
-  start <- proc.time()
-  for(i in 1:1000){
-    aa=mvtnorm:::probval.GenzBretz(x = mvtnorm::GenzBretz(),
-                                n = dim,
-                                df = 0 ,
-                                lower = lower,
-                                upper = upper,
-                                infin = rep(2, dim), # We never have true infinite limits
-                                corr = corr,
-                                corrF = corrF,
-                                delta = mu)
-
-  }
-  end <- proc.time()
-  end-start
-
-
-  aa
-  bb
-  cc
-  dd
-  ee
-
-
-  checkmvArgs()
-
-
-  #### END TESTING ######
-
-
-
-  ?mvtnorm:::probval(algorithm = algorithm,
-                     n)
-
-}
-
+true_shapley
+true_shapley_old
 
 
