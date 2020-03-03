@@ -35,8 +35,8 @@ if(test){
                                  name = paste0('corr', j),
                                  cutoff = cutoff,
                                  Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
-                                 No_test_sample = 20,
-                                 No_train_obs = 20,
+                                 No_test_sample = 2,
+                                 No_train_obs = 100,
                                  N_sample_gaussian = c(50),
                                  seed = 1,
                                  no_categories = no_categories)
