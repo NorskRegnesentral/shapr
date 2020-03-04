@@ -704,6 +704,8 @@ simulate_data <- function(parameters_list){
   tm1 <- proc.time();
   timeit['Calculate_expectations_distributions'] <- list((tm1 - tm0))
 
+  rm(cond_list) # to save memory
+
   tm0 <- proc.time();
   true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
   tm1 <- proc.time();
