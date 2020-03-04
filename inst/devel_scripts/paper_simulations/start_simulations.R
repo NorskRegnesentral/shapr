@@ -9,58 +9,68 @@ test <- FALSE
 tod_date <- format(Sys.Date(), "%d_%m_%y")
 
 
-# dim <- 7
-# no_categories <- 5
-# cutoff = c(-200, -0.5, -0.25, 0, 1, 200)
-# methods <- c("ctree", "kernelSHAP")
-#
-# source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
-# source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
-#
-#
-# ##
-#
-# dim <- 5
-# no_categories <- 6
-# cutoff = c(-200, -0.5, -0.25, 0, 0.9, 1, 200)
-# methods <- c("ctree", "kernelSHAP")
-#
-# source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
-# source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
-
-##
-
-dim <- 3
-no_categories <- 4
-cutoff <- c(-200, -0.5, 0, 1, 200)
-corr <- c(0,0.1,0.5,0.8, 0.9)
-methods <- c("empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP")
+dim <- 7
+no_categories <- 5
+cutoff = c(-200, -0.5, -0.25, 0, 1, 200)
+corr <- 0.9#c(0,0.1,0.5,0.8, 0.9) # 0.8 leads to the error: Error in model@fit(data, ...) : error code 1 from Lapack routine 'dgesdd'
+methods <- c("ctree", "kernelSHAP")
 
 source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
 source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
 
 
+
 ##
-#
-# dim <- 4
-# no_categories <- 3
-# cutoff = c(-200, 0, 1, 200)
+
+# dim <- 3
+# no_categories <- 4
+# cutoff <- c(-200, -0.5, 0, 1, 200)
+# corr <- c(0,0.1,0.5,0.8, 0.9)
 # methods <- c("empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP")
 #
 # source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
 # source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
 #
 #
-#
 # ##
+# #
+# dim <- 4
+# no_categories <- 3
+# cutoff = c(-200, 0, 1, 200)
+# corr <- c(0,0.1,0.5,0.8, 0.9)
 #
-# dim <- 10
-# no_categories <- 4
-# cutoff = c(-200, -0.5, 0, 1, 200)
-# methods <- c("ctree", "kernelSHAP")
+# methods <- c("empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP")
 #
 # source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
 # source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
 #
 # ##
 #
+# dim <- 5
+# no_categories <- 6
+# cutoff = c(-200, -0.5, -0.25, 0, 0.9, 1, 200)
+# corr <- c(0,0.1,0.5,0.8, 0.9)
+# methods <- c("ctree", "kernelSHAP")
+#
+# source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
+# source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
+
+
+#
+#
+#
+# ##
+#
+
+### Not yet run#
+
+dim <- 10
+no_categories <- 4
+cutoff = c(-200, -0.5, 0, 1, 200)
+corr <- c(0,0.1,0.5,0.8, 0.9)
+methods <- c("ctree", "kernelSHAP")
+
+source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
+source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
+
+##
