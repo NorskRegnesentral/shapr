@@ -115,15 +115,11 @@ listfun <- function(mean_above,left,x_val,...){
 
 compute_dens_x_given_S_is_C_func_v2 <- function(ret_list,algorithm = mvtnorm::Miwa()) {
 
-  # above <- mvtnorm::pmvnorm(lower = ret_list$C_lower,upper = ret_list$C_upper,
-  #                           mean = ret_list$mean_above,
-  #                           sigma = ret_list$sigma_above,
-  #                           algorithm = algorithm)[1]
+   above <- mvtnorm::pmvnorm(lower = ret_list$C_lower,upper = ret_list$C_upper,
+                             mean = ret_list$mean_above,
+                             sigma = ret_list$sigma_above,
+                             algorithm = algorithm)[1]
 
-  above <- pmvnorm_no_checking(lower = ret_list$C_lower,upper = ret_list$C_upper,
-                                mean = ret_list$mean_above,
-                                sigma = ret_list$sigma_above,
-                                algorithm = algorithm)$value
 
   dens <- ret_list$left*above/ret_list$below
 
@@ -131,30 +127,18 @@ compute_dens_x_given_S_is_C_func_v2 <- function(ret_list,algorithm = mvtnorm::Mi
 
 }
 
-pmvnorm_no_checking <- function(lower, upper,mean, sigma, algorithm){
 
-  n <- ncol(sigma)
+#### OLD FUNCTIONS ####
+
+pmvnorm_no_checking <- function(lower, upper,mean, sigma, algorithm){
 
   corr <- cov2cor(sigma)
 
-  corrF <- matrix(as.vector(corr), ncol=n, byrow=TRUE)
-  corrF <- corrF[upper.tri(corrF)]
-  #ret = mvtnorm:::mvt(lower = lower,upper = upper,df = 0,corr = corr, delta = mu,algorithm = algorithm)
-
-  ret <- mvtnorm:::probval.Miwa(x = algorithm,
-                                n = n,
-                                df = 0 ,
-                                lower = lower,
-                                upper = upper,
-                                infin = rep(2, n), # We never have true infinite limits
-                                corr = corr,
-                                corrF = corrF,
-                                delta = mean)
+  ret = mvtnorm:::mvt(lower = lower,upper = upper,df = 0,corr = corr, delta = mean,algorithm = algorithm)
 
   return(ret)
 }
 
-#### OLD FUNCTIONS ####
 
 # Here is the computation function, taking the preparation values as input
 compute_dens_x_given_S_is_C_func <- function(x,ret_list) {

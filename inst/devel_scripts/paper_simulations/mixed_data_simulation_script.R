@@ -21,7 +21,7 @@ no_levels <- 3
 no_tot_var <- no_cont_var + no_cat_var
 
 Sigma_diag = 1
-corr = 0.5
+corr = 0.0
 mu = rep(0, no_tot_var)
 beta_0 <- 1
 beta_cont <- c(1,-1)
@@ -30,7 +30,7 @@ beta_cat <- c(1,0,-1,
 
 beta <- c(beta_0,beta_cont,beta_cat)
 No_train_obs = 100
-No_test_obs = 20
+No_test_obs = 100
 cat_cutoff = c(-200, 0, 1, 200)
 noise = FALSE
 name = 'testing'
@@ -268,7 +268,8 @@ Vs_mat[nrow(S),] <- predict(model,x_test)
 #algorithm <- mvtnorm::GenzBretz() # Not exact and slower for small dimensions
 algorithm <- mvtnorm::Miwa()
 
-
+start <- proc.time()
+mc.cores <- 16
 for (i in 2:(nrow(S)-1)){
   S_i <-   which(as.logical(S[i,]))
   Sbar_i <-   which(as.logical(1-S[i,]))
@@ -282,9 +283,9 @@ for (i in 2:(nrow(S)-1)){
 
   Vs_sum_contrib_mat <- matrix(NA,ncol=no_tot_var,nrow=No_test_obs)
 
-  start = proc.time()
+
+  prep_list_2 <- list()
   for (j in Sbar_i){
-    j_is_cont <- j %in% ind_cont_cols
 
     Omega <- Sigma[c(j,S_i),c(j,S_i)]
     xi <- mu[c(j,S_i)]
@@ -296,71 +297,44 @@ for (i in 2:(nrow(S)-1)){
                           MoreArgs = list(xi = xi, Omega = Omega, algorithm = algorithm),
                           SIMPLIFY = FALSE)
 
-    prep_list_2 <- unlist(lapply(prep_list_1,prep_dens_x_given_S_is_C_func_v2,x_vec = x_int_grid),recursive = F)
-
-    intval_list_no_x=parallel::mclapply(X = prep_list_2,FUN = compute_dens_x_given_S_is_C_func_v2,mc.cores = 16)
-    intval_mat_no_x=matrix(unlist(intval_list_no_x),ncol=No_test_obs)
-
+    prep_list_2[[j]] <- unlist(lapply(prep_list_1,prep_dens_x_given_S_is_C_func_v2,x_vec = x_int_grid),recursive = F)
   }
-  end <- proc.time()
-  end-start
-
-  start = proc.time()
-  ll <- list()
-  k <- 1
-  for (j in Sbar_i){
-    j_is_cont <- j %in% ind_cont_cols
-
-    Omega <- Sigma[c(j,S_i),c(j,S_i)]
-    xi <- mu[c(j,S_i)]
 
 
-    prep_list_1 <- mapply(prep_dens_x_given_S_is_C_func,
-                          C_lower =x_test_C_lower_S_i_list,
-                          C_upper = x_test_C_upper_S_i_list,
-                          MoreArgs = list(xi = xi, Omega = Omega, algorithm = algorithm),
-                          SIMPLIFY = FALSE)
-
-    ll[[k]] <- unlist(lapply(prep_list_1,prep_dens_x_given_S_is_C_func_v2,x_vec = x_int_grid),recursive = F)
-   k = k + 1
-  }
-  intval_list_no_x=parallel::mclapply(X = unlist(ll,recursive = F),FUN = compute_dens_x_given_S_is_C_func_v2,mc.cores = 16)
+  intval_list_no_x=parallel::mclapply(X = unlist(prep_list_2,recursive = F),FUN = compute_dens_x_given_S_is_C_func_v2,mc.cores = mc.cores)
   intval_mat_no_x=matrix(unlist(intval_list_no_x),ncol=No_test_obs)
 
   intval_array_no_x=array(unlist(intval_list_no_x),dim = c(length(x_int_grid),No_test_obs,length(Sbar_i)))
 
+  jj <- 1
+  for (j in Sbar_i){
+    j_is_cont <- j %in% ind_cont_cols
 
-  end <- proc.time()
-  end-start
-
-
-
-
-  if (j_is_cont){
-    ## Continuous expectation
-    expectation_vec <- rep(NA,No_test_obs)
-    for(k in 1:No_test_obs){
-      expectation_vec[k] <- h*sum(intval_mat_no_x[,k]*x_int_grid)
-    }
-    Vs_sum_contrib_vec <- beta_list[[j]]*expectation_vec
-
-
-  } else {
-    # categorical expectation
-    prob_mat <- matrix(NA,nrow=No_test_obs,ncol=no_levels)
-    for(k in 1:No_test_obs){
-      for (l in 1:no_levels){
-        prob_mat[k,l] <- h*sum(intval_mat_no_x[,k][x_int_grid_cat==l])
+    if (j_is_cont){
+      ## Continuous expectation
+      expectation_vec <- rep(NA,No_test_obs)
+      for(k in 1:No_test_obs){
+        expectation_vec[k] <- h*sum(intval_array_no_x[,k,jj]*x_int_grid)
       }
-      prob_mat[k,] <- prob_mat[k,]/sum(prob_mat[k,])
-    }
-    Vs_sum_contrib_vec <- as.vector(beta_list[[j]]%*%t(prob_mat))
+      Vs_sum_contrib_vec <- beta_list[[j]]*expectation_vec
 
-  }
+
+    } else {
+      # categorical expectation
+      prob_mat <- matrix(NA,nrow=No_test_obs,ncol=no_levels)
+      for(k in 1:No_test_obs){
+        for (l in 1:no_levels){
+          prob_mat[k,l] <- h*sum(intval_array_no_x[,k,jj][x_int_grid_cat==l])
+        }
+        prob_mat[k,] <- prob_mat[k,]/sum(prob_mat[k,])
+      }
+      Vs_sum_contrib_vec <- as.vector(beta_list[[j]]%*%t(prob_mat))
+
+    }
 
     Vs_sum_contrib_mat[,j] <- Vs_sum_contrib_vec
 
-
+    jj <- jj + 1
   }
 
   for (j in S_i){
@@ -369,6 +343,8 @@ for (i in 2:(nrow(S)-1)){
   Vs_mat[i,] <- rowSums(Vs_sum_contrib_mat)
   print(i)
 }
+end <- proc.time()
+end - start
 
 exactShap <- matrix(NA,ncol=no_tot_var+1,nrow=No_test_obs)
 for (i in 1:No_test_obs){
@@ -435,7 +411,7 @@ rowSums(SHAP)
 predict(model,x_test)
 
 exactShap-SHAP # Close enough!
-# phi0     cont_1_     cont_2_
+#              phi0     cont_1_     cont_2_
 # 101 -4.971156e-07 0.002440432 0.002440431 0.0004880859 -0.005368950
 # 102 -4.971156e-07 0.002440431 0.002440431 0.0004880860 -0.005368949
 # 103 -4.971156e-07 0.002440431 0.002440431 0.0004880860 -0.005368949
