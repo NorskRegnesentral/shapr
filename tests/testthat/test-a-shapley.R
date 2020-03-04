@@ -3,7 +3,7 @@ library(shapr)
 
 context("test-shapley.R")
 
-RNGkind(sample.kind = "Rounding")
+RNGversion(vstr = "3.5.0")
 
 test_that("Basic test functions in shapley.R", {
 
