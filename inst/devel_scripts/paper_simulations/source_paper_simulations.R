@@ -38,7 +38,7 @@ if(test){
                                  No_test_sample = 2,
                                  No_train_obs = 100,
                                  N_sample_gaussian = c(50),
-                                 seed = 1,
+                                 seed = ifelse(exists("seed"),seed,1),
                                  no_categories = no_categories)
     k <- k + 1
   }
@@ -63,7 +63,7 @@ if(test){
                                  No_test_sample = 1000,
                                  No_train_obs = 1000,
                                  N_sample_gaussian = c(100, 1000),
-                                 seed = 1,
+                                 seed = ifelse(exists("seed"),seed,1),
                                  no_categories = no_categories)
     k <- k + 1
   }
