@@ -282,26 +282,65 @@ for (i in 2:(nrow(S)-1)){
 
   Vs_sum_contrib_mat <- matrix(NA,ncol=no_tot_var,nrow=No_test_obs)
 
+  start = proc.time()
   for (j in Sbar_i){
     j_is_cont <- j %in% ind_cont_cols
 
     Omega <- Sigma[c(j,S_i),c(j,S_i)]
     xi <- mu[c(j,S_i)]
 
-    prep_list_all_x_test_C <- mapply(prep_dens_x_given_S_is_C_func,
-                                     C_lower =x_test_C_lower_S_i_list,
-                                     C_upper = x_test_C_upper_S_i_list,
-                                     MoreArgs = list(xi = xi, Omega = Omega, algorithm = algorithm),
-                                     SIMPLIFY = FALSE)
 
-    intval_list_no_x=parallel::mclapply(X = prep_list_all_x_test_C,FUN = vec_compute_dens_x_given_S_is_C_func_rev,x=x_int_grid,
-                                        mc.cores = 6)
+    prep_list_1 <- mapply(prep_dens_x_given_S_is_C_func,
+                          C_lower =x_test_C_lower_S_i_list,
+                          C_upper = x_test_C_upper_S_i_list,
+                          MoreArgs = list(xi = xi, Omega = Omega, algorithm = algorithm),
+                          SIMPLIFY = FALSE)
+
+    prep_list_2 <- unlist(lapply(prep_list_1,prep_dens_x_given_S_is_C_func_v2,x_vec = x_int_grid),recursive = F)
+
+    intval_list_no_x=parallel::mclapply(X = prep_list_2,FUN = compute_dens_x_given_S_is_C_func_v2,mc.cores = 16)
+    intval_mat_no_x=matrix(unlist(intval_list_no_x),ncol=No_test_obs)
+
+  }
+  end <- proc.time()
+  end-start
+
+  start = proc.time()
+  ll <- list()
+  k <- 1
+  for (j in Sbar_i){
+    j_is_cont <- j %in% ind_cont_cols
+
+    Omega <- Sigma[c(j,S_i),c(j,S_i)]
+    xi <- mu[c(j,S_i)]
+
+
+    prep_list_1 <- mapply(prep_dens_x_given_S_is_C_func,
+                          C_lower =x_test_C_lower_S_i_list,
+                          C_upper = x_test_C_upper_S_i_list,
+                          MoreArgs = list(xi = xi, Omega = Omega, algorithm = algorithm),
+                          SIMPLIFY = FALSE)
+
+    ll[[k]] <- unlist(lapply(prep_list_1,prep_dens_x_given_S_is_C_func_v2,x_vec = x_int_grid),recursive = F)
+   k = k + 1
+  }
+  intval_list_no_x=parallel::mclapply(X = unlist(ll,recursive = F),FUN = compute_dens_x_given_S_is_C_func_v2,mc.cores = 16)
+  intval_mat_no_x=matrix(unlist(intval_list_no_x),ncol=No_test_obs)
+
+  intval_array_no_x=array(unlist(intval_list_no_x),dim = c(length(x_int_grid),No_test_obs,length(Sbar_i)))
+
+
+  end <- proc.time()
+  end-start
+
+
+
 
   if (j_is_cont){
     ## Continuous expectation
     expectation_vec <- rep(NA,No_test_obs)
     for(k in 1:No_test_obs){
-      expectation_vec[k] <- h*sum(intval_list_no_x[[k]]*x_int_grid)
+      expectation_vec[k] <- h*sum(intval_mat_no_x[,k]*x_int_grid)
     }
     Vs_sum_contrib_vec <- beta_list[[j]]*expectation_vec
 
@@ -311,7 +350,7 @@ for (i in 2:(nrow(S)-1)){
     prob_mat <- matrix(NA,nrow=No_test_obs,ncol=no_levels)
     for(k in 1:No_test_obs){
       for (l in 1:no_levels){
-        prob_mat[k,l] <- h*sum(intval_list_no_x[[k]][x_int_grid_cat==l])
+        prob_mat[k,l] <- h*sum(intval_mat_no_x[,k][x_int_grid_cat==l])
       }
       prob_mat[k,] <- prob_mat[k,]/sum(prob_mat[k,])
     }

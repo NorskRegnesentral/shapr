@@ -74,14 +74,13 @@ prep_dens_x_given_S_is_C_func <- function(C_lower,C_upper,xi,Omega,algorithm) {
   below <- mvtnorm::pmvnorm(lower = C_lower,upper = C_upper,
                             mean = mean_below,
                             sigma = sigma_below,
-                            algorithm = algorithm)
+                            algorithm = algorithm)[1]
 
 
   left_mean <- xi_V
   left_sd <- sqrt(Omega_V)
 
-  ret <- list(algorithm = algorithm,
-              C_lower = C_lower,
+  ret <- list(C_lower = C_lower,
               C_upper = C_upper,
               mean_above_mult = mean_above_mult,
               mean_above_add = mean_above_add,
@@ -91,54 +90,44 @@ prep_dens_x_given_S_is_C_func <- function(C_lower,C_upper,xi,Omega,algorithm) {
               left_sd = left_sd)
 
   return(ret)
-
 }
 
-prep_dens_x_given_S_is_C_func_v2 <- function(C_lower, C_upper,xi,Omega,algorithm) {
+prep_dens_x_given_S_is_C_func_v2 <- function(ret_list,x_vec) {
 
-  C_lower <- unlist(C_lower)
-  C_upper <- unlist(C_upper)
+  mean_above_mat <- ret_list$mean_above_mul%x%t(x_vec) + as.vector(ret_list$mean_above_add)
+  mean_above_list <- as.list(as.data.frame(mean_above_mat))
 
-  these_U <- (1:length(C_lower))+1
-  these_V <- 1
+  left_vec <- dnorm(x_vec,mean=ret_list$left_mean,sd = ret_list$left_sd)
 
-  Omega_U <- Omega[these_U,these_U,drop=F]
-  Omega_V <- Omega[these_V,these_V,drop=F]
-  Delta <- Omega[these_V,these_U,drop=F]
-
-  xi_U <- xi[these_U]
-  xi_V <- xi[these_V]
-
-
-  mean_above_mult <- t(Delta)%*%solve(Omega_V)
-  mean_above_add <- xi_U - t(Delta)%*%solve(Omega_V)%*%xi_V
-  sigma_above <- Omega_U - t(Delta)%*%solve(Omega_V)%*%Delta
-
-  mean_below <- xi_U
-  sigma_below <- Omega_U
-
-  below <- mvtnorm::pmvnorm(lower = C_lower,upper = C_upper,
-                            mean = mean_below,
-                            sigma = sigma_below,
-                            algorithm = algorithm)
-
-
-  left_mean <- xi_V
-  left_sd <- sqrt(Omega_V)
-
-  ret <- list(algorithm = algorithm,
-              C_lower = C_lower,
-              C_upper = C_upper,
-              mean_above_mult = mean_above_mult,
-              mean_above_add = mean_above_add,
-              sigma_above = sigma_above,
-              below = below,
-              left_mean = left_mean,
-              left_sd = left_sd)
+  ret <- mapply(listfun,mean_above = mean_above_list,left = left_vec,x_val = x_vec,
+                MoreArgs = list(C_lower = ret_list$C_lower,
+                                C_upper = ret_list$C_upper,
+                                below = ret_list$below,
+                                sigma_above = ret_list$sigma_above),
+                SIMPLIFY = F)
 
   return(ret)
+}
+
+listfun <- function(mean_above,left,x_val,...){
+  list(mean_above = mean_above,left = left,x_val = x_val,...)
+}
+
+compute_dens_x_given_S_is_C_func_v2 <- function(ret_list,algorithm = mvtnorm::Miwa()) {
+
+
+  above <- mvtnorm::pmvnorm(lower = ret_list$C_lower,upper = ret_list$C_upper,
+                            mean = ret_list$mean_above,
+                            sigma = ret_list$sigma_above,
+                            algorithm = algorithm)[1]
+
+
+  dens <- ret_list$left*above/ret_list$below
+
+  return(dens)
 
 }
+
 
 # Here is the computation function, taking the preparation values as input
 compute_dens_x_given_S_is_C_func <- function(x,ret_list) {
@@ -149,7 +138,7 @@ compute_dens_x_given_S_is_C_func <- function(x,ret_list) {
   above <- mvtnorm::pmvnorm(lower = ret_list$C_lower,upper = ret_list$C_upper,
                             mean = mean_above,
                             sigma = ret_list$sigma_above,
-                            algorithm = algorithm)
+                            algorithm = algorithm)[1]
 
   left <- dnorm(x,mean=ret_list$left_mean,sd = ret_list$left_sd)
 
@@ -158,6 +147,8 @@ compute_dens_x_given_S_is_C_func <- function(x,ret_list) {
   return(dens)
 
 }
+
+
 
 # Vectorizing the two functions and checking that they give the same result
 vec_dens_x_given_S_is_C_func <- Vectorize(dens_x_given_S_is_C_func,vectorize.args="x")
@@ -171,3 +162,5 @@ vec_compute_dens_x_given_S_is_C_func_2 = Vectorize(compute_dens_x_given_S_is_C_f
 vec_compute_dens_x_given_S_is_C_func_rev <- function(ret_list,x){
   vec_compute_dens_x_given_S_is_C_func(x,ret_list)
 }
+
+
