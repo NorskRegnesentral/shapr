@@ -483,7 +483,7 @@ simulate_data <- function(parameters_list){
   #
   mu <- parameters_list$mu
   beta <- parameters_list$beta
-  N_shapley <- parameters_list$N_shapley # number of var to simulate to calc true Shapley
+  # N_shapley <- parameters_list$N_shapley # number of var to simulate to calc true Shapley
   Sample_test <- parameters_list$Sample_test
   No_train_obs <- parameters_list$No_train_obs
   No_test_sample <- parameters_list$No_test_sample
@@ -498,7 +498,10 @@ simulate_data <- function(parameters_list){
   Sigma_diag <- parameters_list$Sigma_diag
   no_categories <- parameters_list$no_categories
   if(is.null(seed)) seed <- 1
+  x_test_dt <- parameters_list$x_test_dt
+  #
   dim <- length(mu)
+
 
 
   # check correct input
@@ -507,9 +510,6 @@ simulate_data <- function(parameters_list){
   }
   if(!all(is.numeric(beta))){
     stop("beta vector must contain only numerics.")
-  }
-  if(!is.numeric(N_shapley)){
-    stop("N_shapley must be a numeric.")
   }
   if(Sample_test){
     if(!is.numeric(No_test_sample)){
@@ -544,10 +544,13 @@ simulate_data <- function(parameters_list){
   }
 
   print(paste0("Dimension: ", dim), quote = FALSE, right = FALSE)
-  print(paste0("Number of categories: ", no_categories), quote = FALSE, right = FALSE)
+  print(paste0("Nb of categories: ", no_categories), quote = FALSE, right = FALSE)
   print(paste0("Correlation: ", corr), quote = FALSE, right = FALSE)
-  print(paste0("N_shapley: ", N_shapley), quote = FALSE, right = FALSE)
-  print(paste0("No_train_obs: ", No_train_obs), quote = FALSE, right = FALSE)
+  print(paste0("Nb train observations: ", No_train_obs), quote = FALSE, right = FALSE)
+
+  if(!is.null(x_test_dt)){
+    print(paste0("Nb test observations: ", nrow(x_test_dt)), quote = FALSE, right = FALSE)
+  }
 
   ## 1. simulate training data
   tm_current <- Sys.time()
@@ -556,30 +559,33 @@ simulate_data <- function(parameters_list){
   x <- x1
 
   dt <- NULL
-  if(is.null(cutoff)){ ## to get equal proportion in each level
+  if(is.null(cutoff)){
     for(i in 1:no_categories){
       dt <- cbind(dt, cut(x[, i], quantile(x[, i], probs = (1 / no_categories * seq(0, no_categories, by = 1))), labels = 1:no_categories, include.lowest = TRUE)) # without include.lowest, you get NA at the boundaries
       cutoff <- c(cutoff, quantile(x[, i], probs = (1 / no_categories * seq(0, no_categories, by = 1))))
     }
     cutoff <- matrix(cutoff, nrow = dim, ncol = no_categories, byrow = TRUE)
-  } else{ # Annabelle checked the code chunk above
+  } else{
     for(i in 1:dim){
       dt <- cbind(dt, cut(x[, i], cutoff, labels = 1:no_categories))
     }
   }
 
 
-  ## 1.2 Get every combination of the levels and dimensions
-  x_test_list <- list()
-  for(i in 1:dim){
-    x_test_list[[i]] <- 1:no_categories
-  }
-  x_test_dt <- do.call(CJ, x_test_list)
+  ## Get test data
+  ## Get every combination of the levels and dimensions unless x_test_dt is passed to parameters_list
+  if(is.null(x_test_dt)){
+    x_test_list <- list()
+    for(i in 1:dim){
+      x_test_list[[i]] <- 1:no_categories
+    }
+    x_test_dt <- do.call(CJ, x_test_list)
 
-  if(Sample_test){
-    if(nrow(x_test_dt) > No_test_sample){
-      sampled_rows <- sample(1:nrow(x_test_dt), size = No_test_sample, replace = FALSE)
-      x_test_dt <- x_test_dt[sampled_rows, ]
+    if(Sample_test){
+      if(nrow(x_test_dt) > No_test_sample){
+        sampled_rows <- sample(1:nrow(x_test_dt), size = No_test_sample, replace = FALSE)
+        x_test_dt <- x_test_dt[sampled_rows, ]
+      }
     }
   }
 
@@ -628,12 +634,12 @@ simulate_data <- function(parameters_list){
   }
 
   ## 5. initalize shapr object with trained model -- this is used for calculating true shapley
-  x_train <- dt[(1:No_train_obs), ..feat_names] ## used in explainer()
-  x_test <- dt[-(1:No_train_obs), ..feat_names] ## used in cond_expec_mat()
-  y_train <- dt[(1:No_train_obs), .(response)] ## used in cond_expec_mat()
+  x_train <- dt[(1:No_train_obs), ..feat_names]
+  x_test <- dt[-(1:No_train_obs), ..feat_names]
+  y_train <- dt[(1:No_train_obs), .(response)]
 
-  x_train_numeric <- dt_numeric[(1:No_train_obs), ..feat_names] ## used in explainer()
-  x_test_numeric <- dt_numeric[-(1:No_train_obs), ..feat_names] ## used in cond_expec_mat()
+  x_train_numeric <- dt_numeric[(1:No_train_obs), ..feat_names]
+  x_test_numeric <- dt_numeric[-(1:No_train_obs), ..feat_names]
 
   # For computing the true Shapley values (with correlation 0)
   x_test_onehot_full <- dt[-(1:No_train_obs), ..full_onehot_names]
@@ -644,17 +650,11 @@ simulate_data <- function(parameters_list){
   ##
   explainer <- shapr(x_train, model) # print(class(model)) # "lm"
 
-  if(any(grepl("empirical", methods))){
-    explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
-  } else if(any(grepl("gaussian", methods))){
-    explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
-  } else if((any(grepl("ctree_onehot", methods)))){
+  if(any(grepl("empirical", methods)) | any(grepl("gaussian", methods)) | any(grepl("ctree_onehot", methods))){
     explainer_onehot <- shapr(x_train_onehot_reduced, model_onehot)
   }
 
-
-  ## NEW
-  # Create custom function of model_type for lm
+  ## Create custom function of model_type for lm
   model_type.numeric_lm <<- function(x) {
   }
 
@@ -676,16 +676,16 @@ simulate_data <- function(parameters_list){
 
   class(model) <- "numeric_lm"
   explainer_numeric <- shapr(x_train_numeric, model)
-  ## END
+  ## END custom function
 
-  set.seed(10)
   ## 6. calculate the true shapley values
   tm_true_Shapley <- Sys.time();
-  print("Started to calculate true Shapley values.", quote = FALSE, right = FALSE)
+  print("Started calculating true Shapley values.", quote = FALSE, right = FALSE)
 
+  set.seed(10)
   tm0 <- proc.time();
-#  joint_prob_dt_list <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)
-  joint_prob_dt_list <- create_exact_joint_prob(mu,Sigma, beta, explainer, cutoff, response_mod)
+  # joint_prob_dt_list <- sim_true_Normal(mu, Sigma, beta, N_shapley = N_shapley, explainer, cutoff, response_mod)
+  joint_prob_dt_list <- create_exact_joint_prob(mu, Sigma, beta, explainer, cutoff, response_mod)
   tm1 <- proc.time();
   timeit['Simulate_true_Normal'] <- list((tm1 - tm0))
 
@@ -735,7 +735,7 @@ simulate_data <- function(parameters_list){
   phi_sum_mat <- matrix(NA, nrow = No_test_obs, ncol = no_features)
 
   tm_now <- proc.time();
-  print("Started to estimate Shapley values with various methods.", quote = FALSE, right = FALSE)
+  print("Started estimating Shapley values with various methods.", quote = FALSE, right = FALSE)
 
   explanation_list <- list()
   for(m in methods){

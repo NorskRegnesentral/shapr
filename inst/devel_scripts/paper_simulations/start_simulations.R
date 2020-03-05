@@ -6,6 +6,7 @@ library(rapportools) # for testing booleans
 library(ggplot2)
 
 test <- FALSE
+special <- FALSE
 tod_date <- format(Sys.Date(), "%d_%m_%y")
 
 
@@ -73,13 +74,9 @@ tod_date <- format(Sys.Date(), "%d_%m_%y")
 
 
 #
-#
-#
-# ##
-# #
-#
 # ### Not yet run#
 #
+special <- TRUE
 dim <- 10
 no_categories <- 4
 cutoff = c(-200, -0.5, 0, 1, 200)
