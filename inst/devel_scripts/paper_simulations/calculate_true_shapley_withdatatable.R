@@ -278,17 +278,16 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer){
   cond_list <- list()
   cond_list[[1]] <- NA
 
+#  for(i in 2:nrow(explainer$S)){
   for(i in 2:nrow(explainer$S)){
     col_names <- feat_names[as.logical(explainer$S[i, ])]
 
     mat0 <- marg_list[[i]]
     setkeyv(mat0, col_names)
     setkeyv(joint_prob_dt, col_names)
-    mat <- merge(mat0, joint_prob_dt, all.x = TRUE)
-    mat[, cond_prob := joint_prob / marg_prob]
-    #mat[, conditioned_on := paste(col_names, collapse = ", ")]
-
-    cond_list[[i]] <- mat
+    cond_list[[i]] <- merge(mat0, joint_prob_dt, all.x = TRUE)
+    cond_list[[i]][, cond_prob := joint_prob / marg_prob]
+    cond_list[[i]][,(feat_names):=NULL] # To save memory
   }
 
   return(cond_list)
@@ -344,18 +343,24 @@ cond_expec_new <- function(cond_list, explainer, x_test, prediction_zero, joint_
   mat <- unique(x_test)
   mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names] # To be removed later
   mat[, rowid := .I] # Adding identifyer to match on
+  #mat <- joint_prob_dt[mat,.(rowid,feat_comb_id), on=feat_names]
+
 
   cond_expec_list <- list()
   cond_expec_list[[1]] <- NULL
 
   joint_prob_dt[, predict := predict_model(explainer$model, newdata = .SD), .SDcols = feat_names]
 
-  tmp <- NULL
+  setkey(joint_prob_dt,feat_comb_id)
+
+  tmp <- list()
+  tmp0 <- NULL
   for(i in 2:nrow(explainer$S)){
     col_names <- feat_names[as.logical(explainer$S[i, ])]
-    cond_list[[i]] <- merge(cond_list[[i]], joint_prob_dt[, .(feat_comb_id,predict)], by = "feat_comb_id")
-    cond_list[[i]][, expected_value := predict * cond_prob]
-    cond_expec_list[[i]] <- cond_list[[i]][, list(cond_expec=sum(expected_value)), by = col_names]
+    these_cols <- c(col_names,"feat_comb_id","predict")
+    tmp0 <- merge(cond_list[[i]], joint_prob_dt[,..these_cols], by = "feat_comb_id") # Need the whole thing here
+    tmp0[, expected_value := predict * cond_prob]
+    cond_expec_list[[i]] <- tmp0[, list(cond_expec=sum(expected_value)), by = col_names]
     tmp[[i]] <- cbind(cond_expec_list[[i]][mat, .(rowid,cond_expec), on = col_names, allow.cartesian = TRUE],
                       colnum = i - 1)
   }
@@ -698,6 +703,9 @@ simulate_data <- function(parameters_list){
   cond_expec_mat <- cond_expec_new(cond_list, explainer, x_test, prediction_zero = joint_prob_dt_list[[2]], joint_prob_dt = joint_prob_dt_list[[1]])
   tm1 <- proc.time();
   timeit['Calculate_expectations_distributions'] <- list((tm1 - tm0))
+
+  rm(cond_list) # to save memory
+  gc()
 
   tm0 <- proc.time();
   true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)

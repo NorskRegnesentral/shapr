@@ -2,10 +2,46 @@
 
 rm(list=ls())
 #save(fmla.,df.,controls.,file = "inst/devel_scripts/MJ_testing_script_data.RData")
-load("inst/devel_scripts/MJ_testing_script_data.RData")
+load("inst/devel_scripts/old_scripts/MJ_testing_script_data.RData")
 
-a = 1
-datact <- party::ctree(fmla., data = df., controls = controls.)
+library(party)
+library(partykit)
+
+minbucket = 7
+mincriterion = 0.95
+
+set.seed(123)
+start <- proc.time()
+datact <- party::ctree(fmla., data = df., controls = party::ctree_control(minbucket = minbucket,
+                                                                          mincriterion = mincriterion))
+end <- proc.time()
+end - start
+
+set.seed(123)
+start <- proc.time()
+datact_partykit <- partykit::ctree(fmla., data = df., control = partykit::ctree_control(minbucket = minbucket,
+                                                                                      mincriterion = mincriterion,
+                                                                                      splitstat = "maximum"))
+end <- proc.time()
+end - start
+datact
+datact_partykit
+
+aa=predict(datact_partykit,df.,type="prob")
+bb=matrix(unlist(treeresponse(datact,newdata=df.)),nrow=1000,byrow=T)
+
+colMeans(abs(aa-bb)) # Identical
+
+aaa=predict(datact_partykit,df.,type="node")
+
+bbb=where(datact,df.)
+
+
+
+(irisct_party <- party::ctree(Species ~ .,data = iris))
+
+(irisct_partykit <- partykit::ctree(Species ~ .,data = iris,
+                                    control = partykit::ctree_control(splitstat = "maximum")))
 
 
 controls = controls.

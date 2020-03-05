@@ -6,8 +6,8 @@ rand_string <- stringi::stri_rand_strings(1, 5)
 print(rand_string)
 folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
 
-# dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/", folder, sep = ""))
-# dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations/", folder, sep = ""))
+ dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/", folder, sep = ""))
+#dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/paper_simulations/", folder, sep = ""))
 
 ##
 response_mod <- function(mod_matrix_full, beta, epsilon){
@@ -38,7 +38,7 @@ if(test){
                                  No_test_sample = 2,
                                  No_train_obs = 100,
                                  N_sample_gaussian = c(50),
-                                 seed = 1,
+                                 seed = ifelse(exists("seed"),seed,1),
                                  no_categories = no_categories)
     k <- k + 1
   }
@@ -60,10 +60,10 @@ if(test){
                                  name = paste0('corr', j),
                                  cutoff = cutoff,
                                  Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
-                                 No_test_sample = 1000,
+                                 No_test_sample = ifelse(exists("No_test_sample"),No_test_sample,1000),
                                  No_train_obs = 1000,
                                  N_sample_gaussian = c(100, 1000),
-                                 seed = 1,
+                                 seed = ifelse(exists("seed"),seed,1),
                                  no_categories = no_categories)
     k <- k + 1
   }
