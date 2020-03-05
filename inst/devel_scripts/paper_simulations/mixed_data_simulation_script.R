@@ -28,7 +28,7 @@ beta_cont <- c(1,-1)
 beta_cat <- c(1,0,-1,
               2,3,-1)
 
-beta <- c(beta_0,beta_cont,beta_cat)
+beta <- c(beta_0, beta_cont,beta_cat)
 No_train_obs = 100
 No_test_obs = 100
 cat_cutoff = c(-200, 0, 1, 200)
@@ -40,14 +40,14 @@ seed <- 123
 
 # Basic tests #
 
-if(length(beta)!=1+no_cont_var + no_cat_var*no_levels){
-  stop("Incorrect length for beta")
+if(length(beta) != 1 + no_cont_var + no_cat_var * no_levels){
+  stop("Incorrect length for beta.")
 }
-if(length(mu)!=no_cont_var + no_cat_var){
-  stop("Incorrect length for mu")
+if(length(mu) != no_cont_var + no_cat_var){
+  stop("Incorrect length for mu.")
 }
-if(length(cat_cutoff)!=no_levels+1){
-  stop("Incorrect length of cat_cutoff")
+if(length(cat_cutoff) != no_levels + 1){
+  stop("Incorrect length of cat_cutoff.")
 }
 
 
@@ -60,11 +60,11 @@ set.seed(seed)
 x_train <- mvrnorm(n =  No_train_obs, mu = mu, Sigma = Sigma)
 
 dt_train <- data.table(x_train[,1:no_cont_var])
-for (i in (no_cont_var+1):no_tot_var){
+for (i in (no_cont_var + 1):no_tot_var){
   dt_train <- cbind(dt_train, cut(x_train[, i], cat_cutoff, labels = 1:no_levels))
 }
 
-names(dt_train) <- c(paste0("cont_",1:no_cont_var,"_"),paste0("cat_",1:no_cat_var,"_"))
+names(dt_train) <- c(paste0("cont_", 1:no_cont_var, "_"), paste0("cat_", 1:no_cat_var, "_"))
 
 if(noise == TRUE){
   dt_train[, epsilon := rnorm(No_train_obs, 0, 0.1^2)] #
@@ -75,12 +75,12 @@ if(noise == TRUE){
 
 x_test <- mvrnorm(n =  No_test_obs, mu = mu, Sigma = Sigma)
 
-dt_test <- data.table(x_test[,1:no_cont_var])
-for (i in (no_cont_var+1):no_tot_var){
+dt_test <- data.table(x_test[, 1:no_cont_var])
+for (i in (no_cont_var + 1):no_tot_var){
   dt_test <- cbind(dt_test, cut(x_test[, i], cat_cutoff, labels = 1:no_levels))
 }
 
-names(dt_test) <- c(paste0("cont_",1:no_cont_var,"_"),paste0("cat_",1:no_cat_var,"_"))
+names(dt_test) <- c(paste0("cont_", 1:no_cont_var, "_"), paste0("cat_", 1:no_cat_var, "_"))
 
 if(noise == TRUE){
   dt_test[, epsilon := rnorm(No_test_obs, 0, 0.1^2)] #
@@ -88,26 +88,26 @@ if(noise == TRUE){
   dt_test[, epsilon := 0]
 }
 
-dt <- rbind(dt_train,dt_test)
+dt <- rbind(dt_train, dt_test)
 
-cont_cols <- names(dt)[grep("cont",names(dt))]
-cat_cols <- names(dt)[grep("cat",names(dt))]
-feat_names <- c(cont_cols,cat_cols)
+cont_cols <- names(dt)[grep("cont", names(dt))]
+cat_cols <- names(dt)[grep("cat", names(dt))]
+feat_names <- c(cont_cols, cat_cols)
 
 dt_numeric <- copy(dt)
-dt_numeric[, (cat_cols) := lapply(.SD, as.numeric),.SDcols = cat_cols]
+dt_numeric[, (cat_cols) := lapply(.SD, as.numeric), .SDcols = cat_cols]
 
 
-dt[, (cat_cols) := lapply(.SD, as.factor),.SDcols = cat_cols] # It is actually already a factor
+dt[, (cat_cols) := lapply(.SD, as.factor), .SDcols = cat_cols] # It is actually already a factor
 
 train_obs <- 1:No_train_obs
-test_obs <- (No_train_obs+1):(No_train_obs+No_test_obs)
+test_obs <- (No_train_obs + 1):(No_train_obs + No_test_obs)
 
 
 ## 2. One-hot encoding of data
 mod_matrix <- model.matrix(~.-1, data = dt[, ..feat_names], contrasts.arg = lapply(dt[, ..cat_cols], contrasts, contrasts = FALSE))
 
-dt <- cbind(dt, data.table(mod_matrix[,-(1:no_cont_var)])) # Adding the non-continuous columns to the original dt
+dt <- cbind(dt, data.table(mod_matrix[, -(1:no_cont_var)])) # Adding the non-continuous columns to the original dt
 full_onehot_names <- colnames(mod_matrix)
 reduced_onehot_names <- full_onehot_names[-grep("_1$", full_onehot_names)] # names without reference levels
 
