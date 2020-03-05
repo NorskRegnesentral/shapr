@@ -60,7 +60,7 @@ if(test){
                                  name = paste0('corr', j),
                                  cutoff = cutoff,
                                  Sample_test = TRUE, # Can be FALSE as well, then No_test_sample not used.
-                                 No_test_sample = 1000,
+                                 No_test_sample = ifelse(exists("No_test_sample"),No_test_sample,1000),
                                  No_train_obs = 1000,
                                  N_sample_gaussian = c(100, 1000),
                                  seed = ifelse(exists("seed"),seed,1),
