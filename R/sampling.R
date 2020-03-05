@@ -209,6 +209,7 @@ sample_ctree <- function(tree,
                          p,
                          sample) {
   datact <- tree$tree
+  using_partykit <- (class(datact)[1]!="BinaryTree")
 
   cnms <- colnames(x_test)
   if (length(tree$given_ind) %in% c(0, p)) {
@@ -225,11 +226,14 @@ sample_ctree <- function(tree,
     xp <- x_test_given # data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given))) # change by MJ
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
-    fit.nodes <- party::where(object = datact)
-    ## I don't think you actually need this?
-    # nodes <- unique(fit.nodes)
-    # no.nodes <- length(nodes)
-    pred.nodes <- party::where(object = datact, newdata = xp) ## newdata must be data.frame +have the same colnames as x
+    if (using_partykit){
+      fit.nodes <- predict(object = datact,type = "node")
+      pred.nodes <- predict(object = datact, newdata = xp,type = "node") ## newdata must be data.frame +have the same colnames as x
+
+    } else {
+      fit.nodes <- party::where(object = datact)
+      pred.nodes <- party::where(object = datact, newdata = xp) ## newdata must be data.frame +have the same colnames as x
+    }
 
     rowno <- 1:dim(x_train)[1]
 
@@ -308,6 +312,12 @@ sample_ctree <- function(tree,
 #' @param minsplit Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.
 #'
 #' @param minbucket Numeric value. Equal to the minimum sum of weights in a terminal node.
+#' @param use_partykit String. In some semi-rare cases \code{partyk::ctree} runs into an error related to the LINPACK
+#' used by R. To get around this problem, one may fall back to using the newer (but slower) \code{partykit::ctree}
+#' function, which is a reimplementation of the same method. Setting this parameter to \code{"on_error"} (default)
+#' falls back to  \code{partykit::ctree}, if \code{party::ctree} fails. Other options are \code{"never"}, which always
+#' uses \code{party::ctree}, and \code{"always"}, which alsways uses \code{partykit::ctree}. A warning message is
+#' created whenever \code{partykit::ctree} is used.
 #'
 #' @return List with conditional inference tree and the variables conditioned/not conditioned on.
 #'
@@ -315,7 +325,7 @@ sample_ctree <- function(tree,
 #'
 #' @examples
 #' # TODO: Add simple example
-#' @author Annabelle Redelmeier
+#' @author Annabelle Redelmeier, Martin Jullum
 #'
 #' @export
 simulateAllTrees <- function(given_ind,
@@ -324,7 +334,8 @@ simulateAllTrees <- function(given_ind,
                              comb_mincriterion,
                              mincriterion,
                              minsplit,
-                             minbucket) {
+                             minbucket,
+                             use_partykit = "on_error") {
   dependent_ind <- (1:dim(x_train)[2])[-given_ind]
 
   if (length(given_ind) %in% c(0, ncol(x_train))) {
@@ -341,17 +352,6 @@ simulateAllTrees <- function(given_ind,
       }
     }
 
-    if (length(dependent_ind) == 1) {
-      x <- x_train[, given_ind, with = FALSE]
-      y <- x_train[, dependent_ind, with = FALSE]
-
-      df <- data.table(cbind(y, x))
-
-      colnames(df) <- c("Y", paste0("V", given_ind))
-
-      datact <- party::ctree(Y ~ ., data = df, controls = party::ctree_control(minbucket = minbucket,
-                                                                               mincriterion = mincriterion))
-    } else {
       x <- x_train[, given_ind, with = FALSE]
       y <- x_train[, dependent_ind, with = FALSE]
 
@@ -362,9 +362,36 @@ simulateAllTrees <- function(given_ind,
       ynam <- paste0("Y", 1:ncol(y))
       fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
 
-      datact <- party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = minbucket,
-                                                                              mincriterion = mincriterion))
-    }
+      # Running party:ctree if that works. If that fails, run partykit instead
+      if (use_partykit == "on_error"){
+        # temp #
+        a = sample(x = c(0,1),1)
+        print(a)
+        if (a ==1){
+          df0 <- df[,2]
+        } else {
+          df0 <- df
+        }
+        # temp ends #
+
+        datact <- tryCatch(expr = {
+          party::ctree(fmla, data = df0, controls = party::ctree_control(minbucket = minbucket,
+                                                                         mincriterion = mincriterion))
+        },error = function(ex){
+          warning("party::ctree ran into the error: ",ex, "Using partykit::ctree instead!")
+          partykit::ctree(fmla, data = df, control = partykit::ctree_control(minbucket = minbucket,
+                                                                             mincriterion = mincriterion,
+                                                                             splitstat = "maximum"))
+        })
+      } else if (use_partykit == "never") {
+        datact <- party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = minbucket,
+                                                                                mincriterion = mincriterion))
+      } else {
+        warning("Using partykit::ctree instead of party::ctree!")
+        datact <- partykit::ctree(fmla, data = df, control = partykit::ctree_control(minbucket = minbucket,
+                                                                           mincriterion = mincriterion,
+                                                                           splitstat = "maximum"))
+      }
   }
 
   return(list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)) # return the whole tree
