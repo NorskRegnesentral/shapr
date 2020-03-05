@@ -11,7 +11,8 @@ simulateAllTrees(
   comb_mincriterion,
   mincriterion,
   minsplit,
-  minbucket
+  minbucket,
+  use_partykit = "on_error"
 )
 }
 \arguments{
@@ -37,6 +38,13 @@ when conditioning on various numbers of features.}
 \item{minsplit}{Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.}
 
 \item{minbucket}{Numeric value. Equal to the minimum sum of weights in a terminal node.}
+
+\item{use_partykit}{String. In some semi-rare cases \code{partyk::ctree} runs into an error related to the LINPACK
+used by R. To get around this problem, one may fall back to using the newer (but slower) \code{partykit::ctree}
+function, which is a reimplementation of the same method. Setting this parameter to \code{"on_error"} (default)
+falls back to  \code{partykit::ctree}, if \code{party::ctree} fails. Other options are \code{"never"}, which always
+uses \code{party::ctree}, and \code{"always"}, which alsways uses \code{partykit::ctree}. A warning message is
+created whenever \code{partykit::ctree} is used.}
 }
 \value{
 List with conditional inference tree and the variables conditioned/not conditioned on.
@@ -48,6 +56,6 @@ Make all conditional inference trees
 # TODO: Add simple example
 }
 \author{
-Annabelle Redelmeier
+Annabelle Redelmeier, Martin Jullum
 }
 \keyword{internal}
