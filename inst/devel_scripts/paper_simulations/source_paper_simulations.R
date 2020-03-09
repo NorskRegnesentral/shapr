@@ -60,16 +60,22 @@ if(test){
       dt <- cbind(dt, cut(x[, i], cutoff, labels = 1:no_categories))
     }
     dt <- data.table(dt)
-    dt_unique <- unique(dt)[1:1000, ]
+    dt_unique <- unique(dt)[1000+1:2000, ]
 
     dt_unique_list <- list()
     dt_unique_list[[1]] <- dt_unique[1:250, ]
     dt_unique_list[[2]] <- dt_unique[251:500, ]
     dt_unique_list[[3]] <- dt_unique[501:750, ]
     dt_unique_list[[4]] <- dt_unique[751:1000, ]
+    dt_unique_list[[5]] <- dt_unique[250+(751:1000), ]
+    dt_unique_list[[6]] <- dt_unique[500+(751:1000), ]
+    dt_unique_list[[7]] <- dt_unique[750+(751:1000), ]
+    dt_unique_list[[8]] <- dt_unique[1000+(751:1000), ]
 
 
-    for(l in 1:4){
+
+
+    for(l in 1:8){
       parameters_list[[k]] <- list(Sigma_diag = 1,
                                    corr = j,
                                    mu = rep(0, dim),
