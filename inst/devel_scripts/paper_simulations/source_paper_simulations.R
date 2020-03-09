@@ -68,6 +68,7 @@ if(test){
     dt_unique_list[[3]] <- dt_unique[501:750, ]
     dt_unique_list[[4]] <- dt_unique[751:1000, ]
 
+
     for(l in 1:4){
       parameters_list[[k]] <- list(Sigma_diag = 1,
                                    corr = j,

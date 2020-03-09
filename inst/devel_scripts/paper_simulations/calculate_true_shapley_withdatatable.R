@@ -163,7 +163,7 @@ lower_func <- function(x,cutoff){
 #'
 #' @export
 
-create_exact_joint_prob <- function(mu,Sigma, beta, explainer, cutoff, response_mod, algorithm = mvtnorm::GenzBretz(),
+create_exact_joint_prob <- function(mu, Sigma, beta, explainer, cutoff, response_mod, algorithm = mvtnorm::GenzBretz(),
                                     mc.cores = 16){
 
   feat_names <- colnames(explainer$x_train)
@@ -182,28 +182,26 @@ create_exact_joint_prob <- function(mu,Sigma, beta, explainer, cutoff, response_
   all_x_dt[, (feat_names) := lapply(.SD, as.factor),.SDcols = feat_names]
 
   ## Response comptutation
-
   mod_matrix <- model.matrix(~.-1, data = all_x_dt,
-                             contrasts.arg = lapply(all_x_dt[, 1:dim],contrasts,contrasts=FALSE))
+                             contrasts.arg = lapply(all_x_dt[, 1:dim], contrasts, contrasts = FALSE))
 
   all_responses <- response_mod(mod_matrix_full = cbind(1,mod_matrix),
                                 beta = beta,
-                                epsilon = rep(0,nrow(mod_matrix)))
+                                epsilon = rep(0, nrow(mod_matrix)))
 
   prop <- NULL
   for (i in 1:dim){
-    prop <- c(prop,diff(pnorm(cutoff,mean=mu[i],sd = sqrt(Sigma[i,i]))))
+    prop <- c(prop,diff(pnorm(cutoff, mean = mu[i], sd = sqrt(Sigma[i,i]))))
   }
-  names(prop) = rep(1:no_categories,times = dim)
+  names(prop) = rep(1:no_categories, times = dim)
 
 
   # Lists with vectors containing the lower and upper combinations
+  upper_dt <- all_x_dt[, lapply(.SD,upper_func,cutoff=cutoff), .SDcols = feat_names]
+  lower_dt <- all_x_dt[, lapply(.SD,lower_func,cutoff=cutoff), .SDcols = feat_names]
 
-  upper_dt <- all_x_dt[,lapply(.SD,upper_func,cutoff=cutoff),.SDcols = feat_names]
-  lower_dt <- all_x_dt[,lapply(.SD,lower_func,cutoff=cutoff),.SDcols = feat_names]
-
-  upper_dt_list=as.list(as.data.table(t(upper_dt)))
-  lower_dt_list=as.list(as.data.table(t(lower_dt)))
+  upper_dt_list = as.list(as.data.table(t(upper_dt)))
+  lower_dt_list = as.list(as.data.table(t(lower_dt)))
 
   corr <- cov2cor(Sigma)
 
@@ -218,12 +216,12 @@ create_exact_joint_prob <- function(mu,Sigma, beta, explainer, cutoff, response_
   all_probs <- all_probs/sum(all_probs)
 
 
-  all_x_dt[,joint_prob := all_probs]
+  all_x_dt[, joint_prob := all_probs]
 
-  setkeyv(all_x_dt,rev(feat_names)) # To get same ordering as previous version
-  all_x_dt[, feat_comb_id:=.I]
+  setkeyv(all_x_dt, rev(feat_names)) # To get same ordering as previous version
+  all_x_dt[, feat_comb_id := .I]
 
-  mn <- sum(all_responses*all_probs)
+  mn <- sum(all_responses * all_probs)
 
   return(list(all_x_dt, mn, prop))
 }
@@ -278,7 +276,6 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer){
   cond_list <- list()
   cond_list[[1]] <- NA
 
-#  for(i in 2:nrow(explainer$S)){
   for(i in 2:nrow(explainer$S)){
     col_names <- feat_names[as.logical(explainer$S[i, ])]
 
@@ -343,7 +340,7 @@ cond_expec_new <- function(cond_list, explainer, x_test, prediction_zero, joint_
   mat <- unique(x_test)
   mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names] # To be removed later
   mat[, rowid := .I] # Adding identifyer to match on
-  #mat <- joint_prob_dt[mat,.(rowid,feat_comb_id), on=feat_names]
+  # mat <- joint_prob_dt[mat,.(rowid,feat_comb_id), on=feat_names]
 
 
   cond_expec_list <- list()
@@ -351,20 +348,20 @@ cond_expec_new <- function(cond_list, explainer, x_test, prediction_zero, joint_
 
   joint_prob_dt[, predict := predict_model(explainer$model, newdata = .SD), .SDcols = feat_names]
 
-  setkey(joint_prob_dt,feat_comb_id)
+  setkey(joint_prob_dt, feat_comb_id)
 
   tmp <- list()
   tmp0 <- NULL
   for(i in 2:nrow(explainer$S)){
     col_names <- feat_names[as.logical(explainer$S[i, ])]
-    these_cols <- c(col_names,"feat_comb_id","predict")
-    tmp0 <- merge(cond_list[[i]], joint_prob_dt[,..these_cols], by = "feat_comb_id") # Need the whole thing here
+    these_cols <- c(col_names,"feat_comb_id", "predict")
+    tmp0 <- merge(cond_list[[i]], joint_prob_dt[, ..these_cols], by = "feat_comb_id") # Need the whole thing here
     tmp0[, expected_value := predict * cond_prob]
     cond_expec_list[[i]] <- tmp0[, list(cond_expec=sum(expected_value)), by = col_names]
-    tmp[[i]] <- cbind(cond_expec_list[[i]][mat, .(rowid,cond_expec), on = col_names, allow.cartesian = TRUE],
+    tmp[[i]] <- cbind(cond_expec_list[[i]][mat, .(rowid, cond_expec), on = col_names, allow.cartesian = TRUE],
                       colnum = i - 1)
   }
-  tmp_dt <- rbindlist(tmp,use.names = T)
+  tmp_dt <- rbindlist(tmp, use.names = T)
 
   final_dt <- dcast(tmp_dt, formula = "rowid~colnum", value.var = "cond_expec")
   x_test_id <- mat[x_test, on = feat_names]
@@ -437,17 +434,16 @@ linear_Kshap <- function(x_test_onehot_full, beta, prop){
 #'
 #' @param true_shapley vector of Numerics. The vector of true Shapley values.
 #' @param shapley_method vector of Numerics. The vector of estimated Shapley values
-#'
+#' @param weights vector of weights with length equal to  number of rows of true_shapley/shapley_method
 #' @return vector of Shapley values.
 #'
 #' @export
 
-# all_methods[[i]][['true_shapley']], all_methods[[i]][['methods']][[paste0('gaussian_nsamples', gauss)]]$dt_sum
 
 MAE <- function(true_shapley, shapley_method, weights){
-  mean(apply(abs((true_shapley - shapley_method) * weights), 2, sum)[-1])
+  mean(colSums((abs(true_shapley - shapley_method))* weights)[-1])
+  # mean(apply(), 2, sum)[-1])
 }
-
 
 #' Function to calculate the mean average error (MAE) between the true Shapley values and the estimated Shapley values
 #'
