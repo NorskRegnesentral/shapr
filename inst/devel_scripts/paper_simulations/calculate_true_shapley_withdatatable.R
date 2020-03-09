@@ -807,9 +807,9 @@ simulate_data <- function(parameters_list){
       }
     } else if(m == 'ctree_onehot'){
       tm0 <- proc.time()
-      x_test_onehot_reduced[, id := NULL]
-      x_test_onehot_reduced[, no_times := NULL]
-      x_test_onehot_reduced[, Indx := NULL]
+      # x_test_onehot_reduced[, id := NULL]
+      # x_test_onehot_reduced[, no_times := NULL]
+      # x_test_onehot_reduced[, Indx := NULL]
       explanation_list[[m]] <- explain(
         x_test_onehot_reduced,
         approach = 'ctree',
