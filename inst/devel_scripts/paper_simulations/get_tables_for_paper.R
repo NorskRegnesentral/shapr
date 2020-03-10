@@ -219,11 +219,25 @@ folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categorie
 nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.9.rds")
 all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
 
+true_shapley_list <- list()
 dt_sum_list <- list()
 for(j in 1:length(all_methods)){
+
   ct <- all_methods[[j]]$methods[['ctree']]$dt
   KS <- all_methods[[j]]$methods[['kernelSHAP']]$dt
-  dt_sum_list[[j]] <- list(ctree = ct, kernelSHAP = KS)
+
+  estimated_shap = all_methods[[j]]$methods$ctree$x_test
+  true_shap = all_methods[[j]]$joint_prob_true
+
+  col_names = names(all_methods[[j]]$methods$ctree$model$model)[-1]
+
+  rmerge <- true_shap[estimated_shap, on = col_names, allow.cartesian = TRUE]
+
+  feat_comb_id <- rmerge[['feat_comb_id']]
+  TS <- all_methods[[j]][['true_shapley']]
+
+  dt_sum_list[[j]] <- list(ctree = cbind(ct, feat_comb_id), kernelSHAP = cbind(KS, feat_comb_id))
+  true_shapley_list[[j]] <- list(TS)
 }
 
 
@@ -232,12 +246,21 @@ method_names <- NULL
 corr <- NULL
 
 for(i in 1:length(dt_sum_list)){
+  weights <- merge(dt_sum_list[[i]][[1]],  all_methods[[i]]$joint_prob_true[, c('joint_prob', 'feat_comb_id')], by = 'feat_comb_id')
+  weights <- weights[['joint_prob']]
+  weights0 <- weights/(sum(weights))
+
   for(m in names(dt_sum_list[[1]])){
-    MAE_results <- c(MAE_results, MAE(all_methods[[i]][['true_shapley']], dt_sum_list[[i]][[m]], weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+    MAE_results <- c(MAE_results, MAE(true_shapley_list[[i]][[1]], dt_sum_list[[i]][[m]][, feat_comb_id := NULL], weights = weights0)) # 0.4759115
     method_names <- c(method_names, m)
     corr <- c(corr, all_methods[[i]]$parameters$corr)
   }
 }
+
+results <- data.table(MAE_results, method_names, corr)
+results[, dim := dim]
+results[, no_categories := no_categories]
+
 
 results <- data.table(MAE_results, method_names, corr)
 results[, dim := dim]
@@ -260,11 +283,25 @@ folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categorie
 nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.5.rds")
 all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
 
+true_shapley_list <- list()
 dt_sum_list <- list()
 for(j in 1:length(all_methods)){
+
   ct <- all_methods[[j]]$methods[['ctree']]$dt
   KS <- all_methods[[j]]$methods[['kernelSHAP']]$dt
-  dt_sum_list[[j]] <- list(ctree = ct, kernelSHAP = KS)
+
+  estimated_shap = all_methods[[j]]$methods$ctree$x_test
+  true_shap = all_methods[[j]]$joint_prob_true
+
+  col_names = names(all_methods[[j]]$methods$ctree$model$model)[-1]
+
+  rmerge <- true_shap[estimated_shap, on = col_names, allow.cartesian = TRUE]
+
+  feat_comb_id <- rmerge[['feat_comb_id']]
+  TS <- all_methods[[j]][['true_shapley']]
+
+  dt_sum_list[[j]] <- list(ctree = cbind(ct, feat_comb_id), kernelSHAP = cbind(KS, feat_comb_id))
+  true_shapley_list[[j]] <- list(TS)
 }
 
 
@@ -273,8 +310,12 @@ method_names <- NULL
 corr <- NULL
 
 for(i in 1:length(dt_sum_list)){
+  weights <- merge(dt_sum_list[[i]][[1]],  all_methods[[i]]$joint_prob_true[, c('joint_prob', 'feat_comb_id')], by = 'feat_comb_id')
+  weights <- weights[['joint_prob']]
+  weights0 <- weights/(sum(weights))
+
   for(m in names(dt_sum_list[[1]])){
-    MAE_results <- c(MAE_results, MAE(all_methods[[i]][['true_shapley']], dt_sum_list[[i]][[m]], weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+    MAE_results <- c(MAE_results, MAE(true_shapley_list[[i]][[1]], dt_sum_list[[i]][[m]][, feat_comb_id := NULL], weights = weights0)) # 0.4759115
     method_names <- c(method_names, m)
     corr <- c(corr, all_methods[[i]]$parameters$corr)
   }
@@ -297,11 +338,25 @@ folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categorie
 nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.8.rds")
 all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
 
+true_shapley_list <- list()
 dt_sum_list <- list()
 for(j in 1:length(all_methods)){
+
   ct <- all_methods[[j]]$methods[['ctree']]$dt
   KS <- all_methods[[j]]$methods[['kernelSHAP']]$dt
-  dt_sum_list[[j]] <- list(ctree = ct, kernelSHAP = KS)
+
+  estimated_shap = all_methods[[j]]$methods$ctree$x_test
+  true_shap = all_methods[[j]]$joint_prob_true
+
+  col_names = names(all_methods[[j]]$methods$ctree$model$model)[-1]
+
+  rmerge <- true_shap[estimated_shap, on = col_names, allow.cartesian = TRUE]
+
+  feat_comb_id <- rmerge[['feat_comb_id']]
+  TS <- all_methods[[j]][['true_shapley']]
+
+  dt_sum_list[[j]] <- list(ctree = cbind(ct, feat_comb_id), kernelSHAP = cbind(KS, feat_comb_id))
+  true_shapley_list[[j]] <- list(TS)
 }
 
 
@@ -310,12 +365,17 @@ method_names <- NULL
 corr <- NULL
 
 for(i in 1:length(dt_sum_list)){
+  weights <- merge(dt_sum_list[[i]][[1]],  all_methods[[i]]$joint_prob_true[, c('joint_prob', 'feat_comb_id')], by = 'feat_comb_id')
+  weights <- weights[['joint_prob']]
+  weights0 <- weights/(sum(weights))
+
   for(m in names(dt_sum_list[[1]])){
-    MAE_results <- c(MAE_results, MAE(all_methods[[i]][['true_shapley']], dt_sum_list[[i]][[m]], weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+    MAE_results <- c(MAE_results, MAE(true_shapley_list[[i]][[1]], dt_sum_list[[i]][[m]][, feat_comb_id := NULL], weights = weights0)) # 0.4759115
     method_names <- c(method_names, m)
     corr <- c(corr, all_methods[[i]]$parameters$corr)
   }
 }
+
 
 results2 <- data.table(MAE_results, method_names, corr)
 results2[, dim := dim]
@@ -334,11 +394,26 @@ folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categorie
 nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.9.rds")
 all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
 
+
+true_shapley_list <- list()
 dt_sum_list <- list()
 for(j in 1:length(all_methods)){
+
   ct <- all_methods[[j]]$methods[['ctree']]$dt
   KS <- all_methods[[j]]$methods[['kernelSHAP']]$dt
-  dt_sum_list[[j]] <- list(ctree = ct, kernelSHAP = KS)
+
+  estimated_shap = all_methods[[j]]$methods$ctree$x_test
+  true_shap = all_methods[[j]]$joint_prob_true
+
+  col_names = names(all_methods[[j]]$methods$ctree$model$model)[-1]
+
+  rmerge <- true_shap[estimated_shap, on = col_names, allow.cartesian = TRUE]
+
+  feat_comb_id <- rmerge[['feat_comb_id']]
+  TS <- all_methods[[j]][['true_shapley']]
+
+  dt_sum_list[[j]] <- list(ctree = cbind(ct, feat_comb_id), kernelSHAP = cbind(KS, feat_comb_id))
+  true_shapley_list[[j]] <- list(TS)
 }
 
 
@@ -347,12 +422,17 @@ method_names <- NULL
 corr <- NULL
 
 for(i in 1:length(dt_sum_list)){
+  weights <- merge(dt_sum_list[[i]][[1]],  all_methods[[i]]$joint_prob_true[, c('joint_prob', 'feat_comb_id')], by = 'feat_comb_id')
+  weights <- weights[['joint_prob']]
+  weights0 <- weights/(sum(weights))
+
   for(m in names(dt_sum_list[[1]])){
-    MAE_results <- c(MAE_results, MAE(all_methods[[i]][['true_shapley']], dt_sum_list[[i]][[m]], weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+    MAE_results <- c(MAE_results, MAE(true_shapley_list[[i]][[1]], dt_sum_list[[i]][[m]][, feat_comb_id := NULL], weights = weights0)) # 0.4759115
     method_names <- c(method_names, m)
     corr <- c(corr, all_methods[[i]]$parameters$corr)
   }
 }
+
 
 results3 <- data.table(MAE_results, method_names, corr)
 results3[, dim := dim]
