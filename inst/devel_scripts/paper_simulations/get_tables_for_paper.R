@@ -57,8 +57,6 @@ results[, dim := dim]
 results[, no_categories := no_categories]
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim3_nocat3",  sep = "/"))
 
-# t <- reshape(results, idvar = c("method_names", "dim", "no_categories"), timevar = "corr", direction = "wide")
-# xtable(t, digits = 4)
 
 ##------------------------------------------------------
 ## DIMENSION 3
@@ -131,9 +129,6 @@ results <- data.table(MAE_results, method_names, corr)
 results[, dim := dim]
 results[, no_categories := no_categories]
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim3_nocat4",  sep = "/"))
-
-# t <- reshape(results, idvar = c("method_names", "dim", "no_categories"), timevar = "corr", direction = "wide")
-# xtable(t, digits = 4)
 
 
 ##------------------------------------------------------
@@ -208,9 +203,6 @@ results[, dim := dim]
 results[, no_categories := no_categories]
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim4_nocat3",  sep = "/"))
 
-# t <- reshape(results, idvar = c("method_names", "dim", "no_categories"), timevar = "corr", direction = "wide")
-# xtable(t, digits = 4)
-
 
 ##------------------------------------------------------
 ## DIMENSION 5
@@ -252,8 +244,6 @@ results[, dim := dim]
 results[, no_categories := no_categories]
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim5_nocat6",  sep = "/"))
 
-# t <- reshape(results, idvar = c("method_names", "dim", "no_categories"), timevar = "corr", direction = "wide")
-# xtable(t, digits = 4)
 
 ##------------------------------------------------------
 ## DIMENSION 7
@@ -372,31 +362,45 @@ results <- rbind(results, results2, results3)
 
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim7_nocat5",  sep = "/"))
 
-# t <- reshape(results, idvar = c("method_names", "dim", "no_categories"), timevar = "corr", direction = "wide")
-# xtable(t, digits = 4)
-
-
 
 ##------------------------------------------------------
 ## DIMENSION 10
 ## NB CATEGORIES 4
 
-tod_date <- "04_03_20"
-rand_string <- "qdsp3"
+tod_date <- "06_03_20"
+rand_string <- "W34c9"
 dim <- 10
 no_categories <- 4
 
 folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
 
 ## load data
-nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.1.rds")
+nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho0.9_part40.rds")
 all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
 
+true_shapley_list <- list()
 dt_sum_list <- list()
-for(j in 1:length(all_methods)){
-  ct <- all_methods[[j]]$methods[['ctree']]$dt
-  KS <- all_methods[[j]]$methods[['kernelSHAP']]$dt
-  dt_sum_list[[j]] <- list(ctree = ct, kernelSHAP = KS)
+for(j in 1:(length(all_methods)/8)){
+  ct <- NULL
+  KS <- NULL
+  feat_comb_id <- NULL
+  TS <- NULL
+  for(i in ((j - 1) * 8 + 1):(j * 8)){
+    ct <- rbind(ct, all_methods[[i]]$methods[['ctree']]$dt)
+    KS <- rbind(KS, all_methods[[i]]$methods[['kernelSHAP']]$dt)
+
+    estimated_shap = all_methods[[i]]$methods$ctree$x_test
+    true_shap = all_methods[[i]]$joint_prob_true
+
+    col_names = names(all_methods[[i]]$methods$ctree$model$model)[-1]
+
+    rmerge <- true_shap[estimated_shap, on = col_names, allow.cartesian = TRUE]
+
+    feat_comb_id <- c(feat_comb_id, rmerge[['feat_comb_id']])
+    TS <- rbind(TS, all_methods[[j]][['true_shapley']])
+  }
+  dt_sum_list[[j]] <- list(ctree = cbind(ct, feat_comb_id), kernelSHAP = cbind(KS, feat_comb_id))
+  true_shapley_list[[j]] <- list(TS)
 }
 
 
@@ -405,10 +409,14 @@ method_names <- NULL
 corr <- NULL
 
 for(i in 1:length(dt_sum_list)){
+  weights <- merge(dt_sum_list[[i]][[1]],  all_methods[[i]]$joint_prob_true[, c('joint_prob', 'feat_comb_id')], by = 'feat_comb_id')
+  weights <- weights[['joint_prob']]
+  weights0 <- weights/(sum(weights))
+
   for(m in names(dt_sum_list[[1]])){
-    MAE_results <- c(MAE_results, MAE(all_methods[[i]][['true_shapley']], dt_sum_list[[i]][[m]], weights = all_methods[[i]]$joint_prob_true[[dim + 1]]))
+    MAE_results <- c(MAE_results, MAE(true_shapley_list[[i]][[1]], dt_sum_list[[i]][[m]][, feat_comb_id := NULL], weights = weights0)) # 0.4759115
     method_names <- c(method_names, m)
-    corr <- c(corr, all_methods[[i]]$parameters$corr)
+    corr <- c(corr, all_methods[[i * 8]]$parameters$corr)
   }
 }
 
@@ -418,8 +426,6 @@ results[, no_categories := no_categories]
 
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim10_nocat4",  sep = "/"))
 
-# t <- reshape(results, idvar = c("method_names", "dim", "no_categories"), timevar = "corr", direction = "wide")
-# xtable(t, digits = 4)
 
 
 
