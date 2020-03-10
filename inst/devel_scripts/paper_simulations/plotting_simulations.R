@@ -21,8 +21,7 @@ folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categorie
 nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.9.rds")
 all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations_Annabelle", folder, nm, sep = "/"))
 
-# for gaussian stuff
-
+## for gaussian stuff
 if(any(grepl("gaussian", names(all_methods[[1]]$methods)))){
   gauss_mat <- list()
   for(i in 1:length(all_methods)){
@@ -94,7 +93,7 @@ p1 <- ggplot(data = results0, aes(y = MAE_methods, x = MAE_parameters, col = as.
   geom_point(size = 4, stroke = 1.5) +
   scale_x_discrete(labels = c("corr0" = "0", "corr0.05" = "0.05", "corr0.1" = "0.1", "corr0.3" = "0.3", "corr0.5" = "0.5", "corr0.8" = "0.8", "corr0.9" = "0.9")) +
   theme_bw(base_size = 22) + xlab("correlation") +
-  ylab("Mean average error (MAE)") +
+  ylab("Mean absolute error (MAE)") +
   scale_color_discrete(name = "Method" ) +
   ggtitle("")
 #  labels = c("Ctree", "Ctree one-hot", "Empirical", "Empirical independence", "Gaussian_100", "Gaussian_1000", "kernelSHAP")

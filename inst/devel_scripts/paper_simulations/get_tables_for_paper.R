@@ -397,7 +397,7 @@ for(j in 1:(length(all_methods)/8)){
     rmerge <- true_shap[estimated_shap, on = col_names, allow.cartesian = TRUE]
 
     feat_comb_id <- c(feat_comb_id, rmerge[['feat_comb_id']])
-    TS <- rbind(TS, all_methods[[j]][['true_shapley']])
+    TS <- rbind(TS, all_methods[[i]][['true_shapley']])
   }
   dt_sum_list[[j]] <- list(ctree = cbind(ct, feat_comb_id), kernelSHAP = cbind(KS, feat_comb_id))
   true_shapley_list[[j]] <- list(TS)
@@ -425,10 +425,6 @@ results[, dim := dim]
 results[, no_categories := no_categories]
 
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim10_nocat4",  sep = "/"))
-
-
-
-
 
 
 ##------------------------------------------------------

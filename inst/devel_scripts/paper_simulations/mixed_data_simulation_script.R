@@ -494,7 +494,7 @@ exactShap
 explanation_list$ctree$dt
 explanation_list$kernelShap$dt
 
-MAE <- function(true_shapley, shapley_method, weights = rep(1/nrow(true_shapley),nrow(true_shapley))){
+MAE <- function(true_shapley, shapley_method, weights = rep(1 / nrow(true_shapley), nrow(true_shapley))){
   mean(apply(abs((true_shapley - shapley_method) * weights), 2, sum)[-1])
 }
 
@@ -505,7 +505,6 @@ MAE(exactShap,explanation_list$kernelShap$dt)
 
 
 # Just brute force testing when the features are independent for dim_cont = 2, and dim_cat = 2, no_cat = 3
-
 xj_start_mat <- mod_matrix[test_obs,]
 Exj_vec <- c(0,0,diff(pnorm(q = cat_cutoff,mean = mu[1], sd=sqrt(Sigma[1,1]))),diff(pnorm(q = cat_cutoff,mean = mu[1], sd=sqrt(Sigma[1,1]))))
 
