@@ -365,7 +365,7 @@ simulateAllTrees <- function(given_ind,
       # Running party:ctree if that works. If that fails, run partykit instead
       if (use_partykit == "on_error"){
         datact <- tryCatch(expr = {
-          party::ctree(fmla, data = df0, controls = party::ctree_control(minbucket = minbucket,
+          party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = minbucket,
                                                                          mincriterion = mincriterion))
         },error = function(ex){
           warning("party::ctree ran into the error: ",ex, "Using partykit::ctree instead!")
