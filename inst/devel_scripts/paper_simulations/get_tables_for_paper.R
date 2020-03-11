@@ -57,6 +57,30 @@ results[, dim := dim]
 results[, no_categories := no_categories]
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim3_nocat3",  sep = "/"))
 
+## timing
+timing <- NULL
+names <- NULL
+corr <- NULL
+for(i in 1:length(all_methods)){
+  for(j in 6:length(all_methods[[i]]$timing)){
+    timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
+    names <- c(names, names(all_methods[[i]]$timing)[j])
+    corr <- c(corr, all_methods[[i]]$parameters$corr)
+  }
+
+}
+timing <- data.table(timing)
+timing[, method := names]
+timing[, corr := corr]
+timing[, user.child := NULL]
+timing[, sys.child := NULL]
+
+timing[, dim := dim]
+timing[, no_categories := no_categories]
+
+timing2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
+saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim3_nocat3",  sep = "/"))
+
 
 ##------------------------------------------------------
 ## DIMENSION 3
@@ -129,6 +153,33 @@ results <- data.table(MAE_results, method_names, corr)
 results[, dim := dim]
 results[, no_categories := no_categories]
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim3_nocat4",  sep = "/"))
+
+## timing
+
+## timing
+timing <- NULL
+names <- NULL
+corr <- NULL
+for(i in 1:length(all_methods)){
+  for(j in 6:length(all_methods[[i]]$timing)){
+    timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
+    names <- c(names, names(all_methods[[i]]$timing)[j])
+    corr <- c(corr, all_methods[[i]]$parameters$corr)
+  }
+
+}
+timing <- data.table(timing)
+timing[, method := names]
+timing[, corr := corr]
+timing[, user.child := NULL]
+timing[, sys.child := NULL]
+
+timing[, dim := dim]
+timing[, no_categories := no_categories]
+
+timing2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
+
+saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim3_nocat4",  sep = "/"))
 
 
 ##------------------------------------------------------
@@ -203,6 +254,31 @@ results[, dim := dim]
 results[, no_categories := no_categories]
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim4_nocat3",  sep = "/"))
 
+## timing
+timing <- NULL
+names <- NULL
+corr <- NULL
+for(i in 1:length(all_methods)){
+  for(j in 6:length(all_methods[[i]]$timing)){
+    timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
+    names <- c(names, names(all_methods[[i]]$timing)[j])
+    corr <- c(corr, all_methods[[i]]$parameters$corr)
+  }
+
+}
+timing <- data.table(timing)
+timing[, method := names]
+timing[, corr := corr]
+timing[, user.child := NULL]
+timing[, sys.child := NULL]
+
+timing[, dim := dim]
+timing[, no_categories := no_categories]
+
+timing2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
+
+saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim4_nocat3",  sep = "/"))
+
 
 ##------------------------------------------------------
 ## DIMENSION 5
@@ -268,6 +344,34 @@ results[, no_categories := no_categories]
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim5_nocat6",  sep = "/"))
 
 
+
+## timing
+timing <- NULL
+names <- NULL
+corr <- NULL
+for(i in 1:length(all_methods)){
+  for(j in 6:length(all_methods[[i]]$timing)){
+    timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
+    names <- c(names, names(all_methods[[i]]$timing)[j])
+    corr <- c(corr, all_methods[[i]]$parameters$corr)
+  }
+
+}
+timing <- data.table(timing)
+timing[, method := names]
+timing[, corr := corr]
+timing[, user.child := NULL]
+timing[, sys.child := NULL]
+
+timing[, dim := dim]
+timing[, no_categories := no_categories]
+
+timing2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
+
+
+saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim5_nocat6",  sep = "/"))
+
+
 ##------------------------------------------------------
 ## DIMENSION 7
 ## NB CATEGORIES 5
@@ -325,6 +429,30 @@ results <- data.table(MAE_results, method_names, corr)
 results[, dim := dim]
 results[, no_categories := no_categories]
 
+## timing
+timing <- NULL
+names <- NULL
+corr <- NULL
+for(i in 1:length(all_methods)){
+  for(j in 6:length(all_methods[[i]]$timing)){
+    timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
+    names <- c(names, names(all_methods[[i]]$timing)[j])
+    corr <- c(corr, all_methods[[i]]$parameters$corr)
+  }
+
+}
+timing <- data.table(timing)
+timing[, method := names]
+timing[, corr := corr]
+timing[, user.child := NULL]
+timing[, sys.child := NULL]
+
+timing[, dim := dim]
+timing[, no_categories := no_categories]
+
+timing2_0 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
+
+
 ##
 
 tod_date <- "04_03_20"
@@ -380,6 +508,31 @@ for(i in 1:length(dt_sum_list)){
 results2 <- data.table(MAE_results, method_names, corr)
 results2[, dim := dim]
 results2[, no_categories := no_categories]
+
+
+## timing
+timing <- NULL
+names <- NULL
+corr <- NULL
+for(i in 1:length(all_methods)){
+  for(j in 6:length(all_methods[[i]]$timing)){
+    timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
+    names <- c(names, names(all_methods[[i]]$timing)[j])
+    corr <- c(corr, all_methods[[i]]$parameters$corr)
+  }
+
+}
+timing <- data.table(timing)
+timing[, method := names]
+timing[, corr := corr]
+timing[, user.child := NULL]
+timing[, sys.child := NULL]
+
+timing[, dim := dim]
+timing[, no_categories := no_categories]
+
+timing2_2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
+
 
 ##
 
@@ -442,6 +595,32 @@ results <- rbind(results, results2, results3)
 
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim7_nocat5",  sep = "/"))
 
+## timing
+timing <- NULL
+names <- NULL
+corr <- NULL
+for(i in 1:length(all_methods)){
+  for(j in 6:length(all_methods[[i]]$timing)){
+    timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
+    names <- c(names, names(all_methods[[i]]$timing)[j])
+    corr <- c(corr, all_methods[[i]]$parameters$corr)
+  }
+
+}
+timing <- data.table(timing)
+timing[, method := names]
+timing[, corr := corr]
+timing[, user.child := NULL]
+timing[, sys.child := NULL]
+
+timing[, dim := dim]
+timing[, no_categories := no_categories]
+
+timing2_3 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
+
+timing2 <- rbind(timing2_0, timing2_2, timing2_3)
+
+saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim7_nocat5",  sep = "/"))
 
 ##------------------------------------------------------
 ## DIMENSION 10
@@ -507,6 +686,38 @@ results[, no_categories := no_categories]
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim10_nocat4",  sep = "/"))
 
 
+
+## timing
+timing <- NULL
+names <- NULL
+corr <- NULL
+for(i in 1:length(all_methods)){
+  for(j in 6:length(all_methods[[i]]$timing)){
+    timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
+    names <- c(names, names(all_methods[[i]]$timing)[j])
+    corr <- c(corr, all_methods[[i]]$parameters$corr)
+  }
+
+}
+timing <- data.table(timing)
+timing[, method := names]
+timing[, corr := corr]
+timing[, user.child := NULL]
+timing[, sys.child := NULL]
+
+timing[, dim := dim]
+timing[, no_categories := no_categories]
+
+timing0 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
+
+timing2 <- timing0[, .(elapsed = mean(elapsed)), by = c("method", "corr", "dim", "no_categories")]
+
+setcolorder(timing2, c("elapsed", "method", "corr", "dim", "no_categories"))
+
+saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim10_nocat4",  sep = "/"))
+
+
+
 ##------------------------------------------------------
 ## Load all data
 
@@ -525,3 +736,23 @@ t <- reshape(full_table, idvar = c("method_names", "dim", "no_categories"), time
 colnames(t) <- c("method", "dim", "number of categories", "0", "0.1", "0.5", "0.8", "0.9")
 xtable(t, digits = c(0, 0, 0, 0, rep(4, 5)))
 
+
+## ------------------------------------------------------
+## Timing of methods
+
+timing_dim3_nocat3 <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim3_nocat3", sep = "/"))
+timing_dim3_nocat4 <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim3_nocat4", sep = "/"))
+timing_dim4_nocat3 <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim4_nocat3", sep = "/"))
+timing_dim5_nocat6 <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim5_nocat6", sep = "/"))
+timing_dim7_nocat5 <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim7_nocat5", sep = "/"))
+timing_dim10_nocat4 <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim10_nocat4", sep = "/"))
+
+
+timing_full_table <- rbind(timing_dim3_nocat3, timing_dim3_nocat4, timing_dim4_nocat3, timing_dim5_nocat6, timing_dim7_nocat5, timing_dim10_nocat4)
+
+t <- reshape(timing_full_table, idvar = c("method", "dim", "no_categories"), timevar = "corr", direction = "wide")
+
+t[, no_x_test := t[['no_categories']]^t[['dim']]]
+
+colnames(t) <- c("method", "dim", "number of categories", "0", "0.1", "0.5", "0.8", "0.9", "number of variables")
+xtable(t, digits = c(0, 0, 0, 0, rep(2, 5)))
