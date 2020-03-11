@@ -97,7 +97,7 @@ p <- mean(train_dt[['RiskPerformance1']])
 
 tm <- Sys.time()
 explanation <- explain(
-  x = test_dt[1:6, ],
+  x = test_dt[1:6,],
   approach = 'ctree',
   explainer = explainer,
   prediction_zero = p,
@@ -105,6 +105,7 @@ explanation <- explain(
 )
 tm2 <- Sys.time()
 print(tm2 - tm) # 2.8 minutes for 10 features and 6 test observations
+# for 500 test observations and 10 features
 
 # Printing the Shapley values for the test data
 print(explanation$dt)
