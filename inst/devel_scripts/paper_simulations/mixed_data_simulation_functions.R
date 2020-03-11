@@ -31,7 +31,7 @@ set.seed(1); beta <- round(rnorm(dim * no_categories + 1), 1)
 corr <- c(0, 0.1, 0.3, 0.5, 0.8, 0.9)
 k <- 1
 for(j in corr){
-  parameters_list[[k]] <- list(methods = c("gaussian", "empirical", "ctree", "kernelSHAP"),
+  parameters_list[[k]] <- list(methods = c("empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP"),
                           No_sample_gaussian = c(100, 1000),
                           No_cont_var = 2,
                           No_cat_var = 2,

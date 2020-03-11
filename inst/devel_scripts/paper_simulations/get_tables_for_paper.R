@@ -284,8 +284,8 @@ saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subpro
 ## DIMENSION 5
 ## NB CATEGORIES 6
 
-tod_date <- "03_03_20"
-rand_string <- "FPqLx"
+tod_date <- "10_03_20" # "03_03_20"
+rand_string <- "luQN8" # "FPqLx"
 dim <- 5
 no_categories <- 6
 
@@ -298,7 +298,6 @@ all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subproj
 true_shapley_list <- list()
 dt_sum_list <- list()
 for(j in 1:length(all_methods)){
-
   ct <- all_methods[[j]]$methods[['ctree']]$dt
   KS <- all_methods[[j]]$methods[['kernelSHAP']]$dt
 
@@ -336,11 +335,10 @@ for(i in 1:length(dt_sum_list)){
 results <- data.table(MAE_results, method_names, corr)
 results[, dim := dim]
 results[, no_categories := no_categories]
-
-
 results <- data.table(MAE_results, method_names, corr)
 results[, dim := dim]
 results[, no_categories := no_categories]
+
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim5_nocat6",  sep = "/"))
 
 
@@ -376,15 +374,15 @@ saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subpro
 ## DIMENSION 7
 ## NB CATEGORIES 5
 
-tod_date <- "03_03_20"
-rand_string <- "mdXqD"
+tod_date <- "10_03_20" # "03_03_20"
+rand_string <- "l9ZQk" # "mdXqD"
 dim <- 7
 no_categories <- 5
 
 folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
 
 ## load data
-nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.5.rds")
+nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.9.rds")
 all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
 
 true_shapley_list <- list()
@@ -429,172 +427,9 @@ results <- data.table(MAE_results, method_names, corr)
 results[, dim := dim]
 results[, no_categories := no_categories]
 
-## timing
-timing <- NULL
-names <- NULL
-corr <- NULL
-for(i in 1:length(all_methods)){
-  for(j in 6:length(all_methods[[i]]$timing)){
-    timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
-    names <- c(names, names(all_methods[[i]]$timing)[j])
-    corr <- c(corr, all_methods[[i]]$parameters$corr)
-  }
-
-}
-timing <- data.table(timing)
-timing[, method := names]
-timing[, corr := corr]
-timing[, user.child := NULL]
-timing[, sys.child := NULL]
-
-timing[, dim := dim]
-timing[, no_categories := no_categories]
-
-timing2_0 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
-
-
-##
-
-tod_date <- "04_03_20"
-rand_string <- "b5p4T"
-dim <- 7
-no_categories <- 5
-
-folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
-
-## load data
-nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.8.rds")
-all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
-
-true_shapley_list <- list()
-dt_sum_list <- list()
-for(j in 1:length(all_methods)){
-
-  ct <- all_methods[[j]]$methods[['ctree']]$dt
-  KS <- all_methods[[j]]$methods[['kernelSHAP']]$dt
-
-  estimated_shap = all_methods[[j]]$methods$ctree$x_test
-  true_shap = all_methods[[j]]$joint_prob_true
-
-  col_names = names(all_methods[[j]]$methods$ctree$model$model)[-1]
-
-  rmerge <- true_shap[estimated_shap, on = col_names, allow.cartesian = TRUE]
-
-  feat_comb_id <- rmerge[['feat_comb_id']]
-  TS <- all_methods[[j]][['true_shapley']]
-
-  dt_sum_list[[j]] <- list(ctree = cbind(ct, feat_comb_id), kernelSHAP = cbind(KS, feat_comb_id))
-  true_shapley_list[[j]] <- list(TS)
-}
-
-
-MAE_results <- NULL
-method_names <- NULL
-corr <- NULL
-
-for(i in 1:length(dt_sum_list)){
-  weights <- merge(dt_sum_list[[i]][[1]],  all_methods[[i]]$joint_prob_true[, c('joint_prob', 'feat_comb_id')], by = 'feat_comb_id')
-  weights <- weights[['joint_prob']]
-  weights0 <- weights/(sum(weights))
-
-  for(m in names(dt_sum_list[[1]])){
-    MAE_results <- c(MAE_results, MAE(true_shapley_list[[i]][[1]], dt_sum_list[[i]][[m]][, feat_comb_id := NULL], weights = weights0)) # 0.4759115
-    method_names <- c(method_names, m)
-    corr <- c(corr, all_methods[[i]]$parameters$corr)
-  }
-}
-
-
-results2 <- data.table(MAE_results, method_names, corr)
-results2[, dim := dim]
-results2[, no_categories := no_categories]
-
-
-## timing
-timing <- NULL
-names <- NULL
-corr <- NULL
-for(i in 1:length(all_methods)){
-  for(j in 6:length(all_methods[[i]]$timing)){
-    timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
-    names <- c(names, names(all_methods[[i]]$timing)[j])
-    corr <- c(corr, all_methods[[i]]$parameters$corr)
-  }
-
-}
-timing <- data.table(timing)
-timing[, method := names]
-timing[, corr := corr]
-timing[, user.child := NULL]
-timing[, sys.child := NULL]
-
-timing[, dim := dim]
-timing[, no_categories := no_categories]
-
-timing2_2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
-
-
-##
-
-tod_date <- "04_03_20"
-rand_string <- "uc757"
-dim <- 7
-no_categories <- 5
-
-folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
-
-## load data
-nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.9.rds")
-all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
-
-
-true_shapley_list <- list()
-dt_sum_list <- list()
-for(j in 1:length(all_methods)){
-
-  ct <- all_methods[[j]]$methods[['ctree']]$dt
-  KS <- all_methods[[j]]$methods[['kernelSHAP']]$dt
-
-  estimated_shap = all_methods[[j]]$methods$ctree$x_test
-  true_shap = all_methods[[j]]$joint_prob_true
-
-  col_names = names(all_methods[[j]]$methods$ctree$model$model)[-1]
-
-  rmerge <- true_shap[estimated_shap, on = col_names, allow.cartesian = TRUE]
-
-  feat_comb_id <- rmerge[['feat_comb_id']]
-  TS <- all_methods[[j]][['true_shapley']]
-
-  dt_sum_list[[j]] <- list(ctree = cbind(ct, feat_comb_id), kernelSHAP = cbind(KS, feat_comb_id))
-  true_shapley_list[[j]] <- list(TS)
-}
-
-
-MAE_results <- NULL
-method_names <- NULL
-corr <- NULL
-
-for(i in 1:length(dt_sum_list)){
-  weights <- merge(dt_sum_list[[i]][[1]],  all_methods[[i]]$joint_prob_true[, c('joint_prob', 'feat_comb_id')], by = 'feat_comb_id')
-  weights <- weights[['joint_prob']]
-  weights0 <- weights/(sum(weights))
-
-  for(m in names(dt_sum_list[[1]])){
-    MAE_results <- c(MAE_results, MAE(true_shapley_list[[i]][[1]], dt_sum_list[[i]][[m]][, feat_comb_id := NULL], weights = weights0)) # 0.4759115
-    method_names <- c(method_names, m)
-    corr <- c(corr, all_methods[[i]]$parameters$corr)
-  }
-}
-
-
-results3 <- data.table(MAE_results, method_names, corr)
-results3[, dim := dim]
-results3[, no_categories := no_categories]
-
-results <- rbind(results, results2, results3)
-
 saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim7_nocat5",  sep = "/"))
 
+
 ## timing
 timing <- NULL
 names <- NULL
@@ -616,11 +451,177 @@ timing[, sys.child := NULL]
 timing[, dim := dim]
 timing[, no_categories := no_categories]
 
-timing2_3 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
-
-timing2 <- rbind(timing2_0, timing2_2, timing2_3)
-
+timing2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
 saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim7_nocat5",  sep = "/"))
+
+##
+
+# tod_date <- "04_03_20"
+# rand_string <- "b5p4T"
+# dim <- 7
+# no_categories <- 5
+#
+# folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
+#
+# ## load data
+# nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.8.rds")
+# all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
+#
+# true_shapley_list <- list()
+# dt_sum_list <- list()
+# for(j in 1:length(all_methods)){
+#
+#   ct <- all_methods[[j]]$methods[['ctree']]$dt
+#   KS <- all_methods[[j]]$methods[['kernelSHAP']]$dt
+#
+#   estimated_shap = all_methods[[j]]$methods$ctree$x_test
+#   true_shap = all_methods[[j]]$joint_prob_true
+#
+#   col_names = names(all_methods[[j]]$methods$ctree$model$model)[-1]
+#
+#   rmerge <- true_shap[estimated_shap, on = col_names, allow.cartesian = TRUE]
+#
+#   feat_comb_id <- rmerge[['feat_comb_id']]
+#   TS <- all_methods[[j]][['true_shapley']]
+#
+#   dt_sum_list[[j]] <- list(ctree = cbind(ct, feat_comb_id), kernelSHAP = cbind(KS, feat_comb_id))
+#   true_shapley_list[[j]] <- list(TS)
+# }
+#
+#
+# MAE_results <- NULL
+# method_names <- NULL
+# corr <- NULL
+#
+# for(i in 1:length(dt_sum_list)){
+#   weights <- merge(dt_sum_list[[i]][[1]],  all_methods[[i]]$joint_prob_true[, c('joint_prob', 'feat_comb_id')], by = 'feat_comb_id')
+#   weights <- weights[['joint_prob']]
+#   weights0 <- weights/(sum(weights))
+#
+#   for(m in names(dt_sum_list[[1]])){
+#     MAE_results <- c(MAE_results, MAE(true_shapley_list[[i]][[1]], dt_sum_list[[i]][[m]][, feat_comb_id := NULL], weights = weights0)) # 0.4759115
+#     method_names <- c(method_names, m)
+#     corr <- c(corr, all_methods[[i]]$parameters$corr)
+#   }
+# }
+#
+#
+# results2 <- data.table(MAE_results, method_names, corr)
+# results2[, dim := dim]
+# results2[, no_categories := no_categories]
+#
+#
+# ## timing
+# timing <- NULL
+# names <- NULL
+# corr <- NULL
+# for(i in 1:length(all_methods)){
+#   for(j in 6:length(all_methods[[i]]$timing)){
+#     timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
+#     names <- c(names, names(all_methods[[i]]$timing)[j])
+#     corr <- c(corr, all_methods[[i]]$parameters$corr)
+#   }
+#
+# }
+# timing <- data.table(timing)
+# timing[, method := names]
+# timing[, corr := corr]
+# timing[, user.child := NULL]
+# timing[, sys.child := NULL]
+#
+# timing[, dim := dim]
+# timing[, no_categories := no_categories]
+#
+# timing2_2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
+#
+#
+# ##
+#
+# tod_date <- "04_03_20"
+# rand_string <- "uc757"
+# dim <- 7
+# no_categories <- 5
+#
+# folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
+#
+# ## load data
+# nm <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories, "_rho_0.9.rds")
+# all_methods <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
+#
+#
+# true_shapley_list <- list()
+# dt_sum_list <- list()
+# for(j in 1:length(all_methods)){
+#
+#   ct <- all_methods[[j]]$methods[['ctree']]$dt
+#   KS <- all_methods[[j]]$methods[['kernelSHAP']]$dt
+#
+#   estimated_shap = all_methods[[j]]$methods$ctree$x_test
+#   true_shap = all_methods[[j]]$joint_prob_true
+#
+#   col_names = names(all_methods[[j]]$methods$ctree$model$model)[-1]
+#
+#   rmerge <- true_shap[estimated_shap, on = col_names, allow.cartesian = TRUE]
+#
+#   feat_comb_id <- rmerge[['feat_comb_id']]
+#   TS <- all_methods[[j]][['true_shapley']]
+#
+#   dt_sum_list[[j]] <- list(ctree = cbind(ct, feat_comb_id), kernelSHAP = cbind(KS, feat_comb_id))
+#   true_shapley_list[[j]] <- list(TS)
+# }
+#
+#
+# MAE_results <- NULL
+# method_names <- NULL
+# corr <- NULL
+#
+# for(i in 1:length(dt_sum_list)){
+#   weights <- merge(dt_sum_list[[i]][[1]],  all_methods[[i]]$joint_prob_true[, c('joint_prob', 'feat_comb_id')], by = 'feat_comb_id')
+#   weights <- weights[['joint_prob']]
+#   weights0 <- weights/(sum(weights))
+#
+#   for(m in names(dt_sum_list[[1]])){
+#     MAE_results <- c(MAE_results, MAE(true_shapley_list[[i]][[1]], dt_sum_list[[i]][[m]][, feat_comb_id := NULL], weights = weights0)) # 0.4759115
+#     method_names <- c(method_names, m)
+#     corr <- c(corr, all_methods[[i]]$parameters$corr)
+#   }
+# }
+#
+#
+# results3 <- data.table(MAE_results, method_names, corr)
+# results3[, dim := dim]
+# results3[, no_categories := no_categories]
+#
+# results <- rbind(results, results2, results3)
+#
+# saveRDS(results, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "results_dim7_nocat5",  sep = "/"))
+#
+# ## timing
+# timing <- NULL
+# names <- NULL
+# corr <- NULL
+# for(i in 1:length(all_methods)){
+#   for(j in 6:length(all_methods[[i]]$timing)){
+#     timing <-   rbind(timing, t(as.matrix(all_methods[[i]]$timing[[j]])))
+#     names <- c(names, names(all_methods[[i]]$timing)[j])
+#     corr <- c(corr, all_methods[[i]]$parameters$corr)
+#   }
+#
+# }
+# timing <- data.table(timing)
+# timing[, method := names]
+# timing[, corr := corr]
+# timing[, user.child := NULL]
+# timing[, sys.child := NULL]
+#
+# timing[, dim := dim]
+# timing[, no_categories := no_categories]
+#
+# timing2_3 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
+#
+# timing2 <- rbind(timing2_0, timing2_2, timing2_3)
+#
+# saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim7_nocat5",  sep = "/"))
 
 ##------------------------------------------------------
 ## DIMENSION 10
@@ -733,8 +734,10 @@ dim10_nocat4 <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subpro
 full_table <- rbind(dim3_nocat3, dim3_nocat4, dim4_nocat3, dim5_nocat6, dim7_nocat5, dim10_nocat4)
 
 t <- reshape(full_table, idvar = c("method_names", "dim", "no_categories"), timevar = "corr", direction = "wide")
-colnames(t) <- c("method", "dim", "number of categories", "0", "0.1", "0.5", "0.8", "0.9")
-xtable(t, digits = c(0, 0, 0, 0, rep(4, 5)))
+setcolorder(t, c("method_names", "dim", "no_categories", "MAE_results.0", "MAE_results.0.1", "MAE_results.0.3", "MAE_results.0.5", "MAE_results.0.8", "MAE_results.0.9"))
+
+colnames(t) <- c("method", "dim", "number of categories", "0", "0.1", "0.3", "0.5", "0.8", "0.9")
+xtable(t, digits = c(0, 0, 0, 0, rep(4, 6)))
 
 
 ## ------------------------------------------------------
