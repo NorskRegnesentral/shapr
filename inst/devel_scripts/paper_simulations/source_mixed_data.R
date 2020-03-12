@@ -167,6 +167,9 @@ compute_shapley_mixed_data <- function(parameters_list){
   name = parameters_list$name
   seed <- parameters_list$seed
 
+
+  print(paste0("Starting simulation with correlation ", corr))
+
   ## Basic tests #
   if(length(beta) != 1 + No_cont_var + No_cat_var * No_levels){
     stop("Incorrect length for beta.")
