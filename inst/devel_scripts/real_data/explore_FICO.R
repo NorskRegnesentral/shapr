@@ -65,7 +65,7 @@ cont_var <- c("ExternalRiskEstimate", "MSinceOldestTradeOpen", "MSinceMostRecent
               "MSinceMostRecentInqexcl7days", "NumInqLast6M", "NumInqLast6Mexcl7days", "NetFractionRevolvingBurden", "NetFractionInstallBurden", "NumRevolvingTradesWBalance",
               "NumInstallTradesWBalance", "NumBank2NatlTradesWHighUtilization", "PercentTradesWBalance")
 
-some_var <- c(cat_var, cont_var)[1:10]
+some_var <- c(cat_var, cont_var)#[1:10]
 
 y_train <- train_data[, ..y_var]
 x_train <- train_data[, ..some_var]
@@ -89,7 +89,7 @@ summary(model)
 
 train_dt0 <- copy(train_dt)
 
-explainer <- shapr(train_dt0[, RiskPerformance := NULL], model)
+explainer <- shapr(train_dt0[, RiskPerformance := NULL], model,n_combinations = 5000)
 
 train_dt[, RiskPerformance1 := as.numeric(RiskPerformance) - 1]
 
@@ -97,7 +97,7 @@ p <- mean(train_dt[['RiskPerformance1']])
 
 tm <- Sys.time()
 explanation <- explain(
-  x = test_dt[1:6,],
+  x = test_dt[1:5,],
   approach = 'ctree',
   explainer = explainer,
   prediction_zero = p,
