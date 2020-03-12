@@ -25,14 +25,83 @@ check_for_row_NA <- function(row_ind, data){
 }
 
 check_for_NA2 <- function(X){
-  ifelse(X == -7, NA, ifelse(X == -8, NA, ifelse(X == -9, NA, X)))
+  # ifelse(X == -7, NA, ifelse(X == -8, NA, ifelse(X == -9, NA, X)))
+  ifelse(X == -9, NA, X)
 }
 
+find_id <- function(data, Value1, Value2, Value3, Value4){
+  data[ExternalRiskEstimate == Value1 & MSinceOldestTradeOpen == Value2 & MSinceMostRecentTradeOpen == Value3 & AverageMInFile == Value4, "Id"]
+
+}
+
+find_row <- function(data, Value1, Value2, Value3, Value4){
+  data[ExternalRiskEstimate == Value1 & MSinceOldestTradeOpen == Value2 & MSinceMostRecentTradeOpen == Value3 & AverageMInFile == Value4]
+
+}
 ## -----------------------
 
 data <- read.table(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_HELOC_dataset_v1.csv", sep = ",", header = TRUE, stringsAsFactors = TRUE )
 data <- data.table(data)
 nrow(data) # 10459
+data[, Id := 1:nrow(data)]
+data[, pred := 1]
+
+## Demo 1
+# x = find_id(data, Value1 = 61, Value2 = 49, Value3 = 19, Value4 = 29)
+# data[Id == x[[1]], pred := 0.952]
+#
+# ## Demo 2
+# x = find_id(data, Value1 = 59, Value2 = 131, Value3 = 7, Value4 = 81)
+# data[Id == x[[1]], pred := 0.895]
+#
+#
+# ## Demo3
+# x = find_id(data, Value1 = 92, Value2 = 372, Value3 = 10, Value4 = 176)
+# data[Id == x[[1]], pred := 0.049]
+#
+#
+# ## Some random ones
+# ## 4
+# set.seed(10)
+# sample(1:nrow(data), 1)
+# data[491, pred := 0.888]
+#
+# ## 5
+# set.seed(1)
+# sample(1:nrow(data), 1)
+# data[1017, pred := 0.594]
+#
+#
+# ## 6
+# set.seed(2)
+# sample(1:nrow(data), 1)
+# data[4806, pred := 0.696]
+#
+#
+# ## 7
+# set.seed(3)
+# sample(1:nrow(data), 1)
+# data[3770, pred := 0.332]
+#
+#
+# ## 8
+# set.seed(4)
+# sample(1:nrow(data), 1)
+# data[5624, pred := 0.241]
+#
+# #
+# # ## 9
+# # set.seed(5)
+# # sample(1:nrow(data), 1)
+# # data[2255] # pred := 0.241
+#
+#
+# ## 10
+# set.seed(6)
+# sample(1:nrow(data), 1)
+# data[6965, pred := 0.769]
+#
+# write.csv(data, "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_HELOC_dataset_predictions.csv")
 
 
 data0 <- copy(data)
@@ -41,7 +110,7 @@ data0 <- data0[, RiskPerformance := NULL][ , (cols) := lapply(.SD, FUN = check_f
 
 data2 <- data[complete.cases(cbind(data[,"RiskPerformance"], data0)), ]
 
-dim(data2)
+dim(data0)[1] - dim(data2)[1] # 598 have -9 everywhere
 
 data2[, MaxDelqEver := as.factor(MaxDelqEver)]
 data2[, MaxDelq2PublicRecLast12M := as.factor(MaxDelq2PublicRecLast12M)]
@@ -110,11 +179,7 @@ print(tm2 - tm) # 2.8 minutes for 10 features and 6 test observations
 # Printing the Shapley values for the test data
 print(explanation$dt)
 
-# Finally we plot the resulting explanations
-# plotDir <- paste(projDir, "BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures", sep = "/")
-
-# setwd(plotDir)
-p1 <- plot(explanation) # top_k_features = 5
+p1 <- plot(explanation)
 
 # ggplot2::ggsave("shapley_value_prediction_housing_data_Gaussian_10features_6testobs.png", plot = p1, device = NULL, path = NULL,
 #                 scale = 1, width = 6, height = 6,
