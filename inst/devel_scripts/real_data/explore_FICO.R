@@ -44,64 +44,17 @@ data <- read.table(file = "/nr/project/stat/BigInsight/Projects/Explanations/Dat
 data <- data.table(data)
 nrow(data) # 10459
 data[, Id := 1:nrow(data)]
-data[, pred := 1]
 
-## Demo 1
-# x = find_id(data, Value1 = 61, Value2 = 49, Value3 = 19, Value4 = 29)
-# data[Id == x[[1]], pred := 0.952]
-#
-# ## Demo 2
-# x = find_id(data, Value1 = 59, Value2 = 131, Value3 = 7, Value4 = 81)
-# data[Id == x[[1]], pred := 0.895]
-#
-#
-# ## Demo3
-# x = find_id(data, Value1 = 92, Value2 = 372, Value3 = 10, Value4 = 176)
-# data[Id == x[[1]], pred := 0.049]
-#
-#
-# ## Some random ones
-# ## 4
-# set.seed(10)
-# sample(1:nrow(data), 1)
-# data[491, pred := 0.888]
-#
-# ## 5
-# set.seed(1)
-# sample(1:nrow(data), 1)
-# data[1017, pred := 0.594]
-#
-#
-# ## 6
-# set.seed(2)
-# sample(1:nrow(data), 1)
-# data[4806, pred := 0.696]
-#
-#
-# ## 7
-# set.seed(3)
-# sample(1:nrow(data), 1)
-# data[3770, pred := 0.332]
-#
-#
-# ## 8
-# set.seed(4)
-# sample(1:nrow(data), 1)
-# data[5624, pred := 0.241]
-#
-# #
-# # ## 9
-# # set.seed(5)
-# # sample(1:nrow(data), 1)
-# # data[2255] # pred := 0.241
-#
-#
-# ## 10
-# set.seed(6)
-# sample(1:nrow(data), 1)
-# data[6965, pred := 0.769]
-#
-# write.csv(data, "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_HELOC_dataset_predictions.csv")
+demo_id_1 = find_id(data, Value1 = 61, Value2 = 49, Value3 = 19, Value4 = 29)
+demo_id_2 = find_id(data, Value1 = 59, Value2 = 131, Value3 = 7, Value4 = 81)
+demo_id_3 = find_id(data, Value1 = 92, Value2 = 372, Value3 = 10, Value4 = 176)
+
+test_ids = unlist(c(demo_id_1,demo_id_2,demo_id_3,491,1017,4806,3770,5624,6965))
+test_preds_duke = c(0.952,0.895,0.049,0.888,0.594,0.696,0.332,0.241,0.769)
+
+test_data0 = data.table(Id =test_ids,pred_duke=test_preds_duke)
+setkey(test_data0)
+
 
 
 data0 <- copy(data)
@@ -115,14 +68,20 @@ dim(data0)[1] - dim(data2)[1] # 598 have -9 everywhere
 data2[, MaxDelqEver := as.factor(MaxDelqEver)]
 data2[, MaxDelq2PublicRecLast12M := as.factor(MaxDelq2PublicRecLast12M)]
 
+
 ##
+test_data = merge(data2,test_data0,by="Id",all.x = F,all.y=T)
+data3 = data2[!(Id%in%test_data$Id)]
+
+prop_train = 0.8
+
 set.seed(1)
-ss <- sample(1:nrow(data2), 500, replace = FALSE)
-train_data <- data2[-ss,]
-test_data <- data2[ss ,]
+ss <- sample(1:nrow(data3), round(prop_train*nrow(data3)), replace = FALSE)
+train_data <- data3[ss,]
+valid_data <- data3[-ss ,]
 
 dim(train_data) # 9459 obs, 24 columns
-dim(test_data)
+dim(valid_data)
 
 
 
@@ -136,21 +95,113 @@ cont_var <- c("ExternalRiskEstimate", "MSinceOldestTradeOpen", "MSinceMostRecent
 
 some_var <- c(cat_var, cont_var)#[1:10]
 
-y_train <- train_data[, ..y_var]
+# Coding Bad as 1, to get probability of defaulting (this is what the Duke people do)
+y_train <- unlist((train_data[,..y_var]=="Bad")*1)
+y_valid <- unlist((valid_data[,..y_var]=="Bad")*1)
+y_test <- unlist((test_data[,..y_var]=="Bad")*1)
+
 x_train <- train_data[, ..some_var]
+x_valid <- valid_data[, ..some_var]
 x_test <- test_data[, ..some_var]
 
-train_dt <- cbind(y_train, x_train)
-test_dt <- x_test
 
-# Fitting a basic xgboost model to the training data
-# model <- xgboost(
-#   data = x_train,
-#   label = y_train,
-#   nround = 20,
-#   verbose = FALSE,
-#   objective = binary:logistic
-# )
+#### MJ starts preparing for xgboost fit ####
+
+library(caret)
+dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train,x_valid,x_test))
+x_train_dummy=predict(dummyfunc, newdata = x_train)
+x_valid_dummy=predict(dummyfunc, newdata = x_valid)
+x_test_dummy=predict(dummyfunc, newdata = x_test)
+
+colnames_dummy = colnames(x_train_dummy)
+montone_constrains_dt = data.table(colname = colnames_dummy,
+                               constraints = c(rep(0,16),
+                               rep(-1,5),
+                               rep(1,2),
+                               rep(-1,2),
+                               0,
+                               1,
+                               0,
+                               -1,
+                               rep(1,4),
+                               rep(0,2),
+                               1,
+                               0))
+
+
+
+xgbMatrix.train <- xgb.DMatrix(data=x_train_dummy,
+                               label = y_train)
+
+xgbMatrix.valid <- xgb.DMatrix(data=x_valid_dummy,
+                               label = y_valid)
+
+xgbMatrix.test <- xgb.DMatrix(data=x_test_dummy,
+                              label = y_test)
+
+
+params <- list(eta = 0.3,
+               max_depth = 3,
+               objective= 'binary:logistic',
+               eval_metric = c("auc"),
+               tree_method="hist")
+
+params_monotone = params
+params_monotone$monotone_constraints = montone_constrains_dt$constraints
+#params_monotone$max_bin = 512
+
+
+early_stopping_rounds <- 50 # Training stops when the validation AUC scores stops increasing for early_stopping_rounds number of iterations
+print_every_n <- 10 # How often the xgboost model shoud print AUC-scores during training
+nrounds <- 1000 # Max number of iterations
+this.seed <- 1234 # Seed used in fitting procedure
+
+
+set.seed(this.seed)
+tt = proc.time()
+xgbFit_regular <- xgb.train(data=xgbMatrix.train,
+                   params = params,
+                   nrounds = nrounds,
+                   watchlist = list(train = xgbMatrix.train, # train
+                                    test = xgbMatrix.test, # test
+                                    validation = xgbMatrix.valid), # validation (important that this is given last)
+                   early_stopping_rounds = early_stopping_rounds,
+                   print_every_n = print_every_n)
+proc.time()-tt
+
+set.seed(this.seed)
+tt = proc.time()
+xgbFit_monotone <- xgb.train(data=xgbMatrix.train,
+                            params = params_monotone,
+                            nrounds = nrounds,
+                            watchlist = list(train = xgbMatrix.train, # train
+                                             test = xgbMatrix.test, # test
+                                             validation = xgbMatrix.valid), # validation (important that this is given last)
+                            early_stopping_rounds = early_stopping_rounds,
+                            print_every_n = print_every_n)
+proc.time()-tt
+
+# Performance on validation data
+xgbFit_monotone$best_score
+xgbFit_regular$best_score
+
+test_data$pred_monotone = predict(xgbFit_monotone,xgbMatrix.test)
+test_data$pred_regular = predict(xgbFit_regular,xgbMatrix.test)
+
+test_data[,AE_monotone:=abs(pred_monotone-pred_duke)]
+test_data[,AE_regular:=abs(pred_regular-pred_duke)]
+
+mean(test_data$AE_monotone)
+mean(test_data$AE_regular)
+
+
+if (monotone){
+  model <- xgbFit_monotone
+
+} else {
+  model = xgbFit_regular
+}
+
 
 
 model <- glm(RiskPerformance~., data = train_dt, family = "binomial")
