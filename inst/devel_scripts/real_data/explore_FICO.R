@@ -49,8 +49,8 @@ demo_id_1 = find_id(data, Value1 = 61, Value2 = 49, Value3 = 19, Value4 = 29)
 demo_id_2 = find_id(data, Value1 = 59, Value2 = 131, Value3 = 7, Value4 = 81)
 demo_id_3 = find_id(data, Value1 = 92, Value2 = 372, Value3 = 10, Value4 = 176)
 
-test_ids = unlist(c(demo_id_1,demo_id_2,demo_id_3,491,1017,4806,3770,5624,6965))
-test_preds_duke = c(0.952,0.895,0.049,0.888,0.594,0.696,0.332,0.241,0.769)
+test_ids = unlist(c(demo_id_1,demo_id_2,demo_id_3,491,1017,4806,3770,5624))
+test_preds_duke = c(0.952,0.895,0.049,0.888,0.594,0.696,0.332,0.241)
 
 test_data0 = data.table(Id =test_ids,pred_duke=test_preds_duke)
 setkey(test_data0)
@@ -75,7 +75,7 @@ data3 = data2[!(Id%in%test_data$Id)]
 
 prop_train = 0.8
 
-set.seed(1)
+set.seed(123)
 ss <- sample(1:nrow(data3), round(prop_train*nrow(data3)), replace = FALSE)
 train_data <- data3[ss,]
 valid_data <- data3[-ss ,]
@@ -136,6 +136,10 @@ xgbMatrix.train <- xgb.DMatrix(data=x_train_dummy,
 xgbMatrix.valid <- xgb.DMatrix(data=x_valid_dummy,
                                label = y_valid)
 
+xgbMatrix.train.valid = xgb.DMatrix(data=rbind(x_train_dummy,x_valid_dummy),
+                                    label = c(y_train,y_valid))
+
+
 xgbMatrix.test <- xgb.DMatrix(data=x_test_dummy,
                               label = y_test)
 
@@ -155,6 +159,32 @@ early_stopping_rounds <- 50 # Training stops when the validation AUC scores stop
 print_every_n <- 10 # How often the xgboost model shoud print AUC-scores during training
 nrounds <- 1000 # Max number of iterations
 this.seed <- 1234 # Seed used in fitting procedure
+
+set.seed(this.seed)
+tt = proc.time()
+ xgbFit_cv_regular <- xgb.cv(data=xgbMatrix.train.valid,
+                             params = params,
+                             nrounds = nrounds,
+                             early_stopping_rounds = early_stopping_rounds,
+                             callbacks = list(cb.cv.predict(save_models = TRUE)),
+                             print_every_n = print_every_n,
+                             nfold = 5)
+ proc.time()-tt
+
+set.seed(this.seed)
+ tt = proc.time()
+ xgbFit_cv_monotone <- xgb.cv(data=xgbMatrix.train.valid,
+                             params = params_monotone,
+                             nrounds = nrounds,
+                             early_stopping_rounds = early_stopping_rounds,
+                             callbacks = list(cb.cv.predict(save_models = TRUE)),
+                             print_every_n = print_every_n,
+                             nfold = 5)
+ proc.time()-tt
+
+ # Performance on validation data
+ xgbFit_cv_regular$evaluation_log[iter==xgbFit_cv_regular$best_iteration]
+ xgbFit_cv_monotone$evaluation_log[iter==xgbFit_cv_monotone$best_iteration]
 
 
 set.seed(this.seed)
@@ -185,15 +215,31 @@ proc.time()-tt
 xgbFit_monotone$best_score
 xgbFit_regular$best_score
 
+cv.pred_regular <- cv.pred_monotone <- NULL
+for (i in 1:5){
+  cv.pred_regular<-cbind(cv.pred_regular,predict(xgbFit_cv_regular$models[[i]],xgbMatrix.test,ntreelimit = xgbFit_cv_regular$best_iteration))
+  cv.pred_monotone<-cbind(cv.pred_monotone,predict(xgbFit_cv_monotone$models[[i]],xgbMatrix.test,ntreelimit = xgbFit_cv_monotone$best_iteration))
+}
+
+
+test_data$pred_cv_monotone = rowMeans(cv.pred_monotone)
+test_data$pred_cv_regular = rowMeans(cv.pred_regular)
+
 test_data$pred_monotone = predict(xgbFit_monotone,xgbMatrix.test)
 test_data$pred_regular = predict(xgbFit_regular,xgbMatrix.test)
+
+test_data[,AE_cv_monotone:=abs(pred_cv_monotone-pred_duke)]
+test_data[,AE_cv_regular:=abs(pred_cv_regular-pred_duke)]
 
 test_data[,AE_monotone:=abs(pred_monotone-pred_duke)]
 test_data[,AE_regular:=abs(pred_regular-pred_duke)]
 
 mean(test_data$AE_monotone)
 mean(test_data$AE_regular)
+mean(test_data$AE_cv_monotone)
+mean(test_data$AE_cv_regular)
 
+# Prepare the cv-model for fitting into the shapr machinery
 
 if (monotone){
   model <- xgbFit_monotone
