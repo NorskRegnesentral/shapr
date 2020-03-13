@@ -239,45 +239,96 @@ mean(test_data$AE_regular)
 mean(test_data$AE_cv_monotone)
 mean(test_data$AE_cv_regular)
 
+save(x_train,x_valid,x_test,test_data,file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_data_for_modelling.RData")
+
+
 # Prepare the cv-model for fitting into the shapr machinery
 
-if (monotone){
-  model <- xgbFit_monotone
 
-} else {
-  model = xgbFit_regular
+#### XGBoost cv modell prepared for shapr call ###
+model_type.xgb.cv.synchronous <- function(x) {
+  type =  "regression"
+  if(is.null(x$dummyfunc)  && !is.null(x$params$objective) && x$params$objective == "binary:logistic") type = "classification"
+  if(!is.null(x$dummyfunc) && !is.null(x$params$objective) && x$params$objective == "binary:logistic") type = "cat_regression"
+  return(type)
+}
+
+predict_model.xgb.cv.synchronous <- function(x, newdata) {
+  if (!requireNamespace("stats", quietly = TRUE)) {
+    stop("The xgboost package is required for predicting xgboost models")
+  }
+  if (model_type(x) == "cat_regression") {
+    newdata_dummy <- as.matrix(predict(x$dummyfunc, newdata = newdata))
+    cv.pred <- NULL
+    for (i in 1:length(x$folds)){
+      cv.pred = cbind(cv.pred,predict(x$models[[i]], newdata_dummy,ntreelimit = x$best_iteration))
+    }
+  } else {
+    cv.pred <- NULL
+    for (i in 1:length(x$folds)){
+      cv.pred = cbind(cv.pred,predict(x$models[[i]], as.matrix(newdata),ntreelimit = x$best_iteration))
+    }
+  }
+  return(rowMeans(cv.pred))
+}
+
+features.xgb.cv.synchronous <- function(x, cnms, feature_labels = NULL) {
+  if (!is.null(feature_labels)) message_features_labels()
+
+  nms <- x$feature_names
+
+  if (!all(nms %in% cnms)) error_feature_labels()
+
+  return(nms)
 }
 
 
 
-model <- glm(RiskPerformance~., data = train_dt, family = "binomial")
-summary(model)
+p <- mean(y_train)
 
-train_dt0 <- copy(train_dt)
 
-explainer <- shapr(train_dt0[, RiskPerformance := NULL], model,n_combinations = 5000)
+xgbFit_cv_monotone$dummyfunc = dummyfunc
+xgbFit_cv_monotone$feature_names = colnames(x_train) # Need to add this manually as not stored in xgboost CV object
 
-train_dt[, RiskPerformance1 := as.numeric(RiskPerformance) - 1]
+# Testing
+predict_model.xgb.cv.synchronous(xgbFit_cv_monotone,x_test)
 
-p <- mean(train_dt[['RiskPerformance1']])
+n_combinations = 10000
 
+explainer_cv_monotone <- shapr(x_train, xgbFit_cv_monotone,n_combinations = n_combinations)
 tm <- Sys.time()
-explanation <- explain(
-  x = test_dt[1:5,],
+explanation_cv_monotone <- explain(
+  x = x_test,
   approach = 'ctree',
-  explainer = explainer,
+  explainer = explainer_cv_monotone,
+  prediction_zero = p,
+  sample = TRUE
+)
+tm2 <- Sys.time()
+print(tm2 - tm)
+
+save(explanation_cv_monotone,explainer_cv_monotone,xgbFit_cv_monotone,file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone.RData")
+
+
+xgbFit_cv_regular$dummyfunc = dummyfunc
+xgbFit_cv_regular$feature_names = colnames(x_train) # Need to add this manually as not stored in xgboost CV object
+
+explainer_cv_regular <- shapr(x_train, xgbFit_cv_regular,n_combinations = n_combinations)
+tm <- Sys.time()
+explanation_cv_regular <- explain(
+  x = x_test,
+  approach = 'ctree',
+  explainer = explainer_cv_regular,
   prediction_zero = p,
   sample = TRUE
 )
 tm2 <- Sys.time()
 print(tm2 - tm) # 2.8 minutes for 10 features and 6 test observations
-# for 500 test observations and 10 features
 
-# Printing the Shapley values for the test data
-print(explanation$dt)
+save(explanation_cv_regular,explainer_cv_regular,xgbFit_cv_regular,file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular.RData")
 
-p1 <- plot(explanation)
 
+#p1 <- plot(explanation)
 # ggplot2::ggsave("shapley_value_prediction_housing_data_Gaussian_10features_6testobs.png", plot = p1, device = NULL, path = NULL,
 #                 scale = 1, width = 6, height = 6,
 #                 dpi = 300, limitsize = TRUE)
