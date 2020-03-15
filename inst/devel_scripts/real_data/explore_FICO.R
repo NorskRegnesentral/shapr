@@ -293,7 +293,7 @@ xgbFit_cv_monotone$feature_names = colnames(x_train) # Need to add this manually
 # Testing
 predict_model.xgb.cv.synchronous(xgbFit_cv_monotone,x_test)
 
-n_combinations = 10000
+n_combinations = 5000
 
 explainer_cv_monotone <- shapr(x_train, xgbFit_cv_monotone,n_combinations = n_combinations)
 tm <- Sys.time()

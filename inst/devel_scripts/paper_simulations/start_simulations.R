@@ -75,15 +75,15 @@ source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
 # source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
 # source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
 
-
-special_dim7 <- FALSE
-special_dim10 <- TRUE
-dim <- 10
-no_categories <- 4
-cutoff = c(-200, -0.5, 0, 1, 200)
-corr <- c(0, 0.1, 0.3, 0.5, 0.8, 0.9)
-methods <- c("ctree", "kernelSHAP")
-
-source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
-source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
-
+#
+# special_dim7 <- FALSE
+# special_dim10 <- TRUE
+# dim <- 10
+# no_categories <- 4
+# cutoff = c(-200, -0.5, 0, 1, 200)
+# corr <- c(0, 0.1, 0.3, 0.5, 0.8, 0.9)
+# methods <- c("ctree", "kernelSHAP")
+#
+# source("inst/devel_scripts/paper_simulations/calculate_true_shapley_withdatatable.R")
+# source("inst/devel_scripts/paper_simulations/source_paper_simulations.R")
+#
