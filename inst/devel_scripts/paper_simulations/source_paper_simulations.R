@@ -166,9 +166,10 @@ if(test){
       dt_unique <- unique(dt_order)[1:2000, ]
 
       dt_unique_list <- list()
-      dt_unique_list[[1]] <- dt_unique[1751:2000, ]
+      dt_unique_list[[1]] <- dt_unique[1501:1750, ]
+      dt_unique_list[[2]] <- dt_unique[1751:2000, ]
 
-      for(l in 1){
+      for(l in 1:length(dt_unique_list)){
         parameters_list[[k]] <- list(Sigma_diag = 1,
                                      corr = j,
                                      mu = rep(0, dim),
@@ -219,7 +220,7 @@ if(test){
       dt_unique_list[[7]] <- dt_unique[1501:1750, ]
       dt_unique_list[[8]] <- dt_unique[1751:2000, ]
 
-      for(l in 1:8){
+      for(l in 1:length(dt_unique_list)){
         parameters_list[[k]] <- list(Sigma_diag = 1,
                                      corr = j,
                                      mu = rep(0, dim),
