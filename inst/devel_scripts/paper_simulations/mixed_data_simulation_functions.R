@@ -28,7 +28,7 @@ dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Ann
 parameters_list <- list()
 
 set.seed(1); beta <- round(rnorm(dim * no_categories + 1), 1)
-corr <- c(0.3, 0.5, 0.8, 0.9)
+corr <- c(0.9)
 k <- 1
 for(j in corr){
   parameters_list[[k]] <- list(methods = c("empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP"),

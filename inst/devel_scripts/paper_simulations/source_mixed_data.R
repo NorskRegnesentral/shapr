@@ -505,7 +505,33 @@ compute_shapley_mixed_data <- function(parameters_list){
       }
 
       for (i in 1:No_cat_var){
-        phi_sum_mat[, i + No_cont_var] <- rowSums(subset(explanation_list[[m]]$dt, select = which(beta_matcher == i) + 1))
+        phi_sum_mat[, i + No_cont_var] <- rowSums(subset(explanation_list[[m]]$dt, select = which(beta_matcher == i) + No_cont_var + 1))
+      }
+      colnames(phi_sum_mat) <- feat_names
+      explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1], phi_sum_mat)
+
+      print(paste0("Finished estimating Shapley value with ", m, " method."), quote = FALSE, right = FALSE)
+      print(tm1 - tm0)
+      timeit[m] <- list((tm1 - tm0))
+
+    } else if (m == 'empirical_ind'){
+      tm0 <- proc.time()
+      explanation_list[[m]] <- explain(
+        x_test_onehot_reduced,
+        approach = "empirical",
+        type = "independence",
+        explainer = explainer_onehot,
+        prediction_zero = p,
+        sample = FALSE,
+        w_threshold = 1,
+        n_samples = 1000)
+      tm1 <- proc.time()
+      for(i in 1:No_cont_var){
+        phi_sum_mat[, i] <- explanation_list[[m]]$dt[[i + 1]]
+      }
+
+      for (i in 1:No_cat_var){
+        phi_sum_mat[, i + No_cont_var] <- rowSums(subset(explanation_list[[m]]$dt, select = which(beta_matcher == i) + No_cont_var + 1))
       }
       colnames(phi_sum_mat) <- feat_names
       explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1], phi_sum_mat)
@@ -533,8 +559,9 @@ compute_shapley_mixed_data <- function(parameters_list){
           }
 
           for (i in 1:No_cat_var){
-            phi_sum_mat[, i + No_cont_var] <- rowSums(subset(explanation_list[[paste0(m, "_nsamples", j, "_trial", k)]]$dt, select = which(beta_matcher == i) + 1))
+            phi_sum_mat[, i + No_cont_var] <- rowSums(subset(explanation_list[[paste0(m, "_nsamples", j, "_trial", k)]]$dt, select = which(beta_matcher == i)  + No_cont_var + 1))
           }
+
           colnames(phi_sum_mat) <- feat_names
           explanation_list[[paste0(m, "_nsamples", j, "_trial", k)]]$dt_sum <- cbind(explanation_list[[paste0(m, "_nsamples", j, "_trial", k)]]$dt[, 1], phi_sum_mat)
         }
@@ -561,7 +588,7 @@ compute_shapley_mixed_data <- function(parameters_list){
       }
 
       for (i in 1:No_cat_var){
-        phi_sum_mat[, i + No_cont_var] <- rowSums(subset(explanation_list[[m]]$dt, select = which(beta_matcher == i) + 1))
+        phi_sum_mat[, i + No_cont_var] <- rowSums(subset(explanation_list[[m]]$dt, select = which(beta_matcher == i) + No_cont_var + 1))
       }
       colnames(phi_sum_mat) <- feat_names
       explanation_list[[m]]$dt_sum <- cbind(explanation_list[[m]]$dt[, 1], phi_sum_mat)

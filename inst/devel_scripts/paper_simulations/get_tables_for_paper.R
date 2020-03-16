@@ -49,8 +49,6 @@ for(i in 1:length(all_methods)){
       meth <- tmp0
       weight_vec <- all_methods[[i]]$joint_prob_true[[dim + 1]]
 
-
-
     }
     else {
       true <- all_methods[[i]][['true_shapley']]
@@ -99,10 +97,9 @@ timing[, corr := corr]
 timing[, dim := dim]
 timing[, no_categories := no_categories]
 
-timing2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
-<<<<<<< HEAD
+# timing2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
 
-timing2 <- timing2[, (mean_elapsed = mean(elapsed)), by = c("method", "dim", "no_categories")]
+timing2 <- timing[, (mean_elapsed = mean(elapsed)), by = c("method", "dim", "no_categories")]
 
 #saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim3_nocat3",  sep = "/"))
 saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables_new", "timing_dim3_nocat3",  sep = "/"))
@@ -506,15 +503,12 @@ timing[, dim := dim]
 timing[, no_categories := no_categories]
 
 timing2 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
-#timing2 <- timing2[, (mean_elapsed = mean(elapsed)), by = c("method", "dim", "no_categories")]
-
-#saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim7_nocat5",  sep = "/"))
-
-##
+timing2 <- timing2[, (mean_elapsed = mean(elapsed)), by = c("method", "dim", "no_categories")]
 
 saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables_new", "timing_dim7_nocat5",  sep = "/"))
 
-##
+# saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables_new", "timing_dim7_nocat5",  sep = "/"))
+
 
 # tod_date <- "04_03_20"
 # rand_string <- "b5p4T"
@@ -779,11 +773,23 @@ timing[, no_categories := no_categories]
 
 timing0 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
 
-timing2 <- timing0[, .(V1 = sum(elapsed)), by = c("method", "dim", "no_categories")]
+timing2 <- timing0[, .(V1 = sum(elapsed)), by = c("method", "dim", "no_categories", "corr")]
 
-setcolorder(timing2, c("method", "dim", "no_categories", "V1"))
+timing3 <- timing2[, .(V1 = mean(V1)), by = c("method", "dim", "no_categories")]
 
-saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables_new", "timing_dim10_nocat4",  sep = "/"))
+saveRDS(timing3, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables_new", "timing_dim10_nocat4",  sep = "/"))
+
+
+## only for dim 10
+timing2 <- timing0[, .(elapsed = sum(elapsed)), by = c("method", "dim", "no_categories", "corr")]
+t <- reshape(timing2, idvar = c("method", "dim", "no_categories"), timevar = "corr", direction = "wide")
+t[, no_x_test := 2000]
+
+setcolorder(t, c("dim", "no_categories", "no_x_test", "method", "elapsed.0", "elapsed.0.1", "elapsed.0.5", "elapsed.0.8", "elapsed.0.9"))
+
+colnames(t) <- c("dim", "nb categories", "nb variables",  "method", "0", "0.1", "0.5", "0.8", "0.9")
+print(xtable(t, digits = c(0, 0, 0, 0, 0, rep(1, 5))), include.rownames = FALSE)
+
 
 
 
@@ -821,16 +827,10 @@ timing_dim10_nocat4 <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud
 
 
 timing_full_table <- rbind(timing_dim3_nocat3, timing_dim3_nocat4, timing_dim4_nocat3, timing_dim5_nocat6, timing_dim7_nocat5, timing_dim10_nocat4)
-
-# t <- reshape(timing_full_table, idvar = c("method", "dim", "no_categories"), timevar = "corr", direction = "wide")
-# setcolorder(t, c("method", "dim", "no_categories", "elapsed.0", "elapsed.0.1", "elapsed.0.3", "elapsed.0.5", "elapsed.0.8", "elapsed.0.9"))
-# t[, no_x_test := t[['no_categories']]^t[['dim']]]
-
 timing_full_table[, no_x_test := timing_full_table[['no_categories']]^timing_full_table[['dim']]]
 
 setcolorder(timing_full_table, c("dim", "no_categories", "no_x_test", "method", "V1"))
 
 colnames(timing_full_table) <- c("dim", "nb categories", "nb variables",  "method", "elapsed")
-#t[, no_x_test := no_categories^dim]
 
 print(xtable(timing_full_table, digits = c(0, 0, 0, 0, 0, 1)), include.rownames = FALSE)
