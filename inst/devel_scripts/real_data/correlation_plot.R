@@ -68,7 +68,7 @@ dim(data0)[1] - dim(data2)[1] # 598 have -9 everywhere
 data2[, MaxDelqEver := as.factor(MaxDelqEver)]
 data2[, MaxDelq2PublicRecLast12M := as.factor(MaxDelq2PublicRecLast12M)]
 
-cat_var <- c("MaxDelqEver", "MaxDelq2PublicRecLast12M")
+cat_var <- c("MaxDelq2PublicRecLast12M","MaxDelqEver")
 all_var <- c("ExternalRiskEstimate",
              "MSinceOldestTradeOpen", "MSinceMostRecentTradeOpen", "AverageMInFile",
              "NumSatisfactoryTrades",
@@ -103,11 +103,11 @@ cor_cont = cor(cont_data)
 library( questionr)
 cat_tab = table(cat_data)
 cat_corr0 = cramer.v(cat_tab)
-cor_cat = matrix(c(1,cat_corr0,cat_corr0,1),ncol=2)
+#cor_cat = matrix(c(1,cat_corr0,cat_corr0,1),ncol=2)
 
-cor_cont[which(all_var %in% cat_var),which(all_var %in% cat_var)] = cor_cat
+#cor_cont[which(all_var %in% cat_var),which(all_var %in% cat_var)] = cor_cat
 
-cor_all = cor_cont
+#cor_all = cor_cont
 
 
 library(corrplot)
@@ -121,4 +121,40 @@ dev.off()
 library(DiscriMiner)
 #corRatio(variable, group)
 
+all_data = data2[,..all_var]
 
+corcatvec_1 = corcatvec_2 = rep(NA,length(all_var))
+for (i in 1:ncol(all_data)){
+  cont = unlist(all_data[,..i])
+  if(is.factor(cont)){
+    corcatvec_1[i] = NA
+  } else {
+    corcatvec_1[i] = corRatio(cont,unlist(cat_data[,1]))
+  }
+}
+for (i in 1:ncol(all_data)){
+  cont = unlist(all_data[,..i])
+  if(is.factor(cont)){
+    corcatvec_2[i] = NA
+  } else {
+    corcatvec_2[i] = corRatio(cont,unlist(cat_data[,2]))
+  }
+}
+
+
+cor_catcont = cbind(corcatvec_1,corcatvec_2)
+cor_catcont[12,] = c(1,cat_corr0)
+cor_catcont[13,] = c(cat_corr0,1)
+
+cor_all = cor_cont
+cor_all[,12:13] = cor_catcont
+cor_all[12:13,] = t(cor_catcont)
+
+eps = 0.5
+library(corrplot)
+pdf(file="/nr/project/stat/BigInsight/Projects/Explanations/Data/correlation_figure_new.pdf",width = 9,height=9)
+corrplot(cor_all,diag=F)
+corrRect(groups,col=3,lwd=3)
+rect(1-eps,11-eps,ncol(cor_all)+1-eps,13-eps,col=NA,border=6,lwd=1.8)
+rect(12-eps,1-eps,14-eps,ncol(cor_all)+1-eps,col=NA,border=6,lwd=1.8)
+dev.off()
