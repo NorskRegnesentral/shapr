@@ -13,7 +13,7 @@ source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/sha
 tod_date0 <- format(Sys.Date(), "%d_%m_%y")
 
 dim <- 4
-no_categories <- 3
+no_categories <- 4
 
 clock_seed_0 <- round(as.numeric(Sys.time()) * 1000)
 clock_seed <- signif(clock_seed_0) - clock_seed_0
@@ -27,20 +27,19 @@ dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Ann
 
 parameters_list <- list()
 
-set.seed(1); beta <- round(rnorm(dim * no_categories + 1), 1)
-corr <- c(0.9)
+corr <- c(0, 0.1, 0.3, 0.5, 0.8, 0.9)
 k <- 1
 for(j in corr){
   parameters_list[[k]] <- list(methods = c("empirical", "gaussian", "ctree_onehot", "ctree", "kernelSHAP"),
-                          No_sample_gaussian = c(100, 1000),
+                          No_sample_gaussian = c(100),
                           No_cont_var = 2,
                           No_cat_var = 2,
-                          No_levels = 3,
+                          No_levels = 4,
                           Sigma_diag = 1,
                           corr = j,
                           No_train_obs = 1000,
-                          No_test_obs = 2000,
-                          cat_cutoff = c(-200, 0, 1, 200),
+                          No_test_obs = 500,
+                          cat_cutoff = c(-200, -0.5, 0, 1, 200),
                           noise = FALSE,
                           name = 'testing',
                           seed = 123)
@@ -127,7 +126,7 @@ for(i in 1:length(parameters_list)){
 #   ylab("Mean absolute error (MAE)") +
 #   scale_color_discrete(name = "Method" ) +
 #   ggtitle("")
-#
+
 #
 #
 #

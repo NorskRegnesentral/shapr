@@ -5,6 +5,79 @@ library(MASS)
 library(lqmm) ## to check if Sigma is positive definite
 library(rapportools) # for testing booleans
 library(ggplot2)
+library(xtable)
+library(reshape2)
+
+
+## this function is the same as 'plot' in shapr but I have made the font bigger
+plot_shapr <- function(x,
+                       digits = 3,
+                       plot_phi0 = TRUE,
+                       index_x_test = NULL,
+                       top_k_features = NULL,
+                       ...) {
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+  }
+
+  if (is.null(index_x_test)) index_x_test <- seq(nrow(x$x_test))
+  if (is.null(top_k_features)) top_k_features <- ncol(x$x_test) + 1
+  id <- phi <- NULL # due to NSE notes in R CMD check
+
+  # melting Kshap
+  cnms <- colnames(x$x_test)
+  KshapDT <- data.table::copy(x$dt)
+  KshapDT[, id := .I]
+  meltKshap <- data.table::melt(KshapDT, id.vars = "id", value.name = "phi")
+  meltKshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
+
+  # Converting and melting Xtest
+  desc_mat <- format(x$x_test, digits = digits)
+  for (i in 1:ncol(desc_mat)) {
+    desc_mat[, i] <- paste0(cnms[i], " = ", desc_mat[, i])
+  }
+  desc_dt <- data.table::as.data.table(cbind(none = "none", desc_mat))
+  melt_desc_dt <- data.table::melt(desc_dt[, id := .I], id.vars = "id", value.name = "description")
+
+  # Data table for plotting
+  plotting_dt <- merge(meltKshap, melt_desc_dt)
+
+  # Adding the predictions
+  predDT <- data.table::data.table(id = KshapDT$id, pred = x$p)
+  plotting_dt <- merge(plotting_dt, predDT, by = "id")
+
+  # Adding header for each individual plot
+  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
+  plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
+
+  if (!plot_phi0) {
+    plotting_dt <- plotting_dt[variable != "none"]
+  }
+  plotting_dt <- plotting_dt[id %in% index_x_test]
+  plotting_dt[, rank := data.table::frank(-abs(phi)), by = "id"]
+  plotting_dt <- plotting_dt[rank <= top_k_features]
+  plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
+
+  # Plotting
+  gg <- ggplot2::ggplot(plotting_dt) +
+    ggplot2::facet_wrap(~header, scales = "free_y", labeller = "label_value", ncol = 2) +
+    ggplot2::geom_col(ggplot2::aes(x = description, y = phi, fill = sign)) +
+    ggplot2::coord_flip() +
+    ggplot2::scale_fill_manual(values = c("steelblue", "lightsteelblue"), drop = TRUE) +
+    ggplot2::labs(
+      y = "Feature contribution",
+      x = "Feature",
+      fill = "",
+      title = "Shapley value prediction explanation"
+    ) +
+    ggplot2::theme(
+      legend.position = "bottom",
+      plot.title = ggplot2::element_text(hjust = 0.5),
+      text = element_text(size=31)
+    )
+
+  return(gg)
+}
 
 
 ## ------------- some functions ----------------------
@@ -38,11 +111,17 @@ find_row <- function(data, Value1, Value2, Value3, Value4){
   data[ExternalRiskEstimate == Value1 & MSinceOldestTradeOpen == Value2 & MSinceMostRecentTradeOpen == Value3 & AverageMInFile == Value4]
 
 }
+
+## -----------------------
+# data <- read.table(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/fico.csv", sep = ",", header = TRUE,
+#                    stringsAsFactors = TRUE )
+
 ## -----------------------
 
 data <- read.table(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_HELOC_dataset_v1.csv", sep = ",", header = TRUE, stringsAsFactors = TRUE )
 data <- data.table(data)
 nrow(data) # 10459
+ncol(data)
 data[, Id := 1:nrow(data)]
 
 demo_id_1 = find_id(data, Value1 = 61, Value2 = 49, Value3 = 19, Value4 = 29)
@@ -245,7 +324,7 @@ save(x_train,x_valid,x_test,test_data,file = "/nr/project/stat/BigInsight/Projec
 # Prepare the cv-model for fitting into the shapr machinery
 
 
-#### XGBoost cv modell prepared for shapr call ###
+#### XGBoost cv model prepared for shapr call ###
 model_type.xgb.cv.synchronous <- function(x) {
   type =  "regression"
   if(is.null(x$dummyfunc)  && !is.null(x$params$objective) && x$params$objective == "binary:logistic") type = "classification"
@@ -328,33 +407,200 @@ print(tm2 - tm) # 2.8 minutes for 10 features and 6 test observations
 save(explanation_cv_regular,explainer_cv_regular,xgbFit_cv_regular,file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular.RData")
 
 
-#p1 <- plot(explanation)
-# ggplot2::ggsave("shapley_value_prediction_housing_data_Gaussian_10features_6testobs.png", plot = p1, device = NULL, path = NULL,
-#                 scale = 1, width = 6, height = 6,
-#                 dpi = 300, limitsize = TRUE)
+## ANNABELLE START
+load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular.RData")
+
+## objects
+# explainer_cv_regular
+# explanation_cv_regular
+# xgbFit_cv_regular
+
+##
+explanation_cv_regular0 <- explanation_cv_regular
+explanation_cv_regular0$dt <- rbind(explanation_cv_regular$dt[4,], explanation_cv_regular$dt[1,], explanation_cv_regular$dt[5,])
+explanation_cv_regular0$p <- c(explanation_cv_regular$p[4], explanation_cv_regular$p[1], explanation_cv_regular$p[5])
+p1 <- plot_shapr(explanation_cv_regular0, top_k_features = 5)
+
+ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/figures/demo123.pdf",
+       plot = p1, device = "pdf", path = NULL,
+       scale = 1, width = 60, height = 30, units = "cm",
+       dpi = 300, limitsize = TRUE)
+
+print(explanation_cv_regular0$dt)
+
+t <- explanation_cv_regular0$dt
+t[, 'name' := c("Demo1", "Demo2", "Demo3")]
+t2 <- melt(t, id.vars=c("name"))
+t3 <- reshape(t2, idvar = "variable", timevar = "name", direction = "wide")
+colnames(t3) <- c("feature", "Demo 1", "Demo 2", "Demo 3")
+print(xtable(t3, digits = c(0, 0, 3, 3, 3)), include.rownames = FALSE)
+
+## Task: sum the Shapley values that belong to some groups designed by Duke
+
+# ExternalRiskEstimate = ExternalRiskEstimate
+# TradeOpenTime = MSinceOldestTradeOpen + MSinceMostRecentTradeOpen + AverageMInFile
+# NumSatisfactoryTrades
+# TradeFrequency = NumTrades60Ever2DerogPubRec + NumTrades90Ever2DerogPubRec + NumTotalTrades + NumTradesOpeninLast12M
+# Delinquency = PercentTradesNeverDelq + MSinceMostRecentDelq + MaxDelq2PublicRecLast12M + MaxDelqEver
+# Installment = PercentInstallTrades + NetFractionInstallBurden + NumInstallTradesWBalance
+# Inquiry = MSinceMostRecentInqexcl7days + NumInqLast6M + NumInqLast6Mexcl7days
+# RevolvingBalance = NetFractionRevolvingBurden + NumRevolvingTradesWBalance
+# Utilization = NumBank2NatlTradesWHighUtilization
+# TradeWBalance = PercentTradesWBalance
+
+
+## 1
+Duke_table <- copy(explanation_cv_regular0$dt)
+#1
+Duke_table[, ExternalRiskEstimate := ExternalRiskEstimate]
+#2
+Duke_table[, TradeOpenTime := MSinceOldestTradeOpen + MSinceMostRecentTradeOpen + AverageMInFile]
+#3
+Duke_table[, NumSatisfactoryTrades := NumSatisfactoryTrades]
+#4
+Duke_table[, TradeFrequency := NumTrades60Ever2DerogPubRec + NumTrades90Ever2DerogPubRec + NumTotalTrades +
+             NumTradesOpeninLast12M]
+#5
+Duke_table[, Delinquency := PercentTradesNeverDelq + MSinceMostRecentDelq + MaxDelq2PublicRecLast12M +
+             MaxDelqEver]
+#6
+Duke_table[, Installment := PercentInstallTrades + NetFractionInstallBurden + NumInstallTradesWBalance]
+#7
+Duke_table[, Inquiry := MSinceMostRecentInqexcl7days + NumInqLast6M + NumInqLast6Mexcl7days]
+#8
+Duke_table[, RevolvingBalance := NetFractionRevolvingBurden + NumRevolvingTradesWBalance]
+#9
+Duke_table[, Utilization := NumBank2NatlTradesWHighUtilization]
+#10
+Duke_table[, TradeWBalance := PercentTradesWBalance]
+
+# X <- Duke_table
+# X[, 'name' := c("Demo1", "Demo2", "Demo3")]
+# X2 <- melt(X, id.vars = c("name"))
+# X3 <- reshape(X2, idvar = "variable", timevar = "name", direction = "wide")
+
+
+
+## Start with Shapley
+feature_groups <- c("ExternalRiskEstimate", "TradeOpenTime",  "NumSatisfactoryTrades", "TradeFrequency",
+                    "Delinquency", "Installment", "Inquiry", "RevolvingBalance", "Utilization", "TradeWBalance")
+group_nb <- 1:length(feature_groups)
+
+Duke_table0 <- Duke_table[, ..feature_groups]
+
+t <- Duke_table0
+t[, 'name' := c("Demo1", "Demo2", "Demo3")]
+t2 <- melt(t, id.vars = c("name"))
+t3 <- reshape(t2, idvar = "variable", timevar = "name", direction = "wide")
+# t3 <- cbind(t3, group_nb)
+
+## USING RISKS/PROBABILITIES
+risk1 <- c(0.819, 0.789, 0.742, 0.606, 0.799, 0.657, 0.579, 0.641, 0.442, 0.731)
+risk2 <- c(0.819, 0.523, 0.517, 0.45, 0.799, 0.561, 0.639, 0.803, 0.442, 0.731)
+risk3 <- c(0.2, 0.351, 0.454, 0.382, 0.383, 0.446, 0.171, 0.312, 0.442, 0.524)
+
+## USING WEIGHTS
+weights1 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.214)
+weights2 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.214)
+weights3 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.214)
+
+
+# data <- data.table(cbind(risk1, risk2, risk3, weights1))
+# head(data)
+#
+# data[, `Demo 1-Duke` := risk1 * weights1]
+# data[, `Demo 2-Duke` := risk2 * weights1]
+# data[, `Demo 3-Duke` := 1/risk3 * weights1]
+
+
+## USING POINTS
+Demo1 <- c(1.305, 1.947, 1.686, 0.217, 1.973, 0.772, 1.733, 1.203, 0.495, 0.157)
+Demo2 <- c(1.305, 1.291, 1.175, 0.161, 1.973, 0.659, 1.913, 1.507, 0.495, 0.157)
+Demo3 <- 1 - c(0.319, 0.866, 1.032, 0.137, 0.946, 0.524, 0.512, 0.586, 0.495, 0.112)
+
+
+t3 <- cbind(t3, Demo1)
+t3 <- cbind(t3, Demo2)
+t3 <- cbind(t3, Demo3)
+
+colnames(t3) <- c("feature", "Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost", "Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
+names <- c("Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost", "Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
+
+# print(xtable(t3, digits = c(0, rep(2, ncol(t3))), include.rownames = FALSE))
+
+xgb <- c("Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost")
+Duke <- c("Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
+# Duke1 <- c( "Demo 3-Duke")
+
+t3_1 <- t3[, lapply(.SD, function(x) -1 * abs(x)), .SDcols = xgb]
+
+t3_0 <- data[, lapply(.SD, function(x) x * -1), .SDcols = Duke]
+
+dt <- cbind(t3$feature, t3_1, t3_0) #t3[, ..Duke1]
+
+dt0 <- dt[, lapply(.SD, rank), .SDcols = names]
+
+setcolorder(dt0, c("Demo 1-xgboost", "Demo 1-Duke", "Demo 2-xgboost", "Demo 2-Duke", "Demo 3-xgboost", "Demo 3-Duke"))
+
+dt0 <- cbind(feature_groups, dt0)
+print(xtable(dt0, digits = rep(0, ncol(dt0) + 1)), include.rownames = FALSE)
+
+
+
+
+## -------
+
+## Exactly the same as above but with Duke's group numbers
+Duke_table2 <- copy(explanation_cv_regular0$dt)
+Duke_table2[, 'name' := c("Demo1", "Demo2", "Demo3")]
+x2 <- melt(Duke_table2, id.vars = c("name"))
+x3 <- reshape(x2, idvar = "variable", timevar = "name", direction = "wide")
+group_nb2 <- c(0, 5, 5, 1,2, 2, 2, 3, 4, 4, 5, 5, 4, 5, 6, 7, 7, 7, 8, 6, 8, 6, 9, 10)
+x3 <- cbind(x3, group_nb2)
+
+
+
+## ---------
 
 
 
 
 
+## Only to view correlations
+## Annabelle's data frame
+orig_data <- read.table(file = '/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_HELOC_dataset_predictions.csv', sep = ",", header = TRUE)
+orig_data <- data.table(orig_data)
+
+features <- names(orig_data)[-1][-25][-25][-1]
+only_features <- orig_data[, ..features]
+cor1 <- cor(only_features)
+cor2 <- data.table(cor1)
+cor2 <- cbind(rownames(cor1), cor2)
+cor3 <- data.table::melt(cor2, id.vars = "V1", value.name = "phi")
+cor4 <- merge(cor3, x3, by.x = 'V1', by.y = 'variable')
+cor5 <- merge(cor4, x3[, c('variable', 'group_nb2')], by.x = 'variable', by.y = 'variable')
+colnames(cor5) <- c("variable1", "variable2", "phi", "value.Demo1", "value.Demo2", "value.Demo3", "group_nb1", "group_nb2")
+View(cor5)
 
 
 
 
+## Martin's data frame
+## test_data is where the predictions are kept
+load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_data_for_modelling.RData")
+head(test_data)
+
+test_data <- data.table(test_data)
+
+sum(abs(test_data[['pred_duke']] - test_data[['pred_cv_monotone']]))
+sum(abs(test_data[['pred_duke']] - test_data[['pred_cv_regular']]))
 
 
+test_data[, name := c('Demo2', 'none', 'none', 'Demo1', 'Demo3', 'none', 'none', 'none' )]
 
-
-
-
-
-
-
-
-
-
-
-
+setcolorder(test_data, c("name", "RiskPerformance", 'pred_cv_regular', 'pred_duke'))
+test_data <- test_data[order(name)]
+print(xtable(test_data[, c('name',  'RiskPerformance',  'pred_cv_regular', 'pred_duke')]), include.rownames = FALSE)
 
 
 

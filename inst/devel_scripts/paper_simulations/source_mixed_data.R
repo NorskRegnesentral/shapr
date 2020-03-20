@@ -156,8 +156,11 @@ compute_shapley_mixed_data <- function(parameters_list){
   mu <- rep(0, No_tot_var)
   beta_0 <- 1
   beta_cont <- c(1, -1)
-  beta_cat <- c(1, 0, -1,
-                2, 3, -1)
+  # beta_cat <- c(1, 0, -1,
+  #               2, 3, -1)
+  beta_cat <- c(1, 0, -1, 0.5,
+                2, 3, -1, -0.5)
+
   beta <- c(beta_0, beta_cont, beta_cat)
   #
   No_train_obs <- parameters_list$No_train_obs
