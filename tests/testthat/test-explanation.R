@@ -4,7 +4,7 @@ library(shapr)
 context("test-explanation.R")
 
 # For using same Random numer generator as CircelCI (R version 3.5.x)
-if (as.numeric(version$minor) >= 6.0) RNGkind(sample.kind = "Rounding")
+RNGversion(vstr = "3.5.0")
 
 test_that("Test functions in explanation.R", {
 
