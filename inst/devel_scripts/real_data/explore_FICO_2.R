@@ -152,6 +152,7 @@ data2[, MaxDelq2PublicRecLast12M := as.factor(MaxDelq2PublicRecLast12M)]
 test_data = merge(data2,test_data0,by="Id",all.x = F,all.y=T)
 data3 = data2[!(Id%in%test_data$Id)]
 
+
 prop_train = 0.8
 
 set.seed(123)
@@ -528,6 +529,8 @@ features.xgb.cv.synchronous <- function(x, cnms, feature_labels = NULL) {
   return(nms)
 }
 
+# Using only the demo cases
+x_test = x_test[1:3,]
 
 
 p <- mean(y_train)
@@ -541,19 +544,7 @@ predict_model.xgb.cv.synchronous(xgbFit_cv_monotone,x_test)
 
 n_combinations = 5000
 
-explainer_cv_monotone <- shapr(x_train, xgbFit_cv_monotone,n_combinations = n_combinations)
-tm <- Sys.time()
-explanation_cv_monotone <- explain(
-  x = x_test,
-  approach = 'ctree',
-  explainer = explainer_cv_monotone,
-  prediction_zero = p,
-  sample = TRUE
-)
-
 #### Continue here, defining explainer_numeric similalry to how we did for the numeric_lm ####
-xgbFit_cv_monotone_indep = xgbFit_cv_monotone
-class(xgbFit_cv_monotone_indep) = "xgb.cv.synchronous.indep"
 
 model_type.xgb.cv.synchronous.indep <- function(x) {
   type =  "regression"
@@ -594,10 +585,10 @@ predict_model.xgb.cv.synchronous.indep <- function(x, newdata) {
   return(rowMeans(cv.pred))
 } # This is super-hacky but works!
 
+xgbFit_cv_monotone_indep = xgbFit_cv_monotone
+class(xgbFit_cv_monotone_indep) = "xgb.cv.synchronous.indep"
 
-model_type(xgbFit_cv_monotone_indep)
-features(xgbFit_cv_monotone_indep,colnames(x_train))
-
+# Define numeric train and test data
 x_test_num = copy(x_test)
 x_test_num$MaxDelqEver = as.numeric(as.character(x_test_num$MaxDelqEver))
 x_test_num$MaxDelq2PublicRecLast12M = as.numeric(as.character(x_test_num$MaxDelq2PublicRecLast12M))
@@ -606,48 +597,78 @@ x_train_num = copy(x_train)
 x_train_num$MaxDelqEver = as.numeric(as.character(x_train_num$MaxDelqEver))
 x_train_num$MaxDelq2PublicRecLast12M = as.numeric(as.character(x_train_num$MaxDelq2PublicRecLast12M))
 
+# Testing
+model_type(xgbFit_cv_monotone_indep)
+features(xgbFit_cv_monotone_indep,colnames(x_train))
+
+
 
 predict_model(xgbFit_cv_monotone_indep,x_test_num)
 
-# predict_model(x,x_test_num)
-# predict_model.xgb.cv.synchronous(xgbFit_cv_monotone,x_test)
-#
-# aa=predict_model.xgb.cv.synchronous(xgbFit_cv_monotone,x_train)
-#
-# x_train_num = copy(x_train)
-# x_train_num$MaxDelqEver = as.numeric(as.character(x_train_num$MaxDelqEver))
-# x_train_num$MaxDelq2PublicRecLast12M = as.numeric(as.character(x_train_num$MaxDelq2PublicRecLast12M))
-#
-# these = sample(1:7000,6999)
-# bb=predict_model(x,x_train_num[these,])
-# aa=predict_model.xgb.cv.synchronous(xgbFit_cv_monotone,x_train[these,])
-#
-# all.equal(aa,bb)
-####END THIS DEF ####
 
-explainer_cv_monotone_num <- shapr(x_train_num, model)
-
+set.seed(123)
+explainer_cv_monotone_num <- shapr(x_train_num, xgbFit_cv_monotone_indep,n_combinations = n_combinations)
+set.seed(123)
 
 explanation_cv_monotone_ind <- explain(
-  x = x_test_numeric,
+  x = x_test_num,
   approach = "empirical",
   type = "independence",
-  explainer = explainer_numeric,
+  explainer = explainer_cv_monotone_num,
   prediction_zero = p,
   w_threshold = 1)
 
 
-tm2 <- Sys.time()
-print(tm2 - tm)
-
-save(explanation_cv_monotone,explainer_cv_monotone,xgbFit_cv_monotone,file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone.RData")
+save(explainer_cv_monotone_num,explanation_cv_monotone_ind,xgbFit_cv_monotone,
+     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone_indep.RData")
 
 
 xgbFit_cv_regular$dummyfunc = dummyfunc
 xgbFit_cv_regular$feature_names = colnames(x_train) # Need to add this manually as not stored in xgboost CV object
 
+
+xgbFit_cv_regular_indep = xgbFit_cv_regular
+class(xgbFit_cv_regular_indep) = "xgb.cv.synchronous.indep"
+
+
+set.seed(123)
+explainer_cv_regular_num <- shapr(x_train_num, xgbFit_cv_regular_indep,n_combinations = n_combinations)
+set.seed(123)
+
+explanation_cv_regular_ind <- explain(
+  x = x_test_num,
+  approach = "empirical",
+  type = "independence",
+  explainer = explainer_cv_regular_num,
+  prediction_zero = p,
+  w_threshold = 1)
+
+save(explainer_cv_regular_num,explainer_cv_regular_num,xgbFit_cv_regular,
+     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_indep.RData")
+
+
+
+
+set.seed(123)
+explainer_cv_monotone <- shapr(x_train, xgbFit_cv_monotone,n_combinations = n_combinations)
+#tm <- Sys.time()
+set.seed(123)
+
+explanation_cv_monotone <- explain(
+  x = x_test,
+  approach = 'ctree',
+  explainer = explainer_cv_monotone,
+  prediction_zero = p,
+  sample = TRUE
+)
+
+save(explanation_cv_monotone,explainer_cv_monotone,xgbFit_cv_monotone,
+     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone_ctree.RData")
+
+
+set.seed(123)
 explainer_cv_regular <- shapr(x_train, xgbFit_cv_regular,n_combinations = n_combinations)
-tm <- Sys.time()
+set.seed(123)
 explanation_cv_regular <- explain(
   x = x_test,
   approach = 'ctree',
@@ -655,210 +676,6 @@ explanation_cv_regular <- explain(
   prediction_zero = p,
   sample = TRUE
 )
-tm2 <- Sys.time()
-print(tm2 - tm) # 2.8 minutes for 10 features and 6 test observations
 
-save(explanation_cv_regular,explainer_cv_regular,xgbFit_cv_regular,file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular.RData")
-
-
-## ANNABELLE START
-load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular.RData")
-
-## objects
-# explainer_cv_regular
-# explanation_cv_regular
-# xgbFit_cv_regular
-
-##
-explanation_cv_regular0 <- explanation_cv_regular
-explanation_cv_regular0$dt <- rbind(explanation_cv_regular$dt[4,], explanation_cv_regular$dt[1,], explanation_cv_regular$dt[5,])
-explanation_cv_regular0$p <- c(explanation_cv_regular$p[4], explanation_cv_regular$p[1], explanation_cv_regular$p[5])
-p1 <- plot_shapr(explanation_cv_regular0, top_k_features = 5)
-
-ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/figures/demo123.pdf",
-       plot = p1, device = "pdf", path = NULL,
-       scale = 1, width = 60, height = 30, units = "cm",
-       dpi = 300, limitsize = TRUE)
-
-print(explanation_cv_regular0$dt)
-
-t <- explanation_cv_regular0$dt
-t[, 'name' := c("Demo1", "Demo2", "Demo3")]
-t2 <- melt(t, id.vars=c("name"))
-t3 <- reshape(t2, idvar = "variable", timevar = "name", direction = "wide")
-colnames(t3) <- c("feature", "Demo 1", "Demo 2", "Demo 3")
-print(xtable(t3, digits = c(0, 0, 3, 3, 3)), include.rownames = FALSE)
-
-## Task: sum the Shapley values that belong to some groups designed by Duke
-
-# ExternalRiskEstimate = ExternalRiskEstimate
-# TradeOpenTime = MSinceOldestTradeOpen + MSinceMostRecentTradeOpen + AverageMInFile
-# NumSatisfactoryTrades
-# TradeFrequency = NumTrades60Ever2DerogPubRec + NumTrades90Ever2DerogPubRec + NumTotalTrades + NumTradesOpeninLast12M
-# Delinquency = PercentTradesNeverDelq + MSinceMostRecentDelq + MaxDelq2PublicRecLast12M + MaxDelqEver
-# Installment = PercentInstallTrades + NetFractionInstallBurden + NumInstallTradesWBalance
-# Inquiry = MSinceMostRecentInqexcl7days + NumInqLast6M + NumInqLast6Mexcl7days
-# RevolvingBalance = NetFractionRevolvingBurden + NumRevolvingTradesWBalance
-# Utilization = NumBank2NatlTradesWHighUtilization
-# TradeWBalance = PercentTradesWBalance
-
-
-## 1
-Duke_table <- copy(explanation_cv_regular0$dt)
-#1
-Duke_table[, ExternalRiskEstimate := ExternalRiskEstimate]
-#2
-Duke_table[, TradeOpenTime := MSinceOldestTradeOpen + MSinceMostRecentTradeOpen + AverageMInFile]
-#3
-Duke_table[, NumSatisfactoryTrades := NumSatisfactoryTrades]
-#4
-Duke_table[, TradeFrequency := NumTrades60Ever2DerogPubRec + NumTrades90Ever2DerogPubRec + NumTotalTrades +
-             NumTradesOpeninLast12M]
-#5
-Duke_table[, Delinquency := PercentTradesNeverDelq + MSinceMostRecentDelq + MaxDelq2PublicRecLast12M +
-             MaxDelqEver]
-#6
-Duke_table[, Installment := PercentInstallTrades + NetFractionInstallBurden + NumInstallTradesWBalance]
-#7
-Duke_table[, Inquiry := MSinceMostRecentInqexcl7days + NumInqLast6M + NumInqLast6Mexcl7days]
-#8
-Duke_table[, RevolvingBalance := NetFractionRevolvingBurden + NumRevolvingTradesWBalance]
-#9
-Duke_table[, Utilization := NumBank2NatlTradesWHighUtilization]
-#10
-Duke_table[, TradeWBalance := PercentTradesWBalance]
-
-# X <- Duke_table
-# X[, 'name' := c("Demo1", "Demo2", "Demo3")]
-# X2 <- melt(X, id.vars = c("name"))
-# X3 <- reshape(X2, idvar = "variable", timevar = "name", direction = "wide")
-
-
-
-## Start with Shapley
-feature_groups <- c("ExternalRiskEstimate", "TradeOpenTime",  "NumSatisfactoryTrades", "TradeFrequency",
-                    "Delinquency", "Installment", "Inquiry", "RevolvingBalance", "Utilization", "TradeWBalance")
-group_nb <- 1:length(feature_groups)
-
-Duke_table0 <- Duke_table[, ..feature_groups]
-
-t <- Duke_table0
-t[, 'name' := c("Demo1", "Demo2", "Demo3")]
-t2 <- melt(t, id.vars = c("name"))
-t3 <- reshape(t2, idvar = "variable", timevar = "name", direction = "wide")
-# t3 <- cbind(t3, group_nb)
-
-## USING RISKS/PROBABILITIES
-risk1 <- c(0.819, 0.789, 0.742, 0.606, 0.799, 0.657, 0.579, 0.641, 0.442, 0.731)
-risk2 <- c(0.819, 0.523, 0.517, 0.45, 0.799, 0.561, 0.639, 0.803, 0.442, 0.731)
-risk3 <- c(0.2, 0.351, 0.454, 0.382, 0.383, 0.446, 0.171, 0.312, 0.442, 0.524)
-
-## USING WEIGHTS
-weights1 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.214)
-weights2 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.214)
-weights3 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.214)
-
-
-# data <- data.table(cbind(risk1, risk2, risk3, weights1))
-# head(data)
-#
-# data[, `Demo 1-Duke` := risk1 * weights1]
-# data[, `Demo 2-Duke` := risk2 * weights1]
-# data[, `Demo 3-Duke` := 1/risk3 * weights1]
-
-
-## USING POINTS
-Demo1 <- c(1.305, 1.947, 1.686, 0.217, 1.973, 0.772, 1.733, 1.203, 0.495, 0.157)
-Demo2 <- c(1.305, 1.291, 1.175, 0.161, 1.973, 0.659, 1.913, 1.507, 0.495, 0.157)
-Demo3 <- 1 - c(0.319, 0.866, 1.032, 0.137, 0.946, 0.524, 0.512, 0.586, 0.495, 0.112)
-
-
-t3 <- cbind(t3, Demo1)
-t3 <- cbind(t3, Demo2)
-t3 <- cbind(t3, Demo3)
-
-colnames(t3) <- c("feature", "Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost", "Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
-names <- c("Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost", "Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
-
-# print(xtable(t3, digits = c(0, rep(2, ncol(t3))), include.rownames = FALSE))
-
-xgb <- c("Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost")
-Duke <- c("Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
-# Duke1 <- c( "Demo 3-Duke")
-
-t3_1 <- t3[, lapply(.SD, function(x) -1 * abs(x)), .SDcols = xgb]
-
-t3_0 <- data[, lapply(.SD, function(x) x * -1), .SDcols = Duke]
-
-dt <- cbind(t3$feature, t3_1, t3_0) #t3[, ..Duke1]
-
-dt0 <- dt[, lapply(.SD, rank), .SDcols = names]
-
-setcolorder(dt0, c("Demo 1-xgboost", "Demo 1-Duke", "Demo 2-xgboost", "Demo 2-Duke", "Demo 3-xgboost", "Demo 3-Duke"))
-
-dt0 <- cbind(feature_groups, dt0)
-print(xtable(dt0, digits = rep(0, ncol(dt0) + 1)), include.rownames = FALSE)
-
-
-
-
-## -------
-
-## Exactly the same as above but with Duke's group numbers
-Duke_table2 <- copy(explanation_cv_regular0$dt)
-Duke_table2[, 'name' := c("Demo1", "Demo2", "Demo3")]
-x2 <- melt(Duke_table2, id.vars = c("name"))
-x3 <- reshape(x2, idvar = "variable", timevar = "name", direction = "wide")
-group_nb2 <- c(0, 5, 5, 1,2, 2, 2, 3, 4, 4, 5, 5, 4, 5, 6, 7, 7, 7, 8, 6, 8, 6, 9, 10)
-x3 <- cbind(x3, group_nb2)
-
-
-
-## ---------
-
-
-
-
-
-## Only to view correlations
-## Annabelle's data frame
-orig_data <- read.table(file = '/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_HELOC_dataset_predictions.csv', sep = ",", header = TRUE)
-orig_data <- data.table(orig_data)
-
-features <- names(orig_data)[-1][-25][-25][-1]
-only_features <- orig_data[, ..features]
-cor1 <- cor(only_features)
-cor2 <- data.table(cor1)
-cor2 <- cbind(rownames(cor1), cor2)
-cor3 <- data.table::melt(cor2, id.vars = "V1", value.name = "phi")
-cor4 <- merge(cor3, x3, by.x = 'V1', by.y = 'variable')
-cor5 <- merge(cor4, x3[, c('variable', 'group_nb2')], by.x = 'variable', by.y = 'variable')
-colnames(cor5) <- c("variable1", "variable2", "phi", "value.Demo1", "value.Demo2", "value.Demo3", "group_nb1", "group_nb2")
-View(cor5)
-
-
-
-
-## Martin's data frame
-## test_data is where the predictions are kept
-load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_data_for_modelling.RData")
-head(test_data)
-
-test_data <- data.table(test_data)
-
-sum(abs(test_data[['pred_duke']] - test_data[['pred_cv_monotone']]))
-sum(abs(test_data[['pred_duke']] - test_data[['pred_cv_regular']]))
-
-
-test_data[, name := c('Demo2', 'none', 'none', 'Demo1', 'Demo3', 'none', 'none', 'none' )]
-
-setcolorder(test_data, c("name", "RiskPerformance", 'pred_cv_regular', 'pred_duke'))
-test_data <- test_data[order(name)]
-print(xtable(test_data[, c('name',  'RiskPerformance',  'pred_cv_regular', 'pred_duke')]), include.rownames = FALSE)
-
-
-
-
-
-
-
+save(explanation_cv_regular,explainer_cv_regular,xgbFit_cv_regular,
+     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_ctree.RData")
