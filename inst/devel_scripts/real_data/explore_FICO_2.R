@@ -551,30 +551,81 @@ explanation_cv_monotone <- explain(
   sample = TRUE
 )
 
-#### Continue here, defining explainer_numeric similalry to how we did for the numeric_lm:
+#### Continue here, defining explainer_numeric similalry to how we did for the numeric_lm ####
+xgbFit_cv_monotone_indep = xgbFit_cv_monotone
+class(xgbFit_cv_monotone_indep) = "xgb.cv.synchronous.indep"
 
-## Create custom function of model_type for lm
-model_type.numeric_lm <<- function(x) {
+model_type.xgb.cv.synchronous.indep <- function(x) {
+  type =  "regression"
+  if(is.null(x$dummyfunc)  && !is.null(x$params$objective) && x$params$objective == "binary:logistic") type = "classification"
+  if(!is.null(x$dummyfunc) && !is.null(x$params$objective) && x$params$objective == "binary:logistic") type = "cat_regression"
+  return(type)
 }
 
-features.numeric_lm <<- function(x, cnms, feature_labels = NULL) {
+features.xgb.cv.synchronous.indep <- function(x, cnms, feature_labels = NULL) {
   if (!is.null(feature_labels)) message_features_labels()
 
-  nms <- tail(all.vars(x$terms), -1)
+  nms <- x$feature_names
+
   if (!all(nms %in% cnms)) error_feature_labels()
+
   return(nms)
 }
 
-# Create custom function of predict_model for caret
-predict_model.numeric_lm <<- function(x, newdata) {
-  newdata <- as.data.table(newdata)
-  newdata0 <- newdata[, lapply(.SD, as.factor)]
-  class(x) <- "lm"
-  predict(x, newdata0)
-}
+predict_model.xgb.cv.synchronous.indep <- function(x, newdata) {
+  if (!requireNamespace("stats", quietly = TRUE)) {
+    stop("The xgboost package is required for predicting xgboost models")
+  }
+  if (model_type(x) == "cat_regression") {
+    newdata$MaxDelqEver = factor(newdata$MaxDelqEver,levels = c("2", "3", "4", "5", "6", "7", "8"))
+    newdata$MaxDelq2PublicRecLast12M = factor(newdata$MaxDelq2PublicRecLast12M,levels = c("0", "1", "2", "3", "4", "5", "6", "7" ,"9"))
 
-class(model) <- "numeric_lm"
-explainer_numeric <- shapr(x_train_numeric, model)
+    newdata_dummy <- as.matrix(predict(x$dummyfunc, newdata = newdata))
+    cv.pred <- NULL
+    for (i in 1:length(x$folds)){
+      cv.pred = cbind(cv.pred,predict(x$models[[i]], newdata_dummy,ntreelimit = x$best_iteration))
+    }
+  } else {
+    cv.pred <- NULL
+    for (i in 1:length(x$folds)){
+      cv.pred = cbind(cv.pred,predict(x$models[[i]], as.matrix(newdata),ntreelimit = x$best_iteration))
+    }
+  }
+  return(rowMeans(cv.pred))
+} # This is super-hacky but works!
+
+
+model_type(xgbFit_cv_monotone_indep)
+features(xgbFit_cv_monotone_indep,colnames(x_train))
+
+x_test_num = copy(x_test)
+x_test_num$MaxDelqEver = as.numeric(as.character(x_test_num$MaxDelqEver))
+x_test_num$MaxDelq2PublicRecLast12M = as.numeric(as.character(x_test_num$MaxDelq2PublicRecLast12M))
+
+x_train_num = copy(x_train)
+x_train_num$MaxDelqEver = as.numeric(as.character(x_train_num$MaxDelqEver))
+x_train_num$MaxDelq2PublicRecLast12M = as.numeric(as.character(x_train_num$MaxDelq2PublicRecLast12M))
+
+
+predict_model(xgbFit_cv_monotone_indep,x_test_num)
+
+# predict_model(x,x_test_num)
+# predict_model.xgb.cv.synchronous(xgbFit_cv_monotone,x_test)
+#
+# aa=predict_model.xgb.cv.synchronous(xgbFit_cv_monotone,x_train)
+#
+# x_train_num = copy(x_train)
+# x_train_num$MaxDelqEver = as.numeric(as.character(x_train_num$MaxDelqEver))
+# x_train_num$MaxDelq2PublicRecLast12M = as.numeric(as.character(x_train_num$MaxDelq2PublicRecLast12M))
+#
+# these = sample(1:7000,6999)
+# bb=predict_model(x,x_train_num[these,])
+# aa=predict_model.xgb.cv.synchronous(xgbFit_cv_monotone,x_train[these,])
+#
+# all.equal(aa,bb)
+####END THIS DEF ####
+
+explainer_cv_monotone_num <- shapr(x_train_num, model)
 
 
 explanation_cv_monotone_ind <- explain(
