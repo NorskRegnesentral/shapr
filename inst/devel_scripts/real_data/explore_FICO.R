@@ -194,18 +194,18 @@ x_test_dummy=predict(dummyfunc, newdata = x_test)
 
 colnames_dummy = colnames(x_train_dummy)
 montone_constrains_dt = data.table(colname = colnames_dummy,
-                               constraints = c(rep(0,16),
-                               rep(-1,5),
-                               rep(1,2),
-                               rep(-1,2),
-                               0,
-                               1,
-                               0,
-                               -1,
-                               rep(1,4),
-                               rep(0,2),
-                               1,
-                               0))
+                                   constraints = c(rep(0,16),
+                                                   rep(-1,5),
+                                                   rep(1,2),
+                                                   rep(-1,2),
+                                                   0,
+                                                   1,
+                                                   0,
+                                                   -1,
+                                                   rep(1,4),
+                                                   rep(0,2),
+                                                   1,
+                                                   0))
 
 
 
@@ -241,53 +241,53 @@ this.seed <- 1234 # Seed used in fitting procedure
 
 set.seed(this.seed)
 tt = proc.time()
- xgbFit_cv_regular <- xgb.cv(data=xgbMatrix.train.valid,
-                             params = params,
-                             nrounds = nrounds,
-                             early_stopping_rounds = early_stopping_rounds,
-                             callbacks = list(cb.cv.predict(save_models = TRUE)),
-                             print_every_n = print_every_n,
-                             nfold = 5)
- proc.time()-tt
+xgbFit_cv_regular <- xgb.cv(data=xgbMatrix.train.valid,
+                            params = params,
+                            nrounds = nrounds,
+                            early_stopping_rounds = early_stopping_rounds,
+                            callbacks = list(cb.cv.predict(save_models = TRUE)),
+                            print_every_n = print_every_n,
+                            nfold = 5)
+proc.time()-tt
 
 set.seed(this.seed)
- tt = proc.time()
- xgbFit_cv_monotone <- xgb.cv(data=xgbMatrix.train.valid,
+tt = proc.time()
+xgbFit_cv_monotone <- xgb.cv(data=xgbMatrix.train.valid,
                              params = params_monotone,
                              nrounds = nrounds,
                              early_stopping_rounds = early_stopping_rounds,
                              callbacks = list(cb.cv.predict(save_models = TRUE)),
                              print_every_n = print_every_n,
                              nfold = 5)
- proc.time()-tt
+proc.time()-tt
 
- # Performance on validation data
- xgbFit_cv_regular$evaluation_log[iter==xgbFit_cv_regular$best_iteration]
- xgbFit_cv_monotone$evaluation_log[iter==xgbFit_cv_monotone$best_iteration]
+# Performance on validation data
+xgbFit_cv_regular$evaluation_log[iter==xgbFit_cv_regular$best_iteration]
+xgbFit_cv_monotone$evaluation_log[iter==xgbFit_cv_monotone$best_iteration]
 
 
 set.seed(this.seed)
 tt = proc.time()
 xgbFit_regular <- xgb.train(data=xgbMatrix.train,
-                   params = params,
-                   nrounds = nrounds,
-                   watchlist = list(train = xgbMatrix.train, # train
-                                    test = xgbMatrix.test, # test
-                                    validation = xgbMatrix.valid), # validation (important that this is given last)
-                   early_stopping_rounds = early_stopping_rounds,
-                   print_every_n = print_every_n)
-proc.time()-tt
-
-set.seed(this.seed)
-tt = proc.time()
-xgbFit_monotone <- xgb.train(data=xgbMatrix.train,
-                            params = params_monotone,
+                            params = params,
                             nrounds = nrounds,
                             watchlist = list(train = xgbMatrix.train, # train
                                              test = xgbMatrix.test, # test
                                              validation = xgbMatrix.valid), # validation (important that this is given last)
                             early_stopping_rounds = early_stopping_rounds,
                             print_every_n = print_every_n)
+proc.time()-tt
+
+set.seed(this.seed)
+tt = proc.time()
+xgbFit_monotone <- xgb.train(data=xgbMatrix.train,
+                             params = params_monotone,
+                             nrounds = nrounds,
+                             watchlist = list(train = xgbMatrix.train, # train
+                                              test = xgbMatrix.test, # test
+                                              validation = xgbMatrix.valid), # validation (important that this is given last)
+                             early_stopping_rounds = early_stopping_rounds,
+                             print_every_n = print_every_n)
 proc.time()-tt
 
 # Performance on validation data
@@ -318,7 +318,174 @@ mean(test_data$AE_regular)
 mean(test_data$AE_cv_monotone)
 mean(test_data$AE_cv_regular)
 
-save(x_train,x_valid,x_test,test_data,file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_data_for_modelling.RData")
+
+### Computing accuracy and AUC on validation data
+
+pred_valid = predict(xgbFit_monotone,xgbMatrix.valid)
+
+# NO this is not the way to do it
+# pred_all = NULL
+#
+# for (i in 1:5){
+#   pred = predict(xgbFit_cv_regular$models[[i]],xgbMatrix.train.valid,ntreelimit = xgbFit_cv_regular$best_iteration)
+#   pred[xgbFit_cv_regular$folds[[i]]] = NA
+#
+#   pred_all <-cbind(pred_all,pred)
+# }
+#
+#
+# pred_all_final = 1/4*rowSums(pred_all,na.rm = T)
+
+pred_all = NULL
+
+mod = xgbFit_cv_regular#xgbFit_cv_monotone#xgbFit_cv_regular
+
+for (i in 1:5){
+  pred = predict(mod$models[[i]],xgbMatrix.train.valid,ntreelimit = mod$best_iteration)
+  pred_all[mod$folds[[i]]] = pred[mod$folds[[i]]]
+
+  #  pred_all <-cbind(pred_all,pred)
+}
+
+for (i in seq(0.3,0.7,0.01)){
+  confmat = SDMTools::confusion.matrix(c(y_train,y_valid),pred_all,threshold = i)
+  N = sum(confmat[,1])
+  P = sum(confmat[,2])
+  TN = confmat[1,1]
+  TP = confmat[2,2]
+  (accuracy = (TP+TN)/(P+N))
+  print(accuracy)
+}
+confmat = SDMTools::confusion.matrix(c(y_train,y_valid),pred_all,threshold = 0.5)
+N = sum(confmat[,1])
+P = sum(confmat[,2])
+TN = confmat[1,1]
+TP = confmat[2,2]
+(accuracy = (TP+TN)/(P+N))
+print(accuracy)
+
+#### Trying to estimate accuracy in the correct way, accoutning for our 1/5 splitting
+this.seed <- 1234 # Seed used in fitting procedure
+
+tt = proc.time()
+folds = xgbFit_cv_regular$folds
+
+finalpred_regular = rep(NA,dim(xgbMatrix.train.valid)[1])
+cv.pred_regular_list= list()
+xgbFit_cv_regular_list = list()
+for (i in 1:5){
+  idxset_train = sort(unlist(folds[-i]))
+  idxset_test = sort(unlist(folds[i]))
+
+  xgbMatrix_temp_train = slice(xgbMatrix.train.valid,idxset=idxset_train)
+  xgbMatrix_temp_test = slice(xgbMatrix.train.valid,idxset=idxset_test)
+
+  set.seed(this.seed)
+  xgbFit_cv_regular_list[[i]] <- xgb.cv(data=xgbMatrix_temp_train,
+                                        params = params,
+                                        nrounds = nrounds,
+                                        early_stopping_rounds = early_stopping_rounds,
+                                        callbacks = list(cb.cv.predict(save_models = TRUE)),
+                                        print_every_n = print_every_n,
+                                        nfold = 5)
+
+  print(i)
+
+  tmp =  NULL
+  for (j in 1:5){
+    tmp <-cbind(tmp,predict(xgbFit_cv_regular_list[[i]]$models[[j]],
+                            xgbMatrix_temp_test,
+                            ntreelimit = xgbFit_cv_regular_list[[i]]$best_iteration))
+  }
+  finalpred_regular[idxset_test] = rowMeans(tmp)
+
+}
+proc.time()-tt
+
+for (i in seq(0.3,0.7,0.01)){
+  confmat = SDMTools::confusion.matrix(c(y_train,y_valid),finalpred_regular,threshold = i)
+  N = sum(confmat[,1])
+  P = sum(confmat[,2])
+  TN = confmat[1,1]
+  TP = confmat[2,2]
+  (accuracy = (TP+TN)/(P+N))
+  print(accuracy)
+}
+confmat = SDMTools::confusion.matrix(c(y_train,y_valid),finalpred_regular,threshold = 0.5)
+N = sum(confmat[,1])
+P = sum(confmat[,2])
+TN = confmat[1,1]
+TP = confmat[2,2]
+(accuracy = (TP+TN)/(P+N))
+print(accuracy)
+#> print(accuracy)
+#[1] 0.7367299 # THis is the one we report
+
+#### THE monotone version too
+
+this.seed <- 1234 # Seed used in fitting procedure
+
+tt = proc.time()
+folds = xgbFit_cv_regular$folds
+
+finalpred_monotone = rep(NA,dim(xgbMatrix.train.valid)[1])
+cv.pred_monotone_list= list()
+xgbFit_cv_monotone_list = list()
+for (i in 1:5){
+  idxset_train = sort(unlist(folds[-i]))
+  idxset_test = sort(unlist(folds[i]))
+
+  xgbMatrix_temp_train = slice(xgbMatrix.train.valid,idxset=idxset_train)
+  xgbMatrix_temp_test = slice(xgbMatrix.train.valid,idxset=idxset_test)
+
+  set.seed(this.seed)
+  xgbFit_cv_monotone_list[[i]] <- xgb.cv(data=xgbMatrix_temp_train,
+                                        params = params_monotone,
+                                        nrounds = nrounds,
+                                        early_stopping_rounds = early_stopping_rounds,
+                                        callbacks = list(cb.cv.predict(save_models = TRUE)),
+                                        print_every_n = print_every_n,
+                                        nfold = 5)
+
+  print(i)
+
+  tmp =  NULL
+  for (j in 1:5){
+    tmp <-cbind(tmp,predict(xgbFit_cv_monotone_list[[i]]$models[[j]],
+                            xgbMatrix_temp_test,
+                            ntreelimit = xgbFit_cv_monotone_list[[i]]$best_iteration))
+  }
+  finalpred_monotone[idxset_test] = rowMeans(tmp)
+
+}
+proc.time()-tt
+
+for (i in seq(0.3,0.7,0.01)){
+  confmat = SDMTools::confusion.matrix(c(y_train,y_valid),finalpred_monotone,threshold = i)
+  N = sum(confmat[,1])
+  P = sum(confmat[,2])
+  TN = confmat[1,1]
+  TP = confmat[2,2]
+  (accuracy = (TP+TN)/(P+N))
+  print(accuracy)
+}
+confmat = SDMTools::confusion.matrix(c(y_train,y_valid),finalpred_monotone,threshold = 0.5)
+N = sum(confmat[,1])
+P = sum(confmat[,2])
+TN = confmat[1,1]
+TP = confmat[2,2]
+(accuracy = (TP+TN)/(P+N))
+print(accuracy)
+
+
+
+
+##########
+
+
+
+
+#save(x_train,x_valid,x_test,test_data,file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_data_for_modelling.RData")
 
 
 # Prepare the cv-model for fitting into the shapr machinery
