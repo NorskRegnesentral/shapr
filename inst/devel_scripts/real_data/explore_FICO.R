@@ -128,8 +128,8 @@ demo_id_1 = find_id(data, Value1 = 61, Value2 = 49, Value3 = 19, Value4 = 29)
 demo_id_2 = find_id(data, Value1 = 59, Value2 = 131, Value3 = 7, Value4 = 81)
 demo_id_3 = find_id(data, Value1 = 92, Value2 = 372, Value3 = 10, Value4 = 176)
 
-test_ids = unlist(c(demo_id_1,demo_id_2,demo_id_3,491,1017,4806,3770,5624))
-test_preds_duke = c(0.952,0.895,0.049,0.888,0.594,0.696,0.332,0.241)
+test_ids = unlist(c(demo_id_1,demo_id_2,demo_id_3, 491, 1017, 4806, 3770, 5624))
+test_preds_duke = c(0.952, 0.895, 0.049, 0.888, 0.594, 0.696, 0.332, 0.241)
 
 test_data0 = data.table(Id =test_ids,pred_duke=test_preds_duke)
 setkey(test_data0)
@@ -408,6 +408,7 @@ save(explanation_cv_regular,explainer_cv_regular,xgbFit_cv_regular,file = "/nr/p
 
 
 ## ANNABELLE START
+## This is for the regular model (not monotone)
 load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular.RData")
 
 ## objects
@@ -419,6 +420,8 @@ load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explana
 explanation_cv_regular0 <- explanation_cv_regular
 explanation_cv_regular0$dt <- rbind(explanation_cv_regular$dt[4,], explanation_cv_regular$dt[1,], explanation_cv_regular$dt[5,])
 explanation_cv_regular0$p <- c(explanation_cv_regular$p[4], explanation_cv_regular$p[1], explanation_cv_regular$p[5])
+explanation_cv_regular0$x_test <- rbind(explanation_cv_regular0$x_test[4,], explanation_cv_regular0$x_test[1,], explanation_cv_regular0$x_test[5,])
+
 p1 <- plot_shapr(explanation_cv_regular0, top_k_features = 5)
 
 ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/figures/demo123.pdf",
@@ -426,14 +429,24 @@ ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/f
        scale = 1, width = 60, height = 30, units = "cm",
        dpi = 300, limitsize = TRUE)
 
-print(explanation_cv_regular0$dt)
 
-t <- explanation_cv_regular0$dt
-t[, 'name' := c("Demo1", "Demo2", "Demo3")]
-t2 <- melt(t, id.vars=c("name"))
-t3 <- reshape(t2, idvar = "variable", timevar = "name", direction = "wide")
+## melt x_test
+x_test <- explanation_cv_regular0$x_test
+x_test[, 'name' := c("Demo1", "Demo2", "Demo3")]
+x_test2 <- melt(x_test, id.vars=c("name"))
+x_test3 <- reshape(x_test2, idvar = "variable", timevar = "name", direction = "wide")
 colnames(t3) <- c("feature", "Demo 1", "Demo 2", "Demo 3")
 print(xtable(t3, digits = c(0, 0, 3, 3, 3)), include.rownames = FALSE)
+
+
+## melt Shapley values
+dt <- explanation_cv_regular0$dt
+dt[, 'name' := c("Demo1", "Demo2", "Demo3")]
+dt2 <- melt(dt, id.vars=c("name"))
+dt3 <- reshape(dt2, idvar = "variable", timevar = "name", direction = "wide")
+colnames(dt3) <- c("feature", "Demo 1", "Demo 2", "Demo 3")
+View(dt3)
+print(xtable(dt3, digits = c(0, 0, 3, 3, 3)), include.rownames = FALSE)
 
 ## Task: sum the Shapley values that belong to some groups designed by Duke
 
@@ -474,25 +487,17 @@ Duke_table[, Utilization := NumBank2NatlTradesWHighUtilization]
 #10
 Duke_table[, TradeWBalance := PercentTradesWBalance]
 
-# X <- Duke_table
-# X[, 'name' := c("Demo1", "Demo2", "Demo3")]
-# X2 <- melt(X, id.vars = c("name"))
-# X3 <- reshape(X2, idvar = "variable", timevar = "name", direction = "wide")
-
-
-
-## Start with Shapley
+## ## THIS MAKES TABLE 8 IN THE PAPER
 feature_groups <- c("ExternalRiskEstimate", "TradeOpenTime",  "NumSatisfactoryTrades", "TradeFrequency",
                     "Delinquency", "Installment", "Inquiry", "RevolvingBalance", "Utilization", "TradeWBalance")
 group_nb <- 1:length(feature_groups)
 
 Duke_table0 <- Duke_table[, ..feature_groups]
 
-t <- Duke_table0
-t[, 'name' := c("Demo1", "Demo2", "Demo3")]
-t2 <- melt(t, id.vars = c("name"))
-t3 <- reshape(t2, idvar = "variable", timevar = "name", direction = "wide")
-# t3 <- cbind(t3, group_nb)
+Duke_table0[, 'name' := c("Demo1", "Demo2", "Demo3")]
+Duke_table02 <- melt(Duke_table0, id.vars = c("name"))
+Duke_table03 <- reshape(Duke_table02, idvar = "variable", timevar = "name", direction = "wide")
+
 
 ## USING RISKS/PROBABILITIES
 risk1 <- c(0.819, 0.789, 0.742, 0.606, 0.799, 0.657, 0.579, 0.641, 0.442, 0.731)
@@ -505,50 +510,45 @@ weights2 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.2
 weights3 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.214)
 
 
-# data <- data.table(cbind(risk1, risk2, risk3, weights1))
-# head(data)
-#
-# data[, `Demo 1-Duke` := risk1 * weights1]
-# data[, `Demo 2-Duke` := risk2 * weights1]
-# data[, `Demo 3-Duke` := 1/risk3 * weights1]
-
-
 ## USING POINTS
 Demo1 <- c(1.305, 1.947, 1.686, 0.217, 1.973, 0.772, 1.733, 1.203, 0.495, 0.157)
 Demo2 <- c(1.305, 1.291, 1.175, 0.161, 1.973, 0.659, 1.913, 1.507, 0.495, 0.157)
-Demo3 <- 1 - c(0.319, 0.866, 1.032, 0.137, 0.946, 0.524, 0.512, 0.586, 0.495, 0.112)
+Demo3 <- c(0.319, 0.866, 1.032, 0.137, 0.946, 0.524, 0.512, 0.586, 0.495, 0.112)
 
+Duke_table03 <- cbind(Duke_table03, Demo1)
+Duke_table03 <- cbind(Duke_table03, Demo2)
+Duke_table03 <- cbind(Duke_table03, Demo3)
 
-t3 <- cbind(t3, Demo1)
-t3 <- cbind(t3, Demo2)
-t3 <- cbind(t3, Demo3)
-
-colnames(t3) <- c("feature", "Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost", "Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
+colnames(Duke_table03) <- c("feature", "Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost", "Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
 names <- c("Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost", "Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
 
 # print(xtable(t3, digits = c(0, rep(2, ncol(t3))), include.rownames = FALSE))
 
 xgb <- c("Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost")
 Duke <- c("Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
-# Duke1 <- c( "Demo 3-Duke")
 
-t3_1 <- t3[, lapply(.SD, function(x) -1 * abs(x)), .SDcols = xgb]
+Duke_table031 <- Duke_table03[, lapply(.SD, function(x) -1 * abs(x)), .SDcols = xgb]
 
-t3_0 <- data[, lapply(.SD, function(x) x * -1), .SDcols = Duke]
+Duke_table030 <- Duke_table03[, lapply(.SD, function(x) x * -1), .SDcols = Duke]
 
-dt <- cbind(t3$feature, t3_1, t3_0) #t3[, ..Duke1]
+Duke_all <- cbind(Duke_table03$feature, Duke_table031, Duke_table030)
 
-dt0 <- dt[, lapply(.SD, rank), .SDcols = names]
+Duke_all0 <- Duke_all[, lapply(.SD, rank), .SDcols = names]
+colnames(Duke_all0) <- c("Demo 1-rank-xgboost", "Demo 2-rank-xgboost", "Demo 3-rank-xgboost", "Demo 1-rank-Duke", "Demo 2-rank-Duke", "Demo 3-rank-Duke")
+Duke_all0 <- cbind(Duke_all0, Duke_table03[, ..xgb], Duke_table03[, ..Duke])
 
-setcolorder(dt0, c("Demo 1-xgboost", "Demo 1-Duke", "Demo 2-xgboost", "Demo 2-Duke", "Demo 3-xgboost", "Demo 3-Duke"))
+setcolorder(Duke_all0, c("Demo 1-xgboost", "Demo 1-rank-xgboost", "Demo 1-Duke", "Demo 1-rank-Duke",
+                   "Demo 2-xgboost", "Demo 2-rank-xgboost", "Demo 2-Duke", "Demo 2-rank-Duke",
+                   "Demo 3-xgboost", "Demo 3-rank-xgboost", "Demo 3-Duke", "Demo 3-rank-Duke"))
 
-dt0 <- cbind(feature_groups, dt0)
+Duke_all0 <- cbind(feature_groups, Duke_all0)
+View(Duke_all0)
+DUKEALLOLD <- Duke_all0
 print(xtable(dt0, digits = rep(0, ncol(dt0) + 1)), include.rownames = FALSE)
 
+View(Duke_all0[order(`Demo 2-xgboost`)])
 
 
-
-## -------
 
 ## Exactly the same as above but with Duke's group numbers
 Duke_table2 <- copy(explanation_cv_regular0$dt)
@@ -561,11 +561,6 @@ x3 <- cbind(x3, group_nb2)
 
 
 ## ---------
-
-
-
-
-
 ## Only to view correlations
 ## Annabelle's data frame
 orig_data <- read.table(file = '/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_HELOC_dataset_predictions.csv', sep = ",", header = TRUE)
@@ -582,10 +577,9 @@ cor5 <- merge(cor4, x3[, c('variable', 'group_nb2')], by.x = 'variable', by.y = 
 colnames(cor5) <- c("variable1", "variable2", "phi", "value.Demo1", "value.Demo2", "value.Demo3", "group_nb1", "group_nb2")
 View(cor5)
 
-
-
-
-## Martin's data frame
+## -------------------
+## Below we compare the probabilities of the test observations
+## THIS MAKES TABLE 7 IN THE PAPER
 ## test_data is where the predictions are kept
 load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_data_for_modelling.RData")
 head(test_data)
@@ -595,7 +589,6 @@ test_data <- data.table(test_data)
 sum(abs(test_data[['pred_duke']] - test_data[['pred_cv_monotone']]))
 sum(abs(test_data[['pred_duke']] - test_data[['pred_cv_regular']]))
 
-
 test_data[, name := c('Demo2', 'none', 'none', 'Demo1', 'Demo3', 'none', 'none', 'none' )]
 
 setcolorder(test_data, c("name", "RiskPerformance", 'pred_cv_regular', 'pred_duke'))
@@ -604,7 +597,291 @@ print(xtable(test_data[, c('name',  'RiskPerformance',  'pred_cv_regular', 'pred
 
 
 
+## -------------------
+## THE SAME THING AS ABOVE BUT FOR MONOTONE MODEL
+load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone.RData")
+
+## objects
+# explainer_cv_regular
+# explanation_cv_regular
+# xgbFit_cv_regular
+
+##
+explanation_cv_monotone0 <- explanation_cv_monotone
+explanation_cv_monotone0$dt <- rbind(explanation_cv_monotone$dt[4,], explanation_cv_monotone$dt[1,], explanation_cv_monotone$dt[5,])
+explanation_cv_monotone0$p <- c(explanation_cv_monotone$p[4], explanation_cv_monotone$p[1], explanation_cv_monotone$p[5])
+explanation_cv_monotone0$x_test <- rbind(explanation_cv_monotone$x_test[4,], explanation_cv_monotone$x_test[1,], explanation_cv_monotone$x_test[5,])
+
+p1 <- plot_shapr(explanation_cv_monotone0, top_k_features = 5)
+
+ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/figures/demo123.pdf",
+       plot = p1, device = "pdf", path = NULL,
+       scale = 1, width = 60, height = 30, units = "cm",
+       dpi = 300, limitsize = TRUE)
+
+
+## melt x_test
+x_test <- explanation_cv_monotone0$x_test
+x_test[, 'name' := c("Demo1", "Demo2", "Demo3")]
+x_test2 <- melt(x_test, id.vars=c("name"))
+x_test3 <- reshape(x_test2, idvar = "variable", timevar = "name", direction = "wide")
+colnames(x_test3) <- c("feature", "Demo 1", "Demo 2", "Demo 3")
+print(xtable(x_test3, digits = c(0, 0, 3, 3, 3)), include.rownames = FALSE)
+
+
+## melt Shapley values
+dt <- explanation_cv_monotone0$dt
+dt[, 'name' := c("Demo1", "Demo2", "Demo3")]
+dt2 <- melt(dt, id.vars=c("name"))
+dt3 <- reshape(dt2, idvar = "variable", timevar = "name", direction = "wide")
+colnames(dt3) <- c("feature", "Demo 1", "Demo 2", "Demo 3")
+View(dt3)
+print(xtable(dt3, digits = c(0, 0, 3, 3, 3)), include.rownames = FALSE)
+
+## Task: sum the Shapley values that belong to some groups designed by Duke
+
+# ExternalRiskEstimate = ExternalRiskEstimate
+# TradeOpenTime = MSinceOldestTradeOpen + MSinceMostRecentTradeOpen + AverageMInFile
+# NumSatisfactoryTrades
+# TradeFrequency = NumTrades60Ever2DerogPubRec + NumTrades90Ever2DerogPubRec + NumTotalTrades + NumTradesOpeninLast12M
+# Delinquency = PercentTradesNeverDelq + MSinceMostRecentDelq + MaxDelq2PublicRecLast12M + MaxDelqEver
+# Installment = PercentInstallTrades + NetFractionInstallBurden + NumInstallTradesWBalance
+# Inquiry = MSinceMostRecentInqexcl7days + NumInqLast6M + NumInqLast6Mexcl7days
+# RevolvingBalance = NetFractionRevolvingBurden + NumRevolvingTradesWBalance
+# Utilization = NumBank2NatlTradesWHighUtilization
+# TradeWBalance = PercentTradesWBalance
+
+
+## 1
+Duke_table <- copy(explanation_cv_monotone0$dt)
+#1
+Duke_table[, ExternalRiskEstimate := ExternalRiskEstimate]
+#2
+Duke_table[, TradeOpenTime := MSinceOldestTradeOpen + MSinceMostRecentTradeOpen + AverageMInFile]
+#3
+Duke_table[, NumSatisfactoryTrades := NumSatisfactoryTrades]
+#4
+Duke_table[, TradeFrequency := NumTrades60Ever2DerogPubRec + NumTrades90Ever2DerogPubRec + NumTotalTrades +
+             NumTradesOpeninLast12M]
+#5
+Duke_table[, Delinquency := PercentTradesNeverDelq + MSinceMostRecentDelq + MaxDelq2PublicRecLast12M +
+             MaxDelqEver]
+#6
+Duke_table[, Installment := PercentInstallTrades + NetFractionInstallBurden + NumInstallTradesWBalance]
+#7
+Duke_table[, Inquiry := MSinceMostRecentInqexcl7days + NumInqLast6M + NumInqLast6Mexcl7days]
+#8
+Duke_table[, RevolvingBalance := NetFractionRevolvingBurden + NumRevolvingTradesWBalance]
+#9
+Duke_table[, Utilization := NumBank2NatlTradesWHighUtilization]
+#10
+Duke_table[, TradeWBalance := PercentTradesWBalance]
+
+
+feature_groups <- c("ExternalRiskEstimate", "TradeOpenTime",  "NumSatisfactoryTrades", "TradeFrequency",
+                    "Delinquency", "Installment", "Inquiry", "RevolvingBalance", "Utilization", "TradeWBalance")
+group_nb <- 1:length(feature_groups)
+
+Duke_table0 <- Duke_table[, ..feature_groups]
+
+Duke_table0[, 'name' := c("Demo1", "Demo2", "Demo3")]
+Duke_table02 <- melt(Duke_table0, id.vars = c("name"))
+Duke_table03 <- reshape(Duke_table02, idvar = "variable", timevar = "name", direction = "wide")
+
+
+## USING RISKS/PROBABILITIES
+risk1 <- c(0.819, 0.789, 0.742, 0.606, 0.799, 0.657, 0.579, 0.641, 0.442, 0.731)
+risk2 <- c(0.819, 0.523, 0.517, 0.45, 0.799, 0.561, 0.639, 0.803, 0.442, 0.731)
+risk3 <- c(0.2, 0.351, 0.454, 0.382, 0.383, 0.446, 0.171, 0.312, 0.442, 0.524)
+
+## USING WEIGHTS
+weights1 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.214)
+weights2 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.214)
+weights3 <- c(1.593, 2.468, 2.273, 0.358, 2.470, 1.175, 2.994, 1.877, 1.119, 0.214)
+
+
+## USING POINTS
+Demo1 <- c(1.305, 1.947, 1.686, 0.217, 1.973, 0.772, 1.733, 1.203, 0.495, 0.157)
+Demo2 <- c(1.305, 1.291, 1.175, 0.161, 1.973, 0.659, 1.913, 1.507, 0.495, 0.157)
+Demo3 <- c(0.319, 0.866, 1.032, 0.137, 0.946, 0.524, 0.512, 0.586, 0.495, 0.112)
+
+
+Duke_table03 <- cbind(Duke_table03, Demo1)
+Duke_table03 <- cbind(Duke_table03, Demo2)
+Duke_table03 <- cbind(Duke_table03, Demo3)
+
+colnames(Duke_table03) <- c("feature", "Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost", "Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
+names <- c("Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost", "Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
+
+xgb <- c("Demo 1-xgboost", "Demo 2-xgboost", "Demo 3-xgboost")
+Duke <- c("Demo 1-Duke", "Demo 2-Duke", "Demo 3-Duke")
+
+Duke_table031 <- Duke_table03[, lapply(.SD, function(x) -1 * abs(x)), .SDcols = xgb]
+
+Duke_table030 <- Duke_table03[, lapply(.SD, function(x) x * -1), .SDcols = Duke]
+
+Duke_all <- cbind(Duke_table03$feature, Duke_table031, Duke_table030)
+
+Duke_all0 <- Duke_all[, lapply(.SD, rank), .SDcols = names]
+colnames(Duke_all0) <- c("Demo 1-rank-xgboost", "Demo 2-rank-xgboost", "Demo 3-rank-xgboost", "Demo 1-rank-Duke", "Demo 2-rank-Duke", "Demo 3-rank-Duke")
+Duke_all0 <- cbind(Duke_all0, Duke_table03[, ..xgb], Duke_table03[, ..Duke])
+
+setcolorder(Duke_all0, c("Demo 1-xgboost", "Demo 1-rank-xgboost", "Demo 1-Duke", "Demo 1-rank-Duke",
+                         "Demo 2-xgboost", "Demo 2-rank-xgboost", "Demo 2-Duke", "Demo 2-rank-Duke",
+                         "Demo 3-xgboost", "Demo 3-rank-xgboost", "Demo 3-Duke", "Demo 3-rank-Duke"))
+
+Duke_all0 <- cbind(feature_groups, Duke_all0)
+View(Duke_all0)
+print(xtable(dt0, digits = rep(0, ncol(dt0) + 1)), include.rownames = FALSE)
+
+View(Duke_all0[order(`Demo 2-xgboost`)])
+
+
+## March 26th
+load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone_ctree.RData")
+# explanation_cv_monotone$x_test
+# explanation_cv_monotone$dt
+# load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_ctree.RData")
+
+# load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone_indep.RData")
+
+## TO COMPARE AGAINST THE OLD STUFF
+# load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone.RData")
+# explanation_cv_monotoneOLD <- explanation_cv_monotone
+# load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular.RData")
+# explanation_cv_regularOLD <- explanation_cv_regular
+# explanation_cv_monotoneOLD$x_test
+# head(explanation_cv_monotoneOLD$dt,3)
+# dt <- abs(explanation_cv_monotone$dt[3,] - explanation_cv_monotoneOLD$dt[3,])
+# mean(as.matrix(dt))
+# dt <- abs(explanation_cv_regular$dt[3,] - explanation_cv_regularOLD$dt[3,])
+# mean(as.matrix(dt))
+
+
+Duke_table <- copy(explanation_cv_monotone$dt) #  explanation_cv_regular explanation_cv_monotone
+Duke_table[, ExternalRiskEstimate := ExternalRiskEstimate]
+Duke_table[, TradeOpenTime := MSinceOldestTradeOpen + MSinceMostRecentTradeOpen + AverageMInFile]
+Duke_table[, NumSatisfactoryTrades := NumSatisfactoryTrades]
+Duke_table[, TradeFrequency := NumTrades60Ever2DerogPubRec + NumTrades90Ever2DerogPubRec + NumTotalTrades +
+             NumTradesOpeninLast12M]
+Duke_table[, Delinquency := PercentTradesNeverDelq + MSinceMostRecentDelq + MaxDelq2PublicRecLast12M +
+             MaxDelqEver]
+Duke_table[, Installment := PercentInstallTrades + NetFractionInstallBurden + NumInstallTradesWBalance]
+Duke_table[, Inquiry := MSinceMostRecentInqexcl7days + NumInqLast6M + NumInqLast6Mexcl7days]
+Duke_table[, RevolvingBalance := NetFractionRevolvingBurden + NumRevolvingTradesWBalance]
+Duke_table[, Utilization := NumBank2NatlTradesWHighUtilization]
+Duke_table[, TradeWBalance := PercentTradesWBalance]
+
+
+## Start with Shapley
+feature_groups <- c("ExternalRiskEstimate", "TradeOpenTime",  "NumSatisfactoryTrades", "TradeFrequency",
+                    "Delinquency", "Installment", "Inquiry", "RevolvingBalance", "Utilization", "TradeWBalance")
+group_nb <- 1:length(feature_groups)
+
+Duke_table0 <- Duke_table[, ..feature_groups]
+
+Duke_table0[, 'name' := c("Demo2", "xtest1", "xtest2")]
+Duke_table02 <- melt(Duke_table0, id.vars = c("name"))
+Duke_table03 <- reshape(Duke_table02, idvar = "variable", timevar = "name", direction = "wide")
+
+## USING POINTS
+Demo2 <- c(1.305, 1.291, 1.175, 0.161, 1.973, 0.659, 1.913, 1.507, 0.495, 0.157)
+xtest1 <- c(1.074, 0.409, 1.175, 0.201, 1.667, 0.745, 2.115, 1.171, 0.495, 0.157)
+xtest2 <- c(1.074, 0.165, 1.032, 0.137, 1.341, 0.609, 1.733, 1.088, 0.724, 0.130)
+
+Duke_table03 <- cbind(Duke_table03, Demo2)
+Duke_table03 <- cbind(Duke_table03, xtest1)
+Duke_table03 <- cbind(Duke_table03, xtest2)
+
+colnames(Duke_table03) <- c("feature", "Demo 2-xgboost", "xtest1-xgboost", "xtest2-xgboost", "Demo 2-Duke", "xtest1-Duke", "xtest2-Duke")
+names <- c("Demo 2-xgboost", "xtest1-xgboost", "xtest2-xgboost", "Demo 2-Duke", "xtest1-Duke", "xtest2-Duke")
+
+xgb <- c("Demo 2-xgboost", "xtest1-xgboost", "xtest2-xgboost")
+Duke <- c("Demo 2-Duke", "xtest1-Duke", "xtest2-Duke")
+
+Duke_table031 <- Duke_table03[, lapply(.SD, function(x) -1 * abs(x)), .SDcols = xgb]
+
+Duke_table030 <- Duke_table03[, lapply(.SD, function(x) x * -1), .SDcols = Duke]
+
+Duke_all <- cbind(Duke_table03$feature, Duke_table031, Duke_table030)
+
+Duke_all0 <- Duke_all[, lapply(.SD, rank), .SDcols = names]
+colnames(Duke_all0) <- c("Demo 2-rank-xgboost", "xtest1-rank-xgboost", "xtest2-rank-xgboost", "Demo 2-rank-Duke", "xtest1-rank-Duke", "xtest2-rank-Duke")
+Duke_all0 <- cbind(Duke_all0, Duke_table03[, ..xgb], Duke_table03[, ..Duke])
+
+setcolorder(Duke_all0, c("Demo 2-xgboost", "Demo 2-rank-xgboost", "Demo 2-Duke", "Demo 2-rank-Duke",
+                         "xtest1-xgboost", "xtest1-rank-xgboost", "xtest1-Duke", "xtest1-rank-Duke",
+                         "xtest2-xgboost", "xtest2-rank-xgboost", "xtest2-Duke", "xtest2-rank-Duke"))
+
+DUKE_CTREE <- cbind(feature_groups, Duke_all0)
+
+## Independence
+load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone_indep.RData")
+explanation_cv_monotone_ind$x_test
+
+
+Duke_table <- copy(explanation_cv_monotone_ind$dt) #  explanation_cv_monotone
+Duke_table[, ExternalRiskEstimate := ExternalRiskEstimate]
+Duke_table[, TradeOpenTime := MSinceOldestTradeOpen + MSinceMostRecentTradeOpen + AverageMInFile]
+Duke_table[, NumSatisfactoryTrades := NumSatisfactoryTrades]
+Duke_table[, TradeFrequency := NumTrades60Ever2DerogPubRec + NumTrades90Ever2DerogPubRec + NumTotalTrades +
+             NumTradesOpeninLast12M]
+Duke_table[, Delinquency := PercentTradesNeverDelq + MSinceMostRecentDelq + MaxDelq2PublicRecLast12M +
+             MaxDelqEver]
+Duke_table[, Installment := PercentInstallTrades + NetFractionInstallBurden + NumInstallTradesWBalance]
+Duke_table[, Inquiry := MSinceMostRecentInqexcl7days + NumInqLast6M + NumInqLast6Mexcl7days]
+Duke_table[, RevolvingBalance := NetFractionRevolvingBurden + NumRevolvingTradesWBalance]
+Duke_table[, Utilization := NumBank2NatlTradesWHighUtilization]
+Duke_table[, TradeWBalance := PercentTradesWBalance]
+
+
+## Start with Shapley
+feature_groups <- c("ExternalRiskEstimate", "TradeOpenTime",  "NumSatisfactoryTrades", "TradeFrequency",
+                    "Delinquency", "Installment", "Inquiry", "RevolvingBalance", "Utilization", "TradeWBalance")
+group_nb <- 1:length(feature_groups)
+
+Duke_table0 <- Duke_table[, ..feature_groups]
+
+Duke_table0[, 'name' := c("Demo2", "xtest1", "xtest2")]
+Duke_table02 <- melt(Duke_table0, id.vars = c("name"))
+Duke_table03 <- reshape(Duke_table02, idvar = "variable", timevar = "name", direction = "wide")
+
+## USING POINTS
+Demo2 <- c(1.305, 1.291, 1.175, 0.161, 1.973, 0.659, 1.913, 1.507, 0.495, 0.157)
+xtest1 <- c(1.074, 0.409, 1.175, 0.201, 1.667, 0.745, 2.115, 1.171, 0.495, 0.157)
+xtest2 <- c(1.074, 0.165, 1.032, 0.137, 1.341, 0.609, 1.733, 1.088, 0.724, 0.130)
+
+Duke_table03 <- cbind(Duke_table03, Demo2)
+Duke_table03 <- cbind(Duke_table03, xtest1)
+Duke_table03 <- cbind(Duke_table03, xtest2)
+
+colnames(Duke_table03) <- c("feature", "Demo 2-ind", "xtest1-ind", "xtest2-ind", "Demo 2-Duke", "xtest1-Duke", "xtest2-Duke")
+names <- c("Demo 2-ind", "xtest1-ind", "xtest2-ind", "Demo 2-Duke", "xtest1-Duke", "xtest2-Duke")
+
+
+ind <- c("Demo 2-ind", "xtest1-ind", "xtest2-ind")
+Duke <- c("Demo 2-Duke", "xtest1-Duke", "xtest2-Duke")
+
+Duke_table031 <- Duke_table03[, lapply(.SD, function(x) -1 * abs(x)), .SDcols = ind]
+
+Duke_table030 <- Duke_table03[, lapply(.SD, function(x) x * -1), .SDcols = Duke]
+
+Duke_all <- cbind(Duke_table03$feature, Duke_table031, Duke_table030)
+
+Duke_all0 <- Duke_all[, lapply(.SD, rank), .SDcols = names]
+colnames(Duke_all0) <- c("Demo 2-rank-ind", "xtest1-rank-ind", "xtest2-rank-ind", "Demo 2-rank-Duke", "xtest1-rank-Duke", "xtest2-rank-Duke")
+Duke_all0 <- cbind(Duke_all0, Duke_table03[, ..ind], Duke_table03[, ..Duke])
+
+setcolorder(Duke_all0, c("Demo 2-ind", "Demo 2-rank-ind", "Demo 2-Duke", "Demo 2-rank-Duke",
+                         "xtest1-ind", "xtest1-rank-ind", "xtest1-Duke", "xtest1-rank-Duke",
+                         "xtest2-ind", "xtest2-rank-ind", "xtest2-Duke", "xtest2-rank-Duke"))
+
+DUKE_IND <- cbind(feature_groups, Duke_all0)
 
 
 
-
+DUKE_ALL <- cbind(DUKE_CTREE, DUKE_IND[, c(2, 3, 6, 7, 10, 11)])
+setcolorder(DUKE_ALL, c("feature_groups", "Demo 2-xgboost", "Demo 2-rank-xgboost", "Demo 2-ind", "Demo 2-rank-ind", "Demo 2-Duke", "Demo 2-rank-Duke",
+                        "xtest1-xgboost", "xtest1-rank-xgboost", "xtest1-ind", "xtest1-rank-ind", "xtest1-Duke", "xtest1-rank-Duke",
+                        "xtest2-xgboost", "xtest2-rank-xgboost", "xtest2-ind", "xtest2-rank-ind", "xtest2-Duke", "xtest2-rank-Duke"))
+View(DUKE_ALL)
