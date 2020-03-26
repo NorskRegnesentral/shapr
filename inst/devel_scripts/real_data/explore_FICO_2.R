@@ -530,7 +530,7 @@ features.xgb.cv.synchronous <- function(x, cnms, feature_labels = NULL) {
 }
 
 # Using only the demo cases
-x_test = x_test[1:3,]
+x_test = x_test[c(2,4,5),]
 
 
 p <- mean(y_train)
@@ -619,8 +619,8 @@ explanation_cv_monotone_ind <- explain(
   w_threshold = 1)
 
 
-save(explainer_cv_monotone_num,explanation_cv_monotone_ind,xgbFit_cv_monotone,
-     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone_indep.RData")
+save(explanation_cv_monotone_ind,explainer_cv_monotone_num,xgbFit_cv_monotone,
+     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone_indep_2.RData")
 
 
 xgbFit_cv_regular$dummyfunc = dummyfunc
@@ -643,8 +643,8 @@ explanation_cv_regular_ind <- explain(
   prediction_zero = p,
   w_threshold = 1)
 
-save(explainer_cv_regular_num,explainer_cv_regular_num,xgbFit_cv_regular,
-     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_indep.RData")
+save(explanation_cv_regular_ind,explainer_cv_regular_num,xgbFit_cv_regular,
+     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_indep_2.RData")
 
 
 
@@ -663,7 +663,7 @@ explanation_cv_monotone <- explain(
 )
 
 save(explanation_cv_monotone,explainer_cv_monotone,xgbFit_cv_monotone,
-     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone_ctree.RData")
+     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone_ctree_2.RData")
 
 
 set.seed(123)
@@ -678,4 +678,4 @@ explanation_cv_regular <- explain(
 )
 
 save(explanation_cv_regular,explainer_cv_regular,xgbFit_cv_regular,
-     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_ctree.RData")
+     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_ctree_2.RData")
