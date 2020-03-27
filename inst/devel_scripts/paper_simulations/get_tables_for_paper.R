@@ -1025,11 +1025,15 @@ timing_dim7_nocat5 <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/
 timing_dim10_nocat4 <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_tables", "timing_dim10_nocat4", sep = "/"))
 
 
-timing_full_table <- rbind(timing_dim3_nocat3, timing_dim3_nocat4, timing_dim4_nocat3, timing_dim5_nocat6, timing_dim7_nocat5) # timing_dim10_nocat4
+timing_full_table <- rbind(timing_dim3_nocat3, timing_dim3_nocat4, timing_dim4_nocat3, timing_dim5_nocat6, timing_dim7_nocat5, timing_dim10_nocat4) # timing_dim10_nocat4
 timing_full_table[, no_x_test := timing_full_table[['no_categories']]^timing_full_table[['dim']]]
 
-setcolorder(timing_full_table, c("dim", "no_categories", "no_x_test", "method", "V1"))
+timing_full_table[,no_x_test := c(rep(27, 7), rep(64, 6), rep(81, 6), rep(2000, 6))]
+timing_full_table[, V2 := V1/no_x_test]
+timing_full_table[, V1 := NULL]
+
+setcolorder(timing_full_table, c("dim", "no_categories", "no_x_test", "method", "V2"))
 
 colnames(timing_full_table) <- c("dim", "nb categories", "nb variables",  "method", "elapsed")
 
-print(xtable(timing_full_table, digits = c(0, 0, 0, 0, 0, 1)), include.rownames = FALSE)
+print(xtable(timing_full_table, digits = c(0, 0, 0, 0, 0, 3)), include.rownames = FALSE)

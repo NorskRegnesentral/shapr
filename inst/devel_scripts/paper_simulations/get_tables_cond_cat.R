@@ -113,8 +113,6 @@ print(xtable(t, digits = c(0, 0, 0, 0, rep(4, 6))), include.rownames = FALSE)
 
 
 ## TIMING
-
-
 timing <- NULL
 names <- NULL
 corr <- NULL
@@ -131,19 +129,19 @@ timing[, method := names]
 timing[, corr := corr]
 timing[, dim := dim]
 timing[, no_categories := no_categories]
-
 timing1 <- timing[, c("elapsed", "method", "corr", "dim", "no_categories")]
 timing2 <- timing1[, (mean_elapsed = mean(elapsed)), by = c("method", "dim", "no_categories")]
-
 saveRDS(timing2, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/cont_and_cat_data/", "timing_dim4_nocat4",  sep = "/"))
 
 timing_full_table <- readRDS(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/cont_and_cat_data", "timing_dim4_nocat4", sep = "/"))
 
 timing_full_table[, no_x_test := 500]
+timing_full_table[, V2 := V1 / no_x_test]
+timing_full_table[, V1 := NULL]
 
-setcolorder(timing_full_table, c("dim", "no_categories", "no_x_test", "method", "V1"))
+setcolorder(timing_full_table, c("dim", "no_categories", "no_x_test", "method", "V2"))
 
 colnames(timing_full_table) <- c("dim", "nb categories", "nb variables",  "method", "elapsed")
 
-print(xtable(timing_full_table, digits = c(0, 0, 0, 0, 0, 1)), include.rownames = FALSE)
+print(xtable(timing_full_table, digits = c(0, 0, 0, 0, 0, 3)), include.rownames = FALSE)
 
