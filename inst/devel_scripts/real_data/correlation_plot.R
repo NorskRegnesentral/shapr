@@ -100,7 +100,7 @@ cor_cont = cor(cont_data)
 
 
 # Using cramersV for the only categorical features
-library( questionr)
+library(questionr)
 cat_tab = table(cat_data)
 cat_corr0 = cramer.v(cat_tab)
 #cor_cat = matrix(c(1,cat_corr0,cat_corr0,1),ncol=2)

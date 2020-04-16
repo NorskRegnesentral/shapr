@@ -75,28 +75,33 @@ explanation <- explain(
   sample = FALSE)
 
 
-names(explanation$dt) <- c("none", "Age", "Gender", "Type of car", "Nb of accidents", "Time since registration")
+names(explanation$dt) <- c("none", "Age", "Gender", "Type of car", "# of accidents", "Time since registration")
 
-names(explanation$x_test) <- c("Age", "Gender", "Type of car", "Nb of accidents", "Time since registration")
+names(explanation$x_test) <- c("Age", "Gender", "Type of car", "# of accidents", "Time since registration")
 
 explanation$x_test$Age <- c(55, 30)
 explanation$x_test$Gender <- c("Woman", "Man")
-explanation$x_test$`Type of car` <- c("Buick", "Ford")
-explanation$x_test$`Nb of accidents` <- c("3", "1")
+explanation$x_test$`Type of car` <- c("Buick", "Porsche")
+explanation$x_test$`# of accidents` <- c("3", "1")
 explanation$x_test$`Time since registration` <- c("3.2", "1.5")
 
 print(explanation$dt)
 
 # explanation$dt[2, ] <- -1*explanation$dt[2, ]
 
-explanation$dt$none <- c(120.1, 120.1)
-explanation$dt$Age <- c(-100.2, -40.8)
-explanation$dt$Gender <- c(-110.8, 300.78)
-explanation$dt$`Type of car` <- c(11.8, 250.8)
-explanation$dt$`Nb of accidents` <- c(170.54, -40.5)
-explanation$dt$`Time since registration` <- c(-8.9, -20.5)
+x1 <- c(120.1, -100.2, -160.8, 22.8, 250.54, -8.9)
+sum(x1)
+x2 <- c(90.1, -40.8, 130.78, 80.8, -20.5, -40.5)
+sum(x2)
 
-explanation$p <- c(sum(explanation$dt[1, 1:6]), sum(explanation$dt[2, 1:6]))
+explanation$dt$none <- c(x1[1], x2[1])
+explanation$dt$Age <- c(x1[2], x2[2])
+explanation$dt$Gender <- c(x1[3], x2[3])
+explanation$dt$`Type of car` <- c(x1[4], x2[4])
+explanation$dt$`# of accidents` <- c(x1[5], x2[5])
+explanation$dt$`Time since registration` <- c(x1[6], x2[6])
+
+explanation$p <- c(sum(x1), sum(x2))
 
 
 ## -------------------------
@@ -179,7 +184,7 @@ p0 <- plot_shapr_Annabelle(x = explanation, plot_phi0 = TRUE) ## removes the 'no
 
 ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/figures/example_carinsurance2.pdf",
        plot = p0, device = NULL, path = NULL,
-       scale = 1, width = 12, height = 6, units = "cm",
+       scale = 1, width = 10, height = 5, units = "cm",
        dpi = 300, limitsize = TRUE)
 
 
