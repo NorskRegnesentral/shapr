@@ -155,12 +155,12 @@ test_that("test simulateAllTrees", {
 
   given_ind <- c(4, 7)
 
-  comb_indici = NULL
-  comb_mincriterion = NULL
-  mincriterion = 0.95
-  minsplit = 20
-  minbucket = 7
-  sample = TRUE
+  comb_indici <- NULL
+  comb_mincriterion <- NULL
+  mincriterion <- 0.95
+  minsplit <- 20
+  minbucket <- 7
+  sample <- TRUE
 
   # build the tree
   r <- simulateAllTrees(given_ind = given_ind,
@@ -197,12 +197,12 @@ test_that("test simulateAllTrees", {
 
   given_ind <- 1:10
 
-  comb_indici = NULL
-  comb_mincriterion = NULL
-  mincriterion = 0.95
-  minsplit = 20
-  minbucket = 7
-  sample = TRUE
+  comb_indici <- NULL
+  comb_mincriterion <- NULL
+  mincriterion <- 0.95
+  minsplit <- 20
+  minbucket <- 7
+  sample <- TRUE
 
   # build the tree
   r <- simulateAllTrees(given_ind = given_ind,
@@ -302,7 +302,3 @@ test_that("test sample_ctree", {
   #   sample_gaussian(m + 1, n_samples, mu, cov_mat, m, as.vector(x_test))
   # )
 })
-
-
-
-

@@ -216,9 +216,10 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #' colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
 #' ynam <- paste0("Y", 1:ncol(y))
 #' fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
-#' datact <- party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = 7,mincriterion = 0.95))
+#' datact <- party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = 7, mincriterion = 0.95))
 #' tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
-#' sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt, x_train = x_train, p = length(x_test), sample = TRUE)
+#' sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt, x_train = x_train,
+#' p = length(x_test), sample = TRUE)
 #'
 #' @author Annabelle Redelmeier
 
@@ -341,13 +342,15 @@ sample_ctree <- function(tree,
 #' cov_mat <- cov(matrix(rnorm(n * m), n, m))
 #' x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
 #' given_ind <- c(4, 7)
-#' comb_indici = NULL
-#' comb_mincriterion = NULL
-#' mincriterion = 0.95
-#' minsplit = 20
-#' minbucket = 7
-#' sample = TRUE
-#' simulateAllTrees(given_ind = given_ind, x_train = x_train,comb_indici = comb_indici, comb_mincriterion = comb_mincriterion, mincriterion = mincriterion, minsplit = minsplit, minbucket = minbucket, use_partykit = "on_error")
+#' comb_indici <- NULL
+#' comb_mincriterion <- NULL
+#' mincriterion <- 0.95
+#' minsplit <- 20
+#' minbucket <- 7
+#' sample <- TRUE
+#' simulateAllTrees(given_ind = given_ind, x_train = x_train,comb_indici = comb_indici,
+#' comb_mincriterion = comb_mincriterion, mincriterion = mincriterion, minsplit = minsplit,
+#' minbucket = minbucket, use_partykit = "on_error")
 #'
 #' @author Annabelle Redelmeier, Martin Jullum
 #'
