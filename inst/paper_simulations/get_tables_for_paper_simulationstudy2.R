@@ -1,7 +1,7 @@
 
 
 ## This script gets the table for the NEW simulation with 2 continuous and 2 categorical (4 levels)
-## Done over Mar 16
+## Done Mar 16
 
 library(shapr)
 library(data.table)

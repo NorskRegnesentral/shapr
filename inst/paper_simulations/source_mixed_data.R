@@ -134,7 +134,6 @@ MAE <- function(true_shapley, shapley_method, weights = rep(1 / nrow(true_shaple
 
 
 
-## NEW ANNABELLE
 compute_shapley_mixed_data <- function(parameters_list){
 
   # Assuming a linear model
