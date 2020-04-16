@@ -318,7 +318,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
     stopifnot(all(x$comb_mincriterion >= 0))
   }
 
-  ## this is the list of all 2^10 trees (if number of features = 10)
+  # this is a list of all 2^M trees (where number of features = M)
   all_trees <- parallel::mclapply(
     X = features,
     FUN = simulateAllTrees,

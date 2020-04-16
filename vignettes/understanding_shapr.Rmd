@@ -209,6 +209,16 @@ Details on this is found in @aas2019explaining.
 
 <br>
 
+## Conditional inference tree Approach
+
+Conditional inference trees (@hothorn2006unbiasedis) of tree fitting procedure that can handle mixed (i.e continuous, discrete, ordinal, categorical) features and both univariate and multivariate responses. We can use conditional inference trees (ctree) to model the conditional distribution, $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$, found in the Shapley methodology 
+
+We implement this method (called the `ctree' method) using the \verb|party| and \verb|partykit| packages (@partykit_package). 
+
+<a id="ex"></a>
+
+<br>
+
 # Examples
 
 `shapr` supports computation of Shapley values with any predictive model which takes a set of 
@@ -218,7 +228,7 @@ The following example shows how a simple `xgboost` model is trained using the Bo
 and how `shapr` can be used to explain the individual predictions. Note that empirical conditional 
 distribution approach is the default (i.e. `approach = "empirical"`), and that the Gaussian and 
 Gaussian copula approaches can be used instead by setting the argument `approach` to either 
-`"gaussian"` or `"copula"`.
+`"gaussian"` or `"copula"`. The ctree package can be used by setting the argument `approach` to `"ctree"`. 
 
 ```{r, warning=FALSE}
 library(xgboost)
@@ -295,7 +305,25 @@ explanation_copula <- explain(
 plot(explanation_copula, plot_phi0 = FALSE, index_x_test = c(1,6))
 ```
 
+The conditional inference tree approach is used as follows:
+
+```{r}
+# Use the Gaussian copula approach
+explanation_ctree <- explain(
+  x_test,
+  approach = "ctree",
+  explainer = explainer,
+  prediction_zero = pred_zero
+)
+
+# Plot the resulting explanations for observations 1 and 6, excluding 
+# the no-covariate effect
+plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1,6))
+```
+
+
 ## Main arguments in `shapr`
+
 When using `shapr`, the default behavior is to use all feature combinations in the Shapley 
 formula. Kernel SHAPs sampling based approach may be used by specifying `n_combinations`, which 
 is the number of feature combinations to sample. If not specified, the exact method is used. 

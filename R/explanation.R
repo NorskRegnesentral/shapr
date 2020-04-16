@@ -81,9 +81,12 @@
 #' # Gaussian copula approach
 #' explain3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p, n_samples = 1e2)
 #'
+#' # ctree approach
+#' explain4 <- explain(x_test, explainer, approach = "ctree", prediction_zero = p)
+#'
 #' # Combined approach
 #' approach <- c("gaussian", "gaussian", "empirical", "empirical")
-#' explain4 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
+#' explain5 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
 #'
 #' # Plot the results
 #' \dontrun{
@@ -306,8 +309,10 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #' @name explain
 #'
 #' @export
-explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici = NULL, comb_mincriterion = NULL,
-                          mincriterion = 0.95, minsplit = 20, minbucket = 7, sample = TRUE, ...) {
+explain.ctree <- function(x, explainer, approach, prediction_zero,
+                          comb_indici = NULL, comb_mincriterion = NULL,
+                          mincriterion = 0.95, minsplit = 20,
+                          minbucket = 7, sample = TRUE, ...) {
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
     stop("x should be a matrix or a dataframe.")
@@ -328,7 +333,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
 
   if (!is.null(explainer$return)) {
     return(dt)
-  } ## when using a combined method, you return here
+  } # when using a combined method, you return here
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -340,7 +345,8 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, comb_indici =
 #' @name explain
 #'
 #' @export
-explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
+explain.combined <- function(x, explainer, approach, prediction_zero,
+                             mu = NULL, cov_mat = NULL, ...) {
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
@@ -348,7 +354,8 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
   dt_l <- list()
   for (i in seq_along(l)) {
-    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], ...)
+    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i],
+                         prediction_zero, index_features = l[[i]], ...)
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 
@@ -423,7 +430,8 @@ explainer_x_test <- function(x_test, feature_labels) {
 #' @name explain
 #'
 #' @export
-explain.combinedparameters <- function(x, explainer, approach, prediction_zero, mincriterion, ...) {
+explain.combinedparameters <- function(x, explainer, approach,
+                                       prediction_zero, mincriterion, ...) {
 
   # Get indices of combinations
   l <- get_list_parameters(explainer$X$n_features, mincriterion)
@@ -432,7 +440,8 @@ explain.combinedparameters <- function(x, explainer, approach, prediction_zero, 
 
   dt_l <- list()
   for (i in seq_along(l)) {
-    dt_l[[i]] <- explain(x, explainer, approach, prediction_zero, index_features = l[[i]],
+    dt_l[[i]] <- explain(x, explainer, approach, prediction_zero,
+                         index_features = l[[i]],
                          mincriterion = as.numeric(names(l[i])), ...)
   }
 

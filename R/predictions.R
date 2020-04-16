@@ -49,9 +49,9 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   # Predictions
   # Done only for unique variable combinations, then joined back to original dt. Valuable for categorical data
-  dt_unique <- unique(dt[,cnms,with=F])
+  dt_unique <- unique(dt[, cnms, with = F])
   dt_unique[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
-  dt <- dt[dt_unique, on=cnms]
+  dt <- dt[dt_unique, on = cnms]
 
   # Overrides value zero-prediction
   dt[id_combination == 1, p_hat := prediction_zero]
