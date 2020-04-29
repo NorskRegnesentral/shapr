@@ -67,6 +67,7 @@ test_that("Test observation_impute_cpp", {
     feature_i <- features[[index_s[i]]]
 
     for (j in seq(m)) {
+
       if (j %in% feature_i) {
         expect_equal(x[i, j], unname(xtest[1, j]))
       } else {

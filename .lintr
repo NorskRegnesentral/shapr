@@ -2,6 +2,7 @@ linters: with_defaults(
         line_length_linter = lintr::line_length_linter(120),
         object_name_linter = NULL,
         object_usage_linter = NULL,
+<<<<<<< HEAD
         seq_linter = NULL,
         commented_code_linter = NULL
     )
@@ -15,3 +16,15 @@ exclusions: c(list(
         ),
         list.files("inst/devel_scripts",full.names = T, recursive = T)
         )
+=======
+        seq_linter = NULL
+    )
+exclusions: list(
+        "inst/scripts/example.R",
+        "inst/scripts/compare_shap_python.R",
+        "inst/scripts/create_xgboost_model_object.R",
+        "inst/scripts/example_custom_model.R",
+        "R/RcppExports.R",
+        "R/zzz.R"
+    )
+>>>>>>> master

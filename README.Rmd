@@ -23,6 +23,7 @@ knitr::opts_chunk$set(
 [![R build status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
 The most common machine learning task is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features.
@@ -74,6 +75,21 @@ To install the current development version, use
 devtools::install_github("NorskRegnesentral/shapr")
 ```
 
+If you would like to install all packages of the models we currently support, use
+
+```{r, eval = FALSE}
+devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
+```
+
+
+If you would also like to build and view the vignette locally, use 
+```{r, eval = FALSE}
+devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
+vignette("understanding_shapr", "shapr")
+```
+
+You can always check out the latest version of the vignette [here](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html). 
+
 ## Example
 `shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome. 
 
@@ -89,9 +105,10 @@ data("Boston", package = "MASS")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:6), x_var])
-y_train <- Boston[-(1:6), y_var]
-x_test <- as.matrix(Boston[1:6, x_var])
+ind_x_test <- 1:6
+x_train <- as.matrix(Boston[-ind_x_test, x_var])
+y_train <- Boston[-ind_x_test, y_var]
+x_test <- as.matrix(Boston[ind_x_test, x_var])
 
 # Looking at the dependence between the features
 cor(x_train)
@@ -119,7 +136,8 @@ explanation <- explain(
   prediction_zero = p
 )
 
-# Printing the Shapley values for the test data
+# Printing the Shapley values for the test data.
+# For more information about the interpretation of the values in the table, see ?shapr::explain.  
 print(explanation$dt)
 
 # Finally we plot the resulting explanations
@@ -129,7 +147,8 @@ plot(explanation)
 ## Contribution
 
 All feedback and suggestions are very welcome. Details on how to contribute can be found 
-[here](./.github/CONTRIBUTING.md)
+[here](./.github/CONTRIBUTING.md). If you have any questions or comments, feel
+free to open an issue [here](https://github.com/NorskRegnesentral/shapr/issues). 
 
 Please note that the 'shapr' project is released with a
 [Contributor Code of Conduct](CODE_OF_CONDUCT.md).

@@ -53,7 +53,23 @@ List with conditional inference tree and the variables conditioned/not condition
 Make all conditional inference trees
 }
 \examples{
-# TODO: Add simple example
+m <- 10
+n <- 40
+n_samples <- 50
+mu <- rep(1, m)
+cov_mat <- cov(matrix(rnorm(n * m), n, m))
+x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
+given_ind <- c(4, 7)
+comb_indici <- NULL
+comb_mincriterion <- NULL
+mincriterion <- 0.95
+minsplit <- 20
+minbucket <- 7
+sample <- TRUE
+simulateAllTrees(given_ind = given_ind, x_train = x_train,comb_indici = comb_indici,
+comb_mincriterion = comb_mincriterion, mincriterion = mincriterion, minsplit = minsplit,
+minbucket = minbucket, use_partykit = "on_error")
+
 }
 \author{
 Annabelle Redelmeier, Martin Jullum

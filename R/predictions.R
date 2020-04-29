@@ -48,22 +48,17 @@ prediction <- function(dt, prediction_zero, explainer) {
   stopifnot(nrow(explainer$x_test) == dt[, max(id)])
 
   # Predictions
-  # Done only for unique variable combinations, then joined back to original dt. Valuable for categorical data
-  dt_unique <- unique(dt[, cnms, with = F])
-  dt_unique[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
-  dt <- dt[dt_unique, on = cnms]
-
-  # Overrides value zero-prediction
+  dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
   dt[id_combination == 1, p_hat := prediction_zero]
-
-  # Prediction for test data
-  p_all <- predict_model(explainer$model, newdata = as.data.table(explainer$x_test))
+  p_all <- predict_model(explainer$model, newdata = explainer$x_test)
+  dt[id_combination == max(id_combination), p_hat := p_all[id]]
 
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
   data.table::setkeyv(dt_res, c("id", "id_combination"))
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = "k")
   dt_mat[, id_combination := NULL]
+
   kshap <- t(explainer$W %*% as.matrix(dt_mat))
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", cnms)

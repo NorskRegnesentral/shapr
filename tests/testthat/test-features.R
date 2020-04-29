@@ -21,8 +21,8 @@ test_that("Test feature_combinations", {
     m = m,
     exact = exact,
     n_combinations = n_combinations,
-    weight_zero_m = w
-  )
+    weight_zero_m = w)
+
   set.seed(1)
   y2 <- feature_not_exact(
     m = m,
@@ -119,12 +119,14 @@ test_that("Test feature_not_exact", {
       expect_equal(x[["N"]][[i]], 1)
       expect_equal(x[["shapley_weight"]][[i]], w)
       expect_equal(x[["p"]][[i]], NA_real_)
+
     } else if (length(f) == m) {
       expect_equal(f, seq(m))
       expect_equal(x[["n_features"]][[i]], m)
       expect_equal(x[["N"]][[i]], 1)
       expect_equal(x[["shapley_weight"]][[i]], w)
       expect_equal(x[["p"]][[i]], NA_real_)
+
     } else {
       k <- length(f)
       expect_equal(f, sort(f))

@@ -21,6 +21,7 @@ test_that("Test inv_gaussian_transform", {
   # Erros -----------
   expect_error(inv_gaussian_transform(zx, length(zx)))
   expect_error(inv_gaussian_transform(zx, length(zx) + 1))
+
 })
 
 test_that("Test gaussian_transform_separate", {
@@ -39,6 +40,7 @@ test_that("Test gaussian_transform_separate", {
   # Erros -----------
   expect_error(gaussian_transform_separate(yx, length(yx)))
   expect_error(gaussian_transform_separate(yx, length(yx) + 1))
+
 })
 
 test_that("Test gaussian_transform", {

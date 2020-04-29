@@ -4,7 +4,7 @@ library(shapr)
 context("test-explanation.R")
 
 # For using same Random numer generator as CircelCI (R version 3.5.x)
-if (as.numeric(version$minor) >= 6.0) RNGkind(sample.kind = "Rounding")
+RNGversion(vstr = "3.5.0")
 
 test_that("Test functions in explanation.R", {
 
@@ -83,7 +83,8 @@ test_that("Test functions in explanation.R", {
   ex_list[[17]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Ex 18: Explain combined II - all empirical
-  ex_list[[18]] <- explain(x_test, explainer, approach = c(rep("empirical", 4)), prediction_zero = p0)
+  approach <- c(rep("empirical", 4))
+  ex_list[[18]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Ex 19: Explain predictions (ctree, sample = FALSE, default parameters)
   ex_list[[19]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE)
@@ -257,7 +258,6 @@ test_that("Test functions in explanation.R", {
 
   # Checking that all explain objects produce the same as before
   expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
-
 
   ### Additional test that only the produced shapley values are the same as before
   fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")

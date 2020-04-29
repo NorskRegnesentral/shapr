@@ -85,7 +85,7 @@ Function Name                 Description
 
 Assume a predictive model $f(\boldsymbol{x})$ for a response value $y$ with features 
 $\boldsymbol{x}\in \mathbb{R}^M$, trained on a training set, and that we want to explain the 
-predictions for new sets of features. This may be done using ideas from cooperative game theory, 
+predictions for new sets of data. This may be done using ideas from cooperative game theory, 
 letting a single prediction take the place of the game being played and the features the place of 
 the players. Letting $N$ denote the set of all $M$ players, and $S \subseteq N$ be a subset 
 of $|S|$ players, the "contribution" function $v(S)$ describes the total expected sum of payoffs 
@@ -239,8 +239,8 @@ data("Boston", package = "MASS")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(Boston[-(1:6), x_var])
-y_train <- Boston[-(1:6), y_var]
+x_train <- as.matrix(Boston[-1:-6, x_var])
+y_train <- Boston[-1:-6, y_var]
 x_test <- as.matrix(Boston[1:6, x_var])
 
 # Fitting a basic xgboost model to the training data
@@ -255,20 +255,20 @@ model <- xgboost(
 explainer <- shapr(x_train, model)
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-pred_zero <- mean(y_train)
+p <- mean(y_train)
 
-# Computing the actual Shapley values with kernelSHAP accounting for feature 
-# dependence using the empirical (conditional) distribution approach with 
-# bandwidth parameter sigma = 0.1 (default)
+# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
+# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(
   x_test,
   approach = "empirical",
   explainer = explainer,
-  prediction_zero = pred_zero
+  prediction_zero = p
 )
 
-# Printing the Shapley values for the test data
-explanation$dt
+# Printing the Shapley values for the test data. 
+# For more information about the interpretation of the values in the table, see ?shapr::explain.  
+print(explanation$dt)
 
 # Plot the resulting explanations for observations 1 and 6
 plot(explanation, plot_phi0 = FALSE, index_x_test = c(1,6))
@@ -282,7 +282,7 @@ explanation_gaussian <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
-  prediction_zero = pred_zero
+  prediction_zero = p
 )
 
 # Plot the resulting explanations for observations 1 and 6
@@ -297,7 +297,7 @@ explanation_copula <- explain(
   x_test,
   approach = "copula",
   explainer = explainer,
-  prediction_zero = pred_zero
+  prediction_zero = p
 )
 
 # Plot the resulting explanations for observations 1 and 6, excluding 
@@ -389,7 +389,7 @@ explanation_combined <- explain(
   x_test,
   approach = c("empirical","copula","gaussian","gaussian"),
   explainer = explainer,
-  prediction_zero = pred_zero
+  prediction_zero = p
 )
 
 # Plot the resulting explanations for observations 1 and 6, excluding 
@@ -423,6 +423,9 @@ set as used above.
 
 
 ```{r}
+library(caret)
+library(gbm)
+
 # Fitting a gbm model using caret
 set.seed(825)
 model <- caret::train(

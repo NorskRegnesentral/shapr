@@ -35,6 +35,21 @@
 #' # Generate permutations of training data using test observations
 #' r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
 #' str(r)
+#'
+#' # Create training- and test data
+#' x_train <- as.matrix(MASS::mvrnorm(n, mu = rep(0, m), Sigma = sigma), ncol = m)
+#' x_test <- t(as.matrix(MASS::mvrnorm(1, mu = rep(0, m), sigma)))
+#' colnames(x_train) <- colnames(x_test) <- paste0("X", seq(m))
+#'
+#' # Binary matrix which represents the feature combinations
+#' S <- matrix(c(1, 0, 0, 1), nrow = m)
+#'
+#' # Kernel matrix
+#' W_kernel <- matrix(rnorm(n * ncol(S), mean = 1 / n, sd = 1 / n^2), nrow = n)
+#'
+#' # Generate permutations of training data using test observations
+#' r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
+#' str(r)
 #' @author Nikolai Sellereite
 observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n_samples = 1e3) {
 
@@ -103,7 +118,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #' \code{approach = "empirical"}.
 #'
 #' @param ... Currently not used.
-#'
+
 #'
 #' @export
 prepare_data <- function(x, ...) {
@@ -116,6 +131,7 @@ prepare_data <- function(x, ...) {
 #' @rdname prepare_data
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   # Get distance matrix ----------------
@@ -194,17 +210,13 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   dt[first_element, keep := TRUE]
   dt <- dt[keep == TRUE][, keep := NULL]
   dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
-
-  ## only return unique dt
-  dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id")]
-  setnames(dt2, "V1", "w")
-
-  return(dt2)
+  return(dt)
 }
 
 #' @rdname prepare_data
 #' @export
 prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
@@ -241,6 +253,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 #' @rdname prepare_data
 #' @export
 prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -293,6 +306,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
                                mc_cores = 1, mc_cores_simulateAllTrees = mc_cores,
                                mc_cores_sample_ctree = mc_cores, ...) {
+
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
@@ -364,6 +378,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 
 #' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {
+
   id_combination <- n_features <- NULL # due to NSE notes in R CMD check
   stopifnot(
     data.table::is.data.table(x$X),

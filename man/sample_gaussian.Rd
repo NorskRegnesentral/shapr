@@ -31,6 +31,7 @@ cnms <- paste0("x", seq(m))
 colnames(x_test) <- cnms
 index_given <- c(4, 7)
 r <- shapr:::sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
+
 }
 \author{
 Martin Jullum

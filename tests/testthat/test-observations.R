@@ -52,4 +52,5 @@ test_that("Test observation_impute", {
   expect_true(all(colnames(r) == cnms))
   expect_true(all(unlist(lapply(r, is.numeric))))
   expect_true(is.integer(r$id_combination))
+
 })

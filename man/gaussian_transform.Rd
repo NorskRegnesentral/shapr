@@ -18,6 +18,7 @@ Transforms a sample to standardized normal distribution
 \examples{
 y <- rnorm(50)
 x <- shapr:::gaussian_transform(y)
+
 }
 \author{
 Martin Jullum

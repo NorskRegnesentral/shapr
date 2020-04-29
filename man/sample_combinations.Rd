@@ -34,6 +34,7 @@ nsamples <- 7
 joint_sampling <- FALSE
 cnms <- c("samp_train", "samp_test")
 x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
+
 }
 \author{
 Martin Jullum

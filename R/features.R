@@ -153,6 +153,8 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 helper_feature <- function(m, feature_sample) {
   sample_frequence <- is_duplicate <- NULL # due to NSE notes in R CMD check
 
+  sample_frequence <- is_duplicate <- NULL  # due to NSE notes in R CMD check
+
   x <- feature_matrix_cpp(feature_sample, m)
   dt <- data.table::data.table(x)
   cnms <- paste0("V", seq(m))

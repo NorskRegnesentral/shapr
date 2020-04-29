@@ -3,7 +3,7 @@ library(shapr)
 
 context("test-shapley.R")
 
-if (as.numeric(version$minor) >= 6.0) RNGkind(sample.kind = "Rounding")
+RNGversion(vstr = "3.5.0")
 
 test_that("Basic test functions in shapley.R", {
 
@@ -23,6 +23,7 @@ test_that("Basic test functions in shapley.R", {
 
 
 test_that("Testing data input to shapr in shapley.R", {
+
   data("Boston", package = "MASS")
 
   x_var <- c("lstat", "rm", "dis", "indus")
