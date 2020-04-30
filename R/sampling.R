@@ -209,15 +209,16 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #' x_test_dt <- data.table::setDT(as.list(x_test))
 #' given_ind <- c(4, 7)
 #' dependent_ind <- (1:dim(x_train)[2])[-given_ind]
-#'  x <- x_train[, given_ind, with = FALSE]
-#'  y <- x_train[, dependent_ind, with = FALSE]
+#' x <- x_train[, given_ind, with = FALSE]
+#' y <- x_train[, dependent_ind, with = FALSE]
 #' df <- data.table::data.table(cbind(y, x))
 #' colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
 #' ynam <- paste0("Y", 1:ncol(y))
 #' fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
-#' datact <- party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = 7, mincriterion = 0.95))
+#' datact <- party::ctree(fmla, data = df, controls = party::ctree_control(minbucket = 7,
+#' mincriterion = 0.95))
 #' tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
-#' sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt, x_train = x_train,
+#' shapr:::sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt, x_train = x_train,
 #' p = length(x_test), sample = TRUE)
 #'
 #' @author Annabelle Redelmeier
@@ -240,7 +241,8 @@ sample_ctree <- function(tree,
     dependent_ind <- tree$dependent_ind
 
     x_test_given <- x_test[, given_ind, drop = FALSE, with = FALSE]
-
+    # x_test_given <- x_test[, given_ind, drop = FALSE] # changed this April 30
+    # xp <- data.frame(x_test_given)
     xp <- x_test_given
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
@@ -263,7 +265,10 @@ sample_ctree <- function(tree,
       if (length(rowno[fit.nodes == pred.nodes]) <= n_samples) {
         depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], dependent_ind,
                                                 drop = FALSE, with = FALSE])
-        givenDT <- data.table::data.table(x_test[1, given_ind, drop = FALSE, with = FALSE])
+        givenDT <- data.table::data.table(x_test[1,
+                                                 given_ind,
+                                                 drop = FALSE,
+                                                 with = FALSE]) # with = FALSE
 
         ret <- cbind(depDT, givenDT)
         data.table::setcolorder(ret, colnames(x_train))
@@ -272,10 +277,14 @@ sample_ctree <- function(tree,
         newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples,
                            replace = TRUE)
 
-        depDT <- data.table::data.table(x_train[newrowno, dependent_ind,
-                                                drop = FALSE, with = FALSE])
-        givenDT <- data.table::data.table(x_test[1, given_ind,
-                                                 drop = FALSE, with = FALSE])
+        depDT <- data.table::data.table(x_train[newrowno,
+                                                dependent_ind,
+                                                drop = FALSE,
+                                                with = FALSE])
+        givenDT <- data.table::data.table(x_test[1,
+                                                 given_ind,
+                                                 drop = FALSE,
+                                                 with = FALSE]) # with = FALSE
 
         ret <- cbind(depDT, givenDT)
         data.table::setcolorder(ret, colnames(x_train))
@@ -284,10 +293,15 @@ sample_ctree <- function(tree,
       newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples,
                          replace = TRUE)
 
-      depDT <- data.table::data.table(x_train[newrowno, dependent_ind,
-                                              drop = FALSE, with = FALSE])
-      givenDT <- data.table::data.table(x_test[1, given_ind,
-                                               drop = FALSE, with = FALSE])
+      depDT <- data.table::data.table(x_train[newrowno,
+                                              dependent_ind,
+                                              drop = FALSE,
+                                              with = FALSE])
+      # changed April 30
+      givenDT <- data.table::data.table(x_test[1,
+                                               given_ind,
+                                               drop = FALSE,
+                                               with = FALSE]) # with = FALSE
       ret <- cbind(depDT, givenDT)
       data.table::setcolorder(ret, colnames(x_train))
     }

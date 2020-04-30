@@ -313,7 +313,7 @@ explanation_ctree <- explain(
   x_test,
   approach = "ctree",
   explainer = explainer,
-  prediction_zero = pred_zero
+  prediction_zero = p
 )
 
 # Plot the resulting explanations for observations 1 and 6, excluding 

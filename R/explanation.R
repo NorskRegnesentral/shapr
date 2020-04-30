@@ -326,7 +326,8 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
   }
 
   # Add arguments to explainer object
-  explainer$x_test <- data.table::as.data.table(x)
+  #explainer$x_test <- data.table::as.data.table(x) # changed this April 30th
+  explainer$x_test <- data.table::data.table(explainer_x_test(x, explainer$feature_labels))
   explainer$approach <- approach
   explainer$comb_indici <- comb_indici
   explainer$comb_mincriterion <- comb_mincriterion
