@@ -267,21 +267,6 @@ test_that("test sample_ctree", {
   expect_equal(nrow(r), n_samples)
   expect_equal(colnames(r), colnames(x_test_dt))
 
-  # Check that the given features are not resampled, but kept as is.
-  # for (i in seq(m)) {
-  #   var_name <- colnames(x_test_dt)[i]
-  #
-  #   if (i %in% given_ind) {
-  #     expect_equal(
-  #       unique(r[[var_name]]), x_test_dt[, var_name][[1]]
-  #     )
-  #   } else {
-  #     expect_true(
-  #       length(unique(r[[var_name]])) == n_samples
-  #     )
-  #   }
-  # }
-
   # Example 2 -------------
   # Check that conditioning upon all variables simply returns the test observation.
 
@@ -294,11 +279,4 @@ test_that("test sample_ctree", {
                     p = length(x_test), sample = TRUE)
   expect_identical(r, data.table::as.data.table(x_test_dt))
 
-  # Tests for errors ------------------
-  # expect_error(
-  #   sample_gaussian(m + 1, n_samples, mu, cov_mat, m, x_test)
-  # )
-  # expect_error(
-  #   sample_gaussian(m + 1, n_samples, mu, cov_mat, m, as.vector(x_test))
-  # )
 })

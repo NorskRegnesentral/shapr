@@ -241,8 +241,6 @@ sample_ctree <- function(tree,
     dependent_ind <- tree$dependent_ind
 
     x_test_given <- x_test[, given_ind, drop = FALSE, with = FALSE]
-    # x_test_given <- x_test[, given_ind, drop = FALSE] # changed this April 30
-    # xp <- data.frame(x_test_given)
     xp <- x_test_given
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
@@ -268,7 +266,7 @@ sample_ctree <- function(tree,
         givenDT <- data.table::data.table(x_test[1,
                                                  given_ind,
                                                  drop = FALSE,
-                                                 with = FALSE]) # with = FALSE
+                                                 with = FALSE])
 
         ret <- cbind(depDT, givenDT)
         data.table::setcolorder(ret, colnames(x_train))
@@ -284,7 +282,7 @@ sample_ctree <- function(tree,
         givenDT <- data.table::data.table(x_test[1,
                                                  given_ind,
                                                  drop = FALSE,
-                                                 with = FALSE]) # with = FALSE
+                                                 with = FALSE])
 
         ret <- cbind(depDT, givenDT)
         data.table::setcolorder(ret, colnames(x_train))
@@ -301,7 +299,7 @@ sample_ctree <- function(tree,
       givenDT <- data.table::data.table(x_test[1,
                                                given_ind,
                                                drop = FALSE,
-                                               with = FALSE]) # with = FALSE
+                                               with = FALSE])
       ret <- cbind(depDT, givenDT)
       data.table::setcolorder(ret, colnames(x_train))
     }
