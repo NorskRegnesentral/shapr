@@ -300,9 +300,10 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #' If \code{NULL}, the \code{mincriterion} is constant for every combination.
 #' This is a depreciated method and will be deleted later.
 #'
-#' @param mincriterion Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional
+#' @param mincriterion Numeric value or vector where length of vector is the number of features in model.
+#' Value is equal to 1 - alpha where alpha is the nominal level of the conditional
 #' independence tests.
-#' Can also be a vector equal to the length of the number of features indicating which mincriterion to use
+#' If it is a vector, this indicates which mincriterion to use
 #' when conditioning on various numbers of features.
 #'
 #' @param minsplit Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.

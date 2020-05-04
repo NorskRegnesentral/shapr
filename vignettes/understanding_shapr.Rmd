@@ -271,7 +271,7 @@ explanation <- explain(
 print(explanation$dt)
 
 # Plot the resulting explanations for observations 1 and 6
-plot(explanation, plot_phi0 = FALSE, index_x_test = c(1,6))
+plot(explanation, plot_phi0 = FALSE, index_x_test = c(1, 6))
 ``` 
 
 The Gaussian approach is used as follows:
@@ -286,7 +286,7 @@ explanation_gaussian <- explain(
 )
 
 # Plot the resulting explanations for observations 1 and 6
-plot(explanation_gaussian, plot_phi0 = FALSE, index_x_test = c(1,6))
+plot(explanation_gaussian, plot_phi0 = FALSE, index_x_test = c(1, 6))
 ```
 
 The Gaussian copula approach is used as follows:
@@ -302,13 +302,13 @@ explanation_copula <- explain(
 
 # Plot the resulting explanations for observations 1 and 6, excluding 
 # the no-covariate effect
-plot(explanation_copula, plot_phi0 = FALSE, index_x_test = c(1,6))
+plot(explanation_copula, plot_phi0 = FALSE, index_x_test = c(1, 6))
 ```
 
 The conditional inference tree approach is used as follows:
 
 ```{r}
-# Use the Gaussian copula approach
+# Use the conditional inference tree approach
 explanation_ctree <- explain(
   x_test,
   approach = "ctree",
@@ -318,7 +318,51 @@ explanation_ctree <- explain(
 
 # Plot the resulting explanations for observations 1 and 6, excluding 
 # the no-covariate effect
-plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1,6))
+plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1, 6))
+```
+
+
+We can specify parameters used to build the conditional inference trees using the following manner. Default values based on @hothorn2006unbiasedis.  
+
+```{r}
+# Use the conditional inference tree approach
+# We can specify parameters used to building trees by specifying mincriterion, 
+# minsplit, minbucket
+
+explanation_ctree <- explain(
+  x_test,
+  approach = "ctree",
+  explainer = explainer,
+  prediction_zero = p,
+  mincriterion = 0.80, 
+  minsplit = 20,
+  minbucket = 20
+)
+
+# Default parameters (based on (Hothorn, 2006)):
+# mincriterion = 0.95
+# minsplit = 20
+# minbucket = 7
+
+```
+
+We can also specify multiple different mincriterion parameters to use when conditioning on different numbers of features. In this case, a vector of length = number of cols must be provided. 
+
+```{r}
+# Use the conditional inference tree approach
+# Specify a vector of mincriterions instead of just one
+# In this case, when conditioning on 1 or 2 features, use mincriterion = 0.95
+# When conditioning on 3 or 4 features, use mincriterion = 0.25
+
+explanation_ctree <- explain(
+  x_test,
+  approach = "ctree",
+  explainer = explainer,
+  prediction_zero = p,
+  mincriterion = c(0.25, 0.25, 0.95, 0.95)
+)
+
+
 ```
 
 
@@ -366,8 +410,9 @@ generating distribution by the arguments `mu` and `cov_mat`. If not specified, t
 ## Combined approach
 
 In addition to letting the user select one of the three aforementioned approaches for estimating the conditional 
-distribution of the data (i.e. `approach` equals either [`"gaussian"`](#gaussian), [`"copula"`](#copula) or 
-[`"empirical"`](#empirical)), the package allows the user to combine the three approaches. To simplify the usage, 
+distribution of the data (i.e. `approach` equals either [`"gaussian"`](#gaussian), [`"copula"`](#copula),
+[`"empirical"`](#empirical) or 
+[`"ctree"`](#ctree)) the package allows the user to combine the four approaches. To simplify the usage, 
 the flexibility is restricted such that the same approach is used when conditioning on the same number of features. 
 This is also in line @aas2019explaining[, Section 3.4]. 
 
@@ -387,7 +432,23 @@ regardless of the specified approach.
 # Use the combined approach
 explanation_combined <- explain(
   x_test,
-  approach = c("empirical","copula","gaussian","gaussian"),
+  approach = c("empirical", "copula", "gaussian", "gaussian"),
+  explainer = explainer,
+  prediction_zero = p
+)
+
+# Plot the resulting explanations for observations 1 and 6, excluding 
+# the no-covariate effect
+plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1,6))
+```
+
+As a second example using `"ctree"` for the first 3 features and `"empirical"` for the last:
+
+```{r}
+# Use the combined approach
+explanation_combined <- explain(
+  x_test,
+  approach = c("ctree", "ctree", "ctree", "empirical"),
   explainer = explainer,
   prediction_zero = p
 )

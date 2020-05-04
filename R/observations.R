@@ -319,6 +319,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
     features <- x$X$features[index_features]
   }
 
+  # this is depreciated - will be deleted later
   if (!is.null(x$comb_indici)) {
     stopifnot(x$comb_indici >= 0)
     stopifnot(x$comb_indici <= ncol(x$x_train))
