@@ -42,14 +42,9 @@ cooperating players.
 @kononenko2010efficient and later @lundberg2017unified proposed to use the Shapley value framework to explain 
 predictions by distributing the prediction value on the input features. 
 Established methods and implementations for explaining predictions with Shapley values like Shapley 
-<<<<<<< HEAD
-Sampling Values [@vstrumbelj2014explaining], SHAP/Kernel SHAP [@lundberg2017unified], and to some extent TreeSHAP 
-[@lundberg2018consistent], assume that the features are independent when approximating the Shapley values. 
-=======
 Sampling Values [@vstrumbelj2014explaining], SHAP/Kernel SHAP [@lundberg2017unified], and to some extent 
 TreeSHAP/TreeExplainer [@lundberg2018consistent; @Lundberg2020], assume that the features are independent when 
 approximating the Shapley values. 
->>>>>>> master
 The `R`-package `shapr`, however, implements the methodology proposed by @aas2019explaining, where predictions are explained while
 accounting for the dependence between the features, resulting in significantly more accurate approximations to the 
 Shapley values. 
@@ -63,22 +58,12 @@ combinatorial problem related to the Shapley value formula.
 The main methodological contribution of @aas2019explaining is three different methods to estimate certain conditional 
 expectation quantities, referred to as the  _empirical_, _Gaussian_ and _copula_ approach. Additionaly, the user has
 the option of combining the three approaches. 
-<<<<<<< HEAD
-The implementation supports explanation of models fitted with the functions natively: `stats::lm`, `stats::glm`, 
-`ranger::ranger`, `mgcv::gam` and `xgboost::xgboost`/`xgboost::xgb.train`. 
-Moreover, the package supports explanation of custom models by supplying two simple additional class functions.
-
-For reference, the package also includes a benchmark implementation of the original (independence assuming) version of
-Kernel SHAP [@lundberg2017unified], providing identical results to the "official" Kernel SHAP `Python` package `shap` 
-[@shapPythonpackage]. 
-=======
 The implementation supports explanation of models fitted with the following functions natively: `stats::lm` [@rCore], `stats::glm` [@rCore], 
 `ranger::ranger` [@ranger], `mgcv::gam` [@mgcv] and `xgboost::xgboost`/`xgboost::xgb.train` [@xgboost]. 
 Moreover, the package supports explanation of custom models by supplying two simple additional class functions.
 
 For reference, the package also includes a benchmark implementation of the original (independence assuming) version of
 Kernel SHAP [@lundberg2017unified], providing identical results to the "official" Kernel SHAP `Python` package `shap`. 
->>>>>>> master
 This allows the user to easily see the effect and importance of accounting for the feature dependence.
 
 The user interface in the package has largely been adopted from the `R`-package `lime` [@limeRpackage]. 
@@ -87,9 +72,6 @@ Then the output from `shapr` is provided to the `explain` function, along with t
 and the method that should be used to estimate the aforementioned conditional expectations.
 
 The majority of the code is in plain `R` [@rCore], while the most time consuming operations are coded in `C++` 
-<<<<<<< HEAD
-through the `Rcpp` package [@rcppRpackage] for computational speed up. 
-=======
 through the `Rcpp` package [@rcppRpackage] and `RcppArmadillo` package [@eddelbuettel2014rcpparmadillo] for computational speed up. 
 >>>>>>> master
 For RAM efficiency and computational speed up of typical bookeeping operations, we utilize the `data.table` 
