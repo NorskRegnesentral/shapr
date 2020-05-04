@@ -298,6 +298,7 @@ test_that("Test features (binary classification)", {
     expect_equal(features(l[[i]], cnms = colnames(train_df)), x_var)
   }
 
+
 })
 
 test_that("Test missing colnames", {
