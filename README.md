@@ -15,8 +15,8 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
-The most common task of machine learning is to train a model which is
-able to predict an unknown outcome (response variable) based on a set of
+The most common machine learning task is to train a model which is able
+to predict an unknown outcome (response variable) based on a set of
 known input variables/features. When using such models for real life
 applications, it is often crucial to understand why a certain set of
 features lead to exactly that prediction. However, explaining
@@ -57,7 +57,10 @@ The following methodology/features are currently implemented:
   - Accounting for feature dependence using the Mahalanobis distance
     based empirical (conditional) distribution approach of Aas, Jullum,
     and Løland (2019).
-  - Combine any of the three methods.
+  - Accounting for feature dependence using conditional inference trees
+    (Hothorn, Hornik, and Zeileis (2006)). This methodology has
+    currently been submitted.
+  - Combination any of the four methods.
   - Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai
     (1998) when optimizing the bandwidth parameter in the empirical
     (conditional) approach of Aas, Jullum, and Løland (2019).
@@ -102,7 +105,8 @@ support, use
 devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 ```
 
-If you would also like to build and view the vignette locally, use
+If you would also like to build and view the vignette locally,
+use
 
 ``` r
 devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
@@ -186,13 +190,9 @@ plot(explanation)
 ## Contribution
 
 All feedback and suggestions are very welcome. Details on how to
-<<<<<<< HEAD
-contribute can be found [here](./.github/CONTRIBUTING.md)
-=======
 contribute can be found [here](./.github/CONTRIBUTING.md). If you have
 any questions or comments, feel free to open an issue
 [here](https://github.com/NorskRegnesentral/shapr/issues).
->>>>>>> master
 
 Please note that the ‘shapr’ project is released with a [Contributor
 Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
@@ -200,7 +200,7 @@ you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references hanging-indent">
+<div id="refs" class="references">
 
 <div id="ref-aas2019explaining">
 
@@ -210,12 +210,22 @@ Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
 
 </div>
 
+<div id="ref-hothorn2006unbiased">
+
+Hothorn, Torsten, Kurt Hornik, and Achim Zeileis. 2006. “Unbiased
+Recursive Partitioning: A Conditional Inference Framework.” *Journal of
+Computational and Graphical Statistics* 15 (3). Taylor & Francis:
+651–74.
+
+</div>
+
 <div id="ref-hurvich1998smoothing">
 
 Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998.
 “Smoothing Parameter Selection in Nonparametric Regression Using an
 Improved Akaike Information Criterion.” *Journal of the Royal
-Statistical Society: Series B (Statistical Methodology)* 60 (2): 271–93.
+Statistical Society: Series B (Statistical Methodology)* 60 (2). Wiley
+Online Library: 271–93.
 
 </div>
 
@@ -247,7 +257,7 @@ Interpretable Model-Agnostic Explanations*.
 
 Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models
 and Individual Predictions with Feature Contributions.” *Knowledge and
-Information Systems* 41 (3): 647–65.
+Information Systems* 41 (3). Springer: 647–65.
 
 </div>
 
