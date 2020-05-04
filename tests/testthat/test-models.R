@@ -324,16 +324,16 @@ test_that("Test missing colnames", {
   )
 
   # missing colnames in model
-  expect_error(shapr(model_nonames,x_train))
+  expect_error(shapr(model_nonames, x_train))
 
   # missing colnames in training data
-  expect_error(shapr(model,x_train_nonames))
+  expect_error(shapr(model, x_train_nonames))
 
   # missing colnames in both model and training data
-  expect_error(shapr(model_nonames,x_train_nonames))
+  expect_error(shapr(model_nonames, x_train_nonames))
 
   # missing colnames in test data
-  explain <- shapr(x_train,model)
+  explain <- shapr(x_train, model)
   p <- mean(y_train)
   expect_error(
     explain(
@@ -345,6 +345,3 @@ test_that("Test missing colnames", {
   )
 
 })
-
-
-
