@@ -211,9 +211,9 @@ Details on this is found in @aas2019explaining.
 
 ## Conditional inference tree Approach
 
-Conditional inference trees (@hothorn2006unbiasedis) of tree fitting procedure that can handle mixed (i.e continuous, discrete, ordinal, categorical) features and both univariate and multivariate responses. We can use conditional inference trees (ctree) to model the conditional distribution, $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$, found in the Shapley methodology 
+Conditional inference trees (@hothorn2006unbiased) of tree fitting procedure that can handle mixed (i.e continuous, discrete, ordinal, categorical) features and both univariate and multivariate responses. We can use conditional inference trees (ctree) to model the conditional distribution, $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$, found in the Shapley methodology 
 
-We implement this method (called the `ctree' method) using the \verb|party| and \verb|partykit| packages (@partykit_package). 
+We implement this method (called the *ctree* method) using the *party* and *partykit* packages (@partykit_package). 
 
 <a id="ex"></a>
 
@@ -322,7 +322,7 @@ plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1, 6))
 ```
 
 
-We can specify parameters used to build the conditional inference trees using the following manner. Default values based on @hothorn2006unbiasedis.  
+We can specify parameters used to build the conditional inference trees using the following manner. Default values are based on @hothorn2006unbiased.  
 
 ```{r}
 # Use the conditional inference tree approach
@@ -339,20 +339,20 @@ explanation_ctree <- explain(
   minbucket = 20
 )
 
-# Default parameters (based on (Hothorn, 2006)):
+# Default parameters (based on (Hothorn, 2006)) are:
 # mincriterion = 0.95
 # minsplit = 20
 # minbucket = 7
 
 ```
 
-We can also specify multiple different mincriterion parameters to use when conditioning on different numbers of features. In this case, a vector of length = number of cols must be provided. 
+We can also specify multiple different mincriterion (1 minus the boundary for when to stop splitting nodes) parameters to use when conditioning on different numbers of features. In this case, a vector of length = number of features must be provided. 
 
 ```{r}
 # Use the conditional inference tree approach
 # Specify a vector of mincriterions instead of just one
-# In this case, when conditioning on 1 or 2 features, use mincriterion = 0.95
-# When conditioning on 3 or 4 features, use mincriterion = 0.25
+# In this case, when conditioning on 1 or 2 features, use mincriterion = 0.25
+# When conditioning on 3 or 4 features, use mincriterion = 0.95
 
 explanation_ctree <- explain(
   x_test,
