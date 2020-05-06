@@ -1,12 +1,12 @@
 library(testthat)
 library(shapr)
 
-context("test-explanation.R")
+testthat::context("test-explanation.R")
 
 # For using same Random numer generator as CircelCI (R version 3.5.x)
 RNGversion(vstr = "3.5.0")
 
-test_that("Test functions in explanation.R", {
+testthat::test_that("Test functions in explanation.R", {
 
   # Load data -----------
   data("Boston", package = "MASS")
@@ -158,60 +158,29 @@ test_that("Test functions in explanation.R", {
 
   # Ex 36: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
   ex_list[[36]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
-                           comb_indici = 2, comb_mincriterion = c(0.05, 0.95))
+                           mincriterion = c(0.05, 0.05, 0.95, 0.95))
 
   # Ex 37: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
   ex_list[[37]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
-                           comb_indici = 2, comb_mincriterion = c(0.95, 0.95))
+                           mincriterion = rep(0.95, 4))
 
-  # Ex 38: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
-  ex_list[[38]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
-                           comb_indici = 0, comb_mincriterion = c(0.95, 0.95))
-
-  # Ex 39: Test that ctree with comb_mincriterion equal to same probability twice gives the same as only passing one
+  # Ex 38: Test that ctree with mincriterion equal to same probability four times gives the same as only passing one
   # probability to mincriterion
   testthat::expect_equal(
     (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
-             comb_indici = 2, comb_mincriterion = c(0.95, 0.95)))$dt,
-    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
-             mincriterion = 0.95))$dt
-  )
-
-  # Ex 40: Test that ctree with comb_indici equal to zero gives the same as passing the same (second) probability four
-  # times (the second probability is used if comb_indici = 0)
-  testthat::expect_equal(
-    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
-             comb_indici = 0, comb_mincriterion = c(0.05, 0.95)))$dt,
-    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
-             mincriterion = rep(0.95, 4)))$dt
-  )
-
-  # Ex 41: Test that ctree with comb_mincriterion equal to same probability twice gives the same as only passing one
-  # probability to mincriterion
-  testthat::expect_equal(
-    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
-             comb_indici = 0, comb_mincriterion = c(0.05, 0.95)))$dt,
-    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
-             mincriterion = 0.95))$dt
-  )
-
-  # Ex 42: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion only once
-  testthat::expect_equal(
-    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
              mincriterion = rep(0.95, 4)))$dt,
-    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
+    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
              mincriterion = 0.95))$dt
   )
 
 
-  # Ex 43: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion only once
+  # Ex 39: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion only once
   testthat::expect_equal(
     (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
              mincriterion = c(rep(0.95, 2), rep(0.95, 2))))$dt,
     (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
              mincriterion = 0.95))$dt
   )
-
 
   # Checking that explanations with different paralellizations gives the same result (only unix systems!)
 
@@ -257,30 +226,30 @@ test_that("Test functions in explanation.R", {
   }
 
   # Checking that all explain objects produce the same as before
-  expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
+  testthat::expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
 
-  ### Additional test that only the produced shapley values are the same as before
+  ### Additional test to test that only the produced shapley values are the same as before
   fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")
   for (i in 1:length(ex_list)) {
-    expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+    testthat::expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
   }
 
   # Checks that an error is returned
-  expect_error(
+  testthat::expect_error(
     explain(1, explainer, approach = "gaussian", prediction_zero = p0)
   )
-  expect_error(
+  testthat::expect_error(
     explain(list(), explainer, approach = "gaussian", prediction_zero = p0)
   )
-  expect_error(
+  testthat::expect_error(
     explain(x_test, explainer, approach = "Gaussian", prediction_zero = p0)
   )
-  expect_error(
+  testthat::expect_error(
     explain(x_test, explainer, approach = rep("gaussian", ncol(x_test) + 1), prediction_zero = p0)
   )
 })
 
-test_that("Testing data input to explain in explanation.R", {
+testthat::test_that("Testing data input to explain in explanation.R", {
 
   # Setup for training data and explainer object
   data("Boston", package = "MASS")
@@ -336,7 +305,7 @@ test_that("Testing data input to explain in explanation.R", {
   # Expect silent for explainer 1, using correct, reordered and full data set, then identical results
   l <- list()
   for (i in seq_along(all_test_data)) {
-    l[[i]] <- expect_silent(
+    l[[i]] <- testthat::expect_silent(
       explain(
         all_test_data[[i]],
         all_explainers[[1]],
@@ -347,13 +316,13 @@ test_that("Testing data input to explain in explanation.R", {
     )
   }
   for (i in 2:length(l)) {
-    expect_equal(l[[i - 1]], l[[i]])
+    testthat::expect_equal(l[[i - 1]], l[[i]])
   }
 
   # Expect silent for explainer 2, using correct, reordered and bigger data set, then identical results
   l <- list()
   for (i in seq_along(all_test_data)) {
-    l[[i]] <- expect_silent(
+    l[[i]] <- testthat::expect_silent(
       explain(
         all_test_data[[i]],
         all_explainers[[2]],
@@ -364,13 +333,13 @@ test_that("Testing data input to explain in explanation.R", {
     )
   }
   for (i in 2:length(l)) {
-    expect_equal(l[[i - 1]], l[[i]])
+    testthat::expect_equal(l[[i - 1]], l[[i]])
   }
 
   # Expect silent for explainer 3, using correct, reordered and bigger data set, then identical results
   l <- list()
   for (i in seq_along(all_test_data)) {
-    l[[i]] <- expect_silent(
+    l[[i]] <- testthat::expect_silent(
       explain(
         all_test_data[[i]],
         all_explainers[[3]],
@@ -381,13 +350,13 @@ test_that("Testing data input to explain in explanation.R", {
     )
   }
   for (i in 2:length(l)) {
-    expect_equal(l[[i - 1]], l[[i]])
+    testthat::expect_equal(l[[i - 1]], l[[i]])
   }
 
   for (i in seq_along(all_explainers)) {
 
     # Expect error when test data misses used variable
-    expect_error(
+    testthat::expect_error(
       explain(
         xy_test_missing_lstat_df,
         all_explainers[[i]],
@@ -398,7 +367,7 @@ test_that("Testing data input to explain in explanation.R", {
     )
 
     # Expect error when test data misses column names
-    expect_error(
+    testthat::expect_error(
       explain(
         xy_test_full_df_no_colnames,
         all_explainers[[i]],

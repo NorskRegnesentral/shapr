@@ -209,11 +209,18 @@ Details on this is found in @aas2019explaining.
 
 <br>
 
-## Conditional inference tree Approach
+## Conditional Inference Tree Approach
 
-Conditional inference trees (@hothorn2006unbiased) of tree fitting procedure that can handle mixed (i.e continuous, discrete, ordinal, categorical) features and both univariate and multivariate responses. We can use conditional inference trees (ctree) to model the conditional distribution, $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$, found in the Shapley methodology 
+The previous three methods can only handle numerical data. This means that if the data contains categorical/discrete/ordinal features, the features first have to be one-hot encoded. When the number of levels/features is large, this is not feasible. An approach that handles mixed (i.e numerical, categorical, discrete, ordinal) features and both univariate and multivariate responses is conditional inference trees (@hothorn2006unbiased). 
 
-We implement this method (called the *ctree* method) using the *party* and *partykit* packages (@partykit_package). 
+Conditional inference trees is a special tree fitting procedure that relies on hypothesis tests to choose both the splitting feature and the splitting point. The tree fitting procedure is sequential: first a splitting feature is chosen (the feature that is least independent of the response), and then a splitting point is chosen for this feature. This decreases the chance of being biased towards features with many splits (@hothorn2006unbiased). 
+
+We use conditional inference trees (*ctree*) to model the conditional distribution, $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$, found in the Shapley methodology.
+First, we fit a different conditional inference tree to each conditional distribution.
+Once a tree is fit for given dependent features, the end node of $\boldsymbol{x}_{\mathcal{S}}^*$ is found. Then, we sample from this end node and use the resulting samples, 
+$\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K$, when approximating the conditional expectations as in Kernel SHAP. See @Redelmeier2020ctree for more details. 
+
+The conditional inference trees are fit using the *party* and *partykit* packages (@partykit_package). 
 
 <a id="ex"></a>
 
@@ -222,13 +229,13 @@ We implement this method (called the *ctree* method) using the *party* and *part
 # Examples
 
 `shapr` supports computation of Shapley values with any predictive model which takes a set of 
-numeric features and produces a numeric outcome. 
+numeric features and produces a numeric outcome. Note that the ctree method takes both numeric and categorical variables. Check under "Advanced usage" for an example of how this can be done. 
 
 The following example shows how a simple `xgboost` model is trained using the Boston Housing Data, 
-and how `shapr` can be used to explain the individual predictions. Note that empirical conditional 
-distribution approach is the default (i.e. `approach = "empirical"`), and that the Gaussian and 
-Gaussian copula approaches can be used instead by setting the argument `approach` to either 
-`"gaussian"` or `"copula"`. The ctree package can be used by setting the argument `approach` to `"ctree"`. 
+and how `shapr` can be used to explain the individual predictions. Note that the empirical conditional 
+distribution approach is the default (i.e. `approach = "empirical"`), and that the Gaussian, 
+Gaussian copula, and ctree approaches can be used instead by setting the argument `approach` to either 
+`"gaussian"`, `"copula"`, or `"ctree`".
 
 ```{r, warning=FALSE}
 library(xgboost)
@@ -439,7 +446,7 @@ explanation_combined <- explain(
 
 # Plot the resulting explanations for observations 1 and 6, excluding 
 # the no-covariate effect
-plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1,6))
+plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1, 6))
 ```
 
 As a second example using `"ctree"` for the first 3 features and `"empirical"` for the last:
@@ -452,13 +459,49 @@ explanation_combined <- explain(
   explainer = explainer,
   prediction_zero = p
 )
+```
+
+## Using ctree when features are mixed numerical and categorical
+
+```{r}
+x_var <- c("lstat", "rm", "dis", "indus")
+y_var <- "medv"
+
+# Convert two features as factors
+dt <- Boston[, c(x_var, y_var)]
+dt$rm <- as.factor(round(dt$rm/3))
+dt$dis <- as.factor(round(dt$dis/4))
+
+xy_train_cat <- dt[-1:-6, ]
+y_train_cat <- dt[-1:-6, y_var]
+x_train_cat <- dt[-1:-6, x_var]
+x_test_cat <- dt[1:6, x_var]
+
+
+# Fit a basic linear regression model to the training data
+model <- lm(medv ~ lstat + rm + dis + indus, data = xy_train_cat)
+
+# Prepare the data for explanation
+explainer <- shapr(x_train_cat, model)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+p <- mean(y_train_cat)
+
+# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
+explanation_categorical <- explain(
+  x_test_cat,
+  approach = "ctree",
+  explainer = explainer,
+  prediction_zero = p
+)
+# Note that nothing has to be specified to tell "ctree" that two of the features are 
+# cateogrical and two are numerical
 
 # Plot the resulting explanations for observations 1 and 6, excluding 
 # the no-covariate effect
-plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1,6))
+plot(explanation_categorical, plot_phi0 = FALSE, index_x_test = c(1, 6))
+
 ```
-
-
 
 ## Explain custom models
 

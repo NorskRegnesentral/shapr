@@ -222,7 +222,6 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #' p = length(x_test), sample = TRUE)
 #'
 #' @author Annabelle Redelmeier
-
 sample_ctree <- function(tree,
                          n_samples,
                          x_test,
@@ -240,7 +239,10 @@ sample_ctree <- function(tree,
 
     dependent_ind <- tree$dependent_ind
 
-    x_test_given <- x_test[, given_ind, drop = FALSE, with = FALSE]
+    x_test_given <- x_test[,
+                           given_ind,
+                           drop = FALSE,
+                           with = FALSE] #
     xp <- x_test_given
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
@@ -253,7 +255,7 @@ sample_ctree <- function(tree,
 
     } else {
       fit.nodes <- party::where(object = datact)
-      # newdata must be data.frame +have the same colnames as x
+      # newdata must be data.frame + have the same colnames as x
       pred.nodes <- party::where(object = datact, newdata = xp)
     }
 
@@ -295,7 +297,7 @@ sample_ctree <- function(tree,
                                               dependent_ind,
                                               drop = FALSE,
                                               with = FALSE])
-      # changed April 30
+
       givenDT <- data.table::data.table(x_test[1,
                                                given_ind,
                                                drop = FALSE,
@@ -314,16 +316,6 @@ sample_ctree <- function(tree,
 #' @param given_ind Numeric value. Indicates which features are conditioned on.
 #'
 #' @param x_train Numeric vector. Indicates the specific values of features for individual i.
-#'
-#' @param comb_indici Numeric value. (Optional) Contains the splitting point corresponding to where to change the
-#' \code{comb_mincriterion}.
-#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
-#' This is depreciated and will be deleted soon.
-#'
-#' @param comb_mincriterion Numeric vector. (Optional) Contains the different mincriterions to use for each
-#' combination.
-#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
-#' This is depreciated and will be deleted soon.
 #'
 #' @param mincriterion Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional
 #' independence tests.
@@ -353,14 +345,12 @@ sample_ctree <- function(tree,
 #' cov_mat <- cov(matrix(rnorm(n * m), n, m))
 #' x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
 #' given_ind <- c(4, 7)
-#' comb_indici <- NULL
-#' comb_mincriterion <- NULL
 #' mincriterion <- 0.95
 #' minsplit <- 20
 #' minbucket <- 7
 #' sample <- TRUE
-#' simulateAllTrees(given_ind = given_ind, x_train = x_train,comb_indici = comb_indici,
-#' comb_mincriterion = comb_mincriterion, mincriterion = mincriterion, minsplit = minsplit,
+#' simulateAllTrees(given_ind = given_ind, x_train = x_train,
+#' mincriterion = mincriterion, minsplit = minsplit,
 #' minbucket = minbucket, use_partykit = "on_error")
 #'
 #' @author Annabelle Redelmeier, Martin Jullum
@@ -368,8 +358,6 @@ sample_ctree <- function(tree,
 #' @export
 simulateAllTrees <- function(given_ind,
                              x_train,
-                             comb_indici,
-                             comb_mincriterion,
                              mincriterion,
                              minsplit,
                              minbucket,
@@ -379,53 +367,42 @@ simulateAllTrees <- function(given_ind,
   if (length(given_ind) %in% c(0, ncol(x_train))) {
     datact <- list()
   } else {
+    y <- x_train[, dependent_ind, with = FALSE]
+    x <- x_train[, given_ind, with = FALSE]
+    df <- data.table::data.table(cbind(y, x))
+    colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
 
-    # currently no tests made to make sure that comb_indici and
-    # comb_mincriterion both exist
-    # if only one is provided, no split is made.
-    if (!is.null(comb_indici) & !is.null(comb_mincriterion)) {
-      if (length(given_ind) <= comb_indici) {
-        mincriterion <- comb_mincriterion[1] # if alpha = 0.05 --> split tree if p < 0.05
-      } else {
-        mincriterion <- comb_mincriterion[2]
-      }
+    ynam <- paste0("Y", 1:ncol(y))
+    fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
+
+    # Run party:ctree if that works. If that fails, run partykit instead
+    if (use_partykit == "on_error") {
+      datact <- tryCatch(expr = {
+        party::ctree(fmla,
+                     data = df,
+                     controls = party::ctree_control(minbucket = minbucket,
+                                                     mincriterion = mincriterion))
+      }, error = function(ex) {
+        warning("party::ctree ran into the error: ", ex, "Using partykit::ctree instead!")
+        partykit::ctree(fmla,
+                        data = df,
+                        control = partykit::ctree_control(minbucket = minbucket,
+                                                          mincriterion = mincriterion,
+                                                          splitstat = "maximum"))
+      })
+    } else if (use_partykit == "never") {
+      datact <- party::ctree(fmla,
+                             data = df,
+                             controls = party::ctree_control(minbucket = minbucket,
+                                                             mincriterion = mincriterion))
+    } else {
+      warning("Using partykit::ctree instead of party::ctree!")
+      datact <- partykit::ctree(fmla,
+                                data = df,
+                                control = partykit::ctree_control(minbucket = minbucket,
+                                                                  mincriterion = mincriterion,
+                                                                  splitstat = "maximum"))
     }
-      y <- x_train[, dependent_ind, with = FALSE]
-      x <- x_train[, given_ind, with = FALSE]
-      df <- data.table::data.table(cbind(y, x))
-      colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
-
-      ynam <- paste0("Y", 1:ncol(y))
-      fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
-
-      # Run party:ctree if that works. If that fails, run partykit instead
-      if (use_partykit == "on_error") {
-        datact <- tryCatch(expr = {
-          party::ctree(fmla,
-                       data = df,
-                       controls = party::ctree_control(minbucket = minbucket,
-                                                       mincriterion = mincriterion))
-        }, error = function(ex) {
-          warning("party::ctree ran into the error: ", ex, "Using partykit::ctree instead!")
-          partykit::ctree(fmla,
-                          data = df,
-                          control = partykit::ctree_control(minbucket = minbucket,
-                                                            mincriterion = mincriterion,
-                                                            splitstat = "maximum"))
-        })
-      } else if (use_partykit == "never") {
-        datact <- party::ctree(fmla,
-                               data = df,
-                               controls = party::ctree_control(minbucket = minbucket,
-                                                               mincriterion = mincriterion))
-      } else {
-        warning("Using partykit::ctree instead of party::ctree!")
-        datact <- partykit::ctree(fmla,
-                                  data = df,
-                                  control = partykit::ctree_control(minbucket = minbucket,
-                                                                    mincriterion = mincriterion,
-                                                                    splitstat = "maximum"))
-      }
   }
   return(list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind))
 }

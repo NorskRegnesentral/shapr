@@ -1,11 +1,11 @@
 library(testthat)
 library(shapr)
 
-context("test-shapley.R")
+testthat::context("test-shapley.R")
 
 RNGversion(vstr = "3.5.0")
 
-test_that("Basic test functions in shapley.R", {
+testthat::test_that("Basic test functions in shapley.R", {
 
   # Load data -----------
   data("Boston", package = "MASS")
@@ -18,11 +18,11 @@ test_that("Basic test functions in shapley.R", {
   # Prepare the data for explanation
   explainer <- shapr(x_train, model)
 
-  expect_known_value(explainer, file = "test_objects/shapley_explainer_obj.rds")
+  testthat::expect_known_value(explainer, file = "test_objects/shapley_explainer_obj.rds")
 })
 
 
-test_that("Testing data input to shapr in shapley.R", {
+testthat::test_that("Testing data input to shapr in shapley.R", {
 
   data("Boston", package = "MASS")
 
@@ -61,16 +61,16 @@ test_that("Testing data input to shapr in shapley.R", {
   for (i in seq_along(l)) {
 
     # Expect silent
-    expect_silent(shapr(xy_train_full_df, l[[i]]))
+    testthat::expect_silent(shapr(xy_train_full_df, l[[i]]))
 
     # Expect message that feature_labels is ignored
-    expect_message(shapr(xy_train_full_df, l[[i]], feature_labels = x_var_sub))
-    expect_message(shapr(xy_train_full_df, l[[i]], feature_labels = x_var))
+    testthat::expect_message(shapr(xy_train_full_df, l[[i]], feature_labels = x_var_sub))
+    testthat::expect_message(shapr(xy_train_full_df, l[[i]], feature_labels = x_var))
 
     # Expect error, giving error message that indicates that x misses columns used by the model
-    expect_error(shapr(xy_train_missing_lstat_df, l[[i]]))
+    testthat::expect_error(shapr(xy_train_missing_lstat_df, l[[i]]))
 
     # Expect error when x_train don't have column names
-    expect_error(shapr(xy_train_full_df_no_colnames, l[[i]], feature_labels = x_var_sub))
+    testthat::expect_error(shapr(xy_train_full_df_no_colnames, l[[i]], feature_labels = x_var_sub))
   }
 })

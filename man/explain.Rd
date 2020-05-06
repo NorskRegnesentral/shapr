@@ -43,8 +43,6 @@ explain(x, explainer, approach, prediction_zero, ...)
   explainer,
   approach,
   prediction_zero,
-  comb_indici = NULL,
-  comb_mincriterion = NULL,
   mincriterion = 0.95,
   minsplit = 20,
   minbucket = 7,
@@ -109,16 +107,6 @@ when \code{approach = "gaussian"}.}
 \item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. \code{NULL} means it is estimated from the data if needed
 (in the Gaussian approach).}
-
-\item{comb_indici}{Numeric value. (Optional) Contains the splitting point corresponding to where to change the
-\code{comb_mincriterion}.
-If \code{NULL}, the \code{mincriterion} is constant for every combination.
-This is a depreciated method and will be deleted later.}
-
-\item{comb_mincriterion}{Numeric vector. (Optional) Contains the different mincriterions to use for each
-combination.
-If \code{NULL}, the \code{mincriterion} is constant for every combination.
-This is a depreciated method and will be deleted later.}
 
 \item{mincriterion}{Numeric value or vector where length of vector is the number of features in model.
 Value is equal to 1 - alpha where alpha is the nominal level of the conditional

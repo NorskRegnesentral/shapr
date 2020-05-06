@@ -311,35 +311,20 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
-  if (!is.null(seed)) set.seed(seed)
 
+  if (!is.null(seed)) set.seed(seed)
   if (is.null(index_features)) {
     features <- x$X$features
   } else {
     features <- x$X$features[index_features]
   }
 
-  # this is depreciated - will be deleted later
-  if (!is.null(x$comb_indici)) {
-    stopifnot(x$comb_indici >= 0)
-    stopifnot(x$comb_indici <= ncol(x$x_train))
-    stopifnot(length(x$comb_indici) == 1)
-    stopifnot(!is.null(x$comb_mincriterion))
-  }
-  if (!is.null(x$comb_mincriterion)) {
-    stopifnot(!is.null(x$comb_indici))
-    stopifnot(length(x$comb_mincriterion) == 2)
-    stopifnot(all(x$comb_mincriterion <= 1))
-    stopifnot(all(x$comb_mincriterion >= 0))
-  }
 
   # this is a list of all 2^M trees (where number of features = M)
   all_trees <- parallel::mclapply(
     X = features,
     FUN = simulateAllTrees,
     x_train = x$x_train,
-    comb_indici = x$comb_indici,
-    comb_mincriterion = x$comb_mincriterion,
     mincriterion = x$mincriterion,
     minsplit = x$minsplit,
     minbucket = x$minbucket,
@@ -369,7 +354,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
 
-  ## only return unique dt
+  # only return unique dt
   dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id")]
   setnames(dt2, "V1", "w")
 

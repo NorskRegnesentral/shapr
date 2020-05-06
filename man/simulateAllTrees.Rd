@@ -7,8 +7,6 @@
 simulateAllTrees(
   given_ind,
   x_train,
-  comb_indici,
-  comb_mincriterion,
   mincriterion,
   minsplit,
   minbucket,
@@ -19,16 +17,6 @@ simulateAllTrees(
 \item{given_ind}{Numeric value. Indicates which features are conditioned on.}
 
 \item{x_train}{Numeric vector. Indicates the specific values of features for individual i.}
-
-\item{comb_indici}{Numeric value. (Optional) Contains the splitting point corresponding to where to change the
-\code{comb_mincriterion}.
-If \code{NULL}, the \code{mincriterion} is constant for every combination.
-This is depreciated and will be deleted soon.}
-
-\item{comb_mincriterion}{Numeric vector. (Optional) Contains the different mincriterions to use for each
-combination.
-If \code{NULL}, the \code{mincriterion} is constant for every combination.
-This is depreciated and will be deleted soon.}
 
 \item{mincriterion}{Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional
 independence tests.
@@ -60,14 +48,12 @@ mu <- rep(1, m)
 cov_mat <- cov(matrix(rnorm(n * m), n, m))
 x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
 given_ind <- c(4, 7)
-comb_indici <- NULL
-comb_mincriterion <- NULL
 mincriterion <- 0.95
 minsplit <- 20
 minbucket <- 7
 sample <- TRUE
-simulateAllTrees(given_ind = given_ind, x_train = x_train,comb_indici = comb_indici,
-comb_mincriterion = comb_mincriterion, mincriterion = mincriterion, minsplit = minsplit,
+simulateAllTrees(given_ind = given_ind, x_train = x_train,
+mincriterion = mincriterion, minsplit = minsplit,
 minbucket = minbucket, use_partykit = "on_error")
 
 }

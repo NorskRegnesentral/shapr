@@ -290,16 +290,6 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 }
 
 
-#' @param comb_indici Numeric value. (Optional) Contains the splitting point corresponding to where to change the
-#' \code{comb_mincriterion}.
-#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
-#' This is a depreciated method and will be deleted later.
-#'
-#' @param comb_mincriterion Numeric vector. (Optional) Contains the different mincriterions to use for each
-#' combination.
-#' If \code{NULL}, the \code{mincriterion} is constant for every combination.
-#' This is a depreciated method and will be deleted later.
-#'
 #' @param mincriterion Numeric value or vector where length of vector is the number of features in model.
 #' Value is equal to 1 - alpha where alpha is the nominal level of the conditional
 #' independence tests.
@@ -318,7 +308,6 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #'
 #' @export
 explain.ctree <- function(x, explainer, approach, prediction_zero,
-                          comb_indici = NULL, comb_mincriterion = NULL,
                           mincriterion = 0.95, minsplit = 20,
                           minbucket = 7, sample = TRUE, ...) {
   # Checks input argument
@@ -327,10 +316,8 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
   }
 
   # Add arguments to explainer object
-  explainer$x_test <- data.table::data.table(explainer_x_test(x, explainer$feature_labels))
+  explainer$x_test <- explainer_x_test_dt(x, explainer$feature_labels)
   explainer$approach <- approach
-  explainer$comb_indici <- comb_indici
-  explainer$comb_mincriterion <- comb_mincriterion
   explainer$mincriterion <- mincriterion
   explainer$minsplit <- minsplit
   explainer$minbucket <- minbucket
@@ -433,6 +420,21 @@ explainer_x_test <- function(x_test, feature_labels) {
 
   return(as.matrix(x))
 }
+
+#' @keywords internal
+explainer_x_test_dt <- function(x_test, feature_labels) {
+
+  # Remove variables that were not used for training
+  # Same as explainer_x_test() but doesn't convert to a matrix
+  # Useful for ctree method which sometimes takes categorical features
+  x <- data.table::as.data.table(x_test)
+  cnms_remove <- setdiff(colnames(x), feature_labels)
+  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
+  data.table::setcolorder(x, feature_labels)
+
+  return(x)
+}
+
 
 #' @rdname explain
 #' @name explain
