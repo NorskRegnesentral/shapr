@@ -66,7 +66,10 @@ explanation$dt
 #    to simplify later code (this needs to be carefully checked as I may need both version in different functions)
 # 5. merge feature_group with feature_exact with the one exception?
 # 6. Fix plot.shapr Currently, does not work properly.
-
+# 7. Test the approach on the dnb data, and see what kind of results you get for the two cases we
+#    use in the paper
+# 8. Try out group shapley as a way to explain categorical data by grouping one-hot-encoded variables,
+#    and using the empirical approach to estimate the necassary conditional explectations.
 
 # Finally we plot the resulting explanations
 plot(explanation)
