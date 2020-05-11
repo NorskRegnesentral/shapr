@@ -35,8 +35,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          remotes::install_deps(dependencies = TRUE, build = FALSE)
-          remotes::install_cran("lintr")
+          remotes::install_deps(dependencies = TRUE, type = "binary")
+          remotes::install_cran("lintr", type = "binary")
         shell: Rscript {0}
 
       - name: Lint
