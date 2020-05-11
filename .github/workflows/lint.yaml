@@ -18,6 +18,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r@master
 
+      - uses: r-lib/actions/setup-pandoc@master
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
