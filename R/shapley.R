@@ -39,14 +39,14 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, group = NULL) {
   if (is.null(group)){
     W <- weight_matrix_cpp(
       features = X[["features"]],
-      m = X[.N][["n_features"]], # Reversing 2^m (generalized version of X[.N][["n_features"]], also working for groups)
+      m = X[.N][["n_features"]],
       n = X[, .N],
       w = w
     )
   } else {
     W <- weight_matrix_cpp(
       features = X[["groups"]],
-      m = as.integer(log2(X[, .N])), # Reversing 2^m (generalized version of X[.N][["n_features"]], also working for groups)
+      m = X[.N][["n_groups"]],
       n = X[, .N],
       w = w
     )
@@ -168,7 +168,7 @@ shapr <- function(x,
   }
 
   # Get all combinations ----------------
-  dt_combinations <- feature_combinations( # MJMJ: This builds the dt_combinations. The naming and structure of this is key below.
+  dt_combinations <- feature_combinations(
     m = explainer$n_features,
     exact = explainer$exact,
     n_combinations = n_combinations,

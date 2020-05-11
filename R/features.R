@@ -57,6 +57,16 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     )
   }
 
+  # Not supported for m > 30
+  if (length(group)>15) {
+    stop(paste0(
+      "For computational reasons, we are currently not supporting group wise Shapley values \n",
+      "for more than 12 groups. Please reduce the number of groups."
+    )
+    )
+  }
+
+
   if (!exact && n_combinations > (2^m - 2) & is.null(group)) {
     n_combinations <- 2^m - 2
     exact <- TRUE
@@ -76,6 +86,10 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       dt[, p := NULL]
     }
   } else {
+    if(exact){
+      cat(paste0("Only exact = TRUE is supported for group wise Shapley values.\n",
+      "Changing  to exact = TRUE"))
+    }
     dt <- feature_group(group, weight_zero_m)
   }
 

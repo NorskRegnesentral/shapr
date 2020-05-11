@@ -25,7 +25,7 @@ model <- xgboost::xgboost(
   verbose = FALSE
 )
 
-group <- list(c(1,2,3),
+group1 <- list(c(1,2,3),
               c(4,5),
               c(6))
 
@@ -35,17 +35,24 @@ group2 <- list(c(1),
 
 
 # Prepare the data for explanation
-explainer <- shapr(x_train, model, group = group)
+explainer0 <- shapr(x_train, model, group = NULL)
+explainer1 <- shapr(x_train, model, group = group1)
+explainer2 <- shapr(x_train, model, group = group2)
+
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
+explanation0 <- explain(x_test, explainer0, approach = "empirical", prediction_zero = p0)
+explanation1 <- explain(x_test, explainer1, approach = "empirical", prediction_zero = p0)
+explanation2 <- explain(x_test, explainer2, approach = "empirical", prediction_zero = p0)
 
 # Printing the Shapley values for the test data
-explanation$dt
+explanation0$dt
+explanation1$dt
+explanation2$dt
 
 
 explanation <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p0)
@@ -60,11 +67,9 @@ explanation$dt
 
 # TODO in the end
 # 1. Add possibility for the group list to include the column names instead, then to be transformed to a list as below
-# 2. Only allow the group variant to work with the exact method
 # 3. decide whether to sort the group ids or not (is it necessary anywhere in the code?)
 # 4. Consider chainging the m/n_features argument to length(group) if is.null(group) is FALSE early on
 #    to simplify later code (this needs to be carefully checked as I may need both version in different functions)
-# 5. merge feature_group with feature_exact with the one exception?
 # 6. Fix plot.shapr Currently, does not work properly.
 # 7. Test the approach on the dnb data, and see what kind of results you get for the two cases we
 #    use in the paper
