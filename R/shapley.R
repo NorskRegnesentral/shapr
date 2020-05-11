@@ -23,11 +23,12 @@ shapley_weights <- function(m, N, n_features, weight_zero_m = 10^6) {
 #' @param normalize_W_weights Logical. Whether to normalize the weights for the combinations to sum to 1 for
 #' increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations
 #' except combination \code{1} and \code{2^m}.
+#' @param is_groupwise Logical. Indicating whether group wise Shapley values are to be computed.
 #'
 #' @return Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-weight_matrix <- function(X, normalize_W_weights = TRUE, group = NULL) {
+weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 
   # Fetch weights
   w <- X[["shapley_weight"]]
@@ -36,7 +37,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, group = NULL) {
     w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
   }
 
-  if (is.null(group)){
+  if (!is_groupwise){
     W <- weight_matrix_cpp(
       features = X[["features"]],
       m = X[.N][["n_features"]],
@@ -144,6 +145,21 @@ shapr <- function(x,
   # Checks input argument
   feature_labels <- features(model, colnames(x), feature_labels)
   explainer$n_features <- length(feature_labels)
+  is_custom_model <- !(class(model)[1] %in% get_native_methods())
+  is_groupwise <- !is.null(group)
+
+  ### Check group input
+  if (is_groupwise){
+    check_groups(feature_labels,group,is_custom_model)
+    # Make group names if not exisiting
+    if (is.null(names(group))){
+      names(group) <- paste0("group",seq(length(group)))
+    }
+    # Make group list with numeric feature indicators
+    group_num <- lapply(group,FUN = function(x){match(x,feature_labels)})
+  } else {
+    group_numm <- NULL
+  }
 
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)
@@ -156,31 +172,20 @@ shapr <- function(x,
   # Checks model and features
   explainer$p <- predict_model(model, head(x_train))
 
-  # Group handling
-  if (!is.null(group)){
-    if (is.null(names(group))){
-      group_names <- paste0("group",seq(length(group)))
-    } else {
-      group_names <- names(group)
-    }
-  } else {
-    group_names <- NULL
-  }
-
   # Get all combinations ----------------
   dt_combinations <- feature_combinations(
     m = explainer$n_features,
     exact = explainer$exact,
     n_combinations = n_combinations,
     weight_zero_m = 10^6,
-    group = group
+    group_num = group_num
   )
 
   # Get weighted matrix ----------------
-  weighted_mat <- weight_matrix( # MJMJ: Here I need the group list
+  weighted_mat <- weight_matrix(
     X = dt_combinations,
     normalize_W_weights = TRUE,
-    group = group
+    is_groupwise = is_groupwise
   )
 
   ## Get feature matrix ---------
@@ -197,7 +202,8 @@ shapr <- function(x,
   explainer$x <- NULL
   explainer$p <- NULL
   explainer$group <- group
-  explainer$group_names <- group_names
+  explainer$group_num <- group_num
+  explainer$is_groupwise <- is_groupwise
 
   attr(explainer, "class") <- c("explainer", "list")
 

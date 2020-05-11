@@ -42,12 +42,12 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   # Setup
   data.table::setkeyv(dt, c("id", "id_combination"))
-  feature_names <- colnames(explainer$x_test)
+  feature_names <- explainer$feature_labels
 
-  if(is.null(explainer$group)){
+  if(!explainer$is_groupwise){
     shap_names <- feature_names
   } else {
-    shap_names <- explainer$group_names
+    shap_names <- names(explainer$group)
   }
 
   # Check that the number of test observations equals max(id)

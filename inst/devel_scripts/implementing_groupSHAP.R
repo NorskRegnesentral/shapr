@@ -33,15 +33,21 @@ group2 <- list(c(1),
               c(4,5),
               c(6,2,3))
 
+group1_names = lapply(group1,function(x){x_var[x]})
+group2_names = lapply(group2,function(x){x_var[x]})
+
 
 # Prepare the data for explanation
 explainer0 <- shapr(x_train, model, group = NULL)
 explainer1 <- shapr(x_train, model, group = group1)
 explainer2 <- shapr(x_train, model, group = group2)
 
-
 # Spedifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
+
+explainer1_names <- shapr(x_train, model, group = group1_names)
+explanation1_names <- explain(x_test, explainer1_names, approach = "empirical", prediction_zero = p0)
+
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
@@ -66,15 +72,15 @@ explanation$dt
 
 
 # TODO in the end
-# 1. Add possibility for the group list to include the column names instead, then to be transformed to a list as below
-# 3. decide whether to sort the group ids or not (is it necessary anywhere in the code?)
-# 4. Consider chainging the m/n_features argument to length(group) if is.null(group) is FALSE early on
-#    to simplify later code (this needs to be carefully checked as I may need both version in different functions)
 # 6. Fix plot.shapr Currently, does not work properly.
 # 7. Test the approach on the dnb data, and see what kind of results you get for the two cases we
 #    use in the paper
 # 8. Try out group shapley as a way to explain categorical data by grouping one-hot-encoded variables,
 #    and using the empirical approach to estimate the necassary conditional explectations.
+# 9. Create/update tests whereever the behavior is different for groups.
+# 10. Generally need to check the order of x_train and x_test. Should reorder everything to feature_labels
+# and then before returning results in the end, bring it back to original of x_test.
 
 # Finally we plot the resulting explanations
+
 plot(explanation)
