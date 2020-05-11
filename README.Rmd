@@ -31,7 +31,7 @@ However, explaining predictions from complex, or seemingly simple, machine learn
 
 Shapley values is the only prediction explanation framework with a solid theoretical foundation (@lundberg2017unified). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. 
 Popular methods like Shapley Sampling Values (@vstrumbelj2014explaining), SHAP/Kernel SHAP (@lundberg2017unified), and to some extent TreeSHAP (@lundberg2018consistent), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. @aas2019explaining extends and improves the Kernel SHAP method of @lundberg2017unified to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. 
-[See the paper for details](https://arxiv.org/abs/1903.10464).
+[See the paper for details](https://arxiv.org/abs/1903.10464). 
 
 This package implements the methodology of @aas2019explaining.
 
