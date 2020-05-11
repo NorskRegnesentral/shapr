@@ -18,6 +18,11 @@ combinations equals \code{2^ncol(x)}.}
 
 \item{feature_labels}{Character vector. The labels/names of the features used for training the model.
 Only applicable if you are using a custom model. Otherwise the features in use are extracted from \code{model}.}
+
+\item{group}{List. If \code{NULL} regular feature wise Shapley values are computed.
+If provided, group wise Shapley values are computed. \code{group} then has length equal to
+the number of groups. The list element contains character vectors with the features included
+in each of the different groups.}
 }
 \value{
 Named list that contains the following items:

@@ -119,7 +119,8 @@ group_fun_helper <- function(y,m,group_num){
 #' @keywords internal
 feature_group <- function(group_num, weight_zero_m = 10^6) {
 
-  features <- id_combination <- n_features <- shapley_weight <- N <- NULL # due to NSE notes in R CMD check
+  # due to NSE notes in R CMD check
+  features <- id_combination <- n_features <- shapley_weight <- N <- groups <- n_groups <- NULL
 
   m <- length(group_num)
   dt <- data.table::data.table(id_combination = seq(2^m))
@@ -141,7 +142,7 @@ check_groups = function(feature_labels,group,is_custom_model){
 
   # Check that all features in group are in feature labels or used by model
   if(!all(group_features %in% feature_labels)){
-    missing_group_feature = group_feature[!(group_features %in% feature_labels)]
+    missing_group_feature = group_features[!(group_features %in% feature_labels)]
     if(is_custom_model){
       stop(paste0("group feature(s) ",paste0(missing_group_feature,collapse =  ", ")," are not\n",
                   "among feature_labels. Delete from group or adjust feature_labels."))
@@ -155,7 +156,7 @@ check_groups = function(feature_labels,group,is_custom_model){
   if(!all(feature_labels %in% group_features)){
     missing_features = feature_labels[!(feature_labels %in% group_features)]
     if(is_custom_model){
-      stop(paste0("The feature(s) ",paste0(missing_feature,collapse =  ", ")," are not\n",
+      stop(paste0("The feature(s) ",paste0(missing_features,collapse =  ", ")," are not\n",
                   "among the group features. Add them to group or adjust feature_labels."))
     } else {
       stop(paste0("The feature(s) ",paste0(missing_features,collapse =  ", ")," are not\n",
