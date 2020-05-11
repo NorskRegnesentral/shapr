@@ -298,4 +298,50 @@ test_that("Test features (binary classification)", {
     expect_equal(features(l[[i]], cnms = colnames(train_df)), x_var)
   }
 
+
+})
+
+test_that("Test missing colnames", {
+
+  # Data -----------
+  data("Boston", package = "MASS")
+  x_var <- c("lstat", "rm", "dis", "indus")
+  y_var <- "medv"
+  x_train <- as.matrix(tail(Boston[, x_var], -6))
+  y_train <- tail(Boston[, y_var], -6)
+  x_test <- as.matrix(head(Boston[, x_var]))
+
+  x_train_nonames <- x_train
+  colnames(x_train_nonames) <- NULL
+  x_test_nonames <- x_test
+  colnames(x_test_nonames) <- NULL
+
+  model <- xgboost::xgboost(
+    data = x_train, label = y_train, nrounds = 3, verbose = FALSE
+    )
+  model_nonames <- xgboost::xgboost(
+    data = x_train_nonames, label = y_train, nrounds = 3, verbose = FALSE
+  )
+
+  # missing colnames in model
+  expect_error(shapr(model_nonames, x_train))
+
+  # missing colnames in training data
+  expect_error(shapr(model, x_train_nonames))
+
+  # missing colnames in both model and training data
+  expect_error(shapr(model_nonames, x_train_nonames))
+
+  # missing colnames in test data
+  explain <- shapr(x_train, model)
+  p <- mean(y_train)
+  expect_error(
+    explain(
+      x_test_nonames,
+      approach = "empirical",
+      explainer = explainer,
+      prediction_zero = p
+    )
+  )
+
 })
