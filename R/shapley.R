@@ -158,7 +158,7 @@ shapr <- function(x,
     # Make group list with numeric feature indicators
     group_num <- lapply(group,FUN = function(x){match(x,feature_labels)})
   } else {
-    group_numm <- NULL
+    group_num <- NULL
   }
 
   # Converts to data.table, otherwise copy to x_train  --------------
