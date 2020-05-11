@@ -166,6 +166,11 @@ shapr <- function(x,
     m = explainer$n_features
   )
 
+  # Updating explainer$exact as done in feature_combinations
+  if (!explainer$exact && n_combinations > (2^explainer$n_features - 2)) {
+    explainer$exact <- TRUE
+  }
+
   explainer$S <- feature_matrix
   explainer$W <- weighted_mat
   explainer$X <- dt_combinations
