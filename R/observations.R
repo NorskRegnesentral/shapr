@@ -64,9 +64,9 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 
   # Extracts zero and full conditional to be handled separately
   n_feats_vec <- rowSums(S)
-  dt_melt[,n_features:=n_feats_vec[index_s]]
-  dt_melt_sep <- dt_melt[n_features %in% c(0,ncol(x_test))]
-  dt_melt <- dt_melt[!(n_features %in% c(0,ncol(x_test)))]
+  dt_melt[, n_features := n_feats_vec[index_s]]
+  dt_melt_sep <- dt_melt[n_features %in% c(0, ncol(x_test))]
+  dt_melt <- dt_melt[!(n_features %in% c(0, ncol(x_test)))]
 
   # Remove training data with small weight
   knms <- c("index_s", "weight")
@@ -94,17 +94,17 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   dt_p[, w := dt_melt[["weight"]]]
 
   # Handles zero and full conditioning separately
-  dt_p_sep <- unique(dt_melt_sep[,.(index_s)])
-  if (nrow(dt_p_sep)>0){
-    dt_p_sep <- cbind(x_test,dt_p_sep,w=as.numeric(1))
-    setnames(dt_p_sep,"index_s","id_combination")
+  dt_p_sep <- unique(dt_melt_sep[, .(index_s)])
+  if (nrow(dt_p_sep) > 0) {
+    dt_p_sep <- cbind(x_test, dt_p_sep, w = as.numeric(1))
+    setnames(dt_p_sep, "index_s", "id_combination")
 
-    dt_p <- rbind(dt_p,dt_p_sep)
+    dt_p <- rbind(dt_p, dt_p_sep)
   }
-  setkey(dt_p,"id_combination")
+  setkey(dt_p, "id_combination")
 
   # Adding n_features back in
-  dt_p[,n_features:=n_feats_vec[id_combination]]
+  dt_p[, n_features := n_feats_vec[id_combination]]
 
 
   return(dt_p)
@@ -251,7 +251,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt <- merge(dt,x$X[,.(id_combination,n_features)],by = "id_combination")
+  dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
   dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
   return(dt)
 }
@@ -289,7 +289,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt <- merge(dt,x$X[,.(id_combination,n_features)],by = "id_combination")
+  dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
   dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
   return(dt)
 }

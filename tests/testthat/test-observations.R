@@ -46,7 +46,7 @@ test_that("Test observation_impute", {
   expect_error(observation_impute(tail(W_kernel, -1), S, x_train, x_test))
 
   # Test single result
-  cnms <- c(colnames(x_train), "id_combination", "w","n_features")
+  cnms <- c(colnames(x_train), "id_combination", "w", "n_features")
   expect_true(data.table::is.data.table(r))
   expect_true(ncol(r) == m + 3)
   expect_true(all(colnames(r) == cnms))
