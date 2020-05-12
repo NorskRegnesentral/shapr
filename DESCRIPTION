@@ -35,7 +35,6 @@ Suggests:
     xgboost,
     mgcv,
     testthat, 
-    covr,
     maptree,
     corrplot,
     pcaPP,
