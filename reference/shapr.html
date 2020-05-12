@@ -161,7 +161,7 @@ Only applicable if you are using a custom model. Otherwise the features in use a
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Named list that contains the following items:</p><dl'>
+    <p>Named list that contains the following items:</p><dl>
   <dt>exact</dt><dd><p>Boolean. Equals <code>TRUE</code> if <code>n_combinations = NULL</code> or
   <code>n_combinations &lt; 2^ncol(x)</code>, otherwise <code>FALSE</code>.</p></dd>
   <dt>n_features</dt><dd><p>Positive integer. The number of columns in <code>x</code></p></dd>
@@ -201,7 +201,7 @@ model) and <code>n_combinations</code> is also present in the returned object.</
 <span class='no'>df2</span> <span class='kw'>&lt;-</span> <span class='no'>df</span>[, <span class='no'>x_var</span>]
 <span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'>shapr</span>(<span class='no'>df2</span>, <span class='no'>model</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='fl'>1e3</span>)
 
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>explainer</span>$<span class='no'>X</span>))</div><div class='output co'>#&gt; [1] 568</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>explainer</span>$<span class='no'>X</span>))</div><div class='output co'>#&gt; [1] 564</div><div class='input'>
 <span class='co'># Example using approximation where n_combinations &gt; 2^m</span>
 <span class='no'>x_var</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"lstat"</span>, <span class='st'>"rm"</span>, <span class='st'>"dis"</span>, <span class='st'>"indus"</span>)
 <span class='no'>y_var</span> <span class='kw'>&lt;-</span> <span class='st'>"medv"</span>
@@ -225,7 +225,7 @@ model) and <code>n_combinations</code> is also present in the returned object.</
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

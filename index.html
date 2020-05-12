@@ -87,9 +87,9 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="shapr" class="section level1">
+<div id="shapr-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#shapr" class="anchor"></a>shapr <img src="reference/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px">
+<a href="#shapr-" class="anchor"></a>shapr <img src="reference/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px">
 </h1></div>
 <!-- badges: start -->
 
@@ -125,11 +125,11 @@ Current methodological restrictions:
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>To install the current development version, use</p>
-<div class="sourceCode"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/reexports.html">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>)</pre></div>
+<div class="sourceCode" id="cb1"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"NorskRegnesentral/shapr"</span>)</pre></div>
 <p>If you would like to install all packages of the models we currently support, use</p>
-<div class="sourceCode"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/reexports.html">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>, <span class="kw">dependencies</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"NorskRegnesentral/shapr"</span>, <span class="kw">dependencies</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
 <p>If you would also like to build and view the vignette locally, use</p>
-<div class="sourceCode"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/reexports.html">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>, <span class="kw">dependencies</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">build_vignettes</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<div class="sourceCode" id="cb3"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"NorskRegnesentral/shapr"</span>, <span class="kw">dependencies</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">build_vignettes</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span>(<span class="st">"understanding_shapr"</span>, <span class="st">"shapr"</span>)</pre></div>
 <p>You can always check out the latest version of the vignette <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html">here</a>.</p>
 </div>
@@ -138,7 +138,7 @@ Current methodological restrictions:
 <a href="#example" class="anchor"></a>Example</h2>
 <p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.</p>
 <p>The following example shows how a simple <code>xgboost</code> model is trained using the <em>Boston Housing Data</em>, and how <code>shapr</code> explains the individual predictions.</p>
-<div class="sourceCode"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">xgboost</span>)
+<div class="sourceCode" id="cb4"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">xgboost</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">shapr</span>)
 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"Boston"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"MASS"</span>)
@@ -194,7 +194,7 @@ Current methodological restrictions:
 <span class="co">#&gt; 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531</span>
 
 <span class="co"># Finally we plot the resulting explanations</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">explanation</span>)</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">explanation</span>)</pre></div>
 <p><img src="reference/figures/README-basic_example-1.png" width="100%"></p>
 </div>
 <div id="contribution" class="section level2">
@@ -207,57 +207,24 @@ Current methodological restrictions:
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references hanging-indent">
-
 <div id="ref-aas2019explaining">
-
-Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining
-Individual Predictions When Features Are Dependent: More Accurate
-Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
-
+<p>Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>arXiv Preprint arXiv:1903.10464</em>.</p>
 </div>
-
 <div id="ref-hurvich1998smoothing">
-
-Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998.
-“Smoothing Parameter Selection in Nonparametric Regression Using an
-Improved Akaike Information Criterion.” *Journal of the Royal
-Statistical Society: Series B (Statistical Methodology)* 60 (2): 271–93.
-
+<p>Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998. “Smoothing Parameter Selection in Nonparametric Regression Using an Improved Akaike Information Criterion.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 60 (2): 271–93.</p>
 </div>
-
 <div id="ref-lundberg2018consistent">
-
-Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent
-Individualized Feature Attribution for Tree Ensembles.” *arXiv Preprint
-arXiv:1802.03888*.
-
+<p>Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent Individualized Feature Attribution for Tree Ensembles.” <em>arXiv Preprint arXiv:1802.03888</em>.</p>
 </div>
-
 <div id="ref-lundberg2017unified">
-
-Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to
-Interpreting Model Predictions.” In *Advances in Neural Information
-Processing Systems*, 4765–74.
-
+<p>Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.</p>
 </div>
-
 <div id="ref-lime_api">
-
-Pedersen, Thomas Lin, and Michaël Benesty. 2019. *Lime: Local
-Interpretable Model-Agnostic Explanations*.
-<https:>.
-
-</https:>
+<p>Pedersen, Thomas Lin, and Michaël Benesty. 2019. <em>Lime: Local Interpretable Model-Agnostic Explanations</em>. <a href="https://CRAN.R-project.org/package=lime" class="uri">https://CRAN.R-project.org/package=lime</a>.</p>
 </div>
-
 <div id="ref-vstrumbelj2014explaining">
-
-Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models
-and Individual Predictions with Feature Contributions.” *Knowledge and
-Information Systems* 41 (3): 647–65.
-
+<p>Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models and Individual Predictions with Feature Contributions.” <em>Knowledge and Information Systems</em> 41 (3): 647–65.</p>
 </div>
-
 </div>
 </div>
 </div>
@@ -299,7 +266,6 @@ Information Systems* 41 (3): 647–65.
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://circleci.com/gh/NorskRegnesentral/shapr"><img src="https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg" alt="CircleCI"></a></li>
 <li><a href="https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check"><img src="https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
@@ -315,7 +281,7 @@ Information Systems* 41 (3): 647–65.
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>
