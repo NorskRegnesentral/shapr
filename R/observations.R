@@ -93,10 +93,12 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 
   # Handles zero and full conditioning separately
   dt_p_sep <- unique(dt_melt_sep[,.(index_s)])
-  dt_p_sep <- cbind(x_test,dt_p_sep,w=as.numeric(1))
-  setnames(dt_p_sep,"index_s","id_combination")
+  if (nrow(dt_p_sep)>0){
+    dt_p_sep <- cbind(x_test,dt_p_sep,w=as.numeric(1))
+    setnames(dt_p_sep,"index_s","id_combination")
 
-  dt_p <- rbind(dt_p,dt_p_sep)
+    dt_p <- rbind(dt_p,dt_p_sep)
+  }
   setkey(dt_p,"id_combination")
 
   # Adding n_features back in
