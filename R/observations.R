@@ -96,11 +96,12 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   dt_p_sep <- cbind(x_test,dt_p_sep,w=as.numeric(1))
   setnames(dt_p_sep,"index_s","id_combination")
 
-  org_colorder <- names(dt_p)
-
   dt_p <- rbind(dt_p,dt_p_sep)
   setkey(dt_p,"id_combination")
-  setcolorder(dt_p,org_colorder)
+
+  # Adding n_features back in
+  dt_p[,n_features:=n_feats_vec[id_combination]]
+
 
   return(dt_p)
 }
