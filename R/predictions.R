@@ -55,7 +55,7 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   # Predictions
   dt[!(n_features %in% c(0, ncol(explainer$x_test))),
-     p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
+     p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
   dt[n_features == 0, p_hat := prediction_zero]
   p_all <- predict_model(explainer$model, newdata = explainer$x_test)
   dt[n_features == ncol(explainer$x_test), p_hat := p_all[id]]
