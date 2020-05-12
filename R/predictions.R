@@ -32,7 +32,7 @@
 prediction <- function(dt, prediction_zero, explainer) {
 
   # Checks on input data
-  id <- w <- id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
+  id <- w <- id_combination <- p_hat <- n_features <- NULL # due to NSE notes in R CMD check
   stopifnot(
     data.table::is.data.table(dt),
     !is.null(dt[["id"]]),

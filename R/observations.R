@@ -44,7 +44,9 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   stopifnot(nrow(W_kernel) == nrow(x_train))
   stopifnot(ncol(W_kernel) == nrow(S))
   stopifnot(all(S %in% c(0, 1)))
-  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- NULL # due to NSE notes in R CMD check
+
+  # due to NSE notes in R CMD check
+  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- n_features <- NULL
 
   # Find weights for all combinations and training data
   dt <- data.table::as.data.table(W_kernel)
@@ -220,7 +222,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
 #' @export
 prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+  id <- id_combination <- w <- n_features <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -258,7 +260,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 #' @export
 prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+  id <- id_combination <- w <- n_features <- NULL # due to NSE notes in R CMD check
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)
