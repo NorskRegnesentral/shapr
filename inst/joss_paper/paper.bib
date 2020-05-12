@@ -1,7 +1,7 @@
 @article{aas2019explaining,
-  title={Explaining individual predictions when features are dependent: More accurate approximations to Shapley values},
+  title={Explaining individual predictions when features are dependent: More accurate approximations to {S}hapley values},
   author={Aas, Kjersti and Jullum, Martin and L{\o}land, Anders},
-  journal={arXiv preprint arXiv:1903.10464},
+  journal={Arxiv preprint arxiv:1903.10464},
   year={2019}
 }
 
@@ -16,7 +16,7 @@
 @article{kononenko2010efficient,
   title={An efficient explanation of individual classifications using game theory},
   author={{\v{S}}trumbelj, Erik and Kononenko, Igor},
-  journal={Journal of Machine Learning Research},
+  journal={Journal of machine learning research},
   volume={11},
   number={Jan},
   pages={1--18},
@@ -38,7 +38,7 @@
 @article{lundberg2018consistent,
   title={Consistent individualized feature attribution for tree ensembles},
   author={Lundberg, Scott M and Erion, Gabriel G and Lee, Su-In},
-  journal={arXiv preprint arXiv:1802.03888},
+  journal={Arxiv preprint arxiv:1802.03888},
   year={2018}
 }
 
@@ -56,8 +56,8 @@
 
 @Article{Shapley53,
 author={Lloyd S. Shapley},
-title={{A Value for N-Person Games}},
-journal={{Contributions to the Theory of Games}},
+title={A value for n-person games},
+journal={Contributions to the theory of games},
 volume=2,
 year = 1953,
 pages ={307--317}
@@ -84,7 +84,7 @@ doi = {10.1214/aoms/1177728190}
 
 
   @Manual{limeRpackage,
-    title = {lime: Local Interpretable Model-Agnostic Explanations},
+    title = {{lime}: Local Interpretable Model-Agnostic Explanations},
     author = {Thomas Lin Pedersen and Michaël Benesty},
     year = {2019},
     note = {R package version 0.5.1},
@@ -92,18 +92,10 @@ doi = {10.1214/aoms/1177728190}
   }
 
 
-  @Manual{shapPythonpackage,
-    title = {shap: A unified approach to explain the output of any machine learning model},
-    author = {Scott Lundberg},
-    year = {2019},
-    note = {Python package version 0.32.1},
-    url = {https://pypi.org/project/shap/},
-  }
-
   @Article{rcppRpackage,
     title = {{Rcpp}: Seamless {R} and {C++} Integration},
     author = {Dirk Eddelbuettel and Romain Fran\c{c}ois},
-    journal = {Journal of Statistical Software},
+    journal = {Journal of statistical software},
     year = {2011},
     volume = {40},
     number = {8},
@@ -113,22 +105,74 @@ doi = {10.1214/aoms/1177728190}
   }
 
   @Manual{rCore,
-    title = {R: A Language and Environment for Statistical Computing},
+    title = {R: A language and environment for statistical computing},
     author = {{R Core Team}},
-    organization = {R Foundation for Statistical Computing},
-    address = {Vienna, Austria},
+    organization = {R foundation for statistical computing},
     year = {2019},
     url = {https://www.R-project.org/},
   }
 
   @Manual{datatableRpackage,
-    title = {data.table: Extension of `data.frame`},
+    title = {{data.table}: Extension of `data.frame`},
     author = {Matt Dowle and Arun Srinivasan},
     year = {2019},
     note = {R package version 1.12.2},
     url = {https://CRAN.R-project.org/package=data.table},
   }
 
+@article{Lundberg2020,
+  author    = {Scott M. Lundberg and
+               Gabriel G. Erion and
+               Hugh Chen and
+               Alex DeGrave and
+               Jordan M. Prutkin and
+               Bala Nair and
+               Ronit Katz and
+               Jonathan Himmelfarb and
+               Nisha Bansal and
+               Su{-}In Lee},
+  title     = {From local explanations to global understanding with explainable {AI} for trees},
+  journal   = {Nature machine intelligence},
+  volume    = {2},
+  pages     = {56-67},
+  year      = {2020},
+  doi       = {10.1038/s42256-019-0138-9}
+}
 
+@article{eddelbuettel2014rcpparmadillo,
+  title={RcppArmadillo: {A}ccelerating {R} with high-performance {C}++ linear algebra},
+  author={Eddelbuettel, Dirk and Sanderson, Conrad},
+  journal={Computational statistics \& data analysis},
+  volume={71},
+  pages={1054--1063},
+  year={2014},
+  publisher={Elsevier},
+  doi = {10.1016/j.csda.2013.02.005}
+}
 
+@Article{ranger,
+    title = {{ranger}: A Fast Implementation of Random Forests for High Dimensional Data in {C++} and {R}},
+    author = {Marvin N. Wright and Andreas Ziegler},
+    journal = {Journal of statistical software},
+    year = {2017},
+    volume = {77},
+    number = {1},
+    pages = {1--17},
+    doi = {10.18637/jss.v077.i01},
+}
 
+@Manual{xgboost,
+    title = {xgboost: Extreme Gradient Boosting},
+    author = {Tianqi Chen and Tong He and Michael Benesty and Vadim Khotilovich and Yuan Tang and Hyunsu Cho and Kailong Chen and Rory Mitchell and Ignacio Cano and Tianyi Zhou and Mu Li and Junyuan Xie and Min Lin and Yifeng Geng and Yutian Li},
+    year = {2019},
+    note = {R package version 0.90.0.2},
+    url = {https://CRAN.R-project.org/package=xgboost},
+  }
+
+@Book{mgcv,
+    title = {Generalized Additive Models: An Introduction with {R}},
+    year = {2017},
+    author = {S.N Wood},
+    edition = {2},
+    publisher = {Chapman and Hall/CRC},
+  }

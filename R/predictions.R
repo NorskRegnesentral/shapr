@@ -32,7 +32,7 @@
 prediction <- function(dt, prediction_zero, explainer) {
 
   # Checks on input data
-  id <- w <- id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
+  id <- w <- id_combination <- p_hat <- n_features <- NULL # due to NSE notes in R CMD check
   stopifnot(
     data.table::is.data.table(dt),
     !is.null(dt[["id"]]),
@@ -54,10 +54,11 @@ prediction <- function(dt, prediction_zero, explainer) {
   stopifnot(nrow(explainer$x_test) == dt[, max(id)])
 
   # Predictions
-  dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
-  dt[id_combination == 1, p_hat := prediction_zero]
+  dt[!(n_features %in% c(0, ncol(explainer$x_test))),
+     p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
+  dt[n_features == 0, p_hat := prediction_zero]
   p_all <- predict_model(explainer$model, newdata = explainer$x_test)
-  dt[id_combination == max(id_combination), p_hat := p_all[id]]
+  dt[n_features == ncol(explainer$x_test), p_hat := p_all[id]]
 
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]

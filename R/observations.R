@@ -44,7 +44,9 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   stopifnot(nrow(W_kernel) == nrow(x_train))
   stopifnot(ncol(W_kernel) == nrow(S))
   stopifnot(all(S %in% c(0, 1)))
-  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- NULL # due to NSE notes in R CMD check
+
+  # due to NSE notes in R CMD check
+  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- n_features <- NULL
 
   # Find weights for all combinations and training data
   dt <- data.table::as.data.table(W_kernel)
@@ -59,6 +61,12 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
     variable.factor = FALSE
   )
   dt_melt[, index_s := nms_vec[id_combination]]
+
+  # Extracts zero and full conditional to be handled separately
+  n_feats_vec <- rowSums(S)
+  dt_melt[, n_features := n_feats_vec[index_s]]
+  dt_melt_sep <- dt_melt[n_features %in% c(0, ncol(x_test))]
+  dt_melt <- dt_melt[!(n_features %in% c(0, ncol(x_test)))]
 
   # Remove training data with small weight
   knms <- c("index_s", "weight")
@@ -84,6 +92,20 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   data.table::setnames(dt_p, colnames(x_train))
   dt_p[, id_combination := dt_melt[["index_s"]]]
   dt_p[, w := dt_melt[["weight"]]]
+
+  # Handles zero and full conditioning separately
+  dt_p_sep <- unique(dt_melt_sep[, .(index_s)])
+  if (nrow(dt_p_sep) > 0) {
+    dt_p_sep <- cbind(x_test, dt_p_sep, w = as.numeric(1))
+    setnames(dt_p_sep, "index_s", "id_combination")
+
+    dt_p <- rbind(dt_p, dt_p_sep)
+  }
+  setkey(dt_p, "id_combination")
+
+  # Adding n_features back in
+  dt_p[, n_features := n_feats_vec[id_combination]]
+
 
   return(dt_p)
 }
@@ -200,7 +222,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
 #' @export
 prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+  id <- id_combination <- w <- n_features <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -229,7 +251,8 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
+  dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
@@ -237,7 +260,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
 #' @export
 prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+  id <- id_combination <- w <- n_features <- NULL # due to NSE notes in R CMD check
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
   if (!is.null(seed)) set.seed(seed)
@@ -266,7 +289,8 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
+  dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 

@@ -290,7 +290,7 @@ features.lm <- function(x, cnms, feature_labels = NULL) {
   if (!is.null(feature_labels)) message_features_labels()
 
   nms <- tail(all.vars(x$terms), -1)
-  if (!all(nms %in% cnms)) error_feature_labels()
+  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
 
   return(nms)
 }
@@ -301,7 +301,7 @@ features.glm <- function(x, cnms, feature_labels = NULL) {
   if (!is.null(feature_labels)) message_features_labels()
 
   nms <- tail(all.vars(x$terms), -1)
-  if (!all(nms %in% cnms)) error_feature_labels()
+  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
 
   return(nms)
 }
@@ -323,7 +323,7 @@ features.ranger <- function(x, cnms, feature_labels = NULL) {
   }
   nms <- unique_features(nms)
 
-  if (!all(nms %in% cnms)) error_feature_labels()
+  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
 
   return(nms)
 
@@ -336,7 +336,7 @@ features.gam <- function(x, cnms, feature_labels = NULL) {
 
   nms <- tail(all.vars(x$terms), -1)
 
-  if (!all(nms %in% cnms)) error_feature_labels()
+  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
 
   return(nms)
 }
@@ -348,7 +348,7 @@ features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
 
   nms <- x$feature_names
 
-  if (!all(nms %in% cnms)) error_feature_labels()
+  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
 
   return(nms)
 }
@@ -370,7 +370,8 @@ error_feature_labels <- function() {
     paste0(
       "\nThere is mismatch between the column names in x and\n",
       "the returned elements from features(model). All elements\n",
-      "from features(model) should be present in colnames(x).\n",
+      "from features(model) should be present in colnames(x),\n",
+      "and they cannot be NULL.\n",
       "For more information see ?shapr::features"
     )
   )
