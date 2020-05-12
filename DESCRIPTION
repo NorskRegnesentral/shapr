@@ -21,7 +21,7 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Language: en-US
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Depends: R (>= 3.5.0)
 Imports: 
     stats,
@@ -35,9 +35,6 @@ Suggests:
     xgboost,
     mgcv,
     testthat, 
-    maptree,
-    corrplot,
-    pcaPP,
     knitr,
     rmarkdown,
     pkgdown,
