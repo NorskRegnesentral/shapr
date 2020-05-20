@@ -35,7 +35,8 @@
 #'
 #' # Subsample of combinations
 #' x <- shapr:::feature_combinations(m = 13, n_combinations = 1e3)
-feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL) {
+feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6,
+                                 group_num = NULL) {
 
   # Force user to use a natural number for n_combinations if m > 12
   if (m > 12 & is.null(n_combinations) & is.null(group_num)) {
@@ -55,16 +56,15 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     stop(paste0(
       "Currently we are not supporting cases where the number of features is greater than 30\n",
       "for feature wise Shapley values (i.e. without grouping)."
-      )
+    )
     )
   }
 
   # Not supported for m > 30
-  if (length(group_num)>15) {
+  if (length(group_num) > 15) {
     stop(paste0(
       "For computational reasons, we are currently not supporting group wise Shapley values \n",
-      "for more than 12 groups. Please reduce the number of groups."
-    )
+      "for more than 12 groups. Please reduce the number of groups.")
     )
   }
 
@@ -90,7 +90,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   } else {
     if(!exact){
       cat(paste0("Only exact = TRUE is supported for group wise Shapley values.\n",
-      "Changing  to exact = TRUE"))
+                 "Changing  to exact = TRUE"))
     }
     dt <- feature_group(group_num, weight_zero_m)
   }
@@ -99,7 +99,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
 }
 
 #' @keywords internal
-group_fun <- function(x,group_num){
+group_fun <- function(x, group_num){
   if (length(x) != 0){
     unlist(group_num[x])
   } else {
@@ -108,7 +108,7 @@ group_fun <- function(x,group_num){
 }
 
 #' @keywords internal
-group_fun_helper <- function(y,m,group_num){
+group_fun_helper <- function(y, m, group_num){
   if (y !=0){
     utils::combn(x = m, m = y, FUN = group_fun, group_num = group_num, simplify = FALSE)
   } else {
@@ -137,17 +137,17 @@ feature_group <- function(group_num, weight_zero_m = 10^6) {
 }
 
 #' @keywords internal
-check_groups = function(feature_labels,group,is_custom_model){
+check_groups = function(feature_labels, group, is_custom_model){
   group_features <- unlist(group)
 
   # Check that all features in group are in feature labels or used by model
   if(!all(group_features %in% feature_labels)){
     missing_group_feature = group_features[!(group_features %in% feature_labels)]
     if(is_custom_model){
-      stop(paste0("group feature(s) ",paste0(missing_group_feature,collapse =  ", ")," are not\n",
+      stop(paste0("group feature(s) ", paste0(missing_group_feature,collapse =  ", ")," are not\n",
                   "among feature_labels. Delete from group or adjust feature_labels."))
     } else {
-      stop(paste0("group feature(s) ",paste0(missing_group_feature,collapse =  ", ")," are not\n",
+      stop(paste0("group feature(s) ", paste0(missing_group_feature,collapse =  ", ")," are not\n",
                   "used by the model. Delete from group or adjust model."))
     }
   }
@@ -156,10 +156,10 @@ check_groups = function(feature_labels,group,is_custom_model){
   if(!all(feature_labels %in% group_features)){
     missing_features = feature_labels[!(feature_labels %in% group_features)]
     if(is_custom_model){
-      stop(paste0("The feature(s) ",paste0(missing_features,collapse =  ", ")," are not\n",
+      stop(paste0("The feature(s) ",paste0(missing_features, collapse =  ", ")," are not\n",
                   "among the group features. Add them to group or adjust feature_labels."))
     } else {
-      stop(paste0("The feature(s) ",paste0(missing_features,collapse =  ", ")," are not\n",
+      stop(paste0("The feature(s) ",paste0(missing_features, collapse =  ", ")," are not\n",
                   "among the group features. Add them to group or adjust model."))
     }
   }
@@ -172,7 +172,6 @@ check_groups = function(feature_labels,group,is_custom_model){
   }
 
 }
-
 
 #' @keywords internal
 feature_exact <- function(m, weight_zero_m = 10^6) {

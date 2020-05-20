@@ -37,22 +37,38 @@ plot.shapr <- function(x,
   id <- phi <- NULL # due to NSE notes in R CMD check
 
   # melting Kshap
-  cnms <- colnames(x$x_test)
   KshapDT <- data.table::copy(x$dt)
   KshapDT[, id := .I]
   meltKshap <- data.table::melt(KshapDT, id.vars = "id", value.name = "phi")
   meltKshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
-  # Converting and melting Xtest
-  desc_mat <- format(x$x_test, digits = digits)
-  for (i in 1:ncol(desc_mat)) {
-    desc_mat[, i] <- paste0(cnms[i], " = ", desc_mat[, i])
-  }
-  desc_dt <- data.table::as.data.table(cbind(none = "none", desc_mat))
-  melt_desc_dt <- data.table::melt(desc_dt[, id := .I], id.vars = "id", value.name = "description")
+  # Converting and melting xtest
+  if(ncol(x$dt) > ncol(x$x_test) & !grepl("group", names(x$dt)[2], fixed = TRUE)){ # if not grouping
+    cnms <- colnames(x$x_test)
 
-  # Data table for plotting
-  plotting_dt <- merge(meltKshap, melt_desc_dt)
+    desc_mat <- format(x$x_test, digits = digits)
+    for (i in 1:ncol(desc_mat)) {
+      desc_mat[, i] <- paste0(cnms[i], " = ", desc_mat[, i])
+    }
+    desc_dt <- data.table::as.data.table(cbind(none = "none", desc_mat))
+    melt_desc_dt <- data.table::melt(desc_dt[, id := .I], id.vars = "id", value.name = "description")
+
+    # Data table for plotting
+    plotting_dt <- merge(meltKshap, melt_desc_dt)
+  } else{
+    cnms <- colnames(x$dt)[-1]
+
+    desc_mat <- format(x$dt[,-1], digits = digits)
+    for (i in 1:ncol(desc_mat)) {
+      desc_mat[, i] <- paste0(cnms[i]) #  " = ", desc_mat[, i]
+    }
+    desc_dt <- data.table::as.data.table(cbind(none = "none", desc_mat))
+    melt_desc_dt <- data.table::melt(desc_dt[, id := .I], id.vars = "id", value.name = "description")
+
+    # Data table for plotting
+    plotting_dt <- merge(meltKshap, melt_desc_dt)
+
+  }
 
   # Adding the predictions
   predDT <- data.table::data.table(id = KshapDT$id, pred = x$p)

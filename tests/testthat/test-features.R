@@ -1,4 +1,5 @@
 library(shapr)
+library(testthat)
 
 context("test-features.R")
 
@@ -8,22 +9,24 @@ test_that("Test feature_combinations", {
   m <- 3
   exact <- TRUE
   w <- 10^6
-  x1 <- feature_combinations(m = m, exact = exact, weight_zero_m = w)
-  x2 <- feature_exact(m, w)
+  x1 <- shapr:::feature_combinations(m = m, exact = exact, weight_zero_m = w)
+  x2 <- shapr:::feature_exact(m, w)
 
   # Example 2 -----------
   m <- 10
   exact <- FALSE
   n_combinations <- 50
   w <- 10^6
+
   set.seed(1)
-  y1 <- feature_combinations(
+  y1 <- shapr:::feature_combinations(
     m = m,
     exact = exact,
     n_combinations = n_combinations,
     weight_zero_m = w)
+
   set.seed(1)
-  y2 <- feature_not_exact(
+  y2 <- shapr:::feature_not_exact(
     m = m,
     n_combinations = n_combinations,
     weight_zero_m = w
@@ -36,7 +39,7 @@ test_that("Test feature_combinations", {
   n_combinations <- 1e4
   w <- 10^6
   set.seed(1)
-  y3 <- feature_combinations(
+  y3 <- shapr:::feature_combinations(
     m = m,
     exact = exact,
     n_combinations = n_combinations,
@@ -163,5 +166,93 @@ test_that("Test helper_feature", {
   expect_equal(classes, unname(sapply(x, typeof)))
   expect_equal(x[["sample_frequence"]], x2)
   expect_equal(x[["is_duplicate"]], x3)
+
+})
+
+test_that("Test feature_group", {
+
+  data("Boston", package = "MASS")
+  x_var <- c("lstat", "rm","dis",
+             "indus")
+  y_var <- "medv"
+  x_train <- as.matrix(tail(Boston[, x_var], -6))
+  y_train <- tail(Boston[, y_var], -6)
+  x_test <- as.matrix(head(Boston[, x_var], 6))
+
+  # Fitting a basic xgboost model to the training data
+  model <- xgboost::xgboost(
+    data = x_train,
+    label = y_train,
+    nround = 20,
+    verbose = FALSE
+  )
+
+  feature_labels <- shapr:::features(model, colnames(x_train), feature_labels = NULL)
+
+  ## 1
+  group1 <- list(c(1), c(2), c(3), c(4))
+  group1_names = lapply(group1, function(x){x_var[x]})
+  group_num <- lapply(group1_names, FUN = function(x){match(x, feature_labels)})
+
+  expect_silent(feature_group(group_num, weight_zero_m = 10^6))
+  expect_silent(dim(feature_group(group_num, weight_zero_m = 10^6))[1] == 16)
+  expect_error(feature_group())
+
+
+  ## 2
+  group2 <- list(c(1, 2, 3, 4))
+  group2_names = lapply(group2, function(x){x_var[x]})
+  group_num <- lapply(group2_names, FUN = function(x){match(x, feature_labels)})
+  expect_silent(feature_group(group_num, weight_zero_m = 10^6))
+  expect_silent(dim(feature_group(group_num, weight_zero_m = 10^6))[1] == 2)
+
+
+})
+
+test_that("Test check_group", {
+  data("Boston", package = "MASS")
+
+  x_var <- c("lstat", "rm","dis",
+             "indus","nox",
+             "tax")
+  y_var <- "medv"
+
+  x_train <- as.matrix(tail(Boston[, x_var], -6))
+  y_train <- tail(Boston[, y_var], -6)
+  x_test <- as.matrix(head(Boston[, x_var], 6))
+
+  group1 <- list(c(1,2,3),
+                 c(4,5),
+                 c(6))
+
+  group1_names = lapply(group1, function(x){x_var[x]})
+
+
+  # Fitting a basic xgboost model to the training data
+  model <- xgboost::xgboost(
+    data = x_train,
+    label = y_train,
+    nround = 20,
+    verbose = FALSE
+  )
+
+  feature_labels <- shapr:::features(model, colnames(x_train), feature_labels = NULL)
+  group <- group1_names
+  is_custom_model <- FALSE
+  expect_silent(shapr:::check_groups(feature_labels, group, is_custom_model))
+
+  group <- group1
+  expect_error(shapr:::check_groups(feature_labels, group, is_custom_model))
+
+
+  group2 <- list(c(1,2,3),
+                 c(4,1),
+                 c(6))
+
+  group2_names = lapply(group2, function(x){x_var[x]})
+  group <- group2_names
+  expect_error(shapr:::check_groups(feature_labels, group, is_custom_model))
+
+
 
 })

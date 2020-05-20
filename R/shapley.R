@@ -155,10 +155,10 @@ shapr <- function(x,
 
   ### Check group input
   if (is_groupwise){
-    check_groups(feature_labels,group,is_custom_model)
+    check_groups(feature_labels, group, is_custom_model)
     # Make group names if not exisiting
     if (is.null(names(group))){
-      names(group) <- paste0("group",seq(length(group)))
+      names(group) <- paste0("group", seq(length(group)))
     }
     # Make group list with numeric feature indicators
     group_num <- lapply(group,FUN = function(x){match(x,feature_labels)})

@@ -82,7 +82,7 @@ test_that("Test functions in explanation.R", {
   approach <- c(rep("gaussian", 2), rep("empirical", 2))
   ex_list[[17]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
-  # Ex 8: Explain combined II - all empirical
+  # Ex 18: Explain combined II - all empirical
   approach <- c(rep("empirical", 4))
   ex_list[[18]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
@@ -109,6 +109,74 @@ test_that("Test functions in explanation.R", {
   expect_error(
     explain(x_test, explainer, approach = rep("gaussian", ncol(x_test) + 1), prediction_zero = p0)
   )
+})
+
+test_that("Test functions related to groups in explanation.R", {
+
+  # Load data -----------
+  data("Boston", package = "MASS")
+  x_var <- c("lstat", "rm", "dis", "indus")
+  y_var <- "medv"
+
+  y_train <- tail(Boston[, y_var], 50)
+  x_test <- as.matrix(head(Boston[, x_var], 2))
+
+  # Prepare the data for explanation. Path needs to be relative to testthat directory in the package
+  explainer0 <- readRDS(file = "test_objects/shapley_explainer_obj.rds")
+  explainer1 <- readRDS(file = "test_objects/shapley_explainer_group1_obj.rds")
+  explainer2 <- readRDS(file = "test_objects/shapley_explainer_group2_obj.rds")
+
+  # Creating list with lots of different explainer objects
+  p0 <- mean(y_train)
+
+  ex_list <- list()
+
+  # Ex 1: Explain predictions (gaussian)
+  ex_list[[1]] <- explain(x_test, explainer1, approach = "gaussian", prediction_zero = p0)
+
+  # Ex 2: Explain predictions (empirical)
+  ex_list[[2]] <- explain(x_test, explainer1, approach = "empirical", prediction_zero = p0)
+
+  # Ex 3: Explain predictions (copula)
+  ex_list[[3]] <- explain(x_test, explainer1, approach = "copula", prediction_zero = p0)
+
+  # Ex 4: Explain predictions (gaussian, empirical)
+  # AR: this doesn't work!
+  #ex_list[[4]] <- explain(x_test, explainer1, approach = c("gaussian", "empirical"), prediction_zero = p0)
+
+  # Ex 5: Explain predictions (copula)
+  ex_list[[4]] <- explain(x_test, explainer2, approach = "gaussian", prediction_zero = p0)
+
+
+  # Checking that all explain objects produce the same as before
+  expect_known_value(ex_list, file = "test_objects/explanation_explain_group_obj_list.rds")
+
+  ### Additional test that only the produced shapley values are the same as before
+  fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_group_obj_list.rds")
+  for (i in 1:length(ex_list)) {
+    expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+  }
+
+  # Checks that an error is returned
+  expect_error(
+    explain(1, explainer1, approach = "gaussian", prediction_zero = p0)
+  )
+  expect_error(
+    explain(list(), explainer1, approach = "gaussian", prediction_zero = p0)
+  )
+  expect_error(
+    explain(x_test, explainer1, approach = "Gaussian", prediction_zero = p0)
+  )
+  expect_error( # AR: maybe this shouldn't be an error?
+    explain(x_test, explainer1, approach = c("gaussian", "empirical"), prediction_zero = p0)
+  )
+
+  # Here we check if not grouping (explanation0) and grouping but only 1-dimensional (explanation2)
+  # gives the same answer
+  explanation0 <- explain(x_test, explainer0, approach = "empirical", prediction_zero = p0)
+  explanation2 <- explain(x_test, explainer2, approach = "empirical", prediction_zero = p0)
+  expect_equal(explainer0$dt, explainer2$dt)
+
 })
 
 test_that("Testing data input to explain in explanation.R", {
@@ -239,4 +307,145 @@ test_that("Testing data input to explain in explanation.R", {
       )
     )
   }
+})
+
+test_that("Testing data input to explain related to groups in explanation.R", {
+
+  # Setup for training data and explainer object
+  data("Boston", package = "MASS")
+  x_var <- c("lstat", "rm","dis",
+             "indus", "nox",
+             "tax")
+  y_var <- "medv"
+
+  # Train data
+  x_train <- as.matrix(tail(Boston[, x_var], -6))
+  y_train <- tail(Boston[, y_var], -6)
+  xy_train_full_df <- tail(Boston[, ], -6)
+
+  # Test data
+  x_test <- as.matrix(head(Boston[, x_var], 6))
+  x_test_full <- as.matrix(head(Boston[, ], 6))
+  x_test_reordered <- as.matrix(head(Boston[, rev(x_var)], 6))
+  xy_test_full_df <- head(Boston[, ], 6)
+  xy_test_missing_lstat_df <- xy_test_full_df[, !(colnames(xy_test_full_df) == "lstat")]
+  xy_test_full_df_no_colnames <- xy_test_full_df
+  colnames(xy_test_full_df_no_colnames) <- NULL
+
+  # Fitting a basic xgboost model to the training data
+  group1 <- list(c(1,2,3),
+                 c(4,5),
+                 c(6))
+
+  group1_names = lapply(group1, function(x){x_var[x]})
+
+  # Fitting models
+  formula <- as.formula(paste0("medv ~ ", paste0(x_var, collapse = "+")))
+  model1 <- xgboost::xgboost(
+    data = x_train,
+    label = y_train,
+    nround = 5,
+    verbose = FALSE
+  )
+
+  model2 <- lm(
+    formula = formula,
+    data = xy_train_full_df
+  )
+
+  model3 <- ranger::ranger(
+    formula = formula,
+    data = xy_train_full_df,
+    num.trees = 50
+  )
+
+  p0 <- mean(y_train)
+
+  # Get explainer objects
+  all_explainers <- lapply(list(model1, model2, model3), shapr, x = x_train, group = group1_names)
+
+  # Test data
+  all_test_data <- list(
+    x_test,
+    x_test_reordered,
+    x_test_full
+  )
+
+  # Expect silent for explainer 1, using 1. correct, 2. reordered and 3. bigger data set, then identical results
+  group1_list <- list()
+  for (i in seq_along(all_test_data)) {
+    group1_list[[i]] <- expect_silent(
+      explain(
+        all_test_data[[i]],
+        all_explainers[[1]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
+  for (i in 2:length(group1_list)) {
+    expect_equal(group1_list[[i - 1]], group1_list[[i]])
+  }
+
+  # Expect silent for explainer 2, using 1. correct, 2. reordered and 3. bigger data set, then identical results
+  group1_list <- list()
+  for (i in seq_along(all_test_data)) {
+    group1_list[[i]] <- expect_silent(
+      explain(
+        all_test_data[[i]],
+        all_explainers[[2]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
+  for (i in 2:length(group1_list)) {
+    expect_equal(group1_list[[i - 1]], group1_list[[i]])
+  }
+
+  # Expect silent for explainer 3, using 1. correct, 2. reordered and 3. bigger data set, then identical results
+  group1_list <- list()
+  for (i in seq_along(all_test_data)) {
+    group1_list[[i]] <- expect_silent(
+      explain(
+        all_test_data[[i]],
+        all_explainers[[3]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
+  for (i in 2:length(group1_list)) {
+    expect_equal(group1_list[[i - 1]], group1_list[[i]])
+  }
+
+
+
+  for (i in seq_along(all_explainers)) {
+    # Expect error when test data misses used variable
+    expect_error(
+      explain(
+        xy_test_missing_lstat_df,
+        all_explainers[[i]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+
+    # Expect error when test data misses column names
+    expect_error(
+      explain(
+        xy_test_full_df_no_colnames,
+        all_explainers1[[i]],
+        approach = "empirical",
+        prediction_zero = p0,
+        n_samples = 1e2
+      )
+    )
+  }
+
 })

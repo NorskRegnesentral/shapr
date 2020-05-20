@@ -14,7 +14,7 @@
 #' to these three columns, \code{dt} should also have columns which matches the variables used
 #' when training the model.
 #'
-#' I.e. you have fitted a linear model using the features \code{x1},
+#' I.e. you have fit a linear model using the features \code{x1},
 #' \code{x2} and \code{x3}, and you want to explain 5 test observations using the exact method, i.e.
 #' setting \code{exact = TRUE} in \code{\link{shapr}}, the following properties should be satisfied
 #' \enumerate{
@@ -55,7 +55,8 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   # Predictions
   dt[!(n_features %in% c(0, ncol(explainer$x_test))),
-     p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
+     p_hat := shapr:::predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
+
   dt[n_features == 0, p_hat := prediction_zero]
   p_all <- predict_model(explainer$model, newdata = explainer$x_test)
   dt[n_features == ncol(explainer$x_test), p_hat := p_all[id]]
