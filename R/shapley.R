@@ -161,7 +161,7 @@ shapr <- function(x,
       names(group) <- paste0("group", seq(length(group)))
     }
     # Make group list with numeric feature indicators
-    group_num <- lapply(group,FUN = function(x){match(x,feature_labels)})
+    group_num <- lapply(group,FUN = function(x){match(x, feature_labels)})
   } else {
     group_num <- NULL
   }

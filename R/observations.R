@@ -251,7 +251,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
+  dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination") # this just gives you the n_features
   dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
   return(dt)
 }

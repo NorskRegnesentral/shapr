@@ -24,51 +24,14 @@ group1 <- list(c(1,2),
                c(3,4)) # c(4,5),c(6)
 group1_names = lapply(group1, function(x){x_var[x]})
 
-#
-# model2 <- xgboost::xgboost(
-#   data = x_train[,1:4],
-#   label = y_train,
-#   nround = 20,
-#   verbose = FALSE
-# )
-# group2 <- list(c(1,3),
-#                c(2,4))
-# group2_names = lapply(group2, function(x){x_var[x]})
-
-
 # Prepare the data for explanation
-#explainer0 <- shapr(x_train, model, group = NULL)
 explainer1 <- shapr(x_train, model, group = group1_names) # group = group1_names
-#explainer2 <- shapr(x_train, model2, group = group2_names)
 
 p0 <- mean(y_train)
 
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-#explanation0 <- explain(x_test, explainer0, approach = "empirical", prediction_zero = p0)
 explanation1 <- explain(x_test, explainer1, approach = "gaussian", prediction_zero = p0)
-#explanation2 <- explain(x_test, explainer2, approach = "empirical", prediction_zero = p0)
 
-# Printing the Shapley values for the test data
-explanation0$dt
-explanation1$dt
-explanation2$dt
-
-plot(explanation0)
 plot(explanation1)
-plot(explanation2)
-
-
-explanation <- explain(x_test, explainer0, approach = "gaussian", prediction_zero = p0)
-explanation$dt
-
-
-explanation <- explain(x_test, explainer0, approach = "copula", prediction_zero = p0)
-explanation$dt
-
-# Finally we plot the resulting explanations
-
-plot(explanation)
 
 # TODO in the end
 # 6. Fix plot.shapr Currently, does not work properly. (DONE)
@@ -132,10 +95,7 @@ for(cc in corr){
 
   ## 1. simulate training data
   set.seed(seed)
-  x1 <- mvrnorm(n =  No_train_obs, mu = mu, Sigma = Sigma)
-  x <- x1
-
-
+  x <- mvrnorm(n =  No_train_obs, mu = mu, Sigma = Sigma)
   dt <- NULL
   if(is.null(cutoff)){
     for(i in 1:no_categories){
@@ -170,7 +130,7 @@ for(cc in corr){
   dt <- rbind(dt, x_test_dt)
 
   dt <- data.table(dt)
-  setnames(dt, names(dt), paste0("feat_", 1:dim,"_"))
+  setnames(dt, names(dt), paste0("feat_", 1:dim, "_"))
   feat_names <- names(dt[, 1:dim])
 
   dt_numeric <- dt
@@ -252,7 +212,7 @@ for(cc in corr){
   }
   class(model) <- "numeric_lm"
   explainer_numeric <- shapr(x_train_numeric, model)
-  # END custom function
+  # End custom function
 
   ## 6. calculate the true shapley values
   print("Started calculating true Shapley values.", quote = FALSE, right = FALSE)
@@ -266,7 +226,6 @@ for(cc in corr){
   gc()
   true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
 
-
   print(head(true_shapley))
   #           none   feat_1_    feat_2_     feat_3_
   # 1: -0.05576529 0.1189073  0.3437063  0.18465409
@@ -279,26 +238,10 @@ for(cc in corr){
 
   print("Finished calculating true Shapley values.", quote = FALSE, right = FALSE)
 
-  if(explainer$model_type == 'regression'){
-    if(cc == 0){
-      true_linear <- linear_Kshap(x_test_onehot_full = x_test_onehot_full, beta = beta, prop = joint_prob_dt_list[[3]])
-    } else{
-      true_linear <- NULL
-    }
-  } else{
-    true_linear <- NULL
-  }
-
   ## 8. calculate approximate shapley value with different methods
   p <- mean(y_train$response) # since y_train is no longer a matrix
 
-  ## to compute sum of Shapley values - only for one-hot encoded variables
-  beta_matcher <- as.numeric(getstr(reduced_onehot_names))
-  no_features <- max(beta_matcher)
-  phi_sum_mat <- matrix(NA, nrow = No_test_obs, ncol = no_features)
-
   print("Started estimating Shapley values with various methods.", quote = FALSE, right = FALSE)
-
   explanation_list <- list()
 
   ## 1. Regular empirical on one-hot encoded variables
@@ -314,6 +257,10 @@ for(cc in corr){
     n_samples = 1000)
   tm1 <- proc.time()
 
+  beta_matcher <- as.numeric(getstr(reduced_onehot_names))
+  no_features <- max(beta_matcher)
+  phi_sum_mat <- matrix(NA, nrow = No_test_obs, ncol = no_features)
+
   for (i in 1:no_features){
     phi_sum_mat[, i] <- rowSums(subset(explanation_list[[m]]$dt, select = which(beta_matcher == i) + 1))
   }
@@ -327,11 +274,6 @@ for(cc in corr){
   # 4: 0.02618350 0.08536755 -0.8078294  0.18792953
   # 5: 0.02618352 0.09264480 -0.8014691  0.08722524
   # 6: 0.02618350 0.09041001 -0.7952708 -0.80596598
-
-
-
-
-  explanation_list[[m]]$time <- tm1 - tm0
 
   ## 2. Empirical but with groups
   m <- 'empirical_grouped'
@@ -397,13 +339,9 @@ for(i in 1:length(all_methods)){
 }
 
 X[, time := Xx]
-
 X = rbind(X, data.table(MAE = 0.0274, name = 'ctree', correlation = 0, dim = 3, no_categories = 3))
 X = rbind(X, data.table(MAE = 0.0191, name = 'ctree', correlation = 0.1, dim = 3, no_categories = 3))
 X = rbind(X, data.table(MAE = 0.0302, name = 'ctree', correlation = 0.3, dim = 3, no_categories = 3))
 X = rbind(X, data.table(MAE = 0.0310, name = 'ctree', correlation = 0.5, dim = 3, no_categories = 3))
 X = rbind(X, data.table(MAE = 0.0244, name = 'ctree', correlation = 0.8, dim = 3, no_categories = 3))
 X = rbind(X, data.table(MAE = 0.0259, name = 'ctree', correlation = 0.9, dim = 3, no_categories = 3))
-
-
-
