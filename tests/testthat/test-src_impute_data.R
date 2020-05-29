@@ -64,14 +64,13 @@ test_that("Test observation_impute_cpp", {
   expect_true(is.double(x))
 
   for (i in 1:nrow(x)) {
-
     feature_i <- features[[index_s[i]]]
 
     for (j in seq(m)) {
 
       if (j %in% feature_i) {
         expect_equal(x[i, j], unname(xtest[1, j]))
-      }else {
+      } else {
         expect_equal(x[i, j], unname(xtrain[index_xtrain[i], j]))
       }
     }

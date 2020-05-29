@@ -5,7 +5,9 @@
 \alias{explain.empirical}
 \alias{explain.gaussian}
 \alias{explain.copula}
+\alias{explain.ctree}
 \alias{explain.combined}
+\alias{explain.combinedparameters}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(x, explainer, approach, prediction_zero, ...)
@@ -36,6 +38,18 @@ explain(x, explainer, approach, prediction_zero, ...)
 
 \method{explain}{copula}(x, explainer, approach, prediction_zero, ...)
 
+\method{explain}{ctree}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  mincriterion = 0.95,
+  minsplit = 20,
+  minbucket = 7,
+  sample = TRUE,
+  ...
+)
+
 \method{explain}{combined}(
   x,
   explainer,
@@ -45,6 +59,8 @@ explain(x, explainer, approach, prediction_zero, ...)
   cov_mat = NULL,
   ...
 )
+
+\method{explain}{combinedparameters}(x, explainer, approach, prediction_zero, mincriterion, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -55,7 +71,8 @@ See \code{\link{shapr}}.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should
-either be \code{"gaussian"}, \code{"copula"} or \code{"empirical"}. See details for more information.}
+either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
+information.}
 
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
@@ -90,6 +107,19 @@ when \code{approach = "gaussian"}.}
 \item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. \code{NULL} means it is estimated from the data if needed
 (in the Gaussian approach).}
+
+\item{mincriterion}{Numeric value or vector where length of vector is the number of features in model.
+Value is equal to 1 - alpha where alpha is the nominal level of the conditional
+independence tests.
+If it is a vector, this indicates which mincriterion to use
+when conditioning on various numbers of features.}
+
+\item{minsplit}{Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.}
+
+\item{minbucket}{Numeric value. Equal to the minimum sum of weights in a terminal node.}
+
+\item{sample}{Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all
+observations in the node.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
@@ -164,9 +194,12 @@ explain2 <- explain(x_test, explainer, approach = "gaussian", prediction_zero = 
 # Gaussian copula approach
 explain3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p, n_samples = 1e2)
 
+# ctree approach
+explain4 <- explain(x_test, explainer, approach = "ctree", prediction_zero = p)
+
 # Combined approach
 approach <- c("gaussian", "gaussian", "empirical", "empirical")
-explain4 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
+explain5 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
 
 # Plot the results
 \dontrun{

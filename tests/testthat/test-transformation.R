@@ -53,6 +53,4 @@ test_that("Test gaussian_transform", {
   expect_true(is.atomic(x))
   expect_true(is.double(x))
   expect_equal(length(x), length(y))
-
-
 })

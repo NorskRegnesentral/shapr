@@ -222,7 +222,9 @@ shapr <- function(x,
 
 #' @keywords internal
 distance_matrix <- function(x_train, x_test = NULL, list_features) {
-  if (is.null(x_test)) return(NULL)
+  if (is.null(x_test)) {
+    return(NULL)
+  }
 
   # Get covariance matrix
   mcov <- stats::cov(x_train)

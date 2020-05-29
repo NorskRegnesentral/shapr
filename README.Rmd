@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
-The most common task of machine learning is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features.
+The most common machine learning task is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features.
 When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction.
 However, explaining predictions from complex, or seemingly simple, machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable  explanations.
 
@@ -42,7 +42,8 @@ The following methodology/features are currently implemented:
 -   Accounting for feature dependence assuming the features are Gaussian (@aas2019explaining).
 -   Accounting for feature dependence with a Gaussian copula (Gaussian dependence structure, any marginal) (@aas2019explaining).
 -   Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of @aas2019explaining.
--   Combine any of the three methods.
+-   Accounting for feature dependence using conditional inference trees (@hothorn2006unbiased). This methodology has currently been submitted. 
+-   Combination any of the four methods.
 -   Optional use of the AICc criterion of @hurvich1998smoothing when optimizing the bandwidth parameter in the empirical (conditional) approach of @aas2019explaining.
 -   Functionality for visualizing the explanations.
 -   Support for models not supported natively.

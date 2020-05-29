@@ -1,12 +1,12 @@
 library(testthat)
 library(shapr)
 
-context("test-explanation.R")
+testthat::context("test-explanation.R")
 
 # For using same Random numer generator as CircelCI (R version 3.5.x)
 RNGversion(vstr = "3.5.0")
 
-test_that("Test functions in explanation.R", {
+testthat::test_that("Test functions in explanation.R", {
 
   # Load data -----------
   data("Boston", package = "MASS")
@@ -86,27 +86,160 @@ test_that("Test functions in explanation.R", {
   approach <- c(rep("empirical", 4))
   ex_list[[18]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
-  # Checking that all explain objects produce the same as before
-  expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
+  # Ex 19: Explain predictions (ctree, sample = FALSE, default parameters)
+  ex_list[[19]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE)
 
-  ### Additional test that only the produced shapley values are the same as before
-  fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")
-  for (i in 1:length(ex_list)) {
-    expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+  # Ex 20: Explain predictions (ctree, sample = TRUE, default parameters)
+  ex_list[[20]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE)
+
+  # Ex 21: Explain predictions (ctree, sample = FALSE, other ctree parameters)
+  ex_list[[21]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
+                           mincriterion = 0.9, minsplit = 20, minbucket = 25)
+
+  # Ex 22: Explain combined - ctree and gaussian, sample = FALSE
+  ex_list[[22]] <- explain(x_test, explainer, approach = c("ctree", rep("gaussian", 3)),
+                           prediction_zero = p0, sample = FALSE)
+
+  # Ex 23: Explain combined II - ctree and gaussian, sample = FALSE
+  ex_list[[23]] <- explain(x_test, explainer, approach = c(rep("ctree", 2), rep("gaussian", 2)),
+                           prediction_zero = p0, sample = FALSE)
+
+  # Ex 24: Explain combined III - ctree and gaussian, sample = FALSE
+  ex_list[[24]] <- explain(x_test, explainer, approach = c(rep("ctree", 3), rep("gaussian", 1)),
+                           prediction_zero = p0, sample = FALSE)
+
+  # Ex 25: Explain combined IV - ctree all, sample = FALSE
+  ex_list[[25]] <- explain(x_test, explainer, approach = c(rep("ctree", 4)),
+                           prediction_zero = p0, sample = FALSE)
+
+  # Ex 26: Explain combined - ctree and empirical, sample = FALSE
+  ex_list[[26]] <- explain(x_test, explainer, approach = c("ctree", rep("empirical", 3)),
+                           prediction_zero = p0, sample = FALSE)
+
+  # Ex 27: Explain combined II - ctree and empirical, sample = FALSE
+  ex_list[[27]] <- explain(x_test, explainer, approach = c(rep("ctree", 2), rep("empirical", 2)),
+                           prediction_zero = p0, sample = FALSE)
+
+  # Ex 28: Explain combined III - ctree and empirical, sample = FALSE
+  ex_list[[28]] <- explain(x_test, explainer, approach = c(rep("ctree", 3), rep("empirical", 1)),
+                           prediction_zero = p0, sample = FALSE)
+
+  # Ex 29: Explain combined - ctree and gaussian, sample = TRUE
+  ex_list[[29]] <- explain(x_test, explainer, approach = c("ctree", rep("gaussian", 3)),
+                           prediction_zero = p0, sample = TRUE)
+
+  # Ex 30: Explain combined II - ctree and gaussian, sample = TRUE
+  ex_list[[30]] <- explain(x_test, explainer, approach = c(rep("ctree", 2), rep("gaussian", 2)),
+                           prediction_zero = p0, sample = TRUE)
+
+  # Ex 31: Explain combined III - ctree and gaussian, sample = TRUE
+  ex_list[[31]] <- explain(x_test, explainer, approach = c(rep("ctree", 3), rep("gaussian", 1)),
+                           prediction_zero = p0, sample = TRUE)
+
+  # Ex 32: Explain combined IV - ctree all, sample = TRUE
+  ex_list[[32]] <- explain(x_test, explainer, approach = c(rep("ctree", 4)),
+                           prediction_zero = p0, sample = TRUE)
+
+  # Ex 33: Explain combined - ctree and empirical, sample = TRUE
+  ex_list[[33]] <- explain(x_test, explainer, approach = c("ctree", rep("empirical", 3)),
+                           prediction_zero = p0, sample = TRUE)
+
+  # Ex 34: Explain combined II - ctree and empirical, sample = TRUE
+  ex_list[[34]] <- explain(x_test, explainer, approach = c(rep("ctree", 2), rep("empirical", 2)),
+                           prediction_zero = p0, sample = TRUE)
+
+  # Ex 35: Explain combined III - ctree and empirical, sample = TRUE
+  ex_list[[35]] <- explain(x_test, explainer, approach = c(rep("ctree", 3), rep("empirical", 1)),
+                           prediction_zero = p0, sample = TRUE)
+
+  # Ex 36: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[36]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
+                           mincriterion = c(0.05, 0.05, 0.95, 0.95))
+
+  # Ex 37: Explain different ctree mincriterion for different number of dependent variables, sample = TRUE
+  ex_list[[37]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
+                           mincriterion = rep(0.95, 4))
+
+  # Ex 38: Test that ctree with mincriterion equal to same probability four times gives the same as only passing one
+  # probability to mincriterion
+  testthat::expect_equal(
+    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
+             mincriterion = rep(0.95, 4)))$dt,
+    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
+             mincriterion = 0.95))$dt
+  )
+
+
+  # Ex 39: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion only once
+  testthat::expect_equal(
+    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
+             mincriterion = c(rep(0.95, 2), rep(0.95, 2))))$dt,
+    (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
+             mincriterion = 0.95))$dt
+  )
+
+  # Checking that explanations with different paralellizations gives the same result (only unix systems!)
+  if (.Platform$OS.type == "unix") {
+    explain_base_nosample <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE)
+
+    multicore <- 2
+
+    testthat::expect_equal(
+      explain_base_nosample,
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
+              mc_cores = multicore)
+    )
+
+    testthat::expect_equal(
+      explain_base_nosample,
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
+              mc_cores_simulateAllTrees = 1, mc_cores_sample_ctree = multicore)
+    )
+
+    testthat::expect_equal(
+      explain_base_nosample,
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
+              mc_cores_simulateAllTrees = multicore, mc_cores_sample_ctree = 1)
+    )
+
+    explain_base_sample <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE)
+
+    # Seed consistent when only paralellizing simulateAllTrees, and not sample_ctree
+    testthat::expect_equal(
+      explain_base_sample,
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
+              mc_cores_simulateAllTrees = multicore, mc_cores_sample_ctree = 1)
+    )
+
+    # Seed consistent, when run twice with same seed
+    testthat::expect_equal(
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
+              mc_cores = multicore),
+      explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
+              mc_cores = multicore)
+    )
   }
 
+  # Checking that all explain objects produce the same as before
+  testthat::expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
+
+  ### Additional test to test that only the produced shapley values are the same as before
+  fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")
+  for (i in 1:length(ex_list)) {
+    testthat::expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+  }
 
   # Checks that an error is returned
-  expect_error(
+  testthat::expect_error(
     explain(1, explainer, approach = "gaussian", prediction_zero = p0)
   )
-  expect_error(
+  testthat::expect_error(
     explain(list(), explainer, approach = "gaussian", prediction_zero = p0)
   )
-  expect_error(
+  testthat::expect_error(
     explain(x_test, explainer, approach = "Gaussian", prediction_zero = p0)
   )
-  expect_error(
+  testthat::expect_error(
     explain(x_test, explainer, approach = rep("gaussian", ncol(x_test) + 1), prediction_zero = p0)
   )
 })
@@ -179,7 +312,7 @@ test_that("Test functions related to groups in explanation.R", {
 
 })
 
-test_that("Testing data input to explain in explanation.R", {
+testthat::test_that("Testing data input to explain in explanation.R", {
 
   # Setup for training data and explainer object
   data("Boston", package = "MASS")
@@ -235,7 +368,7 @@ test_that("Testing data input to explain in explanation.R", {
   # Expect silent for explainer 1, using correct, reordered and full data set, then identical results
   l <- list()
   for (i in seq_along(all_test_data)) {
-    l[[i]] <- expect_silent(
+    l[[i]] <- testthat::expect_silent(
       explain(
         all_test_data[[i]],
         all_explainers[[1]],
@@ -246,13 +379,13 @@ test_that("Testing data input to explain in explanation.R", {
     )
   }
   for (i in 2:length(l)) {
-    expect_equal(l[[i - 1]], l[[i]])
+    testthat::expect_equal(l[[i - 1]], l[[i]])
   }
 
   # Expect silent for explainer 2, using correct, reordered and bigger data set, then identical results
   l <- list()
   for (i in seq_along(all_test_data)) {
-    l[[i]] <- expect_silent(
+    l[[i]] <- testthat::expect_silent(
       explain(
         all_test_data[[i]],
         all_explainers[[2]],
@@ -263,13 +396,13 @@ test_that("Testing data input to explain in explanation.R", {
     )
   }
   for (i in 2:length(l)) {
-    expect_equal(l[[i - 1]], l[[i]])
+    testthat::expect_equal(l[[i - 1]], l[[i]])
   }
 
   # Expect silent for explainer 3, using correct, reordered and bigger data set, then identical results
   l <- list()
   for (i in seq_along(all_test_data)) {
-    l[[i]] <- expect_silent(
+    l[[i]] <- testthat::expect_silent(
       explain(
         all_test_data[[i]],
         all_explainers[[3]],
@@ -280,13 +413,13 @@ test_that("Testing data input to explain in explanation.R", {
     )
   }
   for (i in 2:length(l)) {
-    expect_equal(l[[i - 1]], l[[i]])
+    testthat::expect_equal(l[[i - 1]], l[[i]])
   }
 
   for (i in seq_along(all_explainers)) {
 
     # Expect error when test data misses used variable
-    expect_error(
+    testthat::expect_error(
       explain(
         xy_test_missing_lstat_df,
         all_explainers[[i]],
@@ -297,7 +430,7 @@ test_that("Testing data input to explain in explanation.R", {
     )
 
     # Expect error when test data misses column names
-    expect_error(
+    testthat::expect_error(
       explain(
         xy_test_full_df_no_colnames,
         all_explainers[[i]],

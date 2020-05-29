@@ -18,7 +18,6 @@
 #'
 #' @author Anders Løland
 cluster_features <- function(x_mat = NULL, cor_mat = NULL, alpha = 1) {
-
   if (!requireNamespace("pcaPP", quietly = TRUE)) {
     stop("pcaPP is not installed. Please run install.packages('pcaPP')")
   }
@@ -115,9 +114,9 @@ correlation_rectangles <- function(corr,
 
   ind <- k + 1
   rect(cu[-ind] + 0.5,
-       n - cu[-ind] + 0.5,
-       cu[-1] + 0.5,
-       n - cu[-1] + 0.5,
-       border = col, lwd = lwd
+    n - cu[-ind] + 0.5,
+    cu[-1] + 0.5,
+    n - cu[-1] + 0.5,
+    border = col, lwd = lwd
   )
 }

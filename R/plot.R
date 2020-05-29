@@ -27,7 +27,6 @@ plot.shapr <- function(x,
                        index_x_test = NULL,
                        top_k_features = NULL,
                        ...) {
-
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   }

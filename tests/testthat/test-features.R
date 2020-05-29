@@ -166,7 +166,6 @@ test_that("Test helper_feature", {
   expect_equal(classes, unname(sapply(x, typeof)))
   expect_equal(x[["sample_frequence"]], x2)
   expect_equal(x[["is_duplicate"]], x3)
-
 })
 
 test_that("Test feature_group", {

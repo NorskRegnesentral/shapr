@@ -1,8 +1,8 @@
 library(shapr)
 
-context("test-sample_combinations.R")
+testthat::context("test-sample_combinations.R")
 
-test_that("Test sample_combinations", {
+testthat::test_that("Test sample_combinations", {
 
   # Example -----------
   ntrain <- 10
@@ -12,19 +12,19 @@ test_that("Test sample_combinations", {
   cnms <- c("samp_train", "samp_test")
 
   set.seed(123) # Ensuring consistency in every test
-  x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
+  x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
   # Tests -----------
-  expect_true(is.data.frame(x))
-  expect_equal(names(x), cnms)
-  expect_equal(nrow(x), nsamples)
+  testthat::expect_true(is.data.frame(x))
+  testthat::expect_equal(names(x), cnms)
+  testthat::expect_equal(nrow(x), nsamples)
 
   # Expect all unique values when nsamples < ntrain
-  expect_true(length(unique(x$samp_train)) == nsamples)
-  expect_true(length(unique(x$samp_test)) == nsamples)
+  testthat::expect_true(length(unique(x$samp_train)) == nsamples)
+  testthat::expect_true(length(unique(x$samp_test)) == nsamples)
 
-  expect_true(max(x$samp_train) <= ntrain)
-  expect_true(max(x$samp_test) <= ntest)
+  testthat::expect_true(max(x$samp_train) <= ntrain)
+  testthat::expect_true(max(x$samp_test) <= ntest)
 
   # Example -----------
   ntrain <- 5
@@ -32,12 +32,12 @@ test_that("Test sample_combinations", {
   nsamples <- 7
   joint_sampling <- FALSE
 
-  x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
+  x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
   # Tests -----------
-  expect_true(max(x$samp_train) <= ntrain)
-  expect_true(max(x$samp_test) <= ntest)
-  expect_equal(nrow(x), nsamples)
+  testthat::expect_true(max(x$samp_train) <= ntrain)
+  testthat::expect_true(max(x$samp_test) <= ntest)
+  testthat::expect_equal(nrow(x), nsamples)
 
   # Example -----------
   ntrain <- 5
@@ -45,15 +45,15 @@ test_that("Test sample_combinations", {
   nsamples <- 7
   joint_sampling <- TRUE
 
-  x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
+  x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
   # Tests -----------
-  expect_true(max(x$samp_train) <= ntrain)
-  expect_true(max(x$samp_test) <= ntest)
-  expect_equal(nrow(x), nsamples)
+  testthat::expect_true(max(x$samp_train) <= ntrain)
+  testthat::expect_true(max(x$samp_test) <= ntest)
+  testthat::expect_equal(nrow(x), nsamples)
 })
 
-test_that("test sample_gaussian", {
+testthat::test_that("test sample_gaussian", {
 
   # Example -----------
   m <- 10
@@ -64,24 +64,24 @@ test_that("test sample_gaussian", {
   cnms <- paste0("x", seq(m))
   colnames(x_test) <- cnms
   index_given <- c(4, 7)
-  r <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
+  r <- shapr:::sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
 
   # Test output format ------------------
-  expect_true(data.table::is.data.table(r))
-  expect_equal(ncol(r), m)
-  expect_equal(nrow(r), n_samples)
-  expect_equal(colnames(r), cnms)
+  testthat::expect_true(data.table::is.data.table(r))
+  testthat::expect_equal(ncol(r), m)
+  testthat::expect_equal(nrow(r), n_samples)
+  testthat::expect_equal(colnames(r), cnms)
 
   # Check that the given features are not resampled, but kept as is.
   for (i in seq(m)) {
     var_name <- cnms[i]
 
     if (i %in% index_given) {
-      expect_equal(
+      testthat::expect_equal(
         unique(r[[var_name]]), x_test[, var_name][[1]]
       )
     } else {
-      expect_true(
+      testthat::expect_true(
         length(unique(r[[var_name]])) == n_samples
       )
     }
@@ -89,19 +89,19 @@ test_that("test sample_gaussian", {
 
   # Example 2 -------------
   # Check that conditioning upon all variables simply returns the test observation.
-  r <- sample_gaussian(1:m, n_samples, mu, cov_mat, m, x_test)
-  expect_identical(r, data.table::as.data.table(x_test))
+  r <- shapr:::sample_gaussian(1:m, n_samples, mu, cov_mat, m, x_test)
+  testthat::expect_identical(r, data.table::as.data.table(x_test))
 
   # Tests for errors ------------------
-  expect_error(
-    sample_gaussian(m + 1, n_samples, mu, cov_mat, m, x_test)
+  testthat::expect_error(
+    shapr:::sample_gaussian(m + 1, n_samples, mu, cov_mat, m, x_test)
   )
-  expect_error(
-    sample_gaussian(m + 1, n_samples, mu, cov_mat, m, as.vector(x_test))
+  testthat::expect_error(
+    shapr:::sample_gaussian(m + 1, n_samples, mu, cov_mat, m, as.vector(x_test))
   )
 })
 
-test_that("test sample_copula", {
+testthat::test_that("test sample_copula", {
   # Example 1 --------------
   # Check that the given features are not resampled, but kept as is.
   m <- 10
@@ -140,4 +140,134 @@ test_that("test sample_copula", {
   expect_identical(colnames(res3), colnames(x_test))
   expect_error(sample_copula(m + 1, n_samples, mu, cov_mat, m, x_test_gaussian, x_train, x_test))
   expect_true(data.table::is.data.table(res2))
+})
+
+testthat::test_that("test simulateAllTrees", {
+
+  # Example 1-----------
+  m <- 10
+  n <- 40
+  n_samples <- 50
+  mu <- rep(1, m)
+  set.seed(123) # Ensuring consistency in every test
+  cov_mat <- cov(matrix(rnorm(n * m), n, m))
+  x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
+
+  given_ind <- c(4, 7)
+
+  mincriterion <- 0.95
+  minsplit <- 20
+  minbucket <- 7
+  sample <- TRUE
+
+  # build the tree
+  r <- shapr:::simulateAllTrees(given_ind = given_ind,
+                        x_train = x_train,
+                        mincriterion = mincriterion,
+                        minsplit = minsplit,
+                        minbucket = minbucket,
+                        use_partykit = "on_error")
+
+  dependent_ind <- (1:dim(x_train)[2])[-given_ind]
+  # Test output format ------------------
+  testthat::expect_true(is.list(r))
+  testthat::expect_equal(length(r), 3)
+  testthat::expect_equal(class(r$tree)[1], "BinaryTree")
+  testthat::expect_equal(r$given_ind, given_ind)
+  testthat::expect_equal(r$dependent_ind, dependent_ind)
+
+  df <- data.table(cbind(party::response(object = r$tree)$Y1,
+                         party::response(object = r$tree)$Y2,
+                         party::response(object = r$tree)$Y3,
+                         party::response(object = r$tree)$Y4,
+                         party::response(object = r$tree)$Y5,
+                         party::response(object = r$tree)$Y6,
+                         party::response(object = r$tree)$Y7,
+                         party::response(object = r$tree)$Y8))
+
+  names(df) <- paste0("V", dependent_ind)
+  testthat::expect_equal(df, x_train[, dependent_ind, with = FALSE])
+
+  # Example 2 -------------
+  # Check that conditioning upon all variables returns empty tree.
+
+  given_ind <- 1:10
+  mincriterion <- 0.95
+  minsplit <- 20
+  minbucket <- 7
+  sample <- TRUE
+
+  # build the tree
+  r <- shapr:::simulateAllTrees(given_ind = given_ind,
+                        x_train = x_train,
+                        mincriterion = mincriterion,
+                        minsplit = minsplit,
+                        minbucket = minbucket,
+                        use_partykit = "on_error")
+
+  testthat::expect_equal(length(r), 3)
+  testthat::expect_true(is.list(r))
+  testthat::expect_true(is.list(r$tree))
+  testthat::expect_equal(r$given_ind, given_ind)
+  testthat::expect_equal(r$dependent_ind, (1:dim(x_train)[2])[-given_ind])
+})
+
+testthat::test_that("test sample_ctree", {
+
+  # Example -----------
+  m <- 10
+  n <- 40
+  n_samples <- 50
+  mu <- rep(1, m)
+  set.seed(123) # Ensuring consistency in every test
+  cov_mat <- cov(matrix(rnorm(n * m), n, m))
+  x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
+  x_test <- MASS::mvrnorm(1, mu, cov_mat)
+  x_test_dt <- data.table::setDT(as.list(x_test))
+
+  given_ind <- c(4, 7)
+
+  # build the tree
+  dependent_ind <- (1:dim(x_train)[2])[-given_ind]
+
+  x <- x_train[, given_ind, with = FALSE]
+  y <- x_train[, dependent_ind, with = FALSE]
+
+  df <- data.table::data.table(cbind(y, x))
+
+  colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
+
+  ynam <- paste0("Y", 1:ncol(y))
+  fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
+
+  datact <- party::ctree(fmla, data = df, controls =
+                 party::ctree_control(minbucket = 7,
+                                      mincriterion = 0.95))
+
+
+  tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
+
+  # new
+  r <- shapr:::sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt,
+                    x_train = x_train,
+                    p = length(x_test), sample = TRUE)
+
+  # Test output format ------------------
+  testthat::expect_true(data.table::is.data.table(r))
+  testthat::expect_equal(ncol(r), m)
+  testthat::expect_equal(nrow(r), n_samples)
+  testthat::expect_equal(colnames(r), colnames(x_test_dt))
+
+  # Example 2 -------------
+  # Check that conditioning upon all variables simply returns the test observation.
+
+  given_ind <- 1:10
+  dependent_ind <- (1:dim(x_train)[2])[-given_ind]
+  datact <- list()
+  tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
+  r <- shapr:::sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt,
+                    x_train = x_train,
+                    p = length(x_test), sample = TRUE)
+  testthat::expect_identical(r, data.table::as.data.table(x_test_dt))
+
 })

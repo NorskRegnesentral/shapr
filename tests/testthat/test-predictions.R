@@ -40,8 +40,6 @@ test_that("Test prediction", {
   # Tets errors
   expect_error(prediction(dt[id < n_xtest], prediction_zero, explainer))
 
-
-
   # Example 2 - with groups ----------
   data("Boston", package = "MASS")
   dt_train <- data.table::as.data.table(Boston)
@@ -67,6 +65,4 @@ test_that("Test prediction", {
   #THIS DOESN'T WORk
   #START HERE ON MONDAY
   #x <- shapr:::prediction(dt, prediction_zero, explainer)
-
-
 })

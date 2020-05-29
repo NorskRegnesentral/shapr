@@ -209,16 +209,33 @@ Details on this is found in @aas2019explaining.
 
 <br>
 
+## Conditional Inference Tree Approach
+
+The previous three methods can only handle numerical data. This means that if the data contains categorical/discrete/ordinal features, the features first have to be one-hot encoded. When the number of levels/features is large, this is not feasible. An approach that handles mixed (i.e numerical, categorical, discrete, ordinal) features and both univariate and multivariate responses is conditional inference trees (@hothorn2006unbiased). 
+
+Conditional inference trees is a special tree fitting procedure that relies on hypothesis tests to choose both the splitting feature and the splitting point. The tree fitting procedure is sequential: first a splitting feature is chosen (the feature that is least independent of the response), and then a splitting point is chosen for this feature. This decreases the chance of being biased towards features with many splits (@hothorn2006unbiased). 
+
+We use conditional inference trees (*ctree*) to model the conditional distribution, $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$, found in the Shapley methodology.
+First, we fit a different conditional inference tree to each conditional distribution.
+Once a tree is fit for given dependent features, the end node of $\boldsymbol{x}_{\mathcal{S}}^*$ is found. Then, we sample from this end node and use the resulting samples, 
+$\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K$, when approximating the conditional expectations as in Kernel SHAP. See @Redelmeier2020ctree for more details. 
+
+The conditional inference trees are fit using the *party* and *partykit* packages (@partykit_package). 
+
+<a id="ex"></a>
+
+<br>
+
 # Examples
 
 `shapr` supports computation of Shapley values with any predictive model which takes a set of 
-numeric features and produces a numeric outcome. 
+numeric features and produces a numeric outcome. Note that the ctree method takes both numeric and categorical variables. Check under "Advanced usage" for an example of how this can be done. 
 
 The following example shows how a simple `xgboost` model is trained using the Boston Housing Data, 
-and how `shapr` can be used to explain the individual predictions. Note that empirical conditional 
-distribution approach is the default (i.e. `approach = "empirical"`), and that the Gaussian and 
-Gaussian copula approaches can be used instead by setting the argument `approach` to either 
-`"gaussian"` or `"copula"`.
+and how `shapr` can be used to explain the individual predictions. Note that the empirical conditional 
+distribution approach is the default (i.e. `approach = "empirical"`), and that the Gaussian, 
+Gaussian copula, and ctree approaches can be used instead by setting the argument `approach` to either 
+`"gaussian"`, `"copula"`, or `"ctree`".
 
 ```{r, warning=FALSE}
 library(xgboost)
@@ -261,7 +278,7 @@ explanation <- explain(
 print(explanation$dt)
 
 # Plot the resulting explanations for observations 1 and 6
-plot(explanation, plot_phi0 = FALSE, index_x_test = c(1,6))
+plot(explanation, plot_phi0 = FALSE, index_x_test = c(1, 6))
 ``` 
 
 The Gaussian approach is used as follows:
@@ -276,7 +293,7 @@ explanation_gaussian <- explain(
 )
 
 # Plot the resulting explanations for observations 1 and 6
-plot(explanation_gaussian, plot_phi0 = FALSE, index_x_test = c(1,6))
+plot(explanation_gaussian, plot_phi0 = FALSE, index_x_test = c(1, 6))
 ```
 
 The Gaussian copula approach is used as follows:
@@ -292,10 +309,72 @@ explanation_copula <- explain(
 
 # Plot the resulting explanations for observations 1 and 6, excluding 
 # the no-covariate effect
-plot(explanation_copula, plot_phi0 = FALSE, index_x_test = c(1,6))
+plot(explanation_copula, plot_phi0 = FALSE, index_x_test = c(1, 6))
 ```
 
+The conditional inference tree approach is used as follows:
+
+```{r}
+# Use the conditional inference tree approach
+explanation_ctree <- explain(
+  x_test,
+  approach = "ctree",
+  explainer = explainer,
+  prediction_zero = p
+)
+
+# Plot the resulting explanations for observations 1 and 6, excluding 
+# the no-covariate effect
+plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1, 6))
+```
+
+
+We can specify parameters used to build the conditional inference trees using the following manner. Default values are based on @hothorn2006unbiased.  
+
+```{r}
+# Use the conditional inference tree approach
+# We can specify parameters used to building trees by specifying mincriterion, 
+# minsplit, minbucket
+
+explanation_ctree <- explain(
+  x_test,
+  approach = "ctree",
+  explainer = explainer,
+  prediction_zero = p,
+  mincriterion = 0.80, 
+  minsplit = 20,
+  minbucket = 20
+)
+
+# Default parameters (based on (Hothorn, 2006)) are:
+# mincriterion = 0.95
+# minsplit = 20
+# minbucket = 7
+
+```
+
+We can also specify multiple different mincriterion (1 minus the boundary for when to stop splitting nodes) parameters to use when conditioning on different numbers of features. In this case, a vector of length = number of features must be provided. 
+
+```{r}
+# Use the conditional inference tree approach
+# Specify a vector of mincriterions instead of just one
+# In this case, when conditioning on 1 or 2 features, use mincriterion = 0.25
+# When conditioning on 3 or 4 features, use mincriterion = 0.95
+
+explanation_ctree <- explain(
+  x_test,
+  approach = "ctree",
+  explainer = explainer,
+  prediction_zero = p,
+  mincriterion = c(0.25, 0.25, 0.95, 0.95)
+)
+
+
+```
+
+
 ## Main arguments in `shapr`
+
 When using `shapr`, the default behavior is to use all feature combinations in the Shapley 
 formula. Kernel SHAPs sampling based approach may be used by specifying `n_combinations`, which 
 is the number of feature combinations to sample. If not specified, the exact method is used. 
@@ -338,8 +417,9 @@ generating distribution by the arguments `mu` and `cov_mat`. If not specified, t
 ## Combined approach
 
 In addition to letting the user select one of the three aforementioned approaches for estimating the conditional 
-distribution of the data (i.e. `approach` equals either [`"gaussian"`](#gaussian), [`"copula"`](#copula) or 
-[`"empirical"`](#empirical)), the package allows the user to combine the three approaches. To simplify the usage, 
+distribution of the data (i.e. `approach` equals either [`"gaussian"`](#gaussian), [`"copula"`](#copula),
+[`"empirical"`](#empirical) or 
+[`"ctree"`](#ctree)) the package allows the user to combine the four approaches. To simplify the usage, 
 the flexibility is restricted such that the same approach is used when conditioning on the same number of features. 
 This is also in line @aas2019explaining[, Section 3.4]. 
 
@@ -359,17 +439,69 @@ regardless of the specified approach.
 # Use the combined approach
 explanation_combined <- explain(
   x_test,
-  approach = c("empirical","copula","gaussian","gaussian"),
+  approach = c("empirical", "copula", "gaussian", "gaussian"),
   explainer = explainer,
   prediction_zero = p
 )
 
 # Plot the resulting explanations for observations 1 and 6, excluding 
 # the no-covariate effect
-plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1,6))
+plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1, 6))
 ```
 
+As a second example using `"ctree"` for the first 3 features and `"empirical"` for the last:
 
+```{r}
+# Use the combined approach
+explanation_combined <- explain(
+  x_test,
+  approach = c("ctree", "ctree", "ctree", "empirical"),
+  explainer = explainer,
+  prediction_zero = p
+)
+```
+
+## Using ctree when features are mixed numerical and categorical
+
+```{r}
+x_var <- c("lstat", "rm", "dis", "indus")
+y_var <- "medv"
+
+# Convert two features as factors
+dt <- Boston[, c(x_var, y_var)]
+dt$rm <- as.factor(round(dt$rm/3))
+dt$dis <- as.factor(round(dt$dis/4))
+
+xy_train_cat <- dt[-1:-6, ]
+y_train_cat <- dt[-1:-6, y_var]
+x_train_cat <- dt[-1:-6, x_var]
+x_test_cat <- dt[1:6, x_var]
+
+
+# Fit a basic linear regression model to the training data
+model <- lm(medv ~ lstat + rm + dis + indus, data = xy_train_cat)
+
+# Prepare the data for explanation
+explainer <- shapr(x_train_cat, model)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+p <- mean(y_train_cat)
+
+# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
+explanation_categorical <- explain(
+  x_test_cat,
+  approach = "ctree",
+  explainer = explainer,
+  prediction_zero = p
+)
+# Note that nothing has to be specified to tell "ctree" that two of the features are 
+# cateogrical and two are numerical
+
+# Plot the resulting explanations for observations 1 and 6, excluding 
+# the no-covariate effect
+plot(explanation_categorical, plot_phi0 = FALSE, index_x_test = c(1, 6))
+
+```
 
 ## Explain custom models
 

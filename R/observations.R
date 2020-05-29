@@ -36,6 +36,20 @@
 #' r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
 #' str(r)
 #'
+#' # Create training- and test data
+#' x_train <- as.matrix(MASS::mvrnorm(n, mu = rep(0, m), Sigma = sigma), ncol = m)
+#' x_test <- t(as.matrix(MASS::mvrnorm(1, mu = rep(0, m), sigma)))
+#' colnames(x_train) <- colnames(x_test) <- paste0("X", seq(m))
+#'
+#' # Binary matrix which represents the feature combinations
+#' S <- matrix(c(1, 0, 0, 1), nrow = m)
+#'
+#' # Kernel matrix
+#' W_kernel <- matrix(rnorm(n * ncol(S), mean = 1 / n, sd = 1 / n^2), nrow = n)
+#'
+#' # Generate permutations of training data using test observations
+#' r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
+#' str(r)
 #' @author Nikolai Sellereite
 observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n_samples = 1e3) {
 
@@ -126,12 +140,15 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #' \code{approach = "empirical"}.
 #'
 #' @param ... Currently not used.
+
 #'
 #' @export
 prepare_data <- function(x, ...) {
   class(x) <- x$approach
   UseMethod("prepare_data", x)
 }
+
+
 
 #' @rdname prepare_data
 #' @export
@@ -234,7 +251,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
   }
 
   for (i in seq(n_xtest)) {
-
     l <- lapply(
       X = features,
       FUN = sample_gaussian,
@@ -250,6 +266,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
+
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination") # this just gives you the n_features
   dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
@@ -293,6 +310,84 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
   dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
   return(dt)
 }
+
+#' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
+#' used for different numbers of conditoned features, this will be a list with the features to pass.
+#'
+#' @param  mc_cores Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
+#' tree building and tree prediction. Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
+#' work on Windows systems.
+#'
+#' @param  mc_cores_simulateAllTrees Integer. Same as \code{mc_cores}, but specific for the tree building function
+#' #' Defaults to \code{mc_cores}.
+#'
+#' @param  mc_cores_sample_ctree Integer. Same as \code{mc_cores}, but specific for the tree building prediction
+#' function.
+#' Defaults to \code{mc_cores}.
+#'
+#' @rdname prepare_data
+#' @export
+prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
+                               mc_cores = 1, mc_cores_simulateAllTrees = mc_cores,
+                               mc_cores_sample_ctree = mc_cores, ...) {
+
+  id <- id_combination <- w <- n_features <- NULL # due to NSE notes in R CMD check
+
+  n_xtest <- nrow(x$x_test)
+  dt_l <- list()
+
+  if (!is.null(seed)) set.seed(seed)
+  if (is.null(index_features)) {
+    features <- x$X$features
+  } else {
+    features <- x$X$features[index_features]
+  }
+
+
+  # this is a list of all 2^M trees (where number of features = M)
+  all_trees <- parallel::mclapply(
+    X = features,
+    FUN = simulateAllTrees,
+    x_train = x$x_train,
+    mincriterion = x$mincriterion,
+    minsplit = x$minsplit,
+    minbucket = x$minbucket,
+    mc.cores = mc_cores_simulateAllTrees,
+    mc.set.seed = FALSE
+  )
+
+  for (i in seq(n_xtest)) {
+    l <- parallel::mclapply(
+      X = all_trees,
+      FUN = sample_ctree,
+      n_samples = n_samples,
+      x_test = x$x_test[i, , drop = FALSE],
+      x_train = x$x_train,
+      p = ncol(x$x_test),
+      sample = x$sample,
+      mc.cores = mc_cores_sample_ctree,
+      mc.set.seed = FALSE
+    )
+
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
+    dt_l[[i]][, w := 1 / n_samples]
+    dt_l[[i]][, id := i]
+
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+  }
+
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  #dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
+  dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
+
+  # only return unique dt
+  dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id",  "n_features")]
+  setnames(dt2, "V1", "w")
+  setcolorder(dt2, c("id_combination", colnames(x$x_test), "w", "id", "n_features"))
+  return(dt2)
+}
+
 
 #' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {

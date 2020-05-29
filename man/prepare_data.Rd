@@ -5,6 +5,7 @@
 \alias{prepare_data.empirical}
 \alias{prepare_data.gaussian}
 \alias{prepare_data.copula}
+\alias{prepare_data.ctree}
 \title{Generate data used for predictions}
 \usage{
 prepare_data(x, ...)
@@ -21,6 +22,17 @@ prepare_data(x, ...)
   index_features = NULL,
   ...
 )
+
+\method{prepare_data}{ctree}(
+  x,
+  seed = 1,
+  n_samples = 1000,
+  index_features = NULL,
+  mc_cores = 1,
+  mc_cores_simulateAllTrees = mc_cores,
+  mc_cores_sample_ctree = mc_cores,
+  ...
+)
 }
 \arguments{
 \item{x}{Explainer object. See \code{\link{explain}} for more information.}
@@ -32,11 +44,22 @@ prepare_data(x, ...)
 \item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation.}
 
-\item{index_features}{Positive integer vector. Specifies the indices of combinations to apply to the present method.
-\code{NULL} means all combinations. Only used internally.}
+\item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
+used for different numbers of conditoned features, this will be a list with the features to pass.}
 
 \item{x_test_gaussian}{Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
 \code{approach = "empirical"}.}
+
+\item{mc_cores}{Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
+tree building and tree prediction. Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
+work on Windows systems.}
+
+\item{mc_cores_simulateAllTrees}{Integer. Same as \code{mc_cores}, but specific for the tree building function
+#' Defaults to \code{mc_cores}.}
+
+\item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction
+function.
+Defaults to \code{mc_cores}.}
 }
 \description{
 Generate data used for predictions
