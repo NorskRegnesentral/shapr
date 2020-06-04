@@ -14,7 +14,7 @@ test_that("Test prediction", {
   prediction_zero <- .5
   n_xtest <- 8
   #
-  dt_combinations <- shapr:::feature_combinations(
+  dt_combinations <- feature_combinations(
     m = n_features,
     exact = TRUE,
     n_combinations = n_combinations,
@@ -34,7 +34,7 @@ test_that("Test prediction", {
   dt[, id_combination := rep_len(1:n_combinations, .N), id] # which features you're conditioning on
   dt[, w := runif(.N)]
   dt <- merge(dt, dt_combinations, on = id_combination)
-  x <- shapr:::prediction(dt, prediction_zero, explainer)
+  x <- prediction(dt, prediction_zero, explainer)
 
   # Test -----------
   lnms <- c("dt", "model", "p", "x_test")
@@ -61,7 +61,7 @@ test_that("Test prediction", {
   prediction_zero <- .5
   n_xtest <- 8
   #
-  dt_combinations <- shapr:::feature_combinations(
+  dt_combinations <- feature_combinations(
     m = n_features,
     exact = TRUE,
     n_combinations = n_combinations,
@@ -85,7 +85,7 @@ test_that("Test prediction", {
   dt[, id_combination := rep_len(1:n_combinations, .N), id]
   dt[, w := runif(.N)]
   dt <- merge(dt, dt_combinations, on = id_combination)
-  x <- shapr:::prediction(dt, prediction_zero, explainer)
+  x <- prediction(dt, prediction_zero, explainer)
 
 
   # Test -----------

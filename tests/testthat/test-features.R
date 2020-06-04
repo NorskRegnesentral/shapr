@@ -9,8 +9,8 @@ test_that("Test feature_combinations", {
   m <- 3
   exact <- TRUE
   w <- 10^6
-  x1 <- shapr:::feature_combinations(m = m, exact = exact, weight_zero_m = w)
-  x2 <- shapr:::feature_exact(m, w)
+  x1 <- feature_combinations(m = m, exact = exact, weight_zero_m = w)
+  x2 <- feature_exact(m, w)
 
   # Example 2 -----------
   m <- 10
@@ -19,14 +19,14 @@ test_that("Test feature_combinations", {
   w <- 10^6
 
   set.seed(1)
-  y1 <- shapr:::feature_combinations(
+  y1 <- feature_combinations(
     m = m,
     exact = exact,
     n_combinations = n_combinations,
     weight_zero_m = w)
 
   set.seed(1)
-  y2 <- shapr:::feature_not_exact(
+  y2 <- feature_not_exact(
     m = m,
     n_combinations = n_combinations,
     weight_zero_m = w
@@ -39,7 +39,7 @@ test_that("Test feature_combinations", {
   n_combinations <- 1e4
   w <- 10^6
   set.seed(1)
-  y3 <- shapr:::feature_combinations(
+  y3 <- feature_combinations(
     m = m,
     exact = exact,
     n_combinations = n_combinations,
@@ -186,7 +186,7 @@ test_that("Test feature_group", {
     verbose = FALSE
   )
 
-  feature_labels <- shapr:::features(model, colnames(x_train), feature_labels = NULL)
+  feature_labels <- features(model, colnames(x_train), feature_labels = NULL)
 
   ## 1
   group1 <- list(c(1), c(2), c(3), c(4))
@@ -235,13 +235,13 @@ test_that("Test check_group", {
     verbose = FALSE
   )
 
-  feature_labels <- shapr:::features(model, colnames(x_train), feature_labels = NULL)
+  feature_labels <- features(model, colnames(x_train), feature_labels = NULL)
   group <- group1_names
   is_custom_model <- FALSE
-  expect_silent(shapr:::check_groups(feature_labels, group, is_custom_model))
+  expect_silent(heck_groups(feature_labels, group, is_custom_model))
 
   group <- group1
-  expect_error(shapr:::check_groups(feature_labels, group, is_custom_model))
+  expect_error(check_groups(feature_labels, group, is_custom_model))
 
 
   group2 <- list(c(1,2,3),
@@ -250,7 +250,7 @@ test_that("Test check_group", {
 
   group2_names = lapply(group2, function(x){x_var[x]})
   group <- group2_names
-  expect_error(shapr:::check_groups(feature_labels, group, is_custom_model))
+  expect_error(check_groups(feature_labels, group, is_custom_model))
 
 
 
