@@ -109,9 +109,9 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Check input for approach
   if (!(is.vector(approach) &&
-    is.atomic(approach) &&
-    (length(approach) == 1 | length(approach) == length(explainer$feature_labels)) &&
-    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
+        is.atomic(approach) &&
+        (length(approach) == 1 | length(approach) == length(explainer$feature_labels)) &&
+        all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
   ) {
     stop(
       paste(

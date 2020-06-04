@@ -193,24 +193,23 @@ create_exact_joint_prob <- function(mu,
   all_responses <- response_mod(mod_matrix_full = cbind(1,mod_matrix),
                                 beta = beta,
                                 epsilon = rep(0, nrow(mod_matrix)))
-
   prop <- NULL
   for (i in 1:dim){
-    prop <- c(prop,diff(pnorm(cutoff, mean = mu[i], sd = sqrt(Sigma[i,i]))))
+    prop <- c(prop, diff(pnorm(cutoff, mean = mu[i], sd = sqrt(Sigma[i,i]))))
   }
   names(prop) = rep(1:no_categories, times = dim)
 
 
   # Lists with vectors containing the lower and upper combinations
-  upper_dt <- all_x_dt[, lapply(.SD,upper_func,cutoff=cutoff), .SDcols = feat_names]
-  lower_dt <- all_x_dt[, lapply(.SD,lower_func,cutoff=cutoff), .SDcols = feat_names]
+  upper_dt <- all_x_dt[, lapply(.SD, upper_func, cutoff = cutoff), .SDcols = feat_names]
+  lower_dt <- all_x_dt[, lapply(.SD, lower_func, cutoff = cutoff), .SDcols = feat_names]
 
   upper_dt_list = as.list(as.data.table(t(upper_dt)))
   lower_dt_list = as.list(as.data.table(t(lower_dt)))
 
   corr <- cov2cor(Sigma)
-
-  all_probs <- parallel::mcmapply(FUN = mvtnorm::pmvnorm,
+  #set.seed(1)
+  all_probs <- parallel::mcmapply(FUN = mvtnorm::pmvnorm, # even if you set the seed, this is a little different
                                   lower = lower_dt_list,
                                   upper = upper_dt_list,
                                   MoreArgs = list(mean = mu,
@@ -281,11 +280,11 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer, model=NULL, group=NUL
   if(is_groupwise){
     feature_labels <- tail(all.vars(model$terms), -1)
 
-    if (is.null(names(group))){
+    if(is.null(names(group))){
       names(group) <- paste0("group", seq(length(group)))
     }
     # Make group list with numeric feature indicators
-    group_num <- lapply(group,FUN = function(x){match(x, feature_labels)})
+    group_num <- lapply(group, FUN = function(x){match(x, feature_labels)})
 
     dt_combinations <- shapr:::feature_combinations(
       m = explainer$n_features,
@@ -296,9 +295,8 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer, model=NULL, group=NUL
     )
 
     ## ALL GROUPS
-    group_all <- list(c(1),
-                      c(2),
-                      c(3))
+    group_all <- lapply(1:length(feat_names), FUN = function(x){x})
+
     group_all_names = lapply(group_all, function(x){feature_labels[x]})
 
     names(group_all_names) <- paste0("group",  seq(length(group_all_names)))
@@ -315,10 +313,12 @@ cond_prob <- function(marg_list, joint_prob_dt, explainer, model=NULL, group=NUL
 
     for(i in 1:nrow(dt_combinations)){
       names(dt_combinations[['features']][[i]]) <- NULL
+      dt_combinations[['features']][[i]] <- dt_combinations[['features']][[i]][order(dt_combinations[['features']][[i]])]
     }
 
     for(i in 1:nrow(dt_combinations_all)){
       names(dt_combinations_all[['features']][[i]]) <- NULL
+      dt_combinations_all[['features']][[i]] <- dt_combinations_all[['features']][[i]][order(dt_combinations_all[['features']][[i]])]
     }
 
     indices <- NULL
@@ -442,10 +442,11 @@ cond_expec_new <- function(cond_list, explainer, x_test, prediction_zero, joint_
                         colnum = i - 1, cond_list[[i]][, c('features', 'id_combination', 'groups')][1])
     }
 
-
     tmp_dt <- rbindlist(tmp, use.names = T)
     tmp_dt_not_NA <- tmp_dt[complete.cases(tmp_dt[['id_combination']]), ]
-    final_dt <- dcast(tmp_dt_not_NA, formula = "rowid~colnum", value.var = "cond_expec")
+    #
+    setkey(tmp_dt_not_NA, id_combination)
+    final_dt <- dcast(tmp_dt_not_NA, formula = "rowid~id_combination", value.var = "cond_expec")
 
     x_test_id <- mat[x_test, on = feat_names]
     #S_char_vec <- as.character(1:(nrow(explainer$S) - 1))

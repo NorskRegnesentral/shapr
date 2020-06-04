@@ -274,12 +274,10 @@ test_that("Test functions related to groups in explanation.R", {
   ex_list[[3]] <- explain(x_test, explainer1, approach = "copula", prediction_zero = p0)
 
   # Ex 4: Explain predictions (gaussian, empirical)
-  # AR: this doesn't work!
-  #ex_list[[4]] <- explain(x_test, explainer1, approach = c("gaussian", "empirical"), prediction_zero = p0)
+  ex_list[[4]] <- explain(x_test, explainer1, approach = c("gaussian", "empirical", "gaussian", "empirical"), prediction_zero = p0)
 
   # Ex 5: Explain predictions (copula)
-  ex_list[[4]] <- explain(x_test, explainer2, approach = "gaussian", prediction_zero = p0)
-
+  ex_list[[5]] <- explain(x_test, explainer2, approach = "gaussian", prediction_zero = p0)
 
   # Checking that all explain objects produce the same as before
   expect_known_value(ex_list, file = "test_objects/explanation_explain_group_obj_list.rds")
@@ -292,16 +290,16 @@ test_that("Test functions related to groups in explanation.R", {
 
   # Checks that an error is returned
   expect_error(
-    explain(1, explainer1, approach = "gaussian", prediction_zero = p0)
+    explain(1, explainer1, approach = "gaussian", prediction_zero = p0) # x_test = 1
   )
   expect_error(
-    explain(list(), explainer1, approach = "gaussian", prediction_zero = p0)
+    explain(list(), explainer1, approach = "gaussian", prediction_zero = p0) # x_test is empty
   )
   expect_error(
-    explain(x_test, explainer1, approach = "Gaussian", prediction_zero = p0)
+    explain(x_test, explainer1, approach = "Gaussian", prediction_zero = p0) # Gaussian is capitalized
   )
-  expect_error( # AR: maybe this shouldn't be an error?
-    explain(x_test, explainer1, approach = c("gaussian", "empirical"), prediction_zero = p0)
+  expect_error(
+    explain(x_test, explainer1, approach = c("gaussian", "empirical"), prediction_zero = p0) #
   )
 
   # Here we check if not grouping (explanation0) and grouping but only 1-dimensional (explanation2)
@@ -443,7 +441,7 @@ testthat::test_that("Testing data input to explain in explanation.R", {
 })
 
 test_that("Testing data input to explain related to groups in explanation.R", {
-
+  # AR: Redundent?
   # Setup for training data and explainer object
   data("Boston", package = "MASS")
   x_var <- c("lstat", "rm","dis",

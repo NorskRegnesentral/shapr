@@ -209,7 +209,7 @@ model_type.gam <- function(x) {
 #' @export
 model_type.xgb.Booster <- function(x) {
   if (!is.null(x$params$objective) &&
-    (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
+      (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
   ) {
     stop(
       paste0(
@@ -357,138 +357,6 @@ error_feature_labels <- function() {
       "\nThere is mismatch between the column names in x and\n",
       "the returned elements from features(model). All elements\n",
       "from features(model) should be present in colnames(x).\n",
-      "For more information see ?shapr::features"
-    )
-  )
-}
-
-#' Fetches feature labels from a given model object
-#'
-#' @inheritParams predict_model
-#' @param cnms Character vector. Represents the names of the columns in the data used for training/explaining.
-#' @param feature_labels Character vector. Represents the labels of the features used for prediction.
-#'
-#' @keywords internal
-#'
-#' @export
-features <- function(x, cnms, feature_labels = NULL) {
-  UseMethod("features", x)
-}
-
-#' @rdname features
-features.default <- function(x, cnms, feature_labels = NULL) {
-
-  if (is.null(feature_labels)) {
-    stop(
-      paste0(
-        "\nIt looks like you are using a custom model, and forgot to pass\n",
-        "a valid value for the argument feature_labels when calling shapr().\n",
-        "See ?shapr::shapr for more information about the argument."
-      )
-    )
-  }
-
-  if (!all(feature_labels %in% cnms)) {
-    stop(
-      paste0(
-        "\nThere is mismatch between the column names in x and\n",
-        "feature_labels. All elements in feature_labels should\n",
-        "be present in colnames(x)."
-      )
-    )
-  }
-
-  feature_labels
-}
-
-#' @rdname features
-features.lm <- function(x, cnms, feature_labels = NULL) {
-
-  if (!is.null(feature_labels)) message_features_labels()
-
-  nms <- tail(all.vars(x$terms), -1)
-  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
-
-  return(nms)
-}
-
-#' @rdname features
-features.glm <- function(x, cnms, feature_labels = NULL) {
-
-  if (!is.null(feature_labels)) message_features_labels()
-
-  nms <- tail(all.vars(x$terms), -1)
-  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
-
-  return(nms)
-}
-
-#' @rdname features
-features.ranger <- function(x, cnms, feature_labels = NULL) {
-
-  if (!is.null(feature_labels)) message_features_labels()
-
-  nms <- x$forest$independent.variable.names
-
-  if (is.null(x$forest)) {
-    stop(
-      paste0(
-        "\nIt looks like the model was fitted without saving the forest. Please set\n",
-        "write.forest = TRUE when fitting a model using ranger::ranger()."
-      )
-    )
-  }
-  nms <- unique_features(nms)
-
-  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
-
-  return(nms)
-
-}
-
-#' @rdname features
-features.gam <- function(x, cnms, feature_labels = NULL) {
-
-  if (!is.null(feature_labels)) message_features_labels()
-
-  nms <- tail(all.vars(x$terms), -1)
-
-  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
-
-  return(nms)
-}
-
-#' @rdname features
-features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
-
-  if (!is.null(feature_labels)) message_features_labels()
-
-  nms <- x$feature_names
-
-  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
-
-  return(nms)
-}
-
-#' @keywords internal
-message_features_labels <- function() {
-  message(
-    paste0(
-      "\nYou have passed a supported model object, and therefore\n",
-      "features_labels is ignored. The argument is only applicable when\n",
-      "using a custom model. For more information see ?shapr::shapr."
-    )
-  )
-}
-
-#' @keywords internal
-error_feature_labels <- function() {
-  stop(
-    paste0(
-      "\nThere is mismatch between the column names in x and\n",
-      "the returned elements from features(model). All elements\n",
-      "from features(model) should be present in colnames(x),\n",
-      "and they cannot be NULL.\n",
       "For more information see ?shapr::features"
     )
   )

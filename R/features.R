@@ -140,6 +140,18 @@ feature_group <- function(group_num, weight_zero_m = 10^6) {
 check_groups = function(feature_labels, group, is_custom_model){
   group_features <- unlist(group)
 
+
+  for(i in group_features){
+    # Check that all group components are characters
+    if(!(is.character(i))){
+      stop("All components of group should be a character.")
+    }
+    # Check that all group components are in x
+    if(!(i %in% feature_labels)){
+      stop("All components of group should be in colnames(x) and used in model.")
+    }
+  }
+
   # Check that all features in group are in feature labels or used by model
   if(!all(group_features %in% feature_labels)){
     missing_group_feature = group_features[!(group_features %in% feature_labels)]
@@ -165,9 +177,9 @@ check_groups = function(feature_labels, group, is_custom_model){
   }
 
   # Check uniqueness of group_features
-  if(!all.equal(group_features,unique(group_features))){
+  if(length(group_features) != length(unique(group_features))){
     dups = group_features[duplicated(group_features)]
-    stop(paste0("Feature(s) ",paste0(dups,collapse = ", "), " are duplicated in groups.\n",
+    stop(paste0("Feature(s) ", paste0(dups, collapse = ", "), " are found in more than one group or multiple times per group.\n",
                 "Make sure earch feature is only represented in one group, and only one time."))
   }
 
