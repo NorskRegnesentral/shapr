@@ -14,7 +14,7 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
-The most common task of machine learning is to train a model which is
+The most common task of machine learning is to train a model which is 
 able to predict an unknown outcome (response variable) based on a set of
 known input variables/features. When using such models for real life
 applications, it is often crucial to understand why a certain set of
