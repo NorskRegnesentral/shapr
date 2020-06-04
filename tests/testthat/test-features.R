@@ -238,7 +238,7 @@ test_that("Test check_group", {
   feature_labels <- features(model, colnames(x_train), feature_labels = NULL)
   group <- group1_names
   is_custom_model <- FALSE
-  expect_silent(heck_groups(feature_labels, group, is_custom_model))
+  expect_silent(check_groups(feature_labels, group, is_custom_model))
 
   group <- group1
   expect_error(check_groups(feature_labels, group, is_custom_model))
