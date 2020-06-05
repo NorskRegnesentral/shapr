@@ -288,21 +288,7 @@ test_that("Test functions related to groups in explanation.R", {
     expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
   }
 
-  # Checks that an error is returned
-  expect_error(
-    explain(1, explainer1, approach = "gaussian", prediction_zero = p0) # x_test = 1
-  )
-  expect_error(
-    explain(list(), explainer1, approach = "gaussian", prediction_zero = p0) # x_test is empty
-  )
-  expect_error(
-    explain(x_test, explainer1, approach = "Gaussian", prediction_zero = p0) # Gaussian is capitalized
-  )
-  expect_error(
-    explain(x_test, explainer1, approach = c("gaussian", "empirical"), prediction_zero = p0) #
-  )
-
-  # Here we check if not grouping (explanation0) and grouping but only 1-dimensional (explanation2)
+  # Here we check if not grouping (explanation0) and grouping with one feature per group (explanation2)
   # gives the same answer
   explanation0 <- explain(x_test, explainer0, approach = "empirical", prediction_zero = p0)
   explanation2 <- explain(x_test, explainer2, approach = "empirical", prediction_zero = p0)

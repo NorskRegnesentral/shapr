@@ -138,7 +138,7 @@ test_that("Testing data input to shapr for grouping in shapley.R", {
 
   group5_names <- list(c("rm", not_x_var), c("lstat", "dis")) # includes a feature not in model
 
-  group6_names <- list(c(2, 3), c(1, 4)) # includes only numeric features
+  group6_names <- list(c(2, 1), c("lstat", "dis")) # includes non-character in the list
 
   group7_names <- list(c("lstat", "rm"), c("rm", "dis", "indus")) # includes a feature in both groups
 
@@ -165,7 +165,6 @@ test_that("Testing data input to shapr for grouping in shapley.R", {
 
 
   for (i in seq_along(l)) {
-
     # Expect silent
     expect_silent(shapr(x = xy_train_full_df, model = l[[i]], group = group1_names))
 
@@ -189,13 +188,12 @@ test_that("Testing data input to shapr for grouping in shapley.R", {
 
     # Expect error when feature appears in more than one group
     expect_error(shapr(x_train, l[[i]], group = group7_names))
-
-  }
+}
 
   formula2 <- as.formula(paste0("medv ~ ", paste0(x_var_sub, collapse = "+")))
   model_sub <- lm(formula = formula2, data = xy_train_full_df)
 
-  # Expect error when group includes a variable not in model
+  # Expect error when group includes a variable in the data, but not in model
   expect_error(shapr(x_train, model_sub, group = group1_names))
 
 })
