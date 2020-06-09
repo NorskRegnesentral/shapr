@@ -170,88 +170,57 @@ test_that("Test helper_feature", {
 
 test_that("Test feature_group", {
 
-  data("Boston", package = "MASS")
-  x_var <- c("lstat", "rm","dis",
-             "indus")
-  y_var <- "medv"
-  x_train <- as.matrix(tail(Boston[, x_var], -6))
-  y_train <- tail(Boston[, y_var], -6)
-  x_test <- as.matrix(head(Boston[, x_var], 6))
-
-  # Fitting a basic xgboost model to the training data
-  model <- xgboost::xgboost(
-    data = x_train,
-    label = y_train,
-    nround = 20,
-    verbose = FALSE
-  )
-
-  feature_labels <- features(model, colnames(x_train), feature_labels = NULL)
-
   ## 1
-  group1 <- list(c(1), c(2), c(3), c(4))
-  group1_names = lapply(group1, function(x){x_var[x]})
-  group_num <- lapply(group1_names, FUN = function(x){match(x, feature_labels)})
-
-  expect_silent(feature_group(group_num, weight_zero_m = 10^6))
-  expect_silent(dim(feature_group(group_num, weight_zero_m = 10^6))[1] == 16)
-  expect_error(feature_group())
-
+  group1_num <- list(c(1), c(2), c(3), c(4))
+  expect_silent(feature_group(group1_num, weight_zero_m = 10^6))
+  expect_silent(dim(feature_group(group1_num, weight_zero_m = 10^6))[1] == 16)
 
   ## 2
-  group2 <- list(c(1, 2, 3, 4))
-  group2_names = lapply(group2, function(x){x_var[x]})
-  group_num <- lapply(group2_names, FUN = function(x){match(x, feature_labels)})
-  expect_silent(feature_group(group_num, weight_zero_m = 10^6))
-  expect_silent(dim(feature_group(group_num, weight_zero_m = 10^6))[1] == 2)
+  group2_num <- list(c(1, 2), c(3, 4))
+  expect_silent(feature_group(group2_num, weight_zero_m = 10^6))
+  expect_silent(dim(feature_group(group2_num, weight_zero_m = 10^6))[1] == 2)
 
+  # Empty call
+  expect_error(feature_group())
 
 })
 
 test_that("Test check_group", {
-  data("Boston", package = "MASS")
 
   x_var <- c("lstat", "rm","dis",
              "indus","nox",
              "tax")
-  y_var <- "medv"
 
-  x_train <- as.matrix(tail(Boston[, x_var], -6))
-  y_train <- tail(Boston[, y_var], -6)
-  x_test <- as.matrix(head(Boston[, x_var], 6))
+  group1_num <- list(c(1,2,3),
+                     c(4,5),
+                     c(6))
 
-  group1 <- list(c(1,2,3),
-                 c(4,5),
-                 c(6))
+  group1_names = lapply(group1_num, function(x){x_var[x]})
 
-  group1_names = lapply(group1, function(x){x_var[x]})
+  # Indendend usage
+  expect_silent(check_groups(x_var, group1_names, FALSE))
+  expect_silent(check_groups(x_var, group1_names, TRUE))
 
+  group2_num <- list(c(1,2,3),
+                     c(4,1),
+                     c(6))
 
-  # Fitting a basic xgboost model to the training data
-  model <- xgboost::xgboost(
-    data = x_train,
-    label = y_train,
-    nround = 20,
-    verbose = FALSE
-  )
+  # Repeated group name
+  group2_names = lapply(group2_num, function(x){x_var[x]})
+  expect_error(check_groups(x_var, group2_names, FALSE))
 
-  feature_labels <- features(model, colnames(x_train), feature_labels = NULL)
-  group <- group1_names
-  is_custom_model <- FALSE
-  expect_silent(heck_groups(feature_labels, group, is_custom_model))
+  group3_names = group1_names
+  group3_names[[3]][2] = "not_in_feature_labels"
 
-  group <- group1
-  expect_error(check_groups(feature_labels, group, is_custom_model))
+  # feature in group not in feature_labels
+  expect_error(check_groups(x_var, group3_names, FALSE))
+  expect_error(check_groups(x_var, group3_names, TRUE))
 
+  group4_names = group1_names
+  group4_names[[3]] = c(1,2)
 
-  group2 <- list(c(1,2,3),
-                 c(4,1),
-                 c(6))
-
-  group2_names = lapply(group2, function(x){x_var[x]})
-  group <- group2_names
-  expect_error(check_groups(feature_labels, group, is_custom_model))
-
-
+  # non-character group
+  expect_error(check_groups(x_var, group4_names, FALSE))
+  expect_error(check_groups(x_var, group4_names, TRUE))
 
 })
