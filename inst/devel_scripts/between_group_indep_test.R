@@ -1,12 +1,54 @@
 ### Testing independence between groups
 
+library(data.table)
+library(shapr)
+
+cond_expec_new_cont = function(S,x_test,mu,Sigma,fitted_beta){
+
+  dim = ncol(S)
+  cond_expec_mat0 = matrix(NA,nrow = nrow(x_test),ncol=nrow(S))
+  for (i in 2:(nrow(S)-1)){
+
+    given.inds = which(S[i,]==1)
+    integrate.inds = which(S[i,]==0)
+
+    Sigma_given = Sigma[given.inds,given.inds]
+    #      Sigma_integrate = Sigma[integrate.inds,integrate.inds]
+    Sigma_integrate_given = Sigma[integrate.inds,given.inds,drop=F]
+
+    mu_given = mu[given.inds]
+    mu_integrate = mu[integrate.inds]
+
+    x_test_given = as.matrix(x_test)[,given.inds]
+    x_test_given = matrix(x_test_given,nrow=length(given.inds),byrow = T)
+
+    #      Sigma_cond = Sigma_integrate - Sigma_integrate_given%*%solve(Sigma_given)%*%t(Sigma_integrate_given)
+      mu_cond = mu_integrate + Sigma_integrate_given%*%solve(Sigma_given)%*%(x_test_given - mu_given)
+
+    mu_cond_full = matrix(NA,ncol=nrow(x_test),nrow = dim)
+    mu_cond_full[integrate.inds,] = mu_cond
+    mu_cond_full[given.inds,] = x_test_given
+    cond_expec_mat0[,i] = as.vector(t(fitted_beta)%*%rbind(1,mu_cond_full))
+
+  }
+
+  pred_zero = as.vector(t(fitted_beta)%*%c(1,mu))
+
+  cond_expec_mat0[,1] = pred_zero
+
+  cond_expec_mat0[,nrow(S)] = predict(model,x_test)
+
+  return(as.data.table(cond_expec_mat0))
+}
+
+
 # parameters
 dim <- 4
 mu <- rep(0, dim)
 Sample_test <- TRUE
 No_train_obs <- 1000
 no_beta_samp = 10
-No_test_sample <- 1000
+No_test_sample <- 10
 N_sample_gaussian <- 1000
 noise <- TRUE
 response_mod <- function(mod_matrix_full, beta, epsilon){
@@ -18,7 +60,7 @@ seed <- 1
 Sigma_diag <- 1
 
 
-group2 <- list(c('feat_1_', 'feat_3_'), c('feat_2_', 'feat_4_'))
+group2 <- list(c('feat_1_',"feat_2_", 'feat_4_'), c( 'feat_3_'))
 
 feat_names = sort(unlist(group2))
 group_num <- lapply(group2,FUN = function(x){match(x, feat_names)})
@@ -27,12 +69,12 @@ for (i in 1:length(group2)){
   group_vec[group_num[[i]]] = i
 }
 
-cc = 0.3
+cc = 0.4
 
 Sigma <- matrix(rep(cc, dim^2), nrow = dim, ncol = dim)
 for (i in 1:dim){
   for(j in 1:dim){
-    if (group_vec[i]==group_vec[j]){
+    if (group_vec[i]!=group_vec[j]){
       Sigma[i,j] = 0
     } else {
       Sigma[i,j] = cc
@@ -43,7 +85,7 @@ diag(Sigma) = Sigma_diag
 
 l = 1
 set.seed(l);  beta <- round(rnorm(dim+1), 1)
-
+beta[1] = 0
 
 ## 1. simulate training data
 set.seed(seed)
@@ -166,3 +208,7 @@ for(i in 1:length(group2)){
   results0[, paste0('group', i) := paste0(group2[[i]], collapse = ", ") ]
 }
 results0[,beta:=list(beta)]
+
+results0
+Kshap0_dt
+Kshap2
