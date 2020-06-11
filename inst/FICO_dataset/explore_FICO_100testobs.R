@@ -378,31 +378,37 @@ predict_model.xgb.cv.synchronous.indep(xgbFit_cv_regular_indep,head(x_test_num,2
 set.seed(123)
 explainer_cv_regular_indep <- shapr(x_train_num, xgbFit_cv_regular_indep,n_combinations = n_combinations)
 set.seed(123)
-
-explanation_cv_regular_ind <- explain(
-  x = head(x_test_num,2),
-  approach = "empirical",
-  type = "independence",
-  explainer = explainer_cv_regular_indep,
-  prediction_zero = p,
-  w_threshold = 1)
-
-save(explanation_cv_regular_ind,explainer_cv_regular_indep,xgbFit_cv_regular_indep,
-     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_indep_100testobs.RData")
-
-
-set.seed(123)
 explainer_cv_regular <- shapr(x_train, xgbFit_cv_regular,n_combinations = n_combinations)
-set.seed(123)
-explanation_cv_regular <- explain(
-  x = head(x_test,2),
-  approach = 'ctree',
-  explainer = explainer_cv_regular,
-  prediction_zero = p,
-  sample = TRUE,
-  mc_cores = 10
-)
 
-save(explanation_cv_regular,explainer_cv_regular,xgbFit_cv_regular,
-     file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_ctree_100testobs.RData")
+chunks = split(1:100, ceiling(seq_along(1:100)/10))
+
+for (i in 3:length(chunks)){
+  set.seed(123)
+  explanation_cv_regular_ind <- explain(
+    x = x_test_num[chunks[[i]]],
+    approach = "empirical",
+    type = "independence",
+    explainer = explainer_cv_regular_indep,
+    prediction_zero = p,
+    w_threshold = 1)
+
+  save(explanation_cv_regular_ind,explainer_cv_regular_indep,xgbFit_cv_regular_indep,
+       file = paste0("/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_indep_100testobs_chunk_",i,".RData"))
+
+gc()
+  set.seed(123)
+  explanation_cv_regular <- explain(
+    x = x_test[chunks[[i]]],
+    approach = 'ctree',
+    explainer = explainer_cv_regular,
+    prediction_zero = p,
+    sample = TRUE,
+    mc_cores = 4
+  )
+
+  save(explanation_cv_regular,explainer_cv_regular,xgbFit_cv_regular,
+       file = paste0("/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_ctree_100testobs_chunk_",i,".RData"))
+
+gc()
+}
 
