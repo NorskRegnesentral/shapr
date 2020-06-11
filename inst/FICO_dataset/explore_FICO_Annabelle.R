@@ -26,6 +26,8 @@ ind_dt <- copy(explanation_cv_regular_ind)
 data <- cbind(c(paste0("ctree", 1:3), paste0("ind", 1:3)), rbind(ctree_dt$dt[2,], ctree_dt2$dt[1,], ctree_dt$dt[3,],
                                                                  ind_dt$dt))
 
+
+
 # OLD
 # load(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_monotone_ctree.RData")
 # ctree_dt <- copy(explanation_cv_monotone)
