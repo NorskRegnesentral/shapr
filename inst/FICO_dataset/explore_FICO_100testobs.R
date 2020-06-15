@@ -403,7 +403,7 @@ gc()
     explainer = explainer_cv_regular,
     prediction_zero = p,
     sample = TRUE,
-    mc_cores = 4
+    mc_cores = 1
   )
 
   save(explanation_cv_regular,explainer_cv_regular,xgbFit_cv_regular,
