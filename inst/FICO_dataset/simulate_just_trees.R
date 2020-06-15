@@ -68,6 +68,93 @@ simulateAllTrees <- function(given_ind,
 }
 
 
+sample_ctree <- function(tree,
+                         n_samples,
+                         x_test,
+                         x_train,
+                         p,
+                         sample) {
+  datact <- tree$tree
+  using_partykit <- (class(datact)[1]!="BinaryTree")
+
+  cnms <- colnames(x_test)
+  if (length(tree$given_ind) %in% c(0, p)) {
+    ret <- x_test # matrix(x_test, ncol = p, nrow = 1)
+  } else {
+    given_ind <- tree$given_ind
+    # given_ind_vec <- rep(0, length(x_test)) ## I don't think we actually use this?
+    # given_ind_vec[given_ind] <- 1
+
+    dependent_ind <- tree$dependent_ind
+
+    x_test_given <- x_test[, given_ind, drop = FALSE, with = FALSE]
+
+    xp <- x_test_given # data.table(matrix(x_test_given, nrow = 1, ncol = length(x_test_given))) # change by MJ
+    colnames(xp) <- paste0("V", given_ind) # this is important for where() below
+
+    if (using_partykit){
+      fit.nodes <- predict(object = datact,type = "node")
+      pred.nodes <- predict(object = datact, newdata = xp,type = "node") ## newdata must be data.frame +have the same colnames as x
+
+    } else {
+      fit.nodes <- party::where(object = datact)
+      pred.nodes <- party::where(object = datact, newdata = xp) ## newdata must be data.frame +have the same colnames as x
+    }
+
+    rowno <- 1:dim(x_train)[1]
+
+    # newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
+    # depDT <- data.table::data.table(matrix(x_train[newrowno, dependent_ind], ncol = length(dependent_ind)))
+    # givenDT <- data.table::data.table(matrix(x_test[1, given_ind], ncol = length(given_ind)))
+    # ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
+    # ret[, paste0("V", dependent_ind) := depDT]
+    # ret[, paste0("V", given_ind) := givenDT]
+
+    if (!sample) {
+      if (length(rowno[fit.nodes == pred.nodes]) <= n_samples) {
+        depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], dependent_ind,
+                                                drop = FALSE, with = FALSE])
+        givenDT <- data.table::data.table(x_test[1, given_ind, drop = FALSE, with = FALSE])
+
+        ret <- cbind(depDT, givenDT)
+        setcolorder(ret, colnames(x_train))
+
+        # ret <- data.table::data.table(matrix(0, nrow = length(rowno[fit.nodes == pred.nodes]), ncol = length(x_test)))
+        # ret[, paste0("V", dependent_ind) := depDT]
+        # ret[, paste0("V", given_ind) := givenDT]
+      } else {
+        newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
+
+        depDT <- data.table::data.table(x_train[newrowno, dependent_ind, drop = FALSE, with = FALSE])
+        givenDT <- data.table::data.table(x_test[1, given_ind, drop = FALSE, with = FALSE])
+
+        # ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
+        # ret[, paste0("V", dependent_ind) := depDT]
+        # ret[, paste0("V", given_ind) := givenDT]
+
+        ret <- cbind(depDT, givenDT)
+        setcolorder(ret, colnames(x_train))
+      }
+    } else {
+      newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples, replace = TRUE)
+
+      depDT <- data.table::data.table(x_train[newrowno, dependent_ind, drop = FALSE, with = FALSE])
+      givenDT <- data.table::data.table(x_test[1, given_ind, drop = FALSE, with = FALSE])
+
+      # ret <- data.table::data.table(matrix(0, nrow = n_samples, ncol = length(x_test)))
+      # ret[, paste0("V", dependent_ind) := depDT]
+      # ret[, paste0("V", given_ind) := givenDT]
+
+      ret <- cbind(depDT, givenDT)
+      setcolorder(ret, colnames(x_train))
+    }
+  }
+  colnames(ret) <- cnms
+
+  return(as.data.table(ret))
+}
+
+
 
 ## ------------- some functions ----------------------
 check_for_cont <- function(col_ind, data){
@@ -417,42 +504,42 @@ print("starting to simulate trees")
 chunks_features = split(1:length(features), ceiling(seq_along(1:length(features))/250))
 
 ## this is the list of all 2^10 trees (if number of features = 10)
-for(i in 1:length(chunks_features)){
-  tt <- Sys.time()
-  all_trees <- parallel::mclapply(
-    X = features[chunks_features[[i]]],
-    FUN = simulateAllTrees,
-    x_train = x$x_train,
-    comb_indici = x$comb_indici,
-    comb_mincriterion = x$comb_mincriterion,
-    mincriterion = x$mincriterion,
-    minsplit = x$minsplit,
-    minbucket = x$minbucket,
-    mc.cores = mc_cores_simulateAllTrees,
-    mc.set.seed = FALSE
-  )
-  saveRDS(all_trees, file = paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/all_trees_chunk_",  i, "_.rds"))
-  print(Sys.time() - tt)
-  print(paste0('saved the ', i, ' th chunk of trees.'))
+# this takes about 7 hours !
+# for(i in 1:length(chunks_features)){
+#   tt <- Sys.time()
+#   all_trees <- parallel::mclapply(
+#     X = features[chunks_features[[i]]],
+#     FUN = simulateAllTrees,
+#     x_train = x$x_train,
+#     comb_indici = x$comb_indici,
+#     comb_mincriterion = x$comb_mincriterion,
+#     mincriterion = x$mincriterion,
+#     minsplit = x$minsplit,
+#     minbucket = x$minbucket,
+#     mc.cores = mc_cores_simulateAllTrees,
+#     mc.set.seed = FALSE
+#   )
+#   saveRDS(all_trees, file = paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/all_trees_chunk_",  i, "_.rds"))
+#   print(Sys.time() - tt)
+#   print(paste0('saved the ', i, ' th chunk of trees.'))
+#
+# }
 
-}
-
-print('trees completed')
+#print('trees completed')
 #
 
-
-
-
-
 # load trees
-files <- list.files("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees", pattern = "*.rds")
+#files <- list.files("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees", pattern = "*.rds")
 
+tt_start <- Sys.time()
+for(k in 2:13){
 
-dt_all <- NULL
-for(k in 2:length(files)){
-  #load(paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/", files[k]))
+  tt <- Sys.time()
+  all_trees <- readRDS(paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/all_trees_chunk_", k, "_.rds"))
+  print(Sys.time() - tt)
+  print("Data loaded")
 
-  all_trees <- all_trees_chunk_3_
+  tt <- Sys.time()
   for (i in seq(n_xtest)) {
     l <- parallel::mclapply(
       X = all_trees,
@@ -471,6 +558,7 @@ for(k in 2:length(files)){
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
+  print(Sys.time() - tt)
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
@@ -478,20 +566,30 @@ for(k in 2:length(files)){
   ## only return unique dt
   dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id")]
   setnames(dt2, "V1", "w")
-  dt2[, id_combination2 := chunks_features[[3]][id_combination]]
+  dt2[, id_combination2 := chunks_features[[k]][id_combination]]
   dt3 <- dt2[['id_combination2']]
   dt4 <- cbind(dt3, dt2)
   dt4[, 'id_combination' := NULL]
   dt4[, 'id_combination2' := NULL]
   setnames(dt4, 'dt3', 'id_combination')
 
-  dt_all <- rbind(dt_all, dt4)
-  #rm(substr(files[k], 1, nchar(files[k]) - 4))
+  tt <- Sys.time()
+  saveRDS(dt4, file = paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/dt_chunk_",  k, ".rds"))
+  print(Sys.time() - tt)
+  #
+  print("Saved file")
+  rm(all_trees)
+  rm(dt_l)
+  rm(dt)
+  rm(dt2)
+  rm(dt3)
+  rm(dt4)
+
+  gc()
+
 }
 
-
-
-
+print(Sys.time() - tt_start)
 
 
 
