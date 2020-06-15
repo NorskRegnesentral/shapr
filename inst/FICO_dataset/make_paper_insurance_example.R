@@ -180,9 +180,9 @@ plot_shapr_Annabelle <- function(x,
 }
 
 ## ---------------------------------
-p0 <- plot_shapr_Annabelle(x = explanation, plot_phi0 = TRUE) ## removes the 'none' possibility
+p0 <- plot_shapr_Annabelle(x = explanation, index_x_test =1, plot_phi0 = TRUE) ## removes the 'none' possibility
 
-ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/figures/example_carinsurance2.pdf",
+ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/figures/example_carinsurance2.png",
        plot = p0, device = NULL, path = NULL,
        scale = 1, width = 10, height = 5, units = "cm",
        dpi = 300, limitsize = TRUE)
