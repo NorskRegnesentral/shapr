@@ -12,18 +12,18 @@ No_train_obs <- 1000
 no_beta_samp = 10
 No_test_sample <- 10
 N_sample_gaussian <- 1000
-noise <- TRUE
-beta012 = c(1,1,2)
-response_mod <- function(mod_matrix_full,beta012, epsilon){
-  as.vector(beta012[1] + beta12[2]*sin(mod_matrix_full[,1]*3*mod_matrix_full[,2]^2) +
-              beta012[3]*mod_matrix_full[,3]*cos(mod_matrix_full[,3]*mod_matrix_full[,4])) +epsilon
+noise <- FALSE
+beta = c(1,1,2)
+response_mod <- function(data_mat,beta, epsilon){
+  as.vector(beta[1] + beta[2]*sin(data_mat[,1]*3*data_mat[,2]^2) +
+              beta[3]*data_mat[,3]*cos(data_mat[,3]*data_mat[,4])) +epsilon
 }
 fit_mod <- "regression"
 seed <- 1
 Sigma_diag <- 1
 
 
-group2 <- list(c('feat_1_',"feat_2_",), c( 'feat_3_', 'feat_4_'))
+group2 <- list(c('feat_1_',"feat_2_"), c( 'feat_3_', 'feat_4_'))
 
 feat_names = sort(unlist(group2))
 group_num <- lapply(group2,FUN = function(x){match(x, feat_names)})
@@ -47,7 +47,7 @@ for (i in 1:dim){
 diag(Sigma) = Sigma_diag
 
 l = 1
-set.seed(l);  beta <- round(rnorm(dim+1), 1)
+set.seed(l);  beta <- round(rnorm(3), 1)
 #beta[1] = 0
 
 ## 1. simulate training data
@@ -78,14 +78,23 @@ if(noise == TRUE){
 x_traintest_mat = as.matrix(dt[,..feat_names])
 
 ## 3. Calculate response
-dt[, response := response_mod(mod_matrix_full = x_traintest_mat, beta012 = beta012, epsilon = epsilon)]
+dt[, response := response_mod(data_mat = x_traintest_mat, beta = beta, epsilon = epsilon)]
 
-## 4. Fit model
-if(fit_mod == 'regression'){
-  form <- as.formula(paste0("response ~", paste(feat_names, collapse = "+")))
-  model <- lm(formula = form, data = dt[(1:No_train_obs), ])
+model = list(beta=beta,pred_func = response_mod)
+class(model) = "custom"
+
+
+model_type.custom <- function(x) {
+  "regression"
 }
-fitted_beta = model$coefficients
+
+# Create custom function
+predict_model.custom <- function(x, newdata) {
+  unlist(x$pred_func(newdata,x$beta,0),use.names = F) # Gives a standard vector
+}
+
+predict_model(model,as.matrix(dt[,..feat_names]))
+
 
 ## 5. initalize shapr object with trained model -- this is used for calculating true shapley
 x_train <- dt[(1:No_train_obs), ..feat_names]
@@ -93,7 +102,7 @@ x_test <- dt[-(1:No_train_obs), ..feat_names]
 y_train <- dt[(1:No_train_obs), .(response)]
 
 
-explainer <- shapr(x_train, model)
+explainer <- shapr(x_train, model,feature_labels = names(x_train))
 
 ## Start grouping stuff
 group1 <- list(c(1), # no groups at all
@@ -101,64 +110,20 @@ group1 <- list(c(1), # no groups at all
                c(3),
                c(4))
 group1_names = lapply(group1, function(x){names(x_test)[x]})
-explainer_group1 <- shapr(x_train, model, group = group1_names)
+explainer_group1 <- shapr(x_train, model, group = group1_names,feature_labels = names(x_train))
 
 
 #group2_names = lapply(group2, function(x){names(x_test)[x]})
 group2_names <- group2
-explainer_group2 <- shapr(x_train, model, group = group2_names)
+explainer_group2 <- shapr(x_train, model, group = group2_names,feature_labels = names(x_train))
 
 #### Here I need to compute the conditional expectation matrix
 
 
-cond_expec_mat0 = cond_expec_new_cont(S = explainer$S,
-                                      x_test = x_test,
-                                      mu = mu,
-                                      Sigma = Sigma,
-                                      fitted_beta = fitted_beta)
-
-# no grouping - used as a test
-Kshap0 <- matrix(0, nrow = nrow(x_test), ncol = nrow(explainer$W))
-for (i in 1:nrow(x_test)) {
-  Kshap0[i, ] = explainer$W %*% t(as.matrix(cond_expec_mat0[i, ]))
-}
-Kshap0 <- data.table(Kshap0)
-dim <- ncol(x_test)
-setnames(Kshap0, 1:(dim + 1), c("none", names(x_test)))
-
-# no ACTUAL grouping but use groups - used as a test
-cond_expec_mat1 = cond_expec_new_cont(S = explainer_group1$S,
-                                      x_test = x_test,
-                                      mu = mu,
-                                      Sigma = Sigma,
-                                      fitted_beta = fitted_beta)
-
-
-Kshap1 <- matrix(0, nrow = nrow(x_test), ncol = nrow(explainer_group1$W))
-for (i in 1:nrow(x_test)) {
-  Kshap1[i, ] = explainer_group1$W %*% t(as.matrix(cond_expec_mat1[i, ]))
-}
-Kshap1 <- data.table(Kshap1)
-setnames(Kshap1, 1:(length(group1_names)+1), c("none", paste0("group", 1:length(group1_names))))
-
-# grouping actually starts
-cond_expec_mat2 = cond_expec_new_cont(S = explainer_group2$S,
-                                      x_test = x_test,
-                                      mu = mu,
-                                      Sigma = Sigma,
-                                      fitted_beta = fitted_beta)
-
-Kshap2 <- matrix(0, nrow = nrow(x_test), ncol = nrow(explainer_group2$W))
-for (i in 1:nrow(x_test)) {
-  Kshap2[i, ] = explainer_group2$W %*% t(as.matrix(cond_expec_mat2[i, ]))
-}
-Kshap2 <- data.table(Kshap2)
-setnames(Kshap2, 1:(length(group2_names)+1), c("none", paste0("group", 1:length(group2_names))))
-
-
 ### Direct approaches using exact Gaussian dist
 
-prediction_zero = sum(fitted_beta*c(1,mu))
+prediction_zero = predict_model(model,matrix(mu,nrow=1))
+
 
 direct_kshap2 = explain(x_test,explainer_group2,
                         approach = "gaussian",
@@ -177,28 +142,27 @@ direct_kshap0 = explain(x_test,explainer,
 
 ##  -------------------------------------------
 
-Kshap0_dt <- data.table(Kshap0)
 names <- NULL
 for(i in 1:length(group2)){
   names <- c(names, paste0('group', i))
-  Kshap0_dt[, paste0('group', i) := rowSums(.SD), .SDcols = group2[[i]]]
+#  Kshap0_dt[, paste0('group', i) := rowSums(.SD), .SDcols = group2[[i]]]
   direct_kshap0$dt[, paste0('group', i) := rowSums(.SD), .SDcols = group2[[i]]]
 }
-feat_names = names(Kshap0)[-1]
+feat_names = names(x_train)
 results0 <- data.table(correlation = cc,
-                       base_MAE = mean(rowMeans(abs(Kshap0 - Kshap1)[,-1])),
-                       group_MAE = mean(rowMeans(abs(Kshap0_dt[,..names] - Kshap2[,-1]))),
-                       direct_MAE = mean(rowMeans(abs(Kshap0[,-1] - direct_kshap0$dt[,..feat_names]))),
-                       direct_group_MAE = mean(rowMeans(abs(Kshap0_dt[,..names] - direct_kshap2$dt[,-1]))))
+#                       base_MAE = mean(rowMeans(abs(Kshap0 - Kshap1)[,-1])),
+#                       group_MAE = mean(rowMeans(abs(Kshap0_dt[,..names] - Kshap2[,-1]))),
+#                       direct_MAE = mean(rowMeans(abs(Kshap0[,-1] - direct_kshap0$dt[,..feat_names]))),
+                       direct_group_MAE = mean(rowMeans(abs(direct_kshap0$dt[,..names] - direct_kshap2$dt[,-1]))))
 for(i in 1:length(group2)){
   results0[, paste0('group', i) := paste0(group2[[i]], collapse = ", ") ]
 }
 results0[,beta:=list(beta)]
 
 results0
-Kshap0_dt
+#Kshap0_dt
 direct_kshap0$dt
 
-Kshap2
+#Kshap2
 direct_kshap2$dt
 
