@@ -8,6 +8,13 @@ library(ggplot2)
 library(xtable)
 library(reshape2)
 
+
+## THIS SCRIPT WAS USED TO ESTIMATE THE SHAPLEY VALUES OF 100 TEST OBSERVATIONS USING ONLY CTREE
+## WE FIRST ESTIMATE JUST THE TREES
+## THEN WE SAMPLE
+## THEN WE ESTIMATE THE SHAPLEY VALUES
+## RUNNING ALL AT ONCE - I.E ALL THE TREES AT ONCE - DOESN'T WORK BECAUSE WE RUN OUT OF MEMORY
+
 simulateAllTrees <- function(given_ind,
                              x_train,
                              comb_indici,
@@ -155,7 +162,50 @@ sample_ctree <- function(tree,
 }
 
 
+prediction <- function(dt, prediction_zero, explainer) {
 
+  # Checks on input data
+  id <- w <- id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
+  stopifnot(
+    data.table::is.data.table(dt),
+    !is.null(dt[["id"]]),
+    !is.null(dt[["id_combination"]]),
+    !is.null(dt[["w"]])
+  )
+
+  # Setup
+  cnms <- colnames(explainer$x_test)
+  data.table::setkeyv(dt, c("id", "id_combination"))
+
+  # Check that the number of test observations equals max(id)
+  stopifnot(nrow(explainer$x_test) == dt[, max(id)])
+
+  # Predictions
+  # Done only for unique variable combinations, then joined back to original dt. Valuable for categorical data
+  dt_unique <- unique(dt[,cnms,with=F])
+  dt_unique[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
+  dt <- dt[dt_unique, on=cnms]
+
+  # Overrides value zero-prediction
+  dt[id_combination == 1, p_hat := prediction_zero]
+
+  # Prediction for test data
+  p_all <- predict_model(explainer$model, newdata = as.data.table(explainer$x_test))
+
+  # Calculate contributions
+  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
+  data.table::setkeyv(dt_res, c("id", "id_combination"))
+  dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = "k")
+  dt_mat[, id_combination := NULL]
+  kshap <- t(explainer$W %*% as.matrix(dt_mat))
+  dt_kshap <- data.table::as.data.table(kshap)
+  colnames(dt_kshap) <- c("none", cnms)
+
+  r <- list(dt = dt_kshap, model = explainer$model, p = p_all, x_test = explainer$x_test)
+  attr(r, "class") <- c("shapr", "list")
+
+  return(r)
+}
 ## ------------- some functions ----------------------
 check_for_cont <- function(col_ind, data){
   return(!is.factor(data[, col_ind]))
@@ -189,10 +239,7 @@ find_row <- function(data, Value1, Value2, Value3, Value4){
 }
 
 ## -----------------------
-# data <- read.table(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/fico.csv", sep = ",", header = TRUE,
-#                    stringsAsFactors = TRUE )
-
-## -----------------------
+## 1. LOAD DATA AND FIT XGBOOST MODEL
 
 data <- read.table(file = "/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_HELOC_dataset_v1.csv", sep = ",", header = TRUE, stringsAsFactors = TRUE )
 data <- data.table(data)
@@ -425,9 +472,10 @@ explainer_cv_regular_indep <- shapr(x_train_num, xgbFit_cv_regular_indep,n_combi
 set.seed(123)
 explainer_cv_regular <- shapr(x_train, xgbFit_cv_regular, n_combinations = n_combinations)
 
+
 chunks = split(1:100, ceiling(seq_along(1:100)/10))
 #-----------------
-set.seed(123)
+set.seed(123) # THIS RUNS OUT OF MEMORY
 # explanation_cv_regular <- explain(
 #   x = x_test[chunks[[i]]],
 #   approach = 'ctree',
@@ -437,8 +485,8 @@ set.seed(123)
 #   mc_cores = 4
 # )
 
-#i = 10
-x = x_test#[chunks[[i]]]
+## 2. START TO SIMULATE JUST TREES
+x = x_test
 approach = 'ctree'
 explainer = explainer_cv_regular
 prediction_zero = p
@@ -524,72 +572,106 @@ chunks_features = split(1:length(features), ceiling(seq_along(1:length(features)
 #   print(paste0('saved the ', i, ' th chunk of trees.'))
 #
 # }
+# print('trees completed')
 
-#print('trees completed')
-#
+
+## 3. LOAD TREES AND SAMPLE FROM THEM
 
 # load trees
-#files <- list.files("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees", pattern = "*.rds")
+# This takes about 3 hours
+# files <- list.files("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees", pattern = "*.rds")
+#
+# tt_start <- Sys.time()
+# for(k in 1:13){
+#
+#   tt <- Sys.time()
+#   all_trees <- readRDS(paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/all_trees_chunk_", k, "_.rds"))
+#   print(Sys.time() - tt)
+#   print("Data loaded")
+#
+#   tt <- Sys.time()
+#   dt_l <- list()
+#   for (i in seq(n_xtest)) {
+#     l <- parallel::mclapply(
+#       X = all_trees,
+#       FUN = sample_ctree,
+#       n_samples = n_samples,
+#       x_test = x$x_test[i, , drop = FALSE],
+#       x_train = x$x_train,
+#       p = ncol(x$x_test),
+#       sample = x$sample,
+#       mc.cores = mc_cores_sample_ctree,
+#       mc.set.seed = FALSE
+#     )
+#
+#     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
+#     dt_l[[i]][, w := 1 / n_samples]
+#     dt_l[[i]][, id := i]
+#     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+#   }
+#   print(Sys.time() - tt)
+#
+#   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+#   dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+#
+#   ## only return unique dt
+#   dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id")]
+#   setnames(dt2, "V1", "w")
+#   dt2[, id_combination2 := chunks_features[[k]][id_combination]]
+#   dt3 <- dt2[['id_combination2']]
+#   dt4 <- cbind(dt3, dt2)
+#   dt4[, 'id_combination' := NULL]
+#   dt4[, 'id_combination2' := NULL]
+#   setnames(dt4, 'dt3', 'id_combination')
+#
+#   tt <- Sys.time()
+#   saveRDS(dt4, file = paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/dt_chunk_",  k, ".rds"))
+#   print(Sys.time() - tt)
+#   #
+#   print("Saved file")
+#   rm(all_trees)
+#   rm(dt_l)
+#   rm(dt)
+#   rm(dt2)
+#   rm(dt3)
+#   rm(dt4)
+#
+#   gc()
+#
+# }
+# print(Sys.time() - tt_start)
 
-tt_start <- Sys.time()
-for(k in 2:13){
+## 4. CALL PREDICTION ON THE SAMPLES TO GET SHAPLEY VALUES
+## DO THIS FOR ALL CTREE
+# ctree_dt_1 <- load(file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/dt_chunk_1.RData")
 
-  tt <- Sys.time()
-  all_trees <- readRDS(paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/all_trees_chunk_", k, "_.rds"))
-  print(Sys.time() - tt)
-  print("Data loaded")
-
-  tt <- Sys.time()
-  for (i in seq(n_xtest)) {
-    l <- parallel::mclapply(
-      X = all_trees,
-      FUN = sample_ctree,
-      n_samples = n_samples,
-      x_test = x$x_test[i, , drop = FALSE],
-      x_train = x$x_train,
-      p = ncol(x$x_test),
-      sample = x$sample,
-      mc.cores = mc_cores_sample_ctree,
-      mc.set.seed = FALSE
-    )
-
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
-    dt_l[[i]][, w := 1 / n_samples]
-    dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
-  }
-  print(Sys.time() - tt)
-
-  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
-
-  ## only return unique dt
-  dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id")]
-  setnames(dt2, "V1", "w")
-  dt2[, id_combination2 := chunks_features[[k]][id_combination]]
-  dt3 <- dt2[['id_combination2']]
-  dt4 <- cbind(dt3, dt2)
-  dt4[, 'id_combination' := NULL]
-  dt4[, 'id_combination2' := NULL]
-  setnames(dt4, 'dt3', 'id_combination')
-
-  tt <- Sys.time()
-  saveRDS(dt4, file = paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/dt_chunk_",  k, ".rds"))
-  print(Sys.time() - tt)
-  #
-  print("Saved file")
-  rm(all_trees)
-  rm(dt_l)
-  rm(dt)
-  rm(dt2)
-  rm(dt3)
-  rm(dt4)
-
-  gc()
-
+dt_ctree0 <- NULL
+for(k in 1:13){
+  assign(paste0("dt_chunk_", k), readRDS(file = paste0("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/dt_chunk_", k, ".rds")))
+  dt_ctree0 <- rbind(dt_ctree0, get(paste0('dt_chunk_', k)))
 }
 
-print(Sys.time() - tt_start)
+# 4 minutes
+tt <- Sys.time()
+r <- prediction(dt_ctree0, prediction_zero, explainer)
+print(Sys.time() - tt)
+
+dt_ctree <- r$dt
+saveRDS(dt_ctree, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/dt_ctree.rds")
+
+## DO THIS FOR ALL INDEPENDENT
+
+dt_ind <- NULL
+for(k in 1:10){
+  load(file = paste0("/nr/project/stat/BigInsight/Projects/Explanations/Data/FICO_explanations_cv_regular_indep_100testobs_chunk_", k, ".RData"))
+  dt_ind <- rbind(dt_ind, explanation_cv_regular_ind$dt)
+}
+saveRDS(dt_ind, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/data/trees/dt_ind.rds")
+
+
+
+
+
 
 
 

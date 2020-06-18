@@ -170,9 +170,9 @@ plot_shapr_Annabelle <- function(x,
     ggplot2::theme(
       legend.position = "bottom",
       plot.title = ggplot2::element_text(hjust = 0.5, size = 6),
-      axis.title=element_text(size = 5.5), # for axis titles
-      axis.text=element_text(size = 5.5), # for axis labels
-      legend.text=element_text(size = 5.5),
+      axis.title=element_text(size = 5), # for axis titles
+      axis.text=element_text(size = 5), # for axis labels
+      legend.text=element_text(size = 5),
       strip.text.x = element_text(size = 5)
     )
 
@@ -180,11 +180,11 @@ plot_shapr_Annabelle <- function(x,
 }
 
 ## ---------------------------------
-p0 <- plot_shapr_Annabelle(x = explanation, index_x_test =1, plot_phi0 = TRUE) ## removes the 'none' possibility
+p0 <- plot_shapr_Annabelle(x = explanation, plot_phi0 = TRUE) ## removes the 'none' possibility, index_x_test =1
 
 ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/figures/example_carinsurance2.png",
        plot = p0, device = NULL, path = NULL,
-       scale = 1, width = 10, height = 5, units = "cm",
+       scale = 1, width = 12, height = 5.5, units = "cm",
        dpi = 300, limitsize = TRUE)
 
 

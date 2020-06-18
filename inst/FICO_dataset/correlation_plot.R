@@ -158,3 +158,5 @@ corrRect(groups,col=3,lwd=3)
 rect(1-eps,11-eps,ncol(cor_all)+1-eps,13-eps,col=NA,border=6,lwd=1.8)
 rect(12-eps,1-eps,14-eps,ncol(cor_all)+1-eps,col=NA,border=6,lwd=1.8)
 dev.off()
+
+max(-1*data.table(cor_all)[,MSinceMostRecentInqexcl7days])
