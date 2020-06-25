@@ -153,10 +153,32 @@ cor_all[12:13,] = t(cor_catcont)
 eps = 0.5
 library(corrplot)
 pdf(file="/nr/project/stat/BigInsight/Projects/Explanations/Data/correlation_figure_new.pdf",width = 9,height=9)
-corrplot(cor_all,diag=F)
+corrplot(cor_all, diag=F)
 corrRect(groups,col=3,lwd=3)
 rect(1-eps,11-eps,ncol(cor_all)+1-eps,13-eps,col=NA,border=6,lwd=1.8)
 rect(12-eps,1-eps,14-eps,ncol(cor_all)+1-eps,col=NA,border=6,lwd=1.8)
 dev.off()
 
+
+# FOR ARTICLE - MEASURE OF HOW CORRELATED THE FEATURES ARE
+print(cor_all)
+
+cor_all_dt <- data.table(cor_all)
+
+vec_of_max_corr <- NULL
+for(i in 1:ncol(cor_all)){
+  print(i)
+  x <- cor_all[, i][order(cor_all[, i])]
+  #print(x[22])
+  #print(x[1])
+  #print("----")
+
+  y = which.max(c(abs(x[22]), abs(x[1])))
+  print(c(x[22], x[1])[y])
+  vec_of_max_corr <- c(vec_of_max_corr, c(x[22], x[1])[y])
+}
+
+cor_all_dt[, SecondLargest_corr := melt(cor_all_dt[, -5, with = FALSE][, rn := 1:.N], id.var= 'rn')[, order(-value)[2] , rn]$V1]
+
+# LEAST CORRELATED FEATURE:
 max(-1*data.table(cor_all)[,MSinceMostRecentInqexcl7days])

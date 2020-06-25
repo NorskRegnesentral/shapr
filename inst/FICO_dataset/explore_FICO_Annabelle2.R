@@ -35,26 +35,53 @@ ggplot(data = data3, aes(x = ctree, y = ind)) + geom_point() +
   facet_wrap(~ variable)  # scales = "free"
   #theme(aspect.ratio=1)
 
+ggsave(
+  '/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/FICO/all_features.png',
+  plot = last_plot(),
+  device = 'png',
+  units = "cm",
+  dpi = 300,
+  width = 50,
+  height = 50,
+  limitsize = TRUE,
+)
 
-data4 <- data.table(data3)[(variable == 'MaxDelq2PublicRecLast12M') | (variable == 'ExternalRiskEstimate') | (variable == 'MSinceMostRecentInqexcl7days') | (variable == 'NumInqLast6Mexcl7days') ,]
-data4[, col := ifelse(id == 14, 1, ifelse(id == 60, 2, ifelse(id == 70, 3, 4)))]
 
-ggplot() + geom_point(data = data4[col == 1], aes(x = ctree, y = ind), color = "red", size = 2) +
+#NumInqLast6Mexcl7days
+#PercentTradesWBalance
+x = sample(1:100, 3)
+print(x)
+# 39 different for NumTrades90Ever2DerogPubRec
+# 86 different for NumTrades90Ever2DerogPubRec and  ExternalRiskEstimate
+
+data4 <- data.table(data3)[(variable == 'MaxDelq2PublicRecLast12M') | (variable == 'ExternalRiskEstimate') | (variable == 'MSinceMostRecentInqexcl7days') | (variable == 'NumTrades90Ever2DerogPubRec') ,]
+# data4[, col := ifelse(id == x[1], 1, ifelse(id == x[2], 2, ifelse(id == x[3], 3, 4)))]
+
+# FINAL
+data4[, col := ifelse(id == 63, 1, ifelse(id == 60, 2, ifelse(id == 86, 3, 4)))]
+
+## FREE AXES
+# ggplot() + geom_point(data = data4[col == 1], aes(x = ctree, y = ind), color = "red", size = 2) +
+#   geom_point(data = data4[col == 2], aes(x = ctree, y = ind), color = "green", size = 2) +
+#   geom_point(data = data4[col == 3], aes(x = ctree, y = ind), color = "blue", size = 2) +
+#   geom_point(data = data4[col == 4], aes(x = ctree, y = ind), alpha = 0.1) +
+#   geom_abline(intercept = 0, slope = 1, col = 'red') +
+#   facet_wrap(~ variable, scales = "free") +
+#   xlab('ctree') + ylab('independence') + theme_bw() + scale_color_manual(values = c("red", "green", "blue", "black")) +
+#   theme(legend.title = element_blank())
+
+
+data4[, variable := droplevels(variable)]
+factor(data4$variable, levels = c( "MaxDelq2PublicRecLast12M", "ExternalRiskEstimate","MSinceMostRecentInqexcl7days","NumTrades90Ever2DerogPubRec"))
+data4[, variable2 := factor(data4$variable, levels = c( "MaxDelq2PublicRecLast12M", "ExternalRiskEstimate","MSinceMostRecentInqexcl7days","NumTrades90Ever2DerogPubRec"))]
+
+ggplot() +
+  geom_point(data = data4[col == 4], aes(x = ctree, y = ind), alpha = 0.1) +
+  geom_point(data = data4[col == 1], aes(x = ctree, y = ind), color = "red", size = 2) +
   geom_point(data = data4[col == 2], aes(x = ctree, y = ind), color = "green", size = 2) +
   geom_point(data = data4[col == 3], aes(x = ctree, y = ind), color = "blue", size = 2) +
-  geom_point(data = data4[col == 4], aes(x = ctree, y = ind), alpha = 0.1) +
   geom_abline(intercept = 0, slope = 1, col = 'red') +
-  facet_wrap(~ variable, scales = "free") +
-  xlab('ctree') + ylab('independence') + theme_bw() + scale_color_manual(values = c("red", "green", "blue", "black")) +
-  theme(legend.title = element_blank())
-
-
-ggplot() + geom_point(data = data4[col == 1], aes(x = ctree, y = ind), color = "red", size = 2) +
-  geom_point(data = data4[col == 2], aes(x = ctree, y = ind), color = "green", size = 2) +
-  geom_point(data = data4[col == 3], aes(x = ctree, y = ind), color = "blue", size = 2) +
-  geom_point(data = data4[col == 4], aes(x = ctree, y = ind), alpha = 0.1) +
-  geom_abline(intercept = 0, slope = 1, col = 'red') +
-  facet_wrap(~ variable) +
+  facet_wrap(~ variable2) +
   xlab('ctree') + ylab('independence') + theme_bw() + scale_color_manual(values = c("red", "green", "blue", "black")) +
   theme(legend.title = element_blank())
 

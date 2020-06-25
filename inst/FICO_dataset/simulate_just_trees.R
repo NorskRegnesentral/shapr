@@ -206,6 +206,8 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   return(r)
 }
+
+
 ## ------------- some functions ----------------------
 check_for_cont <- function(col_ind, data){
   return(!is.factor(data[, col_ind]))
