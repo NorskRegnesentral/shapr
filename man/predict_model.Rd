@@ -44,7 +44,7 @@ The following models are currently supported:
 \item \code{\link[stats:glm]{stats::glm}}
 \item \code{\link[ranger:ranger]{ranger::ranger}}
 \item \code{\link[mgcv:gam]{mgcv::gam}}
-\item \code{\link[xgboost:xgboost]{xgboost::xgb.train}}
+\item \code{\link[xgboost:xgb.train]{xgboost::xgb.train}}
 }
 
 The returned object \code{p} always satisfies the following properties:
