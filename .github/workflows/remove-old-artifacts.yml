@@ -17,4 +17,4 @@ with:
   age: '1 week'
 # Optional inputs
 # skip-tags: true
- skip-recent: 5
+ skip-recent: 6
