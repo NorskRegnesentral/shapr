@@ -31,7 +31,7 @@ p <- mean(y_train)
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(
   x_test,
-  approach = "gaussian",
+  approach = "empirical",
   explainer = explainer,
   prediction_zero = p
 )
