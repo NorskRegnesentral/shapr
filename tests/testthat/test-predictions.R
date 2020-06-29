@@ -20,13 +20,15 @@ test_that("Test prediction", {
   dt[, id := rep_len(1:n_xtest, .N)]
   dt[, id_combination := rep_len(1:n_combinations, .N), id]
   dt[, w := runif(.N)]
-  max_id_combination <- dt[,max(id_combination)]
-  dt <- dt[!(id_combination==max_id_combination)]
-  dt_lastrows <- data.table(explainer$x_test,
-                            id=1:n_xtest,
-                            id_combination = max_id_combination,
-                            w = 1.0)
-  dt <- rbind(dt,dt_lastrows)
+  max_id_combination <- dt[, max(id_combination)]
+  dt <- dt[!(id_combination == max_id_combination)]
+  dt_lastrows <- data.table::data.table(
+    explainer$x_test,
+    id = 1:n_xtest,
+    id_combination = max_id_combination,
+    w = 1.0
+  )
+  dt <- rbind(dt, dt_lastrows)
   x <- prediction(dt, prediction_zero, explainer)
 
   # Test -----------
@@ -43,5 +45,4 @@ test_that("Test prediction", {
 
   # Tets errors
   expect_error(prediction(dt[id < n_xtest], prediction_zero, explainer))
-
 })
