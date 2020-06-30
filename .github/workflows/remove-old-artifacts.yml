@@ -15,6 +15,6 @@ steps:
 uses: c-hive/gha-remove-artifacts@v1
 with:
   age: '1 week'
+  skip-recent: 6
 # Optional inputs
 # skip-tags: true
- skip-recent: 6
