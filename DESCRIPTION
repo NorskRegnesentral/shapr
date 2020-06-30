@@ -37,7 +37,6 @@ Suggests:
     testthat, 
     knitr,
     rmarkdown,
-    pkgdown,
     roxygen2,
     MASS,
     ggplot2,
