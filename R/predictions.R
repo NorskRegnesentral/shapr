@@ -60,7 +60,6 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt[id_combination!=1, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
   dt[id_combination == 1, p_hat := prediction_zero]
   p_all <- dt[id_combination == max(id_combination), p_hat]
-  names(p_all) <- 1:nrow(explainer$x_test)
 
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
