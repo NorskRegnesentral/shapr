@@ -46,7 +46,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   stopifnot(all(S %in% c(0, 1)))
 
   # due to NSE notes in R CMD check
-  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- n_features <- NULL
+  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- NULL
 
   # Find weights for all combinations and training data
   dt <- data.table::as.data.table(W_kernel)
@@ -62,11 +62,6 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   )
   dt_melt[, index_s := nms_vec[id_combination]]
 
-  # Extracts zero and full conditional to be handled separately
-  n_feats_vec <- rowSums(S)
-  dt_melt[, n_features := n_feats_vec[index_s]]
-  dt_melt_sep <- dt_melt[n_features %in% c(0, ncol(x_test))]
-  dt_melt <- dt_melt[!(n_features %in% c(0, ncol(x_test)))]
 
   # Remove training data with small weight
   knms <- c("index_s", "weight")
@@ -92,20 +87,6 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   data.table::setnames(dt_p, colnames(x_train))
   dt_p[, id_combination := dt_melt[["index_s"]]]
   dt_p[, w := dt_melt[["weight"]]]
-
-  # Handles zero and full conditioning separately
-  dt_p_sep <- unique(dt_melt_sep[, .(index_s)])
-  if (nrow(dt_p_sep) > 0) {
-    dt_p_sep <- cbind(x_test, dt_p_sep, w = as.numeric(1))
-    setnames(dt_p_sep, "index_s", "id_combination")
-
-    dt_p <- rbind(dt_p, dt_p_sep)
-  }
-  setkey(dt_p, "id_combination")
-
-  # Adding n_features back in
-  dt_p[, n_features := n_feats_vec[id_combination]]
-
 
   return(dt_p)
 }
