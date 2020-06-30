@@ -34,8 +34,9 @@ Numeric
 }
 \description{
 Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-\code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and \code{\link[xgboost:xgb.train]{xgboost::xgb.train}} with binary or
-continuous response. See details for more information.
+\code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and
+\code{\link[xgboost:xgb.train]{xgboost::xgb.train}} with binary or continuous
+response. See details for more information.
 }
 \details{
 The following models are currently supported:

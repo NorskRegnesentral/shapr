@@ -1,8 +1,9 @@
 #' Generate predictions for different model classes
 #'
 #' @description Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-#' \code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and \code{\link[xgboost:xgb.train]{xgboost::xgb.train}} with binary or
-#' continuous response. See details for more information.
+#' \code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and
+#' \code{\link[xgboost:xgb.train]{xgboost::xgb.train}} with binary or continuous
+#' response. See details for more information.
 #'
 #' @param x Model object for the model to be explained.
 #' @param newdata A data frame (or matrix) in which to look for variables with which to predict.
