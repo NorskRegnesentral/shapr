@@ -125,12 +125,18 @@ Current methodological restrictions:
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>To install the current development version, use</p>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"NorskRegnesentral/shapr"</span>)</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="kw">devtools</span>::<span class="fu">install_github</span>(<span class="st">"NorskRegnesentral/shapr"</span>)
+</pre></div>
 <p>If you would like to install all packages of the models we currently support, use</p>
-<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"NorskRegnesentral/shapr"</span>, <span class="kw">dependencies</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="kw">devtools</span>::<span class="fu">install_github</span>(<span class="st">"NorskRegnesentral/shapr"</span>, dependencies = <span class="fl">TRUE</span>)
+</pre></div>
 <p>If you would also like to build and view the vignette locally, use</p>
-<div class="sourceCode" id="cb3"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"NorskRegnesentral/shapr"</span>, <span class="kw">dependencies</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">build_vignettes</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span>(<span class="st">"understanding_shapr"</span>, <span class="st">"shapr"</span>)</pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="kw">devtools</span>::<span class="fu">install_github</span>(<span class="st">"NorskRegnesentral/shapr"</span>, dependencies = <span class="fl">TRUE</span>, build_vignettes = <span class="fl">TRUE</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span>(<span class="st">"understanding_shapr"</span>, <span class="st">"shapr"</span>)
+</pre></div>
 <p>You can always check out the latest version of the vignette <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html">here</a>.</p>
 </div>
 <div id="example" class="section level2">
@@ -138,21 +144,22 @@ Current methodological restrictions:
 <a href="#example" class="anchor"></a>Example</h2>
 <p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.</p>
 <p>The following example shows how a simple <code>xgboost</code> model is trained using the <em>Boston Housing Data</em>, and how <code>shapr</code> explains the individual predictions.</p>
-<div class="sourceCode" id="cb4"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">xgboost</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">shapr</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/dmlc/xgboost">xgboost</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://norskregnesentral.github.io/shapr">shapr</a></span>)
 
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"Boston"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"MASS"</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"Boston"</span>, package = <span class="st">"MASS"</span>)
 
-<span class="no">x_var</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span>)
-<span class="no">y_var</span> <span class="kw">&lt;-</span> <span class="st">"medv"</span>
+<span class="kw">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span>)
+<span class="kw">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span>
 
-<span class="no">ind_x_test</span> <span class="kw">&lt;-</span> <span class="fl">1</span>:<span class="fl">6</span>
-<span class="no">x_train</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">Boston</span>[-<span class="no">ind_x_test</span>, <span class="no">x_var</span>])
-<span class="no">y_train</span> <span class="kw">&lt;-</span> <span class="no">Boston</span>[-<span class="no">ind_x_test</span>, <span class="no">y_var</span>]
-<span class="no">x_test</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">Boston</span>[<span class="no">ind_x_test</span>, <span class="no">x_var</span>])
+<span class="kw">ind_x_test</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>
+<span class="kw">x_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="kw">Boston</span>[<span class="op">-</span><span class="kw">ind_x_test</span>, <span class="kw">x_var</span>])
+<span class="kw">y_train</span> <span class="op">&lt;-</span> <span class="kw">Boston</span>[<span class="op">-</span><span class="kw">ind_x_test</span>, <span class="kw">y_var</span>]
+<span class="kw">x_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="kw">Boston</span>[<span class="kw">ind_x_test</span>, <span class="kw">x_var</span>])
 
 <span class="co"># Looking at the dependence between the features</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="no">x_train</span>)
+<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="kw">x_train</span>)
 <span class="co">#&gt;            lstat         rm        dis      indus</span>
 <span class="co">#&gt; lstat  1.0000000 -0.6108040 -0.4928126  0.5986263</span>
 <span class="co">#&gt; rm    -0.6108040  1.0000000  0.1999130 -0.3870571</span>
@@ -160,31 +167,31 @@ Current methodological restrictions:
 <span class="co">#&gt; indus  0.5986263 -0.3870571 -0.7060903  1.0000000</span>
 
 <span class="co"># Fitting a basic xgboost model to the training data</span>
-<span class="no">model</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">x_train</span>,
-  <span class="kw">label</span> <span class="kw">=</span> <span class="no">y_train</span>,
-  <span class="kw">nround</span> <span class="kw">=</span> <span class="fl">20</span>,
-  <span class="kw">verbose</span> <span class="kw">=</span> <span class="fl">FALSE</span>
+<span class="kw">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost</a></span>(
+  data = <span class="kw">x_train</span>,
+  label = <span class="kw">y_train</span>,
+  nround = <span class="fl">20</span>,
+  verbose = <span class="fl">FALSE</span>
 )
 
 <span class="co"># Prepare the data for explanation</span>
-<span class="no">explainer</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/shapr.html">shapr</a></span>(<span class="no">x_train</span>, <span class="no">model</span>)
+<span class="kw">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/shapr.html">shapr</a></span>(<span class="kw">x_train</span>, <span class="kw">model</span>)
 
 <span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span>
-<span class="no">p</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">y_train</span>)
+<span class="kw">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">y_train</span>)
 
 <span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
 <span class="co"># the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)</span>
-<span class="no">explanation</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/explain.html">explain</a></span>(
-  <span class="no">x_test</span>,
-  <span class="kw">approach</span> <span class="kw">=</span> <span class="st">"empirical"</span>,
-  <span class="kw">explainer</span> <span class="kw">=</span> <span class="no">explainer</span>,
-  <span class="kw">prediction_zero</span> <span class="kw">=</span> <span class="no">p</span>
+<span class="kw">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/explain.html">explain</a></span>(
+  <span class="kw">x_test</span>,
+  approach = <span class="st">"empirical"</span>,
+  explainer = <span class="kw">explainer</span>,
+  prediction_zero = <span class="kw">p</span>
 )
 
 <span class="co"># Printing the Shapley values for the test data.</span>
 <span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">explanation</span>$<span class="no">dt</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="kw">explanation</span><span class="op">$</span><span class="kw">dt</span>)
 <span class="co">#&gt;      none     lstat         rm       dis      indus</span>
 <span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span>
 <span class="co">#&gt; 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871</span>
@@ -194,7 +201,8 @@ Current methodological restrictions:
 <span class="co">#&gt; 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531</span>
 
 <span class="co"># Finally we plot the resulting explanations</span>
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">explanation</span>)</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation</span>)
+</pre></div>
 <p><img src="reference/figures/README-basic_example-1.png" width="100%"></p>
 </div>
 <div id="contribution" class="section level2">

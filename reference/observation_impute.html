@@ -132,13 +132,13 @@
     <p>Generate permutations of training data using test observations</p>
     </div>
 
-    <pre class="usage"><span class='fu'>observation_impute</span>(
-  <span class='no'>W_kernel</span>,
-  <span class='no'>S</span>,
-  <span class='no'>x_train</span>,
-  <span class='no'>x_test</span>,
-  <span class='kw'>w_threshold</span> <span class='kw'>=</span> <span class='fl'>0.7</span>,
-  <span class='kw'>n_samples</span> <span class='kw'>=</span> <span class='fl'>1000</span>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/observation_impute.html'>observation_impute</a></span>(
+  <span class='kw'>W_kernel</span>,
+  <span class='kw'>S</span>,
+  <span class='kw'>x_train</span>,
+  <span class='kw'>x_test</span>,
+  w_threshold = <span class='fl'>0.7</span>,
+  n_samples = <span class='fl'>1000</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -174,33 +174,35 @@ the largest weight so that the sum of the weights accounts for 80% of the total 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>data.table</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Nikolai Sellereite</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Setup</span>
-<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>20</span> <span class='co'># Sample size of training data</span>
-<span class='no'>m</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span> <span class='co'># Number of features</span>
-<span class='no'>sigma</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cov</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>MASS</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='no'>m</span> * <span class='no'>n</span>, <span class='fl'>0</span>, <span class='fl'>1</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>))
+<span class='kw'>n</span> <span class='op'>&lt;-</span> <span class='fl'>20</span> <span class='co'># Sample size of training data</span>
+<span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fl'>2</span> <span class='co'># Number of features</span>
+<span class='kw'>sigma</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cov</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw'>MASS</span>::<span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='kw'>m</span> <span class='op'>*</span> <span class='kw'>n</span>, <span class='fl'>0</span>, <span class='fl'>1</span>), nrow = <span class='kw'>n</span>))
 
 <span class='co'># Create training- and test data</span>
-<span class='no'>x_train</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='kw pkg'>MASS</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='no'>n</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>0</span>, <span class='no'>m</span>), <span class='kw'>Sigma</span> <span class='kw'>=</span> <span class='no'>sigma</span>), <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='no'>m</span>)
-<span class='no'>x_test</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='kw pkg'>MASS</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>0</span>, <span class='no'>m</span>), <span class='no'>sigma</span>)))
-<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>x_train</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>x_test</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"X"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='no'>m</span>))
+<span class='kw'>x_train</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='kw'>MASS</span>::<span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='kw'>n</span>, mu = <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>0</span>, <span class='kw'>m</span>), Sigma = <span class='kw'>sigma</span>), ncol = <span class='kw'>m</span>)
+<span class='kw'>x_test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='kw'>MASS</span>::<span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, mu = <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>0</span>, <span class='kw'>m</span>), <span class='kw'>sigma</span>)))
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='kw'>x_train</span>) <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='kw'>x_test</span>) <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"X"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='kw'>m</span>))
 
 <span class='co'># Binary matrix which represents the feature combinations</span>
-<span class='no'>S</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>m</span>)
+<span class='kw'>S</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>), nrow = <span class='kw'>m</span>)
 
 <span class='co'># Kernel matrix</span>
-<span class='no'>W_kernel</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span> * <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span>(<span class='no'>S</span>), <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>1</span> / <span class='no'>n</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span> / <span class='no'>n</span>^<span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>)
+<span class='kw'>W_kernel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span>(<span class='kw'>S</span>), mean = <span class='fl'>1</span> <span class='op'>/</span> <span class='kw'>n</span>, sd = <span class='fl'>1</span> <span class='op'>/</span> <span class='kw'>n</span><span class='op'>^</span><span class='fl'>2</span>), nrow = <span class='kw'>n</span>)
 
 <span class='co'># Generate permutations of training data using test observations</span>
-<span class='no'>r</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'>observation_impute</span>(<span class='no'>W_kernel</span>, <span class='no'>S</span>, <span class='no'>x_train</span>, <span class='no'>x_test</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>r</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	28 obs. of  4 variables:
+<span class='kw'>r</span> <span class='op'>&lt;-</span> <span class='kw'>shapr</span>:::<span class='fu'><a href='https://rdrr.io/pkg/shapr/man/observation_impute.html'>observation_impute</a></span>(<span class='kw'>W_kernel</span>, <span class='kw'>S</span>, <span class='kw'>x_train</span>, <span class='kw'>x_test</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='kw'>r</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	28 obs. of  4 variables:
 #&gt;  $ X1            : num  1.98 1.98 1.98 1.98 1.98 ...
 #&gt;  $ X2            : num  2.91 0.175 1.072 -0.203 1.006 ...
 #&gt;  $ id_combination: int  1 1 1 1 1 1 1 1 1 1 ...
 #&gt;  $ w             : num  0.049 0.0492 0.0494 0.0499 0.0502 ...
-#&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'>
-</div></pre>
+#&gt;  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </div><div class='input'></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

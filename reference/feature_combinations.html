@@ -132,11 +132,11 @@
     <p>Define feature combinations, and fetch additional information about each unique combination</p>
     </div>
 
-    <pre class="usage"><span class='fu'>feature_combinations</span>(
-  <span class='no'>m</span>,
-  <span class='kw'>exact</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='fl'>200</span>,
-  <span class='kw'>weight_zero_m</span> <span class='kw'>=</span> <span class='fl'>10</span>^<span class='fl'>6</span>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/feature_combinations.html'>feature_combinations</a></span>(
+  <span class='kw'>m</span>,
+  exact = <span class='fl'>TRUE</span>,
+  n_combinations = <span class='fl'>200</span>,
+  weight_zero_m = <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -179,13 +179,16 @@ from <code>m</code> different features, without replacement.</p></dd>
 
 </dl>
 
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Nikolai Sellereite, Martin Jullum</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># All combinations</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'>feature_combinations</span>(<span class='kw'>m</span> <span class='kw'>=</span> <span class='fl'>5</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>x</span>) <span class='co'># Equals 2^5 = 32</span></div><div class='output co'>#&gt; [1] 32</div><div class='input'>
+<span class='kw'>x</span> <span class='op'>&lt;-</span> <span class='kw'>shapr</span>:::<span class='fu'><a href='https://rdrr.io/pkg/shapr/man/feature_combinations.html'>feature_combinations</a></span>(m = <span class='fl'>5</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>x</span>) <span class='co'># Equals 2^5 = 32</span></div><div class='output co'>#&gt; [1] 32</div><div class='input'>
 <span class='co'># Subsample of combinations</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'>feature_combinations</span>(<span class='kw'>m</span> <span class='kw'>=</span> <span class='fl'>13</span>, <span class='kw'>n_combinations</span> <span class='kw'>=</span> <span class='fl'>1e3</span>)</div></pre>
+<span class='kw'>x</span> <span class='op'>&lt;-</span> <span class='kw'>shapr</span>:::<span class='fu'><a href='https://rdrr.io/pkg/shapr/man/feature_combinations.html'>feature_combinations</a></span>(m = <span class='fl'>13</span>, n_combinations = <span class='fl'>1e3</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

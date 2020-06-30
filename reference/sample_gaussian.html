@@ -132,7 +132,7 @@
     <p>Sample conditional Gaussian variables</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sample_gaussian</span>(<span class='no'>index_given</span>, <span class='no'>n_samples</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>, <span class='no'>m</span>, <span class='no'>x_test</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/sample_gaussian.html'>sample_gaussian</a></span>(<span class='kw'>index_given</span>, <span class='kw'>n_samples</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>, <span class='kw'>m</span>, <span class='kw'>x_test</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -156,17 +156,21 @@ predictions ought to be explained (test data).</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>data.table</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Martin Jullum</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>m</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
-<span class='no'>n_samples</span> <span class='kw'>&lt;-</span> <span class='fl'>50</span>
-<span class='no'>mu</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='no'>m</span>)
-<span class='no'>cov_mat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cov</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n_samples</span> * <span class='no'>m</span>), <span class='no'>n_samples</span>, <span class='no'>m</span>))
-<span class='no'>x_test</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>MASS</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>1</span>)
-<span class='no'>cnms</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"x"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='no'>m</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>x_test</span>) <span class='kw'>&lt;-</span> <span class='no'>cnms</span>
-<span class='no'>index_given</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>7</span>)
-<span class='no'>r</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'>sample_gaussian</span>(<span class='no'>index_given</span>, <span class='no'>n_samples</span>, <span class='no'>mu</span>, <span class='no'>cov_mat</span>, <span class='no'>m</span>, <span class='no'>x_test</span>)</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fl'>10</span>
+<span class='kw'>n_samples</span> <span class='op'>&lt;-</span> <span class='fl'>50</span>
+<span class='kw'>mu</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='kw'>m</span>)
+<span class='kw'>cov_mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cov</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n_samples</span> <span class='op'>*</span> <span class='kw'>m</span>), <span class='kw'>n_samples</span>, <span class='kw'>m</span>))
+<span class='kw'>x_test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw'>MASS</span>::<span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>), nrow = <span class='fl'>1</span>)
+<span class='kw'>cnms</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"x"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='kw'>m</span>))
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='kw'>x_test</span>) <span class='op'>&lt;-</span> <span class='kw'>cnms</span>
+<span class='kw'>index_given</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>7</span>)
+<span class='kw'>r</span> <span class='op'>&lt;-</span> <span class='kw'>shapr</span>:::<span class='fu'><a href='https://rdrr.io/pkg/shapr/man/sample_gaussian.html'>sample_gaussian</a></span>(<span class='kw'>index_given</span>, <span class='kw'>n_samples</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>, <span class='kw'>m</span>, <span class='kw'>x_test</span>)
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

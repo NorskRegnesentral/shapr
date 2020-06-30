@@ -132,7 +132,7 @@
     <p>Get imputed data</p>
     </div>
 
-    <pre class="usage"><span class='fu'>observation_impute_cpp</span>(<span class='no'>index_xtrain</span>, <span class='no'>index_s</span>, <span class='no'>xtrain</span>, <span class='no'>xtest</span>, <span class='no'>S</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/observation_impute_cpp.html'>observation_impute_cpp</a></span>(<span class='kw'>index_xtrain</span>, <span class='kw'>index_s</span>, <span class='kw'>xtrain</span>, <span class='kw'>xtest</span>, <span class='kw'>S</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -179,6 +179,9 @@ the following is true: <code>S[2, 1:3] = c(1, 1, 0)</code>.</p>
 <code>dim(X) = c(length(index_xtrain), ncol(xtrain))</code>. If feature <code>j</code> is present in
 the k-th observation, that is <code>S[index_[k], j] == 1</code>, <code>X[k, j] = xtest[1, j]</code>.
 Otherwise <code>X[k, j] = xtrain[index_xtrain[k], j]</code>.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Nikolai Sellereite</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

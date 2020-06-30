@@ -132,7 +132,7 @@
     <p>Transforms new data to a standardized normal distribution</p>
     </div>
 
-    <pre class="usage"><span class='fu'>inv_gaussian_transform</span>(<span class='no'>zx</span>, <span class='no'>n_z</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/inv_gaussian_transform.html'>inv_gaussian_transform</a></span>(<span class='kw'>zx</span>, <span class='kw'>n_z</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,13 +151,15 @@ the data with the original transformation.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Numeric vector of length <code>n_z</code></p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Martin Jullum</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>zx</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>50</span>)
-<span class='no'>n_z</span> <span class='kw'>&lt;-</span> <span class='fl'>30</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>shapr</span><span class='kw ns'>:::</span><span class='fu'>inv_gaussian_transform</span>(<span class='no'>zx</span>, <span class='no'>n_z</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt;  num [1:30] -0.673 -0.621 -0.62 0.428 -0.57 ...</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>zx</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>50</span>)
+<span class='kw'>n_z</span> <span class='op'>&lt;-</span> <span class='fl'>30</span>
+<span class='kw'>x</span> <span class='op'>&lt;-</span> <span class='kw'>shapr</span>:::<span class='fu'><a href='https://rdrr.io/pkg/shapr/man/inv_gaussian_transform.html'>inv_gaussian_transform</a></span>(<span class='kw'>zx</span>, <span class='kw'>n_z</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='kw'>x</span>)</div><div class='output co'>#&gt;  num [1:30] -0.673 -0.621 -0.62 0.428 -0.57 ...</div><div class='input'></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
