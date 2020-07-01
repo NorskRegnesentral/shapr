@@ -41,8 +41,9 @@
 
 <meta property="og:title" content="Generate predictions for different model classes — predict_model" />
 <meta property="og:description" content="Performs prediction of response lm, glm,
-ranger,  mgcv::gam and xgboost with binary or
-continuous response. See details for more information." />
+ranger,  mgcv::gam and
+xgboost::xgb.train with binary or continuous
+response. See details for more information." />
 
 
 
@@ -74,7 +75,7 @@ continuous response. See details for more information." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1.9000</span>
       </span>
     </div>
 
@@ -132,8 +133,9 @@ continuous response. See details for more information." />
 
     <div class="ref-description">
     <p>Performs prediction of response <code><a href='https://rdrr.io/r/stats/lm.html'>lm</a></code>, <code><a href='https://rdrr.io/r/stats/glm.html'>glm</a></code>,
-<code><a href='https://rdrr.io/pkg/ranger/man/ranger.html'>ranger</a></code>,  <code><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>mgcv::gam</a></code> and <code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost</a></code> with binary or
-continuous response. See details for more information.</p>
+<code><a href='https://rdrr.io/pkg/ranger/man/ranger.html'>ranger</a></code>,  <code><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>mgcv::gam</a></code> and
+<code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost::xgb.train</a></code> with binary or continuous
+response. See details for more information.</p>
     </div>
 
     <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/predict_model.html'>predict_model</a></span>(<span class='kw'>x</span>, <span class='kw'>newdata</span>)
@@ -179,7 +181,7 @@ continuous response. See details for more information.</p>
 <li><p><code><a href='https://rdrr.io/r/stats/glm.html'>stats::glm</a></code></p></li>
 <li><p><code><a href='https://rdrr.io/pkg/ranger/man/ranger.html'>ranger::ranger</a></code></p></li>
 <li><p><code><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>mgcv::gam</a></code></p></li>
-<li><p><code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost::xgboost/xgboost::xgb.train</a></code></p></li>
+<li><p><code><a href='https://rdrr.io/pkg/xgboost/man/xgb.train.html'>xgboost::xgb.train</a></code></p></li>
 </ul>
 
 <p>The returned object <code>p</code> always satisfies the following properties:</p><ul>

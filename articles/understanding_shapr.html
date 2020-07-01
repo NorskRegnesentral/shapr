@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1.9000</span>
       </span>
     </div>
 
@@ -239,8 +239,8 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
   prediction_zero = <span class="kw">p</span>
 )
 
-<span class="co"># Printing the Shapley values for the test data. </span>
-<span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.  </span>
+<span class="co"># Printing the Shapley values for the test data.</span>
+<span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="kw">explanation</span><span class="op">$</span><span class="kw">dt</span>)
 <span class="co">#&gt;      none     lstat         rm       dis      indus</span>
 <span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span>
@@ -251,7 +251,7 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <span class="co">#&gt; 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531</span>
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">6</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">6</span>))
 </pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
 <p>The Gaussian approach is used as follows:</p>
@@ -265,7 +265,7 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 )
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_gaussian</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">6</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_gaussian</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">6</span>))
 </pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
 <p>The Gaussian copula approach is used as follows:</p>
@@ -278,9 +278,9 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
   prediction_zero = <span class="kw">p</span>
 )
 
-<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding </span>
+<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span>
 <span class="co"># the no-covariate effect</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_copula</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">6</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_copula</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">6</span>))
 </pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
 <div id="main-arguments-in-shapr" class="section level2">
@@ -313,14 +313,14 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <span class="co"># Use the combined approach</span>
 <span class="kw">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span>(
   <span class="kw">x_test</span>,
-  approach = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"empirical"</span>,<span class="st">"copula"</span>,<span class="st">"gaussian"</span>,<span class="st">"gaussian"</span>),
+  approach = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"empirical"</span>, <span class="st">"copula"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),
   explainer = <span class="kw">explainer</span>,
   prediction_zero = <span class="kw">p</span>
 )
 
-<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding </span>
+<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span>
 <span class="co"># the no-covariate effect</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_combined</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">6</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_combined</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">6</span>))
 </pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 </div>
@@ -337,57 +337,57 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost::xgboost</a></code>/<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost::xgb.train</a></code>
 </li>
 </ul>
-<p>Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above. Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple additional functions to the class your model belongs to. The first class function is <code>model_type</code>, taking the model object as input, and outputting a character indicating whether the model is a (continuous response) <code>"regression"</code> model, or a (binary) <code>"classification"</code> model. The second function is <code>predict_model</code>, taking the model and data (as a <code>matrix</code> or <code>data.frame</code>) as input and outputting the corresponding prediction as a numeric vector. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a <code>gbm</code> model using the <code>caret</code> package, fitted to the same Boston data set as used above.</p>
+<p>Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above. Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple additional functions to the class your model belongs to. The first class function is <code>model_type</code>, taking the model object as input, and outputting a character indicating whether the model is a (continuous response) <code>"regression"</code> model, or a (binary) <code>"classification"</code> model. The second function is <code>predict_model</code>, taking the model and data (as a <code>matrix</code> or <code>data.frame</code>) as input and outputting the corresponding prediction as a numeric vector. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a <code>gbm</code> model using the <code>gbm</code> package, fitted to the same Boston data set as used above.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/topepo/caret">caret</a></span>)
-<span class="co">#&gt; Loading required package: lattice</span>
-<span class="co">#&gt; Loading required package: ggplot2</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/gbm-developers/gbm">gbm</a></span>)
 <span class="co">#&gt; Loaded gbm 2.1.5</span>
 
-<span class="co"># Fitting a gbm model using caret</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">825</span>)
-<span class="kw">model</span> <span class="op">&lt;-</span> <span class="kw">caret</span>::<span class="fu"><a href="https://rdrr.io/pkg/caret/man/train.html">train</a></span>(
-  <span class="kw">x_train</span>,
-  y = <span class="kw">y_train</span>,
-  method = <span class="st">"gbm"</span>,
-  verbose = <span class="fl">FALSE</span>
-)
+<span class="kw">form</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html">as.formula</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="kw">y_var</span>, <span class="st">"~"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="kw">x_var</span>, collapse = <span class="st">"+"</span>)))
+<span class="kw">xy_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">x_train</span>, medv = <span class="kw">y_train</span>)
 
-<span class="co"># Create custom function of model_type for caret</span>
-<span class="kw">model_type.train</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">x</span>) {
+<span class="co"># Fitting a gbm model</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">825</span>)
+<span class="kw">model</span> <span class="op">&lt;-</span> <span class="kw">gbm</span>::<span class="fu"><a href="https://rdrr.io/pkg/gbm/man/gbm.html">gbm</a></span>(
+  <span class="kw">form</span>,
+  data = <span class="kw">xy_train</span>,
+  distribution = <span class="st">"gaussian"</span>
+  )
+
+<span class="co"># Create custom function of model_type for gbm</span>
+<span class="kw">model_type.gbm</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">x</span>) {
   <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(
-    <span class="kw">x</span><span class="op">$</span><span class="kw">modelType</span>[[<span class="fl">1</span>]] <span class="op">==</span> <span class="st">"Classification"</span>,
+    <span class="kw">x</span><span class="op">$</span><span class="kw">distribution</span><span class="op">$</span><span class="kw">name</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"bernoulli"</span>, <span class="st">"adaboost"</span>),
     <span class="st">"classification"</span>,
     <span class="st">"regression"</span>
   )
 }
 
-<span class="co"># Create custom function of predict_model for caret</span>
-<span class="kw">predict_model.train</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">x</span>, <span class="kw">newdata</span>) {
+<span class="co"># Create custom function of predict_model for gbm</span>
+<span class="kw">predict_model.gbm</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">x</span>, <span class="kw">newdata</span>) {
 
-  <span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"caret"</span>, quietly = <span class="fl">TRUE</span>)) {
-    <span class="fu"><a href="https://rdrr.io/r/base/stop.html">stop</a></span>(<span class="st">"The caret package is required for predicting train models"</span>)
+  <span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">'gbm'</span>, quietly = <span class="fl">TRUE</span>)) {
+    <span class="fu"><a href="https://rdrr.io/r/base/stop.html">stop</a></span>(<span class="st">'The gbm package is required for predicting train models'</span>)
   }
   <span class="kw">model_type</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/model_type.html">model_type</a></span>(<span class="kw">x</span>)
 
   <span class="co">if</span> (<span class="kw">model_type</span> <span class="op">==</span> <span class="st">"classification"</span>) {
 
-    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="kw">x</span>, <span class="kw">newdata</span>, type = <span class="st">"prob"</span>)
+    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="kw">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span>(<span class="kw">newdata</span>), type = <span class="st">"response"</span>, n.trees = <span class="kw">x</span><span class="op">$</span><span class="kw">n.trees</span>)
   } <span class="co">else</span> {
 
-    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="kw">x</span>, <span class="kw">newdata</span>)
+    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="kw">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span>(<span class="kw">newdata</span>), n.trees = <span class="kw">x</span><span class="op">$</span><span class="kw">n.trees</span>)
   }
 }
 
 <span class="co"># Prepare the data for explanation</span>
-<span class="kw">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span>(<span class="kw">x_train</span>, <span class="kw">model</span>, feature_labels = <span class="kw">x_var</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
+<span class="kw">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span>(<span class="kw">xy_train</span>, <span class="kw">model</span>, feature_labels = <span class="kw">x_var</span>)
 
 <span class="co"># Spedifying the phi_0, i.e. the expected prediction without any features</span>
-<span class="kw">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">y_train</span>)
+<span class="kw">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">xy_train</span>[, <span class="kw">y_var</span>])
 
 <span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
-<span class="co"># the empirical (conditional) distribution approach with </span>
+<span class="co"># the empirical (conditional) distribution approach with</span>
 <span class="co"># bandwidth parameter sigma = 0.1 (default)</span>
 <span class="kw">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span>(
   <span class="kw">x_test</span>,
@@ -396,9 +396,9 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
   prediction_zero = <span class="kw">p0</span>
 )
 
-<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding </span>
-<span class="co"># the no-covariate effect. </span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_combined</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">6</span>))
+<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span>
+<span class="co"># the no-covariate effect.</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_combined</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">6</span>))
 </pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-6-1.png" width="672"> Note that this explains a different (but similar) model than the above xgboost model!</p>
 <p><a id="compare"></a></p>
