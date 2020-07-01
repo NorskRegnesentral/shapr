@@ -1,5 +1,5 @@
 Package: shapr
-Version: 0.1.1
+Version: 0.1.1.9000
 Title: Explain the Output of Machine Learning Models with more Accurately Estimated Shapley Values
 Description: Complex machine learning models are often hard to interpret. However, in 
   many situations it is crucial to understand and explain why a model made a specific 
@@ -9,8 +9,8 @@ Description: Complex machine learning models are often hard to interpret. Howeve
   described in Aas, Jullum and Løland (2019) <arXiv:1903.10464>, which accounts for any feature 
   dependence, and thereby produces more accurate estimates of the true Shapley values.
 Authors@R: c(
-    person("Nikolai", "Sellereite", email = "nikolaisellereite@gmail.com", role = c("cre", "aut"), comment = c(ORCID = "0000-0002-4671-0337")),
-    person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = "aut", comment = c(ORCID = "0000-0003-3908-5155")),  
+    person("Nikolai", "Sellereite", email = "nikolaisellereite@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-4671-0337")),
+    person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = c("cre", "aut"), comment = c(ORCID = "0000-0003-3908-5155")),
     person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
     person("Jens Christian", "Wahl", email = "Jens.Christian.Wahl@nr.no", role = "ctb"), 
     person("Camilla", "Lingjærde", role = "ctb"))
@@ -21,7 +21,7 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Language: en-US
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Depends: R (>= 3.5.0)
 Imports: 
     stats,
@@ -35,18 +35,11 @@ Suggests:
     xgboost,
     mgcv,
     testthat, 
-    lintr (>= 2.0.0),
-    covr,
-    maptree,
-    corrplot,
-    pcaPP,
     knitr,
     rmarkdown,
-    pkgdown,
     roxygen2,
     MASS,
     ggplot2,
-    caret,
     gbm
 LinkingTo: 
     RcppArmadillo,

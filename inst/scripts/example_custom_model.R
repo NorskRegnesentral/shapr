@@ -1,6 +1,6 @@
 rm(list = ls())
 
-library(caret)
+library(gbm)
 library(shapr)
 
 # Load data
@@ -10,50 +10,52 @@ data("Boston", package = "MASS")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-x_train <- as.matrix(tail(Boston[, x_var], -6))
-y_train <- tail(Boston[, y_var], -6)
-x_test <- as.matrix(head(Boston[, x_var], 6))
+xy_train <- tail(Boston, -6)
+x_test <- head(Boston,6)
 
-# Fitting a gbm model using caret
+form = as.formula(paste0(y_var,"~",paste0(x_var,collapse="+")))
+
+# Fitting a gbm model
 set.seed(825)
-model <- train(
-  x_train,
-  y = y_train,
-  method = "gbm",
-  verbose = FALSE
+model <- gbm::gbm(
+  form,
+  data = xy_train,
+  distribution="gaussian"
 )
 
-# Create custom function of model_type for caret
-model_type.train <- function(x) {
+
+# Create custom function of model_type for gbm
+model_type.gbm <- function(x) {
   ifelse(
-    x$modelType[[1]] == "Classification",
+    x$distribution$name %in% c("bernoulli","adaboost"),
     "classification",
     "regression"
   )
 }
 
-# Create custom function of predict_model for caret
-predict_model.train <- function(x, newdata) {
+# Create custom function of predict_model for gbm
+predict_model.gbm <- function(x, newdata) {
 
-  if (!requireNamespace('caret', quietly = TRUE)) {
-    stop('The caret package is required for predicting train models')
+  if (!requireNamespace('gbm', quietly = TRUE)) {
+    stop('The gbm package is required for predicting train models')
   }
   model_type <- model_type(x)
 
   if (model_type == "classification") {
 
-    predict(x, newdata, type = "prob")
+    predict(x, as.data.frame(newdata), type = "response",n.trees = x$n.trees)
   } else {
 
-    predict(x, newdata)
+    predict(x, as.data.frame(newdata),n.trees = x$n.trees)
   }
 }
 
 # Prepare the data for explanation
-explainer <- shapr(x_train, model)
+set.seed(123)
+explainer <- shapr(xy_train, model,feature_labels = x_var)
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
-p0 <- mean(y_train)
+p0 <- mean(xy_train[,y_var])
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)

@@ -43,11 +43,11 @@ Define feature combinations, and fetch additional information about each unique 
 }
 \examples{
 # All combinations
-x <- shapr:::feature_combinations(m = 5)
-nrow(x) # Equals 2^5 = 32
+x <- shapr:::feature_combinations(m = 3)
+nrow(x) # Equals 2^3 = 8
 
 # Subsample of combinations
-x <- shapr:::feature_combinations(m = 13, n_combinations = 1e3)
+x <- shapr:::feature_combinations(m = 13, n_combinations = 1e2)
 }
 \author{
 Nikolai Sellereite, Martin Jullum
