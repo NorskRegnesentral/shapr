@@ -28,7 +28,7 @@ test_that("Test prediction", {
     id_combination = max_id_combination,
     w = 1.0
   )
-  dt <- rbind(dt, dt_lastrows,dt_lastrows,dt_lastrows)
+  dt <- rbind(dt, dt_lastrows, dt_lastrows, dt_lastrows)
 
   x <- prediction(dt, prediction_zero, explainer)
 
