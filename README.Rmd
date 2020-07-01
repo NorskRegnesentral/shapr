@@ -70,19 +70,19 @@ The application programming interface (API) of `shapr` is inspired by @lime_api.
 To install the current development version, use
 
 ```{r, eval = FALSE}
-devtools::install_github("NorskRegnesentral/shapr")
+remotes::install_github("NorskRegnesentral/shapr")
 ```
 
 If you would like to install all packages of the models we currently support, use
 
 ```{r, eval = FALSE}
-devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
+remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 ```
 
 
 If you would also like to build and view the vignette locally, use 
 ```{r, eval = FALSE}
-devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
+remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
 vignette("understanding_shapr", "shapr")
 ```
 
