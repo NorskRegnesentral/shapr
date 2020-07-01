@@ -44,9 +44,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
   stopifnot(nrow(W_kernel) == nrow(x_train))
   stopifnot(ncol(W_kernel) == nrow(S))
   stopifnot(all(S %in% c(0, 1)))
-
-  # due to NSE notes in R CMD check
-  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- NULL
+  index_s <- index_x_train <- id_combination <- weight <- w <- wcum <- NULL # due to NSE notes in R CMD check
 
   # Find weights for all combinations and training data
   dt <- data.table::as.data.table(W_kernel)
@@ -61,7 +59,6 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
     variable.factor = FALSE
   )
   dt_melt[, index_s := nms_vec[id_combination]]
-
 
   # Remove training data with small weight
   knms <- c("index_s", "weight")
@@ -224,7 +221,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
-
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   return(dt)
 }
