@@ -91,7 +91,7 @@ print(explanation$dt)
 
 x1 <- c(120.1, -100.2, -160.8, 22.8, 250.54, -8.9)
 sum(x1)
-x2 <- c(90.1, -40.8, 130.78, 80.8, -20.5, -40.5)
+x2 <- c(120.1, -40.8, 130.78, 80.8, -20.5, -40.5)
 sum(x2)
 
 explanation$dt$none <- c(x1[1], x2[1])
@@ -188,6 +188,27 @@ ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/f
        dpi = 300, limitsize = TRUE)
 
 
+ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/figures/example_carinsurance2.pdf",
+       plot = p0,
+       device = "pdf",
+       scale = 1,
+       width = 12,
+       height = 5.5,
+       units = "cm",
+       dpi = 300,
+       limitsize = TRUE)
+
+
+
+ggsave("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/CD_make_paper/Final_zip_version_Redelmeier/figures/example_carinsurance2.pdf",
+       plot = p0,
+       device = "pdf",
+       scale = 1,
+       width = 12,
+       height = 5.5,
+       units = "cm",
+       dpi = 300,
+       limitsize = TRUE)
 
 
 

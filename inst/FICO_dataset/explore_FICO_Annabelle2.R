@@ -82,8 +82,12 @@ ggplot() +
   geom_point(data = data4[col == 3], aes(x = ctree, y = ind), color = "blue", size = 2) +
   geom_abline(intercept = 0, slope = 1, col = 'red') +
   facet_wrap(~ variable2) +
-  xlab('ctree') + ylab('independence') + theme_bw() + scale_color_manual(values = c("red", "green", "blue", "black")) +
-  theme(legend.title = element_blank())
+  xlab('Shapley values estimated using ctree') +
+  ylab('Shapley values estimated using independence') +
+  theme_bw() + scale_color_manual(values = c("red", "green", "blue", "black")) +
+  theme(legend.title = element_blank(),
+        strip.text = element_text(size = 8))
+
 
 ggsave(
   '/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/figures/FICO/four_features.png',
@@ -105,4 +109,14 @@ ggsave(
   limitsize = TRUE,
 )
 
+ggsave(
+  '/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/ctree-paper/CD_make_paper/Final submission Redelmeier/figures/four_features.pdf',
+  plot = last_plot(),
+  device = 'pdf',
+  units = "cm",
+  width = 11,
+  height = 11,
+  dpi = 300,
+  limitsize = TRUE,
+)
 
