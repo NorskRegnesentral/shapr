@@ -7,7 +7,6 @@
 \alias{explain.copula}
 \alias{explain.ctree}
 \alias{explain.combined}
-\alias{explain.categorical}
 \alias{explain.combinedparameters}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
@@ -60,8 +59,6 @@ explain(x, explainer, approach, prediction_zero, ...)
   cov_mat = NULL,
   ...
 )
-
-\method{explain}{categorical}(x, explainer, approach, prediction_zero, joint_prob_dt, ...)
 
 \method{explain}{combinedparameters}(x, explainer, approach, prediction_zero, mincriterion, ...)
 }
@@ -123,10 +120,6 @@ when conditioning on various numbers of features.}
 
 \item{sample}{Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all
 observations in the node.}
-
-\item{prob_dt}{Data.table of probabilities (Optional) of the data generating distribution.
-If \code{NULL} the probabilities/frequencies are are estimated from the data. Note that this is only used
-when \code{approach = "ctree"}.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:

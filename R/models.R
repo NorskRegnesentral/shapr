@@ -337,8 +337,11 @@ features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
   if (!is.null(x[["dummyfunc"]])){
     return(cnms)
   } else {
+
     if (!all(nms %in% cnms)) error_feature_labels()
   }
+
+
 
   return(nms)
 }
