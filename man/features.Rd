@@ -23,20 +23,6 @@ features(x, cnms, feature_labels = NULL)
 \method{features}{gam}(x, cnms, feature_labels = NULL)
 
 \method{features}{xgb.Booster}(x, cnms, feature_labels = NULL)
-
-features(x, cnms, feature_labels = NULL)
-
-\method{features}{default}(x, cnms, feature_labels = NULL)
-
-\method{features}{lm}(x, cnms, feature_labels = NULL)
-
-\method{features}{glm}(x, cnms, feature_labels = NULL)
-
-\method{features}{ranger}(x, cnms, feature_labels = NULL)
-
-\method{features}{gam}(x, cnms, feature_labels = NULL)
-
-\method{features}{xgb.Booster}(x, cnms, feature_labels = NULL)
 }
 \arguments{
 \item{x}{Model object for the model to be explained.}
@@ -46,8 +32,6 @@ features(x, cnms, feature_labels = NULL)
 \item{feature_labels}{Character vector. Represents the labels of the features used for prediction.}
 }
 \description{
-Fetches feature labels from a given model object
-
 Fetches feature labels from a given model object
 }
 \keyword{internal}

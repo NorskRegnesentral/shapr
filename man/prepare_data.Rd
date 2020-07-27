@@ -6,6 +6,7 @@
 \alias{prepare_data.gaussian}
 \alias{prepare_data.copula}
 \alias{prepare_data.ctree}
+\alias{prepare_data.categorical}
 \title{Generate data used for predictions}
 \usage{
 prepare_data(x, ...)
@@ -31,6 +32,15 @@ prepare_data(x, ...)
   mc_cores = 1,
   mc_cores_simulateAllTrees = mc_cores,
   mc_cores_sample_ctree = mc_cores,
+  ...
+)
+
+\method{prepare_data}{categorical}(
+  x,
+  seed = 1,
+  n_samples = 1000,
+  index_features = NULL,
+  mc_cores = 1,
   ...
 )
 }
