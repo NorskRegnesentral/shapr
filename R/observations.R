@@ -396,7 +396,7 @@ prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_feature
     features <- x$X$features[index_features]
   }
 
-  # marg_list <- marg_prob(explainer)
+  # Below is the equivalent of: marg_list <- marg_prob(explainer)
   feat_names <- colnames(x$x_train)
   joint_prob_dt <- x$joint_prob_dt
 
@@ -410,13 +410,12 @@ prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_feature
 
     marg_list[[i]] <- mat
   }
+  # End of marg_prob()
 
-  # joint probabilities
-  feat_names <- colnames(x$x_train)
-
+  # Below is the equivalent of: cond_list <- cond_prob()
   cond_list <- list()
   cond_list[[1]] <- NA
-  # START HERE PROBLEMS??? HERE????
+
   for(i in 2:nrow(x$S)){
     col_names <- feat_names[as.logical(x$S[i, ])]
 
@@ -425,47 +424,40 @@ prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_feature
     setkeyv(joint_prob_dt, col_names)
     cond_list[[i]] <- merge(mat0, joint_prob_dt, all.x = TRUE)
     cond_list[[i]][, cond_prob := joint_prob / marg_prob]
-    cond_list[[i]][, (feat_names):=NULL] # To save memory
+    cond_list[[i]][, (feat_names):= NULL] # To save memory
   }
+  # End of function
 
-  # dt <- cond_list
+  # New
+  cond_list0 <- cond_list
+  cond_list0[[1]] <- data.frame(marg_prob = 1, joint_prob = 1, id = joint_prob_dt$id, cond_prob = 1)
+  cond_dt <- rbindlist(cond_list0, id = 'id_combination')
 
-  dim <- length(feat_names)
-  S_dt <- data.table(x$S)
-  S_dt[, id := 0:(nrow(S_dt) - 1)]
-  setnames(S_dt, c(feat_names, "id"))
+  joint_prob_dt0 <- joint_prob_dt
+  joint_prob_dt0[, joint_prob := NULL]
 
-  mat <- unique(x_test)
-  mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names] # To be removed later
-  mat[, rowid := .I] # Adding identifyer to match on
+  cond_dt <- cond_dt[joint_prob_dt0, on = 'id']
 
-  cond_expec_list <- list()
-  cond_expec_list[[1]] <- NULL
+  setkeyv(cond_dt, c("id_combination", "id"))
 
-  # joint_prob_dt[, predict := predict_model(explainer$model, newdata = .SD), .SDcols = feat_names]
+  S_dt <- data.table(explainer$S)
+  S_dt[S_dt == 0] <- NA
+  S_dt[, id_combination := 1:nrow(S_dt)]
+  setnames(S_dt, c(paste0(feat_names, "conditioned"), "id_combination"))
 
-  setkey(joint_prob_dt, id)
+  cols <- c(feat_names, "id_combination")
+  cond_dt_tmp <- cond_dt[, ..cols]
+  cond_dt_tmp2 <- cond_dt_tmp[, lapply(.SD, as.character)]
+  cond_dt_tmp3 <- cond_dt_tmp2[, lapply(.SD, as.numeric)]
 
-  tmp <- list()
-  tmp0 <- NULL
-  for(i in 2:nrow(x$S)){
-    col_names <- feat_names[as.logical(x$S[i, ])]
-    these_cols <- c(col_names,"id", "predict")
-    tmp0 <- merge(cond_list[[i]], joint_prob_dt[, ..these_cols], by = "id") # Need the whole thing here
-    # tmp0[, expected_value := predict * cond_prob]
-    cond_expec_list[[i]] <- tmp0 # [, list(cond_expec = sum(expected_value)), by = col_names]
-    # tmp[[i]] <- cbind(cond_expec_list[[i]][mat, .(rowid, cond_expec), on = col_names, allow.cartesian = TRUE], colnum = i - 1)
-  }
-  tmp_dt <- rbindlist(tmp, use.names = T)
+  tmp <- cond_dt_tmp3[S_dt, on = 'id_combination']
 
-  final_dt <- dcast(tmp_dt, formula = "rowid~colnum", value.var = "cond_expec")
-  x_test_id <- mat[x_test, on = feat_names]
-  S_char_vec <- as.character(1:(nrow(x$S) - 1))
-  final_dt_x_test <- cbind("0" = prediction_zero, final_dt[x_test_id, ..S_char_vec,on = "rowid"])
+  cols2 <- paste0(feat_names, "conditioned")
+  tmp2 <- tmp[, ..feat_names] * tmp[, ..cols2]
+  setnames(tmp2, c(paste0(feat_names, "conditioned")))
 
-
-
-
+  setkeyv(cond_dt, "id_combination")
+  dt <- cbind(cond_dt, tmp2)
 
 
   return(dt)
