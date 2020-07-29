@@ -373,28 +373,25 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
 explain.categorical <- function(x, explainer, approach, prediction_zero, joint_prob_dt, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- explainer_x_test_dt(x, explainer$feature_labels)
+  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
   explainer$approach <- approach
   explainer$joint_prob_dt <- joint_prob_dt
 
-  # Generate data
-  dt <- prepare_data(explainer, ...)
+  #
+  # set.seed(1)
+  # joint_prob_dt_list <- create_exact_joint_prob(mu, Sigma, explainer, cutoff) # beta, response_mod
+  # marg_list <- marg_prob(joint_prob_dt_list, explainer)
+  # cond_list <- cond_prob(marg_list, joint_prob_dt_list, explainer)
+  # cond_expec_mat <- cond_expec_new(cond_list, explainer, x, prediction_zero = prediction_zero, joint_prob_dt = joint_prob_dt_list)
+  # true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test = x)
 
+  # Generate data
+  dt <- prepare_data(explainer, ...) # START HERE!!!
   if (!is.null(explainer$return)) {
     return(dt)
   }
-  #      id_combination  marg_prob joint_prob id cond_prob feat_1_ feat_2_ feat_3_ feat_1_conditioned feat_2_conditioned feat_3_conditioned
-  #   1:              1 1.00000000 1.00000000  1         1       1       1       1                 NA                 NA                 NA
-  #   2:              1 1.00000000 1.00000000  2         1       1       1       2                 NA                 NA                 NA
-  #   3:              1 1.00000000 1.00000000  3         1       1       1       3                 NA                 NA                 NA
-  #   4:              1 1.00000000 1.00000000  4         1       1       2       1                 NA                 NA                 NA
-  #   5:              1 1.00000000 1.00000000  5         1       1       2       2                 NA                 NA                 NA
-  # ---
-  # 212:              8 0.02552940 0.02552940 23         1       3       2       2                  3                  2                  2
-  # 213:              8 0.01783726 0.01783726 24         1       3       2       3                  3                  2                  3
-  # 214:              8 0.00984454 0.00984454 25         1       3       3       1                  3                  3                  1
-  # 215:              8 0.01784443 0.01784443 26         1       3       3       2                  3                  3                  2
-  # 216:              8 0.01777305 0.01777305 27         1       3       3       3                  3                  3                  3
+
+
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
