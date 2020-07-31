@@ -109,9 +109,9 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Check input for approach
   if (!(is.vector(approach) &&
-        is.atomic(approach) &&
-        (length(approach) == 1 | length(approach) == length(explainer$feature_labels)) &&
-        all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "categorical"))))
+    is.atomic(approach) &&
+    (length(approach) == 1 | length(approach) == length(explainer$feature_labels)) &&
+    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "categorical"))))
   ) {
     stop(
       paste(
@@ -359,62 +359,18 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
   return(r)
 }
 
-#' @param joint_prob_dt Data.table of probabilities (Optional) of the data generating distribution.
+
+
+#' @param prob_dt Data.table of probabilities (Optional) of the data generating distribution.
 #' If \code{NULL} the probabilities/frequencies are are estimated from the data. Note that this is only used
-#' when \code{approach = "categorical"}.
+#' when \code{approach = "ctree"}.
 #'
-#' @author Annabelle Redelmeier
+#'
 #' @rdname explain
 #' @name explain
 #'
 #' @export
-#'
 explain.categorical <- function(x, explainer, approach, prediction_zero, joint_prob_dt, ...) {
-
-  cnms <- explainer$feature_labels
-
-  if (!all(x[, sapply(x, is.factor)])) {
-    stop("All test observations should be factors to use categorical method.")
-  }
-  if (!all(explainer$x_train[, sapply(explainer$x_train, is.factor)])) {
-    stop("All train observations should be factors to use categorical method.")
-  }
-  ## Estimate joint_prob_dt if it is not passed to the function
-  if (is.null(joint_prob_dt)) {
-    data <- copy(explainer$x_train)
-    setkeyv(data, explainer$feature_labels)
-    joint_prob_dt0 <- data[,  .N, eval(explainer$feature_labels)]
-
-    joint_prob_dt0[, joint_prop := N / nrow(data)]
-
-    ## If not all choices occur, fill them in:
-    x_train_list <- list()
-    for(i in 1:ncol(explainer$x_train)) {
-      x_train_list[[i]] <- 1:(length(levels(explainer$x_train[[i]])))
-    }
-    CJ_dt <- do.call(CJ, x_train_list)
-    names(CJ_dt) <- explainer$feature_labels
-    CJ_dt <- CJ_dt[, lapply(.SD, as.factor)]
-
-
-    joint_prob_dt <- joint_prob_dt0[CJ_dt, on = cnms][, id_all := .I]
-
-    set(joint_prob_dt, which(is.na(joint_prob_dt[['joint_prop']])), "joint_prop", 0.001)
-    joint_prob_dt[, joint_prop := joint_prop / sum(joint_prob_dt[['joint_prop']])]
-    joint_prob_dt[, N := NULL]
-
-  } else{
-    for (i in 1:length(explainer$feature_labels)) {
-      if (!explainer$feature_labels[i] %in% names(joint_prob_dt)){
-        stop("All features in training observations should also belong to joint_prob_dt.")
-      }
-    }
-    for (i in explainer$feature_labels) {
-      if (!all(levels(explainer$x_train[[i]]) %in% levels(joint_prob_dt[[i]]))) {
-        stop("All features in training observations should have the same levels as the features in joint_prob_dt.")
-      }
-    }
-  }
 
   # Add arguments to explainer object
   explainer$x_test <- explainer_x_test_dt(x, explainer$feature_labels)
@@ -427,12 +383,142 @@ explain.categorical <- function(x, explainer, approach, prediction_zero, joint_p
   if (!is.null(explainer$return)) {
     return(dt)
   }
+  #      id_combination  marg_prob joint_prob id cond_prob feat_1_ feat_2_ feat_3_ feat_1_conditioned feat_2_conditioned feat_3_conditioned
+  #   1:              1 1.00000000 1.00000000  1         1       1       1       1                 NA                 NA                 NA
+  #   2:              1 1.00000000 1.00000000  2         1       1       1       2                 NA                 NA                 NA
+  #   3:              1 1.00000000 1.00000000  3         1       1       1       3                 NA                 NA                 NA
+  #   4:              1 1.00000000 1.00000000  4         1       1       2       1                 NA                 NA                 NA
+  #   5:              1 1.00000000 1.00000000  5         1       1       2       2                 NA                 NA                 NA
+  # ---
+  # 212:              8 0.02552940 0.02552940 23         1       3       2       2                  3                  2                  2
+  # 213:              8 0.01783726 0.01783726 24         1       3       2       3                  3                  2                  3
+  # 214:              8 0.00984454 0.00984454 25         1       3       3       1                  3                  3                  1
+  # 215:              8 0.01784443 0.01784443 26         1       3       3       2                  3                  3                  2
+  # 216:              8 0.01777305 0.01777305 27         1       3       3       3                  3                  3                  3
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
 
   return(r)
 }
+
+
+
+#' Function to extract the column number of the conditional expectation matrix as a function of
+#' all the possible x_test values
+#'
+#' @description
+#'
+#' @param tbl Data.table. Consists of all possible x_test values.
+#' @param S_dt ??
+#' @return list of column numbers
+#'
+#' @export
+
+col_fun <- function(tbl, S_dt){
+  dim <- ncol(tbl)
+  v <- tbl[, 1:dim]
+  v_S <- data.table(ifelse(is.na(v), 0, 1))
+  colnum <- S_dt[v_S, .(id), on = names(v_S)]
+  return(colnum)
+}
+
+
+#' Function to calculate conditional expectations of the cutoff jointly Normal random variables
+#' for the x_test observations. I.e. doing what cond_expec + extract_cond_expec does together,
+#' just much faster.
+#'
+#' @description
+#'
+#' @param cond_list List. Calculated using the \code{cond_prob} function.
+#' @param explainer explainer object from \code{shapr} package.
+#' @param x_test Matrix. Consists of all the test observations. Has the same dimension
+#' as the number of joint Normal random variables calculated in \code{sim_true_Normal} function.
+#' @param cond_expec_dt data.table. Calculated using the \code{cond_expec} function.
+#' @param prediction_zero Numeric. Number to assigned to phi_0 in Shapley framework.
+#' @param joint_prob_dt data.table The first element in the list calculated using the \code{sim_true_Normal} function.
+#'
+#' @return data.table
+#'
+#' @export
+
+cond_expec_new <- function(cond_list, explainer, x_test, prediction_zero, joint_prob_dt){
+
+  feat_names <- colnames(explainer$x_train)
+  dim <- length(feat_names)
+
+  S_dt <- data.table(explainer$S)
+  S_dt[, id := 0:(nrow(S_dt) - 1)]
+  setnames(S_dt, c(feat_names, "id"))
+
+  mat <- unique(x_test)
+  mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names] # To be removed later
+  mat[, rowid := .I] # Adding identifyer to match on
+  # mat <- joint_prob_dt[mat,.(rowid,feat_comb_id), on=feat_names]
+
+
+  cond_expec_list <- list()
+  cond_expec_list[[1]] <- NULL
+
+  joint_prob_dt[, predict := predict_model(explainer$model, newdata = .SD), .SDcols = feat_names]
+
+  setkey(joint_prob_dt, feat_comb_id)
+
+  tmp <- list()
+  tmp0 <- NULL
+  for(i in 2:nrow(explainer$S)){
+    col_names <- feat_names[as.logical(explainer$S[i, ])]
+    these_cols <- c(col_names,"feat_comb_id", "predict")
+    tmp0 <- merge(cond_list[[i]], joint_prob_dt[, ..these_cols], by = "feat_comb_id") # Need the whole thing here
+    tmp0[, expected_value := predict * cond_prob]
+    cond_expec_list[[i]] <- tmp0[, list(cond_expec=sum(expected_value)), by = col_names]
+    tmp[[i]] <- cbind(cond_expec_list[[i]][mat, .(rowid, cond_expec), on = col_names, allow.cartesian = TRUE],
+                      colnum = i - 1)
+  }
+  tmp_dt <- rbindlist(tmp, use.names = T)
+
+  final_dt <- dcast(tmp_dt, formula = "rowid~colnum", value.var = "cond_expec")
+  x_test_id <- mat[x_test, on = feat_names]
+  S_char_vec <- as.character(1:(nrow(explainer$S) - 1))
+  final_dt_x_test <- cbind("0" = prediction_zero, final_dt[x_test_id, ..S_char_vec,on = "rowid"])
+
+  return(final_dt_x_test)
+}
+
+
+#' Function to calculate the true Shapley values based on the conditional expectations calculated using \code{cond_expec}
+#'
+#' @description
+#'
+#' @param explainer explainer object from shapr package.
+#' @param cond_expec_mat list. Calculated using \code{cond_expec_new} function.
+#' @param x_test vector of test observations. Has the same dimension as the number of joint Normal random variables calculated in \code{sim_true_Normal} function.
+#'
+#' @return vector of Shapley values.
+#'
+#' @export
+
+true_Kshap <- function(explainer, cond_expec_mat, x_test){
+  dim <- ncol(x_test)
+  Kshap <- matrix(0, nrow = nrow(x_test), ncol = nrow(explainer$W))
+  for (i in 1:nrow(x_test)) {
+    Kshap[i, ] = explainer$W %*% t(as.matrix(cond_expec_mat[i, ]))
+  }
+  Kshap <- data.table(Kshap)
+  setnames(Kshap, 1:(dim + 1), c("none", names(x_test)))
+
+  return(Kshap)
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -512,6 +598,7 @@ explainer_x_test_dt <- function(x_test, feature_labels) {
   return(x)
 }
 
+
 #' @rdname explain
 #' @name explain
 #'
@@ -550,3 +637,14 @@ get_list_parameters <- function(n_features, mincriterion) {
   return(l)
 }
 
+#' @keywords internal
+explainer_x_test <- function(x_test, feature_labels) {
+
+  # Remove variables that were not used for training
+  x <- data.table::as.data.table(x_test)
+  cnms_remove <- setdiff(colnames(x), feature_labels)
+  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
+  data.table::setcolorder(x, feature_labels)
+
+  return(as.matrix(x))
+}

@@ -31,6 +31,8 @@
 #' @author Nikolai Sellereite
 prediction <- function(dt, prediction_zero, explainer) {
 
+
+
   # Checks on input data
   id <- w <- id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
   stopifnot(
@@ -45,31 +47,52 @@ prediction <- function(dt, prediction_zero, explainer) {
   data.table::setkeyv(dt, c("id", "id_combination"))
 
   # Check that the number of test observations equals max(id)
-  stopifnot(nrow(explainer$x_test) == dt[, max(id, na.rm = TRUE)])
+  stopifnot(nrow(explainer$x_test) == dt[, max(id)])
 
   # Predictions
   dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
   dt[id_combination == 1, p_hat := prediction_zero]
   p_all <- predict_model(explainer$model, newdata = explainer$x_test)
-  dt[id_combination == max(id_combination), p_hat := p_all[id]] # Ask Martin what this does
+  dt[id_combination == max(id_combination), p_hat := p_all[id]] # this doesn't really do much
+
 
   ## NEW STUFF ----------------------
   if(is.null(dt[["w"]]) & !is.null(explainer$joint_prob_dt)){
+    feat_names <- colnames(explainer$x_train)
+    mat <- unique(explainer$x_test)
+    mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names] # To be removed later
+    mat[, id := .I] # Adding identifyer to match on
 
-    col_names <- c("id_combination", paste0(cnms, "conditioned"))
-    col_names2 <- paste0(cnms, "conditioned")
-    data.table::setkey(dt, "id_combination")
+    setkey(dt, "id")
 
-    dt_k <- dt[, .(k = sum(p_hat * cond_prob)), by = col_names]
-    dt_k[id_combination == 1, "k"] <- prediction_zero
-    data.table::setkey(dt_k, "id_combination")
+    col_names <- c("id_combination", paste0(feat_names, "conditioned"))
+    col_names2 <- paste0(feat_names, "conditioned")
 
-    dt_res0 = dt[dt_k, on = col_names]
-    dt_res <- dt_res0[!is.na(dt_res0$id),]
+    dt1 <- dt[dt[, id_combination != 1]]
+
+    dt2 <- dt1[, .(k = sum(p_hat * cond_prob)), by = col_names]
+    setkey(dt2, "id_combination")
+
+    # this is ugly - fix later
+    tmp <- c(1, rep(NA, length(feat_names)), prediction_zero)
+    tmp0 <- data.frame(t(data.frame(tmp)))
+    colnames(tmp0) <- c("id_combination", paste0(feat_names, "conditioned"), "k")
+
+    dt3 <- rbind(dt2, tmp0)
+    setkey(dt3, "id_combination")
+
+    dt_res = dt[dt3, on = col_names]
+
+
+    # final_dt <- dcast(XXZ, formula = "id~id_combination", value.var = "cond_expec")
+    # x_test_id <- mat[x_test, on = feat_names]
+    # S_char_vec <- as.character(2:(nrow(explainer$S)))
+    # final_dt_x_test <- cbind("1" = prediction_zero, final_dt[x_test_id, ..S_char_vec, on = "id"])
 
   } else if(!is.null(dt[["w"]])){
-
-    dt_res <- dt[, .(k = sum((p_hat * w)) / sum(w)), .(id, id_combination)] # k are the conditional expectations
+    dt_res <- dt[, .(k = sum((p_hat * w)) / sum(w)), .(id, id_combination)] # these are the conditional expectations
+  } else{
+    stop("PROBLEM")
   }
   ## END ----------------
 

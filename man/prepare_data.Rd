@@ -35,7 +35,14 @@ prepare_data(x, ...)
   ...
 )
 
-\method{prepare_data}{categorical}(x, seed = 1, n_samples = 1000, index_features = NULL, ...)
+\method{prepare_data}{categorical}(
+  x,
+  seed = 1,
+  n_samples = 1000,
+  index_features = NULL,
+  mc_cores = 1,
+  ...
+)
 }
 \arguments{
 \item{x}{Explainer object. See \code{\link{explain}} for more information.}
