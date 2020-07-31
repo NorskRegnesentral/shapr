@@ -132,7 +132,7 @@ shapr <- function(x,
   explainer$model_type <- model_type(model)
 
   # Checks input argument
-  feature_labels <- features(model, colnames(x), feature_labels)
+  feature_labels <- features(model, colnames(x), feature_labels) # this doesn't work
   explainer$n_features <- length(feature_labels)
 
   # Converts to data.table, otherwise copy to x_train  --------------

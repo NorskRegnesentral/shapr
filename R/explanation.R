@@ -374,10 +374,10 @@ explain.categorical <- function(x, explainer, approach, prediction_zero, joint_p
   cnms <- explainer$feature_labels
 
   if (!all(x[, sapply(x, is.factor)])) {
-    stop("All test observations should be factors to use the categorical method.")
+    stop("All test observations should be factors to use categorical method.")
   }
   if (!all(explainer$x_train[, sapply(explainer$x_train, is.factor)])) {
-    stop("All train observations should be factors to use the categorical method.")
+    stop("All train observations should be factors to use categorical method.")
   }
   ## Estimate joint_prob_dt if it is not passed to the function
   if (is.null(joint_prob_dt)) {
@@ -385,7 +385,7 @@ explain.categorical <- function(x, explainer, approach, prediction_zero, joint_p
     setkeyv(data, explainer$feature_labels)
     joint_prob_dt0 <- data[,  .N, eval(explainer$feature_labels)]
 
-    joint_prob_dt0[, joint_prob := N / nrow(data)]
+    joint_prob_dt0[, joint_prop := N / nrow(data)]
 
     ## If not all choices occur, fill them in:
     x_train_list <- list()
@@ -396,15 +396,12 @@ explain.categorical <- function(x, explainer, approach, prediction_zero, joint_p
     names(CJ_dt) <- explainer$feature_labels
     CJ_dt <- CJ_dt[, lapply(.SD, as.factor)]
 
-    if(nrow(joint_prob_dt0) < nrow(CJ_dt)) {
-      joint_prob_dt <- joint_prob_dt0[CJ_dt, on = cnms][, id_all := .I]
 
-      set(joint_prob_dt, which(is.na(joint_prob_dt[['joint_prob']])), "joint_prob", 0.001)
-      joint_prob_dt[, joint_prob := joint_prob / sum(joint_prob_dt[['joint_prob']])]
-      joint_prob_dt[, N := NULL]
-    } else {
-      joint_prob_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
-    }
+    joint_prob_dt <- joint_prob_dt0[CJ_dt, on = cnms][, id_all := .I]
+
+    set(joint_prob_dt, which(is.na(joint_prob_dt[['joint_prop']])), "joint_prop", 0.001)
+    joint_prob_dt[, joint_prop := joint_prop / sum(joint_prob_dt[['joint_prop']])]
+    joint_prob_dt[, N := NULL]
 
   } else{
     for (i in 1:length(explainer$feature_labels)) {

@@ -37,7 +37,7 @@ prediction <- function(dt, prediction_zero, explainer) {
     data.table::is.data.table(dt),
     !is.null(dt[["id"]]),
     !is.null(dt[["id_combination"]])
-    # !is.null(dt[["w"]]) # AR removed this July 2020 since w is only important when not passing a joint_prob_dt
+    # !is.null(dt[["w"]])
   )
 
   # Setup
@@ -51,7 +51,7 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
   dt[id_combination == 1, p_hat := prediction_zero]
   p_all <- predict_model(explainer$model, newdata = explainer$x_test)
-  dt[id_combination == max(id_combination), p_hat := p_all[id]] # AR: Ask Martin what this does
+  dt[id_combination == max(id_combination), p_hat := p_all[id]] # Ask Martin what this does
 
   ## NEW STUFF ----------------------
   if(is.null(dt[["w"]]) & !is.null(explainer$joint_prob_dt)){

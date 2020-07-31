@@ -3,7 +3,7 @@ library(MASS)
 library(data.table)
 
 # parameters
-dim <- 4
+dim <- 3
 no_categories <- 3
 mu <- rep(0, dim)
 set.seed(1); beta <- round(rnorm(dim * no_categories + 1), 1)
@@ -16,7 +16,7 @@ methods = c("ctree")
 cutoff = cutoff <- c(-200, 0, 1, 200)
 Sample_test = FALSE # Can be FALSE as well, then No_test_sample not used.
 No_test_sample = 3
-No_train_obs = 1000
+No_train_obs = 15
 x_test_dt <- NULL
 N_sample_gaussian = c(50)
 seed = ifelse(exists("seed"), seed, 1)
@@ -141,7 +141,6 @@ explanation <- explain(
   prediction_zero = p,
   joint_prob_dt = joint_prob_dtNEW0 # not full levels for feature 1 - should give an error
 )
-
 ## 2. Here we remove some levels from the training observations
 x_train0 <- x_train[1:10, ]
 x_train0$feat_2_ <- factor(x_train0$feat_2_, levels= c("1", "2"))
@@ -167,7 +166,7 @@ explainer1 <- shapr(x_train1, model_num)
 explanation <- explain(
   x_test,
   approach = "categorical",
-  explainer = explainer1, # x_train is numeric, should give an error
+  explainer = explainer1, # x_train is numeric
   prediction_zero = p,
   joint_prob_dt = joint_prob_dtNEW
 )
