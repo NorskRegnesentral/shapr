@@ -124,9 +124,9 @@ when conditioning on various numbers of features.}
 \item{sample}{Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all
 observations in the node.}
 
-\item{prob_dt}{Data.table of probabilities (Optional) of the data generating distribution.
+\item{joint_prob_dt}{Data.table of probabilities (Optional) of the data generating distribution.
 If \code{NULL} the probabilities/frequencies are are estimated from the data. Note that this is only used
-when \code{approach = "ctree"}.}
+when \code{approach = "categorical"}.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
@@ -215,4 +215,6 @@ plot(explain1)
 }
 \author{
 Camilla Lingjaerde, Nikolai Sellereite
+
+Annabelle Redelmeier
 }

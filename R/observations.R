@@ -127,7 +127,6 @@ prepare_data <- function(x, ...) {
 }
 
 
-
 #' @rdname prepare_data
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
@@ -362,29 +361,14 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 }
 
 
-
-
-
 #' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
 #' used for different numbers of conditoned features, this will be a list with the features to pass.
 #'
-#' @param  mc_cores Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
-#' tree building and tree prediction. Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
-#' work on Windows systems.
-#'
-#' @param  mc_cores_simulateAllTrees Integer. Same as \code{mc_cores}, but specific for the tree building function
-#' #' Defaults to \code{mc_cores}.
-#'
-#' @param  mc_cores_sample_ctree Integer. Same as \code{mc_cores}, but specific for the tree building prediction
-#' function.
-#' Defaults to \code{mc_cores}.
-#'
 #' @rdname prepare_data
 #' @export
-prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
-                               mc_cores = 1, ...) {
+prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+  id_all <- id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -414,7 +398,7 @@ prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_feature
 
   # Below is the equivalent of: cond_list <- cond_prob()
   cond_list <- list()
-  cond_list[[1]] <- NA
+  cond_list[[1]] <- data.frame(marg_prob = 1, joint_prob = 1, id_all = joint_prob_dt$id_all, cond_prob = 1)
 
   for(i in 2:nrow(x$S)){
     col_names <- feat_names[as.logical(x$S[i, ])]
@@ -426,103 +410,51 @@ prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_feature
     cond_list[[i]][, cond_prob := joint_prob / marg_prob]
     cond_list[[i]][, (feat_names):= NULL] # To save memory
   }
-  # End of function
+  # End of cond_prob()
 
-  # New
-  cond_list0 <- cond_list
-  cond_list0[[1]] <- data.frame(marg_prob = 1, joint_prob = 1, id = joint_prob_dt$id, cond_prob = 1)
-  cond_dt <- rbindlist(cond_list0, id = 'id_combination')
+  cond_dt <- rbindlist(cond_list, id = 'id_combination')
 
-  joint_prob_dt0 <- joint_prob_dt
+  joint_prob_dt0 <- copy(joint_prob_dt)
   joint_prob_dt0[, joint_prob := NULL]
 
-  cond_dt <- cond_dt[joint_prob_dt0, on = 'id']
+  cond_dt <- cond_dt[joint_prob_dt0, on = 'id_all']
 
-  setkeyv(cond_dt, c("id_combination", "id"))
+  setkeyv(cond_dt, c("id_combination", "id_all"))
 
+  cols <- c(feat_names, "id_combination")
+  cols2 <- paste0(feat_names, "conditioned")
+
+  # Now we do something to be able to sort by what is conditioned on (including NA)
   S_dt <- data.table(explainer$S)
   S_dt[S_dt == 0] <- NA
   S_dt[, id_combination := 1:nrow(S_dt)]
-  setnames(S_dt, c(paste0(feat_names, "conditioned"), "id_combination"))
+  setnames(S_dt, c(cols2, "id_combination"))
 
-  cols <- c(feat_names, "id_combination")
-  cond_dt_tmp <- cond_dt[, ..cols]
-  cond_dt_tmp2 <- cond_dt_tmp[, lapply(.SD, as.character)]
-  cond_dt_tmp3 <- cond_dt_tmp2[, lapply(.SD, as.numeric)]
+  cond_dt_sub <- cond_dt[, ..cols]
+  cond_dt_charac <- cond_dt_sub[, lapply(.SD, as.character)]
+  cond_dt_num <- cond_dt_charac[, lapply(.SD, as.numeric)]
 
-  tmp <- cond_dt_tmp3[S_dt, on = 'id_combination']
+  tmp <- cond_dt_num[S_dt, on = 'id_combination']
 
-  cols2 <- paste0(feat_names, "conditioned")
-  tmp2 <- tmp[, ..feat_names] * tmp[, ..cols2]
-  setnames(tmp2, c(paste0(feat_names, "conditioned")))
+  tmp_comb <- tmp[, ..feat_names] * tmp[, ..cols2]
+  setnames(tmp_comb, cols2)
 
   setkeyv(cond_dt, "id_combination")
-  dt <- cbind(cond_dt, tmp2)
+  dt <- cbind(cond_dt, tmp_comb)
 
+  x_test_with_id <- copy(x$x_test)[, id := .I]
 
-  return(dt)
-}
+  dt_with_id <- merge(dt, x_test_with_id, by = feat_names, all.x = TRUE)
+  setcolorder(dt_with_id, c("id_combination", "id_all", "id"))
+  dt_with_id[, marg_prob := NULL]
+  dt_with_id[, joint_prob := NULL]
 
-
-
-#' Function to calculate conditional expectations of the cutoff jointly Normal random variables
-#' for the x_test observations. I.e. doing what cond_expec + extract_cond_expec does together,
-#' just much faster.
-#'
-#' @description
-#'
-#' @param cond_list List. Calculated using the \code{cond_prob} function.
-#' @param explainer explainer object from \code{shapr} package.
-#' @param x_test Matrix. Consists of all the test observations. Has the same dimension
-#' as the number of joint Normal random variables calculated in \code{sim_true_Normal} function.
-#' @param cond_expec_dt data.table. Calculated using the \code{cond_expec} function.
-#' @param prediction_zero Numeric. Number to assigned to phi_0 in Shapley framework.
-#' @param joint_prob_dt data.table The first element in the list calculated using the \code{sim_true_Normal} function.
-#'
-#' @return data.table
-#'
-#' @export
-
-cond_expec_new <- function(cond_list, explainer, x_test){
-
-  feat_names <- colnames(explainer$x_train)
-  dim <- length(feat_names)
-
-  S_dt <- data.table(explainer$S)
-  S_dt[, id := 0:(nrow(S_dt) - 1)]
-  setnames(S_dt, c(feat_names, "id"))
-
-  mat <- unique(x_test)
-  mat <- mat[, lapply(.SD, as.factor), .SDcol = feat_names] # To be removed later
-  mat[, rowid := .I] # Adding identifyer to match on
-  # mat <- joint_prob_dt[mat,.(rowid,feat_comb_id), on=feat_names]
-
-
-  cond_expec_list <- list()
-  cond_expec_list[[1]] <- NULL
-
-  #joint_prob_dt[, predict := predict_model(explainer$model, newdata = .SD), .SDcols = feat_names]
-
-  setkey(joint_prob_dt, feat_comb_id)
-
-  tmp <- list()
-  tmp0 <- NULL
-  for(i in 2:nrow(explainer$S)){
-    col_names <- feat_names[as.logical(explainer$S[i, ])]
-    these_cols <- c(col_names,"feat_comb_id", "predict")
-    tmp0 <- merge(cond_list[[i]], joint_prob_dt[, ..these_cols], by = "feat_comb_id") # Need the whole thing here
-    tmp0[, expected_value := predict * cond_prob]
-    cond_expec_list[[i]] <- tmp0[, list(cond_expec=sum(expected_value)), by = col_names]
-    tmp[[i]] <- cbind(cond_expec_list[[i]][mat, .(rowid, cond_expec), on = col_names, allow.cartesian = TRUE], colnum = i - 1)
-  }
-  tmp_dt <- rbindlist(tmp, use.names = T)
-
-  final_dt <- dcast(tmp_dt, formula = "rowid~colnum", value.var = "cond_expec")
-  x_test_id <- mat[x_test, on = feat_names]
-  S_char_vec <- as.character(1:(nrow(explainer$S) - 1))
-  final_dt_x_test <- cbind("0" = prediction_zero, final_dt[x_test_id, ..S_char_vec,on = "rowid"])
-
-  return(final_dt_x_test)
+  # The important thing to note is that id_all stands for the id in the original joint_prob_dt
+  # While id stands for the test id - this is needed in prediction()
+  # id_combination = which features are conditioned on - e.g: id_combination = 1 --> condition on no features
+  # Also: dt_with_id will include all observations (not just test observations). This is crucial to compute
+  # the correct conditional expectations!
+  return(dt_with_id)
 }
 
 
