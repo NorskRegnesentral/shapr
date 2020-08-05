@@ -1,8 +1,9 @@
 #' Generate predictions for different model classes
 #'
 #' @description Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-#' \code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and \code{\link[xgboost]{xgboost}} with binary or
-#' continuous response. See details for more information.
+#' \code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and
+#' \code{\link[xgboost:xgb.train]{xgboost::xgb.train}} with binary or continuous
+#' response. See details for more information.
 #'
 #' @param x Model object for the model to be explained.
 #' @param newdata A data frame (or matrix) in which to look for variables with which to predict.
@@ -13,7 +14,7 @@
 #' \item \code{\link[stats:glm]{stats::glm}}
 #' \item \code{\link[ranger:ranger]{ranger::ranger}}
 #' \item \code{\link[mgcv:gam]{mgcv::gam}}
-#' \item \code{\link[xgboost:xgboost]{xgboost::xgboost/xgboost::xgb.train}}
+#' \item \code{\link[xgboost:xgb.train]{xgboost::xgb.train}}
 #' }
 #'
 #' The returned object \code{p} always satisfies the following properties:
@@ -281,7 +282,7 @@ features.lm <- function(x, cnms, feature_labels = NULL) {
   if (!is.null(feature_labels)) message_features_labels()
 
   nms <- tail(all.vars(x$terms), -1)
-  if (!all(nms %in% cnms)) error_feature_labels()
+  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
 
   return(nms)
 }
@@ -291,7 +292,7 @@ features.glm <- function(x, cnms, feature_labels = NULL) {
   if (!is.null(feature_labels)) message_features_labels()
 
   nms <- tail(all.vars(x$terms), -1)
-  if (!all(nms %in% cnms)) error_feature_labels()
+  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
 
   return(nms)
 }
@@ -312,7 +313,7 @@ features.ranger <- function(x, cnms, feature_labels = NULL) {
   }
   nms <- unique_features(nms)
 
-  if (!all(nms %in% cnms)) error_feature_labels()
+  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
 
   return(nms)
 }
@@ -323,7 +324,7 @@ features.gam <- function(x, cnms, feature_labels = NULL) {
 
   nms <- tail(all.vars(x$terms), -1)
 
-  if (!all(nms %in% cnms)) error_feature_labels()
+  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
 
   return(nms)
 }
@@ -363,7 +364,8 @@ error_feature_labels <- function() {
     paste0(
       "\nThere is mismatch between the column names in x and\n",
       "the returned elements from features(model). All elements\n",
-      "from features(model) should be present in colnames(x).\n",
+      "from features(model) should be present in colnames(x),\n",
+      "and they cannot be NULL.\n",
       "For more information see ?shapr::features"
     )
   )

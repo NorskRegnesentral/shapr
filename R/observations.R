@@ -203,13 +203,6 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  V1 <- keep <- NULL # due to NSE notes in R CMD check
-  dt[, keep := TRUE]
-  first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, 2^ncol(x$x_test)), V1]
-  dt[id_combination %in% c(1, 2^ncol(x$x_test)), keep := FALSE]
-  dt[first_element, keep := TRUE]
-  dt <- dt[keep == TRUE][, keep := NULL]
-  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
@@ -246,7 +239,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
@@ -283,7 +275,6 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 
