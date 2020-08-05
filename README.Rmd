@@ -19,7 +19,6 @@ knitr::opts_chunk$set(
 # shapr <img src="man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
 
 <!-- badges: start -->
-[![CircleCI](https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg)](https://circleci.com/gh/NorskRegnesentral/shapr)
 [![R build status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -72,19 +71,19 @@ The application programming interface (API) of `shapr` is inspired by @lime_api.
 To install the current development version, use
 
 ```{r, eval = FALSE}
-devtools::install_github("NorskRegnesentral/shapr")
+remotes::install_github("NorskRegnesentral/shapr")
 ```
 
 If you would like to install all packages of the models we currently support, use
 
 ```{r, eval = FALSE}
-devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
+remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 ```
 
 
 If you would also like to build and view the vignette locally, use 
 ```{r, eval = FALSE}
-devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
+remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
 vignette("understanding_shapr", "shapr")
 ```
 

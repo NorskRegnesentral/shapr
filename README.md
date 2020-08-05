@@ -5,7 +5,6 @@
 
 <!-- badges: start -->
 
-[![CircleCI](https://img.shields.io/circleci/build/github/NorskRegnesentral/shapr/master.svg)](https://circleci.com/gh/NorskRegnesentral/shapr)
 [![R build
 status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle:
@@ -95,21 +94,21 @@ is inspired by Pedersen and Benesty (2019).
 To install the current development version, use
 
 ``` r
-devtools::install_github("NorskRegnesentral/shapr")
+remotes::install_github("NorskRegnesentral/shapr")
 ```
 
 If you would like to install all packages of the models we currently
 support, use
 
 ``` r
-devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
+remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 ```
 
 If you would also like to build and view the vignette locally,
 use
 
 ``` r
-devtools::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
+remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
 vignette("understanding_shapr", "shapr")
 ```
 

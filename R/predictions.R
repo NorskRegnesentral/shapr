@@ -47,11 +47,20 @@ prediction <- function(dt, prediction_zero, explainer) {
   # Check that the number of test observations equals max(id)
   stopifnot(nrow(explainer$x_test) == dt[, max(id, na.rm = TRUE)])
 
+  # Reducing the prediction data.table
+  max_id_combination <- dt[, max(id_combination)]
+  V1 <- keep <- NULL # due to NSE notes in R CMD check
+  dt[, keep := TRUE]
+  first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, max_id_combination), V1]
+  dt[id_combination %in% c(1, max_id_combination), keep := FALSE]
+  dt[first_element, c("keep", "w") := list(TRUE, 1.0)]
+  dt <- dt[keep == TRUE][, keep := NULL]
+
   # Predictions
-  dt[, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
+  dt[id_combination != 1, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
   dt[id_combination == 1, p_hat := prediction_zero]
-  p_all <- predict_model(explainer$model, newdata = explainer$x_test)
-  dt[id_combination == max(id_combination), p_hat := p_all[id]] # AR: Ask Martin what this does
+  p_all <- dt[id_combination == max(id_combination), p_hat]
+  names(p_all) <- 1:nrow(explainer$x_test)
 
   ## NEW STUFF ----------------------
   if(is.null(dt[["w"]]) & !is.null(explainer$joint_prob_dt)){
