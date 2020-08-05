@@ -368,10 +368,10 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 #' @export
 prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
 
-  id_all <- id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+  id_all <- id <- id_combination <- NULL # due to NSE notes in R CMD check
 
-  n_xtest <- nrow(x$x_test)
-  dt_l <- list()
+  # n_xtest <- nrow(x$x_test)
+  # dt_l <- list()
 
   if (!is.null(seed)) set.seed(seed)
   if (is.null(index_features)) {
