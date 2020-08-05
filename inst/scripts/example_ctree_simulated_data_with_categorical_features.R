@@ -15,14 +15,14 @@ fit_mod = "regression"
 methods = c("ctree")
 cutoff = cutoff <- c(-200, 0, 1, 200)
 Sample_test = FALSE # Can be FALSE as well, then No_test_sample not used.
-No_test_sample = 25
+No_test_sample = 3
 No_train_obs = 1000
 x_test_dt <- NULL
 N_sample_gaussian = c(50)
 seed = ifelse(exists("seed"), seed, 1)
-################
+##############
 corr <- 0.5 ####
-################
+##############
 Sigma_diag <-1
 x_test_dt <- NULL
 
@@ -59,7 +59,7 @@ if(is.null(x_test_dt)){
 No_test_obs <- nrow(x_test_dt)
 
 dt <- data.table(rbind(dt, x_test_dt))
-setnames(dt, names(dt), paste0("feat_", 1:dim,  "_"))
+setnames(dt, names(dt), paste0("feat_", 1:dim,"_"))
 feat_names <- names(dt[, 1:dim])
 
 dt <- dt[, lapply(.SD, as.factor)]
@@ -145,8 +145,6 @@ explanation <- explain(
 ## 2. Here we remove some levels from the training observations
 x_train0 <- x_train[1:10, ]
 x_train0$feat_2_ <- factor(x_train0$feat_2_, levels= c("1", "2"))
-str(x_train0)
-str(x_test)
 
 explainer0 <- shapr(x_train0, model)
 
