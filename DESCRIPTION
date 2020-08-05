@@ -1,5 +1,5 @@
 Package: shapr
-Version: 0.1.1.9000
+Version: 0.1.2
 Title: Explain the Output of Machine Learning Models with more Accurately Estimated Shapley Values
 Description: Complex machine learning models are often hard to interpret. However, in 
   many situations it is crucial to understand and explain why a model made a specific 
