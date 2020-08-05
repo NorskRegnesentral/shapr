@@ -1,6 +1,7 @@
 ## Test environments
 
 * local Ubuntu 18.04, R 3.6.3
+* local Windows 10, R 4.0.2
 * macOS Catalina 10.15 (macOS-latest on GitHub actions), R 4.0.2
 * Windows Server 2019 (windows-latest on GitHub actions), R 4.0.2
 * Ubuntu 16.04 (ubuntu-16.04 on GitHub actions), R 4.0.2
