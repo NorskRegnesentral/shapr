@@ -1,10 +1,11 @@
 # shapr 0.1.2
 
+# First CRAN submission
 # Removed unused clustering code
 # Removed several package dependencies
 # Moved automatic check and pkgdown site build from Circle CI to GitHub actions
 # Some minor efficiency fixes
-# Some minor tweeks to prepare package from CRAN submission
+# Some minor tweaks to prepare package from CRAN submission
 
 # shapr 0.1.1
 
