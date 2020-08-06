@@ -42,27 +42,27 @@ make_dummies.default <- function (data, ...) {
 
 }
 
-predict.make_dummies <- function(object, newdata, na.action = na.pass, ...) {
+predict.make_dummies <- function(olddata, newdata, na.action = na.pass, ...) {
 
   if(is.null(newdata)) {
-    stop("newdata must be supplied")
+    stop("newdata needs to be included.")
   }
   newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
 
-  if(!all(object$charac_variables %in% names(newdata))) {
-    stop(paste("Variable(s)", paste0("'", object$charac_variables[!object$charac_variables %in% names(newdata)], "'", collapse = ", "), "are not in newdata"))
+  if(!all(olddata$charac_variables %in% names(newdata))) {
+    stop("Some features missing from newdata.")
   }
-  vars <- object$features
+  vars <- olddata$features
   newdata0 <- newdata[, ..vars]
 
   m <- model.frame(data = newdata0,
                    na.action = na.action,
-                   xlev = object$charac_list)
+                   xlev = olddata$charac_list)
 
-  x <- model.matrix(object = ~. + 0, data = m, contrasts.arg = object$contrasts_list)
+  x <- model.matrix(olddata = ~. + 0, data = m, contrasts.arg = olddata$contrasts_list)
 
   all_column_names <- NULL
-  for(i in object$features){
+  for(i in olddata$features){
     if (is.factor(newdata0[[i]])) {
       all_column_names <- c(all_column_names, paste(colnames(newdata0[, ..i]), levels(newdata0[[i]]), sep = "."))
     } else{
