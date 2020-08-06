@@ -2,11 +2,9 @@
 # rcmdcheck
 
 
-install.packages("rcmdcheck")
-
-library(rcmdcheck)
-rcmdcheck(path = getwd())
-
+#install.packages("rcmdcheck")
+#library(rcmdcheck)
+#rcmdcheck(path = getwd())
 
 # Run package on Winbuilder
 
