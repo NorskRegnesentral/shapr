@@ -7,103 +7,91 @@ make_dummies <-
     UseMethod("make_dummies")
   }
 
-make_dummies.default <- function (formula, data, fullRank = FALSE, sep = ".", ...) {
-  formula <- as.formula(formula)
-  if(!is.data.frame(data)) data <- as.data.frame(data, stringsAsFactors = FALSE)
-
-  vars <- all.vars(formula)
-  if(any(vars == ".")) {
-    vars <- vars[vars != "."]
-    vars <- unique(c(vars, colnames(data)))
+make_dummies.default <- function (data, ...) { # formula, #  fullRank = FALSE
+  # formula <- as.formula(formula)
+  if(!is.data.frame(data)) {
+    data <- as.data.frame(data, stringsAsFactors = FALSE)
   }
-  p <- sapply(data[, vars, drop = FALSE], is.factor)
+
+
+  # features <- all.vars(formula)
+  features <- colnames(data)
+  if(length(unique(features)) < length(features)){
+    stop("Features must have unique names.")
+  }
+
+  if(any(features == ".")) {
+    # features <- features[features != "."]
+    # features <- unique(c(features, colnames(data)))
+  }
+  p <- sapply(data[, features, drop = FALSE], is.factor)
   p_sum <- sum(p)
 
   if(p_sum > 0) {
-    facVars <- vars[p]
-    lvls <- lapply(data[, facVars, drop = FALSE], levels)
+    charac_variables <- features[p]
+
+    charac_list <- list()
+    for(i in charac_variables){
+      charac_list[[i]] <- levels(data[, i])
+    }
+
   } else {
-    facVars <- NULL
-    lvls <- NULL
+    charac_variables <- NULL
+    charac_list <- NULL
   }
-  trms <- attr(model.frame(formula, data), "terms")
-  out <- list(call = match.call(),
-              form = formula,
-              vars = vars,
-              facVars = facVars,
-              lvls = lvls,
-              sep = sep,
-              terms = trms,
-              fullRank = fullRank) # this is important for Shapley!
-  class(out) <- "make_dummies"
-  out
+  contrasts_list <- list()
+  for(i in charac_variables){
+    contrasts_list[[i]] <- contrasts(data[,i], contrasts = FALSE)
+  }
+
+  # trms <- attr(model.frame(formula, data), "terms")
+  r <- list(#call = match.call(),
+            # form = formula,
+            features = features,
+            charac_variables = charac_variables,
+            charac_list = charac_list,
+            contrasts_list = contrasts_list)
+            # terms = trms)
+  class(r) <- "make_dummies"
+  return(r)
 
 }
 
 predict.make_dummies <- function(object, newdata, na.action = na.pass, ...) {
 
-  if(is.null(newdata)) stop("newdata must be supplied")
-  if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata, stringsAsFactors = FALSE)
-  if(!all(object$vars %in% names(newdata))) stop(
-    paste("Variable(s)",
-          paste("'", object$vars[!object$vars %in% names(newdata)],
-                "'", sep = "",
-                collapse = ", "),
-          "are not in newdata"))
-  Terms <- object$terms
-  Terms <- delete.response(Terms)
-  if(!object$fullRank) { # this is important for Shapley!
-    oldContr <- options("contrasts")$contrasts
-    newContr <- oldContr
-    newContr["unordered"] <- "contr.ltfr"
-    options(contrasts = newContr)
-    on.exit(options(contrasts = oldContr))
+  if(is.null(newdata)) {
+    stop("newdata must be supplied")
   }
-  m <- model.frame(Terms, newdata, na.action = na.action, xlev = object$lvls)
+  # if(!is.data.frame(newdata)) {
+  #   newdata <- as.data.frame(newdata, stringsAsFactors = FALSE)
+  # }
+  newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
 
-  x <- model.matrix(Terms, m)
+  if(!all(object$charac_variables %in% names(newdata))) {
+    stop(paste("Variable(s)", paste0("'", object$charac_variables[!object$charac_variables %in% names(newdata)], "'", collapse = ", "), "are not in newdata"))
+  }
+  vars <- object$features
+  newdata0 <- newdata[, ..vars]
 
-  cnames <- colnames(x)
-  if(!is.null(object$sep)) {
-    for(i in object$facVars[order(-nchar(object$facVars))]) {
-      ## the default output form model.matrix is NAMElevel with no separator.
-      for(j in object$lvls[[i]]) {
-        from_text <- paste0(i, j)
-        to_text <- paste(i, j, sep = object$sep)
-        pos = which(cnames == from_text)
-        # If there are several identical NAMElevel matching (example: "X1" with level "11" and "X11" with level "1")
-        if (length(pos) > 1) {
-          # If the level j is not the first level of the feature i
-          if (which(object$lvls[[i]] == j) > 1) {
-            # Then we just have to test for the preceding NAMElevel being NAME(level-1)
-            cnames[pos][cnames[pos-1] == paste(i, object$lvls[[i]][which(object$lvls[[i]] == j)-1], sep = object$sep)] <- to_text
-          } else {
-            # Otherwise, we have to test for the preceding NAMElevel being (NAME-1)(last_level)
-            cnames[pos][cnames[pos-1] == paste(object$facVars[order(-nchar(object$facVars))][which(object$facVars[order(-nchar(object$facVars))] == i) - 1],
-                                               utils::tail(object$lvls[[object$facVars[order(-nchar(object$facVars))][which(object$facVars[order(-nchar(object$facVars))] == i) - 1]]], n=1), sep = object$sep)] <- to_text
-          }
-        } else {
-          # Otherwise simply replace the last occurence of the pattern
-          cnames[pos] <- to_text
-        }
-      }
+  m <- model.frame(data = newdata0, # #formula = Terms,
+                   na.action = na.action,
+                   xlev = object$charac_list)
+
+  x <- model.matrix(object = ~. + 0, data = m, contrasts.arg = object$contrasts_list) # Terms, m
+
+  all_column_names <- NULL
+  for(i in object$features){
+    if (is.factor(newdata0[[i]])) {
+      all_column_names <- c(all_column_names, paste(colnames(newdata0[, ..i]), levels(newdata0[[i]]), sep = "."))
+    } else{
+      all_column_names <- c(all_column_names, colnames(newdata0[, ..i]))
     }
   }
-  colnames(x) <- cnames
-  x[, colnames(x) != "(Intercept)", drop = FALSE]
+  colnames(x) <- all_column_names
+  #x[, colnames(x) != "(Intercept)", drop = FALSE]
+  return(x)
 }
 
-print.make_dummies <- function(x, ...) {
-  cat("Dummy Variable Object\n\n")
-  cat("Formula: ")
-  print(x$form)
-  cat(length(x$vars),  " variables, ", length(x$facVars), " factors\n", sep = "")
-  if(!is.null(x$sep)) cat("Variables and levels will be separated by '",
-                                          x$sep, "'\n", sep = "")
-  if(x$fullRank) cat("A full rank encoding is used") else cat("A less than full rank encoding is used")
-  cat("\n")
-  invisible(x)
-}
 
 ## Not used anymore:
 make_dummy_var <- function(formula, data) {

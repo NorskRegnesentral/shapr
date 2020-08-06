@@ -1,65 +1,143 @@
 library(xgboost)
 library(shapr)
 
+## ----------------------------
 data("Boston", package = "MASS")
 
-x_var_cat <- c("lstat", "chas", "rad", "indus")
+x_var <- c("lstat", "chas", "rad", "indus")
 y_var <- "medv"
 
 # convert to factors
 Boston$rad = as.factor(Boston$rad)
 Boston$chas = as.factor(Boston$chas)
 
-x_train_cat <- Boston[-1:-6, x_var_cat]
+x_train <- Boston[-1:-6, x_var]
 y_train <- Boston[-1:-6, y_var]
-x_test_cat <- Boston[1:6, x_var_cat]
+x_test <- Boston[1:6, x_var]
 
 # library(caret)
 # # -- special function when using categorical data + xgboost
-# dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train_cat, x_test_cat))
+# dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train, x_test))
+# x_train_dummy <- predict(dummyfunc, newdata = x_train)
+# x_test_dummy <- predict(dummyfunc, newdata = x_test)
 #
-# x_train_dummy <- predict(dummyfunc, newdata = x_train_cat)
-# x_test_dummy <- predict(dummyfunc, newdata = x_test_cat)
-# # --
-#
-# # Fitting a basic xgboost model to the training data
 # model_cat <- xgboost(
 #   data = x_train_dummy,
 #   label = y_train,
 #   nround = 20,
 #   verbose = FALSE
 # )
+#
 # model_cat$dummyfunc <- dummyfunc
-# explainer_cat <- shapr(x_train_cat, model_cat)
+#
+# explainer_cat <- shapr(x_train, model_cat)
+#
+# p <- mean(y_train)
+#
+# explanation_ctree <- explain(
+#   x_test,
+#   approach = "ctree",
+#   explainer = explainer_cat,
+#   prediction_zero = p
+# )
 
 
 ## NEW
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/scripts/make_dummies.R")
-dummyfunc_Annabelle <- make_dummies(" ~ .", data = rbind(x_train_cat, x_test_cat))
+dummyfunc_original <- make_dummies(data = rbind(x_train, x_test))
 
-x_train_dummy_Annabelle <- predict(dummyfunc_Annabelle, newdata = x_train_cat)
-x_test_dummy_Annabelle <- predict(dummyfunc_Annabelle, newdata = x_test_cat)
+## Tests
+head(x_train)
+original <- predict(dummyfunc_original, newdata = x_train)
+head(original)
 
-model_cat_Annabelle <- xgboost(
-  data = x_train_dummy_Annabelle,
+head(x_test)
+original_test <- predict(dummyfunc_original, newdata = x_test)
+head(original_test)
+
+## If you re-arrange the columns, predict() will arrange them to the original order
+x_train0 <- x_train[, c(2, 1, 4, 3)]
+head(x_train0)
+head(x_train)
+diff_column_placements <- predict(dummyfunc_original, newdata = x_train0)
+head(diff_column_placements)
+
+## What if you have really bad feature names like X1 and X11?
+new_names <- x_train0
+colnames(new_names) <- c("X1", "X11", "indus", "rad")
+
+head(new_names)
+dummyfunc_bad_column_names <- make_dummies(" ~ .", data = new_names)
+
+bad_column_names <- predict(dummyfunc_bad_column_names, newdata = new_names)
+head(bad_column_names)
+
+## What if you put in less features then the original feature vector?
+x_train1 <- x_train[, c(2, 1)]
+head(x_train1)
+head(x_train)
+less_variables <- predict(dummyfunc_original, newdata = x_train1) # will cause an error
+head(less_variables)
+
+## What if you add a feature?
+x_train2 <- cbind(x_train[, c(1, 2)], new_var = x_train[,2], x_train[, c(3, 4)])
+head(x_train2)
+head(x_train)
+a_new_var <- predict(dummyfunc_original, newdata = x_train2) # will not throw an error - do we want it to throw an error?
+head(a_new_var)
+
+## What if you have two variables with the same name?
+x_train3 <- x_train
+colnames(x_train3) <- c("X1", "X2", "X3", "X3")
+head(x_train3)
+dummyfunc_same_var_name <- make_dummies(data = rbind(x_train3)) # will throw an error
+
+
+## What if variables don't have names?
+x_train3 <- x_train
+colnames(x_train3) <- c("", "", "", "")
+head(x_train3)
+dummyfunc_no_var_names <- make_dummies(data = rbind(x_train3)) # will throw an error
+
+
+## RUN THROUGH
+source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/scripts/make_dummies.R")
+
+data("Boston", package = "MASS")
+
+x_var <- c("lstat", "chas", "rad", "indus")
+y_var <- "medv"
+
+# convert to factors
+Boston$rad = as.factor(Boston$rad)
+Boston$chas = as.factor(Boston$chas)
+
+x_train <- Boston[-1:-6, x_var]
+y_train <- Boston[-1:-6, y_var]
+x_test <- Boston[1:6, x_var]
+
+dummyfunc_original <- make_dummies(data = rbind(x_train, x_test))
+
+##
+x_train_dummies <- predict(dummyfunc_original, newdata = x_train)
+x_test_dummies <- predict(dummyfunc_original, newdata = x_test)
+
+model_cat <- xgboost(
+  data = x_train_dummies,
   label = y_train,
   nround = 20,
   verbose = FALSE
 )
 
-model_cat_Annabelle$dummyfunc_Annabelle <- dummyfunc_Annabelle
-explainer_cat_Annabelle <- shapr(x_train_cat, model_cat_Annabelle)
+model_cat$dummyfunc <- dummyfunc_original
+
+explainer_cat <- shapr(x_train, model_cat)
 
 p <- mean(y_train)
 
 explanation_ctree <- explain(
-  x_test_cat,
+  x_test,
   approach = "ctree",
   explainer = explainer_cat,
   prediction_zero = p
 )
-
-
-# Plot the resulting explanations for observations 1 and 6, excluding
-# the no-covariate effect
-plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1, 6))
