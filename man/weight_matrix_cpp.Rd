@@ -15,7 +15,7 @@ vector representing a valid combination of features.}
 \item{n}{Integer. Number of combinations}
 
 \item{w}{Numeric vector of length \code{n}, i.e. \code{w[i]} equals
-the shapley weight of feature combination \code{i}, represented by
+the Shapley weight of feature combination \code{i}, represented by
 \code{features[[i]]}.}
 }
 \value{
