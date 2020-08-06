@@ -18,5 +18,5 @@ devtools::check_win_release()
 
 #rhub::validate_email(email="Martin.Jullum@nr.no")
 
-devtools::check_rhub()
+#devtools::check_rhub()
 

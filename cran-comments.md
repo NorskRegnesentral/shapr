@@ -2,7 +2,7 @@
 
 * GitHub Actions (macOS-latest): R 4.0.2
 * GitHub Actions (ubuntu-16.04): R 4.0.2, 3.6.3, 3.5.3
-* win-builder (x86_64-w64-mingw32): R 4.0.2, 3.6.3, R-devel (2020-08-02 r78957)
+* win-builder (x86_64-w64-mingw32): R 4.0.2, 3.6.3, R-devel (2020-08-04 r78971)
 * local Ubuntu 18.04: R 3.6.3
 * local Windows 10: R 4.0.2, R-devel (2020-08-04 r78971)
 
