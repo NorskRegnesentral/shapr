@@ -169,9 +169,7 @@ approach <- c("gaussian", "gaussian", "empirical", "empirical")
 explain4 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
 
 # Plot the results
-\dontrun{
 plot(explain1)
-}
 }
 \author{
 Camilla Lingjaerde, Nikolai Sellereite
