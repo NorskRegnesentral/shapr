@@ -8,7 +8,7 @@ using namespace Rcpp;
 //' @param m Integer. Number of features
 //' @param n Integer. Number of combinations
 //' @param w Numeric vector of length \code{n}, i.e. \code{w[i]} equals
-//' the shapley weight of feature combination \code{i}, represented by
+//' the Shapley weight of feature combination \code{i}, represented by
 //' \code{features[[i]]}.
 //'
 //' @export
