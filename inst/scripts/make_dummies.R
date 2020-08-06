@@ -59,7 +59,9 @@ predict.make_dummies <- function(olddata, newdata, na.action = na.pass, ...) {
                    na.action = na.action,
                    xlev = olddata$charac_list)
 
-  x <- model.matrix(olddata = ~. + 0, data = m, contrasts.arg = olddata$contrasts_list)
+  x <- model.matrix(object = ~. + 0,
+                    data = m,
+                    contrasts.arg = olddata$contrasts_list)
 
   all_column_names <- NULL
   for(i in olddata$features){
