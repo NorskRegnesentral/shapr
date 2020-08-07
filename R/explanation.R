@@ -300,7 +300,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #'
 #' @param minbucket Numeric value. Equal to the minimum sum of weights in a terminal node.
 #'
-#' @param sample Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all
+#' @param sample Boolean. If TRUE, then method samples from the leaf in the tree. If FALSE, then just takes all
 #'  observations in the node.
 #'
 #' @rdname explain
