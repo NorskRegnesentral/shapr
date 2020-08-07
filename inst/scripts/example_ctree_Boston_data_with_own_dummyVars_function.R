@@ -43,7 +43,7 @@ x_test <- Boston[1:6, x_var]
 
 
 ## NEW
-source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/scripts/make_dummies.R")
+source("inst/scripts/make_dummies.R")
 dummyfunc_original <- make_dummies(data = rbind(x_train, x_test))
 
 ## Tests
@@ -101,7 +101,9 @@ dummyfunc_no_var_names <- make_dummies(data = rbind(x_train3)) # will throw an e
 
 
 ## RUN THROUGH
-source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/scripts/make_dummies.R")
+library(shapr)
+library(xgboost)
+source("inst/scripts/make_dummies_no_class.R")
 
 data("Boston", package = "MASS")
 
@@ -119,8 +121,17 @@ x_test <- Boston[1:6, x_var]
 dummyfunc_original <- make_dummies(data = rbind(x_train, x_test))
 
 ##
-x_train_dummies <- predict(dummyfunc_original, newdata = x_train)
-x_test_dummies <- predict(dummyfunc_original, newdata = x_test)
+x_train_dummies <- apply_dummies(obj = dummyfunc_original, newdata = x_train)
+x_test_dummies <- apply_dummies(obj = dummyfunc_original, newdata = x_test)
+
+# model_cont <- xgboost(
+#   data = as.matrix(x_train),
+#   label = y_train,
+#   nround = 20,
+#   verbose = FALSE
+# )
+# explainer_cont <- shapr(x_train, model_cont)
+
 
 model_cat <- xgboost(
   data = x_train_dummies,
@@ -129,9 +140,10 @@ model_cat <- xgboost(
   verbose = FALSE
 )
 
-model_cat$dummyfunc <- dummyfunc_original
-
+model_cat$dummylist <- dummyfunc_original
 explainer_cat <- shapr(x_train, model_cat)
+
+
 
 p <- mean(y_train)
 

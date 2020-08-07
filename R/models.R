@@ -96,8 +96,9 @@ predict_model.xgb.Booster <- function(x, newdata) {
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The xgboost package is required for predicting xgboost models")
   }
-  if (model_type(x) == "cat_regression") {
-    newdata_dummy <- predict(x$dummyfunc, newdata = newdata)
+  if (!is.null(x[["dummylist"]])) {
+    # newdata_dummy <- predict(x$dummyfunc, newdata = newdata)
+    newdata_dummy <- apply_dummies(obj = x$dummylist, newdata = newdata)
     predict(x, as.matrix(newdata_dummy))
   } else {
     predict(x, as.matrix(newdata))
@@ -335,7 +336,7 @@ features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
 
   nms <- x$feature_names
 
-  if (!is.null(x[["dummyfunc"]])){
+  if (!is.null(x[["dummylist"]])){
     return(cnms)
   } else {
     if (!all(nms %in% cnms)) error_feature_labels()
