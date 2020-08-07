@@ -118,7 +118,7 @@ when conditioning on various numbers of features.}
 
 \item{minbucket}{Numeric value. Equal to the minimum sum of weights in a terminal node.}
 
-\item{sample}{Boolean. If TRUE, then method samples from the leaf in the tree. If FALSE, then just takes all
+\item{sample}{Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all
 observations in the node.}
 }
 \value{
