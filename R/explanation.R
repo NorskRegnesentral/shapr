@@ -300,9 +300,12 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #'
 #' @param minbucket Numeric value. Equal to the minimum sum of weights in a terminal node.
 #'
-#' @param sample Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all
-#'  observations in the node.
-#'
+#' @param sample Boolean. If TRUE, then method always samples from the leaf (with replacement).
+#' If FALSE and the number of obs in the leaf is less than \code{n_samples}, will take all observations in the leaf.
+#' If the number of obs in the leaf is greater than \code{n_samples}, will still sample \code{n_samples}
+#' (with replacement). This means that there will always be sampling in the leaf unless \code{sample} = FALSE
+#' AND the number of obs in the node < \code{n_samples}.
+#
 #' @rdname explain
 #' @name explain
 #'
