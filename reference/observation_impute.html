@@ -132,7 +132,7 @@
     <p>Generate permutations of training data using test observations</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/observation_impute.html'>observation_impute</a></span>(
+    <pre class="usage"><span class='fu'>observation_impute</span>(
   <span class='kw'>W_kernel</span>,
   <span class='kw'>S</span>,
   <span class='kw'>x_train</span>,
@@ -196,7 +196,7 @@ the largest weight so that the sum of the weights accounts for 80% of the total 
 <span class='kw'>W_kernel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span>(<span class='kw'>S</span>), mean = <span class='fl'>1</span> <span class='op'>/</span> <span class='kw'>n</span>, sd = <span class='fl'>1</span> <span class='op'>/</span> <span class='kw'>n</span><span class='op'>^</span><span class='fl'>2</span>), nrow = <span class='kw'>n</span>)
 
 <span class='co'># Generate permutations of training data using test observations</span>
-<span class='kw'>r</span> <span class='op'>&lt;-</span> <span class='kw'>shapr</span>:::<span class='fu'><a href='https://rdrr.io/pkg/shapr/man/observation_impute.html'>observation_impute</a></span>(<span class='kw'>W_kernel</span>, <span class='kw'>S</span>, <span class='kw'>x_train</span>, <span class='kw'>x_test</span>)
+<span class='kw'>r</span> <span class='op'>&lt;-</span> <span class='kw'>shapr</span>:::<span class='fu'>observation_impute</span>(<span class='kw'>W_kernel</span>, <span class='kw'>S</span>, <span class='kw'>x_train</span>, <span class='kw'>x_test</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='kw'>r</span>)</div><div class='output co'>#&gt; Classes ‘data.table’ and 'data.frame':	28 obs. of  4 variables:
 #&gt;  $ X1            : num  1.98 1.98 1.98 1.98 1.98 ...
 #&gt;  $ X2            : num  2.91 0.175 1.072 -0.203 1.006 ...

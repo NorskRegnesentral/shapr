@@ -132,7 +132,7 @@
     <p>Create an explainer object with Shapley weights for test data.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/shapr.html'>shapr</a></span>(<span class='kw'>x</span>, <span class='kw'>model</span>, n_combinations = <span class='kw'>NULL</span>, feature_labels = <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>shapr</span>(<span class='kw'>x</span>, <span class='kw'>model</span>, n_combinations = <span class='kw'>NULL</span>, feature_labels = <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -143,7 +143,7 @@
     </tr>
     <tr>
       <th>model</th>
-      <td><p>The model whose predictions we want to explain. See <code><a href='https://rdrr.io/pkg/shapr/man/predict_model.html'>predict_model</a></code>
+      <td><p>The model whose predictions we want to explain. See <code><a href='predict_model.html'>predict_model</a></code>
 for more information about which models <code>shapr</code> supports natively.</p></td>
     </tr>
     <tr>
@@ -165,14 +165,14 @@ Only applicable if you are using a custom model. Otherwise the features in use a
   <dt>exact</dt><dd><p>Boolean. Equals <code>TRUE</code> if <code>n_combinations = NULL</code> or
   <code>n_combinations &lt; 2^ncol(x)</code>, otherwise <code>FALSE</code>.</p></dd>
   <dt>n_features</dt><dd><p>Positive integer. The number of columns in <code>x</code></p></dd>
-  <dt>model_type</dt><dd><p>Character. Returned value after calling <code><a href='https://rdrr.io/pkg/shapr/man/model_type.html'>model_type(model)</a></code></p></dd>
+  <dt>model_type</dt><dd><p>Character. Returned value after calling <code><a href='model_type.html'>model_type(model)</a></code></p></dd>
   <dt>S</dt><dd><p>Binary matrix. The number of rows equals the number of unique combinations, and
   the number of columns equals the total number of features. I.e. let's say we have a case with
   three features. In that case we have <code>2^3 = 8</code> unique combinations. If the j-th
   observation for the i-th row equals <code>1</code> it indicates that the j-th feature is present in
   the i-th combination. Otherwise it equals <code>0</code>.</p></dd>
   <dt>W</dt><dd><p>Second item</p></dd>
-  <dt>X</dt><dd><p>data.table. Returned object from <code><a href='https://rdrr.io/pkg/shapr/man/feature_combinations.html'>feature_combinations</a></code></p></dd>
+  <dt>X</dt><dd><p>data.table. Returned object from <code><a href='feature_combinations.html'>feature_combinations</a></code></p></dd>
   <dt>x_train</dt><dd><p>data.table. Transformed <code>x</code> into a data.table.</p></dd>
 
 </dl>
@@ -193,7 +193,7 @@ model) and <code>n_combinations</code> is also present in the returned object.</
 <span class='kw'>y_var</span> <span class='op'>&lt;-</span> <span class='st'>"medv"</span>
 <span class='kw'>df1</span> <span class='op'>&lt;-</span> <span class='kw'>df</span>[, <span class='kw'>x_var</span>]
 <span class='kw'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='kw'>medv</span> <span class='op'>~</span> <span class='kw'>lstat</span> <span class='op'>+</span> <span class='kw'>rm</span> <span class='op'>+</span> <span class='kw'>dis</span> <span class='op'>+</span> <span class='kw'>indus</span>, data = <span class='kw'>df</span>)
-<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/shapr/man/shapr.html'>shapr</a></span>(<span class='kw'>df1</span>, <span class='kw'>model</span>)
+<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'>shapr</span>(<span class='kw'>df1</span>, <span class='kw'>model</span>)
 
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>explainer</span><span class='op'>$</span><span class='kw'>X</span>))</div><div class='output co'>#&gt; [1] 16</div><div class='input'><span class='co'># 16 (which equals 2^4)</span>
 
@@ -202,7 +202,7 @@ model) and <code>n_combinations</code> is also present in the returned object.</
 <span class='kw'>x_var</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sets.html'>setdiff</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='kw'>df</span>), <span class='kw'>y_var</span>)
 <span class='kw'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='kw'>medv</span> <span class='op'>~</span> <span class='kw'>.</span>, data = <span class='kw'>df</span>)
 <span class='kw'>df2</span> <span class='op'>&lt;-</span> <span class='kw'>df</span>[, <span class='kw'>x_var</span>]
-<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/shapr/man/shapr.html'>shapr</a></span>(<span class='kw'>df2</span>, <span class='kw'>model</span>, n_combinations = <span class='fl'>1e3</span>)
+<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'>shapr</span>(<span class='kw'>df2</span>, <span class='kw'>model</span>, n_combinations = <span class='fl'>1e3</span>)
 
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>explainer</span><span class='op'>$</span><span class='kw'>X</span>))</div><div class='output co'>#&gt; [1] 564</div><div class='input'>
 <span class='co'># Example using approximation where n_combinations &gt; 2^m</span>
@@ -210,7 +210,7 @@ model) and <code>n_combinations</code> is also present in the returned object.</
 <span class='kw'>y_var</span> <span class='op'>&lt;-</span> <span class='st'>"medv"</span>
 <span class='kw'>df3</span> <span class='op'>&lt;-</span> <span class='kw'>df</span>[, <span class='kw'>x_var</span>]
 <span class='kw'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='kw'>medv</span> <span class='op'>~</span> <span class='kw'>lstat</span> <span class='op'>+</span> <span class='kw'>rm</span> <span class='op'>+</span> <span class='kw'>dis</span> <span class='op'>+</span> <span class='kw'>indus</span>, data = <span class='kw'>df</span>)
-<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/shapr/man/shapr.html'>shapr</a></span>(<span class='kw'>df1</span>, <span class='kw'>model</span>, n_combinations = <span class='fl'>1e3</span>)</div><div class='output co'>#&gt; n_combinations is larger than or equal to 2^m = 16. Using exact instead.</div><div class='input'>
+<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'>shapr</span>(<span class='kw'>df1</span>, <span class='kw'>model</span>, n_combinations = <span class='fl'>1e3</span>)</div><div class='output co'>#&gt; n_combinations is larger than or equal to 2^m = 16. Using exact instead.</div><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>explainer</span><span class='op'>$</span><span class='kw'>X</span>))</div><div class='output co'>#&gt; [1] 16</div><div class='input'><span class='co'># 16 (which equals 2^4)</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

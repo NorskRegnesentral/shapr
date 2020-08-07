@@ -134,7 +134,7 @@ a stand-alone function." />
 a stand-alone function.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/prediction.html'>prediction</a></span>(<span class='kw'>dt</span>, <span class='kw'>prediction_zero</span>, <span class='kw'>explainer</span>)</pre>
+    <pre class="usage"><span class='fu'>prediction</span>(<span class='kw'>dt</span>, <span class='kw'>prediction_zero</span>, <span class='kw'>explainer</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,13 +149,13 @@ a stand-alone function.</p>
     </tr>
     <tr>
       <th>explainer</th>
-      <td><p>An object of class <code>explainer</code>. See <code><a href='https://rdrr.io/pkg/shapr/man/shapr.html'>shapr</a></code>.</p></td>
+      <td><p>An object of class <code>explainer</code>. See <code><a href='shapr.html'>shapr</a></code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of class <code><a href='https://rdrr.io/r/base/c.html'>c("shapr", "list")</a></code>. For more details see <code><a href='https://rdrr.io/pkg/shapr/man/explain.html'>explain</a></code>.</p>
+    <p>An object of class <code><a href='https://rdrr.io/r/base/c.html'>c("shapr", "list")</a></code>. For more details see <code><a href='explain.html'>explain</a></code>.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>If <code>dt</code> does not contain three columns called <code>id</code>, <code>id_combination</code> and <code>w</code>
@@ -166,7 +166,7 @@ to these three columns, <code>dt</code> should also have columns which matches t
 when training the model.</p>
 <p>I.e. you have fitted a linear model using the features <code>x1</code>,
 <code>x2</code> and <code>x3</code>, and you want to explain 5 test observations using the exact method, i.e.
-setting <code>exact = TRUE</code> in <code><a href='https://rdrr.io/pkg/shapr/man/shapr.html'>shapr</a></code>, the following properties should be satisfied</p><ol>
+setting <code>exact = TRUE</code> in <code><a href='shapr.html'>shapr</a></code>, the following properties should be satisfied</p><ol>
 <li><p><code><a href='https://rdrr.io/r/base/colnames.html'>colnames(dt)</a></code> equals <code>c("x1", "x2", "x3", "id", "id_combination", ""w)</code></p></li>
 <li><p><code>dt[, max(id)]</code> equals the number of test observations</p></li>
 <li><p><code>dt[, min(id)]</code> equals 1L.</p></li>

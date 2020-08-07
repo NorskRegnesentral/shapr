@@ -132,7 +132,7 @@
     <p>Sample conditional variables using the Gaussian copula approach</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/shapr/man/sample_copula.html'>sample_copula</a></span>(
+    <pre class="usage"><span class='fu'>sample_copula</span>(
   <span class='kw'>index_given</span>,
   <span class='kw'>n_samples</span>,
   <span class='kw'>mu</span>,
@@ -184,7 +184,7 @@ predictions ought to be explained (test data).</p></td>
 <span class='kw'>x_test</span> <span class='op'>&lt;-</span> <span class='kw'>MASS</span>::<span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>)
 <span class='kw'>x_test_gaussian</span> <span class='op'>&lt;-</span> <span class='kw'>MASS</span>::<span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>)
 <span class='kw'>index_given</span> <span class='op'>&lt;-</span> <span class='fl'>3</span><span class='op'>:</span><span class='fl'>6</span>
-<span class='kw'>ret</span> <span class='op'>&lt;-</span> <span class='kw'>shapr</span>:::<span class='fu'><a href='https://rdrr.io/pkg/shapr/man/sample_copula.html'>sample_copula</a></span>(<span class='kw'>index_given</span>, <span class='kw'>n_samples</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>, m = <span class='kw'>m</span>,
+<span class='kw'>ret</span> <span class='op'>&lt;-</span> <span class='kw'>shapr</span>:::<span class='fu'>sample_copula</span>(<span class='kw'>index_given</span>, <span class='kw'>n_samples</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>, m = <span class='kw'>m</span>,
                              <span class='kw'>x_test_gaussian</span>, <span class='kw'>x_train</span>, <span class='kw'>x_test</span>)
 </div></pre>
   </div>
