@@ -3,7 +3,7 @@ library(MASS)
 library(data.table)
 
 # parameters
-dim <- 4
+dim <- 3
 no_categories <- 3
 mu <- rep(0, dim)
 set.seed(1); beta <- round(rnorm(dim * no_categories + 1), 1)
@@ -70,12 +70,63 @@ epsilon2 <- rnorm(No_test_obs, 0, 0.1^2)
 epsilon <- c(epsilon1, epsilon2)
 dt[, epsilon := epsilon]
 
+# THIS IS AN EXTRA THING IN CASE YOU WANT NON-NUMERICAL FACTORS!
+# num_to_char <- function(dt) {
+#   sapply(dt, function(x) {
+#     if(x == 1) {
+#       return("cat")
+#     } else if (x == 2) {
+#       return("dog")
+#     } else {
+#       return("horse")
+#     }
+#   })
+# }
+#
+# num_to_char2 <- function(dt) {
+#   sapply(dt, function(x) {
+#     if(x == 1) {
+#       return("female")
+#     } else if (x == 2) {
+#       return("male")
+#     } else {
+#       return("unknown")
+#     }
+#   })
+# }
+#
+# num_to_char3 <- function(dt) {
+#   sapply(dt, function(x) {
+#     if(x == 1) {
+#       return("farm")
+#     } else if (x == 2) {
+#       return("house")
+#     } else {
+#       return("apartment")
+#     }
+#   })
+# }
+#
+# dt_new_factors <- copy(dt)
+#
+# dt_new_factors$feat_1_ <- dt_new_factors[, lapply(.SD, FUN = num_to_char), .SDcols = c("feat_1_")]
+# dt_new_factors$feat_2_ <- dt_new_factors[, lapply(.SD, FUN = num_to_char2), .SDcols = c("feat_2_")]
+# dt_new_factors$feat_3_ <- dt_new_factors[, lapply(.SD, FUN = num_to_char3), .SDcols = c("feat_3_")]
+#
+# dt_new_factors <- cbind(dt_new_factors[, lapply(.SD, as.factor), .SDcols = c("feat_1_", "feat_2_", "feat_3_")], epsilon = dt$epsilon)
+#
+# dt <- dt_new_factors
+
 ## 2. One-hot encoding of training data
 mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim], contrasts, contrasts = FALSE))
 
 dt <- cbind(dt, data.table(mod_matrix))
 full_onehot_names <- colnames(mod_matrix)
-reduced_onehot_names <- full_onehot_names[-grep("_1$", full_onehot_names)] # names without reference levels
+
+mod_matrix_not_complete <- model.matrix(~., data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim], contrasts, contrasts = TRUE))
+reduced_onehot_names <- colnames(mod_matrix_not_complete)  # full_onehot_names[-grep("_1$", full_onehot_names)] # names without reference levels
+reduced_onehot_names <- reduced_onehot_names[reduced_onehot_names != '(Intercept)']
+
 
 ## 3. Calculate response
 dt[, response := response_mod(mod_matrix_full = cbind(1, mod_matrix), beta = beta, epsilon = epsilon)]

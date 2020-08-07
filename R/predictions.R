@@ -63,7 +63,7 @@ prediction <- function(dt, prediction_zero, explainer) {
   names(p_all) <- 1:nrow(explainer$x_test)
 
   ## NEW STUFF ----------------------
-  if(is.null(dt[["w"]]) & !is.null(explainer$joint_prob_dt)){
+  if(!is.null(explainer$joint_prob_dt)){
 
     col_names <- c("id_combination", paste0(cnms, "conditioned"))
     col_names2 <- paste0(cnms, "conditioned")

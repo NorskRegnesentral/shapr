@@ -361,9 +361,6 @@ prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_feature
 
   id_all <- id <- id_combination <- NULL # due to NSE notes in R CMD check
 
-  # n_xtest <- nrow(x$x_test)
-  # dt_l <- list()
-
   if (!is.null(seed)) set.seed(seed)
   if (is.null(index_features)) {
     features <- x$X$features
@@ -422,19 +419,27 @@ prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_feature
   data.table::setnames(S_dt, c(cols2, "id_combination"))
 
   cond_dt_sub <- cond_dt[, ..cols]
-  cond_dt_charac <- cond_dt_sub[, lapply(.SD, as.character)]
-  cond_dt_num <- cond_dt_charac[, lapply(.SD, as.numeric)]
+  # OLD
+  # cond_dt_charac <- cond_dt_sub[, lapply(.SD, as.character)]
+  # cond_dt_num <- cond_dt_charac[, lapply(.SD, as.numeric)]
 
-  tmp <- cond_dt_num[S_dt, on = 'id_combination']
+  tmp <- cond_dt_sub[S_dt, on = 'id_combination']
+  tmp_features <- as.matrix(tmp[, ..feat_names])
+  tmp_S <- as.matrix(tmp[, ..cols2])
+  tmp_features[which(is.na(tmp_S))] <- NA
+  tmp_features_with_NA <- data.table::as.data.table(tmp_features)
+  data.table::setnames(tmp_features_with_NA, cols2)
 
-  tmp_comb <- tmp[, ..feat_names] * tmp[, ..cols2]
-  data.table::setnames(tmp_comb, cols2)
-
+  # OLD
+  # tmp <- cond_dt_num[S_dt, on = 'id_combination']
+  # tmp_comb <- tmp[, ..feat_names] * tmp[, ..cols2]
+  # data.table::setnames(tmp_comb, cols2)
   data.table::setkeyv(cond_dt, "id_combination")
-  dt <- cbind(cond_dt, tmp_comb)
+  # dt <- cbind(cond_dt, tmp_comb)
+  dt <- cbind(cond_dt, tmp_features_with_NA)
+
 
   x_test_with_id <- copy(x$x_test)[, id := .I]
-
   dt_with_id <- merge(dt, x_test_with_id, by = feat_names, all.x = TRUE)
   data.table::setcolorder(dt_with_id, c("id_combination", "id_all", "id"))
   dt_with_id[, marg_prob := NULL]
@@ -443,7 +448,6 @@ prepare_data.categorical <- function(x, seed = 1, n_samples = 1e3, index_feature
   # id_all is the id in the original joint_prob_dt
   # id stands for the test id - this is needed in prediction()
   # id_combination stands for which features are conditioned on - e.g: id_combination = 1 --> condition on no features
-
   # Note: dt_with_id will include all observations (not just test observations). This is crucial to compute
   # the correct conditional expectations when the test observations not include all possible combinations!
   return(dt_with_id)

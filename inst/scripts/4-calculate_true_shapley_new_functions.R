@@ -151,10 +151,8 @@ create_exact_joint_probNEW <- function(mu, Sigma, explainer, cutoff, algorithm =
 
   all_x_dt[, joint_prob := all_probs]
 
-  all_x_dt[, id_all := .I]
-
-  # setkeyv(all_x_dt, rev(feat_names)) # To get same ordering as previous version
-  setkeyv(all_x_dt, "id_all")
+  # all_x_dt[, id_all := .I]
+  # setkeyv(all_x_dt, "id_all")
   return(all_x_dt)
 }
 
