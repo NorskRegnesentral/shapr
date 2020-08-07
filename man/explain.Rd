@@ -118,8 +118,11 @@ when conditioning on various numbers of features.}
 
 \item{minbucket}{Numeric value. Equal to the minimum sum of weights in a terminal node.}
 
-\item{sample}{Boolean. If TRUE, then method samples from the leaf in the tree. If FALSE, then just takes all
-observations in the node.}
+\item{sample}{Boolean. If TRUE, then method always samples from the leaf (with replacement).
+If FALSE and the number of obs in the leaf is less than \code{n_samples}, will take all observations in the leaf.
+If the number of obs in the leaf is greater than \code{n_samples}, will still sample \code{n_samples}
+(with replacement). This means that there will always be sampling in the leaf unless \code{sample} = FALSE
+AND the number of obs in the node < \code{n_samples}.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:

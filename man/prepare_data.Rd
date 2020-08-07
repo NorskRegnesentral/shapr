@@ -41,11 +41,8 @@ prepare_data(x, ...)
 
 \item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 
-\item{n_samples}{Integer. The number of samples to take in the leaf. If \code{sample} = TRUE in explain(): will
-always sample \code{n_samples} (with replacement). If \code{sample} = FALSE in explain(): if the number of obs
-in the leaf <= \code{n_samples}, will take all observations in the leaf. If the number of obs in the leaf >
-\code{n_samples}, will still sample \code{n_samples} (with replacement). This means that there will always
-be sampling in the leaf unless \code{sample} = FALSE AND the number of obs in the node < \code{n_samples}.}
+\item{n_samples}{Integer. The number of obs to sample from the leaf if \code{sample} = TRUE or if \code{sample} = FALSE
+but \code{n_samples} is less than the number of obs in the leaf.}
 
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
 used for different numbers of conditoned features, this will be a list with the features to pass.}
