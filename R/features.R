@@ -165,3 +165,111 @@ helper_feature <- function(m, feature_sample) {
 
   return(dt)
 }
+
+#' Initiate the making of dummy variables
+#'
+#' @param data data.table or data.frame. Includes all the features (both factors and possibly others).
+#
+#' @return A list that contains the following entries:
+#' \describe{
+#' \item{features}{Vector. Contains the names of all the features in \code{data}.}
+#' \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
+#' \item{factor_features}{List. Contains each factor and its vector of levels.}
+#' \item{contrasts_list}{List. Contains all the contrasts of the factors.}
+#' }
+#'
+#' @keywords internal
+#'
+#' @author Annabelle Redelmeier
+#'
+#' @examples
+#' data("Boston", package = "MASS")
+#' x_var <- c("lstat", "chas", "rad", "indus")
+#' y_var <- "medv"
+#' # convert to factors
+#' Boston$rad = as.factor(Boston$rad)
+#' Boston$chas = as.factor(Boston$chas)
+#' x_train <- Boston[-1:-6, x_var]
+#' y_train <- Boston[-1:-6, y_var]
+#' x_test <- Boston[1:6, x_var]
+#'
+#' dummyfunc <- shapr:::make_dummies(data = rbind(x_train, x_test))
+#'
+make_dummies <- function (data, ...) {
+
+  data <- data.table::as.data.table(as.data.frame(data, stringsAsFactors = FALSE))
+
+  features <- colnames(data)
+  if(length(unique(features)) < length(features)){
+    stop("Features must have unique names.")
+  }
+  p <- sapply(data[, ..features], is.factor)
+  p_sum <- sum(p)
+
+  if(p_sum > 0) {
+    factor_features <- features[p]
+    factor_list <- lapply(data[, ..factor_features], levels)
+
+  } else {
+    factor_features <- NULL
+    factor_list <- NULL
+  }
+  contrasts_list <- lapply(data[, ..factor_features], contrasts, contrasts = FALSE)
+
+
+  r <- list(features = features,
+            factor_features = factor_features,
+            factor_list = factor_list,
+            contrasts_list = contrasts_list)
+  return(r)
+
+}
+#' Make dummy variables
+#'
+#' @param obj List. Output of \code{make_dummies}.
+#' @param newdata data.table or data.frame. New data (features) that has the same
+#' features as the data used in \code{make_dummies}.
+#
+#' @return A data.frame containing all of the factors in \code{new_data} as
+#' one-hot encoded variables.
+#'
+#' @keywords internal
+#'
+#' @author Annabelle Redelmeier
+#'
+#' @examples
+#' data("Boston", package = "MASS")
+#' x_var <- c("lstat", "chas", "rad", "indus")
+#' y_var <- "medv"
+#' # convert to factors
+#' Boston$rad = as.factor(Boston$rad)
+#' Boston$chas = as.factor(Boston$chas)
+#' x_train <- Boston[-1:-6, x_var]
+#' y_train <- Boston[-1:-6, y_var]
+#' x_test <- Boston[1:6, x_var]
+#'
+#' dummyfunc <- shapr:::make_dummies(data = rbind(x_train, x_test))
+#'
+#' x_train_dummies <- apply_dummies(obj = dummyfunc_original, newdata = x_train)
+apply_dummies <- function(obj, newdata, ...) {
+
+  if(is.null(newdata)) {
+    stop("newdata needs to be included.")
+  }
+  newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
+
+  if(!all(obj$charac_variables %in% names(newdata))) {
+    stop("Some features missing from newdata.")
+  }
+  features <- obj$features
+  newdata_sub <- newdata[, ..features]
+
+  m <- model.frame(data = newdata_sub,
+                   na.action = na.pass,
+                   xlev = obj$charac_list)
+
+  x <- model.matrix(object = ~. + 0,
+                    data = m,
+                    contrasts.arg = obj$contrasts_list)
+  return(x)
+}

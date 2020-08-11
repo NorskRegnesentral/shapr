@@ -1,7 +1,7 @@
 library(xgboost)
 library(shapr)
 
-source("inst/scripts/make_dummies_no_class.R")
+# source("inst/scripts/make_dummies_no_class.R")
 
 data("Boston", package = "MASS")
 
@@ -47,6 +47,15 @@ explanation_ctree <- explain(
   explainer = explainer_cat,
   prediction_zero = p
 )
+
+head(explanation_ctree$dt)
+#      none      lstat        chas       rad     indus
+# 1: 22.446  1.5592494 -0.26105334 0.6362008  1.500910
+# 2: 22.446  0.5237327 -0.01223444 1.0819028 -2.020305
+# 3: 22.446 13.7668894 -0.25545215 1.3729573 -1.232925
+# 4: 22.446 14.2019475 -0.33976648 2.1820143  5.721249
+# 5: 22.446  1.7482355 -0.18688633 3.9573665  3.265200
+# 6: 22.446  1.6255485 -0.09387694 3.9198322  3.332412
 
 ## TESTS
 source("inst/scripts/make_dummies_no_class.R")
