@@ -14,8 +14,8 @@ response_mod = response_mod <- function(mod_matrix_full, beta, epsilon){
 fit_mod = "regression"
 methods = c("ctree")
 cutoff = cutoff <- c(-200, 0, 1, 200)
-Sample_test = FALSE # Can be FALSE as well, then No_test_sample not used.
-No_test_sample = 25
+Sample_test = TRUE # Can be FALSE as well, then No_test_sample not used.
+No_test_sample = 100
 No_train_obs = 1000
 x_test_dt <- NULL
 N_sample_gaussian = c(50)
@@ -174,7 +174,8 @@ explanation <- explain(
   approach = "categorical",
   explainer = explainer,
   prediction_zero = p,
-  joint_prob_dt = NULL
+  joint_prob_dt = NULL,
+  epsilon = 0.001
 )
 
 

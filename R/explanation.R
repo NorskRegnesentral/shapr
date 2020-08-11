@@ -369,7 +369,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
 #'
 #' @export
 #'
-explain.categorical <- function(x, explainer, approach, prediction_zero, joint_prob_dt, ...) {
+explain.categorical <- function(x, explainer, approach, prediction_zero, joint_prob_dt, epsilon = 0.001, ...) {
 
   cnms <- explainer$feature_labels
 
@@ -379,33 +379,26 @@ explain.categorical <- function(x, explainer, approach, prediction_zero, joint_p
   if (!all(explainer$x_train[, sapply(explainer$x_train, is.factor)])) {
     stop("All train observations should be factors to use the categorical method.")
   }
+
   ## Estimate joint_prob_dt if it is not passed to the function
   if (is.null(joint_prob_dt)) {
     train <- copy(explainer$x_train)
-    test <- x
-    train_test <- rbind(train[, ..cnms], test[, ..cnms]) # Ask Martin if we like combining train and test data here
-    joint_prob_dt0 <- train_test[,  .N, eval(explainer$feature_labels)]
+    joint_prob_dt0 <- train[,  .N, eval(explainer$feature_labels)]
+
+    test <- data.table(x)
+    cols = explainer$feature_labels
+
+    test_not_in_train <- setkeyv(setDT(test), cols)[!train]
+    N_test_not_in_train <- nrow(unique(test_not_in_train))
+
+    if(N_test_not_in_train > 0) {
+      joint_prob_dt0 <- rbind(joint_prob_dt0, cbind(test_not_in_train, N = epsilon))
+    }
 
     joint_prob_dt0[, joint_prob := N / nrow(joint_prob_dt0)]
+    joint_prob_dt0[, joint_prob := joint_prob / sum(joint_prob_dt0[['joint_prob']])]
     setkeyv(joint_prob_dt0, explainer$feature_labels)
 
-    ## If not all choices occur, fill them in:
-    # x_train_list <- list()
-    # for(i in 1:ncol(explainer$x_train)) {
-    #   x_train_list[[i]] <- 1:(length(levels(explainer$x_train[[i]])))
-    # }
-    # CJ_dt <- do.call(CJ, x_train_list)
-    # names(CJ_dt) <- explainer$feature_labels
-    # CJ_dt <- CJ_dt[, lapply(.SD, as.factor)]
-    # if(nrow(joint_prob_dt0) < nrow(CJ_dt)) {
-    #   joint_prob_dt <- joint_prob_dt0[CJ_dt, on = cnms][, id_all := .I]
-    #
-    #   set(joint_prob_dt, which(is.na(joint_prob_dt[['joint_prob']])), "joint_prob", 0.001)
-    #   joint_prob_dt[, joint_prob := joint_prob / sum(joint_prob_dt[['joint_prob']])]
-    #   joint_prob_dt[, N := NULL]
-    # } else {
-    #   joint_prob_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
-    # }
     joint_prob_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
 
   } else{
