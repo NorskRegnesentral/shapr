@@ -352,78 +352,34 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 }
 
 
-#' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
-#' used for different numbers of conditoned features, this will be a list with the features to pass.
-#'
 #' @rdname prepare_data
 #' @export
-prepare_data.categorical <- function(x, seed = 1, index_features = NULL, ...) {
+prepare_data.categorical <- function(x, seed = 1, ...) {
 
   id_all <- id <- id_combination <- NULL # due to NSE notes in R CMD check
 
   if (!is.null(seed)) set.seed(seed)
-  if (is.null(index_features)) {
-    features <- x$X$features
-  } else {
-    features <- x$X$features[index_features]
-  }
 
   feat_names <- colnames(x$x_train)
   joint_prob_dt <- x$joint_prob_dt
 
-  # Compute all marginal probabilities
-  marg_list <- list()
-  marg_list[[1]] <- NA
-  for(i in 2:nrow(x$S)){
-    col_names <- feat_names[as.logical(x$S[i, ])]
-
-    mat <- joint_prob_dt[, .(marg_prob = sum(joint_prob)), by = col_names]
-
-    marg_list[[i]] <- mat
-  }
-  # End of marg_prob()
-
   ##
-  # Compute all conditional probabilities
-  cond_list <- list()
-  cond_list[[1]] <- data.frame(marg_prob = 1, joint_prob = 1, id_all = joint_prob_dt$id_all, cond_prob = 1)
-
-  for(i in 2:nrow(x$S)){
-    col_names <- feat_names[as.logical(x$S[i, ])]
-
-    mat0 <- marg_list[[i]]
-    setkeyv(mat0, col_names)
-    setkeyv(joint_prob_dt, col_names)
-    cond_list[[i]] <- merge(mat0, joint_prob_dt, all.x = TRUE)
-    cond_list[[i]][, cond_prob := joint_prob / marg_prob]
-    cond_list[[i]][, (feat_names):= NULL] # To save memory
-  }
-  # End of cond_prob()
-
-  cond_dt <- rbindlist(cond_list, id = 'id_combination')
-
-  joint_prob_dt0 <- copy(joint_prob_dt)
-  joint_prob_dt0[, joint_prob := NULL]
-
-  cond_dt <- cond_dt[joint_prob_dt0, on = 'id_all']
-  setkeyv(cond_dt, c("id_combination", "id_all"))
-  cond_dt[, marg_prob := NULL]
-  cond_dt[, joint_prob := NULL]
-
-
-  # Now we do something to be able to sort by what is conditioned on (including NA)
-  # This is actually used in prediction()
   cols <- c(feat_names, "id_combination")
   cols2 <- paste0(feat_names, "conditioned")
+  cols3 <- c(cols2, "id")
 
   S_dt <- data.table(explainer$S)
   S_dt[S_dt == 0] <- NA
   S_dt[, id_combination := 1:nrow(S_dt)]
   data.table::setnames(S_dt, c(cols2, "id_combination"))
 
-  #cond_dt_sub <- cond_dt[, ..cols]
+  # this is a bit hacky...
+  library(splitstackshape)
+  joint_prob_mult <- cbind(joint_prob_dt, mult = 2^length(feat_names))
+  joint_prob_mult <- expandRows(joint_prob_mult, "mult", count.is.col = TRUE, drop = TRUE)
+  setkeyv(joint_prob_mult, "id_all")
+  tmp <- cbind(joint_prob_mult, S_dt) # first time with conditioned features
 
-  tmp <- cond_dt[S_dt, on = 'id_combination']
   #
   tmp_features <- as.matrix(tmp[, ..feat_names])
   #
@@ -431,34 +387,49 @@ prepare_data.categorical <- function(x, seed = 1, index_features = NULL, ...) {
   #
   tmp_features[which(is.na(tmp_S))] <- NA
   tmp_features_with_NA <- data.table::as.data.table(tmp_features)
-  data.table::setnames(tmp_features_with_NA, cols2)
-  #
-  data.table::setkeyv(cond_dt, "id_combination")
-  dt <- cbind(cond_dt, tmp_features_with_NA)
+  data.table::setnames(tmp_features_with_NA, cols2) # now we have a matrix with the conditioned
+                                                    # features (and the feature value but no ids
+                                                    # or the rest)
+
+  tmp_without_conditioned_features <- copy(tmp)
+  tmp_without_conditioned_features[, (cols2) := NULL]
+  # dt with conditioned features (correct values) + ids + joint_prob
+  dt <- cbind(tmp_without_conditioned_features, tmp_features_with_NA)
+
+
+  # Compute all marginal probabilities
+  marg_dt <- dt[, .(marg_prob = sum(joint_prob)), by = cols2]
+  cond_dt <- dt[marg_dt, on = cols2]
+  # Compute all conditional probabilities
+  cond_dt[, cond_prob := joint_prob / marg_prob]  # dt with conditioned features (correct values) +
+                                                  # ids + joint_prob + marg_prob + cond_prob
 
   ## make the x_test
+  setkeyv(cond_dt, c("id_combination", "id_all"))
   x_test_with_id <- copy(x$x_test)[, id := .I]
-  dt_with_id <- merge(dt, x_test_with_id, by = feat_names, all.x = TRUE)
-  dt_just_test_obs <- dt_with_id[!is.na(id),]
-  #
-  cols3 <- c(cols2, 'id')
-  x_test_mat <- dt_just_test_obs[, ..cols3] # matrix with all possible samples for a given ID
-  setkeyv(x_test_mat, 'id')
+  # this gets the proper test id (if id = NA this means is not a test observation)
+  dt_with_id <- merge(cond_dt, x_test_with_id, by = feat_names, all.x = TRUE)
+  dt_just_test_obs <- dt_with_id[!is.na(id),] # this removes the NON test observations
 
-  final_dt <- dt[x_test_mat, on = cols2, allow.cartesian = TRUE]
+  # This is a really important step! it allows us to get the proper "w" which will
+  # be used in predict()
+  x_test_mat <- dt_just_test_obs[, ..cols3]
+  final_dt <- cond_dt[x_test_mat, on = cols2, allow.cartesian = TRUE]
+
+  # clean-up
   final_dt[, id_all := NULL]
+  final_dt[, marg_prob := NULL]
+  final_dt[, joint_prob := NULL]
   final_dt[, w := cond_prob]
-
-  # sum(final_dt[row_id == 1][id_combination == 2][['cond_prob']])
-
-
+  final_dt[id_combination == 1, w := 1]
+  setcolorder(final_dt, c("id_combination", "id"))
+  setkeyv(final_dt, c("id_combination", "id"))
+  # test: sum(final_dt[id == 5][id_combination == 7][['cond_prob']])
 
   # NOTES:
-  # id_all is the id in the original joint_prob_dt
-  # id stands for the test id - this is needed in prediction()
   # id_combination stands for which features are conditioned on - e.g: id_combination = 1 --> condition on no features
-  # Note: dt_with_id will include all observations (not just test observations). This is crucial to compute
-  # the correct conditional expectations when the test observations not include all possible combinations!
+  # id stands for the test id - this is needed in prediction()
+  # id_all is the id in the original joint_prob_dt
   return(final_dt)
 }
 

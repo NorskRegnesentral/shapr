@@ -360,12 +360,15 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
 }
 
 #' @param joint_prob_dt Data.table of probabilities (Optional) of the data generating distribution.
-#' If \code{NULL} the probabilities/frequencies are are estimated from the data. Note that this is only used
-#' when \code{approach = "categorical"}.
+#' If \code{NULL}, the probabilities/frequencies are estimated from the data. Note that
+#' \code{joint_prob_dt} is only used when \code{approach = "categorical"}.
+#'
+#' @param epsilon Numeric value. If \code{joint_prob_dt} is not supplied, probabilities/frequencies are
+#' estimated using the data. If certain observations occur in the test data and NOT in the train data,
+#' then epsilon is used as the number of times that observations occurs in the training data.
 #'
 #' @author Annabelle Redelmeier
 #' @rdname explain
-#' @name explain
 #'
 #' @export
 #'

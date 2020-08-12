@@ -15,7 +15,7 @@ fit_mod = "regression"
 methods = c("ctree")
 cutoff = cutoff <- c(-200, 0, 1, 200)
 Sample_test = FALSE # Can be FALSE as well, then No_test_sample not used.
-No_test_sample = 1000
+No_test_sample = 5
 No_train_obs = 1000
 x_test_dt <- NULL
 N_sample_gaussian = c(50)
@@ -142,7 +142,7 @@ if(fit_mod == 'regression'){
 
 ## 5. initalize shapr object with trained model -- this is used for calculating true shapley
 x_train <- dt[(1:No_train_obs), ..feat_names]
-x_test <- dt[-(1:No_train_obs), ..feat_names][1:5]
+x_test <- dt[-(1:No_train_obs), ..feat_names]
 y_train <- dt[(1:No_train_obs), .(response)]
 
 ## 6. calculate the true shapley values
@@ -640,3 +640,59 @@ MAE(trueShapley, empShapley, weights = weights0)
 
 
 
+# Extra code....
+marg_list <- list()
+marg_list[[1]] <- NA
+for(i in 2:nrow(x$S)){
+  col_names <- feat_names[as.logical(x$S[i, ])]
+
+  mat <- joint_prob_dt[, .(marg_prob = sum(joint_prob)), by = col_names]
+
+  marg_list[[i]] <- mat
+}
+##
+
+
+# Compute all conditional probabilities
+cond_list <- list()
+cond_list[[1]] <- data.frame(marg_prob = 1, joint_prob = 1, id_all = joint_prob_dt$id_all, cond_prob = 1)
+
+for(i in 2:nrow(x$S)){
+  col_names <- feat_names[as.logical(x$S[i, ])]
+
+  mat0 <- marg_list[[i]]
+  setkeyv(mat0, col_names)
+  setkeyv(joint_prob_dt, col_names)
+  cond_list[[i]] <- merge(mat0, joint_prob_dt, all.x = TRUE)
+  cond_list[[i]][, cond_prob := joint_prob / marg_prob]
+  cond_list[[i]][, (feat_names):= NULL]
+}
+##
+
+cond_dt <- rbindlist(cond_list, id = 'id_combination')
+
+joint_prob_dt0 <- copy(joint_prob_dt)
+joint_prob_dt0[, joint_prob := NULL]
+
+cond_dt <- cond_dt[joint_prob_dt0, on = 'id_all']
+cols <- c(feat_names, "id_combination")
+cols2 <- paste0(feat_names, "conditioned")
+
+S_dt <- data.table(explainer$S)
+S_dt[S_dt == 0] <- NA
+S_dt[, id_combination := 1:nrow(S_dt)]
+data.table::setnames(S_dt, c(cols2, "id_combination"))
+
+
+tmp <- cond_dt[S_dt, on = 'id_combination']
+#
+tmp_features <- as.matrix(tmp[, ..feat_names])
+#
+tmp_S <- as.matrix(tmp[, ..cols2])
+#
+tmp_features[which(is.na(tmp_S))] <- NA
+tmp_features_with_NA <- data.table::as.data.table(tmp_features)
+data.table::setnames(tmp_features_with_NA, cols2)
+#
+data.table::setkeyv(cond_dt, "id_combination")
+dt <- cbind(cond_dt, tmp_features_with_NA)
