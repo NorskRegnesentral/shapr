@@ -14,8 +14,8 @@ response_mod = response_mod <- function(mod_matrix_full, beta, epsilon){
 fit_mod = "regression"
 methods = c("ctree")
 cutoff = cutoff <- c(-200, 0, 1, 200)
-Sample_test = TRUE # Can be FALSE as well, then No_test_sample not used.
-No_test_sample = 100
+Sample_test = FALSE # Can be FALSE as well, then No_test_sample not used.
+No_test_sample = 1000
 No_train_obs = 1000
 x_test_dt <- NULL
 N_sample_gaussian = c(50)
@@ -142,7 +142,7 @@ if(fit_mod == 'regression'){
 
 ## 5. initalize shapr object with trained model -- this is used for calculating true shapley
 x_train <- dt[(1:No_train_obs), ..feat_names]
-x_test <- dt[-(1:No_train_obs), ..feat_names]
+x_test <- dt[-(1:No_train_obs), ..feat_names][1:5]
 y_train <- dt[(1:No_train_obs), .(response)]
 
 ## 6. calculate the true shapley values
@@ -150,7 +150,7 @@ y_train <- dt[(1:No_train_obs), .(response)]
 ## NEW
 source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/scripts/4-calculate_true_shapley_new_functions.R")
 
-p <- mean(y_train$response) # -0.05576529 # 1.179379 # joint_prob_dt_list[[2]] # -0.05576529 # mean(y_train$response)
+p <- mean(y_train$response)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 explainer <- shapr(x_train, model)
@@ -178,6 +178,12 @@ explanation <- explain(
   epsilon = 0.001
 )
 
+explanation <- explain(
+  x_test,
+  approach = "ctree",
+  explainer = explainer,
+  prediction_zero = p
+)
 
 
 ## To test specific cases

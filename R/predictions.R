@@ -36,8 +36,8 @@ prediction <- function(dt, prediction_zero, explainer) {
   stopifnot(
     data.table::is.data.table(dt),
     !is.null(dt[["id"]]),
-    !is.null(dt[["id_combination"]])
-    # !is.null(dt[["w"]]) # AR removed this July 2020 since w is only important when not passing a joint_prob_dt
+    !is.null(dt[["id_combination"]]),
+    !is.null(dt[["w"]])
   )
 
   # Setup
@@ -62,26 +62,7 @@ prediction <- function(dt, prediction_zero, explainer) {
   p_all <- dt[id_combination == max(id_combination), p_hat]
   names(p_all) <- 1:nrow(explainer$x_test)
 
-  ## NEW STUFF ----------------------
-  if(!is.null(explainer$joint_prob_dt)){
-
-    col_names <- c("id_combination", paste0(cnms, "conditioned"))
-    col_names2 <- paste0(cnms, "conditioned")
-    data.table::setkey(dt, "id_combination")
-
-    dt_k <- dt[, .(k = sum(p_hat * cond_prob)), by = col_names]
-    dt_k[id_combination == 1, "k"] <- prediction_zero
-    data.table::setkey(dt_k, "id_combination")
-
-    dt_res0 = dt[dt_k, on = col_names]
-    dt_res <- dt_res0[!is.na(dt_res0$id),]
-
-  } else if(!is.null(dt[["w"]])){
-
-    dt_res <- dt[, .(k = sum((p_hat * w)) / sum(w)), .(id, id_combination)] # k are the conditional expectations
-    explainer$joint_prob_dt <- NULL
-  }
-  ## END ----------------
+  dt_res <- dt[, .(k = sum((p_hat * w)) / sum(w)), .(id, id_combination)] # k are the conditional expectations
 
   # Calculate contributions
   data.table::setkeyv(dt_res, c("id", "id_combination"))
