@@ -13,7 +13,9 @@ Authors@R: c(
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = c("cre", "aut"), comment = c(ORCID = "0000-0003-3908-5155")),
     person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
     person("Jens Christian", "Wahl", email = "Jens.Christian.Wahl@nr.no", role = "ctb"), 
-    person("Camilla", "Lingjærde", role = "ctb"))
+    person("Camilla", "Lingjærde", role = "ctb"),
+    person("Norsk Regnesentral", role =  c("cph", "fnd"))
+    )
 URL: https://norskregnesentral.github.io/shapr/, https://github.com/NorskRegnesentral/shapr
 BugReports: https://github.com/NorskRegnesentral/shapr/issues
 License: MIT + file LICENSE
