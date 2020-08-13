@@ -5,7 +5,8 @@
 # Removed several package dependencies
 # Moved automatic check and pkgdown site build from Circle CI to GitHub actions
 # Some minor efficiency fixes
-# Some minor tweaks to prepare package from CRAN submission
+# Changed package title (shortened)
+# Minor fixes to fulfill CRAN policy
 
 # shapr 0.1.1
 

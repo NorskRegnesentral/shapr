@@ -1,3 +1,17 @@
+## Resubmission
+
+This is a resubmission with the following changes:
+
+* Reduced title length
+* Removed examples from unexported functions
+* Changed one unexported function to exported and added test (not requested)
+* Converted cat-printed console message to message()
+* Added Norsk Regnesentral as "author"" (copyrightholder and funder)
+* Could not find any packages being installed in functions, examples or 
+  vignette as suggested. However, there was a script under inst/devel that 
+  installed packages. This script is now deleted.
+* Updated cran-comments.md and NEWS.md
+
 ## Test environments
 
 * GitHub Actions (macOS-latest): R 4.0.2
