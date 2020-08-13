@@ -1,6 +1,6 @@
 Package: shapr
 Version: 0.1.2
-Title: Prediction Explanation with Dependence-Aware Shapley values
+Title: Prediction Explanation with Dependence-Aware Shapley Values
 Description: Complex machine learning models are often hard to interpret. However, in 
   many situations it is crucial to understand and explain why a model made a specific 
   prediction. Shapley values is the only method for such prediction explanation framework 
