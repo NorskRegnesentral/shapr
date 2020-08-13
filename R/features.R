@@ -55,7 +55,12 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   if (!exact && n_combinations > (2^m - 2)) {
     n_combinations <- 2^m - 2
     exact <- TRUE
-    cat(sprintf("n_combinations is larger than or equal to 2^m = %d. Using exact instead.", 2^m))
+    message(
+      paste0(
+        "\nn_combinations is larger than or equal to 2^m = ", 2^m,". \n",
+        "Using exact instead."
+        )
+      )
   }
 
   if (exact) {
