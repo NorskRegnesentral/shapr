@@ -6,6 +6,19 @@ context("test-explanation.R")
 # For using same Random numer generator as CircelCI (R version 3.5.x)
 RNGversion(vstr = "3.5.0")
 
+test_that("Test get_list_approaches", {
+
+  m <- 4
+  n_features <- c(0, 1, 1, 1, 2, 2, 2, 3)
+  approach <- c("gaussian", "copula", "copula")
+  l <- get_list_approaches(n_features,approach)
+
+  expect_true(is.list(l))
+  expect_equal(names(l),c("gaussian","copula"))
+  expect_equal(l$gaussian,1:4)
+  expect_equal(l$copula,5:8)
+})
+
 test_that("Test functions in explanation.R", {
 
   # Load data -----------

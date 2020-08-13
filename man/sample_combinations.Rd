@@ -27,15 +27,6 @@ data.frame
 Helper function to sample a combination of training and testing rows, which does not risk
 getting the same observation twice. Need to improve this help file.
 }
-\examples{
-ntrain <- 10
-ntest <- 10
-nsamples <- 7
-joint_sampling <- FALSE
-cnms <- c("samp_train", "samp_test")
-x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
-
-}
 \author{
 Martin Jullum
 }

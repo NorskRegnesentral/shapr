@@ -21,18 +21,6 @@ data.table
 \description{
 Sample conditional Gaussian variables
 }
-\examples{
-m <- 10
-n_samples <- 50
-mu <- rep(1, m)
-cov_mat <- cov(matrix(rnorm(n_samples * m), n_samples, m))
-x_test <- matrix(MASS::mvrnorm(1, mu, cov_mat), nrow = 1)
-cnms <- paste0("x", seq(m))
-colnames(x_test) <- cnms
-index_given <- c(4, 7)
-r <- shapr:::sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
-
-}
 \author{
 Martin Jullum
 }
