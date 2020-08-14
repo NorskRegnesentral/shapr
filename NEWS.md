@@ -5,6 +5,8 @@
 # Removed several package dependencies
 # Moved automatic check and pkgdown site build from Circle CI to GitHub actions
 # Some minor efficiency fixes
+# Changed stopping threshold from 12 to 13 features for none-sampling version of 
+  KernelSHAP for consistency with our recommendation
 # Changed package title (shortened)
 # Minor fixes to fulfill CRAN policy
 
