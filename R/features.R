@@ -32,15 +32,15 @@
 #' nrow(x) # Equals 2^3 = 8
 #'
 #' # Subsample of combinations
-#' x <- shapr::feature_combinations(exact = FALSE, m = 13, n_combinations = 1e2)
+#' x <- shapr::feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6) {
 
-  # Force user to use a natural number for n_combinations if m > 12
-  if (m > 12 & is.null(n_combinations)) {
+  # Force user to use a natural number for n_combinations if m > 13
+  if (m > 13 & is.null(n_combinations)) {
     stop(
       paste0(
         "Due to computational complexity, we recommend setting n_combinations = 10 000\n",
-        "if the number of features is larger than 12. Note that you can force the use of the exact\n",
+        "if the number of features is larger than 13. Note that you can force the use of the exact\n",
         "method (i.e. n_combinations = NULL) by setting n_combinations equal to 2^m,\n",
         "where m is the number of features."
       )
