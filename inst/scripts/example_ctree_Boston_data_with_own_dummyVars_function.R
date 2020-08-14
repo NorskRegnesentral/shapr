@@ -1,16 +1,14 @@
 library(xgboost)
 library(shapr)
 
-# source("inst/scripts/make_dummies_no_class.R")
-
 data("Boston", package = "MASS")
 
 x_var <- c("lstat", "chas", "rad", "indus")
 y_var <- "medv"
 
 # convert to factors
-Boston$rad = as.factor(Boston$rad)
-Boston$chas = as.factor(Boston$chas)
+Boston$rad <- as.factor(Boston$rad)
+Boston$chas <- as.factor(Boston$chas)
 
 x_train <- Boston[-1:-6, x_var]
 y_train <- Boston[-1:-6, y_var]
@@ -21,22 +19,8 @@ dummyfunc_original <- make_dummies(data = rbind(x_train, x_test))
 x_train_dummies <- apply_dummies(obj = dummyfunc_original, newdata = x_train)
 x_test_dummies <- apply_dummies(obj = dummyfunc_original, newdata = x_test)
 
-# model_cont <- xgboost(
-#   data = as.matrix(x_train),
-#   label = y_train,
-#   nround = 20,
-#   verbose = FALSE
-# )
-# explainer_cont <- shapr(x_train, model_cont)
-
-model_cat <- xgboost(
-  data = x_train_dummies,
-  label = y_train,
-  nround = 20,
-  verbose = FALSE
-)
-
-model_cat$dummylist <- dummyfunc_original # this is very important! and must be called dummylist to work with the R code!
+# this is very important! and must be called dummylist to work with the R code!
+model_cat$dummylist <- dummyfunc_original
 explainer_cat <- shapr(x_train, model_cat)
 
 p <- mean(y_train)
@@ -58,21 +42,6 @@ head(explanation_ctree$dt)
 # 6: 22.446  1.6255485 -0.09387694 3.9198322  3.332412
 
 ## TESTS
-source("inst/scripts/make_dummies_no_class.R")
-
-data("Boston", package = "MASS")
-
-x_var <- c("lstat", "chas", "rad", "indus")
-y_var <- "medv"
-
-# convert to factors
-Boston$rad = as.factor(Boston$rad)
-Boston$chas = as.factor(Boston$chas)
-
-x_train <- Boston[-1:-6, x_var]
-y_train <- Boston[-1:-6, y_var]
-x_test <- Boston[1:6, x_var]
-
 dummyfunc_original <- make_dummies(data = rbind(x_train, x_test))
 
 head(x_train)
@@ -108,10 +77,11 @@ less_variables <- predict(dummyfunc_original, newdata = x_train1) # will cause a
 head(less_variables)
 
 ## What if you add a feature?
-x_train2 <- cbind(x_train[, c(1, 2)], new_var = x_train[,2], x_train[, c(3, 4)])
+x_train2 <- cbind(x_train[, c(1, 2)], new_var = x_train[, 2], x_train[, c(3, 4)])
 head(x_train2)
 head(x_train)
-a_new_var <- predict(dummyfunc_original, newdata = x_train2) # will not throw an error - do we want it to throw an error?
+# will not throw an error - do we want it to throw an error?
+a_new_var <- predict(dummyfunc_original, newdata = x_train2)
 head(a_new_var)
 
 ## What if you have two variables with the same name?
@@ -126,29 +96,3 @@ x_train3 <- x_train
 colnames(x_train3) <- c("", "", "", "")
 head(x_train3)
 dummyfunc_no_var_names <- make_dummies(data = rbind(x_train3)) # will throw an error
-
-# library(caret)
-# # -- special function when using categorical data + xgboost
-# dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train, x_test))
-# x_train_dummy <- predict(dummyfunc, newdata = x_train)
-# x_test_dummy <- predict(dummyfunc, newdata = x_test)
-#
-# model_cat <- xgboost(
-#   data = x_train_dummy,
-#   label = y_train,
-#   nround = 20,
-#   verbose = FALSE
-# )
-#
-# model_cat$dummyfunc <- dummyfunc
-#
-# explainer_cat <- shapr(x_train, model_cat)
-#
-# p <- mean(y_train)
-#
-# explanation_ctree <- explain(
-#   x_test,
-#   approach = "ctree",
-#   explainer = explainer_cat,
-#   prediction_zero = p
-# )

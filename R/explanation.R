@@ -368,12 +368,14 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
 #' then epsilon is used as the number of times that observations occurs in the training data.
 #'
 #' @author Annabelle Redelmeier
+#'
 #' @rdname explain
 #'
 #' @export
 #'
 explain.categorical <- function(x, explainer, approach, prediction_zero, joint_prob_dt, epsilon = 0.001, ...) {
 
+  joint_prob <- N <- id_all <- NULL # due to NSE notes in R CMD check
   cnms <- explainer$feature_labels
 
   if (!all(x[, sapply(x, is.factor)])) {
@@ -382,41 +384,49 @@ explain.categorical <- function(x, explainer, approach, prediction_zero, joint_p
   if (!all(explainer$x_train[, sapply(explainer$x_train, is.factor)])) {
     stop("All train observations should be factors to use the categorical method.")
   }
-
   ## Estimate joint_prob_dt if it is not passed to the function
   if (is.null(joint_prob_dt)) {
-    train <- copy(explainer$x_train)
-    joint_prob_dt0 <- train[,  .N, eval(explainer$feature_labels)]
+    train <- data.table::copy(explainer$x_train)
+    joint_prob_dt0 <- train[,  .N, eval(cnms)]
 
-    test <- data.table(x)
-    cols = explainer$feature_labels
+    test <- data.table::data.table(x)
 
-    test_not_in_train <- setkeyv(setDT(test), cols)[!train]
+    test_not_in_train <- data.table::setkeyv(data.table::setDT(test), cnms)[!train]
     N_test_not_in_train <- nrow(unique(test_not_in_train))
 
-    if(N_test_not_in_train > 0) {
+    if (N_test_not_in_train > 0) {
       joint_prob_dt0 <- rbind(joint_prob_dt0, cbind(test_not_in_train, N = epsilon))
     }
 
     joint_prob_dt0[, joint_prob := N / nrow(joint_prob_dt0)]
-    joint_prob_dt0[, joint_prob := joint_prob / sum(joint_prob_dt0[['joint_prob']])]
-    setkeyv(joint_prob_dt0, explainer$feature_labels)
+    joint_prob_dt0[, joint_prob := joint_prob / sum(joint_prob_dt0[["joint_prob"]])]
+    data.table::setkeyv(joint_prob_dt0, cnms)
 
     joint_prob_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
 
-  } else{
-    for (i in 1:length(explainer$feature_labels)) {
-      if (!explainer$feature_labels[i] %in% names(joint_prob_dt)){
-        stop("All features in training observations should also belong to joint_prob_dt.")
-      }
-    }
-    for (i in explainer$feature_labels) {
-      if (!all(levels(explainer$x_train[[i]]) %in% levels(joint_prob_dt[[i]]))) {
-        stop("All features in training observations should have the same levels as the features in joint_prob_dt.")
-      }
-    }
-    joint_prob_dt <- joint_prob_dt[, id_all := .I]
+  } else {
+    for (i in colnames(x)) {
+      is_error <- !(i %in% names(joint_prob_dt)) |
+        !all(levels(x[[i]]) %in% levels(joint_prob_dt[[i]]))
 
+      if (is_error > 0) {
+        stop("All features in test observations should belong to joint_prob_dt and have the same
+             levels as the features in joint_prob_dt.")
+      }
+    }
+
+    is_error <- !("joint_prob" %in% names(joint_prob_dt)) |
+      !all(joint_prob_dt$joint_prob <= 1) |
+      !all(joint_prob_dt$joint_prob >= 0) |
+      (sum(joint_prob_dt$joint_prob) != 1)
+
+    if (is_error > 0) {
+      stop('joint_prob_dt must include a column of joint probabilities where the column is called
+      "joint_prob", joint_prob_dt$joint_prob must all be greater or equal to 0 and less than or
+      equal to 1, and sum(joint_prob_dt$joint_prob must equal 1.')
+    }
+
+    joint_prob_dt <- joint_prob_dt[, id_all := .I]
   }
 
   # Add arguments to explainer object
@@ -552,4 +562,3 @@ get_list_parameters <- function(n_features, mincriterion) {
   }
   return(l)
 }
-

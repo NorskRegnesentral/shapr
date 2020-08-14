@@ -11,6 +11,8 @@ apply_dummies(obj, newdata, ...)
 
 \item{newdata}{data.table or data.frame. New data (features) that has the same
 features as the data used in \code{make_dummies}.}
+
+\item{...}{Currently not used.}
 }
 \value{
 A data.frame containing all of the factors in \code{new_data} as
@@ -30,11 +32,11 @@ x_train <- Boston[-1:-6, x_var]
 y_train <- Boston[-1:-6, y_var]
 x_test <- Boston[1:6, x_var]
 
-dummyfunc <- shapr:::make_dummies(data = rbind(x_train, x_test))
+dummyfunc <- make_dummies(data = rbind(x_train, x_test))
 
-x_train_dummies <- apply_dummies(obj = dummyfunc_original, newdata = x_train)
+x_train_dummies <- apply_dummies(obj = dummyfunc, newdata = x_train)
+
 }
 \author{
 Annabelle Redelmeier
 }
-\keyword{internal}

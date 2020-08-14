@@ -61,7 +61,15 @@ explain(x, explainer, approach, prediction_zero, ...)
   ...
 )
 
-\method{explain}{categorical}(x, explainer, approach, prediction_zero, joint_prob_dt, ...)
+\method{explain}{categorical}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  joint_prob_dt,
+  epsilon = 0.001,
+  ...
+)
 
 \method{explain}{combinedparameters}(x, explainer, approach, prediction_zero, mincriterion, ...)
 }
@@ -125,8 +133,12 @@ when conditioning on various numbers of features.}
 observations in the node.}
 
 \item{joint_prob_dt}{Data.table of probabilities (Optional) of the data generating distribution.
-If \code{NULL} the probabilities/frequencies are are estimated from the data. Note that this is only used
-when \code{approach = "categorical"}.}
+If \code{NULL}, the probabilities/frequencies are estimated from the data. Note that
+\code{joint_prob_dt} is only used when \code{approach = "categorical"}.}
+
+\item{epsilon}{Numeric value. If \code{joint_prob_dt} is not supplied, probabilities/frequencies are
+estimated using the data. If certain observations occur in the test data and NOT in the train data,
+then epsilon is used as the number of times that observations occurs in the training data.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:

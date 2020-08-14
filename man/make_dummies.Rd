@@ -8,6 +8,8 @@ make_dummies(data, ...)
 }
 \arguments{
 \item{data}{data.table or data.frame. Includes all the features (both factors and possibly others).}
+
+\item{...}{Currently not used.}
 }
 \value{
 A list that contains the following entries:
@@ -32,10 +34,9 @@ x_train <- Boston[-1:-6, x_var]
 y_train <- Boston[-1:-6, y_var]
 x_test <- Boston[1:6, x_var]
 
-dummyfunc <- shapr:::make_dummies(data = rbind(x_train, x_test))
+dummyfunc <- make_dummies(data = rbind(x_train, x_test))
 
 }
 \author{
 Annabelle Redelmeier
 }
-\keyword{internal}

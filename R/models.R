@@ -96,8 +96,11 @@ predict_model.xgb.Booster <- function(x, newdata) {
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The xgboost package is required for predicting xgboost models")
   }
-  if (!is.null(x[["dummylist"]])) {
-    # newdata_dummy <- predict(x$dummyfunc, newdata = newdata)
+
+  # Test model type
+  model_type <- model_type(x)
+
+  if (model_type == "cat_regression") {
     newdata_dummy <- apply_dummies(obj = x$dummylist, newdata = newdata)
     predict(x, as.matrix(newdata_dummy))
   } else {
@@ -211,7 +214,7 @@ model_type.gam <- function(x) {
 #' @export
 model_type.xgb.Booster <- function(x) {
   if (!is.null(x$params$objective) &&
-    (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
+      (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
   ) {
     stop(
       paste0(
@@ -236,7 +239,7 @@ model_type.xgb.Booster <- function(x) {
   ifelse(
     !is.null(x$params$objective) && x$params$objective == "binary:logistic",
     "classification",
-    ifelse(is.null(x$dummyfunc), "regression", "cat_regression")
+    ifelse(is.null(x$dummylist), "regression", "cat_regression")
   )
 }
 
@@ -336,7 +339,7 @@ features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
 
   nms <- x$feature_names
 
-  if (!is.null(x[["dummylist"]])){
+  if (!is.null(x[["dummylist"]])) {
     return(cnms)
   } else {
     if (!all(nms %in% cnms)) error_feature_labels()

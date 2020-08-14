@@ -328,54 +328,6 @@ explanation_ctree <- explain(
 plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1, 6))
 ```
 
-
-We can use mixed (i.e continuous, categorical, ordinal) data with ctree. Use ctree with categorical data in the following manner:
-
-```{r}
-library(caret)
-x_var_cat <- c("lstat", "chas", "rad", "indus")
-y_var <- "medv"
-
-# convert to factors
-Boston$rad = as.factor(Boston$rad)
-Boston$chas = as.factor(Boston$chas)
-
-x_train_cat <- Boston[-1:-6, x_var_cat]
-y_train <- Boston[-1:-6, y_var]
-x_test_cat <- Boston[1:6, x_var_cat]
-
-# -- special function when using categorical data + xgboost
-dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train_cat, x_test_cat))
-x_train_dummy <- predict(dummyfunc, newdata = x_train_cat)
-x_test_dummy <- predict(dummyfunc, newdata = x_test_cat)
-# --
-
-# Fitting a basic xgboost model to the training data
-model_cat <- xgboost(
-  data = x_train_dummy,
-  label = y_train,
-  nround = 20,
-  verbose = FALSE
-)
-model_cat$dummyfunc <- dummyfunc
-
-explainer_cat <- shapr(x_train_cat, model_cat)
-
-p <- mean(y_train)
-
-explanation_ctree <- explain(
-  x_test_cat,
-  approach = "ctree",
-  explainer = explainer_cat,
-  prediction_zero = p
-)
-
-# Plot the resulting explanations for observations 1 and 6, excluding 
-# the no-covariate effect
-plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1, 6))
-
-```
-
 We can specify parameters used to build the conditional inference trees using the following manner. Default values are based on @hothorn2006unbiased.  
 
 ```{r}
@@ -415,10 +367,66 @@ explanation_ctree <- explain(
   prediction_zero = p,
   mincriterion = c(0.25, 0.25, 0.95, 0.95)
 )
+```
 
+We can use mixed (i.e continuous, categorical, ordinal) data with ctree. Use ctree with categorical data in the following manner. Note that two additional steps are required when using categorical data with xgboost: make_dummies() and apply_dummies(). The function make_dummies() converts the factors to one-hot encoded variables (this is necessary for xgboost). We have to add dummyfunc to the model (see model_cat$dummylist) below so that shapr() doesn't throw an error and say that the columns of x_train are different then the features used to train the model (i.e model_cat).
+
+```{r}
+x_var <- c("lstat", "chas", "rad", "indus")
+y_var <- "medv"
+
+data <- Boston # so we don't change the cont variables to factor variables permanently
+
+# convert to factors
+data$rad = as.factor(data$rad)
+data$chas = as.factor(data$chas)
+
+x_train_cat <- data[-1:-6, x_var]
+y_train_cat <- data[-1:-6, y_var]
+x_test_cat <- data[1:6, x_var]
+
+# convert factors to one-hot encoded variables for xgboost
+dummyfunc <- make_dummies(data = rbind(x_train_cat, x_test_cat))
+
+x_train_dummies <- apply_dummies(obj = dummyfunc, newdata = x_train_cat)
+
+model_cat <- xgboost(
+  data = x_train_dummies,
+  label = y_train,
+  nround = 20,
+  verbose = FALSE
+)
+
+# an important step so that shapr() doesn't throw an error
+model_cat$dummylist <- dummyfunc
+explainer_cat <- shapr(x_train_cat, model_cat)
+
+p <- mean(y_train)
+
+explanation_ctree <- explain(
+  x_test_cat,
+  approach = "ctree",
+  explainer = explainer_cat,
+  prediction_zero = p
+)
+
+# Plot the resulting explanations for observations 1 and 6, excluding 
+# the no-covariate effect
+plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1, 6))
 
 ```
 
+Can also check that the correct test observations are being explained: 
+
+```{r}
+
+x_test_dummies <- apply_dummies(obj = dummyfunc, newdata = x_test_cat)
+
+print(predict(model_cat, x_test_dummies))
+
+print(explanation_ctree$p)
+
+```
 
 ## Main arguments in `shapr`
 

@@ -7,28 +7,28 @@ dim <- 3
 no_categories <- 3
 mu <- rep(0, dim)
 set.seed(1); beta <- round(rnorm(dim * no_categories + 1), 1)
-noise = TRUE
-response_mod = response_mod <- function(mod_matrix_full, beta, epsilon){
+noise <- TRUE
+response_mod <- response_mod <- function(mod_matrix_full, beta, epsilon) {
   as.vector(mod_matrix_full %*% beta) + epsilon
 }
-fit_mod = "regression"
-methods = c("ctree")
-cutoff = cutoff <- c(-200, 0, 1, 200)
-Sample_test = FALSE # Can be FALSE as well, then No_test_sample not used.
-No_test_sample = 5
-No_train_obs = 1000
+fit_mod <- "regression"
+methods <- c("ctree")
+cutoff <- cutoff <- c(-200, 0, 1, 200)
+Sample_test <- FALSE # Can be FALSE as well, then No_test_sample not used.
+No_test_sample <- 5
+No_train_obs <- 1000
 x_test_dt <- NULL
-N_sample_gaussian = c(50)
-seed = ifelse(exists("seed"), seed, 1)
+N_sample_gaussian <- c(50)
+seed <- ifelse(exists("seed"), seed, 1)
 ################
 corr <- 0.5 ####
 ################
-Sigma_diag <-1
+Sigma_diag <- 1
 x_test_dt <- NULL
 
 ## make sure Sigma is positive definite
 Sigma <- matrix(rep(corr, dim^2), nrow = dim, ncol = dim)
-for(i in 1:dim){
+for (i in 1:dim) {
   Sigma[i, i] <- Sigma_diag
 }
 
@@ -36,20 +36,20 @@ for(i in 1:dim){
 set.seed(seed)
 x <- mvrnorm(n =  No_train_obs, mu = mu, Sigma = Sigma)
 dt <- NULL
-for(i in 1:dim){
+for (i in 1:dim) {
   dt <- cbind(dt, cut(x[, i], cutoff, labels = 1:no_categories))
 }
 
 ## Get test data
-if(is.null(x_test_dt)){
+if (is.null(x_test_dt)) {
   x_test_list <- list()
-  for(i in 1:dim){
+  for (i in 1:dim) {
     x_test_list[[i]] <- 1:no_categories
   }
   x_test_dt <- do.call(CJ, x_test_list)
 
-  if(Sample_test){
-    if(nrow(x_test_dt) > No_test_sample){
+  if (Sample_test) {
+    if (nrow(x_test_dt) > No_test_sample) {
       sampled_rows <- sample(1:nrow(x_test_dt), size = No_test_sample, replace = FALSE)
       x_test_dt <- x_test_dt[sampled_rows, ]
     }
@@ -71,6 +71,7 @@ epsilon <- c(epsilon1, epsilon2)
 dt[, epsilon := epsilon]
 
 # THIS IS AN EXTRA THING IN CASE YOU WANT NON-NUMERICAL FACTORS!
+# THIS ONLY WORKS FOR 3 FEATURES with 3 levels each!
 # num_to_char <- function(dt) {
 #   sapply(dt, function(x) {
 #     if(x == 1) {
@@ -113,26 +114,30 @@ dt[, epsilon := epsilon]
 # dt_new_factors$feat_2_ <- dt_new_factors[, lapply(.SD, FUN = num_to_char2), .SDcols = c("feat_2_")]
 # dt_new_factors$feat_3_ <- dt_new_factors[, lapply(.SD, FUN = num_to_char3), .SDcols = c("feat_3_")]
 #
-# dt_new_factors <- cbind(dt_new_factors[, lapply(.SD, as.factor), .SDcols = c("feat_1_", "feat_2_", "feat_3_")], epsilon = dt$epsilon)
+# dt_new_factors <- cbind(dt_new_factors[, lapply(.SD, as.factor), .SDcols =
+# c("feat_1_", "feat_2_", "feat_3_")], epsilon = dt$epsilon)
 #
 # dt <- dt_new_factors
+## END
 
 ## 2. One-hot encoding of training data
-mod_matrix <- model.matrix(~.-1, data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim], contrasts, contrasts = FALSE))
+mod_matrix <- model.matrix(~  . - 1, data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim],
+                                                                              contrasts, contrasts = FALSE))
 
 dt <- cbind(dt, data.table(mod_matrix))
 full_onehot_names <- colnames(mod_matrix)
 
-mod_matrix_not_complete <- model.matrix(~., data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim], contrasts, contrasts = TRUE))
-reduced_onehot_names <- colnames(mod_matrix_not_complete)  # full_onehot_names[-grep("_1$", full_onehot_names)] # names without reference levels
-reduced_onehot_names <- reduced_onehot_names[reduced_onehot_names != '(Intercept)']
+mod_matrix_not_complete <- model.matrix(~., data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim], contrasts,
+                                                                                         contrasts = TRUE))
+reduced_onehot_names <- colnames(mod_matrix_not_complete)
+reduced_onehot_names <- reduced_onehot_names[reduced_onehot_names != "(Intercept)"]
 
 
 ## 3. Calculate response
 dt[, response := response_mod(mod_matrix_full = cbind(1, mod_matrix), beta = beta, epsilon = epsilon)]
 
 ## 4. Fit model
-if(fit_mod == 'regression'){
+if (fit_mod == "regression") {
   form <- as.formula(paste0("response~", paste(feat_names, collapse = "+")))
   model <- lm(formula = form, data = dt[(1:No_train_obs)])
 
@@ -142,13 +147,13 @@ if(fit_mod == 'regression'){
 
 ## 5. initalize shapr object with trained model -- this is used for calculating true shapley
 x_train <- dt[(1:No_train_obs), ..feat_names]
-x_test <- dt[-(1:No_train_obs), ..feat_names]
+x_test <- dt[- (1:No_train_obs), ..feat_names][1:5]
 y_train <- dt[(1:No_train_obs), .(response)]
 
 ## 6. calculate the true shapley values
 
 ## NEW
-source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/scripts/4-calculate_true_shapley_new_functions.R")
+source("inst/scripts/4-calculate_true_shapley_new_functions.R")
 
 p <- mean(y_train$response)
 
@@ -159,6 +164,9 @@ explainer <- shapr(x_train, model)
 set.seed(1)
 joint_prob_dtNEW <- create_exact_joint_probNEW(mu, Sigma, explainer, cutoff)
 
+joint_prob_dtNEW[1, "joint_prob"] <- -1
+
+# this doesn't work for non-numerical factors!!
 explanation <- explain(
   x_test,
   approach = "categorical",
@@ -202,7 +210,7 @@ explanation <- explain(
 
 ## 2. Here we remove some levels from the training observations
 x_train0 <- x_train[1:10, ]
-x_train0$feat_2_ <- factor(x_train0$feat_2_, levels= c("1", "2"))
+x_train0$feat_2_ <- factor(x_train0$feat_2_, levels = c("1", "2"))
 str(x_train0)
 str(x_test)
 
@@ -220,7 +228,7 @@ explanation <- explain(
 x_train1 <- x_train[, lapply(.SD, as.numeric)]
 
 form_num <- as.formula(paste0("response~", paste(feat_names, collapse = "+")))
-model_num <- lm(formula = form, data = cbind(x_train1,  y_train) )
+model_num <- lm(formula = form, data = cbind(x_train1, y_train))
 
 explainer1 <- shapr(x_train1, model_num)
 
@@ -231,10 +239,6 @@ explanation <- explain(
   prediction_zero = p,
   joint_prob_dt = joint_prob_dtNEW
 )
-
-
-
-
 
 
 explanation$dt
@@ -378,272 +382,10 @@ explanation$dt
 # 80: 0.7980833  1.01275189  0.3726504 -0.715496655  0.11454608
 # 81: 0.7980833  0.85495697  0.3180412 -0.612416372 -0.78007331
 
-
-
-
-############################ OLD #############################################
-
-source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/scripts/3-calculate_true_shapley_with_datatable.R")
-
-set.seed(10)
-joint_prob_dt_list <- create_exact_joint_prob(mu, Sigma, beta, explainer, cutoff, response_mod, mc.cores = 1)
-print(joint_prob_dt_list[[2]])
-marg_list <- marg_prob(joint_prob_dt_list[[1]], explainer)
-
-cond_list <- cond_prob(marg_list, joint_prob_dt_list[[1]], explainer)
-
-cond_expec_mat <- cond_expec_new(cond_list, explainer, x_test, prediction_zero = joint_prob_dt_list[[2]], joint_prob_dt = joint_prob_dt_list[[1]])
-
-#               0           1          2           3          4          5          6           7
-#  1: -0.05576529  0.06405741  0.2884922  0.13060150  0.4075045  0.2496137  0.4740486  0.59306080
-#  2: -0.05576529  0.06405741  0.2884922  0.04193657  0.4075045  0.1609488  0.3853836  0.50439586
-#  3: -0.05576529  0.06405741  0.2884922 -0.84819378  0.4075045 -0.7291815 -0.5047467 -0.38573449
-#  4: -0.05576529  0.06405741 -0.8106213  0.13060150 -0.6916091  0.2496137 -0.6250650 -0.50605274
-#  5: -0.05576529  0.06405741 -0.8106213  0.04193657 -0.6916091  0.1609488 -0.7137299 -0.59471767
-#  6: -0.05576529  0.06405741 -0.8106213 -0.84819378 -0.6916091 -0.7291815 -1.6038603 -1.48484802
-#  7: -0.05576529  0.06405741  0.4884829  0.13060150  0.6074951  0.2496137  0.6740392  0.79305146
-#  8: -0.05576529  0.06405741  0.4884829  0.04193657  0.6074951  0.1609488  0.5853743  0.70438653
-#  9: -0.05576529  0.06405741  0.4884829 -0.84819378  0.6074951 -0.7291815 -0.3047561 -0.18574382
-# 10: -0.05576529 -0.93557799  0.2884922  0.13060150 -0.5921309 -0.7500217  0.4740486 -0.40657461
-# 11: -0.05576529 -0.93557799  0.2884922  0.04193657 -0.5921309 -0.8386866  0.3853836 -0.49523954
-# 12: -0.05576529 -0.93557799  0.2884922 -0.84819378 -0.5921309 -1.7288170 -0.5047467 -1.38536989
-# 13: -0.05576529 -0.93557799 -0.8106213  0.13060150 -1.6912445 -0.7500217 -0.6250650 -1.50568815
-# 14: -0.05576529 -0.93557799 -0.8106213  0.04193657 -1.6912445 -0.8386866 -0.7137299 -1.59435308
-# 15: -0.05576529 -0.93557799 -0.8106213 -0.84819378 -1.6912445 -1.7288170 -1.6038603 -2.48448343
-# 16: -0.05576529 -0.93557799  0.4884829  0.13060150 -0.3921403 -0.7500217  0.6740392 -0.20658394
-# 17: -0.05576529 -0.93557799  0.4884829  0.04193657 -0.3921403 -0.8386866  0.5853743 -0.29524888
-# 18: -0.05576529 -0.93557799  0.4884829 -0.84819378 -0.3921403 -1.7288170 -0.3047561 -1.18537923
-# 19: -0.05576529  1.46462912  0.2884922  0.13060150  1.8080762  1.6501854  0.4740486  1.99363250
-# 20: -0.05576529  1.46462912  0.2884922  0.04193657  1.8080762  1.5615205  0.3853836  1.90496757
-# 21: -0.05576529  1.46462912  0.2884922 -0.84819378  1.8080762  0.6713902 -0.5047467  1.01483722
-# 22: -0.05576529  1.46462912 -0.8106213  0.13060150  0.7089626  1.6501854 -0.6250650  0.89451897
-# 23: -0.05576529  1.46462912 -0.8106213  0.04193657  0.7089626  1.5615205 -0.7137299  0.80585404
-# 24: -0.05576529  1.46462912 -0.8106213 -0.84819378  0.7089626  0.6713902 -1.6038603 -0.08427631
-# 25: -0.05576529  1.46462912  0.4884829  0.13060150  2.0080668  1.6501854  0.6740392  2.19362317
-# 26: -0.05576529  1.46462912  0.4884829  0.04193657  2.0080668  1.5615205  0.5853743  2.10495824
-# 27: -0.05576529  1.46462912  0.4884829 -0.84819378  2.0080668  0.6713902 -0.3047561  1.21482789
-# 0           1          2           3          4          5          6           7
-
-true_shapley <- true_Kshap(explainer, cond_expec_mat, x_test)
-
-## OLD
-# none    feat_1_    feat_2_     feat_3_
-#  1: -0.05576529  0.1192824  0.3437172  0.18582648
-#  2: -0.05576529  0.1192824  0.3437172  0.09716155
-#  3: -0.05576529  0.1192824  0.3437172 -0.79296880
-#  4: -0.05576529  0.1192824 -0.7553963  0.18582648
-#  5: -0.05576529  0.1192824 -0.7553963  0.09716155
-#  6: -0.05576529  0.1192824 -0.7553963 -0.79296880
-#  7: -0.05576529  0.1192824  0.5437079  0.18582648
-#  8: -0.05576529  0.1192824  0.5437079  0.09716155
-#  9: -0.05576529  0.1192824  0.5437079 -0.79296880
-# 10: -0.05576529 -0.8803530  0.3437172  0.18582648
-# 11: -0.05576529 -0.8803530  0.3437172  0.09716155
-# 12: -0.05576529 -0.8803530  0.3437172 -0.79296880
-# 13: -0.05576529 -0.8803530 -0.7553963  0.18582648
-# 14: -0.05576529 -0.8803530 -0.7553963  0.09716155
-# 15: -0.05576529 -0.8803530 -0.7553963 -0.79296880
-# 16: -0.05576529 -0.8803530  0.5437079  0.18582648
-# 17: -0.05576529 -0.8803530  0.5437079  0.09716155
-# 18: -0.05576529 -0.8803530  0.5437079 -0.79296880
-# 19: -0.05576529  1.5198541  0.3437172  0.18582648
-# 20: -0.05576529  1.5198541  0.3437172  0.09716155
-# 21: -0.05576529  1.5198541  0.3437172 -0.79296880
-# 22: -0.05576529  1.5198541 -0.7553963  0.18582648
-# 23: -0.05576529  1.5198541 -0.7553963  0.09716155
-# 24: -0.05576529  1.5198541 -0.7553963 -0.79296880
-# 25: -0.05576529  1.5198541  0.5437079  0.18582648
-# 26: -0.05576529  1.5198541  0.5437079  0.09716155
-# 27: -0.05576529  1.5198541  0.5437079 -0.79296880
-# none    feat_1_    feat_2_     feat_3_
-
-#         none      feat_1_    feat_2_     feat_3_     feat_4_      feat_5_    feat_6_     feat_7_
-#  1: 1.179379  1.530211211  0.7766838  0.26425401  0.99677640  0.167469568  0.3145221  0.15988456
-#  2: 1.179379  0.043365984  0.7944186  0.19065066 -0.12661421  1.387495805 -0.6420392  0.16657287
-#  3: 1.179379 -0.803423762 -0.6443841  0.13570797 -1.06310953 -1.827589362  0.3770805 -0.25828185
-#  4: 1.179379 -0.201905784  0.7203391 -0.45453123 -0.70053418  1.104116902  0.2255440  0.11340640
-#  5: 1.179379  1.532919185 -0.6449030  0.23120177 -0.76776430  0.135121953  0.2871187  0.13526038
-#  6: 1.179379 -0.031531789  0.7769878 -0.52720921 -0.04810814  1.281393072 -0.6887475  0.14886349
-#  7: 1.179379 -0.765350997  0.3318879 -0.56777023  0.69966152  1.518569448  0.4150648  0.18401220
-#  8: 1.179379  1.613094944 -0.6103132  0.24662221  0.89858212  1.291335263  0.3136259  0.15812198
-#  9: 1.179379 -0.827938292 -0.6256884  0.18013643 -0.13266035 -1.947363190  0.3241932  0.14247319
-# 10: 1.179379 -0.032648626  0.7999101  0.16864462 -0.83979519  0.251735813  0.3209512  0.14318266
-# 11: 1.179379  1.707548716  0.3275631  0.12347990 -0.30148706 -1.659668301  0.4448463 -0.22283246
-# 12: 1.179379 -0.831070145  0.8030219 -0.53892191  0.78952129  0.375095436 -0.6266910 -0.25624969
-# 13: 1.179379  1.446070790 -0.6664186  0.31814232  0.13858600  1.118125446  0.2302746  0.12119734
-# 14: 1.179379  1.365961587  0.6753102 -0.48134863 -0.72966023 -2.145349299  0.1947828 -0.27199882
-# 15: 1.179379 -0.779536696 -0.6205100  0.15955460  0.71144638 -1.808516183  0.3837168  0.16989035
-# 16: 1.179379  1.606352398 -0.6182898 -0.52731829  0.89088361  1.283504013  0.3254818  0.15016498
-# 17: 1.179379  1.216582927 -0.7794299 -0.34801046 -0.51959914 -0.038312540  0.1787400  0.09156742
-# 18: 1.179379  0.105405495  0.8164423  0.17263704  0.70695098  1.517584482  0.4140087  0.18297846
-# 19: 1.179379  1.693077469  0.3271992 -0.59368715 -0.20884277  1.529426441 -0.5862729 -0.24363261
-# 20: 1.179379  0.135484511  0.2307755  0.07292559  0.35787552 -1.149803462 -0.3797136  0.25967109
-# 21: 1.179379 -0.808768311 -0.6470890  0.10870885 -1.05935353 -1.799257410  0.3730956 -0.24994734
-# 22: 1.179379 -0.979991191  0.7283726  0.25147813 -0.81299365 -2.118696852  0.2312023  0.10937767
-# 23: 1.179379  1.592425269  0.7335269  0.18035750 -0.13391848 -1.877260032 -0.5988395  0.11862296
-# 24: 1.179379 -0.904875694  0.7607608  0.18873908 -0.87900610  1.283318885 -0.6697409  0.13258827
-# 25: 1.179379  0.067319060 -0.6224823 -0.55733422 -0.20242935  0.508729146 -0.6097063 -0.26706824
-# 26: 1.179379 -0.895543951 -0.6423865  0.21453627 -0.87279200  1.259357911 -0.6893347  0.13677122
-# 27: 1.179379  0.108248725  0.3038837  0.14421234  0.60495438 -1.647255781  0.4783998  0.22772678
-# 28: 1.179379  0.143654777  0.7171832  0.03760680  0.44456933 -1.305164623  0.5711948 -0.18360819
-# 29: 1.179379  0.081652146  0.7604706  0.14395452 -0.22851693 -1.802215879 -0.5954696  0.15688978
-
-############################ NEW #############################################
-
-source("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/scripts/4-calculate_true_shapley_new_functions.R")
-
-# Specifying the phi_0, i.e. the expected prediction without any features
-p <- 1.179379 # joint_prob_dt_list[[2]] # -0.05576529 # mean(y_train$response)
-
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-explainer <- shapr(x_train, model)
-# explainer$x_test <- x_test
-# explainer$approach <- "categorical"
-
-#
-set.seed(1)
-joint_prob_dtNEW <- create_exact_joint_probNEW2(mu, Sigma, explainer, cutoff)
-# This is the same
-#     feat_1_ feat_2_ feat_3_  joint_prob id
-#  1:       1       1       1 0.125000000  1
-#  2:       1       1       2 0.085336187  2
-#  3:       1       1       3 0.039663813  3
-#  4:       1       2       1 0.085336187  4
-#  5:       1       2       2 0.058258118  5
-#  6:       1       2       3 0.027078069  6
-#  7:       1       3       1 0.039663813  7
-#  8:       1       3       2 0.027078069  8
-#  9:       1       3       3 0.012585745  9
-# 10:       2       1       1 0.085336187 10
-# 11:       2       1       2 0.058258118 11
-# 12:       2       1       3 0.027078069 12
-# 13:       2       2       1 0.058258118 13
-# 14:       2       2       2 0.039772205 14
-# 15:       2       2       3 0.018485913 15
-# 16:       2       3       1 0.027078069 16
-# 17:       2       3       2 0.018485913 17
-# 18:       2       3       3 0.008592156 18
-# 19:       3       1       1 0.039663813 19
-# 20:       3       1       2 0.027078069 20
-# 21:       3       1       3 0.012585745 21
-# 22:       3       2       1 0.027078069 22
-# 23:       3       2       2 0.018485913 23
-# 24:       3       2       3 0.008592156 24
-# 25:       3       3       1 0.012585745 25
-# 26:       3       3       2 0.008592156 26
-# 27:       3       3       3 0.003993589 27
-# feat_1_ feat_2_ feat_3_  joint_prob id
-
-marg_listNEW <- marg_probNEW(joint_prob_dtNEW, explainer)
-
-# [[6]]
-#    feat_1_ feat_3_  marg_prob
-# 1:       1       1 0.25000000
-# 2:       1       2 0.17067237
-# 3:       1       3 0.07932763
-# 4:       2       1 0.17067237
-# 5:       2       2 0.11651624
-# 6:       2       3 0.05415614
-# 7:       3       1 0.07932763
-# 8:       3       2 0.05415614
-# 9:       3       3 0.02517149
-
-cond_dt <- cond_probNEW(marg_listNEW, joint_prob_dtNEW, explainer)
-
-cond_expec_matNEW <- cond_expecNEW(cond_dt, explainer, x_test, p)
-
-#               1           2          3           4          5          6          7           8
-#  1: -0.05576529  0.06405741  0.2884922  0.13060150  0.4075045  0.2496137  0.4740486  0.59306080
-#  2: -0.05576529  0.06405741  0.2884922  0.04193657  0.4075045  0.1609488  0.3853836  0.50439586
-#  3: -0.05576529  0.06405741  0.2884922 -0.84819378  0.4075045 -0.7291815 -0.5047467 -0.38573449
-#  4: -0.05576529  0.06405741 -0.8106213  0.13060150 -0.6916091  0.2496137 -0.6250650 -0.50605274
-#  5: -0.05576529  0.06405741 -0.8106213  0.04193657 -0.6916091  0.1609488 -0.7137299 -0.59471767
-#  6: -0.05576529  0.06405741 -0.8106213 -0.84819378 -0.6916091 -0.7291815 -1.6038603 -1.48484802
-#  7: -0.05576529  0.06405741  0.4884829  0.13060150  0.6074951  0.2496137  0.6740392  0.79305146
-#  8: -0.05576529  0.06405741  0.4884829  0.04193657  0.6074951  0.1609488  0.5853743  0.70438653
-#  9: -0.05576529  0.06405741  0.4884829 -0.84819378  0.6074951 -0.7291815 -0.3047561 -0.18574382
-# 10: -0.05576529 -0.93557799  0.2884922  0.13060150 -0.5921309 -0.7500217  0.4740486 -0.40657461
-# 11: -0.05576529 -0.93557799  0.2884922  0.04193657 -0.5921309 -0.8386866  0.3853836 -0.49523954
-# 12: -0.05576529 -0.93557799  0.2884922 -0.84819378 -0.5921309 -1.7288170 -0.5047467 -1.38536989
-# 13: -0.05576529 -0.93557799 -0.8106213  0.13060150 -1.6912445 -0.7500217 -0.6250650 -1.50568815
-# 14: -0.05576529 -0.93557799 -0.8106213  0.04193657 -1.6912445 -0.8386866 -0.7137299 -1.59435308
-# 15: -0.05576529 -0.93557799 -0.8106213 -0.84819378 -1.6912445 -1.7288170 -1.6038603 -2.48448343
-# 16: -0.05576529 -0.93557799  0.4884829  0.13060150 -0.3921403 -0.7500217  0.6740392 -0.20658394
-# 17: -0.05576529 -0.93557799  0.4884829  0.04193657 -0.3921403 -0.8386866  0.5853743 -0.29524888
-# 18: -0.05576529 -0.93557799  0.4884829 -0.84819378 -0.3921403 -1.7288170 -0.3047561 -1.18537923
-# 19: -0.05576529  1.46462912  0.2884922  0.13060150  1.8080762  1.6501854  0.4740486  1.99363250
-# 20: -0.05576529  1.46462912  0.2884922  0.04193657  1.8080762  1.5615205  0.3853836  1.90496757
-# 21: -0.05576529  1.46462912  0.2884922 -0.84819378  1.8080762  0.6713902 -0.5047467  1.01483722
-# 22: -0.05576529  1.46462912 -0.8106213  0.13060150  0.7089626  1.6501854 -0.6250650  0.89451897
-# 23: -0.05576529  1.46462912 -0.8106213  0.04193657  0.7089626  1.5615205 -0.7137299  0.80585404
-# 24: -0.05576529  1.46462912 -0.8106213 -0.84819378  0.7089626  0.6713902 -1.6038603 -0.08427631
-# 25: -0.05576529  1.46462912  0.4884829  0.13060150  2.0080668  1.6501854  0.6740392  2.19362317
-# 26: -0.05576529  1.46462912  0.4884829  0.04193657  2.0080668  1.5615205  0.5853743  2.10495824
-# 27: -0.05576529  1.46462912  0.4884829 -0.84819378  2.0080668  0.6713902 -0.3047561  1.21482789
-#               1           2          3           4          5          6          7           8
-
-
-true_shapley <- true_Kshap(explainer, cond_expec_matNEW, x_test)
-
-
-
-# just to check
-
-explanation <- explain(
-  x_test,
-  approach = "ctree",
-  explainer = explainer,
-  prediction_zero = p
-)
-
-ctreeShapley <- explanation$dt
-
-#            none    feat_1_    feat_2_    feat_3_
-#  1: -0.05576527  0.1503015  0.2849002  0.2136243
-#  2: -0.05576526  0.1414748  0.2810344  0.1376520
-#  3: -0.05576526  0.1768801  0.2742665 -0.7811158
-#  4: -0.05576526  0.1744241 -0.8328516  0.2081400
-#  5: -0.05576526  0.1334530 -0.8115930  0.1391876
-#  6: -0.05576526  0.1669113 -0.8473781 -0.7486160
-#  7: -0.05576526  0.1660613  0.4649690  0.2177864
-#  8: -0.05576526  0.1635006  0.4755120  0.1211392
-#  9: -0.05576525  0.1521051  0.4730647 -0.7551483
-# 10: -0.05576525 -0.8534063  0.2737769  0.2288200
-# 11: -0.05576526 -0.8363931  0.2628529  0.1340659
-# 12: -0.05576526 -0.8403930  0.2535993 -0.7428109
-# 13: -0.05576526 -0.8538255 -0.8271347  0.2310373
-# 14: -0.05576527 -0.8317360 -0.8167303  0.1098785
-# 15: -0.05576526 -0.8399119 -0.8213602 -0.7674460
-# 16: -0.05576525 -0.8594895  0.4712977  0.2373731
-# 17: -0.05576526 -0.8487157  0.4550221  0.1542100
-# 18: -0.05576525 -0.8517334  0.4803020 -0.7581826
-# 19: -0.05576525  1.5476062  0.2578753  0.2439162
-# 20: -0.05576526  1.5618285  0.2732663  0.1256381
-# 21: -0.05576526  1.5453755  0.2871597 -0.7619327
-# 22: -0.05576526  1.5615122 -0.8265160  0.2152880
-# 23: -0.05576526  1.5577874 -0.8206933  0.1245252
-# 24: -0.05576526  1.5777314 -0.8443541 -0.7618884
-# 25: -0.05576525  1.5584503  0.4843410  0.2065971
-# 26: -0.05576526  1.5515031  0.4896526  0.1195679
-# 27: -0.05576525  1.5490990  0.4933956 -0.7719015
-# none    feat_1_    feat_2_    feat_3_
-
-
-weights = cond_dt[cond_dt[, id_combination != 1]]
-weights0 = weights[weights[, id_combination == 2]][['joint_prob']]
-
-sum(weights0)
-
-MAE(trueShapley, empShapley, weights = weights0)
-
-
-
-
-
 # Extra code....
 marg_list <- list()
 marg_list[[1]] <- NA
-for(i in 2:nrow(x$S)){
+for (i in 2:nrow(x$S)) {
   col_names <- feat_names[as.logical(x$S[i, ])]
 
   mat <- joint_prob_dt[, .(marg_prob = sum(joint_prob)), by = col_names]
@@ -657,7 +399,7 @@ for(i in 2:nrow(x$S)){
 cond_list <- list()
 cond_list[[1]] <- data.frame(marg_prob = 1, joint_prob = 1, id_all = joint_prob_dt$id_all, cond_prob = 1)
 
-for(i in 2:nrow(x$S)){
+for (i in 2:nrow(x$S)) {
   col_names <- feat_names[as.logical(x$S[i, ])]
 
   mat0 <- marg_list[[i]]
@@ -665,16 +407,16 @@ for(i in 2:nrow(x$S)){
   setkeyv(joint_prob_dt, col_names)
   cond_list[[i]] <- merge(mat0, joint_prob_dt, all.x = TRUE)
   cond_list[[i]][, cond_prob := joint_prob / marg_prob]
-  cond_list[[i]][, (feat_names):= NULL]
+  cond_list[[i]][, (feat_names) := NULL]
 }
 ##
 
-cond_dt <- rbindlist(cond_list, id = 'id_combination')
+cond_dt <- rbindlist(cond_list, id = "id_combination")
 
 joint_prob_dt0 <- copy(joint_prob_dt)
 joint_prob_dt0[, joint_prob := NULL]
 
-cond_dt <- cond_dt[joint_prob_dt0, on = 'id_all']
+cond_dt <- cond_dt[joint_prob_dt0, on = "id_all"]
 cols <- c(feat_names, "id_combination")
 cols2 <- paste0(feat_names, "conditioned")
 
@@ -684,7 +426,7 @@ S_dt[, id_combination := 1:nrow(S_dt)]
 data.table::setnames(S_dt, c(cols2, "id_combination"))
 
 
-tmp <- cond_dt[S_dt, on = 'id_combination']
+tmp <- cond_dt[S_dt, on = "id_combination"]
 #
 tmp_features <- as.matrix(tmp[, ..feat_names])
 #

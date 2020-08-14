@@ -354,82 +354,93 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 
 #' @rdname prepare_data
 #' @export
-prepare_data.categorical <- function(x, seed = 1, ...) {
+prepare_data.categorical <- function(x, ...) {
 
-  id_all <- id <- id_combination <- NULL # due to NSE notes in R CMD check
-
-  if (!is.null(seed)) set.seed(seed)
+  # due to NSE notes in R CMD check
+  id_all <- id <- id_combination <- explainer <- feat_names <- cols <- joint_prob <- NULL
+  cond_prob <- marg_prob <- cols_id <- w <- NULL
 
   feat_names <- colnames(x$x_train)
   joint_prob_dt <- x$joint_prob_dt
 
   ##
-  cols <- c(feat_names, "id_combination")
-  cols2 <- paste0(feat_names, "conditioned")
-  cols3 <- c(cols2, "id")
+  cols <- paste0(feat_names, "conditioned")
+  cols_id <- c(cols, "id")
 
-  S_dt <- data.table(explainer$S)
+  S_dt <- data.table::data.table(explainer$S)
   S_dt[S_dt == 0] <- NA
   S_dt[, id_combination := 1:nrow(S_dt)]
-  data.table::setnames(S_dt, c(cols2, "id_combination"))
+  data.table::setnames(S_dt, c(cols, "id_combination"))
 
-  # this is a bit hacky...
-  library(splitstackshape)
-  joint_prob_mult <- cbind(joint_prob_dt, mult = 2^length(feat_names))
-  joint_prob_mult <- expandRows(joint_prob_mult, "mult", count.is.col = TRUE, drop = TRUE)
-  setkeyv(joint_prob_mult, "id_all")
+  joint_prob_mult <- joint_prob_dt[rep(id_all, nrow(explainer$S))]
+
+  data.table::setkeyv(joint_prob_mult, "id_all")
   tmp <- cbind(joint_prob_mult, S_dt) # first time with conditioned features
-
+  tmp_features <- as.matrix(tmp[, feat_names, with = FALSE])
   #
-  tmp_features <- as.matrix(tmp[, ..feat_names])
-  #
-  tmp_S <- as.matrix(tmp[, ..cols2])
+  tmp_S <- as.matrix(tmp[, cols, with = FALSE])
   #
   tmp_features[which(is.na(tmp_S))] <- NA
   tmp_features_with_NA <- data.table::as.data.table(tmp_features)
-  data.table::setnames(tmp_features_with_NA, cols2) # now we have a matrix with the conditioned
+  data.table::setnames(tmp_features_with_NA, cols) # now we have a matrix with the conditioned
                                                     # features (and the feature value but no ids
-                                                    # or the rest)
+                                                    # or anything else)
 
-  tmp_without_conditioned_features <- copy(tmp)
-  tmp_without_conditioned_features[, (cols2) := NULL]
+  tmp_no_conditioned_features <- data.table::copy(tmp)
+  tmp_no_conditioned_features[, (cols) := NULL]
   # dt with conditioned features (correct values) + ids + joint_prob
-  dt <- cbind(tmp_without_conditioned_features, tmp_features_with_NA)
-
+  dt <- cbind(tmp_no_conditioned_features, tmp_features_with_NA)
 
   # Compute all marginal probabilities
-  marg_dt <- dt[, .(marg_prob = sum(joint_prob)), by = cols2]
-  cond_dt <- dt[marg_dt, on = cols2]
+  marg_dt <- dt[, .(marg_prob = sum(joint_prob)), by = cols]
+  cond_dt <- dt[marg_dt, on = cols]
+
   # Compute all conditional probabilities
-  cond_dt[, cond_prob := joint_prob / marg_prob]  # dt with conditioned features (correct values) +
-                                                  # ids + joint_prob + marg_prob + cond_prob
+  cond_dt[, cond_prob := joint_prob / marg_prob]
+  cond_dt[id_combination == 1, marg_prob := 0]
+  cond_dt[id_combination == 1, cond_prob := 1]
+  ## this is just to test marginals
+  cond_dt_unique <- unique(cond_dt, by = cols)
+  test <- cond_dt_unique[id_combination != 1][, .(sum_prob = sum(marg_prob)),
+                                              by = "id_combination"][["sum_prob"]]
+  if (!all(round(test) == 1)) {
+    print("Warning - not all marginals sum to 1. There could be a problem going on
+          with the joint probabilities. Consider checking.")
+  }
 
   ## make the x_test
-  setkeyv(cond_dt, c("id_combination", "id_all"))
-  x_test_with_id <- copy(x$x_test)[, id := .I]
-  # this gets the proper test id (if id = NA this means is not a test observation)
-  dt_with_id <- merge(cond_dt, x_test_with_id, by = feat_names, all.x = TRUE)
-  dt_just_test_obs <- dt_with_id[!is.na(id),] # this removes the NON test observations
+  data.table::setkeyv(cond_dt, c("id_combination", "id_all"))
+  x_test_with_id <- data.table::copy(x$x_test)[, id := .I]
+  dt_just_test <- cond_dt[x_test_with_id, on = feat_names]
+  cond_dt[, id_all := NULL] # id_all no longer needed when we have id
 
   # This is a really important step! it allows us to get the proper "w" which will
   # be used in predict()
-  x_test_mat <- dt_just_test_obs[, ..cols3]
-  final_dt <- cond_dt[x_test_mat, on = cols2, allow.cartesian = TRUE]
+  dt_test_just_conditioned <- dt_just_test[, cols_id, with = FALSE]
+  final_dt <- cond_dt[dt_test_just_conditioned, on = cols, allow.cartesian = TRUE]
+
+  ## this is just to test conditional probabilities
+  test <- final_dt[id_combination != 1][, .(sum_prob = sum(cond_prob)),
+                                        by = c("id_combination", "id")][["sum_prob"]]
+  if (!all(round(test) == 1)) {
+    print("Warning - not all conditional probabilities sum to 1. There could be a problem going on
+          with the joint probabilities. Consider checking.")
+  }
 
   # clean-up
-  final_dt[, id_all := NULL]
   final_dt[, marg_prob := NULL]
   final_dt[, joint_prob := NULL]
   final_dt[, w := cond_prob]
-  final_dt[id_combination == 1, w := 1]
-  setcolorder(final_dt, c("id_combination", "id"))
-  setkeyv(final_dt, c("id_combination", "id"))
-  # test: sum(final_dt[id == 5][id_combination == 7][['cond_prob']])
+  final_dt[, cond_prob := NULL]
+  data.table::setcolorder(final_dt, c("id_combination", "id"))
+  data.table::setkeyv(final_dt, c("id_combination", "id"))
 
   # NOTES:
-  # id_combination stands for which features are conditioned on - e.g: id_combination = 1 --> condition on no features
-  # id stands for the test id - this is needed in prediction()
-  # id_all is the id in the original joint_prob_dt
+  # "id_combination" stands for which features are conditioned on - e.g:
+  # id_combination = 1 --> condition on no features
+  # "id" stands for the test id - this is needed in prediction()
+  # "id_all" is the id in the original joint_prob_dt
+  # Note that we remove id_all above since we don't need it.
   return(final_dt)
 }
 
