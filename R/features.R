@@ -195,7 +195,7 @@ helper_feature <- function(m, feature_sample) {
 #' y_train <- Boston[-1:-6, y_var]
 #' x_test <- Boston[1:6, x_var]
 #'
-#' dummyfunc <- make_dummies(data = rbind(x_train, x_test))
+#' dummylist <- make_dummies(data = rbind(x_train, x_test))
 #'
 make_dummies <- function(data, ...) {
 
@@ -254,9 +254,9 @@ make_dummies <- function(data, ...) {
 #' y_train <- Boston[-1:-6, y_var]
 #' x_test <- Boston[1:6, x_var]
 #'
-#' dummyfunc <- make_dummies(data = rbind(x_train, x_test))
+#' dummylist <- make_dummies(data = rbind(x_train, x_test))
 #'
-#' x_train_dummies <- apply_dummies(obj = dummyfunc, newdata = x_train)
+#' x_train_dummies <- apply_dummies(obj = dummylist, newdata = x_train)
 #'
 apply_dummies <- function(obj, newdata, ...) {
 

@@ -378,3 +378,37 @@ testthat::test_that("Testing data input to explain in explanation.R", {
     )
   }
 })
+
+testthat::test_that("Test functions in explanation.R with factor features", {
+
+  data("Boston", package = "MASS")
+
+  x_var <- c("lstat", "chas", "rad", "indus")
+  y_var <- "medv"
+
+  # convert to factors
+  Boston$rad <- as.factor(Boston$rad)
+  Boston$chas <- as.factor(Boston$chas)
+
+  y_train <- tail(Boston[, y_var], 350)
+  x_test <- head(Boston[, x_var], 2)
+
+  explainer <- readRDS(file = "test_objects/shapley_explainer_categorical_obj.rds")
+
+  # Creating list with lots of different explainer objects
+  p0 <- mean(y_train)
+
+  ex_list <- list()
+
+  # Ex 1: Explain predictions (ctree)
+  ex_list[[1]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0)
+
+
+  # expect_equal(predict(model_cat, x_test_dummies), ex_list[[1]]$p)
+
+
+})
+
+
+
+

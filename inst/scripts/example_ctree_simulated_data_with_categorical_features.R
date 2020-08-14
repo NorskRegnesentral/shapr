@@ -122,13 +122,13 @@ dt[, epsilon := epsilon]
 
 ## 2. One-hot encoding of training data
 mod_matrix <- model.matrix(~  . - 1, data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim],
-                                                                              contrasts, contrasts = FALSE))
+                                                                                contrasts, contrasts = FALSE))
 
 dt <- cbind(dt, data.table(mod_matrix))
 full_onehot_names <- colnames(mod_matrix)
 
 mod_matrix_not_complete <- model.matrix(~., data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim], contrasts,
-                                                                                         contrasts = TRUE))
+                                                                                       contrasts = TRUE))
 reduced_onehot_names <- colnames(mod_matrix_not_complete)
 reduced_onehot_names <- reduced_onehot_names[reduced_onehot_names != "(Intercept)"]
 

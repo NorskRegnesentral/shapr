@@ -165,3 +165,82 @@ test_that("Test helper_feature", {
   expect_equal(x[["sample_frequence"]], x2)
   expect_equal(x[["is_duplicate"]], x3)
 })
+
+testthat::test_that("Test make_dummies",{
+  data("Boston", package = "MASS")
+  x_var <- c("lstat", "chas", "rad", "indus")
+  y_var <- "medv"
+  # convert to factors
+  Boston$rad = as.factor(Boston$rad)
+  Boston$chas = as.factor(Boston$chas)
+  x_train <- Boston[3:4, x_var]
+  y_train <- Boston[3:4, y_var]
+  x_test <- Boston[1:2, x_var]
+
+  factors <- sapply(x_train, is.factor)
+  nb_factors <- sum(factors)
+
+  dummylist <- make_dummies(data = rbind(x_train, x_test))
+
+  # Tests
+  expect_equal(length(dummylist$contrasts_list), nb_factors)
+
+  expect_equal(length(dummylist$features), ncol(x_train))
+  expect_equal(length(dummylist$factor_features), nb_factors)
+
+  expect_equal(ncol(dummylist$contrasts_list$chas), length(levels(Boston$chas)))
+  expect_equal(ncol(dummylist$contrasts_list$rad), length(levels(Boston$rad)))
+
+})
+
+testthat::test_that("Test apply_dummies",{
+  data("Boston", package = "MASS")
+  x_var <- c("lstat", "chas", "rad", "indus")
+  y_var <- "medv"
+  # convert to factors
+  Boston$rad = as.factor(Boston$rad)
+  Boston$chas = as.factor(Boston$chas)
+  x_train <- Boston[3:4, x_var]
+  y_train <- Boston[3:4, y_var]
+  x_test <- Boston[1:2, x_var]
+
+  numeric <- !sapply(x_train, is.factor)
+
+  nb_numeric <- sum(numeric)
+
+  dummylist <- make_dummies(data = rbind(x_train, x_test))
+  x_train_dummies <- apply_dummies(obj = dummylist, newdata = x_train)
+
+  # Tests
+  expect_equal(ncol(x_train_dummies),
+               nb_numeric +
+                 length(dummylist$factor_list$chas) +
+                 length(dummylist$factor_list$rad))
+
+
+  # What if you re-arrange the columns in x_train?
+  x_train0 <- x_train[, c(2, 1, 4, 3)]
+  diff_column_placements <- apply_dummies(dummylist, newdata = x_train0)
+  expect_equal(colnames(diff_column_placements), colnames(x_train_dummies))
+
+  ## What if you put in less features then the original feature vector?
+  x_train1 <- x_train[, c(2, 1)]
+  expect_error(less_variables <- apply_dummies(dummylist, newdata = x_train1))
+
+  ## What if you add a feature?
+  x_train2 <- cbind(x_train[, c(1, 2)], new_var = x_train[, 2], x_train[, c(3, 4)])
+  # will not throw an error - do we want it to throw an error?
+  a_new_var <- apply_dummies(dummylist, newdata = x_train2)
+  expect_equal(ncol(a_new_var), ncol(x_train_dummies))
+
+  ## What if you have two variables with the same name?
+  x_train3 <- x_train
+  colnames(x_train3) <- c("X1", "X2", "X3", "X3")
+  expect_error(make_dummies(data = rbind(x_train3)))
+
+  ## What if variables don't have names?
+  x_train3 <- x_train
+  colnames(x_train3) <- c("", "", "", "")
+  expect_error(make_dummies(data = rbind(x_train3)))
+
+})
