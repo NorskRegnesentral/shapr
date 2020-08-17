@@ -373,10 +373,12 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
 #'
 #' @export
 #'
-explain.categorical <- function(x, explainer, approach, prediction_zero, joint_prob_dt, epsilon = 0.001, ...) {
+explain.categorical <- function(x, explainer, approach, prediction_zero, joint_prob_dt = NULL, epsilon = 0.001, ...) {
 
   joint_prob <- N <- id_all <- NULL # due to NSE notes in R CMD check
   cnms <- explainer$feature_labels
+
+  x <- explainer_x_test_dt(x, explainer$feature_labels)
 
   if (!all(x[, sapply(x, is.factor)])) {
     stop("All test observations should be factors to use the categorical method.")
@@ -430,7 +432,7 @@ explain.categorical <- function(x, explainer, approach, prediction_zero, joint_p
   }
 
   # Add arguments to explainer object
-  explainer$x_test <- explainer_x_test_dt(x, explainer$feature_labels)
+  explainer$x_test <- x
   explainer$approach <- approach
   explainer$joint_prob_dt <- joint_prob_dt
 

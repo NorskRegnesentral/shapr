@@ -357,22 +357,22 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
 prepare_data.categorical <- function(x, ...) {
 
   # due to NSE notes in R CMD check
-  id_all <- id <- id_combination <- explainer <- feat_names <- cols <- joint_prob <- NULL
+  id_all <- id <- id_combination <- feat_names <- cols <- joint_prob <- NULL
   cond_prob <- marg_prob <- cols_id <- w <- NULL
 
   feat_names <- colnames(x$x_train)
   joint_prob_dt <- x$joint_prob_dt
 
   ##
-  cols <- paste0(feat_names, "conditioned")
+  cols <- paste0(feat_names, "_conditioned")
   cols_id <- c(cols, "id")
 
-  S_dt <- data.table::data.table(explainer$S)
+  S_dt <- data.table::data.table(x$S)
   S_dt[S_dt == 0] <- NA
   S_dt[, id_combination := 1:nrow(S_dt)]
   data.table::setnames(S_dt, c(cols, "id_combination"))
 
-  joint_prob_mult <- joint_prob_dt[rep(id_all, nrow(explainer$S))]
+  joint_prob_mult <- joint_prob_dt[rep(id_all, nrow(x$S))]
 
   data.table::setkeyv(joint_prob_mult, "id_all")
   tmp <- cbind(joint_prob_mult, S_dt) # first time with conditioned features
@@ -428,8 +428,8 @@ prepare_data.categorical <- function(x, ...) {
   }
 
   # clean-up
-  final_dt[, marg_prob := NULL]
-  final_dt[, joint_prob := NULL]
+  # final_dt[, marg_prob := NULL]
+  # final_dt[, joint_prob := NULL]
   final_dt[, w := cond_prob]
   final_dt[, cond_prob := NULL]
   data.table::setcolorder(final_dt, c("id_combination", "id"))

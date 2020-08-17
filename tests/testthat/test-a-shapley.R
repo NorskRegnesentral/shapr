@@ -16,13 +16,10 @@ testthat::test_that("Basic test functions in shapley.R", {
   model <- readRDS("model_objects/lm_model_object.rds")
 
   # Prepare the data for explanation
-  explainer <- shapr(x_train, model)I
+  explainer <- shapr(x_train, model)
 
   testthat::expect_known_value(explainer, file = "test_objects/shapley_explainer_obj.rds")
 })
-
-
-
 
 
 testthat::test_that("Testing data input to shapr in shapley.R", {
@@ -79,7 +76,7 @@ testthat::test_that("Testing data input to shapr in shapley.R", {
 })
 
 
-testthat::test_that("Basic categorical test functions in shapley.R", {
+testthat::test_that("Basic test functions when features are both numeric and categorical in shapley.R", {
 
   data("Boston", package = "MASS")
 
@@ -90,14 +87,35 @@ testthat::test_that("Basic categorical test functions in shapley.R", {
   Boston$rad <- as.factor(Boston$rad)
   Boston$chas <- as.factor(Boston$chas)
 
-  x_train <- tail(Boston[, x_var], 350)
+  x_train <- tail(Boston[, x_var], 350) # we have to use 350 to get all levels
 
-  # Load premade lm model. Path needs to be relative to testthat directory in the package
-  model_cat <- readRDS("model_objects/lm_model_with_categorical_object.rds")
+  # Load pre-made lm model. Path needs to be relative to testthat directory in the package
+  model_cat <- readRDS("model_objects/lm_model_with_cat_num_object.rds")
 
   # Prepare the data for explanation
   explainer_cat <- shapr(x_train, model_cat)
 
-  testthat::expect_known_value(explainer_cat, file = "test_objects/shapley_explainer_categorical_obj.rds")
+  testthat::expect_known_value(explainer_cat, file = "test_objects/shapley_explainer_cat_num_obj.rds")
 })
 
+testthat::test_that("Basic test functions when features are just categorical in shapley.R", {
+
+  data("Boston", package = "MASS")
+
+  x_var <- c( "chas", "rad")
+  y_var <- "medv"
+
+  # convert to factors
+  Boston$rad <- as.factor(Boston$rad)
+  Boston$chas <- as.factor(Boston$chas)
+
+  x_train <- tail(Boston[, x_var], 350) # we have to use 350 to get all levels
+
+  # Load pre-made lm model. Path needs to be relative to testthat directory in the package
+  model_cat <- readRDS("model_objects/lm_model_with_cat_object.rds")
+
+  # Prepare the data for explanation
+  explainer_cat <- shapr(x_train, model_cat)
+
+  testthat::expect_known_value(explainer_cat, file = "test_objects/shapley_explainer_cat_obj.rds")
+})

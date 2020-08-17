@@ -220,7 +220,8 @@ make_dummies <- function(data, ...) {
   contrasts_list <- lapply(data[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
 
 
-  r <- list(features = features,
+  r <- list(data = data,
+            features = features,
             factor_features = factor_features,
             factor_list = factor_list,
             contrasts_list = contrasts_list)
@@ -267,9 +268,20 @@ apply_dummies <- function(obj, newdata, ...) {
   }
   newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
 
-  if (!all(obj$charac_variables %in% names(newdata))) {
+
+  # check all features are in newdata
+  # all(logical(0)) is also TRUE... be careful
+  if (!all(obj$features %in% names(newdata))) {
     stop("Some features missing from newdata.")
   }
+
+  # check that all features have the correct data type
+  for (i in obj$features) {
+    if (class(newdata[[i]]) != class(obj$data[[i]])) {
+      stop("All features must have the same type as original data.")
+    }
+  }
+
   features <- obj$features
   newdata_sub <- newdata[, features, with = FALSE]
 

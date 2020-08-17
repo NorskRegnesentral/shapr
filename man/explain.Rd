@@ -66,7 +66,7 @@ explain(x, explainer, approach, prediction_zero, ...)
   explainer,
   approach,
   prediction_zero,
-  joint_prob_dt,
+  joint_prob_dt = NULL,
   epsilon = 0.001,
   ...
 )

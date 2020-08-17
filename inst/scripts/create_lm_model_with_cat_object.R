@@ -8,10 +8,10 @@ df <- tail(Boston, 350)
 
 # Fit linear model
 set.seed(123)
-model_cat <- lm(medv ~ lstat + chas + rad + indus, data = df)
+model_cat <- lm(medv ~ chas + rad, data = df)
 
-saveRDS(object = model_cat, "inst/model_objects/lm_model_with_categorical_object.rds")
+saveRDS(object = model_cat, "inst/model_objects/lm_model_with_cat_object.rds")
 
 # Used for testing as well, so need a copy in the testthat directory
-saveRDS(object = model_cat, "tests/testthat/model_objects/lm_model_with_categorical_object.rds")
+saveRDS(object = model_cat, "tests/testthat/model_objects/lm_model_with_cat_object.rds")
 
