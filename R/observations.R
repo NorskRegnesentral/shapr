@@ -427,20 +427,10 @@ prepare_data.categorical <- function(x, ...) {
           with the joint probabilities. Consider checking.")
   }
 
-  # clean-up
-  # final_dt[, marg_prob := NULL]
-  # final_dt[, joint_prob := NULL]
   final_dt[, w := cond_prob]
   final_dt[, cond_prob := NULL]
   data.table::setcolorder(final_dt, c("id_combination", "id"))
   data.table::setkeyv(final_dt, c("id_combination", "id"))
-
-  # NOTES:
-  # "id_combination" stands for which features are conditioned on - e.g:
-  # id_combination = 1 --> condition on no features
-  # "id" stands for the test id - this is needed in prediction()
-  # "id_all" is the id in the original joint_prob_dt
-  # Note that we remove id_all above since we don't need it.
   return(final_dt)
 }
 

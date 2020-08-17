@@ -480,7 +480,8 @@ testthat::test_that("Test functions in explanation.R with just factor features",
 
   testthat::expect_true(length(ex_list[[1]]$joint_prob_dt$marg_prob) > 0)
   testthat::expect_true(length(ex_list[[1]]$joint_prob_dt$joint_prob) > 0)
-  testthat::expect_true(all((ex_list[[1]]$joint_prob_dt$joint_prob <= 1) & (ex_list[[1]]$joint_prob_dt$joint_prob >= 0)))
+  testthat::expect_true(all((ex_list[[1]]$joint_prob_dt$joint_prob <= 1) &
+                              (ex_list[[1]]$joint_prob_dt$joint_prob >= 0)))
 
   # test that the conditioned columns were created
   testthat::expect_true(all(c("chas_conditioned", "rad_conditioned") %in% colnames(ex_list[[1]]$joint_prob_dt)))
@@ -490,7 +491,7 @@ testthat::test_that("Test functions in explanation.R with just factor features",
 
   # test that the conditional probabilities were calculated correctly
   tmp <- ex_list[[1]]$joint_prob_dt
-  tmp <- tmp[ id_combination != 1]
+  tmp <- tmp[id_combination != 1]
   testthat::expect_equal(tmp$joint_prob / tmp$marg_prob, tmp$w)
 
   # test that we cover all test observations in joint_prob_dt
@@ -500,10 +501,6 @@ testthat::test_that("Test functions in explanation.R with just factor features",
 
   # the mean(y_train) should be p_hat when id_combination is 1
   tmp <- ex_list[[1]]$joint_prob_dt
-  tmp <- head(tmp[ id_combination == 1], 1)
+  tmp <- head(tmp[id_combination == 1], 1)
   testthat::expect_equal(tmp$p_hat, p0)
-
-
 })
-
-

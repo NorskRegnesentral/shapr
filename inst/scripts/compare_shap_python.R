@@ -21,16 +21,16 @@ x_test <- as.matrix(head(Boston[, x_var], 6))
 
 # Creating a larger test data set (600 observations) for more realistic function time calls.
 # Modifying x_test to repeat the 6 test observations 50 times
-x_test = rep(1,100) %x% x_test
+x_test <- rep(1, 100) %x% x_test
 colnames(x_test) <- colnames(x_train)
 
 # Reading the R format version of the xgboost model to avoid crash reading same xgboost model in R and Python
 model <- readRDS(system.file("model_objects", "xgboost_model_object.rds", package = "shapr"))
 
-pred_test <- predict(model,x_test)
+pred_test <- predict(model, x_test)
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
-p0 <- mean(predict(model,x_train))# adjustment from the standard mean(y_train) to comply with the shap implementation
+p0 <- mean(predict(model, x_train))# adjustment from the standard mean(y_train) to comply with the shap implementation
 
 time_R_start <- proc.time()
 # Prepare the data for explanation
@@ -40,7 +40,8 @@ time_R_prepare <- proc.time()
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation_independence <- explain(x_test, explainer, approach = "empirical", type = "independence", prediction_zero = p0)
+explanation_independence <- explain(x_test, explainer, approach = "empirical",
+                                    type = "independence", prediction_zero = p0)
 
 time_R_indep0 <- proc.time()
 
@@ -50,7 +51,7 @@ explanation_largesigma <- explain(x_test, explainer, approach = "empirical", typ
 time_R_largesigma0 <- proc.time()
 
 time_R_indep <- time_R_indep0 - time_R_start
-time_R_largesigma <- (time_R_largesigma0 - time_R_indep0) + (time_R_prepare- time_R_start)
+time_R_largesigma <- (time_R_largesigma0 - time_R_indep0) + (time_R_prepare - time_R_start)
 
 # Printing the Shapley values for the test data
 Kshap_indep <- explanation_independence$dt
@@ -78,17 +79,15 @@ head(Kshap_largesigma)
 
 
 # Checking the difference between the methods
-mean(abs(as.matrix(Kshap_indep)-as.matrix(Kshap_largesigma)))
+mean(abs(as.matrix(Kshap_indep) - as.matrix(Kshap_largesigma)))
 #[1] 8.404487e-08  # Numerically identical
-
-
 
 #### Running shap from Python ####
 reticulate::py_run_file(system.file("scripts", "shap_python_script.py", package = "shapr"))
 # Writes Python objects to the list py #
 
 # Checking that the predictions are identical
-sum((pred_test-py$py_pred_test)^2)
+sum((pred_test - py$py_pred_test)^2)
 
 head(Kshap_indep)
 #> Kshap_indep
@@ -112,7 +111,7 @@ head(py$Kshap_shap)
 
 
 # Checking difference between our R implementtaion and the shap implementation i Python
-mean(abs(as.matrix(Kshap_indep)-as.matrix(py$Kshap_shap)))
+mean(abs(as.matrix(Kshap_indep) - as.matrix(py$Kshap_shap)))
 #[1] 1,300368e-07 # Numerically identical
 
 # Checking the running time of the different methods
@@ -131,9 +130,3 @@ py$time_py
 
 # Our R implementation is about 3 times faster than the the shap package on this task.
 # Might be some overhead by calling Python from R, but it shouldn't be even close to that much.
-
-
-
-
-
-

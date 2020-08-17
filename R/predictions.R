@@ -73,8 +73,6 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", cnms)
 
-  # return(if (!is.null(explainer$joint_prob_dt)) explainer$joint_prob_dt else NULL)
-
   r <- list(dt = dt_kshap, model = explainer$model, p = p_all, x_test = explainer$x_test)
   if (!is.null(explainer$joint_prob_dt)) {
     r$joint_prob_dt <- dt

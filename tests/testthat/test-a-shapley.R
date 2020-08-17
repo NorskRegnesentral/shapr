@@ -102,7 +102,7 @@ testthat::test_that("Basic test functions when features are just categorical in 
 
   data("Boston", package = "MASS")
 
-  x_var <- c( "chas", "rad")
+  x_var <- c("chas", "rad")
   y_var <- "medv"
 
   # convert to factors

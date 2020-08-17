@@ -168,15 +168,15 @@ test_that("Test helper_feature", {
 })
 
 
-testthat::test_that("Test make_dummies",{
+testthat::test_that("Test make_dummies", {
 
   data("Boston", package = "MASS")
   x_var <- c("lstat", "chas", "rad", "indus")
   y_var <- "medv"
 
   # convert to factors
-  Boston$rad = as.factor(Boston$rad)
-  Boston$chas = as.factor(Boston$chas)
+  Boston$rad <- as.factor(Boston$rad)
+  Boston$chas <- as.factor(Boston$chas)
   x_train <- Boston[3:4, x_var]
   y_train <- Boston[3:4, y_var]
   x_test <- Boston[1:2, x_var]
@@ -208,20 +208,18 @@ testthat::test_that("Test make_dummies",{
   colnames(x_train3) <- c("", "X2", "X3", "X4")
   # this doesn't currently throw an error - should it?
   expect_type(make_dummies(data = rbind(x_train3)), "list")
-
-
 })
 
 
-testthat::test_that("Test apply_dummies",{
+testthat::test_that("Test apply_dummies", {
 
   data("Boston", package = "MASS")
   x_var <- c("lstat", "chas", "rad", "indus")
   y_var <- "medv"
 
   # convert to factors
-  Boston$rad = as.factor(Boston$rad)
-  Boston$chas = as.factor(Boston$chas)
+  Boston$rad <- as.factor(Boston$rad)
+  Boston$chas <- as.factor(Boston$chas)
   x_train <- Boston[3:4, x_var]
   y_train <- Boston[3:4, y_var]
   x_test <- Boston[1:2, x_var]

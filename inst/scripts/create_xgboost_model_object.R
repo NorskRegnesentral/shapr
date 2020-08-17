@@ -11,7 +11,7 @@ x_test <- as.matrix(head(Boston[, x_var], 6))
 
 # Creating a larger test data set (300 observations) for more realistic function time calls.
 # Modifying x_test to repeat the 6 test observations 50 times
-x_test = rep(1,50) %x% x_test
+x_test <- rep(1, 50) %x% x_test
 colnames(x_test) <- colnames(x_train)
 
 # Fitting a basic xgboost model to the training data
@@ -21,6 +21,6 @@ model <- xgboost(
   nround = 20
 )
 
-saveRDS(model,file = "inst/model_objects/xgboost_model_object.rds") 
+saveRDS(model, file = "inst/model_objects/xgboost_model_object.rds")
 
-xgb.save(model=model,fname = "inst/model_objects/xgboost_model_object_raw") 
+xgb.save(model = model, fname = "inst/model_objects/xgboost_model_object_raw")

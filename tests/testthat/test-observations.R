@@ -54,4 +54,3 @@ test_that("Test observation_impute", {
   expect_true(is.integer(r$id_combination))
 
 })
-
