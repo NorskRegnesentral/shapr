@@ -8,8 +8,8 @@
 #'
 #' @param approach Character vector of length \code{1} or \code{n_features}.
 #' \code{n_features} equals the total number of features in the model. All elements should
-#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
-#' information.
+#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"} or
+#' \code{"categorical"}. See details for more information.
 #'
 #' @param prediction_zero Numeric. The prediction value for unseen data, typically equal to the mean of
 #' the response.
@@ -94,6 +94,32 @@
 #' # Combined approach
 #' approach <- c("gaussian", "gaussian", "empirical", "empirical")
 #' explain5 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
+#'
+#' # categorical approach
+#' # need only factor variables
+#' Boston$rad <- as.factor(Boston$rad)
+#' Boston$chas <- as.factor(Boston$chas)
+#'
+#' x_train <- head(Boston, -3)
+#' x_test <- tail(Boston, 3)
+#'
+#' # Fit a linear model
+#' model <- lm(medv ~ rad + chas, data = x_train)
+#'
+#' # Create an explainer object
+#' explainer <- shapr(x_train, model)
+#'
+#' # Explain predictions
+#' p <- mean(x_train$medv)
+#'
+#' explain6 <- explain(x_test, explainer, approach = "categorical", prediction_zero = p)
+#'
+#'
+#' # Grouped approach
+#' group_names <- list(group1 = c("lstat", "rm"), group2 = c("dis", "indus"))
+#'
+#' explainer_grouped <- shapr(x_train, model, group = group_names)
+#' explain6 <- explain(x_test, explainer_grouped, approach = "empirical", prediction_zero = p0)
 #'
 #' # Plot the results
 #' \dontrun{
@@ -185,9 +211,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -234,9 +258,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -279,9 +301,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
   }
   # Generate data
   dt <- prepare_data(explainer, x_test_gaussian = x_test_gaussian, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -326,9 +346,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
   # Generate data
   dt <- prepare_data(explainer, ...)
 
-  if (!is.null(explainer$return)) {
-    return(dt)
-  } # when using a combined method, you return here
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -349,8 +367,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
 
   dt_l <- list()
   for (i in seq_along(l)) {
-    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i],
-                         prediction_zero, index_features = l[[i]], ...)
+    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], ...)
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 
@@ -438,10 +455,6 @@ explain.categorical <- function(x, explainer, approach, prediction_zero, joint_p
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)

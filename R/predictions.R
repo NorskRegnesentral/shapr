@@ -14,7 +14,7 @@
 #' to these three columns, \code{dt} should also have columns which matches the variables used
 #' when training the model.
 #'
-#' I.e. you have fit a linear model using the features \code{x1},
+#' I.e. you have fitted a linear model using the features \code{x1},
 #' \code{x2} and \code{x3}, and you want to explain 5 test observations using the exact method, i.e.
 #' setting \code{exact = TRUE} in \code{\link{shapr}}, the following properties should be satisfied
 #' \enumerate{
@@ -42,15 +42,13 @@ prediction <- function(dt, prediction_zero, explainer) {
   )
 
   # Setup
-  cnms <- colnames(explainer$x_test)
+  cnms <- colnames(explainer$x_test) # "lstat" "chas"  "rad"   "indus" - even if you put in a whole x_test
   data.table::setkeyv(dt, c("id", "id_combination"))
 
-  feature_names <- explainer$feature_labels
-
   if (!explainer$is_groupwise) {
-    shap_names <- feature_names
+    shap_names <- cnms
   } else {
-    shap_names <- names(explainer$group)
+    shap_names <- names(explainer$group) # "group1", "group2"
   }
 
   # Check that the number of test observations equals max(id)

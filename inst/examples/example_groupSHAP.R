@@ -1,17 +1,15 @@
+
 library(shapr)
 
+# xgboost example
 data("Boston", package = "MASS")
 
-x_var <- c("lstat", "rm","dis",
-           "indus") # ,"nox","tax"
+x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
 x_train <- as.matrix(tail(Boston[, x_var], -6))
 y_train <- tail(Boston[, y_var], -6)
 x_test <- as.matrix(head(Boston[, x_var], 6))
-
-# Just looking at the dependence between the features
-cor(x_train)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost::xgboost(
@@ -20,20 +18,43 @@ model <- xgboost::xgboost(
   nround = 20,
   verbose = FALSE
 )
+
 group1 <- list(c(1,2),
                c(3,4)) # c(4,5),c(6)
 
 group1_names = lapply(group1, function(x){x_var[x]})
 
-
-explainer <- shapr(x_train, model)#group = group1_names)
+explainer <- shapr(x_train, model, group = group1_names)
 
 p0 <- mean(y_train)
 
 explanation1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
 
-# Printing the Shapley values for the test data
-plot(explanation1)
+
+# lm example
+data("Boston", package = "MASS")
+
+x_var <- c("lstat", "rm", "dis", "indus")
+
+x_train <- tail(Boston, -6)
+y_train <- tail(Boston, -6)
+x_test <- head(Boston, 6)
+
+model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+
+group1 <- list(c(1,2),
+               c(3,4)) # c(4,5),c(6)
+
+group1_names = lapply(group1, function(x) {
+  x_var[x]
+  })
+
+explainer <- shapr(x_train, model, group = group1_names)
+
+p0 <- mean(x_train$medv)
+
+explanation1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
+
 
 # TODO in the end
 # 6. Fix plot.shapr Currently, does not work properly. (DONE)

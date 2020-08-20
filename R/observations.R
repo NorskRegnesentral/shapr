@@ -148,7 +148,6 @@ prepare_data <- function(x, ...) {
   UseMethod("prepare_data", x)
 }
 
-
 #' @rdname prepare_data
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
@@ -473,8 +472,6 @@ prepare_data.categorical <- function(x, ...) {
 
   return(dt)
 }
-
-
 
 #' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {

@@ -60,7 +60,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   }
 
   # Not supported for m > 30
-  if (length(group_num) > 15) {
+  if (length(group_num) > 13) {
     stop(paste0(
       "For computational reasons, we are currently not supporting group wise Shapley values \n",
       "for more than 12 groups. Please reduce the number of groups.")
@@ -265,8 +265,6 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 helper_feature <- function(m, feature_sample) {
   sample_frequence <- is_duplicate <- NULL # due to NSE notes in R CMD check
 
-  sample_frequence <- is_duplicate <- NULL  # due to NSE notes in R CMD check
-
   x <- feature_matrix_cpp(feature_sample, m)
   dt <- data.table::data.table(x)
   cnms <- paste0("V", seq(m))
@@ -297,12 +295,16 @@ helper_feature <- function(m, feature_sample) {
 #' @author Annabelle Redelmeier
 #'
 #' @examples
+#'
 #' data("Boston", package = "MASS")
+#'
 #' x_var <- c("lstat", "chas", "rad", "indus")
 #' y_var <- "medv"
+#'
 #' # convert to factors
 #' Boston$rad = as.factor(Boston$rad)
 #' Boston$chas = as.factor(Boston$chas)
+#'
 #' x_train <- Boston[-1:-6, x_var]
 #' y_train <- Boston[-1:-6, y_var]
 #' x_test <- Boston[1:6, x_var]
@@ -338,8 +340,8 @@ make_dummies <- function(data, ...) {
             factor_list = factor_list,
             contrasts_list = contrasts_list)
   return(r)
-
 }
+
 #' Make dummy variables
 #'
 #' @param obj List. Output of \code{make_dummies}.
@@ -357,12 +359,16 @@ make_dummies <- function(data, ...) {
 #' @author Annabelle Redelmeier
 #'
 #' @examples
+#'
 #' data("Boston", package = "MASS")
+#'
 #' x_var <- c("lstat", "chas", "rad", "indus")
 #' y_var <- "medv"
+#'
 #' # convert to factors
 #' Boston$rad = as.factor(Boston$rad)
 #' Boston$chas = as.factor(Boston$chas)
+#'
 #' x_train <- Boston[-1:-6, x_var]
 #' y_train <- Boston[-1:-6, y_var]
 #' x_test <- Boston[1:6, x_var]
@@ -372,7 +378,6 @@ make_dummies <- function(data, ...) {
 #' x_train_dummies <- apply_dummies(obj = dummylist, newdata = x_train)
 #'
 apply_dummies <- function(obj, newdata, ...) {
-
 
   features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
   if (is.null(newdata)) {
