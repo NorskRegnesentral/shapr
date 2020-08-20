@@ -72,7 +72,7 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", cnms)
 
-  r <- list(dt = dt_kshap, model = explainer$model, p = p_all, x_test = explainer$x_test)
+  r <- list(dt = dt_kshap, model = explainer$model, p = p_all, x_test = explainer$x_test, dt_mat = dt_mat)
   attr(r, "class") <- c("shapr", "list")
 
   return(r)
