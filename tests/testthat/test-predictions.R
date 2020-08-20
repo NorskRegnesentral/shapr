@@ -23,16 +23,27 @@ test_that("Test prediction", {
   )
   #
   explainer <- list()
-  explainer$model <- stats::lm(formula = "medv ~ lstat + rm + dis + indus", data = head(dt_train, -n_xtest))
+  explainer$model <- stats::lm(formula = "medv ~ lstat + rm + dis + indus",
+                               data = head(dt_train, -n_xtest))
   explainer$x_test <- tail(dt_train[, .SD, .SDcols = features], n_xtest)
   explainer$W <- matrix(1, nrow = n_features + 1, ncol = n_combinations)
   explainer$is_groupwise <- FALSE
-  explainer$feature_labels <- c("lstat", "rm", "dis", "indus") #shapr:::features(explainer$model,colnames(explainer$x_test))
+  explainer$feature_labels <- c("lstat", "rm", "dis", "indus")
   #
-  dt <- dt_train[rep(1:.N, 4)]
-  dt[, id := rep_len(1:n_xtest, .N)] # which test observation
-  dt[, id_combination := rep_len(1:n_combinations, .N), id] # which features you're conditioning on
+  dt <- dt_train[, .SD, .SDcols = features][rep(1:.N, 4)]
+
+  dt[, id := rep_len(1:n_xtest, .N)]
+  dt[, id_combination := rep_len(1:n_combinations, .N), id]
   dt[, w := runif(.N)]
+  max_id_combination <- dt[, max(id_combination)]
+  dt <- dt[!(id_combination == max_id_combination)]
+  dt_lastrows <- data.table::data.table(
+    explainer$x_test,
+    id = 1:n_xtest,
+    id_combination = max_id_combination,
+    w = 1.0
+  )
+  dt <- rbind(dt, dt_lastrows, dt_lastrows, dt_lastrows)
   dt <- merge(dt, dt_combinations, on = id_combination)
   x <- prediction(dt, prediction_zero, explainer)
 
@@ -78,14 +89,25 @@ test_that("Test prediction", {
   explainer$group_num <- list("group1" = c(1, 3), "group2" = c(2, 4))
   explainer$is_groupwise <- TRUE
   explainer$W <- matrix(1, nrow = n_groups + 1, ncol = n_combinations)
-  explainer$feature_labels <- c("lstat", "rm", "dis", "indus") #features(explainer$model, colnames(explainer$x_test)) # if this doesn't work line by line, use devtools::load_all()
+  explainer$feature_labels <- c("lstat", "rm", "dis", "indus")
 
-  dt <- dt_train[rep(1:.N, 4)]
+  dt <- dt_train[, .SD, .SDcols = features][rep(1:.N, 4)]
   dt[, id := rep_len(1:n_xtest, .N)]
   dt[, id_combination := rep_len(1:n_combinations, .N), id]
   dt[, w := runif(.N)]
-  dt <- merge(dt, dt_combinations, on = id_combination)
-  x <- prediction(dt, prediction_zero, explainer)
+  max_id_combination <- dt[, max(id_combination)]
+  #
+  dt <- dt[!(id_combination == max_id_combination)]
+  dt_lastrows <- data.table::data.table(
+    explainer$x_test,
+    id = 1:n_xtest,
+    id_combination = max_id_combination,
+    w = 1.0
+  )
+  dt0 <- rbind(dt, dt_lastrows, dt_lastrows, dt_lastrows)
+  #
+  dt0 <- merge(dt0, dt_combinations, on = id_combination)
+  x <- prediction(dt0, prediction_zero, explainer)
 
 
   # Test -----------
@@ -94,7 +116,10 @@ test_that("Test prediction", {
   expect_equal(names(x), lnms)
   expect_equal(x$model, explainer$model)
   expect_equal(x$x_test, explainer$x_test)
+
   expect_equal(x$p, predict_model(explainer$model, explainer$x_test))
+
+
   expect_true(data.table::is.data.table(x$dt))
   expect_equal(ncol(x$dt), n_groups + 1)
   expect_equal(nrow(x$dt), nrow(explainer$x_test))

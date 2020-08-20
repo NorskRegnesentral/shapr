@@ -3,24 +3,24 @@
 library(data.table)
 library(shapr)
 
-cond_expec_new_cont = function(S,x_test,mu,Sigma,fitted_beta){
+cond_expec_new_cont <- function(S, x_test, mu, Sigma, fitted_beta){
 
   dim = ncol(S)
-  cond_expec_mat0 = matrix(NA,nrow = nrow(x_test),ncol=nrow(S))
-  for (i in 2:(nrow(S)-1)){
+  cond_expec_mat0 <- matrix(NA, nrow = nrow(x_test), ncol=nrow(S))
+  for (i in 2:(nrow(S) - 1)){
 
-    given.inds = which(S[i,]==1)
-    integrate.inds = which(S[i,]==0)
+    given.inds <- which(S[i, ] == 1)
+    integrate.inds <- which(S[i, ] == 0)
 
-    Sigma_given = Sigma[given.inds,given.inds]
-    #      Sigma_integrate = Sigma[integrate.inds,integrate.inds]
-    Sigma_integrate_given = Sigma[integrate.inds,given.inds,drop=F]
+    Sigma_given <- Sigma[given.inds, given.inds]
+    # Sigma_integrate = Sigma[integrate.inds,integrate.inds]
+    Sigma_integrate_given <- Sigma[integrate.inds, given.inds, drop = FALSE]
 
-    mu_given = mu[given.inds]
-    mu_integrate = mu[integrate.inds]
+    mu_given <- mu[given.inds]
+    mu_integrate <- mu[integrate.inds]
 
-    x_test_given = as.matrix(x_test)[,given.inds]
-    x_test_given = matrix(x_test_given,nrow=length(given.inds),byrow = T)
+    x_test_given <- as.matrix(x_test)[, given.inds]
+    x_test_given <- matrix(x_test_given, nrow = length(given.inds), byrow = TRUE)
 
     #      Sigma_cond = Sigma_integrate - Sigma_integrate_given%*%solve(Sigma_given)%*%t(Sigma_integrate_given)
       mu_cond = mu_integrate + Sigma_integrate_given%*%solve(Sigma_given)%*%(x_test_given - mu_given)

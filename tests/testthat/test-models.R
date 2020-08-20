@@ -318,7 +318,7 @@ test_that("Test missing colnames", {
 
   model <- xgboost::xgboost(
     data = x_train, label = y_train, nrounds = 3, verbose = FALSE
-    )
+  )
   model_nonames <- xgboost::xgboost(
     data = x_train_nonames, label = y_train, nrounds = 3, verbose = FALSE
   )

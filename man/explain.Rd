@@ -7,6 +7,7 @@
 \alias{explain.copula}
 \alias{explain.ctree}
 \alias{explain.combined}
+\alias{explain.categorical}
 \alias{explain.combinedparameters}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
@@ -57,6 +58,16 @@ explain(x, explainer, approach, prediction_zero, ...)
   prediction_zero,
   mu = NULL,
   cov_mat = NULL,
+  ...
+)
+
+\method{explain}{categorical}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  joint_prob_dt = NULL,
+  epsilon = 0.001,
   ...
 )
 
@@ -120,6 +131,14 @@ when conditioning on various numbers of features.}
 
 \item{sample}{Boolean. If true, then method samples from the terminal node in the tree. If false, then just takes all
 observations in the node.}
+
+\item{joint_prob_dt}{Data.table of probabilities (Optional) of the data generating distribution.
+If \code{NULL}, the probabilities/frequencies are estimated from the data. Note that
+\code{joint_prob_dt} is only used when \code{approach = "categorical"}.}
+
+\item{epsilon}{Numeric value. If \code{joint_prob_dt} is not supplied, probabilities/frequencies are
+estimated using the data. If certain observations occur in the test data and NOT in the train data,
+then epsilon is used as the number of times that observations occurs in the training data.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
@@ -208,4 +227,6 @@ plot(explain1)
 }
 \author{
 Camilla Lingjaerde, Nikolai Sellereite
+
+Annabelle Redelmeier
 }

@@ -149,7 +149,6 @@ prepare_data <- function(x, ...) {
 }
 
 
-
 #' @rdname prepare_data
 #' @export
 prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
@@ -306,7 +305,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
+  dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination") # this just gives you the n_features
   dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
   return(dt)
 }
@@ -377,7 +376,6 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  #dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
   dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
 
@@ -387,6 +385,95 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   setcolorder(dt2, c("id_combination", colnames(x$x_test), "w", "id", "n_features"))
   return(dt2)
 }
+
+
+#' @rdname prepare_data
+#' @export
+prepare_data.categorical <- function(x, ...) {
+
+  # due to NSE notes in R CMD check
+  id_all <- id <- id_combination <- feat_names <- cols <- joint_prob <- NULL
+  cond_prob <- marg_prob <- cols_id <- w <- n_features <- NULL
+
+  feat_names <- colnames(x$x_train)
+  joint_prob_dt <- x$joint_prob_dt
+
+  ##
+  cols <- paste0(feat_names, "_conditioned")
+  cols_id <- c(cols, "id")
+
+  S_dt <- data.table::data.table(x$S)
+  S_dt[S_dt == 0] <- NA
+  S_dt[, id_combination := 1:nrow(S_dt)]
+  data.table::setnames(S_dt, c(cols, "id_combination"))
+
+  joint_prob_mult <- joint_prob_dt[rep(id_all, nrow(x$S))]
+
+  data.table::setkeyv(joint_prob_mult, "id_all")
+  tmp <- cbind(joint_prob_mult, S_dt) # first time with conditioned features
+  tmp_features <- as.matrix(tmp[, feat_names, with = FALSE])
+  #
+  tmp_S <- as.matrix(tmp[, cols, with = FALSE])
+  #
+  tmp_features[which(is.na(tmp_S))] <- NA
+  tmp_features_with_NA <- data.table::as.data.table(tmp_features)
+  data.table::setnames(tmp_features_with_NA, cols) # now we have a matrix with the conditioned
+                                                    # features (and the feature value but no ids
+                                                    # or anything else)
+
+  tmp_no_conditioned_features <- data.table::copy(tmp)
+  tmp_no_conditioned_features[, (cols) := NULL]
+  # dt with conditioned features (correct values) + ids + joint_prob
+  tmp_all_feat <- cbind(tmp_no_conditioned_features, tmp_features_with_NA)
+
+  # Compute all marginal probabilities
+  marg_dt <- tmp_all_feat[, .(marg_prob = sum(joint_prob)), by = cols]
+  cond_dt <- tmp_all_feat[marg_dt, on = cols]
+
+  # Compute all conditional probabilities
+  cond_dt[, cond_prob := joint_prob / marg_prob]
+  cond_dt[id_combination == 1, marg_prob := 0]
+  cond_dt[id_combination == 1, cond_prob := 1]
+  ## this is just to test marginals
+  cond_dt_unique <- unique(cond_dt, by = cols)
+  test <- cond_dt_unique[id_combination != 1][, .(sum_prob = sum(marg_prob)),
+                                              by = "id_combination"][["sum_prob"]]
+  if (!all(round(test) == 1)) {
+    print("Warning - not all marginals sum to 1. There could be a problem going on
+          with the joint probabilities. Consider checking.")
+  }
+
+  ## make the x_test
+  data.table::setkeyv(cond_dt, c("id_combination", "id_all"))
+  x_test_with_id <- data.table::copy(x$x_test)[, id := .I]
+  dt_just_test <- cond_dt[x_test_with_id, on = feat_names]
+  cond_dt[, id_all := NULL] # id_all no longer needed when we have id
+
+  # This is a really important step! it allows us to get the proper "w" which will
+  # be used in predict()
+  dt_test_just_conditioned <- dt_just_test[, cols_id, with = FALSE]
+  dt <- cond_dt[dt_test_just_conditioned, on = cols, allow.cartesian = TRUE]
+
+  ## this is just to test conditional probabilities
+  test <- dt[id_combination != 1][, .(sum_prob = sum(cond_prob)),
+                                        by = c("id_combination", "id")][["sum_prob"]]
+  if (!all(round(test) == 1)) {
+    print("Warning - not all conditional probabilities sum to 1. There could be a problem going on
+          with the joint probabilities. Consider checking.")
+  }
+
+  dt[, w := cond_prob]
+  dt[, cond_prob := NULL]
+  data.table::setcolorder(dt, c("id_combination", "id"))
+  data.table::setkeyv(dt, c("id_combination", "id"))
+
+  dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
+  dt[n_features %in% c(0, ncol(x$x_test)), w := 1.0]
+
+
+  return(dt)
+}
+
 
 
 #' @keywords internal

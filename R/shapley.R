@@ -37,7 +37,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
     w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
   }
 
-  if (!is_groupwise){
+  if (!is_groupwise) {
     W <- weight_matrix_cpp(
       features = X[["features"]],
       m = X[.N][["n_features"]],
@@ -154,14 +154,16 @@ shapr <- function(x,
   is_groupwise <- !is.null(group)
 
   ### Check group input
-  if (is_groupwise){
+  if (is_groupwise) {
     check_groups(feature_labels, group, is_custom_model)
     # Make group names if not exisiting
-    if (is.null(names(group))){
+    if (is.null(names(group))) {
       names(group) <- paste0("group", seq(length(group)))
     }
     # Make group list with numeric feature indicators
-    group_num <- lapply(group,FUN = function(x){match(x, feature_labels)})
+    group_num <- lapply(group, FUN = function(x) {
+      match(x, feature_labels)
+      })
   } else {
     group_num <- NULL
   }
@@ -222,9 +224,7 @@ shapr <- function(x,
 
 #' @keywords internal
 distance_matrix <- function(x_train, x_test = NULL, list_features) {
-  if (is.null(x_test)) {
-    return(NULL)
-  }
+  if (is.null(x_test)) return(NULL)
 
   # Get covariance matrix
   mcov <- stats::cov(x_train)

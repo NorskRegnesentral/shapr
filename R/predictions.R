@@ -42,28 +42,38 @@ prediction <- function(dt, prediction_zero, explainer) {
   )
 
   # Setup
+  cnms <- colnames(explainer$x_test)
   data.table::setkeyv(dt, c("id", "id_combination"))
+
   feature_names <- explainer$feature_labels
 
-  if(!explainer$is_groupwise){
+  if (!explainer$is_groupwise) {
     shap_names <- feature_names
   } else {
     shap_names <- names(explainer$group)
   }
 
   # Check that the number of test observations equals max(id)
-  stopifnot(nrow(explainer$x_test) == dt[, max(id)])
+  stopifnot(nrow(explainer$x_test) == dt[, max(id, na.rm = TRUE)])
+
+  # Reducing the prediction data.table
+  max_id_combination <- dt[, max(id_combination)]
+  V1 <- keep <- NULL # due to NSE notes in R CMD check
+  dt[, keep := TRUE]
+  first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, max_id_combination), V1]
+  dt[id_combination %in% c(1, max_id_combination), keep := FALSE]
+  dt[first_element, c("keep", "w") := list(TRUE, 1.0)]
+  dt <- dt[keep == TRUE][, keep := NULL]
 
   # Predictions
-  dt[!(n_features %in% c(0, ncol(explainer$x_test))),
-     p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
+  dt[id_combination != 1, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = cnms]
+  dt[id_combination == 1, p_hat := prediction_zero]
+  p_all <- dt[id_combination == max(id_combination), p_hat]
+  names(p_all) <- 1:nrow(explainer$x_test)
 
-  dt[n_features == 0, p_hat := prediction_zero]
-  p_all <- predict_model(explainer$model, newdata = explainer$x_test)
-  dt[n_features == ncol(explainer$x_test), p_hat := p_all[id]]
 
   # Calculate contributions
-  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
+  dt_res <- dt[, .(k = sum((p_hat * w)) / sum(w)), .(id, id_combination)] # k are the conditional expectations
   data.table::setkeyv(dt_res, c("id", "id_combination"))
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = "k")
   dt_mat[, id_combination := NULL]
@@ -73,6 +83,9 @@ prediction <- function(dt, prediction_zero, explainer) {
   colnames(dt_kshap) <- c("none", shap_names)
 
   r <- list(dt = dt_kshap, model = explainer$model, p = p_all, x_test = explainer$x_test)
+  if (!is.null(explainer$joint_prob_dt)) {
+    r$joint_prob_dt <- dt
+  }
   attr(r, "class") <- c("shapr", "list")
 
   return(r)

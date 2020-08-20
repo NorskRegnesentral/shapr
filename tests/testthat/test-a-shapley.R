@@ -31,10 +31,12 @@ test_that("Basic test functions for grouping in shapley.R", {
   # Load premade lm model. Path needs to be relative to testthat directory in the package
   model <- readRDS("model_objects/lm_model_object.rds")
 
-  group1 <- list(c(1,3),
-                 c(2,4))
+  group1 <- list(c(1, 3),
+                 c(2, 4))
 
-  group1_names = lapply(group1, function(x){x_var[x]})
+  group1_names <- lapply(group1, function(x) {
+    x_var[x]
+    })
 
 
   group2 <- list(c(1),
@@ -42,7 +44,9 @@ test_that("Basic test functions for grouping in shapley.R", {
                  c(3),
                  c(4))
 
-  group2_names = lapply(group2, function(x){x_var[x]})
+  group2_names <- lapply(group2, function(x) {
+    x_var[x]
+    })
 
   # Prepare the data for explanation
   explainer1 <- shapr(x_train, model, group = group1_names)
@@ -120,7 +124,7 @@ test_that("Testing data input to shapr for grouping in shapley.R", {
   xy_train_full_df_no_colnames <- xy_train_full_df
   colnames(xy_train_full_df_no_colnames) <- NULL
 
-  group1_names <- list(c("lstat","dis"),
+  group1_names <- list(c("lstat", "dis"),
                        c("rm", "indus"))
 
   group11_names <- list(c("dis"),
@@ -188,12 +192,55 @@ test_that("Testing data input to shapr for grouping in shapley.R", {
 
     # Expect error when feature appears in more than one group
     expect_error(shapr(x_train, l[[i]], group = group7_names))
-}
+  }
 
   formula2 <- as.formula(paste0("medv ~ ", paste0(x_var_sub, collapse = "+")))
   model_sub <- lm(formula = formula2, data = xy_train_full_df)
 
   # Expect error when group includes a variable in the data, but not in model
   expect_error(shapr(x_train, model_sub, group = group1_names))
+})
 
+testthat::test_that("Basic test functions when features are both numeric and categorical in shapley.R", {
+
+  data("Boston", package = "MASS")
+
+  x_var <- c("lstat", "chas", "rad", "indus")
+  y_var <- "medv"
+
+  # convert to factors
+  Boston$rad <- as.factor(Boston$rad)
+  Boston$chas <- as.factor(Boston$chas)
+
+  x_train <- tail(Boston[, x_var], 350) # we have to use 350 to get all levels
+
+  # Load pre-made lm model. Path needs to be relative to testthat directory in the package
+  model_cat <- readRDS("model_objects/lm_model_with_cat_num_object.rds")
+
+  # Prepare the data for explanation
+  explainer_cat <- shapr(x_train, model_cat)
+
+  testthat::expect_known_value(explainer_cat, file = "test_objects/shapley_explainer_cat_num_obj.rds")
+})
+
+testthat::test_that("Basic test functions when features are just categorical in shapley.R", {
+
+  data("Boston", package = "MASS")
+
+  x_var <- c("chas", "rad")
+  y_var <- "medv"
+
+  # convert to factors
+  Boston$rad <- as.factor(Boston$rad)
+  Boston$chas <- as.factor(Boston$chas)
+
+  x_train <- tail(Boston[, x_var], 350) # we have to use 350 to get all levels
+
+  # Load pre-made lm model. Path needs to be relative to testthat directory in the package
+  model_cat <- readRDS("model_objects/lm_model_with_cat_object.rds")
+
+  # Prepare the data for explanation
+  explainer_cat <- shapr(x_train, model_cat)
+
+  testthat::expect_known_value(explainer_cat, file = "test_objects/shapley_explainer_cat_obj.rds")
 })

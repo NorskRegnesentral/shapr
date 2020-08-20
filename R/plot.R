@@ -42,7 +42,7 @@ plot.shapr <- function(x,
   meltKshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
   # Converting and melting xtest
-  if(ncol(x$dt) > ncol(x$x_test) & !grepl("group", names(x$dt)[2], fixed = TRUE)){ # if not grouping
+  if (ncol(x$dt) > ncol(x$x_test) & !grepl("group", names(x$dt)[2], fixed = TRUE)) { # if not grouping
     cnms <- colnames(x$x_test)
 
     desc_mat <- format(x$x_test, digits = digits)
@@ -54,10 +54,10 @@ plot.shapr <- function(x,
 
     # Data table for plotting
     plotting_dt <- merge(meltKshap, melt_desc_dt)
-  } else{
+  } else {
     cnms <- colnames(x$dt)[-1]
 
-    desc_mat <- format(x$dt[,-1], digits = digits)
+    desc_mat <- format(x$dt[, -1], digits = digits)
     for (i in 1:ncol(desc_mat)) {
       desc_mat[, i] <- paste0(cnms[i]) #  " = ", desc_mat[, i]
     }

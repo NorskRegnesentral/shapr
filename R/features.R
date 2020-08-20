@@ -30,14 +30,13 @@
 #'
 #' @examples
 #' # All combinations
-#' x <- shapr:::feature_combinations(m = 5)
-#' nrow(x) # Equals 2^5 = 32
+#' x <- shapr:::feature_combinations(m = 3)
+#' nrow(x) # Equals 2^3 = 8
 #'
 #' # Subsample of combinations
-#' x <- shapr:::feature_combinations(m = 13, n_combinations = 1e3)
+#' x <- shapr:::feature_combinations(m = 13, n_combinations = 1e2)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6,
                                  group_num = NULL) {
-
   # Force user to use a natural number for n_combinations if m > 12
   if (m > 12 & is.null(n_combinations) & is.null(group_num)) {
     stop(
@@ -75,7 +74,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     cat(sprintf("n_combinations is larger than or equal to 2^m = %d. Using exact instead.", 2^m))
   }
 
-  if(is.null(group_num)){
+  if (is.null(group_num)) {
     if (exact) {
       dt <- feature_exact(m, weight_zero_m)
     } else {
@@ -88,7 +87,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       dt[, p := NULL]
     }
   } else {
-    if(!exact){
+    if (!exact) {
       cat(paste0("Only exact = TRUE is supported for group wise Shapley values.\n",
                  "Changing  to exact = TRUE"))
     }
@@ -99,8 +98,8 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
 }
 
 #' @keywords internal
-group_fun <- function(x, group_num){
-  if (length(x) != 0){
+group_fun <- function(x, group_num) {
+  if (length(x) != 0) {
     unlist(group_num[x])
   } else {
     integer(0)
@@ -108,8 +107,8 @@ group_fun <- function(x, group_num){
 }
 
 #' @keywords internal
-group_fun_helper <- function(y, m, group_num){
-  if (y !=0){
+group_fun_helper <- function(y, m, group_num) {
+  if (y != 0) {
     utils::combn(x = m, m = y, FUN = group_fun, group_num = group_num, simplify = FALSE)
   } else {
     list(integer(0))
@@ -127,7 +126,7 @@ feature_group <- function(group_num, weight_zero_m = 10^6) {
   combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
 
   dt[, groups := unlist(combinations, recursive = FALSE)]
-  dt[, features := lapply(groups,FUN = group_fun, group_num = group_num)]
+  dt[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
   dt[, n_groups := length(groups[[1]]), id_combination]
   dt[, n_features := length(features[[1]]), id_combination]
   dt[, N := .N, n_groups]
@@ -137,50 +136,51 @@ feature_group <- function(group_num, weight_zero_m = 10^6) {
 }
 
 #' @keywords internal
-check_groups = function(feature_labels, group, is_custom_model){
+check_groups <- function(feature_labels, group, is_custom_model) {
   group_features <- unlist(group)
 
 
-  for(i in group_features){
+  for (i in group_features) {
     # Check that all group components are characters
-    if(!(is.character(i))){
+    if (!(is.character(i))) {
       stop("All components of group should be a character.")
     }
     # Check that all group components are in x
-    if(!(i %in% feature_labels)){
+    if (!(i %in% feature_labels)) {
       stop("All components of group should be in colnames(x) and used in model.")
     }
   }
 
   # Check that all features in group are in feature labels or used by model
-  if(!all(group_features %in% feature_labels)){
-    missing_group_feature = group_features[!(group_features %in% feature_labels)]
-    if(is_custom_model){
-      stop(paste0("group feature(s) ", paste0(missing_group_feature,collapse =  ", ")," are not\n",
+  if (!all(group_features %in% feature_labels)) {
+    missing_group_feature <- group_features[!(group_features %in% feature_labels)]
+    if (is_custom_model) {
+      stop(paste0("group feature(s) ", paste0(missing_group_feature, collapse =  ", "), " are not\n",
                   "among feature_labels. Delete from group or adjust feature_labels."))
     } else {
-      stop(paste0("group feature(s) ", paste0(missing_group_feature,collapse =  ", ")," are not\n",
+      stop(paste0("group feature(s) ", paste0(missing_group_feature, collapse =  ", "), " are not\n",
                   "used by the model. Delete from group or adjust model."))
     }
   }
 
   # Check that all feature_labels or used by model are in group
-  if(!all(feature_labels %in% group_features)){
-    missing_features = feature_labels[!(feature_labels %in% group_features)]
-    if(is_custom_model){
-      stop(paste0("The feature(s) ",paste0(missing_features, collapse =  ", ")," are not\n",
+  if (!all(feature_labels %in% group_features)) {
+    missing_features <- feature_labels[!(feature_labels %in% group_features)]
+    if (is_custom_model) {
+      stop(paste0("The feature(s) ", paste0(missing_features, collapse =  ", "), " are not\n",
                   "among the group features. Add them to group or adjust feature_labels."))
     } else {
-      stop(paste0("The feature(s) ",paste0(missing_features, collapse =  ", ")," are not\n",
+      stop(paste0("The feature(s) ", paste0(missing_features, collapse =  ", "), " are not\n",
                   "among the group features. Add them to group or adjust model."))
     }
   }
 
   # Check uniqueness of group_features
-  if(length(group_features) != length(unique(group_features))){
-    dups = group_features[duplicated(group_features)]
-    stop(paste0("Feature(s) ", paste0(dups, collapse = ", "), " are found in more than one group or multiple times per group.\n",
-                "Make sure earch feature is only represented in one group, and only one time."))
+  if (length(group_features) != length(unique(group_features))) {
+    dups <- group_features[duplicated(group_features)]
+    stop(paste0("Feature(s) ", paste0(dups, collapse = ", "), " are found in more than one group
+                or multiple times per group.\n", "Make sure earch feature is only represented
+                in one group, and only one time."))
   }
 
 }
@@ -276,4 +276,133 @@ helper_feature <- function(m, feature_sample) {
   dt[, (cnms) := NULL]
 
   return(dt)
+}
+
+#' Initiate the making of dummy variables
+#'
+#' @param data data.table or data.frame. Includes all the features (both factors and possibly others).
+#'
+#' @param ... Currently not used.
+#'
+#' @return A list that contains the following entries:
+#' \describe{
+#' \item{features}{Vector. Contains the names of all the features in \code{data}.}
+#' \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
+#' \item{factor_features}{List. Contains each factor and its vector of levels.}
+#' \item{contrasts_list}{List. Contains all the contrasts of the factors.}
+#' }
+#'
+#' @export
+#'
+#' @author Annabelle Redelmeier
+#'
+#' @examples
+#' data("Boston", package = "MASS")
+#' x_var <- c("lstat", "chas", "rad", "indus")
+#' y_var <- "medv"
+#' # convert to factors
+#' Boston$rad = as.factor(Boston$rad)
+#' Boston$chas = as.factor(Boston$chas)
+#' x_train <- Boston[-1:-6, x_var]
+#' y_train <- Boston[-1:-6, y_var]
+#' x_test <- Boston[1:6, x_var]
+#'
+#' dummylist <- make_dummies(data = rbind(x_train, x_test))
+#'
+make_dummies <- function(data, ...) {
+
+  contrasts <- features <- factor_features <-  NULL # due to NSE notes in R CMD check
+  data <- data.table::as.data.table(as.data.frame(data, stringsAsFactors = FALSE))
+
+  features <- colnames(data)
+  if (length(unique(features)) < length(features)) {
+    stop("Features must have unique names.")
+  }
+  p <- sapply(data[, features, with = FALSE], is.factor)
+  p_sum <- sum(p)
+
+  if (p_sum > 0) {
+    factor_features <- features[p]
+    factor_list <- lapply(data[, factor_features, with = FALSE], levels)
+
+  } else {
+    factor_features <- NULL
+    factor_list <- NULL
+  }
+  contrasts_list <- lapply(data[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
+
+
+  r <- list(data = data,
+            features = features,
+            factor_features = factor_features,
+            factor_list = factor_list,
+            contrasts_list = contrasts_list)
+  return(r)
+
+}
+#' Make dummy variables
+#'
+#' @param obj List. Output of \code{make_dummies}.
+#'
+#' @param newdata data.table or data.frame. New data (features) that has the same
+#' features as the data used in \code{make_dummies}.
+#'
+#' @param ... Currently not used.
+#'
+#' @return A data.frame containing all of the factors in \code{new_data} as
+#' one-hot encoded variables.
+#'
+#' @export
+#'
+#' @author Annabelle Redelmeier
+#'
+#' @examples
+#' data("Boston", package = "MASS")
+#' x_var <- c("lstat", "chas", "rad", "indus")
+#' y_var <- "medv"
+#' # convert to factors
+#' Boston$rad = as.factor(Boston$rad)
+#' Boston$chas = as.factor(Boston$chas)
+#' x_train <- Boston[-1:-6, x_var]
+#' y_train <- Boston[-1:-6, y_var]
+#' x_test <- Boston[1:6, x_var]
+#'
+#' dummylist <- make_dummies(data = rbind(x_train, x_test))
+#'
+#' x_train_dummies <- apply_dummies(obj = dummylist, newdata = x_train)
+#'
+apply_dummies <- function(obj, newdata, ...) {
+
+
+  features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
+  if (is.null(newdata)) {
+    stop("newdata needs to be included.")
+  }
+  newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
+
+
+  # check all features are in newdata
+  # all(logical(0)) is also TRUE... be careful
+  if (!all(obj$features %in% names(newdata))) {
+    stop("Some features missing from newdata.")
+  }
+
+  # check that all features have the correct data type
+  for (i in obj$features) {
+    if (class(newdata[[i]]) != class(obj$data[[i]])) {
+      stop("All features must have the same type as original data.")
+    }
+  }
+
+  features <- obj$features
+  newdata_sub <- newdata[, features, with = FALSE]
+
+  m <- model.frame(data = newdata_sub,
+                   #na.action = na.pass,
+                   xlev = obj$charac_list)
+
+  x <- model.matrix(object = ~. + 0,
+                    data = m,
+                    contrasts.arg = obj$contrasts_list)
+  return(x)
 }

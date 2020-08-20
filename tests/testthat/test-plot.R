@@ -48,11 +48,11 @@ test_that("Test plot.shapr", {
 
 
   # With groups --------
-  x_var <- c("lstat", "rm","dis",
-             "indus","nox",
+  x_var <- c("lstat", "rm", "dis",
+             "indus", "nox",
              "tax")
-  group1 <- list(c(1,2,3),
-                 c(4,5),
+  group1 <- list(c(1, 2, 3),
+                 c(4, 5),
                  c(6))
 
   group2 <- list(c(1),
@@ -62,8 +62,12 @@ test_that("Test plot.shapr", {
                  c(5),
                  c(6))
 
-  group1_names = lapply(group1, function(x){x_var[x]})
-  group2_names = lapply(group2, function(x){x_var[x]})
+  group1_names <- lapply(group1, function(x) {
+    x_var[x]
+    })
+  group2_names <- lapply(group2, function(x) {
+    x_var[x]
+    })
 
 
   ## Example 1 -------
@@ -88,7 +92,7 @@ test_that("Test plot.shapr", {
   ## Example 2 -------
   explanation1 <- list()
   explanation1$dt <- data.table::data.table("none" = rep(22.446, 3),
-                                            "group1" = c(6.4273167,-0.2043953,5.2757339),
+                                            "group1" = c(6.4273167, -0.2043953, 5.2757339),
                                             "group2" = c(-1.7740620, -0.8058347, 6.2492723),
                                             "group3" = c(-0.6324422, 0.3347352, 0.2075207),
                                             "group4" = c(4.6871282, -0.4634629, -1.3892780),
@@ -109,8 +113,8 @@ test_that("Test plot.shapr", {
   plot1 <- plot(explanation1)
 
   ## Test
-  expect_equal(length(group1_names), length(unique(as.character(plot0$data$variable)))-1)
-  expect_equal(length(group2_names), length(unique(as.character(plot1$data$variable)))-1)
+  expect_equal(length(group1_names), length(unique(as.character(plot0$data$variable))) - 1)
+  expect_equal(length(group2_names), length(unique(as.character(plot1$data$variable))) - 1)
 
   expect_equal(explanation0$p, unique(plot0$data$pred))
   expect_equal(explanation1$p, unique(plot1$data$pred))

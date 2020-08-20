@@ -8,9 +8,9 @@ unique_features <- function(x) {
 }
 
 #' @keywords internal
-get_native_methods <- function(){
-  tmp <- ls(getNamespace("shapr"),all.names=TRUE)
-  tmp <- tmp[grep("features\\.",tmp)]
-  tmp <- substring(tmp,nchar("features.")+1)
+get_native_methods <- function() {
+  tmp <- ls(getNamespace("shapr"), all.names = TRUE)
+  tmp <- tmp[grep("features\\.", tmp)]
+  tmp <- substring(tmp, nchar("features.") + 1)
   native_methods <- tmp[tmp != "default"]
 }

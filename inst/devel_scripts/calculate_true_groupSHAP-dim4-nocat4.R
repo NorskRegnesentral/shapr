@@ -324,8 +324,8 @@ print(head(Kshap2))  # - grouping: (feat1, feat3), (feat2, feat4)
 # 4: -0.1468752 -1.1097917  0.9526137
 # 5: -0.1468752  2.4031340 -1.3583819
 # 6: -0.1468754  0.5861328  1.3621290
->
 
-  mean(rowMeans(abs(cbind(Kshap0[,1], Kshap0[,2] + Kshap0[,4], Kshap0[,3]+ Kshap0[,5]) - Kshap2)[,-1]))
+
+mean(rowMeans(abs(cbind(Kshap0[,1], Kshap0[,2] + Kshap0[,4], Kshap0[,3]+ Kshap0[,5]) - Kshap2)[,-1]))
 # 0.05530471
 

@@ -6,6 +6,7 @@
 \alias{prepare_data.gaussian}
 \alias{prepare_data.copula}
 \alias{prepare_data.ctree}
+\alias{prepare_data.categorical}
 \title{Generate data used for predictions}
 \usage{
 prepare_data(x, ...)
@@ -33,6 +34,8 @@ prepare_data(x, ...)
   mc_cores_sample_ctree = mc_cores,
   ...
 )
+
+\method{prepare_data}{categorical}(x, ...)
 }
 \arguments{
 \item{x}{Explainer object. See \code{\link{explain}} for more information.}
