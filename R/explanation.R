@@ -185,9 +185,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -234,9 +232,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -279,9 +275,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
   }
   # Generate data
   dt <- prepare_data(explainer, x_test_gaussian = x_test_gaussian, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -329,9 +323,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
   # Generate data
   dt <- prepare_data(explainer, ...)
 
-  if (!is.null(explainer$return)) {
-    return(dt)
-  } # when using a combined method, you return here
+  if (!is.null(explainer$return)) return(dt)
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -352,8 +344,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
 
   dt_l <- list()
   for (i in seq_along(l)) {
-    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i],
-                         prediction_zero, index_features = l[[i]], ...)
+    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], ...)
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 

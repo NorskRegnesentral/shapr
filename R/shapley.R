@@ -132,7 +132,7 @@ shapr <- function(x,
   explainer$model_type <- model_type(model)
 
   # Checks input argument
-  feature_labels <- features(model, colnames(x), feature_labels) # this doesn't work
+  feature_labels <- features(model, colnames(x), feature_labels)
   explainer$n_features <- length(feature_labels)
 
   # Converts to data.table, otherwise copy to x_train  --------------
@@ -186,9 +186,7 @@ shapr <- function(x,
 
 #' @keywords internal
 distance_matrix <- function(x_train, x_test = NULL, list_features) {
-  if (is.null(x_test)) {
-    return(NULL)
-  }
+  if (is.null(x_test)) return(NULL)
 
   # Get covariance matrix
   mcov <- stats::cov(x_train)

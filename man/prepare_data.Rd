@@ -41,8 +41,8 @@ prepare_data(x, ...)
 
 \item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 
-\item{n_samples}{Integer. The number of obs to sample from the leaf if \code{sample} = TRUE or if \code{sample} = FALSE
-but \code{n_samples} is less than the number of obs in the leaf.}
+\item{n_samples}{Integer. The number of obs to sample from the leaf if \code{sample} = TRUE or if \code{sample}
+= FALSE but \code{n_samples} is less than the number of obs in the leaf.}
 
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
 used for different numbers of conditoned features, this will be a list with the features to pass.}

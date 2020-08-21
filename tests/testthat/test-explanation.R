@@ -1,12 +1,12 @@
 library(testthat)
 library(shapr)
 
-testthat::context("test-explanation.R")
+context("test-explanation.R")
 
 # For using same Random numer generator as CircelCI (R version 3.5.x)
 RNGversion(vstr = "3.5.0")
 
-testthat::test_that("Test functions in explanation.R", {
+test_that("Test functions in explanation.R", {
 
   # Load data -----------
   data("Boston", package = "MASS")
@@ -166,7 +166,7 @@ testthat::test_that("Test functions in explanation.R", {
 
   # Ex 38: Test that ctree with mincriterion equal to same probability four times gives the same as only passing one
   # probability to mincriterion
-  testthat::expect_equal(
+  expect_equal(
     (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
              mincriterion = rep(0.95, 4)))$dt,
     (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
@@ -175,7 +175,7 @@ testthat::test_that("Test functions in explanation.R", {
 
 
   # Ex 39: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion only once
-  testthat::expect_equal(
+  expect_equal(
     (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
              mincriterion = c(rep(0.95, 2), rep(0.95, 2))))$dt,
     (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
@@ -189,19 +189,19 @@ testthat::test_that("Test functions in explanation.R", {
 
     multicore <- 2
 
-    testthat::expect_equal(
+    expect_equal(
       explain_base_nosample,
       explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
               mc_cores = multicore)
     )
 
-    testthat::expect_equal(
+    expect_equal(
       explain_base_nosample,
       explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
               mc_cores_simulateAllTrees = 1, mc_cores_sample_ctree = multicore)
     )
 
-    testthat::expect_equal(
+    expect_equal(
       explain_base_nosample,
       explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
               mc_cores_simulateAllTrees = multicore, mc_cores_sample_ctree = 1)
@@ -210,14 +210,14 @@ testthat::test_that("Test functions in explanation.R", {
     explain_base_sample <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE)
 
     # Seed consistent when only paralellizing simulateAllTrees, and not sample_ctree
-    testthat::expect_equal(
+    expect_equal(
       explain_base_sample,
       explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
               mc_cores_simulateAllTrees = multicore, mc_cores_sample_ctree = 1)
     )
 
     # Seed consistent, when run twice with same seed
-    testthat::expect_equal(
+    expect_equal(
       explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
               mc_cores = multicore),
       explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
@@ -226,30 +226,30 @@ testthat::test_that("Test functions in explanation.R", {
   }
 
   # Checking that all explain objects produce the same as before
-  testthat::expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
+  expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
 
   ### Additional test to test that only the produced shapley values are the same as before
   fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")
   for (i in 1:length(ex_list)) {
-    testthat::expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+    expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
   }
 
   # Checks that an error is returned
-  testthat::expect_error(
+  expect_error(
     explain(1, explainer, approach = "gaussian", prediction_zero = p0)
   )
-  testthat::expect_error(
+  expect_error(
     explain(list(), explainer, approach = "gaussian", prediction_zero = p0)
   )
-  testthat::expect_error(
+  expect_error(
     explain(x_test, explainer, approach = "Gaussian", prediction_zero = p0)
   )
-  testthat::expect_error(
+  expect_error(
     explain(x_test, explainer, approach = rep("gaussian", ncol(x_test) + 1), prediction_zero = p0)
   )
 })
 
-testthat::test_that("Testing data input to explain in explanation.R", {
+test_that("Testing data input to explain in explanation.R", {
 
   # Setup for training data and explainer object
   data("Boston", package = "MASS")
@@ -305,7 +305,7 @@ testthat::test_that("Testing data input to explain in explanation.R", {
   # Expect silent for explainer 1, using correct, reordered and full data set, then identical results
   l <- list()
   for (i in seq_along(all_test_data)) {
-    l[[i]] <- testthat::expect_silent(
+    l[[i]] <- expect_silent(
       explain(
         all_test_data[[i]],
         all_explainers[[1]],
@@ -316,13 +316,13 @@ testthat::test_that("Testing data input to explain in explanation.R", {
     )
   }
   for (i in 2:length(l)) {
-    testthat::expect_equal(l[[i - 1]], l[[i]])
+    expect_equal(l[[i - 1]], l[[i]])
   }
 
   # Expect silent for explainer 2, using correct, reordered and bigger data set, then identical results
   l <- list()
   for (i in seq_along(all_test_data)) {
-    l[[i]] <- testthat::expect_silent(
+    l[[i]] <- expect_silent(
       explain(
         all_test_data[[i]],
         all_explainers[[2]],
@@ -339,7 +339,7 @@ testthat::test_that("Testing data input to explain in explanation.R", {
   # Expect silent for explainer 3, using correct, reordered and bigger data set, then identical results
   l <- list()
   for (i in seq_along(all_test_data)) {
-    l[[i]] <- testthat::expect_silent(
+    l[[i]] <- expect_silent(
       explain(
         all_test_data[[i]],
         all_explainers[[3]],
@@ -356,7 +356,7 @@ testthat::test_that("Testing data input to explain in explanation.R", {
   for (i in seq_along(all_explainers)) {
 
     # Expect error when test data misses used variable
-    testthat::expect_error(
+    expect_error(
       explain(
         xy_test_missing_lstat_df,
         all_explainers[[i]],
@@ -367,7 +367,7 @@ testthat::test_that("Testing data input to explain in explanation.R", {
     )
 
     # Expect error when test data misses column names
-    testthat::expect_error(
+    expect_error(
       explain(
         xy_test_full_df_no_colnames,
         all_explainers[[i]],

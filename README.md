@@ -104,8 +104,7 @@ support, use
 remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 ```
 
-If you would also like to build and view the vignette locally,
-use
+If you would also like to build and view the vignette locally, use
 
 ``` r
 remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE, build_vignettes = TRUE)
@@ -199,7 +198,7 @@ you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 
 <div id="ref-aas2019explaining">
 
@@ -256,7 +255,7 @@ Interpretable Model-Agnostic Explanations*.
 
 Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models
 and Individual Predictions with Feature Contributions.” *Knowledge and
-Information Systems* 41 (3). Springer: 647–65.
+Information Systems* 41 (3): 647–65.
 
 </div>
 
