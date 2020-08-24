@@ -4,15 +4,13 @@
 \alias{apply_dummies}
 \title{Make dummy variables}
 \usage{
-apply_dummies(obj, newdata, ...)
+apply_dummies(obj, newdata)
 }
 \arguments{
 \item{obj}{List. Output of \code{make_dummies}.}
 
 \item{newdata}{data.table or data.frame. New data (features) that has the same
 features as the data used in \code{make_dummies}.}
-
-\item{...}{Currently not used.}
 }
 \value{
 A data.frame containing all of the factors in \code{new_data} as

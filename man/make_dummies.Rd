@@ -4,19 +4,17 @@
 \alias{make_dummies}
 \title{Initiate the making of dummy variables}
 \usage{
-make_dummies(data, ...)
+make_dummies(data)
 }
 \arguments{
 \item{data}{data.table or data.frame. Includes all the features (both factors and possibly others).}
-
-\item{...}{Currently not used.}
 }
 \value{
 A list that contains the following entries:
 \describe{
 \item{features}{Vector. Contains the names of all the features in \code{data}.}
 \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
-\item{factor_features}{List. Contains each factor and its vector of levels.}
+\item{factor_list}{List. Contains each factor and its vector of levels.}
 \item{contrasts_list}{List. Contains all the contrasts of the factors.}
 }
 }

@@ -175,7 +175,7 @@ helper_feature <- function(m, feature_sample) {
 #' \describe{
 #' \item{features}{Vector. Contains the names of all the features in \code{data}.}
 #' \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
-#' \item{factor_features}{List. Contains each factor and its vector of levels.}
+#' \item{factor_list}{List. Contains each factor and its vector of levels.}
 #' \item{contrasts_list}{List. Contains all the contrasts of the factors.}
 #' }
 #'
