@@ -202,7 +202,7 @@ helper_feature <- function(m, feature_sample) {
 #'
 #' dummylist <- make_dummies(data = rbind(x_train, x_test))
 #'
-make_dummies <- function(data, ...) {
+make_dummies <- function(data) {
 
   contrasts <- features <- factor_features <-  NULL # due to NSE notes in R CMD check
   data <- data.table::as.data.table(as.data.frame(data, stringsAsFactors = FALSE))
@@ -268,7 +268,7 @@ make_dummies <- function(data, ...) {
 #'
 #' x_train_dummies <- apply_dummies(obj = dummylist, newdata = x_train)
 #'
-apply_dummies <- function(obj, newdata, ...) {
+apply_dummies <- function(obj, newdata) {
 
   features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
   if (is.null(newdata)) {
