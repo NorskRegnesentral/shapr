@@ -332,7 +332,6 @@ plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1, 6))
 We can use mixed (i.e continuous, categorical, ordinal) data with ctree. Use ctree with categorical data in the following manner:
 
 ```{r}
-library(caret)
 x_var_cat <- c("lstat", "chas", "rad", "indus")
 y_var <- "medv"
 
@@ -345,10 +344,9 @@ y_train <- Boston[-1:-6, y_var]
 x_test_cat <- Boston[1:6, x_var_cat]
 
 # -- special function when using categorical data + xgboost
-dummyfunc <- caret::dummyVars(" ~ .", data = rbind(x_train_cat, x_test_cat))
-x_train_dummy <- predict(dummyfunc, newdata = x_train_cat)
-x_test_dummy <- predict(dummyfunc, newdata = x_test_cat)
-# --
+dummylist <- make_dummies(data = rbind(x_train_cat, x_test_cat))
+x_train_dummy <- apply_dummies(obj = dummylist, newdata = x_train_cat)
+x_test_dummy <- apply_dummies(obj = dummylist, newdata = x_test_cat)
 
 # Fitting a basic xgboost model to the training data
 model_cat <- xgboost(
@@ -357,7 +355,7 @@ model_cat <- xgboost(
   nround = 20,
   verbose = FALSE
 )
-model_cat$dummyfunc <- dummyfunc
+model_cat$dummylist <- dummylist
 
 explainer_cat <- shapr(x_train_cat, model_cat)
 
