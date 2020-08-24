@@ -171,8 +171,6 @@ helper_feature <- function(m, feature_sample) {
 #'
 #' @param data data.table or data.frame. Includes all the features (both factors and possibly others).
 #'
-#' @param ... Currently not used.
-#'
 #' @return A list that contains the following entries:
 #' \describe{
 #' \item{features}{Vector. Contains the names of all the features in \code{data}.}
@@ -239,8 +237,6 @@ make_dummies <- function(data) {
 #'
 #' @param newdata data.table or data.frame. New data (features) that has the same
 #' features as the data used in \code{make_dummies}.
-#'
-#' @param ... Currently not used.
 #'
 #' @return A data.frame containing all of the factors in \code{new_data} as
 #' one-hot encoded variables.
