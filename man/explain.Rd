@@ -174,3 +174,4 @@ plot(explain1)
 \author{
 Camilla Lingjaerde, Nikolai Sellereite
 }
+\keyword{internal}

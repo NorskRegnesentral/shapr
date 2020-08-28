@@ -26,3 +26,4 @@ Temp-function for computing the full AICc with several X's etc
 \author{
 Martin Jullum
 }
+\keyword{internal}

@@ -31,6 +31,7 @@ using namespace Rcpp;
 //' Otherwise \code{X[k, j] = xtrain[index_xtrain[k], j]}.
 //'
 //' @export
+//' @keywords internal
 //'
 //' @return Numeric matrix
 //'

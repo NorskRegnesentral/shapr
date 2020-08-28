@@ -108,6 +108,7 @@ double rss_cpp(arma::mat H, arma::vec y) {
 //' @param tr_H numeric giving the trace of H
 //' @param n numeric given the number of rows in H
 //' @export
+//' @keywords internal
 //'
 //' @return Scalar
 //' @author Martin Jullum
@@ -128,6 +129,7 @@ double correction_matrix_cpp(double tr_H,int n) {
 //' @param y vector with the "response variable"
 //'
 //' @export
+//' @keywords internal
 //'
 //' @return Scalar with the numeric value of the AICc formula
 //' @author Martin Jullum

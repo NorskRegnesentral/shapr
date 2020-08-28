@@ -35,6 +35,7 @@ rss_cpp <- function(H, y) {
 #' @param tr_H numeric giving the trace of H
 #' @param n numeric given the number of rows in H
 #' @export
+#' @keywords internal
 #'
 #' @return Scalar
 #' @author Martin Jullum
@@ -51,6 +52,7 @@ correction_matrix_cpp <- function(tr_H, n) {
 #' @param y vector with the "response variable"
 #'
 #' @export
+#' @keywords internal
 #'
 #' @return Scalar with the numeric value of the AICc formula
 #' @author Martin Jullum
@@ -87,6 +89,7 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 #' @param Xtest_mat Matrix
 #'
 #' @export
+#' @keywords internal
 #'
 #' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 #' @author Martin Jullum
@@ -129,6 +132,7 @@ sample_features_cpp <- function(m, n_features) {
 #' Otherwise \code{X[k, j] = xtrain[index_xtrain[k], j]}.
 #'
 #' @export
+#' @keywords internal
 #'
 #' @return Numeric matrix
 #'
@@ -161,6 +165,7 @@ weight_matrix_cpp <- function(features, m, n, w) {
 #' @param m Positive integer. Total number of features
 #'
 #' @export
+#' @keywords internal
 #'
 #' @return Matrix
 #' @author Nikolai Sellereite

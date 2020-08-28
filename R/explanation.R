@@ -58,6 +58,7 @@
 #' such as the mean of the predictions in the training data are also reasonable.
 #'
 #' @export
+#' @keywords internal
 #'
 #' @author Camilla Lingjaerde, Nikolai Sellereite
 #'

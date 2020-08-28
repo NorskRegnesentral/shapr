@@ -13,6 +13,7 @@ using namespace Rcpp;
 //' @param Xtest_mat Matrix
 //'
 //' @export
+//' @keywords internal
 //'
 //' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 //' @author Martin Jullum

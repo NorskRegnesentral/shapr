@@ -34,6 +34,17 @@
 #' @export
 #'
 #' @author Martin Jullum
+#' @examples
+#'# Load example data
+#' data("Boston", package = "MASS")
+#' # Split data into test- and training data
+#' x_train <- head(Boston, -3)
+#' x_test <- tail(Boston, 3)
+#' # Fit a linear model
+#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#'
+#' # Predicting for a model with a standardized format
+#' predict_model(x = model, newdata = x_test)
 predict_model <- function(x, newdata) {
   UseMethod("predict_model", x)
 }
@@ -143,6 +154,16 @@ predict_model.gam <- function(x, newdata) {
 #' @return Either \code{"classification"} or \code{"regression"}.
 #'
 #' @export
+#' @examples
+#' # Load example data
+#' data("Boston", package = "MASS")
+#' # Split data into test- and training data
+#' x_train <- head(Boston, -3)
+#' # Fit a linear model
+#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#'
+#' # Writing out the defined model type of the object
+#' model_type(x = model)
 model_type <- function(x) {
   UseMethod("model_type")
 }
@@ -255,6 +276,19 @@ model_type.xgb.Booster <- function(x) {
 #' @keywords internal
 #'
 #' @export
+#'
+#' @examples
+#'# Load example data
+#' data("Boston", package = "MASS")
+#' # Split data into test- and training data
+#' x_train <- head(Boston, -3)
+#' # Fit a linear model
+#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#'
+#' cnms <- c("lstat", "rm", "dis", "indus")
+#'
+#' # Checking that features used by the model corresponds to cnms
+#' features(x = model, cnms = cnms, feature_labels = NULL)
 features <- function(x, cnms, feature_labels = NULL) {
   UseMethod("features", x)
 }
@@ -286,6 +320,7 @@ features.default <- function(x, cnms, feature_labels = NULL) {
 }
 
 #' @rdname features
+#' @export
 features.lm <- function(x, cnms, feature_labels = NULL) {
 
   if (!is.null(feature_labels)) message_features_labels()
@@ -297,6 +332,7 @@ features.lm <- function(x, cnms, feature_labels = NULL) {
 }
 
 #' @rdname features
+#' @export
 features.glm <- function(x, cnms, feature_labels = NULL) {
 
   if (!is.null(feature_labels)) message_features_labels()
@@ -308,6 +344,7 @@ features.glm <- function(x, cnms, feature_labels = NULL) {
 }
 
 #' @rdname features
+#' @export
 features.ranger <- function(x, cnms, feature_labels = NULL) {
 
   if (!is.null(feature_labels)) message_features_labels()
@@ -331,6 +368,7 @@ features.ranger <- function(x, cnms, feature_labels = NULL) {
 }
 
 #' @rdname features
+#' @export
 features.gam <- function(x, cnms, feature_labels = NULL) {
 
   if (!is.null(feature_labels)) message_features_labels()
@@ -343,6 +381,7 @@ features.gam <- function(x, cnms, feature_labels = NULL) {
 }
 
 #' @rdname features
+#' @export
 features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
 
   if (!is.null(feature_labels)) message_features_labels()

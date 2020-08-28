@@ -79,6 +79,7 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
 //' @param m Positive integer. Total number of features
 //'
 //' @export
+//' @keywords internal
 //'
 //' @return Matrix
 //' @author Nikolai Sellereite

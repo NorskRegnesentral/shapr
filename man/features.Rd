@@ -34,4 +34,17 @@ features(x, cnms, feature_labels = NULL)
 \description{
 Fetches feature labels from a given model object
 }
+\examples{
+# Load example data
+data("Boston", package = "MASS")
+# Split data into test- and training data
+x_train <- head(Boston, -3)
+# Fit a linear model
+model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+
+cnms <- c("lstat", "rm", "dis", "indus")
+
+# Checking that features used by the model corresponds to cnms
+features(x = model, cnms = cnms, feature_labels = NULL)
+}
 \keyword{internal}

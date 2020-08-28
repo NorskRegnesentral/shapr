@@ -33,3 +33,4 @@ Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m
 \author{
 Martin Jullum
 }
+\keyword{internal}
