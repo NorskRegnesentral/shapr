@@ -100,7 +100,8 @@ test_that("Test functions in explanation.R", {
   ex_list[[18]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Checking that all explain objects produce the same as before
-  expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
+  expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds",
+                     update = FALSE)
 
   ### Additional test that only the produced shapley values are the same as before
   fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")

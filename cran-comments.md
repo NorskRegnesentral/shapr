@@ -6,13 +6,13 @@ This is a resubmission with the following changes:
 
 * Revised what is specified as internal/non-internal functions, and added 
   examples such that all non-internal exported functions now have examples.
-* I could not find any writing to disk in examples/vignettes/tests as suggested.
-  There are scripts under inst/scripts which writes to disk. These scripts are 
-  creating objects which are loaded in the tests and therefore handy for 
-  package development. Note that we are also using testthat::expect_known_value
-  in our tests, this function is overwriting .rds-objects if and only if
-  the test fails. Please let me know more precisely what the issue is, if it
-  persists after this re-submission.
+* I am not quite sure exactly what the "writing to disk" issue refers to, but
+  we are using testthat::expect_known_value in our tests, which is overwriting
+  certain .rds-files if and only if the test fails. I changed the default 
+  behavior so that it no longer overwrites the files. We also have some
+  scripts under inst/scripts that writes to disk. These are now added to 
+  .Rbuildignore. Please let me know more precisely what the issue is if this
+  is not satisfactory.
 * Deleted a call to rm(list=ls()) in a script under inst/scripts. I could not
   find any other modifications of .GlobalEnv in the vignette as suggested.
 
@@ -33,7 +33,7 @@ This is a resubmission with the following changes:
 
 * GitHub Actions (macOS-latest): R 4.0.2
 * GitHub Actions (ubuntu-16.04): R 4.0.2, 3.6.3, 3.5.3
-* win-builder (x86_64-w64-mingw32): R 4.0.2, 3.6.3, R-devel (2020-08-04 r78971)
+* win-builder (x86_64-w64-mingw32): R 4.0.2, 3.6.3, R-devel (2020-08-23 r79071)
 * local Ubuntu 18.04: R 3.6.3
 * local Windows 10: R 4.0.2, R-devel (2020-08-04 r78971)
 
