@@ -9,6 +9,9 @@
   KernelSHAP for consistency with our recommendation
 # Changed package title (shortened)
 # Minor fixes to fulfill CRAN policy
+# Improved documentation
+# Revised internal/external and exported/non-exported functions, leading to far
+  fewer external functions and a cleaner manual. 
 
 # shapr 0.1.1
 

@@ -4,13 +4,19 @@ This is a resubmission with the following changes:
 
 # Revision round 2
 
-* Revised exported, non-exported and internal functions, adding examples
-  to all non-internal exported functions.
-* Found 
-dded to all exported function wh
+* Revised what is specified as internal/non-internal functions, and added 
+  examples such that all non-internal exported functions now have examples.
+* I could not find any writing to disk in examples/vignettes/tests as suggested.
+  There are scripts under inst/scripts which writes to disk. These scripts are 
+  creating objects which are loaded in the tests and therefore handy for 
+  package development. Note that we are also using testthat::expect_known_value
+  in our tests, this function is overwriting .rds-objects if and only if
+  the test fails. Please let me know more precisely what the issue is, if it
+  persists after this re-submission.
+* Deleted a call to rm(list=ls()) in a script under inst/scripts. I could not
+  find any other modifications of .GlobalEnv in the vignette as suggested.
 
-
-# Revision 1
+# Revision round 1
 
 * Reduced title length
 * Removed examples from unexported functions
@@ -34,7 +40,7 @@ dded to all exported function wh
 
 There were no ERRORs or WARNINGs.
 
-There was 1 NOTE:
+There was 2 NOTES:
 * checking CRAN incoming feasibility ... NOTE
 Maintainer: 'Martin Jullum <Martin.Jullum@nr.no>'
 New submission
@@ -46,6 +52,12 @@ Possibly mis-spelled words in DESCRIPTION:
   Shapley (4:30, 7:15, 8:84, 11:72)
 
 > This is a new submission and the suggested mis-spellings are all names. 
+
+* checking for future file timestamps ... NOTE
+  unable to verify current time
+
+> This is a known issue with the worldclockapi.com currently being down
+  (https://stackoverflow.com/questions/63613301/r-cmd-check-note-unable-to-verify-current-time)
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package.

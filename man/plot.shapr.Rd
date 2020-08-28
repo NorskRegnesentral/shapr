@@ -58,7 +58,11 @@ explainer <- shapr(x_train, model)
 p <- mean(x_train$medv)
 
 # Empirical approach
-explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p, n_samples = 1e2)
+explanation <- explain(x_test,
+                      explainer,
+                      approach = "empirical",
+                      prediction_zero = p,
+                      n_samples = 1e2)
 
 # Plot the explantion (this function)
 plot(explanation)
