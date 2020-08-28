@@ -18,6 +18,7 @@ This is a resubmission with the following changes:
 
 # Revision round 1
 
+
 * Reduced title length
 * Removed examples from unexported functions
 * Changed one unexported function to exported and added test (not requested)
