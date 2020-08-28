@@ -9,6 +9,7 @@
 #' @param h numeric specifying the scaling (sigma)
 #'
 #' @export
+#' @keywords internal
 #'
 #' @return Matrix of dimension \code{ncol(X)*ncol(X)}
 #' @author Martin Jullum
@@ -22,6 +23,7 @@ hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
 #' @param y Vector, i.e. representing the response variable
 #'
 #' @export
+#' @keywords internal
 #'
 #' @return Scalar
 #'
@@ -69,6 +71,7 @@ aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
 #' number of variables
 #' @param y_list List.
 #' @param negative Logical.
+#' @keywords internal
 #'
 #' @return Scalar with the numeric value of the AICc formula
 #'
@@ -152,6 +155,7 @@ observation_impute_cpp <- function(index_xtrain, index_s, xtrain, xtest, S) {
 #' \code{features[[i]]}.
 #'
 #' @export
+#' @keywords internal
 #'
 #' @return Matrix of dimension n x m + 1
 #' @author Nikolai Sellereite

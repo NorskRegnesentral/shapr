@@ -12,6 +12,7 @@ using namespace Rcpp;
 //' \code{features[[i]]}.
 //'
 //' @export
+//' @keywords internal
 //'
 //' @return Matrix of dimension n x m + 1
 //' @author Nikolai Sellereite

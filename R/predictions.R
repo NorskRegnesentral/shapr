@@ -26,6 +26,7 @@
 #' \item \code{dt[, type(w)]} equals \code{double}.
 #' }
 #'
+#'
 #' @return An object of class \code{c("shapr", "list")}. For more details see \code{\link{explain}}.
 #'
 #' @author Nikolai Sellereite

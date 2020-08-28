@@ -58,7 +58,6 @@
 #' such as the mean of the predictions in the training data are also reasonable.
 #'
 #' @export
-#' @keywords internal
 #'
 #' @author Camilla Lingjaerde, Nikolai Sellereite
 #'
@@ -91,6 +90,9 @@
 #' # Combined approach
 #' approach <- c("gaussian", "gaussian", "empirical", "empirical")
 #' explain4 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
+#'
+#' # Print the Shapley values
+#' print(explain1$dt)
 #'
 #' # Plot the results
 #' plot(explain1)
