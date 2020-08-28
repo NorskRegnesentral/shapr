@@ -24,3 +24,4 @@ Computing single H matrix in AICc-function using the Mahalanobis distance
 \author{
 Martin Jullum
 }
+\keyword{internal}

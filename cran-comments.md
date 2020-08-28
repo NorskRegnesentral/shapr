@@ -2,6 +2,16 @@
 
 This is a resubmission with the following changes:
 
+# Revision round 2
+
+* Revised exported, non-exported and internal functions, adding examples
+  to all non-internal exported functions.
+* Found 
+dded to all exported function wh
+
+
+# Revision 1
+
 * Reduced title length
 * Removed examples from unexported functions
 * Changed one unexported function to exported and added test (not requested)

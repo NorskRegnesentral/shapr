@@ -26,12 +26,13 @@
 #' If you have a binary classification model we'll always return the probability prediction
 #' for a single class.
 #'
-#' For more details on how to use a custom model see the package vignette:
+#' For more details on how to use a custom model see the package vignette: \cr
 #' \code{vignette("understanding_shapr", package = "shapr")}
 #'
 #' @return Numeric
 #'
 #' @export
+#' @keywords internal
 #'
 #' @author Martin Jullum
 #' @examples
@@ -154,6 +155,8 @@ predict_model.gam <- function(x, newdata) {
 #' @return Either \code{"classification"} or \code{"regression"}.
 #'
 #' @export
+#' @keywords internal
+#'
 #' @examples
 #' # Load example data
 #' data("Boston", package = "MASS")
@@ -276,6 +279,7 @@ model_type.xgb.Booster <- function(x) {
 #' @keywords internal
 #'
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #'# Load example data

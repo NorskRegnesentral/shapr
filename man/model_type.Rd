@@ -51,3 +51,4 @@ model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 # Writing out the defined model type of the object
 model_type(x = model)
 }
+\keyword{internal}

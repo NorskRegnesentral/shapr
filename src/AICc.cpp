@@ -10,6 +10,7 @@ using namespace arma;
 //' @param h numeric specifying the scaling (sigma)
 //'
 //' @export
+//' @keywords internal
 //'
 //' @return Matrix of dimension \code{ncol(X)*ncol(X)}
 //' @author Martin Jullum
@@ -79,6 +80,7 @@ arma::mat hat_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double 
 //' @param y Vector, i.e. representing the response variable
 //'
 //' @export
+//' @keywords internal
 //'
 //' @return Scalar
 //'
@@ -159,6 +161,7 @@ arma::vec aicc_full_single_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, d
 //' number of variables
 //' @param y_list List.
 //' @param negative Logical.
+//' @keywords internal
 //'
 //' @return Scalar with the numeric value of the AICc formula
 //'

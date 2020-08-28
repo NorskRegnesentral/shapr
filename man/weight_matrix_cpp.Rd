@@ -27,3 +27,4 @@ Calculate weight matrix
 \author{
 Nikolai Sellereite
 }
+\keyword{internal}

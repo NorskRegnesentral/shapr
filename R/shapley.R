@@ -9,6 +9,7 @@
 #' cases, i.e. the case where you have either \code{0} or \code{m} features.
 #'
 #' @return Numeric
+#' @keywords internal
 #'
 #' @author Nikolai Sellereite
 shapley_weights <- function(m, N, n_features, weight_zero_m = 10^6) {
@@ -25,6 +26,7 @@ shapley_weights <- function(m, N, n_features, weight_zero_m = 10^6) {
 #' except combination \code{1} and \code{2^m}.
 #'
 #' @return Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
+#' @keywords internal
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 weight_matrix <- function(X, normalize_W_weights = TRUE) {
