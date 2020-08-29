@@ -11,13 +11,12 @@ This is a resubmission with the following changes:
   certain .rds-files if and only if the test fails. I changed the default 
   behavior so that it no longer overwrites the files. We also have some
   scripts under inst/scripts that writes to disk. These are now added to 
-  .Rbuildignore. Please let me know more precisely what the issue is if this
-  is not satisfactory.
+  .Rbuildignore. Please let me know more precisely what the issue is if these
+  fixes are not satisfactory.
 * Deleted a call to rm(list=ls()) in a script under inst/scripts. I could not
   find any other modifications of .GlobalEnv in the vignette as suggested.
 
 # Revision round 1
-
 
 * Reduced title length
 * Removed examples from unexported functions

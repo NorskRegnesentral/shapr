@@ -12,3 +12,4 @@ inst/compare_lundberg\.xgb\.obj
 ^cran-comments\.md$
 ^docs$
 ^CRAN-RELEASE$
+^inst/scripts$
