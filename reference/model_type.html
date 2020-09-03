@@ -75,7 +75,7 @@ return either &quot;regression&quot; or &quot;classification&quot;." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -175,6 +175,17 @@ return either <code>"regression"</code> or <code>"classification"</code>.</p>
     <p>See <code><a href='predict_model.html'>predict_model</a></code> for more information about
 what type of models <code>shapr</code> currently support.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># Load example data</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"Boston"</span>, package = <span class='st'>"MASS"</span>)
+<span class='co'># Split data into test- and training data</span>
+<span class='kw'>x_train</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='kw'>Boston</span>, <span class='op'>-</span><span class='fl'>3</span>)
+<span class='co'># Fit a linear model</span>
+<span class='kw'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='kw'>medv</span> <span class='op'>~</span> <span class='kw'>lstat</span> <span class='op'>+</span> <span class='kw'>rm</span> <span class='op'>+</span> <span class='kw'>dis</span> <span class='op'>+</span> <span class='kw'>indus</span>, data = <span class='kw'>x_train</span>)
+
+<span class='co'># Writing out the defined model type of the object</span>
+<span class='fu'>model_type</span>(x = <span class='kw'>model</span>)
+</div><div class='output co'>#&gt; [1] "regression"</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -186,7 +197,7 @@ what type of models <code>shapr</code> currently support.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nikolai Sellereite, Martin Jullum.</p>
+  <p>Developed by Nikolai Sellereite, Martin Jullum, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

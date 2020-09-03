@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -287,7 +287,7 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <h2 class="hasAnchor">
 <a href="#main-arguments-in-shapr" class="anchor"></a>Main arguments in <code>shapr</code>
 </h2>
-<p>When using <code>shapr</code>, the default behavior is to use all feature combinations in the Shapley formula. Kernel SHAPs sampling based approach may be used by specifying <code>n_combinations</code>, which is the number of feature combinations to sample. If not specified, the exact method is used. The computation time grows approximately exponentially with the number of samples. The training data and the model whose predictions we wish to explain must be provided through the arguments <code>x</code> and <code>model</code>. Note that <code>x</code> must be a <code>data.frame</code> or a <code>matrix</code>, and all elements must be finite numerical values. Currently we do not support categorical features or missing values.</p>
+<p>When using <code>shapr</code>, the default behavior is to use all feature combinations in the Shapley formula. Kernel SHAP’s sampling based approach may be used by specifying <code>n_combinations</code>, which is the number of feature combinations to sample. If not specified, the exact method is used. The computation time grows approximately exponentially with the number of samples. The training data and the model whose predictions we wish to explain must be provided through the arguments <code>x</code> and <code>model</code>. Note that <code>x</code> must be a <code>data.frame</code> or a <code>matrix</code>, and all elements must be finite numerical values. Currently we do not support categorical features or missing values.</p>
 </div>
 <div id="main-arguments-in-explain" class="section level2">
 <h2 class="hasAnchor">
@@ -443,7 +443,7 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 
 
       <footer><div class="copyright">
-  <p>Developed by Nikolai Sellereite, Martin Jullum.</p>
+  <p>Developed by Nikolai Sellereite, Martin Jullum, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -324,10 +324,15 @@ when conditioning on <code>i</code> features.</p>
 <span class='kw'>approach</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"gaussian"</span>, <span class='st'>"empirical"</span>, <span class='st'>"empirical"</span>)
 <span class='kw'>explain4</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span>(<span class='kw'>x_test</span>, <span class='kw'>explainer</span>, approach = <span class='kw'>approach</span>, prediction_zero = <span class='kw'>p</span>, n_samples = <span class='fl'>1e2</span>)
 
+<span class='co'># Print the Shapley values</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>explain1</span><span class='op'>$</span><span class='kw'>dt</span>)
+</div><div class='output co'>#&gt;        none    lstat        rm       dis       indus
+#&gt; 1: 22.55229 4.953864  4.244888 0.8827999 -0.78929796
+#&gt; 2: 22.55229 4.325994  2.696331 1.0856817 -0.42178545
+#&gt; 3: 22.55229 3.823326 -1.892161 1.1417940  0.08801935</div><div class='input'>
 <span class='co'># Plot the results</span>
-<span class='co'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>explain1</span>)
-}</div></pre>
+</div><div class='img'><img src='explain-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -339,7 +344,7 @@ when conditioning on <code>i</code> features.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nikolai Sellereite, Martin Jullum.</p>
+  <p>Developed by Nikolai Sellereite, Martin Jullum, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

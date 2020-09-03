@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Explain the Output of Machine Learning Models with more Accurately Estimated Shapley Values • shapr</title>
+<title>Prediction Explanation with Dependence-Aware Shapley Values • shapr</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Explain the Output of Machine Learning Models with more Accurately Estimated Shapley Values">
+<script src="pkgdown.js"></script><meta property="og:title" content="Prediction Explanation with Dependence-Aware Shapley Values">
 <meta property="og:description" content="Complex machine learning models are often hard to interpret. However, in 
   many situations it is crucial to understand and explain why a model made a specific 
   prediction. Shapley values is the only method for such prediction explanation framework 
@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -190,7 +190,7 @@ Current methodological restrictions:
 )
 
 <span class="co"># Printing the Shapley values for the test data.</span>
-<span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span>
+<span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.  </span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="kw">explanation</span><span class="op">$</span><span class="kw">dt</span>)
 <span class="co">#&gt;      none     lstat         rm       dis      indus</span>
 <span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span>
@@ -208,13 +208,13 @@ Current methodological restrictions:
 <div id="contribution" class="section level2">
 <h2 class="hasAnchor">
 <a href="#contribution" class="anchor"></a>Contribution</h2>
-<p>All feedback and suggestions are very welcome. Details on how to contribute can be found <a href="./CONTRIBUTING.html">here</a>. If you have any questions or comments, feel free to open an issue <a href="https://github.com/NorskRegnesentral/shapr/issues">here</a>.</p>
-<p>Please note that the ‘shapr’ project is released with a <a href="CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<p>All feedback and suggestions are very welcome. Details on how to contribute can be found <a href="https://norskregnesentral.github.io/shapr/CONTRIBUTING.html">here</a>. If you have any questions or comments, feel free to open an issue <a href="https://github.com/NorskRegnesentral/shapr/issues">here</a>.</p>
+<p>Please note that the ‘shapr’ project is released with a <a href="https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 <div id="references" class="section level2">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
-<div id="refs" class="references hanging-indent">
+<div id="refs" class="references">
 <div id="ref-aas2019explaining">
 <p>Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>arXiv Preprint arXiv:1903.10464</em>.</p>
 </div>
@@ -242,6 +242,8 @@ Current methodological restrictions:
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=shapr">https://​cloud.r-project.org/​package=shapr</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/NorskRegnesentral/shapr/">https://​github.com/​NorskRegnesentral/​shapr/​</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/NorskRegnesentral/shapr/issues">https://​github.com/​NorskRegnesentral/​shapr/​issues</a>
@@ -267,6 +269,7 @@ Current methodological restrictions:
 <ul class="list-unstyled">
 <li>Nikolai Sellereite <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-4671-0337" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Martin Jullum <br><small class="roles"> Maintainer, author </small> <a href="https://orcid.org/0000-0003-3908-5155" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Norsk Regnesentral <br><small class="roles"> Copyright holder, funder </small>  </li>
 <li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
@@ -285,7 +288,7 @@ Current methodological restrictions:
 
 
       <footer><div class="copyright">
-  <p>Developed by Nikolai Sellereite, Martin Jullum.</p>
+  <p>Developed by Nikolai Sellereite, Martin Jullum, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

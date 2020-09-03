@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -174,19 +174,6 @@ predictions ought to be explained (test data).</p></td>
 
     <p>Martin Jullum</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fl'>10</span>
-<span class='kw'>n</span> <span class='op'>&lt;-</span> <span class='fl'>40</span>
-<span class='kw'>n_samples</span> <span class='op'>&lt;-</span> <span class='fl'>50</span>
-<span class='kw'>mu</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='kw'>m</span>)
-<span class='kw'>cov_mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cov</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span> <span class='op'>*</span> <span class='kw'>m</span>), <span class='kw'>n</span>, <span class='kw'>m</span>))
-<span class='kw'>x_train</span> <span class='op'>&lt;-</span> <span class='kw'>MASS</span>::<span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='kw'>n</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>)
-<span class='kw'>x_test</span> <span class='op'>&lt;-</span> <span class='kw'>MASS</span>::<span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>)
-<span class='kw'>x_test_gaussian</span> <span class='op'>&lt;-</span> <span class='kw'>MASS</span>::<span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span>(<span class='fl'>1</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>)
-<span class='kw'>index_given</span> <span class='op'>&lt;-</span> <span class='fl'>3</span><span class='op'>:</span><span class='fl'>6</span>
-<span class='kw'>ret</span> <span class='op'>&lt;-</span> <span class='kw'>shapr</span>:::<span class='fu'>sample_copula</span>(<span class='kw'>index_given</span>, <span class='kw'>n_samples</span>, <span class='kw'>mu</span>, <span class='kw'>cov_mat</span>, m = <span class='kw'>m</span>,
-                             <span class='kw'>x_test_gaussian</span>, <span class='kw'>x_train</span>, <span class='kw'>x_test</span>)
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -198,7 +185,7 @@ predictions ought to be explained (test data).</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nikolai Sellereite, Martin Jullum.</p>
+  <p>Developed by Nikolai Sellereite, Martin Jullum, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

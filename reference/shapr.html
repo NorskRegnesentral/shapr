@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -195,7 +195,8 @@ model) and <code>n_combinations</code> is also present in the returned object.</
 <span class='kw'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='kw'>medv</span> <span class='op'>~</span> <span class='kw'>lstat</span> <span class='op'>+</span> <span class='kw'>rm</span> <span class='op'>+</span> <span class='kw'>dis</span> <span class='op'>+</span> <span class='kw'>indus</span>, data = <span class='kw'>df</span>)
 <span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'>shapr</span>(<span class='kw'>df1</span>, <span class='kw'>model</span>)
 
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>explainer</span><span class='op'>$</span><span class='kw'>X</span>))</div><div class='output co'>#&gt; [1] 16</div><div class='input'><span class='co'># 16 (which equals 2^4)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>explainer</span><span class='op'>$</span><span class='kw'>X</span>))
+</div><div class='output co'>#&gt; [1] 16</div><div class='input'><span class='co'># 16 (which equals 2^4)</span>
 
 <span class='co'># Example using approximation</span>
 <span class='kw'>y_var</span> <span class='op'>&lt;-</span> <span class='st'>"medv"</span>
@@ -204,14 +205,20 @@ model) and <code>n_combinations</code> is also present in the returned object.</
 <span class='kw'>df2</span> <span class='op'>&lt;-</span> <span class='kw'>df</span>[, <span class='kw'>x_var</span>]
 <span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'>shapr</span>(<span class='kw'>df2</span>, <span class='kw'>model</span>, n_combinations = <span class='fl'>1e3</span>)
 
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>explainer</span><span class='op'>$</span><span class='kw'>X</span>))</div><div class='output co'>#&gt; [1] 564</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>explainer</span><span class='op'>$</span><span class='kw'>X</span>))
+</div><div class='output co'>#&gt; [1] 568</div><div class='input'>
 <span class='co'># Example using approximation where n_combinations &gt; 2^m</span>
 <span class='kw'>x_var</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"lstat"</span>, <span class='st'>"rm"</span>, <span class='st'>"dis"</span>, <span class='st'>"indus"</span>)
 <span class='kw'>y_var</span> <span class='op'>&lt;-</span> <span class='st'>"medv"</span>
 <span class='kw'>df3</span> <span class='op'>&lt;-</span> <span class='kw'>df</span>[, <span class='kw'>x_var</span>]
 <span class='kw'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='kw'>medv</span> <span class='op'>~</span> <span class='kw'>lstat</span> <span class='op'>+</span> <span class='kw'>rm</span> <span class='op'>+</span> <span class='kw'>dis</span> <span class='op'>+</span> <span class='kw'>indus</span>, data = <span class='kw'>df</span>)
-<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'>shapr</span>(<span class='kw'>df1</span>, <span class='kw'>model</span>, n_combinations = <span class='fl'>1e3</span>)</div><div class='output co'>#&gt; n_combinations is larger than or equal to 2^m = 16. Using exact instead.</div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>explainer</span><span class='op'>$</span><span class='kw'>X</span>))</div><div class='output co'>#&gt; [1] 16</div><div class='input'><span class='co'># 16 (which equals 2^4)</span></div></pre>
+<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'>shapr</span>(<span class='kw'>df1</span>, <span class='kw'>model</span>, n_combinations = <span class='fl'>1e3</span>)
+</div><div class='output co'>#&gt; <span class='message'></span>
+#&gt; <span class='message'>n_combinations is larger than or equal to 2^m = 16. </span>
+#&gt; <span class='message'>Using exact instead.</span></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>explainer</span><span class='op'>$</span><span class='kw'>X</span>))
+</div><div class='output co'>#&gt; [1] 16</div><div class='input'><span class='co'># 16 (which equals 2^4)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -223,7 +230,7 @@ model) and <code>n_combinations</code> is also present in the returned object.</
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nikolai Sellereite, Martin Jullum.</p>
+  <p>Developed by Nikolai Sellereite, Martin Jullum, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
