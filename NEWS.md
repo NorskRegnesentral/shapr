@@ -1,16 +1,21 @@
+
+# shapr 0.1.3
+
+* Fix installation error on Solaris
+
 # shapr 0.1.2
 
-# CRAN release
-# Removed unused clustering code
-# Removed several package dependencies
-# Moved automatic check and pkgdown site build from Circle CI to GitHub actions
-# Some minor efficiency fixes
-# Changed stopping threshold from 12 to 13 features for none-sampling version of 
+* CRAN release
+* Removed unused clustering code
+* Removed several package dependencies
+* Moved automatic check and pkgdown site build from Circle CI to GitHub actions
+* Some minor efficiency fixes
+* Changed stopping threshold from 12 to 13 features for none-sampling version of 
   KernelSHAP for consistency with our recommendation
-# Changed package title (shortened)
-# Minor fixes to fulfill CRAN policy
-# Improved documentation
-# Revised internal/external and exported/non-exported functions, leading to far
+* Changed package title (shortened)
+* Minor fixes to fulfill CRAN policy
+* Improved documentation
+* Revised internal/external and exported/non-exported functions, leading to far
   fewer external functions and a cleaner manual. 
 
 # shapr 0.1.1
