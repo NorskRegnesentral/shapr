@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version-last-release/shapr)](https://cran.r-project.org/package=shapr)
+[![CRAN\_Downloads\_Badge](https://cranlogs.r-pkg.org/badges/grand-total/shapr)](https://cran.r-project.org/package=shapr)
 [![R build
 status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle:
@@ -87,6 +89,12 @@ transformations. The application programming interface (API) of `shapr`
 is inspired by Pedersen and Benesty (2019).
 
 ## Installation
+
+To install the current stable release from CRAN, use
+
+``` r
+install.packages("shapr")
+```
 
 To install the current development version, use
 
