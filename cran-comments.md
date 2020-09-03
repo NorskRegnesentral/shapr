@@ -18,7 +18,14 @@ rhub::check_on_solaris() indicates the issue is fixed in this release.
 
 There were no ERRORs or WARNINGs.
 
-There was 1 NOTE:
+There was 2 NOTES:
+
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: 'Martin Jullum <Martin.Jullum@nr.no>'
+
+Days since last update: 0
+
+> This is a patch for the current installation error on Solaris
 
 * checking for future file timestamps ... NOTE
   unable to verify current time
