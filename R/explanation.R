@@ -91,10 +91,11 @@
 #' approach <- c("gaussian", "gaussian", "empirical", "empirical")
 #' explain4 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
 #'
+#' # Print the Shapley values
+#' print(explain1$dt)
+#'
 #' # Plot the results
-#' \dontrun{
 #' plot(explain1)
-#' }
 explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Check input for x
@@ -312,12 +313,6 @@ explain.combined <- function(x, explainer, approach, prediction_zero, mu = NULL,
 #'
 #' @return List
 #'
-#' @examples
-#' m <- 3
-#' n_features <- c(0, 1, 1, 1, 2, 2, 2, 3)
-#' approach <- c("gaussian", "copula", "copula")
-#' l <- shapr:::get_list_approaches(n_features, approach)
-#' str(l)
 get_list_approaches <- function(n_features, approach) {
 
   l <- list()

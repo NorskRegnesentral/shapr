@@ -168,10 +168,11 @@ explain3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p,
 approach <- c("gaussian", "gaussian", "empirical", "empirical")
 explain4 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
 
+# Print the Shapley values
+print(explain1$dt)
+
 # Plot the results
-\dontrun{
 plot(explain1)
-}
 }
 \author{
 Camilla Lingjaerde, Nikolai Sellereite

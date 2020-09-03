@@ -1,6 +1,6 @@
 Package: shapr
-Version: 0.1.1.9000
-Title: Explain the Output of Machine Learning Models with more Accurately Estimated Shapley Values
+Version: 0.1.2
+Title: Prediction Explanation with Dependence-Aware Shapley Values
 Description: Complex machine learning models are often hard to interpret. However, in 
   many situations it is crucial to understand and explain why a model made a specific 
   prediction. Shapley values is the only method for such prediction explanation framework 
@@ -13,7 +13,9 @@ Authors@R: c(
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = c("cre", "aut"), comment = c(ORCID = "0000-0003-3908-5155")),
     person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
     person("Jens Christian", "Wahl", email = "Jens.Christian.Wahl@nr.no", role = "ctb"), 
-    person("Camilla", "Lingjærde", role = "ctb"))
+    person("Camilla", "Lingjærde", role = "ctb"),
+    person("Norsk Regnesentral", role =  c("cph", "fnd"))
+    )
 URL: https://norskregnesentral.github.io/shapr/, https://github.com/NorskRegnesentral/shapr
 BugReports: https://github.com/NorskRegnesentral/shapr/issues
 License: MIT + file LICENSE
@@ -21,7 +23,7 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Language: en-US
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Depends: R (>= 3.5.0)
 Imports: 
     stats,

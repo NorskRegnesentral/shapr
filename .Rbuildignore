@@ -11,3 +11,5 @@ inst/compare_lundberg\.xgb\.obj
 ^CODE_OF_CONDUCT\.md$
 ^cran-comments\.md$
 ^docs$
+^CRAN-RELEASE$
+^inst/scripts$

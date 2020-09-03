@@ -20,3 +20,4 @@ sigma_hat_sq-function
 \author{
 Martin Jullum
 }
+\keyword{internal}

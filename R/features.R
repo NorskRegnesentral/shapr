@@ -22,25 +22,25 @@
 #' from \code{m} different features, without replacement.}
 #' }
 #'
-#' @keywords internal
+#' @export
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 #'
 #' @examples
 #' # All combinations
-#' x <- shapr:::feature_combinations(m = 3)
+#' x <- feature_combinations(m = 3)
 #' nrow(x) # Equals 2^3 = 8
 #'
 #' # Subsample of combinations
-#' x <- shapr:::feature_combinations(m = 13, n_combinations = 1e2)
+#' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6) {
 
-  # Force user to use a natural number for n_combinations if m > 12
-  if (m > 12 & is.null(n_combinations)) {
+  # Force user to use a natural number for n_combinations if m > 13
+  if (m > 13 & is.null(n_combinations)) {
     stop(
       paste0(
         "Due to computational complexity, we recommend setting n_combinations = 10 000\n",
-        "if the number of features is larger than 12. Note that you can force the use of the exact\n",
+        "if the number of features is larger than 13. Note that you can force the use of the exact\n",
         "method (i.e. n_combinations = NULL) by setting n_combinations equal to 2^m,\n",
         "where m is the number of features."
       )
@@ -55,7 +55,12 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   if (!exact && n_combinations > (2^m - 2)) {
     n_combinations <- 2^m - 2
     exact <- TRUE
-    cat(sprintf("n_combinations is larger than or equal to 2^m = %d. Using exact instead.", 2^m))
+    message(
+      paste0(
+        "\nn_combinations is larger than or equal to 2^m = ", 2^m, ". \n",
+        "Using exact instead."
+        )
+      )
   }
 
   if (exact) {

@@ -1,5 +1,3 @@
-rm(list = ls())
-
 library(gbm)
 library(shapr)
 

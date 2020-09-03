@@ -6,6 +6,19 @@ context("test-explanation.R")
 # For using same Random numer generator as CircelCI (R version 3.5.x)
 RNGversion(vstr = "3.5.0")
 
+test_that("Test get_list_approaches", {
+
+  m <- 4
+  n_features <- c(0, 1, 1, 1, 2, 2, 2, 3)
+  approach <- c("gaussian", "copula", "copula")
+  l <- get_list_approaches(n_features, approach)
+
+  expect_true(is.list(l))
+  expect_equal(names(l), c("gaussian", "copula"))
+  expect_equal(l$gaussian, 1:4)
+  expect_equal(l$copula, 5:8)
+})
+
 test_that("Test functions in explanation.R", {
 
   # Load data -----------
@@ -87,7 +100,8 @@ test_that("Test functions in explanation.R", {
   ex_list[[18]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
   # Checking that all explain objects produce the same as before
-  expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds")
+  expect_known_value(ex_list, file = "test_objects/explanation_explain_obj_list.rds",
+                     update = FALSE)
 
   ### Additional test that only the produced shapley values are the same as before
   fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")

@@ -20,13 +20,6 @@ List
 \description{
 Helper function used in \code{\link{explain.combined}}
 }
-\examples{
-m <- 3
-n_features <- c(0, 1, 1, 1, 2, 2, 2, 3)
-approach <- c("gaussian", "copula", "copula")
-l <- shapr:::get_list_approaches(n_features, approach)
-str(l)
-}
 \author{
 Nikolai Sellereite
 }

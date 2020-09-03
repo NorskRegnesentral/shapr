@@ -22,3 +22,4 @@ Calculate weighted matrix
 \author{
 Nikolai Sellereite, Martin Jullum
 }
+\keyword{internal}

@@ -18,13 +18,6 @@ Numeric vector of length \code{n_z}
 \description{
 Transforms new data to a standardized normal distribution
 }
-\examples{
-zx <- rnorm(50)
-n_z <- 30
-x <- shapr:::inv_gaussian_transform(zx, n_z)
-str(x)
-
-}
 \author{
 Martin Jullum
 }
