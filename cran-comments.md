@@ -8,6 +8,7 @@ rhub::check_on_solaris() indicates the issue is fixed in this release.
 ## Test environments
 
 * GitHub Actions (macOS-latest): R 4.0.2
+* GitHub Actions (windows-latest): R 4.0.2
 * GitHub Actions (ubuntu-16.04): R 4.0.2, 3.6.3, 3.5.3
 * win-builder (x86_64-w64-mingw32): R 4.0.2, 3.6.3, R-devel (2020-08-23 r79071)
 * local Ubuntu 18.04: R 3.6.3
