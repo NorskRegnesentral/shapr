@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -124,16 +124,20 @@ Current methodological restrictions:
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>To install the current development version, use</p>
+<p>To install the current stable release from CRAN, use</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"shapr"</span>)
+</pre></div>
+<p>To install the current development version, use</p>
+<div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>)
 </pre></div>
 <p>If you would like to install all packages of the models we currently support, use</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
+<div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>, dependencies = <span class="fl">TRUE</span>)
 </pre></div>
 <p>If you would also like to build and view the vignette locally, use</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
+<div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"NorskRegnesentral/shapr"</span>, dependencies = <span class="fl">TRUE</span>, build_vignettes = <span class="fl">TRUE</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span>(<span class="st">"understanding_shapr"</span>, <span class="st">"shapr"</span>)
 </pre></div>
@@ -144,7 +148,7 @@ Current methodological restrictions:
 <a href="#example" class="anchor"></a>Example</h2>
 <p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.</p>
 <p>The following example shows how a simple <code>xgboost</code> model is trained using the <em>Boston Housing Data</em>, and how <code>shapr</code> explains the individual predictions.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
+<div class="sourceCode" id="cb5"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/dmlc/xgboost">xgboost</a></span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://norskregnesentral.github.io/shapr">shapr</a></span>)
 
@@ -277,6 +281,8 @@ Current methodological restrictions:
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
+<li><a href="https://cran.r-project.org/package=shapr"><img src="https://www.r-pkg.org/badges/version-last-release/shapr" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://cran.r-project.org/package=shapr"><img src="https://cranlogs.r-pkg.org/badges/grand-total/shapr" alt="CRAN_Downloads_Badge"></a></li>
 <li><a href="https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check"><img src="https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
