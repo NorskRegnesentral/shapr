@@ -60,7 +60,7 @@ arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat,
         cholDec = trimatl(chol(mcov0).t());
         vec D = cholDec.diag();
         if(S_scale_dist){
-            S_scale = 1.0/pow(theseFeatures.n_elem,2);
+            S_scale = 1.0/pow(theseFeatures.n_elem,2.0);
        } else {
             S_scale = 1.0;
         }
