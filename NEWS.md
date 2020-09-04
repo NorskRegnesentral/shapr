@@ -2,6 +2,7 @@
 # shapr 0.1.3
 
 * Fix installation error on Solaris
+* Updated README with CRAN installation instructions and badges
 
 # shapr 0.1.2
 
