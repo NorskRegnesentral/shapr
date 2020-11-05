@@ -13,3 +13,7 @@ inst/compare_lundberg\.xgb\.obj
 ^docs$
 ^CRAN-RELEASE$
 ^inst/scripts$
+^doc$
+^Meta$
+^_pkgdown\.yml$
+^pkgdown$
