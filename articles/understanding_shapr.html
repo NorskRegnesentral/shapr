@@ -37,12 +37,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Vignettes
@@ -203,45 +197,45 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <a href="#examples" class="anchor"></a>Examples</h1>
 <p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.</p>
 <p>The following example shows how a simple <code>xgboost</code> model is trained using the Boston Housing Data, and how <code>shapr</code> can be used to explain the individual predictions. Note that empirical conditional distribution approach is the default (i.e. <code>approach = "empirical"</code>), and that the Gaussian and Gaussian copula approaches can be used instead by setting the argument <code>approach</code> to either <code>"gaussian"</code> or <code>"copula"</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/dmlc/xgboost">xgboost</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://norskregnesentral.github.io/shapr">shapr</a></span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost">xgboost</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://norskregnesentral.github.io/shapr/">shapr</a></span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"Boston"</span>, package = <span class="st">"MASS"</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span>
 
-<span class="kw">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span>)
-<span class="kw">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span>
+<span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span><span class="op">)</span>
+<span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span>
 
-<span class="kw">x_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="kw">Boston</span>[<span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">6</span>, <span class="kw">x_var</span>])
-<span class="kw">y_train</span> <span class="op">&lt;-</span> <span class="kw">Boston</span>[<span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">6</span>, <span class="kw">y_var</span>]
-<span class="kw">x_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="kw">Boston</span>[<span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="kw">x_var</span>])
+<span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">6</span>, <span class="va">x_var</span><span class="op">]</span><span class="op">)</span>
+<span class="va">y_train</span> <span class="op">&lt;-</span> <span class="va">Boston</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">6</span>, <span class="va">y_var</span><span class="op">]</span>
+<span class="va">x_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="va">x_var</span><span class="op">]</span><span class="op">)</span>
 
 <span class="co"># Fitting a basic xgboost model to the training data</span>
-<span class="kw">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost</a></span>(
-  data = <span class="kw">x_train</span>,
-  label = <span class="kw">y_train</span>,
-  nround = <span class="fl">20</span>,
-  verbose = <span class="fl">FALSE</span>
-)
+<span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">x_train</span>,
+  label <span class="op">=</span> <span class="va">y_train</span>,
+  nround <span class="op">=</span> <span class="fl">20</span>,
+  verbose <span class="op">=</span> <span class="cn">FALSE</span>
+<span class="op">)</span>
 
 <span class="co"># Prepare the data for explanation</span>
-<span class="kw">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span>(<span class="kw">x_train</span>, <span class="kw">model</span>)
+<span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">x_train</span>, <span class="va">model</span><span class="op">)</span>
 
 <span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span>
-<span class="kw">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">y_train</span>)
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">)</span>
 
 <span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
 <span class="co"># the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)</span>
-<span class="kw">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span>(
-  <span class="kw">x_test</span>,
-  approach = <span class="st">"empirical"</span>,
-  explainer = <span class="kw">explainer</span>,
-  prediction_zero = <span class="kw">p</span>
-)
+<span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test</span>,
+  approach <span class="op">=</span> <span class="st">"empirical"</span>,
+  explainer <span class="op">=</span> <span class="va">explainer</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p</span>
+<span class="op">)</span>
 
 <span class="co"># Printing the Shapley values for the test data.</span>
 <span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="kw">explanation</span><span class="op">$</span><span class="kw">dt</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">dt</span><span class="op">)</span>
 <span class="co">#&gt;      none     lstat         rm       dis      indus</span>
 <span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span>
 <span class="co">#&gt; 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871</span>
@@ -251,37 +245,34 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <span class="co">#&gt; 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531</span>
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">6</span>))
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
 <p>The Gaussian approach is used as follows:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co"># Use the Gaussian approach</span>
-<span class="kw">explanation_gaussian</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span>(
-  <span class="kw">x_test</span>,
-  approach = <span class="st">"gaussian"</span>,
-  explainer = <span class="kw">explainer</span>,
-  prediction_zero = <span class="kw">p</span>
-)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Use the Gaussian approach</span>
+<span class="va">explanation_gaussian</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test</span>,
+  approach <span class="op">=</span> <span class="st">"gaussian"</span>,
+  explainer <span class="op">=</span> <span class="va">explainer</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p</span>
+<span class="op">)</span>
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_gaussian</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">6</span>))
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_gaussian</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
 <p>The Gaussian copula approach is used as follows:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="co"># Use the Gaussian copula approach</span>
-<span class="kw">explanation_copula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span>(
-  <span class="kw">x_test</span>,
-  approach = <span class="st">"copula"</span>,
-  explainer = <span class="kw">explainer</span>,
-  prediction_zero = <span class="kw">p</span>
-)
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Use the Gaussian copula approach</span>
+<span class="va">explanation_copula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test</span>,
+  approach <span class="op">=</span> <span class="st">"copula"</span>,
+  explainer <span class="op">=</span> <span class="va">explainer</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p</span>
+<span class="op">)</span>
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span>
 <span class="co"># the no-covariate effect</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_copula</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">6</span>))
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_copula</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
 <div id="main-arguments-in-shapr" class="section level2">
 <h2 class="hasAnchor">
@@ -309,19 +300,18 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <p>In addition to letting the user select one of the three aforementioned approaches for estimating the conditional distribution of the data (i.e. <code>approach</code> equals either <a href="#gaussian"><code>"gaussian"</code></a>, <a href="#copula"><code>"copula"</code></a> or <a href="#empirical"><code>"empirical"</code></a>), the package allows the user to combine the three approaches. To simplify the usage, the flexibility is restricted such that the same approach is used when conditioning on the same number of features. This is also in line <span class="citation">Aas, Jullum, and Løland (2019, Section 3.4)</span>.</p>
 <p>This can be done by setting <code>approach</code> equal to a character vector, where the length of the vector is equal to the number of features in the model. Consider a situation where you have trained a model that consists of 10 features, and you would like to use the <code>"empirical"</code> approach when you condition on 1-3 features, the <code>"copula"</code> approach when you condition on 4-5 features, and the <code>"gaussian"</code> approach when conditioning on 6 or more features. This can be applied by simply passing <code>approach = c(rep("empirical", 3), rep("copula", 2), rep("gaussian", 5))</code>, i.e. <code>approach[i]</code> determines which method to use when conditioning on <code>i</code> features.</p>
 <p>The code below exemplifies this approach for a case where there are four features, using <code>"empirical", "copula"</code> and <code>"gaussian"</code> when conditioning on respectively 1, 2 and 3-4 features. Note that it does not matter what method that is specified when conditioning on all features, as that equals the actual prediction regardless of the specified approach.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="co"># Use the combined approach</span>
-<span class="kw">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span>(
-  <span class="kw">x_test</span>,
-  approach = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"empirical"</span>, <span class="st">"copula"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>),
-  explainer = <span class="kw">explainer</span>,
-  prediction_zero = <span class="kw">p</span>
-)
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Use the combined approach</span>
+<span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test</span>,
+  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"empirical"</span>, <span class="st">"copula"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span><span class="op">)</span>,
+  explainer <span class="op">=</span> <span class="va">explainer</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p</span>
+<span class="op">)</span>
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span>
 <span class="co"># the no-covariate effect</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_combined</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">6</span>))
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_combined</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 </div>
 <div id="explain-custom-models" class="section level2">
@@ -338,68 +328,67 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 </li>
 </ul>
 <p>Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above. Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple additional functions to the class your model belongs to. The first class function is <code>model_type</code>, taking the model object as input, and outputting a character indicating whether the model is a (continuous response) <code>"regression"</code> model, or a (binary) <code>"classification"</code> model. The second function is <code>predict_model</code>, taking the model and data (as a <code>matrix</code> or <code>data.frame</code>) as input and outputting the corresponding prediction as a numeric vector. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a <code>gbm</code> model using the <code>gbm</code> package, fitted to the same Boston data set as used above.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/gbm-developers/gbm">gbm</a></span>)
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gbm-developers/gbm">gbm</a></span><span class="op">)</span>
 <span class="co">#&gt; Loaded gbm 2.1.8</span>
 
-<span class="kw">form</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html">as.formula</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="kw">y_var</span>, <span class="st">"~"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="kw">x_var</span>, collapse = <span class="st">"+"</span>)))
-<span class="kw">xy_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">x_train</span>, medv = <span class="kw">y_train</span>)
+<span class="va">form</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">y_var</span>, <span class="st">"~"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">x_var</span>, collapse <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">xy_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">x_train</span>, medv <span class="op">=</span> <span class="va">y_train</span><span class="op">)</span>
 
 <span class="co"># Fitting a gbm model</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">825</span>)
-<span class="kw">model</span> <span class="op">&lt;-</span> <span class="kw">gbm</span>::<span class="fu"><a href="https://rdrr.io/pkg/gbm/man/gbm.html">gbm</a></span>(
-  <span class="kw">form</span>,
-  data = <span class="kw">xy_train</span>,
-  distribution = <span class="st">"gaussian"</span>
-  )
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">825</span><span class="op">)</span>
+<span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">gbm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gbm/man/gbm.html">gbm</a></span><span class="op">(</span>
+  <span class="va">form</span>,
+  data <span class="op">=</span> <span class="va">xy_train</span>,
+  distribution <span class="op">=</span> <span class="st">"gaussian"</span>
+  <span class="op">)</span>
 
 <span class="co"># Create custom function of model_type for gbm</span>
-<span class="kw">model_type.gbm</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">x</span>) {
-  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(
-    <span class="kw">x</span><span class="op">$</span><span class="kw">distribution</span><span class="op">$</span><span class="kw">name</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"bernoulli"</span>, <span class="st">"adaboost"</span>),
+<span class="va">model_type.gbm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span>
+    <span class="va">x</span><span class="op">$</span><span class="va">distribution</span><span class="op">$</span><span class="va">name</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"bernoulli"</span>, <span class="st">"adaboost"</span><span class="op">)</span>,
     <span class="st">"classification"</span>,
     <span class="st">"regression"</span>
-  )
-}
+  <span class="op">)</span>
+<span class="op">}</span>
 
 <span class="co"># Create custom function of predict_model for gbm</span>
-<span class="kw">predict_model.gbm</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">x</span>, <span class="kw">newdata</span>) {
+<span class="va">predict_model.gbm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">newdata</span><span class="op">)</span> <span class="op">{</span>
 
-  <span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">'gbm'</span>, quietly = <span class="fl">TRUE</span>)) {
-    <span class="fu"><a href="https://rdrr.io/r/base/stop.html">stop</a></span>(<span class="st">'The gbm package is required for predicting train models'</span>)
-  }
-  <span class="kw">model_type</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/model_type.html">model_type</a></span>(<span class="kw">x</span>)
+  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">'gbm'</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">'The gbm package is required for predicting train models'</span><span class="op">)</span>
+  <span class="op">}</span>
+  <span class="va">model_type</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/model_type.html">model_type</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
 
-  <span class="co">if</span> (<span class="kw">model_type</span> <span class="op">==</span> <span class="st">"classification"</span>) {
+  <span class="kw">if</span> <span class="op">(</span><span class="va">model_type</span> <span class="op">==</span> <span class="st">"classification"</span><span class="op">)</span> <span class="op">{</span>
 
-    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="kw">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span>(<span class="kw">newdata</span>), type = <span class="st">"response"</span>, n.trees = <span class="kw">x</span><span class="op">$</span><span class="kw">n.trees</span>)
-  } <span class="co">else</span> {
+    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"response"</span>, n.trees <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">n.trees</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
 
-    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="kw">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span>(<span class="kw">newdata</span>), n.trees = <span class="kw">x</span><span class="op">$</span><span class="kw">n.trees</span>)
-  }
-}
+    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">)</span>, n.trees <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">n.trees</span><span class="op">)</span>
+  <span class="op">}</span>
+<span class="op">}</span>
 
 <span class="co"># Prepare the data for explanation</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
-<span class="kw">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span>(<span class="kw">xy_train</span>, <span class="kw">model</span>, feature_labels = <span class="kw">x_var</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
+<span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">xy_train</span>, <span class="va">model</span>, feature_labels <span class="op">=</span> <span class="va">x_var</span><span class="op">)</span>
 
 <span class="co"># Spedifying the phi_0, i.e. the expected prediction without any features</span>
-<span class="kw">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">xy_train</span>[, <span class="kw">y_var</span>])
+<span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">xy_train</span><span class="op">[</span>, <span class="va">y_var</span><span class="op">]</span><span class="op">)</span>
 
 <span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
 <span class="co"># the empirical (conditional) distribution approach with</span>
 <span class="co"># bandwidth parameter sigma = 0.1 (default)</span>
-<span class="kw">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span>(
-  <span class="kw">x_test</span>,
-  <span class="kw">explainer</span>,
-  approach = <span class="st">"empirical"</span>,
-  prediction_zero = <span class="kw">p0</span>
-)
+<span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test</span>,
+  <span class="va">explainer</span>,
+  approach <span class="op">=</span> <span class="st">"empirical"</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p0</span>
+<span class="op">)</span>
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span>
 <span class="co"># the no-covariate effect.</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">explanation_combined</span>, plot_phi0 = <span class="fl">FALSE</span>, index_x_test = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">6</span>))
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_combined</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-6-1.png" width="672"> Note that this explains a different (but similar) model than the above xgboost model!</p>
 <p><a id="compare"></a></p>
 <p><br></p>
@@ -443,11 +432,11 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 
 
       <footer><div class="copyright">
-  <p>Developed by Nikolai Sellereite, Martin Jullum, Norsk Regnesentral.</p>
+  <p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

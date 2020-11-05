@@ -78,13 +78,7 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li class="dropdown">
+        <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Vignettes
      
@@ -132,47 +126,47 @@
     <p>Explain the output of machine learning models with more accurately estimated Shapley values</p>
     </div>
 
-    <pre class="usage"><span class='fu'>explain</span>(<span class='kw'>x</span>, <span class='kw'>explainer</span>, <span class='kw'>approach</span>, <span class='kw'>prediction_zero</span>, <span class='kw'>...</span>)
+    <pre class="usage"><span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for empirical</span>
-<span class='fu'>explain</span>(
-  <span class='kw'>x</span>,
-  <span class='kw'>explainer</span>,
-  <span class='kw'>approach</span>,
-  <span class='kw'>prediction_zero</span>,
-  type = <span class='st'>"fixed_sigma"</span>,
-  fixed_sigma_vec = <span class='fl'>0.1</span>,
-  n_samples_aicc = <span class='fl'>1000</span>,
-  eval_max_aicc = <span class='fl'>20</span>,
-  start_aicc = <span class='fl'>0.1</span>,
-  w_threshold = <span class='fl'>0.95</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'>explain</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>explainer</span>,
+  <span class='va'>approach</span>,
+  <span class='va'>prediction_zero</span>,
+  type <span class='op'>=</span> <span class='st'>"fixed_sigma"</span>,
+  fixed_sigma_vec <span class='op'>=</span> <span class='fl'>0.1</span>,
+  n_samples_aicc <span class='op'>=</span> <span class='fl'>1000</span>,
+  eval_max_aicc <span class='op'>=</span> <span class='fl'>20</span>,
+  start_aicc <span class='op'>=</span> <span class='fl'>0.1</span>,
+  w_threshold <span class='op'>=</span> <span class='fl'>0.95</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for gaussian</span>
-<span class='fu'>explain</span>(
-  <span class='kw'>x</span>,
-  <span class='kw'>explainer</span>,
-  <span class='kw'>approach</span>,
-  <span class='kw'>prediction_zero</span>,
-  mu = <span class='kw'>NULL</span>,
-  cov_mat = <span class='kw'>NULL</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'>explain</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>explainer</span>,
+  <span class='va'>approach</span>,
+  <span class='va'>prediction_zero</span>,
+  mu <span class='op'>=</span> <span class='cn'>NULL</span>,
+  cov_mat <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for copula</span>
-<span class='fu'>explain</span>(<span class='kw'>x</span>, <span class='kw'>explainer</span>, <span class='kw'>approach</span>, <span class='kw'>prediction_zero</span>, <span class='kw'>...</span>)
+<span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for combined</span>
-<span class='fu'>explain</span>(
-  <span class='kw'>x</span>,
-  <span class='kw'>explainer</span>,
-  <span class='kw'>approach</span>,
-  <span class='kw'>prediction_zero</span>,
-  mu = <span class='kw'>NULL</span>,
-  cov_mat = <span class='kw'>NULL</span>,
-  <span class='kw'>...</span>
-)</pre>
+<span class='fu'>explain</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>explainer</span>,
+  <span class='va'>approach</span>,
+  <span class='va'>prediction_zero</span>,
+  mu <span class='op'>=</span> <span class='cn'>NULL</span>,
+  cov_mat <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -296,42 +290,42 @@ when conditioning on <code>i</code> features.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Load example data</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"Boston"</span>, package = <span class='st'>"MASS"</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"Boston"</span>, package <span class='op'>=</span> <span class='st'>"MASS"</span><span class='op'>)</span>
 
 <span class='co'># Split data into test- and training data</span>
-<span class='kw'>x_train</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='kw'>Boston</span>, <span class='op'>-</span><span class='fl'>3</span>)
-<span class='kw'>x_test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='kw'>Boston</span>, <span class='fl'>3</span>)
+<span class='va'>x_train</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>Boston</span>, <span class='op'>-</span><span class='fl'>3</span><span class='op'>)</span>
+<span class='va'>x_test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>Boston</span>, <span class='fl'>3</span><span class='op'>)</span>
 
 <span class='co'># Fit a linear model</span>
-<span class='kw'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span>(<span class='kw'>medv</span> <span class='op'>~</span> <span class='kw'>lstat</span> <span class='op'>+</span> <span class='kw'>rm</span> <span class='op'>+</span> <span class='kw'>dis</span> <span class='op'>+</span> <span class='kw'>indus</span>, data = <span class='kw'>x_train</span>)
+<span class='va'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>medv</span> <span class='op'>~</span> <span class='va'>lstat</span> <span class='op'>+</span> <span class='va'>rm</span> <span class='op'>+</span> <span class='va'>dis</span> <span class='op'>+</span> <span class='va'>indus</span>, data <span class='op'>=</span> <span class='va'>x_train</span><span class='op'>)</span>
 
 <span class='co'># Create an explainer object</span>
-<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'><a href='shapr.html'>shapr</a></span>(<span class='kw'>x_train</span>, <span class='kw'>model</span>)
+<span class='va'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'><a href='shapr.html'>shapr</a></span><span class='op'>(</span><span class='va'>x_train</span>, <span class='va'>model</span><span class='op'>)</span>
 
 <span class='co'># Explain predictions</span>
-<span class='kw'>p</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>x_train</span><span class='op'>$</span><span class='kw'>medv</span>)
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>x_train</span><span class='op'>$</span><span class='va'>medv</span><span class='op'>)</span>
 
 <span class='co'># Empirical approach</span>
-<span class='kw'>explain1</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span>(<span class='kw'>x_test</span>, <span class='kw'>explainer</span>, approach = <span class='st'>"empirical"</span>, prediction_zero = <span class='kw'>p</span>, n_samples = <span class='fl'>1e2</span>)
+<span class='va'>explain1</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span><span class='op'>(</span><span class='va'>x_test</span>, <span class='va'>explainer</span>, approach <span class='op'>=</span> <span class='st'>"empirical"</span>, prediction_zero <span class='op'>=</span> <span class='va'>p</span>, n_samples <span class='op'>=</span> <span class='fl'>1e2</span><span class='op'>)</span>
 
 <span class='co'># Gaussian approach</span>
-<span class='kw'>explain2</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span>(<span class='kw'>x_test</span>, <span class='kw'>explainer</span>, approach = <span class='st'>"gaussian"</span>, prediction_zero = <span class='kw'>p</span>, n_samples = <span class='fl'>1e2</span>)
+<span class='va'>explain2</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span><span class='op'>(</span><span class='va'>x_test</span>, <span class='va'>explainer</span>, approach <span class='op'>=</span> <span class='st'>"gaussian"</span>, prediction_zero <span class='op'>=</span> <span class='va'>p</span>, n_samples <span class='op'>=</span> <span class='fl'>1e2</span><span class='op'>)</span>
 
 <span class='co'># Gaussian copula approach</span>
-<span class='kw'>explain3</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span>(<span class='kw'>x_test</span>, <span class='kw'>explainer</span>, approach = <span class='st'>"copula"</span>, prediction_zero = <span class='kw'>p</span>, n_samples = <span class='fl'>1e2</span>)
+<span class='va'>explain3</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span><span class='op'>(</span><span class='va'>x_test</span>, <span class='va'>explainer</span>, approach <span class='op'>=</span> <span class='st'>"copula"</span>, prediction_zero <span class='op'>=</span> <span class='va'>p</span>, n_samples <span class='op'>=</span> <span class='fl'>1e2</span><span class='op'>)</span>
 
 <span class='co'># Combined approach</span>
-<span class='kw'>approach</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"gaussian"</span>, <span class='st'>"empirical"</span>, <span class='st'>"empirical"</span>)
-<span class='kw'>explain4</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span>(<span class='kw'>x_test</span>, <span class='kw'>explainer</span>, approach = <span class='kw'>approach</span>, prediction_zero = <span class='kw'>p</span>, n_samples = <span class='fl'>1e2</span>)
+<span class='va'>approach</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gaussian"</span>, <span class='st'>"gaussian"</span>, <span class='st'>"empirical"</span>, <span class='st'>"empirical"</span><span class='op'>)</span>
+<span class='va'>explain4</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span><span class='op'>(</span><span class='va'>x_test</span>, <span class='va'>explainer</span>, approach <span class='op'>=</span> <span class='va'>approach</span>, prediction_zero <span class='op'>=</span> <span class='va'>p</span>, n_samples <span class='op'>=</span> <span class='fl'>1e2</span><span class='op'>)</span>
 
 <span class='co'># Print the Shapley values</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>explain1</span><span class='op'>$</span><span class='kw'>dt</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>explain1</span><span class='op'>$</span><span class='va'>dt</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;        none    lstat        rm       dis       indus
 #&gt; 1: 22.55229 4.953864  4.244888 0.8827999 -0.78929796
 #&gt; 2: 22.55229 4.325994  2.696331 1.0856817 -0.42178545
 #&gt; 3: 22.55229 3.823326 -1.892161 1.1417940  0.08801935</div><div class='input'>
 <span class='co'># Plot the results</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>explain1</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>explain1</span><span class='op'>)</span>
 </div><div class='img'><img src='explain-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -344,11 +338,11 @@ when conditioning on <code>i</code> features.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nikolai Sellereite, Martin Jullum, Norsk Regnesentral.</p>
+  <p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
