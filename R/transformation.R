@@ -8,12 +8,6 @@
 #'
 #' @keywords internal
 #'
-#' @examples
-#' zx <- rnorm(50)
-#' n_z <- 30
-#' x <- shapr:::inv_gaussian_transform(zx, n_z)
-#' str(x)
-#'
 #' @author Martin Jullum
 inv_gaussian_transform <- function(zx, n_z) {
   if (n_z >= length(zx)) stop("n_z should be less than length(zx)")
@@ -35,12 +29,6 @@ inv_gaussian_transform <- function(zx, n_z) {
 #'
 #' @keywords internal
 #'
-#' @examples
-#' yx <- rnorm(50)
-#' n_y <- 30
-#' x <- shapr:::gaussian_transform_separate(yx, n_y)
-#' str(x)
-#'
 #' @author Martin Jullum
 gaussian_transform_separate <- function(yx, n_y) {
   if (n_y >= length(yx)) stop("n_y should be less than length(yx)")
@@ -60,10 +48,6 @@ gaussian_transform_separate <- function(yx, n_y) {
 #' @return Numeric vector of length \code{length(x)}
 #'
 #' @keywords internal
-#'
-#' @examples
-#' y <- rnorm(50)
-#' x <- shapr:::gaussian_transform(y)
 #'
 #' @author Martin Jullum
 gaussian_transform <- function(x) {

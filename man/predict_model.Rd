@@ -57,9 +57,22 @@ The returned object \code{p} always satisfies the following properties:
 If you have a binary classification model we'll always return the probability prediction
 for a single class.
 
-For more details on how to use a custom model see the package vignette:
+For more details on how to use a custom model see the package vignette: \cr
 \code{vignette("understanding_shapr", package = "shapr")}
+}
+\examples{
+# Load example data
+data("Boston", package = "MASS")
+# Split data into test- and training data
+x_train <- head(Boston, -3)
+x_test <- tail(Boston, 3)
+# Fit a linear model
+model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+
+# Predicting for a model with a standardized format
+predict_model(x = model, newdata = x_test)
 }
 \author{
 Martin Jullum
 }
+\keyword{internal}

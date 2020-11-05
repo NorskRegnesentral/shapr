@@ -15,11 +15,6 @@ Numeric vector of length \code{length(x)}
 \description{
 Transforms a sample to standardized normal distribution
 }
-\examples{
-y <- rnorm(50)
-x <- shapr:::gaussian_transform(y)
-
-}
 \author{
 Martin Jullum
 }

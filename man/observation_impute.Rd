@@ -35,42 +35,6 @@ data.table
 \description{
 Generate permutations of training data using test observations
 }
-\examples{
-# Setup
-n <- 20 # Sample size of training data
-m <- 2 # Number of features
-sigma <- cov(matrix(MASS::mvrnorm(m * n, 0, 1), nrow = n))
-
-# Create training- and test data
-x_train <- as.matrix(MASS::mvrnorm(n, mu = rep(0, m), Sigma = sigma), ncol = m)
-x_test <- t(as.matrix(MASS::mvrnorm(1, mu = rep(0, m), sigma)))
-colnames(x_train) <- colnames(x_test) <- paste0("X", seq(m))
-
-# Binary matrix which represents the feature combinations
-S <- matrix(c(1, 0, 0, 1), nrow = m)
-
-# Kernel matrix
-W_kernel <- matrix(rnorm(n * ncol(S), mean = 1 / n, sd = 1 / n^2), nrow = n)
-
-# Generate permutations of training data using test observations
-r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
-str(r)
-
-# Create training- and test data
-x_train <- as.matrix(MASS::mvrnorm(n, mu = rep(0, m), Sigma = sigma), ncol = m)
-x_test <- t(as.matrix(MASS::mvrnorm(1, mu = rep(0, m), sigma)))
-colnames(x_train) <- colnames(x_test) <- paste0("X", seq(m))
-
-# Binary matrix which represents the feature combinations
-S <- matrix(c(1, 0, 0, 1), nrow = m)
-
-# Kernel matrix
-W_kernel <- matrix(rnorm(n * ncol(S), mean = 1 / n, sd = 1 / n^2), nrow = n)
-
-# Generate permutations of training data using test observations
-r <- shapr:::observation_impute(W_kernel, S, x_train, x_test)
-str(r)
-}
 \author{
 Nikolai Sellereite
 }

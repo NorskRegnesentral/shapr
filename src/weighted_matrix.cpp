@@ -8,10 +8,11 @@ using namespace Rcpp;
 //' @param m Integer. Number of features
 //' @param n Integer. Number of combinations
 //' @param w Numeric vector of length \code{n}, i.e. \code{w[i]} equals
-//' the shapley weight of feature combination \code{i}, represented by
+//' the Shapley weight of feature combination \code{i}, represented by
 //' \code{features[[i]]}.
 //'
 //' @export
+//' @keywords internal
 //'
 //' @return Matrix of dimension n x m + 1
 //' @author Nikolai Sellereite
@@ -79,6 +80,7 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
 //' @param m Positive integer. Total number of features
 //'
 //' @export
+//' @keywords internal
 //'
 //' @return Matrix
 //' @author Nikolai Sellereite

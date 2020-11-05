@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version-last-release/shapr)](https://cran.r-project.org/package=shapr)
+[![CRAN\_Downloads\_Badge](https://cranlogs.r-pkg.org/badges/grand-total/shapr)](https://cran.r-project.org/package=shapr)
 [![R build
 status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle:
@@ -91,6 +93,12 @@ is inspired by Pedersen and Benesty (2019).
 
 ## Installation
 
+To install the current stable release from CRAN, use
+
+``` r
+install.packages("shapr")
+```
+
 To install the current development version, use
 
 ``` r
@@ -169,7 +177,7 @@ explanation <- explain(
 )
 
 # Printing the Shapley values for the test data.
-# For more information about the interpretation of the values in the table, see ?shapr::explain.
+# For more information about the interpretation of the values in the table, see ?shapr::explain.  
 print(explanation$dt)
 #>      none     lstat         rm       dis      indus
 #> 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644
@@ -188,17 +196,19 @@ plot(explanation)
 ## Contribution
 
 All feedback and suggestions are very welcome. Details on how to
-contribute can be found [here](./.github/CONTRIBUTING.md). If you have
-any questions or comments, feel free to open an issue
+contribute can be found
+[here](https://norskregnesentral.github.io/shapr/CONTRIBUTING.html). If
+you have any questions or comments, feel free to open an issue
 [here](https://github.com/NorskRegnesentral/shapr/issues).
 
 Please note that the ‘shapr’ project is released with a [Contributor
-Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
-you agree to abide by its terms.
+Code of
+Conduct](https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references hanging-indent">
+<div id="refs" class="references">
 
 <div id="ref-aas2019explaining">
 

@@ -18,7 +18,8 @@ test_that("Basic test functions in shapley.R", {
   # Prepare the data for explanation
   explainer <- shapr(x_train, model)
 
-  testthat::expect_known_value(explainer, file = "test_objects/shapley_explainer_obj.rds")
+  expect_known_value(explainer, file = "test_objects/shapley_explainer_obj.rds",
+                     update = FALSE)
 })
 
 

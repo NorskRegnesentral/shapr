@@ -19,6 +19,8 @@ knitr::opts_chunk$set(
 # shapr <img src="man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
 
 <!-- badges: start -->
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-last-release/shapr)](https://cran.r-project.org/package=shapr)
+[![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/grand-total/shapr)](https://cran.r-project.org/package=shapr)
 [![R build status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -67,6 +69,12 @@ Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease 
 The application programming interface (API) of `shapr` is inspired by @lime_api.
 
 ## Installation
+
+To install the current stable release from CRAN, use
+
+```{r, eval = FALSE}
+install.packages("shapr")
+```
 
 To install the current development version, use
 
@@ -146,11 +154,11 @@ plot(explanation)
 ## Contribution
 
 All feedback and suggestions are very welcome. Details on how to contribute can be found 
-[here](./.github/CONTRIBUTING.md). If you have any questions or comments, feel
+[here](https://norskregnesentral.github.io/shapr/CONTRIBUTING.html). If you have any questions or comments, feel
 free to open an issue [here](https://github.com/NorskRegnesentral/shapr/issues). 
 
 Please note that the 'shapr' project is released with a
-[Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+[Contributor Code of Conduct](https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
 
 ## References

@@ -33,20 +33,6 @@ data.table
 \description{
 Sample conditional variables using the Gaussian copula approach
 }
-\examples{
-m <- 10
-n <- 40
-n_samples <- 50
-mu <- rep(1, m)
-cov_mat <- cov(matrix(rnorm(n * m), n, m))
-x_train <- MASS::mvrnorm(n, mu, cov_mat)
-x_test <- MASS::mvrnorm(1, mu, cov_mat)
-x_test_gaussian <- MASS::mvrnorm(1, mu, cov_mat)
-index_given <- 3:6
-ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat, m = m,
-                             x_test_gaussian, x_train, x_test)
-
-}
 \author{
 Martin Jullum
 }

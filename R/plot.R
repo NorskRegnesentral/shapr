@@ -19,6 +19,32 @@
 #' @return ggplot object with plots of the Shapley value explanations
 #'
 #' @export
+#' @examples
+#' #' # Load example data
+#' data("Boston", package = "MASS")
+#'
+#' # Split data into test- and training data
+#' x_train <- head(Boston, -3)
+#' x_test <- tail(Boston, 3)
+#'
+#' # Fit a linear model
+#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#'
+#' # Create an explainer object
+#' explainer <- shapr(x_train, model)
+#'
+#' # Explain predictions
+#' p <- mean(x_train$medv)
+#'
+#' # Empirical approach
+#'explanation <- explain(x_test,
+#'                       explainer,
+#'                       approach = "empirical",
+#'                       prediction_zero = p,
+#'                       n_samples = 1e2)
+#'
+#' # Plot the explantion (this function)
+#' plot(explanation)
 #'
 #' @author Martin Jullum
 plot.shapr <- function(x,

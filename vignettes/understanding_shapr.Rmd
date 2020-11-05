@@ -4,7 +4,7 @@ author: "Camilla Lingjærde, Martin Jullum & Nikolai Sellereite"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 vignette: >
-  %\VignetteIndexEntry{Understanding shapr}
+  %\VignetteIndexEntry{`shapr`: Explaining individual machine learning predictions with Shapley values}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -421,7 +421,7 @@ explanation_ctree <- explain(
 ## Main arguments in `shapr`
 
 When using `shapr`, the default behavior is to use all feature combinations in the Shapley 
-formula. Kernel SHAPs sampling based approach may be used by specifying `n_combinations`, which 
+formula. Kernel SHAP's sampling based approach may be used by specifying `n_combinations`, which 
 is the number of feature combinations to sample. If not specified, the exact method is used. 
 The computation time grows approximately exponentially with the number of samples. The training data 
 and the model whose predictions we wish to explain must be provided through 

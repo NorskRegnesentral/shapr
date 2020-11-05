@@ -40,3 +40,15 @@ return either \code{"regression"} or \code{"classification"}.
 See \code{\link{predict_model}} for more information about
 what type of models \code{shapr} currently support.
 }
+\examples{
+# Load example data
+data("Boston", package = "MASS")
+# Split data into test- and training data
+x_train <- head(Boston, -3)
+# Fit a linear model
+model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+
+# Writing out the defined model type of the object
+model_type(x = model)
+}
+\keyword{internal}

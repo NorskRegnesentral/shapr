@@ -12,19 +12,6 @@
 #'
 #' @keywords internal
 #'
-#' @examples
-#' m <- 10
-#' n <- 40
-#' n_samples <- 50
-#' mu <- rep(1, m)
-#' cov_mat <- cov(matrix(rnorm(n * m), n, m))
-#' x_train <- MASS::mvrnorm(n, mu, cov_mat)
-#' x_test <- MASS::mvrnorm(1, mu, cov_mat)
-#' x_test_gaussian <- MASS::mvrnorm(1, mu, cov_mat)
-#' index_given <- 3:6
-#' ret <- shapr:::sample_copula(index_given, n_samples, mu, cov_mat, m = m,
-#'                              x_test_gaussian, x_train, x_test)
-#'
 #' @author Martin Jullum
 sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_test_gaussian, x_train, x_test) {
   # Handles the unconditional and full conditional separtely when predicting
@@ -66,17 +53,6 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_test_gaussia
 #' @return data.table
 #'
 #' @keywords internal
-#'
-#' @examples
-#' m <- 10
-#' n_samples <- 50
-#' mu <- rep(1, m)
-#' cov_mat <- cov(matrix(rnorm(n_samples * m), n_samples, m))
-#' x_test <- matrix(MASS::mvrnorm(1, mu, cov_mat), nrow = 1)
-#' cnms <- paste0("x", seq(m))
-#' colnames(x_test) <- cnms
-#' index_given <- c(4, 7)
-#' r <- shapr:::sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
 #'
 #' @author Martin Jullum
 sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_test) {
@@ -131,14 +107,6 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_test) {
 #' @return data.frame
 #'
 #' @keywords internal
-#'
-#' @examples
-#' ntrain <- 10
-#' ntest <- 10
-#' nsamples <- 7
-#' joint_sampling <- FALSE
-#' cnms <- c("samp_train", "samp_test")
-#' x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 #'
 #' @author Martin Jullum
 sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) {

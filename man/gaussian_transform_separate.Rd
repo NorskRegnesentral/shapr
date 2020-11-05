@@ -18,13 +18,6 @@ Vector of back-transformed Gaussian data
 \description{
 Transforms new data to standardized normal (dimension 1) based on other data transformations
 }
-\examples{
-yx <- rnorm(50)
-n_y <- 30
-x <- shapr:::gaussian_transform_separate(yx, n_y)
-str(x)
-
-}
 \author{
 Martin Jullum
 }

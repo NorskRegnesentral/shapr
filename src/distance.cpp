@@ -13,6 +13,7 @@ using namespace Rcpp;
 //' @param Xtest_mat Matrix
 //'
 //' @export
+//' @keywords internal
 //'
 //' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 //' @author Martin Jullum
@@ -59,7 +60,7 @@ arma::cube mahalanobis_distance_cpp(Rcpp::List featureList,arma::mat Xtrain_mat,
         cholDec = trimatl(chol(mcov0).t());
         vec D = cholDec.diag();
         if(S_scale_dist){
-            S_scale = 1.0/pow(theseFeatures.n_elem,2);
+            S_scale = 1.0/pow(theseFeatures.n_elem,2.0);
        } else {
             S_scale = 1.0;
         }

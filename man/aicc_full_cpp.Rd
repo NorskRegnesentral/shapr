@@ -29,3 +29,4 @@ AICc formula for several sets, alternative definition
 \author{
 Martin Jullum
 }
+\keyword{internal}

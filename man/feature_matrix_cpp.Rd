@@ -20,3 +20,4 @@ Get feature matrix
 \author{
 Nikolai Sellereite
 }
+\keyword{internal}

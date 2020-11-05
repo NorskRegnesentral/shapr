@@ -20,3 +20,4 @@ correction term with trace_input in AICc formula
 \author{
 Martin Jullum
 }
+\keyword{internal}

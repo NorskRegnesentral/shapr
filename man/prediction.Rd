@@ -43,3 +43,4 @@ setting \code{exact = TRUE} in \code{\link{shapr}}, the following properties sho
 \author{
 Nikolai Sellereite
 }
+\keyword{internal}
