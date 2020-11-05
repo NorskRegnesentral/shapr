@@ -7,6 +7,8 @@
 #'
 #' @importFrom stats predict
 #'
+#' @importFrom stats as.formula
+#'
 #' @importFrom Rcpp sourceCpp
 #'
 #' @keywords internal
