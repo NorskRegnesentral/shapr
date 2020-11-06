@@ -117,7 +117,12 @@ predict_model.xgb.Booster <- function(x, newdata) {
   # Test model type
   model_type <- model_type(x)
 
-  predict(x, as.matrix(newdata))
+  if (model_type %in% c("cat_regression","cat_classification") ) {
+    newdata_dummy <- apply_dummies(obj = x$dummylist, newdata = newdata)
+    predict(x, as.matrix(newdata_dummy))
+  } else {
+    predict(x, as.matrix(newdata))
+  }
 }
 
 #' @rdname predict_model
@@ -265,8 +270,8 @@ model_type.xgb.Booster <- function(x) {
 
   ifelse(
     !is.null(x$params$objective) && x$params$objective == "binary:logistic",
-    "classification",
-    "regression"
+    ifelse(is.null(x$dummylist), "classification", "cat_classification"),
+    ifelse(is.null(x$dummylist), "regression", "cat_regression")
   )
 }
 
@@ -392,7 +397,11 @@ features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
 
   nms <- x$feature_names
 
-  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
+  if (!is.null(x[["dummylist"]])) {
+    return(cnms)
+  } else {
+    if (!all(nms %in% cnms)) error_feature_labels()
+  }
 
   return(nms)
 }
