@@ -433,7 +433,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
                                                prediction_zero, mincriterion, ...) {
 
   # Get indices of combinations
-  l <- get_list_mincriterion(explainer$X$n_features, mincriterion)
+  l <- get_list_ctree_mincrit(explainer$X$n_features, mincriterion)
   explainer$return <- TRUE # this is important so that you don't use prediction() twice
   explainer$x_test <- as.matrix(x)
 
@@ -451,7 +451,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
 }
 
 #' @keywords internal
-get_list_mincriterion <- function(n_features, mincriterion) {
+get_list_ctree_mincrit <- function(n_features, mincriterion) {
   l <- list()
 
   for (k in 1:length(unique(mincriterion))) {
