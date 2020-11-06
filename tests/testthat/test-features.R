@@ -206,6 +206,12 @@ test_that("Test make_dummies", {
   colnames(x_train3) <- c("", "X2", "X3", "X4")
   # this doesn't currently throw an error - should it?
   expect_type(make_dummies(data = rbind(x_train3)), "list")
+
+  # What if data has no column names
+  x_train4 <- x_train
+  colnames(x_train4) <- NULL
+  expect_error(make_dummies(data = x_train4))
+
 })
 
 test_that("Test apply_dummies", {
@@ -238,12 +244,15 @@ test_that("Test apply_dummies", {
 
   # What if you re-arrange the columns in x_train?
   x_train0 <- x_train[, c(2, 1, 4, 3)]
+  x_train0[] <- lapply(x_train0, function(x) if(is.factor(x)) factor(x) else x) # Drop unused levels
+
   # apply_dummies will re-arrange the columns to match x_train in dummylist
   diff_column_placements <- apply_dummies(dummylist, newdata = x_train0)
   expect_equal(colnames(diff_column_placements), colnames(x_train_dummies))
 
   # What if you put in less features then the original feature vector?
   x_train1 <- x_train[, c(2, 1)]
+  x_train1[] <- lapply(x_train1, function(x) if(is.factor(x)) factor(x) else x) # Drop unused levels
   expect_error(apply_dummies(dummylist, newdata = x_train1))
 
   # What if you change the feature types?
@@ -252,6 +261,7 @@ test_that("Test apply_dummies", {
 
   # What if you add a feature?
   x_train2 <- cbind(x_train[, c(1, 2)], new_var = x_train[, 2], x_train[, c(3, 4)])
+  x_train2[] <- lapply(x_train2, function(x) if(is.factor(x)) factor(x) else x) # Drop unused levels
   # will not throw an error - do we want it to throw an error?
   a_new_var <- apply_dummies(dummylist, newdata = x_train2)
   expect_equal(ncol(a_new_var), ncol(x_train_dummies))
