@@ -258,3 +258,95 @@ test_that("Test apply_dummies", {
   expect_equal(ncol(a_new_var), ncol(x_train_dummies))
 
 })
+
+test_that("Test make_dummies", {
+
+  data("Boston", package = "MASS")
+  x_var <- c("lstat", "chas", "rad", "indus")
+  y_var <- "medv"
+
+  # convert to factors
+  Boston$rad <- as.factor(Boston$rad)
+  Boston$chas <- as.factor(Boston$chas)
+  x_train <- Boston[3:4, x_var]
+  y_train <- Boston[3:4, y_var]
+  x_test <- Boston[1:2, x_var]
+
+  factor_feat <- sapply(x_train, is.factor)
+  nb_factor_feat <- sum(factor_feat)
+
+  dummylist <- make_dummies(data = rbind(x_train, x_test))
+
+  # Tests
+  expect_type(dummylist, "list")
+
+  expect_equal(length(dummylist$contrasts_list), nb_factor_feat)
+
+  expect_equal(length(dummylist$features), ncol(x_train))
+
+  expect_equal(length(dummylist$factor_features), nb_factor_feat)
+
+  expect_equal(ncol(dummylist$contrasts_list$chas), length(levels(Boston$chas)))
+  expect_equal(ncol(dummylist$contrasts_list$rad), length(levels(Boston$rad)))
+
+  # What if you have two variables with the same name?
+  x_train3 <- x_train
+  colnames(x_train3) <- c("X1", "X2", "X3", "X3")
+  expect_error(make_dummies(data = rbind(x_train3)))
+
+  # What if one variables has an empty name?
+  x_train3 <- x_train
+  colnames(x_train3) <- c("", "X2", "X3", "X4")
+  # this doesn't currently throw an error - should it?
+  expect_type(make_dummies(data = rbind(x_train3)), "list")
+})
+
+test_that("Test apply_dummies", {
+
+  data("Boston", package = "MASS")
+  x_var <- c("lstat", "chas", "rad", "indus")
+  y_var <- "medv"
+
+  # convert to factors
+  Boston$rad <- as.factor(Boston$rad)
+  Boston$chas <- as.factor(Boston$chas)
+  x_train <- Boston[3:4, x_var]
+  y_train <- Boston[3:4, y_var]
+  x_test <- Boston[1:2, x_var]
+
+  numeric_feat <- !sapply(x_train, is.factor)
+  nb_numeric_feat <- sum(numeric_feat)
+
+  dummylist <- make_dummies(data = rbind(x_train, x_test))
+  x_train_dummies <- apply_dummies(obj = dummylist, newdata = x_train)
+
+
+  # Tests
+  expect_type(x_train_dummies, "double")
+
+  expect_equal(ncol(x_train_dummies),
+               nb_numeric_feat +
+                 length(dummylist$factor_list$chas) +
+                 length(dummylist$factor_list$rad))
+
+  # What if you re-arrange the columns in x_train?
+  x_train0 <- x_train[, c(2, 1, 4, 3)]
+  # apply_dummies will re-arrange the columns to match x_train in dummylist
+  diff_column_placements <- apply_dummies(dummylist, newdata = x_train0)
+  expect_equal(colnames(diff_column_placements), colnames(x_train_dummies))
+
+  # What if you put in less features then the original feature vector?
+  x_train1 <- x_train[, c(2, 1)]
+  expect_error(apply_dummies(dummylist, newdata = x_train1))
+
+  # What if you change the feature types?
+  x_train_num <- sapply(x_train, as.numeric)
+  expect_error(apply_dummies(dummylist, newdata = x_train_num))
+
+  # What if you add a feature?
+  x_train2 <- cbind(x_train[, c(1, 2)], new_var = x_train[, 2], x_train[, c(3, 4)])
+  # will not throw an error - do we want it to throw an error?
+  a_new_var <- apply_dummies(dummylist, newdata = x_train2)
+  expect_equal(ncol(a_new_var), ncol(x_train_dummies))
+
+})
