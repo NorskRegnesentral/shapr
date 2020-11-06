@@ -3,7 +3,7 @@
 S3method(explain,combined)
 S3method(explain,copula)
 S3method(explain,ctree)
-S3method(explain,ctree_combined_mincriteron)
+S3method(explain,ctree_combined_mincriterion)
 S3method(explain,empirical)
 S3method(explain,gaussian)
 S3method(features,gam)
