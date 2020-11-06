@@ -137,7 +137,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   if (length(approach) > 1) {
     class(x) <- "combined"
   } else if (length(extras$mincriterion) > 1) {
-    class(x) <- "ctree_combined_mincriterion"
+    class(x) <- "ctree_comb_mincrit"
   } else {
     class(x) <- approach
   }
