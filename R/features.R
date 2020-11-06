@@ -208,7 +208,7 @@ helper_feature <- function(m, feature_sample) {
 make_dummies <- function(data) {
 
   contrasts <- features <- factor_features <-  NULL # due to NSE notes in R CMD check
-  if(is.null(colnames(data))){
+  if (is.null(colnames(data))) {
     stop("data must have column names.")
   }
   data <- data.table::as.data.table(as.data.frame(data, stringsAsFactors = FALSE))
@@ -279,7 +279,7 @@ apply_dummies <- function(obj, newdata) {
   if (is.null(newdata)) {
     stop("newdata needs to be included.")
   }
-  if(is.null(colnames(newdata))){
+  if (is.null(colnames(newdata))) {
     stop("newdata must have column names.")
   }
   newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))

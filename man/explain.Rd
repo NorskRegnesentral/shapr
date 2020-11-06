@@ -7,7 +7,7 @@
 \alias{explain.copula}
 \alias{explain.ctree}
 \alias{explain.combined}
-\alias{explain.ctree_combined_mincriterion}
+\alias{explain.ctree_comb_mincrit}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(x, explainer, approach, prediction_zero, ...)
@@ -60,7 +60,7 @@ explain(x, explainer, approach, prediction_zero, ...)
   ...
 )
 
-\method{explain}{ctree_combined_mincriterion}(x, explainer, approach, prediction_zero, mincriterion, ...)
+\method{explain}{ctree_comb_mincrit}(x, explainer, approach, prediction_zero, mincriterion, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose

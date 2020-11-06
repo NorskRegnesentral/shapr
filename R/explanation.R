@@ -429,7 +429,7 @@ explainer_x_test_dt <- function(x_test, feature_labels) {
 #' @name explain
 #'
 #' @export
-explain.ctree_combined_mincriterion <- function(x, explainer, approach,
+explain.ctree_comb_mincrit <- function(x, explainer, approach,
                                                prediction_zero, mincriterion, ...) {
 
   # Get indices of combinations
