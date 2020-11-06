@@ -117,7 +117,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
   # Test model type
   model_type <- model_type(x)
 
-  if (model_type %in% c("cat_regression", "cat_classification")) {
+  if (model_type %in% c("cat_regression","cat_classification") ) {
     newdata_dummy <- apply_dummies(obj = x$dummylist, newdata = newdata)
     predict(x, as.matrix(newdata_dummy))
   } else {
