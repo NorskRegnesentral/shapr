@@ -317,14 +317,14 @@ sample_ctree <- function(tree,
 #' minsplit <- 20
 #' minbucket <- 7
 #' sample <- TRUE
-#' simulateAllTrees(given_ind = given_ind, x_train = x_train,
+#' create_ctree(given_ind = given_ind, x_train = x_train,
 #' mincriterion = mincriterion, minsplit = minsplit,
 #' minbucket = minbucket, use_partykit = "on_error")
 #'
 #' @author Annabelle Redelmeier, Martin Jullum
 #'
 #' @export
-simulateAllTrees <- function(given_ind,
+create_ctree <- function(given_ind,
                              x_train,
                              mincriterion,
                              minsplit,

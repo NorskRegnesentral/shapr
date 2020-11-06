@@ -251,7 +251,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' tree building and tree prediction. Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
 #' work on Windows systems.
 #'
-#' @param  mc_cores_simulateAllTrees Integer. Same as \code{mc_cores}, but specific for the tree building function
+#' @param  mc_cores_create_ctree Integer. Same as \code{mc_cores}, but specific for the tree building function
 #' #' Defaults to \code{mc_cores}.
 #'
 #' @param  mc_cores_sample_ctree Integer. Same as \code{mc_cores}, but specific for the tree building prediction
@@ -261,7 +261,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' @rdname prepare_data
 #' @export
 prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
-                               mc_cores = 1, mc_cores_simulateAllTrees = mc_cores,
+                               mc_cores = 1, mc_cores_create_ctree = mc_cores,
                                mc_cores_sample_ctree = mc_cores, ...) {
 
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
@@ -280,12 +280,12 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   # this is a list of all 2^M trees (where number of features = M)
   all_trees <- parallel::mclapply(
     X = features,
-    FUN = simulateAllTrees,
+    FUN = create_ctree,
     x_train = x$x_train,
     mincriterion = x$mincriterion,
     minsplit = x$minsplit,
     minbucket = x$minbucket,
-    mc.cores = mc_cores_simulateAllTrees,
+    mc.cores = mc_cores_create_ctree,
     mc.set.seed = FALSE
   )
 

@@ -29,7 +29,7 @@ prepare_data(x, ...)
   n_samples = 1000,
   index_features = NULL,
   mc_cores = 1,
-  mc_cores_simulateAllTrees = mc_cores,
+  mc_cores_create_ctree = mc_cores,
   mc_cores_sample_ctree = mc_cores,
   ...
 )
@@ -54,7 +54,7 @@ used for different numbers of conditoned features, this will be a list with the 
 tree building and tree prediction. Defaults to 1. Uses parallel::mclapply which relies on forking, i.e. does not
 work on Windows systems.}
 
-\item{mc_cores_simulateAllTrees}{Integer. Same as \code{mc_cores}, but specific for the tree building function
+\item{mc_cores_create_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building function
 #' Defaults to \code{mc_cores}.}
 
 \item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction

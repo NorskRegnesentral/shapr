@@ -142,7 +142,7 @@ test_that("test sample_copula", {
   expect_true(data.table::is.data.table(res2))
 })
 
-test_that("test simulateAllTrees", {
+test_that("test create_ctree", {
 
   # Example 1-----------
   m <- 10
@@ -161,7 +161,7 @@ test_that("test simulateAllTrees", {
   sample <- TRUE
 
   # build the tree
-  r <- simulateAllTrees(given_ind = given_ind,
+  r <- create_ctree(given_ind = given_ind,
                         x_train = x_train,
                         mincriterion = mincriterion,
                         minsplit = minsplit,
@@ -198,7 +198,7 @@ test_that("test simulateAllTrees", {
   sample <- TRUE
 
   # build the tree
-  r <- simulateAllTrees(given_ind = given_ind,
+  r <- create_ctree(given_ind = given_ind,
                         x_train = x_train,
                         mincriterion = mincriterion,
                         minsplit = minsplit,

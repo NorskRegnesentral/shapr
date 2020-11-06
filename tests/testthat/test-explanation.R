@@ -211,22 +211,22 @@ test_that("Test functions in explanation.R", {
     expect_equal(
       explain_base_nosample,
       explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
-              mc_cores_simulateAllTrees = 1, mc_cores_sample_ctree = multicore)
+              mc_cores_create_ctree = 1, mc_cores_sample_ctree = multicore)
     )
 
     expect_equal(
       explain_base_nosample,
       explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
-              mc_cores_simulateAllTrees = multicore, mc_cores_sample_ctree = 1)
+              mc_cores_create_ctree = multicore, mc_cores_sample_ctree = 1)
     )
 
     explain_base_sample <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE)
 
-    # Seed consistent when only paralellizing simulateAllTrees, and not sample_ctree
+    # Seed consistent when only paralellizing create_ctree, and not sample_ctree
     expect_equal(
       explain_base_sample,
       explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
-              mc_cores_simulateAllTrees = multicore, mc_cores_sample_ctree = 1)
+              mc_cores_create_ctree = multicore, mc_cores_sample_ctree = 1)
     )
 
     # Seed consistent, when run twice with same seed
