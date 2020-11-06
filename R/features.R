@@ -171,3 +171,142 @@ helper_feature <- function(m, feature_sample) {
 
   return(dt)
 }
+
+#' Initiate the making of dummy variables
+#'
+#' @param data data.table or data.frame. Includes all the features (both factors and possibly others).
+#'
+#' @return A list that contains the following entries:
+#' \describe{
+#' \item{features}{Vector. Contains the names of all the features in \code{data}.}
+#' \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
+#' \item{factor_list}{List. Contains each factor and its vector of levels.}
+#' \item{contrasts_list}{List. Contains all the contrasts of the factors.}
+#' }
+#'
+#' @export
+#'
+#' @author Annabelle Redelmeier
+#'
+#' @examples
+#'
+#' data("Boston", package = "MASS")
+#'
+#' x_var <- c("lstat", "chas", "rad", "indus")
+#' y_var <- "medv"
+#'
+#' # convert to factors
+#' Boston$rad = as.factor(Boston$rad)
+#' Boston$chas = as.factor(Boston$chas)
+#'
+#' x_train <- Boston[-1:-6, x_var]
+#' y_train <- Boston[-1:-6, y_var]
+#' x_test <- Boston[1:6, x_var]
+#'
+#' dummylist <- make_dummies(data = rbind(x_train, x_test))
+#'
+make_dummies <- function(data) {
+
+  contrasts <- features <- factor_features <-  NULL # due to NSE notes in R CMD check
+  if(is.null(colnames(data))){
+    stop("data must have column names.")
+  }
+  data <- data.table::as.data.table(as.data.frame(data, stringsAsFactors = FALSE))
+
+
+  features <- colnames(data)
+  if (length(unique(features)) < length(features)) {
+    stop("Features must have unique names.")
+  }
+  p <- sapply(data[, features, with = FALSE], is.factor)
+  p_sum <- sum(p)
+
+  if (p_sum > 0) {
+    factor_features <- features[p]
+    factor_list <- lapply(data[, factor_features, with = FALSE], levels)
+
+  } else {
+    factor_features <- NULL
+    factor_list <- NULL
+  }
+  contrasts_list <- lapply(data[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
+
+
+  r <- list(data = data,
+            features = features,
+            factor_features = factor_features,
+            factor_list = factor_list,
+            contrasts_list = contrasts_list)
+  return(r)
+}
+
+#' Make dummy variables
+#'
+#' @param obj List. Output of \code{make_dummies}.
+#'
+#' @param newdata data.table or data.frame. New data (features) that has the same
+#' features as the data used in \code{make_dummies}.
+#'
+#' @return A data.frame containing all of the factors in \code{new_data} as
+#' one-hot encoded variables.
+#'
+#' @export
+#'
+#' @author Annabelle Redelmeier
+#'
+#' @examples
+#'
+#' data("Boston", package = "MASS")
+#'
+#' x_var <- c("lstat", "chas", "rad", "indus")
+#' y_var <- "medv"
+#'
+#' # convert to factors
+#' Boston$rad = as.factor(Boston$rad)
+#' Boston$chas = as.factor(Boston$chas)
+#'
+#' x_train <- Boston[-1:-6, x_var]
+#' y_train <- Boston[-1:-6, y_var]
+#' x_test <- Boston[1:6, x_var]
+#'
+#' dummylist <- make_dummies(data = rbind(x_train, x_test))
+#'
+#' x_train_dummies <- apply_dummies(obj = dummylist, newdata = x_train)
+#'
+apply_dummies <- function(obj, newdata) {
+
+  features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
+  if (is.null(newdata)) {
+    stop("newdata needs to be included.")
+  }
+  if(is.null(colnames(newdata))){
+    stop("newdata must have column names.")
+  }
+  newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
+
+
+  # check all features are in newdata
+  if (!all(obj$features %in% names(newdata))) {
+    stop("Some features missing from newdata.")
+  }
+
+  # check that all features have the correct data type
+  for (i in obj$features) {
+    if (class(newdata[[i]]) != class(obj$data[[i]])) {
+      stop("All features must have the same type as original data.")
+    }
+  }
+
+  features <- obj$features
+  newdata_sub <- newdata[, features, with = FALSE]
+
+  m <- model.frame(data = newdata_sub,
+                   #na.action = na.pass,
+                   xlev = obj$factor_list)
+
+  x <- model.matrix(object = ~. + 0,
+                    data = m,
+                    contrasts.arg = obj$contrasts_list)
+  return(x)
+}
+
