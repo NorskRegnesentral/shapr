@@ -137,7 +137,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   if (length(approach) > 1) {
     class(x) <- "combined"
   } else if (length(extras$mincriterion) > 1) {
-    class(x) <- "combinedparameters"
+    class(x) <- "ctree_combined_mincriteron"
   } else {
     class(x) <- approach
   }
@@ -429,11 +429,11 @@ explainer_x_test_dt <- function(x_test, feature_labels) {
 #' @name explain
 #'
 #' @export
-explain.combinedparameters <- function(x, explainer, approach,
-                                       prediction_zero, mincriterion, ...) {
+explain.ctree_combined_mincriteron <- function(x, explainer, approach,
+                                               prediction_zero, mincriterion, ...) {
 
   # Get indices of combinations
-  l <- get_list_parameters(explainer$X$n_features, mincriterion)
+  l <- get_list_mincriterion(explainer$X$n_features, mincriterion)
   explainer$return <- TRUE # this is important so that you don't use prediction() twice
   explainer$x_test <- as.matrix(x)
 
@@ -451,7 +451,7 @@ explain.combinedparameters <- function(x, explainer, approach,
 }
 
 #' @keywords internal
-get_list_parameters <- function(n_features, mincriterion) {
+get_list_mincriterion <- function(n_features, mincriterion) {
   l <- list()
 
   for (k in 1:length(unique(mincriterion))) {
