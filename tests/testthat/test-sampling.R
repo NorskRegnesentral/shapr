@@ -12,7 +12,7 @@ test_that("Test sample_combinations", {
   cnms <- c("samp_train", "samp_test")
 
   set.seed(123) # Ensuring consistency in every test
-  x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
+  x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
   # Tests -----------
   expect_true(is.data.frame(x))
@@ -32,7 +32,7 @@ test_that("Test sample_combinations", {
   nsamples <- 7
   joint_sampling <- FALSE
 
-  x <- shapr:::sample_combinations(ntrain, ntest, nsamples, joint_sampling)
+  x <- sample_combinations(ntrain, ntest, nsamples, joint_sampling)
 
   # Tests -----------
   expect_true(max(x$samp_train) <= ntrain)
@@ -64,7 +64,7 @@ test_that("test sample_gaussian", {
   cnms <- paste0("x", seq(m))
   colnames(x_test) <- cnms
   index_given <- c(4, 7)
-  r <- shapr:::sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
+  r <- sample_gaussian(index_given, n_samples, mu, cov_mat, m, x_test)
 
   # Test output format ------------------
   expect_true(data.table::is.data.table(r))
@@ -248,7 +248,7 @@ test_that("test sample_ctree", {
   tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
 
   # new
-  r <- shapr:::sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt,
+  r <- sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt,
                     x_train = x_train,
                     p = length(x_test), sample = TRUE)
 

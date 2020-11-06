@@ -1,7 +1,7 @@
 library(testthat)
 library(shapr)
 
-testthat::context("test-shapley.R")
+context("test-shapley.R")
 
 RNGversion(vstr = "3.5.0")
 

@@ -83,7 +83,6 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #' \code{approach = "empirical"}.
 #'
 #' @param ... Currently not used.
-
 #'
 #' @export
 #' @keywords internal
@@ -139,7 +138,6 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   }
   dt_l <- list()
   for (i in seq(n_col)) {
-
     D <- x$D[, i, ]
     h_optim_vec <- h_optim_mat[, i]
     h_optim_vec[is.na(h_optim_vec)] <- 1

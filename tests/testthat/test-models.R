@@ -92,7 +92,8 @@ test_that("Test predict_model (binary classification)", {
       label = as.integer(y_train) - 1,
       nrounds = 2,
       verbose = FALSE,
-      objective = "binary:logistic"
+      objective = "binary:logistic",
+      eval_metric = "error"
     )
   )
 
@@ -208,6 +209,7 @@ test_that("Test predict_model (multi-classification)", {
       nrounds = 2,
       verbose = FALSE,
       objective = "multi:softprob",
+      eval_metric = "merror",
       num_class = 3
     ),
     xgboost::xgboost(
@@ -216,6 +218,7 @@ test_that("Test predict_model (multi-classification)", {
       nrounds = 2,
       verbose = FALSE,
       objective = "multi:softmax",
+      eval_metric = "merror",
       num_class = 3
     )
   )
@@ -290,7 +293,8 @@ test_that("Test features (binary classification)", {
       label = as.integer(y_train) - 1,
       nrounds = 2,
       verbose = FALSE,
-      objective = "binary:logistic"
+      objective = "binary:logistic",
+      eval_metric = "error",
     )
   )
 

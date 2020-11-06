@@ -347,7 +347,7 @@ test_that("Testing data input to explain in explanation.R", {
     )
   }
   for (i in 2:length(l)) {
-    testthat::expect_equal(l[[i - 1]], l[[i]])
+    expect_equal(l[[i - 1]], l[[i]])
   }
 
   # Expect silent for explainer 3, using correct, reordered and bigger data set, then identical results
@@ -364,7 +364,7 @@ test_that("Testing data input to explain in explanation.R", {
     )
   }
   for (i in 2:length(l)) {
-    testthat::expect_equal(l[[i - 1]], l[[i]])
+    expect_equal(l[[i - 1]], l[[i]])
   }
 
   for (i in seq_along(all_explainers)) {
