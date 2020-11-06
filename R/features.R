@@ -208,7 +208,11 @@ helper_feature <- function(m, feature_sample) {
 make_dummies <- function(data) {
 
   contrasts <- features <- factor_features <-  NULL # due to NSE notes in R CMD check
+  if(is.null(colnames(data))){
+    stop("data must have column names.")
+  }
   data <- data.table::as.data.table(as.data.frame(data, stringsAsFactors = FALSE))
+
 
   features <- colnames(data)
   if (length(unique(features)) < length(features)) {
@@ -275,11 +279,13 @@ apply_dummies <- function(obj, newdata) {
   if (is.null(newdata)) {
     stop("newdata needs to be included.")
   }
+  if(is.null(colnames(newdata))){
+    stop("newdata must have column names.")
+  }
   newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
 
 
   # check all features are in newdata
-  # all(logical(0)) is also TRUE... be careful
   if (!all(obj$features %in% names(newdata))) {
     stop("Some features missing from newdata.")
   }
@@ -296,7 +302,7 @@ apply_dummies <- function(obj, newdata) {
 
   m <- model.frame(data = newdata_sub,
                    #na.action = na.pass,
-                   xlev = obj$charac_list)
+                   xlev = obj$factor_list)
 
   x <- model.matrix(object = ~. + 0,
                     data = m,
