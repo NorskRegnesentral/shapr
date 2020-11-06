@@ -10,6 +10,9 @@
     <loc>https://norskregnesentral.github.io/shapr//reference/aicc_full_single_cpp.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/apply_dummies.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/correction_matrix_cpp.html</loc>
   </url>
   <url>
@@ -41,6 +44,9 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/mahalanobis_distance_cpp.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/make_dummies.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/model_type.html</loc>
