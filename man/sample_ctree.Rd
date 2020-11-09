@@ -20,7 +20,8 @@ predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1
 \item{p}{Positive integer. The number of features.}
 
 \item{sample}{Boolean. True indicates that the method samples from the terminal node
-of the tree whereas False indicates that the method takes all the samples if it is less than n_samples.}
+of the tree whereas False indicates that the method takes all the observations if it is
+less than n_samples.}
 }
 \value{
 data.table with \code{n_samples} (conditional) Gaussian samples

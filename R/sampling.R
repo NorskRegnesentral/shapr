@@ -160,7 +160,8 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #' @param p Positive integer. The number of features.
 #'
 #' @param sample Boolean. True indicates that the method samples from the terminal node
-#' of the tree whereas False indicates that the method takes all the samples if it is less than n_samples.
+#' of the tree whereas False indicates that the method takes all the observations if it is
+#' less than n_samples.
 #'
 #' @return data.table with \code{n_samples} (conditional) Gaussian samples
 #'
@@ -227,54 +228,30 @@ sample_ctree <- function(tree,
       pred.nodes <- party::where(object = datact, newdata = xp)
     }
 
-    rowno <- 1:dim(x_train)[1]
+    rowno <- 1:nrow(x_train)
 
-    if (!sample) {
-      if (length(rowno[fit.nodes == pred.nodes]) <= n_samples) {
-        depDT <- data.table::data.table(x_train[rowno[fit.nodes == pred.nodes], dependent_ind,
-                                                drop = FALSE, with = FALSE])
-        givenDT <- data.table::data.table(x_test[1,
-                                                 given_ind,
-                                                 drop = FALSE,
-                                                 with = FALSE])
+    use_all_obs = !sample & (length(rowno[fit.nodes == pred.nodes]) <= n_samples)
 
-        ret <- cbind(depDT, givenDT)
-        data.table::setcolorder(ret, colnames(x_train))
-
-      } else {
-        newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples,
-                           replace = TRUE)
-
-        depDT <- data.table::data.table(x_train[newrowno,
-                                                dependent_ind,
-                                                drop = FALSE,
-                                                with = FALSE])
-        givenDT <- data.table::data.table(x_test[1,
-                                                 given_ind,
-                                                 drop = FALSE,
-                                                 with = FALSE])
-
-        ret <- cbind(depDT, givenDT)
-        data.table::setcolorder(ret, colnames(x_train))
-      }
+    if (use_all_obs){
+      newrowno <- rowno[fit.nodes == pred.nodes]
     } else {
       newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples,
                          replace = TRUE)
-
-      depDT <- data.table::data.table(x_train[newrowno,
-                                              dependent_ind,
-                                              drop = FALSE,
-                                              with = FALSE])
-
-      givenDT <- data.table::data.table(x_test[1,
-                                               given_ind,
-                                               drop = FALSE,
-                                               with = FALSE])
-      ret <- cbind(depDT, givenDT)
-      data.table::setcolorder(ret, colnames(x_train))
     }
+
+    depDT <- data.table::data.table(x_train[newrowno,
+                                            dependent_ind,
+                                            drop = FALSE,
+                                            with = FALSE])
+
+    givenDT <- data.table::data.table(x_test[1,
+                                             given_ind,
+                                             drop = FALSE,
+                                             with = FALSE])
+    ret <- cbind(depDT, givenDT)
+    data.table::setcolorder(ret, colnames(x_train))
+    colnames(ret) <- cnms
   }
-  colnames(ret) <- cnms
 
   return(data.table::as.data.table(ret))
 }
