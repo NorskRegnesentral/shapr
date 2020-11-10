@@ -230,7 +230,7 @@ sample_ctree <- function(tree,
 
     rowno <- 1:nrow(x_train)
 
-    use_all_obs = !sample & (length(rowno[fit.nodes == pred.nodes]) <= n_samples)
+    use_all_obs <- !sample & (length(rowno[fit.nodes == pred.nodes]) <= n_samples)
 
     if (use_all_obs){
       newrowno <- rowno[fit.nodes == pred.nodes]
@@ -340,13 +340,15 @@ create_ctree <- function(given_ind,
                              data = df,
                              controls = party::ctree_control(minbucket = minbucket,
                                                              mincriterion = mincriterion))
-    } else {
+    } else if (use_partykit == "always"){
       warning("Using partykit::ctree instead of party::ctree!")
       datact <- partykit::ctree(fmla,
                                 data = df,
                                 control = partykit::ctree_control(minbucket = minbucket,
                                                                   mincriterion = mincriterion,
                                                                   splitstat = "maximum"))
+    } else {
+      stop("use_partykit needs to be one of 'on_error', 'never', or 'always'. See ?create_ctree for details.")
     }
   }
   return(list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind))
