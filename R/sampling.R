@@ -232,7 +232,7 @@ sample_ctree <- function(tree,
 
     use_all_obs <- !sample & (length(rowno[fit.nodes == pred.nodes]) <= n_samples)
 
-    if (use_all_obs){
+    if (use_all_obs) {
       newrowno <- rowno[fit.nodes == pred.nodes]
     } else {
       newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples,
@@ -340,7 +340,7 @@ create_ctree <- function(given_ind,
                              data = df,
                              controls = party::ctree_control(minbucket = minbucket,
                                                              mincriterion = mincriterion))
-    } else if (use_partykit == "always"){
+    } else if (use_partykit == "always") {
       warning("Using partykit::ctree instead of party::ctree!")
       datact <- partykit::ctree(fmla,
                                 data = df,

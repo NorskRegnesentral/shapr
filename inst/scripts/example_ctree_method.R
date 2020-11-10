@@ -48,8 +48,8 @@ x_train_cat <- as.data.frame(x_train)
 x_test_cat <- as.data.frame(x_test)
 
 # convert to factors for illustational purpose
-x_train_cat$rm = factor(round(x_train_cat$rm))
-x_test_cat$rm = factor(round(x_test_cat$rm),levels = levels(x_train_cat$rm))
+x_train_cat$rm <- factor(round(x_train_cat$rm))
+x_test_cat$rm <- factor(round(x_test_cat$rm), levels = levels(x_train_cat$rm))
 
 
 # -- special function when using categorical data + xgboost
@@ -78,5 +78,3 @@ explanation_cat <- explain(
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
 plot(explanation_cat)
-
-

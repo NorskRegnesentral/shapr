@@ -51,8 +51,8 @@ used for different numbers of conditoned features, this will be a list with the 
 \code{approach = "empirical"}.}
 
 \item{mc_cores}{Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
-tree building (\code{create_ctree}) and tree sampling (\code{sample_ctree}). Defaults to 1. Note: Uses parallel::mclapply
-which relies on forking, i.e. uses only 1 core on Windows systems.}
+tree building (\code{create_ctree}) and tree sampling (\code{sample_ctree}). Defaults to 1. Note: Uses
+parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows systems.}
 
 \item{mc_cores_create_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building function
 #' Defaults to \code{mc_cores}.}
