@@ -66,7 +66,7 @@ model_cat <- xgboost::xgboost(
 )
 model_cat$dummylist <- dummylist
 
-explainer_cat <- shapr(x_test_cat, model_cat)
+explainer_cat <- shapr(x_train_cat, model_cat)
 
 explanation_cat <- explain(
   x_test_cat,
