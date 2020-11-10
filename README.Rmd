@@ -45,7 +45,7 @@ The following methodology/features are currently implemented:
 -   Accounting for feature dependence with a Gaussian copula (Gaussian dependence structure, any marginal) (@aas2019explaining).
 -   Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of @aas2019explaining.
 -   Accounting for feature dependence using conditional inference trees (@redelmeier2020explaining). 
--   Combination any of the four methods.
+-   Combining any of the four methods.
 -   Optional use of the AICc criterion of @hurvich1998smoothing when optimizing the bandwidth parameter in the empirical (conditional) approach of @aas2019explaining.
 -   Functionality for visualizing the explanations.
 -   Support for models not supported natively.
@@ -61,8 +61,8 @@ Current methodological restrictions:
 Future releases will include:
 
 -   Support for parallelization over explanations, Monte Carlo sampling and features subsets for non-parallelizable prediction functions.
--   Computational improvement of the AICc optimization approach
--   Adaptive selection of method to account for the feature dependence
+-   Computational improvement of the AICc optimization approach,
+-   Adaptive selection of method to account for the feature dependence.
 
 Note that both the features and the prediction must be numeric. The approach is constructed for continuous features. Discrete features may also work just fine with the empirical (conditional) distribution approach.
 Unlike SHAP and TreeSHAP, we decompose probability predictions directly to ease the interpretability, i.e. not via log odds transformations.

@@ -60,7 +60,7 @@ The following methodology/features are currently implemented:
     and Løland (2019).
 -   Accounting for feature dependence using conditional inference trees
     (Redelmeier, Jullum, and Aas (2020)).
--   Combination any of the four methods.
+-   Combining any of the four methods.
 -   Optional use of the AICc criterion of Hurvich, Simonoff, and
     Tsai (1998) when optimizing the bandwidth parameter in the empirical
     (conditional) approach of Aas, Jullum, and Løland (2019).
@@ -79,8 +79,8 @@ Future releases will include:
 
 -   Support for parallelization over explanations, Monte Carlo sampling
     and features subsets for non-parallelizable prediction functions.
--   Computational improvement of the AICc optimization approach
--   Adaptive selection of method to account for the feature dependence
+-   Computational improvement of the AICc optimization approach,
+-   Adaptive selection of method to account for the feature dependence.
 
 Note that both the features and the prediction must be numeric. The
 approach is constructed for continuous features. Discrete features may
