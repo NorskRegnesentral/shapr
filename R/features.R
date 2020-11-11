@@ -211,26 +211,60 @@ helper_feature <- function(m, feature_sample) {
 #' y_train <- Boston[-1:-6, y_var]
 #' x_test <- Boston[1:6, x_var]
 #'
-#' dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_train)
+#' dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_test)
 #'
 make_dummies <- function(data, newdata) {
 
   contrasts <- features <- factor_features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
+  #
   if (is.null(colnames(data))) {
     stop("data must have column names.")
   }
+  if (is.null(colnames(newdata))) {
+    stop("newdata must have column names.")
+  }
+  if (is.null(newdata)) {
+    stop("newdata needs to be included.")
+  }
+
   data <- data.table::as.data.table(as.data.frame(data, stringsAsFactors = FALSE))
+  newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
 
-
+  # Check that data has unique names
   features <- colnames(data)
   if (length(unique(features)) < length(features)) {
     stop("Features must have unique names.")
   }
-  p <- sapply(data[, features, with = FALSE], is.factor) # check which features are factors
-  p_sum <- sum(p)
 
-  if (p_sum > 0) {
-    factor_features <- features[p]
+  # Check that all features in data are in newdata
+  if (!all(features %in% names(newdata))) {
+    stop("Some features missing from newdata.")
+  }
+
+  # Check that all features in data have the correct data type
+  for (i in features) {
+    if (class(newdata[[i]]) != class(data[[i]])) {
+      stop("All features must have the same type as original data.")
+    }
+  }
+
+  # Check that data and newdata have the same levels
+  p_all <- sapply(data[, features, with = FALSE], is.factor) # check which features are factors
+  p_sum_all <- sum(p_all)
+  list_levels_all <- lapply(data[, p_all, with = FALSE], levels)
+  #
+  p_new <- sapply(newdata[, features, with = FALSE], is.factor) # check which features are factors
+  p_sum_new <- sum(p_new)
+  list_levels_new <- lapply(newdata[, p_new, with = FALSE], levels)
+
+  for(i in names(list_levels_all)){
+    if(!setequal(list_levels_new[[i]], list_levels_all[[i]])){
+      stop("Levels of categorical variables in data and newdata must be the same!")
+    }
+  }
+
+  if (p_sum_all > 0) {
+    factor_features <- features[p_all]
     factor_list <- lapply(data[, factor_features, with = FALSE], levels)
 
   } else {
@@ -239,41 +273,14 @@ make_dummies <- function(data, newdata) {
   }
   contrasts_list <- lapply(data[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
 
-
   obj <- list(data = data,
               features = features,
               factor_features = factor_features,
               factor_list = factor_list,
               contrasts_list = contrasts_list)
 
-  ## Apply to new data --apply_dummy()
-  if (is.null(newdata)) {
-    stop("newdata needs to be included.")
-  }
-  if (is.null(colnames(newdata))) {
-    stop("newdata must have column names.")
-  }
-  newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
-
-
-  # check all features are in newdata
-  if (!all(features %in% names(newdata))) {
-    stop("Some features missing from newdata.")
-  }
-
-  # check that all features have the correct data type
-  for (i in features) {
-    if (class(newdata[[i]]) != class(obj$data[[i]])) {
-      stop("All features must have the same type as original data.")
-    }
-  }
-
-  # check that all factors have the same number of levels?
-
   newdata_sub <- newdata[, features, with = FALSE]
-
   m <- model.frame(data = newdata_sub,
-                   # na.action = na.pass,
                    xlev = obj$factor_list)
 
   x <- model.matrix(object = ~. + 0,
@@ -314,9 +321,9 @@ make_dummies <- function(data, newdata) {
 #' y_train <- Boston[-1:-6, y_var]
 #' x_test <- Boston[1:6, x_var]
 #'
-#' dummylist <- make_dummies(data = rbind(x_train, x_test))
+#' dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_train)
 #'
-#' x_train_dummies <- apply_dummies(obj = dummylist, newdata = x_train)
+#' x_train_dummies <- apply_dummies(obj = dummylist$obj, newdata = x_train)
 #'
 apply_dummies <- function(obj, newdata) {
 
@@ -324,28 +331,46 @@ apply_dummies <- function(obj, newdata) {
   if (is.null(newdata)) {
     stop("newdata needs to be included.")
   }
+  if (is.null(colnames(newdata))) {
+    stop("newdata must have column names.")
+  }
   newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
 
 
-  # check all features are in newdata
-  # all(logical(0)) is also TRUE... be careful
+  # Check all features in data are also in newdata
   if (!all(obj$features %in% names(newdata))) {
     stop("Some features missing from newdata.")
   }
 
-  # check that all features have the correct data type
+  # Check that all features in data have the correct data type
   for (i in obj$features) {
     if (class(newdata[[i]]) != class(obj$data[[i]])) {
       stop("All features must have the same type as original data.")
     }
   }
 
+  # Check that data and newdata have the same levels
+  data <- obj$data
   features <- obj$features
+  p_all <- sapply(data[, features, with = FALSE], is.factor) # check which features are factors
+  p_sum_all <- sum(p_all)
+  list_levels_all <- lapply(data[, p_all, with = FALSE], levels)
+  #
+  p_new <- sapply(newdata[, features, with = FALSE], is.factor) # check which features are factors
+  p_sum_new <- sum(p_new)
+  list_levels_new <- lapply(newdata[, p_new, with = FALSE], levels)
+
+  for(i in names(list_levels_all)){
+    if(!setequal(list_levels_new[[i]], list_levels_all[[i]])){
+      stop("Levels of categorical variables in data and newdata must be the same!")
+    }
+  }
+
   newdata_sub <- newdata[, features, with = FALSE]
 
   m <- model.frame(data = newdata_sub,
                    #na.action = na.pass,
-                   xlev = obj$charac_list)
+                   xlev = obj$factor_list)
 
   x <- model.matrix(object = ~. + 0,
                     data = m,

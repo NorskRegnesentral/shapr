@@ -43,7 +43,7 @@ x_train <- Boston[-1:-6, x_var]
 y_train <- Boston[-1:-6, y_var]
 x_test <- Boston[1:6, x_var]
 
-dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_train)
+dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_test)
 
 }
 \author{
