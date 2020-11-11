@@ -70,7 +70,8 @@ prediction <- function(dt, prediction_zero, explainer) {
   data.table::setkeyv(dt_res, c("id", "id_combination"))
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = "k")
   dt_mat[, id_combination := NULL]
-  kshap <-  t(explainer$W %*% as.matrix(dt_mat))
+  kshap <- t(explainer$W %*% as.matrix(dt_mat))
+
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", cnms)
 

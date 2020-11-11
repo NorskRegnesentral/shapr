@@ -16,8 +16,8 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
-The most common task of machine learning is to train a model which is
-able to predict an unknown outcome (response variable) based on a set of
+The most common machine learning task is to train a model which is able
+to predict an unknown outcome (response variable) based on a set of
 known input variables/features. When using such models for real life
 applications, it is often crucial to understand why a certain set of
 features lead to exactly that prediction. However, explaining
@@ -47,23 +47,25 @@ This package implements the methodology of Aas, Jullum, and Løland
 
 The following methodology/features are currently implemented:
 
-  - Native support of explanation of predictions from models fitted with
+-   Native support of explanation of predictions from models fitted with
     the following functions `stats::glm`, `stats::lm`,`ranger::ranger`,
     `xgboost::xgboost`/`xgboost::xgb.train` and `mgcv::gam`.
-  - Accounting for feature dependence assuming the features are Gaussian
+-   Accounting for feature dependence assuming the features are Gaussian
     (Aas, Jullum, and Løland (2019)).
-  - Accounting for feature dependence with a Gaussian copula (Gaussian
-    dependence structure, any marginal) (Aas, Jullum, and Løland
-    (2019)).
-  - Accounting for feature dependence using the Mahalanobis distance
+-   Accounting for feature dependence with a Gaussian copula (Gaussian
+    dependence structure, any marginal) (Aas, Jullum, and
+    Løland (2019)).
+-   Accounting for feature dependence using the Mahalanobis distance
     based empirical (conditional) distribution approach of Aas, Jullum,
     and Løland (2019).
-  - Combine any of the three methods.
-  - Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai
-    (1998) when optimizing the bandwidth parameter in the empirical
+-   Accounting for feature dependence using conditional inference trees
+    (Redelmeier, Jullum, and Aas (2020)).
+-   Combining any of the four methods.
+-   Optional use of the AICc criterion of Hurvich, Simonoff, and
+    Tsai (1998) when optimizing the bandwidth parameter in the empirical
     (conditional) approach of Aas, Jullum, and Løland (2019).
-  - Functionality for visualizing the explanations.
-  - Support for models not supported natively.
+-   Functionality for visualizing the explanations.
+-   Support for models not supported natively.
 
 <!--
 Current methodological restrictions:
@@ -75,10 +77,10 @@ Current methodological restrictions:
 
 Future releases will include:
 
-  - Support for parallelization over explanations, Monte Carlo sampling
+-   Support for parallelization over explanations, Monte Carlo sampling
     and features subsets for non-parallelizable prediction functions.
-  - Computational improvement of the AICc optimization approach
-  - Adaptive selection of method to account for the feature dependence
+-   Computational improvement of the AICc optimization approach,
+-   Adaptive selection of method to account for the feature dependence.
 
 Note that both the features and the prediction must be numeric. The
 approach is constructed for continuous features. Discrete features may
@@ -174,15 +176,15 @@ explanation <- explain(
 )
 
 # Printing the Shapley values for the test data.
-# For more information about the interpretation of the values in the table, see ?shapr::explain.  
+# For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$dt)
 #>      none     lstat         rm       dis      indus
 #> 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644
-#> 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871
-#> 3: 22.446 5.9888016  5.5450861 0.5660136 -1.4304350
-#> 4: 22.446 8.2142203  0.7507569 0.1893368  1.8298305
-#> 5: 22.446 0.5059890  5.6875106 0.8432240  2.2471152
-#> 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531
+#> 2: 22.446 0.1671901 -0.7088401 0.9689005  0.3786871
+#> 3: 22.446 5.9888022  5.5450858 0.5660134 -1.4304351
+#> 4: 22.446 8.2142204  0.7507572 0.1893366  1.8298304
+#> 5: 22.446 0.5059898  5.6875103 0.8432238  2.2471150
+#> 6: 22.446 1.9929673 -3.6001958 0.8601984  3.1510531
 
 # Finally we plot the resulting explanations
 plot(explanation)
@@ -205,9 +207,9 @@ By contributing to this project, you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
-<div id="ref-aas2019explaining">
+<div id="ref-aas2019explaining" class="csl-entry">
 
 Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining
 Individual Predictions When Features Are Dependent: More Accurate
@@ -215,7 +217,7 @@ Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
 
 </div>
 
-<div id="ref-hurvich1998smoothing">
+<div id="ref-hurvich1998smoothing" class="csl-entry">
 
 Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998.
 “Smoothing Parameter Selection in Nonparametric Regression Using an
@@ -224,7 +226,7 @@ Statistical Society: Series B (Statistical Methodology)* 60 (2): 271–93.
 
 </div>
 
-<div id="ref-lundberg2018consistent">
+<div id="ref-lundberg2018consistent" class="csl-entry">
 
 Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent
 Individualized Feature Attribution for Tree Ensembles.” *arXiv Preprint
@@ -232,7 +234,7 @@ arXiv:1802.03888*.
 
 </div>
 
-<div id="ref-lundberg2017unified">
+<div id="ref-lundberg2017unified" class="csl-entry">
 
 Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to
 Interpreting Model Predictions.” In *Advances in Neural Information
@@ -240,7 +242,7 @@ Processing Systems*, 4765–74.
 
 </div>
 
-<div id="ref-lime_api">
+<div id="ref-lime_api" class="csl-entry">
 
 Pedersen, Thomas Lin, and Michaël Benesty. 2019. *Lime: Local
 Interpretable Model-Agnostic Explanations*.
@@ -248,7 +250,16 @@ Interpretable Model-Agnostic Explanations*.
 
 </div>
 
-<div id="ref-vstrumbelj2014explaining">
+<div id="ref-redelmeier2020explaining" class="csl-entry">
+
+Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining
+Predictive Models with Mixed Features Using Shapley Values and
+Conditional Inference Trees.” In *International Cross-Domain Conference
+for Machine Learning and Knowledge Extraction*, 117–37. Springer.
+
+</div>
+
+<div id="ref-vstrumbelj2014explaining" class="csl-entry">
 
 Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models
 and Individual Predictions with Feature Contributions.” *Knowledge and

@@ -185,7 +185,6 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
   }
 
   for (i in seq(n_xtest)) {
-
     l <- lapply(
       X = features,
       FUN = sample_gaussian,
@@ -201,6 +200,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
+
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   return(dt)
 }
@@ -240,6 +240,84 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   return(dt)
 }
+
+#' @param n_samples Integer. The number of obs to sample from the leaf if \code{sample} = TRUE or if \code{sample}
+#' = FALSE but \code{n_samples} is less than the number of obs in the leaf.
+#'
+#' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
+#' used for different numbers of conditoned features, this will be a list with the features to pass.
+#'
+#' @param  mc_cores Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
+#' tree building (\code{create_ctree}) and tree sampling (\code{sample_ctree}). Defaults to 1. Note: Uses
+#' parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows systems.
+#'
+#' @param  mc_cores_create_ctree Integer. Same as \code{mc_cores}, but specific for the tree building function
+#' #' Defaults to \code{mc_cores}.
+#'
+#' @param  mc_cores_sample_ctree Integer. Same as \code{mc_cores}, but specific for the tree building prediction
+#' function.
+#' Defaults to \code{mc_cores}.
+#'
+#' @rdname prepare_data
+#' @export
+prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
+                               mc_cores = 1, mc_cores_create_ctree = mc_cores,
+                               mc_cores_sample_ctree = mc_cores, ...) {
+
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+
+  n_xtest <- nrow(x$x_test)
+  dt_l <- list()
+
+  if (!is.null(seed)) set.seed(seed)
+  if (is.null(index_features)) {
+    features <- x$X$features
+  } else {
+    features <- x$X$features[index_features]
+  }
+
+
+  # this is a list of all 2^M trees (where number of features = M)
+  all_trees <- parallel::mclapply(
+    X = features,
+    FUN = create_ctree,
+    x_train = x$x_train,
+    mincriterion = x$mincriterion,
+    minsplit = x$minsplit,
+    minbucket = x$minbucket,
+    mc.cores = mc_cores_create_ctree,
+    mc.set.seed = FALSE
+  )
+
+  for (i in seq(n_xtest)) {
+    l <- parallel::mclapply(
+      X = all_trees,
+      FUN = sample_ctree,
+      n_samples = n_samples,
+      x_test = x$x_test[i, , drop = FALSE],
+      x_train = x$x_train,
+      p = ncol(x$x_test),
+      sample = x$sample,
+      mc.cores = mc_cores_sample_ctree,
+      mc.set.seed = FALSE
+    )
+
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
+    dt_l[[i]][, w := 1 / n_samples]
+    dt_l[[i]][, id := i]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+  }
+
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+
+  # only return unique dt
+  dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id")]
+  setnames(dt2, "V1", "w")
+
+  return(dt2)
+}
+
 
 #' @keywords internal
 compute_AICc_each_k <- function(x, h_optim_mat) {

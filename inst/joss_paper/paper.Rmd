@@ -73,6 +73,7 @@ and the method that should be used to estimate the aforementioned conditional ex
 
 The majority of the code is in plain `R` [@rCore], while the most time consuming operations are coded in `C++` 
 through the `Rcpp` package [@rcppRpackage] and `RcppArmadillo` package [@eddelbuettel2014rcpparmadillo] for computational speed up. 
+
 For RAM efficiency and computational speed up of typical bookeeping operations, we utilize the `data.table` 
 package [@datatableRpackage] which does operations "by reference", i.e. without memory copies.
 

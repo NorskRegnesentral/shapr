@@ -10,7 +10,7 @@ test_that("Test plot.shapr", {
                 4.0900, 4.9671, 4.9671, 6.0622, 6.0622,
                 2.31, 7.07, 7.07, 2.18, 2.18),
               ncol = 4
-  )
+              )
 
   colnames(x) <- c("lstat", "rm", "dis", "indus")
 
@@ -22,7 +22,7 @@ test_that("Test plot.shapr", {
     "rm" = c(-1.2527, -0.7088, 5.5451, 0.7508, 5.6875),
     "dis" = c(0.2920, 0.9689, 0.5660, 0.1893, 0.8432),
     "indus" = c(4.5529, 0.3787, -1.4304, 1.8298, 2.2471)
-  )
+    )
   explanation$x_test <- x
   attr(explanation, "class") <- c("shapr", "list")
 

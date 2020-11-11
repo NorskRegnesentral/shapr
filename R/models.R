@@ -117,7 +117,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
   # Test model type
   model_type <- model_type(x)
 
-  if (model_type %in% c("cat_regression","cat_classification") ) {
+  if (model_type %in% c("cat_regression", "cat_classification" ) ) {
     newdata_dummy <- apply_dummies(obj = x$dummylist, newdata = newdata)
     predict(x, as.matrix(newdata_dummy))
   } else {
@@ -246,7 +246,7 @@ model_type.gam <- function(x) {
 model_type.xgb.Booster <- function(x) {
 
   if (!is.null(x$params$objective) &&
-      (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
+    (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
   ) {
     stop(
       paste0(
@@ -373,7 +373,6 @@ features.ranger <- function(x, cnms, feature_labels = NULL) {
   if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
 
   return(nms)
-
 }
 
 #' @rdname features
@@ -392,7 +391,6 @@ features.gam <- function(x, cnms, feature_labels = NULL) {
 #' @rdname features
 #' @export
 features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
-
   if (!is.null(feature_labels)) message_features_labels()
 
   nms <- x$feature_names

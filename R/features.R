@@ -159,7 +159,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 #' @keywords internal
 helper_feature <- function(m, feature_sample) {
 
-  sample_frequence <- is_duplicate <- NULL  # due to NSE notes in R CMD check
+  sample_frequence <- is_duplicate <- NULL # due to NSE notes in R CMD check
 
   x <- feature_matrix_cpp(feature_sample, m)
   dt <- data.table::data.table(x)
@@ -208,7 +208,7 @@ helper_feature <- function(m, feature_sample) {
 make_dummies <- function(data) {
 
   contrasts <- features <- factor_features <-  NULL # due to NSE notes in R CMD check
-  if(is.null(colnames(data))){
+  if (is.null(colnames(data))) {
     stop("data must have column names.")
   }
   data <- data.table::as.data.table(as.data.frame(data, stringsAsFactors = FALSE))
@@ -279,7 +279,7 @@ apply_dummies <- function(obj, newdata) {
   if (is.null(newdata)) {
     stop("newdata needs to be included.")
   }
-  if(is.null(colnames(newdata))){
+  if (is.null(colnames(newdata))) {
     stop("newdata must have column names.")
   }
   newdata <- data.table::as.data.table(as.data.frame(newdata, stringsAsFactors = FALSE))
@@ -309,4 +309,3 @@ apply_dummies <- function(obj, newdata) {
                     contrasts.arg = obj$contrasts_list)
   return(x)
 }
-
