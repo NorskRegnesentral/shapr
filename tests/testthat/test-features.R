@@ -170,63 +170,69 @@ test_that("Test helper_feature", {
 test_that("Test make_dummies", {
 
   data("Boston", package = "MASS")
-  x_var <- c("lstat", "chas", "rad", "indus")
+  x_var <- c("lstat", "rm", "dis", "indus")
   y_var <- "medv"
 
-  # convert to factors
-  Boston$rad <- as.factor(Boston$rad)
-  Boston$chas <- as.factor(Boston$chas)
-  x_train <- Boston[3:4, x_var]
-  y_train <- Boston[3:4, y_var]
-  x_test <- Boston[1:2, x_var]
+  x_train <- as.data.frame(Boston[401:411, x_var])
+  y_train <- Boston[401:408, y_var]
+  x_test <- as.data.frame(Boston[1:4, x_var])
+
+  # convert to factors for illustational purpose
+  x_train$rm <- factor(round(x_train$rm))
+  x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 
   factor_feat <- sapply(x_train, is.factor)
   nb_factor_feat <- sum(factor_feat)
 
-  dummylist <- make_dummies(data = rbind(x_train, x_test))
+  dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_train)
 
   # Tests
   expect_type(dummylist, "list")
 
-  expect_equal(length(dummylist$contrasts_list), nb_factor_feat)
+  expect_equal(length(dummylist$obj$contrasts_list), nb_factor_feat)
 
-  expect_equal(length(dummylist$features), ncol(x_train))
+  expect_equal(length(dummylist$obj$features), ncol(x_train))
 
-  expect_equal(length(dummylist$factor_features), nb_factor_feat)
+  expect_equal(length(dummylist$obj$factor_features), nb_factor_feat)
 
-  expect_equal(ncol(dummylist$contrasts_list$chas), length(levels(Boston$chas)))
-  expect_equal(ncol(dummylist$contrasts_list$rad), length(levels(Boston$rad)))
+  expect_equal(ncol(dummylist$obj$contrasts_list$rm), length(levels(x_train$rm)))
 
-  # What if you have two variables with the same name?
-  x_train3 <- x_train
-  colnames(x_train3) <- c("X1", "X2", "X3", "X3")
-  expect_error(make_dummies(data = rbind(x_train3)))
+  # What if you have two variables with the same name? - error
+  x_train2 <- x_train
+  colnames(x_train2) <- c("X1", "X2", "X3", "X3")
+  expect_error(make_dummies(data = x_train2, newdata = x_train))
 
-  # What if one variables has an empty name?
+  # What if one variables has an empty name? - error
   x_train3 <- x_train
   colnames(x_train3) <- c("", "X2", "X3", "X4")
-  # this doesn't currently throw an error - should it?
-  expect_type(make_dummies(data = rbind(x_train3)), "list")
+  expect_error(make_dummies(data = x_train3, newdata = x_train3))
 
-  # What if data has no column names
+  # What if data has no column names - error
   x_train4 <- x_train
   colnames(x_train4) <- NULL
-  expect_error(make_dummies(data = x_train4))
+  expect_error(make_dummies(data = x_train4, newdata = x_train4))
+
+  # What if data and newdata don't have the same levels?
+  x_test_diff_levels = droplevels(x_test)
+
+  expect_error(make_dummies(data = rbind(x_train, x_test_diff_levels), newdata = x_test_diff_levels))
+  expect_error(make_dummies(data = rbind(x_train, x_test), newdata = x_test_diff_levels))
 
 })
 
 test_that("Test apply_dummies", {
 
   data("Boston", package = "MASS")
-  x_var <- c("lstat", "chas", "rad", "indus")
+  x_var <- c("lstat", "rm", "dis", "indus")
   y_var <- "medv"
 
-  # convert to factors
-  Boston$rad <- as.factor(Boston$rad)
-  Boston$chas <- as.factor(Boston$chas)
-  x_train <- Boston[3:4, x_var]
-  y_train <- Boston[3:4, y_var]
-  x_test <- Boston[1:2, x_var]
+  x_train <- as.data.frame(Boston[401:411, x_var])
+  y_train <- Boston[401:408, y_var]
+  x_test <- as.data.frame(Boston[1:4, x_var])
+
+  # convert to factors for illustational purpose
+  x_train$rm <- factor(round(x_train$rm))
+  x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 
   numeric_feat <- !sapply(x_train, is.factor)
   nb_numeric_feat <- sum(numeric_feat)
@@ -239,21 +245,17 @@ test_that("Test apply_dummies", {
   expect_type(x_train_dummies, "double")
 
   expect_equal(ncol(x_train_dummies),
-               nb_numeric_feat +
-                 length(dummylist$obj$factor_list$chas) +
-                 length(dummylist$obj$factor_list$rad))
+               nb_numeric_feat + length(dummylist$obj$factor_list$rm))
 
   # What if you re-arrange the columns in x_train?
-  x_train0 <- x_train[, c(2, 1, 4, 3)]
-  x_train0[] <- lapply(x_train0, function(x) if (is.factor(x)) factor(x) else x) # Drop unused levels
 
+  x_train0 <- x_train[, c(2, 3, 1, 4)]
   # apply_dummies will re-arrange the columns to match x_train in dummylist
   diff_column_placements <- apply_dummies(dummylist$obj, newdata = x_train0)
   expect_equal(colnames(diff_column_placements), colnames(x_train_dummies))
 
   # What if you put in less features then the original feature vector?
   x_train1 <- x_train[, c(2, 1)]
-  x_train1[] <- lapply(x_train1, function(x) if (is.factor(x)) factor(x) else x) # Drop unused levels
   expect_error(apply_dummies(dummylist$obj, newdata = x_train1))
 
   # What if you change the feature types?
@@ -262,7 +264,7 @@ test_that("Test apply_dummies", {
 
   # What if you add a feature?
   x_train2 <- cbind(x_train[, c(1, 2)], new_var = x_train[, 2], x_train[, c(3, 4)])
-  x_train2[] <- lapply(x_train2, function(x) if (is.factor(x)) factor(x) else x) # Drop unused levels
+
   # will not throw an error - do we want it to throw an error?
   a_new_var <- apply_dummies(dummylist$obj, newdata = x_train2)
   expect_equal(ncol(a_new_var), ncol(x_train_dummies))

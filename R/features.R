@@ -249,13 +249,15 @@ make_dummies <- function(data, newdata) {
   }
 
   # Check that data and newdata have the same levels
-  p_all <- sapply(data[, features, with = FALSE], is.factor) # check which features are factors
-  p_sum_all <- sum(p_all)
-  list_levels_all <- lapply(data[, p_all, with = FALSE], levels)
+  data0 <- data[, features, with = FALSE]
+  is_factor_all <- sapply(data0, is.factor) # check which features are factors
+  nb_factor_all <- sum(is_factor_all)
+  list_levels_all <- lapply(data0[, is_factor_all, with = FALSE], levels)
   #
-  p_new <- sapply(newdata[, features, with = FALSE], is.factor) # check which features are factors
-  p_sum_new <- sum(p_new)
-  list_levels_new <- lapply(newdata[, p_new, with = FALSE], levels)
+  newdata0 <- newdata[, features, with = FALSE]
+  is_factor_new <- sapply(newdata0, is.factor) # check which features are factors
+  nb_factor_new <- sum(is_factor_new)
+  list_levels_new <- lapply(newdata0[, is_factor_new, with = FALSE], levels)
 
   for(i in names(list_levels_all)){
     if(!setequal(list_levels_new[[i]], list_levels_all[[i]])){
@@ -263,8 +265,8 @@ make_dummies <- function(data, newdata) {
     }
   }
 
-  if (p_sum_all > 0) {
-    factor_features <- features[p_all]
+  if (nb_factor_all > 0) {
+    factor_features <- features[is_factor_all]
     factor_list <- lapply(data[, factor_features, with = FALSE], levels)
 
   } else {
@@ -352,13 +354,13 @@ apply_dummies <- function(obj, newdata) {
   # Check that data and newdata have the same levels
   data <- obj$data
   features <- obj$features
-  p_all <- sapply(data[, features, with = FALSE], is.factor) # check which features are factors
-  p_sum_all <- sum(p_all)
-  list_levels_all <- lapply(data[, p_all, with = FALSE], levels)
+  data <- data[, features, with = FALSE]
+  is_factor_all <- sapply(data, is.factor) # check which features are factors
+  list_levels_all <- lapply(data[, is_factor_all, with = FALSE], levels)
   #
-  p_new <- sapply(newdata[, features, with = FALSE], is.factor) # check which features are factors
-  p_sum_new <- sum(p_new)
-  list_levels_new <- lapply(newdata[, p_new, with = FALSE], levels)
+  newdata <- newdata[, features, with = FALSE]
+  is_factor_new <- sapply(newdata, is.factor) # check which features are factors
+  list_levels_new <- lapply(newdata[, is_factor_new, with = FALSE], levels)
 
   for(i in names(list_levels_all)){
     if(!setequal(list_levels_new[[i]], list_levels_all[[i]])){
@@ -369,7 +371,6 @@ apply_dummies <- function(obj, newdata) {
   newdata_sub <- newdata[, features, with = FALSE]
 
   m <- model.frame(data = newdata_sub,
-                   #na.action = na.pass,
                    xlev = obj$factor_list)
 
   x <- model.matrix(object = ~. + 0,
