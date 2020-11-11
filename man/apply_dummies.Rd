@@ -2,7 +2,8 @@
 % Please edit documentation in R/features.R
 \name{apply_dummies}
 \alias{apply_dummies}
-\title{Make dummy variables}
+\title{Make dummy variables - this is an internal function intended only to be used in
+predict_model.xgb.Booster()}
 \usage{
 apply_dummies(obj, newdata)
 }
@@ -17,7 +18,8 @@ A data.frame containing all of the factors in \code{new_data} as
 one-hot encoded variables.
 }
 \description{
-Make dummy variables
+Make dummy variables - this is an internal function intended only to be used in
+predict_model.xgb.Booster()
 }
 \examples{
 
@@ -42,3 +44,4 @@ x_train_dummies <- apply_dummies(obj = dummylist, newdata = x_train)
 \author{
 Annabelle Redelmeier
 }
+\keyword{internal}

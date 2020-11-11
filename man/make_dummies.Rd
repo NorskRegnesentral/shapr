@@ -4,18 +4,25 @@
 \alias{make_dummies}
 \title{Initiate the making of dummy variables}
 \usage{
-make_dummies(data)
+make_dummies(data, newdata)
 }
 \arguments{
 \item{data}{data.table or data.frame. Includes all the features (both factors and possibly others).}
+
+\item{newdata}{data.table or data.frame. New data (features) that has the same
+features as \code{data}.}
 }
 \value{
 A list that contains the following entries:
 \describe{
+\item{obj}{List, Contains \describe{
 \item{features}{Vector. Contains the names of all the features in \code{data}.}
 \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
 \item{factor_list}{List. Contains each factor and its vector of levels.}
 \item{contrasts_list}{List. Contains all the contrasts of the factors.}
+}}
+\item{model.matrix}{A data.frame containing all of the factors in \code{new_data} as
+one-hot encoded variables.}
 }
 }
 \description{
@@ -36,7 +43,7 @@ x_train <- Boston[-1:-6, x_var]
 y_train <- Boston[-1:-6, y_var]
 x_test <- Boston[1:6, x_var]
 
-dummylist <- make_dummies(data = rbind(x_train, x_test))
+dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_train)
 
 }
 \author{
