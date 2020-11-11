@@ -142,6 +142,18 @@
   n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
   index_features <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
+<span class='op'>)</span>
+
+<span class='co'># S3 method for ctree</span>
+<span class='fu'>prepare_data</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  seed <span class='op'>=</span> <span class='fl'>1</span>,
+  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
+  index_features <span class='op'>=</span> <span class='cn'>NULL</span>,
+  mc_cores <span class='op'>=</span> <span class='fl'>1</span>,
+  mc_cores_create_ctree <span class='op'>=</span> <span class='va'>mc_cores</span>,
+  mc_cores_sample_ctree <span class='op'>=</span> <span class='va'>mc_cores</span>,
+  <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -161,18 +173,35 @@
     </tr>
     <tr>
       <th>n_samples</th>
-      <td><p>Positive integer. Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation.</p></td>
+      <td><p>Integer. The number of obs to sample from the leaf if <code>sample</code> = TRUE or if <code>sample</code>
+= FALSE but <code>n_samples</code> is less than the number of obs in the leaf.</p></td>
     </tr>
     <tr>
       <th>index_features</th>
-      <td><p>Positive integer vector. Specifies the indices of combinations to apply to the present method.
-<code>NULL</code> means all combinations. Only used internally.</p></td>
+      <td><p>List. Default is NULL but if either various methods are being used or various mincriterion are
+used for different numbers of conditoned features, this will be a list with the features to pass.</p></td>
     </tr>
     <tr>
       <th>x_test_gaussian</th>
       <td><p>Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
 <code>approach = "empirical"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>mc_cores</th>
+      <td><p>Integer. Only for class <code>ctree</code> currently. The number of cores to use in paralellization of the
+tree building (<code>create_ctree</code>) and tree sampling (<code>sample_ctree</code>). Defaults to 1. Note: Uses
+parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows systems.</p></td>
+    </tr>
+    <tr>
+      <th>mc_cores_create_ctree</th>
+      <td><p>Integer. Same as <code>mc_cores</code>, but specific for the tree building function
+#' Defaults to <code>mc_cores</code>.</p></td>
+    </tr>
+    <tr>
+      <th>mc_cores_sample_ctree</th>
+      <td><p>Integer. Same as <code>mc_cores</code>, but specific for the tree building prediction
+function.
+Defaults to <code>mc_cores</code>.</p></td>
     </tr>
     </table>
 

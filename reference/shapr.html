@@ -200,7 +200,7 @@ model) and <code>n_combinations</code> is also present in the returned object.</
 <span class='va'>explainer</span> <span class='op'>&lt;-</span> <span class='fu'>shapr</span><span class='op'>(</span><span class='va'>df2</span>, <span class='va'>model</span>, n_combinations <span class='op'>=</span> <span class='fl'>1e3</span><span class='op'>)</span>
 
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>explainer</span><span class='op'>$</span><span class='va'>X</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] 568</div><div class='input'>
+</div><div class='output co'>#&gt; [1] 572</div><div class='input'>
 <span class='co'># Example using approximation where n_combinations &gt; 2^m</span>
 <span class='va'>x_var</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"lstat"</span>, <span class='st'>"rm"</span>, <span class='st'>"dis"</span>, <span class='st'>"indus"</span><span class='op'>)</span>
 <span class='va'>y_var</span> <span class='op'>&lt;-</span> <span class='st'>"medv"</span>

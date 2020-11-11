@@ -157,6 +157,19 @@
 <span class='co'># S3 method for copula</span>
 <span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, <span class='va'>...</span><span class='op'>)</span>
 
+<span class='co'># S3 method for ctree</span>
+<span class='fu'>explain</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>explainer</span>,
+  <span class='va'>approach</span>,
+  <span class='va'>prediction_zero</span>,
+  mincriterion <span class='op'>=</span> <span class='fl'>0.95</span>,
+  minsplit <span class='op'>=</span> <span class='fl'>20</span>,
+  minbucket <span class='op'>=</span> <span class='fl'>7</span>,
+  sample <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
+
 <span class='co'># S3 method for combined</span>
 <span class='fu'>explain</span><span class='op'>(</span>
   <span class='va'>x</span>,
@@ -166,7 +179,10 @@
   mu <span class='op'>=</span> <span class='cn'>NULL</span>,
   cov_mat <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
-<span class='op'>)</span></pre>
+<span class='op'>)</span>
+
+<span class='co'># S3 method for ctree_comb_mincrit</span>
+<span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, <span class='va'>mincriterion</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -185,7 +201,8 @@ See <code><a href='shapr.html'>shapr</a></code>.</p></td>
       <th>approach</th>
       <td><p>Character vector of length <code>1</code> or <code>n_features</code>.
 <code>n_features</code> equals the total number of features in the model. All elements should
-either be <code>"gaussian"</code>, <code>"copula"</code> or <code>"empirical"</code>. See details for more information.</p></td>
+either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, or <code>"ctree"</code>. See details for more
+information.</p></td>
     </tr>
     <tr>
       <th>prediction_zero</th>
@@ -240,6 +257,30 @@ when <code>approach = "gaussian"</code>.</p></td>
       <td><p>Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. <code>NULL</code> means it is estimated from the data if needed
 (in the Gaussian approach).</p></td>
+    </tr>
+    <tr>
+      <th>mincriterion</th>
+      <td><p>Numeric value or vector where length of vector is the number of features in model.
+Value is equal to 1 - alpha where alpha is the nominal level of the conditional
+independence tests.
+If it is a vector, this indicates which mincriterion to use
+when conditioning on various numbers of features.</p></td>
+    </tr>
+    <tr>
+      <th>minsplit</th>
+      <td><p>Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.</p></td>
+    </tr>
+    <tr>
+      <th>minbucket</th>
+      <td><p>Numeric value. Equal to the minimum sum of weights in a terminal node.</p></td>
+    </tr>
+    <tr>
+      <th>sample</th>
+      <td><p>Boolean. If TRUE, then the method always samples <code>n_samples</code> from the leaf (with replacement).
+If FALSE and the number of obs in the leaf is less than <code>n_samples</code>, the method will take all observations
+in the leaf. If FALSE and the number of obs in the leaf is more than <code>n_samples</code>, the method will sample
+<code>n_samples</code> (with replacement). This means that there will always be sampling in the leaf unless
+<code>sample</code> = FALSE AND the number of obs in the node is less than <code>n_samples</code>.</p></td>
     </tr>
     </table>
 
@@ -314,9 +355,12 @@ when conditioning on <code>i</code> features.</p>
 <span class='co'># Gaussian copula approach</span>
 <span class='va'>explain3</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span><span class='op'>(</span><span class='va'>x_test</span>, <span class='va'>explainer</span>, approach <span class='op'>=</span> <span class='st'>"copula"</span>, prediction_zero <span class='op'>=</span> <span class='va'>p</span>, n_samples <span class='op'>=</span> <span class='fl'>1e2</span><span class='op'>)</span>
 
+<span class='co'># ctree approach</span>
+<span class='va'>explain4</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span><span class='op'>(</span><span class='va'>x_test</span>, <span class='va'>explainer</span>, approach <span class='op'>=</span> <span class='st'>"ctree"</span>, prediction_zero <span class='op'>=</span> <span class='va'>p</span><span class='op'>)</span>
+
 <span class='co'># Combined approach</span>
 <span class='va'>approach</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gaussian"</span>, <span class='st'>"gaussian"</span>, <span class='st'>"empirical"</span>, <span class='st'>"empirical"</span><span class='op'>)</span>
-<span class='va'>explain4</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span><span class='op'>(</span><span class='va'>x_test</span>, <span class='va'>explainer</span>, approach <span class='op'>=</span> <span class='va'>approach</span>, prediction_zero <span class='op'>=</span> <span class='va'>p</span>, n_samples <span class='op'>=</span> <span class='fl'>1e2</span><span class='op'>)</span>
+<span class='va'>explain5</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span><span class='op'>(</span><span class='va'>x_test</span>, <span class='va'>explainer</span>, approach <span class='op'>=</span> <span class='va'>approach</span>, prediction_zero <span class='op'>=</span> <span class='va'>p</span>, n_samples <span class='op'>=</span> <span class='fl'>1e2</span><span class='op'>)</span>
 
 <span class='co'># Print the Shapley values</span>
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>explain1</span><span class='op'>$</span><span class='va'>dt</span><span class='op'>)</span>

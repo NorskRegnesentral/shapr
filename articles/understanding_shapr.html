@@ -191,12 +191,22 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <p><a id="ex"></a></p>
 <p><br></p>
 </div>
+<div id="conditional-inference-tree-approach" class="section level2">
+<h2 class="hasAnchor">
+<a href="#conditional-inference-tree-approach" class="anchor"></a>Conditional Inference Tree Approach</h2>
+<p>The previous three methods can only handle numerical data. This means that if the data contains categorical/discrete/ordinal features, the features first have to be one-hot encoded. When the number of levels/features is large, this is not feasible. An approach that handles mixed (i.e numerical, categorical, discrete, ordinal) features and both univariate and multivariate responses is conditional inference trees (<span class="citation">Hothorn, Hornik, and Zeileis (2006)</span>).</p>
+<p>Conditional inference trees is a special tree fitting procedure that relies on hypothesis tests to choose both the splitting feature and the splitting point. The tree fitting procedure is sequential: first a splitting feature is chosen (the feature that is least independent of the response), and then a splitting point is chosen for this feature. This decreases the chance of being biased towards features with many splits (<span class="citation">Hothorn, Hornik, and Zeileis (2006)</span>).</p>
+<p>We use conditional inference trees (<em>ctree</em>) to model the conditional distribution, <span class="math inline">\(p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)\)</span>, found in the Shapley methodology. First, we fit a different conditional inference tree to each conditional distribution. Once a tree is fit for given dependent features, the end node of <span class="math inline">\(\boldsymbol{x}_{\mathcal{S}}^*\)</span> is found. Then, we sample from this end node and use the resulting samples, <span class="math inline">\(\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K\)</span>, when approximating the conditional expectations as in Kernel SHAP. See <span class="citation">Redelmeier, Jullum, and Aas (2020)</span> for more details.</p>
+<p>The conditional inference trees are fit using the <em>party</em> and <em>partykit</em> packages (<span class="citation">Hothorn and Zeileis (2015)</span>).</p>
+<p><a id="ex"></a></p>
+<p><br></p>
+</div>
 </div>
 <div id="examples" class="section level1">
 <h1 class="hasAnchor">
 <a href="#examples" class="anchor"></a>Examples</h1>
-<p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.</p>
-<p>The following example shows how a simple <code>xgboost</code> model is trained using the Boston Housing Data, and how <code>shapr</code> can be used to explain the individual predictions. Note that empirical conditional distribution approach is the default (i.e. <code>approach = "empirical"</code>), and that the Gaussian and Gaussian copula approaches can be used instead by setting the argument <code>approach</code> to either <code>"gaussian"</code> or <code>"copula"</code>.</p>
+<p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome. Note that the ctree method takes both numeric and categorical variables. Check under “Advanced usage” for an example of how this can be done.</p>
+<p>The following example shows how a simple <code>xgboost</code> model is trained using the Boston Housing Data, and how <code>shapr</code> can be used to explain the individual predictions. Note that the empirical conditional distribution approach is the default (i.e. <code>approach = "empirical"</code>), and that the Gaussian, Gaussian copula, and ctree approaches can be used instead by setting the argument <code>approach</code> to either <code>"gaussian"</code>, <code>"copula"</code>, or <code>"ctree</code>".</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost">xgboost</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://norskregnesentral.github.io/shapr/">shapr</a></span><span class="op">)</span>
@@ -274,6 +284,96 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <span class="co"># the no-covariate effect</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_copula</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
+<p>The conditional inference tree approach is used as follows:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Use the conditional inference tree approach</span>
+<span class="va">explanation_ctree</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test</span>,
+  approach <span class="op">=</span> <span class="st">"ctree"</span>,
+  explainer <span class="op">=</span> <span class="va">explainer</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p</span>
+<span class="op">)</span>
+
+<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding </span>
+<span class="co"># the no-covariate effect</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_ctree</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
+<p>We can use mixed (i.e continuous, categorical, ordinal) data with ctree. Use ctree with categorical data in the following manner:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x_var_cat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"chas"</span>, <span class="st">"rad"</span>, <span class="st">"indus"</span><span class="op">)</span>
+<span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span>
+
+<span class="co"># convert to factors</span>
+<span class="va">Boston</span><span class="op">$</span><span class="va">rad</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">$</span><span class="va">rad</span><span class="op">)</span>
+<span class="va">Boston</span><span class="op">$</span><span class="va">chas</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">$</span><span class="va">chas</span><span class="op">)</span>
+
+<span class="va">x_train_cat</span> <span class="op">&lt;-</span> <span class="va">Boston</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">6</span>, <span class="va">x_var_cat</span><span class="op">]</span>
+<span class="va">y_train</span> <span class="op">&lt;-</span> <span class="va">Boston</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">6</span>, <span class="va">y_var</span><span class="op">]</span>
+<span class="va">x_test_cat</span> <span class="op">&lt;-</span> <span class="va">Boston</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="va">x_var_cat</span><span class="op">]</span>
+
+<span class="co"># -- special function when using categorical data + xgboost</span>
+<span class="va">dummylist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_dummies.html">make_dummies</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">x_train_cat</span>, <span class="va">x_test_cat</span><span class="op">)</span><span class="op">)</span>
+<span class="va">x_train_dummy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_dummies.html">apply_dummies</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">dummylist</span>, newdata <span class="op">=</span> <span class="va">x_train_cat</span><span class="op">)</span>
+<span class="va">x_test_dummy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_dummies.html">apply_dummies</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">dummylist</span>, newdata <span class="op">=</span> <span class="va">x_test_cat</span><span class="op">)</span>
+
+<span class="co"># Fitting a basic xgboost model to the training data</span>
+<span class="va">model_cat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">x_train_dummy</span>,
+  label <span class="op">=</span> <span class="va">y_train</span>,
+  nround <span class="op">=</span> <span class="fl">20</span>,
+  verbose <span class="op">=</span> <span class="cn">FALSE</span>
+<span class="op">)</span>
+<span class="va">model_cat</span><span class="op">$</span><span class="va">dummylist</span> <span class="op">&lt;-</span> <span class="va">dummylist</span>
+
+<span class="va">explainer_cat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">x_train_cat</span>, <span class="va">model_cat</span><span class="op">)</span>
+
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">)</span>
+
+<span class="va">explanation_ctree</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test_cat</span>,
+  approach <span class="op">=</span> <span class="st">"ctree"</span>,
+  explainer <span class="op">=</span> <span class="va">explainer_cat</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p</span>
+<span class="op">)</span>
+
+<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding </span>
+<span class="co"># the no-covariate effect</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_ctree</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<p>We can specify parameters used to build the conditional inference trees using the following manner. Default values are based on <span class="citation">Hothorn, Hornik, and Zeileis (2006)</span>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Use the conditional inference tree approach</span>
+<span class="co"># We can specify parameters used to building trees by specifying mincriterion, </span>
+<span class="co"># minsplit, minbucket</span>
+
+<span class="va">explanation_ctree</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test</span>,
+  approach <span class="op">=</span> <span class="st">"ctree"</span>,
+  explainer <span class="op">=</span> <span class="va">explainer</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p</span>,
+  mincriterion <span class="op">=</span> <span class="fl">0.80</span>, 
+  minsplit <span class="op">=</span> <span class="fl">20</span>,
+  minbucket <span class="op">=</span> <span class="fl">20</span>
+<span class="op">)</span>
+
+<span class="co"># Default parameters (based on (Hothorn, 2006)) are:</span>
+<span class="co"># mincriterion = 0.95</span>
+<span class="co"># minsplit = 20</span>
+<span class="co"># minbucket = 7</span></code></pre></div>
+<p>We can also specify multiple different mincriterion (1 minus the boundary for when to stop splitting nodes) parameters to use when conditioning on different numbers of features. In this case, a vector of length = number of features must be provided.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Use the conditional inference tree approach</span>
+<span class="co"># Specify a vector of mincriterions instead of just one</span>
+<span class="co"># In this case, when conditioning on 1 or 2 features, use mincriterion = 0.25</span>
+<span class="co"># When conditioning on 3 or 4 features, use mincriterion = 0.95</span>
+
+<span class="va">explanation_ctree</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test</span>,
+  approach <span class="op">=</span> <span class="st">"ctree"</span>,
+  explainer <span class="op">=</span> <span class="va">explainer</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p</span>,
+  mincriterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.95</span>, <span class="fl">0.95</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
 <div id="main-arguments-in-shapr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#main-arguments-in-shapr" class="anchor"></a>Main arguments in <code>shapr</code>
@@ -297,10 +397,10 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <div id="combined-approach" class="section level2">
 <h2 class="hasAnchor">
 <a href="#combined-approach" class="anchor"></a>Combined approach</h2>
-<p>In addition to letting the user select one of the three aforementioned approaches for estimating the conditional distribution of the data (i.e. <code>approach</code> equals either <a href="#gaussian"><code>"gaussian"</code></a>, <a href="#copula"><code>"copula"</code></a> or <a href="#empirical"><code>"empirical"</code></a>), the package allows the user to combine the three approaches. To simplify the usage, the flexibility is restricted such that the same approach is used when conditioning on the same number of features. This is also in line <span class="citation">Aas, Jullum, and Løland (2019, Section 3.4)</span>.</p>
+<p>In addition to letting the user select one of the three aforementioned approaches for estimating the conditional distribution of the data (i.e. <code>approach</code> equals either <a href="#gaussian"><code>"gaussian"</code></a>, <a href="#copula"><code>"copula"</code></a>, <a href="#empirical"><code>"empirical"</code></a> or <a href="#ctree"><code>"ctree"</code></a>) the package allows the user to combine the four approaches. To simplify the usage, the flexibility is restricted such that the same approach is used when conditioning on the same number of features. This is also in line <span class="citation">Aas, Jullum, and Løland (2019, Section 3.4)</span>.</p>
 <p>This can be done by setting <code>approach</code> equal to a character vector, where the length of the vector is equal to the number of features in the model. Consider a situation where you have trained a model that consists of 10 features, and you would like to use the <code>"empirical"</code> approach when you condition on 1-3 features, the <code>"copula"</code> approach when you condition on 4-5 features, and the <code>"gaussian"</code> approach when conditioning on 6 or more features. This can be applied by simply passing <code>approach = c(rep("empirical", 3), rep("copula", 2), rep("gaussian", 5))</code>, i.e. <code>approach[i]</code> determines which method to use when conditioning on <code>i</code> features.</p>
 <p>The code below exemplifies this approach for a case where there are four features, using <code>"empirical", "copula"</code> and <code>"gaussian"</code> when conditioning on respectively 1, 2 and 3-4 features. Note that it does not matter what method that is specified when conditioning on all features, as that equals the actual prediction regardless of the specified approach.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Use the combined approach</span>
 <span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
   <span class="va">x_test</span>,
@@ -312,7 +412,58 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span>
 <span class="co"># the no-covariate effect</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_combined</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<p>As a second example using <code>"ctree"</code> for the first 3 features and <code>"empirical"</code> for the last:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Use the combined approach</span>
+<span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test</span>,
+  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ctree"</span>, <span class="st">"ctree"</span>, <span class="st">"ctree"</span>, <span class="st">"empirical"</span><span class="op">)</span>,
+  explainer <span class="op">=</span> <span class="va">explainer</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p</span>
+<span class="op">)</span></code></pre></div>
+</div>
+<div id="using-ctree-when-features-are-mixed-numerical-and-categorical" class="section level2">
+<h2 class="hasAnchor">
+<a href="#using-ctree-when-features-are-mixed-numerical-and-categorical" class="anchor"></a>Using ctree when features are mixed numerical and categorical</h2>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span><span class="op">)</span>
+<span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span>
+
+<span class="co"># Convert two features as factors</span>
+<span class="va">dt</span> <span class="op">&lt;-</span> <span class="va">Boston</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">x_var</span>, <span class="va">y_var</span><span class="op">)</span><span class="op">]</span>
+<span class="va">dt</span><span class="op">$</span><span class="va">rm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">dt</span><span class="op">$</span><span class="va">rm</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span>
+<span class="va">dt</span><span class="op">$</span><span class="va">dis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">dt</span><span class="op">$</span><span class="va">dis</span><span class="op">/</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">xy_train_cat</span> <span class="op">&lt;-</span> <span class="va">dt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">6</span>, <span class="op">]</span>
+<span class="va">y_train_cat</span> <span class="op">&lt;-</span> <span class="va">dt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">6</span>, <span class="va">y_var</span><span class="op">]</span>
+<span class="va">x_train_cat</span> <span class="op">&lt;-</span> <span class="va">dt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">6</span>, <span class="va">x_var</span><span class="op">]</span>
+<span class="va">x_test_cat</span> <span class="op">&lt;-</span> <span class="va">dt</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="va">x_var</span><span class="op">]</span>
+
+
+<span class="co"># Fit a basic linear regression model to the training data</span>
+<span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">dis</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">xy_train_cat</span><span class="op">)</span>
+
+<span class="co"># Prepare the data for explanation</span>
+<span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">x_train_cat</span>, <span class="va">model</span><span class="op">)</span>
+
+<span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">y_train_cat</span><span class="op">)</span>
+
+<span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
+<span class="va">explanation_categorical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
+  <span class="va">x_test_cat</span>,
+  approach <span class="op">=</span> <span class="st">"ctree"</span>,
+  explainer <span class="op">=</span> <span class="va">explainer</span>,
+  prediction_zero <span class="op">=</span> <span class="va">p</span>
+<span class="op">)</span>
+<span class="co"># Note that nothing has to be specified to tell "ctree" that two of the features are </span>
+<span class="co"># cateogrical and two are numerical</span>
+
+<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding </span>
+<span class="co"># the no-covariate effect</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_categorical</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
 </div>
 <div id="explain-custom-models" class="section level2">
 <h2 class="hasAnchor">
@@ -328,7 +479,7 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 </li>
 </ul>
 <p>Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above. Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple additional functions to the class your model belongs to. The first class function is <code>model_type</code>, taking the model object as input, and outputting a character indicating whether the model is a (continuous response) <code>"regression"</code> model, or a (binary) <code>"classification"</code> model. The second function is <code>predict_model</code>, taking the model and data (as a <code>matrix</code> or <code>data.frame</code>) as input and outputting the corresponding prediction as a numeric vector. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a <code>gbm</code> model using the <code>gbm</code> package, fitted to the same Boston data set as used above.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gbm-developers/gbm">gbm</a></span><span class="op">)</span>
 <span class="co">#&gt; Loaded gbm 2.1.8</span>
 
@@ -389,7 +540,7 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span>
 <span class="co"># the no-covariate effect.</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_combined</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-6-1.png" width="672"> Note that this explains a different (but similar) model than the above xgboost model!</p>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-12-1.png" width="672"> Note that this explains a different (but similar) model than the above xgboost model!</p>
 <p><a id="compare"></a></p>
 <p><br></p>
 </div>
@@ -408,8 +559,17 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <div id="ref-aas2019explaining">
 <p>Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>arXiv Preprint arXiv:1903.10464</em>.</p>
 </div>
+<div id="ref-hothorn2006unbiased">
+<p>Hothorn, Torsten, Kurt Hornik, and Achim Zeileis. 2006. “Unbiased Recursive Partitioning: A Conditional Inference Framework.” <em>Journal of Computational and Graphical Statistics</em> 15 (3): 651–74.</p>
+</div>
+<div id="ref-partykit_package">
+<p>Hothorn, Torsten, and Achim Zeileis. 2015. “partykit: A Modular Toolkit for Recursive Partytioning in R.” <em>Journal of Machine Learning Research</em> 16: 3905–9.</p>
+</div>
 <div id="ref-lundberg2017unified">
 <p>Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.</p>
+</div>
+<div id="ref-Redelmeier2020ctree">
+<p>Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predictive Models with Mixed Features Using Shapley Values and Conditional Inference Trees.” <em>Submitted</em>.</p>
 </div>
 <div id="ref-rosenblatt1956">
 <p>Rosenblatt, Murray. 1956. “Remarks on Some Nonparametric Estimates of a Density Function.” <em>The Annals of Mathematical Statistics</em> 27: 832–37.</p>

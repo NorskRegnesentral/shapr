@@ -16,6 +16,9 @@
     <loc>https://norskregnesentral.github.io/shapr//reference/correction_matrix_cpp.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/create_ctree.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/explain.html</loc>
   </url>
   <url>
@@ -77,6 +80,9 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/sample_copula.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/sample_ctree.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/sample_gaussian.html</loc>
