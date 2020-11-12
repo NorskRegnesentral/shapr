@@ -4,24 +4,27 @@
 \alias{make_dummies}
 \title{Initiate the making of dummy variables}
 \usage{
-make_dummies(data, newdata)
+make_dummies(traindata, testdata)
 }
 \arguments{
-\item{data}{data.table or data.frame. Includes all the features (both factors and possibly others).}
+\item{traindata}{data.table or data.frame.}
 
-\item{newdata}{data.table or data.frame. New data (features) that has the same
-features as \code{data}.}
+\item{testdata}{data.table or data.frame. New data that has the same
+feature names, types, and levels as \code{traindata}.}
 }
 \value{
 A list that contains the following entries:
 \describe{
 \item{obj}{List, Contains \describe{
+\item{data}{Dataframe. Passing the traindata. This is purely for the internal \code{apply_dummies} function.}
 \item{features}{Vector. Contains the names of all the features in \code{data}.}
 \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
 \item{factor_list}{List. Contains each factor and its vector of levels.}
 \item{contrasts_list}{List. Contains all the contrasts of the factors.}
 }}
-\item{model.matrix}{A data.frame containing all of the factors in \code{new_data} as
+\item{train_dummies}{A data.frame containing all of the factors in \code{traindata} as
+one-hot encoded variables.}
+\item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
 one-hot encoded variables.}
 }
 }
@@ -41,7 +44,7 @@ x_test <- as.data.frame(Boston[1:4, x_var])
 x_train$rm <- factor(round(x_train$rm))
 x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 
-dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_test)
+dummylist <- make_dummies(traindata = x_train, testdata = x_test)
 
 }
 \author{

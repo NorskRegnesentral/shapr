@@ -67,8 +67,6 @@ print(levels(x_train_cat$rm))
 print(levels(x_test_cat$rm))
 
 # Tests---
-
-
 # 1) Train has more features than test but features in test are contained in train
 x_train1 <- cbind(x_train_cat, 1)
 x_test1 <- x_test_cat

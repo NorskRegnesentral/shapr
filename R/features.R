@@ -182,15 +182,17 @@ helper_feature <- function(m, feature_sample) {
 #' @return A list that contains the following entries:
 #' \describe{
 #' \item{obj}{List, Contains \describe{
+#' \item{data}{Dataframe. Passing the traindata. This is purely for the internal \code{apply_dummies} function.}
 #' \item{features}{Vector. Contains the names of all the features in \code{data}.}
 #' \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
 #' \item{factor_list}{List. Contains each factor and its vector of levels.}
 #' \item{contrasts_list}{List. Contains all the contrasts of the factors.}
 #' }}
-#' \item{model.matrix}{A data.frame containing all of the factors in \code{new_data} as
+#' \item{train_dummies}{A data.frame containing all of the factors in \code{traindata} as
+#' one-hot encoded variables.}
+#' \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
 #' one-hot encoded variables.}
 #' }
-#'
 #'
 #' @export
 #'
@@ -220,19 +222,19 @@ make_dummies <- function(traindata, testdata) {
   features <- colnames(traindata)
 
   if (is.null(colnames(traindata))) {
-    stop("data must have column names.")
+    stop("traindata must have column names.")
   }
   if (is.null(colnames(testdata))) {
     stop("testdata must have column names.")
   }
   if (length(unique(features)) < length(features)) {
-    stop("Columns of traindata must have unique names.")
+    stop("traindata must have unique column names.")
   }
   if (length(unique(colnames(testdata))) < length(colnames(testdata))) {
-    stop("Columns of testdata must have unique names.")
+    stop("testdata must have unique column names.")
   }
   if (!all(features %in% names(testdata))) {
-    stop("Some features missing from testdata")
+    stop(paste0("The feature(s) ", paste0(features[!(features %in% names(testdata))], collapse = ", "), " are missing from testdata."))
   }
 
   # in case the testing data has a different column order or more columns than the training data:
@@ -263,7 +265,7 @@ make_dummies <- function(traindata, testdata) {
 
   for (i in names(list_levels_train)) {
     if (!setequal(list_levels_test[[i]], list_levels_train[[i]])) {
-      stop("Levels of categorical variables in traindata and testdata must be the same!")
+      stop("Levels of categorical variables in traindata and testdata must be the same.")
     }
   }
 
@@ -306,7 +308,7 @@ make_dummies <- function(traindata, testdata) {
 #' Make dummy variables - this is an internal function intended only to be used in
 #' predict_model.xgb.Booster()
 #'
-#' @param obj List. Output of \code{make_dummies}.
+#' @param obj List. Output of \code{make_dummies$obj}.
 #'
 #' @param testdata data.table or data.frame. New data that has the same
 #' feature names, types, and levels as \code{obj$data}.
@@ -334,7 +336,7 @@ apply_dummies <- function(obj, testdata) {
     stop("Some features missing from testdata")
   }
   if (length(unique(colnames(testdata))) < length(colnames(testdata))) {
-    stop("Columns of testdata must have unique names.")
+    stop("testdata must have unique column names.")
   }
 
   # in case the testing data has a different column order or more columns than the training data:
