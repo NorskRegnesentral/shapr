@@ -31,17 +31,15 @@ Initiate the making of dummy variables
 \examples{
 
 data("Boston", package = "MASS")
-
-x_var <- c("lstat", "chas", "rad", "indus")
+x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
+x_train <- as.data.frame(Boston[401:411, x_var])
+y_train <- Boston[401:408, y_var]
+x_test <- as.data.frame(Boston[1:4, x_var])
 
-# convert to factors
-Boston$rad = as.factor(Boston$rad)
-Boston$chas = as.factor(Boston$chas)
-
-x_train <- Boston[-1:-6, x_var]
-y_train <- Boston[-1:-6, y_var]
-x_test <- Boston[1:6, x_var]
+# convert to factors for illustational purpose
+x_train$rm <- factor(round(x_train$rm))
+x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 
 dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_test)
 

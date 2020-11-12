@@ -21,26 +21,6 @@ one-hot encoded variables.
 Make dummy variables - this is an internal function intended only to be used in
 predict_model.xgb.Booster()
 }
-\examples{
-
-data("Boston", package = "MASS")
-
-x_var <- c("lstat", "chas", "rad", "indus")
-y_var <- "medv"
-
-# convert to factors
-Boston$rad = as.factor(Boston$rad)
-Boston$chas = as.factor(Boston$chas)
-
-x_train <- Boston[-1:-6, x_var]
-y_train <- Boston[-1:-6, y_var]
-x_test <- Boston[1:6, x_var]
-
-dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_train)
-
-x_train_dummies <- apply_dummies(obj = dummylist$obj, newdata = x_train)
-
-}
 \author{
 Annabelle Redelmeier
 }

@@ -271,3 +271,4 @@ test_that("test sample_ctree", {
   expect_identical(r, data.table::as.data.table(x_test_dt))
 
 })
+

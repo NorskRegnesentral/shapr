@@ -344,18 +344,20 @@ y_train <- Boston[-1:-6, y_var]
 x_test_cat <- Boston[1:6, x_var_cat]
 
 # -- special function when using categorical data + xgboost
-dummylist <- make_dummies(data = rbind(x_train_cat, x_test_cat))
-x_train_dummy <- apply_dummies(obj = dummylist, newdata = x_train_cat)
-x_test_dummy <- apply_dummies(obj = dummylist, newdata = x_test_cat)
+dummylist_train <- make_dummies(data = rbind(x_train_cat, x_test_cat), newdata = x_train_cat)
+dummylist_test <- make_dummies(data = rbind(x_train_cat, x_test_cat), newdata = x_test_cat)
+
+x_train_dummy <- dummylist_train$model.matrix
+x_test_dummy <- dummylist_test$model.matrix
 
 # Fitting a basic xgboost model to the training data
-model_cat <- xgboost(
+model_cat <- xgboost::xgboost(
   data = x_train_dummy,
   label = y_train,
   nround = 20,
   verbose = FALSE
 )
-model_cat$dummylist <- dummylist
+model_cat$dummylist <- dummylist_train$obj
 
 explainer_cat <- shapr(x_train_cat, model_cat)
 
