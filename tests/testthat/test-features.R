@@ -213,7 +213,7 @@ test_that("Test make_dummies", {
   expect_error(make_dummies(data = x_train4, newdata = x_train4))
 
   # What if data and newdata don't have the same levels?
-  x_test_diff_levels = droplevels(x_test)
+  x_test_diff_levels <- droplevels(x_test)
 
   expect_error(make_dummies(data = rbind(x_train, x_test_diff_levels), newdata = x_test_diff_levels))
   expect_error(make_dummies(data = rbind(x_train, x_test), newdata = x_test_diff_levels))

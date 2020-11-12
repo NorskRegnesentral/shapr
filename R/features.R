@@ -257,8 +257,8 @@ make_dummies <- function(data, newdata) {
   nb_factor_new <- sum(is_factor_new)
   list_levels_new <- lapply(newdata0[, is_factor_new, with = FALSE], levels)
 
-  for(i in names(list_levels_all)){
-    if(!setequal(list_levels_new[[i]], list_levels_all[[i]])){
+  for (i in names(list_levels_all)) {
+    if (!setequal(list_levels_new[[i]], list_levels_all[[i]])) {
       stop("Levels of categorical variables in data and newdata must be the same!")
     }
   }
@@ -341,8 +341,8 @@ apply_dummies <- function(obj, newdata) {
   is_factor_new <- sapply(newdata, is.factor) # check which features are factors
   list_levels_new <- lapply(newdata[, is_factor_new, with = FALSE], levels)
 
-  for(i in names(list_levels_all)){
-    if(!setequal(list_levels_new[[i]], list_levels_all[[i]])){
+  for (i in names(list_levels_all)) {
+    if (!setequal(list_levels_new[[i]], list_levels_all[[i]])) {
       stop("Levels of categorical variables in data and newdata must be the same!")
     }
   }
