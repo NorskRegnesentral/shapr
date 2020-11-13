@@ -191,6 +191,9 @@ helper_feature <- function(m, feature_sample) {
 #' one-hot encoded variables.}
 #' \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
 #' one-hot encoded variables.}
+#' \item{traindata_new}{Original traindata with correct column ordering and factor levels.}
+#' \item{testdata_new}{Original testdata with correct column ordering and factor levels. Important for
+#' explain() function.}
 #' }
 #'
 #' @export
@@ -309,7 +312,8 @@ make_dummies <- function(traindata, testdata) {
                                contrasts.arg = obj$contrasts_list)
 
 
-  return(list(obj = obj, train_dummies = train_dummies, test_dummies = test_dummies))
+  return(list(obj = obj, train_dummies = train_dummies, test_dummies = test_dummies, traindata_new = traindata,
+              testdata_new = testdata))
 
 }
 

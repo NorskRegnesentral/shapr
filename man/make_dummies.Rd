@@ -25,6 +25,9 @@ A list that contains the following entries:
 one-hot encoded variables.}
 \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
 one-hot encoded variables.}
+\item{traindata_new}{Original traindata with correct column ordering and factor levels.}
+\item{testdata_new}{Original testdata with correct column ordering and factor levels. Important for
+explain() function.}
 }
 }
 \description{

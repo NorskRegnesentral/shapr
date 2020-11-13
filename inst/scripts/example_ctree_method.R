@@ -84,13 +84,15 @@ model_cat <- xgboost::xgboost(
 )
 model_cat$dummylist <- make_dummies_list$obj
 
-explainer_cat <- shapr(x_train_cat, model_cat)
+explainer_cat <- shapr(make_dummies_list$traindata_new, model_cat)
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
 
+# make_dummies_list$testdata_new$rm
+
 explanation_cat <- explain(
-  x_test_cat,
+  make_dummies_list$testdata_new,
   approach = "ctree",
   explainer = explainer_cat,
   prediction_zero = p0
