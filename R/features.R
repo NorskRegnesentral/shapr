@@ -182,7 +182,6 @@ helper_feature <- function(m, feature_sample) {
 #' @return A list that contains the following entries:
 #' \describe{
 #' \item{obj}{List, Contains \describe{
-#' \item{data}{Dataframe. Passing the traindata. This is purely for the internal \code{apply_dummies} function.}
 #' \item{features}{Vector. Contains the names of all the features in \code{data}.}
 #' \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
 #' \item{factor_list}{List. Contains each factor and its vector of levels.}
@@ -217,9 +216,8 @@ make_dummies <- function(traindata, testdata) {
 
   contrasts <- features <- factor_features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
 
-  traindata <- data.table::as.data.table(as.data.frame(traindata, stringsAsFactors = FALSE))
-  testdata <- data.table::as.data.table(as.data.frame(testdata, stringsAsFactors = FALSE))
-  features <- colnames(traindata)
+  traindata <- data.table::as.data.table(traindata)
+  testdata <- data.table::as.data.table(testdata)
 
   if (is.null(colnames(traindata))) {
     stop("traindata must have column names.")
@@ -227,46 +225,57 @@ make_dummies <- function(traindata, testdata) {
   if (is.null(colnames(testdata))) {
     stop("testdata must have column names.")
   }
-  if (length(unique(features)) < length(features)) {
-    stop("traindata must have unique column names.")
-  }
-  if (length(unique(colnames(testdata))) < length(colnames(testdata))) {
-    stop("testdata must have unique column names.")
-  }
-  if (!all(features %in% names(testdata))) {
-    stop(paste0("The feature(s) ", paste0(features[!(features %in% names(testdata))], collapse = ", "), " are missing from testdata."))
+  if (length(colnames(traindata)) != length(colnames(testdata))) {
+    stop("traindata and testdata must have the same number of columns.")
   }
 
-  # in case the testing data has a different column order or more columns than the training data:
+  if (!all(sort(colnames(traindata)) == sort(colnames(testdata)))) {
+    stop("traindata and testdata must have the same column names.")
+  }
+
+  features <- colnames(traindata)
+  # feature names must be unique
+  if (length(unique(features)) < length(features)) {
+    stop("Both traindata and testdata must have unique column names.")
+  }
+
+  # Check if any features have empty names i.e ""
+  if (any(features == "")) {
+    stop("One or more features is missing a name.")
+  }
+
+  # In case the testing data has a different column order than the training data:
   testdata <- testdata[, features, with = FALSE]
 
-  # this checks if the features have the same types. We don't check using "class" because columns that are
-  # lists would pass that check
-  for (i in features) {
-    if (is.numeric(traindata[[i]]) != is.numeric(testdata[[i]])) {
-      stop(paste0("Feature ", i, " has a different type in the training and test data."))
-    } else if (is.numeric(traindata[[i]]) !=  is.numeric(testdata[[i]])) {
-      stop(paste0("Feature ", i, " has a different type in the train and test data sets."))
-    }
+  # Check if the features all have class "numeric" or "factor
+  if (!all(sapply(traindata, class) %in% c("numeric", "factor"))) {
+    stop("All traindata must have class numeric or factor.")
   }
-  # Check if any features have empty names i.e ""
-  for (i in features) {
-    if (i == "") {
-      stop("One or more features is missing a name.")
-    }
+  if (!all(sapply(testdata, class) %in% c("numeric", "factor"))) {
+    stop("All testdata must have class numeric or factor.")
+  }
+  # Check if traindata and testdata have features with the same class
+  if (!all(sapply(traindata, class) == sapply(testdata, class))) {
+    stop("All traindata and testdata must have the same classes.")
   }
 
   # Check that traindata and testdata have the same levels for the factor features
   is_factor <- sapply(traindata, is.factor) # check which features are factors
-  nb_factor <- sum(is_factor) # we don't have to do this for testdata because we already checked the feature types
-                              # were the same above
-  list_levels_train <- lapply(traindata[, is_factor, with = FALSE], levels)
-  list_levels_test <- lapply(testdata[, is_factor, with = FALSE], levels)
+  nb_factor <- sum(is_factor)
 
+  list_levels_train <- lapply(traindata[, is_factor, with = FALSE], function(x) {sort(levels(x))})
+  list_levels_test <- lapply(testdata[, is_factor, with = FALSE], function(x) {sort(levels(x))})
+
+  if (!identical(list_levels_train, list_levels_test)) {
+    stop("Levels of categorical variables in traindata and testdata must be the same.")
+  }
+
+  # re-level traindata and testdata
   for (i in names(list_levels_train)) {
-    if (!setequal(list_levels_test[[i]], list_levels_train[[i]])) {
-      stop("Levels of categorical variables in traindata and testdata must be the same.")
-    }
+    traindata[[i]] <- factor(traindata[[i]], levels = list_levels_train[[i]])
+  }
+  for (i in names(list_levels_test)) {
+    testdata[[i]] <- factor(testdata[[i]], levels = list_levels_test[[i]])
   }
 
   if (nb_factor > 0) {
@@ -277,14 +286,13 @@ make_dummies <- function(traindata, testdata) {
     factor_list <- NULL
   }
 
-  # do we need to combine train and test here? - probably just train because they have the same levels?
   contrasts_list <- lapply(traindata[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
 
-  obj <- list(data = traindata,
-              features = features,
+  obj <- list(features = features,
               factor_features = factor_features,
               factor_list = factor_list,
-              contrasts_list = contrasts_list)
+              contrasts_list = contrasts_list,
+              class_vector = sapply(traindata, class))
 
   # get train dummies
   m <- model.frame(data = traindata,
@@ -324,10 +332,8 @@ apply_dummies <- function(obj, testdata) {
 
   features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
 
-  traindata <- obj$data
-
-  testdata <- data.table::as.data.table(as.data.frame(testdata, stringsAsFactors = FALSE))
-  features <- colnames(traindata)
+  testdata <- data.table::as.data.table(testdata)
+  features <- obj$features
 
   if (is.null(colnames(testdata))) {
     stop("testdata must have column names.")
@@ -342,26 +348,25 @@ apply_dummies <- function(obj, testdata) {
   # in case the testing data has a different column order or more columns than the training data:
   testdata <- testdata[, features, with = FALSE]
 
-  # this checks if the features have the same types. We don't check using "class" because columns that are
-  # lists would pass that check
-  for (i in features) {
-    if (is.numeric(traindata[[i]]) != is.numeric(testdata[[i]])) {
-      stop(paste0("Feature ", i, " has a different type in the training and test data."))
-    } else if (is.numeric(traindata[[i]]) !=  is.numeric(testdata[[i]])) {
-      stop(paste0("Feature ", i, " has a different type in the train and test data sets."))
-    }
+  if (!all(sapply(testdata, class) %in% c("numeric", "factor"))) {
+    stop("All testdata must have class numeric or factor.")
+  }
+  if (!all(obj$class_vector == sapply(testdata, class))) {
+    stop("All traindata and testdata must have the same classes.")
   }
 
   # Check that traindata and data have the same levels for the factor features
-  is_factor <- sapply(traindata, is.factor) # check which features are factors
-  nb_factor <- sum(is_factor)
-  list_levels_train <- lapply(traindata[, is_factor, with = FALSE], levels)
-  list_levels_test <- lapply(testdata[, is_factor, with = FALSE], levels)
+  is_factor <- obj$factor_features
+  list_levels_train <- obj$factor_list
+  list_levels_test <- lapply(testdata[, is_factor, with = FALSE], function(x){sort(levels(x))})
 
-  for (i in names(list_levels_train)) {
-    if (!setequal(list_levels_test[[i]], list_levels_train[[i]])) {
-      stop("Levels of categorical variables in traindata and testdata must be the same!")
-    }
+  if (!identical(list_levels_train, list_levels_test)) {
+    stop("Levels of categorical variables in traindata and testdata must be the same.")
+  }
+
+  # re-level testdata
+  for (i in names(list_levels_test)) {
+    testdata[[i]] <- factor(testdata[[i]], levels = list_levels_test[[i]])
   }
 
   m <- model.frame(data = testdata,

@@ -16,7 +16,6 @@ feature names, types, and levels as \code{traindata}.}
 A list that contains the following entries:
 \describe{
 \item{obj}{List, Contains \describe{
-\item{data}{Dataframe. Passing the traindata. This is purely for the internal \code{apply_dummies} function.}
 \item{features}{Vector. Contains the names of all the features in \code{data}.}
 \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
 \item{factor_list}{List. Contains each factor and its vector of levels.}
