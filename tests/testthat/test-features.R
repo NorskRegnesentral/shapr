@@ -177,14 +177,14 @@ test_that("Test make_dummies", {
   y_train <- Boston[401:408, y_var]
   x_test <- as.data.frame(Boston[1:4, x_var])
 
-  # convert to factors for illustational purpose
+  # convert to factors for illustrational purpose
   x_train$rm <- factor(round(x_train$rm))
   x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 
   factor_feat <- sapply(x_train, is.factor)
   nb_factor_feat <- sum(factor_feat)
 
-  dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_train)
+  dummylist <- make_dummies(traindata = x_train, testdata = x_train)
 
   # Tests
   expect_type(dummylist, "list")
@@ -197,26 +197,99 @@ test_that("Test make_dummies", {
 
   expect_equal(ncol(dummylist$obj$contrasts_list$rm), length(levels(x_train$rm)))
 
-  # What if you have two variables with the same name? - error
+  # 1) What if train has more features than test but features in test are contained in train
+  x_train1 <- cbind(x_train, 1)
+  x_test1 <- x_test
+  expect_error(make_dummies(traindata = x_train1, testdata = x_test1))
+
+  # 2) What if train has different feature types than test
   x_train2 <- x_train
-  colnames(x_train2) <- c("X1", "X2", "X3", "X3")
-  expect_error(make_dummies(data = x_train2, newdata = x_train))
+  x_test2 <- x_test
+  x_test2$rm <- as.numeric(x_test2$rm)
+  expect_error(make_dummies(traindata = x_train2, testdata = x_test2))
 
-  # What if one variables has an empty name? - error
+  # 3) What if test has more features than train but features in train are contained in test
   x_train3 <- x_train
-  colnames(x_train3) <- c("", "X2", "X3", "X4")
-  expect_error(make_dummies(data = x_train3, newdata = x_train3))
+  x_test3 <- cbind(x_test, 1)
+  expect_error(make_dummies(traindata = x_train3, testdata = x_test3))
 
-  # What if data has no column names - error
+  # 4) What if train and test only have numerical features
   x_train4 <- x_train
-  colnames(x_train4) <- NULL
-  expect_error(make_dummies(data = x_train4, newdata = x_train4))
+  x_train4$rm <- as.numeric(x_train4$rm)
+  x_test4 <- x_test
+  x_test4$rm <- as.numeric(x_test4$rm)
+  expect_type(make_dummies(traindata = x_train4, testdata = x_test4), "list")
 
-  # What if data and newdata don't have the same levels?
-  x_test_diff_levels <- droplevels(x_test)
+  # 5) What if train and test only have categorical features
+  x_train5 <- x_train
+  x_train5 <- x_train5[, "rm", drop = FALSE]
+  x_test5 <- x_test
+  x_test5 <- x_test5[, "rm", drop = FALSE]
+  expect_type(make_dummies(traindata = x_train5, testdata = x_test5), "list")
 
-  expect_error(make_dummies(data = rbind(x_train, x_test_diff_levels), newdata = x_test_diff_levels))
-  expect_error(make_dummies(data = rbind(x_train, x_test), newdata = x_test_diff_levels))
+  # 6) What if test has the same levels as train but random ordering of levels
+  x_train6 <- x_train
+  x_train6$rm <- factor(x_train6$rm, levels = 4:9)
+  x_test6 <- x_test
+  x_test6$rm <- factor(x_test6$rm, levels = c(8, 9, 7, 4, 5, 6))
+  expect_type(make_dummies(traindata = x_train6, testdata = x_test6), "list")
+
+  # 7) What if test has different levels than train
+  x_train7 <- x_train
+  x_train7$rm <- factor(x_train7$rm, levels = 4:9)
+  x_test7 <- x_test
+  x_test7$rm <- factor(x_test7$rm, levels = 6:8)
+  expect_error(make_dummies(traindata = x_train7, testdata = x_test7))
+
+  # 8) What if train and test have different feature names
+  x_train8 <- x_train
+  x_test8 <- x_test
+  names(x_test8) <- c("lstat2", "rm2", "dis2", "indus2")
+  expect_error(make_dummies(traindata = x_train8, testdata = x_test8))
+
+  # 9) What if one variables has an empty name
+  x_train9 <- x_train
+  colnames(x_train9) <- c("", "rm", "dis", "indus")
+  x_test9 <- x_test
+  colnames(x_test9) <- c("", "rm", "dis", "indus")
+  expect_error(make_dummies(traindata = x_train9, testdata = x_test9))
+
+  # 10) What if traindata has a column that repeats
+  x_train10 <- cbind(x_train, lstat = x_train$lstat)
+  x_test10 <- cbind(x_test, lstat = x_test$lstat)
+  expect_error(make_dummies(traindata = x_train10, testdata = x_test10))
+
+  # 11) What if traindata has no column names
+  x_train11 <- x_train
+  colnames(x_train11) <- NULL
+  x_test11 <- x_test
+  colnames(x_test11) <- NULL
+  expect_error(make_dummies(traindata = x_train11, testdata = x_test11))
+
+  # 12 Test that traindata_new and testdata_new will be the same as the original
+  # x_train and x_test. The only time this is different is if the levels of train
+  # and test are different. See below.
+  dummylist12 <- make_dummies(traindata = x_train, testdata = x_test)
+  #
+  expect_true(all(data.frame(dummylist12$traindata_new) == x_train))
+  expect_true(all(levels(dummylist12$traindata_new$rm) == levels(x_train$rm)))
+  expect_true(all(data.frame(dummylist12$testdata_new) == x_test))
+  expect_true(all(levels(dummylist12$testdata_new$rm) == levels(x_test$rm)))
+
+
+  # 13 Different levels same as check # 12
+  #
+  x_train13 <- x_train
+  x_train13$rm <- factor(x_train13$rm, levels = 4:9)
+  x_test13 <- x_test
+  x_test13$rm <- factor(x_test13$rm, levels = c(8, 9, 7, 4, 5, 6))
+  dummylist13 <- make_dummies(traindata = x_train13, testdata = x_test13)
+  #
+  expect_true(all(data.frame(dummylist13$traindata_new) == x_train13))
+  expect_true(all(levels(dummylist13$traindata_new$rm) == levels(x_train13$rm)))
+  expect_true(all(data.frame(dummylist13$testdata_new) == x_test13))
+  # Important !!!!
+  expect_false(all(levels(dummylist13$testdata_new$rm) == levels(x_test13$rm)))
 
 })
 
@@ -230,43 +303,72 @@ test_that("Test apply_dummies", {
   y_train <- Boston[401:408, y_var]
   x_test <- as.data.frame(Boston[1:4, x_var])
 
-  # convert to factors for illustational purpose
+  # convert to factors for illustrational purpose
   x_train$rm <- factor(round(x_train$rm))
   x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 
   numeric_feat <- !sapply(x_train, is.factor)
   nb_numeric_feat <- sum(numeric_feat)
 
-  dummylist <- make_dummies(data = rbind(x_train, x_test), newdata = x_train)
+  dummylist <- make_dummies(traindata = x_train, testdata = x_test)
 
-  x_train_dummies <- apply_dummies(obj = dummylist$obj, newdata = x_train)
+  # have to call devtools::load_all() for internal functions
+  x_test_dummies <- apply_dummies(obj = dummylist$obj, testdata = x_test)
 
   # Tests
-  expect_type(x_train_dummies, "double")
+  expect_type(x_test_dummies, "double")
 
-  expect_equal(ncol(x_train_dummies),
+  expect_equal(ncol(x_test_dummies),
                nb_numeric_feat + length(dummylist$obj$factor_list$rm))
 
-  # What if you re-arrange the columns in x_train?
+  # Test that make_dummies() and apply_dummies() gives the same output
+  # for a given traindata and testdata
+  expect_true(all(dummylist$test_dummies == x_test_dummies))
 
-  x_train0 <- x_train[, c(2, 3, 1, 4)]
-  # apply_dummies will re-arrange the columns to match x_train in dummylist
-  diff_column_placements <- apply_dummies(dummylist$obj, newdata = x_train0)
-  expect_equal(colnames(diff_column_placements), colnames(x_train_dummies))
+  # 1) What if you re-arrange the columns in x_train
+  x_test1 <- x_test[, c(2, 3, 1, 4)]
+  diff_column_placements <- apply_dummies(obj = dummylist$obj, testdata = x_test1)
+  expect_equal(colnames(diff_column_placements), colnames(x_test_dummies))
 
-  # What if you put in less features then the original feature vector?
-  x_train1 <- x_train[, c(2, 1)]
-  expect_error(apply_dummies(dummylist$obj, newdata = x_train1))
+  # 2) What if you put in less features then the original traindata
+  x_test2 <- x_test[, c(2, 1)]
+  expect_error(apply_dummies(dummylist$obj, testdata = x_test2))
 
-  # What if you change the feature types?
-  x_train_num <- sapply(x_train, as.numeric)
-  expect_error(apply_dummies(dummylist$obj, newdata = x_train_num))
+  # 3) What if you change the feature types of testdata
+  x_test3 <- sapply(x_test, as.numeric)
+  expect_error(apply_dummies(dummylist$obj, testdata = x_test3))
 
-  # What if you add a feature?
-  x_train2 <- cbind(x_train[, c(1, 2)], new_var = x_train[, 2], x_train[, c(3, 4)])
+  # 4) What if you add a feature
+  x_test4 <- cbind(x_train[, c(1, 2)], new_var = x_train[, 2], x_train[, c(3, 4)])
+  expect_error(apply_dummies(dummylist$obj, testdata = x_test4))
 
-  # will not throw an error - do we want it to throw an error?
-  a_new_var <- apply_dummies(dummylist$obj, newdata = x_train2)
-  expect_equal(ncol(a_new_var), ncol(x_train_dummies))
+  # 6) What if test has the same levels as train but random ordering of levels
+  x_test6 <- x_test
+  x_test6$rm <- factor(x_test6$rm, levels = c(8, 9, 7, 4, 5, 6))
+  expect_error(apply_dummies(dummylist$obj, testdata = x_test6))
+
+  # 7) What if test has different levels than train
+  x_test7 <- x_test
+  x_test7$rm <- factor(x_test7$rm, levels = 6:8)
+  expect_error(apply_dummies(dummylist$obj, testdata = x_test7))
+
+  # 8) What if train and test have different feature names
+  x_test8 <- x_test
+  names(x_test8) <- c("lstat2", "rm2", "dis2", "indus2")
+  expect_error(apply_dummies(dummylist$obj, testdata = x_test8))
+
+  # 9) What if one variables has an empty name
+  x_test9 <- x_test
+  colnames(x_test9) <- c("", "rm", "dis", "indus")
+  expect_error(apply_dummies(dummylist$obj, testdata = x_test9))
+
+  # 10) What if traindata has a column that repeats
+  x_test10 <- cbind(x_test, lstat = x_test$lstat)
+  expect_error(apply_dummies(dummylist$obj, testdata = x_test10))
+
+  # 11) What if testdata has no column names
+  x_test11 <- x_test
+  colnames(x_test11) <- NULL
+  expect_error(apply_dummies(dummylist$obj, testdata = x_test11))
 
 })

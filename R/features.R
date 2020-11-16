@@ -219,15 +219,16 @@ make_dummies <- function(traindata, testdata) {
 
   contrasts <- features <- factor_features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
 
-  traindata <- data.table::as.data.table(traindata)
-  testdata <- data.table::as.data.table(testdata)
-
   if (is.null(colnames(traindata))) {
     stop("traindata must have column names.")
   }
   if (is.null(colnames(testdata))) {
     stop("testdata must have column names.")
   }
+
+  traindata <- data.table::as.data.table(traindata)
+  testdata <- data.table::as.data.table(testdata)
+
   if (length(colnames(traindata)) != length(colnames(testdata))) {
     stop("traindata and testdata must have the same number of columns.")
   }
@@ -238,7 +239,7 @@ make_dummies <- function(traindata, testdata) {
 
   features <- colnames(traindata)
   # feature names must be unique
-  if (length(unique(features)) < length(features)) {
+  if (any(duplicated(features))) {
     stop("Both traindata and testdata must have unique column names.")
   }
 
@@ -336,16 +337,20 @@ apply_dummies <- function(obj, testdata) {
 
   features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
 
-  testdata <- data.table::as.data.table(testdata)
-  features <- obj$features
-
   if (is.null(colnames(testdata))) {
     stop("testdata must have column names.")
   }
-  if (!all(features %in% names(testdata))) {
-    stop("Some features missing from testdata")
+
+  testdata <- data.table::as.data.table(testdata)
+  features <- obj$features
+
+  if (length(features) != length(colnames(testdata))) {
+    stop("traindata and testdata must have the same number of columns.")
   }
-  if (length(unique(colnames(testdata))) < length(colnames(testdata))) {
+  if (!all(sort(features) == sort(colnames(testdata)))) {
+    stop("traindata and testdata must have the same column names.")
+  }
+  if (any(duplicated(colnames(testdata)))) {
     stop("testdata must have unique column names.")
   }
 
@@ -359,7 +364,7 @@ apply_dummies <- function(obj, testdata) {
     stop("All traindata and testdata must have the same classes.")
   }
 
-  # Check that traindata and data have the same levels for the factor features
+  # Check that traindata and testdata have the same levels for the factor features
   is_factor <- obj$factor_features
   list_levels_train <- obj$factor_list
   list_levels_test <- lapply(testdata[, is_factor, with = FALSE], function(x){sort(levels(x))})
