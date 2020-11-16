@@ -217,8 +217,8 @@ helper_feature <- function(m, feature_sample) {
 #'
 make_dummies <- function(traindata, testdata) {
 
-  contrasts <- features <- factor_features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
-
+  contrasts <- features <- factor_features <- NULL # due to NSE notes in R CMD check
+  # <- model.frame <- model.matrix
   if (is.null(colnames(traindata))) {
     stop("traindata must have column names.")
   }
@@ -335,8 +335,8 @@ make_dummies <- function(traindata, testdata) {
 #'
 apply_dummies <- function(obj, testdata) {
 
-  features <- model.frame <- model.matrix <- NULL # due to NSE notes in R CMD check
-
+  features <- NULL # due to NSE notes in R CMD check
+  # model.frame <- model.matrix
   if (is.null(colnames(testdata))) {
     stop("testdata must have column names.")
   }
