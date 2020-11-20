@@ -4,18 +4,31 @@
 \alias{make_dummies}
 \title{Initiate the making of dummy variables}
 \usage{
-make_dummies(data)
+make_dummies(traindata, testdata)
 }
 \arguments{
-\item{data}{data.table or data.frame. Includes all the features (both factors and possibly others).}
+\item{traindata}{data.table or data.frame.}
+
+\item{testdata}{data.table or data.frame. New data that has the same
+feature names, types, and levels as \code{traindata}.}
 }
 \value{
 A list that contains the following entries:
 \describe{
+\item{obj}{List, Contains \describe{
 \item{features}{Vector. Contains the names of all the features in \code{data}.}
 \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
 \item{factor_list}{List. Contains each factor and its vector of levels.}
 \item{contrasts_list}{List. Contains all the contrasts of the factors.}
+}}
+\item{train_dummies}{A data.frame containing all of the factors in \code{traindata} as
+one-hot encoded variables.}
+\item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
+one-hot encoded variables.}
+\item{traindata_new}{Original traindata with correct column ordering and factor levels. To be passed to
+\code{shapr()}.}
+\item{testdata_new}{Original testdata with correct column ordering and factor levels. To be passed to
+\code{explain()}.}
 }
 }
 \description{
@@ -24,19 +37,17 @@ Initiate the making of dummy variables
 \examples{
 
 data("Boston", package = "MASS")
-
-x_var <- c("lstat", "chas", "rad", "indus")
+x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
+x_train <- as.data.frame(Boston[401:411, x_var])
+y_train <- Boston[401:408, y_var]
+x_test <- as.data.frame(Boston[1:4, x_var])
 
-# convert to factors
-Boston$rad = as.factor(Boston$rad)
-Boston$chas = as.factor(Boston$chas)
+# convert to factors for illustational purpose
+x_train$rm <- factor(round(x_train$rm))
+x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 
-x_train <- Boston[-1:-6, x_var]
-y_train <- Boston[-1:-6, y_var]
-x_test <- Boston[1:6, x_var]
-
-dummylist <- make_dummies(data = rbind(x_train, x_test))
+dummylist <- make_dummies(traindata = x_train, testdata = x_test)
 
 }
 \author{

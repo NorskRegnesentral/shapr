@@ -2,43 +2,26 @@
 % Please edit documentation in R/features.R
 \name{apply_dummies}
 \alias{apply_dummies}
-\title{Make dummy variables}
+\title{Make dummy variables - this is an internal function intended only to be used in
+predict_model.xgb.Booster()}
 \usage{
-apply_dummies(obj, newdata)
+apply_dummies(obj, testdata)
 }
 \arguments{
-\item{obj}{List. Output of \code{make_dummies}.}
+\item{obj}{List. Output of \code{make_dummies$obj}.}
 
-\item{newdata}{data.table or data.frame. New data (features) that has the same
-features as the data used in \code{make_dummies}.}
+\item{testdata}{data.table or data.frame. New data that has the same
+feature names, types, and levels as \code{obj$data}.}
 }
 \value{
-A data.frame containing all of the factors in \code{new_data} as
+A data.frame containing all of the factors in \code{testdata} as
 one-hot encoded variables.
 }
 \description{
-Make dummy variables
-}
-\examples{
-
-data("Boston", package = "MASS")
-
-x_var <- c("lstat", "chas", "rad", "indus")
-y_var <- "medv"
-
-# convert to factors
-Boston$rad = as.factor(Boston$rad)
-Boston$chas = as.factor(Boston$chas)
-
-x_train <- Boston[-1:-6, x_var]
-y_train <- Boston[-1:-6, y_var]
-x_test <- Boston[1:6, x_var]
-
-dummylist <- make_dummies(data = rbind(x_train, x_test))
-
-x_train_dummies <- apply_dummies(obj = dummylist, newdata = x_train)
-
+Make dummy variables - this is an internal function intended only to be used in
+predict_model.xgb.Booster()
 }
 \author{
 Annabelle Redelmeier
 }
+\keyword{internal}

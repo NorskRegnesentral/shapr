@@ -344,25 +344,26 @@ y_train <- Boston[-1:-6, y_var]
 x_test_cat <- Boston[1:6, x_var_cat]
 
 # -- special function when using categorical data + xgboost
-dummylist <- make_dummies(data = rbind(x_train_cat, x_test_cat))
-x_train_dummy <- apply_dummies(obj = dummylist, newdata = x_train_cat)
-x_test_dummy <- apply_dummies(obj = dummylist, newdata = x_test_cat)
+make_dummies_list <- make_dummies(traindata = x_train_cat, testdata = x_test_cat)
+
+x_train_dummy <- make_dummies_list$train_dummies
+x_test_dummy <- make_dummies_list$test_dummies
 
 # Fitting a basic xgboost model to the training data
-model_cat <- xgboost(
+model_cat <- xgboost::xgboost(
   data = x_train_dummy,
   label = y_train,
   nround = 20,
   verbose = FALSE
 )
-model_cat$dummylist <- dummylist
+model_cat$dummylist <- make_dummies_list$obj
 
-explainer_cat <- shapr(x_train_cat, model_cat)
+explainer_cat <- shapr(make_dummies_list$traindata_new, model_cat)
 
 p <- mean(y_train)
 
-explanation_ctree <- explain(
-  x_test_cat,
+explanation_cat <- explain(
+  make_dummies_list$testdata_new,
   approach = "ctree",
   explainer = explainer_cat,
   prediction_zero = p
@@ -395,7 +396,6 @@ explanation_ctree <- explain(
 # mincriterion = 0.95
 # minsplit = 20
 # minbucket = 7
-
 ```
 
 We can also specify multiple different mincriterion (1 minus the boundary for when to stop splitting nodes) parameters to use when conditioning on different numbers of features. In this case, a vector of length = number of features must be provided. 
@@ -413,8 +413,6 @@ explanation_ctree <- explain(
   prediction_zero = p,
   mincriterion = c(0.25, 0.25, 0.95, 0.95)
 )
-
-
 ```
 
 

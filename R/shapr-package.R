@@ -9,6 +9,10 @@
 #'
 #' @importFrom stats as.formula
 #'
+#' @importFrom stats model.matrix
+#'
+#' @importFrom stats model.frame
+#'
 #' @importFrom Rcpp sourceCpp
 #'
 #' @keywords internal
