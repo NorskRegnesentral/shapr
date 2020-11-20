@@ -252,12 +252,12 @@ make_dummies <- function(traindata, testdata) {
   # In case the testing data has a different column order than the training data:
   testdata <- testdata[, features, with = FALSE]
 
-  # Check if the features all have class "numeric" or "factor
-  if (!all(sapply(traindata, class) %in% c("numeric", "factor"))) {
-    stop("All traindata must have class numeric or factor.")
+  # Check if the features all have class "integer", "numeric" or "factor
+  if (!all(sapply(traindata, class) %in% c("integer", "numeric", "factor"))) {
+    stop("All traindata must have class integer, numeric or factor.")
   }
-  if (!all(sapply(testdata, class) %in% c("numeric", "factor"))) {
-    stop("All testdata must have class numeric or factor.")
+  if (!all(sapply(testdata, class) %in% c("integer", "numeric", "factor"))) {
+    stop("All testdata must have class integer, numeric or factor.")
   }
   # Check if traindata and testdata have features with the same class
   if (!all(sapply(traindata, class) == sapply(testdata, class))) {
@@ -355,8 +355,8 @@ apply_dummies <- function(obj, testdata) {
   # in case the testing data has a different column order or more columns than the training data:
   testdata <- testdata[, features, with = FALSE]
 
-  if (!all(sapply(testdata, class) %in% c("numeric", "factor"))) {
-    stop("All testdata must have class numeric or factor.")
+  if (!all(sapply(testdata, class) %in% c("integer", "numeric", "factor"))) {
+    stop("All testdata must have class integer, numeric or factor.")
   }
   if (!all(obj$class_vector == sapply(testdata, class))) {
     stop("All traindata and testdata must have the same classes.")
