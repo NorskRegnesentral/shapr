@@ -191,9 +191,10 @@ helper_feature <- function(m, feature_sample) {
 #' one-hot encoded variables.}
 #' \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
 #' one-hot encoded variables.}
-#' \item{traindata_new}{Original traindata with correct column ordering and factor levels.}
-#' \item{testdata_new}{Original testdata with correct column ordering and factor levels. Important for
-#' explain() function.}
+#' \item{traindata_new}{Original traindata with correct column ordering and factor levels. To be passed to
+#' \code{shapr()}.}
+#' \item{testdata_new}{Original testdata with correct column ordering and factor levels. To be passed to
+#' \code{explain().}
 #' }
 #'
 #' @export
@@ -345,13 +346,10 @@ apply_dummies <- function(obj, testdata) {
   features <- obj$features
 
   if (length(features) != length(colnames(testdata))) {
-    stop("traindata and testdata must have the same number of columns.")
+    stop("testdata must have the same number of columns as traindata.")
   }
   if (!all(sort(features) == sort(colnames(testdata)))) {
-    stop("traindata and testdata must have the same column names.")
-  }
-  if (any(duplicated(colnames(testdata)))) {
-    stop("testdata must have unique column names.")
+    stop("testdata must have the same column names as traindata.")
   }
 
   # in case the testing data has a different column order or more columns than the training data:
