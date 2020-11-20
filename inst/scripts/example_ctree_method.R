@@ -60,14 +60,10 @@ x_test_cat <- as.data.frame(x_test)
 # convert to factors for illustational purpose
 x_train_cat$rm <- factor(round(x_train_cat$rm))
 x_test_cat$rm <- factor(round(x_test_cat$rm), levels = c(8, 9, 7, 4, 5, 6))
-# x_test_cat$rm <- factor(round(x_test_cat$rm)) # this won't work because different levels!
 
 # Make sure they have the same levels!
 print(levels(x_train_cat$rm))
 print(levels(x_test_cat$rm))
-
-# traindata = x_train_cat
-# testdata = x_test_cat
 
 # -- special function when using categorical data + xgboost
 make_dummies_list <- make_dummies(traindata = x_train_cat, testdata = x_test_cat)

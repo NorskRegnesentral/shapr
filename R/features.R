@@ -194,7 +194,7 @@ helper_feature <- function(m, feature_sample) {
 #' \item{traindata_new}{Original traindata with correct column ordering and factor levels. To be passed to
 #' \code{shapr()}.}
 #' \item{testdata_new}{Original testdata with correct column ordering and factor levels. To be passed to
-#' \code{explain().}
+#' \code{explain()}.}
 #' }
 #'
 #' @export
@@ -268,8 +268,8 @@ make_dummies <- function(traindata, testdata) {
   is_factor <- sapply(traindata, is.factor) # check which features are factors
   nb_factor <- sum(is_factor)
 
-  list_levels_train <- lapply(traindata[, is_factor, with = FALSE], function(x) {sort(levels(x))})
-  list_levels_test <- lapply(testdata[, is_factor, with = FALSE], function(x) {sort(levels(x))})
+  list_levels_train <- lapply(traindata[, is_factor, with = FALSE], function(x) sort(levels(x)))
+  list_levels_test <- lapply(testdata[, is_factor, with = FALSE], function(x) sort(levels(x)))
 
   if (!identical(list_levels_train, list_levels_test)) {
     stop("Levels of categorical variables in traindata and testdata must be the same.")
@@ -337,7 +337,6 @@ make_dummies <- function(traindata, testdata) {
 apply_dummies <- function(obj, testdata) {
 
   features <- NULL # due to NSE notes in R CMD check
-  # model.frame <- model.matrix
   if (is.null(colnames(testdata))) {
     stop("testdata must have column names.")
   }
@@ -365,7 +364,7 @@ apply_dummies <- function(obj, testdata) {
   # Check that traindata and testdata have the same levels for the factor features
   is_factor <- obj$factor_features
   list_levels_train <- obj$factor_list
-  list_levels_test <- lapply(testdata[, is_factor, with = FALSE], function(x){sort(levels(x))})
+  list_levels_test <- lapply(testdata[, is_factor, with = FALSE], function(x) sort(levels(x)))
 
   if (!identical(list_levels_train, list_levels_test)) {
     stop("Levels of categorical variables in traindata and testdata must be the same.")
