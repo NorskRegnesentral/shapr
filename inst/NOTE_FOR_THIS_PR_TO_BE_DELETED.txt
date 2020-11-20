@@ -1,0 +1,16 @@
+NOTE: In this PR I will do
+
+1. within shapr and explain, check that the factors have the same levels as provided in the model objects
+  a.  check if input is data.frame/data.table or matrix. If matrix, do nothing
+      if data.frame, convert to data.table, then
+      check which factors are specified in the model object (dummylist for xgboost, something else in lm and glm),
+      and then check if that matches the data. This COULD be done within the features-functions,
+      separately extracing AND checking within the individual functions.
+      A better approach is perhaps to make a check_features function, which does the checking and will call the features
+      function which are simplified to only return lists with the different features, their class and if factors,
+      also their levels. Other packages must have the same "problem". Maybe I can see how this is
+      done in e.g. lime.
+
+
+        -- this could be specified
+
