@@ -126,24 +126,38 @@
     <p>Initiate the making of dummy variables</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_dummies</span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>make_dummies</span><span class='op'>(</span><span class='va'>traindata</span>, <span class='va'>testdata</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>data</th>
-      <td><p>data.table or data.frame. Includes all the features (both factors and possibly others).</p></td>
+      <th>traindata</th>
+      <td><p>data.table or data.frame.</p></td>
+    </tr>
+    <tr>
+      <th>testdata</th>
+      <td><p>data.table or data.frame. New data that has the same
+feature names, types, and levels as <code>traindata</code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A list that contains the following entries:</p><dl>
+<dt>obj</dt><dd><p>List, Contains <dl>
 <dt>features</dt><dd><p>Vector. Contains the names of all the features in <code>data</code>.</p></dd>
 <dt>factor_features</dt><dd><p>Vector. Contains the names of all the factors in <code>data</code>.</p></dd>
 <dt>factor_list</dt><dd><p>List. Contains each factor and its vector of levels.</p></dd>
-<dt>contrasts_list</dt><dd><p>List. Contains all the contrasts of the factors.</p></dd>
+<dt>contrasts_list</dt><dd><p>List. Contains all the contrasts of the factors.</p></dd></dl></p></dd>
+<dt>train_dummies</dt><dd><p>A data.frame containing all of the factors in <code>traindata</code> as
+one-hot encoded variables.</p></dd>
+<dt>test_dummies</dt><dd><p>A data.frame containing all of the factors in <code>testdata</code> as
+one-hot encoded variables.</p></dd>
+<dt>traindata_new</dt><dd><p>Original traindata with correct column ordering and factor levels. To be passed to
+<code><a href='shapr.html'>shapr()</a></code>.</p></dd>
+<dt>testdata_new</dt><dd><p>Original testdata with correct column ordering and factor levels. To be passed to
+<code><a href='explain.html'>explain()</a></code>.</p></dd>
 
 </dl>
 
@@ -154,19 +168,17 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"Boston"</span>, package <span class='op'>=</span> <span class='st'>"MASS"</span><span class='op'>)</span>
-
-<span class='va'>x_var</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"lstat"</span>, <span class='st'>"chas"</span>, <span class='st'>"rad"</span>, <span class='st'>"indus"</span><span class='op'>)</span>
+<span class='va'>x_var</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"lstat"</span>, <span class='st'>"rm"</span>, <span class='st'>"dis"</span>, <span class='st'>"indus"</span><span class='op'>)</span>
 <span class='va'>y_var</span> <span class='op'>&lt;-</span> <span class='st'>"medv"</span>
+<span class='va'>x_train</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='va'>Boston</span><span class='op'>[</span><span class='fl'>401</span><span class='op'>:</span><span class='fl'>411</span>, <span class='va'>x_var</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>y_train</span> <span class='op'>&lt;-</span> <span class='va'>Boston</span><span class='op'>[</span><span class='fl'>401</span><span class='op'>:</span><span class='fl'>408</span>, <span class='va'>y_var</span><span class='op'>]</span>
+<span class='va'>x_test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='va'>Boston</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>, <span class='va'>x_var</span><span class='op'>]</span><span class='op'>)</span>
 
-<span class='co'># convert to factors</span>
-<span class='va'>Boston</span><span class='op'>$</span><span class='va'>rad</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>Boston</span><span class='op'>$</span><span class='va'>rad</span><span class='op'>)</span>
-<span class='va'>Boston</span><span class='op'>$</span><span class='va'>chas</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>Boston</span><span class='op'>$</span><span class='va'>chas</span><span class='op'>)</span>
+<span class='co'># convert to factors for illustational purpose</span>
+<span class='va'>x_train</span><span class='op'>$</span><span class='va'>rm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='va'>x_train</span><span class='op'>$</span><span class='va'>rm</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>x_test</span><span class='op'>$</span><span class='va'>rm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='va'>x_test</span><span class='op'>$</span><span class='va'>rm</span><span class='op'>)</span>, levels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>x_train</span><span class='op'>$</span><span class='va'>rm</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='va'>x_train</span> <span class='op'>&lt;-</span> <span class='va'>Boston</span><span class='op'>[</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>:</span><span class='op'>-</span><span class='fl'>6</span>, <span class='va'>x_var</span><span class='op'>]</span>
-<span class='va'>y_train</span> <span class='op'>&lt;-</span> <span class='va'>Boston</span><span class='op'>[</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>:</span><span class='op'>-</span><span class='fl'>6</span>, <span class='va'>y_var</span><span class='op'>]</span>
-<span class='va'>x_test</span> <span class='op'>&lt;-</span> <span class='va'>Boston</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>6</span>, <span class='va'>x_var</span><span class='op'>]</span>
-
-<span class='va'>dummylist</span> <span class='op'>&lt;-</span> <span class='fu'>make_dummies</span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>x_train</span>, <span class='va'>x_test</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>dummylist</span> <span class='op'>&lt;-</span> <span class='fu'>make_dummies</span><span class='op'>(</span>traindata <span class='op'>=</span> <span class='va'>x_train</span>, testdata <span class='op'>=</span> <span class='va'>x_test</span><span class='op'>)</span>
 
 </div></pre>
   </div>

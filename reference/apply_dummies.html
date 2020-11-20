@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make dummy variables — apply_dummies • shapr</title>
+<title>Make dummy variables - this is an internal function intended only to be used in
+predict_model.xgb.Booster() — apply_dummies • shapr</title>
 
 
 <!-- jquery -->
@@ -39,8 +40,10 @@
 
 
 
-<meta property="og:title" content="Make dummy variables — apply_dummies" />
-<meta property="og:description" content="Make dummy variables" />
+<meta property="og:title" content="Make dummy variables - this is an internal function intended only to be used in
+predict_model.xgb.Booster() — apply_dummies" />
+<meta property="og:description" content="Make dummy variables - this is an internal function intended only to be used in
+predict_model.xgb.Booster()" />
 
 
 
@@ -117,59 +120,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make dummy variables</h1>
+    <h1>Make dummy variables - this is an internal function intended only to be used in
+predict_model.xgb.Booster()</h1>
     <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/features.R'><code>R/features.R</code></a></small>
     <div class="hidden name"><code>apply_dummies.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make dummy variables</p>
+    <p>Make dummy variables - this is an internal function intended only to be used in
+predict_model.xgb.Booster()</p>
     </div>
 
-    <pre class="usage"><span class='fu'>apply_dummies</span><span class='op'>(</span><span class='va'>obj</span>, <span class='va'>newdata</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>apply_dummies</span><span class='op'>(</span><span class='va'>obj</span>, <span class='va'>testdata</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>obj</th>
-      <td><p>List. Output of <code>make_dummies</code>.</p></td>
+      <td><p>List. Output of <code>make_dummies$obj</code>.</p></td>
     </tr>
     <tr>
-      <th>newdata</th>
-      <td><p>data.table or data.frame. New data (features) that has the same
-features as the data used in <code>make_dummies</code>.</p></td>
+      <th>testdata</th>
+      <td><p>data.table or data.frame. New data that has the same
+feature names, types, and levels as <code>obj$data</code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data.frame containing all of the factors in <code>new_data</code> as
+    <p>A data.frame containing all of the factors in <code>testdata</code> as
 one-hot encoded variables.</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Annabelle Redelmeier</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"Boston"</span>, package <span class='op'>=</span> <span class='st'>"MASS"</span><span class='op'>)</span>
-
-<span class='va'>x_var</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"lstat"</span>, <span class='st'>"chas"</span>, <span class='st'>"rad"</span>, <span class='st'>"indus"</span><span class='op'>)</span>
-<span class='va'>y_var</span> <span class='op'>&lt;-</span> <span class='st'>"medv"</span>
-
-<span class='co'># convert to factors</span>
-<span class='va'>Boston</span><span class='op'>$</span><span class='va'>rad</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>Boston</span><span class='op'>$</span><span class='va'>rad</span><span class='op'>)</span>
-<span class='va'>Boston</span><span class='op'>$</span><span class='va'>chas</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>Boston</span><span class='op'>$</span><span class='va'>chas</span><span class='op'>)</span>
-
-<span class='va'>x_train</span> <span class='op'>&lt;-</span> <span class='va'>Boston</span><span class='op'>[</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>:</span><span class='op'>-</span><span class='fl'>6</span>, <span class='va'>x_var</span><span class='op'>]</span>
-<span class='va'>y_train</span> <span class='op'>&lt;-</span> <span class='va'>Boston</span><span class='op'>[</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>:</span><span class='op'>-</span><span class='fl'>6</span>, <span class='va'>y_var</span><span class='op'>]</span>
-<span class='va'>x_test</span> <span class='op'>&lt;-</span> <span class='va'>Boston</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>6</span>, <span class='va'>x_var</span><span class='op'>]</span>
-
-<span class='va'>dummylist</span> <span class='op'>&lt;-</span> <span class='fu'><a href='make_dummies.html'>make_dummies</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>x_train</span>, <span class='va'>x_test</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='va'>x_train_dummies</span> <span class='op'>&lt;-</span> <span class='fu'>apply_dummies</span><span class='op'>(</span>obj <span class='op'>=</span> <span class='va'>dummylist</span>, newdata <span class='op'>=</span> <span class='va'>x_train</span><span class='op'>)</span>
-
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
