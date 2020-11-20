@@ -312,7 +312,6 @@ test_that("Test apply_dummies", {
 
   dummylist <- make_dummies(traindata = x_train, testdata = x_test)
 
-  # have to call devtools::load_all() for internal functions
   x_test_dummies <- apply_dummies(obj = dummylist$obj, testdata = x_test)
 
   # Tests
