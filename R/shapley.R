@@ -137,12 +137,10 @@ shapr <- function(x,
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)
 
-  feature_list_model = get_model_features(model,feature_labels)
+  feature_list_model <- get_model_features(model,feature_labels)
+  feature_list_x_train <- get_data_features(x_train) # CONTINUE HERE ADDING THIS FUNCTION
 
-
-  feature_labels <- features(model, colnames(x), feature_labels)
-  explainer$n_features <- length(feature_labels)
-
+  explainer$n_features <- length(feature_list_model$labels)
 
   # Removes variables that are not included in model   --------------
   cnms_remove <- setdiff(colnames(x), feature_labels)

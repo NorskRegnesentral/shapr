@@ -342,29 +342,36 @@ get_model_features <- function(x,feature_labels) {
 get_model_features.default <- function(x, feature_labels = NULL) {
 
   # For custom models
-  feature_list = lapply(feature_labels,function(x) list(type = NA))
-  names(feature_list) = feature_labels
+  feature_list = list()
+  feature_list$labels <- feature_labels
+  feature_list$classes <- rep(NA,length(feature_labels))
+  feature_list$factor_levels = NULL
 
   return(feature_list)
-
 }
 
 #' @rdname get_model_features
 #' @export
 get_model_features.lm <- function(x, feature_labels = NULL) {
 
-  nms <- tail(all.vars(x$terms), -1)
+  feature_list = list()
+  feature_list$labels <- labels(x$terms)
+  feature_list$classes <- attr(x$terms,"dateClasses")
+  feature_list$factor_levels = x$xlevels
 
-  return(nms)
+  return(feature_list)
 }
 
 #' @rdname get_model_features
 #' @export
 get_model_features.glm <- function(x, feature_labels = NULL) {
 
-  nms <- tail(all.vars(x$terms), -1)
+  feature_list = list()
+  feature_list$labels <- labels(x$terms)
+  feature_list$classes <- attr(x$terms,"dateClasses")
+  feature_list$factor_levels = x$xlevels
 
-  return(nms)
+  return(feature_list)
 }
 
 #' @rdname get_model_features
@@ -380,33 +387,44 @@ get_model_features.ranger <- function(x, feature_labels = NULL) {
       )
     )
   }
+  feature_list = list()
+  feature_list$labels <- unique_features(x$forest$independent.variable.names)
+  feature_list$classes <- rep(NA,length(feature_list$labels)) # Not supported
+  feature_list$factor_levels <- x$forest$covariate.levels # Only provided when respect.unordered.factors == T
 
-  nms <- x$forest$independent.variable.names
-
-  nms <- unique_features(nms)
-
-  return(nms)
+  return(feature_list)
 }
 
 #' @rdname get_model_features
 #' @export
 get_model_features.gam <- function(x, feature_labels = NULL) {
 
-  nms <- tail(all.vars(x$terms), -1)
+  feature_list = list()
+  feature_list$labels <- labels(x$terms)
+  feature_list$classes <- attr(x$terms,"dateClasses")
+  feature_list$factor_levels = x$xlevels
 
-  return(nms)
+  return(feature_list)
 }
 
 #' @rdname get_model_features
 #' @export
 get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
 
-  nms <- x$feature_names
+  feature_list = list()
 
-  if (!is.null(x[["dummylist"]])) {
-    # GET THINGS FROM THIS LIST
+  if (is.null(x[["dummylist"]])) {
+    feature_list$labels <- x$feature_names
+    feature_list$classes <- rep(NA,length(feature_list$labels)) # Not supported
+    feature_list$factor_levels <- NULL
+  } else {
+    feature_list$labels <- dummylist$features
+    feature_list$classes <- x$dummylist$class_vector
+    feature_list$factor_levels = x$dummylist$factor_list
+  }
 
-  return(nms)
+  return(feature_list)
+
 }
 
 
