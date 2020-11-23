@@ -404,16 +404,6 @@ features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
   return(nms)
 }
 
-#' @keywords internal
-message_features_labels <- function() {
-  message(
-    paste0(
-      "\nYou have passed a supported model object, and therefore\n",
-      "features_labels is ignored. The argument is only applicable when\n",
-      "using a custom model. For more information see ?shapr::shapr."
-    )
-  )
-}
 
 #' @keywords internal
 error_feature_labels <- function() {
@@ -426,4 +416,43 @@ error_feature_labels <- function() {
       "For more information see ?shapr::features"
     )
   )
+}
+
+
+#' @keywords internal
+check_custom_models <- function(model,feature_labels) {
+
+  native_models <- substring(as.character(methods(features)),first = 10)
+  is_native_model <- (class(model) %in% native_models)
+
+  if(is_native_model){
+    if(!is.null(feature_labels)){
+      message(
+        paste0(
+          "\nYou have passed a supported model object, and therefore\n",
+          "features_labels is ignored. The argument is only applicable when\n",
+          "using a custom model. For more information see ?shapr::shapr."
+        )
+      )
+    }
+    return(NULL)
+  } else {
+    if(is.character(feature_labels)){
+      message(
+        paste0(
+          "\nIt looks like you are using a custom model. Note that we currently\n",
+          "do not check the class and validity of the features specified in\n",
+          "feature_labels when calling shapr().\n"
+        )
+      )
+    } else {
+      stop(
+        paste0(
+          "\nIt looks like you are using a custom model, and forgot to pass\n",
+          "a valid value for the argument feature_labels when calling shapr().\n",
+          "See ?shapr::shapr for more information about the argument."
+        )
+      )
+    }
+  }
 }

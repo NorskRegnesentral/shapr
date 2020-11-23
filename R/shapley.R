@@ -133,12 +133,16 @@ shapr <- function(x,
   explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
   explainer$model_type <- model_type(model)
 
-  # Checks input argument
-  feature_labels <- features(model, colnames(x), feature_labels)
-  explainer$n_features <- length(feature_labels)
+  # Checks for custom model
+  check_custom_model(model,feature_labels)
 
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)
+
+
+  feature_labels <- features(model, colnames(x), feature_labels)
+  explainer$n_features <- length(feature_labels)
+
 
   # Removes variables that are not included in model   --------------
   cnms_remove <- setdiff(colnames(x), feature_labels)
