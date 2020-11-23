@@ -133,13 +133,11 @@ shapr <- function(x,
   explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
   explainer$model_type <- model_type(model)
 
-  # Checks for custom model
-  check_custom_model(model,feature_labels)
 
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)
 
-  feature_list_model = get_model_features(model)
+  feature_list_model = get_model_features(model,feature_labels)
 
 
   feature_labels <- features(model, colnames(x), feature_labels)

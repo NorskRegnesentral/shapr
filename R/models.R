@@ -298,109 +298,9 @@ model_type.xgb.Booster <- function(x) {
 #'
 #' # Checking that features used by the model corresponds to cnms
 #' features(x = model, cnms = cnms, feature_labels = NULL)
-get_model_features <- function(x) {
-  UseMethod("get_model_features", x)
-}
+get_model_features <- function(x,feature_labels) {
 
-#' @rdname features
-features.default <- function(x) {
-
-}
-
-#' @rdname features
-#' @export
-features.lm <- function(x, cnms, feature_labels = NULL) {
-
-  if (!is.null(feature_labels)) message_features_labels()
-
-  nms <- tail(all.vars(x$terms), -1)
-  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
-
-  return(nms)
-}
-
-#' @rdname features
-#' @export
-features.glm <- function(x, cnms, feature_labels = NULL) {
-
-  if (!is.null(feature_labels)) message_features_labels()
-
-  nms <- tail(all.vars(x$terms), -1)
-  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
-
-  return(nms)
-}
-
-#' @rdname features
-#' @export
-features.ranger <- function(x, cnms, feature_labels = NULL) {
-
-  if (!is.null(feature_labels)) message_features_labels()
-
-  nms <- x$forest$independent.variable.names
-
-  if (is.null(x$forest)) {
-    stop(
-      paste0(
-        "\nIt looks like the model was fitted without saving the forest. Please set\n",
-        "write.forest = TRUE when fitting a model using ranger::ranger()."
-      )
-    )
-  }
-  nms <- unique_features(nms)
-
-  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
-
-  return(nms)
-}
-
-#' @rdname features
-#' @export
-features.gam <- function(x, cnms, feature_labels = NULL) {
-
-  if (!is.null(feature_labels)) message_features_labels()
-
-  nms <- tail(all.vars(x$terms), -1)
-
-  if (!all(nms %in% cnms) | is.null(nms)) error_feature_labels()
-
-  return(nms)
-}
-
-#' @rdname features
-#' @export
-features.xgb.Booster <- function(x, cnms, feature_labels = NULL) {
-  if (!is.null(feature_labels)) message_features_labels()
-
-  nms <- x$feature_names
-
-  if (!is.null(x[["dummylist"]])) {
-    return(cnms)
-  } else {
-    if (!all(nms %in% cnms)) error_feature_labels()
-  }
-
-  return(nms)
-}
-
-
-#' @keywords internal
-error_feature_labels <- function() {
-  stop(
-    paste0(
-      "\nThere is mismatch between the column names in x and\n",
-      "the returned elements from features(model). All elements\n",
-      "from features(model) should be present in colnames(x),\n",
-      "and they cannot be NULL.\n",
-      "For more information see ?shapr::features"
-    )
-  )
-}
-
-
-#' @keywords internal
-check_custom_models <- function(model,feature_labels) {
-
+  # Start with all checking for native models
   native_models <- substring(as.character(methods(features)),first = 10)
   is_native_model <- (class(model) %in% native_models)
 
@@ -411,15 +311,11 @@ check_custom_models <- function(model,feature_labels) {
           "\nYou have passed a supported model object, and therefore\n",
           "features_labels is ignored. The argument is only applicable when\n",
           "using a custom model. For more information see ?shapr::shapr."
+          )
         )
-      )
-    }
-    return(NULL)
-  } else {
+      }
+    } else { # if custom model
     if(is.character(feature_labels)){
-
-      model$feature_list = lapply(feature_labels,function(x) list(type = NA))
-      names(model$feature_list) = feature_labels
 
       message(
         paste0(
@@ -438,4 +334,99 @@ check_custom_models <- function(model,feature_labels) {
       )
     }
   }
+
+  UseMethod("get_model_features", x)
+}
+
+#' @rdname get_model_features
+get_model_features.default <- function(x, feature_labels = NULL) {
+
+  # For custom models
+  feature_list = lapply(feature_labels,function(x) list(type = NA))
+  names(feature_list) = feature_labels
+
+  return(feature_list)
+
+}
+
+#' @rdname get_model_features
+#' @export
+get_model_features.lm <- function(x, feature_labels = NULL) {
+
+  nms <- tail(all.vars(x$terms), -1)
+
+  return(nms)
+}
+
+#' @rdname get_model_features
+#' @export
+get_model_features.glm <- function(x, feature_labels = NULL) {
+
+  nms <- tail(all.vars(x$terms), -1)
+
+  return(nms)
+}
+
+#' @rdname get_model_features
+#' @export
+get_model_features.ranger <- function(x, feature_labels = NULL) {
+
+  # Additional check
+  if (is.null(x$forest)) {
+    stop(
+      paste0(
+        "\nIt looks like the model was fitted without saving the forest. Please set\n",
+        "write.forest = TRUE when fitting a model using ranger::ranger()."
+      )
+    )
+  }
+
+  nms <- x$forest$independent.variable.names
+
+  nms <- unique_features(nms)
+
+  return(nms)
+}
+
+#' @rdname get_model_features
+#' @export
+get_model_features.gam <- function(x, feature_labels = NULL) {
+
+  nms <- tail(all.vars(x$terms), -1)
+
+  return(nms)
+}
+
+#' @rdname get_model_features
+#' @export
+get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
+
+  nms <- x$feature_names
+
+  if (!is.null(x[["dummylist"]])) {
+    # GET THINGS FROM THIS LIST
+
+  return(nms)
+}
+
+
+
+#' @keywords internal
+error_feature_labels <- function() {
+  # USE THIS FUNCTION IN check_feature_labels
+  stop(
+    paste0(
+      "\nThere is mismatch between the column names in x and\n",
+      "the returned elements from features(model). All elements\n",
+      "from features(model) should be present in colnames(x),\n",
+      "and they cannot be NULL.\n",
+      "For more information see ?shapr::features"
+    )
+  )
+}
+
+
+#' @keywords internal
+check_custom_models <- function(model,feature_labels) {
+
 }
