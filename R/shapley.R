@@ -139,6 +139,8 @@ shapr <- function(x,
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)
 
+  feature_list_model = get_model_features(model)
+
 
   feature_labels <- features(model, colnames(x), feature_labels)
   explainer$n_features <- length(feature_labels)

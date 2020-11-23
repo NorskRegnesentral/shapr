@@ -14,3 +14,33 @@ NOTE: In this PR I will do
 
         -- this could be specified
 
+require that data passed to the function is a data.table object
+
+get_model_features(x){
+
+named list with feature_names as names
+every component has two objects:
+1. feature_type
+2. levels (NULL if not a factor)
+
+feature_names = ...
+feature_types
+
+}
+
+save this as feature_list_model and call it only in shapr
+
+get_data_features(x){
+same list as above
+}
+
+check_features(model_feature_labels,data){
+do all the same checks that are done in the make/apply_dummies-functions.
+
+}
+
+in shapr: call this after doing as.data.table(x) where we do features today
+in explain call this in the main function (before setting the class), after a call to as.data.table.
+
+Handling custom models: currently feature_labels are passed. We could still allow that, but then throw a warning
+  that the class has not been checked for custom models -- then coerce to

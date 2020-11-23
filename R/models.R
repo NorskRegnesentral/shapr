@@ -298,34 +298,13 @@ model_type.xgb.Booster <- function(x) {
 #'
 #' # Checking that features used by the model corresponds to cnms
 #' features(x = model, cnms = cnms, feature_labels = NULL)
-features <- function(x, cnms, feature_labels = NULL) {
-  UseMethod("features", x)
+get_model_features <- function(x) {
+  UseMethod("get_model_features", x)
 }
 
 #' @rdname features
-features.default <- function(x, cnms, feature_labels = NULL) {
+features.default <- function(x) {
 
-  if (is.null(feature_labels)) {
-    stop(
-      paste0(
-        "\nIt looks like you are using a custom model, and forgot to pass\n",
-        "a valid value for the argument feature_labels when calling shapr().\n",
-        "See ?shapr::shapr for more information about the argument."
-      )
-    )
-  }
-
-  if (!all(feature_labels %in% cnms)) {
-    stop(
-      paste0(
-        "\nThere is mismatch between the column names in x and\n",
-        "feature_labels. All elements in feature_labels should\n",
-        "be present in colnames(x)."
-      )
-    )
-  }
-
-  feature_labels
 }
 
 #' @rdname features
@@ -438,6 +417,10 @@ check_custom_models <- function(model,feature_labels) {
     return(NULL)
   } else {
     if(is.character(feature_labels)){
+
+      model$feature_list = lapply(feature_labels,function(x) list(type = NA))
+      names(model$feature_list) = feature_labels
+
       message(
         paste0(
           "\nIt looks like you are using a custom model. Note that we currently\n",
