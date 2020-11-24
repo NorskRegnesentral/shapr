@@ -278,13 +278,11 @@ model_type.xgb.Booster <- function(x) {
 #' Fetches feature labels from a given model object
 #'
 #' @inheritParams predict_model
-#' @param cnms Character vector. Represents the names of the columns in the data used for training/explaining.
 #' @param feature_labels Character vector. Represents the labels of the features used for prediction.
 #'
 #' @keywords internal
 #'
 #' @export
-#' @keywords internal
 #'
 #' @examples
 #'# Load example data
@@ -349,6 +347,7 @@ get_model_features.default <- function(x, feature_labels = NULL) {
 
   return(feature_list)
 }
+
 
 #' @rdname get_model_features
 #' @export
@@ -427,6 +426,30 @@ get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
 
 }
 
+#' Fetches feature labels from a given model object
+#'
+#' @param x data.table The data to extract feature information from.
+#'
+#' @keywords internal
+#'
+#' @export
+#'
+#' @examples
+#'# Load example data
+#' data("Boston", package = "MASS")
+#' # Split data into test- and training data
+#' x_train <- as.data.table(head(Boston))
+#' x_train[,rad:=as.factor(rad)]
+#' get_data_features(x_train)
+get_data_features <- function(x){
+
+  feature_list = list()
+  feature_list$labels <- names(x)
+  feature_list$classes <- lapply(x,class)
+  feature_list$factor_levels = lapply(x,levels)
+
+  return(feature_list)
+}
 
 
 #' @keywords internal
