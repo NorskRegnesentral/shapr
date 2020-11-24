@@ -44,3 +44,12 @@ in explain call this in the main function (before setting the class), after a ca
 
 Handling custom models: currently feature_labels are passed. We could still allow that, but then throw a warning
   that the class has not been checked for custom models -- then coerce to
+
+
+TODO:
+
+1. tillat NA i modellen dersom jeg har use_first_as_truth!
+
+
+
+

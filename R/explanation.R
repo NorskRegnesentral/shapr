@@ -123,16 +123,18 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     )
   }
 
-  # Check that x contains correct variables
-  if (!all(explainer$feature_labels %in% colnames(x))) {
-    stop(
-      paste0(
-        "\nThe test data, x, does not contain all features necessary for\n",
-        "generating predictions. Please modify x so that all labels given\n",
-        "by explainer$feature_labels is present in colnames(x)."
-      )
-    )
-  }
+  # Converts to data.table, otherwise copy to x_train  --------------
+  x_test <- data.table::as.data.table(x_test)
+
+  # Check features of test data against model specification/training data
+  feature_list_x_test <- get_data_features(x_test)
+
+  x_test_reordering <- check_features(explainer$feature_list, feature_list_x_test,
+                                       "model/training data", "test data",use_first_list_as_truth = T)
+
+  # Removes features that are not included in model and reorders the columns --------------
+  x_test <- x_test[,..x_test_reordering]
+  explainer$x_test <- x_test
 
   if (length(approach) > 1) {
     class(x) <- "combined"
@@ -175,7 +177,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
                               start_aicc = 0.1, w_threshold = 0.95, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
+  explainer$x_test <- as.matrix(explainer$x_test)
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec

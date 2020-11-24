@@ -137,6 +137,7 @@ shapr <- function(x,
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)
 
+  # Check features of training data against model specification
   feature_list_model <- get_model_features(model,feature_labels)
   feature_list_x_train <- get_data_features(x_train)
 
@@ -182,6 +183,7 @@ shapr <- function(x,
   explainer$feature_labels <- feature_labels
   explainer$x <- NULL
   explainer$p <- NULL
+  explainer$feature_list <- feature_list_model
 
   attr(explainer, "class") <- c("explainer", "list")
 

@@ -429,7 +429,7 @@ get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
 
 #' Fetches feature labels from a given model object
 #'
-#' @param x data.table The data to extract feature information from.
+#' @param x matrix, data.frame or data.table The data to extract feature information from.
 #'
 #' @keywords internal
 #'
@@ -443,6 +443,8 @@ get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
 #' x_train[,rad:=as.factor(rad)]
 #' get_data_features(x_train)
 get_data_features <- function(x){
+
+  x <- data.table::as.data.table(x)
 
   feature_list = list()
   feature_list$labels <- names(x)
@@ -516,7 +518,7 @@ check_features <- function(f_list_1,f_list_2,name_1,name_2,use_first_list_as_tru
 
   #### Checking classes ####
   # Check if traindata and testdata have features with the same class
-  if (!all.equal(f_list_1$classes,f_list_2$classes)) {
+  if (!all(f_list_1$classes == f_list_2$classes)) {
     stop(paste0("The features in ",name_1," and ",name_2," must have the same classes."))
   }
 
@@ -529,7 +531,7 @@ check_features <- function(f_list_1,f_list_2,name_1,name_2,use_first_list_as_tru
   }
 
   #### Checking factor levels ####
-  if (!all.equal(f_list_1$factor_levels, f_list_2$factor_levels)) {
+  if (!all(f_list_1$factor_levels == f_list_2$factor_levels)) {
     stop(paste0("The levels of the categorical features in ",name_1," and ",name_2," does not match."))
   }
 
