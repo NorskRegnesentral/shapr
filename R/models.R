@@ -296,11 +296,11 @@ model_type.xgb.Booster <- function(x) {
 #'
 #' # Checking that features used by the model corresponds to cnms
 #' features(x = model, cnms = cnms, feature_labels = NULL)
-get_model_features <- function(x,feature_labels) {
+get_model_features <- function(x,feature_labels = NULL) {
 
   # Start with all checking for native models
   native_models <- substring(as.character(methods(get_model_features)),first = 20)
-  is_native_model <- (class(model) %in% native_models)
+  is_native_model <- (class(x)[1] %in% native_models)
 
   if(is_native_model){
     if(!is.null(feature_labels)){
@@ -355,8 +355,9 @@ get_model_features.lm <- function(x, feature_labels = NULL) {
 
   feature_list = list()
   feature_list$labels <- labels(x$terms)
-  feature_list$classes <- attr(x$terms,"dateClasses")
-  feature_list$factor_levels = x$xlevels
+  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
+  feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
   return(feature_list)
 }
@@ -367,8 +368,22 @@ get_model_features.glm <- function(x, feature_labels = NULL) {
 
   feature_list = list()
   feature_list$labels <- labels(x$terms)
-  feature_list$classes <- attr(x$terms,"dateClasses")
-  feature_list$factor_levels = x$xlevels
+  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
+  feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
+
+  return(feature_list)
+}
+
+#' @rdname get_model_features
+#' @export
+get_model_features.gam <- function(x, feature_labels = NULL) {
+
+  feature_list = list()
+  feature_list$labels <- labels(x$terms)
+  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
+  feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
   return(feature_list)
 }
@@ -388,23 +403,13 @@ get_model_features.ranger <- function(x, feature_labels = NULL) {
   }
   feature_list = list()
   feature_list$labels <- unique_features(x$forest$independent.variable.names)
-  feature_list$classes <- rep(NA,length(feature_list$labels)) # Not supported
-  feature_list$factor_levels <- x$forest$covariate.levels # Only provided when respect.unordered.factors == T
+  feature_list$classes <- setNames(rep(NA, length(feature_list$labels)),feature_list$labels) # Not supported
+  feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+  feature_list$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels # Only provided when respect.unordered.factors == T
 
   return(feature_list)
 }
 
-#' @rdname get_model_features
-#' @export
-get_model_features.gam <- function(x, feature_labels = NULL) {
-
-  feature_list = list()
-  feature_list$labels <- labels(x$terms)
-  feature_list$classes <- attr(x$terms,"dateClasses")
-  feature_list$factor_levels = x$xlevels
-
-  return(feature_list)
-}
 
 #' @rdname get_model_features
 #' @export
@@ -414,13 +419,13 @@ get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
 
   if (is.null(x[["dummylist"]])) {
     feature_list$labels <- x$feature_names
-    feature_list$classes <- rep(NA, length(feature_list$labels)) # Not supported
+    feature_list$classes <- setNames(rep(NA, length(feature_list$labels)),feature_list$labels) # Not supported
     feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
   } else {
-    feature_list$labels <- x$dummylist$features
-    feature_list$classes <- x$dummylist$class_vector
+    feature_list$labels <- x$dummylist$obj$features
+    feature_list$classes <- x$dummylist$obj$class_vector
     feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
-    feature_list$factor_levels[names(x$dummylist$factor_list)] <- x$dummylist$factor_list
+    feature_list$factor_levels[names(x$dummylist$obj$factor_list)] <- x$dummylist$obj$factor_list
   }
 
   return(feature_list)
@@ -456,7 +461,9 @@ get_data_features <- function(x){
 
 
 #' @keywords internal
-check_features <- function(f_list_1,f_list_2,name_1,name_2,use_first_list_as_truth=F){
+check_features <- function(f_list_1,f_list_2,
+                           name_1 = "model",name_2 = "data",
+                           use_first_list_as_truth=F){
 
   #### Check validity of f_lists ####
 
@@ -502,9 +509,17 @@ check_features <- function(f_list_1,f_list_2,name_1,name_2,use_first_list_as_tru
   #### Reorder f_List_2 to match f_list_1, also removing anything in the former which is not in the latter ####
   f_list_2_reordering = match(f_list_1$labels,f_list_2$labels)
 
-  f_list_2$labels = f_list_2$labels[f_list_2_reordering]
-  f_list_2$classes = f_list_2$classes[f_list_2_reordering]
-  f_list_2$factor_levels = f_list_2$factor_levels[f_list_2_reordering]
+  f_list_2$labels <- f_list_2$labels[f_list_2_reordering]
+  f_list_2$classes <- f_list_2$classes[f_list_2_reordering]
+  f_list_2$factor_levels <- f_list_2$factor_levels[f_list_2_reordering]
+
+  # Computes level reordering based on original level order for f_list_1
+  f_list_2_level_reordering <- mapply(FUN=function(x,y) match(x,y),
+                                      f_list_1$factor_levels, f_list_2$factor_levels, SIMPLIFY = F)
+
+  # Sorts the factor levels for easier comparison below
+  f_list_1$factor_levels <- lapply(f_list_1$factor_levels,FUN=sort)
+  f_list_2$factor_levels <- lapply(f_list_2$factor_levels,FUN=sort)
 
   # feature names must be unique
   if (any(duplicated(f_list_1$labels))) {
@@ -517,27 +532,40 @@ check_features <- function(f_list_1,f_list_2,name_1,name_2,use_first_list_as_tru
   }
 
   #### Checking classes ####
-  # Check if traindata and testdata have features with the same class
-  if (!all(f_list_1$classes == f_list_2$classes)) {
-    stop(paste0("The features in ",name_1," and ",name_2," must have the same classes."))
+  if(use_first_list_as_truth & any(is.na(f_list_1$classes))){
+      message(paste0("The specified ",name_1," does not provide (all) feature classes. ",
+                     "Feature class and any factor level checking is disabled."))
+  } else {
+    # Check if f_list_1 and f_list_2 have features with the same class
+    if (!identical(f_list_1$classes,  f_list_2$classes)) {
+      stop(paste0("The features in ",name_1," and ",name_2," must have the same classes."))
+    }
+
+    # Check if the features all have class "integer", "numeric" or "factor
+    if (!all(f_list_1$classes %in% c("integer", "numeric", "factor"))) {
+      invalid_class <- which(!(f_list_1$classes %in% c("integer", "numeric", "factor")))
+      stop(paste0("Feature(s) ",paste0(invalid_class,collapse=", ")," in ",name_1," and ",name_2,
+                  " is not of class integer, numeric or factor."))
+    }
+
+    # Checking factor levels #
+    if (!identical(f_list_1$factor_levels, f_list_2$factor_levels)) {
+      stop(paste0("The levels of the categorical features in ",name_1," and ",name_2," does not match."))
+    }
+
   }
 
-
-  # Check if the features all have class "integer", "numeric" or "factor
-  if (!all(f_list_1$classes %in% c("integer", "numeric", "factor"))) {
-    invalid_class <- which(!(f_list_1$classes %in% c("integer", "numeric", "factor")))
-    stop(paste0("Feature(s) ",paste0(this_class,collapse=", ")," in ",name_1," and ",name_2,
-                " is not of class integer, numeric or factor."))
+  # Decide what to return
+  if(use_first_list_as_truth){
+    ret <- list(
+      label = f_list_2_reordering,
+      factor_level = f_list_2_level_reordering
+    )
+  } else {
+    ret <- NULL
   }
 
-  #### Checking factor levels ####
-  if (!all(f_list_1$factor_levels == f_list_2$factor_levels)) {
-    stop(paste0("The levels of the categorical features in ",name_1," and ",name_2," does not match."))
-  }
-
-
-  # Returning the reorder-vector to be applied to data later
-  return(f_list_2_reordering)
+  return(ret)
 
 }
 

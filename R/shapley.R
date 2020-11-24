@@ -141,11 +141,14 @@ shapr <- function(x,
   feature_list_model <- get_model_features(model,feature_labels)
   feature_list_x_train <- get_data_features(x_train)
 
-  x_train_reordering <- check_features(feature_list_model,feature_list_x_train,
+  reordering <- check_features(feature_list_model,feature_list_x_train,
                                          "model","training data",use_first_list_as_truth = T)
 
   # Removes variables that are not included in model and reorders the columns --------------
-  x_train <- x_train[,..x_train_reordering]
+  x_train <- x_train[,..reordering$label]
+
+  ### TODO: FIX reordering og factor levels here and in explain.
+
   explainer$n_features <- ncol(x_train)
 
   # Checks model and features

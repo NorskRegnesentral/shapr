@@ -247,25 +247,60 @@ test_that("Test features (regression)", {
 
   # Data -----------
   data("Boston", package = "MASS")
-  x_var <- c("lstat", "rm", "dis", "indus")
   y_var <- "medv"
   x_train <- tail(Boston, -6)
   y_train <- tail(Boston[, y_var], -6)
-  str_formula <- "y_train ~ lstat + rm + dis + indus"
-  train_df <- cbind(y_train, x_train)
 
-  # List of models
-  l <- list(
-    stats::lm(str_formula, data = train_df),
-    stats::glm(str_formula, data = train_df),
-    ranger::ranger(str_formula, data = train_df),
-    xgboost::xgboost(data = as.matrix(x_train[, x_var]), label = y_train, nrounds = 3, verbose = FALSE),
-    mgcv::gam(as.formula(str_formula), data = train_df)
+  # convert to factors for testing purposes
+  x_train$rad <- factor(round(x_train$rad))
+  x_train$chas <- factor(round(x_train$chas))
+
+  train_df <- cbind(x_train, y_train)
+
+  x_var_numeric <- c("lstat", "rm", "dis", "indus")
+  x_var_factor <- c("lstat", "rm", "dis", "indus", "rad", "chas")
+
+
+  formula_numeric <- as.formula(paste0("y_train ~ ",paste0(x_var_numeric,collapse="+")))
+  formula_factor <- as.formula(paste0("y_train ~ ",paste0(x_var_factor,collapse="+")))
+
+
+  # List of models to run silently
+  l_silent <- list(
+    stats::lm(formula_numeric, data = train_df),
+    stats::glm(formula_numeric, data = train_df),
+    mgcv::gam(formula_numeric, data = train_df),
+    stats::lm(formula_factor, data = train_df),
+    stats::glm(formula_factor, data = train_df),
+    mgcv::gam(formula_factor, data = train_df)
+
   )
 
-  for (i in seq_along(l)) {
-    expect_equal(features(l[[i]], cnms = colnames(train_df)), x_var)
+  dummylist <- make_dummies(traindata = x_train[, x_var_factor], testdata = x_train[, x_var_factor])
+
+  l_message <- list(
+    ranger::ranger(formula_numeric, data = train_df),
+    xgboost::xgboost(data = as.matrix(x_train[, x_var_numeric]), label = y_train, nrounds = 3, verbose = FALSE),
+
+    ranger::ranger(formula_factor, data = train_df),
+    xgboost::xgboost(data = dummylist$train_dummies, label = y_train, nrounds = 3, verbose = FALSE)
+    )
+  l_message[[4]]$dummylist <- dummylist
+
+
+  data_features <- get_data_features(train_df)
+  for (i in seq_along(l_silent)) {
+    model_features <- get_model_features(l_silent[[i]])
+    expect_silent(check_features(model_features,data_features,use_first_list_as_truth=T))
   }
+
+  for (i in seq_along(l_message)) {
+    model_features <- get_model_features(l_message[[i]])
+    expect_message(check_features(model_features,data_features,use_first_list_as_truth=T))
+  }
+
+  data_features <- get_data_features(train_df[-3])
+
 
 })
 
