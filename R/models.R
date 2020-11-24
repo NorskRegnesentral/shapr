@@ -299,7 +299,7 @@ model_type.xgb.Booster <- function(x) {
 get_model_features <- function(x,feature_labels) {
 
   # Start with all checking for native models
-  native_models <- substring(as.character(methods(features)),first = 10)
+  native_models <- substring(as.character(methods(get_model_features)),first = 20)
   is_native_model <- (class(model) %in% native_models)
 
   if(is_native_model){
@@ -414,12 +414,13 @@ get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
 
   if (is.null(x[["dummylist"]])) {
     feature_list$labels <- x$feature_names
-    feature_list$classes <- rep(NA,length(feature_list$labels)) # Not supported
-    feature_list$factor_levels <- NULL
+    feature_list$classes <- rep(NA, length(feature_list$labels)) # Not supported
+    feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
   } else {
-    feature_list$labels <- dummylist$features
+    feature_list$labels <- x$dummylist$features
     feature_list$classes <- x$dummylist$class_vector
-    feature_list$factor_levels = x$dummylist$factor_list
+    feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+    feature_list$factor_levels[names(x$dummylist$factor_list)] <- x$dummylist$factor_list
   }
 
   return(feature_list)
@@ -445,7 +446,7 @@ get_data_features <- function(x){
 
   feature_list = list()
   feature_list$labels <- names(x)
-  feature_list$classes <- lapply(x,class)
+  feature_list$classes <- unlist(lapply(x,class))
   feature_list$factor_levels = lapply(x,levels)
 
   return(feature_list)
@@ -466,6 +467,91 @@ error_feature_labels <- function() {
   )
 }
 
+#' @keywords internal
+check_features <- function(f_list_1,f_list_2,name_1,name_2,use_first_list_as_truth=F){
+
+  #### Check validity of f_lists ####
+
+  if(!all(f_list_1$labels == names(f_list_1$classes))){
+    stop(paste0(name_1," does not have matching labels and class names"))
+  }
+  if(!all(f_list_1$labels == names(f_list_1$factor_levels))){
+    stop(paste0(name_1," does not have matching labels and factor level names"))
+  }
+
+  if(!all(f_list_2$labels == names(f_list_2$classes))){
+    stop(paste0(name_2," does not have matching labels and class names"))
+  }
+  if(!all(f_list_2$labels == names(f_list_2$factor_levels))){
+    stop(paste0(name_2," does not have matching labels and factor level names"))
+  }
+
+
+  #### Checking labels ####
+  if (is.null(f_list_1$labels)) {
+    stop(paste0(name_1," must have column names."))
+  }
+  if (is.null(f_list_2$labels)) {
+    stop(paste0(name_2," must have column names."))
+  }
+
+
+  missing_1_in_2 <- f_list_1$labels[!(f_list_1$labels %in% f_list_2$labels)]
+  missing_2_in_1 <- f_list_2$labels[!(f_list_2$labels %in% f_list_1$labels)]
+
+  if (length(missing_1_in_2)>0) {
+    stop(paste0("Feature(s) ",paste0(missing_1_in_2,collapse=", ")," in ",name_1," is not in ",name_2,"."))
+  }
+
+  # Also check also that the features in 2 are in 1
+  if(!use_first_list_as_truth){
+    if (length(missing_2_in_1)>0) {
+      stop(paste0("Feature(s) ",paste0(missing_2_in_1,collapse=", ")," in ",name_2," is not in ",name_1,"."))
+    }
+  }
+
+
+  #### Reorder f_List_2 to match f_list_1, also removing anything in the former which is not in the latter ####
+  f_list_2_reordering = match(f_list_1$labels,f_list_2$labels)
+
+  f_list_2$labels = f_list_2$labels[f_list_2_reordering]
+  f_list_2$classes = f_list_2$classes[f_list_2_reordering]
+  f_list_2$factor_levels = f_list_2$factor_levels[f_list_2_reordering]
+
+  # feature names must be unique
+  if (any(duplicated(f_list_1$labels))) {
+    stop(paste0("Both ",name_1," and ",name_2," must have unique column names."))
+  }
+
+  # Check if any features have empty names i.e ""
+  if (any(f_list_1$labels == "")) {
+    stop("One or more features is missing a name.")
+  }
+
+  #### Checking classes ####
+  # Check if traindata and testdata have features with the same class
+  if (!all.equal(f_list_1$classes,f_list_2$classes)) {
+    stop(paste0("The features in ",name_1," and ",name_2," must have the same classes."))
+  }
+
+
+  # Check if the features all have class "integer", "numeric" or "factor
+  if (!all(f_list_1$classes %in% c("integer", "numeric", "factor"))) {
+    invalid_class <- which(!(f_list_1$classes %in% c("integer", "numeric", "factor")))
+    stop(paste0("Feature(s) ",paste0(this_class,collapse=", ")," in ",name_1," and ",name_2,
+                " is not of class integer, numeric or factor."))
+  }
+
+  #### Checking factor levels ####
+  if (!all.equal(f_list_1$factor_levels, f_list_2$factor_levels)) {
+    stop(paste0("The levels of the categorical features in ",name_1," and ",name_2," does not match."))
+  }
+
+
+  # Returning the reorder-vector to be applied to data later
+  return(f_list_2_reordering)
+
+}
 
 #' @keywords internal
 check_custom_models <- function(model,feature_labels) {

@@ -138,14 +138,14 @@ shapr <- function(x,
   x_train <- data.table::as.data.table(x)
 
   feature_list_model <- get_model_features(model,feature_labels)
-  feature_list_x_train <- get_data_features(x_train) # CONTINUE HERE ADDING THIS FUNCTION
+  feature_list_x_train <- get_data_features(x_train)
 
-  explainer$n_features <- length(feature_list_model$labels)
+  x_train_reordering <- check_features(feature_list_model,feature_list_x_train,
+                                         "model","training data",use_first_list_as_truth = T)
 
-  # Removes variables that are not included in model   --------------
-  cnms_remove <- setdiff(colnames(x), feature_labels)
-  if (length(cnms_remove) > 0) x_train[, (cnms_remove) := NULL]
-  data.table::setcolorder(x_train, feature_labels)
+  # Removes variables that are not included in model and reorders the columns --------------
+  x_train <- x_train[,..x_train_reordering]
+  explainer$n_features <- ncol(x_train)
 
   # Checks model and features
   explainer$p <- predict_model(model, head(x_train))
