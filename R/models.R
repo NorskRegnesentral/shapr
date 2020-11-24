@@ -454,20 +454,6 @@ get_data_features <- function(x){
 
 
 #' @keywords internal
-error_feature_labels <- function() {
-  # USE THIS FUNCTION IN check_feature_labels
-  stop(
-    paste0(
-      "\nThere is mismatch between the column names in x and\n",
-      "the returned elements from features(model). All elements\n",
-      "from features(model) should be present in colnames(x),\n",
-      "and they cannot be NULL.\n",
-      "For more information see ?shapr::features"
-    )
-  )
-}
-
-#' @keywords internal
 check_features <- function(f_list_1,f_list_2,name_1,name_2,use_first_list_as_truth=F){
 
   #### Check validity of f_lists ####
@@ -553,7 +539,3 @@ check_features <- function(f_list_1,f_list_2,name_1,name_2,use_first_list_as_tru
 
 }
 
-#' @keywords internal
-check_custom_models <- function(model,feature_labels) {
-
-}
