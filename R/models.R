@@ -559,7 +559,8 @@ check_features <- function(f_list_1,f_list_2,
   if(use_first_list_as_truth){
     ret <- list(
       label = f_list_2_reordering,
-      factor_level = f_list_2_level_reordering
+      factor_level = f_list_2_level_reordering,
+      reordered_f_list_2 = f_list_2
     )
   } else {
     ret <- NULL

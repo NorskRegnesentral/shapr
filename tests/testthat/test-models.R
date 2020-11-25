@@ -301,6 +301,7 @@ test_that("Test features (regression)", {
 
   data_features <- get_data_features(train_df[-3])
 
+  shapr(train_df,l_message[[4]])
 
 })
 
