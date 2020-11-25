@@ -295,7 +295,7 @@ model_type.xgb.Booster <- function(x) {
 #' cnms <- c("lstat", "rm", "dis", "indus")
 #'
 #' # Checking that features used by the model corresponds to cnms
-#' features(x = model, cnms = cnms, feature_labels = NULL)
+#' get_model_features(x = model, feature_labels = NULL)
 get_model_features <- function(x,feature_labels = NULL) {
 
   # Start with all checking for native models
@@ -460,10 +460,42 @@ get_data_features <- function(x){
 }
 
 
+#' Checks that two extracted feature lists have exactly the same properites
+#'
+#' @param f_list_1,f_list_2 List. As extracted from either \code{get_data_features} or \code{get_model_features}.
+#' @param name_1,name_2 Character. Names corresponding to the input of respectively \code{f_list_1} and \code{f_list_2},
+#' used to provide informative error messages.
+#' @param use_1_as_truth Logical. If TRUE, \code{f_list_2} is compared to \code{f_list_1}, i.e. additional elements
+#' is allowed in \code{f_list_2}, and if \code{f_list_1}'s feature classes contains NA's, feature class check is
+#' ignored regardless of what is specified in \code{f_list_1}. If FALSE, \code{f_list_1} and \code{f_list_2} are
+#' equated and they need to contain exactly the same elements. Set to TRUE when comparing a model and data, and FALSE
+#' when comparing two data sets.
+#'
+#' @return List. The \code{f_list_1} is returned as inserted, but with an additional sorted factor list. This could be
+#' used to reorder the data.
 #' @keywords internal
+#'
+#' @export
+#'
+#' @examples
+#' Load example data
+#' data("Boston", package = "MASS")
+#' # Split data into test- and training data
+#' x_train <- as.data.table(head(Boston))
+#' x_train[,rad:=as.factor(rad)]
+#' data_features <- get_data_features(x_train)
+#'
+#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#'
+#' cnms <- c("lstat", "rm", "dis", "indus")
+#'
+#' # Checking that features used by the model corresponds to cnms
+#' model_features <- get_model_features(x = model, feature_labels = NULL)
+#'
+#' check_features(model_features,data_features)
 check_features <- function(f_list_1,f_list_2,
                            name_1 = "model",name_2 = "data",
-                           use_first_list_as_truth=F){
+                           use_1_as_truth=T){
 
   #### Check validity of f_lists ####
 
@@ -499,7 +531,7 @@ check_features <- function(f_list_1,f_list_2,
   }
 
   # Also check also that the features in 2 are in 1
-  if(!use_first_list_as_truth){
+  if(!use_1_as_truth){
     if (length(missing_2_in_1)>0) {
       stop(paste0("Feature(s) ",paste0(missing_2_in_1,collapse=", ")," in ",name_2," is not in ",name_1,"."))
     }
@@ -528,7 +560,7 @@ check_features <- function(f_list_1,f_list_2,
   }
 
   #### Checking classes ####
-  if(use_first_list_as_truth & any(is.na(f_list_1$classes))){
+  if(use_1_as_truth & any(is.na(f_list_1$classes))){
       message(paste0("The specified ",name_1," does not provide (all) feature classes. ",
                      "Feature class and any factor level checking is disabled."))
   } else {
@@ -551,9 +583,42 @@ check_features <- function(f_list_1,f_list_2,
 
   }
 
-  # Decide what to return
-
   return(f_list_1)
 
+}
+
+#' @keywords internal
+update_data = function(data,updater){
+  # Operates on data by reference, so no copying of data here
+
+  new_labels <- updater$labels
+  factor_features <- which(updater$classes=="factor")
+  factor_levels <- updater$factor_levels
+
+  # Reorder and delete unused columns
+  cnms_remove <- setdiff(colnames(data), new_labels)
+  if (length(cnms_remove) > 0) {
+    message(paste0("The columns(s) ",paste0(cnms_remove,collapse=", ")," is not used by the model and thus removed",
+                   "from the data."))
+
+    data[, (cnms_remove) := NULL]
+  }
+  data.table::setcolorder(data, new_labels)
+
+  # Reorderes the factor levels
+  org_factor_levels <- lapply(data,levels)
+  identical_levels <- mapply(FUN = "identical",org_factor_levels,factor_levels)
+  if(any(!identical_levels)){
+    changed_levels <- which(!identical_levels)
+
+    for (i in changed_levels) {
+      ##### ADD MESSAG EHRE AND CHECK THAT IT WORKS !!!!###
+      data.table::set(data,
+                      j=i,
+                      value = factor(unlist(data[,new_labels[i],with=F],use.names = F), levels = factor_levels[[i]]))
+    }
+  }
+
+  return(NULL)
 }
 

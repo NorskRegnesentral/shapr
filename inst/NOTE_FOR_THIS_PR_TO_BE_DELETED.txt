@@ -48,7 +48,11 @@ Handling custom models: currently feature_labels are passed. We could still allo
 
 TODO:
 
-1. tillat NA i modellen dersom jeg har use_first_as_truth!
+1. document input to update_data, check_features and similar
+2. Add messages when things are not checked (already done?)
+3. Make tests for errors
+4. Update dummy
+5. Check if it makes sense to make ONE big function calling the two get functions, check features and the updater.
 
 
 
