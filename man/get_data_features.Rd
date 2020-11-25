@@ -7,7 +7,7 @@
 get_data_features(x)
 }
 \arguments{
-\item{x}{data.table The data to extract feature information from.}
+\item{x}{matrix, data.frame or data.table The data to extract feature information from.}
 }
 \description{
 Fetches feature labels from a given model object

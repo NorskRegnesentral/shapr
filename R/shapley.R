@@ -142,7 +142,7 @@ shapr <- function(x,
   feature_list_x_train <- get_data_features(x_train)
 
   updater <- check_features(feature_list_model,feature_list_x_train,
-                            "model","training data",use_first_list_as_truth = T)
+                            "model","training data",use_1_as_truth = T)
 
   update_data(x_train,updater) # Updates x_train by reference
 

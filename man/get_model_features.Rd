@@ -5,12 +5,12 @@
 \alias{get_model_features.default}
 \alias{get_model_features.lm}
 \alias{get_model_features.glm}
-\alias{get_model_features.ranger}
 \alias{get_model_features.gam}
+\alias{get_model_features.ranger}
 \alias{get_model_features.xgb.Booster}
 \title{Fetches feature labels from a given model object}
 \usage{
-get_model_features(x, feature_labels)
+get_model_features(x, feature_labels = NULL)
 
 \method{get_model_features}{default}(x, feature_labels = NULL)
 
@@ -18,9 +18,9 @@ get_model_features(x, feature_labels)
 
 \method{get_model_features}{glm}(x, feature_labels = NULL)
 
-\method{get_model_features}{ranger}(x, feature_labels = NULL)
-
 \method{get_model_features}{gam}(x, feature_labels = NULL)
+
+\method{get_model_features}{ranger}(x, feature_labels = NULL)
 
 \method{get_model_features}{xgb.Booster}(x, feature_labels = NULL)
 }
@@ -43,6 +43,6 @@ model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 cnms <- c("lstat", "rm", "dis", "indus")
 
 # Checking that features used by the model corresponds to cnms
-features(x = model, cnms = cnms, feature_labels = NULL)
+get_model_features(x = model, feature_labels = NULL)
 }
 \keyword{internal}

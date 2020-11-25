@@ -123,13 +123,13 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     )
   }
 
-  # Check features of test data against model specification/training data
+  # Check features of test data against those specified in the explainer
   x_test <- data.table::as.data.table(x_test)
 
   feature_list_x_test <- get_data_features(x_test)
 
   updater <- check_features(explainer$feature_list,feature_list_x_test,
-                            "explainer","test data",use_first_list_as_truth = T)
+                            "explainer","test data",use_1_as_truth = T)
 
   update_data(x_test,updater) # Updates x_test by reference
   explainer$x_test <- x_test
