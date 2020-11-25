@@ -144,47 +144,7 @@ shapr <- function(x,
   updater <- check_features(feature_list_model,feature_list_x_train,
                             "model","training data",use_first_list_as_truth = T)
 
-  # Removes variables that are not included in model and reorders the columns --------------
-  update_data(x_train,reordering) # Updates x_train by reference
-
-  update_data = function(data,reordering){
-    # Operates on data by reference, so no copying of data here
-
-    # Removes variables that are not included in model   --------------
-
-    new_labels <- reordering$reordered_f_list_2$labels
-    factor_features <- which(reordering$reordered_f_list_2$classes=="factor")
-    factor_levels <- reordering$reordered_f_list_2$factor_levels
-
-
-    # Reorder and delete unused columns
-    cnms_remove <- setdiff(colnames(data), new_labels)
-    if (length(cnms_remove) > 0) data[, (cnms_remove) := NULL]
-    data.table::setcolorder(data, new_labels)
-
-#    data[,rad := factor(rad, levels = factor_levels[["rad"]])]
-
-    for (i in factor_features) {
-      data.table::set(data,
-                      j=i,
-                      value = factor(unlist(data[,new_labels[i],with=F],use.names = F), levels = factor_levels[[i]]))
-    }
-
-
-#   for (i in factor_features) {
-#      data[[i]] <- factor(data[[i]], levels = factor_levels[[i]])
-#    }
-
-
-
-  return(data)
-
-  }
-  x_train[,lapply(.SD,FUN=)]
-
-  x_train2 <- mapply(function(x,y)y[x],)
-
-  ### TODO: FIX reordering og factor levels here and in explain.
+  update_data(x_train,updater) # Updates x_train by reference
 
   explainer$n_features <- ncol(x_train)
 

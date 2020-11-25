@@ -513,13 +513,9 @@ check_features <- function(f_list_1,f_list_2,
   f_list_2$classes <- f_list_2$classes[f_list_2_reordering]
   f_list_2$factor_levels <- f_list_2$factor_levels[f_list_2_reordering]
 
-  # Computes level reordering based on original level order for f_list_1
-  f_list_2_level_reordering <- mapply(FUN=function(x,y) match(x,y),
-                                      f_list_1$factor_levels, f_list_2$factor_levels, SIMPLIFY = F)
-
   # Sorts the factor levels for easier comparison below
-  f_list_1$factor_levels <- lapply(f_list_1$factor_levels,FUN=sort)
-  f_list_2$factor_levels <- lapply(f_list_2$factor_levels,FUN=sort)
+  f_list_1$sorted_factor_levels <- lapply(f_list_1$factor_levels,FUN=sort)
+  f_list_2$sorted_factor_levels <- lapply(f_list_2$factor_levels,FUN=sort)
 
   # feature names must be unique
   if (any(duplicated(f_list_1$labels))) {
@@ -549,24 +545,15 @@ check_features <- function(f_list_1,f_list_2,
     }
 
     # Checking factor levels #
-    if (!identical(f_list_1$factor_levels, f_list_2$factor_levels)) {
+    if (!identical(f_list_1$sorted_factor_levels, f_list_2$sorted_factor_levels)) {
       stop(paste0("The levels of the categorical features in ",name_1," and ",name_2," does not match."))
     }
 
   }
 
   # Decide what to return
-  if(use_first_list_as_truth){
-    ret <- list(
-      label = f_list_2_reordering,
-      factor_level = f_list_2_level_reordering,
-      reordered_f_list_2 = f_list_2
-    )
-  } else {
-    ret <- NULL
-  }
 
-  return(ret)
+  return(f_list_1)
 
 }
 
