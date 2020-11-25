@@ -314,7 +314,6 @@ get_model_features <- function(x,feature_labels = NULL) {
       }
     } else { # if custom model
     if(is.character(feature_labels)){
-
       message(
         paste0(
           "\nIt looks like you are using a custom model. Note that we currently\n",
@@ -342,8 +341,10 @@ get_model_features.default <- function(x, feature_labels = NULL) {
   # For custom models
   feature_list = list()
   feature_list$labels <- feature_labels
-  feature_list$classes <- rep(NA,length(feature_labels))
-  feature_list$factor_levels = NULL
+  m <- length(feature_list$labels)
+
+  feature_list$classes <- rep(NA,m)
+  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
 
   return(feature_list)
 }
@@ -355,8 +356,10 @@ get_model_features.lm <- function(x, feature_labels = NULL) {
 
   feature_list = list()
   feature_list$labels <- labels(x$terms)
+  m <- length(feature_list$labels)
+
   feature_list$classes <- attr(x$terms,"dataClasses")[-1]
-  feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
   return(feature_list)
@@ -368,8 +371,10 @@ get_model_features.glm <- function(x, feature_labels = NULL) {
 
   feature_list = list()
   feature_list$labels <- labels(x$terms)
+  m <- length(feature_list$labels)
+
   feature_list$classes <- attr(x$terms,"dataClasses")[-1]
-  feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
   return(feature_list)
@@ -381,8 +386,10 @@ get_model_features.gam <- function(x, feature_labels = NULL) {
 
   feature_list = list()
   feature_list$labels <- labels(x$terms)
+  m <- length(feature_list$labels)
+
   feature_list$classes <- attr(x$terms,"dataClasses")[-1]
-  feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
   return(feature_list)
@@ -403,8 +410,10 @@ get_model_features.ranger <- function(x, feature_labels = NULL) {
   }
   feature_list = list()
   feature_list$labels <- unique_features(x$forest$independent.variable.names)
-  feature_list$classes <- setNames(rep(NA, length(feature_list$labels)),feature_list$labels) # Not supported
-  feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+  m <- length(feature_list$labels)
+
+  feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
+  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels # Only provided when respect.unordered.factors == T
 
   return(feature_list)
@@ -419,12 +428,16 @@ get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
 
   if (is.null(x[["dummylist"]])) {
     feature_list$labels <- x$feature_names
-    feature_list$classes <- setNames(rep(NA, length(feature_list$labels)),feature_list$labels) # Not supported
-    feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+    m <- length(feature_list$labels)
+
+    feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
+    feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   } else {
     feature_list$labels <- x$dummylist$obj$features
+    m <- length(feature_list$labels)
+
     feature_list$classes <- x$dummylist$obj$class_vector
-    feature_list$factor_levels <- setNames(vector("list", length(feature_list$labels)), feature_list$labels)
+    feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
     feature_list$factor_levels[names(x$dummylist$obj$factor_list)] <- x$dummylist$obj$factor_list
   }
 
@@ -497,22 +510,22 @@ check_features <- function(f_list_1,f_list_2,
                            name_1 = "model",name_2 = "data",
                            use_1_as_truth=T){
 
-  #### Check validity of f_lists ####
-
-  if(!all(f_list_1$labels == names(f_list_1$classes))){
-    stop(paste0(name_1," does not have matching labels and class names"))
-  }
-  if(!all(f_list_1$labels == names(f_list_1$factor_levels))){
-    stop(paste0(name_1," does not have matching labels and factor level names"))
-  }
-
-  if(!all(f_list_2$labels == names(f_list_2$classes))){
-    stop(paste0(name_2," does not have matching labels and class names"))
-  }
-  if(!all(f_list_2$labels == names(f_list_2$factor_levels))){
-    stop(paste0(name_2," does not have matching labels and factor level names"))
-  }
-
+#  #### Check validity of f_lists ####
+#
+#  if(!all(f_list_1$labels == names(f_list_1$classes))){
+#    stop(paste0(name_1," does not have matching labels and class names"))
+#  }
+#  if(!all(f_list_1$labels == names(f_list_1$factor_levels))){
+#    stop(paste0(name_1," does not have matching labels and factor level names"))
+#  }
+#
+#  if(!all(f_list_2$labels == names(f_list_2$classes))){
+#    stop(paste0(name_2," does not have matching labels and class names"))
+#  }
+#  if(!all(f_list_2$labels == names(f_list_2$factor_levels))){
+#    stop(paste0(name_2," does not have matching labels and factor level names"))
+#  }
+#
 
   #### Checking labels ####
   if (is.null(f_list_1$labels)) {
@@ -572,13 +585,13 @@ check_features <- function(f_list_1,f_list_2,
     # Check if the features all have class "integer", "numeric" or "factor
     if (!all(f_list_1$classes %in% c("integer", "numeric", "factor"))) {
       invalid_class <- which(!(f_list_1$classes %in% c("integer", "numeric", "factor")))
-      stop(paste0("Feature(s) ",paste0(invalid_class,collapse=", ")," in ",name_1," and ",name_2,
+      stop(paste0("Feature(s) ",paste0(f_list_1$labels[invalid_class],collapse=", ")," in ",name_1," and ",name_2,
                   " is not of class integer, numeric or factor."))
     }
 
     # Checking factor levels #
     if (!identical(f_list_1$sorted_factor_levels, f_list_2$sorted_factor_levels)) {
-      stop(paste0("The levels of the categorical features in ",name_1," and ",name_2," does not match."))
+      stop(paste0("Some levels for factor features are not present in both ",name_1," and ",name_2,"."))
     }
 
   }
@@ -610,9 +623,10 @@ update_data = function(data,updater){
   identical_levels <- mapply(FUN = "identical",org_factor_levels,factor_levels)
   if(any(!identical_levels)){
     changed_levels <- which(!identical_levels)
+    message(paste0("Levels are reordered for the factor feature(s) ",
+                   paste0(new_labels[changed_levels],collapse=", "),"."))
 
     for (i in changed_levels) {
-      ##### ADD MESSAG EHRE AND CHECK THAT IT WORKS !!!!###
       data.table::set(data,
                       j=i,
                       value = factor(unlist(data[,new_labels[i],with=F],use.names = F), levels = factor_levels[[i]]))

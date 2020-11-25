@@ -272,36 +272,81 @@ test_that("Test features (regression)", {
     mgcv::gam(formula_numeric, data = train_df),
     stats::lm(formula_factor, data = train_df),
     stats::glm(formula_factor, data = train_df),
-    mgcv::gam(formula_factor, data = train_df)
+    mgcv::gam(formula_factor, data = train_df),
+    xgboost::xgboost(data = dummylist$train_dummies, label = y_train, nrounds = 3, verbose = FALSE)
 
   )
-
   dummylist <- make_dummies(traindata = x_train[, x_var_factor], testdata = x_train[, x_var_factor])
+
+  l_silent[[7]]$dummylist <- dummylist
+
+
 
   l_message <- list(
     ranger::ranger(formula_numeric, data = train_df),
     xgboost::xgboost(data = as.matrix(x_train[, x_var_numeric]), label = y_train, nrounds = 3, verbose = FALSE),
 
-    ranger::ranger(formula_factor, data = train_df),
-    xgboost::xgboost(data = dummylist$train_dummies, label = y_train, nrounds = 3, verbose = FALSE)
+    ranger::ranger(formula_factor, data = train_df)
     )
-  l_message[[4]]$dummylist <- dummylist
 
 
   data_features <- get_data_features(train_df)
   for (i in seq_along(l_silent)) {
     model_features <- get_model_features(l_silent[[i]])
-    expect_silent(check_features(model_features,data_features,use_first_list_as_truth=T))
+    expect_silent(check_features(model_features,data_features))
   }
 
   for (i in seq_along(l_message)) {
     model_features <- get_model_features(l_message[[i]])
-    expect_message(check_features(model_features,data_features,use_first_list_as_truth=T))
+    expect_message(check_features(model_features,data_features))
   }
 
-  data_features <- get_data_features(train_df[-3])
 
-  shapr(train_df,l_message[[4]])
+  # Checking all stops in check_features
+  data_features_ok <- get_data_features(train_df)
+
+  # Non-matching labels
+  data_features_error <- get_data_features(train_df)
+  data_features_error$labels <- NULL
+  expect_error(check_features(data_features_ok,data_features_error))
+  expect_error(check_features(data_features_error,data_features_ok))
+
+  # Missing features
+  data_features_error <- get_data_features(train_df[,-3])
+  expect_error(check_features(data_features_ok,data_features_error))
+  expect_error(check_features(data_features_error,data_features_ok,use_1_as_truth = F))
+
+  # Duplicated column names
+  data_features_error <- get_data_features(cbind(crim=train_df[,1],train_df))
+  expect_error(check_features(data_features_error,data_features_error))
+
+  # Empty column names
+  train_df_0 <- train_df
+  names(train_df_0)[1] = ""
+  data_features_error <- get_data_features(train_df_0)
+  expect_error(check_features(data_features_error,data_features_error))
+
+  # feature class is NA
+  data_features_error <- data_features_ok
+  data_features_error$classes <- rep(NA,length(data_features_error$classes))
+  expect_message(check_features(data_features_error,data_features_error))
+
+  # feature classes are different
+  data_features_error <- data_features_ok
+  data_features_error$classes <- rev(data_features_error$classes)
+  names(data_features_error$classes) <- names(model_features_ok$classes)
+  expect_error(check_features(model_features_ok,data_features_error))
+
+  # invalid feature class
+  data_features_error <- data_features_ok
+  data_features_error$classes[1] <- "logical"
+  expect_error(check_features(data_features_error,data_features_error))
+
+  # non-matching factor levels
+  data_features_error <- data_features_ok
+  data_features_error$factor_levels$chas <- c(data_features_error$factor_levels$chas,"2")
+  expect_error(check_features(data_features_ok,data_features_error))
+
 
 })
 

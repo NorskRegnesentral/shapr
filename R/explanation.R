@@ -123,17 +123,15 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     )
   }
 
-  # Converts to data.table, otherwise copy to x_train  --------------
+  # Check features of test data against model specification/training data
   x_test <- data.table::as.data.table(x_test)
 
-  # Check features of test data against model specification/training data
   feature_list_x_test <- get_data_features(x_test)
 
-  x_test_reordering <- check_features(explainer$feature_list, feature_list_x_test,
-                                       "model/training data", "test data",use_first_list_as_truth = T)
+  updater <- check_features(explainer$feature_list,feature_list_x_test,
+                            "explainer","test data",use_first_list_as_truth = T)
 
-  # Removes features that are not included in model and reorders the columns --------------
-  x_test <- x_test[,..x_test_reordering]
+  update_data(x_test,updater) # Updates x_test by reference
   explainer$x_test <- x_test
 
   if (length(approach) > 1) {
