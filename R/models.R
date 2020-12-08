@@ -318,7 +318,7 @@ get_model_features <- function(x,feature_labels = NULL) {
         paste0(
           "\nIt looks like you are using a custom model. Note that we currently\n",
           "do not check the class and validity of the features specified in\n",
-          "feature_labels when calling shapr().\n"
+          "feature_labels when calling shapr() with custom models.\n"
         )
       )
     } else {
@@ -433,12 +433,12 @@ get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
     feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
     feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   } else {
-    feature_list$labels <- x$dummylist$obj$features
+    feature_list$labels <- x$dummylist$features
     m <- length(feature_list$labels)
 
-    feature_list$classes <- x$dummylist$obj$class_vector
+    feature_list$classes <- x$dummylist$class_vector
     feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-    feature_list$factor_levels[names(x$dummylist$obj$factor_list)] <- x$dummylist$obj$factor_list
+    feature_list$factor_levels[names(x$dummylist$factor_list)] <- x$dummylist$factor_list
   }
 
   return(feature_list)

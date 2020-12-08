@@ -64,4 +64,6 @@ NO, I WILL KEEP IT THIS WAY AS I NEED THE feature list to be added to the explai
 10. Run checks -- I am sure there are issues here!
 11. Make PR
 12. Talk to Annabelle on whether I should update the dummy functions here. Update dummy? OR postpone this until you talk to Annabelle?
+13. Consider removing the sorting in make dummies as that will often lead to reordering the levels, which is maybe not wanted.
+
 

@@ -25,6 +25,72 @@ test_that("Basic test functions in shapley.R", {
 
 test_that("Testing data input to shapr in shapley.R", {
 
+  # Data -----------
+  data("Boston", package = "MASS")
+  y_var <- "medv"
+  x_train <- tail(Boston, -6)
+  y_train <- tail(Boston[, y_var], -6)
+  y_train_binary <- as.factor(tail((Boston[, y_var]>20)*1, -6))
+
+  # convert to factors for testing purposes
+  x_train$rad <- factor(round(x_train$rad))
+  x_train$chas <- factor(round(x_train$chas))
+
+  train_df <- cbind(x_train, y_train,y_train_binary)
+
+
+  x_var_numeric <- c("lstat", "rm", "dis", "indus")
+  x_var_factor <- c("lstat", "rm", "dis", "indus", "rad", "chas")
+
+  train_df_used_numeric <- x_train[,x_var_numeric]
+  train_df_used_factor <- x_train[,x_var_factor]
+
+  formula_numeric <- as.formula(paste0("y_train ~ ",paste0(x_var_numeric,collapse="+")))
+  formula_factor <- as.formula(paste0("y_train ~ ",paste0(x_var_factor,collapse="+")))
+
+  formula_binary_numeric <- as.formula(paste0("y_train_binary ~ ",paste0(x_var_numeric,collapse="+")))
+  formula_binary_factor <- as.formula(paste0("y_train_binary ~ ",paste0(x_var_factor,collapse="+")))
+
+  dummylist <- make_dummies(traindata = x_train[, x_var_factor], testdata = x_train[, x_var_factor])
+
+  # List of models to run silently
+  l_numeric <- list(
+    stats::lm(formula_numeric, data = train_df),
+    stats::glm(formula_numeric, data = train_df),
+    mgcv::gam(formula_numeric, data = train_df))
+
+  l_factor <- list(stats::lm(formula_factor, data = train_df),
+                   stats::glm(formula_factor, data = train_df),
+                   mgcv::gam(formula_factor, data = train_df)
+  )
+
+  l_message <- list(xgboost::xgboost(data = dummylist$train_dummies, label = y_train,
+                                     nrounds = 3, verbose = FALSE)
+  )
+
+  l_message[[1]]$dummylist <- dummylist$obj
+
+
+  for (i in seq_along(l_numeric)) {
+    expect_silent(shapr(train_df_used_numeric,l_numeric[[i]])) # No modification
+    expect_message(shapr(train_df,l_numeric[[i]])) # Features dropped
+  }
+
+  for (i in seq_along(l_factor)) {
+    expect_silent(shapr(train_df_used_factor,l_factor[[i]])) # No modification
+    expect_message(shapr(train_df,l_factor[[i]])) # Features dropped
+  }
+
+  for (i in seq_along(l_message)) {
+    expect_message(shapr(train_df_used_factor,l_message[[i]])) # Factor reordering
+    expect_message(shapr(train_df,l_message[[i]])) # Factor reordering + features dropped
+  }
+
+  # Add tests here for differnet types "errors" from test-models + the original ones below
+
+
+  ##########OLD ##########
+
   data("Boston", package = "MASS")
 
   x_var <- c("lstat", "rm", "dis", "indus")
