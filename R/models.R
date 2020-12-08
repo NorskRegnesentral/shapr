@@ -600,6 +600,18 @@ check_features <- function(f_list_1,f_list_2,
 
 }
 
+#' Updates data by reference according to the updater argument.
+#'
+#' @description \code{data} is updated, i.e. unused columns and factor levels are removed as described in
+#' \code{updater}. This is done by reference, i.e. updates the object being passed to data even if nothing is
+#' returned by the function itself.
+#'
+#' @param data data.table. Data that ought to be updated.
+#' @param updater List. The object should be the output from
+#' \code{\link[shapr:check_features]{check_features()}}.
+#'
+#'
+#' @return NULL.
 #' @keywords internal
 update_data = function(data,updater){
   # Operates on data by reference, so no copying of data here
@@ -611,7 +623,7 @@ update_data = function(data,updater){
   # Reorder and delete unused columns
   cnms_remove <- setdiff(colnames(data), new_labels)
   if (length(cnms_remove) > 0) {
-    message(paste0("The columns(s) ",paste0(cnms_remove,collapse=", ")," is not used by the model and thus removed",
+    message(paste0("The columns(s) ",paste0(cnms_remove,collapse=", ")," is not used by the model and thus removed ",
                    "from the data."))
 
     data[, (cnms_remove) := NULL]

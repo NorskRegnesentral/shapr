@@ -243,27 +243,31 @@ test_that("Test predict_model (multi-classification)", {
   }
 })
 
-test_that("Test features (regression)", {
+test_that("Test check_features + update_data", {
 
   # Data -----------
   data("Boston", package = "MASS")
   y_var <- "medv"
   x_train <- tail(Boston, -6)
   y_train <- tail(Boston[, y_var], -6)
+  y_train_binary <- as.factor(tail((Boston[, y_var]>20)*1, -6))
 
   # convert to factors for testing purposes
   x_train$rad <- factor(round(x_train$rad))
   x_train$chas <- factor(round(x_train$chas))
 
-  train_df <- cbind(x_train, y_train)
+  train_df <- cbind(x_train, y_train,y_train_binary)
 
   x_var_numeric <- c("lstat", "rm", "dis", "indus")
   x_var_factor <- c("lstat", "rm", "dis", "indus", "rad", "chas")
 
-
   formula_numeric <- as.formula(paste0("y_train ~ ",paste0(x_var_numeric,collapse="+")))
   formula_factor <- as.formula(paste0("y_train ~ ",paste0(x_var_factor,collapse="+")))
 
+  formula_binary_numeric <- as.formula(paste0("y_train_binary ~ ",paste0(x_var_numeric,collapse="+")))
+  formula_binary_factor <- as.formula(paste0("y_train_binary ~ ",paste0(x_var_factor,collapse="+")))
+
+  dummylist <- make_dummies(traindata = x_train[, x_var_factor], testdata = x_train[, x_var_factor])
 
   # List of models to run silently
   l_silent <- list(
@@ -273,12 +277,18 @@ test_that("Test features (regression)", {
     stats::lm(formula_factor, data = train_df),
     stats::glm(formula_factor, data = train_df),
     mgcv::gam(formula_factor, data = train_df),
-    xgboost::xgboost(data = dummylist$train_dummies, label = y_train, nrounds = 3, verbose = FALSE)
+    xgboost::xgboost(data = dummylist$train_dummies, label = y_train,
+                     nrounds = 3, verbose = FALSE),
 
+    stats::glm(formula_binary_numeric, data = train_df, family = "binomial"),
+    mgcv::gam(formula_binary_numeric, data = train_df, family = "binomial"),
+    stats::glm(formula_binary_factor, data = train_df, family = "binomial"),
+    mgcv::gam(formula_binary_factor, data = train_df, family = "binomial"),
+    xgboost::xgboost(data = dummylist$train_dummies, label = as.integer(y_train_binary)-1,
+                     nrounds = 3, verbose = FALSE, objective = "binary:logistic")
   )
-  dummylist <- make_dummies(traindata = x_train[, x_var_factor], testdata = x_train[, x_var_factor])
 
-  l_silent[[7]]$dummylist <- dummylist
+  l_silent[[7]]$dummylist <- l_silent[[12]]$dummylist <- dummylist
 
 
 
@@ -286,7 +296,10 @@ test_that("Test features (regression)", {
     ranger::ranger(formula_numeric, data = train_df),
     xgboost::xgboost(data = as.matrix(x_train[, x_var_numeric]), label = y_train, nrounds = 3, verbose = FALSE),
 
-    ranger::ranger(formula_factor, data = train_df)
+    ranger::ranger(formula_factor, data = train_df),
+
+    ranger::ranger(formula_binary_numeric, data = train_df, probability = TRUE),
+    ranger::ranger(formula_binary_factor, data = train_df, probability = TRUE)
     )
 
 
@@ -334,8 +347,8 @@ test_that("Test features (regression)", {
   # feature classes are different
   data_features_error <- data_features_ok
   data_features_error$classes <- rev(data_features_error$classes)
-  names(data_features_error$classes) <- names(model_features_ok$classes)
-  expect_error(check_features(model_features_ok,data_features_error))
+  names(data_features_error$classes) <- names(data_features_ok$classes)
+  expect_error(check_features(data_features_ok,data_features_error))
 
   # invalid feature class
   data_features_error <- data_features_ok
@@ -347,44 +360,37 @@ test_that("Test features (regression)", {
   data_features_error$factor_levels$chas <- c(data_features_error$factor_levels$chas,"2")
   expect_error(check_features(data_features_ok,data_features_error))
 
+  #### Now turning to update_data tests ####
+
+  model_features_ok <- get_model_features(l_silent[[4]])
+
+  # Checking null output and message to remove features
+  train_dt <- as.data.table(train_df)
+  data_to_update <- copy(train_dt)
+  expect_message(expect_null(update_data(data_to_update,model_features_ok)))
+
+  # Checking that features are indeed removed
+  expect_equal(names(data_to_update),model_features_ok$labels)
+
+  # Second call with same input should do nothing
+  expect_silent(expect_null(update_data(data_to_update,model_features_ok)))
+
+  # Checking null output and message to shuffle factor levels
+  data_to_update_2 <- head(data_to_update,20)
+  data_to_update_2$rad <- droplevels(data_to_update_2$rad)
+  org_levels_rad <- levels(data_to_update_2$rad)
+
+  expect_message(expect_null(update_data(data_to_update_2,model_features_ok)))
+
+  # Checking that levels are indeed updated
+  expect_true(length(org_levels_rad)<length(levels(data_to_update_2$rad)))
+  expect_equal(model_features_ok$factor_levels$rad,levels(data_to_update_2$rad))
 
 })
 
-test_that("Test features (binary classification)", {
-
-  # Data -----------
-  data("iris", package = "datasets")
-  x_var <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
-  y_var <- "Species"
-  iris$Species <- as.character(iris$Species)
-  iris <- iris[which(iris$Species != "virginica"), ]
-  iris$Species <- as.factor(iris$Species)
-  x_train <- tail(iris, -6)
-  y_train <- tail(iris[, y_var], -6)
-  str_formula <- "y_train ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width"
-  train_df <- cbind(y_train, x_train)
-
-  # List of models
-  l <- list(
-    suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")),
-    suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial")),
-    ranger::ranger(str_formula, data = train_df, probability = TRUE),
-    xgboost::xgboost(
-      data = as.matrix(x_train[, x_var]),
-      label = as.integer(y_train) - 1,
-      nrounds = 2,
-      verbose = FALSE,
-      objective = "binary:logistic",
-      eval_metric = "error",
-    )
-  )
-
-  for (i in seq_along(l)) {
-    expect_equal(features(l[[i]], cnms = colnames(train_df)), x_var)
-  }
 
 
-})
+
 
 test_that("Test missing colnames", {
 
