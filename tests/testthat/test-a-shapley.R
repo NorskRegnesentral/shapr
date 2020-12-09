@@ -86,6 +86,51 @@ test_that("Testing data input to shapr in shapley.R", {
     expect_message(shapr(train_df,l_message[[i]])) # Factor reordering + features dropped
   }
 
+  # Testing errors on incompatible model and data
+  # Missing features
+  model <- stats::lm(formula_factor, data = train_df)
+  data_error <- train_df[,-3]
+  expect_error(shapr(data_error,model))
+
+  # Duplicated column names
+  data_error <- train_df_used_factor
+  data_error <- cbind(data_error,lstat = 1)
+  expect_error(shapr(data_error,model))
+
+  # Empty column names
+  tmp <- dummylist$train_dummies
+  colnames(tmp) <- NULL
+  model <- xgboost::xgboost(data = tmp, label = y_train,
+                            nrounds = 3, verbose = FALSE)
+  data_error <- train_df
+  expect_error(shapr(data_error,model))
+
+  ### KOMMET HIT !!!
+
+
+  # feature class is NA
+  data_features_error <- data_features_ok
+  data_features_error$classes <- rep(NA,length(data_features_error$classes))
+  expect_message(check_features(data_features_error,data_features_error))
+
+  # feature classes are different
+  data_features_error <- data_features_ok
+  data_features_error$classes <- rev(data_features_error$classes)
+  names(data_features_error$classes) <- names(data_features_ok$classes)
+  expect_error(check_features(data_features_ok,data_features_error))
+
+  # invalid feature class
+  data_features_error <- data_features_ok
+  data_features_error$classes[1] <- "logical"
+  expect_error(check_features(data_features_error,data_features_error))
+
+  # non-matching factor levels
+  data_features_error <- data_features_ok
+  data_features_error$factor_levels$chas <- c(data_features_error$factor_levels$chas,"2")
+  expect_error(check_features(data_features_ok,data_features_error))
+
+
+
   # Add tests here for differnet types "errors" from test-models + the original ones below
 
 

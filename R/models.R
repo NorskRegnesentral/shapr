@@ -535,6 +535,16 @@ check_features <- function(f_list_1,f_list_2,
     stop(paste0(name_2," must have column names."))
   }
 
+  # feature names must be unique
+  if (any(duplicated(f_list_1$labels))) {
+    stop(paste0(name_1," must have unique column names."))
+  }
+
+  # feature names must be unique
+  if (any(duplicated(f_list_2$labels))) {
+    stop(paste0(name_2," must have unique column names."))
+  }
+
 
   missing_1_in_2 <- f_list_1$labels[!(f_list_1$labels %in% f_list_2$labels)]
   missing_2_in_1 <- f_list_2$labels[!(f_list_2$labels %in% f_list_1$labels)]
@@ -562,15 +572,11 @@ check_features <- function(f_list_1,f_list_2,
   f_list_1$sorted_factor_levels <- lapply(f_list_1$factor_levels,FUN=sort)
   f_list_2$sorted_factor_levels <- lapply(f_list_2$factor_levels,FUN=sort)
 
-  # feature names must be unique
-  if (any(duplicated(f_list_1$labels))) {
-    stop(paste0("Both ",name_1," and ",name_2," must have unique column names."))
-  }
-
   # Check if any features have empty names i.e ""
   if (any(f_list_1$labels == "")) {
     stop("One or more features is missing a name.")
   }
+
 
   #### Checking classes ####
   if(use_1_as_truth & any(is.na(f_list_1$classes))){
