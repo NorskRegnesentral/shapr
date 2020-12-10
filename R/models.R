@@ -705,7 +705,7 @@ update_data = function(data,updater){
 #'
 #'@keywords internal
 get_supported_models <- function(){
-  #DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs),"info"),keep.rownames = T)
+  DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs),"info"),keep.rownames = T)
   #DT_get_model_specs <- data.table::as.data.table(attr(.S3methods(get_model_specs,envir=globalenv()),"info"),keep.rownames = T)
 
   DT_get_model_specs[,rn:=substring(as.character(rn),first=17)]
@@ -713,8 +713,8 @@ get_supported_models <- function(){
   DT_get_model_specs[,native_get_model_specs:=ifelse(from=="shapr",1,0)]
   DT_get_model_specs[,c("visible","from","generic","isS4"):=NULL]
 
-  #DT_model_type <- data.table::as.data.table(attr(methods(model_type),"info"),keep.rownames = T)
-  DT_model_type <- data.table::as.data.table(attr(.S3methods(model_type,envir=globalenv()),"info"),keep.rownames = T)
+  DT_model_type <- data.table::as.data.table(attr(methods(model_type),"info"),keep.rownames = T)
+  #DT_model_type <- data.table::as.data.table(attr(.S3methods(model_type,envir=globalenv()),"info"),keep.rownames = T)
 
   DT_model_type[,rn:=substring(as.character(rn),first=12)]
   DT_model_type[,model_type:=1]

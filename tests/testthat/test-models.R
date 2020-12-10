@@ -437,39 +437,6 @@ test_that("Test missing colnames", {
 
 })
 
-test_that("Test get_supported_models", {
-
-  print(sys.parent())
-  print(parent.frame(n = 10))
-  print(sys.frame())
-  print(sys.parent())
-  env <- parent.frame(1)#sys.parent()#sys.frame()
-  print(.S3methods(model_type, envir=env))
-  model_type.test <- function() 1
-
-  print(.S3methods(model_type, envir=env))
-  #methods2(model_type)
-
-#  print(methods(model_type))
-#  print(methods2(model_type))
-
-  # no_native_methods <- length(methods(model_type))
-  #
-  # org_models <- get_supported_models()
-  #
-  # print(org_models)
-  #
-  # model_type.test <- function() 1
-  #
-  # new_models <- get_supported_models()
-  #
-  # print(new_models)
-  #
-  # expect_equal(nrow(org_models),no_native_methods)
-  #
-  # expect_equal(nrow(org_models)+1,nrow(new_models))
-
-  })
 
 
 
