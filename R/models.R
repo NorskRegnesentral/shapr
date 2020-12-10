@@ -729,7 +729,7 @@ get_supported_models <- function(){
 
   DT <- merge(DT_get_model_specs,DT_model_type,by="rn",all=T,allow.cartesian=T,nomatch=0)
   DT <- merge(DT,DT_predict_model,by="rn",all=T,nomatch=0)
-  DT[,(colnames(DT)[-1]):=lapply(.SD,nafill,fill=0),.SDcols=colnames(DT)[-1]]
+  DT[,(colnames(DT)[-1]):=lapply(.SD,data.table::nafill,fill=0),.SDcols=colnames(DT)[-1]]
   DT[,native:=as.logical(native_get_model_specs*native_model_type*native_predict_model)]
   DT[,c("native_get_model_specs","native_model_type","native_predict_model"):=NULL]
   DT[,(colnames(DT)[2:4]):=lapply(.SD,as.logical),.SDcols=colnames(DT)[2:4]]

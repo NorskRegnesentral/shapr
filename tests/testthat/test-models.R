@@ -439,4 +439,20 @@ test_that("Test missing colnames", {
 
 
 
+test_that("Test get_supported_models", {
+
+  org_models <- get_supported_models()
+
+  # Simulate adding to .GlobalEnv
+  globalfun_1 <- list(model_type.test = function() 1)
+  attach(globalfun_1)
+
+  new_models <- get_supported_models()
+
+  expect_false("test" %in% org_models$model_class)
+  expect_true("test" %in% new_models$model_class)
+
+  detach(globalfun_1) # Sets search path back
+  })
+
 
