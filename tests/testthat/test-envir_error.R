@@ -30,7 +30,7 @@ test_that("Test get_supported_models", {
 
   new_models <- get_supported_models() # test should be added here
 
-  expect_false(!all.equal(org_models,new_models)) # This fails, it should not if test is found for model_type
+  expect_false(!identical(org_models,new_models)) # This fails, it should not if test is found for model_type
 
 
 
