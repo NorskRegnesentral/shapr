@@ -4,7 +4,11 @@ library(testthat)
 test_that("Test get_supported_models", {
 
 
-  print(methods(model_type)) # This should list model.type.test as defined above, but it does not
+  print(methods(model_type)) # This should list all model_type classes.
+
+  model_type.test <- function() 1
+
+  print(methods(model_type)) # This should list model.type.test as defined above, but it does not when ran as a test
 
   # .S3methods are called by methods(). Trying to provide differnet envir to that function
   env1 <- parent.frame(1)
@@ -22,15 +26,20 @@ test_that("Test get_supported_models", {
 
   # This is what I really want to work
 
+  rm(model_type.test)
+
   org_models <- get_supported_models()
 
   print(org_models)
 
   model_type.test <- function() 1
 
+
   new_models <- get_supported_models() # test should be added here
 
-  expect_false(!identical(org_models,new_models)) # This fails, it should not if test is found for model_type
+  print(new_models)
+
+  expect_equal(nrow(org_models)+1,nrow(new_models)) # This fails, it should not if test is found for model_type
 
 
 
