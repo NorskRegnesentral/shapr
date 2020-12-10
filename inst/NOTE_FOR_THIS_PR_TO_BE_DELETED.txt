@@ -51,7 +51,8 @@ TODO:
 #1. document input to update_data, check_features and similar
 #2. Add messages when things are not checked (already done?)
 #3. Make tests for errors
-3.5: Make tests for update_data + check whether I should add something to the shapr and explain tests to trigger errors in the check functionality.
+#3.5: Make tests for update_data + check whether I should add something to the shapr and
+#3.55 Update tests for explain tests to trigger errors in the check functionality.
 3.6. Add examples
 #4. Add proper checking for the explain function
 4.5. Check whether the modifications to the explainer object doen in the main explain function are carried forward to
