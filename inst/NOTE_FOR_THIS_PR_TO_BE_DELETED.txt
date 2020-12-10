@@ -16,7 +16,7 @@ NOTE: In this PR I will do
 
 require that data passed to the function is a data.table object
 
-get_model_features(x){
+get_model_specs(x){
 
 named list with feature_names as names
 every component has two objects:
@@ -30,7 +30,7 @@ feature_types
 
 save this as feature_list_model and call it only in shapr
 
-get_data_features(x){
+get_data_specs(x){
 same list as above
 }
 
@@ -65,5 +65,7 @@ NO, I WILL KEEP IT THIS WAY AS I NEED THE feature list to be added to the explai
 11. Make PR
 12. Talk to Annabelle on whether I should update the dummy functions here. Update dummy? OR postpone this until you talk to Annabelle?
 13. Consider removing the sorting in make dummies as that will often lead to reordering the levels, which is maybe not wanted.
-
+14. Update vignette and shapr::shapr()-documentation on how to
+make custom models, including the optional get_model_specs
+15. Update tests fro get_model_specs with the new back-doors
 

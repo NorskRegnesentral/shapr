@@ -303,40 +303,40 @@ test_that("Test check_features + update_data", {
     )
 
 
-  data_features <- get_data_features(train_df)
+  data_features <- get_data_specs(train_df)
   for (i in seq_along(l_silent)) {
-    model_features <- get_model_features(l_silent[[i]])
+    model_features <- get_model_specs(l_silent[[i]])
     expect_silent(check_features(model_features,data_features))
   }
 
   for (i in seq_along(l_message)) {
-    model_features <- get_model_features(l_message[[i]])
+    model_features <- get_model_specs(l_message[[i]])
     expect_message(check_features(model_features,data_features))
   }
 
 
   # Checking all stops in check_features
-  data_features_ok <- get_data_features(train_df)
+  data_features_ok <- get_data_specs(train_df)
 
   # Non-matching labels
-  data_features_error <- get_data_features(train_df)
+  data_features_error <- get_data_specs(train_df)
   data_features_error$labels <- NULL
   expect_error(check_features(data_features_ok,data_features_error))
   expect_error(check_features(data_features_error,data_features_ok))
 
   # Missing features
-  data_features_error <- get_data_features(train_df[,-3])
+  data_features_error <- get_data_specs(train_df[,-3])
   expect_error(check_features(data_features_ok,data_features_error))
   expect_error(check_features(data_features_error,data_features_ok,use_1_as_truth = F))
 
   # Duplicated column names
-  data_features_error <- get_data_features(cbind(crim=train_df[,1],train_df))
+  data_features_error <- get_data_specs(cbind(crim=train_df[,1],train_df))
   expect_error(check_features(data_features_error,data_features_error))
 
   # Empty column names
   train_df_0 <- train_df
   names(train_df_0)[1] = ""
-  data_features_error <- get_data_features(train_df_0)
+  data_features_error <- get_data_specs(train_df_0)
   expect_error(check_features(data_features_error,data_features_error))
 
   # feature class is NA
@@ -362,7 +362,7 @@ test_that("Test check_features + update_data", {
 
   #### Now turning to update_data tests ####
 
-  model_features_ok <- get_model_features(l_silent[[4]])
+  model_features_ok <- get_model_specs(l_silent[[4]])
 
   # Checking null output and message to remove features
   train_dt <- as.data.table(train_df)
@@ -436,3 +436,40 @@ test_that("Test missing colnames", {
   )
 
 })
+
+test_that("Test get_supported_models", {
+
+  print(sys.parent())
+  print(parent.frame(n = 10))
+  print(sys.frame())
+  print(sys.parent())
+  env <- parent.frame(1)#sys.parent()#sys.frame()
+  print(.S3methods(model_type, envir=env))
+  model_type.test <- function() 1
+
+  print(.S3methods(model_type, envir=env))
+  #methods2(model_type)
+
+#  print(methods(model_type))
+#  print(methods2(model_type))
+
+  # no_native_methods <- length(methods(model_type))
+  #
+  # org_models <- get_supported_models()
+  #
+  # print(org_models)
+  #
+  # model_type.test <- function() 1
+  #
+  # new_models <- get_supported_models()
+  #
+  # print(new_models)
+  #
+  # expect_equal(nrow(org_models),no_native_methods)
+  #
+  # expect_equal(nrow(org_models)+1,nrow(new_models))
+
+  })
+
+
+

@@ -131,25 +131,24 @@ shapr <- function(x,
   # Setup
   explainer <- as.list(environment())
   explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
-  explainer$model_type <- model_type(model)
 
 
   # Converts to data.table, otherwise copy to x_train  --------------
   x_train <- data.table::as.data.table(x)
 
   # Check features of training data against model specification
-  feature_list_model <- get_model_features(model,feature_labels)
-  feature_list_x_train <- get_data_features(x_train)
+  feature_list_model <- get_model_specs(model,feature_labels)
+  feature_list_x_train <- get_data_specs(x_train)
 
   updater <- check_features(feature_list_model,feature_list_x_train,
                             "model","training data",use_1_as_truth = T)
 
   update_data(x_train,updater) # Updates x_train by reference
 
+  explainer$model_type <- feature_list_model$model_type
   explainer$n_features <- ncol(x_train)
-
-  # Checks model and features
   explainer$p <- predict_model(model, head(x_train))
+
 
   # Get all combinations ----------------
   dt_combinations <- feature_combinations(

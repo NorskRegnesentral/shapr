@@ -19,7 +19,7 @@ test_that("Basic test functions in shapley.R", {
   explainer <- shapr(x_train, model)
 
   expect_known_value(explainer, file = "test_objects/shapley_explainer_obj.rds",
-                     update = FALSE)
+                     update = F)
 })
 
 
@@ -59,16 +59,20 @@ test_that("Testing data input to shapr in shapley.R", {
     stats::glm(formula_numeric, data = train_df),
     mgcv::gam(formula_numeric, data = train_df))
 
-  l_factor <- list(stats::lm(formula_factor, data = train_df),
-                   stats::glm(formula_factor, data = train_df),
-                   mgcv::gam(formula_factor, data = train_df)
+  l_factor <- list(
+    stats::lm(formula_factor, data = train_df),
+    stats::glm(formula_factor, data = train_df),
+    mgcv::gam(formula_factor, data = train_df)
   )
 
-  l_message <- list(xgboost::xgboost(data = dummylist$train_dummies, label = y_train,
-                                     nrounds = 3, verbose = FALSE)
+  l_message <- list(
+    xgboost::xgboost(data = dummylist$train_dummies, label = y_train,
+                     nrounds = 3, verbose = FALSE)
   )
 
   l_message[[1]]$dummylist <- dummylist$obj
+
+
 
 
   for (i in seq_along(l_numeric)) {
@@ -86,6 +90,43 @@ test_that("Testing data input to shapr in shapley.R", {
     expect_message(shapr(train_df,l_message[[i]])) # Factor reordering + features dropped
   }
 
+  # Custom model
+  model_custom <- gbm::gbm(formula_factor,data = train_df,distribution = "gaussian")
+  expect_error(shapr(train_df_used_factor ,model_custom)) # Both required model objects not defined
+
+  # Create custom function of model_type for gbm
+  model_type.gbm <- function(x) "regression"
+
+  expect_error(shapr(train_df_used_factor ,model_custom)) # predict_model objects not defined
+
+  # Create custom function of predict_model for gbm
+  predict_model.gbm <- function(x, newdata) {
+    predict(x, as.data.frame(newdata), n.trees = x$n.trees)
+  }
+
+  expect_error(shapr(train_df_used_factor ,model_custom)) # Missing feature_labels & get_model_specs
+  expect_message(shapr(train_df_used_factor ,model_custom,feature_labels = labels(model_custom$Terms))) # feature_labels, but no get_model_specs
+
+  expect_message(expect_error(shapr(train_df_used_factor,model_custom,
+                                    feature_labels = labels(model_custom$Terms)[-1]))) # Passing invalid feature_labels
+
+  get_model_specs.gbm <- function(x, feature_labels = NULL) {
+
+    feature_list = list()
+    feature_list$labels <- labels(x$Terms)
+    m <- length(feature_list$labels)
+
+    feature_list$classes <- attr(x$Terms,"dataClasses")[-1]
+    feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
+    feature_list$factor_levels[feature_list$classes=="factor"] <- x$var.levels[feature_list$classes=="factor"]
+
+    return(feature_list)
+  }
+  expect_message(shapr(train_df_used_factor ,model_custom,feature_labels = labels(model_custom$Terms))) # Both feature_labels & get_model_specs
+  expect_silent(shapr(train_df_used_factor,model_custom)) # Missing feature_labels, but get_model_specs is added
+
+  expect_message(shapr(train_df,model_custom)) # Features dropped
+
   # Testing errors on incompatible model and data
   # Missing features
   model <- stats::lm(formula_factor, data = train_df)
@@ -97,92 +138,22 @@ test_that("Testing data input to shapr in shapley.R", {
   data_error <- cbind(data_error,lstat = 1)
   expect_error(shapr(data_error,model))
 
-  # Empty column names
+  # Empty column names in data
   tmp <- dummylist$train_dummies
   colnames(tmp) <- NULL
-  model <- xgboost::xgboost(data = tmp, label = y_train,
+  model_xgb <- xgboost::xgboost(data = tmp, label = y_train,
                             nrounds = 3, verbose = FALSE)
   data_error <- train_df
+  expect_error(shapr(data_error,model_xgb))
+
+  # Data feature with incorrect class
+  data_error <- train_df_used_factor
+  data_error$lstat <- as.integer(data_error$lstat>15)
   expect_error(shapr(data_error,model))
 
-  ### KOMMET HIT !!!
-
-
-  # feature class is NA
-  data_features_error <- data_features_ok
-  data_features_error$classes <- rep(NA,length(data_features_error$classes))
-  expect_message(check_features(data_features_error,data_features_error))
-
-  # feature classes are different
-  data_features_error <- data_features_ok
-  data_features_error$classes <- rev(data_features_error$classes)
-  names(data_features_error$classes) <- names(data_features_ok$classes)
-  expect_error(check_features(data_features_ok,data_features_error))
-
-  # invalid feature class
-  data_features_error <- data_features_ok
-  data_features_error$classes[1] <- "logical"
-  expect_error(check_features(data_features_error,data_features_error))
-
   # non-matching factor levels
-  data_features_error <- data_features_ok
-  data_features_error$factor_levels$chas <- c(data_features_error$factor_levels$chas,"2")
-  expect_error(check_features(data_features_ok,data_features_error))
+  data_error <- head(train_df_used_factor)
+  data_error$rad <- droplevels(data_error$rad)
+  expect_error(shapr(data_error,model))
 
-
-
-  # Add tests here for differnet types "errors" from test-models + the original ones below
-
-
-  ##########OLD ##########
-
-  data("Boston", package = "MASS")
-
-  x_var <- c("lstat", "rm", "dis", "indus")
-  x_var_sub <- x_var[1:2]
-  not_x_var <- "crim"
-  not_even_var <- "not_a_column_name"
-
-  x_train <- as.matrix(tail(Boston[, x_var], -6))
-  xy_train_full_df <- tail(Boston[, ], -6)
-  xy_train_missing_lstat_df <- xy_train_full_df[, !(colnames(xy_train_full_df) == "lstat")]
-  xy_train_full_df_no_colnames <- xy_train_full_df
-  colnames(xy_train_full_df_no_colnames) <- NULL
-
-  # Fitting models
-  formula <- as.formula(paste0("medv ~ ", paste0(x_var, collapse = "+")))
-
-  l <- list(
-    xgboost::xgboost(
-      data = x_train,
-      label = tail(Boston[, "medv"], -6),
-      nround = 3,
-      verbose = FALSE
-    ),
-    lm(
-      formula = formula,
-      data = xy_train_full_df
-    ),
-    ranger::ranger(
-      formula = formula,
-      data = xy_train_full_df,
-      num.trees = 50
-    )
-  )
-
-  for (i in seq_along(l)) {
-
-    # Expect silent
-    expect_silent(shapr(xy_train_full_df, l[[i]]))
-
-    # Expect message that feature_labels is ignored
-    expect_message(shapr(xy_train_full_df, l[[i]], feature_labels = x_var_sub))
-    expect_message(shapr(xy_train_full_df, l[[i]], feature_labels = x_var))
-
-    # Expect error, giving error message that indicates that x misses columns used by the model
-    expect_error(shapr(xy_train_missing_lstat_df, l[[i]]))
-
-    # Expect error when x_train don't have column names
-    expect_error(shapr(xy_train_full_df_no_colnames, l[[i]], feature_labels = x_var_sub))
-  }
 })

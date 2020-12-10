@@ -13,7 +13,7 @@ check_features(
 )
 }
 \arguments{
-\item{f_list_1, f_list_2}{List. As extracted from either \code{get_data_features} or \code{get_model_features}.}
+\item{f_list_1, f_list_2}{List. As extracted from either \code{get_data_specs} or \code{get_model_specs}.}
 
 \item{name_1, name_2}{Character. Names corresponding to the input of respectively \code{f_list_1} and \code{f_list_2},
 used to provide informative error messages.}
@@ -37,14 +37,14 @@ data("Boston", package = "MASS")
 # Split data into test- and training data
 x_train <- as.data.table(head(Boston))
 x_train[,rad:=as.factor(rad)]
-data_features <- get_data_features(x_train)
+data_features <- get_data_specs(x_train)
 
 model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 
 cnms <- c("lstat", "rm", "dis", "indus")
 
 # Checking that features used by the model corresponds to cnms
-model_features <- get_model_features(x = model, feature_labels = NULL)
+model_features <- get_model_specs(x = model, feature_labels = NULL)
 
 check_features(model_features,data_features)
 }

@@ -295,48 +295,87 @@ model_type.xgb.Booster <- function(x) {
 #' cnms <- c("lstat", "rm", "dis", "indus")
 #'
 #' # Checking that features used by the model corresponds to cnms
-#' get_model_features(x = model, feature_labels = NULL)
-get_model_features <- function(x,feature_labels = NULL) {
+#' get_model_specs(x = model, feature_labels = NULL)
+get_model_specs <- function(x,feature_labels = NULL) {
+
+  required_model_objects <- c("model_type","predict_model")
+  recommended_model_objects <- "get_model_specs"
 
   # Start with all checking for native models
-  native_models <- substring(as.character(methods(get_model_features)),first = 20)
-  is_native_model <- (class(x)[1] %in% native_models)
+  model_info <- get_supported_models()[model_class==class(x)[1],]
 
-  if(is_native_model){
+  if(nrow(model_info)==0){
+    stop(
+      "You passed a nonsupported model to shapr. See ?shapr::shapr or the vignette\n",
+      "for more information on how to run shapr with custom models."
+    )
+  }
+
+  if(model_info$native){
     if(!is.null(feature_labels)){
       message(
         paste0(
           "\nYou have passed a supported model object, and therefore\n",
           "features_labels is ignored. The argument is only applicable when\n",
-          "using a custom model. For more information see ?shapr::shapr."
-          )
-        )
-      }
-    } else { # if custom model
-    if(is.character(feature_labels)){
-      message(
-        paste0(
-          "\nIt looks like you are using a custom model. Note that we currently\n",
-          "do not check the class and validity of the features specified in\n",
-          "feature_labels when calling shapr() with custom models.\n"
-        )
-      )
-    } else {
-      stop(
-        paste0(
-          "\nIt looks like you are using a custom model, and forgot to pass\n",
-          "a valid value for the argument feature_labels when calling shapr().\n",
-          "See ?shapr::shapr for more information about the argument."
+          "using a custom model. See ?shapr::shapr or the vignette for more information."
         )
       )
     }
+  } else { # if custom model
+
+
+    available_model_objects <- names(which(unlist(model_info[,2:4])))
+    if(!(all(required_model_objects %in% available_model_objects)))
+    {
+      this_object_missing <- which(!(required_model_objects %in% available_model_objects))
+
+      stop(
+        paste0(
+          "The following required model objects are not available for your custom model: ",
+          paste0(required_model_objects[this_object_missing],collapse = ", "),".\n",
+          "See ?shapr::shapr or the vignette for more information."
+        )
+      )
+    }
+    if(!(recommended_model_objects %in% available_model_objects)){
+      if(is.character(feature_labels)){
+        message(
+          paste0(
+            "The following recommended model objects are not available for your custom model: ",
+            paste0(recommended_model_objects,collapse = ", "),".\n",
+            "The provided feature_labels is used, and there is no checking of feature classes and any\n",
+            "factor levels. See ?shapr::shapr or the vignette for more information."
+          )
+        )
+      } else { # If neither the recommended objects nor feature labels is provided
+        stop(
+          paste0(
+            "Both the recommended model object ",recommended_model_objects," and feature_labels are\n",
+            "missing for your custom model. Please provided at least one of them.\n",
+            "See ?shapr::shapr or the vignette for more information."
+          )
+        )
+      }
+    } else {
+      if(is.character(feature_labels)){ # If both recommended objects and feature labels is provided
+        message(
+          paste0(
+            "\nYou have passed a custom model with all required and recommended model objects.\n",
+            "features_labels is therefore ignored. The argument is only applicable when\n",
+            "using a custom model without ",recommended_model_objects,"\n",
+            "See ?shapr::shapr or the vignette for more information."
+          )
+        )
+      }
+    }
   }
 
-  UseMethod("get_model_features", x)
+
+  UseMethod("get_model_specs", x)
 }
 
-#' @rdname get_model_features
-get_model_features.default <- function(x, feature_labels = NULL) {
+#' @rdname get_model_specs
+get_model_specs.default <- function(x, feature_labels = NULL) {
 
   # For custom models
   feature_list = list()
@@ -345,14 +384,15 @@ get_model_features.default <- function(x, feature_labels = NULL) {
 
   feature_list$classes <- rep(NA,m)
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
+  feature_list$model_type <- model_type(x)
 
   return(feature_list)
 }
 
 
-#' @rdname get_model_features
+#' @rdname get_model_specs
 #' @export
-get_model_features.lm <- function(x, feature_labels = NULL) {
+get_model_specs.lm <- function(x, feature_labels = NULL) {
 
   feature_list = list()
   feature_list$labels <- labels(x$terms)
@@ -361,13 +401,14 @@ get_model_features.lm <- function(x, feature_labels = NULL) {
   feature_list$classes <- attr(x$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
+  feature_list$model_type <- model_type(x)
 
   return(feature_list)
 }
 
-#' @rdname get_model_features
+#' @rdname get_model_specs
 #' @export
-get_model_features.glm <- function(x, feature_labels = NULL) {
+get_model_specs.glm <- function(x, feature_labels = NULL) {
 
   feature_list = list()
   feature_list$labels <- labels(x$terms)
@@ -376,13 +417,14 @@ get_model_features.glm <- function(x, feature_labels = NULL) {
   feature_list$classes <- attr(x$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
+  feature_list$model_type <- model_type(x)
 
   return(feature_list)
 }
 
-#' @rdname get_model_features
+#' @rdname get_model_specs
 #' @export
-get_model_features.gam <- function(x, feature_labels = NULL) {
+get_model_specs.gam <- function(x, feature_labels = NULL) {
 
   feature_list = list()
   feature_list$labels <- labels(x$terms)
@@ -391,13 +433,14 @@ get_model_features.gam <- function(x, feature_labels = NULL) {
   feature_list$classes <- attr(x$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
+  feature_list$model_type <- model_type(x)
 
   return(feature_list)
 }
 
-#' @rdname get_model_features
+#' @rdname get_model_specs
 #' @export
-get_model_features.ranger <- function(x, feature_labels = NULL) {
+get_model_specs.ranger <- function(x, feature_labels = NULL) {
 
   # Additional check
   if (is.null(x$forest)) {
@@ -415,14 +458,15 @@ get_model_features.ranger <- function(x, feature_labels = NULL) {
   feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels # Only provided when respect.unordered.factors == T
+  feature_list$model_type <- model_type(x)
 
   return(feature_list)
 }
 
 
-#' @rdname get_model_features
+#' @rdname get_model_specs
 #' @export
-get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
+get_model_specs.xgb.Booster <- function(x, feature_labels = NULL) {
 
   feature_list = list()
 
@@ -440,6 +484,7 @@ get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
     feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
     feature_list$factor_levels[names(x$dummylist$factor_list)] <- x$dummylist$factor_list
   }
+  feature_list$model_type <- model_type(x)
 
   return(feature_list)
 
@@ -459,8 +504,8 @@ get_model_features.xgb.Booster <- function(x, feature_labels = NULL) {
 #' # Split data into test- and training data
 #' x_train <- as.data.table(head(Boston))
 #' x_train[,rad:=as.factor(rad)]
-#' get_data_features(x_train)
-get_data_features <- function(x){
+#' get_data_specs(x_train)
+get_data_specs <- function(x){
 
   x <- data.table::as.data.table(x)
 
@@ -475,7 +520,7 @@ get_data_features <- function(x){
 
 #' Checks that two extracted feature lists have exactly the same properites
 #'
-#' @param f_list_1,f_list_2 List. As extracted from either \code{get_data_features} or \code{get_model_features}.
+#' @param f_list_1,f_list_2 List. As extracted from either \code{get_data_specs} or \code{get_model_specs}.
 #' @param name_1,name_2 Character. Names corresponding to the input of respectively \code{f_list_1} and \code{f_list_2},
 #' used to provide informative error messages.
 #' @param use_1_as_truth Logical. If TRUE, \code{f_list_2} is compared to \code{f_list_1}, i.e. additional elements
@@ -496,14 +541,14 @@ get_data_features <- function(x){
 #' # Split data into test- and training data
 #' x_train <- as.data.table(head(Boston))
 #' x_train[,rad:=as.factor(rad)]
-#' data_features <- get_data_features(x_train)
+#' data_features <- get_data_specs(x_train)
 #'
 #' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 #'
 #' cnms <- c("lstat", "rm", "dis", "indus")
 #'
 #' # Checking that features used by the model corresponds to cnms
-#' model_features <- get_model_features(x = model, feature_labels = NULL)
+#' model_features <- get_model_specs(x = model, feature_labels = NULL)
 #'
 #' check_features(model_features,data_features)
 check_features <- function(f_list_1,f_list_2,
@@ -653,4 +698,43 @@ update_data = function(data,updater){
 
   return(NULL)
 }
+
+
+
+#' Provides a data.table with the supported models
+#'
+#'@keywords internal
+get_supported_models <- function(){
+  #DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs),"info"),keep.rownames = T)
+  #DT_get_model_specs <- data.table::as.data.table(attr(.S3methods(get_model_specs,envir=globalenv()),"info"),keep.rownames = T)
+
+  DT_get_model_specs[,rn:=substring(as.character(rn),first=17)]
+  DT_get_model_specs[,get_model_specs:=1]
+  DT_get_model_specs[,native_get_model_specs:=ifelse(from=="shapr",1,0)]
+  DT_get_model_specs[,c("visible","from","generic","isS4"):=NULL]
+
+  #DT_model_type <- data.table::as.data.table(attr(methods(model_type),"info"),keep.rownames = T)
+  DT_model_type <- data.table::as.data.table(attr(.S3methods(model_type,envir=globalenv()),"info"),keep.rownames = T)
+
+  DT_model_type[,rn:=substring(as.character(rn),first=12)]
+  DT_model_type[,model_type:=1]
+  DT_model_type[,native_model_type:=ifelse(from=="shapr",1,0)]
+  DT_model_type[,c("visible","from","generic","isS4"):=NULL]
+
+  DT_predict_model <- data.table::as.data.table(attr(methods(predict_model),"info"),keep.rownames = T)
+  DT_predict_model[,rn:=substring(as.character(rn),first=15)]
+  DT_predict_model[,predict_model:=1]
+  DT_predict_model[,native_predict_model:=ifelse(from=="shapr",1,0)]
+  DT_predict_model[,c("visible","from","generic","isS4"):=NULL]
+
+  DT <- merge(DT_get_model_specs,DT_model_type,by="rn",all=T,allow.cartesian=T,nomatch=0)
+  DT <- merge(DT,DT_predict_model,by="rn",all=T,nomatch=0)
+  DT[,(colnames(DT)[-1]):=lapply(.SD,nafill,fill=0),.SDcols=colnames(DT)[-1]]
+  DT[,native:=as.logical(native_get_model_specs*native_model_type*native_predict_model)]
+  DT[,c("native_get_model_specs","native_model_type","native_predict_model"):=NULL]
+  DT[,(colnames(DT)[2:4]):=lapply(.SD,as.logical),.SDcols=colnames(DT)[2:4]]
+  data.table::setnames(DT,"rn","model_class")
+  return(DT)
+}
+
 
