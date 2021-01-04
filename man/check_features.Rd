@@ -32,20 +32,17 @@ used to reorder the data.
 Checks that two extracted feature lists have exactly the same properites
 }
 \examples{
-Load example data
+
+
+# Load example data
 data("Boston", package = "MASS")
 # Split data into test- and training data
-x_train <- as.data.table(head(Boston))
+x_train <- data.table::as.data.table(head(Boston))
 x_train[,rad:=as.factor(rad)]
 data_features <- get_data_specs(x_train)
+model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 
-model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
-
-cnms <- c("lstat", "rm", "dis", "indus")
-
-# Checking that features used by the model corresponds to cnms
 model_features <- get_model_specs(x = model, feature_labels = NULL)
-
 check_features(model_features,data_features)
 }
 \keyword{internal}

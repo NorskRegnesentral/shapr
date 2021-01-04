@@ -33,16 +33,13 @@ get_model_specs(x, feature_labels = NULL)
 Fetches feature labels from a given model object
 }
 \examples{
-# Load example data
+ # Load example data
 data("Boston", package = "MASS")
-# Split data into test- and training data
-x_train <- head(Boston, -3)
-# Fit a linear model
-model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+Split data into test- and training data
+x_train <- data.table::as.data.table(head(Boston))
+x_train[,rad:=as.factor(rad)]
+model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 
-cnms <- c("lstat", "rm", "dis", "indus")
-
-# Checking that features used by the model corresponds to cnms
 get_model_specs(x = model, feature_labels = NULL)
 }
 \keyword{internal}

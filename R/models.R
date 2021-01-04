@@ -285,16 +285,13 @@ model_type.xgb.Booster <- function(x) {
 #' @export
 #'
 #' @examples
-#'# Load example data
+#'  # Load example data
 #' data("Boston", package = "MASS")
-#' # Split data into test- and training data
-#' x_train <- head(Boston, -3)
-#' # Fit a linear model
-#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#' Split data into test- and training data
+#' x_train <- data.table::as.data.table(head(Boston))
+#' x_train[,rad:=as.factor(rad)]
+#' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
-#' cnms <- c("lstat", "rm", "dis", "indus")
-#'
-#' # Checking that features used by the model corresponds to cnms
 #' get_model_specs(x = model, feature_labels = NULL)
 get_model_specs <- function(x,feature_labels = NULL) {
 
@@ -536,20 +533,17 @@ get_data_specs <- function(x){
 #' @export
 #'
 #' @examples
-#' Load example data
+#'
+#'
+#' # Load example data
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
-#' x_train <- as.data.table(head(Boston))
+#' x_train <- data.table::as.data.table(head(Boston))
 #' x_train[,rad:=as.factor(rad)]
 #' data_features <- get_data_specs(x_train)
+#' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
-#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
-#'
-#' cnms <- c("lstat", "rm", "dis", "indus")
-#'
-#' # Checking that features used by the model corresponds to cnms
 #' model_features <- get_model_specs(x = model, feature_labels = NULL)
-#'
 #' check_features(model_features,data_features)
 check_features <- function(f_list_1,f_list_2,
                            name_1 = "model",name_2 = "data",

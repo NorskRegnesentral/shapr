@@ -53,14 +53,14 @@ TODO:
 #3. Make tests for errors
 #3.5: Make tests for update_data + check whether I should add something to the shapr and
 #3.55 Update tests for explain tests to trigger errors in the check functionality.
-3.6. Add examples
+#3.6. Add examples
 #4. Add proper checking for the explain function
 4.5. Check whether the modifications to the explainer object doen in the main explain function are carried forward to
-    the differnet class versions or not.
+    the differnet class versions or not. -- NO, they are not so I need to make a new function for updating the test data which is called from the individual explain functions (replacing explainer_x_test)
 #6. Check if it makes sense to make ONE big function calling the two get functions, check features and the updater.
 NO, I WILL KEEP IT THIS WAY AS I NEED THE feature list to be added to the explainer.
 7. Delete traces of features
-8. Update test objects for explainer (shapr) as they will now contain the feature list from the explainer
+8. Update test objects for explainer (shapr) as they will now contain the feature list from the explainer (also delete the model_type object in explainer?)
 9. Run all tests
 10. Run checks -- I am sure there are issues here!
 11. Make PR
@@ -69,4 +69,4 @@ NO, I WILL KEEP IT THIS WAY AS I NEED THE feature list to be added to the explai
 14. Update vignette and shapr::shapr()-documentation on how to
 make custom models, including the optional get_model_specs
 15. Update tests fro get_model_specs with the new back-doors
-
+16. Delete unused code in functions (like in the top of check_features)

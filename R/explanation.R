@@ -124,7 +124,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   }
 
   # Check features of test data against those specified in the explainer
-  x_test <- data.table::as.data.table(x_test)
+  x_test <- data.table::as.data.table(x)
 
   feature_list_x_test <- get_data_specs(x_test)
 
