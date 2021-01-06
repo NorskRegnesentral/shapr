@@ -317,59 +317,115 @@ test_that("Testing data input to explain in explanation.R", {
     x_test_full
   )
 
-  # Expect silent for explainer 1, using correct, reordered and full data set, then identical results
+  # explainer 1
+  # Expect message due to no label/factor checking
   l <- list()
-  for (i in seq_along(all_test_data)) {
-    l[[i]] <- expect_silent(
-      explain(
-        all_test_data[[i]],
-        all_explainers[[1]],
-        approach = "empirical",
-        prediction_zero = p0,
-        n_samples = 1e2
-      )
+  l[[1]] <- expect_message(
+    explain(
+      all_test_data[[1]],
+      all_explainers[[1]],
+      approach = "empirical",
+      prediction_zero = p0,
+      n_samples = 1e2
     )
-  }
+  )
+  # Expect message due to no label/factor checking
+  l[[2]] <- expect_message(
+    explain(
+      all_test_data[[2]],
+      all_explainers[[1]],
+      approach = "empirical",
+      prediction_zero = p0,
+      n_samples = 1e2
+    )
+  )
+  # Expect message due to no label/factor checking + removal of data
+  l[[3]] <- expect_message(
+    explain(
+      all_test_data[[3]],
+      all_explainers[[1]],
+      approach = "empirical",
+      prediction_zero = p0,
+      n_samples = 1e2
+    )
+  )
   for (i in 2:length(l)) {
     expect_equal(l[[i - 1]], l[[i]])
   }
 
-  # Expect silent for explainer 2, using correct, reordered and bigger data set, then identical results
+  # explainer 2
+  # Expect silent
   l <- list()
-  for (i in seq_along(all_test_data)) {
-    l[[i]] <- expect_silent(
-      explain(
-        all_test_data[[i]],
-        all_explainers[[2]],
-        approach = "empirical",
-        prediction_zero = p0,
-        n_samples = 1e2
-      )
+  l[[1]] <- expect_silent(
+    explain(
+      all_test_data[[1]],
+      all_explainers[[2]],
+      approach = "empirical",
+      prediction_zero = p0,
+      n_samples = 1e2
     )
-  }
+  )
+  # Expect silent
+  l[[2]] <- expect_silent(
+    explain(
+      all_test_data[[2]],
+      all_explainers[[2]],
+      approach = "empirical",
+      prediction_zero = p0,
+      n_samples = 1e2
+    )
+  )
+  # Expect message due to removal of data
+  l[[3]] <- expect_message(
+    explain(
+      all_test_data[[3]],
+      all_explainers[[2]],
+      approach = "empirical",
+      prediction_zero = p0,
+      n_samples = 1e2
+    )
+  )
   for (i in 2:length(l)) {
     expect_equal(l[[i - 1]], l[[i]])
   }
 
-  # Expect silent for explainer 3, using correct, reordered and bigger data set, then identical results
+  # explainer 3
+  # Expect message due to no label/factor checking
   l <- list()
-  for (i in seq_along(all_test_data)) {
-    l[[i]] <- expect_silent(
-      explain(
-        all_test_data[[i]],
-        all_explainers[[3]],
-        approach = "empirical",
-        prediction_zero = p0,
-        n_samples = 1e2
-      )
+  l[[1]] <- expect_message(
+    explain(
+      all_test_data[[1]],
+      all_explainers[[3]],
+      approach = "empirical",
+      prediction_zero = p0,
+      n_samples = 1e2
     )
-  }
+  )
+  # Expect message due to no label/factor checking
+  l[[2]] <- expect_message(
+    explain(
+      all_test_data[[2]],
+      all_explainers[[3]],
+      approach = "empirical",
+      prediction_zero = p0,
+      n_samples = 1e2
+    )
+  )
+  # Expect message due to no label/factor checking + removal of data
+  l[[3]] <- expect_message(
+    explain(
+      all_test_data[[3]],
+      all_explainers[[3]],
+      approach = "empirical",
+      prediction_zero = p0,
+      n_samples = 1e2
+    )
+  )
   for (i in 2:length(l)) {
     expect_equal(l[[i - 1]], l[[i]])
   }
 
   for (i in seq_along(all_explainers)) {
-
     # Expect error when test data misses used variable
     expect_error(
       explain(

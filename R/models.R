@@ -519,6 +519,10 @@ get_data_specs <- function(x){
 #' @export
 #'
 fix_data = function(x,feature_list, name_1 = "model",name_2 = "data",use_feature_list_as_truth = T){
+  if(all(is.null(colnames(x)))){
+    stop(paste0("The ", name_2, " is missing column names"))
+  }
+
   x_dt <- data.table::as.data.table(x)
 
   feature_list_data <- get_data_specs(x_dt)
