@@ -285,7 +285,7 @@ test_that("Test check_features + update_data", {
     stats::glm(formula_binary_factor, data = train_df, family = "binomial"),
     mgcv::gam(formula_binary_factor, data = train_df, family = "binomial"),
     xgboost::xgboost(data = dummylist$train_dummies, label = as.integer(y_train_binary)-1,
-                     nrounds = 3, verbose = FALSE, objective = "binary:logistic")
+                     nrounds = 3, verbose = FALSE, objective = "binary:logistic", eval_metric = "error")
   )
 
   l_silent[[7]]$dummylist <- l_silent[[12]]$dummylist <- dummylist$obj

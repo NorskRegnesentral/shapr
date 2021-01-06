@@ -123,16 +123,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     )
   }
 
-  # Check features of test data against those specified in the explainer
-  x_test <- data.table::as.data.table(x)
 
-  feature_list_x_test <- get_data_specs(x_test)
-
-  updater <- check_features(explainer$feature_list,feature_list_x_test,
-                            "explainer","test data",use_1_as_truth = T)
-
-  update_data(x_test,updater) # Updates x_test by reference
-  explainer$x_test <- x_test
 
   if (length(approach) > 1) {
     class(x) <- "combined"
@@ -175,7 +166,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
                               start_aicc = 0.1, w_threshold = 0.95, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(explainer$x_test)
+  explainer$x_test <- as.matrix(fix_data(x,explainer$feature_list,"model","test data"))
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec
@@ -207,8 +198,9 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
 
+
   # Add arguments to explainer object
-  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
+  explainer$x_test <- as.matrix(fix_data(x,explainer$feature_list,"model","test data"))
   explainer$approach <- approach
 
   # If mu is not provided directly, use mean of training data
@@ -246,7 +238,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Setup
-  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
+  explainer$x_test <- as.matrix(fix_data(x,explainer$feature_list,"model","test data"))
   explainer$approach <- approach
 
   # Prepare transformed data
@@ -314,7 +306,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
   }
 
   # Add arguments to explainer object
-  explainer$x_test <- explainer_x_test_dt(x, explainer$feature_labels)
+  explainer$x_test <- fix_data(x,explainer$feature_list,"model","test data")
   explainer$approach <- approach
   explainer$mincriterion <- mincriterion
   explainer$minsplit <- minsplit
@@ -341,7 +333,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
-  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
+  explainer$x_test <- as.matrix(fix_data(x,explainer$feature_list,"model","test data"))
 
   dt_l <- list()
   for (i in seq_along(l)) {
@@ -398,32 +390,6 @@ get_list_approaches <- function(n_features, approach) {
   return(l)
 }
 
-#' @keywords internal
-explainer_x_test <- function(x_test, feature_labels) {
-
-  # Remove variables that were not used for training
-  x <- data.table::as.data.table(x_test)
-  cnms_remove <- setdiff(colnames(x), feature_labels)
-  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
-  data.table::setcolorder(x, feature_labels)
-
-  return(as.matrix(x))
-}
-
-#' @keywords internal
-explainer_x_test_dt <- function(x_test, feature_labels) {
-
-  # Remove variables that were not used for training
-  # Same as explainer_x_test() but doesn't convert to a matrix
-  # Useful for ctree method which sometimes takes categorical features
-  x <- data.table::as.data.table(x_test)
-  cnms_remove <- setdiff(colnames(x), feature_labels)
-  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
-  data.table::setcolorder(x, feature_labels)
-
-  return(x)
-}
-
 
 #' @rdname explain
 #' @name explain
@@ -461,16 +427,4 @@ get_list_ctree_mincrit <- function(n_features, mincriterion) {
     l[[nn]] <- which(n_features %in% x)
   }
   return(l)
-}
-
-#' @keywords internal
-explainer_x_test <- function(x_test, feature_labels) {
-
-  # Remove variables that were not used for training
-  x <- data.table::as.data.table(x_test)
-  cnms_remove <- setdiff(colnames(x), feature_labels)
-  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
-  data.table::setcolorder(x, feature_labels)
-
-  return(as.matrix(x))
 }

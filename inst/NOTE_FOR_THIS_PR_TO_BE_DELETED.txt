@@ -70,3 +70,7 @@ NO, I WILL KEEP IT THIS WAY AS I NEED THE feature list to be added to the explai
 make custom models, including the optional get_model_specs
 15. Update tests fro get_model_specs with the new back-doors
 16. Delete unused code in functions (like in the top of check_features)
+17. Add documentation to fix_data
+18. Add back and try to fix issue with custom model tests for shapr not working.
+19. Add tests for successful creation of custom models with both shapr and explain
+20. Delete $feature_labels from explainer produced in shapr.

@@ -173,7 +173,7 @@ predict_model.gam <- function(x, newdata) {
 #' # Writing out the defined model type of the object
 #' model_type(x = model)
 model_type <- function(x) {
-  UseMethod("model_type")
+  UseMethod("model_type", x)
 }
 
 #' @rdname model_type
@@ -512,6 +512,24 @@ get_data_specs <- function(x){
   feature_list$factor_levels = lapply(x,levels)
 
   return(feature_list)
+}
+
+#' TODO: Add header, parameter info, return and example here
+#' @keywords internal
+#' @export
+#'
+fix_data = function(x,feature_list, name_1 = "model",name_2 = "data",use_feature_list_as_truth = T){
+  x_dt <- data.table::as.data.table(x)
+
+  feature_list_data <- get_data_specs(x_dt)
+
+  updater <- check_features(feature_list,feature_list_data,
+                            name_1 = name_1,
+                            name_2 = name_2,
+                            use_1_as_truth = use_feature_list_as_truth)
+  update_data(x_dt,updater) # Updates x_dt by reference
+
+  return(x_dt)
 }
 
 
