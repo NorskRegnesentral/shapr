@@ -142,7 +142,6 @@ shapr <- function(x,
                       "training data",
                       use_feature_list_as_truth = T)
 
-  explainer$model_type <- feature_list_model$model_type
   explainer$n_features <- ncol(x_train)
   explainer$p <- predict_model(model, head(x_train))
 

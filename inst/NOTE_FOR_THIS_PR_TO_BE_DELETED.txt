@@ -59,9 +59,9 @@ TODO:
 #    the differnet class versions or not. -- NO, they are not so I need to make a new function for updating the test data which is called from the individual #explain functions (replacing explainer_x_test)
 #6. Check if it makes sense to make ONE big function calling the two get functions, check features and the updater.
 #NO, I WILL KEEP IT THIS WAY AS I NEED THE feature list to be added to the explainer.
-7. Delete traces of features
-8. Update test objects for explainer (shapr) as they will now contain the feature list from the explainer (also delete the model_type object in explainer?)
-9. Run all tests
+#7. Delete traces of features
+#8. Update test objects for explainer (shapr) as they will now contain the feature list from the explainer (also delete the model_type object in explainer?)
+#9. Run all tests
 10. Run checks -- I am sure there are issues here!
 11. Make PR
 12. Talk to Annabelle on whether I should update the dummy functions here. Update dummy? OR postpone this until you talk to Annabelle?
