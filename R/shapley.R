@@ -176,7 +176,6 @@ shapr <- function(x,
   explainer$W <- weighted_mat
   explainer$X <- dt_combinations
   explainer$x_train <- x_train
-  explainer$feature_labels <- feature_list_model$labels
   explainer$x <- NULL
   explainer$p <- NULL
   explainer$feature_list <- feature_list_model
