@@ -11,8 +11,3 @@ Further work
 9. Run checks
 10. run lintr and styler in the end
 
-11. Check whether I should rather pass the feature list stemming from the data, rather than the model on from shapr, since in the case where
-    the model does not have this information (ranger or xgboost), the train data and test data should at least have the same format.
-    Could do it just in those cases and provide a message that this is done, and a name passed alongside this list instead of those passed
-    manually to check_features.
-

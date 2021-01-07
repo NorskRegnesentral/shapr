@@ -641,7 +641,10 @@ check_features <- function(f_list_1,f_list_2,
   #### Checking classes ####
   if(use_1_as_truth & any(is.na(f_list_1$classes))){
       message(paste0("The specified ",name_1," does not provide (all) feature classes. ",
-                     "Feature class and any factor level checking is disabled."))
+                     "Feature class and any factor level checking is disabled, and those specifed in the ",
+                     name_2," are passed on from here."))
+
+    ret <- f_list_2
   } else {
     # Check if f_list_1 and f_list_2 have features with the same class
     if (!identical(f_list_1$classes,  f_list_2$classes)) {
@@ -660,9 +663,12 @@ check_features <- function(f_list_1,f_list_2,
       stop(paste0("Some levels for factor features are not present in both ",name_1," and ",name_2,"."))
     }
 
+    ret <- f_list_1
   }
 
-  return(f_list_1)
+  ret$sorted_factor_levels <- NULL # Not needed
+
+  return(ret) #
 
 }
 

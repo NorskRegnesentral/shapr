@@ -320,7 +320,7 @@ test_that("Testing data input to explain in explanation.R", {
   # explainer 1
   # Expect message due to no label/factor checking
   l <- list()
-  l[[1]] <- expect_message(
+  l[[1]] <- expect_silent(
     explain(
       all_test_data[[1]],
       all_explainers[[1]],
@@ -330,7 +330,7 @@ test_that("Testing data input to explain in explanation.R", {
     )
   )
   # Expect message due to no label/factor checking
-  l[[2]] <- expect_message(
+  l[[2]] <- expect_silent(
     explain(
       all_test_data[[2]],
       all_explainers[[1]],
@@ -339,7 +339,7 @@ test_that("Testing data input to explain in explanation.R", {
       n_samples = 1e2
     )
   )
-  # Expect message due to no label/factor checking + removal of data
+  # Expect message due to removal of data
   l[[3]] <- expect_message(
     explain(
       all_test_data[[3]],
@@ -390,9 +390,9 @@ test_that("Testing data input to explain in explanation.R", {
   }
 
   # explainer 3
-  # Expect message due to no label/factor checking
+  # Expect silent
   l <- list()
-  l[[1]] <- expect_message(
+  l[[1]] <- expect_silent(
     explain(
       all_test_data[[1]],
       all_explainers[[3]],
@@ -401,8 +401,8 @@ test_that("Testing data input to explain in explanation.R", {
       n_samples = 1e2
     )
   )
-  # Expect message due to no label/factor checking
-  l[[2]] <- expect_message(
+  # Expect silent
+  l[[2]] <- expect_silent(
     explain(
       all_test_data[[2]],
       all_explainers[[3]],
@@ -411,7 +411,7 @@ test_that("Testing data input to explain in explanation.R", {
       n_samples = 1e2
     )
   )
-  # Expect message due to no label/factor checking + removal of data
+  # Expect message due removal of data
   l[[3]] <- expect_message(
     explain(
       all_test_data[[3]],
