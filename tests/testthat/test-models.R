@@ -388,10 +388,6 @@ test_that("Test check_features + update_data", {
 
 })
 
-
-
-
-
 test_that("Test missing colnames", {
 
   # Data -----------
@@ -437,8 +433,6 @@ test_that("Test missing colnames", {
 
 })
 
-
-
 test_that("Test get_supported_models", {
 
   org_models <- get_supported_models()
@@ -455,4 +449,30 @@ test_that("Test get_supported_models", {
   detach(globalfun_1) # Sets search path back
   })
 
+test_that("Test get_model_specs",{
 
+  # Data -----------
+  data("Boston", package = "MASS")
+  y_var <- "medv"
+  x_train <- tail(Boston, -6)
+  y_train <- tail(Boston[, y_var], -6)
+
+  train_df <- cbind(x_train, y_train)
+  x_var_numeric <- c("lstat", "rm", "dis", "indus")
+  formula_numeric <- as.formula(paste0("y_train ~ ",paste0(x_var_numeric,collapse="+")))
+
+  # Backdoors in main func
+
+  # Unsupported model
+  model_unsupported <- gbm::gbm(formula_numeric,distribution = "gaussian",data = train_df)
+  model_native <- stats::lm(formula_numeric, data = train_df)
+
+  # Unsupported model
+  expect_error(get_model_specs(model_unsupported))
+
+  # Unused feature_labels
+  expect_message(get_model_specs(model_native,feature_labels = x_var_numeric))
+
+  # This is further tested for custom models in test-a-shapley (now commented out)
+
+})

@@ -166,7 +166,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
                               start_aicc = 0.1, w_threshold = 0.95, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(fix_data(x,explainer$feature_list,"model","test data"))
+  explainer$x_test <- as.matrix(process_data(x,explainer$feature_list,"model","test data"))
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec
@@ -200,7 +200,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(fix_data(x,explainer$feature_list,"model","test data"))
+  explainer$x_test <- as.matrix(process_data(x,explainer$feature_list,"model","test data"))
   explainer$approach <- approach
 
   # If mu is not provided directly, use mean of training data
@@ -238,7 +238,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Setup
-  explainer$x_test <- as.matrix(fix_data(x,explainer$feature_list,"model","test data"))
+  explainer$x_test <- as.matrix(process_data(x,explainer$feature_list,"model","test data"))
   explainer$approach <- approach
 
   # Prepare transformed data
@@ -306,7 +306,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
   }
 
   # Add arguments to explainer object
-  explainer$x_test <- fix_data(x,explainer$feature_list,"model","test data")
+  explainer$x_test <- process_data(x,explainer$feature_list,"model","test data")
   explainer$approach <- approach
   explainer$mincriterion <- mincriterion
   explainer$minsplit <- minsplit
@@ -333,7 +333,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
-  explainer$x_test <- as.matrix(fix_data(x,explainer$feature_list,"model","test data"))
+  explainer$x_test <- as.matrix(process_data(x,explainer$feature_list,"model","test data"))
 
   dt_l <- list()
   for (i in seq_along(l)) {

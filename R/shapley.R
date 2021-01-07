@@ -136,7 +136,7 @@ shapr <- function(x,
   # Check features of training data against model specification
   feature_list_model <- get_model_specs(model,feature_labels)
 
-  x_train <- fix_data(x = x,
+  x_train <- process_data(x = x,
                       feature_list = feature_list_model,
                       "model",
                       "training data",

@@ -514,11 +514,21 @@ get_data_specs <- function(x){
   return(feature_list)
 }
 
-#' TODO: Add header, parameter info, return and example here
+#' Process (check and update) data according to specified feature list
+#'
+#' @param x matrix, data.frame or data.table. The data to check input for and update
+#' according to the specification in \code{feature_list}.
+#' @param feature_list List. Output from running \code{get_data_specs} or \code{get_model_specs}
+#' @param name_1,name_2 Character. Passed directly on to \code{check_features}
+#' @param use_feature_list_as_truth Logical. Passed directly on to \code{use_1_as_truth} in \code{check_features}.
+#'
+#' @return Checked and updated data \code{x} in data.table format.
+#'
 #' @keywords internal
+#'
 #' @export
 #'
-fix_data = function(x,feature_list, name_1 = "model",name_2 = "data",use_feature_list_as_truth = T){
+process_data = function(x,feature_list, name_1 = "model",name_2 = "data",use_feature_list_as_truth = T){
   if(all(is.null(colnames(x)))){
     stop(paste0("The ", name_2, " is missing column names"))
   }
@@ -570,23 +580,6 @@ fix_data = function(x,feature_list, name_1 = "model",name_2 = "data",use_feature
 check_features <- function(f_list_1,f_list_2,
                            name_1 = "model",name_2 = "data",
                            use_1_as_truth=T){
-
-#  #### Check validity of f_lists ####
-#
-#  if(!all(f_list_1$labels == names(f_list_1$classes))){
-#    stop(paste0(name_1," does not have matching labels and class names"))
-#  }
-#  if(!all(f_list_1$labels == names(f_list_1$factor_levels))){
-#    stop(paste0(name_1," does not have matching labels and factor level names"))
-#  }
-#
-#  if(!all(f_list_2$labels == names(f_list_2$classes))){
-#    stop(paste0(name_2," does not have matching labels and class names"))
-#  }
-#  if(!all(f_list_2$labels == names(f_list_2$factor_levels))){
-#    stop(paste0(name_2," does not have matching labels and factor level names"))
-#  }
-#
 
   #### Checking labels ####
   if (is.null(f_list_1$labels)) {

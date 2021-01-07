@@ -1,78 +1,14 @@
-NOTE: In this PR I will do
+Further work
 
-1. within shapr and explain, check that the factors have the same levels as provided in the model objects
-  a.  check if input is data.frame/data.table or matrix. If matrix, do nothing
-      if data.frame, convert to data.table, then
-      check which factors are specified in the model object (dummylist for xgboost, something else in lm and glm),
-      and then check if that matches the data. This COULD be done within the features-functions,
-      separately extracing AND checking within the individual functions.
-      A better approach is perhaps to make a check_features function, which does the checking and will call the features
-      function which are simplified to only return lists with the different features, their class and if factors,
-      also their levels. Other packages must have the same "problem". Maybe I can see how this is
-      done in e.g. lime.
-
-
-        -- this could be specified
-
-require that data passed to the function is a data.table object
-
-get_model_specs(x){
-
-named list with feature_names as names
-every component has two objects:
-1. feature_type
-2. levels (NULL if not a factor)
-
-feature_names = ...
-feature_types
-
-}
-
-save this as feature_list_model and call it only in shapr
-
-get_data_specs(x){
-same list as above
-}
-
-check_features(model_feature_labels,data){
-do all the same checks that are done in the make/apply_dummies-functions.
-
-}
-
-in shapr: call this after doing as.data.table(x) where we do features today
-in explain call this in the main function (before setting the class), after a call to as.data.table.
-
-Handling custom models: currently feature_labels are passed. We could still allow that, but then throw a warning
-  that the class has not been checked for custom models -- then coerce to
-
-
-TODO:
-
-#1. document input to update_data, check_features and similar
-#2. Add messages when things are not checked (already done?)
-#3. Make tests for errors
-#3.5: Make tests for update_data + check whether I should add something to the shapr and
-#3.55 Update tests for explain tests to trigger errors in the check functionality.
-#3.6. Add examples
-#4. Add proper checking for the explain function
-#4.5. Check whether the modifications to the explainer object doen in the main explain function are carried forward to
-#    the differnet class versions or not. -- NO, they are not so I need to make a new function for updating the test data which is called from the individual #explain functions (replacing explainer_x_test)
-#6. Check if it makes sense to make ONE big function calling the two get functions, check features and the updater.
-#NO, I WILL KEEP IT THIS WAY AS I NEED THE feature list to be added to the explainer.
-#7. Delete traces of features
-#8. Update test objects for explainer (shapr) as they will now contain the feature list from the explainer (also delete the model_type object in explainer?)
-#9. Run all tests
-10. Run checks -- I am sure there are issues here!
-11. Make PR
-12. Talk to Annabelle on whether I should update the dummy functions here. Update dummy? OR postpone this until you talk to Annabelle?
-13. Consider removing the sorting in make dummies as that will often lead to reordering the levels, which is maybe not wanted.
-14. Update vignette and shapr::shapr()-documentation on how to
-make custom models, including the optional get_model_specs
-15. Update tests fro get_model_specs with the new back-doors
-16. Delete unused code in functions (like in the top of check_features)
-17. Add documentation to fix_data
-18. Add back and try to fix issue with custom model tests for shapr not working.
-19. Add tests for successful creation of custom models with both shapr and explain
-#20. Delete $feature_labels from explainer produced in shapr.
-21. COnsider adding an option, check_feature_classes + check_factor_levels to shapr which are automatically enforced if the model class does not
+1. Clean up things
+2. Get testing of custom models to work, then add tests for passing custom model that stops or gives messages when calling BOTH get_data_specs and get_model_specs, and check_features
+3. Consider restructuring process_data not using so many different functions
+4. Update make_data and apply_data using the functions in process_data.
+5. Consider adding an option to skip
+6. Update vignette and shapr::shapr-documentation on how to make custom model, including the optional get_model_specs stuff
+7. Consider adding options check_feature_classes + check_factor_levels to shapr which are automatically enforced if the model class does not
     have this kind of information. These should be added to the ouput of get_model_features and passed on to check_features.
+8. Restructure tests so that testing is carried out in the main functions.
+9. Run checks
+
+
