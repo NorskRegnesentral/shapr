@@ -35,7 +35,7 @@ Fetches feature labels from a given model object
 \examples{
  # Load example data
 data("Boston", package = "MASS")
-Split data into test- and training data
+# Split data into test- and training data
 x_train <- data.table::as.data.table(head(Boston))
 x_train[,rad:=as.factor(rad)]
 model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)

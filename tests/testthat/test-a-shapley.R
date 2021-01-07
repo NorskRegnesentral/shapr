@@ -111,7 +111,7 @@ test_that("Testing data input to shapr in shapley.R", {
 
   # Data feature with incorrect class
   data_error <- train_df_used_factor
-  data_error$lstat <- as.integer(data_error$lstat>15)
+  data_error$lstat <- as.logical(data_error$lstat>15)
   expect_error(shapr(data_error,model))
 
   # non-matching factor levels

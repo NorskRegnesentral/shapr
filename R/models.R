@@ -287,13 +287,15 @@ model_type.xgb.Booster <- function(x) {
 #' @examples
 #'  # Load example data
 #' data("Boston", package = "MASS")
-#' Split data into test- and training data
+#' # Split data into test- and training data
 #' x_train <- data.table::as.data.table(head(Boston))
 #' x_train[,rad:=as.factor(rad)]
 #' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
 #' get_model_specs(x = model, feature_labels = NULL)
 get_model_specs <- function(x,feature_labels = NULL) {
+
+  model_class <- NULL # Due to NSE notes in R CMD check
 
   required_model_objects <- c("model_type","predict_model")
   recommended_model_objects <- "get_model_specs"
@@ -499,7 +501,7 @@ get_model_specs.xgb.Booster <- function(x, feature_labels = NULL) {
 #'# Load example data
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
-#' x_train <- as.data.table(head(Boston))
+#' x_train <- data.table::as.data.table(head(Boston))
 #' x_train[,rad:=as.factor(rad)]
 #' get_data_specs(x_train)
 get_data_specs <- function(x){
@@ -510,6 +512,9 @@ get_data_specs <- function(x){
   feature_list$labels <- names(x)
   feature_list$classes <- unlist(lapply(x,class))
   feature_list$factor_levels = lapply(x,levels)
+
+  # Defining all integer values as numeric
+  feature_list$classes[feature_list$classes=="integer"] <- "numeric"
 
   return(feature_list)
 }
@@ -714,6 +719,13 @@ update_data = function(data,updater){
 #'
 #'@keywords internal
 get_supported_models <- function(){
+
+  # Fixing NSE notes in R CMD check
+  rn <- get_model_specs <- native_get_model_specs <- from <- NULL
+  model_type <- native_model_type <-  NULL
+  predict_model <- native_predict_model <- NULL
+  native <- NULL
+
   DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs),"info"),keep.rownames = T)
   #DT_get_model_specs <- data.table::as.data.table(attr(.S3methods(get_model_specs,envir=globalenv()),"info"),keep.rownames = T)
 
