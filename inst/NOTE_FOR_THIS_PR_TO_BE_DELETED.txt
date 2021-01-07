@@ -1,8 +1,8 @@
 Further work
 
 1. Get testing of custom models to work, then add tests for passing custom model that stops or gives messages when calling BOTH get_data_specs and get_model_specs, and check_features
-3. Consider restructuring process_data not using so many different functions
-4. Update make_data and apply_data using the functions in process_data.
+3. Consider restructuring preprocess_data not using so many different functions
+4. Update make_data and apply_data using the functions in preprocess_data.
 5. Consider adding an option to skip
 6. Update vignette and shapr::shapr-documentation on how to make custom model, including the optional get_model_specs stuff
 7. Consider adding options check_feature_classes + check_factor_levels to shapr which are automatically enforced if the model class does not

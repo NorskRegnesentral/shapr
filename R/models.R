@@ -524,8 +524,6 @@ get_data_specs <- function(x){
 #' @param x matrix, data.frame or data.table. The data to check input for and update
 #' according to the specification in \code{feature_list}.
 #' @param feature_list List. Output from running \code{get_data_specs} or \code{get_model_specs}
-#' @param name_1,name_2 Character. Passed directly on to \code{check_features}
-#' @param use_feature_list_as_truth Logical. Passed directly on to \code{use_1_as_truth} in \code{check_features}.
 #'
 #' @return Checked and updated data \code{x} in data.table format.
 #'
@@ -533,9 +531,9 @@ get_data_specs <- function(x){
 #'
 #' @export
 #'
-process_data = function(x,feature_list, name_1 = "model",name_2 = "data",use_feature_list_as_truth = T){
+preprocess_data = function(x,feature_list){
   if(all(is.null(colnames(x)))){
-    stop(paste0("The ", name_2, " is missing column names"))
+    stop(paste0("The data is missing column names"))
   }
 
   x_dt <- data.table::as.data.table(x)
@@ -543,9 +541,9 @@ process_data = function(x,feature_list, name_1 = "model",name_2 = "data",use_fea
   feature_list_data <- get_data_specs(x_dt)
 
   updater <- check_features(feature_list,feature_list_data,
-                            name_1 = name_1,
-                            name_2 = name_2,
-                            use_1_as_truth = use_feature_list_as_truth)
+                            name_1 = "model",
+                            name_2 = "data",
+                            use_1_as_truth = T)
   update_data(x_dt,updater) # Updates x_dt by reference
 
   return(x_dt)
