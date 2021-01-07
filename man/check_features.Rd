@@ -4,19 +4,10 @@
 \alias{check_features}
 \title{Checks that two extracted feature lists have exactly the same properites}
 \usage{
-check_features(
-  f_list_1,
-  f_list_2,
-  name_1 = "model",
-  name_2 = "data",
-  use_1_as_truth = T
-)
+check_features(f_list_1, f_list_2, use_1_as_truth = T)
 }
 \arguments{
 \item{f_list_1, f_list_2}{List. As extracted from either \code{get_data_specs} or \code{get_model_specs}.}
-
-\item{name_1, name_2}{Character. Names corresponding to the input of respectively \code{f_list_1} and \code{f_list_2},
-used to provide informative error messages.}
 
 \item{use_1_as_truth}{Logical. If TRUE, \code{f_list_2} is compared to \code{f_list_1}, i.e. additional elements
 is allowed in \code{f_list_2}, and if \code{f_list_1}'s feature classes contains NA's, feature class check is
@@ -25,8 +16,8 @@ equated and they need to contain exactly the same elements. Set to TRUE when com
 when comparing two data sets.}
 }
 \value{
-List. The \code{f_list_1} is returned as inserted, but with an additional sorted factor list. This could be
-used to reorder the data.
+List. The \code{f_list_1} is returned as inserted if there all check are carried out, otherwise
+\code{f_list_2} is used.
 }
 \description{
 Checks that two extracted feature lists have exactly the same properites

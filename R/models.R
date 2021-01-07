@@ -384,6 +384,7 @@ get_model_specs.default <- function(x, feature_labels = NULL) {
   feature_list$classes <- rep(NA,m)
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$model_type <- model_type(x)
+  feature_list$specs_type <- "model"
 
   return(feature_list)
 }
@@ -401,6 +402,7 @@ get_model_specs.lm <- function(x, feature_labels = NULL) {
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
   feature_list$model_type <- model_type(x)
+  feature_list$specs_type <- "model"
 
   return(feature_list)
 }
@@ -417,6 +419,7 @@ get_model_specs.glm <- function(x, feature_labels = NULL) {
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
   feature_list$model_type <- model_type(x)
+  feature_list$specs_type <- "model"
 
   return(feature_list)
 }
@@ -433,6 +436,7 @@ get_model_specs.gam <- function(x, feature_labels = NULL) {
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
   feature_list$model_type <- model_type(x)
+  feature_list$specs_type <- "model"
 
   return(feature_list)
 }
@@ -458,6 +462,7 @@ get_model_specs.ranger <- function(x, feature_labels = NULL) {
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels # Only provided when respect.unordered.factors == T
   feature_list$model_type <- model_type(x)
+  feature_list$specs_type <- "model"
 
   return(feature_list)
 }
@@ -484,6 +489,7 @@ get_model_specs.xgb.Booster <- function(x, feature_labels = NULL) {
     feature_list$factor_levels[names(x$dummylist$factor_list)] <- x$dummylist$factor_list
   }
   feature_list$model_type <- model_type(x)
+  feature_list$specs_type <- "model"
 
   return(feature_list)
 
@@ -512,6 +518,7 @@ get_data_specs <- function(x){
   feature_list$labels <- names(x)
   feature_list$classes <- unlist(lapply(x,class))
   feature_list$factor_levels = lapply(x,levels)
+  feature_list$specs_type <- "data"
 
   # Defining all integer values as numeric
   feature_list$classes[feature_list$classes=="integer"] <- "numeric"
@@ -541,8 +548,6 @@ preprocess_data = function(x,feature_list){
   feature_list_data <- get_data_specs(x_dt)
 
   updater <- check_features(feature_list,feature_list_data,
-                            name_1 = "model",
-                            name_2 = "data",
                             use_1_as_truth = T)
   update_data(x_dt,updater) # Updates x_dt by reference
 
@@ -556,16 +561,15 @@ preprocess_data = function(x,feature_list){
 #' Checks that two extracted feature lists have exactly the same properites
 #'
 #' @param f_list_1,f_list_2 List. As extracted from either \code{get_data_specs} or \code{get_model_specs}.
-#' @param name_1,name_2 Character. Names corresponding to the input of respectively \code{f_list_1} and \code{f_list_2},
-#' used to provide informative error messages.
 #' @param use_1_as_truth Logical. If TRUE, \code{f_list_2} is compared to \code{f_list_1}, i.e. additional elements
 #' is allowed in \code{f_list_2}, and if \code{f_list_1}'s feature classes contains NA's, feature class check is
 #' ignored regardless of what is specified in \code{f_list_1}. If FALSE, \code{f_list_1} and \code{f_list_2} are
 #' equated and they need to contain exactly the same elements. Set to TRUE when comparing a model and data, and FALSE
 #' when comparing two data sets.
 #'
-#' @return List. The \code{f_list_1} is returned as inserted, but with an additional sorted factor list. This could be
-#' used to reorder the data.
+#' @return List. The \code{f_list_1} is returned as inserted if there all check are carried out, otherwise
+#' \code{f_list_2} is used.
+#'
 #' @keywords internal
 #'
 #' @export
@@ -584,8 +588,15 @@ preprocess_data = function(x,feature_list){
 #' model_features <- get_model_specs(x = model, feature_labels = NULL)
 #' check_features(model_features,data_features)
 check_features <- function(f_list_1,f_list_2,
-                           name_1 = "model",name_2 = "data",
                            use_1_as_truth=T){
+
+  name_1 <- f_list_1$specs_type
+  name_2 <- f_list_2$specs_type
+
+  if(name_1 == name_2){
+    name_1 <- paste0("shapr-",name_1)
+    name_2 <- paste0("test-",name_2)
+  }
 
   #### Checking labels ####
   if (is.null(f_list_1$labels)) {
@@ -645,6 +656,7 @@ check_features <- function(f_list_1,f_list_2,
                      name_2," are passed on from here."))
 
     ret <- f_list_2
+
   } else {
     # Check if f_list_1 and f_list_2 have features with the same class
     if (!identical(f_list_1$classes,  f_list_2$classes)) {
