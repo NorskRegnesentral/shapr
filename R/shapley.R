@@ -136,11 +136,11 @@ shapr <- function(x,
   # Check features of training data against model specification
   feature_list_model <- get_model_specs(model,feature_labels)
 
-  x_train <- preprocess_data(x = x,
-                      feature_list = feature_list_model,
-                      "model",
-                      "training data",
-                      use_feature_list_as_truth = T)
+  processed_list <- preprocess_data(x = x,
+                             feature_list = feature_list_model)
+
+  x_train <- processed_list$x_dt
+  updated_feature_list <- processed_list$updated_feature_list
 
   explainer$n_features <- ncol(x_train)
   explainer$p <- predict_model(model, head(x_train))
@@ -177,7 +177,7 @@ shapr <- function(x,
   explainer$x_train <- x_train
   explainer$x <- NULL
   explainer$p <- NULL
-  explainer$feature_list <- feature_list_model
+  explainer$feature_list <- updated_feature_list
 
   attr(explainer, "class") <- c("explainer", "list")
 

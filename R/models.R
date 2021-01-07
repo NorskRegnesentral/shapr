@@ -546,7 +546,10 @@ preprocess_data = function(x,feature_list){
                             use_1_as_truth = T)
   update_data(x_dt,updater) # Updates x_dt by reference
 
-  return(x_dt)
+  ret <- list(x_dt = x_dt,
+              updated_feature_list = updater)
+
+  return(ret)
 }
 
 
