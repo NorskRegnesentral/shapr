@@ -1,7 +1,6 @@
 Further work
 
-1. Clean up things
-2. Get testing of custom models to work, then add tests for passing custom model that stops or gives messages when calling BOTH get_data_specs and get_model_specs, and check_features
+1. Get testing of custom models to work, then add tests for passing custom model that stops or gives messages when calling BOTH get_data_specs and get_model_specs, and check_features
 3. Consider restructuring process_data not using so many different functions
 4. Update make_data and apply_data using the functions in process_data.
 5. Consider adding an option to skip
@@ -10,5 +9,5 @@ Further work
     have this kind of information. These should be added to the ouput of get_model_features and passed on to check_features.
 8. Restructure tests so that testing is carried out in the main functions.
 9. Run checks
-
+10. run lintr and styler in the end
 
