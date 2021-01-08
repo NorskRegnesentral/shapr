@@ -11,3 +11,5 @@ Further work
 9. Run checks
 10. run lintr and styler in the end
 
+11. Consider removing feature_labels option and requiring get_model_specs function as well. This will simplify error messages, code base and
+I can anyway provide a set of minimal custom functions for this type.
