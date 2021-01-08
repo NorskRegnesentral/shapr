@@ -3,7 +3,6 @@ Further work
 1. Get testing of custom models to work, then add tests for passing custom model that stops or gives messages when calling BOTH get_data_specs and get_model_specs, and check_features
 3. Consider restructuring preprocess_data not using so many different functions
 4. Update make_data and apply_data using the functions in preprocess_data.
-5. Consider adding an option to skip
 6. Update vignette and shapr::shapr-documentation on how to make custom model, including the optional get_model_specs stuff
 7. Consider adding options check_feature_classes + check_factor_levels to shapr which are automatically enforced if the model class does not
     have this kind of information. These should be added to the ouput of get_model_features and passed on to check_features.
@@ -13,3 +12,25 @@ Further work
 
 11. Consider removing feature_labels option and requiring get_model_specs function as well. This will simplify error messages, code base and
 I can anyway provide a set of minimal custom functions for this type.
+
++
+
+get_model_space use model as argument
+add new file for preprocess functions?
+when returning f_list_2 do tests theer as well
+can we merge update_data to check_features (need to see how htis works out after using check_features in make_dummies)
+shapr: remove p
+
+TODO:
+
+update make_dummies
+DO THE ABOVE
+restrucute tests
+
+
+CONTINUE WITH: Update apply_dummies to have the same structyre as make_dummies (Reme), after that try to see if you can replace
+  obj with updater.
+
+
+
+

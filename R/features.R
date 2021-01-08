@@ -218,80 +218,44 @@ helper_feature <- function(m, feature_sample) {
 #'
 make_dummies <- function(traindata, testdata) {
 
-  contrasts <- features <- factor_features <- NULL # due to NSE notes in R CMD check
-  # <- model.frame <- model.matrix
-  if (is.null(colnames(traindata))) {
-    stop("traindata must have column names.")
-  }
-  if (is.null(colnames(testdata))) {
-    stop("testdata must have column names.")
+  if(all(is.null(colnames(traindata)))){
+    stop(paste0("The traindata is missing column names"))
   }
 
-  traindata <- data.table::as.data.table(traindata)
-  testdata <- data.table::as.data.table(testdata)
-
-  if (length(colnames(traindata)) != length(colnames(testdata))) {
-    stop("traindata and testdata must have the same number of columns.")
+  if(all(is.null(colnames(testdata)))){
+    stop(paste0("The testdata is missing column names"))
   }
 
-  if (!all(sort(colnames(traindata)) == sort(colnames(testdata)))) {
-    stop("traindata and testdata must have the same column names.")
-  }
 
-  features <- colnames(traindata)
-  # feature names must be unique
-  if (any(duplicated(features))) {
-    stop("Both traindata and testdata must have unique column names.")
-  }
+  train_dt <- data.table::as.data.table(traindata)
+  test_dt <- data.table::as.data.table(testdata)
 
-  # Check if any features have empty names i.e ""
-  if (any(features == "")) {
-    stop("One or more features is missing a name.")
-  }
+  feature_list_train <- get_data_specs(train_dt)
+  feature_list_test <- get_data_specs(test_dt)
 
-  # In case the testing data has a different column order than the training data:
-  testdata <- testdata[, features, with = FALSE]
+  feature_list_train$specs_type="traindata"
+  feature_list_test$specs_type="testdata"
 
-  # Check if the features all have class "integer", "numeric" or "factor
-  if (!all(sapply(traindata, class) %in% c("integer", "numeric", "factor"))) {
-    stop("All traindata must have class integer, numeric or factor.")
-  }
-  if (!all(sapply(testdata, class) %in% c("integer", "numeric", "factor"))) {
-    stop("All testdata must have class integer, numeric or factor.")
-  }
-  # Check if traindata and testdata have features with the same class
-  if (!all(sapply(traindata, class) == sapply(testdata, class))) {
-    stop("All traindata and testdata must have the same classes.")
-  }
+  updater <- check_features(feature_list_train,feature_list_test,F)
 
-  # Check that traindata and testdata have the same levels for the factor features
-  is_factor <- sapply(traindata, is.factor) # check which features are factors
+  # Reorderes factor levels so that they match
+  update_data(train_dt,updater)
+  update_data(test_dt,updater)
+
+  # Extracts the components that the were used before. Consider cleaning up this.
+  features <- updater$labels
+  is_factor <- updater$classes=="factor" # check which features are factors
   nb_factor <- sum(is_factor)
-
-  list_levels_train <- lapply(traindata[, is_factor, with = FALSE], function(x) sort(levels(x)))
-  list_levels_test <- lapply(testdata[, is_factor, with = FALSE], function(x) sort(levels(x)))
-
-  if (!identical(list_levels_train, list_levels_test)) {
-    stop("Levels of categorical variables in traindata and testdata must be the same.")
-  }
-
-  # re-level traindata and testdata
-  for (i in names(list_levels_train)) {
-    traindata[[i]] <- factor(traindata[[i]], levels = list_levels_train[[i]])
-  }
-  for (i in names(list_levels_test)) {
-    testdata[[i]] <- factor(testdata[[i]], levels = list_levels_test[[i]])
-  }
 
   if (nb_factor > 0) {
     factor_features <- features[is_factor]
-    factor_list <- lapply(traindata[, factor_features, with = FALSE], levels)
+    factor_list <- updater$factor_levels[is_factor]
   } else {
     factor_features <- NULL
     factor_list <- NULL
   }
 
-  contrasts_list <- lapply(traindata[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
+  contrasts_list <- lapply(train_dt[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
 
   obj <- list(features = features,
               factor_features = factor_features,
@@ -300,22 +264,23 @@ make_dummies <- function(traindata, testdata) {
               class_vector = sapply(traindata, class))
 
   # get train dummies
-  m <- model.frame(data = traindata,
+  m <- model.frame(data = train_dt,
                    xlev = obj$factor_list)
   train_dummies <- model.matrix(object = ~. + 0,
-                    data = m,
-                    contrasts.arg = obj$contrasts_list)
+                                data = m,
+                                contrasts.arg = obj$contrasts_list)
 
   # get test dummies
-  m <- model.frame(data = testdata,
+  m <- model.frame(data = test_dt,
                    xlev = obj$factor_list)
   test_dummies <- model.matrix(object = ~. + 0,
                                data = m,
                                contrasts.arg = obj$contrasts_list)
 
 
-  return(list(obj = obj, train_dummies = train_dummies, test_dummies = test_dummies, traindata_new = traindata,
-              testdata_new = testdata))
+  return(list(obj = obj, updater = updater,
+              train_dummies = train_dummies, test_dummies = test_dummies, traindata_new = train_dt,
+              testdata_new = test_dt))
 
 }
 
@@ -336,10 +301,22 @@ make_dummies <- function(traindata, testdata) {
 #'
 apply_dummies <- function(obj, testdata) {
 
-  features <- NULL # due to NSE notes in R CMD check
-  if (is.null(colnames(testdata))) {
-    stop("testdata must have column names.")
+
+  if(all(is.null(colnames(testdata)))){
+    stop(paste0("The testdata is missing column names"))
   }
+  test_dt <- data.table::as.data.table(testdata)
+
+  feature_list_test <- get_data_specs(test_dt)
+
+  feature_list_test$specs_type="testdata"
+
+
+
+  #features <- NULL # due to NSE notes in R CMD check
+  #if (is.null(colnames(testdata))) {
+  #  stop("testdata must have column names.")
+  #}
 
   testdata <- data.table::as.data.table(testdata)
   features <- obj$features
