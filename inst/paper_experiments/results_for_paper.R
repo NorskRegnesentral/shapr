@@ -10,7 +10,7 @@ library(gridExtra)
 library(grid)
 
 res_folder <- "paper_experiments/res/"
-output_folder <- "/home/jullum/nr/project_stat/BigInsight/Projects/Explanations/Doc/MJ/GIT/Fig"
+output_folder <- "/nr/project_stat/BigInsight/Projects/Explanations/Kode/Kode paper 1/figs" #"/home/jullum/nr/project_stat/BigInsight/Projects/Explanations/Doc/MJ/GIT/Fig"
 #output_folder <- "paper_experiments/res/tables_and_figures_for_paper"
 
 all_res_experiment_A_dim3 <- "all_results_experiment_A_dim_3_Linear_Linear_Gaussian.csv"
@@ -304,26 +304,63 @@ sign(as.matrix(datres[,-c(1,2)]))
 ###### Plott histogram of real data
 
 XYtrain <- fread("/nr/project/stat/BFFGB18/LIME/lime/R/train6.csv")
-nn <- c(2,6,9,12,15,18,21,24,27)+1
-XYtrain.sub <- subset(XYtrain,select = nn)
+features <- names(XYtrain)[-c(1,2)]
+features <- gsub("_end","",features)
+features <- gsub("_correct","",features)
+names(XYtrain)[-c(1,2)] <- features
 
-colnames(XYtrain.sub) <- substr(colnames(XYtrain.sub),start=1,stop=nchar(colnames(XYtrain.sub))-4)
-colnames(XYtrain.sub)[grepl("_correct",colnames(XYtrain.sub))] <- substr(colnames(XYtrain.sub)[grepl("_correct",colnames(XYtrain.sub))],
-                                                                         start=1,
-                                                                         stop=nchar(colnames(XYtrain.sub)[grepl("_correct",colnames(XYtrain.sub))])-8)
+plot_features <- c("br_max",
+                  "br_mean",
+                  "br_std",
+                  "kk_std_mean",
+                  #"sk_std_mean",
+                  "kk_std",
+                  "sum_min",
+                  "sum_max",
+                  "sum_mean",
+                  "inn_std_mean")
+                  #"kk_min",
+                  #"tr_max")
+plot_features <- c("sum_min",
+                   "sum_max",
+                   "sum_mean",
+                   "inn_std_mean",
+                   "kk_mean",
+                   "br_max",
+                   "br_mean",
+                   "br_min",
+                   "kk_std_mean")
+#"kk_min",
+#"tr_max")
+
+#nn <- c(2,6,9,12,15,18,21,24,27)+1
+XYtrain.sub <- XYtrain[,..plot_features]
+
+#colnames(XYtrain.sub) <- substr(colnames(XYtrain.sub),start=1,stop=nchar(colnames(XYtrain.sub))-4)
+#colnames(XYtrain.sub)[grepl("_correct",colnames(XYtrain.sub))] <- substr(colnames(XYtrain.sub)[grepl("_correct",colnames(XYtrain.sub))],
+#                                                                         start=1,
+#                                                                         stop=nchar(colnames(XYtrain.sub)[grepl("_correct",colnames(XYtrain.sub))])-8)
 
 
 XYtrain.sub.melt <- melt(XYtrain.sub)
+XYtrain.sub.melt2 <- NULL
+for(i in plot_features){
+    quants <- XYtrain.sub.melt[variable==i,quantile(value,c(0.001,0.999))]
+    XYtrain.sub.melt2 <- rbind(XYtrain.sub.melt2,
+                               XYtrain.sub.melt[variable==i & value>=quants[1] & value<=quants[2],])
+}
+
 
 ggplot(XYtrain.sub.melt,aes(x=value)) +
-    geom_histogram(aes(y=..density..),binwidth = 0.25) +
-    facet_wrap(~variable,ncol=3)+
-    xlim(c(-2,5)) +
-    ylim(c(0,4)) +
+    geom_histogram(aes(y=..density..),bins=40) +
+    facet_wrap(~variable,ncol=3,scales = "free")+
+#    scale()+
+#    xlim(c(NA,10)) +
+    #ylim(c(0,4)) +
     theme_light() +
 #    theme(strip.background =element_rect(fill="white"))+
     theme(strip.text = element_text(colour = 'black'))
-ggsave(file.path(output_folder,"real_example_histograms.pdf"),width = 6, height = 6)
+#ggsave(file.path(output_folder,"real_example_histograms.pdf"),width = 6, height = 6)
 
 
 
@@ -332,8 +369,8 @@ for(i in 1:9){
     sub[[i]] <- subset(XYtrain.sub,select = i)
     colnames(sub[[i]]) <- "var"
     aa[[i]] <- ggplot(sub[[i]],aes(x=var)) +
-        geom_histogram(aes(y=..density..),bins=30) +
-        xlim(quantile(unlist(sub[[i]]),c(0.01,0.99))) +
+        geom_histogram(aes(y=..density..),bins=33) +
+        xlim(quantile(unlist(sub[[i]]),c(0.005,0.995))) +
         xlab(colnames(XYtrain.sub)[i]) +
         ylab(ifelse(i %in% c(1,4,7),"density","")) +
         theme_light()
@@ -341,8 +378,8 @@ for(i in 1:9){
 
 library(gridExtra)
 
-pdf(file.path(output_folder,"real_example_histograms_2.pdf"),width = 7, height = 7)
-grid.arrange(grobs=aa,ncol=3)
+pdf(file.path(output_folder,"real_example_histograms_2_edited_2.pdf"),width = 7, height = 7)
+grid.arrange(grobs=aa,ncol=3,top = grid::textGrob("Histograms for selected features", x = 0.05, hjust = 0))
 dev.off()
 
 
