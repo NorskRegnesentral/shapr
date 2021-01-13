@@ -4,7 +4,8 @@ Further work
 #2. Removing feature_labels option and requiring get_model_specs function as well. This will simplify error messages, code base and --
 #   I can anyway provide a set of minimal custom functions for this type.
 2.5 Check WHEN use_1_as truth is used, and see if you can replace it with something more intuitve based on when it used and not.
-3. Update vignette and shapr::shapr-documentation on how to make custom model, including the optional get_model_specs stuff and all required stuff for custom models
+3. Update vignette and shapr::shapr-documentation on how to make custom model, deleting all traces of feature_labels and make it pass,
+  including all required stuff for custom models
   it is important that these examples are very good. Provide a full one for all of gbm + a minimal one just to get that specific model type through.
 3.5. Update documentation, examples etc.
 4. Restructure tests so that testing is carried out in the main functions -- and remove unused ones.
