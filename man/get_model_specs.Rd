@@ -10,23 +10,21 @@
 \alias{get_model_specs.xgb.Booster}
 \title{Fetches feature labels from a given model object}
 \usage{
-get_model_specs(x, feature_labels = NULL)
+get_model_specs(model, feature_labels = NULL)
 
-\method{get_model_specs}{default}(x, feature_labels = NULL)
+\method{get_model_specs}{default}(model, feature_labels = NULL)
 
-\method{get_model_specs}{lm}(x, feature_labels = NULL)
+\method{get_model_specs}{lm}(model, feature_labels = NULL)
 
-\method{get_model_specs}{glm}(x, feature_labels = NULL)
+\method{get_model_specs}{glm}(model, feature_labels = NULL)
 
-\method{get_model_specs}{gam}(x, feature_labels = NULL)
+\method{get_model_specs}{gam}(model, feature_labels = NULL)
 
-\method{get_model_specs}{ranger}(x, feature_labels = NULL)
+\method{get_model_specs}{ranger}(model, feature_labels = NULL)
 
-\method{get_model_specs}{xgb.Booster}(x, feature_labels = NULL)
+\method{get_model_specs}{xgb.Booster}(model, feature_labels = NULL)
 }
 \arguments{
-\item{x}{Model object for the model to be explained.}
-
 \item{feature_labels}{Character vector. Represents the labels of the features used for prediction.}
 }
 \description{
@@ -40,6 +38,6 @@ x_train <- data.table::as.data.table(head(Boston))
 x_train[,rad:=as.factor(rad)]
 model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 
-get_model_specs(x = model, feature_labels = NULL)
+get_model_specs(model, feature_labels = NULL)
 }
 \keyword{internal}

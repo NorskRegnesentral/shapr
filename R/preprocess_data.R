@@ -88,7 +88,7 @@ preprocess_data = function(x,feature_list){
 #' data_features <- get_data_specs(x_train)
 #' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
-#' model_features <- get_model_specs(x = model, feature_labels = NULL)
+#' model_features <- get_model_specs(model, feature_labels = NULL)
 #' check_features(model_features,data_features)
 check_features <- function(f_list_1,f_list_2,
                            use_1_as_truth=T){
