@@ -189,13 +189,13 @@ test_that("Test make_dummies", {
   # Tests
   expect_type(dummylist, "list")
 
-  expect_equal(length(dummylist$obj$contrasts_list), nb_factor_feat)
+  expect_equal(length(dummylist$feature_list$contrasts_list), nb_factor_feat)
 
-  expect_equal(length(dummylist$obj$features), ncol(x_train))
+  expect_equal(length(dummylist$feature_list$labels), ncol(x_train))
 
-  expect_equal(length(dummylist$obj$factor_features), nb_factor_feat)
+  expect_equal(sum(dummylist$feature_list$classes=="factor"), nb_factor_feat)
 
-  expect_equal(ncol(dummylist$obj$contrasts_list$rm), length(levels(x_train$rm)))
+  expect_equal(ncol(dummylist$feature_list$contrasts_list$rm), length(levels(x_train$rm)))
 
   # 1) What if train has more features than test but features in test are contained in train
   x_train1 <- cbind(x_train, 1)
@@ -312,13 +312,13 @@ test_that("Test apply_dummies", {
 
   dummylist <- make_dummies(traindata = x_train, testdata = x_test)
 
-  x_test_dummies <- apply_dummies(obj = dummylist$obj, testdata = x_test)
+  x_test_dummies <- apply_dummies(feature_list = dummylist$feature_list, testdata = x_test)
 
   # Tests
   expect_type(x_test_dummies, "double")
 
   expect_equal(ncol(x_test_dummies),
-               nb_numeric_feat + length(dummylist$obj$factor_list$rm))
+               nb_numeric_feat + ncol(dummylist$feature_list$contrasts_list$rm))
 
   # Test that make_dummies() and apply_dummies() gives the same output
   # for a given traindata and testdata
@@ -326,48 +326,48 @@ test_that("Test apply_dummies", {
 
   # 1) What if you re-arrange the columns in x_train
   x_test1 <- x_test[, c(2, 3, 1, 4)]
-  diff_column_placements <- apply_dummies(obj = dummylist$obj, testdata = x_test1)
+  diff_column_placements <- apply_dummies(dummylist$feature_list, testdata = x_test1)
   expect_equal(colnames(diff_column_placements), colnames(x_test_dummies))
 
   # 2) What if you put in less features then the original traindata
   x_test2 <- x_test[, c(2, 1)]
-  expect_error(apply_dummies(dummylist$obj, testdata = x_test2))
+  expect_error(apply_dummies(dummylist$feature_list, testdata = x_test2))
 
   # 3) What if you change the feature types of testdata
   x_test3 <- sapply(x_test, as.numeric)
-  expect_error(apply_dummies(dummylist$obj, testdata = x_test3))
+  expect_error(apply_dummies(dummylist$feature_list, testdata = x_test3))
 
   # 4) What if you add a feature
   x_test4 <- cbind(x_train[, c(1, 2)], new_var = x_train[, 2], x_train[, c(3, 4)])
-  expect_error(apply_dummies(dummylist$obj, testdata = x_test4))
+  expect_error(apply_dummies(dummylist$feature_list, testdata = x_test4))
 
   # 6) What if test has the same levels as train but random ordering of levels
   x_test6 <- x_test
   x_test6$rm <- factor(x_test6$rm, levels = c(8, 9, 7, 4, 5, 6))
-  expect_error(apply_dummies(dummylist$obj, testdata = x_test6))
+  expect_error(apply_dummies(dummylist$feature_list, testdata = x_test6))
 
   # 7) What if test has different levels than train
   x_test7 <- x_test
   x_test7$rm <- factor(x_test7$rm, levels = 6:8)
-  expect_error(apply_dummies(dummylist$obj, testdata = x_test7))
+  expect_error(apply_dummies(dummylist$feature_list, testdata = x_test7))
 
   # 8) What if train and test have different feature names
   x_test8 <- x_test
   names(x_test8) <- c("lstat2", "rm2", "dis2", "indus2")
-  expect_error(apply_dummies(dummylist$obj, testdata = x_test8))
+  expect_error(apply_dummies(dummylist$feature_list, testdata = x_test8))
 
   # 9) What if one variables has an empty name
   x_test9 <- x_test
   colnames(x_test9) <- c("", "rm", "dis", "indus")
-  expect_error(apply_dummies(dummylist$obj, testdata = x_test9))
+  expect_error(apply_dummies(dummylist$feature_list, testdata = x_test9))
 
   # 10) What if traindata has a column that repeats
   x_test10 <- cbind(x_test, lstat = x_test$lstat)
-  expect_error(apply_dummies(dummylist$obj, testdata = x_test10))
+  expect_error(apply_dummies(dummylist$feature_list, testdata = x_test10))
 
   # 11) What if testdata has no column names
   x_test11 <- x_test
   colnames(x_test11) <- NULL
-  expect_error(apply_dummies(dummylist$obj, testdata = x_test11))
+  expect_error(apply_dummies(dummylist$feature_list, testdata = x_test11))
 
 })

@@ -5,10 +5,10 @@
 \title{Make dummy variables - this is an internal function intended only to be used in
 predict_model.xgb.Booster()}
 \usage{
-apply_dummies(obj, testdata)
+apply_dummies(feature_list, testdata)
 }
 \arguments{
-\item{obj}{List. Output of \code{make_dummies$obj}.}
+\item{feature_list}{List. Output of \code{make_dummies$feature_list}.}
 
 \item{testdata}{data.table or data.frame. New data that has the same
 feature names, types, and levels as \code{obj$data}.}

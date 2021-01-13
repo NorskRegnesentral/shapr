@@ -118,7 +118,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
   model_type <- model_type(x)
 
   if (model_type %in% c("cat_regression", "cat_classification")) {
-    newdata_dummy <- apply_dummies(obj = x$dummylist, testdata = newdata)
+    newdata_dummy <- apply_dummies(feature_list = x$dummylist, testdata = newdata)
     predict(x, as.matrix(newdata_dummy))
   } else {
     predict(x, as.matrix(newdata))
@@ -481,12 +481,7 @@ get_model_specs.xgb.Booster <- function(x, feature_labels = NULL) {
     feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
     feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   } else {
-    feature_list$labels <- x$dummylist$features
-    m <- length(feature_list$labels)
-
-    feature_list$classes <- x$dummylist$class_vector
-    feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-    feature_list$factor_levels[names(x$dummylist$factor_list)] <- x$dummylist$factor_list
+    feature_list <- x$dummylist
   }
   feature_list$model_type <- model_type(x)
   feature_list$specs_type <- "model"

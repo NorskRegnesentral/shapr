@@ -62,15 +62,13 @@ test_that("Testing data input to shapr in shapley.R", {
   l_factor <- list(
     stats::lm(formula_factor, data = train_df),
     stats::glm(formula_factor, data = train_df),
-    mgcv::gam(formula_factor, data = train_df)
-  )
-
-  l_message <- list(
+    mgcv::gam(formula_factor, data = train_df),
     xgboost::xgboost(data = dummylist$train_dummies, label = y_train,
                      nrounds = 3, verbose = FALSE)
   )
 
-  l_message[[1]]$dummylist <- dummylist$obj
+
+  l_factor[[4]]$dummylist <- dummylist$feature_list
 
 
 
@@ -85,10 +83,6 @@ test_that("Testing data input to shapr in shapley.R", {
     expect_message(shapr(train_df,l_factor[[i]])) # Features dropped
   }
 
-  for (i in seq_along(l_message)) {
-    expect_message(shapr(train_df_used_factor,l_message[[i]])) # Factor reordering
-    expect_message(shapr(train_df,l_message[[i]])) # Factor reordering + features dropped
-  }
 
   # Testing errors on incompatible model and data
   # Missing features
