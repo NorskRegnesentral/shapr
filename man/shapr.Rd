@@ -4,7 +4,7 @@
 \alias{shapr}
 \title{Create an explainer object with Shapley weights for test data.}
 \usage{
-shapr(x, model, n_combinations = NULL, feature_labels = NULL)
+shapr(x, model, n_combinations = NULL)
 }
 \arguments{
 \item{x}{Numeric matrix or data.frame. Contains the data used for training the model.}
@@ -15,9 +15,6 @@ for more information about which models \code{shapr} supports natively.}
 \item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
 the exact method is used and all combinations are considered. The maximum number of
 combinations equals \code{2^ncol(x)}.}
-
-\item{feature_labels}{Character vector. The labels/names of the features used for training the model.
-Only applicable if you are using a custom model. Otherwise the features in use are extracted from \code{model}.}
 }
 \value{
 Named list that contains the following items:
@@ -36,8 +33,7 @@ Named list that contains the following items:
   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
 }
 
-In addition to the items above \code{model}, \code{feature_labels} (updated with the names actually used by the
-model) and \code{n_combinations} is also present in the returned object.
+In addition to the items above \code{model} and \code{n_combinations} is also present in the returned object.
 }
 \description{
 Create an explainer object with Shapley weights for test data.

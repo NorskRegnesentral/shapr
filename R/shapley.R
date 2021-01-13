@@ -59,8 +59,6 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' the exact method is used and all combinations are considered. The maximum number of
 #' combinations equals \code{2^ncol(x)}.
 #'
-#' @param feature_labels Character vector. The labels/names of the features used for training the model.
-#' Only applicable if you are using a custom model. Otherwise the features in use are extracted from \code{model}.
 #'
 #' @return Named list that contains the following items:
 #' \describe{
@@ -78,8 +76,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
 #' }
 #'
-#' In addition to the items above \code{model}, \code{feature_labels} (updated with the names actually used by the
-#' model) and \code{n_combinations} is also present in the returned object.
+#' In addition to the items above \code{model} and \code{n_combinations} is also present in the returned object.
 #'
 #' @export
 #'
@@ -120,8 +117,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' # 16 (which equals 2^4)
 shapr <- function(x,
                   model,
-                  n_combinations = NULL,
-                  feature_labels = NULL) {
+                  n_combinations = NULL) {
 
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
@@ -134,7 +130,7 @@ shapr <- function(x,
 
 
   # Check features of training data against model specification
-  feature_list_model <- get_model_specs(model,feature_labels)
+  feature_list_model <- get_model_specs(model)
 
   processed_list <- preprocess_data(x = x,
                              feature_list = feature_list_model)

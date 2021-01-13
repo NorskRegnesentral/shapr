@@ -22,6 +22,6 @@ Make dummy variables - this is an internal function intended only to be used in
 predict_model.xgb.Booster()
 }
 \author{
-Annabelle Redelmeier
+Annabelle Redelmeier, Martin Jullum
 }
 \keyword{internal}

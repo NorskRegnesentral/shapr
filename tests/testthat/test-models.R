@@ -470,9 +470,6 @@ test_that("Test get_model_specs",{
   # Unsupported model
   expect_error(get_model_specs(model_unsupported))
 
-  # Unused feature_labels
-  expect_message(get_model_specs(model_native,feature_labels = x_var_numeric))
-
   # This is further tested for custom models in test-a-shapley (now commented out)
 
 })

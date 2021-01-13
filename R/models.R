@@ -278,7 +278,6 @@ model_type.xgb.Booster <- function(x) {
 #' Fetches feature labels from a given model object
 #'
 #' @inheritParams predict_model
-#' @param feature_labels Character vector. Represents the labels of the features used for prediction.
 #'
 #' @keywords internal
 #'
@@ -292,16 +291,16 @@ model_type.xgb.Booster <- function(x) {
 #' x_train[,rad:=as.factor(rad)]
 #' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
-#' get_model_specs(model, feature_labels = NULL)
-get_model_specs <- function(model,feature_labels = NULL) {
+#' get_model_specs(model)
+get_model_specs <- function(model) {
 
   model_class <- NULL # Due to NSE notes in R CMD check
 
-  required_model_objects <- c("model_type","predict_model")
-  recommended_model_objects <- "get_model_specs"
+  required_model_objects <- c("model_type","predict_model","get_model_specs")
 
   # Start with all checking for native models
   model_info <- get_supported_models()[model_class==class(model)[1],]
+  available_model_objects <- names(which(unlist(model_info[,2:4])))
 
   if(nrow(model_info)==0){
     stop(
@@ -310,63 +309,16 @@ get_model_specs <- function(model,feature_labels = NULL) {
     )
   }
 
-  if(model_info$native){
-    if(!is.null(feature_labels)){
-      message(
-        paste0(
-          "\nYou have passed a supported model object, and therefore\n",
-          "features_labels is ignored. The argument is only applicable when\n",
-          "using a custom model. See ?shapr::shapr or the vignette for more information."
-        )
+  if(!(all(required_model_objects %in% available_model_objects)))
+  {
+    this_object_missing <- which(!(required_model_objects %in% available_model_objects))
+    stop(
+      paste0(
+        "The following required model objects are not available for your custom model: ",
+        paste0(required_model_objects[this_object_missing],collapse = ", "),".\n",
+        "See ?shapr::shapr or the vignette for more information."
       )
-    }
-  } else { # if custom model
-
-
-    available_model_objects <- names(which(unlist(model_info[,2:4])))
-    if(!(all(required_model_objects %in% available_model_objects)))
-    {
-      this_object_missing <- which(!(required_model_objects %in% available_model_objects))
-
-      stop(
-        paste0(
-          "The following required model objects are not available for your custom model: ",
-          paste0(required_model_objects[this_object_missing],collapse = ", "),".\n",
-          "See ?shapr::shapr or the vignette for more information."
-        )
-      )
-    }
-    if(!(recommended_model_objects %in% available_model_objects)){
-      if(is.character(feature_labels)){
-        message(
-          paste0(
-            "The following recommended model objects are not available for your custom model: ",
-            paste0(recommended_model_objects,collapse = ", "),".\n",
-            "The provided feature_labels is used, and there is no checking of feature classes and any\n",
-            "factor levels. See ?shapr::shapr or the vignette for more information."
-          )
-        )
-      } else { # If neither the recommended objects nor feature labels is provided
-        stop(
-          paste0(
-            "Both the recommended model object ",recommended_model_objects," and feature_labels are\n",
-            "missing for your custom model. Please provided at least one of them.\n",
-            "See ?shapr::shapr or the vignette for more information."
-          )
-        )
-      }
-    } else {
-      if(is.character(feature_labels)){ # If both recommended objects and feature labels is provided
-        message(
-          paste0(
-            "\nYou have passed a custom model with all required and recommended model objects.\n",
-            "features_labels is therefore ignored. The argument is only applicable when\n",
-            "using a custom model without ",recommended_model_objects,"\n",
-            "See ?shapr::shapr or the vignette for more information."
-          )
-        )
-      }
-    }
+    )
   }
 
 
@@ -374,25 +326,17 @@ get_model_specs <- function(model,feature_labels = NULL) {
 }
 
 #' @rdname get_model_specs
-get_model_specs.default <- function(model, feature_labels = NULL) {
+get_model_specs.default <- function(model) {
 
   # For custom models
-  feature_list = list()
-  feature_list$labels <- feature_labels
-  m <- length(feature_list$labels)
-
-  feature_list$classes <- rep(NA,m)
-  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$model_type <- model_type(model)
-  feature_list$specs_type <- "model"
-
+  stop("You should never get here. May I delete this function?")
   return(feature_list)
 }
 
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.lm <- function(model, feature_labels = NULL) {
+get_model_specs.lm <- function(model) {
 
   feature_list = list()
   feature_list$labels <- labels(model$terms)
@@ -409,7 +353,7 @@ get_model_specs.lm <- function(model, feature_labels = NULL) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.glm <- function(model, feature_labels = NULL) {
+get_model_specs.glm <- function(model) {
 
   feature_list = list()
   feature_list$labels <- labels(model$terms)
@@ -426,7 +370,7 @@ get_model_specs.glm <- function(model, feature_labels = NULL) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.gam <- function(model, feature_labels = NULL) {
+get_model_specs.gam <- function(model) {
 
   feature_list = list()
   feature_list$labels <- labels(model$terms)
@@ -443,7 +387,7 @@ get_model_specs.gam <- function(model, feature_labels = NULL) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.ranger <- function(model, feature_labels = NULL) {
+get_model_specs.ranger <- function(model) {
 
   # Additional check
   if (is.null(model$forest)) {
@@ -470,7 +414,7 @@ get_model_specs.ranger <- function(model, feature_labels = NULL) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.xgb.Booster <- function(model, feature_labels = NULL) {
+get_model_specs.xgb.Booster <- function(model) {
 
   feature_list = list()
 

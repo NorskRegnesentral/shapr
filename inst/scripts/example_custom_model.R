@@ -50,7 +50,7 @@ predict_model.gbm <- function(x, newdata) {
 
 # Prepare the data for explanation
 set.seed(123)
-explainer <- shapr(xy_train, model,feature_labels = x_var)
+explainer <- shapr(xy_train, model,feature_labels = x_var) #TODO: THIS EXAMPLE NEEDS UPDATING AS FEATURE_LABELS IS NO LONGER AVAILABLE
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(xy_train[,y_var])
