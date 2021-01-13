@@ -28,7 +28,7 @@ DO THE ABOVE
 restrucute tests
 
 
-CONTINUE WITH: Update apply_dummies to have the same structyre as make_dummies (Reme), after that try to see if you can replace
+CONTINUE WITH: Update apply_dummies to have the same structyre as make_dummies, after that try to see if you can replace
   obj with updater.
 
 
