@@ -181,12 +181,7 @@ helper_feature <- function(m, feature_sample) {
 #'
 #' @return A list that contains the following entries:
 #' \describe{
-#' \item{obj}{List, Contains \describe{
-#' \item{features}{Vector. Contains the names of all the features in \code{data}.}
-#' \item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
-#' \item{factor_list}{List. Contains each factor and its vector of levels.}
-#' \item{contrasts_list}{List. Contains all the contrasts of the factors.}
-#' }}
+#' \item{feature_list}{List, Output from \code{check_features}}
 #' \item{train_dummies}{A data.frame containing all of the factors in \code{traindata} as
 #' one-hot encoded variables.}
 #' \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
@@ -199,7 +194,7 @@ helper_feature <- function(m, feature_sample) {
 #'
 #' @export
 #'
-#' @author Annabelle Redelmeier
+#' @author Annabelle Redelmeier, Martin Jullum
 #'
 #' @examples
 #'
@@ -288,7 +283,7 @@ make_dummies <- function(traindata, testdata) {
 #' @return A data.frame containing all of the factors in \code{testdata} as
 #' one-hot encoded variables.
 #'
-#' @author Annabelle Redelmeier
+#' @author Annabelle Redelmeier, Martin Jullum
 #'
 #' @keywords internal
 #'
