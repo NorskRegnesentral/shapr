@@ -342,7 +342,7 @@ test_that("Test check_features + update_data", {
   # feature class is NA
   data_features_error <- data_features_ok
   data_features_error$classes <- rep(NA,length(data_features_error$classes))
-  expect_message(check_features(data_features_error,data_features_error))
+  expect_message(check_features(data_features_error,data_features_ok))
 
   # feature classes are different
   data_features_error <- data_features_ok

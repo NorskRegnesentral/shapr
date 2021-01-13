@@ -15,7 +15,6 @@ I can anyway provide a set of minimal custom functions for this type.
 
 +
 
-when returning f_list_2 do tests theer as well
 can we merge update_data to check_features (need to see how htis works out after using check_features in make_dummies)
 shapr: remove p
 
