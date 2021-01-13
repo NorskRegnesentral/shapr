@@ -288,7 +288,7 @@ test_that("Test check_features + update_data", {
                      nrounds = 3, verbose = FALSE, objective = "binary:logistic", eval_metric = "error")
   )
 
-  l_silent[[7]]$dummylist <- l_silent[[12]]$dummylist <- dummylist$feature_list
+  l_silent[[7]]$feature_list <- l_silent[[12]]$feature_list <- dummylist$feature_list
 
 
 

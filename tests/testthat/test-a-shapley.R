@@ -68,7 +68,7 @@ test_that("Testing data input to shapr in shapley.R", {
   )
 
 
-  l_factor[[4]]$dummylist <- dummylist$feature_list
+  l_factor[[4]]$feature_list <- dummylist$feature_list
 
 
 

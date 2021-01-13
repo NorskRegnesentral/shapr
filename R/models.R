@@ -118,7 +118,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
   model_type <- model_type(x)
 
   if (model_type %in% c("cat_regression", "cat_classification")) {
-    newdata_dummy <- apply_dummies(feature_list = x$dummylist, testdata = newdata)
+    newdata_dummy <- apply_dummies(feature_list = x$feature_list, testdata = newdata)
     predict(x, as.matrix(newdata_dummy))
   } else {
     predict(x, as.matrix(newdata))
@@ -270,8 +270,8 @@ model_type.xgb.Booster <- function(x) {
 
   ifelse(
     !is.null(x$params$objective) && x$params$objective == "binary:logistic",
-    ifelse(is.null(x$dummylist), "classification", "cat_classification"),
-    ifelse(is.null(x$dummylist), "regression", "cat_regression")
+    ifelse(is.null(x$feature_list), "classification", "cat_classification"),
+    ifelse(is.null(x$feature_list), "regression", "cat_regression")
   )
 }
 
@@ -474,14 +474,14 @@ get_model_specs.xgb.Booster <- function(x, feature_labels = NULL) {
 
   feature_list = list()
 
-  if (is.null(x[["dummylist"]])) {
+  if (is.null(x[["feature_list"]])) {
     feature_list$labels <- x$feature_names
     m <- length(feature_list$labels)
 
     feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
     feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   } else {
-    feature_list <- x$dummylist
+    feature_list <- x$feature_list
   }
   feature_list$model_type <- model_type(x)
   feature_list$specs_type <- "model"

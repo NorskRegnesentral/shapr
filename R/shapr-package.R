@@ -15,9 +15,12 @@
 #'
 #' @importFrom stats setNames
 #'
+#' @importFrom stats contrasts
+#'
 #' @importFrom Rcpp sourceCpp
 #'
 #' @keywords internal
 #'
 #' @useDynLib shapr, .registration = TRUE
 NULL
+

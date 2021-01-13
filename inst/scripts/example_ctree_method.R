@@ -66,10 +66,10 @@ print(levels(x_train_cat$rm))
 print(levels(x_test_cat$rm))
 
 # -- special function when using categorical data + xgboost
-make_dummies_list <- make_dummies(traindata = x_train_cat, testdata = x_test_cat)
+dummylist <- make_dummies(traindata = x_train_cat, testdata = x_test_cat)
 
-x_train_dummy <- make_dummies_list$train_dummies
-x_test_dummy <- make_dummies_list$test_dummies
+x_train_dummy <- dummylist$train_dummies
+x_test_dummy <- dummylist$test_dummies
 
 # Fitting a basic xgboost model to the training data
 model_cat <- xgboost::xgboost(
@@ -78,17 +78,17 @@ model_cat <- xgboost::xgboost(
   nround = 20,
   verbose = FALSE
 )
-model_cat$dummylist <- make_dummies_list$obj
+model_cat$feature_list <- dummylist$feature_list
 
-explainer_cat <- shapr(make_dummies_list$traindata_new, model_cat)
+explainer_cat <- shapr(dummylist$traindata_new, model_cat)
 
 # Specifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
 
-# make_dummies_list$testdata_new$rm
+# dummylist$testdata_new$rm
 
 explanation_cat <- explain(
-  make_dummies_list$testdata_new,
+  dummylist$testdata_new,
   approach = "ctree",
   explainer = explainer_cat,
   prediction_zero = p0
