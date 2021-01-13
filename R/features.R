@@ -261,7 +261,8 @@ make_dummies <- function(traindata, testdata) {
               factor_features = factor_features,
               factor_list = factor_list,
               contrasts_list = contrasts_list,
-              class_vector = sapply(traindata, class))
+              class_vector = sapply(traindata, class),
+              feature_list = updater)
 
   # get train dummies
   m <- model.frame(data = train_dt,
@@ -278,7 +279,7 @@ make_dummies <- function(traindata, testdata) {
                                contrasts.arg = obj$contrasts_list)
 
 
-  return(list(obj = obj, updater = updater,
+  return(list(obj = obj,
               train_dummies = train_dummies, test_dummies = test_dummies, traindata_new = train_dt,
               testdata_new = test_dt))
 
@@ -311,48 +312,12 @@ apply_dummies <- function(obj, testdata) {
 
   feature_list_test$specs_type="testdata"
 
+  updater <- check_features(obj$feature_list,feature_list_test,F)
 
+  # Reorderes factor levels so that they match
+  update_data(test_dt,updater)
 
-  #features <- NULL # due to NSE notes in R CMD check
-  #if (is.null(colnames(testdata))) {
-  #  stop("testdata must have column names.")
-  #}
-
-  testdata <- data.table::as.data.table(testdata)
-  features <- obj$features
-
-  if (length(features) != length(colnames(testdata))) {
-    stop("testdata must have the same number of columns as traindata.")
-  }
-  if (!all(sort(features) == sort(colnames(testdata)))) {
-    stop("testdata must have the same column names as traindata.")
-  }
-
-  # in case the testing data has a different column order or more columns than the training data:
-  testdata <- testdata[, features, with = FALSE]
-
-  if (!all(sapply(testdata, class) %in% c("integer", "numeric", "factor"))) {
-    stop("All testdata must have class integer, numeric or factor.")
-  }
-  if (!all(obj$class_vector == sapply(testdata, class))) {
-    stop("All traindata and testdata must have the same classes.")
-  }
-
-  # Check that traindata and testdata have the same levels for the factor features
-  is_factor <- obj$factor_features
-  list_levels_train <- obj$factor_list
-  list_levels_test <- lapply(testdata[, is_factor, with = FALSE], function(x) sort(levels(x)))
-
-  if (!identical(list_levels_train, list_levels_test)) {
-    stop("Levels of categorical variables in traindata and testdata must be the same.")
-  }
-
-  # re-level testdata
-  for (i in names(list_levels_test)) {
-    testdata[[i]] <- factor(testdata[[i]], levels = list_levels_test[[i]])
-  }
-
-  m <- model.frame(data = testdata,
+  m <- model.frame(data = test_dt,
                    xlev = obj$factor_list)
 
   x <- model.matrix(object = ~. + 0,
