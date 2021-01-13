@@ -292,8 +292,8 @@ model_type.xgb.Booster <- function(x) {
 #' x_train[,rad:=as.factor(rad)]
 #' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
-#' get_model_specs(x = model, feature_labels = NULL)
-get_model_specs <- function(x,feature_labels = NULL) {
+#' get_model_specs(model, feature_labels = NULL)
+get_model_specs <- function(model,feature_labels = NULL) {
 
   model_class <- NULL # Due to NSE notes in R CMD check
 
@@ -301,7 +301,7 @@ get_model_specs <- function(x,feature_labels = NULL) {
   recommended_model_objects <- "get_model_specs"
 
   # Start with all checking for native models
-  model_info <- get_supported_models()[model_class==class(x)[1],]
+  model_info <- get_supported_models()[model_class==class(model)[1],]
 
   if(nrow(model_info)==0){
     stop(
@@ -370,11 +370,11 @@ get_model_specs <- function(x,feature_labels = NULL) {
   }
 
 
-  UseMethod("get_model_specs", x)
+  UseMethod("get_model_specs", model)
 }
 
 #' @rdname get_model_specs
-get_model_specs.default <- function(x, feature_labels = NULL) {
+get_model_specs.default <- function(model, feature_labels = NULL) {
 
   # For custom models
   feature_list = list()
@@ -383,7 +383,7 @@ get_model_specs.default <- function(x, feature_labels = NULL) {
 
   feature_list$classes <- rep(NA,m)
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$model_type <- model_type(x)
+  feature_list$model_type <- model_type(model)
   feature_list$specs_type <- "model"
 
   return(feature_list)
@@ -392,16 +392,16 @@ get_model_specs.default <- function(x, feature_labels = NULL) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.lm <- function(x, feature_labels = NULL) {
+get_model_specs.lm <- function(model, feature_labels = NULL) {
 
   feature_list = list()
-  feature_list$labels <- labels(x$terms)
+  feature_list$labels <- labels(model$terms)
   m <- length(feature_list$labels)
 
-  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
+  feature_list$classes <- attr(model$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
-  feature_list$model_type <- model_type(x)
+  feature_list$factor_levels[names(model$xlevels)] <- model$xlevels
+  feature_list$model_type <- model_type(model)
   feature_list$specs_type <- "model"
 
   return(feature_list)
@@ -409,16 +409,16 @@ get_model_specs.lm <- function(x, feature_labels = NULL) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.glm <- function(x, feature_labels = NULL) {
+get_model_specs.glm <- function(model, feature_labels = NULL) {
 
   feature_list = list()
-  feature_list$labels <- labels(x$terms)
+  feature_list$labels <- labels(model$terms)
   m <- length(feature_list$labels)
 
-  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
+  feature_list$classes <- attr(model$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
-  feature_list$model_type <- model_type(x)
+  feature_list$factor_levels[names(model$xlevels)] <- model$xlevels
+  feature_list$model_type <- model_type(model)
   feature_list$specs_type <- "model"
 
   return(feature_list)
@@ -426,16 +426,16 @@ get_model_specs.glm <- function(x, feature_labels = NULL) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.gam <- function(x, feature_labels = NULL) {
+get_model_specs.gam <- function(model, feature_labels = NULL) {
 
   feature_list = list()
-  feature_list$labels <- labels(x$terms)
+  feature_list$labels <- labels(model$terms)
   m <- length(feature_list$labels)
 
-  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
+  feature_list$classes <- attr(model$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
-  feature_list$model_type <- model_type(x)
+  feature_list$factor_levels[names(model$xlevels)] <- model$xlevels
+  feature_list$model_type <- model_type(model)
   feature_list$specs_type <- "model"
 
   return(feature_list)
@@ -443,10 +443,10 @@ get_model_specs.gam <- function(x, feature_labels = NULL) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.ranger <- function(x, feature_labels = NULL) {
+get_model_specs.ranger <- function(model, feature_labels = NULL) {
 
   # Additional check
-  if (is.null(x$forest)) {
+  if (is.null(model$forest)) {
     stop(
       paste0(
         "\nIt looks like the model was fitted without saving the forest. Please set\n",
@@ -455,13 +455,13 @@ get_model_specs.ranger <- function(x, feature_labels = NULL) {
     )
   }
   feature_list = list()
-  feature_list$labels <- unique_features(x$forest$independent.variable.names)
+  feature_list$labels <- unique_features(model$forest$independent.variable.names)
   m <- length(feature_list$labels)
 
   feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels # Only provided when respect.unordered.factors == T
-  feature_list$model_type <- model_type(x)
+  feature_list$factor_levels[names(model$forest$covariate.levels)] <- model$forest$covariate.levels # Only provided when respect.unordered.factors == T
+  feature_list$model_type <- model_type(model)
   feature_list$specs_type <- "model"
 
   return(feature_list)
@@ -470,20 +470,20 @@ get_model_specs.ranger <- function(x, feature_labels = NULL) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.xgb.Booster <- function(x, feature_labels = NULL) {
+get_model_specs.xgb.Booster <- function(model, feature_labels = NULL) {
 
   feature_list = list()
 
-  if (is.null(x[["feature_list"]])) {
-    feature_list$labels <- x$feature_names
+  if (is.null(model[["feature_list"]])) {
+    feature_list$labels <- model$feature_names
     m <- length(feature_list$labels)
 
     feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
     feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   } else {
-    feature_list <- x$feature_list
+    feature_list <- model$feature_list
   }
-  feature_list$model_type <- model_type(x)
+  feature_list$model_type <- model_type(model)
   feature_list$specs_type <- "model"
 
   return(feature_list)

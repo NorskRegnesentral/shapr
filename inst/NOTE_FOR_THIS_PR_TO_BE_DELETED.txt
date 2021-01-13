@@ -23,15 +23,8 @@ shapr: remove p
 
 TODO:
 
-update make_dummies
-move from dummylist to feature_list everywhere when assigned to an object
 DO THE ABOVE
 restrucute tests
 
-
-CONTINUE WITH: Update apply_dummies to have the same structyre as make_dummies, after that try to see if you can replace
-  obj with updater.
-
-NOW: FIX THE ISSUE WITH INCONSISTENT FEATURE LABELS IN XGBOOST -- I MIGHT NEED BOTH THE ORIGINAL ONES AND THE ONE-HOT-ENCODED ONES...
 
 
