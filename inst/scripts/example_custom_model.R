@@ -11,6 +11,13 @@ y_var <- "medv"
 xy_train <- tail(Boston, -6)
 x_test <- head(Boston,6)
 
+# testing
+xy_train <- head(Boston,50)
+x_test <- tail(Boston, -6)
+
+
+# testing ends
+
 form = as.formula(paste0(y_var,"~",paste0(x_var,collapse="+")))
 
 # Fitting a gbm model
@@ -46,6 +53,21 @@ predict_model.gbm <- function(x, newdata) {
 
     predict(x, as.data.frame(newdata),n.trees = x$n.trees)
   }
+}
+
+get_model_specs.gbm <- function(model){
+  feature_list = list()
+  feature_list$labels <- labels(model$Terms)
+  m <- length(feature_list$labels)
+
+  feature_list$classes <- attr(model$Terms,"dataClasses")[-1]
+  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
+  feature_list$factor_levels[feature_list$classes=="factor"] <- NA
+  feature_list$model_type <- model_type(model)
+  feature_list$specs_type <- "model"
+
+  return(feature_list)
+
 }
 
 # Prepare the data for explanation
