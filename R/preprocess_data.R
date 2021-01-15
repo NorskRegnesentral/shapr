@@ -93,6 +93,14 @@ preprocess_data = function(x,feature_list){
 check_features <- function(f_list_1,f_list_2,
                            use_1_as_truth=T){
 
+  if(is.null(f_list_1$specs_type)){
+    f_list_1$specs_type <- "model"
+  }
+
+  if(is.null(f_list_2$specs_type)){
+    f_list_2$specs_type <- "model"
+  }
+
   name_1 <- f_list_1$specs_type
   name_2 <- f_list_2$specs_type
 

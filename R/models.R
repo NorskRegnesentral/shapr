@@ -96,9 +96,6 @@ predict_model.ranger <- function(x, newdata) {
     stop("The ranger package is required for predicting ranger models")
   }
 
-  # Test model type
-  model_type <- model_type(x)
-
   if (x$treetype == "Probability estimation") {
     predict(x, newdata)$predictions[, 2]
   } else {
@@ -114,14 +111,11 @@ predict_model.xgb.Booster <- function(x, newdata) {
     stop("The xgboost package is required for predicting xgboost models")
   }
 
-  # Test model type
-  model_type <- model_type(x)
-
-  if (model_type %in% c("cat_regression", "cat_classification")) {
+  if (is.null(x$feature_list)) {
+    predict(x, as.matrix(newdata))
+  } else {
     newdata_dummy <- apply_dummies(feature_list = x$feature_list, testdata = newdata)
     predict(x, as.matrix(newdata_dummy))
-  } else {
-    predict(x, as.matrix(newdata))
   }
 }
 
@@ -145,19 +139,19 @@ predict_model.gam <- function(x, newdata) {
 
 }
 
-#' Define type of model
+#' Check that the type of model is supported by the explanation method
 #'
 #' @description The function checks whether the model given by \code{x} is
-#' supported, and if it is a regression- or a classification model. If \code{x} is
-#' not a supported model the function will return an error message, otherwise it will
-#' return either \code{"regression"} or \code{"classification"}.
+#' supported. If \code{x} is
+#' not a supported model the function will return an error message, otherwise it return NULL (meaning all types of
+#' models with this class is supported)
 #'
 #' @inheritParams predict_model
 #'
 #' @details See \code{\link{predict_model}} for more information about
 #' what type of models \code{shapr} currently support.
 #'
-#' @return Either \code{"classification"} or \code{"regression"}.
+#' @return Error or NULL
 #'
 #' @export
 #' @keywords internal
@@ -170,38 +164,34 @@ predict_model.gam <- function(x, newdata) {
 #' # Fit a linear model
 #' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 #'
-#' # Writing out the defined model type of the object
-#' model_type(x = model)
-model_type <- function(x) {
-  UseMethod("model_type", x)
+#' # Checking the model object
+#' model_checker(x = model)
+model_checker <- function(x) {
+  UseMethod("model_checker", x)
 }
 
-#' @rdname model_type
+#' @rdname model_checker
 #' @export
-model_type.default <- function(x) {
-  stop("The model you passed to shapr is currently not supported.")
+model_checker.default <- function(x) {
+  stop("The model class you passed to shapr is currently not supported.")
 }
 
-#' @rdname model_type
+#' @rdname model_checker
 #' @export
-model_type.lm <- function(x) {
-  "regression"
+model_checker.lm <- function(x) {
+  NULL
 }
 
-#' @rdname model_type
+#' @rdname model_checker
 #' @export
-model_type.glm <- function(x) {
-  ifelse(
-    x$family[[1]] == "binomial",
-    "classification",
-    "regression"
-  )
+model_checker.glm <- function(x) {
+  NULL
 }
 
-#' @rdname model_type
-#' @name model_type
+#' @rdname model_checker
+#' @name model_checker
 #' @export
-model_type.ranger <- function(x) {
+model_checker.ranger <- function(x) {
 
   if (x$treetype == "Classification") {
     stop(
@@ -214,10 +204,16 @@ model_type.ranger <- function(x) {
     )
   }
 
-  if (x$treetype == "Probability estimation") {
-    if (length(x$forest$levels) == 2) {
-      "classification"
-    } else {
+  if (x$treetype == "survival") {
+    stop(
+      paste0(
+        "\n",
+        "We currently don't support explanation of survival type of ranger models."
+      )
+    )
+  }
+
+  if (x$treetype == "Probability estimation" & length(x$forest$levels) > 2) {
       stop(
         paste0(
           "\n",
@@ -225,25 +221,31 @@ model_type.ranger <- function(x) {
           "where length(model$forest$levels) is greater than 2."
         )
       )
-    }
-  } else {
-    "regression"
   }
+
+  # Additional check
+  if (is.null(model$forest)) {
+    stop(
+      paste0(
+        "\nIt looks like the model was fitted without saving the forest. Please set\n",
+        "write.forest = TRUE when fitting a model using ranger::ranger()."
+      )
+    )
+  }
+
+
+  return(ret)
 }
 
-#' @rdname model_type
+#' @rdname model_checker
 #' @export
-model_type.gam <- function(x) {
-  ifelse(
-    x$family[[1]] == "binomial",
-    "classification",
-    "regression"
-  )
+model_checker.gam <- function(x) {
+  NULL
 }
 
-#' @rdname model_type
+#' @rdname model_checker
 #' @export
-model_type.xgb.Booster <- function(x) {
+model_checker.xgb.Booster <- function(x) {
 
   if (!is.null(x$params$objective) &&
     (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
@@ -267,12 +269,7 @@ model_type.xgb.Booster <- function(x) {
       )
     )
   }
-
-  ifelse(
-    !is.null(x$params$objective) && x$params$objective == "binary:logistic",
-    ifelse(is.null(x$feature_list), "classification", "cat_classification"),
-    ifelse(is.null(x$feature_list), "regression", "cat_regression")
-  )
+  return(NULL)
 }
 
 #' Fetches feature labels from a given model object
@@ -296,7 +293,7 @@ get_model_specs <- function(model) {
 
   model_class <- NULL # Due to NSE notes in R CMD check
 
-  required_model_objects <- c("model_type","predict_model","get_model_specs")
+  required_model_objects <- c("predict_model","get_model_specs")
 
   # Start with all checking for native models
   model_info <- get_supported_models()[model_class==class(model)[1],]
@@ -338,6 +335,8 @@ get_model_specs.default <- function(model) {
 #' @export
 get_model_specs.lm <- function(model) {
 
+  model_checker(model) # Checking if the model is supported
+
   feature_list = list()
   feature_list$labels <- labels(model$terms)
   m <- length(feature_list$labels)
@@ -345,8 +344,6 @@ get_model_specs.lm <- function(model) {
   feature_list$classes <- attr(model$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(model$xlevels)] <- model$xlevels
-  feature_list$model_type <- model_type(model)
-  feature_list$specs_type <- "model"
 
   return(feature_list)
 }
@@ -355,6 +352,8 @@ get_model_specs.lm <- function(model) {
 #' @export
 get_model_specs.glm <- function(model) {
 
+  model_checker(model) # Checking if the model is supported
+
   feature_list = list()
   feature_list$labels <- labels(model$terms)
   m <- length(feature_list$labels)
@@ -362,8 +361,6 @@ get_model_specs.glm <- function(model) {
   feature_list$classes <- attr(model$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(model$xlevels)] <- model$xlevels
-  feature_list$model_type <- model_type(model)
-  feature_list$specs_type <- "model"
 
   return(feature_list)
 }
@@ -372,6 +369,8 @@ get_model_specs.glm <- function(model) {
 #' @export
 get_model_specs.gam <- function(model) {
 
+  model_checker(model) # Checking if the model is supported
+
   feature_list = list()
   feature_list$labels <- labels(model$terms)
   m <- length(feature_list$labels)
@@ -379,8 +378,6 @@ get_model_specs.gam <- function(model) {
   feature_list$classes <- attr(model$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(model$xlevels)] <- model$xlevels
-  feature_list$model_type <- model_type(model)
-  feature_list$specs_type <- "model"
 
   return(feature_list)
 }
@@ -389,15 +386,8 @@ get_model_specs.gam <- function(model) {
 #' @export
 get_model_specs.ranger <- function(model) {
 
-  # Additional check
-  if (is.null(model$forest)) {
-    stop(
-      paste0(
-        "\nIt looks like the model was fitted without saving the forest. Please set\n",
-        "write.forest = TRUE when fitting a model using ranger::ranger()."
-      )
-    )
-  }
+  model_checker(model) # Checking if the model is supported
+
   feature_list = list()
   feature_list$labels <- unique_features(model$forest$independent.variable.names)
   m <- length(feature_list$labels)
@@ -405,8 +395,6 @@ get_model_specs.ranger <- function(model) {
   feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(model$forest$covariate.levels)] <- model$forest$covariate.levels # Only provided when respect.unordered.factors == T
-  feature_list$model_type <- model_type(model)
-  feature_list$specs_type <- "model"
 
   return(feature_list)
 }
@@ -416,8 +404,9 @@ get_model_specs.ranger <- function(model) {
 #' @export
 get_model_specs.xgb.Booster <- function(model) {
 
-  feature_list = list()
+  model_checker(model) # Checking if the model is supported
 
+  feature_list = list()
   if (is.null(model[["feature_list"]])) {
     feature_list$labels <- model$feature_names
     m <- length(feature_list$labels)
@@ -427,8 +416,6 @@ get_model_specs.xgb.Booster <- function(model) {
   } else {
     feature_list <- model$feature_list
   }
-  feature_list$model_type <- model_type(model)
-  feature_list$specs_type <- "model"
 
   return(feature_list)
 
@@ -444,7 +431,6 @@ get_supported_models <- function(){
 
   # Fixing NSE notes in R CMD check
   rn <- get_model_specs <- native_get_model_specs <- from <- NULL
-  model_type <- native_model_type <-  NULL
   predict_model <- native_predict_model <- NULL
   native <- NULL
 
@@ -456,25 +442,16 @@ get_supported_models <- function(){
   DT_get_model_specs[,native_get_model_specs:=ifelse(from=="shapr",1,0)]
   DT_get_model_specs[,c("visible","from","generic","isS4"):=NULL]
 
-  DT_model_type <- data.table::as.data.table(attr(methods(model_type),"info"),keep.rownames = T)
-  #DT_model_type <- data.table::as.data.table(attr(.S3methods(model_type,envir=globalenv()),"info"),keep.rownames = T)
-
-  DT_model_type[,rn:=substring(as.character(rn),first=12)]
-  DT_model_type[,model_type:=1]
-  DT_model_type[,native_model_type:=ifelse(from=="shapr",1,0)]
-  DT_model_type[,c("visible","from","generic","isS4"):=NULL]
-
   DT_predict_model <- data.table::as.data.table(attr(methods(predict_model),"info"),keep.rownames = T)
   DT_predict_model[,rn:=substring(as.character(rn),first=15)]
   DT_predict_model[,predict_model:=1]
   DT_predict_model[,native_predict_model:=ifelse(from=="shapr",1,0)]
   DT_predict_model[,c("visible","from","generic","isS4"):=NULL]
 
-  DT <- merge(DT_get_model_specs,DT_model_type,by="rn",all=T,allow.cartesian=T,nomatch=0)
-  DT <- merge(DT,DT_predict_model,by="rn",all=T,nomatch=0)
+  DT <- merge(DT_get_model_specs,DT_predict_model,by="rn",all=T,allow.cartesian=T,nomatch=0)
   DT[,(colnames(DT)[-1]):=lapply(.SD,data.table::nafill,fill=0),.SDcols=colnames(DT)[-1]]
-  DT[,native:=as.logical(native_get_model_specs*native_model_type*native_predict_model)]
-  DT[,c("native_get_model_specs","native_model_type","native_predict_model"):=NULL]
+  DT[,native:=as.logical(native_get_model_specs*native_predict_model)]
+  DT[,c("native_get_model_specs","native_predict_model"):=NULL]
   DT[,(colnames(DT)[2:4]):=lapply(.SD,as.logical),.SDcols=colnames(DT)[2:4]]
   data.table::setnames(DT,"rn","model_class")
   return(DT)
