@@ -96,17 +96,29 @@ check_features <- function(f_list_1,f_list_2,
   name_1 <- f_list_1$specs_type
   name_2 <- f_list_2$specs_type
 
-  if(name_1 == name_2){
-    name_1 <- paste0("shapr-",name_1)
-    name_2 <- paste0("test-",name_2)
+  if(name_1 == name_2){ # If used in explain after a model has NA-info during check in shapr
+    name_1 <- paste0(name_1,"_train")
+    name_2 <- paste0(name_2,"_test")
   }
 
-  #### Checking labels ####
+  #### Checking that labels exists ####
   if (is.null(f_list_1$labels)) {
     stop(paste0(name_1," must have column names."))
   }
   if (is.null(f_list_2$labels)) {
     stop(paste0(name_2," must have column names."))
+  }
+
+  NA_1 <- any(is.na(f_list_1$labels))
+  NA_2 <- any(is.na(f_list_2$labels))
+
+  if((NA_1 & NA_2) | ((NA_1 | NA_2) & !use_1_as_truth)){
+    stop(paste0("The ",name_1," or ",name_2," have column names that are NA. Handle that to proceed."))
+  }
+  if((NA_1 & use_1_as_truth)){
+    message(paste0("The specified ",name_1," provides feature labels that are NA. ",
+                   "The labels of ",name_2," are taken as the truth."))
+    f_list_1 <- f_list_2
   }
 
   # feature names must be unique
@@ -134,6 +146,11 @@ check_features <- function(f_list_1,f_list_2,
     }
   }
 
+  # Check if any features have empty names i.e ""
+  if (any(f_list_1$labels == "")) {
+    stop("One or more features is missing a name.")
+  }
+
 
   #### Reorder f_List_2 to match f_list_1, also removing anything in the former which is not in the latter ####
   f_list_2_reordering = match(f_list_1$labels,f_list_2$labels)
@@ -146,46 +163,42 @@ check_features <- function(f_list_1,f_list_2,
   f_list_1$sorted_factor_levels <- lapply(f_list_1$factor_levels,FUN=sort)
   f_list_2$sorted_factor_levels <- lapply(f_list_2$factor_levels,FUN=sort)
 
-  # Check if any features have empty names i.e ""
-  if (any(f_list_1$labels == "")) {
-    stop("One or more features is missing a name.")
-  }
-
 
   #### Checking classes ####
-  if(any(is.na(f_list_1$classes))){
-    message(paste0("The specified ",name_1," does not provide (all) feature classes. ",
-                   "Feature class and any factor level checking is disabled, and those specifed in the ",
-                   name_2," are passed on from here."))
-    ret <- ref <- f_list_2
-
-  } else {
-    ret <- f_list_1
-    ref <- f_list_2
+  if(any(is.na(f_list_1$classes)) & use_1_as_truth){ # Only relevant when f_list_1 is a model
+    message(paste0("The specified ",name_1," provides feature classes that are NA. ",
+                   "The classes of ",name_2," are taken as the truth."))
+    f_list_1 <- f_list_2
 
   }
-
   # Check if f_list_1 and f_list_2 have features with the same class
-  if (!identical(ret$classes,  ref$classes)) {
+  if (!identical(f_list_1$classes,  f_list_2$classes)) {
     stop(paste0("The features in ",name_1," and ",name_2," must have the same classes."))
   }
 
   # Check if the features all have class "integer", "numeric" or "factor
-  if (!all(ret$classes %in% c("integer", "numeric", "factor"))) {
-    invalid_class <- which(!(ret$classes %in% c("integer", "numeric", "factor")))
-    stop(paste0("Feature(s) ",paste0(ret$labels[invalid_class],collapse=", ")," in ",name_1," and ",name_2,
+  if (!all(f_list_1$classes %in% c("integer", "numeric", "factor"))) {
+    invalid_class <- which(!(f_list_1$classes %in% c("integer", "numeric", "factor")))
+    stop(paste0("Feature(s) ",paste0(f_list_1$labels[invalid_class],collapse=", ")," in ",name_1," and ",name_2,
                 " is not of class integer, numeric or factor."))
   }
 
+  #### Checking factor levels ####
+  if(any(is.na(f_list_1$factor_levels)) & use_1_as_truth){ # Only relevant when f_list_1 is a model
+    message(paste0("The specified ",name_1," provides factor levels that are NA. ",
+                   "The factor levels of ",name_2," are taken as the truth."))
+    f_list_1 <- f_list_2
+
+  }
+
   # Checking factor levels #
-  if (!identical(ret$sorted_factor_levels, ref$sorted_factor_levels)) {
+  if (!identical(f_list_1$sorted_factor_levels, f_list_2$sorted_factor_levels)) {
     stop(paste0("Some levels for factor features are not present in both ",name_1," and ",name_2,"."))
   }
 
+  f_list_1$sorted_factor_levels <- NULL # Not needed
 
-  ret$sorted_factor_levels <- NULL # Not needed
-
-  return(ret) #
+  return(f_list_1) #
 
 }
 

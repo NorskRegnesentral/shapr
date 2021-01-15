@@ -369,9 +369,9 @@ explanation_cat <- explain(
   prediction_zero = p
 )
 
-# Plot the resulting explanations for observations 1 and 6, excluding 
+# Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
-plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1, 6))
+plot(explanation_cat, plot_phi0 = FALSE, index_x_test = c(1, 6))
 
 ```
 
@@ -572,8 +572,9 @@ set as used above.
 ```{r}
 library(gbm)
 
-form <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
-xy_train <- data.frame(x_train, medv = y_train)
+xy_train <- data.frame(x_train,medv = y_train)
+
+form <- as.formula(paste0(y_var,"~",paste0(x_var,collapse="+")))
 
 # Fitting a gbm model
 set.seed(825)
@@ -581,12 +582,13 @@ model <- gbm::gbm(
   form,
   data = xy_train,
   distribution = "gaussian"
-  )
+)
+
 
 # Create custom function of model_type for gbm
 model_type.gbm <- function(x) {
   ifelse(
-    x$distribution$name %in% c("bernoulli", "adaboost"),
+    x$distribution$name %in% c("bernoulli","adaboost"),
     "classification",
     "regression"
   )
@@ -602,33 +604,44 @@ predict_model.gbm <- function(x, newdata) {
 
   if (model_type == "classification") {
 
-    predict(x, as.data.frame(newdata), type = "response", n.trees = x$n.trees)
+    predict(x, as.data.frame(newdata), type = "response",n.trees = x$n.trees)
   } else {
 
-    predict(x, as.data.frame(newdata), n.trees = x$n.trees)
+    predict(x, as.data.frame(newdata),n.trees = x$n.trees)
   }
+}
+
+get_model_specs.gbm <- function(model){
+  feature_list = list()
+  feature_list$labels <- labels(model$Terms)
+  m <- length(feature_list$labels)
+
+  feature_list$classes <- attr(model$Terms,"dataClasses")[-1]
+  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
+  feature_list$factor_levels[feature_list$classes=="factor"] <- NA
+  feature_list$model_type <- model_type(model)
+  feature_list$specs_type <- "model"
+
+  return(feature_list)
+
 }
 
 # Prepare the data for explanation
 set.seed(123)
-explainer <- shapr(xy_train, model, feature_labels = x_var)
+explainer <- shapr(xy_train, model)
 
 # Spedifying the phi_0, i.e. the expected prediction without any features
-p0 <- mean(xy_train[, y_var])
+p0 <- mean(xy_train[,y_var])
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with
-# bandwidth parameter sigma = 0.1 (default)
-explanation <- explain(
-  x_test,
-  explainer,
-  approach = "empirical",
-  prediction_zero = p0
-)
+# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
+explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
 
-# Plot the resulting explanations for observations 1 and 6, excluding
-# the no-covariate effect.
-plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1, 6))
+# Printing the Shapley values for the test data
+explanation$dt
+
+# Plot results
+plot(explanation)
 ```
 Note that this explains a different (but similar) model than the above xgboost model!
 
