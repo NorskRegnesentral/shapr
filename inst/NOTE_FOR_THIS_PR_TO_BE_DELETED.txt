@@ -18,5 +18,9 @@ Further work
 
 
 
+- Skip model_type function, just to this within predict_model as this is the only place it might be needed (sometimes)
+- skip specs_type in models and add that in check_features if it is missing.
+- set get_model_specs.default to only NA-s
 
-
+  feature_list$model_type <- model_type(model)
+  feature_list$specs_type <- "model"
