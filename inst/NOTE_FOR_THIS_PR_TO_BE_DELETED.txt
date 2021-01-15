@@ -7,6 +7,9 @@ Further work
 3. Update vignette and shapr::shapr-documentation on how to make custom model, deleting all traces of feature_labels and make it pass,
   including all required stuff for custom models
   it is important that these examples are very good. Provide a full one for all of gbm + a minimal one just to get that specific model type through.
+  -- I am here now -- update both vignette instruction and tests according to the new style of adding custom models (less requirements). Note in the vignette that this was
+  changed from the previous version of shapr (include version number!)
+- set get_model_specs.default to only NA-s
 #3.2 Add possibility in check_features that only the factor levels from a model might be unknown (NA) and that the factor levels form the training data is used.
 3.5. Update documentation, examples etc.
 4. Restructure tests so that testing is carried out in the main functions -- and remove unused ones.
@@ -15,5 +18,9 @@ Further work
   model stuff that actually should pass (not just failing ones.)
 6. Run checks
 7. run lintr and styler for the full pacakge in another PR
-- set get_model_specs.default to only NA-s
+
+
+DIV:
+
+- do classes need to be named in feature_list? Check if it is used or it is just the order. sort them correctly according to what is being used.
 
