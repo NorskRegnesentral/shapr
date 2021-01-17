@@ -52,8 +52,8 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'
 #' @param x Numeric matrix or data.frame. Contains the data used for training the model.
 #'
-#' @param model The model whose predictions we want to explain. See \code{\link{predict_model}}
-#' for more information about which models \code{shapr} supports natively.
+#' @param model The model whose predictions we want to explain. Run \code{shapr:::get_supported_models()[]}
+#' for a table of which models \code{shapr} supports natively.
 #'
 #' @param n_combinations Integer. The number of feature combinations to sample. If \code{NULL},
 #' the exact method is used and all combinations are considered. The maximum number of
@@ -132,7 +132,7 @@ shapr <- function(x,
   feature_list_model <- get_model_specs(model)
 
   processed_list <- preprocess_data(x = x,
-                             feature_list = feature_list_model)
+                                    feature_list = feature_list_model)
 
   x_train <- processed_list$x_dt
   updated_feature_list <- processed_list$updated_feature_list

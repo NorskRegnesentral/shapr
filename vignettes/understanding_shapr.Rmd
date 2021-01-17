@@ -558,24 +558,30 @@ plot(explanation_categorical, plot_phi0 = FALSE, index_x_test = c(1, 6))
 
 Any continuous response regression model or binary classification model of these model classes, can be explained with 
 the package directly as exemplified above.
-Moreover, essentially any feature dependent prediction model can be explained by the package by specifying three simple 
-additional functions to the class your model belongs to. 
-The first class function is `model_type`, taking the model object as input, and outputting a character indicating 
-whether the model is a (continuous response) `"regression"` model, or a (binary) `"classification"` model. 
-The second function is `predict_model`, taking the model and data (as a `matrix` or `data.frame/data.table`) as input and 
-outputting the corresponding prediction as a numeric vector. 
-The third is a `get_model_specs`, taking the model as input an outputting a list with the following elements: *labels* 
-(vector with the feature names to compute Shapley values for), *classes* (a named vector with the labels as names and the 
-class type as elements), *factor_levels* (a named list with the labels as names and vectors with the factor levels as
-elements (NULL if the feature is not a factor)), *model_type* (the output from `model_type`) and *specs_type* (the 
-string "model"). The `get_model_specs` function is primarely used to check that the format of the data passed to
-`shapr` and `explain` have the correct format. This is highly recommended, those checks can be disabled by setting
-using the function `shapr::get_model_specs`, which sets all components in *labels, classes* and *factor_levels* to NA.
-Once these three class functions are created, one can explain predictions from this model class as before.
+Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two (or one) 
+simple additional functions to the class your model belongs to. 
+
+*Note: The below procedure for specifying custom models was changed in shapr v0.2.0*
+The first class function is `predict_model`, taking the model and data (as a `matrix` or `data.frame/data.table`) as 
+input and outputting the corresponding prediction as a numeric vector. 
+The second (optional, but highly recommended) class function is `get_model_specs`, taking the model as input and 
+outputting a list with the following elements: 
+*labels*(vector with the feature names to compute Shapley values for), 
+*classes* (a named vector with the labels as names and the class type as elements), 
+*factor_levels* (a named list with the labels as names and vectors with the factor levels as elements (NULL if the 
+feature is not a factor)). 
+The `get_model_specs` function is used to check that the format of the data passed to `shapr` and `explain` have the 
+correct format. 
+It is highly recommended to do such checks in order to ensure correct usage of `shapr` and `explain`. 
+If, for some reason, such checking is not desirable, one does not have to provide the `get_model_specs` function class.
+This will, however, throw a warning that all feature consistency checking towards the model is disabled.
+
+Once the above class functions are created, one can explain predictions from this model class as before.
 These functions **can** be made general enough to handle all supported model types of that class, or they can be made
-minimal and simple to allow explanation of only the specific version of the model class you have at hand. 
-Below we exemplify both full feature versions of these functions and minimal versions for the `gbm` model class 
-from the pacakge `gbm` package, fitted to the same Boston data set as used above.
+minimal, possibly only allowing explanation of the specific version of the model class at hand. 
+Below we exemplify both a set of full support versions of these functions and a minimal version also skipping the
+`get_model_specs` function. 
+We do this for the `gbm` model class from the pacakge `gbm` package, fitted to the same Boston data set as used above.
 
 
 ```{r}
@@ -606,7 +612,6 @@ predict_model.gbm <- function(x, newdata) {
     "classification",
     "regression"
   )
-
   if (model_type == "classification") {
 
     predict(x, as.data.frame(newdata), type = "response",n.trees = x$n.trees)
@@ -623,10 +628,9 @@ get_model_specs.gbm <- function(model){
 
   feature_list$classes <- attr(model$Terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[feature_list$classes=="factor"] <- NA
+  feature_list$factor_levels[feature_list$classes=="factor"] <- NA # the model object doesn't contain factor levels info
 
   return(feature_list)
-
 }
 
 # Prepare the data for explanation
@@ -639,20 +643,25 @@ plot(explanation)
 
 #### Minimal version of the three required model functions        ####
 #### Note: Working only for this exact version of the model class ####
-# 
+#### Avoiding to define get_model_specs skips all feature         ####
+#### consistency checking between your data and model             ####
 
 predict_model.gbm <- function(x, newdata) {
     predict(x, as.data.frame(newdata),n.trees = x$n.trees)
 }
 
-get_model_specs.gbm <- function(model){
-  return(list(labels = NA, classes = NA,factor_levels = NA))
-} # ALternatively, set get_model_specs.gbm <- shapr::get_model_specs.default
+rm(get_model_specs.gbm)
 
+# Prepare the data for explanation
+set.seed(123)
+explainer <- shapr(x_train, model)
+p0 <- mean(xy_train[,y_var])
+explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
+# Plot results
+plot(explanation)
 
 
 ```
-Note that this explains a different (but similar) model than the above xgboost model!
 
 
 

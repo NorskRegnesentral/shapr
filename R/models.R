@@ -293,7 +293,8 @@ get_model_specs <- function(model) {
 
   model_class <- NULL # Due to NSE notes in R CMD check
 
-  required_model_objects <- c("predict_model","get_model_specs")
+  required_model_objects <- "predict_model"
+  recommended_model_objects <- "get_model_specs"
 
   # Start with all checking for native models
   model_info <- get_supported_models()[model_class==class(model)[1],]
@@ -301,7 +302,7 @@ get_model_specs <- function(model) {
 
   if(nrow(model_info)==0){
     stop(
-      "You passed a nonsupported model to shapr. See ?shapr::shapr or the vignette\n",
+      "You passed a model to shapr which is not natively supported See ?shapr::shapr or the vignette\n",
       "for more information on how to run shapr with custom models."
     )
   }
@@ -318,6 +319,18 @@ get_model_specs <- function(model) {
     )
   }
 
+  if(!(all(recommended_model_objects %in% available_model_objects)))
+  {
+    this_object_missing <- which(!(recommended_model_objects %in% available_model_objects))
+    message(
+      paste0(
+        paste0(recommended_model_objects[this_object_missing],collapse = ", ")," is not available for your custom ",
+        "model. All feature consistency checking between model and data is disabled.\n",
+        "See ?shapr::shapr or the vignette for more information."
+      )
+    )
+  }
+
 
   UseMethod("get_model_specs", model)
 }
@@ -325,9 +338,8 @@ get_model_specs <- function(model) {
 #' @rdname get_model_specs
 get_model_specs.default <- function(model) {
 
-  # For custom models
-  stop("You should never get here. May I delete this function?")
-  return(feature_list)
+  # For custom models where there is no
+  return(list(labels = NA, classes = NA,factor_levels = NA))
 }
 
 

@@ -22,7 +22,6 @@ Named list that contains the following items:
   \item{exact}{Boolean. Equals \code{TRUE} if \code{n_combinations = NULL} or
   \code{n_combinations < 2^ncol(x)}, otherwise \code{FALSE}.}
   \item{n_features}{Positive integer. The number of columns in \code{x}}
-  \item{model_type}{Character. Returned value after calling \code{model_type(model)}}
   \item{S}{Binary matrix. The number of rows equals the number of unique combinations, and
   the number of columns equals the total number of features. I.e. let's say we have a case with
   three features. In that case we have \code{2^3 = 8} unique combinations. If the j-th

@@ -21,7 +21,6 @@ get_data_specs <- function(x){
   feature_list$labels <- names(x)
   feature_list$classes <- unlist(lapply(x,class))
   feature_list$factor_levels = lapply(x,levels)
-  feature_list$specs_type <- "data"
 
   # Defining all integer values as numeric
   feature_list$classes[feature_list$classes=="integer"] <- "numeric"
@@ -49,6 +48,7 @@ preprocess_data = function(x,feature_list){
   x_dt <- data.table::as.data.table(x)
 
   feature_list_data <- get_data_specs(x_dt)
+  feature_list_data$specs_type <- "data"
 
   updater <- check_features(feature_list,feature_list_data,
                             use_1_as_truth = T)
@@ -92,6 +92,7 @@ preprocess_data = function(x,feature_list){
 #' check_features(model_features,data_features)
 check_features <- function(f_list_1,f_list_2,
                            use_1_as_truth=T){
+
 
   if(is.null(f_list_1$specs_type)){
     f_list_1$specs_type <- "model"
