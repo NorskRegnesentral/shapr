@@ -298,7 +298,7 @@ get_model_specs <- function(model) {
 
   # Start with all checking for native models
   model_info <- get_supported_models()[model_class==class(model)[1],]
-  available_model_objects <- names(which(unlist(model_info[,2:4])))
+  available_model_objects <- names(which(unlist(model_info[,2:3])))
 
   if(nrow(model_info)==0){
     stop(
@@ -451,20 +451,16 @@ get_supported_models <- function(){
 
   DT_get_model_specs[,rn:=substring(as.character(rn),first=17)]
   DT_get_model_specs[,get_model_specs:=1]
-  DT_get_model_specs[,native_get_model_specs:=ifelse(from=="shapr",1,0)]
   DT_get_model_specs[,c("visible","from","generic","isS4"):=NULL]
 
   DT_predict_model <- data.table::as.data.table(attr(methods(predict_model),"info"),keep.rownames = T)
   DT_predict_model[,rn:=substring(as.character(rn),first=15)]
   DT_predict_model[,predict_model:=1]
-  DT_predict_model[,native_predict_model:=ifelse(from=="shapr",1,0)]
   DT_predict_model[,c("visible","from","generic","isS4"):=NULL]
 
   DT <- merge(DT_get_model_specs,DT_predict_model,by="rn",all=T,allow.cartesian=T,nomatch=0)
   DT[,(colnames(DT)[-1]):=lapply(.SD,data.table::nafill,fill=0),.SDcols=colnames(DT)[-1]]
-  DT[,native:=as.logical(native_get_model_specs*native_predict_model)]
-  DT[,c("native_get_model_specs","native_predict_model"):=NULL]
-  DT[,(colnames(DT)[2:4]):=lapply(.SD,as.logical),.SDcols=colnames(DT)[2:4]]
+  DT[,(colnames(DT)[2:3]):=lapply(.SD,as.logical),.SDcols=colnames(DT)[2:3]]
   data.table::setnames(DT,"rn","model_class")
   return(DT)
 }
