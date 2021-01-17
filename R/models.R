@@ -224,7 +224,7 @@ model_checker.ranger <- function(x) {
   }
 
   # Additional check
-  if (is.null(model$forest)) {
+  if (is.null(x$forest)) {
     stop(
       paste0(
         "\nIt looks like the model was fitted without saving the forest. Please set\n",
@@ -234,7 +234,7 @@ model_checker.ranger <- function(x) {
   }
 
 
-  return(ret)
+  return(NULL)
 }
 
 #' @rdname model_checker

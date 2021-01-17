@@ -9,8 +9,8 @@ shapr(x, model, n_combinations = NULL)
 \arguments{
 \item{x}{Numeric matrix or data.frame. Contains the data used for training the model.}
 
-\item{model}{The model whose predictions we want to explain. See \code{\link{predict_model}}
-for more information about which models \code{shapr} supports natively.}
+\item{model}{The model whose predictions we want to explain. Run \code{shapr:::get_supported_models()[]}
+for a table of which models \code{shapr} supports natively.}
 
 \item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
 the exact method is used and all combinations are considered. The maximum number of

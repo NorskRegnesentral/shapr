@@ -310,6 +310,8 @@ test_that("Testing data input to explain in explanation.R", {
   # Get explainer objects
   all_explainers <- lapply(list(model1, model2, model3), shapr, x = x_train)
 
+  shapr(x_train,model3)
+
   # Test data
   all_test_data <- list(
     x_test,

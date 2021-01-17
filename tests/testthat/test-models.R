@@ -60,10 +60,6 @@ test_that("Test predict_model (regression)", {
       predict_model(l[[i]], x_test), predict_model(l[[i]], as.matrix(x_test))
     )
 
-    # Check model type
-    expect_equal(
-      model_type(l[[i]]), "regression"
-    )
   }
 })
 
@@ -139,10 +135,6 @@ test_that("Test predict_model (binary classification)", {
       predict_model(l[[i]], x_test), predict_model(l[[i]], as.matrix(x_test))
     )
 
-    # Check model type
-    expect_equal(
-      model_type(l[[i]]), "classification"
-    )
   }
 
   # Errors
@@ -165,18 +157,14 @@ test_that("Test predict_model (binary classification)", {
 
     # Input equals data.frame
     expect_error(
-      predict_model(l[[i]], x_test)
+      get_model_specs(l[[i]])
     )
 
     # Input equals matrix
     expect_error(
-      predict_model(l[[i]], as.matrix(x_test))
+      get_model_specs(l[[i]])
     )
 
-    # Check model type
-    expect_error(
-      model_type(l[[i]])
-    )
   }
 })
 
@@ -228,18 +216,14 @@ test_that("Test predict_model (multi-classification)", {
 
     # Input equals data.frame
     expect_error(
-      predict_model(l[[i]], x_test)
+      get_model_specs(l[[i]], x_test)
     )
 
     # Input equals matrix
     expect_error(
-      predict_model(l[[i]], as.matrix(x_test))
+      get_model_specs(l[[i]], as.matrix(x_test))
     )
 
-    # Check model type
-    expect_error(
-      model_type(l[[i]])
-    )
   }
 })
 
@@ -438,7 +422,7 @@ test_that("Test get_supported_models", {
   org_models <- get_supported_models()
 
   # Simulate adding to .GlobalEnv
-  globalfun_1 <- list(model_type.test = function() 1)
+  globalfun_1 <- list(get_model_specs.test = function() 1)
   attach(globalfun_1)
 
   new_models <- get_supported_models()
