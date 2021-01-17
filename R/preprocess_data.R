@@ -160,6 +160,16 @@ check_features <- function(f_list_1,f_list_2,
     stop("One or more features is missing a name.")
   }
 
+  # Order classes and factor levels in the same way as labels
+  # for f_list_1
+  order_1 <- match(f_list_1$labels,names(f_list_1$classes))
+  f_list_1$classes <- f_list_1$classes[order_1]
+  f_list_1$factor_levels <- f_list_1$factor_levels[order_1]
+
+  # for f_list_2
+  order_2 <- match(f_list_2$labels,names(f_list_2$classes))
+  f_list_2$classes <- f_list_2$classes[order_2]
+  f_list_2$factor_levels <- f_list_2$factor_levels[order_2]
 
   #### Reorder f_List_2 to match f_list_1, also removing anything in the former which is not in the latter ####
   f_list_2_reordering = match(f_list_1$labels,f_list_2$labels)
