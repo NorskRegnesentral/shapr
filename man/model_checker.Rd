@@ -31,10 +31,9 @@ model_checker(x)
 Error or NULL
 }
 \description{
-The function checks whether the model given by \code{x} is
-supported. If \code{x} is
-not a supported model the function will return an error message, otherwise it return NULL (meaning all types of
-models with this class is supported)
+The function checks whether the model given by \code{x} is supported.
+If \code{x} is not a supported model the function will return an error message, otherwise it return NULL
+(meaning all types of models with this class is supported)
 }
 \details{
 See \code{\link{predict_model}} for more information about

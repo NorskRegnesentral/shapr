@@ -11,8 +11,8 @@ Further work
 #  changed from the previous version of shapr (include version number!)
 #- set get_model_specs.default to only NA-s
 #3.2 Add possibility in check_features that only the factor levels from a model might be unknown (NA) and that the factor levels form the training data is used.
-3.5. Update documentation, examples etc.
-  - Go through the main functions and see if their documentation and examples works out
+#3.5. Update documentation, examples etc.
+#  - Go through the main functions and see if their documentation and examples works out
 4. Restructure tests so that testing is carried out in the main functions -- and remove unused ones.
 5. Get testing of custom models to work, then add tests for passing custom model that stops or gives messages when calling BOTH get_data_specs and get_model_specs, and check_features
   If it don't get it to work, make set of maual tests that checks stuff for custom models in a single script outside of testthat. Note that you should at least have some custom
@@ -25,3 +25,5 @@ DIV:
 
 #- do classes need to be named in feature_list? Check if it is used or it is just the order. sort them correctly according to what is being used.
 #- delete the native thing from get_supported_models
+- traindata -> train_data and testdata -> test_data for consistency
+- update NEWS with edits

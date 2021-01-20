@@ -7,9 +7,11 @@
 shapr(x, model, n_combinations = NULL)
 }
 \arguments{
-\item{x}{Numeric matrix or data.frame. Contains the data used for training the model.}
+\item{x}{Numeric matrix or data.frame/data.table. Contains the data used to estimate the (conditional)
+distributions for the features needed to properly estimate the conditional expectations in the Shapley formula.}
 
-\item{model}{The model whose predictions we want to explain. Run \code{shapr:::get_supported_models()[]}
+\item{model}{The model whose predictions we want to explain. Run
+\code{\link[shapr:get_supported_models]{shapr:::get_supported_models()}}
 for a table of which models \code{shapr} supports natively.}
 
 \item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
@@ -30,6 +32,7 @@ Named list that contains the following items:
   \item{W}{Second item}
   \item{X}{data.table. Returned object from \code{\link{feature_combinations}}}
   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
+  \item{feature_list}{List. The \code{updated_feature_list} output from \code{\link[shapr:preprocess_data]{preprocess_data}}}
 }
 
 In addition to the items above \code{model} and \code{n_combinations} is also present in the returned object.

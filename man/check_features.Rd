@@ -16,15 +16,13 @@ equated and they need to contain exactly the same elements. Set to TRUE when com
 when comparing two data sets.}
 }
 \value{
-List. The \code{f_list_1} is returned as inserted if there all check are carried out, otherwise
-\code{f_list_2} is used.
+List. The \code{f_list_1} is returned as inserted if there all check are carried out. If some info is
+missing from \code{f_list_1}, the function continues consistency checking using \code{f_list_2} and returns that.
 }
 \description{
 Checks that two extracted feature lists have exactly the same properites
 }
 \examples{
-
-
 # Load example data
 data("Boston", package = "MASS")
 # Split data into test- and training data
@@ -35,5 +33,8 @@ model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 
 model_features <- get_model_specs(model)
 check_features(model_features,data_features)
+}
+\author{
+Martin Jullum
 }
 \keyword{internal}

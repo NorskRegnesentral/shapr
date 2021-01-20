@@ -10,7 +10,7 @@ update_data(data, updater)
 \item{data}{data.table. Data that ought to be updated.}
 
 \item{updater}{List. The object should be the output from
-\code{\link[shapr:check_features]{check_features()}}.}
+\code{\link[shapr:check_features]{check_features}}.}
 }
 \value{
 NULL.
@@ -19,5 +19,21 @@ NULL.
 \code{data} is updated, i.e. unused columns and factor levels are removed as described in
 \code{updater}. This is done by reference, i.e. updates the object being passed to data even if nothing is
 returned by the function itself.
+}
+\examples{
+# Load example data
+data("Boston", package = "MASS")
+# Split data into test- and training data
+x_train <- data.table::as.data.table(head(Boston))
+x_train[,rad:=as.factor(rad)]
+data_features <- get_data_specs(x_train)
+model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+
+model_features <- get_model_specs(model)
+updater <- check_features(model_features,data_features)
+update_data(x_train,updater)
+}
+\author{
+Martin Jullum
 }
 \keyword{internal}

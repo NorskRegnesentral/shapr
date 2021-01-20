@@ -1,9 +1,22 @@
-#' Fetches feature labels from a given model object
+#' Fetches feature information from a given data set
 #'
 #' @param x matrix, data.frame or data.table The data to extract feature information from.
 #'
-#' @keywords internal
+#' @details This function is used to extract the feature information to be checked against the corresponding
+#' information extracted from the model and other data sets. The function is called from
+#' \code{\link[shapr:preprocess_data]{preprocess_data}}
+#' and \code{\link[shapr:make_dummies]{make_dummies}}
 #'
+#' @return A list with the following elements:
+#' \describe{
+#'   \item{labels}{character vector with the feature names to compute Shapley values for}
+#'   \item{classes}{a named character vector with the labels as names and the class type as elements}
+#'   \item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
+#'   (NULL if the feature is not a factor)}
+#' }
+#' @author Martin Jullum
+#'
+#' @keywords internal
 #' @export
 #'
 #' @examples
@@ -32,14 +45,31 @@ get_data_specs <- function(x){
 #'
 #' @param x matrix, data.frame or data.table. The data to check input for and update
 #' according to the specification in \code{feature_list}.
-#' @param feature_list List. Output from running \code{get_data_specs} or \code{get_model_specs}
+#' @param feature_list List. Output from running \code{\link[shapr:get_data_specs]{get_data_specs}} or
+#' \code{\link[shapr:get_model_specs]{get_model_specs}}
 #'
-#' @return Checked and updated data \code{x} in data.table format.
+#' @details This function takes care of all preprocessing and checking of the provided data in \code{x} against
+#' the feature_list which is typically the output from \code{\link[shapr:get_model_specs]{get_model_specs}}
+#'
+#' @return List with two named elements: \code{x_dt}: Checked and updated data \code{x} in data.table format, and
+#' \code{update_feature_list} the output from \code{\link[shapr:check_features]{check_features}}
+#'
+#' @author Martin Jullum
 #'
 #' @keywords internal
-#'
 #' @export
 #'
+#' @examples
+#' # Load example data
+#' data("Boston", package = "MASS")
+#' # Split data into test- and training data
+#' x_train <- data.table::as.data.table(head(Boston))
+#' x_train[,rad:=as.factor(rad)]
+#' data_features <- get_data_specs(x_train)
+#' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+#'
+#' model_features <- get_model_specs(model)
+#' preprocess_data(x_train,model_features)
 preprocess_data = function(x,feature_list){
   if(all(is.null(colnames(x)))){
     stop(paste0("The data is missing column names"))
@@ -70,16 +100,15 @@ preprocess_data = function(x,feature_list){
 #' equated and they need to contain exactly the same elements. Set to TRUE when comparing a model and data, and FALSE
 #' when comparing two data sets.
 #'
-#' @return List. The \code{f_list_1} is returned as inserted if there all check are carried out, otherwise
-#' \code{f_list_2} is used.
+#' @return List. The \code{f_list_1} is returned as inserted if there all check are carried out. If some info is
+#' missing from \code{f_list_1}, the function continues consistency checking using \code{f_list_2} and returns that.
+#'
+#' @author Martin Jullum
 #'
 #' @keywords internal
-#'
 #' @export
 #'
 #' @examples
-#'
-#'
 #' # Load example data
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
@@ -229,11 +258,28 @@ check_features <- function(f_list_1,f_list_2,
 #'
 #' @param data data.table. Data that ought to be updated.
 #' @param updater List. The object should be the output from
-#' \code{\link[shapr:check_features]{check_features()}}.
+#' \code{\link[shapr:check_features]{check_features}}.
 #'
 #'
 #' @return NULL.
+#'
+#' @author Martin Jullum
+#'
 #' @keywords internal
+#' @export
+#'
+#' @examples
+#' # Load example data
+#' data("Boston", package = "MASS")
+#' # Split data into test- and training data
+#' x_train <- data.table::as.data.table(head(Boston))
+#' x_train[,rad:=as.factor(rad)]
+#' data_features <- get_data_specs(x_train)
+#' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+#'
+#' model_features <- get_model_specs(model)
+#' updater <- check_features(model_features,data_features)
+#' update_data(x_train,updater)
 update_data = function(data,updater){
   # Operates on data by reference, so no copying of data here
 

@@ -158,11 +158,11 @@ such as the mean of the predictions in the training data are also reasonable.
 Explain the output of machine learning models with more accurately estimated Shapley values
 }
 \details{
-The most important thing to notice is that \code{shapr} has implemented three different
+The most important thing to notice is that \code{shapr} has implemented four different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"} and \code{"copula"}.
+\code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
 
-In addition to this the user will also have the option of combining the three approaches.
+In addition to this the user will also have the option of combining the four approaches.
 E.g. if you're in a situation where you have trained a model the consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
 the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
@@ -211,5 +211,5 @@ print(explain1$dt)
 plot(explain1)
 }
 \author{
-Camilla Lingjaerde, Nikolai Sellereite
+Camilla Lingjaerde, Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier
 }

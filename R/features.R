@@ -187,9 +187,9 @@ helper_feature <- function(m, feature_sample) {
 #' \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
 #' one-hot encoded variables.}
 #' \item{traindata_new}{Original traindata with correct column ordering and factor levels. To be passed to
-#' \code{shapr()}.}
+#' \code{\link[shapr:shapr]{shapr}.}}
 #' \item{testdata_new}{Original testdata with correct column ordering and factor levels. To be passed to
-#' \code{explain()}.}
+#' \code{\link[shapr:explain]{explain}.}}
 #' }
 #'
 #' @export
@@ -232,14 +232,14 @@ make_dummies <- function(traindata, testdata) {
 
   updater <- check_features(feature_list_train,feature_list_test,F)
 
-  # Reorderes factor levels so that they match
+  # Reorderes factor levels so that they match each other
   update_data(train_dt,updater)
   update_data(test_dt,updater)
 
   feature_list <- updater
 
   # Extracts the components that the were used before. Consider cleaning up this.
-  factor_features <- feature_list$labels[updater$classes=="factor"] # check which features are factors
+  factor_features <- feature_list$labels[updater$classes=="factor"]
 
   if(length(factor_features)>0){
     factor_list <- feature_list$factor_levels[factor_features]
@@ -272,16 +272,17 @@ make_dummies <- function(traindata, testdata) {
 
 }
 
-#' Make dummy variables - this is an internal function intended only to be used in
+#' Apply dummy variables - this is an internal function intended only to be used in
 #' predict_model.xgb.Booster()
 #'
-#' @param feature_list List. Output of \code{make_dummies$feature_list}.
+#' @param feature_list List. The \code{feature_list} object in the output object after running
+#' \code{\link[shapr:make_dummies]{make_dummies}}
 #'
 #' @param testdata data.table or data.frame. New data that has the same
-#' feature names, types, and levels as \code{obj$data}.
+#' feature names, types, and levels as \code{feature_list}.
 #'
-#' @return A data.frame containing all of the factors in \code{testdata} as
-#' one-hot encoded variables.
+#' @return A data.table with all features, but where the factors in \code{testdata} as
+#' one-hot encoded variables as specified in feature_list
 #'
 #' @author Annabelle Redelmeier, Martin Jullum
 #'

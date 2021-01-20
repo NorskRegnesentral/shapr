@@ -10,12 +10,33 @@ preprocess_data(x, feature_list)
 \item{x}{matrix, data.frame or data.table. The data to check input for and update
 according to the specification in \code{feature_list}.}
 
-\item{feature_list}{List. Output from running \code{get_data_specs} or \code{get_model_specs}}
+\item{feature_list}{List. Output from running \code{\link[shapr:get_data_specs]{get_data_specs}} or
+\code{\link[shapr:get_model_specs]{get_model_specs}}}
 }
 \value{
-Checked and updated data \code{x} in data.table format.
+List with two named elements: \code{x_dt}: Checked and updated data \code{x} in data.table format, and
+\code{update_feature_list} the output from \code{\link[shapr:check_features]{check_features}}
 }
 \description{
 Process (check and update) data according to specified feature list
+}
+\details{
+This function takes care of all preprocessing and checking of the provided data in \code{x} against
+the feature_list which is typically the output from \code{\link[shapr:get_model_specs]{get_model_specs}}
+}
+\examples{
+# Load example data
+data("Boston", package = "MASS")
+# Split data into test- and training data
+x_train <- data.table::as.data.table(head(Boston))
+x_train[,rad:=as.factor(rad)]
+data_features <- get_data_specs(x_train)
+model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+
+model_features <- get_model_specs(model)
+preprocess_data(x_train,model_features)
+}
+\author{
+Martin Jullum
 }
 \keyword{internal}

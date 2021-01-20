@@ -26,8 +26,9 @@
 #' If you have a binary classification model we'll always return the probability prediction
 #' for a single class.
 #'
-#' For more details on how to use a custom model see the package vignette: \cr
-#' \code{vignette("understanding_shapr", package = "shapr")}
+#' For more details on how to explain other types of models (i.e. custom models), see the package vignette: \cr
+#' From R: \code{vignette("understanding_shapr", package = "shapr")}  \cr
+#' Web: \url{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models}
 #'
 #' @return Numeric
 #'
@@ -141,10 +142,9 @@ predict_model.gam <- function(x, newdata) {
 
 #' Check that the type of model is supported by the explanation method
 #'
-#' @description The function checks whether the model given by \code{x} is
-#' supported. If \code{x} is
-#' not a supported model the function will return an error message, otherwise it return NULL (meaning all types of
-#' models with this class is supported)
+#' @description The function checks whether the model given by \code{x} is supported.
+#' If \code{x} is not a supported model the function will return an error message, otherwise it return NULL
+#' (meaning all types of models with this class is supported)
 #'
 #' @inheritParams predict_model
 #'
@@ -272,12 +272,24 @@ model_checker.xgb.Booster <- function(x) {
   return(NULL)
 }
 
-#' Fetches feature labels from a given model object
+#' Fetches feature information from a given model object
 #'
 #' @inheritParams predict_model
 #'
-#' @keywords internal
+#' @details This function is used to extract the feature information to be checked against data passed to \code{shapr}
+#' and \code{explain}. The function is called from \code{preprocess_data}.
 #'
+#' @return A list with the following elements:
+#' \describe{
+#'   \item{labels}{character vector with the feature names to compute Shapley values for}
+#'   \item{classes}{a named character vector with the labels as names and the class type as elements}
+#'   \item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
+#'   (NULL if the feature is not a factor)}
+#' }
+#'
+#' @author Martin Jullum
+#'
+#' @keywords internal
 #' @export
 #'
 #' @examples
@@ -289,7 +301,7 @@ model_checker.xgb.Booster <- function(x) {
 #' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
 #' get_model_specs(model)
-get_model_specs <- function(model) {
+get_model_specs <- function(x) {
 
   model_class <- NULL # Due to NSE notes in R CMD check
 
@@ -297,7 +309,7 @@ get_model_specs <- function(model) {
   recommended_model_objects <- "get_model_specs"
 
   # Start with all checking for native models
-  model_info <- get_supported_models()[model_class==class(model)[1],]
+  model_info <- get_supported_models()[model_class==class(x)[1],]
   available_model_objects <- names(which(unlist(model_info[,2:3])))
 
   if(nrow(model_info)==0){
@@ -332,11 +344,11 @@ get_model_specs <- function(model) {
   }
 
 
-  UseMethod("get_model_specs", model)
+  UseMethod("get_model_specs", x)
 }
 
 #' @rdname get_model_specs
-get_model_specs.default <- function(model) {
+get_model_specs.default <- function(x) {
 
   # For custom models where there is no
   return(list(labels = NA, classes = NA,factor_levels = NA))
@@ -345,68 +357,68 @@ get_model_specs.default <- function(model) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.lm <- function(model) {
+get_model_specs.lm <- function(x) {
 
-  model_checker(model) # Checking if the model is supported
+  model_checker(x) # Checking if the model is supported
 
   feature_list = list()
-  feature_list$labels <- labels(model$terms)
+  feature_list$labels <- labels(x$terms)
   m <- length(feature_list$labels)
 
-  feature_list$classes <- attr(model$terms,"dataClasses")[-1]
+  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(model$xlevels)] <- model$xlevels
+  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
   return(feature_list)
 }
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.glm <- function(model) {
+get_model_specs.glm <- function(x) {
 
-  model_checker(model) # Checking if the model is supported
+  model_checker(x) # Checking if the model is supported
 
   feature_list = list()
-  feature_list$labels <- labels(model$terms)
+  feature_list$labels <- labels(x$terms)
   m <- length(feature_list$labels)
 
-  feature_list$classes <- attr(model$terms,"dataClasses")[-1]
+  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(model$xlevels)] <- model$xlevels
+  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
   return(feature_list)
 }
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.gam <- function(model) {
+get_model_specs.gam <- function(x) {
 
-  model_checker(model) # Checking if the model is supported
+  model_checker(x) # Checking if the model is supported
 
   feature_list = list()
-  feature_list$labels <- labels(model$terms)
+  feature_list$labels <- labels(x$terms)
   m <- length(feature_list$labels)
 
-  feature_list$classes <- attr(model$terms,"dataClasses")[-1]
+  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(model$xlevels)] <- model$xlevels
+  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
   return(feature_list)
 }
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.ranger <- function(model) {
+get_model_specs.ranger <- function(x) {
 
-  model_checker(model) # Checking if the model is supported
+  model_checker(x) # Checking if the model is supported
 
   feature_list = list()
-  feature_list$labels <- unique_features(model$forest$independent.variable.names)
+  feature_list$labels <- unique_features(x$forest$independent.variable.names)
   m <- length(feature_list$labels)
 
   feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(model$forest$covariate.levels)] <- model$forest$covariate.levels # Only provided when respect.unordered.factors == T
+  feature_list$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels # Only provided when respect.unordered.factors == T
 
   return(feature_list)
 }
@@ -414,19 +426,19 @@ get_model_specs.ranger <- function(model) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.xgb.Booster <- function(model) {
+get_model_specs.xgb.Booster <- function(x) {
 
-  model_checker(model) # Checking if the model is supported
+  model_checker(x) # Checking if the model is supported
 
   feature_list = list()
-  if (is.null(model[["feature_list"]])) {
-    feature_list$labels <- model$feature_names
+  if (is.null(x[["feature_list"]])) {
+    feature_list$labels <- x$feature_names
     m <- length(feature_list$labels)
 
     feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
     feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   } else {
-    feature_list <- model$feature_list
+    feature_list <- x$feature_list
   }
 
   return(feature_list)

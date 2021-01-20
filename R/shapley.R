@@ -50,9 +50,11 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 
 #' Create an explainer object with Shapley weights for test data.
 #'
-#' @param x Numeric matrix or data.frame. Contains the data used for training the model.
+#' @param x Numeric matrix or data.frame/data.table. Contains the data used to estimate the (conditional)
+#' distributions for the features needed to properly estimate the conditional expectations in the Shapley formula.
 #'
-#' @param model The model whose predictions we want to explain. Run \code{shapr:::get_supported_models()[]}
+#' @param model The model whose predictions we want to explain. Run
+#' \code{\link[shapr:get_supported_models]{shapr:::get_supported_models()}}
 #' for a table of which models \code{shapr} supports natively.
 #'
 #' @param n_combinations Integer. The number of feature combinations to sample. If \code{NULL},
@@ -73,6 +75,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'   \item{W}{Second item}
 #'   \item{X}{data.table. Returned object from \code{\link{feature_combinations}}}
 #'   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
+#'   \item{feature_list}{List. The \code{updated_feature_list} output from \code{\link[shapr:preprocess_data]{preprocess_data}}}
 #' }
 #'
 #' In addition to the items above \code{model} and \code{n_combinations} is also present in the returned object.

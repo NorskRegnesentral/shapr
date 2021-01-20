@@ -8,24 +8,40 @@
 \alias{get_model_specs.gam}
 \alias{get_model_specs.ranger}
 \alias{get_model_specs.xgb.Booster}
-\title{Fetches feature labels from a given model object}
+\title{Fetches feature information from a given model object}
 \usage{
-get_model_specs(model)
+get_model_specs(x)
 
-\method{get_model_specs}{default}(model)
+\method{get_model_specs}{default}(x)
 
-\method{get_model_specs}{lm}(model)
+\method{get_model_specs}{lm}(x)
 
-\method{get_model_specs}{glm}(model)
+\method{get_model_specs}{glm}(x)
 
-\method{get_model_specs}{gam}(model)
+\method{get_model_specs}{gam}(x)
 
-\method{get_model_specs}{ranger}(model)
+\method{get_model_specs}{ranger}(x)
 
-\method{get_model_specs}{xgb.Booster}(model)
+\method{get_model_specs}{xgb.Booster}(x)
+}
+\arguments{
+\item{x}{Model object for the model to be explained.}
+}
+\value{
+A list with the following elements:
+\describe{
+  \item{labels}{character vector with the feature names to compute Shapley values for}
+  \item{classes}{a named character vector with the labels as names and the class type as elements}
+  \item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
+  (NULL if the feature is not a factor)}
+}
 }
 \description{
-Fetches feature labels from a given model object
+Fetches feature information from a given model object
+}
+\details{
+This function is used to extract the feature information to be checked against data passed to \code{shapr}
+and \code{explain}. The function is called from \code{preprocess_data}.
 }
 \examples{
  # Load example data
@@ -36,5 +52,8 @@ x_train[,rad:=as.factor(rad)]
 model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 
 get_model_specs(model)
+}
+\author{
+Martin Jullum
 }
 \keyword{internal}
