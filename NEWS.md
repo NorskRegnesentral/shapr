@@ -1,4 +1,8 @@
 
+# shapr 0.1.4
+
+* Using all packages under Suggests conditionally in tests
+
 # shapr 0.1.3
 
 * Fix installation error on Solaris

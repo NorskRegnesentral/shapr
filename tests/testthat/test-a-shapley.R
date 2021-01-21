@@ -48,8 +48,8 @@ test_that("Testing data input to shapr in shapley.R", {
       )
     )
 
-    if(requireNamespace("xgboost")){
-      l[[length(l)+1]] <-   xgboost::xgboost(
+    if (requireNamespace("xgboost")) {
+      l[[length(l) + 1]] <-   xgboost::xgboost(
         data = x_train,
         label = tail(Boston[, "medv"], -6),
         nround = 3,
@@ -57,8 +57,8 @@ test_that("Testing data input to shapr in shapley.R", {
       )
     }
 
-    if(requireNamespace("ranger")){
-      l[[length(l)+1]] <-     ranger::ranger(
+    if (requireNamespace("ranger")) {
+      l[[length(l) + 1]] <-     ranger::ranger(
         formula = formula,
         data = xy_train_full_df,
         num.trees = 50

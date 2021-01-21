@@ -156,8 +156,8 @@ test_that("Testing data input to explain in explanation.R", {
       )
     )
 
-    if(requireNamespace("xgboost")){
-      l[[length(l)+1]] <- xgboost::xgboost(
+    if (requireNamespace("xgboost")) {
+      l[[length(l) + 1]] <- xgboost::xgboost(
         data = x_train,
         label = y_train,
         nround = 5,
@@ -165,8 +165,8 @@ test_that("Testing data input to explain in explanation.R", {
       )
     }
 
-    if(requireNamespace("ranger")){
-      l[[length(l)+1]] <- ranger::ranger(
+    if (requireNamespace("ranger")) {
+      l[[length(l) + 1]] <- ranger::ranger(
         formula = formula,
         data = xy_train_full_df,
         num.trees = 50
