@@ -18,14 +18,14 @@ test_that("Test predict_model (regression)", {
       stats::lm(str_formula, data = train_df),
       stats::glm(str_formula, data = train_df))
 
-    if(requireNamespace("ranger")){
-      l[[length(l)+1]] <- ranger::ranger(str_formula, data = train_df)
+    if (requireNamespace("ranger", quietly = TRUE)) {
+      l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df)
     }
-    if(requireNamespace("xgboost")){
-      l[[length(l)+1]] <- xgboost::xgboost(data = as.matrix(x_train), label = y_train, nrounds = 3, verbose = FALSE)
+    if (requireNamespace("xgboost", quietly = TRUE)) {
+      l[[length(l) + 1]] <- xgboost::xgboost(data = as.matrix(x_train), label = y_train, nrounds = 3, verbose = FALSE)
     }
-    if(requireNamespace("mgcv")){
-      l[[length(l)+1]] <- mgcv::gam(as.formula(str_formula), data = train_df)
+    if (requireNamespace("mgcv", quietly = TRUE)) {
+      l[[length(l) + 1]] <- mgcv::gam(as.formula(str_formula), data = train_df)
     }
 
     # Tests
@@ -93,14 +93,14 @@ test_that("Test predict_model (binary classification)", {
   l <- list(
     suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")))
 
-  if(requireNamespace("mgcv")){
-    l[[length(l)+1]] <- suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial"))
+  if (requireNamespace("mgcv", quietly = TRUE)) {
+    l[[length(l) + 1]] <- suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial"))
   }
-  if(requireNamespace("ranger")){
-    l[[length(l)+1]] <- ranger::ranger(str_formula, data = train_df, probability = TRUE)
+  if (requireNamespace("ranger", quietly = TRUE)) {
+    l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df, probability = TRUE)
   }
-  if(requireNamespace("xgboost")){
-    l[[length(l)+1]] <- xgboost::xgboost(
+  if (requireNamespace("xgboost", quietly = TRUE)) {
+    l[[length(l) + 1]] <- xgboost::xgboost(
       data = as.matrix(x_train),
       label = as.integer(y_train) - 1,
       nrounds = 2,
@@ -160,11 +160,11 @@ test_that("Test predict_model (binary classification)", {
   # Errors
   l <- list()
 
-  if(requireNamespace("ranger")){
-    l[[length(l)+1]] <- ranger::ranger(str_formula,data = train_df)
+  if (requireNamespace("ranger", quietly = TRUE)) {
+    l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df)
   }
-  if(requireNamespace("xgboost")){
-    l[[length(l)+1]] <- xgboost::xgboost(
+  if (requireNamespace("xgboost", quietly = TRUE)) {
+    l[[length(l) + 1]] <- xgboost::xgboost(
       data = as.matrix(x_train),
       label = as.integer(y_train) - 1,
       nrounds = 2,
@@ -207,19 +207,19 @@ test_that("Test predict_model (multi-classification)", {
   # List of models
   l <- list()
 
-  if(requireNamespace("ranger")){
-    l[[length(l)+1]] <-     ranger::ranger(
+  if (requireNamespace("ranger", quietly = TRUE)) {
+    l[[length(l) + 1]] <- ranger::ranger(
       str_formula,
       data = train_df
     )
-    l[[length(l)+1]] <-     ranger::ranger(
+    l[[length(l) + 1]] <- ranger::ranger(
       str_formula,
       data = train_df,
       probability = TRUE
     )
   }
-  if(requireNamespace("xgboost")){
-    l[[length(l)+1]] <-     xgboost::xgboost(
+  if (requireNamespace("xgboost", quietly = TRUE)) {
+    l[[length(l) + 1]] <- xgboost::xgboost(
       as.matrix(x_train),
       label = as.integer(y_train) - 1,
       nrounds = 2,
@@ -227,7 +227,7 @@ test_that("Test predict_model (multi-classification)", {
       objective = "multi:softprob",
       num_class = 3
     )
-    l[[length(l)+1]] <-     xgboost::xgboost(
+    l[[length(l) + 1]] <-     xgboost::xgboost(
       as.matrix(x_train),
       label = as.integer(y_train) - 1,
       nrounds = 2,
@@ -276,14 +276,19 @@ test_that("Test features (regression)", {
       stats::glm(str_formula, data = train_df)
     )
 
-    if(requireNamespace("ranger")){
-      l[[length(l)+1]] <- ranger::ranger(str_formula, data = train_df)
+    if (requireNamespace("ranger", quietly = TRUE)) {
+      l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df)
     }
-    if(requireNamespace("xgboost")){
-      l[[length(l)+1]] <- xgboost::xgboost(data = as.matrix(x_train[, x_var]), label = y_train, nrounds = 3, verbose = FALSE)
+    if (requireNamespace("xgboost", quietly = TRUE)) {
+      l[[length(l) + 1]] <- xgboost::xgboost(
+        data = as.matrix(x_train[, x_var]),
+        label = y_train,
+        nrounds = 3,
+        verbose = FALSE
+        )
     }
-    if(requireNamespace("mgcv")){
-      l[[length(l)+1]] <- mgcv::gam(as.formula(str_formula), data = train_df)
+    if (requireNamespace("mgcv", quietly = TRUE)) {
+      l[[length(l) + 1]] <- mgcv::gam(as.formula(str_formula), data = train_df)
     }
 
     for (i in seq_along(l)) {
@@ -312,14 +317,14 @@ test_that("Test features (binary classification)", {
   l <- list(
     suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")))
 
-  if(requireNamespace("mgcv")){
-    l[[length(l)+1]] <- suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial"))
+  if (requireNamespace("mgcv", quietly = TRUE)) {
+    l[[length(l) + 1]] <- suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial"))
   }
-  if(requireNamespace("ranger")){
-    l[[length(l)+1]] <- ranger::ranger(str_formula, data = train_df, probability = TRUE)
+  if (requireNamespace("ranger", quietly = TRUE)) {
+    l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df, probability = TRUE)
   }
-  if(requireNamespace("xgboost")){
-    l[[length(l)+1]] <- xgboost::xgboost(
+  if (requireNamespace("xgboost", quietly = TRUE)) {
+    l[[length(l) + 1]] <- xgboost::xgboost(
       data = as.matrix(x_train[, x_var]),
       label = as.integer(y_train) - 1,
       nrounds = 2,
@@ -351,7 +356,7 @@ test_that("Test missing colnames", {
     x_test_nonames <- x_test
     colnames(x_test_nonames) <- NULL
 
-    if (requireNamespace("xgboost")) {
+    if (requireNamespace("xgboost", quietly = TRUE)) {
 
       model <- xgboost::xgboost(
         data = x_train, label = y_train, nrounds = 3, verbose = FALSE

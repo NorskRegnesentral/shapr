@@ -1,7 +1,7 @@
 
 # shapr 0.1.4
 
-* Using all packages under Suggests conditionally in tests
+* Patch to fulfill CRAN policy of using packages under Suggests conditionally (in tests and examples)
 
 # shapr 0.1.3
 

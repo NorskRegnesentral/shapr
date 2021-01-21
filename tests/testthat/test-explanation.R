@@ -164,7 +164,7 @@ test_that("Testing data input to explain in explanation.R", {
       )
     )
     all_explainers <- list(
-      shapr(x_train,ll[[1]])
+      shapr(x_train, ll[[1]])
       )
 
     # Expect silent for explainer 1, using correct, reordered and full data set, then identical results
@@ -186,7 +186,7 @@ test_that("Testing data input to explain in explanation.R", {
 
     # xgboost
 
-    if (requireNamespace("xgboost")) {
+    if (requireNamespace("xgboost", quietly = TRUE)) {
       ll[[length(ll) + 1]] <- xgboost::xgboost(
         data = x_train,
         label = y_train,
@@ -194,7 +194,7 @@ test_that("Testing data input to explain in explanation.R", {
         verbose = FALSE
       )
 
-      all_explainers[[length(all_explainers) + 1]] <- shapr(x_train,ll[[length(ll)]])
+      all_explainers[[length(all_explainers) + 1]] <- shapr(x_train, ll[[length(ll)]])
 
       # Expect silent for explainer 2, using correct, reordered and bigger data set, then identical results
       l <- list()
@@ -217,14 +217,14 @@ test_that("Testing data input to explain in explanation.R", {
 
 
 
-    if (requireNamespace("ranger")) {
+    if (requireNamespace("ranger", quietly = TRUE)) {
       ll[[length(ll) + 1]] <- ranger::ranger(
         formula = formula,
         data = xy_train_full_df,
         num.trees = 50
       )
 
-      all_explainers[[length(all_explainers) + 1]] <- shapr(x_train,ll[[length(ll)]])
+      all_explainers[[length(all_explainers) + 1]] <- shapr(x_train, ll[[length(ll)]])
 
       l <- list()
       for (i in seq_along(all_test_data)) {

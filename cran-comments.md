@@ -3,7 +3,7 @@
 
 * Got an email fran CRAN that shapr gave ERROR due to ERROR in package under Suggests (xgboost). Even though the xgboost issue was fixed in time, shapr was taken off CRAN due to packages under Suggests not being used conditionally in tests and examples. This patch fixes this issue using
 ```
-if(requireNamespace("pkgname"))
+if(requireNamespace("pkgname", quietly = TRUE))
 ```
 and checked to run fine without Suggested packages through
 ```
@@ -17,7 +17,11 @@ devtools::check(vignettes = FALSE, env_vars=c(`_R_CHECK_DEPENDS_ONLY_` = "true")
 * GitHub Actions (ubuntu-16.04): R 4.0, 3.6, 3.5
 * win-builder (x86_64-w64-mingw32): R 4.0, 3.6, R-devel
 * local Ubuntu 18.04: R 3.6
-* local Windows 10: R 4.0.2, R-devel (2020-08-04 r78971)
+* local Windows 10: R 4.0
+* R-hub (windows-x86_64-devel): R-devel
+* R-hub (ubuntu-gcc-release): R-release
+* R-hub (fedora-gcc-devel): R-devel
+* R-hub (macos-highsierra-release-cran): R-release
 
 ## R CMD check results
 

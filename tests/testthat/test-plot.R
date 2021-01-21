@@ -2,7 +2,7 @@ context("test-plot.R")
 
 test_that("Test plot.shapr", {
 
-  if (requireNamespace("ggplot2")) {
+  if (requireNamespace("ggplot2", quietly = TRUE)) {
 
     # Example -----------
     x <- matrix(c(4.98, 9.14, 4.03, 2.94, 5.33,
