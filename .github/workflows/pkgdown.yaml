@@ -1,9 +1,8 @@
 on:
   push:
     branches:
-      - master
-      - cranversion
-
+    - master
+    - cranversion
 name: pkgdown
 
 jobs:
