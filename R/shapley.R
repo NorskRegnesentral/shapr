@@ -141,7 +141,8 @@ shapr <- function(x,
   updated_feature_list <- processed_list$updated_feature_list
 
   explainer$n_features <- ncol(x_train)
-  explainer$p <- predict_model(model, head(x_train))
+
+  tmp <- predict_model(model, head(x_train)) # Checking that the prediction function works
 
 
   # Get all combinations ----------------
@@ -174,7 +175,6 @@ shapr <- function(x,
   explainer$X <- dt_combinations
   explainer$x_train <- x_train
   explainer$x <- NULL
-  explainer$p <- NULL
   explainer$feature_list <- updated_feature_list
 
   attr(explainer, "class") <- c("explainer", "list")

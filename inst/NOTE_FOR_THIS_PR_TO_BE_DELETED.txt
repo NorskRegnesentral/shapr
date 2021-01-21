@@ -25,5 +25,4 @@ DIV:
 
 #- do classes need to be named in feature_list? Check if it is used or it is just the order. sort them correctly according to what is being used.
 #- delete the native thing from get_supported_models
-- traindata -> train_data and testdata -> test_data for consistency
 - update NEWS with edits
