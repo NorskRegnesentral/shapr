@@ -1,5 +1,3 @@
-library(shapr)
-
 context("test-features.R")
 
 test_that("Test feature_combinations", {

@@ -41,6 +41,7 @@ See \code{\link{predict_model}} for more information about
 what type of models \code{shapr} currently support.
 }
 \examples{
+if (requireNamespace("MASS", quietly = TRUE)) {
 # Load example data
 data("Boston", package = "MASS")
 # Split data into test- and training data
@@ -50,5 +51,6 @@ model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 
 # Writing out the defined model type of the object
 model_type(x = model)
+}
 }
 \keyword{internal}

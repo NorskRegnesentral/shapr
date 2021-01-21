@@ -1,75 +1,82 @@
-library(shapr)
-library(testthat)
-
 context("test-models.R")
 
 test_that("Test predict_model (regression)", {
 
   # Data -----------
-  data("Boston", package = "MASS")
-  x_var <- c("lstat", "rm", "dis", "indus")
-  y_var <- "medv"
-  x_train <- tail(Boston[, x_var], -6)
-  y_train <- tail(Boston[, y_var], -6)
-  x_test <- head(Boston[, x_var], 6)
-  str_formula <- "y_train ~ lstat + rm + dis + indus"
-  train_df <- cbind(y_train, x_train)
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    y_var <- "medv"
+    x_train <- tail(Boston[, x_var], -6)
+    y_train <- tail(Boston[, y_var], -6)
+    x_test <- head(Boston[, x_var], 6)
+    str_formula <- "y_train ~ lstat + rm + dis + indus"
+    train_df <- cbind(y_train, x_train)
 
-  # List of models
-  l <- list(
-    stats::lm(str_formula, data = train_df),
-    stats::glm(str_formula, data = train_df),
-    ranger::ranger(str_formula, data = train_df),
-    xgboost::xgboost(data = as.matrix(x_train), label = y_train, nrounds = 3, verbose = FALSE),
-    mgcv::gam(as.formula(str_formula), data = train_df)
-  )
+    # List of models
+    l <- list(
+      stats::lm(str_formula, data = train_df),
+      stats::glm(str_formula, data = train_df))
 
-  # Tests
-  for (i in seq_along(l)) {
+    if (requireNamespace("ranger", quietly = TRUE)) {
+      l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df)
+    }
+    if (requireNamespace("xgboost", quietly = TRUE)) {
+      l[[length(l) + 1]] <- xgboost::xgboost(data = as.matrix(x_train), label = y_train, nrounds = 3, verbose = FALSE)
+    }
+    if (requireNamespace("mgcv", quietly = TRUE)) {
+      l[[length(l) + 1]] <- mgcv::gam(as.formula(str_formula), data = train_df)
+    }
 
-    # Input equals data.frame
-    expect_true(
-      is.vector(predict_model(l[[i]], x_test))
-    )
-    expect_true(
-      is.atomic(predict_model(l[[i]], x_test))
-    )
-    expect_true(
-      is.double(predict_model(l[[i]], x_test))
-    )
-    expect_true(
-      length(predict_model(l[[i]], x_test)) == nrow(x_test)
-    )
+    # Tests
+    for (i in seq_along(l)) {
 
-    # Input equals matrix
-    expect_true(
-      is.double(predict_model(l[[i]], as.matrix(x_test)))
-    )
-    expect_true(
-      is.atomic(predict_model(l[[i]], as.matrix(x_test)))
-    )
-    expect_true(
-      is.vector(predict_model(l[[i]], as.matrix(x_test)))
-    )
-    expect_true(
-      length(predict_model(l[[i]], as.matrix(x_test))) == nrow(x_test)
-    )
+      # Input equals data.frame
+      expect_true(
+        is.vector(predict_model(l[[i]], x_test))
+      )
+      expect_true(
+        is.atomic(predict_model(l[[i]], x_test))
+      )
+      expect_true(
+        is.double(predict_model(l[[i]], x_test))
+      )
+      expect_true(
+        length(predict_model(l[[i]], x_test)) == nrow(x_test)
+      )
 
-    # Check that output is equal
-    expect_equal(
-      predict_model(l[[i]], x_test), predict_model(l[[i]], as.matrix(x_test))
-    )
+      # Input equals matrix
+      expect_true(
+        is.double(predict_model(l[[i]], as.matrix(x_test)))
+      )
+      expect_true(
+        is.atomic(predict_model(l[[i]], as.matrix(x_test)))
+      )
+      expect_true(
+        is.vector(predict_model(l[[i]], as.matrix(x_test)))
+      )
+      expect_true(
+        length(predict_model(l[[i]], as.matrix(x_test))) == nrow(x_test)
+      )
 
-    # Check model type
-    expect_equal(
-      model_type(l[[i]]), "regression"
-    )
+      # Check that output is equal
+      expect_equal(
+        predict_model(l[[i]], x_test), predict_model(l[[i]], as.matrix(x_test))
+      )
+
+      # Check model type
+      expect_equal(
+        model_type(l[[i]]), "regression"
+      )
+    }
+
   }
 })
 
 test_that("Test predict_model (binary classification)", {
 
   # Data -----------
+
   data("iris", package = "datasets")
   x_var <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
   y_var <- "Species"
@@ -84,17 +91,23 @@ test_that("Test predict_model (binary classification)", {
 
   # List of models
   l <- list(
-    suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")),
-    suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial")),
-    ranger::ranger(str_formula, data = train_df, probability = TRUE),
-    xgboost::xgboost(
+    suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")))
+
+  if (requireNamespace("mgcv", quietly = TRUE)) {
+    l[[length(l) + 1]] <- suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial"))
+  }
+  if (requireNamespace("ranger", quietly = TRUE)) {
+    l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df, probability = TRUE)
+  }
+  if (requireNamespace("xgboost", quietly = TRUE)) {
+    l[[length(l) + 1]] <- xgboost::xgboost(
       data = as.matrix(x_train),
       label = as.integer(y_train) - 1,
       nrounds = 2,
       verbose = FALSE,
       objective = "binary:logistic"
     )
-  )
+  }
 
   # Tests
   for (i in seq_along(l)) {
@@ -145,19 +158,19 @@ test_that("Test predict_model (binary classification)", {
   }
 
   # Errors
-  l <- list(
-    ranger::ranger(
-      str_formula,
-      data = train_df
-    ),
-    xgboost::xgboost(
+  l <- list()
+
+  if (requireNamespace("ranger", quietly = TRUE)) {
+    l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df)
+  }
+  if (requireNamespace("xgboost", quietly = TRUE)) {
+    l[[length(l) + 1]] <- xgboost::xgboost(
       data = as.matrix(x_train),
       label = as.integer(y_train) - 1,
       nrounds = 2,
       verbose = FALSE,
-      objective = "reg:logistic"
-    )
-  )
+      objective = "reg:logistic")
+  }
 
   # Tests
   for (i in seq_along(l)) {
@@ -192,25 +205,29 @@ test_that("Test predict_model (multi-classification)", {
   train_df <- cbind(y_train, x_train)
 
   # List of models
-  l <- list(
-    ranger::ranger(
+  l <- list()
+
+  if (requireNamespace("ranger", quietly = TRUE)) {
+    l[[length(l) + 1]] <- ranger::ranger(
       str_formula,
       data = train_df
-    ),
-    ranger::ranger(
+    )
+    l[[length(l) + 1]] <- ranger::ranger(
       str_formula,
       data = train_df,
       probability = TRUE
-    ),
-    xgboost::xgboost(
+    )
+  }
+  if (requireNamespace("xgboost", quietly = TRUE)) {
+    l[[length(l) + 1]] <- xgboost::xgboost(
       as.matrix(x_train),
       label = as.integer(y_train) - 1,
       nrounds = 2,
       verbose = FALSE,
       objective = "multi:softprob",
       num_class = 3
-    ),
-    xgboost::xgboost(
+    )
+    l[[length(l) + 1]] <-     xgboost::xgboost(
       as.matrix(x_train),
       label = as.integer(y_train) - 1,
       nrounds = 2,
@@ -218,7 +235,8 @@ test_that("Test predict_model (multi-classification)", {
       objective = "multi:softmax",
       num_class = 3
     )
-  )
+  }
+
 
   # Tests
   for (i in seq_along(l)) {
@@ -243,25 +261,40 @@ test_that("Test predict_model (multi-classification)", {
 test_that("Test features (regression)", {
 
   # Data -----------
-  data("Boston", package = "MASS")
-  x_var <- c("lstat", "rm", "dis", "indus")
-  y_var <- "medv"
-  x_train <- tail(Boston, -6)
-  y_train <- tail(Boston[, y_var], -6)
-  str_formula <- "y_train ~ lstat + rm + dis + indus"
-  train_df <- cbind(y_train, x_train)
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    y_var <- "medv"
+    x_train <- tail(Boston, -6)
+    y_train <- tail(Boston[, y_var], -6)
+    str_formula <- "y_train ~ lstat + rm + dis + indus"
+    train_df <- cbind(y_train, x_train)
 
-  # List of models
-  l <- list(
-    stats::lm(str_formula, data = train_df),
-    stats::glm(str_formula, data = train_df),
-    ranger::ranger(str_formula, data = train_df),
-    xgboost::xgboost(data = as.matrix(x_train[, x_var]), label = y_train, nrounds = 3, verbose = FALSE),
-    mgcv::gam(as.formula(str_formula), data = train_df)
-  )
+    # List of models
+    l <- list(
+      stats::lm(str_formula, data = train_df),
+      stats::glm(str_formula, data = train_df)
+    )
 
-  for (i in seq_along(l)) {
-    expect_equal(features(l[[i]], cnms = colnames(train_df)), x_var)
+    if (requireNamespace("ranger", quietly = TRUE)) {
+      l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df)
+    }
+    if (requireNamespace("xgboost", quietly = TRUE)) {
+      l[[length(l) + 1]] <- xgboost::xgboost(
+        data = as.matrix(x_train[, x_var]),
+        label = y_train,
+        nrounds = 3,
+        verbose = FALSE
+        )
+    }
+    if (requireNamespace("mgcv", quietly = TRUE)) {
+      l[[length(l) + 1]] <- mgcv::gam(as.formula(str_formula), data = train_df)
+    }
+
+    for (i in seq_along(l)) {
+      expect_equal(features(l[[i]], cnms = colnames(train_df)), x_var)
+    }
+
   }
 
 })
@@ -282,17 +315,23 @@ test_that("Test features (binary classification)", {
 
   # List of models
   l <- list(
-    suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")),
-    suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial")),
-    ranger::ranger(str_formula, data = train_df, probability = TRUE),
-    xgboost::xgboost(
+    suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")))
+
+  if (requireNamespace("mgcv", quietly = TRUE)) {
+    l[[length(l) + 1]] <- suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial"))
+  }
+  if (requireNamespace("ranger", quietly = TRUE)) {
+    l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df, probability = TRUE)
+  }
+  if (requireNamespace("xgboost", quietly = TRUE)) {
+    l[[length(l) + 1]] <- xgboost::xgboost(
       data = as.matrix(x_train[, x_var]),
       label = as.integer(y_train) - 1,
       nrounds = 2,
       verbose = FALSE,
       objective = "binary:logistic"
     )
-  )
+  }
 
   for (i in seq_along(l)) {
     expect_equal(features(l[[i]], cnms = colnames(train_df)), x_var)
@@ -304,44 +343,48 @@ test_that("Test features (binary classification)", {
 test_that("Test missing colnames", {
 
   # Data -----------
-  data("Boston", package = "MASS")
-  x_var <- c("lstat", "rm", "dis", "indus")
-  y_var <- "medv"
-  x_train <- as.matrix(tail(Boston[, x_var], -6))
-  y_train <- tail(Boston[, y_var], -6)
-  x_test <- as.matrix(head(Boston[, x_var]))
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    y_var <- "medv"
+    x_train <- as.matrix(tail(Boston[, x_var], -6))
+    y_train <- tail(Boston[, y_var], -6)
+    x_test <- as.matrix(head(Boston[, x_var]))
 
-  x_train_nonames <- x_train
-  colnames(x_train_nonames) <- NULL
-  x_test_nonames <- x_test
-  colnames(x_test_nonames) <- NULL
+    x_train_nonames <- x_train
+    colnames(x_train_nonames) <- NULL
+    x_test_nonames <- x_test
+    colnames(x_test_nonames) <- NULL
 
-  model <- xgboost::xgboost(
-    data = x_train, label = y_train, nrounds = 3, verbose = FALSE
-    )
-  model_nonames <- xgboost::xgboost(
-    data = x_train_nonames, label = y_train, nrounds = 3, verbose = FALSE
-  )
+    if (requireNamespace("xgboost", quietly = TRUE)) {
 
-  # missing colnames in model
-  expect_error(shapr(model_nonames, x_train))
+      model <- xgboost::xgboost(
+        data = x_train, label = y_train, nrounds = 3, verbose = FALSE
+      )
+      model_nonames <- xgboost::xgboost(
+        data = x_train_nonames, label = y_train, nrounds = 3, verbose = FALSE
+      )
 
-  # missing colnames in training data
-  expect_error(shapr(model, x_train_nonames))
+      # missing colnames in model
+      expect_error(shapr(model_nonames, x_train))
 
-  # missing colnames in both model and training data
-  expect_error(shapr(model_nonames, x_train_nonames))
+      # missing colnames in training data
+      expect_error(shapr(model, x_train_nonames))
 
-  # missing colnames in test data
-  explain <- shapr(x_train, model)
-  p <- mean(y_train)
-  expect_error(
-    explain(
-      x_test_nonames,
-      approach = "empirical",
-      explainer = explainer,
-      prediction_zero = p
-    )
-  )
+      # missing colnames in both model and training data
+      expect_error(shapr(model_nonames, x_train_nonames))
 
+      # missing colnames in test data
+      explain <- shapr(x_train, model)
+      p <- mean(y_train)
+      expect_error(
+        explain(
+          x_test_nonames,
+          approach = "empirical",
+          explainer = explainer,
+          prediction_zero = p
+        )
+      )
+    }
+  }
 })
