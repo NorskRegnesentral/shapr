@@ -146,37 +146,8 @@ test_that("Testing data input to explain in explanation.R", {
     xy_test_full_df_no_colnames <- xy_test_full_df
     colnames(xy_test_full_df_no_colnames) <- NULL
 
-    # Fitting models
     formula <- as.formula(paste0("medv ~ ", paste0(x_var, collapse = "+")))
-
-    l <- list(
-      lm(
-        formula = formula,
-        data = xy_train_full_df
-      )
-    )
-
-    if (requireNamespace("xgboost")) {
-      l[[length(l) + 1]] <- xgboost::xgboost(
-        data = x_train,
-        label = y_train,
-        nround = 5,
-        verbose = FALSE
-      )
-    }
-
-    if (requireNamespace("ranger")) {
-      l[[length(l) + 1]] <- ranger::ranger(
-        formula = formula,
-        data = xy_train_full_df,
-        num.trees = 50
-      )
-    }
-
     p0 <- mean(y_train)
-
-    # Get explainer objects
-    all_explainers <- lapply(l, shapr, x = x_train)
 
     # Test data
     all_test_data <- list(
@@ -184,6 +155,17 @@ test_that("Testing data input to explain in explanation.R", {
       x_test_reordered,
       x_test_full
     )
+
+    # Linear model
+    ll <- list(
+      lm(
+        formula = formula,
+        data = xy_train_full_df
+      )
+    )
+    all_explainers <- list(
+      shapr(x_train,ll[[1]])
+      )
 
     # Expect silent for explainer 1, using correct, reordered and full data set, then identical results
     l <- list()
@@ -202,39 +184,67 @@ test_that("Testing data input to explain in explanation.R", {
       expect_equal(l[[i - 1]], l[[i]])
     }
 
-    # Expect silent for explainer 2, using correct, reordered and bigger data set, then identical results
-    l <- list()
-    for (i in seq_along(all_test_data)) {
-      l[[i]] <- expect_silent(
-        explain(
-          all_test_data[[i]],
-          all_explainers[[2]],
-          approach = "empirical",
-          prediction_zero = p0,
-          n_samples = 1e2
-        )
+    # xgboost
+
+    if (requireNamespace("xgboost")) {
+      ll[[length(ll) + 1]] <- xgboost::xgboost(
+        data = x_train,
+        label = y_train,
+        nround = 5,
+        verbose = FALSE
       )
+
+      all_explainers[[length(all_explainers) + 1]] <- shapr(x_train,ll[[length(ll)]])
+
+      # Expect silent for explainer 2, using correct, reordered and bigger data set, then identical results
+      l <- list()
+      for (i in seq_along(all_test_data)) {
+        l[[i]] <- expect_silent(
+          explain(
+            all_test_data[[i]],
+            all_explainers[[length(all_explainers)]],
+            approach = "empirical",
+            prediction_zero = p0,
+            n_samples = 1e2
+          )
+        )
+      }
+      for (i in 2:length(l)) {
+        expect_equal(l[[i - 1]], l[[i]])
+      }
+
     }
-    for (i in 2:length(l)) {
-      expect_equal(l[[i - 1]], l[[i]])
+
+
+
+    if (requireNamespace("ranger")) {
+      ll[[length(ll) + 1]] <- ranger::ranger(
+        formula = formula,
+        data = xy_train_full_df,
+        num.trees = 50
+      )
+
+      all_explainers[[length(all_explainers) + 1]] <- shapr(x_train,ll[[length(ll)]])
+
+      l <- list()
+      for (i in seq_along(all_test_data)) {
+        l[[i]] <- expect_silent(
+          explain(
+            all_test_data[[i]],
+            all_explainers[[3]],
+            approach = "empirical",
+            prediction_zero = p0,
+            n_samples = 1e2
+          )
+        )
+      }
+      for (i in 2:length(l)) {
+        expect_equal(l[[i - 1]], l[[i]])
+      }
+
     }
 
     # Expect silent for explainer 3, using correct, reordered and bigger data set, then identical results
-    l <- list()
-    for (i in seq_along(all_test_data)) {
-      l[[i]] <- expect_silent(
-        explain(
-          all_test_data[[i]],
-          all_explainers[[3]],
-          approach = "empirical",
-          prediction_zero = p0,
-          n_samples = 1e2
-        )
-      )
-    }
-    for (i in 2:length(l)) {
-      expect_equal(l[[i - 1]], l[[i]])
-    }
 
     for (i in seq_along(all_explainers)) {
 
