@@ -43,6 +43,7 @@ model) and \code{n_combinations} is also present in the returned object.
 Create an explainer object with Shapley weights for test data.
 }
 \examples{
+if (requireNamespace("MASS", quietly = TRUE)) {
 # Load example data
 data("Boston", package = "MASS")
 df <- Boston
@@ -75,6 +76,7 @@ explainer <- shapr(df1, model, n_combinations = 1e3)
 
 print(nrow(explainer$X))
 # 16 (which equals 2^4)
+}
 }
 \author{
 Nikolai Sellereite

@@ -36,6 +36,7 @@
 #'
 #' @author Martin Jullum
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #'# Load example data
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
@@ -46,6 +47,7 @@
 #'
 #' # Predicting for a model with a standardized format
 #' predict_model(x = model, newdata = x_test)
+#' }
 predict_model <- function(x, newdata) {
   UseMethod("predict_model", x)
 }
@@ -158,6 +160,7 @@ predict_model.gam <- function(x, newdata) {
 #' @keywords internal
 #'
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' # Load example data
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
@@ -167,6 +170,7 @@ predict_model.gam <- function(x, newdata) {
 #'
 #' # Writing out the defined model type of the object
 #' model_type(x = model)
+#' }
 model_type <- function(x) {
   UseMethod("model_type")
 }
@@ -282,6 +286,7 @@ model_type.xgb.Booster <- function(x) {
 #' @keywords internal
 #'
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #'# Load example data
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
@@ -293,6 +298,7 @@ model_type.xgb.Booster <- function(x) {
 #'
 #' # Checking that features used by the model corresponds to cnms
 #' features(x = model, cnms = cnms, feature_labels = NULL)
+#' }
 features <- function(x, cnms, feature_labels = NULL) {
   UseMethod("features", x)
 }

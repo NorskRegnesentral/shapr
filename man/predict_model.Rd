@@ -61,6 +61,7 @@ For more details on how to use a custom model see the package vignette: \cr
 \code{vignette("understanding_shapr", package = "shapr")}
 }
 \examples{
+if (requireNamespace("MASS", quietly = TRUE)) {
 # Load example data
 data("Boston", package = "MASS")
 # Split data into test- and training data
@@ -71,6 +72,7 @@ model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 
 # Predicting for a model with a standardized format
 predict_model(x = model, newdata = x_test)
+}
 }
 \author{
 Martin Jullum

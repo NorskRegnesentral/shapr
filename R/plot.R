@@ -20,6 +20,7 @@
 #'
 #' @export
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' #' # Load example data
 #' data("Boston", package = "MASS")
 #'
@@ -43,8 +44,11 @@
 #'                       prediction_zero = p,
 #'                       n_samples = 1e2)
 #'
+#'if (requireNamespace("ggplot2", quietly = TRUE)) {
 #' # Plot the explantion (this function)
 #' plot(explanation)
+#' }
+#' }
 #'
 #' @author Martin Jullum
 plot.shapr <- function(x,

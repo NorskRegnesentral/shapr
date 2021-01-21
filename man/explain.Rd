@@ -139,6 +139,7 @@ if you condition on more than 5 features this can be done by simply passing
 when conditioning on \code{i} features.
 }
 \examples{
+if (requireNamespace("MASS", quietly = TRUE)) {
 # Load example data
 data("Boston", package = "MASS")
 
@@ -172,7 +173,10 @@ explain4 <- explain(x_test, explainer, approach = approach, prediction_zero = p,
 print(explain1$dt)
 
 # Plot the results
+if (requireNamespace("ggplot2", quietly = TRUE)) {
 plot(explain1)
+}
+}
 }
 \author{
 Camilla Lingjaerde, Nikolai Sellereite

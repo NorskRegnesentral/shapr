@@ -62,6 +62,7 @@
 #' @author Camilla Lingjaerde, Nikolai Sellereite
 #'
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' # Load example data
 #' data("Boston", package = "MASS")
 #'
@@ -95,7 +96,10 @@
 #' print(explain1$dt)
 #'
 #' # Plot the results
+#' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #' plot(explain1)
+#' }
+#' }
 explain <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Check input for x

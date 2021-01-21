@@ -35,6 +35,7 @@ features(x, cnms, feature_labels = NULL)
 Fetches feature labels from a given model object
 }
 \examples{
+if (requireNamespace("MASS", quietly = TRUE)) {
 # Load example data
 data("Boston", package = "MASS")
 # Split data into test- and training data
@@ -46,5 +47,6 @@ cnms <- c("lstat", "rm", "dis", "indus")
 
 # Checking that features used by the model corresponds to cnms
 features(x = model, cnms = cnms, feature_labels = NULL)
+}
 }
 \keyword{internal}

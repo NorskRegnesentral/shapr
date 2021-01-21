@@ -86,6 +86,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' @author Nikolai Sellereite
 #'
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' # Load example data
 #' data("Boston", package = "MASS")
 #' df <- Boston
@@ -118,6 +119,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'
 #' print(nrow(explainer$X))
 #' # 16 (which equals 2^4)
+#' }
 shapr <- function(x,
                   model,
                   n_combinations = NULL,
