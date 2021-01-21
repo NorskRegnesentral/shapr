@@ -165,7 +165,7 @@ test_that("Testing data input to explain in explanation.R", {
       )
     }
 
-    if(requireNamespace("mgcv")){
+    if(requireNamespace("ranger")){
       l[[length(l)+1]] <- ranger::ranger(
         formula = formula,
         data = xy_train_full_df,
