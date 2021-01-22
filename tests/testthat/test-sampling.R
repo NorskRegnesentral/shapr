@@ -146,130 +146,134 @@ test_that("test sample_copula", {
 
 test_that("test create_ctree", {
 
-  # Example 1-----------
-  m <- 10
-  n <- 40
-  n_samples <- 50
-  mu <- rep(1, m)
-  set.seed(123) # Ensuring consistency in every test
-  cov_mat <- cov(matrix(rnorm(n * m), n, m))
-  x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
+  if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
 
-  given_ind <- c(4, 7)
+    # Example 1-----------
+    m <- 10
+    n <- 40
+    n_samples <- 50
+    mu <- rep(1, m)
+    set.seed(123) # Ensuring consistency in every test
+    cov_mat <- cov(matrix(rnorm(n * m), n, m))
+    x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
 
-  mincriterion <- 0.95
-  minsplit <- 20
-  minbucket <- 7
-  sample <- TRUE
+    given_ind <- c(4, 7)
 
-  # build the tree
-  r <- create_ctree(given_ind = given_ind,
-                        x_train = x_train,
-                        mincriterion = mincriterion,
-                        minsplit = minsplit,
-                        minbucket = minbucket,
-                        use_partykit = "on_error")
+    mincriterion <- 0.95
+    minsplit <- 20
+    minbucket <- 7
+    sample <- TRUE
 
-  dependent_ind <- (1:dim(x_train)[2])[-given_ind]
-  # Test output format ------------------
-  expect_true(is.list(r))
-  expect_equal(length(r), 3)
-  expect_equal(class(r$tree)[1], "BinaryTree")
-  expect_equal(r$given_ind, given_ind)
-  expect_equal(r$dependent_ind, dependent_ind)
+    # build the tree
+    r <- create_ctree(given_ind = given_ind,
+                      x_train = x_train,
+                      mincriterion = mincriterion,
+                      minsplit = minsplit,
+                      minbucket = minbucket,
+                      use_partykit = "on_error")
 
-  df <- data.table(cbind(party::response(object = r$tree)$Y1,
-                         party::response(object = r$tree)$Y2,
-                         party::response(object = r$tree)$Y3,
-                         party::response(object = r$tree)$Y4,
-                         party::response(object = r$tree)$Y5,
-                         party::response(object = r$tree)$Y6,
-                         party::response(object = r$tree)$Y7,
-                         party::response(object = r$tree)$Y8))
+    dependent_ind <- (1:dim(x_train)[2])[-given_ind]
+    # Test output format ------------------
+    expect_true(is.list(r))
+    expect_equal(length(r), 3)
+    expect_equal(class(r$tree)[1], "BinaryTree")
+    expect_equal(r$given_ind, given_ind)
+    expect_equal(r$dependent_ind, dependent_ind)
 
-  names(df) <- paste0("V", dependent_ind)
-  expect_equal(df, x_train[, dependent_ind, with = FALSE])
+    df <- data.table(cbind(party::response(object = r$tree)$Y1,
+                           party::response(object = r$tree)$Y2,
+                           party::response(object = r$tree)$Y3,
+                           party::response(object = r$tree)$Y4,
+                           party::response(object = r$tree)$Y5,
+                           party::response(object = r$tree)$Y6,
+                           party::response(object = r$tree)$Y7,
+                           party::response(object = r$tree)$Y8))
 
-  # Example 2 -------------
-  # Check that conditioning upon all variables returns empty tree.
+    names(df) <- paste0("V", dependent_ind)
+    expect_equal(df, x_train[, dependent_ind, with = FALSE])
 
-  given_ind <- 1:10
-  mincriterion <- 0.95
-  minsplit <- 20
-  minbucket <- 7
-  sample <- TRUE
+    # Example 2 -------------
+    # Check that conditioning upon all variables returns empty tree.
 
-  # build the tree
-  r <- create_ctree(given_ind = given_ind,
-                        x_train = x_train,
-                        mincriterion = mincriterion,
-                        minsplit = minsplit,
-                        minbucket = minbucket,
-                        use_partykit = "on_error")
+    given_ind <- 1:10
+    mincriterion <- 0.95
+    minsplit <- 20
+    minbucket <- 7
+    sample <- TRUE
 
-  expect_equal(length(r), 3)
-  expect_true(is.list(r))
-  expect_true(is.list(r$tree))
-  expect_equal(r$given_ind, given_ind)
-  expect_equal(r$dependent_ind, (1:dim(x_train)[2])[-given_ind])
+    # build the tree
+    r <- create_ctree(given_ind = given_ind,
+                      x_train = x_train,
+                      mincriterion = mincriterion,
+                      minsplit = minsplit,
+                      minbucket = minbucket,
+                      use_partykit = "on_error")
+
+    expect_equal(length(r), 3)
+    expect_true(is.list(r))
+    expect_true(is.list(r$tree))
+    expect_equal(r$given_ind, given_ind)
+    expect_equal(r$dependent_ind, (1:dim(x_train)[2])[-given_ind])
+  }
 })
 
 test_that("test sample_ctree", {
 
-  # Example -----------
-  m <- 10
-  n <- 40
-  n_samples <- 50
-  mu <- rep(1, m)
-  set.seed(123) # Ensuring consistency in every test
-  cov_mat <- cov(matrix(rnorm(n * m), n, m))
-  x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
-  x_test <- MASS::mvrnorm(1, mu, cov_mat)
-  x_test_dt <- data.table::setDT(as.list(x_test))
+  if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
+    # Example -----------
+    m <- 10
+    n <- 40
+    n_samples <- 50
+    mu <- rep(1, m)
+    set.seed(123) # Ensuring consistency in every test
+    cov_mat <- cov(matrix(rnorm(n * m), n, m))
+    x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
+    x_test <- MASS::mvrnorm(1, mu, cov_mat)
+    x_test_dt <- data.table::setDT(as.list(x_test))
 
-  given_ind <- c(4, 7)
+    given_ind <- c(4, 7)
 
-  # build the tree
-  dependent_ind <- (1:dim(x_train)[2])[-given_ind]
+    # build the tree
+    dependent_ind <- (1:dim(x_train)[2])[-given_ind]
 
-  x <- x_train[, given_ind, with = FALSE]
-  y <- x_train[, dependent_ind, with = FALSE]
+    x <- x_train[, given_ind, with = FALSE]
+    y <- x_train[, dependent_ind, with = FALSE]
 
-  df <- data.table::data.table(cbind(y, x))
+    df <- data.table::data.table(cbind(y, x))
 
-  colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
+    colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
 
-  ynam <- paste0("Y", 1:ncol(y))
-  fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
+    ynam <- paste0("Y", 1:ncol(y))
+    fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
 
-  datact <- party::ctree(fmla, data = df, controls =
-                 party::ctree_control(minbucket = 7,
-                                      mincriterion = 0.95))
+    datact <- party::ctree(fmla, data = df, controls =
+                             party::ctree_control(minbucket = 7,
+                                                  mincriterion = 0.95))
 
 
-  tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
+    tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
 
-  # new
-  r <- sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt,
-                    x_train = x_train,
-                    p = length(x_test), sample = TRUE)
+    # new
+    r <- sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt,
+                      x_train = x_train,
+                      p = length(x_test), sample = TRUE)
 
-  # Test output format ------------------
-  expect_true(data.table::is.data.table(r))
-  expect_equal(ncol(r), m)
-  expect_equal(nrow(r), n_samples)
-  expect_equal(colnames(r), colnames(x_test_dt))
+    # Test output format ------------------
+    expect_true(data.table::is.data.table(r))
+    expect_equal(ncol(r), m)
+    expect_equal(nrow(r), n_samples)
+    expect_equal(colnames(r), colnames(x_test_dt))
 
-  # Example 2 -------------
-  # Check that conditioning upon all variables simply returns the test observation.
+    # Example 2 -------------
+    # Check that conditioning upon all variables simply returns the test observation.
 
-  given_ind <- 1:10
-  dependent_ind <- (1:dim(x_train)[2])[-given_ind]
-  datact <- list()
-  tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
-  r <- sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt,
-                    x_train = x_train,
-                    p = length(x_test), sample = TRUE)
-  expect_identical(r, data.table::as.data.table(x_test_dt))
-
+    given_ind <- 1:10
+    dependent_ind <- (1:dim(x_train)[2])[-given_ind]
+    datact <- list()
+    tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
+    r <- sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt,
+                      x_train = x_train,
+                      p = length(x_test), sample = TRUE)
+    expect_identical(r, data.table::as.data.table(x_test_dt))
+  }
 })

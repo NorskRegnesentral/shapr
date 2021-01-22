@@ -197,7 +197,7 @@ helper_feature <- function(m, feature_sample) {
 #' @author Annabelle Redelmeier, Martin Jullum
 #'
 #' @examples
-#'
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' data("Boston", package = "MASS")
 #' x_var <- c("lstat", "rm", "dis", "indus")
 #' y_var <- "medv"
@@ -210,7 +210,7 @@ helper_feature <- function(m, feature_sample) {
 #' x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 #'
 #' dummylist <- make_dummies(traindata = x_train, testdata = x_test)
-#'
+#'}
 make_dummies <- function(traindata, testdata) {
 
   if(all(is.null(colnames(traindata)))){

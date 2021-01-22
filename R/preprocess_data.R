@@ -21,11 +21,13 @@
 #'
 #' @examples
 #'# Load example data
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
 #' x_train <- data.table::as.data.table(head(Boston))
 #' x_train[,rad:=as.factor(rad)]
 #' get_data_specs(x_train)
+#' }
 get_data_specs <- function(x){
 
   x <- data.table::as.data.table(x)
@@ -61,6 +63,7 @@ get_data_specs <- function(x){
 #'
 #' @examples
 #' # Load example data
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
 #' x_train <- data.table::as.data.table(head(Boston))
@@ -70,6 +73,7 @@ get_data_specs <- function(x){
 #'
 #' model_features <- get_model_specs(model)
 #' preprocess_data(x_train,model_features)
+#' }
 preprocess_data = function(x,feature_list){
   if(all(is.null(colnames(x)))){
     stop(paste0("The data is missing column names"))
@@ -110,6 +114,7 @@ preprocess_data = function(x,feature_list){
 #'
 #' @examples
 #' # Load example data
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
 #' x_train <- data.table::as.data.table(head(Boston))
@@ -119,6 +124,7 @@ preprocess_data = function(x,feature_list){
 #'
 #' model_features <- get_model_specs(model)
 #' check_features(model_features,data_features)
+#' }
 check_features <- function(f_list_1,f_list_2,
                            use_1_as_truth=T){
 
@@ -270,6 +276,7 @@ check_features <- function(f_list_1,f_list_2,
 #'
 #' @examples
 #' # Load example data
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
 #' x_train <- data.table::as.data.table(head(Boston))
@@ -280,6 +287,7 @@ check_features <- function(f_list_1,f_list_2,
 #' model_features <- get_model_specs(model)
 #' updater <- check_features(model_features,data_features)
 #' update_data(x_train,updater)
+#' }
 update_data = function(data,updater){
   # Operates on data by reference, so no copying of data here
 

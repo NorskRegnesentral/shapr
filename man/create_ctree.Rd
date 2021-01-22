@@ -41,6 +41,7 @@ List with conditional inference tree and the variables conditioned/not condition
 Make all conditional inference trees
 }
 \examples{
+if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
 m <- 10
 n <- 40
 n_samples <- 50
@@ -55,7 +56,7 @@ sample <- TRUE
 create_ctree(given_ind = given_ind, x_train = x_train,
 mincriterion = mincriterion, minsplit = minsplit,
 minbucket = minbucket, use_partykit = "on_error")
-
+}
 }
 \author{
 Annabelle Redelmeier, Martin Jullum

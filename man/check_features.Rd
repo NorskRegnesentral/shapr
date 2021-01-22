@@ -24,6 +24,7 @@ Checks that two extracted feature lists have exactly the same properites
 }
 \examples{
 # Load example data
+if (requireNamespace("MASS", quietly = TRUE)) {
 data("Boston", package = "MASS")
 # Split data into test- and training data
 x_train <- data.table::as.data.table(head(Boston))
@@ -33,6 +34,7 @@ model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 
 model_features <- get_model_specs(model)
 check_features(model_features,data_features)
+}
 }
 \author{
 Martin Jullum

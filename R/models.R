@@ -169,6 +169,7 @@ predict_model.gam <- function(x, newdata) {
 #'
 #' # Checking the model object
 #' model_checker(x = model)
+#' }
 model_checker <- function(x) {
   UseMethod("model_checker", x)
 }

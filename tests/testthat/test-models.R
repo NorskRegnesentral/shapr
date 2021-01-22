@@ -58,7 +58,7 @@ test_that("Test predict_model (regression)", {
       expect_true(
         length(predict_model(l[[i]], as.matrix(x_test))) == nrow(x_test)
       )
-
+    }
   }
 })
 
@@ -66,175 +66,178 @@ test_that("Test predict_model (binary classification)", {
 
   # Data -----------
 
-  data("iris", package = "datasets")
-  x_var <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
-  y_var <- "Species"
-  iris$Species <- as.character(iris$Species)
-  iris <- iris[which(iris$Species != "virginica"), ]
-  iris$Species <- as.factor(iris$Species)
-  x_train <- tail(iris[, x_var], -6)
-  y_train <- tail(iris[, y_var], -6)
-  x_test <- head(iris[, x_var], 6)
-  str_formula <- "y_train ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width"
-  train_df <- cbind(y_train, x_train)
+  if (requireNamespace("datasets", quietly = TRUE)) {
+    data("iris", package = "datasets")
+    x_var <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
+    y_var <- "Species"
+    iris$Species <- as.character(iris$Species)
+    iris <- iris[which(iris$Species != "virginica"), ]
+    iris$Species <- as.factor(iris$Species)
+    x_train <- tail(iris[, x_var], -6)
+    y_train <- tail(iris[, y_var], -6)
+    x_test <- head(iris[, x_var], 6)
+    str_formula <- "y_train ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width"
+    train_df <- cbind(y_train, x_train)
 
-  # List of models
-  l <- list(
-    suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial")))
-
-  if (requireNamespace("mgcv", quietly = TRUE)) {
-    l[[length(l) + 1]] <- suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial"))
-  }
-  if (requireNamespace("ranger", quietly = TRUE)) {
-    l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df, probability = TRUE)
-  }
-  if (requireNamespace("xgboost", quietly = TRUE)) {
-    l[[length(l) + 1]] <- xgboost::xgboost(
-      data = as.matrix(x_train),
-      label = as.integer(y_train) - 1,
-      nrounds = 2,
-      verbose = FALSE,
-      objective = "binary:logistic",
-      eval_metric = "error"
-    )
-  }
-
-  # Tests
-  for (i in seq_along(l)) {
-
-    # Input equals data.frame
-    expect_true(
-      is.vector(predict_model(l[[i]], x_test))
-    )
-    expect_true(
-      is.atomic(predict_model(l[[i]], x_test))
-    )
-    expect_true(
-      is.double(predict_model(l[[i]], x_test))
-    )
-    expect_true(
-      length(predict_model(l[[i]], x_test)) == nrow(x_test)
-    )
-    expect_true(
-      all(data.table::between(predict_model(l[[i]], x_test), 0, 1))
+    # List of models
+    l <- list(
+      suppressWarnings(stats::glm(str_formula, data = train_df, family = "binomial"))
     )
 
-    # Input equals matrix
-    expect_true(
-      is.double(predict_model(l[[i]], as.matrix(x_test)))
-    )
-    expect_true(
-      is.atomic(predict_model(l[[i]], as.matrix(x_test)))
-    )
-    expect_true(
-      is.vector(predict_model(l[[i]], as.matrix(x_test)))
-    )
-    expect_true(
-      length(predict_model(l[[i]], as.matrix(x_test))) == nrow(x_test)
-    )
-    expect_true(
-      all(data.table::between(predict_model(l[[i]], as.matrix(x_test)), 0, 1))
-    )
+    if (requireNamespace("mgcv", quietly = TRUE)) {
+      l[[length(l) + 1]] <- suppressWarnings(mgcv::gam(as.formula(str_formula), data = train_df, family = "binomial"))
+    }
+    if (requireNamespace("ranger", quietly = TRUE)) {
+      l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df, probability = TRUE)
+    }
+    if (requireNamespace("xgboost", quietly = TRUE)) {
+      l[[length(l) + 1]] <- xgboost::xgboost(
+        data = as.matrix(x_train),
+        label = as.integer(y_train) - 1,
+        nrounds = 2,
+        verbose = FALSE,
+        objective = "binary:logistic",
+        eval_metric = "error"
+      )
+    }
 
-    # Check that output is equal
-    expect_equal(
-      predict_model(l[[i]], x_test), predict_model(l[[i]], as.matrix(x_test))
-    )
+    # Tests
+    for (i in seq_along(l)) {
 
-  }
+      # Input equals data.frame
+      expect_true(
+        is.vector(predict_model(l[[i]], x_test))
+      )
+      expect_true(
+        is.atomic(predict_model(l[[i]], x_test))
+      )
+      expect_true(
+        is.double(predict_model(l[[i]], x_test))
+      )
+      expect_true(
+        length(predict_model(l[[i]], x_test)) == nrow(x_test)
+      )
+      expect_true(
+        all(data.table::between(predict_model(l[[i]], x_test), 0, 1))
+      )
 
-  # Errors
-  l <- list()
+      # Input equals matrix
+      expect_true(
+        is.double(predict_model(l[[i]], as.matrix(x_test)))
+      )
+      expect_true(
+        is.atomic(predict_model(l[[i]], as.matrix(x_test)))
+      )
+      expect_true(
+        is.vector(predict_model(l[[i]], as.matrix(x_test)))
+      )
+      expect_true(
+        length(predict_model(l[[i]], as.matrix(x_test))) == nrow(x_test)
+      )
+      expect_true(
+        all(data.table::between(predict_model(l[[i]], as.matrix(x_test)), 0, 1))
+      )
 
-  if (requireNamespace("ranger", quietly = TRUE)) {
-    l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df)
-  }
-  if (requireNamespace("xgboost", quietly = TRUE)) {
-    l[[length(l) + 1]] <- xgboost::xgboost(
-      data = as.matrix(x_train),
-      label = as.integer(y_train) - 1,
-      nrounds = 2,
-      verbose = FALSE,
-      objective = "reg:logistic")
-  }
+      # Check that output is equal
+      expect_equal(
+        predict_model(l[[i]], x_test), predict_model(l[[i]], as.matrix(x_test))
+      )
 
-  # Tests
-  for (i in seq_along(l)) {
+    }
 
-    # Input equals data.frame
-    expect_error(
-      get_model_specs(l[[i]])
-    )
+    # Errors
+    l <- list()
 
-    # Input equals matrix
-    expect_error(
-      get_model_specs(l[[i]])
-    )
+    if (requireNamespace("ranger", quietly = TRUE)) {
+      l[[length(l) + 1]] <- ranger::ranger(str_formula, data = train_df)
+    }
+    if (requireNamespace("xgboost", quietly = TRUE)) {
+      l[[length(l) + 1]] <- xgboost::xgboost(
+        data = as.matrix(x_train),
+        label = as.integer(y_train) - 1,
+        nrounds = 2,
+        verbose = FALSE,
+        objective = "reg:logistic")
+    }
 
+    # Tests
+    for (i in seq_along(l)) {
+
+      # Input equals data.frame
+      expect_error(
+        get_model_specs(l[[i]])
+      )
+
+      # Input equals matrix
+      expect_error(
+        get_model_specs(l[[i]])
+      )
+    }
   }
 })
 
 test_that("Test predict_model (multi-classification)", {
 
   # Data -----------
-  data("iris", package = "datasets")
-  x_var <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
-  y_var <- "Species"
-  x_train <- tail(iris[, x_var], -6)
-  y_train <- tail(iris[, y_var], -6)
-  x_test <- head(iris[, x_var], 6)
-  str_formula <- "y_train ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width"
-  train_df <- cbind(y_train, x_train)
+  if (requireNamespace("datasets", quietly = TRUE)) {
+    data("iris", package = "datasets")
+    x_var <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
+    y_var <- "Species"
+    x_train <- tail(iris[, x_var], -6)
+    y_train <- tail(iris[, y_var], -6)
+    x_test <- head(iris[, x_var], 6)
+    str_formula <- "y_train ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width"
+    train_df <- cbind(y_train, x_train)
 
-  # List of models
-  l <- list()
+    # List of models
+    l <- list()
 
-  if (requireNamespace("ranger", quietly = TRUE)) {
-    l[[length(l) + 1]] <- ranger::ranger(
-      str_formula,
-      data = train_df
-    )
-    l[[length(l) + 1]] <- ranger::ranger(
-      str_formula,
-      data = train_df,
-      probability = TRUE
-    )
-  }
-  if (requireNamespace("xgboost", quietly = TRUE)) {
-    l[[length(l) + 1]] <- xgboost::xgboost(
-      as.matrix(x_train),
-      label = as.integer(y_train) - 1,
-      nrounds = 2,
-      verbose = FALSE,
-      objective = "multi:softprob",
-      eval_metric = "merror",
-      num_class = 3
-    )
-    l[[length(l) + 1]] <-     xgboost::xgboost(
-      as.matrix(x_train),
-      label = as.integer(y_train) - 1,
-      nrounds = 2,
-      verbose = FALSE,
-      objective = "multi:softmax",
-      eval_metric = "merror",
-      num_class = 3
-    )
-  }
+    if (requireNamespace("ranger", quietly = TRUE)) {
+      l[[length(l) + 1]] <- ranger::ranger(
+        str_formula,
+        data = train_df
+      )
+      l[[length(l) + 1]] <- ranger::ranger(
+        str_formula,
+        data = train_df,
+        probability = TRUE
+      )
+    }
+    if (requireNamespace("xgboost", quietly = TRUE)) {
+      l[[length(l) + 1]] <- xgboost::xgboost(
+        as.matrix(x_train),
+        label = as.integer(y_train) - 1,
+        nrounds = 2,
+        verbose = FALSE,
+        objective = "multi:softprob",
+        eval_metric = "merror",
+        num_class = 3
+      )
+      l[[length(l) + 1]] <-     xgboost::xgboost(
+        as.matrix(x_train),
+        label = as.integer(y_train) - 1,
+        nrounds = 2,
+        verbose = FALSE,
+        objective = "multi:softmax",
+        eval_metric = "merror",
+        num_class = 3
+      )
+    }
 
 
-  # Tests
-  for (i in seq_along(l)) {
+    # Tests
+    for (i in seq_along(l)) {
 
-    # Input equals data.frame
-    expect_error(
-      get_model_specs(l[[i]], x_test)
-    )
+      # Input equals data.frame
+      expect_error(
+        get_model_specs(l[[i]], x_test)
+      )
 
-    # Input equals matrix
-    expect_error(
-      get_model_specs(l[[i]], as.matrix(x_test))
-    )
-
+      # Input equals matrix
+      expect_error(
+        get_model_specs(l[[i]], as.matrix(x_test))
+      )
+    }
   }
 })
 
@@ -269,35 +272,46 @@ test_that("Test check_features + update_data", {
   l_silent <- list(
     stats::lm(formula_numeric, data = train_df),
     stats::glm(formula_numeric, data = train_df),
-    mgcv::gam(formula_numeric, data = train_df),
     stats::lm(formula_factor, data = train_df),
     stats::glm(formula_factor, data = train_df),
-    mgcv::gam(formula_factor, data = train_df),
-    xgboost::xgboost(data = dummylist$train_dummies, label = y_train,
-                     nrounds = 3, verbose = FALSE),
-
     stats::glm(formula_binary_numeric, data = train_df, family = "binomial"),
-    mgcv::gam(formula_binary_numeric, data = train_df, family = "binomial"),
-    stats::glm(formula_binary_factor, data = train_df, family = "binomial"),
-    mgcv::gam(formula_binary_factor, data = train_df, family = "binomial"),
-    xgboost::xgboost(data = dummylist$train_dummies, label = as.integer(y_train_binary)-1,
-                     nrounds = 3, verbose = FALSE, objective = "binary:logistic", eval_metric = "error")
+    stats::glm(formula_binary_factor, data = train_df, family = "binomial")
   )
-
-  l_silent[[7]]$feature_list <- l_silent[[12]]$feature_list <- dummylist$feature_list
-
+  l_message <- list()
 
 
-  l_message <- list(
-    ranger::ranger(formula_numeric, data = train_df),
-    xgboost::xgboost(data = as.matrix(x_train[, x_var_numeric]), label = y_train, nrounds = 3, verbose = FALSE),
+  if (requireNamespace("mgcv", quietly = TRUE)) {
+    l_silent[[length(l_silent) + 1]] <- mgcv::gam(formula_numeric, data = train_df)
+    l_silent[[length(l_silent) + 1]] <- mgcv::gam(formula_factor, data = train_df)
+    l_silent[[length(l_silent) + 1]] <- mgcv::gam(formula_binary_numeric, data = train_df, family = "binomial")
+    l_silent[[length(l_silent) + 1]] <- mgcv::gam(formula_binary_factor, data = train_df, family = "binomial")
+  }
 
-    ranger::ranger(formula_factor, data = train_df),
+  if (requireNamespace("xgboost", quietly = TRUE)) {
+    l_silent[[length(l_silent) + 1]] <- xgboost::xgboost(data = dummylist$train_dummies, label = y_train,
+                                                         nrounds = 3, verbose = FALSE)
+    l_silent[[length(l_silent)]]$feature_list <- dummylist$feature_list
 
-    ranger::ranger(formula_binary_numeric, data = train_df, probability = TRUE),
-    ranger::ranger(formula_binary_factor, data = train_df, probability = TRUE)
-    )
+    l_silent[[length(l_silent) + 1]] <- xgboost::xgboost(
+      data = dummylist$train_dummies,
+      label = as.integer(y_train_binary)-1,
+      nrounds = 3,
+      verbose = FALSE,
+      objective = "binary:logistic",
+      eval_metric = "error"
+      )
+    l_silent[[length(l_silent)]]$feature_list <- dummylist$feature_list
 
+    l_message[[length(l_message) + 1]] <- xgboost::xgboost(data = as.matrix(x_train[, x_var_numeric]),
+                                                           label = y_train, nrounds = 3, verbose = FALSE)
+  }
+
+  if (requireNamespace("ranger", quietly = TRUE)) {
+    l_message[[length(l_message) + 1]] <- ranger::ranger(formula_numeric, data = train_df)
+    l_message[[length(l_message) + 1]] <- ranger::ranger(formula_factor, data = train_df)
+    l_message[[length(l_message) + 1]] <- ranger::ranger(formula_binary_numeric, data = train_df, probability = TRUE)
+    l_message[[length(l_message) + 1]] <- ranger::ranger(formula_binary_factor, data = train_df, probability = TRUE)
+  }
 
   data_features <- get_data_specs(train_df)
   for (i in seq_along(l_silent)) {
@@ -358,7 +372,7 @@ test_that("Test check_features + update_data", {
 
   #### Now turning to update_data tests ####
 
-  model_features_ok <- get_model_specs(l_silent[[4]])
+  model_features_ok <- get_model_specs(l_silent[[3]])
 
   # Checking null output and message to remove features
   train_dt <- as.data.table(train_df)
@@ -381,7 +395,7 @@ test_that("Test check_features + update_data", {
   # Checking that levels are indeed updated
   expect_true(length(org_levels_rad)<length(levels(data_to_update_2$rad)))
   expect_equal(model_features_ok$factor_levels$rad,levels(data_to_update_2$rad))
-
+}
 })
 
 test_that("Test missing colnames", {
@@ -401,10 +415,10 @@ test_that("Test missing colnames", {
     colnames(x_test_nonames) <- NULL
 
     if (requireNamespace("xgboost", quietly = TRUE)) {
-
       model <- xgboost::xgboost(
         data = x_train, label = y_train, nrounds = 3, verbose = FALSE
       )
+
       model_nonames <- xgboost::xgboost(
         data = x_train_nonames, label = y_train, nrounds = 3, verbose = FALSE
       )
@@ -452,24 +466,25 @@ test_that("Test get_supported_models", {
 test_that("Test get_model_specs",{
 
   # Data -----------
-  data("Boston", package = "MASS")
-  y_var <- "medv"
-  x_train <- tail(Boston, -6)
-  y_train <- tail(Boston[, y_var], -6)
+  if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("gbm", quietly = TRUE)){
+    data("Boston", package = "MASS")
+    y_var <- "medv"
+    x_train <- tail(Boston, -6)
+    y_train <- tail(Boston[, y_var], -6)
 
-  train_df <- cbind(x_train, y_train)
-  x_var_numeric <- c("lstat", "rm", "dis", "indus")
-  formula_numeric <- as.formula(paste0("y_train ~ ",paste0(x_var_numeric,collapse="+")))
+    train_df <- cbind(x_train, y_train)
+    x_var_numeric <- c("lstat", "rm", "dis", "indus")
+    formula_numeric <- as.formula(paste0("y_train ~ ",paste0(x_var_numeric,collapse="+")))
 
-  # Backdoors in main func
+    # Backdoors in main func
 
-  # Unsupported model
-  model_unsupported <- gbm::gbm(formula_numeric,distribution = "gaussian",data = train_df)
-  model_native <- stats::lm(formula_numeric, data = train_df)
+    # Unsupported model
+    model_unsupported <- gbm::gbm(formula_numeric,distribution = "gaussian",data = train_df)
+    model_native <- stats::lm(formula_numeric, data = train_df)
 
-  # Unsupported model
-  expect_error(get_model_specs(model_unsupported))
+    # Unsupported model
+    expect_error(get_model_specs(model_unsupported))
 
-  # This is further tested for custom models in test-a-shapley (now commented out)
-
+    # This is further tested for custom models in test-a-shapley (now commented out)
+  }
 })

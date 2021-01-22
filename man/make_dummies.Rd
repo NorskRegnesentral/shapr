@@ -30,7 +30,7 @@ one-hot encoded variables.}
 Initiate the making of dummy variables
 }
 \examples{
-
+if (requireNamespace("MASS", quietly = TRUE)) {
 data("Boston", package = "MASS")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
@@ -43,7 +43,7 @@ x_train$rm <- factor(round(x_train$rm))
 x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 
 dummylist <- make_dummies(traindata = x_train, testdata = x_test)
-
+}
 }
 \author{
 Annabelle Redelmeier, Martin Jullum

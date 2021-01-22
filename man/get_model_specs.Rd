@@ -44,7 +44,8 @@ This function is used to extract the feature information to be checked against d
 and \code{explain}. The function is called from \code{preprocess_data}.
 }
 \examples{
- # Load example data
+if (requireNamespace("MASS", quietly = TRUE)) {
+# Load example data
 data("Boston", package = "MASS")
 # Split data into test- and training data
 x_train <- data.table::as.data.table(head(Boston))
@@ -52,6 +53,7 @@ x_train[,rad:=as.factor(rad)]
 model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 
 get_model_specs(model)
+}
 }
 \author{
 Martin Jullum

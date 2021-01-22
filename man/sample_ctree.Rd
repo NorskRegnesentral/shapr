@@ -30,6 +30,7 @@ data.table with \code{n_samples} (conditional) Gaussian samples
 Sample ctree variables from a given conditional inference tree
 }
 \examples{
+if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
 m <- 10
 n <- 40
 n_samples <- 50
@@ -51,7 +52,7 @@ mincriterion = 0.95))
 tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
 shapr:::sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt, x_train = x_train,
 p = length(x_test), sample = TRUE)
-
+}
 }
 \author{
 Annabelle Redelmeier
