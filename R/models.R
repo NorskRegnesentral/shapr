@@ -37,6 +37,7 @@
 #'
 #' @author Martin Jullum
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #'# Load example data
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
@@ -47,6 +48,7 @@
 #'
 #' # Predicting for a model with a standardized format
 #' predict_model(x = model, newdata = x_test)
+#' }
 predict_model <- function(x, newdata) {
   UseMethod("predict_model", x)
 }
@@ -157,6 +159,7 @@ predict_model.gam <- function(x, newdata) {
 #' @keywords internal
 #'
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' # Load example data
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
@@ -293,7 +296,8 @@ model_checker.xgb.Booster <- function(x) {
 #' @export
 #'
 #' @examples
-#'  # Load example data
+#' if (requireNamespace("MASS", quietly = TRUE)) {
+#'# Load example data
 #' data("Boston", package = "MASS")
 #' # Split data into test- and training data
 #' x_train <- data.table::as.data.table(head(Boston))
@@ -301,6 +305,7 @@ model_checker.xgb.Booster <- function(x) {
 #' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
 #' get_model_specs(model)
+#'}
 get_model_specs <- function(x) {
 
   model_class <- NULL # Due to NSE notes in R CMD check

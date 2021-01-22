@@ -1,6 +1,3 @@
-library(testthat)
-library(shapr)
-
 context("test-shapley.R")
 
 RNGversion(vstr = "3.5.0")
@@ -8,25 +5,28 @@ RNGversion(vstr = "3.5.0")
 test_that("Basic test functions in shapley.R", {
 
   # Load data -----------
-  data("Boston", package = "MASS")
-  x_var <- c("lstat", "rm", "dis", "indus")
-  x_train <- tail(Boston[, x_var], 50)
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    x_train <- tail(Boston[, x_var], 50)
 
-  # Load premade lm model. Path needs to be relative to testthat directory in the package
-  model <- readRDS("model_objects/lm_model_object.rds")
+    # Load premade lm model. Path needs to be relative to testthat directory in the package
+    model <- readRDS("model_objects/lm_model_object.rds")
 
-  # Prepare the data for explanation
-  explainer <- shapr(x_train, model)
+    # Prepare the data for explanation
+    explainer <- shapr(x_train, model)
 
-  expect_known_value(explainer, file = "test_objects/shapley_explainer_obj.rds",
-                     update = F)
+    expect_known_value(explainer, file = "test_objects/shapley_explainer_obj.rds",
+                       update = FALSE)
+  }
 })
 
 
 test_that("Testing data input to shapr in shapley.R", {
 
-  # Data -----------
-  data("Boston", package = "MASS")
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+
   y_var <- "medv"
   x_train <- tail(Boston, -6)
   y_train <- tail(Boston[, y_var], -6)

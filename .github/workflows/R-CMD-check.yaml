@@ -2,7 +2,11 @@ on:
   push:
     branches:
       - master
+      - cranversion
   pull_request:
+    branches:
+      - master
+      - cranversion
 
 name: R-CMD-check
 

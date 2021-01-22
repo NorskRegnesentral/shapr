@@ -62,6 +62,7 @@ From R: \code{vignette("understanding_shapr", package = "shapr")}  \cr
 Web: \url{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models}
 }
 \examples{
+if (requireNamespace("MASS", quietly = TRUE)) {
 # Load example data
 data("Boston", package = "MASS")
 # Split data into test- and training data
@@ -72,6 +73,7 @@ model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 
 # Predicting for a model with a standardized format
 predict_model(x = model, newdata = x_test)
+}
 }
 \author{
 Martin Jullum

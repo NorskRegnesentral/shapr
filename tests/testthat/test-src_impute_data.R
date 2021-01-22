@@ -1,5 +1,3 @@
-library(shapr)
-
 context("test-src_impute_data.R")
 
 test_that("Test observation_impute_cpp", {
