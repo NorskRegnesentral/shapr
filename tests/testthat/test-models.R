@@ -485,6 +485,10 @@ test_that("Test get_model_specs",{
     # Unsupported model
     expect_error(get_model_specs(model_unsupported))
 
-    # This is further tested for custom models in test-a-shapley (now commented out)
+    # This is further tested for custom models in the script tests/manual_test_scripts/test_custom_models.R
+    # run expect_silent(source("tests/testthat/manual_test_scripts/test_custom_models.R")) manually to run those tests
   }
 })
+
+
+

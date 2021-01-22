@@ -26,7 +26,8 @@
 #' If you have a binary classification model we'll always return the probability prediction
 #' for a single class.
 #'
-#' For more details on how to explain other types of models (i.e. custom models), see the package vignette: \cr
+#' For more details on how to explain other types of models (i.e. custom models), see the Advanced usage section
+#' of the vignette: \cr
 #' From R: \code{vignette("understanding_shapr", package = "shapr")}  \cr
 #' Web: \url{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models}
 #'
@@ -332,7 +333,9 @@ get_model_specs <- function(x) {
       paste0(
         "The following required model objects are not available for your custom model: ",
         paste0(required_model_objects[this_object_missing],collapse = ", "),".\n",
-        "See ?shapr::shapr or the vignette for more information."
+        "See the 'Advanced usage' section of the vignette:\n",
+        "vignette('understanding_shapr', package = 'shapr')\n",
+        "for more information.\n"
       )
     )
   }
@@ -344,7 +347,9 @@ get_model_specs <- function(x) {
       paste0(
         paste0(recommended_model_objects[this_object_missing],collapse = ", ")," is not available for your custom ",
         "model. All feature consistency checking between model and data is disabled.\n",
-        "See ?shapr::shapr or the vignette for more information."
+        "See the 'Advanced usage' section of the vignette:\n",
+        "vignette('understanding_shapr', package = 'shapr')\n",
+        "for more information.\n"
       )
     )
   }

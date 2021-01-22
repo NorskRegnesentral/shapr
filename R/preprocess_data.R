@@ -238,7 +238,7 @@ check_features <- function(f_list_1,f_list_2,
   }
 
   #### Checking factor levels ####
-  if(any(is.na(f_list_1$factor_levels)) & use_1_as_truth){ # Only relevant when f_list_1 is a model
+  if(any(is.na(f_list_1$factor_levels)) & any(f_list_1$classes == "factor") & use_1_as_truth){ # Only relevant when f_list_1 is a model
     message(paste0("The specified ",name_1," provides factor levels that are NA. ",
                    "The factor levels of ",name_2," are taken as the truth."))
     f_list_1 <- f_list_2
@@ -292,7 +292,6 @@ update_data = function(data,updater){
   # Operates on data by reference, so no copying of data here
 
   new_labels <- updater$labels
-  factor_features <- which(updater$classes=="factor")
   factor_levels <- updater$factor_levels
 
   # Reorder and delete unused columns
@@ -306,17 +305,19 @@ update_data = function(data,updater){
   data.table::setcolorder(data, new_labels)
 
   # Reorderes the factor levels
-  org_factor_levels <- lapply(data,levels)
-  identical_levels <- mapply(FUN = "identical",org_factor_levels,factor_levels)
-  if(any(!identical_levels)){
-    changed_levels <- which(!identical_levels)
-    message(paste0("Levels are reordered for the factor feature(s) ",
-                   paste0(new_labels[changed_levels],collapse=", "),"."))
+  if(any(updater$classes=="factor")){
+    org_factor_levels <- lapply(data,levels)
+    identical_levels <- mapply(FUN = "identical",org_factor_levels,factor_levels)
+    if(any(!identical_levels)){
+      changed_levels <- which(!identical_levels)
+      message(paste0("Levels are reordered for the factor feature(s) ",
+                     paste0(new_labels[changed_levels],collapse=", "),"."))
 
-    for (i in changed_levels) {
-      data.table::set(data,
-                      j=i,
-                      value = factor(unlist(data[,new_labels[i],with=F],use.names = F), levels = factor_levels[[i]]))
+      for (i in changed_levels) {
+        data.table::set(data,
+                        j=i,
+                        value = factor(unlist(data[,new_labels[i],with=F],use.names = F), levels = factor_levels[[i]]))
+      }
     }
   }
 

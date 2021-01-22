@@ -57,7 +57,8 @@ The returned object \code{p} always satisfies the following properties:
 If you have a binary classification model we'll always return the probability prediction
 for a single class.
 
-For more details on how to explain other types of models (i.e. custom models), see the package vignette: \cr
+For more details on how to explain other types of models (i.e. custom models), see the Advanced usage section
+of the vignette: \cr
 From R: \code{vignette("understanding_shapr", package = "shapr")}  \cr
 Web: \url{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models}
 }
