@@ -69,16 +69,21 @@ explanation <- explain(x_test, explainer, approach = "empirical", prediction_zer
 # Plot results
 plot(explanation)
 
-#### Minimal version of the three required model functions        ####
-#### Note: This works only for this exact version of the model class ####
-#### This avoids defining get_model_specs to skip all feature         ####
-#### consistency checking between your data and model             ####
+
+# Minimal version of the three required model functions
+# Note: Working only for this exact version of the model class
+# Avoiding to define get_model_specs skips all feature
+# consistency checking between your data and model
+
+# Removing the previously defined functions to simulate a fresh start
+rm(predict_model.gbm)
+rm(get_model_specs.gbm)
+
 
 predict_model.gbm <- function(x, newdata) {
   predict(x, as.data.frame(newdata),n.trees = x$n.trees)
 }
 
-rm(get_model_specs.gbm)
 
 # Prepare the data for explanation
 set.seed(123)

@@ -176,17 +176,18 @@ check_features <- function(f_list_1,f_list_2,
   }
 
 
-  missing_1_in_2 <- f_list_1$labels[!(f_list_1$labels %in% f_list_2$labels)]
-  missing_2_in_1 <- f_list_2$labels[!(f_list_2$labels %in% f_list_1$labels)]
+  feat_in_1_not_in_2 <- f_list_1$labels[!(f_list_1$labels %in% f_list_2$labels)]
+  feat_in_2_not_in_1 <- f_list_2$labels[!(f_list_2$labels %in% f_list_1$labels)]
 
-  if (length(missing_1_in_2)>0) {
-    stop(paste0("Feature(s) ",paste0(missing_1_in_2,collapse=", ")," is in ",name_1,", but not in ",name_2,"."))
+  # Check that the features in 1 are in 2
+  if (length(feat_in_1_not_in_2)>0) {
+    stop(paste0("Feature(s) ",paste0(feat_in_1_not_in_2,collapse=", ")," in ",name_1," is not in ",name_2,"."))
   }
 
   # Also check that the features in 2 are in 1
   if(!use_1_as_truth){
-    if (length(missing_2_in_1)>0) {
-      stop(paste0("Feature(s) ",paste0(missing_2_in_1,collapse=", ")," is in ",name_2,", but not in ",name_1,"."))
+    if (length(feat_in_1_not_in_2)>0) {
+      stop(paste0("Feature(s) ",paste0(feat_in_1_not_in_2,collapse=", ")," in ",name_2," is not in ",name_1,"."))
     }
   }
 
@@ -206,7 +207,7 @@ check_features <- function(f_list_1,f_list_2,
   f_list_2$classes <- f_list_2$classes[order_2]
   f_list_2$factor_levels <- f_list_2$factor_levels[order_2]
 
-  #### Reorder f_List_2 to match f_list_1, also removing anything in the former which is not in the latter ####
+  # Reorder f_List_2 to match f_list_1, also removing anything in the former which is not in the latter ####
   f_list_2_reordering = match(f_list_1$labels,f_list_2$labels)
 
   f_list_2$labels <- f_list_2$labels[f_list_2_reordering]

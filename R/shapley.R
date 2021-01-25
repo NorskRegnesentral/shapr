@@ -144,8 +144,18 @@ shapr <- function(x,
 
   explainer$n_features <- ncol(x_train)
 
-  tmp <- predict_model(model, head(x_train)) # Checking that the prediction function works. tmp is not used after this line.
-
+  # Checking that the prediction function works
+  tmp <- predict_model(model, head(x_train,2))
+  if(!(all(is.numeric(tmp)) & length(tmp)==2)){
+    stop(
+      paste0(
+        "The predict_model function of class ",class(model)," is invalid.\n",
+        "See the 'Advanced usage' section of the vignette:\n",
+        "vignette('understanding_shapr', package = 'shapr')\n",
+        "for more information on running shapr with custom models.\n"
+        )
+    )
+  }
 
   # Get all combinations ----------------
   dt_combinations <- feature_combinations(

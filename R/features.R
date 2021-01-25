@@ -238,7 +238,7 @@ make_dummies <- function(traindata, testdata) {
 
   feature_list <- updater
 
-  # Extracts the components that the were used before. Consider cleaning up this.
+  # Extracts the components
   factor_features <- feature_list$labels[updater$classes=="factor"]
 
   if(length(factor_features)>0){
