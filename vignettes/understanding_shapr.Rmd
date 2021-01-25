@@ -571,7 +571,7 @@ outputting a list with the following elements:
 *factor_levels* (a named list with the labels as names and vectors with the factor levels as elements (NULL if the 
 feature is not a factor)). 
 The `get_model_specs` function is used to check that the format of the data passed to `shapr` and `explain` have the 
-correct format. 
+correct format in terms of the necessary feature columns being available and having the correct class/attributes.
 It is highly recommended to do such checks in order to ensure correct usage of `shapr` and `explain`. 
 If, for some reason, such checking is not desirable, one does not have to provide the `get_model_specs` function class.
 This will, however, throw a warning that all feature consistency checking against the model is disabled.
