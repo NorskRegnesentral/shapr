@@ -1,6 +1,9 @@
 # Test custom models
 
 # Doing all testing from shapr
+# Because new functions have to be created (to use gbm with shapr), we cannot use a classic testthat set up because
+# shapr will not see the functions created inside of the test environment. Therefore we have to test these functions
+# a bit differently (and more manual) than other tests.
 
 library(testthat)
 library(shapr)
@@ -103,4 +106,3 @@ library(MASS)
   expect_message(shapr(train_df_used_factor ,model_custom)) # Only predict_model defined, so warning
 
   rm(predict_model.gbm)
-

@@ -181,7 +181,7 @@ helper_feature <- function(m, feature_sample) {
 #'
 #' @return A list that contains the following entries:
 #' \describe{
-#' \item{feature_list}{List, Output from \code{check_features}}
+#' \item{feature_list}{List. Output from \code{check_features}}
 #' \item{train_dummies}{A data.frame containing all of the factors in \code{traindata} as
 #' one-hot encoded variables.}
 #' \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
@@ -281,7 +281,7 @@ make_dummies <- function(traindata, testdata) {
 #' @param testdata data.table or data.frame. New data that has the same
 #' feature names, types, and levels as \code{feature_list}.
 #'
-#' @return A data.table with all features, but where the factors in \code{testdata} as
+#' @return A data.table with all features but where the factors in \code{testdata} are
 #' one-hot encoded variables as specified in feature_list
 #'
 #' @author Annabelle Redelmeier, Martin Jullum

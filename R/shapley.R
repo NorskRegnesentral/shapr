@@ -78,7 +78,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'   \item{feature_list}{List. The \code{updated_feature_list} output from \code{\link[shapr:preprocess_data]{preprocess_data}}}
 #' }
 #'
-#' In addition to the items above \code{model} and \code{n_combinations} is also present in the returned object.
+#' In addition to the items above, \code{model} and \code{n_combinations} are also present in the returned object.
 #'
 #' @export
 #'
@@ -144,7 +144,7 @@ shapr <- function(x,
 
   explainer$n_features <- ncol(x_train)
 
-  tmp <- predict_model(model, head(x_train)) # Checking that the prediction function works
+  tmp <- predict_model(model, head(x_train)) # Checking that the prediction function works. tmp is not used after this line.
 
 
   # Get all combinations ----------------

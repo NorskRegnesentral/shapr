@@ -566,7 +566,7 @@ The first class function is `predict_model`, taking the model and data (as a `ma
 input and outputting the corresponding prediction as a numeric vector. 
 The second (optional, but highly recommended) class function is `get_model_specs`, taking the model as input and 
 outputting a list with the following elements: 
-*labels*(vector with the feature names to compute Shapley values for), 
+*labels* (vector with the feature names to compute Shapley values for), 
 *classes* (a named vector with the labels as names and the class type as elements), 
 *factor_levels* (a named list with the labels as names and vectors with the factor levels as elements (NULL if the 
 feature is not a factor)). 
@@ -574,14 +574,14 @@ The `get_model_specs` function is used to check that the format of the data pass
 correct format. 
 It is highly recommended to do such checks in order to ensure correct usage of `shapr` and `explain`. 
 If, for some reason, such checking is not desirable, one does not have to provide the `get_model_specs` function class.
-This will, however, throw a warning that all feature consistency checking towards the model is disabled.
+This will, however, throw a warning that all feature consistency checking against the model is disabled.
 
 Once the above class functions are created, one can explain predictions from this model class as before.
 These functions **can** be made general enough to handle all supported model types of that class, or they can be made
 minimal, possibly only allowing explanation of the specific version of the model class at hand. 
-Below we exemplify both a set of full support versions of these functions and a minimal version also skipping the
+Below we give examples of both full support versions of these functions and a minimal version which skips the
 `get_model_specs` function. 
-We do this for the `gbm` model class from the pacakge `gbm` package, fitted to the same Boston data set as used above.
+We do this for the `gbm` model class from the `gbm` package, fitted to the same Boston data set as used above.
 
 
 ```{r}

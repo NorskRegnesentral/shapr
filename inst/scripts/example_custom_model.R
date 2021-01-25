@@ -70,8 +70,8 @@ explanation <- explain(x_test, explainer, approach = "empirical", prediction_zer
 plot(explanation)
 
 #### Minimal version of the three required model functions        ####
-#### Note: Working only for this exact version of the model class ####
-#### Avoiding to define get_model_specs skips all feature         ####
+#### Note: This works only for this exact version of the model class ####
+#### This avoids defining get_model_specs to skip all feature         ####
 #### consistency checking between your data and model             ####
 
 predict_model.gbm <- function(x, newdata) {

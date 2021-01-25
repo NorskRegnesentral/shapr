@@ -10,7 +10,7 @@
 #' @return A list with the following elements:
 #' \describe{
 #'   \item{labels}{character vector with the feature names to compute Shapley values for}
-#'   \item{classes}{a named character vector with the labels as names and the class type as elements}
+#'   \item{classes}{a named character vector with the labels as names and the class types as elements}
 #'   \item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
 #'   (NULL if the feature is not a factor)}
 #' }
@@ -180,13 +180,13 @@ check_features <- function(f_list_1,f_list_2,
   missing_2_in_1 <- f_list_2$labels[!(f_list_2$labels %in% f_list_1$labels)]
 
   if (length(missing_1_in_2)>0) {
-    stop(paste0("Feature(s) ",paste0(missing_1_in_2,collapse=", ")," in ",name_1," is not in ",name_2,"."))
+    stop(paste0("Feature(s) ",paste0(missing_1_in_2,collapse=", ")," is in ",name_1,", but not in ",name_2,"."))
   }
 
-  # Also check also that the features in 2 are in 1
+  # Also check that the features in 2 are in 1
   if(!use_1_as_truth){
     if (length(missing_2_in_1)>0) {
-      stop(paste0("Feature(s) ",paste0(missing_2_in_1,collapse=", ")," in ",name_2," is not in ",name_1,"."))
+      stop(paste0("Feature(s) ",paste0(missing_2_in_1,collapse=", ")," is in ",name_2,", but not in ",name_1,"."))
     }
   }
 
