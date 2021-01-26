@@ -70,7 +70,6 @@ test_that("Test feature_matrix_cpp", {
     n_features <- length(feature_i)
     if (n_features == 0) {
       expect_equal(x[i, ], rep(0, m))
-
     } else {
       expect_equal(x[i, feature_i], rep(1, n_features))
       expect_equal(x[i, -feature_i], rep(0, m - n_features))

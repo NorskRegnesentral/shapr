@@ -52,7 +52,6 @@ test_that("Test sample_combinations", {
 })
 
 test_that("test sample_gaussian", {
-
   if (requireNamespace("MASS", quietly = TRUE)) {
     # Example -----------
     m <- 10
@@ -145,7 +144,6 @@ test_that("test sample_copula", {
 })
 
 test_that("test create_ctree", {
-
   if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
 
     # Example 1-----------
@@ -165,12 +163,14 @@ test_that("test create_ctree", {
     sample <- TRUE
 
     # build the tree
-    r <- create_ctree(given_ind = given_ind,
-                      x_train = x_train,
-                      mincriterion = mincriterion,
-                      minsplit = minsplit,
-                      minbucket = minbucket,
-                      use_partykit = "on_error")
+    r <- create_ctree(
+      given_ind = given_ind,
+      x_train = x_train,
+      mincriterion = mincriterion,
+      minsplit = minsplit,
+      minbucket = minbucket,
+      use_partykit = "on_error"
+    )
 
     dependent_ind <- (1:dim(x_train)[2])[-given_ind]
     # Test output format ------------------
@@ -180,14 +180,16 @@ test_that("test create_ctree", {
     expect_equal(r$given_ind, given_ind)
     expect_equal(r$dependent_ind, dependent_ind)
 
-    df <- data.table(cbind(party::response(object = r$tree)$Y1,
-                           party::response(object = r$tree)$Y2,
-                           party::response(object = r$tree)$Y3,
-                           party::response(object = r$tree)$Y4,
-                           party::response(object = r$tree)$Y5,
-                           party::response(object = r$tree)$Y6,
-                           party::response(object = r$tree)$Y7,
-                           party::response(object = r$tree)$Y8))
+    df <- data.table(cbind(
+      party::response(object = r$tree)$Y1,
+      party::response(object = r$tree)$Y2,
+      party::response(object = r$tree)$Y3,
+      party::response(object = r$tree)$Y4,
+      party::response(object = r$tree)$Y5,
+      party::response(object = r$tree)$Y6,
+      party::response(object = r$tree)$Y7,
+      party::response(object = r$tree)$Y8
+    ))
 
     names(df) <- paste0("V", dependent_ind)
     expect_equal(df, x_train[, dependent_ind, with = FALSE])
@@ -202,12 +204,14 @@ test_that("test create_ctree", {
     sample <- TRUE
 
     # build the tree
-    r <- create_ctree(given_ind = given_ind,
-                      x_train = x_train,
-                      mincriterion = mincriterion,
-                      minsplit = minsplit,
-                      minbucket = minbucket,
-                      use_partykit = "on_error")
+    r <- create_ctree(
+      given_ind = given_ind,
+      x_train = x_train,
+      mincriterion = mincriterion,
+      minsplit = minsplit,
+      minbucket = minbucket,
+      use_partykit = "on_error"
+    )
 
     expect_equal(length(r), 3)
     expect_true(is.list(r))
@@ -218,7 +222,6 @@ test_that("test create_ctree", {
 })
 
 test_that("test sample_ctree", {
-
   if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
     # Example -----------
     m <- 10
@@ -246,17 +249,23 @@ test_that("test sample_ctree", {
     ynam <- paste0("Y", 1:ncol(y))
     fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
 
-    datact <- party::ctree(fmla, data = df, controls =
-                             party::ctree_control(minbucket = 7,
-                                                  mincriterion = 0.95))
+    datact <- party::ctree(fmla,
+      data = df, controls =
+        party::ctree_control(
+          minbucket = 7,
+          mincriterion = 0.95
+        )
+    )
 
 
     tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
 
     # new
-    r <- sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt,
-                      x_train = x_train,
-                      p = length(x_test), sample = TRUE)
+    r <- sample_ctree(
+      tree = tree, n_samples = n_samples, x_test = x_test_dt,
+      x_train = x_train,
+      p = length(x_test), sample = TRUE
+    )
 
     # Test output format ------------------
     expect_true(data.table::is.data.table(r))
@@ -271,9 +280,11 @@ test_that("test sample_ctree", {
     dependent_ind <- (1:dim(x_train)[2])[-given_ind]
     datact <- list()
     tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
-    r <- sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt,
-                      x_train = x_train,
-                      p = length(x_test), sample = TRUE)
+    r <- sample_ctree(
+      tree = tree, n_samples = n_samples, x_test = x_test_dt,
+      x_train = x_train,
+      p = length(x_test), sample = TRUE
+    )
     expect_identical(r, data.table::as.data.table(x_test_dt))
   }
 })

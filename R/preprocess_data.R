@@ -20,25 +20,24 @@
 #' @export
 #'
 #' @examples
-#'# Load example data
+#' # Load example data
 #' if (requireNamespace("MASS", quietly = TRUE)) {
-#' data("Boston", package = "MASS")
-#' # Split data into test- and training data
-#' x_train <- data.table::as.data.table(head(Boston))
-#' x_train[,rad:=as.factor(rad)]
-#' get_data_specs(x_train)
+#'   data("Boston", package = "MASS")
+#'   # Split data into test- and training data
+#'   x_train <- data.table::as.data.table(head(Boston))
+#'   x_train[, rad := as.factor(rad)]
+#'   get_data_specs(x_train)
 #' }
-get_data_specs <- function(x){
-
+get_data_specs <- function(x) {
   x <- data.table::as.data.table(x)
 
-  feature_list = list()
+  feature_list <- list()
   feature_list$labels <- names(x)
-  feature_list$classes <- unlist(lapply(x,class))
-  feature_list$factor_levels = lapply(x,levels)
+  feature_list$classes <- unlist(lapply(x, class))
+  feature_list$factor_levels <- lapply(x, levels)
 
   # Defining all integer values as numeric
-  feature_list$classes[feature_list$classes=="integer"] <- "numeric"
+  feature_list$classes[feature_list$classes == "integer"] <- "numeric"
 
   return(feature_list)
 }
@@ -64,18 +63,18 @@ get_data_specs <- function(x){
 #' @examples
 #' # Load example data
 #' if (requireNamespace("MASS", quietly = TRUE)) {
-#' data("Boston", package = "MASS")
-#' # Split data into test- and training data
-#' x_train <- data.table::as.data.table(head(Boston))
-#' x_train[,rad:=as.factor(rad)]
-#' data_features <- get_data_specs(x_train)
-#' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+#'   data("Boston", package = "MASS")
+#'   # Split data into test- and training data
+#'   x_train <- data.table::as.data.table(head(Boston))
+#'   x_train[, rad := as.factor(rad)]
+#'   data_features <- get_data_specs(x_train)
+#'   model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
-#' model_features <- get_model_specs(model)
-#' preprocess_data(x_train,model_features)
+#'   model_features <- get_model_specs(model)
+#'   preprocess_data(x_train, model_features)
 #' }
-preprocess_data = function(x,feature_list){
-  if(all(is.null(colnames(x)))){
+preprocess_data <- function(x, feature_list) {
+  if (all(is.null(colnames(x)))) {
     stop(paste0("The data is missing column names"))
   }
 
@@ -84,12 +83,15 @@ preprocess_data = function(x,feature_list){
   feature_list_data <- get_data_specs(x_dt)
   feature_list_data$specs_type <- "data"
 
-  updater <- check_features(feature_list,feature_list_data,
-                            use_1_as_truth = T)
-  update_data(x_dt,updater) # Updates x_dt by reference
+  updater <- check_features(feature_list, feature_list_data,
+    use_1_as_truth = T
+  )
+  update_data(x_dt, updater) # Updates x_dt by reference
 
-  ret <- list(x_dt = x_dt,
-              updated_feature_list = updater)
+  ret <- list(
+    x_dt = x_dt,
+    updated_feature_list = updater
+  )
 
   return(ret)
 }
@@ -115,69 +117,71 @@ preprocess_data = function(x,feature_list){
 #' @examples
 #' # Load example data
 #' if (requireNamespace("MASS", quietly = TRUE)) {
-#' data("Boston", package = "MASS")
-#' # Split data into test- and training data
-#' x_train <- data.table::as.data.table(head(Boston))
-#' x_train[,rad:=as.factor(rad)]
-#' data_features <- get_data_specs(x_train)
-#' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+#'   data("Boston", package = "MASS")
+#'   # Split data into test- and training data
+#'   x_train <- data.table::as.data.table(head(Boston))
+#'   x_train[, rad := as.factor(rad)]
+#'   data_features <- get_data_specs(x_train)
+#'   model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
-#' model_features <- get_model_specs(model)
-#' check_features(model_features,data_features)
+#'   model_features <- get_model_specs(model)
+#'   check_features(model_features, data_features)
 #' }
-check_features <- function(f_list_1,f_list_2,
-                           use_1_as_truth=T){
-
-
-  if(is.null(f_list_1$specs_type)){
+check_features <- function(f_list_1, f_list_2,
+                           use_1_as_truth = T) {
+  if (is.null(f_list_1$specs_type)) {
     f_list_1$specs_type <- "model"
   }
 
-  if(is.null(f_list_2$specs_type)){
+  if (is.null(f_list_2$specs_type)) {
     f_list_2$specs_type <- "model"
   }
 
   name_1 <- f_list_1$specs_type
   name_2 <- f_list_2$specs_type
 
-  if(name_1 == name_2){ # If used in explain after a model has NA-info during check in shapr
-    name_1 <- paste0(name_1,"_train")
-    name_2 <- paste0(name_2,"_test")
+  if (name_1 == name_2) { # If used in explain after a model has NA-info during check in shapr
+    name_1 <- paste0(name_1, "_train")
+    name_2 <- paste0(name_2, "_test")
   }
 
   #### Checking that labels exists if required, otherwise stop or switch ####
   NULL_1 <- is.null(f_list_1$labels)
   NULL_2 <- is.null(f_list_2$labels)
 
-  if(NULL_2 | (NULL_1 & !use_1_as_truth)){
-    stop(paste0("The ",name_1," or ",name_2," have missing column names. Handle that to proceed."))
+  if (NULL_2 | (NULL_1 & !use_1_as_truth)) {
+    stop(paste0("The ", name_1, " or ", name_2, " have missing column names. Handle that to proceed."))
   }
-  if(NULL_1 & use_1_as_truth){
-    message(paste0("The specified ",name_1," provides NULL feature labels. ",
-                   "The labels of ",name_2," are taken as the truth."))
+  if (NULL_1 & use_1_as_truth) {
+    message(paste0(
+      "The specified ", name_1, " provides NULL feature labels. ",
+      "The labels of ", name_2, " are taken as the truth."
+    ))
     f_list_1 <- f_list_2
   }
 
   NA_1 <- any(is.na(f_list_1$labels))
   NA_2 <- any(is.na(f_list_2$labels))
 
-  if((NA_1 & NA_2) | ((NA_1 | NA_2) & !use_1_as_truth)){
-    stop(paste0("The ",name_1," or ",name_2," have column names that are NA. Handle that to proceed."))
+  if ((NA_1 & NA_2) | ((NA_1 | NA_2) & !use_1_as_truth)) {
+    stop(paste0("The ", name_1, " or ", name_2, " have column names that are NA. Handle that to proceed."))
   }
-  if((NA_1 & use_1_as_truth)){
-    message(paste0("The specified ",name_1," provides feature labels that are NA. ",
-                   "The labels of ",name_2," are taken as the truth."))
+  if ((NA_1 & use_1_as_truth)) {
+    message(paste0(
+      "The specified ", name_1, " provides feature labels that are NA. ",
+      "The labels of ", name_2, " are taken as the truth."
+    ))
     f_list_1 <- f_list_2
   }
 
   # feature names must be unique
   if (any(duplicated(f_list_1$labels))) {
-    stop(paste0(name_1," must have unique column names."))
+    stop(paste0(name_1, " must have unique column names."))
   }
 
   # feature names must be unique
   if (any(duplicated(f_list_2$labels))) {
-    stop(paste0(name_2," must have unique column names."))
+    stop(paste0(name_2, " must have unique column names."))
   }
 
 
@@ -185,14 +189,14 @@ check_features <- function(f_list_1,f_list_2,
   feat_in_2_not_in_1 <- f_list_2$labels[!(f_list_2$labels %in% f_list_1$labels)]
 
   # Check that the features in 1 are in 2
-  if (length(feat_in_1_not_in_2)>0) {
-    stop(paste0("Feature(s) ",paste0(feat_in_1_not_in_2,collapse=", ")," in ",name_1," is not in ",name_2,"."))
+  if (length(feat_in_1_not_in_2) > 0) {
+    stop(paste0("Feature(s) ", paste0(feat_in_1_not_in_2, collapse = ", "), " in ", name_1, " is not in ", name_2, "."))
   }
 
   # Also check that the features in 2 are in 1
-  if(!use_1_as_truth){
-    if (length(feat_in_2_not_in_1)>0) {
-      stop(paste0("Feature(s) ",paste0(feat_in_2_not_in_1,collapse=", ")," in ",name_2," is not in ",name_1,"."))
+  if (!use_1_as_truth) {
+    if (length(feat_in_2_not_in_1) > 0) {
+      stop(paste0("Feature(s) ", paste0(feat_in_2_not_in_1, collapse = ", "), " in ", name_2, " is not in ", name_1, "."))
     }
   }
 
@@ -203,68 +207,72 @@ check_features <- function(f_list_1,f_list_2,
 
   # Order classes and factor levels in the same way as labels
   # for f_list_1
-  order_1 <- match(f_list_1$labels,names(f_list_1$classes))
+  order_1 <- match(f_list_1$labels, names(f_list_1$classes))
   f_list_1$classes <- f_list_1$classes[order_1]
   f_list_1$factor_levels <- f_list_1$factor_levels[order_1]
 
   # for f_list_2
-  order_2 <- match(f_list_2$labels,names(f_list_2$classes))
+  order_2 <- match(f_list_2$labels, names(f_list_2$classes))
   f_list_2$classes <- f_list_2$classes[order_2]
   f_list_2$factor_levels <- f_list_2$factor_levels[order_2]
 
   # Reorder f_List_2 to match f_list_1, also removing anything in the former which is not in the latter ####
-  f_list_2_reordering = match(f_list_1$labels,f_list_2$labels)
+  f_list_2_reordering <- match(f_list_1$labels, f_list_2$labels)
 
   f_list_2$labels <- f_list_2$labels[f_list_2_reordering]
   f_list_2$classes <- f_list_2$classes[f_list_2_reordering]
   f_list_2$factor_levels <- f_list_2$factor_levels[f_list_2_reordering]
 
   # Sorts the factor levels for easier comparison below
-  f_list_1$sorted_factor_levels <- lapply(f_list_1$factor_levels,FUN=sort)
-  f_list_2$sorted_factor_levels <- lapply(f_list_2$factor_levels,FUN=sort)
+  f_list_1$sorted_factor_levels <- lapply(f_list_1$factor_levels, FUN = sort)
+  f_list_2$sorted_factor_levels <- lapply(f_list_2$factor_levels, FUN = sort)
 
 
   #### Checking classes ####
-  if(any(is.na(f_list_1$classes)) & use_1_as_truth){ # Only relevant when f_list_1 is a model
-    message(paste0("The specified ",name_1," provides feature classes that are NA. ",
-                   "The classes of ",name_2," are taken as the truth."))
+  if (any(is.na(f_list_1$classes)) & use_1_as_truth) { # Only relevant when f_list_1 is a model
+    message(paste0(
+      "The specified ", name_1, " provides feature classes that are NA. ",
+      "The classes of ", name_2, " are taken as the truth."
+    ))
     f_list_1 <- f_list_2
-
   }
   # Check if f_list_1 and f_list_2 have features with the same class
-  if (!identical(f_list_1$classes,  f_list_2$classes)) {
-    stop(paste0("The features in ",name_1," and ",name_2," must have the same classes."))
+  if (!identical(f_list_1$classes, f_list_2$classes)) {
+    stop(paste0("The features in ", name_1, " and ", name_2, " must have the same classes."))
   }
 
   # Check if the features all have class "integer", "numeric" or "factor
   if (!all(f_list_1$classes %in% c("integer", "numeric", "factor"))) {
     invalid_class <- which(!(f_list_1$classes %in% c("integer", "numeric", "factor")))
-    stop(paste0("Feature(s) ",paste0(f_list_1$labels[invalid_class],collapse=", ")," in ",name_1," and ",name_2,
-                " is not of class integer, numeric or factor."))
+    stop(paste0(
+      "Feature(s) ", paste0(f_list_1$labels[invalid_class], collapse = ", "), " in ", name_1, " and ", name_2,
+      " is not of class integer, numeric or factor."
+    ))
   }
 
   #### Checking factor levels ####
   factor_classes <- which(f_list_1$classes == "factor")
-  if(length(factor_classes)>0){
+  if (length(factor_classes) > 0) {
     relevant_factor_levels <- f_list_1$factor_levels[factor_classes]
     is_NA <- any(is.na(relevant_factor_levels))
     is_NULL <- any(is.null(relevant_factor_levels))
-    if((is_NA | is_NULL) & use_1_as_truth ){
-      message(paste0("The specified ",name_1," provides factor feature levels that are NULL or NA. ",
-                     "The factor levels of ",name_2," are taken as the truth."))
+    if ((is_NA | is_NULL) & use_1_as_truth) {
+      message(paste0(
+        "The specified ", name_1, " provides factor feature levels that are NULL or NA. ",
+        "The factor levels of ", name_2, " are taken as the truth."
+      ))
       f_list_1 <- f_list_2 # Always safe to switch as f_list_2 is based on data, and extracts correctly
     }
   }
 
   # Checking factor levels #
   if (!identical(f_list_1$sorted_factor_levels, f_list_2$sorted_factor_levels)) {
-    stop(paste0("Some levels for factor features are not present in both ",name_1," and ",name_2,"."))
+    stop(paste0("Some levels for factor features are not present in both ", name_1, " and ", name_2, "."))
   }
 
   f_list_1$sorted_factor_levels <- NULL # Not needed
 
   return(f_list_1) #
-
 }
 
 #' Updates data by reference according to the updater argument.
@@ -288,18 +296,18 @@ check_features <- function(f_list_1,f_list_2,
 #' @examples
 #' # Load example data
 #' if (requireNamespace("MASS", quietly = TRUE)) {
-#' data("Boston", package = "MASS")
-#' # Split data into test- and training data
-#' x_train <- data.table::as.data.table(head(Boston))
-#' x_train[,rad:=as.factor(rad)]
-#' data_features <- get_data_specs(x_train)
-#' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+#'   data("Boston", package = "MASS")
+#'   # Split data into test- and training data
+#'   x_train <- data.table::as.data.table(head(Boston))
+#'   x_train[, rad := as.factor(rad)]
+#'   data_features <- get_data_specs(x_train)
+#'   model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
-#' model_features <- get_model_specs(model)
-#' updater <- check_features(model_features,data_features)
-#' update_data(x_train,updater)
+#'   model_features <- get_model_specs(model)
+#'   updater <- check_features(model_features, data_features)
+#'   update_data(x_train, updater)
 #' }
-update_data = function(data,updater){
+update_data <- function(data, updater) {
   # Operates on data by reference, so no copying of data here
 
   new_labels <- updater$labels
@@ -311,27 +319,30 @@ update_data = function(data,updater){
     message(
       paste0(
         "The columns(s) ",
-        paste0(cnms_remove,collapse=", "),
+        paste0(cnms_remove, collapse = ", "),
         " is not used by the model and thus removed from the data."
-        )
       )
+    )
     data[, (cnms_remove) := NULL]
   }
   data.table::setcolorder(data, new_labels)
 
   # Reorderes the factor levels
-  if(any(updater$classes=="factor")){
-    org_factor_levels <- lapply(data,levels)
-    identical_levels <- mapply(FUN = "identical",org_factor_levels,factor_levels)
-    if(any(!identical_levels)){
+  if (any(updater$classes == "factor")) {
+    org_factor_levels <- lapply(data, levels)
+    identical_levels <- mapply(FUN = "identical", org_factor_levels, factor_levels)
+    if (any(!identical_levels)) {
       changed_levels <- which(!identical_levels)
-      message(paste0("Levels are reordered for the factor feature(s) ",
-                     paste0(new_labels[changed_levels],collapse=", "),"."))
+      message(paste0(
+        "Levels are reordered for the factor feature(s) ",
+        paste0(new_labels[changed_levels], collapse = ", "), "."
+      ))
 
       for (i in changed_levels) {
         data.table::set(data,
-                        j=i,
-                        value = factor(unlist(data[,new_labels[i],with=F],use.names = F), levels = factor_levels[[i]]))
+          j = i,
+          value = factor(unlist(data[, new_labels[i], with = F], use.names = F), levels = factor_levels[[i]])
+        )
       }
     }
   }

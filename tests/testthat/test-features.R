@@ -19,7 +19,8 @@ test_that("Test feature_combinations", {
     m = m,
     exact = exact,
     n_combinations = n_combinations,
-    weight_zero_m = w)
+    weight_zero_m = w
+  )
 
   set.seed(1)
   y2 <- feature_not_exact(
@@ -117,14 +118,12 @@ test_that("Test feature_not_exact", {
       expect_equal(x[["N"]][[i]], 1)
       expect_equal(x[["shapley_weight"]][[i]], w)
       expect_equal(x[["p"]][[i]], NA_real_)
-
     } else if (length(f) == m) {
       expect_equal(f, seq(m))
       expect_equal(x[["n_features"]][[i]], m)
       expect_equal(x[["N"]][[i]], 1)
       expect_equal(x[["shapley_weight"]][[i]], w)
       expect_equal(x[["p"]][[i]], NA_real_)
-
     } else {
       k <- length(f)
       expect_equal(f, sort(f))
@@ -166,7 +165,6 @@ test_that("Test helper_feature", {
 
 
 test_that("Test make_dummies", {
-
   if (requireNamespace("MASS", quietly = TRUE)) {
     data("Boston", package = "MASS")
     x_var <- c("lstat", "rm", "dis", "indus")
@@ -192,7 +190,7 @@ test_that("Test make_dummies", {
 
     expect_equal(length(dummylist$feature_list$labels), ncol(x_train))
 
-    expect_equal(sum(dummylist$feature_list$classes=="factor"), nb_factor_feat)
+    expect_equal(sum(dummylist$feature_list$classes == "factor"), nb_factor_feat)
 
     expect_equal(ncol(dummylist$feature_list$contrasts_list$rm), length(levels(x_train$rm)))
 
@@ -293,7 +291,6 @@ test_that("Test make_dummies", {
 })
 
 test_that("Test apply_dummies", {
-
   if (requireNamespace("MASS", quietly = TRUE)) {
     data("Boston", package = "MASS")
     x_var <- c("lstat", "rm", "dis", "indus")
@@ -317,8 +314,10 @@ test_that("Test apply_dummies", {
     # Tests
     expect_type(x_test_dummies, "double")
 
-    expect_equal(ncol(x_test_dummies),
-                 nb_numeric_feat + ncol(dummylist$feature_list$contrasts_list$rm))
+    expect_equal(
+      ncol(x_test_dummies),
+      nb_numeric_feat + ncol(dummylist$feature_list$contrasts_list$rm)
+    )
 
     # Test that make_dummies() and apply_dummies() gives the same output
     # for a given traindata and testdata

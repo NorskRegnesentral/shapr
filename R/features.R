@@ -59,8 +59,8 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       paste0(
         "\nn_combinations is larger than or equal to 2^m = ", 2^m, ". \n",
         "Using exact instead."
-        )
       )
+    )
   }
 
   if (exact) {
@@ -80,7 +80,6 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
 
 #' @keywords internal
 feature_exact <- function(m, weight_zero_m = 10^6) {
-
   features <- id_combination <- n_features <- shapley_weight <- N <- NULL # due to NSE notes in R CMD check
 
   dt <- data.table::data.table(id_combination = seq(2^m))
@@ -95,7 +94,6 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 
 #' @keywords internal
 feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
-
   features <- id_combination <- n_features <- shapley_weight <- N <- NULL # due to NSE notes in R CMD check
 
   # Find weights for given number of features ----------
@@ -158,7 +156,6 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 
 #' @keywords internal
 helper_feature <- function(m, feature_sample) {
-
   sample_frequence <- is_duplicate <- NULL # due to NSE notes in R CMD check
 
   x <- feature_matrix_cpp(feature_sample, m)
@@ -198,26 +195,25 @@ helper_feature <- function(m, feature_sample) {
 #'
 #' @examples
 #' if (requireNamespace("MASS", quietly = TRUE)) {
-#' data("Boston", package = "MASS")
-#' x_var <- c("lstat", "rm", "dis", "indus")
-#' y_var <- "medv"
-#' x_train <- as.data.frame(Boston[401:411, x_var])
-#' y_train <- Boston[401:408, y_var]
-#' x_test <- as.data.frame(Boston[1:4, x_var])
+#'   data("Boston", package = "MASS")
+#'   x_var <- c("lstat", "rm", "dis", "indus")
+#'   y_var <- "medv"
+#'   x_train <- as.data.frame(Boston[401:411, x_var])
+#'   y_train <- Boston[401:408, y_var]
+#'   x_test <- as.data.frame(Boston[1:4, x_var])
 #'
-#' # convert to factors for illustational purpose
-#' x_train$rm <- factor(round(x_train$rm))
-#' x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
+#'   # convert to factors for illustational purpose
+#'   x_train$rm <- factor(round(x_train$rm))
+#'   x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 #'
-#' dummylist <- make_dummies(traindata = x_train, testdata = x_test)
-#'}
+#'   dummylist <- make_dummies(traindata = x_train, testdata = x_test)
+#' }
 make_dummies <- function(traindata, testdata) {
-
-  if(all(is.null(colnames(traindata)))){
+  if (all(is.null(colnames(traindata)))) {
     stop(paste0("The traindata is missing column names"))
   }
 
-  if(all(is.null(colnames(testdata)))){
+  if (all(is.null(colnames(testdata)))) {
     stop(paste0("The testdata is missing column names"))
   }
 
@@ -227,49 +223,55 @@ make_dummies <- function(traindata, testdata) {
   feature_list_train <- get_data_specs(train_dt)
   feature_list_test <- get_data_specs(test_dt)
 
-  feature_list_train$specs_type="traindata"
-  feature_list_test$specs_type="testdata"
+  feature_list_train$specs_type <- "traindata"
+  feature_list_test$specs_type <- "testdata"
 
-  updater <- check_features(feature_list_train,feature_list_test,F)
+  updater <- check_features(feature_list_train, feature_list_test, F)
 
   # Reorderes factor levels so that they match each other
-  update_data(train_dt,updater)
-  update_data(test_dt,updater)
+  update_data(train_dt, updater)
+  update_data(test_dt, updater)
 
   feature_list <- updater
 
   # Extracts the components
-  factor_features <- feature_list$labels[updater$classes=="factor"]
+  factor_features <- feature_list$labels[updater$classes == "factor"]
 
-  if(length(factor_features)>0){
+  if (length(factor_features) > 0) {
     factor_list <- feature_list$factor_levels[factor_features]
     feature_list$contrasts_list <- lapply(train_dt[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
 
     # get train dummies
-    m <- model.frame(data = train_dt,
-                     xlev = factor_list)
-    train_dummies <- model.matrix(object = ~. + 0,
-                                  data = m,
-                                  contrasts.arg = feature_list$contrasts_list)
+    m <- model.frame(
+      data = train_dt,
+      xlev = factor_list
+    )
+    train_dummies <- model.matrix(
+      object = ~ . + 0,
+      data = m,
+      contrasts.arg = feature_list$contrasts_list
+    )
 
     # get test dummies
-    m <- model.frame(data = test_dt,
-                     xlev = factor_list)
-    test_dummies <- model.matrix(object = ~. + 0,
-                                 data = m,
-                                 contrasts.arg = feature_list$contrasts_list)
-
-
+    m <- model.frame(
+      data = test_dt,
+      xlev = factor_list
+    )
+    test_dummies <- model.matrix(
+      object = ~ . + 0,
+      data = m,
+      contrasts.arg = feature_list$contrasts_list
+    )
   } else {
     train_dummies <- train_dt
     test_dummies <- test_dt
-
   }
 
-  return(list(feature_list = feature_list,
-              train_dummies = train_dummies, test_dummies = test_dummies, traindata_new = train_dt,
-              testdata_new = test_dt))
-
+  return(list(
+    feature_list = feature_list,
+    train_dummies = train_dummies, test_dummies = test_dummies, traindata_new = train_dt,
+    testdata_new = test_dt
+  ))
 }
 
 #' Apply dummy variables - this is an internal function intended only to be used in
@@ -289,33 +291,35 @@ make_dummies <- function(traindata, testdata) {
 #' @keywords internal
 #'
 apply_dummies <- function(feature_list, testdata) {
-
-
-  if(all(is.null(colnames(testdata)))){
+  if (all(is.null(colnames(testdata)))) {
     stop(paste0("The testdata is missing column names"))
   }
   test_dt <- data.table::as.data.table(testdata)
 
   feature_list_test <- get_data_specs(test_dt)
 
-  feature_list_test$specs_type="testdata"
+  feature_list_test$specs_type <- "testdata"
 
-  updater <- check_features(feature_list,feature_list_test,F)
+  updater <- check_features(feature_list, feature_list_test, F)
 
   # Reorderes factor levels so that they match
-  update_data(test_dt,updater)
+  update_data(test_dt, updater)
 
-  factor_features <- feature_list$labels[updater$classes=="factor"] # check which features are factors
+  factor_features <- feature_list$labels[updater$classes == "factor"] # check which features are factors
 
-  if(length(factor_features)>0){
+  if (length(factor_features) > 0) {
     factor_list <- feature_list$factor_levels[factor_features]
 
-    m <- model.frame(data = test_dt,
-                     xlev = factor_list)
+    m <- model.frame(
+      data = test_dt,
+      xlev = factor_list
+    )
 
-    x <- model.matrix(object = ~. + 0,
-                      data = m,
-                      contrasts.arg = feature_list$contrasts_list)
+    x <- model.matrix(
+      object = ~ . + 0,
+      data = m,
+      contrasts.arg = feature_list$contrasts_list
+    )
   } else {
     x <- test_dt
   }

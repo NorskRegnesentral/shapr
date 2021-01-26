@@ -23,4 +23,3 @@
 #'
 #' @useDynLib shapr, .registration = TRUE
 NULL
-

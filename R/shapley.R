@@ -86,38 +86,38 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'
 #' @examples
 #' if (requireNamespace("MASS", quietly = TRUE)) {
-#' # Load example data
-#' data("Boston", package = "MASS")
-#' df <- Boston
+#'   # Load example data
+#'   data("Boston", package = "MASS")
+#'   df <- Boston
 #'
-#' # Example using the exact method
-#' x_var <- c("lstat", "rm", "dis", "indus")
-#' y_var <- "medv"
-#' df1 <- df[, x_var]
-#' model <- lm(medv ~ lstat + rm + dis + indus, data = df)
-#' explainer <- shapr(df1, model)
+#'   # Example using the exact method
+#'   x_var <- c("lstat", "rm", "dis", "indus")
+#'   y_var <- "medv"
+#'   df1 <- df[, x_var]
+#'   model <- lm(medv ~ lstat + rm + dis + indus, data = df)
+#'   explainer <- shapr(df1, model)
 #'
-#' print(nrow(explainer$X))
-#' # 16 (which equals 2^4)
+#'   print(nrow(explainer$X))
+#'   # 16 (which equals 2^4)
 #'
-#' # Example using approximation
-#' y_var <- "medv"
-#' x_var <- setdiff(colnames(df), y_var)
-#' model <- lm(medv ~ ., data = df)
-#' df2 <- df[, x_var]
-#' explainer <- shapr(df2, model, n_combinations = 1e3)
+#'   # Example using approximation
+#'   y_var <- "medv"
+#'   x_var <- setdiff(colnames(df), y_var)
+#'   model <- lm(medv ~ ., data = df)
+#'   df2 <- df[, x_var]
+#'   explainer <- shapr(df2, model, n_combinations = 1e3)
 #'
-#' print(nrow(explainer$X))
+#'   print(nrow(explainer$X))
 #'
-#' # Example using approximation where n_combinations > 2^m
-#' x_var <- c("lstat", "rm", "dis", "indus")
-#' y_var <- "medv"
-#' df3 <- df[, x_var]
-#' model <- lm(medv ~ lstat + rm + dis + indus, data = df)
-#' explainer <- shapr(df1, model, n_combinations = 1e3)
+#'   # Example using approximation where n_combinations > 2^m
+#'   x_var <- c("lstat", "rm", "dis", "indus")
+#'   y_var <- "medv"
+#'   df3 <- df[, x_var]
+#'   model <- lm(medv ~ lstat + rm + dis + indus, data = df)
+#'   explainer <- shapr(df1, model, n_combinations = 1e3)
 #'
-#' print(nrow(explainer$X))
-#' # 16 (which equals 2^4)
+#'   print(nrow(explainer$X))
+#'   # 16 (which equals 2^4)
 #' }
 shapr <- function(x,
                   model,
@@ -136,8 +136,10 @@ shapr <- function(x,
   # Check features of training data against model specification
   feature_list_model <- get_model_specs(model)
 
-  processed_list <- preprocess_data(x = x,
-                                    feature_list = feature_list_model)
+  processed_list <- preprocess_data(
+    x = x,
+    feature_list = feature_list_model
+  )
 
   x_train <- processed_list$x_dt
   updated_feature_list <- processed_list$updated_feature_list
@@ -145,15 +147,15 @@ shapr <- function(x,
   explainer$n_features <- ncol(x_train)
 
   # Checking that the prediction function works
-  tmp <- predict_model(model, head(x_train,2))
-  if(!(all(is.numeric(tmp)) & length(tmp)==2)){
+  tmp <- predict_model(model, head(x_train, 2))
+  if (!(all(is.numeric(tmp)) & length(tmp) == 2)) {
     stop(
       paste0(
-        "The predict_model function of class ",class(model)," is invalid.\n",
+        "The predict_model function of class ", class(model), " is invalid.\n",
         "See the 'Advanced usage' section of the vignette:\n",
         "vignette('understanding_shapr', package = 'shapr')\n",
         "for more information on running shapr with custom models.\n"
-        )
+      )
     )
   }
 
@@ -196,7 +198,9 @@ shapr <- function(x,
 
 #' @keywords internal
 distance_matrix <- function(x_train, x_test = NULL, list_features) {
-  if (is.null(x_test)) return(NULL)
+  if (is.null(x_test)) {
+    return(NULL)
+  }
 
   # Get covariance matrix
   mcov <- stats::cov(x_train)

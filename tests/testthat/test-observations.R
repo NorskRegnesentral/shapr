@@ -1,7 +1,6 @@
 context("test-observations.R")
 
 test_that("Test observation_impute", {
-
   if (requireNamespace("MASS", quietly = TRUE)) {
     # Examples
     n <- 20
@@ -26,17 +25,17 @@ test_that("Test observation_impute", {
       observation_impute(W_kernel, S, x_train, x_test)
     )
 
-  # Test that w_threshold reduces number of rows
-  expect_true(
-    nrow(observation_impute(W_kernel, S, x_train, x_test, w_threshold = .7)) >
-      nrow(observation_impute(W_kernel, S, x_train, x_test, w_threshold = 0.5))
-  )
+    # Test that w_threshold reduces number of rows
+    expect_true(
+      nrow(observation_impute(W_kernel, S, x_train, x_test, w_threshold = .7)) >
+        nrow(observation_impute(W_kernel, S, x_train, x_test, w_threshold = 0.5))
+    )
 
-  # Test that n_samples reduces number of rows
-  expect_true(
-    nrow(observation_impute(W_kernel, S, x_train, x_test)) >
-      nrow(observation_impute(W_kernel, S, x_train, x_test, n_samples = 10))
-  )
+    # Test that n_samples reduces number of rows
+    expect_true(
+      nrow(observation_impute(W_kernel, S, x_train, x_test)) >
+        nrow(observation_impute(W_kernel, S, x_train, x_test, n_samples = 10))
+    )
 
     # Tests error
     expect_error(observation_impute(1, S, x_train, x_test))
