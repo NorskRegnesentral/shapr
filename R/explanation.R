@@ -81,20 +81,25 @@
 #'   p <- mean(x_train$medv)
 #'
 #'   # Empirical approach
-#'   explain1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p, n_samples = 1e2)
+#'   explain1 <- explain(x_test, explainer, approach = "empirical",
+#'    prediction_zero = p, n_samples = 1e2)
 #'
 #'   # Gaussian approach
-#'   explain2 <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p, n_samples = 1e2)
+#'   explain2 <- explain(x_test, explainer, approach = "gaussian",
+#'    prediction_zero = p, n_samples = 1e2)
 #'
 #'   # Gaussian copula approach
-#'   explain3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p, n_samples = 1e2)
+#'   explain3 <- explain(x_test, explainer, approach = "copula",
+#'    prediction_zero = p, n_samples = 1e2)
 #'
 #'   # ctree approach
-#'   explain4 <- explain(x_test, explainer, approach = "ctree", prediction_zero = p)
+#'   explain4 <- explain(x_test, explainer, approach = "ctree",
+#'    prediction_zero = p)
 #'
 #'   # Combined approach
 #'   approach <- c("gaussian", "gaussian", "empirical", "empirical")
-#'   explain5 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
+#'   explain5 <- explain(x_test, explainer, approach = approach,
+#'    prediction_zero = p, n_samples = 1e2)
 #'
 #'   # Print the Shapley values
 #'   print(explain1$dt)

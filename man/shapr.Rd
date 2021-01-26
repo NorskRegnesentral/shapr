@@ -32,7 +32,8 @@ Named list that contains the following items:
   \item{W}{Second item}
   \item{X}{data.table. Returned object from \code{\link{feature_combinations}}}
   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
-  \item{feature_list}{List. The \code{updated_feature_list} output from \code{\link[shapr:preprocess_data]{preprocess_data}}}
+  \item{feature_list}{List. The \code{updated_feature_list} output from
+  \code{\link[shapr:preprocess_data]{preprocess_data}}}
 }
 
 In addition to the items above, \code{model} and \code{n_combinations} are also present in the returned object.
@@ -42,38 +43,38 @@ Create an explainer object with Shapley weights for test data.
 }
 \examples{
 if (requireNamespace("MASS", quietly = TRUE)) {
-# Load example data
-data("Boston", package = "MASS")
-df <- Boston
+  # Load example data
+  data("Boston", package = "MASS")
+  df <- Boston
 
-# Example using the exact method
-x_var <- c("lstat", "rm", "dis", "indus")
-y_var <- "medv"
-df1 <- df[, x_var]
-model <- lm(medv ~ lstat + rm + dis + indus, data = df)
-explainer <- shapr(df1, model)
+  # Example using the exact method
+  x_var <- c("lstat", "rm", "dis", "indus")
+  y_var <- "medv"
+  df1 <- df[, x_var]
+  model <- lm(medv ~ lstat + rm + dis + indus, data = df)
+  explainer <- shapr(df1, model)
 
-print(nrow(explainer$X))
-# 16 (which equals 2^4)
+  print(nrow(explainer$X))
+  # 16 (which equals 2^4)
 
-# Example using approximation
-y_var <- "medv"
-x_var <- setdiff(colnames(df), y_var)
-model <- lm(medv ~ ., data = df)
-df2 <- df[, x_var]
-explainer <- shapr(df2, model, n_combinations = 1e3)
+  # Example using approximation
+  y_var <- "medv"
+  x_var <- setdiff(colnames(df), y_var)
+  model <- lm(medv ~ ., data = df)
+  df2 <- df[, x_var]
+  explainer <- shapr(df2, model, n_combinations = 1e3)
 
-print(nrow(explainer$X))
+  print(nrow(explainer$X))
 
-# Example using approximation where n_combinations > 2^m
-x_var <- c("lstat", "rm", "dis", "indus")
-y_var <- "medv"
-df3 <- df[, x_var]
-model <- lm(medv ~ lstat + rm + dis + indus, data = df)
-explainer <- shapr(df1, model, n_combinations = 1e3)
+  # Example using approximation where n_combinations > 2^m
+  x_var <- c("lstat", "rm", "dis", "indus")
+  y_var <- "medv"
+  df3 <- df[, x_var]
+  model <- lm(medv ~ lstat + rm + dis + indus, data = df)
+  explainer <- shapr(df1, model, n_combinations = 1e3)
 
-print(nrow(explainer$X))
-# 16 (which equals 2^4)
+  print(nrow(explainer$X))
+  # 16 (which equals 2^4)
 }
 }
 \author{

@@ -41,15 +41,15 @@ what type of models \code{shapr} currently support.
 }
 \examples{
 if (requireNamespace("MASS", quietly = TRUE)) {
-# Load example data
-data("Boston", package = "MASS")
-# Split data into test- and training data
-x_train <- head(Boston, -3)
-# Fit a linear model
-model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+  # Load example data
+  data("Boston", package = "MASS")
+  # Split data into test- and training data
+  x_train <- head(Boston, -3)
+  # Fit a linear model
+  model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 
-# Checking the model object
-model_checker(x = model)
+  # Checking the model object
+  model_checker(x = model)
 }
 }
 \keyword{internal}

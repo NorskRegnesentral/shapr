@@ -2,9 +2,9 @@
 # shapr 0.2.0
 
 * Minor CRAN release
-* Added the new dependence modelling approach "ctree" which handles categorical features in addition
+* Added the new dependence modeling approach "ctree" which handles categorical features in addition
   to numerical ones from the paper https://doi.org/10.1007/978-3-030-57321-8_7
-* Addied support to explain models based on categorical features for model classes like xgboost
+* Added support to explain models based on categorical features for model classes like xgboost
   which originally takes only numeric input. On the user side an additional call to the new *make_dummies*
   function is required. See the vignette for details. 
 * Slight change in the user-procedure for explaining predictions from custom models, requiring only a single function

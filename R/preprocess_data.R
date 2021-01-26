@@ -97,11 +97,11 @@ preprocess_data <- function(x, feature_list) {
 }
 
 
-#' Checks that two extracted feature lists have exactly the same properites
+#' Checks that two extracted feature lists have exactly the same properties
 #'
 #' @param f_list_1,f_list_2 List. As extracted from either \code{get_data_specs} or \code{get_model_specs}.
 #' @param use_1_as_truth Logical. If TRUE, \code{f_list_2} is compared to \code{f_list_1}, i.e. additional elements
-#' is allowed in \code{f_list_2}, and if \code{f_list_1}'s feature classes contains NA's, feature class check is
+#' is allowed in \code{f_list_2}, and if \code{f_list_1}'s feature classes contains NAs, feature class check is
 #' ignored regardless of what is specified in \code{f_list_1}. If FALSE, \code{f_list_1} and \code{f_list_2} are
 #' equated and they need to contain exactly the same elements. Set to TRUE when comparing a model and data, and FALSE
 #' when comparing two data sets.

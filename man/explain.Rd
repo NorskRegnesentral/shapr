@@ -173,45 +173,50 @@ when conditioning on \code{i} features.
 }
 \examples{
 if (requireNamespace("MASS", quietly = TRUE)) {
-# Load example data
-data("Boston", package = "MASS")
+  # Load example data
+  data("Boston", package = "MASS")
 
-# Split data into test- and training data
-x_train <- head(Boston, -3)
-x_test <- tail(Boston, 3)
+  # Split data into test- and training data
+  x_train <- head(Boston, -3)
+  x_test <- tail(Boston, 3)
 
-# Fit a linear model
-model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+  # Fit a linear model
+  model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 
-# Create an explainer object
-explainer <- shapr(x_train, model)
+  # Create an explainer object
+  explainer <- shapr(x_train, model)
 
-# Explain predictions
-p <- mean(x_train$medv)
+  # Explain predictions
+  p <- mean(x_train$medv)
 
-# Empirical approach
-explain1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p, n_samples = 1e2)
+  # Empirical approach
+  explain1 <- explain(x_test, explainer, approach = "empirical",
+   prediction_zero = p, n_samples = 1e2)
 
-# Gaussian approach
-explain2 <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p, n_samples = 1e2)
+  # Gaussian approach
+  explain2 <- explain(x_test, explainer, approach = "gaussian",
+   prediction_zero = p, n_samples = 1e2)
 
-# Gaussian copula approach
-explain3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p, n_samples = 1e2)
+  # Gaussian copula approach
+  explain3 <- explain(x_test, explainer, approach = "copula",
+   prediction_zero = p, n_samples = 1e2)
 
-# ctree approach
-explain4 <- explain(x_test, explainer, approach = "ctree", prediction_zero = p)
+  # ctree approach
+  explain4 <- explain(x_test, explainer, approach = "ctree",
+   prediction_zero = p)
 
-# Combined approach
-approach <- c("gaussian", "gaussian", "empirical", "empirical")
-explain5 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
+  # Combined approach
+  approach <- c("gaussian", "gaussian", "empirical", "empirical")
+  explain5 <- explain(x_test, explainer, approach = approach,
+   prediction_zero = p, n_samples = 1e2)
 
-# Print the Shapley values
-print(explain1$dt)
+  # Print the Shapley values
+  print(explain1$dt)
 
-# Plot the results
-if (requireNamespace("ggplot2", quietly = TRUE)) {
-plot(explain1)
-}
+  # Plot the results
+  if (requireNamespace("ggplot2", quietly = TRUE)) {
+    plot(explain1)
+  }
 }
 }
 \author{

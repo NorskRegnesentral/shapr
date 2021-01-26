@@ -30,11 +30,11 @@ and \code{\link[shapr:make_dummies]{make_dummies}}
 \examples{
 # Load example data
 if (requireNamespace("MASS", quietly = TRUE)) {
-data("Boston", package = "MASS")
-# Split data into test- and training data
-x_train <- data.table::as.data.table(head(Boston))
-x_train[,rad:=as.factor(rad)]
-get_data_specs(x_train)
+  data("Boston", package = "MASS")
+  # Split data into test- and training data
+  x_train <- data.table::as.data.table(head(Boston))
+  x_train[, rad := as.factor(rad)]
+  get_data_specs(x_train)
 }
 }
 \author{

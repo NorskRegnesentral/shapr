@@ -31,7 +31,7 @@ when conditioning on various numbers of features.}
 used by R. To get around this problem, one may fall back to using the newer (but slower) \code{partykit::ctree}
 function, which is a reimplementation of the same method. Setting this parameter to \code{"on_error"} (default)
 falls back to  \code{partykit::ctree}, if \code{party::ctree} fails. Other options are \code{"never"}, which always
-uses \code{party::ctree}, and \code{"always"}, which alsways uses \code{partykit::ctree}. A warning message is
+uses \code{party::ctree}, and \code{"always"}, which always uses \code{partykit::ctree}. A warning message is
 created whenever \code{partykit::ctree} is used.}
 }
 \value{
@@ -42,20 +42,22 @@ Make all conditional inference trees
 }
 \examples{
 if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
-m <- 10
-n <- 40
-n_samples <- 50
-mu <- rep(1, m)
-cov_mat <- cov(matrix(rnorm(n * m), n, m))
-x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
-given_ind <- c(4, 7)
-mincriterion <- 0.95
-minsplit <- 20
-minbucket <- 7
-sample <- TRUE
-create_ctree(given_ind = given_ind, x_train = x_train,
-mincriterion = mincriterion, minsplit = minsplit,
-minbucket = minbucket, use_partykit = "on_error")
+  m <- 10
+  n <- 40
+  n_samples <- 50
+  mu <- rep(1, m)
+  cov_mat <- cov(matrix(rnorm(n * m), n, m))
+  x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
+  given_ind <- c(4, 7)
+  mincriterion <- 0.95
+  minsplit <- 20
+  minbucket <- 7
+  sample <- TRUE
+  create_ctree(
+    given_ind = given_ind, x_train = x_train,
+    mincriterion = mincriterion, minsplit = minsplit,
+    minbucket = minbucket, use_partykit = "on_error"
+  )
 }
 }
 \author{

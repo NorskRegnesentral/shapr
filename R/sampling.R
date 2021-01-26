@@ -290,7 +290,7 @@ sample_ctree <- function(tree,
 #' used by R. To get around this problem, one may fall back to using the newer (but slower) \code{partykit::ctree}
 #' function, which is a reimplementation of the same method. Setting this parameter to \code{"on_error"} (default)
 #' falls back to  \code{partykit::ctree}, if \code{party::ctree} fails. Other options are \code{"never"}, which always
-#' uses \code{party::ctree}, and \code{"always"}, which alsways uses \code{partykit::ctree}. A warning message is
+#' uses \code{party::ctree}, and \code{"always"}, which always uses \code{partykit::ctree}. A warning message is
 #' created whenever \code{partykit::ctree} is used.
 #'
 #' @return List with conditional inference tree and the variables conditioned/not conditioned on.

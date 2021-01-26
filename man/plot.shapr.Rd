@@ -42,35 +42,35 @@ how you should use the function.
 }
 \examples{
 if (requireNamespace("MASS", quietly = TRUE)) {
-#' # Load example data
-data("Boston", package = "MASS")
+  #' # Load example data
+  data("Boston", package = "MASS")
 
-# Split data into test- and training data
-x_train <- head(Boston, -3)
-x_test <- tail(Boston, 3)
+  # Split data into test- and training data
+  x_train <- head(Boston, -3)
+  x_test <- tail(Boston, 3)
 
-# Fit a linear model
-model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+  # Fit a linear model
+  model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 
-# Create an explainer object
-explainer <- shapr(x_train, model)
+  # Create an explainer object
+  explainer <- shapr(x_train, model)
 
-# Explain predictions
-p <- mean(x_train$medv)
+  # Explain predictions
+  p <- mean(x_train$medv)
 
-# Empirical approach
-explanation <- explain(x_test,
-                      explainer,
-                      approach = "empirical",
-                      prediction_zero = p,
-                      n_samples = 1e2)
+  # Empirical approach
+  explanation <- explain(x_test,
+    explainer,
+    approach = "empirical",
+    prediction_zero = p,
+    n_samples = 1e2
+  )
 
-if (requireNamespace("ggplot2", quietly = TRUE)) {
-# Plot the explantion (this function)
-plot(explanation)
+  if (requireNamespace("ggplot2", quietly = TRUE)) {
+    # Plot the explantion (this function)
+    plot(explanation)
+  }
 }
-}
-
 }
 \author{
 Martin Jullum

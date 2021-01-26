@@ -242,7 +242,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #' = FALSE but \code{n_samples} is less than the number of obs in the leaf.
 #'
 #' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
-#' used for different numbers of conditoned features, this will be a list with the features to pass.
+#' used for different numbers of conditioned features, this will be a list with the features to pass.
 #'
 #' @param  mc_cores Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
 #' tree building (\code{create_ctree}) and tree sampling (\code{sample_ctree}). Defaults to 1. Note: Uses

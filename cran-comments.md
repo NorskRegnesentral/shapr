@@ -1,15 +1,9 @@
 
-# Patch for shapr 0.1.3
+# Minor release, shapr 0.2.0
 
-* Got an email fran CRAN that shapr gave ERROR due to ERROR in package under Suggests (xgboost). Even though the xgboost issue was fixed in time, shapr was taken off CRAN due to packages under Suggests not being used conditionally in tests and examples. This patch fixes this issue using
-```
-if(requireNamespace("pkgname", quietly = TRUE))
-```
-and checked to run fine without Suggested packages through
-```
-devtools::check(vignettes = FALSE, env_vars=c(`_R_CHECK_DEPENDS_ONLY_` = "true"))
-```
-
+* Adds the ctree approach from new paper
+* Simplified supported for custom models
+* Adds comprehensive check suite for feature consistency
 
 ## Test environments
 
