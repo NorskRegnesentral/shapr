@@ -162,7 +162,7 @@ The most important thing to notice is that \code{shapr} has implemented four dif
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
 \code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
 
-In addition to this the user will also have the option of combining the four approaches.
+In addition, the user also has the option of combining the four approaches.
 E.g. if you're in a situation where you have trained a model the consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
 the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version

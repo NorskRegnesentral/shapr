@@ -93,11 +93,11 @@ test_that("Test functions in explanation.R", {
     approach <- c(rep("gaussian", 2), rep("empirical", 2))
     ex_list[[17]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
-    if (requireNamespace("party", quietly = TRUE)) {
+    # Ex 18: Explain combined II - all empirical
+    approach <- c(rep("empirical", 4))
+    ex_list[[18]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
-      # Ex 18: Explain combined II - all empirical
-      approach <- c(rep("empirical", 4))
-      ex_list[[18]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
+    if (requireNamespace("party", quietly = TRUE)) {
 
       # Ex 19: Explain predictions (ctree, sample = FALSE, default parameters)
       ex_list[[19]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE)
@@ -177,7 +177,7 @@ test_that("Test functions in explanation.R", {
       ex_list[[38]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
                                mincriterion = rep(0.95, 4))
 
-      # Ex 38: Test that ctree with mincriterion equal to same probability four times gives the same as only passing one
+      # Ex 39: Test that ctree with mincriterion equal to same probability four times gives the same as only passing one
       # probability to mincriterion
       expect_equal(
         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
@@ -187,7 +187,7 @@ test_that("Test functions in explanation.R", {
       )
 
 
-      # Ex 39: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion only once
+      # Ex 40: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion only once
       expect_equal(
         (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE,
                  mincriterion = c(rep(0.95, 2), rep(0.95, 2))))$dt,
@@ -222,14 +222,14 @@ test_that("Test functions in explanation.R", {
 
         explain_base_sample <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE)
 
-        # Seed consistent when only paralellizing create_ctree, and not sample_ctree
+        # Consistent results when only paralellizing create_ctree, and not sample_ctree
         expect_equal(
           explain_base_sample,
           explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
                   mc_cores_create_ctree = multicore, mc_cores_sample_ctree = 1)
         )
 
-        # Seed consistent, when run twice with same seed
+        # Consistent results when ran twice with same seed
         expect_equal(
           explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
                   mc_cores = multicore),
@@ -304,7 +304,7 @@ test_that("Testing data input to explain in explanation.R", {
     )
 
     # Linear model
-    ll <- list(
+    list_models <- list(
       lm(
         formula = formula,
         data = xy_train_full_df
@@ -312,13 +312,13 @@ test_that("Testing data input to explain in explanation.R", {
     )
 
     all_explainers <- list(
-      shapr(x_train, ll[[1]])
+      shapr(x_train, list_models[[1]])
     )
 
     # explainer 1
     # Expect message due to no label/factor checking
-    l <- list()
-    l[[1]] <- expect_silent(
+    list_explanation <- list()
+    list_explanation[[1]] <- expect_silent(
       explain(
         all_test_data[[1]],
         all_explainers[[1]],
@@ -328,7 +328,7 @@ test_that("Testing data input to explain in explanation.R", {
       )
     )
     # Expect message due to no label/factor checking
-    l[[2]] <- expect_silent(
+    list_explanation[[2]] <- expect_silent(
       explain(
         all_test_data[[2]],
         all_explainers[[1]],
@@ -338,7 +338,7 @@ test_that("Testing data input to explain in explanation.R", {
       )
     )
     # Expect message due to removal of data
-    l[[3]] <- expect_message(
+    list_explanation[[3]] <- expect_message(
       explain(
         all_test_data[[3]],
         all_explainers[[1]],
@@ -347,25 +347,25 @@ test_that("Testing data input to explain in explanation.R", {
         n_samples = 1e2
       )
     )
-    for (i in 2:length(l)) {
-      expect_equal(l[[i - 1]], l[[i]])
+    for (i in 2:length(list_explanation)) {
+      expect_equal(list_explanation[[i - 1]], list_explanation[[i]])
     }
 
 
     if (requireNamespace("xgboost", quietly = TRUE)) {
-      ll[[length(ll) + 1]] <- xgboost::xgboost(
+      list_models[[length(list_models) + 1]] <- xgboost::xgboost(
         data = x_train,
         label = y_train,
         nround = 5,
         verbose = FALSE
       )
 
-      all_explainers[[length(all_explainers) + 1]] <- shapr(x_train, ll[[length(ll)]])
+      all_explainers[[length(all_explainers) + 1]] <- shapr(x_train, list_models[[length(list_models)]])
 
       # explainer 2
       # Expect silent
-      l <- list()
-      l[[1]] <- expect_silent(
+      list_explanation <- list()
+      list_explanation[[1]] <- expect_silent(
         explain(
           all_test_data[[1]],
           all_explainers[[length(all_explainers)]],
@@ -375,7 +375,7 @@ test_that("Testing data input to explain in explanation.R", {
         )
       )
       # Expect silent
-      l[[2]] <- expect_silent(
+      list_explanation[[2]] <- expect_silent(
         explain(
           all_test_data[[2]],
           all_explainers[[length(all_explainers)]],
@@ -385,7 +385,7 @@ test_that("Testing data input to explain in explanation.R", {
         )
       )
       # Expect message due to removal of data
-      l[[3]] <- expect_message(
+      list_explanation[[3]] <- expect_message(
         explain(
           all_test_data[[3]],
           all_explainers[[length(all_explainers)]],
@@ -394,25 +394,25 @@ test_that("Testing data input to explain in explanation.R", {
           n_samples = 1e2
         )
       )
-      for (i in 2:length(l)) {
-        expect_equal(l[[i - 1]], l[[i]])
+      for (i in 2:length(list_explanation)) {
+        expect_equal(list_explanation[[i - 1]], list_explanation[[i]])
       }
     }
 
 
     if (requireNamespace("ranger", quietly = TRUE)) {
-      ll[[length(ll) + 1]] <- ranger::ranger(
+      list_models[[length(list_models) + 1]] <- ranger::ranger(
         formula = formula,
         data = xy_train_full_df,
         num.trees = 50
       )
 
-      all_explainers[[length(all_explainers) + 1]] <- shapr(x_train, ll[[length(ll)]])
+      all_explainers[[length(all_explainers) + 1]] <- shapr(x_train, list_models[[length(list_models)]])
 
       # explainer 3
       # Expect silent
-      l <- list()
-      l[[1]] <- expect_silent(
+      list_explanation <- list()
+      list_explanation[[1]] <- expect_silent(
         explain(
           all_test_data[[1]],
           all_explainers[[length(all_explainers)]],
@@ -422,7 +422,7 @@ test_that("Testing data input to explain in explanation.R", {
         )
       )
       # Expect silent
-      l[[2]] <- expect_silent(
+      list_explanation[[2]] <- expect_silent(
         explain(
           all_test_data[[2]],
           all_explainers[[length(all_explainers)]],
@@ -432,7 +432,7 @@ test_that("Testing data input to explain in explanation.R", {
         )
       )
       # Expect message due removal of data
-      l[[3]] <- expect_message(
+      list_explanation[[3]] <- expect_message(
         explain(
           all_test_data[[3]],
           all_explainers[[length(all_explainers)]],
@@ -441,8 +441,8 @@ test_that("Testing data input to explain in explanation.R", {
           n_samples = 1e2
         )
       )
-      for (i in 2:length(l)) {
-        expect_equal(l[[i - 1]], l[[i]])
+      for (i in 2:length(list_explanation)) {
+        expect_equal(list_explanation[[i - 1]], list_explanation[[i]])
       }
 
     }

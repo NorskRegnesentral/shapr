@@ -271,8 +271,8 @@ test_that("Test check_features + update_data", {
   # List of models to run silently
   l_silent <- list(
     stats::lm(formula_numeric, data = train_df),
-    stats::glm(formula_numeric, data = train_df),
     stats::lm(formula_factor, data = train_df),
+    stats::glm(formula_numeric, data = train_df),
     stats::glm(formula_factor, data = train_df),
     stats::glm(formula_binary_numeric, data = train_df, family = "binomial"),
     stats::glm(formula_binary_factor, data = train_df, family = "binomial")
@@ -372,7 +372,7 @@ test_that("Test check_features + update_data", {
 
   #### Now turning to update_data tests ####
 
-  model_features_ok <- get_model_specs(l_silent[[3]])
+  model_features_ok <- get_model_specs(l_silent[[2]])
 
   # Checking null output and message to remove features
   train_dt <- as.data.table(train_df)
@@ -386,7 +386,7 @@ test_that("Test check_features + update_data", {
   expect_silent(expect_null(update_data(data_to_update,model_features_ok)))
 
   # Checking null output and message to shuffle factor levels
-  data_to_update_2 <- head(data_to_update,20)
+  data_to_update_2 <- head(copy(train_dt),20)
   data_to_update_2$rad <- droplevels(data_to_update_2$rad)
   org_levels_rad <- levels(data_to_update_2$rad)
 
@@ -476,13 +476,8 @@ test_that("Test get_model_specs",{
     x_var_numeric <- c("lstat", "rm", "dis", "indus")
     formula_numeric <- as.formula(paste0("y_train ~ ",paste0(x_var_numeric,collapse="+")))
 
-    # Backdoors in main func
-
     # Unsupported model
     model_unsupported <- gbm::gbm(formula_numeric,distribution = "gaussian",data = train_df)
-    model_native <- stats::lm(formula_numeric, data = train_df)
-
-    # Unsupported model
     expect_error(get_model_specs(model_unsupported))
 
     # This is further tested for custom models in the script tests/manual_test_scripts/test_custom_models.R

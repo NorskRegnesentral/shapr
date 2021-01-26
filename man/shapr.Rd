@@ -35,7 +35,7 @@ Named list that contains the following items:
   \item{feature_list}{List. The \code{updated_feature_list} output from \code{\link[shapr:preprocess_data]{preprocess_data}}}
 }
 
-In addition to the items above \code{model} and \code{n_combinations} is also present in the returned object.
+In addition to the items above, \code{model} and \code{n_combinations} are also present in the returned object.
 }
 \description{
 Create an explainer object with Shapley weights for test data.

@@ -186,8 +186,8 @@ check_features <- function(f_list_1,f_list_2,
 
   # Also check that the features in 2 are in 1
   if(!use_1_as_truth){
-    if (length(feat_in_1_not_in_2)>0) {
-      stop(paste0("Feature(s) ",paste0(feat_in_1_not_in_2,collapse=", ")," in ",name_2," is not in ",name_1,"."))
+    if (length(feat_in_2_not_in_1)>0) {
+      stop(paste0("Feature(s) ",paste0(feat_in_2_not_in_1,collapse=", ")," in ",name_2," is not in ",name_1,"."))
     }
   }
 
@@ -298,9 +298,13 @@ update_data = function(data,updater){
   # Reorder and delete unused columns
   cnms_remove <- setdiff(colnames(data), new_labels)
   if (length(cnms_remove) > 0) {
-    message(paste0("The columns(s) ",paste0(cnms_remove,collapse=", ")," is not used by the model and thus removed ",
-                   "from the data."))
-
+    message(
+      paste0(
+        "The columns(s) ",
+        paste0(cnms_remove,collapse=", "),
+        " is not used by the model and thus removed from the data."
+        )
+      )
     data[, (cnms_remove) := NULL]
   }
   data.table::setcolorder(data, new_labels)

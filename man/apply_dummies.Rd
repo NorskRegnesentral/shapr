@@ -15,7 +15,7 @@ apply_dummies(feature_list, testdata)
 feature names, types, and levels as \code{feature_list}.}
 }
 \value{
-A data.table with all features, but where the factors in \code{testdata} as
+A data.table with all features but where the factors in \code{testdata} are
 one-hot encoded variables as specified in feature_list
 }
 \description{

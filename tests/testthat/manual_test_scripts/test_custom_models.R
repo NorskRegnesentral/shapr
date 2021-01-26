@@ -36,11 +36,11 @@ formula_factor <- as.formula(paste0("y_train ~ ",paste0(x_var_factor,collapse="+
 # Custom model with only numeric features
 model_custom <- gbm::gbm(formula_numeric,data = train_df,distribution = "gaussian")
 expect_error(shapr(train_df_used_numeric ,model_custom)) # Required model objects defined
-get_model_specs.gbm <- function(model){
+get_model_specs.gbm <- function(x){
   feature_list = list()
-  feature_list$labels <- labels(model$Terms)
+  feature_list$labels <- labels(x$Terms)
   m <- length(feature_list$labels)
-  feature_list$classes <- attr(model$Terms,"dataClasses")[-1]
+  feature_list$classes <- attr(x$Terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[feature_list$classes=="factor"] <- NA # the model object doesn't contain factor levels info
   return(feature_list)
@@ -73,11 +73,11 @@ rm(predict_model.gbm)
 # Custom model with factors
 model_custom <- gbm::gbm(formula_factor,data = train_df,distribution = "gaussian")
 expect_error(shapr(train_df_used_factor ,model_custom)) # Required model objects defined
-get_model_specs.gbm <- function(model){
+get_model_specs.gbm <- function(x){
   feature_list = list()
-  feature_list$labels <- labels(model$Terms)
+  feature_list$labels <- labels(x$Terms)
   m <- length(feature_list$labels)
-  feature_list$classes <- attr(model$Terms,"dataClasses")[-1]
+  feature_list$classes <- attr(x$Terms,"dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[feature_list$classes=="factor"] <- NA # the model object doesn't contain factor levels info
   return(feature_list)
@@ -103,6 +103,16 @@ expect_message(shapr(train_df_used_factor ,model_custom)) # Both defined, so pas
 
 rm(get_model_specs.gbm)
 
-expect_message(shapr(train_df_used_factor ,model_custom)) # Only predict_model defined, so warning
+expect_message(shapr(train_df_used_factor ,model_custom)) # Only predict_model defined, so warning message returned
 
 rm(predict_model.gbm)
+
+predict_model.gbm <- function(x, newdata) NULL
+
+# Erroneous predict_model defined, so throw error + messages
+expect_message(expect_error(shapr(train_df_used_factor ,model_custom)))
+
+
+rm(predict_model.gbm)
+
+
