@@ -2,26 +2,27 @@
 % Please edit documentation in R/features.R
 \name{apply_dummies}
 \alias{apply_dummies}
-\title{Make dummy variables - this is an internal function intended only to be used in
+\title{Apply dummy variables - this is an internal function intended only to be used in
 predict_model.xgb.Booster()}
 \usage{
-apply_dummies(obj, testdata)
+apply_dummies(feature_list, testdata)
 }
 \arguments{
-\item{obj}{List. Output of \code{make_dummies$obj}.}
+\item{feature_list}{List. The \code{feature_list} object in the output object after running
+\code{\link[shapr:make_dummies]{make_dummies}}}
 
 \item{testdata}{data.table or data.frame. New data that has the same
-feature names, types, and levels as \code{obj$data}.}
+feature names, types, and levels as \code{feature_list}.}
 }
 \value{
-A data.frame containing all of the factors in \code{testdata} as
-one-hot encoded variables.
+A data.table with all features but where the factors in \code{testdata} are
+one-hot encoded variables as specified in feature_list
 }
 \description{
-Make dummy variables - this is an internal function intended only to be used in
+Apply dummy variables - this is an internal function intended only to be used in
 predict_model.xgb.Booster()
 }
 \author{
-Annabelle Redelmeier
+Annabelle Redelmeier, Martin Jullum
 }
 \keyword{internal}

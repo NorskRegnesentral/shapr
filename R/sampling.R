@@ -167,7 +167,10 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #'
 #' @keywords internal
 #'
+#' @author Annabelle Redelmeier
+#'
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
 #' m <- 10
 #' n <- 40
 #' n_samples <- 50
@@ -189,8 +192,7 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #' tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
 #' shapr:::sample_ctree(tree = tree, n_samples = n_samples, x_test = x_test_dt, x_train = x_train,
 #' p = length(x_test), sample = TRUE)
-#'
-#' @author Annabelle Redelmeier
+#' }
 sample_ctree <- function(tree,
                          n_samples,
                          x_test,
@@ -281,8 +283,12 @@ sample_ctree <- function(tree,
 #' @return List with conditional inference tree and the variables conditioned/not conditioned on.
 #'
 #' @keywords internal
+#' @author Annabelle Redelmeier, Martin Jullum
+#'
+#' @export
 #'
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
 #' m <- 10
 #' n <- 40
 #' n_samples <- 50
@@ -297,10 +303,7 @@ sample_ctree <- function(tree,
 #' create_ctree(given_ind = given_ind, x_train = x_train,
 #' mincriterion = mincriterion, minsplit = minsplit,
 #' minbucket = minbucket, use_partykit = "on_error")
-#'
-#' @author Annabelle Redelmeier, Martin Jullum
-#'
-#' @export
+#' }
 create_ctree <- function(given_ind,
                              x_train,
                              mincriterion,

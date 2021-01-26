@@ -50,24 +50,23 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 
 #' Create an explainer object with Shapley weights for test data.
 #'
-#' @param x Numeric matrix or data.frame. Contains the data used for training the model.
+#' @param x Numeric matrix or data.frame/data.table. Contains the data used to estimate the (conditional)
+#' distributions for the features needed to properly estimate the conditional expectations in the Shapley formula.
 #'
-#' @param model The model whose predictions we want to explain. See \code{\link{predict_model}}
-#' for more information about which models \code{shapr} supports natively.
+#' @param model The model whose predictions we want to explain. Run
+#' \code{\link[shapr:get_supported_models]{shapr:::get_supported_models()}}
+#' for a table of which models \code{shapr} supports natively.
 #'
 #' @param n_combinations Integer. The number of feature combinations to sample. If \code{NULL},
 #' the exact method is used and all combinations are considered. The maximum number of
 #' combinations equals \code{2^ncol(x)}.
 #'
-#' @param feature_labels Character vector. The labels/names of the features used for training the model.
-#' Only applicable if you are using a custom model. Otherwise the features in use are extracted from \code{model}.
 #'
 #' @return Named list that contains the following items:
 #' \describe{
 #'   \item{exact}{Boolean. Equals \code{TRUE} if \code{n_combinations = NULL} or
 #'   \code{n_combinations < 2^ncol(x)}, otherwise \code{FALSE}.}
 #'   \item{n_features}{Positive integer. The number of columns in \code{x}}
-#'   \item{model_type}{Character. Returned value after calling \code{model_type(model)}}
 #'   \item{S}{Binary matrix. The number of rows equals the number of unique combinations, and
 #'   the number of columns equals the total number of features. I.e. let's say we have a case with
 #'   three features. In that case we have \code{2^3 = 8} unique combinations. If the j-th
@@ -76,16 +75,17 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'   \item{W}{Second item}
 #'   \item{X}{data.table. Returned object from \code{\link{feature_combinations}}}
 #'   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
+#'   \item{feature_list}{List. The \code{updated_feature_list} output from \code{\link[shapr:preprocess_data]{preprocess_data}}}
 #' }
 #'
-#' In addition to the items above \code{model}, \code{feature_labels} (updated with the names actually used by the
-#' model) and \code{n_combinations} is also present in the returned object.
+#' In addition to the items above, \code{model} and \code{n_combinations} are also present in the returned object.
 #'
 #' @export
 #'
 #' @author Nikolai Sellereite
 #'
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' # Load example data
 #' data("Boston", package = "MASS")
 #' df <- Boston
@@ -118,10 +118,10 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'
 #' print(nrow(explainer$X))
 #' # 16 (which equals 2^4)
+#' }
 shapr <- function(x,
                   model,
-                  n_combinations = NULL,
-                  feature_labels = NULL) {
+                  n_combinations = NULL) {
 
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
@@ -131,22 +131,31 @@ shapr <- function(x,
   # Setup
   explainer <- as.list(environment())
   explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
-  explainer$model_type <- model_type(model)
 
-  # Checks input argument
-  feature_labels <- features(model, colnames(x), feature_labels)
-  explainer$n_features <- length(feature_labels)
 
-  # Converts to data.table, otherwise copy to x_train  --------------
-  x_train <- data.table::as.data.table(x)
+  # Check features of training data against model specification
+  feature_list_model <- get_model_specs(model)
 
-  # Removes variables that are not included in model   --------------
-  cnms_remove <- setdiff(colnames(x), feature_labels)
-  if (length(cnms_remove) > 0) x_train[, (cnms_remove) := NULL]
-  data.table::setcolorder(x_train, feature_labels)
+  processed_list <- preprocess_data(x = x,
+                                    feature_list = feature_list_model)
 
-  # Checks model and features
-  explainer$p <- predict_model(model, head(x_train))
+  x_train <- processed_list$x_dt
+  updated_feature_list <- processed_list$updated_feature_list
+
+  explainer$n_features <- ncol(x_train)
+
+  # Checking that the prediction function works
+  tmp <- predict_model(model, head(x_train,2))
+  if(!(all(is.numeric(tmp)) & length(tmp)==2)){
+    stop(
+      paste0(
+        "The predict_model function of class ",class(model)," is invalid.\n",
+        "See the 'Advanced usage' section of the vignette:\n",
+        "vignette('understanding_shapr', package = 'shapr')\n",
+        "for more information on running shapr with custom models.\n"
+        )
+    )
+  }
 
   # Get all combinations ----------------
   dt_combinations <- feature_combinations(
@@ -177,9 +186,8 @@ shapr <- function(x,
   explainer$W <- weighted_mat
   explainer$X <- dt_combinations
   explainer$x_train <- x_train
-  explainer$feature_labels <- feature_labels
   explainer$x <- NULL
-  explainer$p <- NULL
+  explainer$feature_list <- updated_feature_list
 
   attr(explainer, "class") <- c("explainer", "list")
 

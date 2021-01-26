@@ -4,20 +4,19 @@
 \alias{shapr}
 \title{Create an explainer object with Shapley weights for test data.}
 \usage{
-shapr(x, model, n_combinations = NULL, feature_labels = NULL)
+shapr(x, model, n_combinations = NULL)
 }
 \arguments{
-\item{x}{Numeric matrix or data.frame. Contains the data used for training the model.}
+\item{x}{Numeric matrix or data.frame/data.table. Contains the data used to estimate the (conditional)
+distributions for the features needed to properly estimate the conditional expectations in the Shapley formula.}
 
-\item{model}{The model whose predictions we want to explain. See \code{\link{predict_model}}
-for more information about which models \code{shapr} supports natively.}
+\item{model}{The model whose predictions we want to explain. Run
+\code{\link[shapr:get_supported_models]{shapr:::get_supported_models()}}
+for a table of which models \code{shapr} supports natively.}
 
 \item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
 the exact method is used and all combinations are considered. The maximum number of
 combinations equals \code{2^ncol(x)}.}
-
-\item{feature_labels}{Character vector. The labels/names of the features used for training the model.
-Only applicable if you are using a custom model. Otherwise the features in use are extracted from \code{model}.}
 }
 \value{
 Named list that contains the following items:
@@ -25,7 +24,6 @@ Named list that contains the following items:
   \item{exact}{Boolean. Equals \code{TRUE} if \code{n_combinations = NULL} or
   \code{n_combinations < 2^ncol(x)}, otherwise \code{FALSE}.}
   \item{n_features}{Positive integer. The number of columns in \code{x}}
-  \item{model_type}{Character. Returned value after calling \code{model_type(model)}}
   \item{S}{Binary matrix. The number of rows equals the number of unique combinations, and
   the number of columns equals the total number of features. I.e. let's say we have a case with
   three features. In that case we have \code{2^3 = 8} unique combinations. If the j-th
@@ -34,15 +32,16 @@ Named list that contains the following items:
   \item{W}{Second item}
   \item{X}{data.table. Returned object from \code{\link{feature_combinations}}}
   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
+  \item{feature_list}{List. The \code{updated_feature_list} output from \code{\link[shapr:preprocess_data]{preprocess_data}}}
 }
 
-In addition to the items above \code{model}, \code{feature_labels} (updated with the names actually used by the
-model) and \code{n_combinations} is also present in the returned object.
+In addition to the items above, \code{model} and \code{n_combinations} are also present in the returned object.
 }
 \description{
 Create an explainer object with Shapley weights for test data.
 }
 \examples{
+if (requireNamespace("MASS", quietly = TRUE)) {
 # Load example data
 data("Boston", package = "MASS")
 df <- Boston
@@ -75,6 +74,7 @@ explainer <- shapr(df1, model, n_combinations = 1e3)
 
 print(nrow(explainer$X))
 # 16 (which equals 2^4)
+}
 }
 \author{
 Nikolai Sellereite

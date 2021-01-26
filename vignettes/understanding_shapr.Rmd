@@ -344,10 +344,10 @@ y_train <- Boston[-1:-6, y_var]
 x_test_cat <- Boston[1:6, x_var_cat]
 
 # -- special function when using categorical data + xgboost
-make_dummies_list <- make_dummies(traindata = x_train_cat, testdata = x_test_cat)
+dummylist <- make_dummies(traindata = x_train_cat, testdata = x_test_cat)
 
-x_train_dummy <- make_dummies_list$train_dummies
-x_test_dummy <- make_dummies_list$test_dummies
+x_train_dummy <- dummylist$train_dummies
+x_test_dummy <- dummylist$test_dummies
 
 # Fitting a basic xgboost model to the training data
 model_cat <- xgboost::xgboost(
@@ -356,22 +356,22 @@ model_cat <- xgboost::xgboost(
   nround = 20,
   verbose = FALSE
 )
-model_cat$dummylist <- make_dummies_list$obj
+model_cat$feature_list <- dummylist$feature_list
 
-explainer_cat <- shapr(make_dummies_list$traindata_new, model_cat)
+explainer_cat <- shapr(dummylist$traindata_new, model_cat)
 
 p <- mean(y_train)
 
 explanation_cat <- explain(
-  make_dummies_list$testdata_new,
+  dummylist$testdata_new,
   approach = "ctree",
   explainer = explainer_cat,
   prediction_zero = p
 )
 
-# Plot the resulting explanations for observations 1 and 6, excluding 
+# Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
-plot(explanation_ctree, plot_phi0 = FALSE, index_x_test = c(1, 6))
+plot(explanation_cat, plot_phi0 = FALSE, index_x_test = c(1, 6))
 
 ```
 
@@ -548,7 +548,7 @@ plot(explanation_categorical, plot_phi0 = FALSE, index_x_test = c(1, 6))
 
 ## Explain custom models
 
-`shapr` currently supports explanation of predictions from models fitted with the following functions:
+`shapr` currently natively supports explanation of predictions from models fitted with the following functions:
 
 * `stats::lm`
 * `stats::glm` 
@@ -558,22 +558,38 @@ plot(explanation_categorical, plot_phi0 = FALSE, index_x_test = c(1, 6))
 
 Any continuous response regression model or binary classification model of these model classes, can be explained with 
 the package directly as exemplified above.
-Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple 
-additional functions to the class your model belongs to. 
-The first class function is `model_type`, taking the model object as input, and outputting a character indicating 
-whether the model is a (continuous response) `"regression"` model, or a (binary) `"classification"` model. 
-The second function is `predict_model`, taking the model and data (as a `matrix` or `data.frame`) as input and 
-outputting the corresponding prediction as a numeric vector. 
-Once these two class functions are created, one can explain predictions from this model class as before.
-Below we exemplify this process by explaining a `gbm` model using the `gbm` package, fitted to the same Boston data 
-set as used above.
+Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two (or one) 
+simple additional functions to the class your model belongs to. 
+
+*Note: The below procedure for specifying custom models was changed in shapr v0.2.0*
+The first class function is `predict_model`, taking the model and data (as a `matrix` or `data.frame/data.table`) as 
+input and outputting the corresponding prediction as a numeric vector. 
+The second (optional, but highly recommended) class function is `get_model_specs`, taking the model as input and 
+outputting a list with the following elements: 
+*labels* (vector with the feature names to compute Shapley values for), 
+*classes* (a named vector with the labels as names and the class type as elements), 
+*factor_levels* (a named list with the labels as names and vectors with the factor levels as elements (NULL if the 
+feature is not a factor)). 
+The `get_model_specs` function is used to check that the format of the data passed to `shapr` and `explain` have the 
+correct format in terms of the necessary feature columns being available and having the correct class/attributes.
+It is highly recommended to do such checks in order to ensure correct usage of `shapr` and `explain`. 
+If, for some reason, such checking is not desirable, one does not have to provide the `get_model_specs` function class.
+This will, however, throw a warning that all feature consistency checking against the model is disabled.
+
+Once the above class functions are created, one can explain predictions from this model class as before.
+These functions **can** be made general enough to handle all supported model types of that class, or they can be made
+minimal, possibly only allowing explanation of the specific version of the model class at hand. 
+Below we give examples of both full support versions of these functions and a minimal version which skips the
+`get_model_specs` function. 
+We do this for the `gbm` model class from the `gbm` package, fitted to the same Boston data set as used above.
 
 
 ```{r}
 library(gbm)
 
-form <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
-xy_train <- data.frame(x_train, medv = y_train)
+xy_train <- data.frame(x_train,medv = y_train)
+
+form <- as.formula(paste0(y_var,"~",paste0(x_var,collapse="+")))
 
 # Fitting a gbm model
 set.seed(825)
@@ -581,56 +597,73 @@ model <- gbm::gbm(
   form,
   data = xy_train,
   distribution = "gaussian"
-  )
+)
 
-# Create custom function of model_type for gbm
-model_type.gbm <- function(x) {
-  ifelse(
-    x$distribution$name %in% c("bernoulli", "adaboost"),
-    "classification",
-    "regression"
-  )
-}
+#### Full feature versions of the three required model functions ####
 
-# Create custom function of predict_model for gbm
 predict_model.gbm <- function(x, newdata) {
-
+  
   if (!requireNamespace('gbm', quietly = TRUE)) {
     stop('The gbm package is required for predicting train models')
   }
-  model_type <- model_type(x)
 
+  model_type <- ifelse(
+    x$distribution$name %in% c("bernoulli","adaboost"),
+    "classification",
+    "regression"
+  )
   if (model_type == "classification") {
 
-    predict(x, as.data.frame(newdata), type = "response", n.trees = x$n.trees)
+    predict(x, as.data.frame(newdata), type = "response",n.trees = x$n.trees)
   } else {
 
-    predict(x, as.data.frame(newdata), n.trees = x$n.trees)
+    predict(x, as.data.frame(newdata),n.trees = x$n.trees)
   }
+}
+
+get_model_specs.gbm <- function(x){
+  feature_list = list()
+  feature_list$labels <- labels(x$Terms)
+  m <- length(feature_list$labels)
+
+  feature_list$classes <- attr(x$Terms,"dataClasses")[-1]
+  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
+  feature_list$factor_levels[feature_list$classes=="factor"] <- NA # the model object doesn't contain factor levels info
+
+  return(feature_list)
 }
 
 # Prepare the data for explanation
 set.seed(123)
-explainer <- shapr(xy_train, model, feature_labels = x_var)
+explainer <- shapr(xy_train, model)
+p0 <- mean(xy_train[,y_var])
+explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
+# Plot results
+plot(explanation)
 
-# Spedifying the phi_0, i.e. the expected prediction without any features
-p0 <- mean(xy_train[, y_var])
+#### Minimal version of the three required model functions ####      
+# Note: Working only for this exact version of the model class 
+# Avoiding to define get_model_specs skips all feature         
+# consistency checking between your data and model             
 
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with
-# bandwidth parameter sigma = 0.1 (default)
-explanation <- explain(
-  x_test,
-  explainer,
-  approach = "empirical",
-  prediction_zero = p0
-)
+# Removing the previously defined functions to simulate a fresh start
+rm(predict_model.gbm)
+rm(get_model_specs.gbm)
 
-# Plot the resulting explanations for observations 1 and 6, excluding
-# the no-covariate effect.
-plot(explanation_combined, plot_phi0 = FALSE, index_x_test = c(1, 6))
+predict_model.gbm <- function(x, newdata) {
+    predict(x, as.data.frame(newdata),n.trees = x$n.trees)
+}
+
+# Prepare the data for explanation
+set.seed(123)
+explainer <- shapr(x_train, model)
+p0 <- mean(xy_train[,y_var])
+explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
+# Plot results
+plot(explanation)
+
+
 ```
-Note that this explains a different (but similar) model than the above xgboost model!
 
 
 

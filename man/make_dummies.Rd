@@ -15,27 +15,22 @@ feature names, types, and levels as \code{traindata}.}
 \value{
 A list that contains the following entries:
 \describe{
-\item{obj}{List, Contains \describe{
-\item{features}{Vector. Contains the names of all the features in \code{data}.}
-\item{factor_features}{Vector. Contains the names of all the factors in \code{data}.}
-\item{factor_list}{List. Contains each factor and its vector of levels.}
-\item{contrasts_list}{List. Contains all the contrasts of the factors.}
-}}
+\item{feature_list}{List. Output from \code{check_features}}
 \item{train_dummies}{A data.frame containing all of the factors in \code{traindata} as
 one-hot encoded variables.}
 \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
 one-hot encoded variables.}
 \item{traindata_new}{Original traindata with correct column ordering and factor levels. To be passed to
-\code{shapr()}.}
+\code{\link[shapr:shapr]{shapr}.}}
 \item{testdata_new}{Original testdata with correct column ordering and factor levels. To be passed to
-\code{explain()}.}
+\code{\link[shapr:explain]{explain}.}}
 }
 }
 \description{
 Initiate the making of dummy variables
 }
 \examples{
-
+if (requireNamespace("MASS", quietly = TRUE)) {
 data("Boston", package = "MASS")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
@@ -48,8 +43,8 @@ x_train$rm <- factor(round(x_train$rm))
 x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
 
 dummylist <- make_dummies(traindata = x_train, testdata = x_test)
-
+}
 }
 \author{
-Annabelle Redelmeier
+Annabelle Redelmeier, Martin Jullum
 }

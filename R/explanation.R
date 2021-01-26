@@ -16,11 +16,11 @@
 #'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
-#' @details The most important thing to notice is that \code{shapr} has implemented three different
+#' @details The most important thing to notice is that \code{shapr} has implemented four different
 #' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-#' \code{"gaussian"} and \code{"copula"}.
+#' \code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
 #'
-#' In addition to this the user will also have the option of combining the three approaches.
+#' In addition, the user also has the option of combining the four approaches.
 #' E.g. if you're in a situation where you have trained a model the consists of 10 features,
 #' and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
 #' the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
@@ -60,9 +60,10 @@
 #'
 #' @export
 #'
-#' @author Camilla Lingjaerde, Nikolai Sellereite
+#' @author Camilla Lingjaerde, Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier
 #'
 #' @examples
+#' if (requireNamespace("MASS", quietly = TRUE)) {
 #' # Load example data
 #' data("Boston", package = "MASS")
 #'
@@ -99,19 +100,22 @@
 #' print(explain1$dt)
 #'
 #' # Plot the results
+#' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #' plot(explain1)
+#' }
+#' }
 explain <- function(x, explainer, approach, prediction_zero, ...) {
   extras <- list(...)
 
   # Check input for x
   if (!is.matrix(x) & !is.data.frame(x)) {
-    stop("x should be a matrix or a dataframe.")
+    stop("x should be a matrix or a data.frame/data.table.")
   }
 
   # Check input for approach
   if (!(is.vector(approach) &&
     is.atomic(approach) &&
-    (length(approach) == 1 | length(approach) == length(explainer$feature_labels)) &&
+    (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
     all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
   ) {
     stop(
@@ -123,16 +127,7 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     )
   }
 
-  # Check that x contains correct variables
-  if (!all(explainer$feature_labels %in% colnames(x))) {
-    stop(
-      paste0(
-        "\nThe test data, x, does not contain all features necessary for\n",
-        "generating predictions. Please modify x so that all labels given\n",
-        "by explainer$feature_labels is present in colnames(x)."
-      )
-    )
-  }
+
 
   if (length(approach) > 1) {
     class(x) <- "combined"
@@ -175,7 +170,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
                               start_aicc = 0.1, w_threshold = 0.95, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec
@@ -207,8 +202,9 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
 
+
   # Add arguments to explainer object
-  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
 
   # If mu is not provided directly, use mean of training data
@@ -246,7 +242,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 
   # Setup
-  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
 
   # Prepare transformed data
@@ -314,7 +310,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
   }
 
   # Add arguments to explainer object
-  explainer$x_test <- explainer_x_test_dt(x, explainer$feature_labels)
+  explainer$x_test <- preprocess_data(x, explainer$feature_list)$x_dt
   explainer$approach <- approach
   explainer$mincriterion <- mincriterion
   explainer$minsplit <- minsplit
@@ -341,7 +337,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
-  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
 
   dt_l <- list()
   for (i in seq_along(l)) {
@@ -398,32 +394,6 @@ get_list_approaches <- function(n_features, approach) {
   return(l)
 }
 
-#' @keywords internal
-explainer_x_test <- function(x_test, feature_labels) {
-
-  # Remove variables that were not used for training
-  x <- data.table::as.data.table(x_test)
-  cnms_remove <- setdiff(colnames(x), feature_labels)
-  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
-  data.table::setcolorder(x, feature_labels)
-
-  return(as.matrix(x))
-}
-
-#' @keywords internal
-explainer_x_test_dt <- function(x_test, feature_labels) {
-
-  # Remove variables that were not used for training
-  # Same as explainer_x_test() but doesn't convert to a matrix
-  # Useful for ctree method which sometimes takes categorical features
-  x <- data.table::as.data.table(x_test)
-  cnms_remove <- setdiff(colnames(x), feature_labels)
-  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
-  data.table::setcolorder(x, feature_labels)
-
-  return(x)
-}
-
 
 #' @rdname explain
 #' @name explain
@@ -461,16 +431,4 @@ get_list_ctree_mincrit <- function(n_features, mincriterion) {
     l[[nn]] <- which(n_features %in% x)
   }
   return(l)
-}
-
-#' @keywords internal
-explainer_x_test <- function(x_test, feature_labels) {
-
-  # Remove variables that were not used for training
-  x <- data.table::as.data.table(x_test)
-  cnms_remove <- setdiff(colnames(x), feature_labels)
-  if (length(cnms_remove) > 0) x[, (cnms_remove) := NULL]
-  data.table::setcolorder(x, feature_labels)
-
-  return(as.matrix(x))
 }

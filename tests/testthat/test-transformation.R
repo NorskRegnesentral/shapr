@@ -1,5 +1,3 @@
-library(shapr)
-
 context("test-transformation.R")
 
 test_that("Test inv_gaussian_transform", {

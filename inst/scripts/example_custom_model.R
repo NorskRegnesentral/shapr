@@ -8,37 +8,38 @@ data("Boston", package = "MASS")
 x_var <- c("lstat", "rm", "dis", "indus")
 y_var <- "medv"
 
-xy_train <- tail(Boston, -6)
-x_test <- head(Boston,6)
+x_train <- as.matrix(Boston[-1:-6, x_var])
+y_train <- Boston[-1:-6, y_var]
+x_test <- as.matrix(Boston[1:6, x_var])
 
 form = as.formula(paste0(y_var,"~",paste0(x_var,collapse="+")))
+
+library(gbm)
+
+xy_train <- data.frame(x_train,medv = y_train)
+
 
 # Fitting a gbm model
 set.seed(825)
 model <- gbm::gbm(
   form,
   data = xy_train,
-  distribution="gaussian"
+  distribution = "gaussian"
 )
 
+#### Full feature versions of the three required model functions ####
 
-# Create custom function of model_type for gbm
-model_type.gbm <- function(x) {
-  ifelse(
-    x$distribution$name %in% c("bernoulli","adaboost"),
-    "classification",
-    "regression"
-  )
-}
-
-# Create custom function of predict_model for gbm
 predict_model.gbm <- function(x, newdata) {
 
   if (!requireNamespace('gbm', quietly = TRUE)) {
     stop('The gbm package is required for predicting train models')
   }
-  model_type <- model_type(x)
 
+  model_type <- ifelse(
+    x$distribution$name %in% c("bernoulli","adaboost"),
+    "classification",
+    "regression"
+  )
   if (model_type == "classification") {
 
     predict(x, as.data.frame(newdata), type = "response",n.trees = x$n.trees)
@@ -48,19 +49,46 @@ predict_model.gbm <- function(x, newdata) {
   }
 }
 
+get_model_specs.gbm <- function(x){
+  feature_list = list()
+  feature_list$labels <- labels(x$Terms)
+  m <- length(feature_list$labels)
+
+  feature_list$classes <- attr(x$Terms,"dataClasses")[-1]
+  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
+  feature_list$factor_levels[feature_list$classes=="factor"] <- NA # the model object doesn't contain factor levels info
+
+  return(feature_list)
+}
+
 # Prepare the data for explanation
 set.seed(123)
-explainer <- shapr(xy_train, model,feature_labels = x_var)
-
-# Spedifying the phi_0, i.e. the expected prediction without any features
+explainer <- shapr(xy_train, model)
 p0 <- mean(xy_train[,y_var])
-
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
+# Plot results
+plot(explanation)
 
-# Printing the Shapley values for the test data
-explanation$dt
 
+# Minimal version of the three required model functions
+# Note: Working only for this exact version of the model class
+# Avoiding to define get_model_specs skips all feature
+# consistency checking between your data and model
+
+# Removing the previously defined functions to simulate a fresh start
+rm(predict_model.gbm)
+rm(get_model_specs.gbm)
+
+
+predict_model.gbm <- function(x, newdata) {
+  predict(x, as.data.frame(newdata),n.trees = x$n.trees)
+}
+
+
+# Prepare the data for explanation
+set.seed(123)
+explainer <- shapr(x_train, model)
+p0 <- mean(xy_train[,y_var])
+explanation <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
 # Plot results
 plot(explanation)

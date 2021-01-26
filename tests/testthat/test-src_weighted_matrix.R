@@ -1,5 +1,3 @@
-library(shapr)
-
 context("test-src_weighted_matrix.R")
 
 test_that("Test weight_matrix_cpp", {

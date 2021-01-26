@@ -41,6 +41,7 @@ See \code{vignette("understanding_shapr", package = "shapr")} for an example of
 how you should use the function.
 }
 \examples{
+if (requireNamespace("MASS", quietly = TRUE)) {
 #' # Load example data
 data("Boston", package = "MASS")
 
@@ -64,8 +65,11 @@ explanation <- explain(x_test,
                       prediction_zero = p,
                       n_samples = 1e2)
 
+if (requireNamespace("ggplot2", quietly = TRUE)) {
 # Plot the explantion (this function)
 plot(explanation)
+}
+}
 
 }
 \author{
