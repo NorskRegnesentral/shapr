@@ -332,7 +332,9 @@ test_that("Test check_features + update_data", {
   data_features_error <- get_data_specs(train_df)
   data_features_error$labels <- NULL
   expect_error(check_features(data_features_ok,data_features_error))
-  expect_error(check_features(data_features_error,data_features_ok))
+  expect_message(check_features(data_features_error,data_features_ok,use_1_as_truth = T))
+  expect_error(check_features(data_features_error,data_features_ok,use_1_as_truth = F))
+
 
   # Missing features
   data_features_error <- get_data_specs(train_df[,-3])

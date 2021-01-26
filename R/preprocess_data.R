@@ -145,12 +145,17 @@ check_features <- function(f_list_1,f_list_2,
     name_2 <- paste0(name_2,"_test")
   }
 
-  #### Checking that labels exists ####
-  if (is.null(f_list_1$labels)) {
-    stop(paste0(name_1," must have column names."))
+  #### Checking that labels exists if required, otherwise stop or switch ####
+  NULL_1 <- is.null(f_list_1$labels)
+  NULL_2 <- is.null(f_list_2$labels)
+
+  if(NULL_2 | (NULL_1 & !use_1_as_truth)){
+    stop(paste0("The ",name_1," or ",name_2," have missing column names. Handle that to proceed."))
   }
-  if (is.null(f_list_2$labels)) {
-    stop(paste0(name_2," must have column names."))
+  if(NULL_1 & use_1_as_truth){
+    message(paste0("The specified ",name_1," provides NULL feature labels. ",
+                   "The labels of ",name_2," are taken as the truth."))
+    f_list_1 <- f_list_2
   }
 
   NA_1 <- any(is.na(f_list_1$labels))

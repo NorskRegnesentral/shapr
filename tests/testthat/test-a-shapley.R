@@ -105,14 +105,14 @@ test_that("Testing data input to shapr in shapley.R", {
     colnames(data_error) <- NULL
     expect_error(shapr(data_error,model))
 
-    # Empty column names in model
+    # Empty column names in model (ok if found in data -- and we trust it)
     if (requireNamespace("xgboost", quietly = TRUE)) {
-      tmp <- dummylist$train_dummies
-      colnames(tmp) <- NULL
+      data_with_colnames <- data_no_colnames <- as.matrix(train_df_used_numeric)
+      colnames(data_no_colnames) <- NULL
+
       model_xgb <- xgboost::xgboost(data = tmp, label = y_train,
                                     nrounds = 3, verbose = FALSE)
-      data_error <- train_df
-      expect_error(shapr(data_error,model_xgb))
+      expect_message(shapr(data_with_colnames,model_xgb))
     }
 
     # Data feature with incorrect class
