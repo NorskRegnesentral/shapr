@@ -226,7 +226,7 @@ test_that("Test functions in explanation.R", {
       )
 
 
-      # Ex 40: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion only once
+      # Ex 40: Test that ctree with the same mincriterion repeated four times is the same as passing mincriterion once
       expect_equal(
         (explain(x_test, explainer,
           approach = "ctree", prediction_zero = p0, sample = FALSE,

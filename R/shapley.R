@@ -75,7 +75,8 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #'   \item{W}{Second item}
 #'   \item{X}{data.table. Returned object from \code{\link{feature_combinations}}}
 #'   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
-#'   \item{feature_list}{List. The \code{updated_feature_list} output from \code{\link[shapr:preprocess_data]{preprocess_data}}}
+#'   \item{feature_list}{List. The \code{updated_feature_list} output from
+#'   \code{\link[shapr:preprocess_data]{preprocess_data}}}
 #' }
 #'
 #' In addition to the items above, \code{model} and \code{n_combinations} are also present in the returned object.

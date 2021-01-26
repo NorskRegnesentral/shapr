@@ -413,7 +413,9 @@ get_model_specs.ranger <- function(x) {
 
   feature_list$classes <- setNames(rep(NA, m), feature_list$labels) # Not supported
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels # Only provided when respect.unordered.factors == T
+
+  # Only provided when respect.unordered.factors == T
+  feature_list$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels
 
   return(feature_list)
 }
@@ -452,7 +454,6 @@ get_supported_models <- function() {
   native <- NULL
 
   DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs), "info"), keep.rownames = T)
-  # DT_get_model_specs <- data.table::as.data.table(attr(.S3methods(get_model_specs,envir=globalenv()),"info"),keep.rownames = T)
 
   DT_get_model_specs[, rn := substring(as.character(rn), first = 17)]
   DT_get_model_specs[, get_model_specs := 1]

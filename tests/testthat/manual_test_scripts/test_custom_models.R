@@ -42,7 +42,7 @@ get_model_specs.gbm <- function(x) {
   m <- length(feature_list$labels)
   feature_list$classes <- attr(x$Terms, "dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[feature_list$classes == "factor"] <- NA # the model object doesn't contain factor levels info
+  feature_list$factor_levels[feature_list$classes == "factor"] <- NA # the model object don't contain factor levels info
   return(feature_list)
 }
 expect_error(shapr(train_df_used_numeric, model_custom)) # predict_model objects not defined
@@ -80,7 +80,7 @@ get_model_specs.gbm <- function(x) {
   m <- length(feature_list$labels)
   feature_list$classes <- attr(x$Terms, "dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[feature_list$classes == "factor"] <- NA # the model object doesn't contain factor levels info
+  feature_list$factor_levels[feature_list$classes == "factor"] <- NA # the model object don't contain factor levels info
   return(feature_list)
 }
 expect_error(shapr(train_df_used_factor, model_custom)) # predict_model objects not defined
