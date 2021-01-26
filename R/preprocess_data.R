@@ -244,11 +244,16 @@ check_features <- function(f_list_1,f_list_2,
   }
 
   #### Checking factor levels ####
-  if(any(is.na(f_list_1$factor_levels)) & any(f_list_1$classes == "factor") & use_1_as_truth){ # Only relevant when f_list_1 is a model
-    message(paste0("The specified ",name_1," provides factor levels that are NA. ",
-                   "The factor levels of ",name_2," are taken as the truth."))
-    f_list_1 <- f_list_2
-
+  factor_classes <- which(f_list_1$classes == "factor")
+  if(length(factor_classes)>0){
+    relevant_factor_levels <- f_list_1$factor_levels[factor_classes]
+    is_NA <- any(is.na(relevant_factor_levels))
+    is_NULL <- any(is.null(relevant_factor_levels))
+    if((is_NA | is_NULL) & use_1_as_truth ){
+      message(paste0("The specified ",name_1," provides factor feature levels that are NULL or NA. ",
+                     "The factor levels of ",name_2," are taken as the truth."))
+      f_list_1 <- f_list_2 # Always safe to switch as f_list_2 is based on data, and extracts correctly
+    }
   }
 
   # Checking factor levels #

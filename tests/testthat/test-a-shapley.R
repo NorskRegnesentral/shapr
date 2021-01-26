@@ -107,10 +107,10 @@ test_that("Testing data input to shapr in shapley.R", {
 
     # Empty column names in model (ok if found in data -- and we trust it)
     if (requireNamespace("xgboost", quietly = TRUE)) {
-      data_with_colnames <- data_no_colnames <- as.matrix(train_df_used_numeric)
-      colnames(data_no_colnames) <- NULL
+      data_with_colnames <- data_without_colnames <- as.matrix(train_df_used_numeric)
+      colnames(data_without_colnames) <- NULL
 
-      model_xgb <- xgboost::xgboost(data = tmp, label = y_train,
+      model_xgb <- xgboost::xgboost(data = data_without_colnames, label = y_train,
                                     nrounds = 3, verbose = FALSE)
       expect_message(shapr(data_with_colnames,model_xgb))
     }

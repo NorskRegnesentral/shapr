@@ -62,6 +62,7 @@ predict_model.gbm <- function(x, newdata) {
     predict(x, as.data.frame(newdata),n.trees = x$n.trees)
   }
 }
+
 expect_silent(shapr(train_df_used_numeric ,model_custom)) # Both defined, so pass silently
 
 rm(get_model_specs.gbm)
