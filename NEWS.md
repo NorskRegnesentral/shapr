@@ -1,4 +1,22 @@
 
+# shapr 0.2.0
+
+* Minor CRAN release
+* Added the new dependence modelling approach "ctree" which handles categorical features in addition
+  to numerical ones from the paper https://doi.org/10.1007/978-3-030-57321-8_7
+* Addied support to explain models based on categorical features for model classes like xgboost
+  which originally takes only numeric input. On the user side an additional call to the new *make_dummies*
+  function is required. See the vignette for details. 
+* Slight change in the user-procedure for explaining predictions from custom models, requiring only a single function
+  *predict_model*. 
+* Introduced a thorough system for extraction and checking of the feature information in the model and the data 
+  passed to *shapr* and *explain*. The features in the data are check for consistency with the what can be extracted
+  from the model object. If the model object is missing some of the necessary information, the info from the data
+  is used instead. Checking includes feature labels, classes and any factor levels.
+* As part of the previous point, the *feature_labels* option previously used for custom models is removed.
+* Added a manual testing script for custom model (currently cannot be handled by testthat due to environment issues)
+* A few under-the-hood changes for checking in the *shapr* function.
+
 # shapr 0.1.4
 
 * Patch to fulfill CRAN policy of using packages under Suggests conditionally (in tests and examples)
