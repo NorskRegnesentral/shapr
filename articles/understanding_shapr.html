@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4.9000</span>
       </span>
     </div>
 
@@ -59,7 +59,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/NorskRegnesentral/shapr/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -230,6 +230,7 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 
 <span class="co"># Prepare the data for explanation</span>
 <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">x_train</span>, <span class="va">model</span><span class="op">)</span>
+<span class="co">#&gt; The specified model provides feature classes that are NA. The classes of data are taken as the truth.</span>
 
 <span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span>
 <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">)</span>
@@ -248,11 +249,11 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">dt</span><span class="op">)</span>
 <span class="co">#&gt;      none     lstat         rm       dis      indus</span>
 <span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span>
-<span class="co">#&gt; 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871</span>
-<span class="co">#&gt; 3: 22.446 5.9888016  5.5450861 0.5660136 -1.4304350</span>
-<span class="co">#&gt; 4: 22.446 8.2142203  0.7507569 0.1893368  1.8298305</span>
-<span class="co">#&gt; 5: 22.446 0.5059890  5.6875106 0.8432240  2.2471152</span>
-<span class="co">#&gt; 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510531</span>
+<span class="co">#&gt; 2: 22.446 0.1671901 -0.7088401 0.9689005  0.3786871</span>
+<span class="co">#&gt; 3: 22.446 5.9888022  5.5450858 0.5660134 -1.4304351</span>
+<span class="co">#&gt; 4: 22.446 8.2142204  0.7507572 0.1893366  1.8298304</span>
+<span class="co">#&gt; 5: 22.446 0.5059898  5.6875103 0.8432238  2.2471150</span>
+<span class="co">#&gt; 6: 22.446 1.9929673 -3.6001958 0.8601984  3.1510531</span>
 
 <span class="co"># Plot the resulting explanations for observations 1 and 6</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
@@ -312,10 +313,10 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <span class="va">x_test_cat</span> <span class="op">&lt;-</span> <span class="va">Boston</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="va">x_var_cat</span><span class="op">]</span>
 
 <span class="co"># -- special function when using categorical data + xgboost</span>
-<span class="va">make_dummies_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_dummies.html">make_dummies</a></span><span class="op">(</span>traindata <span class="op">=</span> <span class="va">x_train_cat</span>, testdata <span class="op">=</span> <span class="va">x_test_cat</span><span class="op">)</span>
+<span class="va">dummylist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_dummies.html">make_dummies</a></span><span class="op">(</span>traindata <span class="op">=</span> <span class="va">x_train_cat</span>, testdata <span class="op">=</span> <span class="va">x_test_cat</span><span class="op">)</span>
 
-<span class="va">x_train_dummy</span> <span class="op">&lt;-</span> <span class="va">make_dummies_list</span><span class="op">$</span><span class="va">train_dummies</span>
-<span class="va">x_test_dummy</span> <span class="op">&lt;-</span> <span class="va">make_dummies_list</span><span class="op">$</span><span class="va">test_dummies</span>
+<span class="va">x_train_dummy</span> <span class="op">&lt;-</span> <span class="va">dummylist</span><span class="op">$</span><span class="va">train_dummies</span>
+<span class="va">x_test_dummy</span> <span class="op">&lt;-</span> <span class="va">dummylist</span><span class="op">$</span><span class="va">test_dummies</span>
 
 <span class="co"># Fitting a basic xgboost model to the training data</span>
 <span class="va">model_cat</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost</a></span><span class="op">(</span>
@@ -324,22 +325,22 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
   nround <span class="op">=</span> <span class="fl">20</span>,
   verbose <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span>
-<span class="va">model_cat</span><span class="op">$</span><span class="va">dummylist</span> <span class="op">&lt;-</span> <span class="va">make_dummies_list</span><span class="op">$</span><span class="va">obj</span>
+<span class="va">model_cat</span><span class="op">$</span><span class="va">feature_list</span> <span class="op">&lt;-</span> <span class="va">dummylist</span><span class="op">$</span><span class="va">feature_list</span>
 
-<span class="va">explainer_cat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">make_dummies_list</span><span class="op">$</span><span class="va">traindata_new</span>, <span class="va">model_cat</span><span class="op">)</span>
+<span class="va">explainer_cat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">dummylist</span><span class="op">$</span><span class="va">traindata_new</span>, <span class="va">model_cat</span><span class="op">)</span>
 
 <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">)</span>
 
 <span class="va">explanation_cat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
-  <span class="va">make_dummies_list</span><span class="op">$</span><span class="va">testdata_new</span>,
+  <span class="va">dummylist</span><span class="op">$</span><span class="va">testdata_new</span>,
   approach <span class="op">=</span> <span class="st">"ctree"</span>,
   explainer <span class="op">=</span> <span class="va">explainer_cat</span>,
   prediction_zero <span class="op">=</span> <span class="va">p</span>
 <span class="op">)</span>
 
-<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding </span>
+<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span>
 <span class="co"># the no-covariate effect</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_ctree</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_cat</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 <p>We can specify parameters used to build the conditional inference trees using the following manner. Default values are based on <span class="citation">Hothorn, Hornik, and Zeileis (2006)</span>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -469,7 +470,7 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <div id="explain-custom-models" class="section level2">
 <h2 class="hasAnchor">
 <a href="#explain-custom-models" class="anchor"></a>Explain custom models</h2>
-<p><code>shapr</code> currently supports explanation of predictions from models fitted with the following functions:</p>
+<p><code>shapr</code> currently natively supports explanation of predictions from models fitted with the following functions:</p>
 <ul>
 <li><code><a href="https://rdrr.io/r/stats/lm.html">stats::lm</a></code></li>
 <li><code><a href="https://rdrr.io/r/stats/glm.html">stats::glm</a></code></li>
@@ -479,13 +480,16 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost::xgboost</a></code>/<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgboost::xgb.train</a></code>
 </li>
 </ul>
-<p>Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above. Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two simple additional functions to the class your model belongs to. The first class function is <code>model_type</code>, taking the model object as input, and outputting a character indicating whether the model is a (continuous response) <code>"regression"</code> model, or a (binary) <code>"classification"</code> model. The second function is <code>predict_model</code>, taking the model and data (as a <code>matrix</code> or <code>data.frame</code>) as input and outputting the corresponding prediction as a numeric vector. Once these two class functions are created, one can explain predictions from this model class as before. Below we exemplify this process by explaining a <code>gbm</code> model using the <code>gbm</code> package, fitted to the same Boston data set as used above.</p>
+<p>Any continuous response regression model or binary classification model of these model classes, can be explained with the package directly as exemplified above. Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two (or one) simple additional functions to the class your model belongs to.</p>
+<p><em>Note: The below procedure for specifying custom models was changed in shapr v0.2.0</em> The first class function is <code>predict_model</code>, taking the model and data (as a <code>matrix</code> or <code>data.frame/data.table</code>) as input and outputting the corresponding prediction as a numeric vector. The second (optional, but highly recommended) class function is <code>get_model_specs</code>, taking the model as input and outputting a list with the following elements: <em>labels</em> (vector with the feature names to compute Shapley values for), <em>classes</em> (a named vector with the labels as names and the class type as elements), <em>factor_levels</em> (a named list with the labels as names and vectors with the factor levels as elements (NULL if the feature is not a factor)). The <code>get_model_specs</code> function is used to check that the format of the data passed to <code>shapr</code> and <code>explain</code> have the correct format in terms of the necessary feature columns being available and having the correct class/attributes. It is highly recommended to do such checks in order to ensure correct usage of <code>shapr</code> and <code>explain</code>. If, for some reason, such checking is not desirable, one does not have to provide the <code>get_model_specs</code> function class. This will, however, throw a warning that all feature consistency checking against the model is disabled.</p>
+<p>Once the above class functions are created, one can explain predictions from this model class as before. These functions <strong>can</strong> be made general enough to handle all supported model types of that class, or they can be made minimal, possibly only allowing explanation of the specific version of the model class at hand. Below we give examples of both full support versions of these functions and a minimal version which skips the <code>get_model_specs</code> function. We do this for the <code>gbm</code> model class from the <code>gbm</code> package, fitted to the same Boston data set as used above.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gbm-developers/gbm">gbm</a></span><span class="op">)</span>
 <span class="co">#&gt; Loaded gbm 2.1.8</span>
 
-<span class="va">form</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">y_var</span>, <span class="st">"~"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">x_var</span>, collapse <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">xy_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">x_train</span>, medv <span class="op">=</span> <span class="va">y_train</span><span class="op">)</span>
+<span class="va">xy_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">x_train</span>,medv <span class="op">=</span> <span class="va">y_train</span><span class="op">)</span>
+
+<span class="va">form</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">y_var</span>,<span class="st">"~"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">x_var</span>,collapse<span class="op">=</span><span class="st">"+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># Fitting a gbm model</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">825</span><span class="op">)</span>
@@ -493,55 +497,79 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
   <span class="va">form</span>,
   data <span class="op">=</span> <span class="va">xy_train</span>,
   distribution <span class="op">=</span> <span class="st">"gaussian"</span>
-  <span class="op">)</span>
+<span class="op">)</span>
 
-<span class="co"># Create custom function of model_type for gbm</span>
-<span class="va">model_type.gbm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span>
-    <span class="va">x</span><span class="op">$</span><span class="va">distribution</span><span class="op">$</span><span class="va">name</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"bernoulli"</span>, <span class="st">"adaboost"</span><span class="op">)</span>,
-    <span class="st">"classification"</span>,
-    <span class="st">"regression"</span>
-  <span class="op">)</span>
-<span class="op">}</span>
+<span class="co">#### Full feature versions of the three required model functions ####</span>
 
-<span class="co"># Create custom function of predict_model for gbm</span>
 <span class="va">predict_model.gbm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">newdata</span><span class="op">)</span> <span class="op">{</span>
-
+  
   <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">'gbm'</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
     <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">'The gbm package is required for predicting train models'</span><span class="op">)</span>
   <span class="op">}</span>
-  <span class="va">model_type</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/model_type.html">model_type</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
 
+  <span class="va">model_type</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span>
+    <span class="va">x</span><span class="op">$</span><span class="va">distribution</span><span class="op">$</span><span class="va">name</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"bernoulli"</span>,<span class="st">"adaboost"</span><span class="op">)</span>,
+    <span class="st">"classification"</span>,
+    <span class="st">"regression"</span>
+  <span class="op">)</span>
   <span class="kw">if</span> <span class="op">(</span><span class="va">model_type</span> <span class="op">==</span> <span class="st">"classification"</span><span class="op">)</span> <span class="op">{</span>
 
-    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"response"</span>, n.trees <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">n.trees</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"response"</span>,n.trees <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">n.trees</span><span class="op">)</span>
   <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
 
-    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">)</span>, n.trees <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">n.trees</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">)</span>,n.trees <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">n.trees</span><span class="op">)</span>
   <span class="op">}</span>
+<span class="op">}</span>
+
+<span class="va">get_model_specs.gbm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span>
+  <span class="va">feature_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span>
+  <span class="va">feature_list</span><span class="op">$</span><span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/labels.html">labels</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">Terms</span><span class="op">)</span>
+  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">feature_list</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span>
+
+  <span class="va">feature_list</span><span class="op">$</span><span class="va">classes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">Terms</span>,<span class="st">"dataClasses"</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>
+  <span class="va">feature_list</span><span class="op">$</span><span class="va">factor_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">m</span><span class="op">)</span>, <span class="va">feature_list</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span>
+  <span class="va">feature_list</span><span class="op">$</span><span class="va">factor_levels</span><span class="op">[</span><span class="va">feature_list</span><span class="op">$</span><span class="va">classes</span><span class="op">==</span><span class="st">"factor"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span> <span class="co"># the model object doesn't contain factor levels info</span>
+
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">feature_list</span><span class="op">)</span>
 <span class="op">}</span>
 
 <span class="co"># Prepare the data for explanation</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
-<span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">xy_train</span>, <span class="va">model</span>, feature_labels <span class="op">=</span> <span class="va">x_var</span><span class="op">)</span>
+<span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">xy_train</span>, <span class="va">model</span><span class="op">)</span>
+<span class="co">#&gt; The columns(s) medv is not used by the model and thus removed from the data.</span>
+<span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">xy_train</span><span class="op">[</span>,<span class="va">y_var</span><span class="op">]</span><span class="op">)</span>
+<span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span><span class="va">x_test</span>, <span class="va">explainer</span>, approach <span class="op">=</span> <span class="st">"empirical"</span>, prediction_zero <span class="op">=</span> <span class="va">p0</span><span class="op">)</span>
+<span class="co"># Plot results</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></code></pre></div>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="co">#### Minimal version of the three required model functions ####      </span>
+<span class="co"># Note: Working only for this exact version of the model class </span>
+<span class="co"># Avoiding to define get_model_specs skips all feature         </span>
+<span class="co"># consistency checking between your data and model             </span>
 
-<span class="co"># Spedifying the phi_0, i.e. the expected prediction without any features</span>
-<span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">xy_train</span><span class="op">[</span>, <span class="va">y_var</span><span class="op">]</span><span class="op">)</span>
+<span class="co"># Removing the previously defined functions to simulate a fresh start</span>
+<span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span><span class="va">predict_model.gbm</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span><span class="va">get_model_specs.gbm</span><span class="op">)</span>
 
-<span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
-<span class="co"># the empirical (conditional) distribution approach with</span>
-<span class="co"># bandwidth parameter sigma = 0.1 (default)</span>
-<span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span>
-  <span class="va">x_test</span>,
-  <span class="va">explainer</span>,
-  approach <span class="op">=</span> <span class="st">"empirical"</span>,
-  prediction_zero <span class="op">=</span> <span class="va">p0</span>
-<span class="op">)</span>
+<span class="va">predict_model.gbm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">newdata</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">)</span>,n.trees <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">n.trees</span><span class="op">)</span>
+<span class="op">}</span>
 
-<span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span>
-<span class="co"># the no-covariate effect.</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation_combined</span>, plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-12-1.png" width="672"> Note that this explains a different (but similar) model than the above xgboost model!</p>
+<span class="co"># Prepare the data for explanation</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
+<span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">x_train</span>, <span class="va">model</span><span class="op">)</span>
+<span class="co">#&gt; get_model_specs is not available for your custom model. All feature consistency checking between model and data is disabled.</span>
+<span class="co">#&gt; See the 'Advanced usage' section of the vignette:</span>
+<span class="co">#&gt; vignette('understanding_shapr', package = 'shapr')</span>
+<span class="co">#&gt; for more information.</span>
+<span class="co">#&gt; The specified model provides feature labels that are NA. The labels of data are taken as the truth.</span>
+<span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">xy_train</span><span class="op">[</span>,<span class="va">y_var</span><span class="op">]</span><span class="op">)</span>
+<span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span><span class="va">x_test</span>, <span class="va">explainer</span>, approach <span class="op">=</span> <span class="st">"empirical"</span>, prediction_zero <span class="op">=</span> <span class="va">p0</span><span class="op">)</span>
+<span class="co"># Plot results</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></code></pre></div>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-12-2.png" width="672"></p>
 <p><a id="compare"></a></p>
 <p><br></p>
 </div>

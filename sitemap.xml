@@ -13,6 +13,9 @@
     <loc>https://norskregnesentral.github.io/shapr//reference/apply_dummies.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/check_features.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/correction_matrix_cpp.html</loc>
   </url>
   <url>
@@ -28,16 +31,22 @@
     <loc>https://norskregnesentral.github.io/shapr//reference/feature_matrix_cpp.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/features.html</loc>
-  </url>
-  <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/gaussian_transform.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/gaussian_transform_separate.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/get_data_specs.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/get_list_approaches.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/get_model_specs.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/get_supported_models.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/hat_matrix_cpp.html</loc>
@@ -52,7 +61,7 @@
     <loc>https://norskregnesentral.github.io/shapr//reference/make_dummies.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/model_type.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr//reference/model_checker.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/observation_impute.html</loc>
@@ -71,6 +80,9 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/prepare_data.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/preprocess_data.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/rss_cpp.html</loc>
@@ -92,6 +104,9 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/shapr.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/update_data.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/weight_matrix.html</loc>

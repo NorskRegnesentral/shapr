@@ -44,6 +44,8 @@
 
 
 
+
+
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
@@ -71,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4.9000</span>
       </span>
     </div>
 
@@ -99,7 +101,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/NorskRegnesentral/shapr/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -120,6 +122,30 @@
       <small>Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="shapr-020" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.0">
+<a href="#shapr-020" class="anchor"></a>shapr 0.2.0<small> Unreleased </small>
+</h1>
+<ul>
+<li>Minor CRAN release</li>
+<li>Added the new dependence modeling approach “ctree” which handles categorical features in addition to numerical ones. For more information see our paper <a href="https://doi.org/10.1007/978-3-030-57321-8_7" class="uri">https://doi.org/10.1007/978-3-030-57321-8_7</a>
+</li>
+<li>Added support to explain models which take as input categorical features for model classes like xgboost which originally takes only numeric input. On the user side, an additional call to the new <em>make_dummies</em> function is required. See the vignette for details.</li>
+<li>Slight change in the user procedure for explaining predictions from custom models. This now requires only a single function <em>predict_model</em>.</li>
+<li>Introduced a thorough system for extracting and checking the feature information in the model and the data passed to <em>shapr</em> and <em>explain</em>. The features in the data are checked for consistency with what can be extracted from the model object. If the model object is missing some of the necessary information, the info from the data is used instead. The system checks feature labels, classes, and any factor levels.</li>
+<li>Due to the previous point, the <em>feature_labels</em> option previously used for custom models is removed.</li>
+<li>Added a manual testing script for custom model (currently cannot be handled by testthat due to environment issues).</li>
+<li>A few under-the-hood changes for checking in the <em>shapr</em> function.</li>
+</ul>
+</div>
+    <div id="shapr-014" class="section level1">
+<h1 class="page-header" data-toc-text="0.1.4">
+<a href="#shapr-014" class="anchor"></a>shapr 0.1.4<small> 2021-01-21 </small>
+</h1>
+<ul>
+<li>Patch to fulfill CRAN policy of using packages under Suggests conditionally (in tests and examples)</li>
+</ul>
+</div>
     <div id="shapr-013" class="section level1">
 <h1 class="page-header" data-toc-text="0.1.3">
 <a href="#shapr-013" class="anchor"></a>shapr 0.1.3<small> 2020-09-03 </small>

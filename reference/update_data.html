@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate data used for predictions — prepare_data • shapr</title>
+<title>Updates data by reference according to the updater argument. — update_data • shapr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,10 @@
 
 
 
-<meta property="og:title" content="Generate data used for predictions — prepare_data" />
-<meta property="og:description" content="Generate data used for predictions" />
+<meta property="og:title" content="Updates data by reference according to the updater argument. — update_data" />
+<meta property="og:description" content="data is updated, i.e. unused columns and factor levels are removed as described in
+updater. This is done by reference, i.e. updates the object being passed to data even if nothing is
+returned by the function itself." />
 
 
 
@@ -119,95 +121,55 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate data used for predictions</h1>
-    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/observations.R'><code>R/observations.R</code></a></small>
-    <div class="hidden name"><code>prepare_data.Rd</code></div>
+    <h1>Updates data by reference according to the updater argument.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/preprocess_data.R'><code>R/preprocess_data.R</code></a></small>
+    <div class="hidden name"><code>update_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Generate data used for predictions</p>
+    <p><code>data</code> is updated, i.e. unused columns and factor levels are removed as described in
+<code>updater</code>. This is done by reference, i.e. updates the object being passed to data even if nothing is
+returned by the function itself.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='co'># S3 method for empirical</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, n_samples <span class='op'>=</span> <span class='fl'>1000</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='co'># S3 method for gaussian</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, n_samples <span class='op'>=</span> <span class='fl'>1000</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='co'># S3 method for copula</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span>
-  <span class='va'>x</span>,
-  x_test_gaussian <span class='op'>=</span> <span class='fl'>1</span>,
-  seed <span class='op'>=</span> <span class='fl'>1</span>,
-  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
-  index_features <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>...</span>
-<span class='op'>)</span>
-
-<span class='co'># S3 method for ctree</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span>
-  <span class='va'>x</span>,
-  seed <span class='op'>=</span> <span class='fl'>1</span>,
-  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
-  index_features <span class='op'>=</span> <span class='cn'>NULL</span>,
-  mc_cores <span class='op'>=</span> <span class='fl'>1</span>,
-  mc_cores_create_ctree <span class='op'>=</span> <span class='va'>mc_cores</span>,
-  mc_cores_sample_ctree <span class='op'>=</span> <span class='va'>mc_cores</span>,
-  <span class='va'>...</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>update_data</span><span class='op'>(</span><span class='va'>data</span>, <span class='va'>updater</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>Explainer object. See <code><a href='explain.html'>explain</a></code> for more information.</p></td>
+      <th>data</th>
+      <td><p>data.table. Data that ought to be updated.</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Currently not used.</p></td>
-    </tr>
-    <tr>
-      <th>seed</th>
-      <td><p>Positive integer. If <code>NULL</code> the seed will be inherited from the calling environment.</p></td>
-    </tr>
-    <tr>
-      <th>n_samples</th>
-      <td><p>Integer. The number of obs to sample from the leaf if <code>sample</code> = TRUE or if <code>sample</code>
-= FALSE but <code>n_samples</code> is less than the number of obs in the leaf.</p></td>
-    </tr>
-    <tr>
-      <th>index_features</th>
-      <td><p>List. Default is NULL but if either various methods are being used or various mincriterion are
-used for different numbers of conditioned features, this will be a list with the features to pass.</p></td>
-    </tr>
-    <tr>
-      <th>x_test_gaussian</th>
-      <td><p>Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
-<code>approach = "empirical"</code>.</p></td>
-    </tr>
-    <tr>
-      <th>mc_cores</th>
-      <td><p>Integer. Only for class <code>ctree</code> currently. The number of cores to use in paralellization of the
-tree building (<code>create_ctree</code>) and tree sampling (<code>sample_ctree</code>). Defaults to 1. Note: Uses
-parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows systems.</p></td>
-    </tr>
-    <tr>
-      <th>mc_cores_create_ctree</th>
-      <td><p>Integer. Same as <code>mc_cores</code>, but specific for the tree building function
-#' Defaults to <code>mc_cores</code>.</p></td>
-    </tr>
-    <tr>
-      <th>mc_cores_sample_ctree</th>
-      <td><p>Integer. Same as <code>mc_cores</code>, but specific for the tree building prediction
-function.
-Defaults to <code>mc_cores</code>.</p></td>
+      <th>updater</th>
+      <td><p>List. The object should be the output from
+<code><a href='check_features.html'>check_features</a></code>.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>NULL.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Martin Jullum</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># Load example data</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"MASS"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"Boston"</span>, package <span class='op'>=</span> <span class='st'>"MASS"</span><span class='op'>)</span>
+  <span class='co'># Split data into test- and training data</span>
+  <span class='va'>x_train</span> <span class='op'>&lt;-</span> <span class='fu'>data.table</span><span class='fu'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html'>as.data.table</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>Boston</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='va'>x_train</span><span class='op'>[</span>, <span class='va'>rad</span> <span class='op'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>rad</span><span class='op'>)</span><span class='op'>]</span>
+  <span class='va'>data_features</span> <span class='op'>&lt;-</span> <span class='fu'><a href='get_data_specs.html'>get_data_specs</a></span><span class='op'>(</span><span class='va'>x_train</span><span class='op'>)</span>
+  <span class='va'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>medv</span> <span class='op'>~</span> <span class='va'>lstat</span> <span class='op'>+</span> <span class='va'>rm</span> <span class='op'>+</span> <span class='va'>rad</span> <span class='op'>+</span> <span class='va'>indus</span>, data <span class='op'>=</span> <span class='va'>x_train</span><span class='op'>)</span>
+
+  <span class='va'>model_features</span> <span class='op'>&lt;-</span> <span class='fu'><a href='get_model_specs.html'>get_model_specs</a></span><span class='op'>(</span><span class='va'>model</span><span class='op'>)</span>
+  <span class='va'>updater</span> <span class='op'>&lt;-</span> <span class='fu'><a href='check_features.html'>check_features</a></span><span class='op'>(</span><span class='va'>model_features</span>, <span class='va'>data_features</span><span class='op'>)</span>
+  <span class='fu'>update_data</span><span class='op'>(</span><span class='va'>x_train</span>, <span class='va'>updater</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, dis, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt; NULL</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
