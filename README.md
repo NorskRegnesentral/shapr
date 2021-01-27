@@ -10,7 +10,7 @@
 [![R build
 status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg)](https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check)
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
@@ -162,6 +162,7 @@ model <- xgboost(
 
 # Prepare the data for explanation
 explainer <- shapr(x_train, model)
+#> The specified model provides feature classes that are NA. The classes of data are taken as the truth.
 
 # Specifying the phi_0, i.e. the expected prediction without any features
 p <- mean(y_train)
@@ -180,11 +181,11 @@ explanation <- explain(
 print(explanation$dt)
 #>      none     lstat         rm       dis      indus
 #> 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644
-#> 2: 22.446 0.1671901 -0.7088401 0.9689005  0.3786871
-#> 3: 22.446 5.9888022  5.5450858 0.5660134 -1.4304351
-#> 4: 22.446 8.2142204  0.7507572 0.1893366  1.8298304
-#> 5: 22.446 0.5059898  5.6875103 0.8432238  2.2471150
-#> 6: 22.446 1.9929673 -3.6001958 0.8601984  3.1510531
+#> 2: 22.446 0.1671903 -0.7088405 0.9689007  0.3786871
+#> 3: 22.446 5.9888016  5.5450861 0.5660136 -1.4304350
+#> 4: 22.446 8.2142203  0.7507569 0.1893368  1.8298305
+#> 5: 22.446 0.5059890  5.6875106 0.8432240  2.2471152
+#> 6: 22.446 1.9929674 -3.6001959 0.8601984  3.1510530
 
 # Finally we plot the resulting explanations
 plot(explanation)

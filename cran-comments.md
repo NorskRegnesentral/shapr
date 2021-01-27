@@ -9,6 +9,7 @@
 
 * GitHub Actions (windows-latest): R 4.0
 * GitHub Actions (ubuntu-16.04): R 4.0, 3.6, 3.5
+* GitHub Actions (macOS-latest): R-release, 4.0
 * win-builder (x86_64-w64-mingw32): R 4.0, 3.6, R-devel
 * local Ubuntu 18.04: R 3.6
 * local Windows 10: R 4.0
@@ -17,11 +18,16 @@
 * R-hub (fedora-gcc-devel): R-devel
 * R-hub (macos-highsierra-release-cran): R-release
 
+* local Ubuntu 18.04: R 3.6 (without packages in Suggests): 
+```devtools::check(vignettes = FALSE, env_vars=c(`_R_CHECK_DEPENDS_ONLY_` = "true"))```
+
 ## R CMD check results
 
 There were no ERRORs or WARNINGs.
 
-There was 1 NOTE (on local local Windows 10: R 4.0):
+There was 2 NOTES 
+
+*NOTE 1 (on local Windows 10: R 4.0):
 
   Note: information on .o files for i386 is not available
   Note: information on .o files for x64 is not available
@@ -45,6 +51,11 @@ There was 1 NOTE (on local local Windows 10: R 4.0):
 
 > I believe this is a false-positive ref https://stackoverflow.com/questions/64402688/information-on-o-files-for-x64-is-not-available-note-on-r-package-checks-using
 
+*NOTE 2 (on all winbuilder + R-hub servers)
+
+Days since last update: 6
+
+> The previous release was a basic patch after the package was taken off CRAN. This is a proper release with new features.
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package.
