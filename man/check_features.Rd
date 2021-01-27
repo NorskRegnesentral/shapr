@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess_data.R
 \name{check_features}
 \alias{check_features}
-\title{Checks that two extracted feature lists have exactly the same properites}
+\title{Checks that two extracted feature lists have exactly the same properties}
 \usage{
 check_features(f_list_1, f_list_2, use_1_as_truth = T)
 }
@@ -10,7 +10,7 @@ check_features(f_list_1, f_list_2, use_1_as_truth = T)
 \item{f_list_1, f_list_2}{List. As extracted from either \code{get_data_specs} or \code{get_model_specs}.}
 
 \item{use_1_as_truth}{Logical. If TRUE, \code{f_list_2} is compared to \code{f_list_1}, i.e. additional elements
-is allowed in \code{f_list_2}, and if \code{f_list_1}'s feature classes contains NA's, feature class check is
+is allowed in \code{f_list_2}, and if \code{f_list_1}'s feature classes contains NAs, feature class check is
 ignored regardless of what is specified in \code{f_list_1}. If FALSE, \code{f_list_1} and \code{f_list_2} are
 equated and they need to contain exactly the same elements. Set to TRUE when comparing a model and data, and FALSE
 when comparing two data sets.}
@@ -20,20 +20,20 @@ List. The \code{f_list_1} is returned as inserted if there all check are carried
 missing from \code{f_list_1}, the function continues consistency checking using \code{f_list_2} and returns that.
 }
 \description{
-Checks that two extracted feature lists have exactly the same properites
+Checks that two extracted feature lists have exactly the same properties
 }
 \examples{
 # Load example data
 if (requireNamespace("MASS", quietly = TRUE)) {
-data("Boston", package = "MASS")
-# Split data into test- and training data
-x_train <- data.table::as.data.table(head(Boston))
-x_train[,rad:=as.factor(rad)]
-data_features <- get_data_specs(x_train)
-model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+  data("Boston", package = "MASS")
+  # Split data into test- and training data
+  x_train <- data.table::as.data.table(head(Boston))
+  x_train[, rad := as.factor(rad)]
+  data_features <- get_data_specs(x_train)
+  model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 
-model_features <- get_model_specs(model)
-check_features(model_features,data_features)
+  model_features <- get_model_specs(model)
+  check_features(model_features, data_features)
 }
 }
 \author{

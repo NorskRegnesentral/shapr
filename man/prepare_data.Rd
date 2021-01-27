@@ -45,7 +45,7 @@ prepare_data(x, ...)
 = FALSE but \code{n_samples} is less than the number of obs in the leaf.}
 
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
-used for different numbers of conditoned features, this will be a list with the features to pass.}
+used for different numbers of conditioned features, this will be a list with the features to pass.}
 
 \item{x_test_gaussian}{Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
 \code{approach = "empirical"}.}

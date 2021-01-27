@@ -64,45 +64,60 @@
 #'
 #' @examples
 #' if (requireNamespace("MASS", quietly = TRUE)) {
-#' # Load example data
-#' data("Boston", package = "MASS")
+#'   # Load example data
+#'   data("Boston", package = "MASS")
 #'
-#' # Split data into test- and training data
-#' x_train <- head(Boston, -3)
-#' x_test <- tail(Boston, 3)
+#'   # Split data into test- and training data
+#'   x_train <- head(Boston, -3)
+#'   x_test <- tail(Boston, 3)
 #'
-#' # Fit a linear model
-#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#'   # Fit a linear model
+#'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 #'
-#' # Create an explainer object
-#' explainer <- shapr(x_train, model)
+#'   # Create an explainer object
+#'   explainer <- shapr(x_train, model)
 #'
-#' # Explain predictions
-#' p <- mean(x_train$medv)
+#'   # Explain predictions
+#'   p <- mean(x_train$medv)
 #'
-#' # Empirical approach
-#' explain1 <- explain(x_test, explainer, approach = "empirical", prediction_zero = p, n_samples = 1e2)
+#'   # Empirical approach
+#'   explain1 <- explain(x_test, explainer,
+#'     approach = "empirical",
+#'     prediction_zero = p, n_samples = 1e2
+#'   )
 #'
-#' # Gaussian approach
-#' explain2 <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p, n_samples = 1e2)
+#'   # Gaussian approach
+#'   explain2 <- explain(x_test, explainer,
+#'     approach = "gaussian",
+#'     prediction_zero = p, n_samples = 1e2
+#'   )
 #'
-#' # Gaussian copula approach
-#' explain3 <- explain(x_test, explainer, approach = "copula", prediction_zero = p, n_samples = 1e2)
+#'   # Gaussian copula approach
+#'   explain3 <- explain(x_test, explainer,
+#'     approach = "copula",
+#'     prediction_zero = p, n_samples = 1e2
+#'   )
 #'
-#' # ctree approach
-#' explain4 <- explain(x_test, explainer, approach = "ctree", prediction_zero = p)
+#'   # ctree approach
+#'   explain4 <- explain(x_test, explainer,
+#'     approach = "ctree",
+#'     prediction_zero = p
+#'   )
 #'
-#' # Combined approach
-#' approach <- c("gaussian", "gaussian", "empirical", "empirical")
-#' explain5 <- explain(x_test, explainer, approach = approach, prediction_zero = p, n_samples = 1e2)
+#'   # Combined approach
+#'   approach <- c("gaussian", "gaussian", "empirical", "empirical")
+#'   explain5 <- explain(x_test, explainer,
+#'     approach = approach,
+#'     prediction_zero = p, n_samples = 1e2
+#'   )
 #'
-#' # Print the Shapley values
-#' print(explain1$dt)
+#'   # Print the Shapley values
+#'   print(explain1$dt)
 #'
-#' # Plot the results
-#' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#' plot(explain1)
-#' }
+#'   # Plot the results
+#'   if (requireNamespace("ggplot2", quietly = TRUE)) {
+#'     plot(explain1)
+#'   }
 #' }
 explain <- function(x, explainer, approach, prediction_zero, ...) {
   extras <- list(...)
@@ -181,7 +196,9 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) return(dt)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -229,7 +246,9 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
   # Generate data
   dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) return(dt)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -272,7 +291,9 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
   }
   # Generate data
   dt <- prepare_data(explainer, x_test_gaussian = x_test_gaussian, ...)
-  if (!is.null(explainer$return)) return(dt)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -320,7 +341,9 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
   # Generate data
   dt <- prepare_data(explainer, ...)
 
-  if (!is.null(explainer$return)) return(dt)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
 
   # Predict
   r <- prediction(dt, prediction_zero, explainer)
@@ -400,7 +423,7 @@ get_list_approaches <- function(n_features, approach) {
 #'
 #' @export
 explain.ctree_comb_mincrit <- function(x, explainer, approach,
-                                               prediction_zero, mincriterion, ...) {
+                                       prediction_zero, mincriterion, ...) {
 
   # Get indices of combinations
   l <- get_list_ctree_mincrit(explainer$X$n_features, mincriterion)
@@ -410,8 +433,9 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
   dt_l <- list()
   for (i in seq_along(l)) {
     dt_l[[i]] <- explain(x, explainer, approach, prediction_zero,
-                         index_features = l[[i]],
-                         mincriterion = as.numeric(names(l[i])), ...)
+      index_features = l[[i]],
+      mincriterion = as.numeric(names(l[i])), ...
+    )
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE)

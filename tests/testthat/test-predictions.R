@@ -4,7 +4,6 @@ test_that("Test prediction", {
 
   # Example -----------
   if (requireNamespace("MASS", quietly = TRUE)) {
-
     data("Boston", package = "MASS")
     dt_train <- data.table::as.data.table(Boston)
     features <- c("lstat", "rm", "dis", "indus")

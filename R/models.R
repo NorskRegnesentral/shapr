@@ -39,16 +39,16 @@
 #' @author Martin Jullum
 #' @examples
 #' if (requireNamespace("MASS", quietly = TRUE)) {
-#'# Load example data
-#' data("Boston", package = "MASS")
-#' # Split data into test- and training data
-#' x_train <- head(Boston, -3)
-#' x_test <- tail(Boston, 3)
-#' # Fit a linear model
-#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#'   # Load example data
+#'   data("Boston", package = "MASS")
+#'   # Split data into test- and training data
+#'   x_train <- head(Boston, -3)
+#'   x_test <- tail(Boston, 3)
+#'   # Fit a linear model
+#'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 #'
-#' # Predicting for a model with a standardized format
-#' predict_model(x = model, newdata = x_test)
+#'   # Predicting for a model with a standardized format
+#'   predict_model(x = model, newdata = x_test)
 #' }
 predict_model <- function(x, newdata) {
   UseMethod("predict_model", x)
@@ -57,7 +57,6 @@ predict_model <- function(x, newdata) {
 #' @rdname predict_model
 #' @export
 predict_model.default <- function(x, newdata) {
-
   str_error <- paste(
     "It seems that you passed a non-valid model object.",
     "See more information about which models that are supported",
@@ -69,7 +68,6 @@ predict_model.default <- function(x, newdata) {
 #' @rdname predict_model
 #' @export
 predict_model.lm <- function(x, newdata) {
-
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The stats package is required for predicting stats models")
   }
@@ -80,7 +78,6 @@ predict_model.lm <- function(x, newdata) {
 #' @rdname predict_model
 #' @export
 predict_model.glm <- function(x, newdata) {
-
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The stats package is required for predicting stats models")
   }
@@ -95,7 +92,6 @@ predict_model.glm <- function(x, newdata) {
 #' @rdname predict_model
 #' @export
 predict_model.ranger <- function(x, newdata) {
-
   if (!requireNamespace("ranger", quietly = TRUE)) {
     stop("The ranger package is required for predicting ranger models")
   }
@@ -110,7 +106,6 @@ predict_model.ranger <- function(x, newdata) {
 #' @rdname predict_model
 #' @export
 predict_model.xgb.Booster <- function(x, newdata) {
-
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The xgboost package is required for predicting xgboost models")
   }
@@ -126,7 +121,6 @@ predict_model.xgb.Booster <- function(x, newdata) {
 #' @rdname predict_model
 #' @export
 predict_model.gam <- function(x, newdata) {
-
   if (!requireNamespace("mgcv", quietly = TRUE)) {
     stop("The mgcv package is required for predicting gam models")
   }
@@ -140,7 +134,6 @@ predict_model.gam <- function(x, newdata) {
       predict(x, as.data.frame(newdata))
     )
   }
-
 }
 
 #' Check that the type of model is supported by the explanation method
@@ -161,15 +154,15 @@ predict_model.gam <- function(x, newdata) {
 #'
 #' @examples
 #' if (requireNamespace("MASS", quietly = TRUE)) {
-#' # Load example data
-#' data("Boston", package = "MASS")
-#' # Split data into test- and training data
-#' x_train <- head(Boston, -3)
-#' # Fit a linear model
-#' model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#'   # Load example data
+#'   data("Boston", package = "MASS")
+#'   # Split data into test- and training data
+#'   x_train <- head(Boston, -3)
+#'   # Fit a linear model
+#'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 #'
-#' # Checking the model object
-#' model_checker(x = model)
+#'   # Checking the model object
+#'   model_checker(x = model)
 #' }
 model_checker <- function(x) {
   UseMethod("model_checker", x)
@@ -197,7 +190,6 @@ model_checker.glm <- function(x) {
 #' @name model_checker
 #' @export
 model_checker.ranger <- function(x) {
-
   if (x$treetype == "Classification") {
     stop(
       paste0(
@@ -219,13 +211,13 @@ model_checker.ranger <- function(x) {
   }
 
   if (x$treetype == "Probability estimation" & length(x$forest$levels) > 2) {
-      stop(
-        paste0(
-          "\n",
-          "We currently don't support multi-classification using ranger, i.e.\n",
-          "where length(model$forest$levels) is greater than 2."
-        )
+    stop(
+      paste0(
+        "\n",
+        "We currently don't support multi-classification using ranger, i.e.\n",
+        "where length(model$forest$levels) is greater than 2."
       )
+    )
   }
 
   # Additional check
@@ -251,7 +243,6 @@ model_checker.gam <- function(x) {
 #' @rdname model_checker
 #' @export
 model_checker.xgb.Booster <- function(x) {
-
   if (!is.null(x$params$objective) &&
     (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
   ) {
@@ -299,40 +290,38 @@ model_checker.xgb.Booster <- function(x) {
 #'
 #' @examples
 #' if (requireNamespace("MASS", quietly = TRUE)) {
-#'# Load example data
-#' data("Boston", package = "MASS")
-#' # Split data into test- and training data
-#' x_train <- data.table::as.data.table(head(Boston))
-#' x_train[,rad:=as.factor(rad)]
-#' model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+#'   # Load example data
+#'   data("Boston", package = "MASS")
+#'   # Split data into test- and training data
+#'   x_train <- data.table::as.data.table(head(Boston))
+#'   x_train[, rad := as.factor(rad)]
+#'   model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
 #'
-#' get_model_specs(model)
-#'}
+#'   get_model_specs(model)
+#' }
 get_model_specs <- function(x) {
-
   model_class <- NULL # Due to NSE notes in R CMD check
 
   required_model_objects <- "predict_model"
   recommended_model_objects <- "get_model_specs"
 
   # Start with all checking for native models
-  model_info <- get_supported_models()[model_class==class(x)[1],]
-  available_model_objects <- names(which(unlist(model_info[,2:3])))
+  model_info <- get_supported_models()[model_class == class(x)[1], ]
+  available_model_objects <- names(which(unlist(model_info[, 2:3])))
 
-  if(nrow(model_info)==0){
+  if (nrow(model_info) == 0) {
     stop(
       "You passed a model to shapr which is not natively supported See ?shapr::shapr or the vignette\n",
       "for more information on how to run shapr with custom models."
     )
   }
 
-  if(!(all(required_model_objects %in% available_model_objects)))
-  {
+  if (!(all(required_model_objects %in% available_model_objects))) {
     this_object_missing <- which(!(required_model_objects %in% available_model_objects))
     stop(
       paste0(
         "The following required model objects are not available for your custom model: ",
-        paste0(required_model_objects[this_object_missing],collapse = ", "),".\n",
+        paste0(required_model_objects[this_object_missing], collapse = ", "), ".\n",
         "See the 'Advanced usage' section of the vignette:\n",
         "vignette('understanding_shapr', package = 'shapr')\n",
         "for more information.\n"
@@ -340,12 +329,11 @@ get_model_specs <- function(x) {
     )
   }
 
-  if(!(all(recommended_model_objects %in% available_model_objects)))
-  {
+  if (!(all(recommended_model_objects %in% available_model_objects))) {
     this_object_missing <- which(!(recommended_model_objects %in% available_model_objects))
     message(
       paste0(
-        paste0(recommended_model_objects[this_object_missing],collapse = ", ")," is not available for your custom ",
+        paste0(recommended_model_objects[this_object_missing], collapse = ", "), " is not available for your custom ",
         "model. All feature consistency checking between model and data is disabled.\n",
         "See the 'Advanced usage' section of the vignette:\n",
         "vignette('understanding_shapr', package = 'shapr')\n",
@@ -362,21 +350,20 @@ get_model_specs <- function(x) {
 get_model_specs.default <- function(x) {
 
   # For custom models where there is no
-  return(list(labels = NA, classes = NA,factor_levels = NA))
+  return(list(labels = NA, classes = NA, factor_levels = NA))
 }
 
 
 #' @rdname get_model_specs
 #' @export
 get_model_specs.lm <- function(x) {
-
   model_checker(x) # Checking if the model is supported
 
-  feature_list = list()
+  feature_list <- list()
   feature_list$labels <- labels(x$terms)
   m <- length(feature_list$labels)
 
-  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
+  feature_list$classes <- attr(x$terms, "dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
@@ -386,14 +373,13 @@ get_model_specs.lm <- function(x) {
 #' @rdname get_model_specs
 #' @export
 get_model_specs.glm <- function(x) {
-
   model_checker(x) # Checking if the model is supported
 
-  feature_list = list()
+  feature_list <- list()
   feature_list$labels <- labels(x$terms)
   m <- length(feature_list$labels)
 
-  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
+  feature_list$classes <- attr(x$terms, "dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
@@ -403,14 +389,13 @@ get_model_specs.glm <- function(x) {
 #' @rdname get_model_specs
 #' @export
 get_model_specs.gam <- function(x) {
-
   model_checker(x) # Checking if the model is supported
 
-  feature_list = list()
+  feature_list <- list()
   feature_list$labels <- labels(x$terms)
   m <- length(feature_list$labels)
 
-  feature_list$classes <- attr(x$terms,"dataClasses")[-1]
+  feature_list$classes <- attr(x$terms, "dataClasses")[-1]
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
 
@@ -420,16 +405,17 @@ get_model_specs.gam <- function(x) {
 #' @rdname get_model_specs
 #' @export
 get_model_specs.ranger <- function(x) {
-
   model_checker(x) # Checking if the model is supported
 
-  feature_list = list()
+  feature_list <- list()
   feature_list$labels <- unique_features(x$forest$independent.variable.names)
   m <- length(feature_list$labels)
 
-  feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
+  feature_list$classes <- setNames(rep(NA, m), feature_list$labels) # Not supported
   feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels # Only provided when respect.unordered.factors == T
+
+  # Only provided when respect.unordered.factors == T
+  feature_list$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels
 
   return(feature_list)
 }
@@ -438,22 +424,20 @@ get_model_specs.ranger <- function(x) {
 #' @rdname get_model_specs
 #' @export
 get_model_specs.xgb.Booster <- function(x) {
-
   model_checker(x) # Checking if the model is supported
 
-  feature_list = list()
+  feature_list <- list()
   if (is.null(x[["feature_list"]])) {
     feature_list$labels <- x$feature_names
     m <- length(feature_list$labels)
 
-    feature_list$classes <- setNames(rep(NA, m),feature_list$labels) # Not supported
+    feature_list$classes <- setNames(rep(NA, m), feature_list$labels) # Not supported
     feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
   } else {
     feature_list <- x$feature_list
   }
 
   return(feature_list)
-
 }
 
 
@@ -461,31 +445,28 @@ get_model_specs.xgb.Booster <- function(x) {
 
 #' Provides a data.table with the supported models
 #'
-#'@keywords internal
-get_supported_models <- function(){
+#' @keywords internal
+get_supported_models <- function() {
 
   # Fixing NSE notes in R CMD check
   rn <- get_model_specs <- native_get_model_specs <- from <- NULL
   predict_model <- native_predict_model <- NULL
   native <- NULL
 
-  DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs),"info"),keep.rownames = T)
-  #DT_get_model_specs <- data.table::as.data.table(attr(.S3methods(get_model_specs,envir=globalenv()),"info"),keep.rownames = T)
+  DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs), "info"), keep.rownames = T)
 
-  DT_get_model_specs[,rn:=substring(as.character(rn),first=17)]
-  DT_get_model_specs[,get_model_specs:=1]
-  DT_get_model_specs[,c("visible","from","generic","isS4"):=NULL]
+  DT_get_model_specs[, rn := substring(as.character(rn), first = 17)]
+  DT_get_model_specs[, get_model_specs := 1]
+  DT_get_model_specs[, c("visible", "from", "generic", "isS4") := NULL]
 
-  DT_predict_model <- data.table::as.data.table(attr(methods(predict_model),"info"),keep.rownames = T)
-  DT_predict_model[,rn:=substring(as.character(rn),first=15)]
-  DT_predict_model[,predict_model:=1]
-  DT_predict_model[,c("visible","from","generic","isS4"):=NULL]
+  DT_predict_model <- data.table::as.data.table(attr(methods(predict_model), "info"), keep.rownames = T)
+  DT_predict_model[, rn := substring(as.character(rn), first = 15)]
+  DT_predict_model[, predict_model := 1]
+  DT_predict_model[, c("visible", "from", "generic", "isS4") := NULL]
 
-  DT <- merge(DT_get_model_specs,DT_predict_model,by="rn",all=T,allow.cartesian=T,nomatch=0)
-  DT[,(colnames(DT)[-1]):=lapply(.SD,data.table::nafill,fill=0),.SDcols=colnames(DT)[-1]]
-  DT[,(colnames(DT)[2:3]):=lapply(.SD,as.logical),.SDcols=colnames(DT)[2:3]]
-  data.table::setnames(DT,"rn","model_class")
+  DT <- merge(DT_get_model_specs, DT_predict_model, by = "rn", all = T, allow.cartesian = T, nomatch = 0)
+  DT[, (colnames(DT)[-1]) := lapply(.SD, data.table::nafill, fill = 0), .SDcols = colnames(DT)[-1]]
+  DT[, (colnames(DT)[2:3]) := lapply(.SD, as.logical), .SDcols = colnames(DT)[2:3]]
+  data.table::setnames(DT, "rn", "model_class")
   return(DT)
 }
-
-
