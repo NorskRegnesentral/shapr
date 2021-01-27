@@ -14,8 +14,6 @@
 * local Ubuntu 18.04: R 3.6
 * local Windows 10: R 4.0
 * R-hub (windows-x86_64-devel): R-devel
-* R-hub (ubuntu-gcc-release): R-release
-* R-hub (fedora-gcc-devel): R-devel
 * R-hub (macos-highsierra-release-cran): R-release
 
 * local Ubuntu 18.04: R 3.6 (without packages in Suggests): 
