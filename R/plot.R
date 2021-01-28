@@ -75,7 +75,7 @@ plot.shapr <- function(x,
   meltKshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
   # Converting and melting Xtest
-  if(is_groupwise){
+  if(!is_groupwise){
     desc_mat <- format(x$x_test, digits = digits)
     for (i in 1:ncol(desc_mat)) {
       desc_mat[, i] <- paste0(cnms[i], " = ", desc_mat[, i])
