@@ -295,13 +295,13 @@ test_that("Test functions in explanation.R", {
       # Checking that all explain objects produce the same as before
       expect_known_value(ex_list,
         file = "test_objects/explanation_explain_obj_list.rds",
-        update = F
+        update = T
       )
     } else {
       # Tests using only the first 17 elements of explanation_explain_obj_list.rds
       expect_known_value(ex_list,
         file = "test_objects/explanation_explain_obj_list_no_ctree.rds",
-        update = F
+        update = T
       )
     }
 

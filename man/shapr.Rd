@@ -4,7 +4,7 @@
 \alias{shapr}
 \title{Create an explainer object with Shapley weights for test data.}
 \usage{
-shapr(x, model, n_combinations = NULL)
+shapr(x, model, n_combinations = NULL, group = NULL)
 }
 \arguments{
 \item{x}{Numeric matrix or data.frame/data.table. Contains the data used to estimate the (conditional)
@@ -17,6 +17,11 @@ for a table of which models \code{shapr} supports natively.}
 \item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
 the exact method is used and all combinations are considered. The maximum number of
 combinations equals \code{2^ncol(x)}.}
+
+\item{group}{List. If \code{NULL} regular feature wise Shapley values are computed.
+If provided, group wise Shapley values are computed. \code{group} then has length equal to
+the number of groups. The list element contains character vectors with the features included
+in each of the different groups.}
 }
 \value{
 Named list that contains the following items:

@@ -24,12 +24,13 @@ shapley_weights <- function(m, N, n_features, weight_zero_m = 10^6) {
 #' @param normalize_W_weights Logical. Whether to normalize the weights for the combinations to sum to 1 for
 #' increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations
 #' except combination \code{1} and \code{2^m}.
+#' @param is_groupwise Logical. Indicating whether group wise Shapley values are to be computed.
 #'
 #' @return Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
 #' @keywords internal
 #'
 #' @author Nikolai Sellereite, Martin Jullum
-weight_matrix <- function(X, normalize_W_weights = TRUE) {
+weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 
   # Fetch weights
   w <- X[["shapley_weight"]]
@@ -38,12 +39,21 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
     w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
   }
 
-  W <- weight_matrix_cpp(
-    features = X[["features"]],
-    m = X[.N][["n_features"]],
-    n = X[, .N],
-    w = w
-  )
+  if (!is_groupwise){
+    W <- weight_matrix_cpp(
+      features = X[["features"]],
+      m = X[.N][["n_features"]],
+      n = X[, .N],
+      w = w
+    )
+  } else {
+    W <- weight_matrix_cpp(
+      features = X[["groups"]],
+      m = X[.N][["n_groups"]],
+      n = X[, .N],
+      w = w
+    )
+  }
 
   return(W)
 }
@@ -61,6 +71,10 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' the exact method is used and all combinations are considered. The maximum number of
 #' combinations equals \code{2^ncol(x)}.
 #'
+#' @param group List. If \code{NULL} regular feature wise Shapley values are computed.
+#' If provided, group wise Shapley values are computed. \code{group} then has length equal to
+#' the number of groups. The list element contains character vectors with the features included
+#' in each of the different groups.
 #'
 #' @return Named list that contains the following items:
 #' \describe{
@@ -122,7 +136,8 @@ weight_matrix <- function(X, normalize_W_weights = TRUE) {
 #' }
 shapr <- function(x,
                   model,
-                  n_combinations = NULL) {
+                  n_combinations = NULL,
+                  group = NULL) {
 
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
@@ -140,12 +155,33 @@ shapr <- function(x,
   processed_list <- preprocess_data(
     x = x,
     feature_list = feature_list_model
-  )
+    )
+
+
 
   x_train <- processed_list$x_dt
   updated_feature_list <- processed_list$updated_feature_list
 
   explainer$n_features <- ncol(x_train)
+
+
+  # Process groups MJ: Put this in a proper function instead
+  # Feature-wise or group-wise
+  is_groupwise <- !is.null(group)
+  feature_labels <- updated_feature_list$labels
+
+  if (is_groupwise){
+    check_groups(feature_labels, group)
+    # Make group names if not existing
+    if (is.null(names(group))){
+      names(group) <- paste0("group", seq(length(group)))
+    }
+    # Make group list with numeric feature indicators
+    group_num <- lapply(group,FUN = function(x){match(x, feature_labels)})
+  } else {
+    group_num <- NULL
+  }
+
 
   # Checking that the prediction function works
   tmp <- predict_model(model, head(x_train, 2))
@@ -165,13 +201,15 @@ shapr <- function(x,
     m = explainer$n_features,
     exact = explainer$exact,
     n_combinations = n_combinations,
-    weight_zero_m = 10^6
+    weight_zero_m = 10^6,
+    group_num = group_num
   )
 
   # Get weighted matrix ----------------
   weighted_mat <- weight_matrix(
     X = dt_combinations,
-    normalize_W_weights = TRUE
+    normalize_W_weights = TRUE,
+    is_groupwise = is_groupwise
   )
 
   ## Get feature matrix ---------
@@ -191,6 +229,8 @@ shapr <- function(x,
   explainer$x_train <- x_train
   explainer$x <- NULL
   explainer$feature_list <- updated_feature_list
+  explainer$group <- group
+  explainer$is_groupwise <- is_groupwise
 
   attr(explainer, "class") <- c("explainer", "list")
 

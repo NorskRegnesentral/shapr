@@ -15,6 +15,7 @@ test_that("Test prediction", {
     explainer$model <- stats::lm(formula = "medv ~ lstat + rm + dis + indus", data = head(dt_train, -n_xtest))
     explainer$x_test <- tail(dt_train[, .SD, .SDcols = features], n_xtest)
     explainer$W <- matrix(1, nrow = n_features + 1, ncol = n_combinations)
+    explainer$is_groupwise <- FALSE
     dt <- dt_train[, .SD, .SDcols = features][rep(1:.N, 4)]
     dt[, id := rep_len(1:n_xtest, .N)]
     dt[, id_combination := rep_len(1:n_combinations, .N), id]
@@ -32,7 +33,7 @@ test_that("Test prediction", {
     x <- prediction(dt, prediction_zero, explainer)
 
     # Test -----------
-    lnms <- c("dt", "model", "p", "x_test")
+    lnms <- c("dt", "model", "p", "x_test", "is_groupwise")
     expect_equal(class(x), c("shapr", "list"))
     expect_equal(names(x), lnms)
     expect_equal(x$model, explainer$model)

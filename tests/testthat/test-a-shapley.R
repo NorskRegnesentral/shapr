@@ -18,7 +18,7 @@ test_that("Basic test functions in shapley.R", {
 
     expect_known_value(explainer,
       file = "test_objects/shapley_explainer_obj.rds",
-      update = FALSE
+      update = F
     )
   }
 })
