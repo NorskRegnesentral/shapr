@@ -143,16 +143,16 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   }
 
 
-
+  this_class <- ""
   if (length(approach) > 1) {
-    class(x) <- "combined"
+    class(this_class) <- "combined"
   } else if (length(extras$mincriterion) > 1) {
-    class(x) <- "ctree_comb_mincrit"
+    class(this_class) <- "ctree_comb_mincrit"
   } else {
-    class(x) <- approach
+    class(this_class) <- approach
   }
 
-  UseMethod("explain", x)
+  UseMethod("explain", this_class)
 }
 
 #' @param type Character. Should be equal to either \code{"independence"},
