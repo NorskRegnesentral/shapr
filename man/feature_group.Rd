@@ -10,7 +10,7 @@ feature_group(group_num, weight_zero_m = 10^6)
 \item{group_num}{Vector of characters. Contains the feature labels used by the model}
 
 \item{weight_zero_m}{Positive integer. Represents the Shapley weight for two special
-cases, i.e. the case where you have either \code{0} or \code{m} features.}
+cases, i.e. the case where you have either \code{0} or \code{m} features/feature groups.}
 }
 \value{
 data.table with all feature group combinations, shapley weights etc.

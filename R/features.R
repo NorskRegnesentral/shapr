@@ -113,7 +113,7 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
   dt[, features := unlist(combinations, recursive = FALSE)]
   dt[, n_features := length(features[[1]]), id_combination]
   dt[, N := .N, n_features]
-  dt[, shapley_weight := shapley_weights(m = m, N = N, n_features, weight_zero_m)]
+  dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m)]
 
   return(dt)
 }
@@ -149,7 +149,7 @@ feature_group <- function(group_num, weight_zero_m = 10^6) {
   dt[, n_groups := length(groups[[1]]), id_combination]
   dt[, n_features := length(features[[1]]), id_combination]
   dt[, N := .N, n_groups]
-  dt[, shapley_weight := shapley_weights(m = m, N = N, n_features = n_groups, weight_zero_m)]
+  dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_groups, weight_zero_m)]
 
   return(dt)
 }

@@ -1,19 +1,19 @@
 #' Calculate Shapley weight
 #'
-#' @param m Positive integer. Total number of features.
-#' @param n_features Positive integer. Represents the number of features you want to sample from a feature
-#' space consisting of \code{m} unique features. Note that \code{ 0 < = n_features <= m}.
-#' @param N Positive integer. The number of unique combinations when sampling \code{n_features} features,
-#' without replacement, from a sample space consisting of \code{m} different features.
+#' @param m Positive integer. Total number of features/feature groups.
+#' @param n_components Positive integer. Represents the number of features/feature groups you want to sample from
+#' a feature space consisting of \code{m} unique features/feature groups. Note that \code{ 0 < = n_components <= m}.
+#' @param N Positive integer. The number of unique combinations when sampling \code{n_components} features/feature
+#' groups, without replacement, from a sample space consisting of \code{m} different features/feature groups.
 #' @param weight_zero_m Positive integer. Represents the Shapley weight for two special
-#' cases, i.e. the case where you have either \code{0} or \code{m} features.
+#' cases, i.e. the case where you have either \code{0} or \code{m} features/feature groups.
 #'
 #' @return Numeric
 #' @keywords internal
 #'
 #' @author Nikolai Sellereite
-shapley_weights <- function(m, N, n_features, weight_zero_m = 10^6) {
-  x <- (m - 1) / (N * n_features * (m - n_features))
+shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
+  x <- (m - 1) / (N * n_components * (m - n_components))
   x[!is.finite(x)] <- weight_zero_m
   x
 }
