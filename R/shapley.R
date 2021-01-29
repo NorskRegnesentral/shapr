@@ -41,14 +41,14 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 
   if (!is_groupwise){
     W <- weight_matrix_cpp(
-      features = X[["features"]],
+      subsets = X[["features"]],
       m = X[.N][["n_features"]],
       n = X[, .N],
       w = w
     )
   } else {
     W <- weight_matrix_cpp(
-      features = X[["groups"]],
+      subsets = X[["groups"]],
       m = X[.N][["n_groups"]],
       n = X[, .N],
       w = w
@@ -170,23 +170,18 @@ shapr <- function(x,
   explainer$n_features <- ncol(x_train)
 
 
-  # Process groups MJ: Put this in a proper function instead
-  # Feature-wise or group-wise
+  # Processes groups if specified. Otherwise do nothing
   is_groupwise <- !is.null(group)
-  feature_labels <- updated_feature_list$labels
-
-  if (is_groupwise){
-    check_groups(feature_labels, group)
-    # Make group names if not existing
-    if (is.null(names(group))){
-      names(group) <- paste0("group", seq(length(group)))
-    }
-    # Make group list with numeric feature indicators
-    group_num <- lapply(group,FUN = function(x){match(x, feature_labels)})
+  if(is_groupwise){
+    group_list <- process_groups(
+      group = group,
+      feature_labels = updated_feature_list$labels
+    )
+    group <- group_list$group
+    group_num <- group_list$group_num
   } else {
     group_num <- NULL
   }
-
 
   # Checking that the prediction function works
   tmp <- predict_model(model, head(x_train, 2))

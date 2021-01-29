@@ -182,11 +182,14 @@ test_that("Testing data input to shapr for grouping in shapley.R", {
     not_x_var <- "crim"
 
     x_train <- as.matrix(tail(Boston[, x_var], -6))
-
+    xy_train <- tail(Boston, -6)
     group_num <- list(c(1,3),
                        c(2,4))
 
     group = lapply(group_num, function(x){x_var[x]})
+    names(group) =  c("A","B")
+
+    group_no_names = lapply(group_num, function(x){x_var[x]})
 
     group_error_1 <- list(c(x_var[1:2],not_x_var),
                         x_var[3:4])
@@ -203,11 +206,15 @@ test_that("Testing data input to shapr for grouping in shapley.R", {
 
     # Fitting models
     formula <- as.formula(paste0("medv ~ ", paste0(x_var, collapse = "+")))
-    model <- stats::lm(formula = formula,data = xy_train_full_df)
+    model <- stats::lm(formula = formula,data = xy_train)
 
 
     # Expect silent
     expect_silent(shapr(x = x_train, model = model, group = group))
+
+    # Expect message for missing names
+    expect_message(shapr(x = x_train, model = model, group = group_no_names))
+
 
     # Expect error when group is not a list
     expect_error(shapr(x_train, model, group = x_var))

@@ -96,6 +96,7 @@ test_that("Test functions in explanation.R", {
     approach <- c(rep("empirical", 4))
     ex_list[[18]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
 
+
     if (requireNamespace("party", quietly = TRUE)) {
 
       # Ex 19: Explain predictions (ctree, sample = FALSE, default parameters)
@@ -566,5 +567,62 @@ test_that("Testing that differnet data ordering gives same explanations", {
 
   }
 })
+
+
+test_that("Test functions related to groups in explanation.R", {
+
+  # Load data -----------
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    y_var <- "medv"
+
+    y_train <- tail(Boston[, y_var], 50)
+    x_test <- as.matrix(head(Boston[, x_var], 2))
+
+    # Prepare the data for explanation. Path needs to be relative to testthat directory in the package
+    explainer0 <- readRDS(file = "test_objects/shapley_explainer_obj.rds")
+    explainer1 <- readRDS(file = "test_objects/shapley_explainer_group1_obj.rds")
+    explainer2 <- readRDS(file = "test_objects/shapley_explainer_group2_obj.rds")
+
+    # Creating list with lots of different explainer objects
+    p0 <- mean(y_train)
+
+    ex_list <- list()
+
+    # Ex 1: Explain predictions (gaussian)
+    ex_list[[1]] <- explain(x_test, explainer1, approach = "gaussian", prediction_zero = p0)
+
+    # Ex 2: Explain predictions (empirical)
+    ex_list[[2]] <- explain(x_test, explainer1, approach = "empirical", prediction_zero = p0)
+
+    # Ex 3: Explain predictions (copula)
+    ex_list[[3]] <- explain(x_test, explainer1, approach = "copula", prediction_zero = p0)
+
+    # Ex 4: Explain predictions (gaussian, empirical)
+    ex_list[[4]] <- explain(x_test, explainer1, approach = c("gaussian", "empirical", "gaussian",
+                                                             "empirical"), prediction_zero = p0)
+
+    # Ex 5: Explain predictions (copula)
+    ex_list[[5]] <- explain(x_test, explainer2, approach = "gaussian", prediction_zero = p0)
+
+    # Checking that all explain objects produce the same as before
+    expect_known_value(ex_list, file = "test_objects/explanation_explain_group_obj_list.rds")
+
+    ### Additional test that only the produced shapley values are the same as before
+    fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_group_obj_list.rds")
+    for (i in 1:length(ex_list)) {
+      expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+    }
+
+    # Here we check if not grouping (explanation0) and grouping with one feature per group (explanation2)
+    # gives the same answer
+    explanation0 <- explain(x_test, explainer0, approach = "empirical", prediction_zero = p0)
+    explanation2 <- explain(x_test, explainer2, approach = "empirical", prediction_zero = p0)
+    names(explanation2$dt)[-1] <- unlist(explainer2$group)
+    expect_equal(explanation0$dt, explanation2$dt)
+  }
+})
+
 
 

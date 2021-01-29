@@ -363,3 +363,35 @@ update_data <- function(data, updater) {
 
   return(NULL)
 }
+
+#' Process (check and update names) the group list
+#'
+#' @inheritParams shapr
+#' @param feature_labels Vector of characters. Contains the feature labels used by the model
+#'
+#' @details This function takes care of all preprocessing and checking of the provided data in \code{x} against
+#' the feature_list which is typically the output from \code{\link[shapr:get_model_specs]{get_model_specs}}
+#'
+#' @return List with two named elements: \code{group}: The input, but with group names if non-existing,
+#' \code{group_num} a corresponding group list with names replaced by feature number
+#'
+#' @author Martin Jullum
+#'
+#' @keywords internal
+process_groups <- function(group, feature_labels){
+
+    check_groups(feature_labels, group)
+
+    # Make group names if not existing
+    if (is.null(names(group))){
+      message("Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc.")
+      names(group) <- paste0("group", seq_along(group))
+    }
+
+    # Make group list with numeric feature indicators
+    group_num <- lapply(group,FUN = function(x){match(x, feature_labels)})
+
+  return(list(group = group,group_num = group_num))
+}
+
+
