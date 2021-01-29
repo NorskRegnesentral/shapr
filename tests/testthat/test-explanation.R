@@ -30,7 +30,7 @@ test_that("Test functions in explanation.R", {
     explainer <- readRDS(file = "test_objects/shapley_explainer_obj.rds")
     p0 <- mean(y_train)
 
-    # Test way to insert test data (shapr<v0.2.1 threw error for line 2 and 3 below on R>=4.0)
+    # Test way to insert test data (shapr<v0.2.1 threw error for line 2-4 below on R>=4.0)
     expect_silent(explain(x_test, explainer, approach = "gaussian", prediction_zero = p0))
     expect_silent(explain(head(x_test), explainer, approach = "gaussian", prediction_zero = p0))
     expect_silent(explain(x_test[,1:4], explainer, approach = "gaussian", prediction_zero = p0))
