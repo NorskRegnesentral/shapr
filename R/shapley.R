@@ -108,9 +108,9 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #'   # Example using the exact method
 #'   x_var <- c("lstat", "rm", "dis", "indus")
 #'   y_var <- "medv"
-#'   df1 <- df[, x_var]
+#'   df0 <- df[, x_var]
 #'   model <- lm(medv ~ lstat + rm + dis + indus, data = df)
-#'   explainer <- shapr(df1, model)
+#'   explainer <- shapr(df0, model)
 #'
 #'   print(nrow(explainer$X))
 #'   # 16 (which equals 2^4)
@@ -119,20 +119,25 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #'   y_var <- "medv"
 #'   x_var <- setdiff(colnames(df), y_var)
 #'   model <- lm(medv ~ ., data = df)
-#'   df2 <- df[, x_var]
-#'   explainer <- shapr(df2, model, n_combinations = 1e3)
+#'   explainer <- shapr(df0, model, n_combinations = 1e3)
 #'
 #'   print(nrow(explainer$X))
 #'
 #'   # Example using approximation where n_combinations > 2^m
 #'   x_var <- c("lstat", "rm", "dis", "indus")
 #'   y_var <- "medv"
-#'   df3 <- df[, x_var]
 #'   model <- lm(medv ~ lstat + rm + dis + indus, data = df)
-#'   explainer <- shapr(df1, model, n_combinations = 1e3)
+#'   explainer <- shapr(df0, model, n_combinations = 1e3)
 #'
 #'   print(nrow(explainer$X))
 #'   # 16 (which equals 2^4)
+#'
+#'   # Example using groups
+#'   group <- list(x_var[1:2],x_var[3:4])
+#'
+#'  explainer_group <- shapr(df0, model, group = group)
+#'  print(nrow(explainer_group$X))
+#'  # 4 (which equals 2^(#groups))
 #' }
 shapr <- function(x,
                   model,

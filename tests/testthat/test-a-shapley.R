@@ -133,3 +133,100 @@ test_that("Testing data input to shapr in shapley.R", {
     expect_error(shapr(data_error, model))
   }
 })
+
+test_that("Basic test functions for grouping in shapley.R", {
+
+  # Load data -----------
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    x_train <- tail(Boston[, x_var], 50)
+
+    # Load premade lm model. Path needs to be relative to testthat directory in the package
+    model <- readRDS("model_objects/lm_model_object.rds")
+
+    group1_num <- list(c(1,3),
+                       c(2,4))
+
+    group1 = lapply(group1_num, function(x){x_var[x]})
+
+
+    group2_num <- list(c(1),
+                       c(2),
+                       c(3),
+                       c(4))
+
+    group2 = lapply(group2_num, function(x){x_var[x]})
+
+    # Prepare the data for explanation
+    explainer1 <- shapr(x_train, model, group = group1)
+    explainer2 <- shapr(x_train, model, group = group2)
+
+    expect_known_value(explainer1,
+                       file = "test_objects/shapley_explainer_group1_obj.rds",
+                       update = F)
+    expect_known_value(explainer2,
+                       file = "test_objects/shapley_explainer_group2_obj.rds",
+                       update = F)
+  }
+}
+)
+
+
+test_that("Testing data input to shapr for grouping in shapley.R", {
+
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+
+    x_var <- c("lstat", "rm", "dis", "indus")
+    not_x_var <- "crim"
+
+    x_train <- as.matrix(tail(Boston[, x_var], -6))
+
+    group_num <- list(c(1,3),
+                       c(2,4))
+
+    group = lapply(group_num, function(x){x_var[x]})
+
+    group_error_1 <- list(c(x_var[1:2],not_x_var),
+                        x_var[3:4])
+
+    group_error_2 <- list(x_var[1],
+                          x_var[3:4])
+
+    group_error_3 <- list(x_var[c(1,2)],
+                          x_var[c(1,3,4)])
+
+    group_error_4 <- list(x_var[c(1,2)],
+                          x_var[c(1,3,4)])
+
+
+    # Fitting models
+    formula <- as.formula(paste0("medv ~ ", paste0(x_var, collapse = "+")))
+    model <- stats::lm(formula = formula,data = xy_train_full_df)
+
+
+    # Expect silent
+    expect_silent(shapr(x = x_train, model = model, group = group))
+
+    # Expect error when group is not a list
+    expect_error(shapr(x_train, model, group = x_var))
+
+
+    # Expect error that group does not include names of features
+    expect_error(shapr(x = x_train, model = model, group = group_num))
+
+    # Expect error when x_train/model does not use a feature mentioned in the group
+    expect_error(shapr(x_train, model, group = group_error_1))
+
+    # Expect error when group does not contain a feature used by the model
+    expect_error(shapr(x_train, model, group = group_error_2))
+
+    # Expect error when group does duplicated features
+    expect_error(shapr(x_train, model, group = group_error_3))
+
+  }
+}
+)
+
+

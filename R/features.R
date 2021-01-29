@@ -127,6 +127,13 @@ group_fun <- function(x, group_num) {
   }
 }
 
+#' Analogue to feature_exact, but for groups instead.
+#'
+#' @inheritParams shapley_weights
+#' @param group_num Vector of characters. Contains the feature labels used by the model
+#'
+#' @return data.table with all feature group combinations, shapley weights etc.
+#'
 #' @keywords internal
 feature_group <- function(group_num, weight_zero_m = 10^6) {
 
@@ -147,20 +154,25 @@ feature_group <- function(group_num, weight_zero_m = 10^6) {
   return(dt)
 }
 
+#' Check that the group parameter has the right form and content
+#'
+#' @inheritParams shapr
+#' @param feature_labels Vector of characters. Contains the feature labels used by the model
+#'
+#' @return Error or NULL
+#'
 #' @keywords internal
 check_groups <- function(feature_labels, group) {
+
+  if(!is.list(group)){
+    stop("group must be a list")
+  }
+
   group_features <- unlist(group)
 
-
-  for (i in group_features) {
-    # Check that all group components are characters
-    if (!(is.character(i))) {
-      stop("All components of group should be a character.")
-    }
-    # Check that all group components are in x
-    if (!(i %in% feature_labels)) {
-      stop("All components of group should be in colnames(x) and used in model.")
-    }
+  # Checking that the group_features are characters
+  if(!all(is.character(group_features))){
+    stop("All components of group should be a character.")
   }
 
   # Check that all features in group are in feature labels or used by model
@@ -169,7 +181,7 @@ check_groups <- function(feature_labels, group) {
     stop(
       paste0(
         "The group feature(s) ", paste0(missing_group_feature, collapse =  ", "), " are not\n",
-        "among the features. Delete from group."
+        "among the features specified by the model/data. Delete from group."
       )
     )
   }
@@ -179,7 +191,7 @@ check_groups <- function(feature_labels, group) {
     missing_features <- feature_labels[!(feature_labels %in% group_features)]
     stop(
       paste0(
-        "The feature(s) ", paste0(missing_features, collapse =  ", "), " are not\n",
+        "The model/data feature(s) ", paste0(missing_features, collapse =  ", "), " are not\n",
         "among the group features. Add to a group."
       )
     )
@@ -190,9 +202,9 @@ check_groups <- function(feature_labels, group) {
     dups <- group_features[duplicated(group_features)]
     stop(
       paste0(
-        "Feature(s) ", paste0(dups, collapse = ", "), " are found in more than one group
-                or multiple times per group.\n", "Make sure each feature is only represented
-                in one group, and only one time."
+        "Feature(s) ", paste0(dups, collapse = ", "), " are found in more than one group or ",
+        "multiple times per group.\n",
+        "Make sure each feature is only represented in one group, and only one time."
       )
     )
   }

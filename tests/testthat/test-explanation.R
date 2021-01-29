@@ -530,3 +530,41 @@ test_that("Testing data input to explain in explanation.R", {
     }
   }
 })
+
+
+test_that("Testing that differnet data ordering gives same explanations", {
+
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    y_var <- "medv"
+
+    # Training data
+    x_train <- as.matrix(tail(Boston[, x_var], -6))
+    y_train <- tail(Boston[, y_var], -6)
+    xy_train_full_df <- tail(Boston, -6)
+
+    # Test data
+    x_test <- as.matrix(head(Boston[, x_var], 6))
+
+    formula <- as.formula(paste0("medv ~ ", paste0(x_var, collapse = "+")))
+    p0 <- mean(y_train)
+
+    model <-   lm(formula = formula,data = xy_train_full_df)
+
+    explainer_1 <- shapr(x_train[,1:4],model = model)
+    explainer_2 <- shapr(x_train[,4:1],model = model)
+
+    explained_1_1 <- explain(x = x_test[,1:4],explainer = explainer_1,approach = "empirical",prediction_zero = p0)
+    explained_1_2 <- explain(x = x_test[,4:1],explainer = explainer_1,approach = "empirical",prediction_zero = p0)
+    explained_2_1 <- explain(x = x_test[,1:4],explainer = explainer_2,approach = "empirical",prediction_zero = p0)
+    explained_2_2 <- explain(x = x_test[,4:1],explainer = explainer_2,approach = "empirical",prediction_zero = p0)
+
+    expect_identical(explained_1_1,explained_1_2)
+    expect_identical(explained_1_1,explained_2_1)
+    expect_identical(explained_1_1,explained_2_2)
+
+  }
+})
+
+
