@@ -87,8 +87,9 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #' @export
 #' @keywords internal
 prepare_data <- function(x, ...) {
-  class(x) <- x$approach
-  UseMethod("prepare_data", x)
+  this_class <- ""
+  class(this_class) <- x$approach
+  UseMethod("prepare_data", this_class)
 }
 
 #' @rdname prepare_data
