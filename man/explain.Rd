@@ -229,7 +229,7 @@ if (requireNamespace("MASS", quietly = TRUE)) {
   }
 
   # Group-wise explanations
-  group <- list(A=c("lstat","rm"), B=c("dis","indus"))
+  group <- list(A = c("lstat", "rm"), B = c("dis", "indus"))
   explainer_group <- shapr(x_train, model, group = group)
   explain_groups <- explain(
     x_test,
@@ -239,7 +239,6 @@ if (requireNamespace("MASS", quietly = TRUE)) {
     n_samples = 1e2
   )
   print(explain_groups$dt)
-
 }
 }
 \author{

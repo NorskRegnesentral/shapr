@@ -117,9 +117,8 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #'
 #'   # Example using approximation
 #'   y_var <- "medv"
-#'   x_var <- setdiff(colnames(df), y_var)
 #'   model <- lm(medv ~ ., data = df)
-#'   explainer <- shapr(df0, model, n_combinations = 1e3)
+#'   explainer <- shapr(df, model, n_combinations = 1e3)
 #'
 #'   print(nrow(explainer$X))
 #'
@@ -133,7 +132,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #'   # 16 (which equals 2^4)
 #'
 #'   # Example using groups
-#'   group <- list(x_var[1:2], x_var[3:4])
+#'   group <- list(A=x_var[1:2], B=x_var[3:4])
 #'
 #'   explainer_group <- shapr(df0, model, group = group)
 #'   print(nrow(explainer_group$X))
