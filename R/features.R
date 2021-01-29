@@ -53,16 +53,16 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   if (m > 30 & is.null(group_num)) {
     stop(
       paste0(
-      "Currently we are not supporting cases where the number of features is greater than 30\n",
-      "for feature-wise Shapley values."
+        "Currently we are not supporting cases where the number of features is greater than 30\n",
+        "for feature-wise Shapley values."
       )
     )
   }
   if (length(group_num) > 13) {
     stop(
       paste0(
-      "For computational reasons, we are currently not supporting group-wise Shapley values \n",
-      "for more than 13 groups. Please reduce the number of groups."
+        "For computational reasons, we are currently not supporting group-wise Shapley values \n",
+        "for more than 13 groups. Please reduce the number of groups."
       )
     )
   }
@@ -95,8 +95,10 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   } else {
     # Here if group-wise Shapley values
     if (!exact) {
-      cat(paste0("Input exact = FALSE is not supported for group-wise Shapley values.\n",
-                 "Changing to exact = TRUE"))
+      cat(paste0(
+        "Input exact = FALSE is not supported for group-wise Shapley values.\n",
+        "Changing to exact = TRUE"
+      ))
     }
     dt <- feature_group(group_num, weight_zero_m)
   }
@@ -163,15 +165,14 @@ feature_group <- function(group_num, weight_zero_m = 10^6) {
 #'
 #' @keywords internal
 check_groups <- function(feature_labels, group) {
-
-  if(!is.list(group)){
+  if (!is.list(group)) {
     stop("group must be a list")
   }
 
   group_features <- unlist(group)
 
   # Checking that the group_features are characters
-  if(!all(is.character(group_features))){
+  if (!all(is.character(group_features))) {
     stop("All components of group should be a character.")
   }
 
@@ -180,7 +181,7 @@ check_groups <- function(feature_labels, group) {
     missing_group_feature <- group_features[!(group_features %in% feature_labels)]
     stop(
       paste0(
-        "The group feature(s) ", paste0(missing_group_feature, collapse =  ", "), " are not\n",
+        "The group feature(s) ", paste0(missing_group_feature, collapse = ", "), " are not\n",
         "among the features specified by the model/data. Delete from group."
       )
     )
@@ -191,7 +192,7 @@ check_groups <- function(feature_labels, group) {
     missing_features <- feature_labels[!(feature_labels %in% group_features)]
     stop(
       paste0(
-        "The model/data feature(s) ", paste0(missing_features, collapse =  ", "), " are not\n",
+        "The model/data feature(s) ", paste0(missing_features, collapse = ", "), " are not\n",
         "among the group features. Add to a group."
       )
     )

@@ -378,20 +378,19 @@ update_data <- function(data, updater) {
 #' @author Martin Jullum
 #'
 #' @keywords internal
-process_groups <- function(group, feature_labels){
+process_groups <- function(group, feature_labels) {
+  check_groups(feature_labels, group)
 
-    check_groups(feature_labels, group)
+  # Make group names if not existing
+  if (is.null(names(group))) {
+    message("Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc.")
+    names(group) <- paste0("group", seq_along(group))
+  }
 
-    # Make group names if not existing
-    if (is.null(names(group))){
-      message("Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc.")
-      names(group) <- paste0("group", seq_along(group))
-    }
+  # Make group list with numeric feature indicators
+  group_num <- lapply(group, FUN = function(x) {
+    match(x, feature_labels)
+  })
 
-    # Make group list with numeric feature indicators
-    group_num <- lapply(group,FUN = function(x){match(x, feature_labels)})
-
-  return(list(group = group,group_num = group_num))
+  return(list(group = group, group_num = group_num))
 }
-
-

@@ -45,9 +45,9 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   # Setup
   feature_names <- colnames(explainer$x_test)
-  if(!explainer$is_groupwise){
+  if (!explainer$is_groupwise) {
     shap_names <- feature_names
-  } else{
+  } else {
     shap_names <- names(explainer$group)
   }
 
@@ -81,11 +81,13 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", shap_names)
 
-  r <- list(dt = dt_kshap,
-            model = explainer$model,
-            p = p_all,
-            x_test = explainer$x_test,
-            is_groupwise = explainer$is_groupwise)
+  r <- list(
+    dt = dt_kshap,
+    model = explainer$model,
+    p = p_all,
+    x_test = explainer$x_test,
+    is_groupwise = explainer$is_groupwise
+  )
   attr(r, "class") <- c("shapr", "list")
 
   return(r)

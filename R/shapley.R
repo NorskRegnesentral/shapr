@@ -39,7 +39,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
     w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
   }
 
-  if (!is_groupwise){
+  if (!is_groupwise) {
     W <- weight_matrix_cpp(
       subsets = X[["features"]],
       m = X[.N][["n_features"]],
@@ -133,11 +133,11 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #'   # 16 (which equals 2^4)
 #'
 #'   # Example using groups
-#'   group <- list(x_var[1:2],x_var[3:4])
+#'   group <- list(x_var[1:2], x_var[3:4])
 #'
-#'  explainer_group <- shapr(df0, model, group = group)
-#'  print(nrow(explainer_group$X))
-#'  # 4 (which equals 2^(#groups))
+#'   explainer_group <- shapr(df0, model, group = group)
+#'   print(nrow(explainer_group$X))
+#'   # 4 (which equals 2^(#groups))
 #' }
 shapr <- function(x,
                   model,
@@ -160,7 +160,7 @@ shapr <- function(x,
   processed_list <- preprocess_data(
     x = x,
     feature_list = feature_list_model
-    )
+  )
 
 
 
@@ -172,7 +172,7 @@ shapr <- function(x,
 
   # Processes groups if specified. Otherwise do nothing
   is_groupwise <- !is.null(group)
-  if(is_groupwise){
+  if (is_groupwise) {
     group_list <- process_groups(
       group = group,
       feature_labels = updated_feature_list$labels

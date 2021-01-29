@@ -145,36 +145,44 @@ test_that("Basic test functions for grouping in shapley.R", {
     # Load premade lm model. Path needs to be relative to testthat directory in the package
     model <- readRDS("model_objects/lm_model_object.rds")
 
-    group1_num <- list(c(1,3),
-                       c(2,4))
+    group1_num <- list(
+      c(1, 3),
+      c(2, 4)
+    )
 
-    group1 = lapply(group1_num, function(x){x_var[x]})
+    group1 <- lapply(group1_num, function(x) {
+      x_var[x]
+    })
 
 
-    group2_num <- list(c(1),
-                       c(2),
-                       c(3),
-                       c(4))
+    group2_num <- list(
+      c(1),
+      c(2),
+      c(3),
+      c(4)
+    )
 
-    group2 = lapply(group2_num, function(x){x_var[x]})
+    group2 <- lapply(group2_num, function(x) {
+      x_var[x]
+    })
 
     # Prepare the data for explanation
     explainer1 <- shapr(x_train, model, group = group1)
     explainer2 <- shapr(x_train, model, group = group2)
 
     expect_known_value(explainer1,
-                       file = "test_objects/shapley_explainer_group1_obj.rds",
-                       update = F)
+      file = "test_objects/shapley_explainer_group1_obj.rds",
+      update = F
+    )
     expect_known_value(explainer2,
-                       file = "test_objects/shapley_explainer_group2_obj.rds",
-                       update = F)
+      file = "test_objects/shapley_explainer_group2_obj.rds",
+      update = F
+    )
   }
-}
-)
+})
 
 
 test_that("Testing data input to shapr for grouping in shapley.R", {
-
   if (requireNamespace("MASS", quietly = TRUE)) {
     data("Boston", package = "MASS")
 
@@ -183,30 +191,44 @@ test_that("Testing data input to shapr for grouping in shapley.R", {
 
     x_train <- as.matrix(tail(Boston[, x_var], -6))
     xy_train <- tail(Boston, -6)
-    group_num <- list(c(1,3),
-                       c(2,4))
+    group_num <- list(
+      c(1, 3),
+      c(2, 4)
+    )
 
-    group = lapply(group_num, function(x){x_var[x]})
-    names(group) =  c("A","B")
+    group <- lapply(group_num, function(x) {
+      x_var[x]
+    })
+    names(group) <- c("A", "B")
 
-    group_no_names = lapply(group_num, function(x){x_var[x]})
+    group_no_names <- lapply(group_num, function(x) {
+      x_var[x]
+    })
 
-    group_error_1 <- list(c(x_var[1:2],not_x_var),
-                        x_var[3:4])
+    group_error_1 <- list(
+      c(x_var[1:2], not_x_var),
+      x_var[3:4]
+    )
 
-    group_error_2 <- list(x_var[1],
-                          x_var[3:4])
+    group_error_2 <- list(
+      x_var[1],
+      x_var[3:4]
+    )
 
-    group_error_3 <- list(x_var[c(1,2)],
-                          x_var[c(1,3,4)])
+    group_error_3 <- list(
+      x_var[c(1, 2)],
+      x_var[c(1, 3, 4)]
+    )
 
-    group_error_4 <- list(x_var[c(1,2)],
-                          x_var[c(1,3,4)])
+    group_error_4 <- list(
+      x_var[c(1, 2)],
+      x_var[c(1, 3, 4)]
+    )
 
 
     # Fitting models
     formula <- as.formula(paste0("medv ~ ", paste0(x_var, collapse = "+")))
-    model <- stats::lm(formula = formula,data = xy_train)
+    model <- stats::lm(formula = formula, data = xy_train)
 
 
     # Expect silent
@@ -231,9 +253,5 @@ test_that("Testing data input to shapr for grouping in shapley.R", {
 
     # Expect error when group does duplicated features
     expect_error(shapr(x_train, model, group = group_error_3))
-
   }
-}
-)
-
-
+})
