@@ -83,7 +83,7 @@ plot.shapr <- function(x,
   } else {
     desc_mat <- format(x$dt[, -1], digits = digits)
     for (i in 1:ncol(desc_mat)) {
-      desc_mat[, i] <- paste0(cnms[i]) #  " = ", desc_mat[, i]
+      desc_mat[, i] <- paste0(cnms[i])
     }
   }
 

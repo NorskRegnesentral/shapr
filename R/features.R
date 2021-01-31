@@ -132,7 +132,8 @@ group_fun <- function(x, group_num) {
 #' Analogue to feature_exact, but for groups instead.
 #'
 #' @inheritParams shapley_weights
-#' @param group_num Vector of characters. Contains the feature labels used by the model
+#' @param group_num List. Contains vector of integers indicating the feature numbers for the
+#' different groups.
 #'
 #' @return data.table with all feature group combinations, shapley weights etc.
 #'
@@ -187,7 +188,7 @@ check_groups <- function(feature_labels, group) {
     )
   }
 
-  # Check that all feature_labels or used by model are in group
+  # Check that all feature used by model are in group
   if (!all(feature_labels %in% group_features)) {
     missing_features <- feature_labels[!(feature_labels %in% group_features)]
     stop(
