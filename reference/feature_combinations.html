@@ -74,7 +74,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
       </span>
     </div>
 
@@ -132,7 +132,8 @@
   <span class='va'>m</span>,
   exact <span class='op'>=</span> <span class='cn'>TRUE</span>,
   n_combinations <span class='op'>=</span> <span class='fl'>200</span>,
-  weight_zero_m <span class='op'>=</span> <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>
+  weight_zero_m <span class='op'>=</span> <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>,
+  group_num <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -157,6 +158,11 @@ value for <code>n_combinations</code>.</p></td>
       <th>weight_zero_m</th>
       <td><p>Numeric. The value to use as a replacement for infinite combination
 weights when doing numerical operations.</p></td>
+    </tr>
+    <tr>
+      <th>group_num</th>
+      <td><p>List. Contains vector of integers indicating the feature numbers for the
+different groups.</p></td>
     </tr>
     </table>
 

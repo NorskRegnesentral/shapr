@@ -74,7 +74,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
       </span>
     </div>
 
@@ -387,11 +387,26 @@ when conditioning on <code>i</code> features.</p>
   <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"ggplot2"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
     <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>explain1</span><span class='op'>)</span>
   <span class='op'>}</span>
+
+  <span class='co'># Group-wise explanations</span>
+  <span class='va'>group</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>A <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"lstat"</span>, <span class='st'>"rm"</span><span class='op'>)</span>, B <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"dis"</span>, <span class='st'>"indus"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='va'>explainer_group</span> <span class='op'>&lt;-</span> <span class='fu'><a href='shapr.html'>shapr</a></span><span class='op'>(</span><span class='va'>x_train</span>, <span class='va'>model</span>, group <span class='op'>=</span> <span class='va'>group</span><span class='op'>)</span>
+  <span class='va'>explain_groups</span> <span class='op'>&lt;-</span> <span class='fu'>explain</span><span class='op'>(</span>
+    <span class='va'>x_test</span>,
+    <span class='va'>explainer_group</span>,
+    approach <span class='op'>=</span> <span class='st'>"empirical"</span>,
+    prediction_zero <span class='op'>=</span> <span class='va'>p</span>,
+    n_samples <span class='op'>=</span> <span class='fl'>1e2</span>
+  <span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>explain_groups</span><span class='op'>$</span><span class='va'>dt</span><span class='op'>)</span>
 <span class='op'>}</span>
 </div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt;        none    lstat        rm       dis       indus
 #&gt; 1: 22.55229 4.953864  4.244888 0.8827999 -0.78929796
 #&gt; 2: 22.55229 4.325994  2.696331 1.0856817 -0.42178545
-#&gt; 3: 22.55229 3.823326 -1.892161 1.1417940  0.08801935</div><div class='img'><img src='explain-1.png' alt='' width='700' height='433' /></div></pre>
+#&gt; 3: 22.55229 3.823326 -1.892161 1.1417940  0.08801935</div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt; <span class='message'>The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span></div><div class='output co'>#&gt;        none        A         B
+#&gt; 1: 22.55229 8.718123 0.5741309
+#&gt; 2: 22.55229 6.838269 0.8479526
+#&gt; 3: 22.55229 1.842581 1.3183971</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

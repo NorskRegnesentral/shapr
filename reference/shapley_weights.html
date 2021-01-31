@@ -74,7 +74,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
       </span>
     </div>
 
@@ -128,29 +128,29 @@
     <p>Calculate Shapley weight</p>
     </div>
 
-    <pre class="usage"><span class='fu'>shapley_weights</span><span class='op'>(</span><span class='va'>m</span>, <span class='va'>N</span>, <span class='va'>n_features</span>, weight_zero_m <span class='op'>=</span> <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>shapley_weights</span><span class='op'>(</span><span class='va'>m</span>, <span class='va'>N</span>, <span class='va'>n_components</span>, weight_zero_m <span class='op'>=</span> <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>m</th>
-      <td><p>Positive integer. Total number of features.</p></td>
+      <td><p>Positive integer. Total number of features/feature groups.</p></td>
     </tr>
     <tr>
       <th>N</th>
-      <td><p>Positive integer. The number of unique combinations when sampling <code>n_features</code> features,
-without replacement, from a sample space consisting of <code>m</code> different features.</p></td>
+      <td><p>Positive integer. The number of unique combinations when sampling <code>n_components</code> features/feature
+groups, without replacement, from a sample space consisting of <code>m</code> different features/feature groups.</p></td>
     </tr>
     <tr>
-      <th>n_features</th>
-      <td><p>Positive integer. Represents the number of features you want to sample from a feature
-space consisting of <code>m</code> unique features. Note that <code> 0 &lt; = n_features &lt;= m</code>.</p></td>
+      <th>n_components</th>
+      <td><p>Positive integer. Represents the number of features/feature groups you want to sample from
+a feature space consisting of <code>m</code> unique features/feature groups. Note that <code> 0 &lt; = n_components &lt;= m</code>.</p></td>
     </tr>
     <tr>
       <th>weight_zero_m</th>
       <td><p>Positive integer. Represents the Shapley weight for two special
-cases, i.e. the case where you have either <code>0</code> or <code>m</code> features.</p></td>
+cases, i.e. the case where you have either <code>0</code> or <code>m</code> features/feature groups.</p></td>
     </tr>
     </table>
 

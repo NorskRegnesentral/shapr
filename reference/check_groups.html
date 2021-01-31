@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Temp-function for computing the full AICc with several X's etc — aicc_full_single_cpp • shapr</title>
+<title>Check that the group parameter has the right form and content — check_groups • shapr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Temp-function for computing the full AICc with several X's etc — aicc_full_single_cpp" />
-<meta property="og:description" content="Temp-function for computing the full AICc with several X's etc" />
+<meta property="og:title" content="Check that the group parameter has the right form and content — check_groups" />
+<meta property="og:description" content="Check that the group parameter has the right form and content" />
 
 
 
@@ -119,48 +119,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Temp-function for computing the full AICc with several X's etc</h1>
-    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
-    <div class="hidden name"><code>aicc_full_single_cpp.Rd</code></div>
+    <h1>Check that the group parameter has the right form and content</h1>
+    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/features.R'><code>R/features.R</code></a></small>
+    <div class="hidden name"><code>check_groups.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Temp-function for computing the full AICc with several X's etc</p>
+    <p>Check that the group parameter has the right form and content</p>
     </div>
 
-    <pre class="usage"><span class='fu'>aicc_full_single_cpp</span><span class='op'>(</span><span class='va'>X</span>, <span class='va'>mcov</span>, <span class='va'>S_scale_dist</span>, <span class='va'>h</span>, <span class='va'>y</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>check_groups</span><span class='op'>(</span><span class='va'>feature_labels</span>, <span class='va'>group</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>X</th>
-      <td><p>matrix with "covariates"</p></td>
+      <th>feature_labels</th>
+      <td><p>Vector of characters. Contains the feature labels used by the model</p></td>
     </tr>
     <tr>
-      <th>mcov</th>
-      <td><p>covariance matrix</p></td>
-    </tr>
-    <tr>
-      <th>S_scale_dist</th>
-      <td><p>logical indicating whether the Mahalanobis distance should be scaled with the number of variables</p></td>
-    </tr>
-    <tr>
-      <th>h</th>
-      <td><p>numeric specifying the scaling (sigma)</p></td>
-    </tr>
-    <tr>
-      <th>y</th>
-      <td><p>vector with the "response variable"</p></td>
+      <th>group</th>
+      <td><p>List. If <code>NULL</code> regular feature wise Shapley values are computed.
+If provided, group wise Shapley values are computed. <code>group</code> then has length equal to
+the number of groups. The list element contains character vectors with the features included
+in each of the different groups.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Scalar with the numeric value of the AICc formula</p>
-    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
-
-    <p>Martin Jullum</p>
+    <p>Error or NULL</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

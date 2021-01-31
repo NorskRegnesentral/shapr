@@ -16,6 +16,9 @@
     <loc>https://norskregnesentral.github.io/shapr//reference/check_features.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/check_groups.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/correction_matrix_cpp.html</loc>
   </url>
   <url>
@@ -26,6 +29,9 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/feature_combinations.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/feature_group.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/feature_matrix_cpp.html</loc>
@@ -83,6 +89,9 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/preprocess_data.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr//reference/process_groups.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr//reference/rss_cpp.html</loc>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Temp-function for computing the full AICc with several X's etc — aicc_full_single_cpp • shapr</title>
+<title>Process (check and update names) the group list — process_groups • shapr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Temp-function for computing the full AICc with several X's etc — aicc_full_single_cpp" />
-<meta property="og:description" content="Temp-function for computing the full AICc with several X's etc" />
+<meta property="og:title" content="Process (check and update names) the group list — process_groups" />
+<meta property="og:description" content="Process (check and update names) the group list" />
 
 
 
@@ -119,45 +119,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Temp-function for computing the full AICc with several X's etc</h1>
-    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
-    <div class="hidden name"><code>aicc_full_single_cpp.Rd</code></div>
+    <h1>Process (check and update names) the group list</h1>
+    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/preprocess_data.R'><code>R/preprocess_data.R</code></a></small>
+    <div class="hidden name"><code>process_groups.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Temp-function for computing the full AICc with several X's etc</p>
+    <p>Process (check and update names) the group list</p>
     </div>
 
-    <pre class="usage"><span class='fu'>aicc_full_single_cpp</span><span class='op'>(</span><span class='va'>X</span>, <span class='va'>mcov</span>, <span class='va'>S_scale_dist</span>, <span class='va'>h</span>, <span class='va'>y</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>process_groups</span><span class='op'>(</span><span class='va'>group</span>, <span class='va'>feature_labels</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>X</th>
-      <td><p>matrix with "covariates"</p></td>
+      <th>group</th>
+      <td><p>List. If <code>NULL</code> regular feature wise Shapley values are computed.
+If provided, group wise Shapley values are computed. <code>group</code> then has length equal to
+the number of groups. The list element contains character vectors with the features included
+in each of the different groups.</p></td>
     </tr>
     <tr>
-      <th>mcov</th>
-      <td><p>covariance matrix</p></td>
-    </tr>
-    <tr>
-      <th>S_scale_dist</th>
-      <td><p>logical indicating whether the Mahalanobis distance should be scaled with the number of variables</p></td>
-    </tr>
-    <tr>
-      <th>h</th>
-      <td><p>numeric specifying the scaling (sigma)</p></td>
-    </tr>
-    <tr>
-      <th>y</th>
-      <td><p>vector with the "response variable"</p></td>
+      <th>feature_labels</th>
+      <td><p>Vector of characters. Contains the feature labels used by the model</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Scalar with the numeric value of the AICc formula</p>
+    <p>List with two named elements: <code>group</code>: The input, but with group names if non-existing,
+<code>group_num</code> a corresponding group list with names replaced by feature number</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>This function takes care of all preprocessing and checking of the provided data in <code>x</code> against
+the feature_list which is typically the output from <code><a href='get_model_specs.html'>get_model_specs</a></code></p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Martin Jullum</p>

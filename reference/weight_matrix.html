@@ -74,7 +74,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
       </span>
     </div>
 
@@ -128,7 +128,7 @@
     <p>Calculate weighted matrix</p>
     </div>
 
-    <pre class="usage"><span class='fu'>weight_matrix</span><span class='op'>(</span><span class='va'>X</span>, normalize_W_weights <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>weight_matrix</span><span class='op'>(</span><span class='va'>X</span>, normalize_W_weights <span class='op'>=</span> <span class='cn'>TRUE</span>, is_groupwise <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,6 +142,10 @@
       <td><p>Logical. Whether to normalize the weights for the combinations to sum to 1 for
 increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations
 except combination <code>1</code> and <code>2^m</code>.</p></td>
+    </tr>
+    <tr>
+      <th>is_groupwise</th>
+      <td><p>Logical. Indicating whether group wise Shapley values are to be computed.</p></td>
     </tr>
     </table>
 

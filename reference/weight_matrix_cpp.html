@@ -74,7 +74,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
       </span>
     </div>
 
@@ -128,19 +128,19 @@
     <p>Calculate weight matrix</p>
     </div>
 
-    <pre class="usage"><span class='fu'>weight_matrix_cpp</span><span class='op'>(</span><span class='va'>features</span>, <span class='va'>m</span>, <span class='va'>n</span>, <span class='va'>w</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>weight_matrix_cpp</span><span class='op'>(</span><span class='va'>subsets</span>, <span class='va'>m</span>, <span class='va'>n</span>, <span class='va'>w</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>features</th>
+      <th>subsets</th>
       <td><p>List. Each of the elements equals an integer
-vector representing a valid combination of features.</p></td>
+vector representing a valid combination of features/feature groups.</p></td>
     </tr>
     <tr>
       <th>m</th>
-      <td><p>Integer. Number of features</p></td>
+      <td><p>Integer. Number of features/feature groups</p></td>
     </tr>
     <tr>
       <th>n</th>
@@ -149,8 +149,8 @@ vector representing a valid combination of features.</p></td>
     <tr>
       <th>w</th>
       <td><p>Numeric vector of length <code>n</code>, i.e. <code>w[i]</code> equals
-the Shapley weight of feature combination <code>i</code>, represented by
-<code>features[[i]]</code>.</p></td>
+the Shapley weight of feature/feature group combination <code>i</code>, represented by
+<code>subsets[[i]]</code>.</p></td>
     </tr>
     </table>
 
