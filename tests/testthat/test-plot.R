@@ -25,6 +25,7 @@ test_that("Test plot.shapr", {
       "indus" = c(4.5529, 0.3787, -1.4304, 1.8298, 2.2471)
     )
     explanation$x_test <- x
+    explanation$is_groupwise <- FALSE
     attr(explanation, "class") <- c("shapr", "list")
 
 

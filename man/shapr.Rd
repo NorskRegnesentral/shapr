@@ -4,7 +4,7 @@
 \alias{shapr}
 \title{Create an explainer object with Shapley weights for test data.}
 \usage{
-shapr(x, model, n_combinations = NULL)
+shapr(x, model, n_combinations = NULL, group = NULL)
 }
 \arguments{
 \item{x}{Numeric matrix or data.frame/data.table. Contains the data used to estimate the (conditional)
@@ -17,6 +17,11 @@ for a table of which models \code{shapr} supports natively.}
 \item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
 the exact method is used and all combinations are considered. The maximum number of
 combinations equals \code{2^ncol(x)}.}
+
+\item{group}{List. If \code{NULL} regular feature wise Shapley values are computed.
+If provided, group wise Shapley values are computed. \code{group} then has length equal to
+the number of groups. The list element contains character vectors with the features included
+in each of the different groups.}
 }
 \value{
 Named list that contains the following items:
@@ -50,31 +55,35 @@ if (requireNamespace("MASS", quietly = TRUE)) {
   # Example using the exact method
   x_var <- c("lstat", "rm", "dis", "indus")
   y_var <- "medv"
-  df1 <- df[, x_var]
+  df0 <- df[, x_var]
   model <- lm(medv ~ lstat + rm + dis + indus, data = df)
-  explainer <- shapr(df1, model)
+  explainer <- shapr(df0, model)
 
   print(nrow(explainer$X))
   # 16 (which equals 2^4)
 
   # Example using approximation
   y_var <- "medv"
-  x_var <- setdiff(colnames(df), y_var)
   model <- lm(medv ~ ., data = df)
-  df2 <- df[, x_var]
-  explainer <- shapr(df2, model, n_combinations = 1e3)
+  explainer <- shapr(df, model, n_combinations = 1e3)
 
   print(nrow(explainer$X))
 
   # Example using approximation where n_combinations > 2^m
   x_var <- c("lstat", "rm", "dis", "indus")
   y_var <- "medv"
-  df3 <- df[, x_var]
   model <- lm(medv ~ lstat + rm + dis + indus, data = df)
-  explainer <- shapr(df1, model, n_combinations = 1e3)
+  explainer <- shapr(df0, model, n_combinations = 1e3)
 
   print(nrow(explainer$X))
   # 16 (which equals 2^4)
+
+  # Example using groups
+  group <- list(A=x_var[1:2], B=x_var[3:4])
+
+  explainer_group <- shapr(df0, model, group = group)
+  print(nrow(explainer_group$X))
+  # 4 (which equals 2^(#groups))
 }
 }
 \author{

@@ -5,7 +5,7 @@ test_that("Test weight_matrix_cpp", {
   ## Example -----------
   m <- 3
   n <- 2^m
-  features <- unlist(
+  subsets <- unlist(
     lapply(
       0:m,
       utils::combn,
@@ -16,9 +16,9 @@ test_that("Test weight_matrix_cpp", {
   )
   w_all <- shapley_weights(m, choose(m, 0:m), 0:m)
   w_all[!is.finite(w_all)] <- 10^6
-  w <- w_all[sapply(features, length) + 1]
+  w <- w_all[sapply(subsets, length) + 1]
   x <- weight_matrix_cpp(
-    features = features,
+    subsets = subsets,
     m = m,
     n = n,
     w = w
@@ -27,8 +27,8 @@ test_that("Test weight_matrix_cpp", {
   ## Exact results -----------
   Z <- matrix(0, nrow = n, ncol = m + 1)
   Z[, 1] <- 1
-  for (i in seq_along(features)) {
-    f <- features[[i]]
+  for (i in seq_along(subsets)) {
+    f <- subsets[[i]]
     if (length(f) > 0) {
       Z[i, f + 1] <- 1
     }

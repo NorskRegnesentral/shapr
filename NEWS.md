@@ -1,3 +1,9 @@
+# shapr 0.2.0.9000
+
+* Development version
+* Added support for groupSHAP, including check of appropriate groups, examples and tests
+* Various modifications to input of internal functions to reflect that Shapley values may be
+  computed both feature-wise and group-wise
 
 # shapr 0.2.0
 

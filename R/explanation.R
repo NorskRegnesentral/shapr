@@ -118,6 +118,18 @@
 #'   if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'     plot(explain1)
 #'   }
+#'
+#'   # Group-wise explanations
+#'   group <- list(A = c("lstat", "rm"), B = c("dis", "indus"))
+#'   explainer_group <- shapr(x_train, model, group = group)
+#'   explain_groups <- explain(
+#'     x_test,
+#'     explainer_group,
+#'     approach = "empirical",
+#'     prediction_zero = p,
+#'     n_samples = 1e2
+#'   )
+#'   print(explain_groups$dt)
 #' }
 explain <- function(x, explainer, approach, prediction_zero, ...) {
   extras <- list(...)

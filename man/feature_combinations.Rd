@@ -8,7 +8,8 @@ feature_combinations(
   m,
   exact = TRUE,
   n_combinations = 200,
-  weight_zero_m = 10^6
+  weight_zero_m = 10^6,
+  group_num = NULL
 )
 }
 \arguments{
@@ -23,6 +24,9 @@ value for \code{n_combinations}.}
 
 \item{weight_zero_m}{Numeric. The value to use as a replacement for infinite combination
 weights when doing numerical operations.}
+
+\item{group_num}{List. Contains vector of integers indicating the feature numbers for the
+different groups.}
 }
 \value{
 A data.table that contains the following columns:

@@ -71,7 +71,7 @@ test_that("Test feature_exact", {
     c(2L, 3L),
     c(1L, 2L, 3L)
   )
-  n_features <- c(0, rep(1, 3), rep(2, 3), 3)
+  n_components <- c(0, rep(1, 3), rep(2, 3), 3)
   n <- c(1, rep(3, 6), 1)
 
   # Tests -----------
@@ -80,7 +80,7 @@ test_that("Test feature_exact", {
   expect_equal(unname(sapply(x, typeof)), classes)
   expect_equal(x[["id_combination"]], seq(nrow(x)))
   expect_equal(x[["features"]], lfeatures)
-  expect_equal(x[["n_features"]], n_features)
+  expect_equal(x[["n_features"]], n_components)
   expect_equal(x[["N"]], n)
 })
 
@@ -102,7 +102,7 @@ test_that("Test feature_not_exact", {
   cnms <- c("id_combination", "features", "n_features", "N", "shapley_weight", "p")
   classes <- c("integer", "list", "integer", "integer", "integer", "double")
   n <- sapply(seq(m - 1), choose, n = m)
-  w_all <- shapley_weights(m = m, N = n, n_features = seq(m - 1)) * n
+  w_all <- shapley_weights(m = m, N = n, n_components = seq(m - 1)) * n
   w_default <- w_all / sum(w_all)
 
   # Test results -----------

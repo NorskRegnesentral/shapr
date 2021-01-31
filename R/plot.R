@@ -65,23 +65,34 @@ plot.shapr <- function(x,
   if (is.null(top_k_features)) top_k_features <- ncol(x$x_test) + 1
   id <- phi <- NULL # due to NSE notes in R CMD check
 
+  is_groupwise <- x$is_groupwise
+
   # melting Kshap
-  cnms <- colnames(x$x_test)
+  shap_names <- colnames(x$dt)[-1]
   KshapDT <- data.table::copy(x$dt)
   KshapDT[, id := .I]
   meltKshap <- data.table::melt(KshapDT, id.vars = "id", value.name = "phi")
   meltKshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
   # Converting and melting Xtest
-  desc_mat <- format(x$x_test, digits = digits)
-  for (i in 1:ncol(desc_mat)) {
-    desc_mat[, i] <- paste0(cnms[i], " = ", desc_mat[, i])
+  if (!is_groupwise) {
+    desc_mat <- format(x$x_test, digits = digits)
+    for (i in 1:ncol(desc_mat)) {
+      desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
+    }
+  } else {
+    desc_mat <- format(x$dt[, -1], digits = digits)
+    for (i in 1:ncol(desc_mat)) {
+      desc_mat[, i] <- paste0(shap_names[i])
+    }
   }
+
   desc_dt <- data.table::as.data.table(cbind(none = "none", desc_mat))
   melt_desc_dt <- data.table::melt(desc_dt[, id := .I], id.vars = "id", value.name = "description")
 
   # Data table for plotting
   plotting_dt <- merge(meltKshap, melt_desc_dt)
+
 
   # Adding the predictions
   predDT <- data.table::data.table(id = KshapDT$id, pred = x$p)
