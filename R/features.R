@@ -193,8 +193,8 @@ check_groups <- function(feature_labels, group) {
     missing_features <- feature_labels[!(feature_labels %in% group_features)]
     stop(
       paste0(
-        "The model/data feature(s) ", paste0(missing_features, collapse = ", "), " are not\n",
-        "among the group features. Add to a group."
+        "The model/data feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
+        "belong to one of the groups. Add to a group."
       )
     )
   }
@@ -206,7 +206,7 @@ check_groups <- function(feature_labels, group) {
       paste0(
         "Feature(s) ", paste0(dups, collapse = ", "), " are found in more than one group or ",
         "multiple times per group.\n",
-        "Make sure each feature is only represented in one group, and only one time."
+        "Make sure each feature is only represented in one group, and only once."
       )
     )
   }
