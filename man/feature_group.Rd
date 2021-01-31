@@ -7,7 +7,8 @@
 feature_group(group_num, weight_zero_m = 10^6)
 }
 \arguments{
-\item{group_num}{Vector of characters. Contains the feature labels used by the model}
+\item{group_num}{List. Contains vector of integers indicating the feature numbers for the
+different groups.}
 
 \item{weight_zero_m}{Positive integer. Represents the Shapley weight for two special
 cases, i.e. the case where you have either \code{0} or \code{m} features/feature groups.}

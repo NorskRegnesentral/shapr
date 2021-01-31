@@ -68,7 +68,7 @@ plot.shapr <- function(x,
   is_groupwise <- x$is_groupwise
 
   # melting Kshap
-  cnms <- colnames(x$dt)[-1]
+  shap_names <- colnames(x$dt)[-1]
   KshapDT <- data.table::copy(x$dt)
   KshapDT[, id := .I]
   meltKshap <- data.table::melt(KshapDT, id.vars = "id", value.name = "phi")
@@ -78,12 +78,12 @@ plot.shapr <- function(x,
   if (!is_groupwise) {
     desc_mat <- format(x$x_test, digits = digits)
     for (i in 1:ncol(desc_mat)) {
-      desc_mat[, i] <- paste0(cnms[i], " = ", desc_mat[, i])
+      desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
     }
   } else {
     desc_mat <- format(x$dt[, -1], digits = digits)
     for (i in 1:ncol(desc_mat)) {
-      desc_mat[, i] <- paste0(cnms[i])
+      desc_mat[, i] <- paste0(shap_names[i])
     }
   }
 
