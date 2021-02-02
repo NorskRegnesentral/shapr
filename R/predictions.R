@@ -42,7 +42,6 @@ prediction <- function(dt, prediction_zero, explainer) {
     !is.null(dt[["id_combination"]]),
     !is.null(dt[["w"]])
   )
-
   # Setup
   feature_names <- colnames(explainer$x_test)
   if (!explainer$is_groupwise) {
@@ -56,14 +55,15 @@ prediction <- function(dt, prediction_zero, explainer) {
   # Check that the number of test observations equals max(id)
   stopifnot(nrow(explainer$x_test) == dt[, max(id)])
 
-  # Reducing the prediction data.table
+  # Reducing the prediction data.table - this only does something for the empirical and categorical methods
   max_id_combination <- dt[, max(id_combination)]
   V1 <- keep <- NULL # due to NSE notes in R CMD check
   dt[, keep := TRUE]
   first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, max_id_combination), V1]
   dt[id_combination %in% c(1, max_id_combination), keep := FALSE]
-  dt[first_element, c("keep", "w") := list(TRUE, 1.0)]
+  dt[first_element, c("keep", "w") := list(TRUE, 1.0)] # this sets some of the keep = FALSE to TRUE
   dt <- dt[keep == TRUE][, keep := NULL]
+
 
   # Predictions
   dt[id_combination != 1, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]

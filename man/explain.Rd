@@ -6,6 +6,7 @@
 \alias{explain.gaussian}
 \alias{explain.copula}
 \alias{explain.ctree}
+\alias{explain.categorical}
 \alias{explain.combined}
 \alias{explain.ctree_comb_mincrit}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
@@ -50,6 +51,16 @@ explain(x, explainer, approach, prediction_zero, ...)
   ...
 )
 
+\method{explain}{categorical}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  joint_prob_dt = NULL,
+  epsilon = 0.001,
+  ...
+)
+
 \method{explain}{combined}(
   x,
   explainer,
@@ -71,7 +82,7 @@ See \code{\link{shapr}}.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should
-either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
+either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}. See details for more
 information.}
 
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
@@ -123,6 +134,14 @@ If FALSE and the number of obs in the leaf is less than \code{n_samples}, the me
 in the leaf. If FALSE and the number of obs in the leaf is more than \code{n_samples}, the method will sample
 \code{n_samples} (with replacement). This means that there will always be sampling in the leaf unless
 \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
+
+\item{joint_prob_dt}{Data.table of probabilities (Optional) of the data generating distribution.
+If \code{NULL}, the probabilities/frequencies are estimated from the data. Note that
+\code{joint_prob_dt} is only used when \code{approach = "categorical"}.}
+
+\item{epsilon}{Numeric value. If \code{joint_prob_dt} is not supplied, probabilities/frequencies are
+estimated using the data. If certain observations occur in the test data and NOT in the train data,
+then epsilon is used as the number of times that observations occurs in the training data.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
@@ -158,9 +177,9 @@ such as the mean of the predictions in the training data are also reasonable.
 Explain the output of machine learning models with more accurately estimated Shapley values
 }
 \details{
-The most important thing to notice is that \code{shapr} has implemented four different
+The most important thing to notice is that \code{shapr} has implemented five different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
+\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, and \code{"categorical"}.
 
 In addition, the user also has the option of combining the four approaches.
 E.g. if you're in a situation where you have trained a model the consists of 10 features,
@@ -220,6 +239,25 @@ if (requireNamespace("MASS", quietly = TRUE)) {
     prediction_zero = p, n_samples = 1e2
   )
 
+  # Categorical approach
+  # need only factor variables
+  Boston$rad <- as.factor(Boston$rad)
+  Boston$chas <- as.factor(Boston$chas)
+
+  x_train <- head(Boston, -3)
+  x_test <- tail(Boston, 3)
+
+  # Fit a linear model
+  model <- lm(medv ~ rad + chas, data = x_train)
+
+  # Create an explainer object
+  explainer <- shapr(x_train, model)
+
+  # Explain predictions
+  p <- mean(x_train$medv)
+
+  explain6 <- explain(x_test, explainer, approach = "categorical", prediction_zero = p)
+
   # Print the Shapley values
   print(explain1$dt)
 
@@ -243,4 +281,6 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 }
 \author{
 Camilla Lingjaerde, Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier
+
+Annabelle Redelmeier
 }

@@ -8,7 +8,7 @@
 #'
 #' @param approach Character vector of length \code{1} or \code{n_features}.
 #' \code{n_features} equals the total number of features in the model. All elements should
-#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
+#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}. See details for more
 #' information.
 #'
 #' @param prediction_zero Numeric. The prediction value for unseen data, typically equal to the mean of
@@ -16,9 +16,9 @@
 #'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
-#' @details The most important thing to notice is that \code{shapr} has implemented four different
+#' @details The most important thing to notice is that \code{shapr} has implemented five different
 #' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-#' \code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
+#' \code{"gaussian"}, \code{"copula"}, \code{"ctree"}, and \code{"categorical"}.
 #'
 #' In addition, the user also has the option of combining the four approaches.
 #' E.g. if you're in a situation where you have trained a model the consists of 10 features,
@@ -111,6 +111,25 @@
 #'     prediction_zero = p, n_samples = 1e2
 #'   )
 #'
+#'   # Categorical approach
+#'   # need only factor variables
+#'   Boston$rad <- as.factor(Boston$rad)
+#'   Boston$chas <- as.factor(Boston$chas)
+#'
+#'   x_train <- head(Boston, -3)
+#'   x_test <- tail(Boston, 3)
+#'
+#'   # Fit a linear model
+#'   model <- lm(medv ~ rad + chas, data = x_train)
+#'
+#'   # Create an explainer object
+#'   explainer <- shapr(x_train, model)
+#'
+#'   # Explain predictions
+#'   p <- mean(x_train$medv)
+#'
+#'   explain6 <- explain(x_test, explainer, approach = "categorical", prediction_zero = p)
+#'
 #'   # Print the Shapley values
 #'   print(explain1$dt)
 #'
@@ -143,12 +162,12 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
   if (!(is.vector(approach) &&
     is.atomic(approach) &&
     (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
-    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
+    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "categorical"))))
   ) {
     stop(
       paste(
         "It seems that you passed a non-valid value for approach.",
-        "It should be either 'empirical', 'gaussian', 'copula', 'ctree' or",
+        "It should be either 'empirical', 'gaussian', 'copula', 'ctree', 'categorical', or",
         "a vector of length=ncol(x) with only the above characters."
       )
     )
@@ -362,6 +381,98 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
 
   return(r)
 }
+
+
+#' @param joint_prob_dt Data.table of probabilities (Optional) of the data generating distribution.
+#' If \code{NULL}, the probabilities/frequencies are estimated from the data. Note that
+#' \code{joint_prob_dt} is only used when \code{approach = "categorical"}.
+#'
+#' @param epsilon Numeric value. If \code{joint_prob_dt} is not supplied, probabilities/frequencies are
+#' estimated using the data. If certain observations occur in the test data and NOT in the train data,
+#' then epsilon is used as the number of times that observations occurs in the training data.
+#'
+#' @author Annabelle Redelmeier
+#'
+#' @rdname explain
+#'
+#' @export
+explain.categorical <- function(x, explainer, approach, prediction_zero,
+                                joint_prob_dt = NULL, epsilon = 0.001, ...) {
+
+  joint_prob <- N <- id_all <- NULL # due to NSE notes in R CMD check
+  cnms <- explainer$feature_list$labels
+
+  # x <- explainer_x_test_dt(x, explainer$feature_labels) # old
+  explainer$x_test <- preprocess_data(x, explainer$feature_list)$x_dt
+
+
+  if (!all(explainer$x_test[, sapply(explainer$x_test, is.factor)])) {
+    stop("All test observations should be factors to use the categorical method.")
+  }
+  # AR: Is this necessary now that we check that train and test have the same classes??!
+  if (!all(explainer$x_train[, sapply(explainer$x_train, is.factor)])) {
+    stop("All train observations should be factors to use the categorical method.")
+  }
+
+  ## Estimate joint_prob_dt if it is not passed to the function
+  if (is.null(joint_prob_dt)) {
+    train <- data.table::copy(explainer$x_train)
+    joint_prob_dt0 <- train[,  .N, eval(cnms)]
+
+    test <- data.table::data.table(explainer$x_test)
+
+    test_not_in_train <- data.table::setkeyv(data.table::setDT(test), cnms)[!train]
+    N_test_not_in_train <- nrow(unique(test_not_in_train))
+
+    if (N_test_not_in_train > 0) {
+      joint_prob_dt0 <- rbind(joint_prob_dt0, cbind(test_not_in_train, N = epsilon))
+    }
+
+    joint_prob_dt0[, joint_prob := N / nrow(joint_prob_dt0)]
+    joint_prob_dt0[, joint_prob := joint_prob / sum(joint_prob_dt0[["joint_prob"]])]
+    data.table::setkeyv(joint_prob_dt0, cnms)
+
+    joint_prob_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
+
+  } else {
+    for (i in colnames(explainer$x_test)) {
+      is_error <- !(i %in% names(joint_prob_dt)) |
+        !all(levels(explainer$x_test[[i]]) %in% levels(joint_prob_dt[[i]]))
+
+      if (is_error > 0) {
+        stop("All features in test observations should belong to joint_prob_dt and have the same
+             levels as the features in joint_prob_dt.")
+      }
+    }
+
+    is_error <- !("joint_prob" %in% names(joint_prob_dt)) |
+      !all(joint_prob_dt$joint_prob <= 1) |
+      !all(joint_prob_dt$joint_prob >= 0) |
+      (round(sum(joint_prob_dt$joint_prob), 3) != 1)
+
+    if (is_error > 0) {
+      stop('joint_prob_dt must include a column of joint probabilities where the column is called
+      "joint_prob", joint_prob_dt$joint_prob must all be greater or equal to 0 and less than or
+      equal to 1, and sum(joint_prob_dt$joint_prob must equal 1.')
+    }
+
+    joint_prob_dt <- joint_prob_dt[, id_all := .I]
+  }
+
+  # Add arguments to explainer object
+  explainer$approach <- approach
+  explainer$joint_prob_dt <- joint_prob_dt
+
+  # Generate data
+  dt <- prepare_data(explainer, ...)
+
+  # Predict
+  r <- prediction(dt, prediction_zero, explainer)
+
+  return(r)
+}
+
+
 
 #' @rdname explain
 #' @name explain
