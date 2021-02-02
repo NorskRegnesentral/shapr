@@ -23,7 +23,6 @@ test_that("Basic test functions in shapley.R", {
   }
 })
 
-
 test_that("Testing data input to shapr in shapley.R", {
   if (requireNamespace("MASS", quietly = TRUE)) {
     data("Boston", package = "MASS")
@@ -180,7 +179,6 @@ test_that("Basic test functions for grouping in shapley.R", {
     )
   }
 })
-
 
 test_that("Testing data input to shapr for grouping in shapley.R", {
   if (requireNamespace("MASS", quietly = TRUE)) {

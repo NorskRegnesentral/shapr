@@ -239,33 +239,6 @@ if (requireNamespace("MASS", quietly = TRUE)) {
     prediction_zero = p, n_samples = 1e2
   )
 
-  # Categorical approach
-  # need only factor variables
-  Boston$rad <- as.factor(Boston$rad)
-  Boston$chas <- as.factor(Boston$chas)
-
-  x_train <- head(Boston, -3)
-  x_test <- tail(Boston, 3)
-
-  # Fit a linear model
-  model <- lm(medv ~ rad + chas, data = x_train)
-
-  # Create an explainer object
-  explainer <- shapr(x_train, model)
-
-  # Explain predictions
-  p <- mean(x_train$medv)
-
-  explain6 <- explain(x_test, explainer, approach = "categorical", prediction_zero = p)
-
-  # Print the Shapley values
-  print(explain1$dt)
-
-  # Plot the results
-  if (requireNamespace("ggplot2", quietly = TRUE)) {
-    plot(explain1)
-  }
-
   # Group-wise explanations
   group <- list(A = c("lstat", "rm"), B = c("dis", "indus"))
   explainer_group <- shapr(x_train, model, group = group)
@@ -277,6 +250,31 @@ if (requireNamespace("MASS", quietly = TRUE)) {
     n_samples = 1e2
   )
   print(explain_groups$dt)
+
+  # Categorical approach - need only factor variables
+
+  Boston$rad <- as.factor(Boston$rad)
+  Boston$chas <- as.factor(Boston$chas)
+  x_train <- head(Boston, -3)
+  x_test <- tail(Boston, 3)
+  # Fit a linear model
+  model <- lm(medv ~ rad + chas, data = x_train)
+
+  explainer <- shapr(x_train, model)
+
+  # Explain predictions
+  p <- mean(x_train$medv)
+
+  explain6 <- explain(x_test, explainer, approach = "categorical", prediction_zero = p)
+
+  # Print the Shapley values
+  print(explain6$dt)
+
+  # Plot the results
+  if (requireNamespace("ggplot2", quietly = TRUE)) {
+    plot(explain6)
+  }
+
 }
 }
 \author{
