@@ -674,18 +674,13 @@ test_that("Test functions in explanation.R with factor and numeric features", {
       (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
                mincriterion = 0.95))$dt
     )
-
+    # browser()
     # Checking that all explain objects produce the same as before
-    testthat::expect_known_value(ex_list, file = "test_objects/explanation_explain_cat_num_obj_list.rds")
-    # testthat::expect_known_value(ex_list, file = "../../../explanation_explain_cat_num_obj_list.rds")
-    # ?!?!?!?!??!?!?! I don't see the differences
-    # tmp = readRDS('../../../explanation_explain_cat_num_obj_list.rds')
-    # length(ex_list[[1]])
-    # length(tmp[[1]])
+    testthat::expect_known_value(ex_list, file = "test_objects/explanation_explain_cat_num_obj_list.rds", update = F)
 
     ### Additional test to test that only the produced shapley values are the same as before
     fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_cat_num_obj_list_fixed.rds")
-
+    # fails here for i = 4
     for (i in 1:length(ex_list)) {
       testthat::expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
     }
