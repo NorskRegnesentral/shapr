@@ -88,6 +88,9 @@ prediction <- function(dt, prediction_zero, explainer) {
     x_test = explainer$x_test,
     is_groupwise = explainer$is_groupwise
   )
+  if (!is.null(explainer$joint_prob_dt)) {
+    r$joint_prob_dt <- dt
+  }
   attr(r, "class") <- c("shapr", "list")
 
   return(r)

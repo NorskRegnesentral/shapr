@@ -397,9 +397,6 @@ prepare_data.categorical <- function(x, ...) {
 
   dt[, w := cond_prob]
   dt[, cond_prob := NULL]
-  dt[, joint_prob := NULL]
-  dt[, marg_prob := NULL]
-  dt[, (cols) := NULL]
 
   data.table::setcolorder(dt, c("id_combination", "id"))
   data.table::setkeyv(dt, c("id_combination", "id"))

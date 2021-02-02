@@ -630,3 +630,144 @@ test_that("Test functions related to groups in explanation.R", {
     expect_equal(explanation0$dt, explanation2$dt)
   }
 })
+
+
+test_that("Test functions in explanation.R with factor and numeric features", {
+  if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+
+    x_var <- c("lstat", "chas", "rad", "indus")
+    y_var <- "medv"
+
+    # convert to factors
+    Boston$rad <- as.factor(Boston$rad)
+    Boston$chas <- as.factor(Boston$chas)
+
+    y_train <- tail(Boston[, y_var], 350) # we have to use 350 to get all levels
+    x_test <- head(Boston[, x_var], 2)
+
+    explainer <- readRDS(file = "test_objects/shapley_explainer_cat_num_obj.rds")
+
+    # Creating list with lots of different explainer objects
+    p0 <- mean(y_train)
+
+    ex_list <- list()
+
+    # Ex 1: Explain predictions (ctree)
+    ex_list[[1]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0)
+
+    # Ex 2: Explain predictions (ctree - different mincriterion, minsplit)
+    ex_list[[2]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0,
+                            mincriterion = 0.90, minsplit = 7)
+
+    # Ex 3: Explain predictions (ctree, repeat ctree four times)
+    ex_list[[3]] <- explain(x_test, explainer, approach = rep("ctree", 4), prediction_zero = p0)
+
+    # Ex 4: Explain predictions (ctree, sample = FALSE)
+    ex_list[[4]] <- explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = FALSE)
+
+    # Ex 5: Test that ctree with mincriterion equal to same probability four times gives the same as only passing one
+    # probability to mincriterion
+    testthat::expect_equal(
+      (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
+               mincriterion = rep(0.95, 4)))$dt,
+      (explain(x_test, explainer, approach = "ctree", prediction_zero = p0, sample = TRUE,
+               mincriterion = 0.95))$dt
+    )
+
+    # Checking that all explain objects produce the same as before
+    testthat::expect_known_value(ex_list, file = "test_objects/explanation_explain_cat_num_obj_list.rds")
+    # testthat::expect_known_value(ex_list, file = "../../../explanation_explain_cat_num_obj_list.rds")
+    # ?!?!?!?!??!?!?! I don't see the differences
+    # tmp = readRDS('../../../explanation_explain_cat_num_obj_list.rds')
+    # length(ex_list[[1]])
+    # length(tmp[[1]])
+
+    ### Additional test to test that only the produced shapley values are the same as before
+    fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_cat_num_obj_list_fixed.rds")
+
+    for (i in 1:length(ex_list)) {
+      testthat::expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+    }
+
+    # Checks that an error is returned
+    testthat::expect_error(
+      explain(as.matrix(x_test), explainer, approach = "ctree", prediction_zero = p0)
+    )
+  }
+
+})
+
+
+test_that("Test functions in explanation.R with just factor features", {
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+
+    x_var <- c("chas", "rad")
+    y_var <- "medv"
+
+    # convert to factors
+    Boston$rad <- as.factor(Boston$rad)
+    Boston$chas <- as.factor(Boston$chas)
+
+    y_train <- tail(Boston[, y_var], 350) # we have to use 350 to get all levels
+    x_test <- head(Boston[, x_var], 2)
+
+    # new - made Feb 2 2021
+    explainer <- readRDS(file = "test_objects/shapley_explainer_cat_obj.rds")
+    # made Aug 2020 - doesn't work anymore because we have changed the explain() obj
+    # explainer <- readRDS(file = "../../shapley_explainer_cat_obj.rds")
+
+    # Creating list with lots of different explainer objects
+    p0 <- mean(y_train)
+
+    ex_list <- list()
+
+    # Ex 1: Explain predictions (categorical)
+    ex_list[[1]] <- explain(x_test, explainer, approach = "categorical", prediction_zero = p0)
+
+    # Checking that all explain objects produce the same as before
+    # testthat::expect_known_value(ex_list, file = "test_objects/explanation_explain_cat_obj_list.rds")
+    testthat::expect_known_value(ex_list, file = "../../../explanation_explain_cat_obj_list.rds")
+    # THIS DOESN"T WORK AND I DON"T KNOW WHY?
+    # tmp = readRDS("../../../explanation_explain_cat_obj_list.rds")
+
+    # Test that only the produced shapley values are the same as before
+    fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_cat_obj_list_fixed.rds")
+
+    for (i in 1:length(ex_list)) {
+      testthat::expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+    }
+
+    ## Additional tests
+    # test that joint_prob_dt is not null for "categorical"
+    testthat::expect_true(!is.null(ex_list[[1]]$joint_prob_dt))
+
+    testthat::expect_true(length(ex_list[[1]]$joint_prob_dt$marg_prob) > 0)
+    testthat::expect_true(length(ex_list[[1]]$joint_prob_dt$joint_prob) > 0)
+    testthat::expect_true(all((ex_list[[1]]$joint_prob_dt$joint_prob <= 1) &
+                                (ex_list[[1]]$joint_prob_dt$joint_prob >= 0)))
+
+    # test that the conditioned columns were created
+    testthat::expect_true(all(c("chas_conditioned", "rad_conditioned") %in% colnames(ex_list[[1]]$joint_prob_dt)))
+
+    # test that the max id_combination is the same as the nrow of the S matrix
+    testthat::expect_equal(max(ex_list[[1]]$joint_prob_dt$id_combination), nrow(explainer$S))
+
+    # test that the conditional probabilities were calculated correctly
+    tmp <- ex_list[[1]]$joint_prob_dt
+    tmp <- tmp[id_combination != 1]
+    testthat::expect_equal(tmp$joint_prob / tmp$marg_prob, tmp$w)
+
+    # test that we cover all test observations in joint_prob_dt
+    x_train_unique <- unique(data.table(explainer$x_train), by = c("chas", "rad"))
+    joint_prob_dt <- ex_list[[1]]$joint_prob_dt
+    testthat::expect_equal(nrow(x_train_unique[joint_prob_dt, on = c("chas", "rad")]), nrow(ex_list[[1]]$joint_prob_dt))
+
+    # the mean(y_train) should be p_hat when id_combination is 1
+    tmp <- ex_list[[1]]$joint_prob_dt
+    tmp <- head(tmp[id_combination == 1], 1)
+    testthat::expect_equal(tmp$p_hat, p0)
+  }
+
+})

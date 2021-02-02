@@ -255,3 +255,61 @@ test_that("Testing data input to shapr for grouping in shapley.R", {
     expect_error(shapr(x_train, model, group = group_error_3))
   }
 })
+
+test_that("Basic test functions when features are both numeric and categorical in shapley.R", {
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+
+    x_var <- c("lstat", "chas", "rad", "indus")
+    y_var <- "medv"
+
+    # convert to factors
+    Boston$rad <- as.factor(Boston$rad)
+    Boston$chas <- as.factor(Boston$chas)
+
+    x_train <- tail(Boston[, x_var], 350) # we have to use 350 to get all levels
+
+    # Load pre-made lm model. Path needs to be relative to testthat directory in the package
+    model_cat <- readRDS("model_objects/lm_model_with_cat_num_object.rds")
+
+    # Prepare the data for explanation
+    explainer_cat <- shapr(x_train, model_cat)
+
+    testthat::expect_known_value(explainer_cat, file = "test_objects/shapley_explainer_cat_num_obj.rds")
+    # this works:
+    # testthat::expect_known_value(explainer_cat, file = "../../../shapley_explainer_cat_num_obj.rds")
+
+    # tmp = readRDS('../../../shapley_explainer_cat_num_obj.rds')
+
+  }
+
+})
+
+test_that("Basic test functions when features are just categorical in shapley.R", {
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+
+    x_var <- c("chas", "rad")
+    y_var <- "medv"
+
+    # convert to factors
+    Boston$rad <- as.factor(Boston$rad)
+    Boston$chas <- as.factor(Boston$chas)
+
+    x_train <- tail(Boston[, x_var], 350) # we have to use 350 to get all levels
+
+    # Load pre-made lm model. Path needs to be relative to testthat directory in the package
+    model_cat <- readRDS("model_objects/lm_model_with_cat_object.rds")
+
+    # Prepare the data for explanation
+    explainer_cat <- shapr(x_train, model_cat)
+
+    testthat::expect_known_value(explainer_cat, file = "test_objects/shapley_explainer_cat_obj.rds")
+    # this works
+    # testthat::expect_known_value(explainer_cat, file = "../../../shapley_explainer_cat_obj.rds")
+
+    # tmp = readRDS('../../../shapley_explainer_cat_obj.rds')
+
+  }
+
+})
