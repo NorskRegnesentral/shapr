@@ -6,28 +6,20 @@ library(data.table)
 dim <- 3
 no_categories <- 3
 mu <- rep(0, dim)
-set.seed(1)
+seed = 1
+set.seed(seed)
 beta <- round(rnorm(dim * no_categories + 1), 1)
-noise <- TRUE
 response_mod <- response_mod <- function(mod_matrix_full, beta, epsilon) {
   as.vector(mod_matrix_full %*% beta) + epsilon
 }
 fit_mod <- "regression"
 methods <- c("ctree")
 cutoff <- cutoff <- c(-200, 0, 1, 200)
-Sample_test <- FALSE # Can be FALSE as well, then No_test_sample not used.
 No_test_sample <- 5
 No_train_obs <- 1000
-x_test_dt <- NULL
-N_sample_gaussian <- c(50)
-seed <- ifelse(exists("seed"), seed, 1)
-################
-corr <- 0.5 ####
-################
+#
+corr <- 0.5
 Sigma_diag <- 1
-x_test_dt <- NULL
-
-## make sure Sigma is positive definite
 Sigma <- matrix(rep(corr, dim^2), nrow = dim, ncol = dim)
 for (i in 1:dim) {
   Sigma[i, i] <- Sigma_diag
@@ -42,21 +34,12 @@ for (i in 1:dim) {
 }
 
 ## Get test data
-if (is.null(x_test_dt)) {
-  x_test_list <- list()
-  for (i in 1:dim) {
-    x_test_list[[i]] <- 1:no_categories
-  }
-  x_test_dt <- do.call(CJ, x_test_list)
-
-  if (Sample_test) {
-    if (nrow(x_test_dt) > No_test_sample) {
-      sampled_rows <- sample(1:nrow(x_test_dt), size = No_test_sample, replace = FALSE)
-      x_test_dt <- x_test_dt[sampled_rows, ]
-    }
-  }
+x_test_dt <- NULL
+x_test_list <- list()
+for (i in 1:dim) {
+  x_test_list[[i]] <- 1:no_categories
 }
-
+x_test_dt <- do.call(CJ, x_test_list)
 No_test_obs <- nrow(x_test_dt)
 
 dt <- data.table(rbind(dt, x_test_dt))
@@ -68,55 +51,6 @@ dt <- dt[, lapply(.SD, as.factor)]
 set.seed(seed)
 dt[, epsilon := rnorm(No_train_obs + No_test_obs, 0, 0.1^2)]
 
-# THIS IS AN EXTRA THING IN CASE YOU WANT NON-NUMERICAL FACTORS!
-# THIS ONLY WORKS FOR 3 FEATURES with 3 levels each!
-# num_to_char <- function(dt) {
-#   sapply(dt, function(x) {
-#     if(x == 1) {
-#       return("cat")
-#     } else if (x == 2) {
-#       return("dog")
-#     } else {
-#       return("horse")
-#     }
-#   })
-# }
-#
-# num_to_char2 <- function(dt) {
-#   sapply(dt, function(x) {
-#     if(x == 1) {
-#       return("female")
-#     } else if (x == 2) {
-#       return("male")
-#     } else {
-#       return("unknown")
-#     }
-#   })
-# }
-#
-# num_to_char3 <- function(dt) {
-#   sapply(dt, function(x) {
-#     if(x == 1) {
-#       return("farm")
-#     } else if (x == 2) {
-#       return("house")
-#     } else {
-#       return("apartment")
-#     }
-#   })
-# }
-#
-# dt_new_factors <- copy(dt)
-#
-# dt_new_factors$feat_1_ <- dt_new_factors[, lapply(.SD, FUN = num_to_char), .SDcols = c("feat_1_")]
-# dt_new_factors$feat_2_ <- dt_new_factors[, lapply(.SD, FUN = num_to_char2), .SDcols = c("feat_2_")]
-# dt_new_factors$feat_3_ <- dt_new_factors[, lapply(.SD, FUN = num_to_char3), .SDcols = c("feat_3_")]
-#
-# dt_new_factors <- cbind(dt_new_factors[, lapply(.SD, as.factor), .SDcols =
-# c("feat_1_", "feat_2_", "feat_3_")], epsilon = dt$epsilon)
-#
-# dt <- dt_new_factors
-## END
 
 ## 2. One-hot encoding of training data
 mod_matrix <- model.matrix(~  . - 1,
@@ -126,12 +60,6 @@ mod_matrix <- model.matrix(~  . - 1,
 dt <- cbind(dt, data.table(mod_matrix))
 full_onehot_names <- colnames(mod_matrix)
 
-mod_matrix_not_complete <- model.matrix(~., data = dt[, 1:dim], contrasts.arg = lapply(dt[, 1:dim], contrasts,
-                                                                                       contrasts = TRUE))
-reduced_onehot_names <- colnames(mod_matrix_not_complete)
-reduced_onehot_names <- reduced_onehot_names[reduced_onehot_names != "(Intercept)"]
-
-
 ## 3. Calculate response
 dt[, response := response_mod(mod_matrix_full = cbind(1, mod_matrix), beta = beta, epsilon = epsilon)]
 
@@ -139,9 +67,6 @@ dt[, response := response_mod(mod_matrix_full = cbind(1, mod_matrix), beta = bet
 if (fit_mod == "regression") {
   form <- as.formula(paste0("response ~", paste(feat_names, collapse = "+")))
   model <- lm(formula = form, data = dt[(1:No_train_obs)])
-
-  fmla_onehot <- as.formula(paste("response ~", paste(reduced_onehot_names, collapse = "+")))
-  model_onehot <- lm(fmla_onehot, data = dt[(1:No_train_obs)])
 }
 
 ## 5. initalize shapr object with trained model -- this is used for calculating true shapley

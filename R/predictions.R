@@ -83,6 +83,8 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   r <- list(
     dt = dt_kshap,
+    dt_mat = dt_mat,
+    W = explainer$W,
     model = explainer$model,
     p = p_all,
     x_test = explainer$x_test,
