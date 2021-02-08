@@ -2,7 +2,7 @@ library(shapr)
 library(MASS)
 library(data.table)
 
-setwd("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/")
+#setwd("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/")
 
 source("inst/paper_experiments/model_definitions.R")
 source("inst/paper_experiments/1-general_experiment-function.R")

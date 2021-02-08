@@ -2,7 +2,7 @@ library(shapr)
 library(MASS)
 library(data.table)
 
-setwd("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/")
+#setwd("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/")
 
 MAD <- function(pre_grouped, post_grouped, weights){
   mean(colSums((abs(pre_grouped - post_grouped)) * weights))
@@ -47,14 +47,14 @@ general_experiment = function(No_test_obs,
                               make_response_function,
                               model_function,
                               form,
-                              model_name){
+                              model_name,
+                              n_samples = 2000){
   print(paste0("Correlation: ", corr))
   # parameters
   dim <- 10
   mu <- rep(0, dim)
   set.seed(seed)
   No_train_obs <- 1000
-  n_samples = 2000
   #
   Sigma_diag <- 1
   Sigma <- matrix(rep(corr, dim^2), nrow = dim, ncol = dim)
