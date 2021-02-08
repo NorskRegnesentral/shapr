@@ -48,7 +48,7 @@ general_experiment = function(No_test_obs,
                               model_function,
                               form,
                               model_name,
-                              n_samples = 2000){
+                              n_samples = 1000){
   print(paste0("Correlation: ", corr))
   # parameters
   dim <- 10
@@ -121,7 +121,8 @@ general_experiment = function(No_test_obs,
   tmp[, grouping := "A"]
   tmp[, No_test_obs := No_test_obs]
 
-  fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/group1_Shapley_values_GAM.csv", append = T)
+  # fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/group1_Shapley_values_GAM.csv", append = T)
+  fwrite(tmp, file = "inst/paper_experiments/results/group1_Shapley_values_GAM.csv", append = T)
 
   # Pre-grouping approach 2
   group2 <- list(group1 = 1:2,
@@ -162,7 +163,8 @@ general_experiment = function(No_test_obs,
   tmp[, grouping := "B"]
   tmp[, No_test_obs := No_test_obs]
 
-  fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/group2_Shapley_values_GAM.csv", append = T)
+  # fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/group2_Shapley_values_GAM.csv", append = T)
+  fwrite(tmp, file = "inst/paper_experiments/results/group2_Shapley_values_GAM.csv", append = T)
 
   # Post-grouping approach
   explainer <- shapr(x_train, model)
@@ -189,7 +191,8 @@ general_experiment = function(No_test_obs,
   tmp[, model_type := model_name]
   tmp[, No_test_obs := No_test_obs]
 
-  fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/All_Shapley_values_GAM.csv", append = T)
+  # fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/All_Shapley_values_GAM.csv", append = T)
+  fwrite(tmp, file = "inst/paper_experiments/results/All_Shapley_values_GAM.csv", append = T)
 
   print(paste0("object size: ", pryr::object_size(explanation) / 10^6, " MB"))
 
@@ -238,7 +241,8 @@ general_experiment = function(No_test_obs,
   results_csv1[, MDR := MDR(pre_grouped_rank, post_grouped_rank, weights = 1)]
   # print(MAD(pre_grouped_stand, post_grouped_stand, weights = 1))
 
-  fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/results_groupA_GAM.csv", append = T)
+  # fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/results_groupA_GAM.csv", append = T)
+  fwrite(tmp, file = "inst/paper_experiments/results/results_groupA_GAM.csv", append = T)
 
   # Compare group 2
   explanation_base2 = copy(explanation$dt)
@@ -287,7 +291,9 @@ general_experiment = function(No_test_obs,
   results_csv1[, MDR := MDR(pre_grouped_rank, post_grouped_rank, weights = 1)]
   # print(MAD(pre_grouped_stand, post_grouped_stand, weights = 1))
 
-  fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/results_groupB_GAM.csv", append = T)
+  # fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/results_groupB_GAM.csv", append = T)
+  fwrite(tmp, file = "inst/paper_experiments/results/results_groupB_GAM.csv", append = T)
+
   print("Done")
 }
 
