@@ -25,6 +25,21 @@ get_model_specs.lm <- function(x) {
 }
 assignInNamespace("get_model_specs.lm", get_model_specs.lm, "shapr")
 
+get_model_specs.gam <- function(x) {
+  model_checker(x) # Checking if the model is supported
+
+  feature_list <- list()
+  feature_list$labels <- names(attr(x$terms, "dataClasses")[-1])
+  m <- length(feature_list$labels)
+
+  feature_list$classes <- attr(x$terms, "dataClasses")[-1]
+  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
+  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
+
+  return(feature_list)
+}
+assignInNamespace("get_model_specs.gam", get_model_specs.gam, "shapr")
+
 general_experiment = function(No_test_obs,
                               corr,
                               seed = 1,
@@ -39,6 +54,7 @@ general_experiment = function(No_test_obs,
   mu <- rep(0, dim)
   set.seed(seed)
   No_train_obs <- 1000
+  n_samples = 2000
   #
   Sigma_diag <- 1
   Sigma <- matrix(rep(corr, dim^2), nrow = dim, ncol = dim)
@@ -62,8 +78,6 @@ general_experiment = function(No_test_obs,
   ## 4. Fit regression model 1
   model = model_function(form = form, train = dt[(1:No_train_obs)])
 
-
-  ## 5. Initalize shapr object
   x_train <- dt[(1:No_train_obs), ..feat_names]
   x_test <- dt[- (1:No_train_obs), ..feat_names]
   y_train <- dt[(1:No_train_obs), .(response)]
@@ -85,18 +99,29 @@ general_experiment = function(No_test_obs,
     prediction_zero = p,
     mu = mu,
     cov_mat = Sigma,
-    n_samples = 5000
+    n_samples = n_samples
   )
   print("explain() for group 1 finished")
+
   group1_names = copy(names(explainer$group))
   rank_group_names1 = paste0(group1_names, "_rank")
   explanation_group1_dt <- copy(explanation$dt)
-
 
   explanation_mat_pre = as.matrix(explanation_group1_dt[, ..group1_names])
   explanation_ranking_pre = t(apply(-explanation_mat_pre, FUN = rank, 1))
   colnames(explanation_ranking_pre) = rank_group_names1
   explanation_group1_dt = cbind(explanation_group1_dt, explanation_ranking_pre)
+
+  tmp = data.table(explanation_group1_dt)
+  tmp[, correlation := corr]
+  tmp[, pre_grouped := 1]
+  tmp[, standardized := 0]
+  tmp[, test_id := 1:.N, by = c("pre_grouped", "standardized")]
+  tmp[, model_type := model_name]
+  tmp[, grouping := "A"]
+  tmp[, No_test_obs := No_test_obs]
+
+  fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/group1_Shapley_values_GAM.csv", append = T)
 
   # Pre-grouping approach 2
   group2 <- list(group1 = 1:2,
@@ -115,9 +140,10 @@ general_experiment = function(No_test_obs,
     prediction_zero = p,
     mu = mu,
     cov_mat = Sigma,
-    n_samples = 5000
+    n_samples = n_samples
   )
-  print("explain() for group 1 finished")
+  print("explain() for group 2 finished")
+
   group2_names = copy(names(explainer$group))
   rank_group_names2 = paste0(group2_names, "_rank")
   explanation_group2_dt <- copy(explanation$dt)
@@ -127,9 +153,21 @@ general_experiment = function(No_test_obs,
   colnames(explanation_ranking_pre2) = rank_group_names2
   explanation_group2_dt = cbind(explanation_group2_dt, explanation_ranking_pre2)
 
+  tmp = data.table(explanation_group2_dt)
+  tmp[, correlation := corr]
+  tmp[, pre_grouped := 1]
+  tmp[, standardized := 0]
+  tmp[, test_id := 1:.N, by = c("pre_grouped", "standardized")]
+  tmp[, model_type := model_name]
+  tmp[, grouping := "B"]
+  tmp[, No_test_obs := No_test_obs]
+
+  fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/group2_Shapley_values_GAM.csv", append = T)
+
   # Post-grouping approach
   explainer <- shapr(x_train, model)
   print("shapr() for full features finished")
+  time_start = Sys.time()
   explanation <- explain(
     x = x_test,
     explainer = explainer,
@@ -137,9 +175,23 @@ general_experiment = function(No_test_obs,
     prediction_zero = p,
     mu = mu,
     cov_mat = Sigma,
-    n_samples = 5000
+    n_samples = n_samples
   )
+  print(Sys.time() - time_start)
   print("explain() for full features finished")
+
+  # Saving full Shapley values
+  tmp = data.table(explanation$dt)
+  tmp[, correlation := corr]
+  tmp[, pre_grouped := 0]
+  tmp[, standardized := 0]
+  tmp[, test_id := 1:.N, by = c("pre_grouped", "standardized")]
+  tmp[, model_type := model_name]
+  tmp[, No_test_obs := No_test_obs]
+
+  fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/All_Shapley_values_GAM.csv", append = T)
+
+  print(paste0("object size: ", pryr::object_size(explanation) / 10^6, " MB"))
 
   # Compare group 1
   explanation_base1 = copy(explanation$dt)
@@ -186,8 +238,7 @@ general_experiment = function(No_test_obs,
   results_csv1[, MDR := MDR(pre_grouped_rank, post_grouped_rank, weights = 1)]
   # print(MAD(pre_grouped_stand, post_grouped_stand, weights = 1))
 
-  fwrite(results_csv1, file = "inst/paper_experiments/results/results_groupA_GAM.csv", append = T)
-
+  fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/results_groupA_GAM.csv", append = T)
 
   # Compare group 2
   explanation_base2 = copy(explanation$dt)
@@ -236,7 +287,7 @@ general_experiment = function(No_test_obs,
   results_csv1[, MDR := MDR(pre_grouped_rank, post_grouped_rank, weights = 1)]
   # print(MAD(pre_grouped_stand, post_grouped_stand, weights = 1))
 
-  fwrite(results_csv1, file = "inst/paper_experiments/results/results_groupB_GAM.csv", append = T)
-
+  fwrite(tmp, file = "/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/inst/paper_experiments/results/results_groupB_GAM.csv", append = T)
+  print("Done")
 }
 
