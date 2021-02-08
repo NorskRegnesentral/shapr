@@ -11,7 +11,7 @@ source("inst/paper_experiments/1-general_experiment-function.R")
 seed = 1
 set.seed(seed)
 beta <- round(rnorm(50), 1)
-No_test_obs = 2
+No_test_obs = 100
 corr_vector = c(0, 0.1, 0.3, 0.7, 0.9)
 
 lm_function = function(form, train_data){
@@ -31,5 +31,5 @@ for(corr in corr_vector){
                      form = form_gam3,
                      model_function = gam_function,
                      model_name = "experiment_gam3",
-                     n_samples = 2000)
+                     n_samples = 1000)
 }
