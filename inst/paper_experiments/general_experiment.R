@@ -2,7 +2,7 @@ library(shapr)
 library(MASS)
 library(data.table)
 
-setwd("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/")
+#setwd("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/")
 
 MAD <- function(pre_grouped, post_grouped, weights){
   mean(colSums((abs(pre_grouped - post_grouped)) * weights))
