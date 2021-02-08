@@ -1,6 +1,7 @@
 library(shapr)
 library(MASS)
 library(data.table)
+library(pryr)
 
 #setwd("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/")
 
@@ -30,5 +31,5 @@ for(corr in corr_vector){
                      form = form_gam3,
                      model_function = gam_function,
                      model_name = "experiment_gam3",
-                     n_samples = 100)
+                     n_samples = 2000)
 }
