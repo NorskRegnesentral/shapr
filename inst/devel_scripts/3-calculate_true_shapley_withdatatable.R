@@ -165,44 +165,25 @@ lower_func <- function(x,cutoff){
 
 create_exact_joint_prob <- function(mu,
                                     Sigma,
-                                    beta,
-                                    explainer,
+                                    feat_names,
                                     cutoff,
-                                    make_response_function_onehot,
+                                    response_dt,
                                     algorithm = mvtnorm::GenzBretz(),
                                     mc.cores = 16){
 
-  feat_names <- colnames(explainer$x_train)
+  
   dim <- length(feat_names)
   no_categories <- length(cutoff) - 1
 
-  all_x_list <- list()
-  for(i in 1:dim){
-    all_x_list[[i]] <- 1:no_categories
-  }
-  all_x_dt <- do.call(CJ, all_x_list)
-  names(all_x_dt) <- feat_names
-
-  all_x_dt[, (feat_names) := lapply(.SD, as.factor), .SDcols = feat_names]
-
-  ## Response comptutation
-  mod_matrix <- model.matrix(~.-1, data = all_x_dt,
-                             contrasts.arg = lapply(all_x_dt[, 1:dim], contrasts, contrasts = FALSE))
-
-  temp = data.table(cbind(1,mod_matrix))
-  temp[, response := make_response_function_onehot(.SD, beta = beta), .SDcols = names(temp)]
-  all_responses <- temp$response
-
   prop <- NULL
   for (i in 1:dim){
-    prop <- c(prop,diff(pnorm(cutoff, mean = mu[i], sd = sqrt(Sigma[i,i]))))
+    prop <- c(prop, diff(pnorm(cutoff, mean = mu[i], sd = sqrt(Sigma[i,i]))))
   }
   names(prop) = rep(1:no_categories, times = dim)
 
-
   # Lists with vectors containing the lower and upper combinations
-  upper_dt <- all_x_dt[, lapply(.SD,upper_func,cutoff=cutoff), .SDcols = feat_names]
-  lower_dt <- all_x_dt[, lapply(.SD,lower_func,cutoff=cutoff), .SDcols = feat_names]
+  upper_dt <- response_dt[, lapply(.SD,upper_func,cutoff=cutoff), .SDcols = feat_names]
+  lower_dt <- response_dt[, lapply(.SD,lower_func,cutoff=cutoff), .SDcols = feat_names]
 
   upper_dt_list = as.list(as.data.table(t(upper_dt)))
   lower_dt_list = as.list(as.data.table(t(lower_dt)))
@@ -218,14 +199,14 @@ create_exact_joint_prob <- function(mu,
                                   mc.cores = mc.cores)
 
   all_probs <- all_probs / sum(all_probs)
-  all_x_dt[, joint_prob := all_probs]
+  response_dt[, joint_prob := all_probs]
 
-  setkeyv(all_x_dt, rev(feat_names)) # To get same ordering as previous version
-  all_x_dt[, feat_comb_id := .I]
+  setkeyv(response_dt, rev(feat_names)) # To get same ordering as previous version
+  response_dt[, feat_comb_id := .I]
+  
+  mn <- sum(response_dt$response * all_probs)
 
-  mn <- sum(all_responses * all_probs)
-
-  return(list(all_x_dt, mn, prop))
+  return(list(response_dt, mn, prop))
 }
 
 
