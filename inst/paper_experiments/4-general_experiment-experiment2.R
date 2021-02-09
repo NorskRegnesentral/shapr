@@ -2,8 +2,6 @@ library(shapr)
 library(MASS)
 library(data.table)
 
-#setwd("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/")
-
 source("inst/paper_experiments/model_definitions.R")
 source("inst/paper_experiments/1-general_experiment-function.R")
 
@@ -11,7 +9,7 @@ seed = 1
 set.seed(seed)
 beta <- round(rnorm(50), 1)
 No_test_obs = 100
-corr_vector = c(0, 0.1, 0.3, 0.7, 0.9)
+corr_vector = c(0.1, 0.3, 0.7, 0.9)
 
 lm_function = function(form, train_data){
   lm(formula = form, data = train_data)
