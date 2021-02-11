@@ -87,7 +87,6 @@ holdout_ranger_AUC <- function(splits, mod_form) {
 }
 
 models <- list(All = formula)
-
 for(i in 1:length(models)){
   print(i)
   CV$results <- map(CV$splits,
@@ -136,42 +135,61 @@ group3 <- c("CLM_FREQ", "MVR_PTS", "REVOKED", "TIF")
 x_train = analysis(CV$splits[[1]])
 x_test = assessment(CV$splits[[1]])
 
-formula2 = as.formula(paste("CLAIM_FLAG ~", paste(group2, collapse = "+")))
-model2 = glm(formula = formula2, data = x_train, family = 'binomial')
+group_1_ = paste(group1, collapse = "+")
+group_2_ = paste(group2, collapse = "+")
+group_3_ = paste(group3, collapse = "+")
+temp = paste(paste(group_1_, group_2_, sep = "+"), group_3_, sep = "+")
+formula2 = as.formula(paste0("CLAIM_FLAG ~ ", temp))
 
-explainer <- shapr(x_train, model2)
+# model2 = glm(formula = formula2, data = x_train, family = 'binomial')
+
+model = ranger(formula2, data = x_train,  probability = TRUE, importance = "impurity")
+explainer <- shapr(x_train, model)
+
+# p <- mean(as.numeric(as.character(x_train$CLAIM_FLAG)))
+# explanation1 <- explain(
+#   x_test[1:6,],
+#   approach = "ctree",
+#   explainer = explainer,
+#   prediction_zero = p
+# )
 
 p <- mean(as.numeric(as.character(x_train$CLAIM_FLAG)))
-explanation1 <- explain(
-  x_test[1:6,],
-  approach = "ctree",
-  explainer = explainer,
-  prediction_zero = p
-)
-
-
 group_names = list(personal_info = group1, car_info = group2, customer_info = group3)
 
-formula3 = as.formula(paste("CLAIM_FLAG ~", paste(c(group1, group2, group3), collapse = "+")))
-model3 = glm(formula = formula3, data = x_train, family = 'binomial')
-
-explainer_group <- shapr(x_train, model3, group = group_names)
+explainer_group <- shapr(x_train, model, group = group_names)
 explanation_group <- explain(
-  x_test[1,],
+  x_test[1:4,],
   approach = "ctree",
   explainer = explainer_group,
   prediction_zero = p
 )
+x_test[1:4,]
 
-p = plot(explanation_group) + ggtitle("")
+explanation_group$dt = round(explanation_group$dt, 2)
+explanation_group$p = round(explanation_group$p, 2)
+
+size = 7
+p1 = plot(explanation_group) + ggtitle("") +
+  ggplot2::facet_wrap(~header, scales = "free_y", labeller = "label_value", ncol = 2) +
+  ggplot2::theme(
+    legend.position = "none",
+    legend.text = element_text(size = size),
+    legend.title = element_text(size = size),
+    axis.text = element_text(size = size),
+    axis.text.y = element_text(size = size),
+    axis.title = element_text(size = size),
+    strip.text = element_text(size = size)
+  )
+p1
 
 ggsave(
   "car-insurance-glm-3-groups.png",
-  plot = p,
+  plot = p1,
   device = 'png',
   path = 'inst/car-insurance-example/',
   scale = 1,
-  width = 6,
-  height = 6,
+  width = 9,
+  height = 9,
   units = "cm"
   )
