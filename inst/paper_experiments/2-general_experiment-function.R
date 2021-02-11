@@ -8,7 +8,6 @@ source("inst/devel_scripts/3-calculate_true_shapley_withdatatable.R")
 
 seed = 1
 No_test_obs = 100
-corr_vector = c(0, 0.1, 0.3, 0.7, 0.9)
 
 lm_function = function(form, train_data){
   lm(formula = form, data = train_data)
@@ -18,6 +17,7 @@ gam_function = function(form, train_data){
   mgcv::gam(formula = form, data = train_data)
 }
 
+corr_vector = c(0, 0.1, 0.3, 0.7, 0.9)
 for(corr in corr_vector){
   general_experiment(No_test_obs = No_test_obs,
                      corr = corr,
@@ -26,7 +26,7 @@ for(corr in corr_vector){
                      model_function = lm_function,
                      model_name = "experiment_lm1")
 }
-
+corr_vector = c(0, 0.1, 0.3, 0.7, 0.9)
 for(corr in corr_vector){
   general_experiment(No_test_obs = No_test_obs,
                      corr = corr,
@@ -35,7 +35,7 @@ for(corr in corr_vector){
                      model_function = lm_function,
                      model_name = "experiment_lm2")
 }
-
+corr_vector = c(0, 0.1, 0.3, 0.7, 0.9)
 for(corr in corr_vector){
   general_experiment(No_test_obs = No_test_obs,
                      corr = corr,
