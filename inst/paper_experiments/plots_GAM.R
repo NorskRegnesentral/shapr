@@ -6,7 +6,7 @@ MAD <- function(pre_grouped, post_grouped){
   abs(pre_grouped - post_grouped)
 }
 MDR <- function(ranking_pre_grouped, ranking_post_grouped){
-  mean(colMeans(abs(ranking_pre_grouped - ranking_post_grouped)))
+  abs(ranking_pre_grouped - ranking_post_grouped)
 }
 
 # Half way through I started saving the gam results with another name :/
@@ -77,9 +77,9 @@ for(exper in c("experiment_gam1")  ){
 
     MAD2 = apply(MAD(pre_grouped_stand3, post_grouped_stand3), 1, mean)
 
-    # MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
+    MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
 
-    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, correlation = corr, experiment = exper)
+    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, absolute_difference_rank = MDR0, correlation = corr, experiment = exper)
 
   }
 }
@@ -127,9 +127,9 @@ for(exper in c( "experiment_gam2")  ){
 
     MAD2 = apply(MAD(pre_grouped_stand3, post_grouped_stand3), 1, mean)
 
-    # MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
+    MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
 
-    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, correlation = corr, experiment = exper)
+    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, absolute_difference_rank = MDR0, correlation = corr, experiment = exper)
 
   }
 }
@@ -177,9 +177,9 @@ for(exper in c("experiment_gam3")){
 
     MAD2 = apply(MAD(pre_grouped_stand3, post_grouped_stand3), 1, mean)
 
-    # MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
+    MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
 
-    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, correlation = corr, experiment = exper)
+    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, absolute_difference_rank = MDR0, correlation = corr, experiment = exper)
 
   }
 }
@@ -195,6 +195,13 @@ ggplot(results_all, aes(y = absolute_difference_log, x = correlation, col = expe
                color = "black", size = 3) +
   labs(y = "log of Mean-per-obs(abs(Pre-group - Post-group))") +
   ggtitle("GAM models with 10 features, 3 groups") + ylim(-7.5, 2)
+
+ggplot(results_all, aes(y = absolute_difference_rank, x = correlation, col = experiment)) + geom_boxplot() +
+  stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
+               color = "black", size = 3) +
+  labs(y = "Mean-per-obs(abs(Pre-group_rank - Post-group_rank))") +
+  ggtitle("GAM models with 10 continuous features, 3 groups")
+
 
 
 #### GROUP B
@@ -271,9 +278,9 @@ for(exper in c("experiment_gam1")  ){
 
     MAD2 = apply(MAD(pre_grouped_stand3, post_grouped_stand3), 1, mean)
 
-    # MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
+    MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
 
-    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, correlation = corr, experiment = exper)
+    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, absolute_difference_rank = MDR0, correlation = corr, experiment = exper)
 
   }
 }
@@ -323,9 +330,9 @@ for(exper in c("experiment_gam2")  ){
 
     MAD2 = apply(MAD(pre_grouped_stand3, post_grouped_stand3), 1, mean)
 
-    # MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
+    MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
 
-    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, correlation = corr, experiment = exper)
+    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, absolute_difference_rank = MDR0, correlation = corr, experiment = exper)
 
   }
 }
@@ -375,9 +382,9 @@ for(exper in c("experiment_gam3")  ){
 
     MAD2 = apply(MAD(pre_grouped_stand3, post_grouped_stand3), 1, mean)
 
-    # MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
+    MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
 
-    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, correlation = corr, experiment = exper)
+    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, absolute_difference_rank = MDR0, correlation = corr, experiment = exper)
 
   }
 }
@@ -393,4 +400,10 @@ ggplot(results_all, aes(y = absolute_difference_log, x = correlation, col = expe
                color = "black", size = 3) +
   labs(y = "log of Mean-per-obs(abs(Pre-group - Post-group))") +
   ggtitle("GAM models with 10 features, 5 groups") + ylim(-7.5, 2)
+
+ggplot(results_all, aes(y = absolute_difference_rank, x = correlation, col = experiment)) + geom_boxplot() +
+  stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
+               color = "black", size = 3) +
+  labs(y = "Mean-per-obs(abs(Pre-group_rank - Post-group_rank))") +
+  ggtitle("GAM models with 10 continuous features, 5 groups")
 

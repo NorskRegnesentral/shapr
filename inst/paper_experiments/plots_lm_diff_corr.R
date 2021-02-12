@@ -2,12 +2,6 @@ library(shapr)
 library(data.table)
 library(ggplot2)
 
-# new results Feb 10 - after changing n_samples to 1000
-# and computing results here
-
-# MAD <- function(pre_grouped, post_grouped){
-#   mean(colMeans(abs(pre_grouped - post_grouped)))
-# }
 MAD <- function(pre_grouped, post_grouped){
   abs(pre_grouped - post_grouped)
 }
@@ -15,23 +9,17 @@ MDR <- function(ranking_pre_grouped, ranking_post_grouped){
   abs(ranking_pre_grouped - ranking_post_grouped)
 }
 
-# the "new" csvs were made Feb 10 in the evening. Should give the same results as before but now no "double rows" for a given corr and exper
-
-groupA_shapley = fread("inst/paper_experiments/results/groupA_Shapley_values_lm-new.csv")
-groupA_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
-all_shapley = fread("inst/paper_experiments/results/All_Shapley_values_lm-new.csv")
-all_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
-
-groupB_shapley = fread("inst/paper_experiments/results/groupB_Shapley_values_lm-new.csv")
-groupB_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
-
+groupA_shapley = fread("inst/paper_experiments/results/AR-groupA_Shapley_values_lm_diff_corr.csv")
 
 # remove any test tries
 groupA_shapley = groupA_shapley[No_test_obs == 100]
-all_shapley = all_shapley[No_test_obs == 100]#[model_type == "experiment_gam3"]
-all_shapley[, .N, by = correlation]
+groupA_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
 
-# Group 1
+all_shapley = fread("inst/paper_experiments/results/AR-groupA_All_Shapley_values_lm_diff_corr.csv")
+all_shapley = all_shapley[No_test_obs == 100]
+all_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
+
+# Group A
 groupA <- list(group1 = 1:4,
                group2 = 5:8,
                group3 = 9:10)
@@ -40,7 +28,7 @@ groupA_names = copy(names(groupA))
 rank_group_namesA = paste0(groupA_names, "_rank")
 
 results = list()
-for(exper in c("experiment_lm1", "experiment_lm2", "experiment_lm3")  ){
+for(exper in c("AR-groupA-experiment_lm_diff_corr")  ){
   for(corr in c(0, 0.1, 0.3, 0.7, 0.9)){
 
     group_exp = groupA_shapley[model_type == exper][correlation == corr]
@@ -100,29 +88,20 @@ results_all$absolute_difference_log = log(results_all$absolute_difference)
 ggplot(results_all, aes(y = absolute_difference, x = correlation, col = experiment)) + geom_boxplot() +
   stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
                color = "black", size = 3) +
-  labs(y = "Mean-per-obs(abs(Pre-group - Post-group))") +
-  ggtitle("lm models with 10 continuous features, 3 groups") + ylim(0, 0.6)
-
-
-ggplot(results_all, aes(y = absolute_difference_rank, x = correlation, col = experiment)) + geom_boxplot() +
-  stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
-               color = "black", size = 3) +
-  labs(y = "Mean-per-obs(abs(Pre-group_rank - Post-group_rank))") +
-  ggtitle("lm models with 10 continuous features, 3 groups")
+  labs(y = "log of Mean-per-obs(abs(Pre-group - Post-group))") +
+  ggtitle("GAM models with 10 features, 3 groups") + ylim(-7.5, 2)
 
 
 #### GROUP B
 
-
-all_shapley = fread("inst/paper_experiments/results/All_Shapley_values_lm-new.csv")
-groupB_shapley = fread("inst/paper_experiments/results/groupB_Shapley_values_lm-new.csv")
+groupB_shapley = fread("inst/paper_experiments/results/AR-groupB_Shapley_values_lm_diff_corr.csv")
 
 # remove any test tries
-groupB_shapley = groupB_shapley[No_test_obs == 100]
-all_shapley = all_shapley[No_test_obs == 100]#[model_type == "experiment_gam3"]
-all_shapley[, .N, by = correlation]
+groupB_shapley = groupA_shapley[No_test_obs == 100]
+groupB_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
 
-# Group 1
+all_shapley = fread("inst/paper_experiments/results/AR-groupB_All_Shapley_values_lm_diff_corr.csv")
+
 groupB <- list(group1 = 1:2,
                group2 = 3:4,
                group3 = 5:6,
@@ -134,7 +113,7 @@ rank_group_namesB = paste0(groupB_names, "_rank")
 
 
 results = list()
-for(exper in c("experiment_lm1", "experiment_lm2", "experiment_lm3")  ){
+for(exper in c("MJ-groupB-experiment_gam_diff_corr")  ){
   for(corr in c(0, 0.1, 0.3, 0.7, 0.9)){
 
     group_exp = groupB_shapley[model_type == exper][correlation == corr]
@@ -187,24 +166,21 @@ for(exper in c("experiment_lm1", "experiment_lm2", "experiment_lm3")  ){
   }
 }
 
-
 results_all = rbindlist(results)
 
 results_all$experiment = factor(results_all$experiment)
 results_all$correlation = factor(results_all$correlation)
 results_all$absolute_difference_log = log(results_all$absolute_difference)
 
-results_all[, mean(absolute_difference), by = c("experiment", "correlation")]
-
-ggplot(results_all, aes(y = absolute_difference, x = correlation, col = experiment)) + geom_boxplot() +
+ggplot(results_all, aes(y = absolute_difference_log, x = correlation, col = experiment)) + geom_boxplot() +
   stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
                color = "black", size = 3) +
-  labs(y = "Mean-per-obs(abs(Pre-group - Post-group))") +
-  ggtitle("lm models with 10 features, 5 groups")  + ylim(0, 0.6)
+  labs(y = "log of Mean-per-obs(abs(Pre-group - Post-group))") +
+  ggtitle("GAM models with 10 features, 5 groups") + ylim(-7.5, 2)
 
 ggplot(results_all, aes(y = absolute_difference_rank, x = correlation, col = experiment)) + geom_boxplot() +
   stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
                color = "black", size = 3) +
   labs(y = "Mean-per-obs(abs(Pre-group_rank - Post-group_rank))") +
-  ggtitle("lm models with 10 continuous features, 5 groups")
+  ggtitle("GAM models with 10 continuous features, 5 groups")
 
