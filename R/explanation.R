@@ -197,6 +197,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
                               start_aicc = 0.1, w_threshold = 0.95, ...) {
 
   # Add arguments to explainer object
+  print(class(x))
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
   explainer$type <- type
