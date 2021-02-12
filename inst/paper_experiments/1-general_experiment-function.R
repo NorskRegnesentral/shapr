@@ -2,12 +2,6 @@ library(shapr)
 library(MASS)
 library(data.table)
 
-MAD <- function(pre_grouped, post_grouped, weights){
-  mean(colSums((abs(pre_grouped - post_grouped)) * weights))
-}
-MDR <- function(ranking_pre_grouped, ranking_post_grouped, weights){
-  mean(colSums((abs(ranking_pre_grouped - ranking_post_grouped)) * weights))
-}
 get_model_specs.lm <- function(x) {
   model_checker(x) # Checking if the model is supported
 
@@ -48,6 +42,8 @@ general_experiment = function(No_test_obs,
                               model_name,
                               n_samples = 1000){
   print(paste0("Correlation: ", corr))
+  print(paste0("Now: ", Sys.time()))
+  print(paste0("Number test obs: ", No_test_obs))
   # parameters
   dim <- 10
   mu <- rep(0, dim)
@@ -119,7 +115,11 @@ general_experiment = function(No_test_obs,
   tmp[, grouping := "A"]
   tmp[, No_test_obs := No_test_obs]
 
-  fwrite(tmp, file = "inst/paper_experiments/results/group1_Shapley_values_GAM.csv", append = T)
+  if(grepl("lm", model_name)){
+    fwrite(tmp, file = "inst/paper_experiments/results/groupA_Shapley_values_lm-new.csv", append = T)
+  } else if(grepl("gam", model_name)){
+    fwrite(tmp, file = "inst/paper_experiments/results/groupA_Shapley_values_GAM.csv", append = T)
+  }
 
   # Pre-grouping approach 2
   group2 <- list(group1 = 1:2,
@@ -160,7 +160,11 @@ general_experiment = function(No_test_obs,
   tmp[, grouping := "B"]
   tmp[, No_test_obs := No_test_obs]
 
-  fwrite(tmp, file = "inst/paper_experiments/results/group2_Shapley_values_GAM.csv", append = T)
+  if(grepl("lm", model_name)){
+    fwrite(tmp, file = "inst/paper_experiments/results/groupB_Shapley_values_lm-new.csv", append = T)
+  } else if(grepl("gam", model_name)){
+    fwrite(tmp, file = "inst/paper_experiments/results/groupB_Shapley_values_GAM.csv", append = T)
+  }
 
   # Post-grouping approach
   explainer <- shapr(x_train, model)
@@ -187,103 +191,11 @@ general_experiment = function(No_test_obs,
   tmp[, model_type := model_name]
   tmp[, No_test_obs := No_test_obs]
 
-  fwrite(tmp, file = "inst/paper_experiments/results/All_Shapley_values_GAM.csv", append = T)
-
-  print(paste0("object size: ", pryr::object_size(explanation) / 10^6, " MB"))
-
-  # Compare group 1
-  explanation_base1 = copy(explanation$dt)
-  explanation_base1 = data.table(explanation_base1)
-  explanation_base1[, group1 := rowSums(.SD), .SDcols = group1[[1]]]
-  explanation_base1[, group2 := rowSums(.SD), .SDcols = group1[[2]]]
-  explanation_base1[, group3 := rowSums(.SD), .SDcols = group1[[3]]]
-
-  explanation_mat_post1 = as.matrix(explanation_base1[, ..group1_names])
-  explanation_ranking_post1 = t(apply(-explanation_mat_post1, FUN = rank, 1))
-  colnames(explanation_ranking_post1) = rank_group_names1
-  explanation_base1 = cbind(explanation_base1, explanation_ranking_post1)
-
-  pre_grouped = explanation_group1_dt[, ..group1_names]
-
-  mean_pre_grouped = matrix(apply(pre_grouped, 2, mean), ncol = ncol(pre_grouped), nrow = nrow(pre_grouped), byrow = T)
-  sd_pre_grouped = sd(as.matrix(pre_grouped))
-
-  pre_grouped_stand = (pre_grouped - mean_pre_grouped) / sd_pre_grouped
-
-  post_grouped = explanation_base1[, ..group1_names]
-  post_grouped_stand = (post_grouped - mean_pre_grouped) / sd_pre_grouped
-
-  pre_grouped_rank = explanation_group1_dt[, ..rank_group_names1]
-  post_grouped_rank = explanation_base1[, ..rank_group_names1]
-
-  results_csvPre = data.frame(correlation = corr,
-                              pre_grouped = 1,
-                              standardized = c(rep(0, nrow(pre_grouped)), rep(1, nrow(pre_grouped_stand))),
-                              rbind(pre_grouped, pre_grouped_stand),
-                              pre_grouped_rank)
-
-  results_csvPost = data.frame(correlation = corr,
-                               pre_grouped = 0,
-                               standardized = c(rep(0, nrow(post_grouped)), rep(1, nrow(post_grouped_stand))),
-                               rbind(post_grouped, post_grouped_stand),
-                               post_grouped_rank)
-  results_csv1 = data.table(rbind(results_csvPre, results_csvPost))
-  results_csv1[, test_id := 1:.N, by = c("pre_grouped", "standardized")]
-  results_csv1[, model_type := model_name]
-  results_csv1[, grouping := "A"]
-  results_csv1[, No_test_obs := No_test_obs]
-  results_csv1[, MAD := MAD(pre_grouped_stand, post_grouped_stand, weights = 1)]
-  results_csv1[, MDR := MDR(pre_grouped_rank, post_grouped_rank, weights = 1)]
-
-  fwrite(results_csv1, file = "inst/paper_experiments/results/results_groupA_GAM.csv", append = T)
-
-  # Compare group 2
-  explanation_base2 = copy(explanation$dt)
-  explanation_base2 = data.table(explanation_base2)
-  explanation_base2[, group1 := rowSums(.SD), .SDcols = group2[[1]]]
-  explanation_base2[, group2 := rowSums(.SD), .SDcols = group2[[2]]]
-  explanation_base2[, group3 := rowSums(.SD), .SDcols = group2[[3]]]
-  explanation_base2[, group4 := rowSums(.SD), .SDcols = group2[[4]]]
-  explanation_base2[, group5 := rowSums(.SD), .SDcols = group2[[5]]]
-
-  explanation_mat_post2 = as.matrix(explanation_base2[, ..group2_names])
-  explanation_ranking_post2 = t(apply(-explanation_mat_post2, FUN = rank, 1))
-  colnames(explanation_ranking_post2) = rank_group_names2
-  explanation_base2 = cbind(explanation_base2, explanation_ranking_post2)
-
-  pre_grouped = explanation_group2_dt[, ..group2_names]
-
-  mean_pre_grouped = matrix(apply(pre_grouped, 2, mean), ncol = ncol(pre_grouped), nrow = nrow(pre_grouped), byrow = T)
-  sd_pre_grouped = sd(as.matrix(pre_grouped))
-
-  pre_grouped_stand = (pre_grouped - mean_pre_grouped) / sd_pre_grouped
-
-  post_grouped = explanation_base2[, ..group2_names]
-  post_grouped_stand = (post_grouped - mean_pre_grouped) / sd_pre_grouped
-
-  pre_grouped_rank = explanation_group2_dt[, ..rank_group_names2]
-  post_grouped_rank = explanation_base2[, ..rank_group_names2]
-
-  results_csvPre = data.frame(correlation = corr,
-                              pre_grouped = 1,
-                              standardized = c(rep(0, nrow(pre_grouped)), rep(1, nrow(pre_grouped_stand))),
-                              rbind(pre_grouped, pre_grouped_stand),
-                              pre_grouped_rank)
-
-  results_csvPost = data.frame(correlation = corr,
-                               pre_grouped = 0,
-                               standardized = c(rep(0, nrow(post_grouped)), rep(1, nrow(post_grouped_stand))),
-                               rbind(post_grouped, post_grouped_stand),
-                               post_grouped_rank)
-  results_csv1 = data.table(rbind(results_csvPre, results_csvPost))
-  results_csv1[, test_id := 1:.N, by = c("pre_grouped", "standardized")]
-  results_csv1[, model_type := model_name]
-  results_csv1[, grouping := "B"]
-  results_csv1[, No_test_obs := No_test_obs]
-  results_csv1[, MAD := MAD(pre_grouped_stand, post_grouped_stand, weights = 1)]
-  results_csv1[, MDR := MDR(pre_grouped_rank, post_grouped_rank, weights = 1)]
-
-  fwrite(results_csv1, file = "inst/paper_experiments/results/results_groupB_GAM.csv", append = T)
+  if(grepl("lm", model_name)){
+    fwrite(tmp, file = "inst/paper_experiments/results/All_Shapley_values_lm-new.csv", append = T)
+  } else if(grepl("gam", model_name)){
+    fwrite(tmp, file = "inst/paper_experiments/results/All_Shapley_values_GAM.csv", append = T)
+  }
 
   print("Done")
 }
