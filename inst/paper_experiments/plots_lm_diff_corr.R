@@ -31,10 +31,10 @@ results = list()
 for(exper in c("AR-groupA-experiment_lm_diff_corr")  ){
   for(corr in c(0, 0.1, 0.3, 0.7, 0.9)){
 
-    group_exp = groupA_shapley[model_type == exper][correlation == corr]
+    group_exp = groupA_shapley[correlation == corr]
     group_exp_u = group_exp[, tail(.SD, 1), by = .(test_id, model_type, correlation)]
 
-    all_exp = all_shapley[model_type == exper][correlation == corr]
+    all_exp = all_shapley[correlation == corr]
     all_exp_u = all_exp[, tail(.SD, 1), by = .(test_id, model_type, correlation)]
 
     explanation_base = data.table(all_exp_u)
@@ -89,15 +89,22 @@ ggplot(results_all, aes(y = absolute_difference, x = correlation, col = experime
   stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
                color = "black", size = 3) +
   labs(y = "log of Mean-per-obs(abs(Pre-group - Post-group))") +
-  ggtitle("GAM models with 10 features, 3 groups") + ylim(-7.5, 2)
+  ggtitle("lm models with 10 features, 3 groups, diff correlations within and between groups")# + ylim(-7.5, 2)
 
 
 #### GROUP B
 
+MAD <- function(pre_grouped, post_grouped){
+  abs(pre_grouped - post_grouped)
+}
+MDR <- function(ranking_pre_grouped, ranking_post_grouped){
+  abs(ranking_pre_grouped - ranking_post_grouped)
+}
+
 groupB_shapley = fread("inst/paper_experiments/results/AR-groupB_Shapley_values_lm_diff_corr.csv")
 
 # remove any test tries
-groupB_shapley = groupA_shapley[No_test_obs == 100]
+groupB_shapley = groupB_shapley[No_test_obs == 100]
 groupB_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
 
 all_shapley = fread("inst/paper_experiments/results/AR-groupB_All_Shapley_values_lm_diff_corr.csv")
@@ -113,57 +120,55 @@ rank_group_namesB = paste0(groupB_names, "_rank")
 
 
 results = list()
-for(exper in c("MJ-groupB-experiment_gam_diff_corr")  ){
-  for(corr in c(0, 0.1, 0.3, 0.7, 0.9)){
+for(corr in c(0, 0.1, 0.3, 0.7, 0.9)){
 
-    group_exp = groupB_shapley[model_type == exper][correlation == corr]
-    group_exp_u = group_exp[, tail(.SD, 1), by = .(test_id, model_type, correlation)]
+  group_exp = groupB_shapley[correlation == corr]
+  group_exp_u = group_exp[, tail(.SD, 1), by = .(test_id, model_type, correlation)]
 
-    all_exp = all_shapley[model_type == exper][correlation == corr]
-    all_exp_u = all_exp[, tail(.SD, 1), by = .(test_id, model_type, correlation)]
+  all_exp = all_shapley[correlation == corr]
+  all_exp_u = all_exp[, tail(.SD, 1), by = .(test_id, model_type, correlation)]
 
-    explanation_base = data.table(all_exp_u)
-    explanation_base[, group1 := rowSums(.SD), .SDcols = groupB[[1]]]
-    explanation_base[, group2 := rowSums(.SD), .SDcols = groupB[[2]]]
-    explanation_base[, group3 := rowSums(.SD), .SDcols = groupB[[3]]]
-    explanation_base[, group4 := rowSums(.SD), .SDcols = groupB[[4]]]
-    explanation_base[, group5 := rowSums(.SD), .SDcols = groupB[[5]]]
+  explanation_base = data.table(all_exp_u)
+  explanation_base[, group1 := rowSums(.SD), .SDcols = groupB[[1]]]
+  explanation_base[, group2 := rowSums(.SD), .SDcols = groupB[[2]]]
+  explanation_base[, group3 := rowSums(.SD), .SDcols = groupB[[3]]]
+  explanation_base[, group4 := rowSums(.SD), .SDcols = groupB[[4]]]
+  explanation_base[, group5 := rowSums(.SD), .SDcols = groupB[[5]]]
 
-    explanation_mat_post = as.matrix(explanation_base[, ..groupB_names])
-    explanation_ranking_post = t(apply(-explanation_mat_post, FUN = rank, 1))
-    colnames(explanation_ranking_post) = rank_group_namesB
-    explanation_base = cbind(explanation_base, explanation_ranking_post)
+  explanation_mat_post = as.matrix(explanation_base[, ..groupB_names])
+  explanation_ranking_post = t(apply(-explanation_mat_post, FUN = rank, 1))
+  colnames(explanation_ranking_post) = rank_group_namesB
+  explanation_base = cbind(explanation_base, explanation_ranking_post)
 
-    pre_grouped = group_exp_u[, ..groupB_names]
+  pre_grouped = group_exp_u[, ..groupB_names]
 
-    mean_pre_grouped = apply(pre_grouped, 2, mean)
-    sd_pre_grouped2 = apply(pre_grouped, 2, sd)
-    sd_pre_grouped3 = mean(apply(pre_grouped, 2, sd))
+  mean_pre_grouped = apply(pre_grouped, 2, mean)
+  sd_pre_grouped2 = apply(pre_grouped, 2, sd)
+  sd_pre_grouped3 = mean(apply(pre_grouped, 2, sd))
 
-    pre_grouped_stand = sweep(pre_grouped, 2, mean_pre_grouped, "-")
-    pre_grouped_stand2 = sweep(pre_grouped_stand, 2, sd_pre_grouped2, "/")
-    pre_grouped_stand3 = pre_grouped_stand / sd_pre_grouped3
-    #
-    pre_grouped_rank = group_exp_u[, ..rank_group_namesB]
+  pre_grouped_stand = sweep(pre_grouped, 2, mean_pre_grouped, "-")
+  pre_grouped_stand2 = sweep(pre_grouped_stand, 2, sd_pre_grouped2, "/")
+  pre_grouped_stand3 = pre_grouped_stand / sd_pre_grouped3
+  #
+  pre_grouped_rank = group_exp_u[, ..rank_group_namesB]
 
-    post_grouped = explanation_base[, ..groupB_names]
-    post_grouped_stand = sweep(post_grouped, 2, mean_pre_grouped, "-")
-    post_grouped_stand2 = sweep(post_grouped_stand, 2, sd_pre_grouped2, "/")
-    post_grouped_stand3 = post_grouped_stand / sd_pre_grouped3
-    post_grouped_rank = explanation_base[, ..rank_group_namesB]
+  post_grouped = explanation_base[, ..groupB_names]
+  post_grouped_stand = sweep(post_grouped, 2, mean_pre_grouped, "-")
+  post_grouped_stand2 = sweep(post_grouped_stand, 2, sd_pre_grouped2, "/")
+  post_grouped_stand3 = post_grouped_stand / sd_pre_grouped3
+  post_grouped_rank = explanation_base[, ..rank_group_namesB]
 
 
-    MAD0 = apply(MAD(pre_grouped, post_grouped), 1, mean)
+  MAD0 = apply(MAD(pre_grouped, post_grouped), 1, mean)
 
-    MAD1 = apply(MAD(pre_grouped_stand2, post_grouped_stand2), 1, mean)
+  MAD1 = apply(MAD(pre_grouped_stand2, post_grouped_stand2), 1, mean)
 
-    MAD2 = apply(MAD(pre_grouped_stand3, post_grouped_stand3), 1, mean)
+  MAD2 = apply(MAD(pre_grouped_stand3, post_grouped_stand3), 1, mean)
 
-    MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
+  MDR0 = apply(MDR(pre_grouped_rank, post_grouped_rank), 1, mean)
 
-    results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, absolute_difference_rank = MDR0, correlation = corr, experiment = exper)
+  results[[length(results) + 1]] = data.frame(absolute_difference = MAD1, absolute_difference_rank = MDR0, correlation = corr, experiment = "AR-groupB-experiment_lm_diff_corr")
 
-  }
 }
 
 results_all = rbindlist(results)
@@ -172,11 +177,11 @@ results_all$experiment = factor(results_all$experiment)
 results_all$correlation = factor(results_all$correlation)
 results_all$absolute_difference_log = log(results_all$absolute_difference)
 
-ggplot(results_all, aes(y = absolute_difference_log, x = correlation, col = experiment)) + geom_boxplot() +
+ggplot(results_all, aes(y = absolute_difference, x = correlation, col = experiment)) + geom_boxplot() +
   stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
                color = "black", size = 3) +
   labs(y = "log of Mean-per-obs(abs(Pre-group - Post-group))") +
-  ggtitle("GAM models with 10 features, 5 groups") + ylim(-7.5, 2)
+  ggtitle("lm models with 10 features, 5 groups, diff correlations within and between groups")# + ylim(-7.5, 2)
 
 ggplot(results_all, aes(y = absolute_difference_rank, x = correlation, col = experiment)) + geom_boxplot() +
   stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),

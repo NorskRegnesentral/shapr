@@ -29,7 +29,7 @@ rank_group_namesA = paste0(groupA_names, "_rank")
 
 results = list()
 for(exper in c("AR-groupA-experiment_gam_diff_corr")  ){
-  for(corr in c(0, 0.1, 0.3, 0.7, 0.9)){
+  for(corr in c(0, 0.1, 0.3, 0.7, 0.9)){ # , 0.1, 0.3, 0.7, 0.9
 
     group_exp = groupA_shapley[model_type == exper][correlation == corr]
     group_exp_u = group_exp[, tail(.SD, 1), by = .(test_id, model_type, correlation)]
@@ -88,8 +88,8 @@ results_all$absolute_difference_log = log(results_all$absolute_difference)
 ggplot(results_all, aes(y = absolute_difference, x = correlation, col = experiment)) + geom_boxplot() +
   stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
                color = "black", size = 3) +
-  labs(y = "log of Mean-per-obs(abs(Pre-group - Post-group))") +
-  ggtitle("GAM models with 10 features, 3 groups") + ylim(-7.5, 2)
+  labs(y = "Mean-per-obs(abs(Pre-group - Post-group))", x = "correlations between groups") +
+  ggtitle("GAM models with 10 features, 3 groups, diff correlations within and between groups")
 
 
 #### GROUP B
@@ -116,7 +116,7 @@ rank_group_namesB = paste0(groupB_names, "_rank")
 
 results = list()
 for(exper in c("MJ-groupB-experiment_gam_diff_corr")  ){
-  for(corr in c(0, 0.1, 0.3, 0.7, 0.9)){
+  for(corr in c(0, 0.1)){ # , 0.3, 0.7, 0.9
 
     group_exp = groupB_shapley[model_type == exper][correlation == corr]
     group_exp_u = group_exp[, tail(.SD, 1), by = .(test_id, model_type, correlation)]
