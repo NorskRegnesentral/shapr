@@ -7,7 +7,8 @@ source("inst/paper_experiments/AR-1-general_experiment-function_lm.R")
 
 seed = 1
 set.seed(seed)
-beta = c(-0.6,  0.2, -0.8,  1.6,  0.3, -0.8,  0.5,  0.7,  0.6, -0.3,  1.5,  0.4, -0.6, -2.2,  1.1,  0.0,  0.0,  0.9)
+beta = c(-0.6,  0.2, -0.8,  1.6,  0.3, -0.8,  0.5,  0.7,  0.6, -0.3,  1.5,
+         0.4, -0.6, -2.2,  1.1,  0.0,  0.0,  0.9)
 No_test_obs = 100
 n_samples = 1000
 

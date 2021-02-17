@@ -123,11 +123,6 @@ dt[, mean(f1)] # 0.8682297 this is what is in the paper
 
 
 # Fit groupshap
-# "ID"         "KIDSDRIV"   "BIRTH"      "AGE"        "HOMEKIDS"   "YOJ"
-# [7] "INCOME"     "PARENT1"    "HOME_VAL"   "MSTATUS"    "GENDER"     "EDUCATION"
-# [13] "OCCUPATION" "TRAVTIME"   "CAR_USE"    "BLUEBOOK"   "TIF"        "CAR_TYPE"
-# [19] "RED_CAR"    "OLDCLAIM"   "CLM_FREQ"   "REVOKED"    "MVR_PTS"    "CLM_AMT"
-# [25] "CAR_AGE"    "CLAIM_FLAG" "URBANICITY"
 group1 <- c("AGE", "EDUCATION", "HOMEKIDS", "HOME_VAL", "OCCUPATION", "TRAVTIME", "KIDSDRIV", "MSTATUS", "PARENT1", "GENDER", "URBANICITY", "YOJ")
 group2 <- c("BLUEBOOK", "CAR_AGE", "CAR_TYPE", "RED_CAR")
 group3 <- c("CLM_FREQ", "MVR_PTS", "REVOKED", "TIF")
@@ -170,10 +165,9 @@ explanation_group$dt = round(explanation_group$dt, 2)
 explanation_group$p = round(explanation_group$p, 2)
 
 size = 7
-p1 = plot(explanation_group) + ggtitle("") +
-  ggplot2::facet_wrap(~header, scales = "free_y", labeller = "label_value", ncol = 2) +
+p1 = plot(explanation_group, plot_phi0 = F) + ggtitle("") +
+  ggplot2::facet_wrap(~header, scales = "free_x", labeller = "label_value", ncol = 2) +
   ggplot2::theme(
-    legend.position = "none",
     legend.text = element_text(size = size),
     legend.title = element_text(size = size),
     axis.text = element_text(size = size),
@@ -182,7 +176,8 @@ p1 = plot(explanation_group) + ggtitle("") +
     strip.text = element_text(size = size)
   )
 p1
-
+#
+# legend.position = "none",
 ggsave(
   "car-insurance-glm-3-groups.png",
   plot = p1,

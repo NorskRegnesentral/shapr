@@ -17,14 +17,10 @@ MDR <- function(ranking_pre_grouped, ranking_post_grouped){
 
 # the "new" csvs were made Feb 10 in the evening. Should give the same results as before but now no "double rows" for a given corr and exper
 
-groupA_shapley = fread("inst/paper_experiments/results/groupA_Shapley_values_lm-new.csv")
+groupA_shapley = fread("inst/paper_experiments/results/finished-results/groupA_Shapley_values_lm-new.csv")
 groupA_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
-all_shapley = fread("inst/paper_experiments/results/All_Shapley_values_lm-new.csv")
+all_shapley = fread("inst/paper_experiments/results/finished-results/All_Shapley_values_lm-new.csv")
 all_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
-
-groupB_shapley = fread("inst/paper_experiments/results/groupB_Shapley_values_lm-new.csv")
-groupB_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
-
 
 # remove any test tries
 groupA_shapley = groupA_shapley[No_test_obs == 100]
@@ -110,12 +106,34 @@ ggplot(results_all, aes(y = absolute_difference_rank, x = correlation, col = exp
   labs(y = "Mean-per-obs(abs(Pre-group_rank - Post-group_rank))") +
   ggtitle("lm models with 10 continuous features, 3 groups")
 
+results_all[experiment == "experiment_lm1", experiment := "lm_1"]
+results_all[experiment == "experiment_lm2", experiment := "lm_2"]
+results_all[experiment == "experiment_lm3", experiment := "lm_3"]
+setnames(results_all, "experiment", "model")
+
+results_allA = results_all
+
+p1 <- ggplot(results_allA, aes(y = absolute_difference, x = correlation, col = model)) + geom_boxplot() +
+  stat_summary(fun = mean, geom="point", aes(group = model), position = position_dodge(.8),
+               color = "black", size = 3) + ylim(0, 0.63) +
+  labs(y = "Mean absolute deviation for individual i", x = "correlation between all features")
+
+# ggsave(
+#   "exper1-lm-groupA.png",
+#   plot = p1,
+#   device = 'png',
+#   path = 'inst/paper_experiments/figures/',
+#   scale = 1,
+#   width = 13,
+#   height = 7,
+#   units = "cm"
+# )
 
 #### GROUP B
 
 
-all_shapley = fread("inst/paper_experiments/results/All_Shapley_values_lm-new.csv")
-groupB_shapley = fread("inst/paper_experiments/results/groupB_Shapley_values_lm-new.csv")
+all_shapley = fread("inst/paper_experiments/results/finished-results/All_Shapley_values_lm-new.csv")
+groupB_shapley = fread("inst/paper_experiments/results/finished-results/groupB_Shapley_values_lm-new.csv")
 
 # remove any test tries
 groupB_shapley = groupB_shapley[No_test_obs == 100]
@@ -208,3 +226,62 @@ ggplot(results_all, aes(y = absolute_difference_rank, x = correlation, col = exp
   labs(y = "Mean-per-obs(abs(Pre-group_rank - Post-group_rank))") +
   ggtitle("lm models with 10 continuous features, 5 groups")
 
+
+
+results_all[experiment == "experiment_lm1", experiment := "lm_1"]
+results_all[experiment == "experiment_lm2", experiment := "lm_2"]
+results_all[experiment == "experiment_lm3", experiment := "lm_3"]
+setnames(results_all, "experiment", "model")
+
+results_allB = results_all
+
+p2 <- ggplot(results_allB, aes(y = absolute_difference, x = correlation, col = model)) + geom_boxplot() +
+  stat_summary(fun = mean, geom="point", aes(group = model), position = position_dodge(.8),
+               color = "black", size = 3) + ylim(0, 0.63) +
+  labs(y = "Mean-per-obs(abs(Pre-group - Post-group))", x = "correlation between all features")
+
+# ggsave(
+#   "exper1-lm-groupB.png",
+#   plot = p2,
+#   device = 'png',
+#   path = 'inst/paper_experiments/figures/',
+#   scale = 1,
+#   width = 13,
+#   height = 7,
+#   units = "cm"
+# )
+
+results_allA[, grouping := "group A"]
+results_allB[, grouping := "group B"]
+
+results = rbind(results_allA, results_allB)
+
+scaleFUN <- function(x) sprintf("%.3f", x)
+
+size = 7
+theme_set(theme_bw())
+p3 <- ggplot(results, aes(y = absolute_difference, x = correlation, col = model)) +
+  geom_boxplot() + scale_y_log10() +  # scale_y_continuous(trans="log", labels=scaleFUN) +
+  stat_summary(fun = mean, geom="point", aes(group = model), position = position_dodge(.8),
+               color = "black", size = 1) +
+  labs(y = "Mean Absolute Deviation for Individual i", x = "Correlation Across All Feature Pairs") +
+  facet_wrap(~ grouping) +
+  ggplot2::theme(
+    legend.text = element_text(size = size),
+    legend.title = element_text(size = size),
+    axis.text = element_text(size = size),
+    axis.text.y = element_text(size = size),
+    axis.title = element_text(size = size),
+    strip.text = element_text(size = size)
+  )
+
+ggsave(
+  "exper1-lm-groupAB-log10-scale.png",
+  plot = p3,
+  device = 'png',
+  path = 'inst/paper_experiments/figures/',
+  scale = 1,
+  width = 17.4,
+  height = 6.5,
+  units = "cm"
+)

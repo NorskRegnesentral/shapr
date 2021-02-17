@@ -85,12 +85,25 @@ results_all$experiment = factor(results_all$experiment)
 results_all$correlation = factor(results_all$correlation)
 results_all$absolute_difference_log = log(results_all$absolute_difference)
 
-ggplot(results_all, aes(y = absolute_difference, x = correlation, col = experiment)) + geom_boxplot() +
+results_groupA = results_all
+
+p1 <- ggplot(results_all, aes(y = absolute_difference, x = correlation, col = experiment)) + geom_boxplot() +
   stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
                color = "black", size = 3) +
-  labs(y = "log of Mean-per-obs(abs(Pre-group - Post-group))") +
-  ggtitle("lm models with 10 features, 3 groups, diff correlations within and between groups")# + ylim(-7.5, 2)
+  labs(y = "Mean-per-obs(abs(Pre-group - Post-group))", x = "correlation between features of different groups") +
+  #ggtitle("lm models with 10 features, 3 groups, diff correlations within and between groups") +
+  theme(legend.position = "none")
 
+ggsave(
+  "exper3-lm-groupA.png",
+  plot = p1,
+  device = 'png',
+  path = 'inst/paper_experiments/figures/',
+  scale = 1,
+  width = 9,
+  height = 9,
+  units = "cm"
+)
 
 #### GROUP B
 
@@ -177,15 +190,57 @@ results_all$experiment = factor(results_all$experiment)
 results_all$correlation = factor(results_all$correlation)
 results_all$absolute_difference_log = log(results_all$absolute_difference)
 
-ggplot(results_all, aes(y = absolute_difference, x = correlation, col = experiment)) + geom_boxplot() +
+results_groupB = results_all
+
+p2 <- ggplot(results_all, aes(y = absolute_difference, x = correlation, col = experiment)) + geom_boxplot() +
   stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
                color = "black", size = 3) +
-  labs(y = "log of Mean-per-obs(abs(Pre-group - Post-group))") +
-  ggtitle("lm models with 10 features, 5 groups, diff correlations within and between groups")# + ylim(-7.5, 2)
+  labs(y = "Mean-per-obs(abs(Pre-group - Post-group))", x = "correlation between features of different groups") +
+  #ggtitle("lm models with 10 features, 5 groups, diff correlations within and between groups") +
+  theme(legend.position = "none")
 
 ggplot(results_all, aes(y = absolute_difference_rank, x = correlation, col = experiment)) + geom_boxplot() +
   stat_summary(fun = mean, geom="point", aes(group = experiment), position = position_dodge(.8),
                color = "black", size = 3) +
   labs(y = "Mean-per-obs(abs(Pre-group_rank - Post-group_rank))") +
   ggtitle("GAM models with 10 continuous features, 5 groups")
+
+
+ggsave(
+  "exper3-lm-groupB.png",
+  plot = p2,
+  device = 'png',
+  path = 'inst/paper_experiments/figures/',
+  scale = 1,
+  width = 9,
+  height = 9,
+  units = "cm"
+)
+
+results_AB = rbind(results_groupA, results_groupB)
+
+results_AB[experiment == "AR-groupA-experiment_lm_diff_corr", experiment := "group A"]
+results_AB[experiment == "AR-groupB-experiment_lm_diff_corr", experiment := "group B"]
+setnames(results_AB, "experiment", "grouping")
+
+p3 <- ggplot(results_AB, aes(y = absolute_difference, x = correlation, col = grouping)) + geom_boxplot() +
+  stat_summary(fun = mean, geom = "point", aes(group = grouping), position = position_dodge(.8),
+               color = "black", size = 3) +
+  labs(y = "Mean-per-obs(abs(Pre-group - Post-group))", x = "correlation between features of different groups")
+  #ggtitle("lm models with 10 features, 5 groups, diff correlations within and between groups") +
+  #theme(legend.position = "none")
+
+
+ggsave(
+  "exper3-lm-groupAB.png",
+  plot = p3,
+  device = 'png',
+  path = 'inst/paper_experiments/figures/',
+  scale = 1,
+  width = 13,
+  height = 7,
+  units = "cm"
+)
+
+
 
