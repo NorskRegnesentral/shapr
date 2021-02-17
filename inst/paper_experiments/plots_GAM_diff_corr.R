@@ -417,7 +417,7 @@ scaleFUN <- function(x) sprintf("%.3f", x)
 size = 7
 theme_set(theme_bw())
 p4 <- ggplot(results, aes(y = absolute_difference, x = correlation, col = grouping)) +
-  geom_boxplot() +scale_y_continuous(trans="log", labels=scaleFUN) +
+  geom_boxplot() + scale_y_log10() + # + scale_y_continuous(trans="log", labels=scaleFUN) +
   stat_summary(fun = mean, geom="point", aes(group = grouping), position = position_dodge(.8),
                color = "black", size = 1) +
   labs(y = "Mean Absolute Deviation for Individual i", x = "Correlation Across Features in Different Groups") +
@@ -432,7 +432,7 @@ p4 <- ggplot(results, aes(y = absolute_difference, x = correlation, col = groupi
   )
 
 ggsave(
-  "exper3-lm-GAM-groupAB-log-scale.png",
+  "exper3-lm-GAM-groupAB-log10-scale.png",
   plot = p4,
   device = 'png',
   path = 'inst/paper_experiments/figures/',
