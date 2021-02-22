@@ -1,9 +1,10 @@
+## This is the script to run GAM3 experiment (from paper) with fixed beta and response functions.
+# Takes perhaps 12 * 5 hours to run the whole thing. Martin ran this for the paper.
+
 library(shapr)
 library(MASS)
 library(data.table)
 library(pryr)
-
-#setwd("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/shapr/")
 
 source("inst/paper_experiments/model_definitions.R")
 source("inst/paper_experiments/1-general_experiment-function.R")

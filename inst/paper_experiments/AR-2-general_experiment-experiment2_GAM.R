@@ -1,3 +1,6 @@
+# This is to run experiment 3 for GAM2 and grouping A. Annabelle ran this for the paper. Took about 12 * 5 hours to finish.
+# In these experiments, we have to run groupShapley and post-grouped Shapley for EVERY grouping (not just for a given model.)
+
 library(shapr)
 library(MASS)
 library(data.table)

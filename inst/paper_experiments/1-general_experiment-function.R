@@ -1,3 +1,7 @@
+## Function for running 2-general_experiment-lm.R (for lm), 3-general_experiment1.R (for GAM1), 4-general_experiment2.R (for GAM2), and
+# 5-general_experiment3.R (for GAM3).
+
+
 library(shapr)
 library(MASS)
 library(data.table)

@@ -1,3 +1,6 @@
+## This is the script to run GAM2 experiment (from paper) with fixed beta and response functions.
+# Takes perhaps 12 * 5 hours to run the whole thing.
+
 library(shapr)
 library(MASS)
 library(data.table)
@@ -9,7 +12,7 @@ seed = 1
 set.seed(seed)
 beta <- round(rnorm(50), 1)
 No_test_obs = 100
-corr_vector = c(0.7, 0.9)
+corr_vector = c(0, 0.1, 0.3, 0.7, 0.9)
 
 lm_function = function(form, train_data){
   lm(formula = form, data = train_data)

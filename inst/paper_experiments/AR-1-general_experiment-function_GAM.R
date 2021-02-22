@@ -1,3 +1,7 @@
+# This is the general function for experiment 3 for GAM2 and grouping A.
+# This script of functions accompanies AR-2-general_experiment-experiment2_GAM.R.
+# In these experiments, we have to run groupShapley and post-grouped Shapley for EVERY grouping (not just for a given model.)
+
 library(shapr)
 library(MASS)
 library(data.table)

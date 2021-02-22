@@ -1,3 +1,6 @@
+# This is the general function for experiment 3 for lm2 and groupings A and B.
+# In these experiments, we have to run groupShapley and post-grouped Shapley for EVERY grouping (not just for a given model.)
+
 library(shapr)
 library(MASS)
 library(data.table)
