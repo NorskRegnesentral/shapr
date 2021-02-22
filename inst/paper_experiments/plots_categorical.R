@@ -1,3 +1,6 @@
+# Here we plot the results of 2-cat-general_experiment-function.R. But we don't 
+# end up using the experiment/plots in the paper. 
+
 library(shapr)
 library(data.table)
 library(ggplot2)
@@ -9,13 +12,13 @@ MDR <- function(ranking_pre_grouped, ranking_post_grouped){
   abs(ranking_pre_grouped - ranking_post_grouped)
 }
 
-all_shapley = fread("inst/paper_experiments/results/All_Shapley_values_categorical_lm_new_response.csv")
+all_shapley = fread("inst/paper_experiments/results/cat-All_Shapley_values_lm_new_response.csv")
 all_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
 
-groupA_shapley = fread("inst/paper_experiments/results/groupA_Shapley_values_categorical_new_response.csv")
+groupA_shapley = fread("inst/paper_experiments/results/cat-groupA_Shapley_values_new_response.csv")
 groupA_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
 
-groupB_shapley = fread("inst/paper_experiments/results/groupB_Shapley_values_categorical_new_response.csv")
+groupB_shapley = fread("inst/paper_experiments/results/cat-groupB_Shapley_values_new_response.csv")
 groupB_shapley[, .N, by = c("correlation", "model_type")][order(model_type)]
 
 # remove any test tries
@@ -34,7 +37,7 @@ rank_group_namesA = paste0(groupA_names, "_rank")
 
 results = list()
 for(exper in c("experiment_lm1", "experiment_lm2", "experiment_lm3")  ){
-  for(corr in unique(groupA_shapley[model_type == exper][["correlation"]])){ # , 0.1, 0.3, 0.7, 0.9
+  for(corr in c(0, 0.1, 0.3, 0.7, 0.9)){
     
     group_exp = groupA_shapley[model_type == exper][correlation == corr]
     group_exp_u = group_exp[, tail(.SD, 1), by = .(test_id, model_type, correlation)]
@@ -99,8 +102,8 @@ ggplot(results_all, aes(y = absolute_difference_rank, x = correlation, col = exp
 
 #### GROUP B
 
-all_shapley = fread("inst/paper_experiments/results/All_Shapley_values_categorical_lm_new_response.csv")
-groupB_shapley = fread("inst/paper_experiments/results/groupB_Shapley_values_categorical_new_response.csv")
+all_shapley = fread("inst/paper_experiments/results/cat-All_Shapley_values_lm_new_response.csv")
+groupB_shapley = fread("inst/paper_experiments/results/cat-groupB_Shapley_values_new_response.csv")
 
 # remove any test tries
 groupB_shapley = groupB_shapley[No_test_obs == 100]
@@ -120,7 +123,7 @@ rank_group_namesB = paste0(groupB_names, "_rank")
 
 results = list()
 for(exper in c("experiment_lm1", "experiment_lm2", "experiment_lm3")  ){
-  for(corr in unique(groupB_shapley[model_type == exper][["correlation"]])){
+  for(corr in c(0, 0.1, 0.3, 0.7, 0.9)){
     
     group_exp = groupB_shapley[model_type == exper][correlation == corr]
     group_exp_u = group_exp[, tail(.SD, 1), by = .(test_id, model_type, correlation)]

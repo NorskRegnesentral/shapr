@@ -1,3 +1,5 @@
+# This script is the function used in the script 2-cat-general_experiment-function.R
+
 library(shapr)
 library(MASS)
 library(data.table)
@@ -189,7 +191,7 @@ general_experiment = function(No_test_obs,
   tmp[, response := dt[- (1:No_train_obs), "response"]]
   tmp[, joint_prob := x_test$joint_prob]
   
-  fwrite(tmp, file = "inst/paper_experiments/results/groupA_Shapley_values_categorical_new_response.csv", append = T)
+  fwrite(tmp, file = "inst/paper_experiments/results/cat-groupA_Shapley_values_new_response.csv", append = T)
   
   # Pre-grouping approach 2
   group2 <- list(group1 = 1:2,
@@ -230,7 +232,7 @@ general_experiment = function(No_test_obs,
   tmp[, response := dt[- (1:No_train_obs), "response"]]
   tmp[, joint_prob := x_test$joint_prob]
   
-  fwrite(tmp, file = "inst/paper_experiments/results/groupB_Shapley_values_categorical_new_response.csv", append = T)
+  fwrite(tmp, file = "inst/paper_experiments/results/cat-groupB_Shapley_values_new_response.csv", append = T)
   
   # Post-grouping approach
   explainer <- shapr(x_train, model)
@@ -257,7 +259,7 @@ general_experiment = function(No_test_obs,
   tmp[, response := dt[- (1:No_train_obs), "response"]]
   tmp[, joint_prob := x_test$joint_prob]
   
-  fwrite(tmp, file = "inst/paper_experiments/results/All_Shapley_values_categorical_lm_new_response.csv", append = T)
+  fwrite(tmp, file = "inst/paper_experiments/results/cat-All_Shapley_values_lm_new_response.csv", append = T)
 
   print("Done")
 }
