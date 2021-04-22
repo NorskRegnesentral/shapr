@@ -5,7 +5,7 @@ set.seed(clock_seed)
 rand_string <- stringi::stri_rand_strings(1, 5)
 folder <- paste0(tod_date, "_", rand_string, "_dim", dim, "_nbcat", no_categories)
 
-dir.create(paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations/", folder, sep = ""))
+dir.create(paste("../results/paper_simulations/", folder, sep = ""))
 
 ##
 response_mod <- function(mod_matrix_full, beta, epsilon){
@@ -172,7 +172,7 @@ if(special_dim10 | special_dim10){
   for(i in 1:length(parameters_list)){
     all_methods[[i]] <- simulate_data(parameters_list[[i]])
     nm = paste(folder, '_rho', parameters_list[[i]]$corr, "_part", i, ".rds", sep = "")
-    saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
+    saveRDS(all_methods, file = paste("../results/paper_simulations", folder, nm, sep = "/"))
   }
 } else{
 
@@ -180,7 +180,7 @@ if(special_dim10 | special_dim10){
   for(i in 1:length(parameters_list)){
     all_methods[[i]] <- simulate_data(parameters_list[[i]])
     nm = paste(folder, '_rho_', parameters_list[[i]]$corr, ".rds", sep = "")
-    saveRDS(all_methods, file = paste("/nr/project/stat/BigInsight/Projects/Fraud/Subprojects/NAV/Annabelle/results/paper_simulations", folder, nm, sep = "/"))
+    saveRDS(all_methods, file = paste("../results/paper_simulations", folder, nm, sep = "/"))
   }
 }
 
