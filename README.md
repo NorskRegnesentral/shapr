@@ -212,9 +212,9 @@ By contributing to this project, you agree to abide by its terms.
 
 <div id="ref-aas2019explaining" class="csl-entry">
 
-Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining
+Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining
 Individual Predictions When Features Are Dependent: More Accurate
-Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
+Approximations to Shapley Values.” *Artificial Intelligence*, Vol. 298, September (and part of the Special Issue on Explainable AI).
 
 </div>
 
