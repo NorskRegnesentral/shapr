@@ -159,7 +159,7 @@ free to open an issue [here](https://github.com/NorskRegnesentral/shapr/issues).
 
 Please note that the 'shapr' project is released with a
 [Contributor Code of Conduct](https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html).
-By contributing to this project, you agree to abide by its terms.
+By contributing to this project, you agree to abide by its terms. 
 
 ## References
 
