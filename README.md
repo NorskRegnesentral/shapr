@@ -214,8 +214,7 @@ By contributing to this project, you agree to abide by its terms.
 
 Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining
 Individual Predictions When Features Are Dependent: More Accurate
-Approximations to Shapley Values.” *Artificial Intelligence* 298
-(September).
+Approximations to Shapley Values.” *Artificial Intelligence* 298.
 
 </div>
 
