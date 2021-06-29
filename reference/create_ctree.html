@@ -58,9 +58,15 @@
 
 
 
+  
+
+  
+
   </head>
 
   <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -128,14 +134,14 @@
     <p>Make all conditional inference trees</p>
     </div>
 
-    <pre class="usage"><span class='fu'>create_ctree</span><span class='op'>(</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>create_ctree</span><span class='op'>(</span>
   <span class='va'>given_ind</span>,
   <span class='va'>x_train</span>,
   <span class='va'>mincriterion</span>,
   <span class='va'>minsplit</span>,
   <span class='va'>minbucket</span>,
   use_partykit <span class='op'>=</span> <span class='st'>"on_error"</span>
-<span class='op'>)</span></pre>
+<span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -182,40 +188,41 @@ created whenever <code><a href='https://rdrr.io/pkg/partykit/man/ctree.html'>par
     <p>Annabelle Redelmeier, Martin Jullum</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"MASS"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'>&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"party"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='va'>m</span> <span class='op'>&lt;-</span> <span class='fl'>10</span>
-  <span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>40</span>
-  <span class='va'>n_samples</span> <span class='op'>&lt;-</span> <span class='fl'>50</span>
-  <span class='va'>mu</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='va'>m</span><span class='op'>)</span>
-  <span class='va'>cov_mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cov</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>m</span><span class='op'>)</span>, <span class='va'>n</span>, <span class='va'>m</span><span class='op'>)</span><span class='op'>)</span>
-  <span class='va'>x_train</span> <span class='op'>&lt;-</span> <span class='fu'>data.table</span><span class='fu'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span><span class='op'>(</span><span class='fu'>MASS</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span><span class='op'>(</span><span class='va'>n</span>, <span class='va'>mu</span>, <span class='va'>cov_mat</span><span class='op'>)</span><span class='op'>)</span>
-  <span class='va'>given_ind</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>7</span><span class='op'>)</span>
-  <span class='va'>mincriterion</span> <span class='op'>&lt;-</span> <span class='fl'>0.95</span>
-  <span class='va'>minsplit</span> <span class='op'>&lt;-</span> <span class='fl'>20</span>
-  <span class='va'>minbucket</span> <span class='op'>&lt;-</span> <span class='fl'>7</span>
-  <span class='va'>sample</span> <span class='op'>&lt;-</span> <span class='cn'>TRUE</span>
-  <span class='fu'>create_ctree</span><span class='op'>(</span>
-    given_ind <span class='op'>=</span> <span class='va'>given_ind</span>, x_train <span class='op'>=</span> <span class='va'>x_train</span>,
-    mincriterion <span class='op'>=</span> <span class='va'>mincriterion</span>, minsplit <span class='op'>=</span> <span class='va'>minsplit</span>,
-    minbucket <span class='op'>=</span> <span class='va'>minbucket</span>, use_partykit <span class='op'>=</span> <span class='st'>"on_error"</span>
-  <span class='op'>)</span>
-<span class='op'>}</span>
-</div><div class='output co'>#&gt; $tree
-#&gt; 
-#&gt; 	 Conditional inference tree with 1 terminal nodes
-#&gt; 
-#&gt; Responses: Y1, Y2, Y3, Y4, Y5, Y6, Y7, Y8 
-#&gt; Inputs:  V4, V7 
-#&gt; Number of observations:  40 
-#&gt; 
-#&gt; 1)*  weights = 40 
-#&gt; 
-#&gt; $given_ind
-#&gt; [1] 4 7
-#&gt; 
-#&gt; $dependent_ind
-#&gt; [1]  1  2  3  5  6  8  9 10
-#&gt; </div></pre>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"MASS"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'>&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"party"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='va'>m</span> <span class='op'>&lt;-</span> <span class='fl'>10</span></span>
+<span class='r-in'>  <span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>40</span></span>
+<span class='r-in'>  <span class='va'>n_samples</span> <span class='op'>&lt;-</span> <span class='fl'>50</span></span>
+<span class='r-in'>  <span class='va'>mu</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='va'>m</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='va'>cov_mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cov</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>m</span><span class='op'>)</span>, <span class='va'>n</span>, <span class='va'>m</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='va'>x_train</span> <span class='op'>&lt;-</span> <span class='fu'>data.table</span><span class='fu'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span><span class='op'>(</span><span class='fu'>MASS</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span><span class='op'>(</span><span class='va'>n</span>, <span class='va'>mu</span>, <span class='va'>cov_mat</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='va'>given_ind</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>7</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='va'>mincriterion</span> <span class='op'>&lt;-</span> <span class='fl'>0.95</span></span>
+<span class='r-in'>  <span class='va'>minsplit</span> <span class='op'>&lt;-</span> <span class='fl'>20</span></span>
+<span class='r-in'>  <span class='va'>minbucket</span> <span class='op'>&lt;-</span> <span class='fl'>7</span></span>
+<span class='r-in'>  <span class='va'>sample</span> <span class='op'>&lt;-</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>  <span class='fu'>create_ctree</span><span class='op'>(</span></span>
+<span class='r-in'>    given_ind <span class='op'>=</span> <span class='va'>given_ind</span>, x_train <span class='op'>=</span> <span class='va'>x_train</span>,</span>
+<span class='r-in'>    mincriterion <span class='op'>=</span> <span class='va'>mincriterion</span>, minsplit <span class='op'>=</span> <span class='va'>minsplit</span>,</span>
+<span class='r-in'>    minbucket <span class='op'>=</span> <span class='va'>minbucket</span>, use_partykit <span class='op'>=</span> <span class='st'>"on_error"</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $tree</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	 Conditional inference tree with 1 terminal nodes</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Responses: Y1, Y2, Y3, Y4, Y5, Y6, Y7, Y8 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Inputs:  V4, V7 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Number of observations:  40 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1)*  weights = 40 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $given_ind</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 4 7</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $dependent_ind</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1]  1  2  3  5  6  8  9 10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -227,11 +234,11 @@ created whenever <code><a href='https://rdrr.io/pkg/partykit/man/ctree.html'>par
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
+  <p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>
@@ -239,6 +246,8 @@ created whenever <code><a href='https://rdrr.io/pkg/partykit/man/ctree.html'>par
 
   
 
+
+  
 
   </body>
 </html>

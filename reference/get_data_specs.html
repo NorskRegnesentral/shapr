@@ -58,9 +58,15 @@
 
 
 
+  
+
+  
+
   </head>
 
   <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -128,7 +134,7 @@
     <p>Fetches feature information from a given data set</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_data_specs</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>get_data_specs</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -160,68 +166,69 @@ and <code><a href='make_dummies.html'>make_dummies</a></code></p>
     <p>Martin Jullum</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Load example data</span>
-<span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"MASS"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"Boston"</span>, package <span class='op'>=</span> <span class='st'>"MASS"</span><span class='op'>)</span>
-  <span class='co'># Split data into test- and training data</span>
-  <span class='va'>x_train</span> <span class='op'>&lt;-</span> <span class='fu'>data.table</span><span class='fu'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html'>as.data.table</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>Boston</span><span class='op'>)</span><span class='op'>)</span>
-  <span class='va'>x_train</span><span class='op'>[</span>, <span class='va'>rad</span> <span class='op'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>rad</span><span class='op'>)</span><span class='op'>]</span>
-  <span class='fu'>get_data_specs</span><span class='op'>(</span><span class='va'>x_train</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div><div class='output co'>#&gt; $labels
-#&gt;  [1] "crim"    "zn"      "indus"   "chas"    "nox"     "rm"      "age"    
-#&gt;  [8] "dis"     "rad"     "tax"     "ptratio" "black"   "lstat"   "medv"   
-#&gt; 
-#&gt; $classes
-#&gt;      crim        zn     indus      chas       nox        rm       age       dis 
-#&gt; "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" 
-#&gt;       rad       tax   ptratio     black     lstat      medv 
-#&gt;  "factor" "numeric" "numeric" "numeric" "numeric" "numeric" 
-#&gt; 
-#&gt; $factor_levels
-#&gt; $factor_levels$crim
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$zn
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$indus
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$chas
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$nox
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$rm
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$age
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$dis
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$rad
-#&gt; [1] "1" "2" "3"
-#&gt; 
-#&gt; $factor_levels$tax
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$ptratio
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$black
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$lstat
-#&gt; NULL
-#&gt; 
-#&gt; $factor_levels$medv
-#&gt; NULL
-#&gt; 
-#&gt; </div></pre>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='co'># Load example data</span></span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"MASS"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"Boston"</span>, package <span class='op'>=</span> <span class='st'>"MASS"</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='co'># Split data into test- and training data</span></span>
+<span class='r-in'>  <span class='va'>x_train</span> <span class='op'>&lt;-</span> <span class='fu'>data.table</span><span class='fu'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html'>as.data.table</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>Boston</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='va'>x_train</span><span class='op'>[</span>, <span class='va'>rad</span> <span class='op'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>rad</span><span class='op'>)</span><span class='op'>]</span></span>
+<span class='r-in'>  <span class='fu'>get_data_specs</span><span class='op'>(</span><span class='va'>x_train</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $labels</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [1] "crim"    "zn"      "indus"   "chas"    "nox"     "rm"      "age"    </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [8] "dis"     "rad"     "tax"     "ptratio" "black"   "lstat"   "medv"   </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $classes</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      crim        zn     indus      chas       nox        rm       age       dis </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       rad       tax   ptratio     black     lstat      medv </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  "factor" "numeric" "numeric" "numeric" "numeric" "numeric" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$crim</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$zn</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$indus</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$chas</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$nox</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$rm</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$age</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$dis</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$rad</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "1" "2" "3"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$tax</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$ptratio</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$black</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$lstat</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $factor_levels$medv</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -233,11 +240,11 @@ and <code><a href='make_dummies.html'>make_dummies</a></code></p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
+  <p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>
@@ -245,6 +252,8 @@ and <code><a href='make_dummies.html'>make_dummies</a></code></p>
 
   
 
+
+  
 
   </body>
 </html>

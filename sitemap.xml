@@ -1,129 +1,156 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//index.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/404.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/aicc_full_cpp.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/aicc_full_single_cpp.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/CONTRIBUTING.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/apply_dummies.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/check_features.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/check_groups.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/correction_matrix_cpp.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/create_ctree.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/authors.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/explain.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/index.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/feature_combinations.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/news/index.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/feature_group.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/aicc_full_cpp.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/feature_matrix_cpp.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/aicc_full_single_cpp.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/gaussian_transform.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/apply_dummies.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/gaussian_transform_separate.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/check_features.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/get_data_specs.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/check_groups.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/get_list_approaches.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/correction_matrix_cpp.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/get_model_specs.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/create_ctree.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/get_supported_models.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/explain.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/hat_matrix_cpp.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/feature_combinations.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/inv_gaussian_transform.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/feature_group.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/mahalanobis_distance_cpp.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/feature_matrix_cpp.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/make_dummies.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/gaussian_transform.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/model_checker.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/gaussian_transform_separate.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/observation_impute.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/get_data_specs.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/observation_impute_cpp.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/get_list_approaches.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/plot.shapr.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/get_model_specs.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/predict_model.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/get_supported_models.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/prediction.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/hat_matrix_cpp.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/prepare_data.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/preprocess_data.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/inv_gaussian_transform.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/process_groups.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/mahalanobis_distance_cpp.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/rss_cpp.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/make_dummies.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/sample_combinations.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/model_checker.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/sample_copula.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/observation_impute.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/sample_ctree.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/observation_impute_cpp.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/sample_gaussian.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/plot.shapr.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/shapley_weights.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/predict_model.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/shapr.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/prediction.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/update_data.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/prepare_data.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/weight_matrix.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/preprocess_data.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//reference/weight_matrix_cpp.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/process_groups.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr//articles/understanding_shapr.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/rss_cpp.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/sample_combinations.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/sample_copula.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/sample_ctree.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/sample_gaussian.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/shapley_weights.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/shapr.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/update_data.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/weight_matrix.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/weight_matrix_cpp.html</loc>
   </url>
 </urlset>
