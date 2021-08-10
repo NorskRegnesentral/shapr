@@ -8,6 +8,9 @@
 #' @param x_train Numeric matrix
 #' @param x_test Numeric matrix
 #'
+#' @inheritParams explain
+#' @inherit explain references
+#'
 #' @return data.table
 #'
 #' @keywords internal

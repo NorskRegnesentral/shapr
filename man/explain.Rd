@@ -98,7 +98,10 @@ optimizing the AICc. Note that this argument is only applicable when
 is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
 \code{"AICc_each_k"} or \code{"AICc_full"}}
 
-\item{w_threshold}{Positive integer between 0 and 1.}
+\item{w_threshold}{Numeric vector of length 1, with \code{0 < w_threshold <= 1} representing the minimum proportion
+of the total empirical weight that data samples should use. If e.g. \code{w_threshold = .8} we will choose the
+\code{K} samples with the largest weight so that the sum of the weights accounts for 80\% of the total weight.
+\code{w_threshold} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
 
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 If \code{NULL} the expected values are estimated from the data. Note that this is only used
@@ -240,6 +243,10 @@ if (requireNamespace("MASS", quietly = TRUE)) {
   )
   print(explain_groups$dt)
 }
+}
+\references{
+Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
 Camilla Lingjaerde, Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier
