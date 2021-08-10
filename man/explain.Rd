@@ -64,7 +64,7 @@ explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
   ...
 )
 
-\method{explain}{ctree_comb_mincrit}(x, explainer, approach, prediction_zero, mincriterion, ...)
+\method{explain}{ctree_comb_mincrit}(x, explainer, approach, prediction_zero, n_samples, mincriterion, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
