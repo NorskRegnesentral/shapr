@@ -7,9 +7,6 @@
 #' the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.
 #' @param x_train Numeric matrix
 #' @param x_test Numeric matrix
-#' @param w_threshold Numeric vector of length 1, where \code{w_threshold > 0} and
-#' \code{w_threshold <= 1}. If \code{w_threshold = .8} we will choose the \code{K} samples with
-#' the largest weight so that the sum of the weights accounts for 80\% of the total weight.
 #'
 #' @return data.table
 #'
