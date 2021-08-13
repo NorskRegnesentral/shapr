@@ -91,6 +91,57 @@ prepare_data <- function(x, ...) {
 
 #' @rdname prepare_data
 #' @export
+prepare_data.independence <- function(x, seed = 1, index_features = NULL, ...) {
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+
+  if (is.null(index_features)) {
+    index_features <- x$X[, .I]
+  }
+
+  S <- x$S[index_features, ]
+  x_train = as.matrix(x$x_train)
+  n_train <- nrow(x_train)
+  n_samples = min(x$n_samples,n_train)
+
+  index_s <- rep(seq(x$n_combinations), each = n_samples)
+  w <- 1/x$n_combinations
+
+  n_col <- nrow(x$x_test)
+
+  if (!is.null(seed)) set.seed(seed)
+
+  dt_l <- list()
+  for (i in seq(n_col)) {
+    x_test = x$x_test[i, , drop = FALSE]
+
+    #### NEED TO SAMPLE index_xtrain her (vector of size n_samples*)
+    index_xtrain <- c(replicate(x$n_combinations,sample(x = seq(n_train),size = n_samples,replace = F)))
+
+    # Generate data used for prediction
+    dt_p <- observation_impute_cpp(
+      index_xtrain = index_xtrain,
+      index_s = index_s,
+      xtrain = x_train,
+      xtest = x_test,
+      S = S
+    )
+
+    # Add keys
+    dt_l[[i]] <- data.table::as.data.table(dt_p)
+    data.table::setnames(dt_l[[i]], colnames(x_train))
+    dt_l[[i]][, id_combination := index_s]
+    dt_l[[i]][, w := w] # IS THIS NECESSARY?
+    dt_l[[i]][, id := i]
+  }
+
+
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  return(dt)
+}
+
+
+#' @rdname prepare_data
+#' @export
 prepare_data.empirical <- function(x, seed = 1, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
@@ -157,6 +208,8 @@ prepare_data.empirical <- function(x, seed = 1, index_features = NULL, ...) {
       w_threshold = x$w_threshold,
       n_samples = x$n_samples
     )
+
+
 
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
