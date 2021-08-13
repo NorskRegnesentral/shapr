@@ -48,7 +48,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
     dt_melt <- dt_melt[wcum > 1 - w_threshold][, wcum := NULL]
   }
   dt_melt <- dt_melt[, tail(.SD, n_samples), by = "index_s"]
-
+  dt_melt00 <<- copy(dt_melt) # TO BE DELETED
   # Generate data used for prediction
   dt_p <- observation_impute_cpp(
     index_xtrain = dt_melt[["index_x_train"]],
@@ -104,7 +104,7 @@ prepare_data.independence <- function(x, seed = 1, index_features = NULL, ...) {
   n_samples = min(x$n_samples,n_train)
 
   index_s <- rep(seq(x$n_combinations), each = n_samples)
-  w <- 1/x$n_combinations
+  w <- 1/x$n_samples
 
   n_col <- nrow(x$x_test)
 

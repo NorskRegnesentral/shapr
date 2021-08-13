@@ -86,7 +86,10 @@ prediction <- function(dt, prediction_zero, explainer) {
     model = explainer$model,
     p = p_all,
     x_test = explainer$x_test,
-    is_groupwise = explainer$is_groupwise
+    is_groupwise = explainer$is_groupwise,
+    dt_mat = dt_mat, # TO BE DELETED
+    dt_res = dt_res, # TO BE DELETED
+    dtdt = dt # TO BE DELETED
   )
   attr(r, "class") <- c("shapr", "list")
 
