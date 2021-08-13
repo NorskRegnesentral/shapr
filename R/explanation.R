@@ -144,7 +144,7 @@
 #'   )
 #'   print(explain_groups$dt)
 #' }
-explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,...) {
+explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ...) {
   extras <- list(...)
 
   # Check input for x
