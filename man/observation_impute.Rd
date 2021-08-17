@@ -25,15 +25,23 @@ the total number of unique features, respectively. Note that \code{m = ncol(x_tr
 
 \item{x_test}{Numeric matrix}
 
-\item{w_threshold}{Numeric vector of length 1, where \code{w_threshold > 0} and
-\code{w_threshold <= 1}. If \code{w_threshold = .8} we will choose the \code{K} samples with
-the largest weight so that the sum of the weights accounts for 80\% of the total weight.}
+\item{w_threshold}{Numeric vector of length 1, with \code{0 < w_threshold <= 1} representing the minimum proportion
+of the total empirical weight that data samples should use. If e.g. \code{w_threshold = .8} we will choose the
+\code{K} samples with the largest weight so that the sum of the weights accounts for 80\% of the total weight.
+\code{w_threshold} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
+
+\item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation. See also details.}
 }
 \value{
 data.table
 }
 \description{
 Generate permutations of training data using test observations
+}
+\references{
+Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
 Nikolai Sellereite

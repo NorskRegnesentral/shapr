@@ -10,23 +10,15 @@
 \usage{
 prepare_data(x, ...)
 
-\method{prepare_data}{empirical}(x, seed = 1, n_samples = 1000, index_features = NULL, ...)
+\method{prepare_data}{empirical}(x, seed = 1, index_features = NULL, ...)
 
-\method{prepare_data}{gaussian}(x, seed = 1, n_samples = 1000, index_features = NULL, ...)
+\method{prepare_data}{gaussian}(x, seed = 1, index_features = NULL, ...)
 
-\method{prepare_data}{copula}(
-  x,
-  x_test_gaussian = 1,
-  seed = 1,
-  n_samples = 1000,
-  index_features = NULL,
-  ...
-)
+\method{prepare_data}{copula}(x, x_test_gaussian = 1, seed = 1, index_features = NULL, ...)
 
 \method{prepare_data}{ctree}(
   x,
   seed = 1,
-  n_samples = 1000,
   index_features = NULL,
   mc_cores = 1,
   mc_cores_create_ctree = mc_cores,
@@ -40,9 +32,6 @@ prepare_data(x, ...)
 \item{...}{Currently not used.}
 
 \item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
-
-\item{n_samples}{Integer. The number of obs to sample from the leaf if \code{sample} = TRUE or if \code{sample}
-= FALSE but \code{n_samples} is less than the number of obs in the leaf.}
 
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
 used for different numbers of conditioned features, this will be a list with the features to pass.}

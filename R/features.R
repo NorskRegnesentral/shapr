@@ -73,7 +73,8 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     exact <- TRUE
     message(
       paste0(
-        "\nn_combinations is larger than or equal to 2^m = ", 2^m, ". \n",
+        "\nSuccess with message:\n",
+        "n_combinations is larger than or equal to 2^m = ", 2^m, ". \n",
         "Using exact instead."
       )
     )

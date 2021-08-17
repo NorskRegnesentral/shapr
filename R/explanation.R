@@ -11,6 +11,9 @@
 #' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
 #' information.
 #'
+#' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
+#' Monte Carlo integration for every conditional expectation. See also details.
+#'
 #' @param prediction_zero Numeric. The prediction value for unseen data, typically equal to the mean of
 #' the response.
 #'
@@ -19,15 +22,21 @@
 #' @details The most important thing to notice is that \code{shapr} has implemented four different
 #' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
 #' \code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
-#'
 #' In addition, the user also has the option of combining the four approaches.
-#' E.g. if you're in a situation where you have trained a model the consists of 10 features,
+#' E.g., if you're in a situation where you have trained a model that consists of 10 features,
 #' and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
 #' the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
 #' if you condition on more than 5 features this can be done by simply passing
 #' \code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
-#' \code{"approach[i]" = "gaussian"} it means that you'd like to use the \code{"gaussian"} approach
+#' \code{"approach[i]" = "gaussian"} means that you'd like to use the \code{"gaussian"} approach
 #' when conditioning on \code{i} features.
+#'
+#' For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
+#' from the leaf node (see an exception related to the \code{sample} argument).
+#' For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in equations (14-15) of
+#' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+#' \code{w_threshold} argument.
+#'
 #'
 #' @return Object of class \code{c("shapr", "list")}. Contains the following items:
 #' \describe{
@@ -61,6 +70,10 @@
 #' @export
 #'
 #' @author Camilla Lingjaerde, Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier
+#'
+#'@references
+#'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+#'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 #'
 #' @examples
 #' if (requireNamespace("MASS", quietly = TRUE)) {
@@ -131,7 +144,7 @@
 #'   )
 #'   print(explain_groups$dt)
 #' }
-explain <- function(x, explainer, approach, prediction_zero, ...) {
+explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ...) {
   extras <- list(...)
 
   # Check input for x
@@ -186,15 +199,19 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
 #' \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
-#' @param w_threshold Positive integer between 0 and 1.
+#' @param w_threshold Numeric vector of length 1, with \code{0 < w_threshold <= 1} representing the minimum proportion
+#' of the total empirical weight that data samples should use. If e.g. \code{w_threshold = .8} we will choose the
+#' \code{K} samples with the largest weight so that the sum of the weights accounts for 80\% of the total weight.
+#' \code{w_threshold} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).
 #'
 #' @rdname explain
 #'
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
+                              n_samples = 1e3, w_threshold = 0.95,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               n_samples_aicc = 1000, eval_max_aicc = 20,
-                              start_aicc = 0.1, w_threshold = 0.95, ...) {
+                              start_aicc = 0.1, ...) {
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
@@ -205,6 +222,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   explainer$eval_max_aicc <- eval_max_aicc
   explainer$start_aicc <- start_aicc
   explainer$w_threshold <- w_threshold
+  explainer$n_samples <- n_samples
 
   # Generate data
   dt <- prepare_data(explainer, ...)
@@ -229,12 +247,14 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #' @rdname explain
 #'
 #' @export
-explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
+explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, mu = NULL, cov_mat = NULL, ...) {
 
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
+  explainer$n_samples <- n_samples
+
 
   # If mu is not provided directly, use mean of training data
   if (is.null(mu)) {
@@ -270,11 +290,12 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
 
 #' @rdname explain
 #' @export
-explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
+explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ...) {
 
   # Setup
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
+  explainer$n_samples <- n_samples
 
   # Prepare transformed data
   x_train <- apply(
@@ -334,7 +355,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #' @name explain
 #'
 #' @export
-explain.ctree <- function(x, explainer, approach, prediction_zero,
+explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
                           mincriterion = 0.95, minsplit = 20,
                           minbucket = 7, sample = TRUE, ...) {
   # Checks input argument
@@ -349,6 +370,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
   explainer$minsplit <- minsplit
   explainer$minbucket <- minbucket
   explainer$sample <- sample
+  explainer$n_samples <- n_samples
 
   # Generate data
   dt <- prepare_data(explainer, ...)
@@ -367,12 +389,13 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
 #' @name explain
 #'
 #' @export
-explain.combined <- function(x, explainer, approach, prediction_zero,
+explain.combined <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
                              mu = NULL, cov_mat = NULL, ...) {
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$n_samples <- n_samples
 
   dt_l <- list()
   for (i in seq_along(l)) {
@@ -435,7 +458,7 @@ get_list_approaches <- function(n_features, approach) {
 #'
 #' @export
 explain.ctree_comb_mincrit <- function(x, explainer, approach,
-                                       prediction_zero, mincriterion, ...) {
+                                       prediction_zero, n_samples, mincriterion, ...) {
 
   # Get indices of combinations
   l <- get_list_ctree_mincrit(explainer$X$n_features, mincriterion)

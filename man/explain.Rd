@@ -10,19 +10,20 @@
 \alias{explain.ctree_comb_mincrit}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
-explain(x, explainer, approach, prediction_zero, ...)
+explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
 
 \method{explain}{empirical}(
   x,
   explainer,
   approach,
   prediction_zero,
+  n_samples = 1000,
+  w_threshold = 0.95,
   type = "fixed_sigma",
   fixed_sigma_vec = 0.1,
   n_samples_aicc = 1000,
   eval_max_aicc = 20,
   start_aicc = 0.1,
-  w_threshold = 0.95,
   ...
 )
 
@@ -31,18 +32,20 @@ explain(x, explainer, approach, prediction_zero, ...)
   explainer,
   approach,
   prediction_zero,
+  n_samples = 1000,
   mu = NULL,
   cov_mat = NULL,
   ...
 )
 
-\method{explain}{copula}(x, explainer, approach, prediction_zero, ...)
+\method{explain}{copula}(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
 
 \method{explain}{ctree}(
   x,
   explainer,
   approach,
   prediction_zero,
+  n_samples = 1000,
   mincriterion = 0.95,
   minsplit = 20,
   minbucket = 7,
@@ -55,12 +58,13 @@ explain(x, explainer, approach, prediction_zero, ...)
   explainer,
   approach,
   prediction_zero,
+  n_samples = 1000,
   mu = NULL,
   cov_mat = NULL,
   ...
 )
 
-\method{explain}{ctree_comb_mincrit}(x, explainer, approach, prediction_zero, mincriterion, ...)
+\method{explain}{ctree_comb_mincrit}(x, explainer, approach, prediction_zero, n_samples, mincriterion, ...)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -77,7 +81,15 @@ information.}
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
 
+\item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation. See also details.}
+
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
+
+\item{w_threshold}{Numeric vector of length 1, with \code{0 < w_threshold <= 1} representing the minimum proportion
+of the total empirical weight that data samples should use. If e.g. \code{w_threshold = .8} we will choose the
+\code{K} samples with the largest weight so that the sum of the weights accounts for 80\% of the total weight.
+\code{w_threshold} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
 
 \item{type}{Character. Should be equal to either \code{"independence"},
 \code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.}
@@ -97,8 +109,6 @@ optimizing the AICc. Note that this argument is only applicable when
 \item{start_aicc}{Numeric. Start value of \code{sigma} when optimizing the AICc. Note that this argument
 is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
 \code{"AICc_each_k"} or \code{"AICc_full"}}
-
-\item{w_threshold}{Positive integer between 0 and 1.}
 
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 If \code{NULL} the expected values are estimated from the data. Note that this is only used
@@ -161,7 +171,6 @@ Explain the output of machine learning models with more accurately estimated Sha
 The most important thing to notice is that \code{shapr} has implemented four different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
 \code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
-
 In addition, the user also has the option of combining the four approaches.
 E.g. if you're in a situation where you have trained a model the consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
@@ -170,6 +179,12 @@ if you condition on more than 5 features this can be done by simply passing
 \code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
 \code{"approach[i]" = "gaussian"} it means that you'd like to use the \code{"gaussian"} approach
 when conditioning on \code{i} features.
+
+For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
+from the leaf node (see an exception related to the \code{sample} argument).
+For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in equations (14-15) of
+Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+\code{w_threshold} argument.
 }
 \examples{
 if (requireNamespace("MASS", quietly = TRUE)) {
@@ -240,6 +255,10 @@ if (requireNamespace("MASS", quietly = TRUE)) {
   )
   print(explain_groups$dt)
 }
+}
+\references{
+Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
 Camilla Lingjaerde, Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier
