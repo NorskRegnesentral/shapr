@@ -51,6 +51,8 @@ for (i in 1:100){
 colMeans(rbindlist(aa,idcol = "id"))[-1]
 # Result with shapr pre august 2021
 # (https://github.com/NorskRegnesentral/shapr/commit/be0d8820d03a40ce2a6b97119951e9e53f565bf3 and earlier)
+#none        crim          zn       indus        chas         nox          rm
+#22.44599960  0.82097007  0.25774210 -0.11606248 -1.30120629 -0.05590187  1.23677919
 
 # Result with shapr post august 2021
 #none       crim         zn      indus       chas        nox         rm
@@ -64,7 +66,8 @@ explanation_full <- explain(
   prediction_zero = p, seed=111+i
 )
 explanation_full$dt
-# Using full data set into Monte Carlo integration (all give the same result, much closer to new indep version)
+# Using full data set into Monte Carlo integration regardless of version
+# (all give the same result, much closer to new indep version)
 #none      crim        zn      indus       chas        nox        rm
 #1: 22.446 0.5669853 0.2103577 -0.3720835 -0.2213791 -0.3109162 0.9693563
 #2: 22.446 0.5669850 0.2103577 -0.3720835 -0.2213790 -0.3109161 0.9693564
