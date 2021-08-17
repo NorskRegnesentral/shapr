@@ -167,15 +167,25 @@ the total number of unique features, respectively. Note that <code>m = ncol(x_tr
     </tr>
     <tr>
       <th>w_threshold</th>
-      <td><p>Numeric vector of length 1, where <code>w_threshold &gt; 0</code> and
-<code>w_threshold &lt;= 1</code>. If <code>w_threshold = .8</code> we will choose the <code>K</code> samples with
-the largest weight so that the sum of the weights accounts for 80% of the total weight.</p></td>
+      <td><p>Numeric vector of length 1, with <code>0 &lt; w_threshold &lt;= 1</code> representing the minimum proportion
+of the total empirical weight that data samples should use. If e.g. <code>w_threshold = .8</code> we will choose the
+<code>K</code> samples with the largest weight so that the sum of the weights accounts for 80% of the total weight.
+<code>w_threshold</code> is the \(\eta\) parameter in equation (15) of Aas et al (2021).</p></td>
+    </tr>
+    <tr>
+      <th>n_samples</th>
+      <td><p>Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation. See also details.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>data.table</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Aas, K., Jullum, M., &amp; Løland, A. (2021). Explaining individual predictions when features are dependent:
+  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Nikolai Sellereite</p>

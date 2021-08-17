@@ -137,26 +137,18 @@
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for empirical</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, n_samples <span class='op'>=</span> <span class='fl'>1000</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for gaussian</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, n_samples <span class='op'>=</span> <span class='fl'>1000</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for copula</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span>
-  <span class='va'>x</span>,
-  x_test_gaussian <span class='op'>=</span> <span class='fl'>1</span>,
-  seed <span class='op'>=</span> <span class='fl'>1</span>,
-  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
-  index_features <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>...</span>
-<span class='op'>)</span>
+<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, x_test_gaussian <span class='op'>=</span> <span class='fl'>1</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for ctree</span>
 <span class='fu'>prepare_data</span><span class='op'>(</span>
   <span class='va'>x</span>,
   seed <span class='op'>=</span> <span class='fl'>1</span>,
-  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
   index_features <span class='op'>=</span> <span class='cn'>NULL</span>,
   mc_cores <span class='op'>=</span> <span class='fl'>1</span>,
   mc_cores_create_ctree <span class='op'>=</span> <span class='va'>mc_cores</span>,
@@ -178,11 +170,6 @@
     <tr>
       <th>seed</th>
       <td><p>Positive integer. If <code>NULL</code> the seed will be inherited from the calling environment.</p></td>
-    </tr>
-    <tr>
-      <th>n_samples</th>
-      <td><p>Integer. The number of obs to sample from the leaf if <code>sample</code> = TRUE or if <code>sample</code>
-= FALSE but <code>n_samples</code> is less than the number of obs in the leaf.</p></td>
     </tr>
     <tr>
       <th>index_features</th>

@@ -134,7 +134,7 @@
     <p>Explain the output of machine learning models with more accurately estimated Shapley values</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, <span class='va'>...</span><span class='op'>)</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, n_samples <span class='op'>=</span> <span class='fl'>1000</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for empirical</span>
 <span class='fu'>explain</span><span class='op'>(</span>
@@ -142,12 +142,13 @@
   <span class='va'>explainer</span>,
   <span class='va'>approach</span>,
   <span class='va'>prediction_zero</span>,
+  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
+  w_threshold <span class='op'>=</span> <span class='fl'>0.95</span>,
   type <span class='op'>=</span> <span class='st'>"fixed_sigma"</span>,
   fixed_sigma_vec <span class='op'>=</span> <span class='fl'>0.1</span>,
   n_samples_aicc <span class='op'>=</span> <span class='fl'>1000</span>,
   eval_max_aicc <span class='op'>=</span> <span class='fl'>20</span>,
   start_aicc <span class='op'>=</span> <span class='fl'>0.1</span>,
-  w_threshold <span class='op'>=</span> <span class='fl'>0.95</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
 
@@ -157,13 +158,14 @@
   <span class='va'>explainer</span>,
   <span class='va'>approach</span>,
   <span class='va'>prediction_zero</span>,
+  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
   mu <span class='op'>=</span> <span class='cn'>NULL</span>,
   cov_mat <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
 
 <span class='co'># S3 method for copula</span>
-<span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, n_samples <span class='op'>=</span> <span class='fl'>1000</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for ctree</span>
 <span class='fu'>explain</span><span class='op'>(</span>
@@ -171,6 +173,7 @@
   <span class='va'>explainer</span>,
   <span class='va'>approach</span>,
   <span class='va'>prediction_zero</span>,
+  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
   mincriterion <span class='op'>=</span> <span class='fl'>0.95</span>,
   minsplit <span class='op'>=</span> <span class='fl'>20</span>,
   minbucket <span class='op'>=</span> <span class='fl'>7</span>,
@@ -184,13 +187,14 @@
   <span class='va'>explainer</span>,
   <span class='va'>approach</span>,
   <span class='va'>prediction_zero</span>,
+  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
   mu <span class='op'>=</span> <span class='cn'>NULL</span>,
   cov_mat <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
 
 <span class='co'># S3 method for ctree_comb_mincrit</span>
-<span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, <span class='va'>mincriterion</span>, <span class='va'>...</span><span class='op'>)</span></code></pre></div>
+<span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, <span class='va'>n_samples</span>, <span class='va'>mincriterion</span>, <span class='va'>...</span><span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -218,8 +222,20 @@ information.</p></td>
 the response.</p></td>
     </tr>
     <tr>
+      <th>n_samples</th>
+      <td><p>Positive integer. Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation. See also details.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>Additional arguments passed to <code><a href='prepare_data.html'>prepare_data</a></code></p></td>
+    </tr>
+    <tr>
+      <th>w_threshold</th>
+      <td><p>Numeric vector of length 1, with <code>0 &lt; w_threshold &lt;= 1</code> representing the minimum proportion
+of the total empirical weight that data samples should use. If e.g. <code>w_threshold = .8</code> we will choose the
+<code>K</code> samples with the largest weight so that the sum of the weights accounts for 80% of the total weight.
+<code>w_threshold</code> is the \(\eta\) parameter in equation (15) of Aas et al (2021).</p></td>
     </tr>
     <tr>
       <th>type</th>
@@ -249,10 +265,6 @@ optimizing the AICc. Note that this argument is only applicable when
       <td><p>Numeric. Start value of <code>sigma</code> when optimizing the AICc. Note that this argument
 is only applicable when <code>approach = "empirical"</code>, and <code>type</code> is either equal to
 <code>"AICc_each_k"</code> or <code>"AICc_full"</code></p></td>
-    </tr>
-    <tr>
-      <th>w_threshold</th>
-      <td><p>Positive integer between 0 and 1.</p></td>
     </tr>
     <tr>
       <th>mu</th>
@@ -324,8 +336,8 @@ such as the mean of the predictions in the training data are also reasonable.</p
 
     <p>The most important thing to notice is that <code>shapr</code> has implemented four different
 approaches for estimating the conditional distributions of the data, namely <code>"empirical"</code>,
-<code>"gaussian"</code>, <code>"copula"</code> and <code>"ctree"</code>.</p>
-<p>In addition, the user also has the option of combining the four approaches.
+<code>"gaussian"</code>, <code>"copula"</code> and <code>"ctree"</code>.
+In addition, the user also has the option of combining the four approaches.
 E.g. if you're in a situation where you have trained a model the consists of 10 features,
 and you'd like to use the <code>"gaussian"</code> approach when you condition on a single feature,
 the <code>"empirical"</code> approach if you condition on 2-5 features, and <code>"copula"</code> version
@@ -333,6 +345,15 @@ if you condition on more than 5 features this can be done by simply passing
 <code>approach = c("gaussian", rep("empirical", 4), rep("copula", 5))</code>. If
 <code>"approach[i]" = "gaussian"</code> it means that you'd like to use the <code>"gaussian"</code> approach
 when conditioning on <code>i</code> features.</p>
+<p>For <code>approach="ctree"</code>, <code>n_samples</code> corresponds to the number of samples
+from the leaf node (see an exception related to the <code>sample</code> argument).
+For <code>approach="empirical"</code>, <code>n_samples</code> is  the \(K\) parameter in equations (14-15) of
+Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+<code>w_threshold</code> argument.</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Aas, K., Jullum, M., &amp; Løland, A. (2021). Explaining individual predictions when features are dependent:
+  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Camilla Lingjaerde, Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier</p>
@@ -406,19 +427,39 @@ when conditioning on <code>i</code> features.</p>
 <span class='r-in'>  <span class='op'>)</span></span>
 <span class='r-in'>  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>explain_groups</span><span class='op'>$</span><span class='va'>dt</span><span class='op'>)</span></span>
 <span class='r-in'><span class='op'>}</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Success with message:</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Success with message:</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Success with message:</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Success with message:</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Success with message:</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Success with message:</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Success with message:</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Success with message:</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>        none    lstat        rm       dis       indus</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: 22.55229 4.953864  4.244888 0.8827999 -0.78929796</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 2: 22.55229 4.325994  2.696331 1.0856817 -0.42178545</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 3: 22.55229 3.823326 -1.892161 1.1417940  0.08801935</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: 22.55229 4.936125  4.227149 0.9360181 -0.80703737</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2: 22.55229 4.319264  2.689601 1.1058710 -0.42851521</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3: 22.55229 3.821546 -1.891280 1.1444728  0.08623941</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Success with message:</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Success with message:</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>        none        A         B</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> 1: 22.55229 8.718123 0.5741309</span>

@@ -232,6 +232,8 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 
 <span class="co"># Prepare the data for explanation</span>
 <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">x_train</span>, <span class="va">model</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Success with message:</span>
 <span class="co">#&gt; The specified model provides feature classes that are NA. The classes of data are taken as the truth.</span>
 
 <span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span>
@@ -538,6 +540,8 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <span class="co"># Prepare the data for explanation</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
 <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">xy_train</span>, <span class="va">model</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Success with message:</span>
 <span class="co">#&gt; The columns(s) medv is not used by the model and thus removed from the data.</span>
 <span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">xy_train</span><span class="op">[</span>,<span class="va">y_var</span><span class="op">]</span><span class="op">)</span>
 <span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span><span class="va">x_test</span>, <span class="va">explainer</span>, approach <span class="op">=</span> <span class="st">"empirical"</span>, prediction_zero <span class="op">=</span> <span class="va">p0</span><span class="op">)</span>
@@ -566,6 +570,8 @@ E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\
 <span class="co">#&gt; See the 'Advanced usage' section of the vignette:</span>
 <span class="co">#&gt; vignette('understanding_shapr', package = 'shapr')</span>
 <span class="co">#&gt; for more information.</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Success with message:</span>
 <span class="co">#&gt; The specified model provides feature labels that are NA. The labels of data are taken as the truth.</span>
 <span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">xy_train</span><span class="op">[</span>,<span class="va">y_var</span><span class="op">]</span><span class="op">)</span>
 <span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span><span class="va">x_test</span>, <span class="va">explainer</span>, approach <span class="op">=</span> <span class="st">"empirical"</span>, prediction_zero <span class="op">=</span> <span class="va">p0</span><span class="op">)</span>
