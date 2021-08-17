@@ -28,7 +28,7 @@
 #' the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
 #' if you condition on more than 5 features this can be done by simply passing
 #' \code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
-#' \code{"approach[i]" = "gaussian"} it means that you'd like to use the \code{"gaussian"} approach
+#' \code{"approach[i]" = "gaussian"} means that you'd like to use the \code{"gaussian"} approach
 #' when conditioning on \code{i} features.
 #'
 #' For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
