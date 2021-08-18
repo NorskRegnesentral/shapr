@@ -230,6 +230,7 @@ shapr <- function(x,
   explainer$feature_list <- updated_feature_list
   explainer$group <- group
   explainer$is_groupwise <- is_groupwise
+  explainer$n_combinations <- nrow(feature_matrix)
 
   attr(explainer, "class") <- c("explainer", "list")
 

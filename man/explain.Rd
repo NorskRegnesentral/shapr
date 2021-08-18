@@ -2,6 +2,7 @@
 % Please edit documentation in R/explanation.R
 \name{explain}
 \alias{explain}
+\alias{explain.independence}
 \alias{explain.empirical}
 \alias{explain.gaussian}
 \alias{explain.copula}
@@ -11,6 +12,8 @@
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
+
+\method{explain}{independence}(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
 
 \method{explain}{empirical}(
   x,
