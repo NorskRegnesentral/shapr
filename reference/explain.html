@@ -338,12 +338,12 @@ such as the mean of the predictions in the training data are also reasonable.</p
 approaches for estimating the conditional distributions of the data, namely <code>"empirical"</code>,
 <code>"gaussian"</code>, <code>"copula"</code> and <code>"ctree"</code>.
 In addition, the user also has the option of combining the four approaches.
-E.g. if you're in a situation where you have trained a model the consists of 10 features,
+E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the <code>"gaussian"</code> approach when you condition on a single feature,
 the <code>"empirical"</code> approach if you condition on 2-5 features, and <code>"copula"</code> version
 if you condition on more than 5 features this can be done by simply passing
 <code>approach = c("gaussian", rep("empirical", 4), rep("copula", 5))</code>. If
-<code>"approach[i]" = "gaussian"</code> it means that you'd like to use the <code>"gaussian"</code> approach
+<code>"approach[i]" = "gaussian"</code> means that you'd like to use the <code>"gaussian"</code> approach
 when conditioning on <code>i</code> features.</p>
 <p>For <code>approach="ctree"</code>, <code>n_samples</code> corresponds to the number of samples
 from the leaf node (see an exception related to the <code>sample</code> argument).
