@@ -140,7 +140,7 @@ prepare_data.empirical <- function(x, seed = 1, index_features = NULL, ...) {
     h_optim_vec[is.na(h_optim_vec)] <- 1
 
     if (kernel_metric == "independence") {
-      D <- D[sample.int(nrow(D)), ] + runif(n = nrow(D) * ncol(D))
+      D <- D[sample.int(nrow(D)), ] + stats::runif(n = nrow(D) * ncol(D))
       h_optim_vec <- mean(D) * 1000
     }
 
