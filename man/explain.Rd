@@ -172,12 +172,12 @@ The most important thing to notice is that \code{shapr} has implemented four dif
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
 \code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
 In addition, the user also has the option of combining the four approaches.
-E.g. if you're in a situation where you have trained a model the consists of 10 features,
+E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
 the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
 if you condition on more than 5 features this can be done by simply passing
 \code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
-\code{"approach[i]" = "gaussian"} it means that you'd like to use the \code{"gaussian"} approach
+\code{"approach[i]" = "gaussian"} means that you'd like to use the \code{"gaussian"} approach
 when conditioning on \code{i} features.
 
 For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
