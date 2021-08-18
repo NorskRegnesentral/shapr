@@ -99,12 +99,12 @@ prepare_data.independence <- function(x, seed = 1, index_features = NULL, ...) {
   }
 
   S <- x$S[index_features, ]
-  x_train = as.matrix(x$x_train)
+  x_train <- as.matrix(x$x_train)
   n_train <- nrow(x_train)
-  n_samples = min(x$n_samples,n_train)
+  n_samples <- min(x$n_samples, n_train)
 
   index_s <- rep(seq(x$n_combinations), each = n_samples)
-  w <- 1/x$n_samples
+  w <- 1 / x$n_samples
 
   n_col <- nrow(x$x_test)
 
@@ -112,10 +112,10 @@ prepare_data.independence <- function(x, seed = 1, index_features = NULL, ...) {
 
   dt_l <- list()
   for (i in seq(n_col)) {
-    x_test = x$x_test[i, , drop = FALSE]
+    x_test <- x$x_test[i, , drop = FALSE]
 
     #### NEED TO SAMPLE index_xtrain her (vector of size n_samples*)
-    index_xtrain <- c(replicate(x$n_combinations,sample(x = seq(n_train),size = n_samples,replace = F)))
+    index_xtrain <- c(replicate(x$n_combinations, sample(x = seq(n_train), size = n_samples, replace = F)))
 
     # Generate data used for prediction
     dt_p <- observation_impute_cpp(
