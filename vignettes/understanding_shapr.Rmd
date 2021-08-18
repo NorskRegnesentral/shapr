@@ -682,7 +682,7 @@ distances to *all* training observations should be used (i.e. setting `approach 
 well by increasing $\sigma$. For completeness of the `shapr`, we have also implemented 
 a version of the original method, which samples training observations independently with respect to 
 their distances to test observations (i.e. without the large-$\sigma$ approximation). This method is 
-available by using `approach = "empirical"` and `type = "independence"` in `explain`. 
+available by using `approach = "independence"` in `explain`. 
 
 We have compared the results using these two variants with the original implementation of 
 @lundberg2017unified, available through the Python library [`shap`](https://github.com/slundberg/shap).
