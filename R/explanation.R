@@ -314,7 +314,7 @@ explain.causal <- function(x, explainer, approach, prediction_zero, n_samples = 
                            mu = NULL, cov_mat = NULL, confounding = FALSE, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
