@@ -9,7 +9,9 @@ feature_combinations(
   exact = TRUE,
   n_combinations = 200,
   weight_zero_m = 10^6,
-  group_num = NULL
+  group_num = NULL,
+  asymmetric = FALSE,
+  causal_ordering = NULL
 )
 }
 \arguments{
@@ -27,6 +29,15 @@ weights when doing numerical operations.}
 
 \item{group_num}{List. Contains vector of integers indicating the feature numbers for the
 different groups.}
+
+\item{asymmetric}{Logical. The flag specifies whether we want to compute
+asymmetric Shapley values. If so, a causal ordering also needs to be specified
+and we only consider variable permutations with the given causal ordering.}
+
+\item{causal_ordering}{List. Contains vectors specifying (partial) causal ordering.
+Each element in the list is a component in the order, which can contain one
+or more variable indices in a vector. For example, in list(1, c(2, 3)),
+2 > 1 and 3 > 1, but 2 and 3 are not comparable.}
 }
 \value{
 A data.table that contains the following columns:

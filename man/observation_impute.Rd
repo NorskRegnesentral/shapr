@@ -42,6 +42,14 @@ Generate permutations of training data using test observations
 \references{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+
+Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
+incorporating causal knowledge into model-agnostic explainability.
+Advances in Neural Information Processing Systems, 33.
+
+Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal Shapley Values:
+Exploiting Causal Knowledge to Explain Individual Predictions of Complex Models.
+Advances in Neural Information Processing Systems, 33.
 }
 \author{
 Nikolai Sellereite

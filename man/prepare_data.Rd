@@ -4,6 +4,7 @@
 \alias{prepare_data}
 \alias{prepare_data.empirical}
 \alias{prepare_data.gaussian}
+\alias{prepare_data.causal}
 \alias{prepare_data.copula}
 \alias{prepare_data.ctree}
 \title{Generate data used for predictions}
@@ -13,6 +14,8 @@ prepare_data(x, ...)
 \method{prepare_data}{empirical}(x, seed = 1, index_features = NULL, ...)
 
 \method{prepare_data}{gaussian}(x, seed = 1, index_features = NULL, ...)
+
+\method{prepare_data}{causal}(x, seed = 1, index_features = NULL, ...)
 
 \method{prepare_data}{copula}(x, x_test_gaussian = 1, seed = 1, index_features = NULL, ...)
 
@@ -52,5 +55,8 @@ Defaults to \code{mc_cores}.}
 }
 \description{
 Generate data used for predictions
+}
+\author{
+Tom Heskes, Ioan Gabriel Bucur
 }
 \keyword{internal}
