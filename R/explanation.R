@@ -297,6 +297,16 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
 #' Otherwise, the logical vector must contain a value for each component in the ordering.
 #'
 #' @author Tom Heskes, Ioan Gabriel Bucur
+#'
+#' @references
+#' Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
+#' incorporating causal knowledge into model-agnostic explainability.
+#' Advances in Neural Information Processing Systems, 33.
+#'
+#' Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal Shapley Values:
+#' Exploiting Causal Knowledge to Explain Individual Predictions of Complex Models.
+#' Advances in Neural Information Processing Systems, 33.
+#'
 #' @rdname explain
 #'
 #' @export
