@@ -275,8 +275,8 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
   }
 
   # If no causal ordering is specified, put all variables in a single component.
-  if (is.null(x$causal_ordering)) {
-    causal_ordering <- list(1:ncol(x$x_test))
+  if (is.null(explainer$causal_ordering)) {
+    causal_ordering <- list(1:ncol(explainer$x_test))
   }
 
   # Generate data
@@ -329,8 +329,8 @@ explain.causal <- function(x, explainer, approach, prediction_zero, n_samples = 
   }
 
   # If no causal ordering is specified, put all variables in a single component.
-  if (is.null(x$causal_ordering)) {
-    causal_ordering <- list(1:ncol(x$x_test))
+  if (is.null(explainer$causal_ordering)) {
+    causal_ordering <- list(1:ncol(explainer$x_test))
   }
 
   explainer$confounding <- confounding
