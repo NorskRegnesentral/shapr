@@ -180,6 +180,11 @@ prepare_data.gaussian <- function(x, seed = 1, index_features = NULL, ...) {
     features <- x$X$features[index_features]
   }
 
+  # For asymmetric Shapley values, we filter out the features inconsistent with the causal ordering.
+  if (x$asymmetric) {
+    features <- features[sapply(features, respects_order, causal_ordering = x$causal_ordering)]
+  }
+
   for (i in seq(n_xtest)) {
     l <- lapply(
       X = features,
@@ -198,6 +203,59 @@ prepare_data.gaussian <- function(x, seed = 1, index_features = NULL, ...) {
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  return(dt)
+}
+
+
+#' @rdname prepare_data
+#' @export
+#'
+#' @author Tom Heskes, Ioan Gabriel Bucur
+prepare_data.causal <- function(x, seed = 1, index_features = NULL, ...) {
+
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+
+  n_xtest <- nrow(x$x_test)
+  dt_l <- list()
+  if (!is.null(seed)) set.seed(seed)
+  if (is.null(index_features)) {
+    features <- x$X$features
+  } else {
+    features <- x$X$features[index_features]
+  }
+
+  # By default, no causal ordering is specified, meaning all variables are in one component.
+  if (is.null(x$causal_ordering)) {
+    causal_ordering <- list(1:ncol(x$x_test))
+  }
+
+  # For asymmetric Shapley values, we filter out the features inconsistent with the causal ordering.
+  if (x$asymmetric) {
+    features <- features[sapply(features, respects_order, causal_ordering = x$causal_ordering)]
+  }
+
+  for (i in seq(n_xtest)) {
+
+    l <- lapply(
+      X = features,
+      FUN = sample_causal,
+      n_samples = x$n_samples,
+      mu = x$mu,
+      cov_mat = x$cov_mat,
+      m = ncol(x$x_test),
+      x_test = x$x_test[i, , drop = FALSE],
+      causal_ordering = x$causal_ordering,
+      confounding = x$confounding
+    )
+
+    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
+    dt_l[[i]][, w := 1 / x$n_samples]
+    dt_l[[i]][, id := i]
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+  }
+
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
   return(dt)
 }
 

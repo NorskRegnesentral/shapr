@@ -76,6 +76,15 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #' the number of groups. The list element contains character vectors with the features included
 #' in each of the different groups.
 #'
+#' @param asymmetric Logical. The flag specifies whether we want to compute
+#' asymmetric Shapley values. If so, a causal ordering also needs to be specified
+#' and we only consider variable permutations with the given causal ordering.
+#'
+#' @param causal_ordering List. Contains vectors specifying (partial) causal ordering.
+#' Each element in the list is a component in the order, which can contain one
+#' or more variable indices in a vector. For example, in list(1, c(2, 3)),
+#' 2 > 1 and 3 > 1, but 2 and 3 are not comparable.
+#'
 #' @return Named list that contains the following items:
 #' \describe{
 #'   \item{exact}{Boolean. Equals \code{TRUE} if \code{n_combinations = NULL} or
@@ -138,10 +147,8 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #'   print(nrow(explainer_group$X))
 #'   # 4 (which equals 2^(#groups))
 #' }
-shapr <- function(x,
-                  model,
-                  n_combinations = NULL,
-                  group = NULL) {
+shapr <- function(x, model, n_combinations = NULL, group = NULL,
+                  asymmetric = FALSE, causal_ordering = NULL) {
 
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
@@ -152,7 +159,6 @@ shapr <- function(x,
   explainer <- as.list(environment())
   explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
 
-
   # Check features of training data against model specification
   feature_list_model <- get_model_specs(model)
 
@@ -161,13 +167,10 @@ shapr <- function(x,
     feature_list = feature_list_model
   )
 
-
-
   x_train <- processed_list$x_dt
   updated_feature_list <- processed_list$updated_feature_list
 
   explainer$n_features <- ncol(x_train)
-
 
   # Processes groups if specified. Otherwise do nothing
   is_groupwise <- !is.null(group)
@@ -201,7 +204,9 @@ shapr <- function(x,
     exact = explainer$exact,
     n_combinations = n_combinations,
     weight_zero_m = 10^6,
-    group_num = group_num
+    group_num = group_num,
+    asymmetric = asymmetric,
+    causal_ordering = causal_ordering
   )
 
   # Get weighted matrix ----------------
@@ -230,6 +235,8 @@ shapr <- function(x,
   explainer$feature_list <- updated_feature_list
   explainer$group <- group
   explainer$is_groupwise <- is_groupwise
+  explainer$asymmetric <- asymmetric
+  explainer$causal_ordering <- causal_ordering
 
   attr(explainer, "class") <- c("explainer", "list")
 

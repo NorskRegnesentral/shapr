@@ -156,12 +156,12 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ..
   if (!(is.vector(approach) &&
     is.atomic(approach) &&
     (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
-    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
+    all(is.element(approach, c("empirical", "gaussian", "causal", "copula", "ctree"))))
   ) {
     stop(
       paste(
         "It seems that you passed a non-valid value for approach.",
-        "It should be either 'empirical', 'gaussian', 'copula', 'ctree' or",
+        "It should be either 'empirical', 'gaussian', 'causal', 'copula', 'ctree' or",
         "a vector of length=ncol(x) with only the above characters."
       )
     )
@@ -238,23 +238,21 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 
 #' @param mu Numeric vector. (Optional) Containing the mean of the data generating distribution.
 #' If \code{NULL} the expected values are estimated from the data. Note that this is only used
-#' when \code{approach = "gaussian"}.
+#' when \code{approach = "gaussian"}  or \code{approach = "causal"}.
 #'
 #' @param cov_mat Numeric matrix. (Optional) Containing the covariance matrix of the data
 #' generating distribution. \code{NULL} means it is estimated from the data if needed
-#' (in the Gaussian approach).
+#' (in the Gaussian or causal approach).
 #'
 #' @rdname explain
 #'
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, mu = NULL, cov_mat = NULL, ...) {
 
-
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
   explainer$n_samples <- n_samples
-
 
   # If mu is not provided directly, use mean of training data
   if (is.null(mu)) {
@@ -276,6 +274,11 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
     explainer$cov_mat <- cov_mat
   }
 
+  # If no causal ordering is specified, put all variables in a single component.
+  if (is.null(x$causal_ordering)) {
+    causal_ordering <- list(1:ncol(x$x_test))
+  }
+
   # Generate data
   dt <- prepare_data(explainer, ...)
   if (!is.null(explainer$return)) {
@@ -287,6 +290,61 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
 
   return(r)
 }
+
+
+#' @param confounding Logical vector that specifies whether we assume confounding or not.
+#' If a single value is specified, then the assumption is set globally for all components.
+#' Otherwise, the logical vector must contain a value for each component in the ordering.
+#'
+#' @author Tom Heskes, Ioan Gabriel Bucur
+#' @rdname explain
+#'
+#' @export
+explain.causal <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
+                           mu = NULL, cov_mat = NULL, confounding = FALSE, ...) {
+
+  # Add arguments to explainer object
+  explainer$x_test <- explainer_x_test(x, explainer$feature_labels)
+  explainer$approach <- approach
+  explainer$n_samples <- n_samples
+
+  # If mu is not provided directly, use mean of training data
+  if (is.null(mu)) {
+    explainer$mu <- unname(colMeans(explainer$x_train))
+  } else {
+    explainer$mu <- mu
+  }
+
+  # If cov_mat is not provided directly, use sample covariance of training data
+  if (is.null(cov_mat)) {
+    cov_mat <- stats::cov(explainer$x_train)
+  }
+
+  # Make sure that covariance matrix is positive-definite
+  eigen_values <- eigen(cov_mat)$values
+  if (any(eigen_values <= 1e-06)) {
+    explainer$cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
+  } else {
+    explainer$cov_mat <- cov_mat
+  }
+
+  # If no causal ordering is specified, put all variables in a single component.
+  if (is.null(x$causal_ordering)) {
+    causal_ordering <- list(1:ncol(x$x_test))
+  }
+
+  explainer$confounding <- confounding
+
+  # Generate data
+  dt <- prepare_data(explainer, ...)
+  if (!is.null(explainer$return)) return(dt)
+
+  # Predict
+  r <- prediction(dt, prediction_zero, explainer)
+
+  return(r)
+}
+
 
 #' @rdname explain
 #' @export
@@ -414,7 +472,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
 #' \code{length(n_features) <= 2^m}, where \code{m} equals the number
 #' of features.
 #' @param approach Character vector of length \code{m}. All elements should be
-#' either \code{"empirical"}, \code{"gaussian"} or \code{"copula"}.
+#' either \code{"empirical"}, \code{"causal"}, \code{"gaussian"} or \code{"copula"}.
 #'
 #' @keywords internal
 #'
@@ -430,6 +488,12 @@ get_list_approaches <- function(n_features, approach) {
   if (length(x) > 0) {
     if (approach[1] == "empirical") x <- c(0, x)
     l$empirical <- which(n_features %in% x)
+  }
+
+  x <- which(approach == "causal")
+  if (length(x) > 0) {
+    if (approach[1] == "causal") x <- c(0, x)
+    l$causal <- which(n_features %in% x)
   }
 
   x <- which(approach == "gaussian")
