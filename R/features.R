@@ -131,10 +131,6 @@ feature_exact <- function(m, weight_zero_m = 10^6, asymmetric = FALSE, causal_or
 
   if (asymmetric) {
 
-    # If no causal ordering is specified, we put all variables in one component.
-    if (is.null(causal_ordering)) {
-      causal_ordering <- list(1:m)
-    }
     # Filter out the features that do not agree with the order
     dt <- dt[sapply(dt$features, respects_order, causal_ordering), ]
     dt[, N := .(count = .N), by = n_features]

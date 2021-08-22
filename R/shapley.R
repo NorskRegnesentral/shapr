@@ -227,6 +227,12 @@ shapr <- function(x, model, n_combinations = NULL, group = NULL,
     explainer$exact <- TRUE
   }
 
+  # If no causal ordering is specified, put all variables in a single component,
+  # in the order in which they are stored in the data.frame / matrix.
+  if (is.null(causal_ordering)) {
+    causal_ordering <- list(1:length(updated_feature_list$labels))
+  }
+
   explainer$S <- feature_matrix
   explainer$W <- weighted_mat
   explainer$X <- dt_combinations

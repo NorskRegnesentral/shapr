@@ -224,14 +224,9 @@ prepare_data.causal <- function(x, seed = 1, index_features = NULL, ...) {
     features <- x$X$features[index_features]
   }
 
-  # If no causal ordering is specified, we put all variables in one component.
-  if (is.null(x$causal_ordering)) {
-    causal_ordering <- list(1:ncol(x$x_test))
-  }
-
   # For asymmetric Shapley values, we filter out the features inconsistent with the causal ordering.
   if (x$asymmetric) {
-    features <- features[sapply(features, respects_order, causal_ordering)]
+    features <- features[sapply(features, respects_order, x$causal_ordering)]
   }
 
   for (i in seq(n_xtest)) {
@@ -244,7 +239,7 @@ prepare_data.causal <- function(x, seed = 1, index_features = NULL, ...) {
       cov_mat = x$cov_mat,
       m = ncol(x$x_test),
       x_test = x$x_test[i, , drop = FALSE],
-      causal_ordering = causal_ordering,
+      causal_ordering = x$causal_ordering,
       confounding = x$confounding
     )
 

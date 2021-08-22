@@ -274,11 +274,6 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
     explainer$cov_mat <- cov_mat
   }
 
-  # If no causal ordering is specified, put all variables in a single component.
-  if (is.null(explainer$causal_ordering)) {
-    causal_ordering <- list(1:ncol(explainer$x_test))
-  }
-
   # Generate data
   dt <- prepare_data(explainer, ...)
   if (!is.null(explainer$return)) {
@@ -336,11 +331,6 @@ explain.causal <- function(x, explainer, approach, prediction_zero, n_samples = 
     explainer$cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
   } else {
     explainer$cov_mat <- cov_mat
-  }
-
-  # If no causal ordering is specified, put all variables in a single component.
-  if (is.null(explainer$causal_ordering)) {
-    causal_ordering <- list(1:ncol(explainer$x_test))
   }
 
   explainer$confounding <- confounding
