@@ -172,7 +172,9 @@ prepare_data.empirical <- function(x, seed = 1, index_features = NULL, ...) {
 
   if (kernel_metric == "independence") {
     x$w_threshold <- 1
-    paste0("w_threshold force set to 1 for kernel_metric = 'independence'")
+    message(
+      "\nSuccess with message:\nw_threshold force set to 1 for type = 'independence'"
+      )
   } else if (kernel_metric == "gaussian") {
     if (x$type == "fixed_sigma") {
       h_optim_mat[, ] <- x$fixed_sigma_vec

@@ -167,6 +167,12 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ..
     )
   }
 
+  if(approach == "empirical" & type=="independence"){
+    warning(paste0(
+      "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
+      "Please use approach = 'independence' instead in the call to explain()."
+    ))
+  }
 
   this_class <- ""
   if (length(approach) > 1) {
