@@ -167,13 +167,6 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ..
     )
   }
 
-  if(approach == "empirical" & type=="independence"){
-    warning(paste0(
-      "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
-      "Please use approach = 'independence' instead in the call to explain()."
-    ))
-  }
-
   this_class <- ""
   if (length(approach) > 1) {
     class(this_class) <- "combined"
@@ -252,6 +245,13 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   explainer$start_aicc <- start_aicc
   explainer$w_threshold <- w_threshold
   explainer$n_samples <- n_samples
+
+  if(type=="independence"){
+    warning(paste0(
+      "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
+      "Please use approach = 'independence' instead in the call to explain()."
+    ))
+  }
 
   # Generate data
   dt <- prepare_data(explainer, ...)
