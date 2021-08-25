@@ -45,7 +45,7 @@
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6,
-                                 group_num = NULL, asymmetric = FALSE, causal_ordering = NULL) {
+                                 group_num = NULL, asymmetric = FALSE, causal_ordering = list(1:m)) {
 
   # Force user to use a natural number for n_combinations if m > 13
   if (m > 13 & is.null(n_combinations) & is.null(group_num)) {
@@ -118,7 +118,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
 }
 
 #' @keywords internal
-feature_exact <- function(m, weight_zero_m = 10^6, asymmetric = FALSE, causal_ordering = NULL) {
+feature_exact <- function(m, weight_zero_m = 10^6, asymmetric = FALSE, causal_ordering = list(1:m)) {
 
   features <- id_combination <- n_features <- shapley_weight <- N <- NULL # due to NSE notes in R CMD check
 
