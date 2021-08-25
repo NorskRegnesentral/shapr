@@ -95,6 +95,12 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     if (exact) {
       dt <- feature_exact(m, weight_zero_m, asymmetric, causal_ordering)
     } else {
+      if (asymmetric) {
+        cat(paste0(
+          "Input asymmetric = TRUE is not supported in combination with exact = FALSE.\n",
+          "Changing to asymmetric = FALSE"
+        ))
+      }
       dt <- feature_not_exact(m, n_combinations, weight_zero_m)
       stopifnot(
         data.table::is.data.table(dt),
@@ -109,6 +115,12 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       cat(paste0(
         "Input exact = FALSE is not supported for group-wise Shapley values.\n",
         "Changing to exact = TRUE"
+      ))
+    }
+    if (asymmetric) {
+      cat(paste0(
+        "Input asymmetric = TRUE is not supported for group-wise Shapley values.\n",
+        "Changing to asymmetric = FALSE"
       ))
     }
     dt <- feature_group(group_num, weight_zero_m)
