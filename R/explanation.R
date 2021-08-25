@@ -246,7 +246,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   explainer$w_threshold <- w_threshold
   explainer$n_samples <- n_samples
 
-  if(type=="independence"){
+  if (type == "independence") {
     warning(paste0(
       "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
       "Please use approach = 'independence' instead in the call to explain()."
