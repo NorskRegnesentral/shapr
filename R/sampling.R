@@ -60,7 +60,7 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_test) {
   # Check input
   stopifnot(is.matrix(x_test))
 
-  # Handles the unconditional and full conditional separtely when predicting
+  # Handles the unconditional and full conditional separately when predicting
   cnms <- colnames(x_test)
   if (length(index_given) %in% c(0, m)) {
     return(data.table::as.data.table(x_test))
@@ -143,8 +143,10 @@ sample_causal <- function(index_given, n_samples, mu, cov_mat, m, x_test,
     stop(paste("Incomplete or incorrect partial causal_ordering specified for", m, "variables"))
   }
 
-  # not sure if this is needed/makes sense
-  #  if (length(index_given) %in% c(0, m)) return(data.table::as.data.table(x_test))
+  # Handles the unconditional and full conditional separately when predicting
+  if (length(index_given) %in% c(0, m)) {
+    return(data.table::as.data.table(x_test))
+  }
 
   dependent_ind <- setdiff(1:length(mu), index_given)
   xall <- matrix(NA, ncol = m, nrow = n_samples)

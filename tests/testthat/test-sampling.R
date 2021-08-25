@@ -100,6 +100,63 @@ test_that("test sample_gaussian", {
   }
 })
 
+test_that("test sample_causal", {
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    # Example -----------
+    m <- 10
+    n_samples <- 50
+    mu <- rep(1, m)
+    cov_mat <- cov(matrix(rnorm(n_samples * m), n_samples, m))
+    x_test <- matrix(MASS::mvrnorm(1, mu, cov_mat), nrow = 1)
+    cnms <- paste0("x", seq(m))
+    colnames(x_test) <- cnms
+    index_given <- c(4, 7)
+    causal_ordering <- list(1:4, 8:10, 5:7)
+    confounding <- c(TRUE, TRUE, FALSE)
+    r <- sample_causal(index_given, n_samples, mu, cov_mat, m, x_test, causal_ordering, confounding)
+
+    # Test output format ------------------
+    expect_true(data.table::is.data.table(r))
+    expect_equal(ncol(r), m)
+    expect_equal(nrow(r), n_samples)
+    expect_equal(colnames(r), cnms)
+
+    # Check that the given features are not resampled, but kept as is.
+    for (i in seq(m)) {
+      var_name <- cnms[i]
+
+      if (i %in% index_given) {
+        expect_equal(
+          unique(r[[var_name]]), x_test[, var_name][[1]]
+        )
+      } else {
+        expect_true(
+          length(unique(r[[var_name]])) == n_samples
+        )
+      }
+    }
+
+    # Example 2 -------------
+    # Check that conditioning upon all variables simply returns the test observation.
+    r <- sample_causal(1:m, n_samples, mu, cov_mat, m, x_test, causal_ordering, confounding)
+    expect_identical(r, data.table::as.data.table(x_test))
+
+    # Tests for errors ------------------
+    expect_error(
+      sample_causal(m + 1, n_samples, mu, cov_mat, m, x_test, causal_ordering, confounding)
+    )
+    expect_error(
+      sample_causal(m + 1, n_samples, mu, cov_mat, m, as.vector(x_test), causal_ordering, confounding)
+    )
+    expect_error(
+      sample_causal(m, n_samples, mu, cov_mat, m, x_test, unlist(causal_ordering), confounding)
+    )
+    expect_error(
+      sample_causal(m, n_samples, mu, cov_mat, m, x_test, causal_ordering, as.integer(confounding))
+    )
+  }
+})
+
 test_that("test sample_copula", {
   if (requireNamespace("MASS", quietly = TRUE)) {
     # Example 1 --------------
