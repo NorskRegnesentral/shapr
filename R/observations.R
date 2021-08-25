@@ -114,7 +114,7 @@ prepare_data.independence <- function(x, seed = 1, index_features = NULL, ...) {
   for (i in seq(n_col)) {
     x_test <- x$x_test[i, , drop = FALSE]
 
-    #### NEED TO SAMPLE index_xtrain here (vector of size n_samples*)
+    # sampling index_xtrain
     index_xtrain <- c(replicate(x$n_combinations, sample(x = seq(n_train), size = n_samples, replace = F)))
 
     # Generate data used for prediction
