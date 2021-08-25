@@ -156,7 +156,7 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ..
   if (!(is.vector(approach) &&
     is.atomic(approach) &&
     (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
-    all(is.element(approach, c("empirical", "gaussian", "causal", "copula", "ctree"))))
+    all(is.element(approach, c("empirical", "gaussian", "causal", "copula", "ctree", "independence"))))
   ) {
     stop(
       paste(
@@ -166,7 +166,6 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ..
       )
     )
   }
-
 
   this_class <- ""
   if (length(approach) > 1) {
@@ -179,6 +178,29 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ..
 
   UseMethod("explain", this_class)
 }
+
+#' @rdname explain
+#' @export
+explain.independence <- function(x, explainer, approach, prediction_zero,
+                                 n_samples = 1e3, ...) {
+
+  # Add arguments to explainer object
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$approach <- approach
+  explainer$n_samples <- n_samples
+
+  # Generate data
+  dt <- prepare_data(explainer, ...)
+  if (!is.null(explainer$return)) {
+    return(dt)
+  }
+
+  # Predict
+  r <- prediction(dt, prediction_zero, explainer)
+
+  return(r)
+}
+
 
 #' @param type Character. Should be equal to either \code{"independence"},
 #' \code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.
@@ -223,6 +245,13 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   explainer$start_aicc <- start_aicc
   explainer$w_threshold <- w_threshold
   explainer$n_samples <- n_samples
+
+  if (type == "independence") {
+    warning(paste0(
+      "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
+      "Please use approach = 'independence' instead in the call to explain()."
+    ))
+  }
 
   # Generate data
   dt <- prepare_data(explainer, ...)

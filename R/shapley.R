@@ -241,6 +241,7 @@ shapr <- function(x, model, n_combinations = NULL, group = NULL,
   explainer$feature_list <- updated_feature_list
   explainer$group <- group
   explainer$is_groupwise <- is_groupwise
+  explainer$n_combinations <- nrow(feature_matrix)
   explainer$asymmetric <- asymmetric
   explainer$causal_ordering <- causal_ordering
 

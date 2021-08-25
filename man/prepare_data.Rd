@@ -2,6 +2,7 @@
 % Please edit documentation in R/observations.R
 \name{prepare_data}
 \alias{prepare_data}
+\alias{prepare_data.independence}
 \alias{prepare_data.empirical}
 \alias{prepare_data.gaussian}
 \alias{prepare_data.causal}
@@ -10,6 +11,8 @@
 \title{Generate data used for predictions}
 \usage{
 prepare_data(x, ...)
+
+\method{prepare_data}{independence}(x, seed = 1, index_features = NULL, ...)
 
 \method{prepare_data}{empirical}(x, seed = 1, index_features = NULL, ...)
 

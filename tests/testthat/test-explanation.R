@@ -47,7 +47,7 @@ test_that("Test functions in explanation.R", {
     ex_list[[2]] <- explain(x_test, explainer, approach = "copula", prediction_zero = p0)
 
     # Ex 3: Explain predictions (empirical, independence):
-    ex_list[[3]] <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0, type = "independence")
+    ex_list[[3]] <- explain(x_test, explainer, approach = "independence", prediction_zero = p0)
 
     # Ex 4: Explain predictions (empirical, fixed sigma)
     ex_list[[4]] <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0, type = "fixed_sigma")
