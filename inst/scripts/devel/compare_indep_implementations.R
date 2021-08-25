@@ -3,7 +3,7 @@ library(shapr)
 
 data("Boston", package = "MASS")
 
-x_var <- c("crim","zn","indus","chas"   ,"nox"  ,  "rm" ,  "age"  ,  "dis" ,"rad" ,"tax" ,"ptratio",  "black", "lstat")[1:6]
+x_var <- c("crim", "zn", "indus","chas", "nox", "rm", "age", "dis", "rad", "tax", "ptratio", "black", "lstat")[1:6]
 y_var <- "medv"
 
 x_train <- as.matrix(Boston[-1:-6, x_var])
