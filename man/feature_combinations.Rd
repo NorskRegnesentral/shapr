@@ -11,7 +11,7 @@ feature_combinations(
   weight_zero_m = 10^6,
   group_num = NULL,
   asymmetric = FALSE,
-  causal_ordering = NULL
+  causal_ordering = list(1:m)
 )
 }
 \arguments{
