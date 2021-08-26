@@ -49,8 +49,10 @@ colnames(x_test) <- cnms
 index_given <- c(4, 7)
 causal_ordering <- list(c(1:3), c(4:6), c(7:10))
 confounding <- c(TRUE, FALSE, TRUE)
-r <- shapr:::sample_causal(index_given, n_samples, mu, cov_mat, m, x_test, causal_ordering, confounding)
-
+r <- shapr:::sample_causal(
+  index_given, n_samples, mu, cov_mat, m, x_test,
+  causal_ordering, confounding
+)
 }
 \author{
 Tom Heskes, Ioan Gabriel Bucur
