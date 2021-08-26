@@ -77,9 +77,9 @@ predictions ought to be explained (test data).}
 See \code{\link{shapr}}.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
-\code{n_features} equals the total number of features in the model. All elements should
-either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
-information.}
+\code{n_features} equals the total number of features in the model. All elements should,
+either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, or \code{"independence"}.
+See details for more information.}
 
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
@@ -173,7 +173,7 @@ Explain the output of machine learning models with more accurately estimated Sha
 \details{
 The most important thing to notice is that \code{shapr} has implemented four different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
+\code{"gaussian"}, \code{"copula"}, \code{"ctree"} and \code{"independence"}.
 In addition, the user also has the option of combining the four approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
