@@ -104,6 +104,10 @@ the response.}
 \item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
+\item{n_batches}{Positive integer. Specifies how many iterations that should be used to calculate the
+contribution function for each test observation. The default value is 1. Setting it to a higher number can
+eleviate memory problems for models with many features.}
+
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 
 \item{w_threshold}{Numeric vector of length 1, with \code{0 < w_threshold <= 1} representing the minimum proportion

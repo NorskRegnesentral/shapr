@@ -7,11 +7,14 @@
 prepare_and_predict(explainer, n_batches, ...)
 }
 \arguments{
-\item{explainer}{An \code{explainer} object.}
+\item{explainer}{An \code{explainer} object to use for explaining the observations.
+See \code{\link{shapr}}.}
 
-\item{n_batches}{Integer specifying number of batches.}
+\item{n_batches}{Positive integer. Specifies how many iterations that should be used to calculate the
+contribution function for each test observation. The default value is 1. Setting it to a higher number can
+eleviate memory problems for models with many features.}
 
-\item{...}{Passed to \code{\link{prepare_data}}.}
+\item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 }
 \value{
 A list. See \code{\link{explain}} for more information.
