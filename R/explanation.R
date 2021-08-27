@@ -7,9 +7,9 @@
 #' See \code{\link{shapr}}.
 #'
 #' @param approach Character vector of length \code{1} or \code{n_features}.
-#' \code{n_features} equals the total number of features in the model. All elements should
-#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
-#' information.
+#' \code{n_features} equals the total number of features in the model. All elements should,
+#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, or \code{"independence"}.
+#' See details for more information.
 #'
 #' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation. See also details.
@@ -21,7 +21,7 @@
 #'
 #' @details The most important thing to notice is that \code{shapr} has implemented four different
 #' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-#' \code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
+#' \code{"gaussian"}, \code{"copula"}, \code{"ctree"} and \code{"independence"}.
 #' In addition, the user also has the option of combining the four approaches.
 #' E.g., if you're in a situation where you have trained a model that consists of 10 features,
 #' and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
@@ -161,7 +161,7 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ..
     stop(
       paste(
         "It seems that you passed a non-valid value for approach.",
-        "It should be either 'empirical', 'gaussian', 'copula', 'ctree' or",
+        "It should be either 'empirical', 'gaussian', 'copula', 'ctree', 'independence' or",
         "a vector of length=ncol(x) with only the above characters."
       )
     )
@@ -454,6 +454,12 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
 get_list_approaches <- function(n_features, approach) {
   l <- list()
   approach[length(approach)] <- approach[length(approach) - 1]
+
+  x <- which(approach == "independence")
+  if (length(x) > 0) {
+    if (approach[1] == "independence") x <- c(0, x)
+    l$independence <- which(n_features %in% x)
+  }
 
   x <- which(approach == "empirical")
   if (length(x) > 0) {

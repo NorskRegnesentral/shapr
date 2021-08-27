@@ -103,7 +103,7 @@ prepare_data.independence <- function(x, seed = 1, index_features = NULL, ...) {
   n_train <- nrow(x_train)
   n_samples <- min(x$n_samples, n_train)
 
-  index_s <- rep(seq(x$n_combinations), each = n_samples)
+  index_s <- rep(seq(nrow(S)), each = n_samples)
   w <- 1 / x$n_samples
 
   n_col <- nrow(x$x_test)
@@ -115,7 +115,7 @@ prepare_data.independence <- function(x, seed = 1, index_features = NULL, ...) {
     x_test <- x$x_test[i, , drop = FALSE]
 
     # sampling index_xtrain
-    index_xtrain <- c(replicate(x$n_combinations, sample(x = seq(n_train), size = n_samples, replace = F)))
+    index_xtrain <- c(replicate(nrow(S), sample(x = seq(n_train), size = n_samples, replace = F)))
 
     # Generate data used for prediction
     dt_p <- observation_impute_cpp(
