@@ -215,9 +215,9 @@ See <code><a href='shapr.html'>shapr</a></code>.</p></td>
     <tr>
       <th>approach</th>
       <td><p>Character vector of length <code>1</code> or <code>n_features</code>.
-<code>n_features</code> equals the total number of features in the model. All elements should
-either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, or <code>"ctree"</code>. See details for more
-information.</p></td>
+<code>n_features</code> equals the total number of features in the model. All elements should,
+either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, or <code>"independence"</code>.
+See details for more information.</p></td>
     </tr>
     <tr>
       <th>prediction_zero</th>
@@ -339,7 +339,7 @@ such as the mean of the predictions in the training data are also reasonable.</p
 
     <p>The most important thing to notice is that <code>shapr</code> has implemented four different
 approaches for estimating the conditional distributions of the data, namely <code>"empirical"</code>,
-<code>"gaussian"</code>, <code>"copula"</code> and <code>"ctree"</code>.
+<code>"gaussian"</code>, <code>"copula"</code>, <code>"ctree"</code> and <code>"independence"</code>.
 In addition, the user also has the option of combining the four approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the <code>"gaussian"</code> approach when you condition on a single feature,
