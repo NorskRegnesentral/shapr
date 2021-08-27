@@ -11,9 +11,25 @@
 \alias{explain.ctree_comb_mincrit}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
-explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
+explain(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  n_samples = 1000,
+  n_batches = 1,
+  ...
+)
 
-\method{explain}{independence}(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
+\method{explain}{independence}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  n_samples = 1000,
+  n_batches = 1,
+  ...
+)
 
 \method{explain}{empirical}(
   x,
@@ -36,6 +52,7 @@ explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
   approach,
   prediction_zero,
   n_samples = 1000,
+  n_batches = 1,
   mu = NULL,
   cov_mat = NULL,
   ...

@@ -144,7 +144,7 @@
 #'   )
 #'   print(explain_groups$dt)
 #' }
-explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ...) {
+explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, n_batches = 1, ...) {
   extras <- list(...)
 
   # Check input for x
@@ -182,7 +182,7 @@ explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ..
 #' @rdname explain
 #' @export
 explain.independence <- function(x, explainer, approach, prediction_zero,
-                                 n_samples = 1e3, ...) {
+                                 n_samples = 1e3, n_batches = 1, ...) {
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
@@ -276,7 +276,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #' @rdname explain
 #'
 #' @export
-explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, mu = NULL, cov_mat = NULL, ...) {
+explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, n_batches = 1, mu = NULL, cov_mat = NULL, ...) {
 
 
   # Add arguments to explainer object
@@ -305,14 +305,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
     explainer$cov_mat <- cov_mat
   }
 
-  # Generate data
-  dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
-
-  # Predict
-  r <- prediction(dt, prediction_zero, explainer)
+  r <- prepare_and_predict(explainer, n_batches)
 
   return(r)
 }
@@ -520,3 +513,87 @@ get_list_ctree_mincrit <- function(n_features, mincriterion) {
   }
   return(l)
 }
+
+
+
+#' Create a list of indexes used to run batches
+#' @param explainer The binary matrix `S` returned from `shapr`.
+#' @param n_batches Numeric value specifying how many batches `S` should be split into.
+#' @return A list of length `n_batches`.
+#' @keywords internal
+create_S_batch <- function(explainer, n_batches) {
+
+  if (n_batches == 1) return(list(1:nrow(explainer$S)))
+
+  # If method = "combined" we should make sure each batch only contains values that is related to
+
+
+  # Get indices of combinations
+  #l <- get_list_approaches(explainer$X$n_features, approach)
+  #explainer$return <- TRUE
+  #explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  #explainer$n_samples <- n_samples
+
+  no_samples <- nrow(explainer$S)
+  x0 <- 2:(no_samples - 1)
+  S_groups <- split(x0, cut(x0, n_batches, labels = FALSE))
+  # First and last observation is needed every time
+  S_groups <- lapply(S_groups, function(x) c(1, x, no_samples))
+  return(S_groups)
+}
+
+#' Prepare and predict in batches
+#' @param explainer An \code{explainer} object.
+#' @param n_batches Integer specifying number of batches.
+#' @param ... Passed to \code{\link{prepare_data}}.
+#' @return A list. See \code{\link{explain}} for more information.
+#' @keywords internal
+prepare_and_predict <- function(explainer, n_batches, ...) {
+
+
+ #  if (inherits(explainer), "combined"){}
+  # Add arguments to explainer object
+  # approach <- "gaussian"
+  # x <- x_test
+  # n_samples <- 100000
+  # n_batches <- 4
+  # explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  # explainer$approach <- approach
+  # explainer$n_samples <- n_samples
+  # explainer$mu <- unname(colMeans(explainer$x_train))
+  # cov_mat <- stats::cov(explainer$x_train)
+  # explainer$cov_mat <- cov_mat
+  # prediction_zero = p
+
+
+  S_batch <- create_S_batch(explainer, n_batches)
+  pred_batch <- list()
+  r_batch = list()
+
+  for(batch in seq_along(S_batch)) {
+    print(batch)
+    dt <- prepare_data(explainer, index_features = S_batch[[batch]])#, ...)
+    r_batch[[batch]] <- prediction(dt, prediction_zero, explainer)
+    r_batch[[batch]]$dt_mat[, row_id := S_batch[[batch]]]
+
+  }
+
+  dt_mat <- data.table::rbindlist(lapply(r_batch,"[[", "dt_mat"))
+  dt_mat <- unique(dt_mat)
+  setkey(dt_mat, row_id)
+  dt_mat[, row_id := NULL]
+
+  dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
+
+  res = list(dt = dt_kshap,
+             model = explainer$model,
+             p = r_batch[[1]]$p, # equal for all batches
+             x_test = explainer$x_test,
+             is_groupwise = explainer$is_groupwise,
+             dt_mat = dt_mat)
+
+  return(res)
+
+
+}
+
