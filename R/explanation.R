@@ -17,6 +17,10 @@
 #' @param prediction_zero Numeric. The prediction value for unseen data, typically equal to the mean of
 #' the response.
 #'
+#' @param n_batches Positive integer. Specifies how many iterations that should be used to calculate the
+#' contribution function for each test observation. The default value is 1. Setting it to a higher number can
+#' eleviate memory problems for models with many features.
+#'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
 #' @details The most important thing to notice is that \code{shapr} has implemented four different
@@ -533,13 +537,6 @@ create_S_batch <- function(explainer, n_batches) {
 
   # If method = "combined" we should make sure each batch only contains values that is related to
 
-
-  # Get indices of combinations
-  #l <- get_list_approaches(explainer$X$n_features, approach)
-  #explainer$return <- TRUE
-  #explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
-  #explainer$n_samples <- n_samples
-
   no_samples <- nrow(explainer$S)
   x0 <- 2:(no_samples - 1)
   S_groups <- split(x0, cut(x0, n_batches, labels = FALSE))
@@ -549,36 +546,18 @@ create_S_batch <- function(explainer, n_batches) {
 }
 
 #' Prepare and predict in batches
-#' @param explainer An \code{explainer} object.
-#' @param n_batches Integer specifying number of batches.
-#' @param ... Passed to \code{\link{prepare_data}}.
+#' @inheritParams explain
 #' @return A list. See \code{\link{explain}} for more information.
 #' @keywords internal
 prepare_and_predict <- function(explainer, n_batches, ...) {
 
-
- #  if (inherits(explainer), "combined"){}
-  # Add arguments to explainer object
-  # approach <- "gaussian"
-  # x <- x_test
-  # n_samples <- 100000
-  # n_batches <- 4
-  # explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
-  # explainer$approach <- approach
-  # explainer$n_samples <- n_samples
-  # explainer$mu <- unname(colMeans(explainer$x_train))
-  # cov_mat <- stats::cov(explainer$x_train)
-  # explainer$cov_mat <- cov_mat
-  # prediction_zero = p
-
-
   S_batch <- create_S_batch(explainer, n_batches)
   pred_batch <- list()
-  r_batch = list()
+  r_batch <- list()
 
   for(batch in seq_along(S_batch)) {
-    print(batch)
-    dt <- prepare_data(explainer, index_features = S_batch[[batch]])#, ...)
+
+    dt <- prepare_data(explainer, index_features = S_batch[[batch]], ...)
     r_batch[[batch]] <- prediction(dt, prediction_zero, explainer)
     r_batch[[batch]]$dt_mat[, row_id := S_batch[[batch]]]
 
