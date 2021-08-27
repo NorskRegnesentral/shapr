@@ -45,12 +45,6 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   # Setup
   feature_names <- colnames(explainer$x_test)
-  if (!explainer$is_groupwise) {
-    shap_names <- feature_names
-  } else {
-    shap_names <- names(explainer$group)
-  }
-
   data.table::setkeyv(dt, c("id", "id_combination"))
 
   # Check that the number of test observations equals max(id)
@@ -76,19 +70,44 @@ prediction <- function(dt, prediction_zero, explainer) {
   data.table::setkeyv(dt_res, c("id", "id_combination"))
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = "k")
   dt_mat[, id_combination := NULL]
-  kshap <- t(explainer$W %*% as.matrix(dt_mat))
+  #kshap <- t(explainer$W %*% as.matrix(dt_mat))
 
-  dt_kshap <- data.table::as.data.table(kshap)
-  colnames(dt_kshap) <- c("none", shap_names)
+  #dt_kshap <- data.table::as.data.table(kshap)
+  #colnames(dt_kshap) <- c("none", shap_names)
 
   r <- list(
-    dt = dt_kshap,
-    model = explainer$model,
+    #dt = dt_kshap,
+    #model = explainer$model,
     p = p_all,
-    x_test = explainer$x_test,
-    is_groupwise = explainer$is_groupwise
+    #x_test = explainer$x_test,
+    #is_groupwise = explainer$is_groupwise,
+    dt_mat = dt_mat
   )
   attr(r, "class") <- c("shapr", "list")
 
   return(r)
+}
+
+
+#' Compute shapley values
+#' @param explainer An `explain` object.
+#' @param contribution_mat The contribution matrix.
+#' @return A `data.table` with shapley values for each test observation.
+#' @keywords internal
+compute_shapley <- function(explainer, contribution_mat) {
+
+  feature_names <- colnames(explainer$x_test)
+  if (!explainer$is_groupwise) {
+    shap_names <- feature_names
+  } else {
+    shap_names <- names(explainer$group)
+  }
+
+
+  kshap <- t(explainer$W %*% as.matrix(dt_mat))
+  dt_kshap <- data.table::as.data.table(kshap)
+  colnames(dt_kshap) <- c("none", shap_names)
+
+  return(dt_kshap)
+
 }
