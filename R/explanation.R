@@ -193,16 +193,7 @@ explain.independence <- function(x, explainer, approach, prediction_zero,
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
-  # Generate data
-  dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
-
-  # Predict
-  r <- prediction(dt, prediction_zero, explainer)
-
-  return(r)
+  r <- prepare_and_predict(explainer, n_batches, ...)
 }
 
 
@@ -234,7 +225,7 @@ explain.independence <- function(x, explainer, approach, prediction_zero,
 #'
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
-                              n_samples = 1e3, w_threshold = 0.95,
+                              n_samples = 1e3, n_batches = 1, w_threshold = 0.95,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               n_samples_aicc = 1000, eval_max_aicc = 20,
                               start_aicc = 0.1, ...) {
@@ -257,14 +248,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
     ))
   }
 
-  # Generate data
-  dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
-
-  # Predict
-  r <- prediction(dt, prediction_zero, explainer)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero,  ...)
 
   return(r)
 }
@@ -309,14 +293,14 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
     explainer$cov_mat <- cov_mat
   }
 
-  r <- prepare_and_predict(explainer, n_batches)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, ...)
 
   return(r)
 }
 
 #' @rdname explain
 #' @export
-explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, ...) {
+explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, n_batches = 1, ...) {
 
   # Setup
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
@@ -348,14 +332,8 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
   } else {
     explainer$cov_mat <- cov_mat
   }
-  # Generate data
-  dt <- prepare_data(explainer, x_test_gaussian = x_test_gaussian, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
 
-  # Predict
-  r <- prediction(dt, prediction_zero, explainer)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, ...)
 
   return(r)
 }
@@ -382,7 +360,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
 #'
 #' @export
 explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                          mincriterion = 0.95, minsplit = 20,
+                          n_batches = 1, mincriterion = 0.95, minsplit = 20,
                           minbucket = 7, sample = TRUE, ...) {
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
@@ -398,15 +376,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1
   explainer$sample <- sample
   explainer$n_samples <- n_samples
 
-  # Generate data
-  dt <- prepare_data(explainer, ...)
-
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
-
-  # Predict
-  r <- prediction(dt, prediction_zero, explainer)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, ...)
 
   return(r)
 }
@@ -416,7 +386,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1
 #'
 #' @export
 explain.combined <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                             mu = NULL, cov_mat = NULL, ...) {
+                             n_batches = 1, mu = NULL, cov_mat = NULL, ...) {
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
@@ -424,14 +394,16 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   explainer$n_samples <- n_samples
 
   dt_l <- list()
+  # Compute shapley values for all methods
   for (i in seq_along(l)) {
-    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], ...)
+    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], n_batches = n_batches, ...)$dt_mat
   }
-  dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 
-  r <- prediction(dt, prediction_zero, explainer)
+  dt <- rbindlist(dt_l)
+  dt_mat <- compute_shapley(explainer, as.matrix(dt))
 
-  return(r)
+
+  return(dt_mat)
 }
 
 #' Helper function used in \code{\link{explain.combined}}
@@ -484,7 +456,7 @@ get_list_approaches <- function(n_features, approach) {
 #'
 #' @export
 explain.ctree_comb_mincrit <- function(x, explainer, approach,
-                                       prediction_zero, n_samples, mincriterion, ...) {
+                                       prediction_zero, n_samples, n_batches = 1, mincriterion, ...) {
 
   # Get indices of combinations
   l <- get_list_ctree_mincrit(explainer$X$n_features, mincriterion)
@@ -525,17 +497,33 @@ get_list_ctree_mincrit <- function(n_features, mincriterion) {
 #' @param n_batches Numeric value specifying how many batches `S` should be split into.
 #' @return A list of length `n_batches`.
 #' @keywords internal
-create_S_batch <- function(explainer, n_batches) {
+create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 
-  if (n_batches == 1) return(list(1:nrow(explainer$S)))
-
-  # If method = "combined" we should make sure each batch only contains values that is related to
+  if (n_batches == 1) {
+    if (!is.null(index_features)) {
+      return(list(index_features))
+    } else {
+      return(list(1:nrow(explainer$S)))
+    }
+  }
 
   no_samples <- nrow(explainer$S)
-  x0 <- 2:(no_samples - 1)
-  S_groups <- split(x0, cut(x0, n_batches, labels = FALSE))
-  # First and last observation is needed every time
-  S_groups <- lapply(S_groups, function(x) c(1, x, no_samples))
+
+  if (!is.null(index_features)) {
+    # Rescale the number of batches to the percentage of observations used
+    n_batches <- floor(length(index_features) / nrow(explainer$S) * n_batches)
+    if (n_batches == 1) return(list(index_features))
+    S_groups <- split(index_features, cut(index_features, n_batches, labels = FALSE))
+    # S_groups <- lapply(S_groups, function(x) c(1, x, no_samples))
+
+  } else {
+    #x0 <- 2:(no_samples - 1)
+    x0 <- 1:no_samples
+    S_groups <- split(x0, cut(x0, n_batches, labels = FALSE))
+    # First and last observation is needed every time
+    #S_groups <- lapply(S_groups, function(x) c(1, x, no_samples))
+  }
+
   return(S_groups)
 }
 
@@ -543,15 +531,17 @@ create_S_batch <- function(explainer, n_batches) {
 #' @inheritParams explain
 #' @return A list. See \code{\link{explain}} for more information.
 #' @keywords internal
-prepare_and_predict <- function(explainer, n_batches, ...) {
+prepare_and_predict <- function(explainer, n_batches, prediction_zero, ...) {
 
-  S_batch <- create_S_batch(explainer, n_batches)
+  index_features <- list(...)$index_features
+
+  S_batch <- create_S_batch(explainer, n_batches, index_features)
   pred_batch <- list()
   r_batch <- list()
 
   for(batch in seq_along(S_batch)) {
 
-    dt <- prepare_data(explainer, index_features = S_batch[[batch]], ...)
+    dt <- prepare_data(explainer, index_features = S_batch[[batch]])
     r_batch[[batch]] <- prediction(dt, prediction_zero, explainer)
     r_batch[[batch]]$dt_mat[, row_id := S_batch[[batch]]]
 
@@ -564,12 +554,12 @@ prepare_and_predict <- function(explainer, n_batches, ...) {
 
   dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
 
-  res = list(dt = dt_kshap,
-             model = explainer$model,
-             p = r_batch[[1]]$p, # equal for all batches
-             x_test = explainer$x_test,
-             is_groupwise = explainer$is_groupwise,
-             dt_mat = dt_mat)
+  res <- list(dt = dt_kshap,
+              model = explainer$model,
+              p = r_batch[[1]]$p, # equal for all batches
+              x_test = explainer$x_test,
+              is_groupwise = explainer$is_groupwise,
+              dt_mat = dt_mat)
 
   return(res)
 

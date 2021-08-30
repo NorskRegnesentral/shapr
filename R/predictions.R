@@ -104,7 +104,7 @@ compute_shapley <- function(explainer, contribution_mat) {
   }
 
 
-  kshap <- t(explainer$W %*% as.matrix(dt_mat))
+  kshap <- t(explainer$W %*% contribution_mat)
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", shap_names)
 
