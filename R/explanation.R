@@ -475,7 +475,7 @@ get_list_approaches <- function(n_features, approach) {
 #' @export
 explain.ctree_comb_mincrit <- function(x, explainer, approach,
                                        prediction_zero, n_samples, n_batches = 1,
-                                       only_return_dt_mat = FALSE, mincriterion, ...) {
+                                       mincriterion, ...) {
 
   # Get indices of combinations
   l <- get_list_ctree_mincrit(explainer$X$n_features, mincriterion)
@@ -486,14 +486,26 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
   for (i in seq_along(l)) {
     dt_l[[i]] <- explain(x, explainer, approach, prediction_zero,
       index_features = l[[i]],
-      mincriterion = as.numeric(names(l[i])), ...
+      mincriterion = as.numeric(names(l[i])),
+      only_return_dt_mat = TRUE,
+      ...
     )
   }
 
-  dt <- data.table::rbindlist(dt_l, use.names = TRUE)
+  dt_mat <- rbindlist(dt_l)
+  dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
 
-  r <- prediction(dt, prediction_zero, explainer)
-  return(r)
+  res <- list(dt = dt_kshap,
+              model = explainer$model,
+              p = attr(dt_l[[1]], "p"), # equal for all batches
+              x_test = explainer$x_test,
+              is_groupwise = explainer$is_groupwise,
+              dt_mat = dt_mat)
+
+  attr(res, "class") <- c("shapr", "list")
+
+  return(res)
+
 }
 
 #' @keywords internal
