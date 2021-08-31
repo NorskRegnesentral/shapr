@@ -76,9 +76,6 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
 #' \code{NULL} means all combinations. Only used internally.
 #'
-#' @param x_test_gaussian Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
-#' \code{approach = "empirical"}.
-#'
 #' @param ... Currently not used.
 #'
 #' @export
@@ -258,7 +255,7 @@ prepare_data.gaussian <- function(x, seed = 1, index_features = NULL, ...) {
 
 #' @rdname prepare_data
 #' @export
-prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, index_features = NULL, ...) {
+prepare_data.copula <- function(x, seed = 1, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
@@ -268,6 +265,8 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, index_features
   } else {
     features <- x$X$features[index_features]
   }
+
+  x_test_gaussian <- x$x_test_gaussian
 
   for (i in seq(n_xtest)) {
     l <- lapply(

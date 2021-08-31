@@ -335,6 +335,8 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
     explainer$cov_mat <- cov_mat
   }
 
+  explainer$x_test_gaussian <- x_test_gaussian
+
   r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_dt_mat, ...)
 
   return(r)
@@ -578,7 +580,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
 
   }
 
-  dt_mat <- data.table::rbindlist(lapply(r_batch,"[[", "dt_mat"))
+  dt_mat <- rbindlist(lapply(r_batch,"[[", "dt_mat"))
   dt_mat <- unique(dt_mat)
   setkey(dt_mat, row_id)
   dt_mat[, row_id := NULL]
