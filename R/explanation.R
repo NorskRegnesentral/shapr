@@ -19,7 +19,10 @@
 #'
 #' @param n_batches Positive integer. Specifies how many iterations that should be used to calculate the
 #' contribution function for each test observation. The default value is 1. Setting it to a higher number can
-#' eleviate memory problems for models with many features.
+#' alleviate memory problems for models with many features.
+#'
+#' @param only_return_dt_mat Logical. Used internally in `explain.combined`. If `TRUE` the `data.table` from
+#' \code{\link{prediction}} is returned, else an object of class `shapr`.
 #'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
@@ -148,7 +151,8 @@
 #'   )
 #'   print(explain_groups$dt)
 #' }
-explain <- function(x, explainer, approach, prediction_zero, n_samples = 1e3, n_batches = 1, only_return_dt_mat = FALSE, ...) {
+explain <- function(x, explainer, approach, prediction_zero,
+                    n_samples = 1e3, n_batches = 1, only_return_dt_mat = FALSE, ...) {
   extras <- list(...)
 
   # Check input for x
@@ -525,10 +529,18 @@ get_list_ctree_mincrit <- function(n_features, mincriterion) {
 
 
 
-#' Create a list of indexes used to run batches
+#' Compute Shapley values in batches
+#'
+#' Create a list of indexes used to compute Shapley values in batches.
+#'
 #' @param explainer The binary matrix `S` returned from `shapr`.
 #' @param n_batches Numeric value specifying how many batches `S` should be split into.
+#' @param index_feature Numeric vector specifying which rows of `S` that should be considered.
 #' @return A list of length `n_batches`.
+#'
+#' @details If `index_features` is not `NULL` then the number of batches is scaled such that the
+#' total number of batches is equal `n_batches` and not within the rows specified by `index_features`.
+#'
 #' @keywords internal
 create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 
@@ -551,7 +563,6 @@ create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 
   } else {
     x0 <- 2:(no_samples - 1)
-    #x0 <- 1:no_samples
     S_groups <- split(x0, cut(x0, n_batches, labels = FALSE))
     # First and last observation is needed every time
     S_groups <- lapply(S_groups, function(x) c(1, x, no_samples))
@@ -560,7 +571,12 @@ create_S_batch <- function(explainer, n_batches, index_features = NULL) {
   return(S_groups)
 }
 
-#' Prepare and predict in batches
+#' Calculate Shapley values
+#'
+#' Sample covariate values, predict and calculate Shapley values. The sampling and prediction can be done in batches
+#' if `n_batches` is greater than 1.
+#'
+#'
 #' @inheritParams explain
 #' @return A list. See \code{\link{explain}} for more information.
 #' @keywords internal
@@ -572,7 +588,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
   pred_batch <- list()
   r_batch <- list()
 
-  for(batch in seq_along(S_batch)) {
+  for (batch in seq_along(S_batch)) {
 
     dt <- prepare_data(explainer, index_features = S_batch[[batch]])
     r_batch[[batch]] <- prediction(dt, prediction_zero, explainer)
@@ -580,7 +596,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
 
   }
 
-  dt_mat <- rbindlist(lapply(r_batch,"[[", "dt_mat"))
+  dt_mat <- rbindlist(lapply(r_batch, "[[", "dt_mat"))
   dt_mat <- unique(dt_mat)
   setkey(dt_mat, row_id)
   dt_mat[, row_id := NULL]
@@ -603,6 +619,4 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
 
   return(res)
 
-
 }
-

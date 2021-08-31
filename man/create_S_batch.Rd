@@ -2,19 +2,25 @@
 % Please edit documentation in R/explanation.R
 \name{create_S_batch}
 \alias{create_S_batch}
-\title{Create a list of indexes used to run batches}
+\title{Compute Shapley values in batches}
 \usage{
-create_S_batch(explainer, n_batches)
+create_S_batch(explainer, n_batches, index_features = NULL)
 }
 \arguments{
 \item{explainer}{The binary matrix `S` returned from `shapr`.}
 
 \item{n_batches}{Numeric value specifying how many batches `S` should be split into.}
+
+\item{index_feature}{Numeric vector specifying which rows of `S` that should be considered.}
 }
 \value{
 A list of length `n_batches`.
 }
 \description{
-Create a list of indexes used to run batches
+Create a list of indexes used to compute Shapley values in batches.
+}
+\details{
+If `index_features` is not `NULL` then the number of batches is scaled such that the
+total number of batches is equal `n_batches` and not within the rows specified by `index_features`.
 }
 \keyword{internal}

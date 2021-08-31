@@ -2,9 +2,15 @@
 % Please edit documentation in R/explanation.R
 \name{prepare_and_predict}
 \alias{prepare_and_predict}
-\title{Prepare and predict in batches}
+\title{Calculate Shapley values}
 \usage{
-prepare_and_predict(explainer, n_batches, ...)
+prepare_and_predict(
+  explainer,
+  n_batches,
+  prediction_zero,
+  only_return_dt_mat,
+  ...
+)
 }
 \arguments{
 \item{explainer}{An \code{explainer} object to use for explaining the observations.
@@ -12,7 +18,13 @@ See \code{\link{shapr}}.}
 
 \item{n_batches}{Positive integer. Specifies how many iterations that should be used to calculate the
 contribution function for each test observation. The default value is 1. Setting it to a higher number can
-eleviate memory problems for models with many features.}
+alleviate memory problems for models with many features.}
+
+\item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
+the response.}
+
+\item{only_return_dt_mat}{Logical. Used internally in `explain.combined`. If `TRUE` the `data.table` from
+\code{\link{prediction}} is returned, else an object of class `shapr`.}
 
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 }
@@ -20,6 +32,7 @@ eleviate memory problems for models with many features.}
 A list. See \code{\link{explain}} for more information.
 }
 \description{
-Prepare and predict in batches
+Sample covariate values, predict and calculate Shapley values. The sampling and prediction can be done in batches
+if `n_batches` is greater than 1.
 }
 \keyword{internal}

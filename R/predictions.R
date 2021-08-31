@@ -70,19 +70,9 @@ prediction <- function(dt, prediction_zero, explainer) {
   data.table::setkeyv(dt_res, c("id", "id_combination"))
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = "k")
   dt_mat[, id_combination := NULL]
-  #kshap <- t(explainer$W %*% as.matrix(dt_mat))
 
-  #dt_kshap <- data.table::as.data.table(kshap)
-  #colnames(dt_kshap) <- c("none", shap_names)
 
-  r <- list(
-    #dt = dt_kshap,
-    #model = explainer$model,
-    p = p_all,
-    #x_test = explainer$x_test,
-    #is_groupwise = explainer$is_groupwise,
-    dt_mat = dt_mat
-  )
+  r <- list(p = p_all, dt_mat = dt_mat)
   attr(r, "class") <- c("shapr", "list")
 
   return(r)

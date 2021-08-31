@@ -18,6 +18,7 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
+  only_return_dt_mat = FALSE,
   ...
 )
 
@@ -28,6 +29,7 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
+  only_return_dt_mat = FALSE,
   ...
 )
 
@@ -37,6 +39,8 @@ explain(
   approach,
   prediction_zero,
   n_samples = 1000,
+  n_batches = 1,
+  only_return_dt_mat = FALSE,
   w_threshold = 0.95,
   type = "fixed_sigma",
   fixed_sigma_vec = 0.1,
@@ -53,12 +57,22 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
+  only_return_dt_mat = FALSE,
   mu = NULL,
   cov_mat = NULL,
   ...
 )
 
-\method{explain}{copula}(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
+\method{explain}{copula}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  n_samples = 1000,
+  n_batches = 1,
+  only_return_dt_mat = FALSE,
+  ...
+)
 
 \method{explain}{ctree}(
   x,
@@ -66,6 +80,8 @@ explain(
   approach,
   prediction_zero,
   n_samples = 1000,
+  n_batches = 1,
+  only_return_dt_mat = FALSE,
   mincriterion = 0.95,
   minsplit = 20,
   minbucket = 7,
@@ -79,12 +95,22 @@ explain(
   approach,
   prediction_zero,
   n_samples = 1000,
+  n_batches = 1,
   mu = NULL,
   cov_mat = NULL,
   ...
 )
 
-\method{explain}{ctree_comb_mincrit}(x, explainer, approach, prediction_zero, n_samples, mincriterion, ...)
+\method{explain}{ctree_comb_mincrit}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  n_samples,
+  n_batches = 1,
+  mincriterion,
+  ...
+)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -106,7 +132,10 @@ Monte Carlo integration for every conditional expectation. See also details.}
 
 \item{n_batches}{Positive integer. Specifies how many iterations that should be used to calculate the
 contribution function for each test observation. The default value is 1. Setting it to a higher number can
-eleviate memory problems for models with many features.}
+alleviate memory problems for models with many features.}
+
+\item{only_return_dt_mat}{Logical. Used internally in `explain.combined`. If `TRUE` the `data.table` from
+\code{\link{prediction}} is returned, else an object of class `shapr`.}
 
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 

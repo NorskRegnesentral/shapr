@@ -78,6 +78,8 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #'
 #' @param ... Currently not used.
 #'
+#' @return A `data.table` containing simulated data passed to \code{\link{prediction}}.
+#'
 #' @export
 #' @keywords internal
 prepare_data <- function(x, ...) {

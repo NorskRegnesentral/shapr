@@ -17,7 +17,7 @@ prepare_data(x, ...)
 
 \method{prepare_data}{gaussian}(x, seed = 1, index_features = NULL, ...)
 
-\method{prepare_data}{copula}(x, x_test_gaussian = 1, seed = 1, index_features = NULL, ...)
+\method{prepare_data}{copula}(x, seed = 1, index_features = NULL, ...)
 
 \method{prepare_data}{ctree}(
   x,
@@ -39,9 +39,6 @@ prepare_data(x, ...)
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
 used for different numbers of conditioned features, this will be a list with the features to pass.}
 
-\item{x_test_gaussian}{Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
-\code{approach = "empirical"}.}
-
 \item{mc_cores}{Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
 tree building (\code{create_ctree}) and tree sampling (\code{sample_ctree}). Defaults to 1. Note: Uses
 parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows systems.}
@@ -52,6 +49,9 @@ parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows sys
 \item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction
 function.
 Defaults to \code{mc_cores}.}
+}
+\value{
+A `data.table` containing simulated data passed to \code{\link{prediction}}.
 }
 \description{
 Generate data used for predictions
