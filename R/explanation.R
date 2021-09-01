@@ -190,7 +190,10 @@ explain <- function(x, explainer, approach, prediction_zero,
 #' @rdname explain
 #' @export
 explain.independence <- function(x, explainer, approach, prediction_zero,
-                                 n_samples = 1e3, n_batches = 1, only_return_dt_mat = FALSE, ...) {
+                                 n_samples = 1e3, n_batches = 1, seed = 1, only_return_dt_mat = FALSE, ...) {
+
+
+  if (!is.null(seed)) set.seed(seed)
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
@@ -229,10 +232,12 @@ explain.independence <- function(x, explainer, approach, prediction_zero,
 #'
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
-                              n_samples = 1e3, n_batches = 1, only_return_dt_mat = FALSE, w_threshold = 0.95,
-                              type = "fixed_sigma", fixed_sigma_vec = 0.1,
+                              n_samples = 1e3, n_batches = 1, seed = 1, only_return_dt_mat = FALSE,
+                              w_threshold = 0.95, type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               n_samples_aicc = 1000, eval_max_aicc = 20,
                               start_aicc = 0.1, ...) {
+
+  if (!is.null(seed)) set.seed(seed)
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
@@ -269,8 +274,10 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #'
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                             n_batches = 1, only_return_dt_mat = FALSE, mu = NULL, cov_mat = NULL, ...) {
+                             n_batches = 1, seed = 1, only_return_dt_mat = FALSE,
+                             mu = NULL, cov_mat = NULL, ...) {
 
+  if (!is.null(seed)) set.seed(seed)
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
@@ -306,7 +313,9 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
 #' @rdname explain
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                           n_batches = 1, only_return_dt_mat = FALSE, ...) {
+                           n_batches = 1,  seed = 1, only_return_dt_mat = FALSE, ...) {
+
+  if (!is.null(seed)) set.seed(seed)
 
   # Setup
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
@@ -368,8 +377,12 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
 #'
 #' @export
 explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                          n_batches = 1, only_return_dt_mat = FALSE, mincriterion = 0.95, minsplit = 20,
+                          n_batches = 1, seed = 1, only_return_dt_mat = FALSE,
+                          mincriterion = 0.95, minsplit = 20,
                           minbucket = 7, sample = TRUE, ...) {
+
+  if (!is.null(seed)) set.seed(seed)
+
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
     stop("x should be a matrix or a dataframe.")
@@ -394,7 +407,10 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1
 #'
 #' @export
 explain.combined <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                             n_batches = 1, mu = NULL, cov_mat = NULL, ...) {
+                             n_batches = 1, seed = 1, mu = NULL, cov_mat = NULL, ...) {
+
+  if (!is.null(seed)) set.seed(seed)
+
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
@@ -406,7 +422,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   for (i in seq_along(l)) {
     dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero,
                          index_features = l[[i]], n_batches = n_batches,
-                         only_return_dt_mat = TRUE, ...)
+                         only_return_dt_mat = TRUE, seed = NULL, ...)
   }
 
   dt_mat <- rbindlist(dt_l)
@@ -481,7 +497,9 @@ get_list_approaches <- function(n_features, approach) {
 #' @export
 explain.ctree_comb_mincrit <- function(x, explainer, approach,
                                        prediction_zero, n_samples, n_batches = 1,
-                                       mincriterion, ...) {
+                                       seed = 1, mincriterion, ...) {
+
+  if (!is.null(seed)) set.seed(seed)
 
   # Get indices of combinations
   l <- get_list_ctree_mincrit(explainer$X$n_features, mincriterion)
@@ -494,6 +512,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
       index_features = l[[i]],
       mincriterion = as.numeric(names(l[i])),
       only_return_dt_mat = TRUE,
+      seed = NULL,
       ...
     )
   }

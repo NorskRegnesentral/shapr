@@ -11,17 +11,16 @@
 \usage{
 prepare_data(x, ...)
 
-\method{prepare_data}{independence}(x, seed = 1, index_features = NULL, ...)
+\method{prepare_data}{independence}(x, index_features = NULL, ...)
 
-\method{prepare_data}{empirical}(x, seed = 1, index_features = NULL, ...)
+\method{prepare_data}{empirical}(x, index_features = NULL, ...)
 
-\method{prepare_data}{gaussian}(x, seed = 1, index_features = NULL, ...)
+\method{prepare_data}{gaussian}(x, index_features = NULL, ...)
 
-\method{prepare_data}{copula}(x, seed = 1, index_features = NULL, ...)
+\method{prepare_data}{copula}(x, index_features = NULL, ...)
 
 \method{prepare_data}{ctree}(
   x,
-  seed = 1,
   index_features = NULL,
   mc_cores = 1,
   mc_cores_create_ctree = mc_cores,
@@ -33,8 +32,6 @@ prepare_data(x, ...)
 \item{x}{Explainer object. See \code{\link{explain}} for more information.}
 
 \item{...}{Currently not used.}
-
-\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
 used for different numbers of conditioned features, this will be a list with the features to pass.}
@@ -49,6 +46,8 @@ parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows sys
 \item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction
 function.
 Defaults to \code{mc_cores}.}
+
+\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 }
 \value{
 A `data.table` containing simulated data passed to \code{\link{prediction}}.
