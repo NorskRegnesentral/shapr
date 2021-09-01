@@ -432,8 +432,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
               model = explainer$model,
               p = attr(dt_l[[1]], "p"), # equal for all batches
               x_test = explainer$x_test,
-              is_groupwise = explainer$is_groupwise,
-              dt_mat = dt_mat)
+              is_groupwise = explainer$is_groupwise)
 
   attr(res, "class") <- c("shapr", "list")
 
@@ -524,8 +523,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
               model = explainer$model,
               p = attr(dt_l[[1]], "p"), # equal for all batches
               x_test = explainer$x_test,
-              is_groupwise = explainer$is_groupwise,
-              dt_mat = dt_mat)
+              is_groupwise = explainer$is_groupwise)
 
   attr(res, "class") <- c("shapr", "list")
 
@@ -631,8 +629,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
               model = explainer$model,
               p = r_batch[[1]]$p, # equal for all batches
               x_test = explainer$x_test,
-              is_groupwise = explainer$is_groupwise,
-              dt_mat = dt_mat)
+              is_groupwise = explainer$is_groupwise)
 
   attr(res, "class") <- c("shapr", "list")
 
