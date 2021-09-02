@@ -252,6 +252,8 @@ prepare_data.gaussian <- function(x, index_features = NULL, ...) {
   return(dt)
 }
 
+
+
 #' @rdname prepare_data
 #' @export
 prepare_data.copula <- function(x,  index_features = NULL, ...) {

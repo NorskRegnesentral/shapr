@@ -310,6 +310,10 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
   return(r)
 }
 
+
+
+
+
 #' @rdname explain
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
@@ -425,7 +429,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
                          only_return_dt_mat = TRUE, seed = NULL, ...)
   }
 
-  dt_mat <- rbindlist(dt_l)
+  dt_mat <- unique(rbindlist(dt_l))
   dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
 
   res <- list(dt = dt_kshap,
@@ -561,20 +565,20 @@ get_list_ctree_mincrit <- function(n_features, mincriterion) {
 #' @keywords internal
 create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 
+  no_samples <- nrow(explainer$S)
+
   if (n_batches == 1) {
     if (!is.null(index_features)) {
-      return(list(index_features))
+      return(list(unique(c(1, index_features, no_samples))))
     } else {
       return(list(1:nrow(explainer$S)))
     }
   }
 
-  no_samples <- nrow(explainer$S)
-
   if (!is.null(index_features)) {
     # Rescale the number of batches to the percentage of observations used
     n_batches <- floor(length(index_features) / nrow(explainer$S) * n_batches)
-    if (n_batches == 1) return(list(index_features))
+    if (n_batches == 1) return(list(unique(c(1, index_features, no_samples))))
     S_groups <- split(index_features, cut(index_features, n_batches, labels = FALSE))
     S_groups <- lapply(S_groups, function(x) unique(c(1, x, no_samples)))
 
