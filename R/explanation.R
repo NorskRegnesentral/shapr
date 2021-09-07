@@ -603,7 +603,7 @@ create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 
   if (!is.null(index_features)) {
     # Rescale the number of batches to the percentage of observations used
-    n_batches <- floor(length(index_features) / nrow(explainer$S) * n_batches)
+    n_batches <- max(1,floor(length(index_features) / nrow(explainer$S) * n_batches))
     if (n_batches == 1) return(list(unique(c(1, index_features, no_samples))))
     S_groups <- split(index_features, cut(index_features, n_batches, labels = FALSE))
     S_groups <- lapply(S_groups, function(x) unique(c(1, x, no_samples)))
