@@ -1,6 +1,6 @@
 
 library(xgboost)
-devtools::load_all()
+#devtools::load_all()
 #library(shapr)
 library(data.table)
 
@@ -61,3 +61,41 @@ res$gauss$dt
 
 emp_b$dt
 res$empirical$dt
+
+#### MJ stuff here:
+
+# Using independence with n_samples > nrow(x_train) such that no sampling is performed
+
+indep1 =  explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000, n_batches = 1)
+indep2 =  explain(x_test, explainer, "independence2", prediction_zero = p, n_samples = 10000, n_batches = 1)
+
+all.equal(indep1,indep2) # TRUE
+
+indep1_batch_2 = explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000, n_batches = 2)
+
+all.equal(indep1,indep1_batch_2) # TRUE
+
+indep1_batch_5 = explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000, n_batches = 5)
+
+all.equal(indep1,indep1_batch_5) # TRUE
+
+comb_indep_1_batch_1 = explain(x_test, explainer, c("independence", "independence", "independence", "independence"), prediction_zero = p, n_samples = 10000, n_batches = 1)
+
+all.equal(indep1,comb_indep_1_batch_1) # TRUE
+
+comb_indep_1_batch_2 = explain(x_test, explainer, c("independence", "independence", "independence", "independence"), prediction_zero = p, n_samples = 10000, n_batches = 2)
+
+all.equal(indep1,comb_indep_1_batch_2) # TRUE
+
+comb_indep_1_2_batch_1 = explain(x_test, explainer, c("independence", "independence", "independence2", "independence2"), prediction_zero = p, n_samples = 10000, n_batches = 1)
+
+all.equal(indep1,comb_indep_1_2_batch_1) #TRUE
+
+comb_indep_1_2_batch_2 = explain(x_test, explainer, c("independence", "independence", "independence2", "independence2"), prediction_zero = p, n_samples = 10000, n_batches = 2)
+
+all.equal(indep1,comb_indep_1_2_batch_2) #TRUE
+
+comb_indep_1_2_batch_5 = explain(x_test, explainer, c("independence", "independence", "independence2", "independence2"), prediction_zero = p, n_samples = 10000, n_batches = 5)
+
+all.equal(indep1,comb_indep_1_2_batch_5) #TRUE
+
