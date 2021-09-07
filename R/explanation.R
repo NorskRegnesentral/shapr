@@ -164,7 +164,7 @@ explain <- function(x, explainer, approach, prediction_zero,
   if (!(is.vector(approach) &&
     is.atomic(approach) &&
     (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
-    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "independence"))))
+    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "independence","independence2"))))
   ) {
     stop(
       paste(
@@ -186,6 +186,21 @@ explain <- function(x, explainer, approach, prediction_zero,
 
   UseMethod("explain", this_class)
 }
+
+explain.independence2 <- function(x, explainer, approach, prediction_zero,
+                                  n_samples = 1e3, n_batches = 1, seed = 1, only_return_dt_mat = FALSE, ...) {
+
+
+  if (!is.null(seed)) set.seed(seed)
+
+  # Add arguments to explainer object
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$approach <- approach
+  explainer$n_samples <- n_samples
+
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_dt_mat, ...)
+}
+
 
 #' @rdname explain
 #' @export
@@ -465,6 +480,12 @@ get_list_approaches <- function(n_features, approach) {
   if (length(x) > 0) {
     if (approach[1] == "independence") x <- c(0, x)
     l$independence <- which(n_features %in% x)
+  }
+
+  x <- which(approach == "independence2")
+  if (length(x) > 0) {
+    if (approach[1] == "independence2") x <- c(0, x)
+    l$independence2 <- which(n_features %in% x)
   }
 
   x <- which(approach == "empirical")
