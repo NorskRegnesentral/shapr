@@ -444,7 +444,12 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
                          only_return_dt_mat = TRUE, seed = NULL, ...)
   }
 
+  dt_l_keep <<- dt_l
+
   dt_mat <- unique(rbindlist(dt_l))
+  setkey(dt_mat, row_id)
+  dt_mat[, row_id := NULL]
+
   dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
 
   res <- list(dt = dt_kshap,
@@ -639,14 +644,15 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
   }
 
   dt_mat <- rbindlist(lapply(r_batch, "[[", "dt_mat"))
-  dt_mat <- unique(dt_mat)
-  setkey(dt_mat, row_id)
-  dt_mat[, row_id := NULL]
 
   if (only_return_dt_mat) {
     attr(dt_mat, "p") <- r_batch[[1]]$p
     return(dt_mat)
   }
+
+  dt_mat <- unique(dt_mat)
+  setkey(dt_mat, row_id)
+  dt_mat[, row_id := NULL]
 
   dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
 
