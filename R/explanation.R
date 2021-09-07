@@ -444,8 +444,6 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
                          only_return_dt_mat = TRUE, seed = NULL, ...)
   }
 
-  dt_l_keep <<- dt_l
-
   dt_mat <- unique(rbindlist(dt_l))
   setkey(dt_mat, row_id)
   dt_mat[, row_id := NULL]
