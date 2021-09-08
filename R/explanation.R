@@ -653,3 +653,9 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
   return(res)
 
 }
+
+
+#' @export
+print.shapr <- function(x, ...) {
+  print(x$dt)
+}

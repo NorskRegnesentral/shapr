@@ -29,8 +29,8 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
   seed = 1,
+  only_return_dt_mat = FALSE,
   ...
 )
 
@@ -41,8 +41,8 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
   seed = 1,
+  only_return_dt_mat = FALSE,
   w_threshold = 0.95,
   type = "fixed_sigma",
   fixed_sigma_vec = 0.1,
@@ -59,8 +59,8 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
   seed = 1,
+  only_return_dt_mat = FALSE,
   mu = NULL,
   cov_mat = NULL,
   ...
@@ -73,8 +73,8 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
   seed = 1,
+  only_return_dt_mat = FALSE,
   ...
 )
 
@@ -85,8 +85,8 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
   seed = 1,
+  only_return_dt_mat = FALSE,
   mincriterion = 0.95,
   minsplit = 20,
   minbucket = 7,
