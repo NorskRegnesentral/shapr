@@ -506,6 +506,10 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
                                        prediction_zero, n_samples, n_batches = 1,
                                        seed = 1, mincriterion, ...) {
 
+
+  if (length(explainer$feature_list$labels) != length(mincriterion)) {
+    stop("The length of mincriterion has to be equal to 1 or the number of features.")
+  }
   if (!is.null(seed)) set.seed(seed)
 
   # Get indices of combinations
