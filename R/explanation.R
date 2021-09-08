@@ -164,7 +164,7 @@ explain <- function(x, explainer, approach, prediction_zero,
   if (!(is.vector(approach) &&
     is.atomic(approach) &&
     (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
-    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "independence","independence2"))))
+    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "independence"))))
   ) {
     stop(
       paste(
