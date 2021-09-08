@@ -30,6 +30,9 @@ model <- xgboost(
 # copula =  explain(x_test, explainer, "copula", prediction_zero = p, n_samples = 10000)
 # indep = explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000)
 # comb = explain(x_test, explainer, c("gaussian", "gaussian", "empirical", "empirical"), prediction_zero = p, n_samples = 10000)
+ctree = explain(x_test, explainer, "ctree", mincriterion = 0.95, prediction_zero = p, n_samples = 10000)
+ctree2 = explain(x_test, explainer, "ctree", mincriterion = c(0.95, 0.95, 0.95, 0.95), prediction_zero = p, n_samples = 100001)
+
 #saveRDS(list(gauss = gauss, empirical = emp, copula = copula, indep = indep, comb = comb), file = "master_res.rds")
 nobs = 6
 x_test <- as.matrix(Boston[1:nobs, x_var])
@@ -78,6 +81,56 @@ explain.independence2 <- function(x, explainer, approach, prediction_zero,
 
   r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_dt_mat, ...)
 }
+
+
+prepare_data.independence2 <- function(x, index_features = NULL, ...) {
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+
+  if (is.null(index_features)) {
+    index_features <- x$X[, .I]
+  }
+
+  S <- x$S[index_features, ]
+  x_train <- as.matrix(x$x_train)
+  n_train <- nrow(x_train)
+  n_samples <- min(x$n_samples, n_train)
+
+  index_s <- rep(seq(nrow(S)), each = n_samples)
+  w <- 1 / x$n_samples
+
+  n_col <- nrow(x$x_test)
+
+  dt_l <- list()
+  for (i in seq(n_col)) {
+    x_test <- x$x_test[i, , drop = FALSE]
+
+    # sampling index_xtrain
+    index_xtrain <- c(replicate(nrow(S), sample(x = seq(n_train), size = n_samples, replace = F)))
+
+    # Generate data used for prediction
+    dt_p <- observation_impute_cpp(
+      index_xtrain = index_xtrain,
+      index_s = index_s,
+      xtrain = x_train,
+      xtest = x_test,
+      S = S
+    )
+
+    # Add keys
+    dt_l[[i]] <- data.table::as.data.table(dt_p)
+    data.table::setnames(dt_l[[i]], colnames(x_train))
+    dt_l[[i]][, id_combination := index_s]
+    dt_l[[i]][, w := w] # IS THIS NECESSARY?
+    dt_l[[i]][, id := i]
+  }
+
+
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  return(dt)
+}
+
+
+
 
 # Using independence with n_samples > nrow(x_train) such that no sampling is performed
 

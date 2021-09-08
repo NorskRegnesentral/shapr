@@ -471,12 +471,6 @@ get_list_approaches <- function(n_features, approach) {
     l$independence <- which(n_features %in% x)
   }
 
-  x <- which(approach == "independence2")
-  if (length(x) > 0) {
-    if (approach[1] == "independence2") x <- c(0, x)
-    l$independence2 <- which(n_features %in% x)
-  }
-
   x <- which(approach == "empirical")
   if (length(x) > 0) {
     if (approach[1] == "empirical") x <- c(0, x)
