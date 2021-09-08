@@ -530,7 +530,9 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
     )
   }
 
-  dt_mat <- rbindlist(dt_l)
+  dt_mat <- unique(rbindlist(dt_l))
+  setkey(dt_mat, row_id)
+  dt_mat[, row_id := NULL]
   dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
 
   res <- list(dt = dt_kshap,

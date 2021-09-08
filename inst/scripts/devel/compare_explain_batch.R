@@ -42,6 +42,7 @@ copula =  explain(x_test, explainer, "copula", prediction_zero = p, n_samples = 
 indep = explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000, n_batches = 1)
 comb = explain(x_test, explainer, c("gaussian", "empirical", "empirical", "empirical"), prediction_zero = p, n_samples = 10000, n_batches = 1)
 ctree = explain(x_test, explainer, "ctree", prediction_zero = p, n_samples = 10000, n_batches = 3)
+ctree2 = explain(x_test, explainer, "ctree", mincriterion = c(0.9, 0.95, 0.95, 0.95), prediction_zero = p, n_samples = 10000, n_batches = 3)
 
 res = readRDS("inst/scripts/devel/master_res.rds")
 
@@ -63,6 +64,20 @@ emp_b$dt
 res$empirical$dt
 
 #### MJ stuff here:
+
+explain.independence2 <- function(x, explainer, approach, prediction_zero,
+                                  n_samples = 1e3, n_batches = 1, seed = 1, only_return_dt_mat = FALSE, ...) {
+
+
+  if (!is.null(seed)) set.seed(seed)
+
+  # Add arguments to explainer object
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$approach <- approach
+  explainer$n_samples <- n_samples
+
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_dt_mat, ...)
+}
 
 # Using independence with n_samples > nrow(x_train) such that no sampling is performed
 
