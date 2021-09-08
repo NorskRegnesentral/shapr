@@ -1,6 +1,6 @@
 
 library(xgboost)
-#devtools::load_all()
+devtools::load_all()
 #library(shapr)
 library(data.table)
 
