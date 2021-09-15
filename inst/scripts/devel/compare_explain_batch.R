@@ -33,7 +33,7 @@ comb = explain(x_test, explainer, c("gaussian", "gaussian", "empirical", "empiri
 ctree = explain(x_test, explainer, "ctree", mincriterion = 0.95, prediction_zero = p, n_samples = 10000)
 ctree2 = explain(x_test, explainer, "ctree", mincriterion = c(0.95, 0.95, 0.95, 0.95), prediction_zero = p, n_samples = 10000)
 #saveRDS(list(gauss = gauss, empirical = emp, copula = copula, indep = indep, comb = comb, ctree = ctree, ctree_comb = ctree2), file = "inst/scripts/devel/master_res2.rds")
-saveRDS(list(ctree = ctree, ctree_comb = ctree2), file = "inst/scripts/devel/master_res_ctree.rds")
+# saveRDS(list(ctree = ctree, ctree_comb = ctree2), file = "inst/scripts/devel/master_res_ctree.rds")
 
 
 detach("package:shapr", unload = TRUE)
@@ -46,7 +46,7 @@ gauss = explain(x_test, explainer, "gaussian", prediction_zero = p, n_samples = 
 emp =  explain(x_test, explainer, "empirical", prediction_zero = p, n_samples = 10000, n_batches = 1)
 copula =  explain(x_test, explainer, "copula", prediction_zero = p, n_samples = 10000, n_batches = 1)
 indep = explain(x_test, explainer, "independence", prediction_zero = p, n_samples = 10000, n_batches = 1)
-comb = explain(x_test, explainer, c("gaussian", "empirical", "empirical", "empirical"), prediction_zero = p, n_samples = 10000, n_batches = 1)
+comb = explain(x_test, explainer, c("gaussian", "gaussian", "empirical", "empirical"), prediction_zero = p, n_samples = 10000, n_batches = 1)
 ctree = explain(x_test, explainer, "ctree", mincriterion = 0.95, prediction_zero = p, n_samples = 10000, n_batches = 1)
 ctree2 = explain(x_test, explainer, "ctree", mincriterion = c(0.95, 0.95, 0.95, 0.95), prediction_zero = p, n_samples = 10000, n_batches = 1)
 
