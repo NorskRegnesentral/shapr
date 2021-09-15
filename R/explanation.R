@@ -427,7 +427,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   for (i in seq_along(l)) {
     dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero,
                          index_features = l[[i]], n_batches = n_batches,
-                         only_return_dt_mat = TRUE, seed = NULL, ...)
+                         only_return_dt_mat = TRUE, seed = seed, ...)
   }
 
   dt_mat <- unique(rbindlist(dt_l))
@@ -436,9 +436,13 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
 
   dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
 
+  # Find which element containing non-na p
+  p <- attr(dt_l[[which(sapply(dt_l, function(x) all(!is.na(attr(x, "p")))))]], "p")
+
+
   res <- list(dt = dt_kshap,
               model = explainer$model,
-              p = attr(dt_l[[1]], "p"), # equal for all batches
+              p = p,
               x_test = explainer$x_test,
               is_groupwise = explainer$is_groupwise)
 
@@ -523,7 +527,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
       index_features = l[[i]],
       mincriterion = as.numeric(names(l[i])),
       only_return_dt_mat = TRUE,
-      seed = NULL,
+      seed = seed,
       ...
     )
   }
@@ -533,9 +537,14 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
   dt_mat[, row_id := NULL]
   dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
 
+  # Find which element containing non-na p
+  p <- attr(dt_l[[which(sapply(dt_l, function(x) all(!is.na(attr(x, "p")))))]], "p")
+
+
+
   res <- list(dt = dt_kshap,
               model = explainer$model,
-              p = attr(dt_l[[1]], "p"), # equal for all batches
+              p = p,
               x_test = explainer$x_test,
               is_groupwise = explainer$is_groupwise)
 
@@ -579,7 +588,7 @@ create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 
   if (n_batches == 1) {
     if (!is.null(index_features)) {
-      return(list(unique(c(1, index_features, no_samples))))
+      return(list(index_features))
     } else {
       return(list(1:nrow(explainer$S)))
     }
@@ -587,16 +596,13 @@ create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 
   if (!is.null(index_features)) {
     # Rescale the number of batches to the percentage of observations used
-    n_batches <- max(1,floor(length(index_features) / nrow(explainer$S) * n_batches))
-    if (n_batches == 1) return(list(unique(c(1, index_features, no_samples))))
+    n_batches <- max(1, floor(length(index_features) / nrow(explainer$S) * n_batches))
+    if (n_batches == 1) return(list(unique(index_features)))
     S_groups <- split(index_features, cut(index_features, n_batches, labels = FALSE))
-    S_groups <- lapply(S_groups, function(x) unique(c(1, x, no_samples)))
 
   } else {
-    x0 <- 2:(no_samples - 1)
+    x0 <- 1:no_samples
     S_groups <- split(x0, cut(x0, n_batches, labels = FALSE))
-    # First and last observation is needed every time
-    S_groups <- lapply(S_groups, function(x) c(1, x, no_samples))
   }
 
   return(S_groups)
@@ -618,6 +624,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
   S_batch <- create_S_batch(explainer, n_batches, index_features)
   pred_batch <- list()
   r_batch <- list()
+  p <- NA
 
   for (batch in seq_along(S_batch)) {
 
@@ -625,12 +632,14 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
     r_batch[[batch]] <- prediction(dt, prediction_zero, explainer)
     r_batch[[batch]]$dt_mat[, row_id := S_batch[[batch]]]
 
+    if (!is.null(r_batch[[batch]]$p)) p <- r_batch[[batch]]$p
+
   }
 
   dt_mat <- rbindlist(lapply(r_batch, "[[", "dt_mat"))
 
   if (only_return_dt_mat) {
-    attr(dt_mat, "p") <- r_batch[[1]]$p
+    attr(dt_mat, "p") <- p
     return(dt_mat)
   }
 
@@ -642,7 +651,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
 
   res <- list(dt = dt_kshap,
               model = explainer$model,
-              p = r_batch[[1]]$p, # equal for all batches
+              p = p,
               x_test = explainer$x_test,
               is_groupwise = explainer$is_groupwise)
 

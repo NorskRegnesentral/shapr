@@ -303,13 +303,13 @@ test_that("Test functions in explanation.R", {
       # Checking that all explain objects produce the same as before
       expect_known_value(ex_list,
         file = "test_objects/explanation_explain_obj_list.rds",
-        update = T
+        update = FALSE
       )
     } else {
       # Tests using only the first 17 elements of explanation_explain_obj_list.rds
       expect_known_value(ex_list,
         file = "test_objects/explanation_explain_obj_list_no_ctree.rds",
-        update = T
+        update = FALSE
       )
     }
 
@@ -629,4 +629,30 @@ test_that("Test functions related to groups in explanation.R", {
     names(explanation2$dt)[-1] <- unlist(explainer2$group)
     expect_equal(explanation0$dt, explanation2$dt)
   }
+})
+
+
+test_that("test functions related to running explain in batch", {
+
+  explainer <- list()
+
+  n_comb <- 20
+  n_batches <- 1
+  explainer$S <- matrix(1, nrow = n_comb, ncol = 5)
+  S_batch <- create_S_batch(explainer, n_batches = n_batches)
+  n_batches <- 1
+  expect_length(S_batch, n_batches)
+
+  n_batches <- 5
+  S_batch <- create_S_batch(explainer, n_batches = n_batches)
+  expect_length(S_batch, 5)
+  expect_equal(unlist(S_batch, use.names = FALSE), 1:n_comb)
+
+
+  S_batch <- create_S_batch(explainer, n_batches = n_batches, index_features = 1:10)
+  expect_equal(unlist(S_batch, use.names = FALSE), 1:10)
+
+
+
+
 })

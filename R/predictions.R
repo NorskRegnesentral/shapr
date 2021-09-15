@@ -51,7 +51,7 @@ prediction <- function(dt, prediction_zero, explainer) {
   stopifnot(nrow(explainer$x_test) == dt[, max(id)])
 
   # Reducing the prediction data.table
-  max_id_combination <- dt[, max(id_combination)]
+  max_id_combination <- nrow(explainer$S)
   V1 <- keep <- NULL # due to NSE notes in R CMD check
   dt[, keep := TRUE]
   first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, max_id_combination), V1]
@@ -62,8 +62,14 @@ prediction <- function(dt, prediction_zero, explainer) {
   # Predictions
   dt[id_combination != 1, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
   dt[id_combination == 1, p_hat := prediction_zero]
-  p_all <- dt[id_combination == max(id_combination), p_hat]
-  names(p_all) <- 1:nrow(explainer$x_test)
+
+  if (dt[, max(id_combination)] < max_id_combination) {
+    p_all <- NULL
+  } else {
+    p_all <- dt[id_combination == max_id_combination, p_hat]
+    names(p_all) <- 1:nrow(explainer$x_test)
+  }
+
 
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
