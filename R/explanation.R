@@ -427,7 +427,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   for (i in seq_along(l)) {
     dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero,
                          index_features = l[[i]], n_batches = n_batches,
-                         only_return_dt_mat = TRUE, seed = seed, ...)
+                         only_return_dt_mat = TRUE, seed = NULL, ...)
   }
 
   dt_mat <- unique(rbindlist(dt_l))
@@ -527,7 +527,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
       index_features = l[[i]],
       mincriterion = as.numeric(names(l[i])),
       only_return_dt_mat = TRUE,
-      seed = seed,
+      seed = NULL,
       ...
     )
   }
