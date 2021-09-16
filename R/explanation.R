@@ -187,7 +187,7 @@ explain <- function(x, explainer, approach, prediction_zero,
   UseMethod("explain", this_class)
 }
 
-
+#' @param seed Positive integer. If \code{NULL} the seed will be inherited from the calling environment.
 #' @rdname explain
 #' @export
 explain.independence <- function(x, explainer, approach, prediction_zero,

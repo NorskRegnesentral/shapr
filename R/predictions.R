@@ -77,9 +77,7 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = "k")
   dt_mat[, id_combination := NULL]
 
-
   r <- list(p = p_all, dt_mat = dt_mat)
-  attr(r, "class") <- c("shapr", "list")
 
   return(r)
 }

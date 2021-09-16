@@ -146,6 +146,8 @@ alleviate memory problems for models with many features.}
 
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 
+\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
+
 \item{w_threshold}{Numeric vector of length 1, with \code{0 < w_threshold <= 1} representing the minimum proportion
 of the total empirical weight that data samples should use. If e.g. \code{w_threshold = .8} we will choose the
 \code{K} samples with the largest weight so that the sum of the weights accounts for 80\% of the total weight.
