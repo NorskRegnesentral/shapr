@@ -191,7 +191,7 @@ explain <- function(x, explainer, approach, prediction_zero,
 #' @rdname explain
 #' @export
 explain.independence <- function(x, explainer, approach, prediction_zero,
-                                 n_samples = 1e3, n_batches = 1, seed = 1, only_return_dt_mat = FALSE, ...) {
+                                 n_samples = 1e3, n_batches = 1, only_return_dt_mat = FALSE, seed = 1, ...) {
 
 
   if (!is.null(seed)) set.seed(seed)
@@ -233,7 +233,7 @@ explain.independence <- function(x, explainer, approach, prediction_zero,
 #'
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
-                              n_samples = 1e3, n_batches = 1, seed = 1, only_return_dt_mat = FALSE,
+                              n_samples = 1e3, n_batches = 1, only_return_dt_mat = FALSE, seed = 1,
                               w_threshold = 0.95, type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               n_samples_aicc = 1000, eval_max_aicc = 20,
                               start_aicc = 0.1, ...) {
@@ -275,7 +275,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #'
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                             n_batches = 1, seed = 1, only_return_dt_mat = FALSE,
+                             n_batches = 1, only_return_dt_mat = FALSE, seed = 1,
                              mu = NULL, cov_mat = NULL, ...) {
 
   if (!is.null(seed)) set.seed(seed)
@@ -318,7 +318,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
 #' @rdname explain
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                           n_batches = 1,  seed = 1, only_return_dt_mat = FALSE, ...) {
+                           n_batches = 1, only_return_dt_mat = FALSE, seed = 1, ...) {
 
   if (!is.null(seed)) set.seed(seed)
 
@@ -382,7 +382,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
 #'
 #' @export
 explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                          n_batches = 1, seed = 1, only_return_dt_mat = FALSE,
+                          n_batches = 1, only_return_dt_mat = FALSE, seed = 1,
                           mincriterion = 0.95, minsplit = 20,
                           minbucket = 7, sample = TRUE, ...) {
 
@@ -412,8 +412,10 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1
 #'
 #' @export
 explain.combined <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                             n_batches = 1, seed = 1, mu = NULL, cov_mat = NULL, ...) {
+                             n_batches = 1, only_return_dt_mat, seed = 1, mu = NULL, cov_mat = NULL, ...) {
 
+  # for R CMD check
+  row_id <- NULL
   if (!is.null(seed)) set.seed(seed)
 
   # Get indices of combinations
@@ -508,8 +510,10 @@ get_list_approaches <- function(n_features, approach) {
 #' @export
 explain.ctree_comb_mincrit <- function(x, explainer, approach,
                                        prediction_zero, n_samples, n_batches = 1,
-                                       seed = 1, mincriterion, ...) {
+                                       only_return_dt_mat, seed = 1, mincriterion, ...) {
 
+  # For R CMD check
+  row_id <- NULL
 
   if (length(explainer$feature_list$labels) != length(mincriterion)) {
     stop("The length of mincriterion has to be equal to 1 or the number of features.")
@@ -539,8 +543,6 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
 
   # Find which element containing non-na p
   p <- attr(dt_l[[which(sapply(dt_l, function(x) all(!is.na(attr(x, "p")))))]], "p")
-
-
 
   res <- list(dt = dt_kshap,
               model = explainer$model,
@@ -618,6 +620,9 @@ create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 #' @return A list. See \code{\link{explain}} for more information.
 #' @keywords internal
 prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_return_dt_mat, ...) {
+
+  # For R CMD check
+  row_id <- NULL
 
   index_features <- list(...)$index_features
 
