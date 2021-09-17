@@ -18,7 +18,7 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
+  only_return_contrib_dt = FALSE,
   ...
 )
 
@@ -29,7 +29,7 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
+  only_return_contrib_dt = FALSE,
   seed = 1,
   ...
 )
@@ -41,7 +41,7 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
+  only_return_contrib_dt = FALSE,
   seed = 1,
   w_threshold = 0.95,
   type = "fixed_sigma",
@@ -59,7 +59,7 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
+  only_return_contrib_dt = FALSE,
   seed = 1,
   mu = NULL,
   cov_mat = NULL,
@@ -73,7 +73,7 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
+  only_return_contrib_dt = FALSE,
   seed = 1,
   ...
 )
@@ -85,7 +85,7 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat = FALSE,
+  only_return_contrib_dt = FALSE,
   seed = 1,
   mincriterion = 0.95,
   minsplit = 20,
@@ -101,7 +101,7 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_dt_mat,
+  only_return_contrib_dt,
   seed = 1,
   mu = NULL,
   cov_mat = NULL,
@@ -115,7 +115,7 @@ explain(
   prediction_zero,
   n_samples,
   n_batches = 1,
-  only_return_dt_mat,
+  only_return_contrib_dt,
   seed = 1,
   mincriterion,
   ...
@@ -143,8 +143,10 @@ Monte Carlo integration for every conditional expectation. See also details.}
 contribution function for each test observation. The default value is 1. Setting it to a higher number can
 alleviate memory problems for models with many features.}
 
-\item{only_return_dt_mat}{Logical. Used internally in `explain.combined`. If `TRUE` the `data.table` from
-\code{\link{prediction}} is returned, else an object of class `shapr`.}
+\item{only_return_contrib_dt}{Logical. Used internally in \code{explain.combined}. If \code{TRUE} the
+\code{data.table} from \code{\link{prediction}} is returned, else an object of class \code{shapr}.
+Each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
+The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}}
 
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 

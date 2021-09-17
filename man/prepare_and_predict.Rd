@@ -8,7 +8,7 @@ prepare_and_predict(
   explainer,
   n_batches,
   prediction_zero,
-  only_return_dt_mat,
+  only_return_contrib_mat,
   ...
 )
 }
@@ -22,9 +22,6 @@ alleviate memory problems for models with many features.}
 
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
-
-\item{only_return_dt_mat}{Logical. Used internally in `explain.combined`. If `TRUE` the `data.table` from
-\code{\link{prediction}} is returned, else an object of class `shapr`.}
 
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 }

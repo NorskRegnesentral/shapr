@@ -72,7 +72,7 @@ res$empirical$dt
 #### MJ stuff here:
 
 explain.independence2 <- function(x, explainer, approach, prediction_zero,
-                                  n_samples = 1e3, n_batches = 1, seed = 1, only_return_dt_mat = FALSE, ...) {
+                                  n_samples = 1e3, n_batches = 1, seed = 1, only_return_contrib_dt = FALSE, ...) {
 
 
   if (!is.null(seed)) set.seed(seed)
@@ -82,7 +82,7 @@ explain.independence2 <- function(x, explainer, approach, prediction_zero,
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
-  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_dt_mat, ...)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_contrib_dt, ...)
 }
 
 

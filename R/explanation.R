@@ -21,8 +21,10 @@
 #' contribution function for each test observation. The default value is 1. Setting it to a higher number can
 #' alleviate memory problems for models with many features.
 #'
-#' @param only_return_dt_mat Logical. Used internally in `explain.combined`. If `TRUE` the `data.table` from
-#' \code{\link{prediction}} is returned, else an object of class `shapr`.
+#' @param only_return_contrib_dt Logical. Used internally in \code{explain.combined}. If \code{TRUE} the
+#' \code{data.table} from \code{\link{prediction}} is returned, else an object of class \code{shapr}.
+#' Each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
+#' The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}
 #'
 #' @param ... Additional arguments passed to \code{\link{prepare_data}}
 #'
@@ -152,7 +154,7 @@
 #'   print(explain_groups$dt)
 #' }
 explain <- function(x, explainer, approach, prediction_zero,
-                    n_samples = 1e3, n_batches = 1, only_return_dt_mat = FALSE, ...) {
+                    n_samples = 1e3, n_batches = 1, only_return_contrib_dt = FALSE, ...) {
   extras <- list(...)
 
   # Check input for x
@@ -191,7 +193,7 @@ explain <- function(x, explainer, approach, prediction_zero,
 #' @rdname explain
 #' @export
 explain.independence <- function(x, explainer, approach, prediction_zero,
-                                 n_samples = 1e3, n_batches = 1, only_return_dt_mat = FALSE, seed = 1, ...) {
+                                 n_samples = 1e3, n_batches = 1, only_return_contrib_dt = FALSE, seed = 1, ...) {
 
 
   if (!is.null(seed)) set.seed(seed)
@@ -201,7 +203,7 @@ explain.independence <- function(x, explainer, approach, prediction_zero,
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
-  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_dt_mat, ...)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_contrib_dt, ...)
 }
 
 
@@ -233,7 +235,7 @@ explain.independence <- function(x, explainer, approach, prediction_zero,
 #'
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
-                              n_samples = 1e3, n_batches = 1, only_return_dt_mat = FALSE, seed = 1,
+                              n_samples = 1e3, n_batches = 1, only_return_contrib_dt = FALSE, seed = 1,
                               w_threshold = 0.95, type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               n_samples_aicc = 1000, eval_max_aicc = 20,
                               start_aicc = 0.1, ...) {
@@ -258,7 +260,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
     ))
   }
 
-  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_dt_mat, ...)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_contrib_dt, ...)
 
   return(r)
 }
@@ -275,7 +277,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #'
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                             n_batches = 1, only_return_dt_mat = FALSE, seed = 1,
+                             n_batches = 1, only_return_contrib_dt = FALSE, seed = 1,
                              mu = NULL, cov_mat = NULL, ...) {
 
   if (!is.null(seed)) set.seed(seed)
@@ -306,7 +308,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
     explainer$cov_mat <- cov_mat
   }
 
-  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_dt_mat, ...)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_contrib_dt, ...)
 
   return(r)
 }
@@ -318,7 +320,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
 #' @rdname explain
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                           n_batches = 1, only_return_dt_mat = FALSE, seed = 1, ...) {
+                           n_batches = 1, only_return_contrib_dt = FALSE, seed = 1, ...) {
 
   if (!is.null(seed)) set.seed(seed)
 
@@ -355,7 +357,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
 
   explainer$x_test_gaussian <- x_test_gaussian
 
-  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_dt_mat, ...)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_contrib_dt, ...)
 
   return(r)
 }
@@ -382,7 +384,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
 #'
 #' @export
 explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                          n_batches = 1, only_return_dt_mat = FALSE, seed = 1,
+                          n_batches = 1, only_return_contrib_dt = FALSE, seed = 1,
                           mincriterion = 0.95, minsplit = 20,
                           minbucket = 7, sample = TRUE, ...) {
 
@@ -402,7 +404,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1
   explainer$sample <- sample
   explainer$n_samples <- n_samples
 
-  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_dt_mat, ...)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, only_return_contrib_dt, ...)
 
   return(r)
 }
@@ -412,7 +414,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1
 #'
 #' @export
 explain.combined <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                             n_batches = 1, only_return_dt_mat, seed = 1, mu = NULL, cov_mat = NULL, ...) {
+                             n_batches = 1, only_return_contrib_dt, seed = 1, mu = NULL, cov_mat = NULL, ...) {
 
   # for R CMD check
   row_id <- NULL
@@ -429,7 +431,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   for (i in seq_along(l)) {
     dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero,
                          index_features = l[[i]], n_batches = n_batches,
-                         only_return_dt_mat = TRUE, seed = NULL, ...)
+                         only_return_contrib_dt = TRUE, seed = NULL, ...)
   }
 
   dt_mat <- unique(rbindlist(dt_l))
@@ -510,7 +512,7 @@ get_list_approaches <- function(n_features, approach) {
 #' @export
 explain.ctree_comb_mincrit <- function(x, explainer, approach,
                                        prediction_zero, n_samples, n_batches = 1,
-                                       only_return_dt_mat, seed = 1, mincriterion, ...) {
+                                       only_return_contrib_dt, seed = 1, mincriterion, ...) {
 
   # For R CMD check
   row_id <- NULL
@@ -530,7 +532,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
     dt_l[[i]] <- explain(x, explainer, approach, prediction_zero,
       index_features = l[[i]],
       mincriterion = as.numeric(names(l[i])),
-      only_return_dt_mat = TRUE,
+      only_return_contrib_dt = TRUE,
       seed = NULL,
       ...
     )
@@ -619,7 +621,7 @@ create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 #' @inheritParams explain
 #' @return A list. See \code{\link{explain}} for more information.
 #' @keywords internal
-prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_return_dt_mat, ...) {
+prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_return_contrib_mat, ...) {
 
   # For R CMD check
   row_id <- NULL
@@ -643,7 +645,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
 
   dt_mat <- rbindlist(lapply(r_batch, "[[", "dt_mat"))
 
-  if (only_return_dt_mat) {
+  if (only_return_contrib_mat) {
     attr(dt_mat, "p") <- p
     return(dt_mat)
   }
