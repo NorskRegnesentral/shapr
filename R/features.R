@@ -41,7 +41,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   m_group <- length(group_num) # The number of groups
 
   # Force user to use a natural number for n_combinations if m > 13
-  if (m > 13 & is.null(n_combinations) & m_group==0) {
+  if (m > 13 & is.null(n_combinations) & m_group == 0) {
     stop(
       paste0(
         "Due to computational complexity, we recommend setting n_combinations = 10 000\n",
@@ -53,7 +53,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   }
 
   # Not supported for m > 30
-  if (m > 30 & m_group==0) {
+  if (m > 30 & m_group == 0) {
     stop(
       paste0(
         "Currently we are not supporting cases where the number of features is greater than 30\n",
@@ -70,10 +70,10 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     )
   }
 
-  if (!exact){
-    if(m_group==0){
+  if (!exact) {
+    if (m_group == 0) {
       # Switch to exact for feature-wise method
-      if(n_combinations > (2^m - 2)) {
+      if (n_combinations > (2^m - 2)) {
         n_combinations <- 2^m - 2
         exact <- TRUE
         message(
@@ -86,7 +86,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       }
     } else {
       # Switch to exact for feature-wise method
-      if(n_combinations > (2^m_group - 2)) {
+      if (n_combinations > (2^m_group - 2)) {
         n_combinations <- 2^m_group - 2
         exact <- TRUE
         message(
@@ -100,7 +100,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     }
   }
 
-  if (m_group==0) {
+  if (m_group == 0) {
     # Here if feature-wise Shapley values
     if (exact) {
       dt <- feature_exact(m, weight_zero_m)
