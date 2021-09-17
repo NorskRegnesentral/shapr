@@ -170,7 +170,9 @@ test_that("Basic test functions for grouping in shapley.R", {
     explainer1 <- shapr(x_train, model, group = group1)
     explainer2 <- shapr(x_train, model, group = group2)
 
+    set.seed(123)
     explainer1_2 <- shapr(x_train, model, group = group1, n_combinations = 5)
+    set.seed(1234)
     explainer2_2 <- shapr(x_train, model, group = group2, n_combinations = 5)
 
     expect_known_value(explainer1,
