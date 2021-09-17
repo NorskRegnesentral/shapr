@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9001</span>
       </span>
     </div>
 
@@ -152,6 +152,7 @@
   n_samples_aicc <span class='op'>=</span> <span class='fl'>1000</span>,
   eval_max_aicc <span class='op'>=</span> <span class='fl'>20</span>,
   start_aicc <span class='op'>=</span> <span class='fl'>0.1</span>,
+  cov_mat <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
 
@@ -270,16 +271,16 @@ is only applicable when <code>approach = "empirical"</code>, and <code>type</cod
 <code>"AICc_each_k"</code> or <code>"AICc_full"</code></p></td>
     </tr>
     <tr>
-      <th>mu</th>
-      <td><p>Numeric vector. (Optional) Containing the mean of the data generating distribution.
-If <code>NULL</code> the expected values are estimated from the data. Note that this is only used
-when <code>approach = "gaussian"</code>.</p></td>
-    </tr>
-    <tr>
       <th>cov_mat</th>
       <td><p>Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. <code>NULL</code> means it is estimated from the data if needed
 (in the Gaussian approach).</p></td>
+    </tr>
+    <tr>
+      <th>mu</th>
+      <td><p>Numeric vector. (Optional) Containing the mean of the data generating distribution.
+If <code>NULL</code> the expected values are estimated from the data. Note that this is only used
+when <code>approach = "gaussian"</code>.</p></td>
     </tr>
     <tr>
       <th>mincriterion</th>
