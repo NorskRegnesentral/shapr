@@ -27,6 +27,7 @@ explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
   n_samples_aicc = 1000,
   eval_max_aicc = 20,
   start_aicc = 0.1,
+  cov_mat = NULL,
   ...
 )
 
@@ -113,13 +114,13 @@ optimizing the AICc. Note that this argument is only applicable when
 is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
 \code{"AICc_each_k"} or \code{"AICc_full"}}
 
-\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
-If \code{NULL} the expected values are estimated from the data. Note that this is only used
-when \code{approach = "gaussian"}.}
-
 \item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. \code{NULL} means it is estimated from the data if needed
 (in the Gaussian approach).}
+
+\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
+If \code{NULL} the expected values are estimated from the data. Note that this is only used
+when \code{approach = "gaussian"}.}
 
 \item{mincriterion}{Numeric value or vector where length of vector is the number of features in model.
 Value is equal to 1 - alpha where alpha is the nominal level of the conditional

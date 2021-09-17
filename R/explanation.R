@@ -225,6 +225,9 @@ explain.independence <- function(x, explainer, approach, prediction_zero,
 #' of the total empirical weight that data samples should use. If e.g. \code{w_threshold = .8} we will choose the
 #' \code{K} samples with the largest weight so that the sum of the weights accounts for 80\% of the total weight.
 #' \code{w_threshold} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).
+#' @param cov_mat Numeric matrix. (Optional) Containing the covariance matrix of the data
+#' generating distribution. \code{NULL} means it is estimated from the data if needed
+#' (in the empirical approach).
 #'
 #' @rdname explain
 #'
@@ -233,7 +236,8 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
                               n_samples = 1e3, w_threshold = 0.95,
                               type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               n_samples_aicc = 1000, eval_max_aicc = 20,
-                              start_aicc = 0.1, ...) {
+                              start_aicc = 0.1,
+                              cov_mat = NULL, ...) {
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
@@ -251,6 +255,18 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
       "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
       "Please use approach = 'independence' instead in the call to explain()."
     ))
+  }
+
+  # If cov_mat is not provided directly, use sample covariance of training data
+  if (is.null(cov_mat)) {
+    cov_mat <- stats::cov(explainer$x_train)
+  }
+  # Make sure that covariance matrix is positive-definite
+  eigen_values <- eigen(cov_mat)$values
+  if (any(eigen_values <= 1e-06)) {
+    explainer$cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
+  } else {
+    explainer$cov_mat <- cov_mat
   }
 
   # Generate data

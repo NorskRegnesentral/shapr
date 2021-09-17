@@ -155,7 +155,8 @@ prepare_data.empirical <- function(x, seed = 1, index_features = NULL, ...) {
   x$D <- distance_matrix(
     x$x_train,
     x$x_test,
-    x$X$features[index_features]
+    x$X$features[index_features],
+    mcov = x$cov_mat
   )
 
   # Setup
