@@ -639,7 +639,9 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
 
     if (!is.null(r_batch[[batch]]$p)) p <- r_batch[[batch]]$p
 
-    cat("Batch no ",batch," of ",length(S_batch)," completed.\n")
+    if(length(S_batch)>1){
+      cat("Batch no ",batch," of ",length(S_batch)," completed.\n")
+    }
 
   }
 
