@@ -337,15 +337,19 @@ test_that("Test functions in explanation.R", {
 
     # Check that the same results are obtained if you pass the covariance matrix or whether it is computed internally
     # Gaussian approach
-    explained_gaus_cov <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p0, cov_mat = cov(explainer$x_train))
-    explained_gaus_no_cov <- explain(x_test, explainer, approach = "gaussian", prediction_zero = p0)
+    explained_gaus_cov <- explain(x_test, explainer, approach = "gaussian",
+                                  prediction_zero = p0, cov_mat = cov(explainer$x_train))
+    explained_gaus_no_cov <- explain(x_test, explainer, approach = "gaussian",
+                                     prediction_zero = p0)
 
     # Empirical approach
-    explained_emp_cov <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0, cov_mat = cov(explainer$x_train))
-    explained_emp_no_cov <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0)
+    explained_emp_cov <- explain(x_test, explainer, approach = "empirical",
+                                 prediction_zero = p0, cov_mat = cov(explainer$x_train))
+    explained_emp_no_cov <- explain(x_test, explainer, approach = "empirical",
+                                    prediction_zero = p0)
 
-    expect_equal(explained_gaus_cov,explained_gaus_no_cov)
-    expect_equal(explained_emp_cov,explained_emp_no_cov)
+    expect_equal(explained_gaus_cov, explained_gaus_no_cov)
+    expect_equal(explained_emp_cov, explained_emp_no_cov)
 
   }
 })
