@@ -240,13 +240,11 @@ shapr <- function(x,
 }
 
 #' @keywords internal
-distance_matrix <- function(x_train, x_test = NULL, list_features) {
+distance_matrix <- function(x_train, x_test = NULL, list_features, mcov) {
   if (is.null(x_test)) {
     return(NULL)
   }
 
-  # Get covariance matrix
-  mcov <- stats::cov(x_train)
   if (is.null(dim(x_test))) {
     x_test <- t(as.matrix(x_test))
   }
