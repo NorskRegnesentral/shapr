@@ -97,7 +97,7 @@ prepare_data.independence <- function(x, index_features = NULL, ...) {
     index_features <- x$X[, .I]
   }
 
-  S <- x$S[index_features, ]
+  S <- x$S[index_features, , drop = FALSE]
   x_train <- as.matrix(x$x_train)
   n_train <- nrow(x_train)
   n_samples <- min(x$n_samples, n_train)
@@ -156,7 +156,7 @@ prepare_data.empirical <- function(x, index_features = NULL, ...) {
 
   # Setup
   n_col <- nrow(x$x_test)
-  no_empirical <- nrow(x$S[index_features, ])
+  no_empirical <- nrow(x$S[index_features, , drop = FALSE])
 
   h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
   h_optim_DT <- as.data.table(h_optim_mat)
@@ -196,7 +196,7 @@ prepare_data.empirical <- function(x, index_features = NULL, ...) {
 
     val <- t(t(-0.5 * D) / h_optim_vec^2)
     W_kernel <- exp(val)
-    S <- x$S[index_features, ]
+    S <- x$S[index_features, , drop = FALSE]
 
     ## Get imputed data
     dt_l[[i]] <- observation_impute(
