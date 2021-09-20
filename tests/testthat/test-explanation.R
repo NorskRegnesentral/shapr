@@ -674,7 +674,7 @@ test_that("prepare_and_predict", {
     explainer$approach <- "independence"
     explainer$n_samples <- 100
 
-    res = prepare_and_predict(explainer, n_batches = 1, p0, FALSE)
+    res <- prepare_and_predict(explainer, n_batches = 1, p0, FALSE)
 
     expect_true(is.list(res))
     expect_s3_class(res, "shapr")
@@ -682,7 +682,7 @@ test_that("prepare_and_predict", {
 
 
     # return the contribution matrix
-    res =  prepare_and_predict(explainer, n_batches = 1, p0, TRUE)
+    res <- prepare_and_predict(explainer, n_batches = 1, p0, TRUE)
     expect_s3_class(res, "data.table")
 
 

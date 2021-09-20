@@ -35,7 +35,7 @@ test_that("Test prediction", {
 
     # Test -----------
     lnms <- c("p", "dt_mat")
-    expect_equal(class(x), c("shapr", "list"))
+    expect_equal(class(x), "list")
     expect_equal(names(x), lnms)
     expect_equal(x$p, predict_model(explainer$model, explainer$x_test))
     expect_true(data.table::is.data.table(x$dt_mat))
