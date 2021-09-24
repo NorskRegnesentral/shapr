@@ -449,7 +449,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   # Compute shapley values for all methods
   for (i in seq_along(l)) {
     dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero,
-                         index_features = l[[i]], n_batches = n_batches,
+                         index_S = l[[i]], n_batches = n_batches,
                          only_return_contrib_dt = TRUE, seed = NULL, ...)
   }
 
@@ -549,7 +549,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
   dt_l <- list()
   for (i in seq_along(l)) {
     dt_l[[i]] <- explain(x, explainer, approach, prediction_zero,
-      index_features = l[[i]],
+      index_S = l[[i]],
       mincriterion = as.numeric(names(l[i])),
       only_return_contrib_dt = TRUE,
       seed = NULL,
@@ -598,30 +598,30 @@ get_list_ctree_mincrit <- function(n_features, mincriterion) {
 #'
 #' @param explainer The binary matrix \code{S} returned from \code{\link{shapr}}.
 #' @param n_batches Numeric value specifying how many batches \code{S} should be split into.
-#' @param index_feature Numeric vector specifying which rows of \code{S} that should be considered.
+#' @param index_S Numeric vector specifying which rows of \code{S} that should be considered.
 #' @return A list of length \code{n_batches}.
 #'
-#' @details If \code{index_features} is not \code{NULL} then the number of batches is scaled such that the
-#' total number of batches is equal \code{n_batches} and not within the rows specified by\code{index_features}.
+#' @details If \code{index_S} is not \code{NULL} then the number of batches is scaled such that the
+#' total number of batches is equal \code{n_batches} and not within the rows specified by\code{index_S}.
 #'
 #' @keywords internal
-create_S_batch <- function(explainer, n_batches, index_features = NULL) {
+create_S_batch <- function(explainer, n_batches, index_S = NULL) {
 
   no_samples <- nrow(explainer$S)
 
   if (n_batches == 1) {
-    if (!is.null(index_features)) {
-      return(list(index_features))
+    if (!is.null(index_S)) {
+      return(list(index_S))
     } else {
       return(list(1:nrow(explainer$S)))
     }
   }
 
-  if (!is.null(index_features)) {
+  if (!is.null(index_S)) {
     # Rescale the number of batches to the percentage of observations used
-    n_batches <- max(1, floor(length(index_features) / nrow(explainer$S) * n_batches))
-    if (n_batches == 1) return(list(unique(index_features)))
-    S_groups <- split(index_features, cut(index_features, n_batches, labels = FALSE))
+    n_batches <- max(1, floor(length(index_S) / nrow(explainer$S) * n_batches))
+    if (n_batches == 1) return(list(unique(index_S)))
+    S_groups <- split(index_S, cut(index_S, n_batches, labels = FALSE))
 
   } else {
     x0 <- 1:no_samples
@@ -640,21 +640,23 @@ create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 #' @inheritParams explain
 #' @return A list. See \code{\link{explain}} for more information.
 #' @keywords internal
-prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_return_contrib_mat, ...) {
+prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_return_contrib_dt, ...) {
 
   # For R CMD check
   row_id <- NULL
 
-  index_features <- list(...)$index_features
+  dots <- list(...)
+  index_S <- dots$index_S
+  dots$index_S <- NULL
 
-  S_batch <- create_S_batch(explainer, n_batches, index_features)
+  S_batch <- create_S_batch(explainer, n_batches, index_S)
   pred_batch <- list()
   r_batch <- list()
   p <- NA
 
   for (batch in seq_along(S_batch)) {
 
-    dt <- prepare_data(explainer, index_features = S_batch[[batch]])
+    dt <- prepare_data(explainer, index_features = S_batch[[batch]], ...)
     r_batch[[batch]] <- prediction(dt, prediction_zero, explainer)
     r_batch[[batch]]$dt_mat[, row_id := S_batch[[batch]]]
 
@@ -668,7 +670,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
 
   dt_mat <- rbindlist(lapply(r_batch, "[[", "dt_mat"))
 
-  if (only_return_contrib_mat) {
+  if (only_return_contrib_dt) {
     attr(dt_mat, "p") <- p
     return(dt_mat)
   }

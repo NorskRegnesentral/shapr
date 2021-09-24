@@ -8,7 +8,7 @@ prepare_and_predict(
   explainer,
   n_batches,
   prediction_zero,
-  only_return_contrib_mat,
+  only_return_contrib_dt,
   ...
 )
 }
@@ -22,6 +22,11 @@ alleviate memory problems for models with many features.}
 
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
+
+\item{only_return_contrib_dt}{Logical. Used internally in \code{explain.combined}. If \code{TRUE} the
+\code{data.table} from \code{\link{prediction}} is returned, else an object of class \code{shapr}.
+Each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
+The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}}
 
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
 }
