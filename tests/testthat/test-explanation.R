@@ -652,8 +652,8 @@ test_that("test functions related to running explain in batch", {
   S_batch <- create_S_batch(explainer, n_batches = n_batches, index_features = 1:10)
   expect_equal(unlist(S_batch, use.names = FALSE), 1:10)
 
-
 })
+
 
 test_that("prepare_and_predict", {
 
@@ -685,7 +685,15 @@ test_that("prepare_and_predict", {
     res <- prepare_and_predict(explainer, n_batches = 1, p0, TRUE)
     expect_s3_class(res, "data.table")
 
-
   }
+})
+
+test_that("errors with non valid n_batches", {
+
+  explainer <- list()
+  explainer$S <- matrix(1, nrow = 10, ncol = 2)
+  x_test <- data.table()
+  expect_error(explain(x_test, explainer, n_batches = 0))
+  expect_error(explain(x_test, explainer, n_batches = 10))
 
 })

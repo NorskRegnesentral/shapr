@@ -162,6 +162,9 @@ explain <- function(x, explainer, approach, prediction_zero,
     stop("x should be a matrix or a data.frame/data.table.")
   }
 
+  if (n_batches < 1 || n_batches >= nrow(explainer$S)) {
+    stop("`n_batches` is smaller than 1 or greater or equal to number of rows in explainer$S.")
+  }
   # Check input for approach
   if (!(is.vector(approach) &&
     is.atomic(approach) &&
@@ -642,7 +645,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
     if (!is.null(r_batch[[batch]]$p)) p <- r_batch[[batch]]$p
 
     if (length(S_batch) > 1) {
-      cat("Batch no ", batch, " of ", length(S_batch), " completed.\n")
+      cat("Batch no", batch, "of", length(S_batch), "completed.\n")
     }
 
   }
