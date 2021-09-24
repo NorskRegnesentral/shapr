@@ -140,16 +140,20 @@ the response.}
 \item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
-\item{n_batches}{Positive integer. Specifies how many iterations that should be used to calculate the
-contribution function for each test observation. The default value is 1. Setting it to a higher number can
-alleviate memory problems for models with many features.}
+\item{n_batches}{Positive integer.
+Specifies how many batches the total number of feature combinations should be split into when calculating the
+contribution function for each test observation.
+The default value is 1.
+Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+This typically comes with a small increase in computation time.}
 
-\item{only_return_contrib_dt}{Logical. Used internally in \code{explain.combined}. If \code{TRUE} the
-\code{data.table} from \code{\link{prediction}} is returned, else an object of class \code{shapr}.
-Each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
-The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}}
+\item{only_return_contrib_dt}{Logical. Used internally in \code{explain.combined}.
+If \code{FALSE} (default) an object of class \code{shapr} is returned.
+If \code{TRUE} the \code{data.table} from \code{\link{prediction}} is returned.
+Then, each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
+The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}.}
 
-\item{...}{Additional arguments passed to \code{\link{prepare_data}}}
+\item{...}{Additional arguments passed to \code{\link{prepare_and_predict}}}
 
 \item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 
@@ -235,7 +239,7 @@ such as the mean of the predictions in the training data are also reasonable.
 Explain the output of machine learning models with more accurately estimated Shapley values
 }
 \details{
-The most important thing to notice is that \code{shapr} has implemented four different
+The most important thing to notice is that \code{shapr} has implemented five different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
 \code{"gaussian"}, \code{"copula"}, \code{"ctree"} and \code{"independence"}.
 In addition, the user also has the option of combining the four approaches.

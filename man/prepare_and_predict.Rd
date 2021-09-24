@@ -16,9 +16,12 @@ prepare_and_predict(
 \item{explainer}{An \code{explainer} object to use for explaining the observations.
 See \code{\link{shapr}}.}
 
-\item{n_batches}{Positive integer. Specifies how many iterations that should be used to calculate the
-contribution function for each test observation. The default value is 1. Setting it to a higher number can
-alleviate memory problems for models with many features.}
+\item{n_batches}{Positive integer.
+Specifies how many batches the total number of feature combinations should be split into when calculating the
+contribution function for each test observation.
+The default value is 1.
+Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+This typically comes with a small increase in computation time.}
 
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
@@ -29,6 +32,7 @@ Each column (except for \code{row_id}) correspond to the vector \code{v_D} in Eq
 The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}}
 
 \item{...}{Additional arguments passed to \code{\link{prepare_data}}}
+
 }
 \value{
 A list. See \code{\link{explain}} for more information.
