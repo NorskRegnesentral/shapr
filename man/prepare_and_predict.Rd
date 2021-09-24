@@ -26,13 +26,13 @@ This typically comes with a small increase in computation time.}
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
 
-\item{only_return_contrib_dt}{Logical. Used internally in \code{explain.combined}. If \code{TRUE} the
-\code{data.table} from \code{\link{prediction}} is returned, else an object of class \code{shapr}.
-Each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
-The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}}
+\item{only_return_contrib_dt}{Logical. Used internally in \code{explain.combined}.
+If \code{FALSE} (default) an object of class \code{shapr} is returned.
+If \code{TRUE} the \code{data.table} from \code{\link{prediction}} is returned.
+Then, each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
+The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}.}
 
-\item{...}{Additional arguments passed to \code{\link{prepare_data}}}
-
+\item{...}{Additional arguments passed to \code{\link{prepare_and_predict}}}
 }
 \value{
 A list. See \code{\link{explain}} for more information.

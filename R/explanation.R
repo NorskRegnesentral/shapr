@@ -649,9 +649,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
   # For R CMD check
   row_id <- NULL
 
-  dots <- list(...)
-  index_S <- dots$index_S
-  dots$index_S <- NULL
+  index_S <- list(...)$index_S
 
   S_batch <- create_S_batch(explainer, n_batches, index_S)
   pred_batch <- list()

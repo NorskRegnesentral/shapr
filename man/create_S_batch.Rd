@@ -4,14 +4,14 @@
 \alias{create_S_batch}
 \title{Compute Shapley values in batches}
 \usage{
-create_S_batch(explainer, n_batches, index_features = NULL)
+create_S_batch(explainer, n_batches, index_S = NULL)
 }
 \arguments{
 \item{explainer}{The binary matrix \code{S} returned from \code{\link{shapr}}.}
 
 \item{n_batches}{Numeric value specifying how many batches \code{S} should be split into.}
 
-\item{index_feature}{Numeric vector specifying which rows of \code{S} that should be considered.}
+\item{index_S}{Numeric vector specifying which rows of \code{S} that should be considered.}
 }
 \value{
 A list of length \code{n_batches}.
@@ -20,7 +20,7 @@ A list of length \code{n_batches}.
 Create a list of indexes used to compute Shapley values in batches.
 }
 \details{
-If \code{index_features} is not \code{NULL} then the number of batches is scaled such that the
-total number of batches is equal \code{n_batches} and not within the rows specified by\code{index_features}.
+If \code{index_S} is not \code{NULL} then the number of batches is scaled such that the
+total number of batches is equal \code{n_batches} and not within the rows specified by\code{index_S}.
 }
 \keyword{internal}
