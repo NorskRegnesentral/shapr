@@ -60,7 +60,7 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt <- dt[keep == TRUE][, keep := NULL]
 
   # Predictions
-  if (!all(dt[,unique(id_combination)] == 1)){ # Avoid warnings when predicting with empty newdata
+  if (!all(dt[, unique(id_combination)] == 1)) { # Avoid warnings when predicting with empty newdata
     dt[id_combination != 1, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
   }
   dt[id_combination == 1, p_hat := prediction_zero]
