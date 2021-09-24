@@ -17,18 +17,22 @@
 #' @param prediction_zero Numeric. The prediction value for unseen data, typically equal to the mean of
 #' the response.
 #'
-#' @param n_batches Positive integer. Specifies how many iterations that should be used to calculate the
-#' contribution function for each test observation. The default value is 1. Setting it to a higher number can
-#' alleviate memory problems for models with many features.
+#' @param n_batches Positive integer.
+#' Specifies how many batches the total number of feature combinations should be split into when calculating the
+#' contribution function for each test observation.
+#' The default value is 1.
+#' Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+#' This typically comes with a small increase in computation time.
 #'
-#' @param only_return_contrib_dt Logical. Used internally in \code{explain.combined}. If \code{TRUE} the
-#' \code{data.table} from \code{\link{prediction}} is returned, else an object of class \code{shapr}.
-#' Each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
-#' The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}
+#' @param only_return_contrib_dt Logical. Used internally in \code{explain.combined}.
+#' If \code{FALSE} (default) an object of class \code{shapr} is returned.
+#' If \code{TRUE} the \code{data.table} from \code{\link{prediction}} is returned.
+#' Then, each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
+#' The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}.
 #'
-#' @param ... Additional arguments passed to \code{\link{prepare_data}}
+#' @param ... Additional arguments passed to \code{\link{prepare_and_predict}}
 #'
-#' @details The most important thing to notice is that \code{shapr} has implemented four different
+#' @details The most important thing to notice is that \code{shapr} has implemented five different
 #' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
 #' \code{"gaussian"}, \code{"copula"}, \code{"ctree"} and \code{"independence"}.
 #' In addition, the user also has the option of combining the four approaches.
@@ -162,8 +166,8 @@ explain <- function(x, explainer, approach, prediction_zero,
     stop("x should be a matrix or a data.frame/data.table.")
   }
 
-  if (n_batches < 1 || n_batches >= nrow(explainer$S)) {
-    stop("`n_batches` is smaller than 1 or greater or equal to number of rows in explainer$S.")
+  if (n_batches < 1 || n_batches > nrow(explainer$S)) {
+    stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
   }
   # Check input for approach
   if (!(is.vector(approach) &&
@@ -621,12 +625,12 @@ create_S_batch <- function(explainer, n_batches, index_features = NULL) {
     # Rescale the number of batches to the percentage of observations used
     n_batches <- max(1, floor(length(index_features) / nrow(explainer$S) * n_batches))
     if (n_batches == 1) return(list(unique(index_features)))
-    S_groups <- split(index_features, cut(index_features, n_batches, labels = FALSE))
-
+    x0 <- index_features
   } else {
     x0 <- 1:no_samples
-    S_groups <- split(x0, cut(x0, n_batches, labels = FALSE))
   }
+  S_groups <- split(x0, cut(x0, n_batches, labels = FALSE))
+
 
   return(S_groups)
 }
