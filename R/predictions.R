@@ -84,9 +84,10 @@ prediction <- function(dt, prediction_zero, explainer) {
 
 
 #' Compute shapley values
-#' @param explainer An `explain` object.
+#' @param explainer An \code{explain} object.
 #' @param contribution_mat The contribution matrix.
-#' @return A `data.table` with shapley values for each test observation.
+#' @return A \code{data.table} with shapley values for each test observation.
+#' @export
 #' @keywords internal
 compute_shapley <- function(explainer, contribution_mat) {
 

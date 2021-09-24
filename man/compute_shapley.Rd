@@ -7,12 +7,12 @@
 compute_shapley(explainer, contribution_mat)
 }
 \arguments{
-\item{explainer}{An `explain` object.}
+\item{explainer}{An \code{explain} object.}
 
 \item{contribution_mat}{The contribution matrix.}
 }
 \value{
-A `data.table` with shapley values for each test observation.
+A \code{data.table} with shapley values for each test observation.
 }
 \description{
 Compute shapley values

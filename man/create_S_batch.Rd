@@ -7,20 +7,20 @@
 create_S_batch(explainer, n_batches, index_features = NULL)
 }
 \arguments{
-\item{explainer}{The binary matrix `S` returned from `shapr`.}
+\item{explainer}{The binary matrix \code{S} returned from \code{\link{shapr}}.}
 
-\item{n_batches}{Numeric value specifying how many batches `S` should be split into.}
+\item{n_batches}{Numeric value specifying how many batches \code{S} should be split into.}
 
-\item{index_feature}{Numeric vector specifying which rows of `S` that should be considered.}
+\item{index_feature}{Numeric vector specifying which rows of \code{S} that should be considered.}
 }
 \value{
-A list of length `n_batches`.
+A list of length \code{n_batches}.
 }
 \description{
 Create a list of indexes used to compute Shapley values in batches.
 }
 \details{
-If `index_features` is not `NULL` then the number of batches is scaled such that the
-total number of batches is equal `n_batches` and not within the rows specified by `index_features`.
+If \code{index_features} is not \code{NULL} then the number of batches is scaled such that the
+total number of batches is equal \code{n_batches} and not within the rows specified by\code{index_features}.
 }
 \keyword{internal}

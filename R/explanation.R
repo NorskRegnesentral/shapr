@@ -454,7 +454,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   }
 
   dt_mat <- unique(rbindlist(dt_l))
-  setkey(dt_mat, row_id)
+  data.table::setkey(dt_mat, row_id)
   dt_mat[, row_id := NULL]
 
   dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
@@ -558,7 +558,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
   }
 
   dt_mat <- unique(rbindlist(dt_l))
-  setkey(dt_mat, row_id)
+  data.table::setkey(dt_mat, row_id)
   dt_mat[, row_id := NULL]
   dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
 
@@ -596,13 +596,13 @@ get_list_ctree_mincrit <- function(n_features, mincriterion) {
 #'
 #' Create a list of indexes used to compute Shapley values in batches.
 #'
-#' @param explainer The binary matrix `S` returned from `shapr`.
-#' @param n_batches Numeric value specifying how many batches `S` should be split into.
-#' @param index_feature Numeric vector specifying which rows of `S` that should be considered.
-#' @return A list of length `n_batches`.
+#' @param explainer The binary matrix \code{S} returned from \code{\link{shapr}}.
+#' @param n_batches Numeric value specifying how many batches \code{S} should be split into.
+#' @param index_feature Numeric vector specifying which rows of \code{S} that should be considered.
+#' @return A list of length \code{n_batches}.
 #'
-#' @details If `index_features` is not `NULL` then the number of batches is scaled such that the
-#' total number of batches is equal `n_batches` and not within the rows specified by `index_features`.
+#' @details If \code{index_features} is not \code{NULL} then the number of batches is scaled such that the
+#' total number of batches is equal \code{n_batches} and not within the rows specified by\code{index_features}.
 #'
 #' @keywords internal
 create_S_batch <- function(explainer, n_batches, index_features = NULL) {
@@ -634,7 +634,7 @@ create_S_batch <- function(explainer, n_batches, index_features = NULL) {
 #' Calculate Shapley values
 #'
 #' Sample covariate values, predict and calculate Shapley values. The sampling and prediction can be done in batches
-#' if `n_batches` is greater than 1.
+#' if \code{n_batches} is greater than 1.
 #'
 #'
 #' @inheritParams explain
@@ -674,7 +674,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, only_retu
   }
 
   dt_mat <- unique(dt_mat)
-  setkey(dt_mat, row_id)
+  data.table::setkey(dt_mat, row_id)
   dt_mat[, row_id := NULL]
 
   dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))

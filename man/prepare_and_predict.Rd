@@ -30,6 +30,6 @@ A list. See \code{\link{explain}} for more information.
 }
 \description{
 Sample covariate values, predict and calculate Shapley values. The sampling and prediction can be done in batches
-if `n_batches` is greater than 1.
+if \code{n_batches} is greater than 1.
 }
 \keyword{internal}
