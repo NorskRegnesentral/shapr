@@ -691,7 +691,7 @@ test_that("prepare_and_predict", {
     explainer$approach <- "independence"
     explainer$n_samples <- 100
 
-    res <- prepare_and_predict(explainer, n_batches = 1, p0, FALSE)
+    res <- prepare_and_predict(explainer, n_batches = 1, p0)
 
     expect_true(is.list(res))
     expect_s3_class(res, "shapr")
@@ -699,7 +699,7 @@ test_that("prepare_and_predict", {
 
 
     # return the contribution matrix
-    res <- prepare_and_predict(explainer, n_batches = 1, p0, TRUE)
+    res <- prepare_and_predict(explainer, n_batches = 1, p0, only_return_contrib_dt = TRUE)
     expect_s3_class(res, "data.table")
 
   }
@@ -711,6 +711,6 @@ test_that("errors with non valid n_batches", {
   explainer$S <- matrix(1, nrow = 10, ncol = 2)
   x_test <- data.table()
   expect_error(explain(x_test, explainer, n_batches = 0))
-  expect_error(explain(x_test, explainer, n_batches = 10))
+  expect_error(explain(x_test, explainer, n_batches = 11))
 
 })

@@ -18,7 +18,6 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_contrib_dt = FALSE,
   ...
 )
 
@@ -29,7 +28,6 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_contrib_dt = FALSE,
   seed = 1,
   ...
 )
@@ -41,7 +39,6 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_contrib_dt = FALSE,
   seed = 1,
   w_threshold = 0.95,
   type = "fixed_sigma",
@@ -60,7 +57,6 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_contrib_dt = FALSE,
   seed = 1,
   mu = NULL,
   cov_mat = NULL,
@@ -74,7 +70,6 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_contrib_dt = FALSE,
   seed = 1,
   ...
 )
@@ -86,7 +81,6 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_contrib_dt = FALSE,
   seed = 1,
   mincriterion = 0.95,
   minsplit = 20,
@@ -102,7 +96,6 @@ explain(
   prediction_zero,
   n_samples = 1000,
   n_batches = 1,
-  only_return_contrib_dt,
   seed = 1,
   mu = NULL,
   cov_mat = NULL,
@@ -116,7 +109,6 @@ explain(
   prediction_zero,
   n_samples,
   n_batches = 1,
-  only_return_contrib_dt,
   seed = 1,
   mincriterion,
   ...
@@ -146,12 +138,6 @@ contribution function for each test observation.
 The default value is 1.
 Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
 This typically comes with a small increase in computation time.}
-
-\item{only_return_contrib_dt}{Logical. Used internally in \code{explain.combined}.
-If \code{FALSE} (default) an object of class \code{shapr} is returned.
-If \code{TRUE} the \code{data.table} from \code{\link{prediction}} is returned.
-Then, each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
-The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}.}
 
 \item{...}{Additional arguments passed to \code{\link{prepare_and_predict}}}
 
