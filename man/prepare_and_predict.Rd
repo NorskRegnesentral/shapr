@@ -20,7 +20,7 @@ This typically comes with a small increase in computation time.}
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
 
-\item{...}{Arguments passed to \link{\code{prepare_data}} with exception of \code{only_return_contrib_dt},
+\item{...}{Arguments passed to \code{\link{prepare_data}} with exception of \code{only_return_contrib_dt},
 which is only passed to explain. If \code{TRUE} the
 \code{data.table} from \code{\link{prediction}} is returned, else an object of class \code{shapr}.
 Each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
