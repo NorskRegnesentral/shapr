@@ -303,13 +303,13 @@ test_that("Test functions in explanation.R", {
       # Checking that all explain objects produce the same as before
       expect_known_value(ex_list,
         file = "test_objects/explanation_explain_obj_list.rds",
-        update = F
+        update = FALSE
       )
     } else {
       # Tests using only the first 17 elements of explanation_explain_obj_list.rds
       expect_known_value(ex_list,
         file = "test_objects/explanation_explain_obj_list_no_ctree.rds",
-        update = F
+        update = FALSE
       )
     }
 
@@ -317,7 +317,7 @@ test_that("Test functions in explanation.R", {
     ### Additional test to test that only the produced shapley values are the same as before
     fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")
     for (i in 1:length(ex_list)) {
-      expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+        expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
     }
 
 
@@ -646,4 +646,71 @@ test_that("Test functions related to groups in explanation.R", {
     names(explanation2$dt)[-1] <- unlist(explainer2$group)
     expect_equal(explanation0$dt, explanation2$dt)
   }
+})
+
+
+test_that("test functions related to running explain in batch", {
+
+  explainer <- list()
+
+  n_comb <- 20
+  n_batches <- 1
+  explainer$S <- matrix(1, nrow = n_comb, ncol = 5)
+  S_batch <- create_S_batch(explainer, n_batches = n_batches)
+  n_batches <- 1
+  expect_length(S_batch, n_batches)
+
+  n_batches <- 5
+  S_batch <- create_S_batch(explainer, n_batches = n_batches)
+  expect_length(S_batch, 5)
+  expect_equal(unlist(S_batch, use.names = FALSE), 1:n_comb)
+
+
+  S_batch <- create_S_batch(explainer, n_batches = n_batches, index_S = 1:10)
+  expect_equal(unlist(S_batch, use.names = FALSE), 1:10)
+
+})
+
+
+test_that("prepare_and_predict", {
+
+  if (requireNamespace("MASS", quietly = TRUE)) {
+
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    y_var <- "medv"
+
+    y_train <- tail(Boston[, y_var], 50)
+    x_test <- as.matrix(head(Boston[, x_var], 2))
+
+    # Prepare the data for explanation. Path needs to be relative to testthat directory in the package
+    explainer <- readRDS(file = "test_objects/shapley_explainer_obj.rds")
+
+    p0 <- mean(y_train)
+    explainer$x_test <- as.matrix(preprocess_data(x_test, explainer$feature_list)$x_dt)
+    explainer$approach <- "independence"
+    explainer$n_samples <- 100
+
+    res <- prepare_and_predict(explainer, n_batches = 1, p0)
+
+    expect_true(is.list(res))
+    expect_s3_class(res, "shapr")
+    expect_equal(names(res), c("dt", "model", "p", "x_test", "is_groupwise"))
+
+
+    # return the contribution matrix
+    res <- prepare_and_predict(explainer, n_batches = 1, p0, only_return_contrib_dt = TRUE)
+    expect_s3_class(res, "data.table")
+
+  }
+})
+
+test_that("errors with non valid n_batches", {
+
+  explainer <- list()
+  explainer$S <- matrix(1, nrow = 10, ncol = 2)
+  x_test <- data.table()
+  expect_error(explain(x_test, explainer, n_batches = 0))
+  expect_error(explain(x_test, explainer, n_batches = 11))
+
 })

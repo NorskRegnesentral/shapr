@@ -45,19 +45,13 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   # Setup
   feature_names <- colnames(explainer$x_test)
-  if (!explainer$is_groupwise) {
-    shap_names <- feature_names
-  } else {
-    shap_names <- names(explainer$group)
-  }
-
   data.table::setkeyv(dt, c("id", "id_combination"))
 
   # Check that the number of test observations equals max(id)
   stopifnot(nrow(explainer$x_test) == dt[, max(id)])
 
   # Reducing the prediction data.table
-  max_id_combination <- dt[, max(id_combination)]
+  max_id_combination <- nrow(explainer$S)
   V1 <- keep <- NULL # due to NSE notes in R CMD check
   dt[, keep := TRUE]
   first_element <- dt[, tail(.I, 1), .(id, id_combination)][id_combination %in% c(1, max_id_combination), V1]
@@ -66,29 +60,51 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt <- dt[keep == TRUE][, keep := NULL]
 
   # Predictions
-  dt[id_combination != 1, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
+  if (!all(dt[, unique(id_combination)] == 1)) { # Avoid warnings when predicting with empty newdata
+    dt[id_combination != 1, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
+  }
   dt[id_combination == 1, p_hat := prediction_zero]
-  p_all <- dt[id_combination == max(id_combination), p_hat]
-  names(p_all) <- 1:nrow(explainer$x_test)
+
+  if (dt[, max(id_combination)] < max_id_combination) {
+    p_all <- NULL
+  } else {
+    p_all <- dt[id_combination == max_id_combination, p_hat]
+    names(p_all) <- 1:nrow(explainer$x_test)
+  }
+
 
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
   data.table::setkeyv(dt_res, c("id", "id_combination"))
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = "k")
   dt_mat[, id_combination := NULL]
-  kshap <- t(explainer$W %*% as.matrix(dt_mat))
 
+  r <- list(p = p_all, dt_mat = dt_mat)
+
+  return(r)
+}
+
+
+#' Compute shapley values
+#' @param explainer An \code{explain} object.
+#' @param contribution_mat The contribution matrix.
+#' @return A \code{data.table} with shapley values for each test observation.
+#' @export
+#' @keywords internal
+compute_shapley <- function(explainer, contribution_mat) {
+
+  feature_names <- colnames(explainer$x_test)
+  if (!explainer$is_groupwise) {
+    shap_names <- feature_names
+  } else {
+    shap_names <- names(explainer$group)
+  }
+
+
+  kshap <- t(explainer$W %*% contribution_mat)
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", shap_names)
 
-  r <- list(
-    dt = dt_kshap,
-    model = explainer$model,
-    p = p_all,
-    x_test = explainer$x_test,
-    is_groupwise = explainer$is_groupwise
-  )
-  attr(r, "class") <- c("shapr", "list")
+  return(dt_kshap)
 
-  return(r)
 }

@@ -16,6 +16,7 @@ test_that("Test prediction", {
     explainer$x_test <- tail(dt_train[, .SD, .SDcols = features], n_xtest)
     explainer$W <- matrix(1, nrow = n_features + 1, ncol = n_combinations)
     explainer$is_groupwise <- FALSE
+    explainer$S <- matrix(1, nrow = n_combinations, ncol = n_features)
     dt <- dt_train[, .SD, .SDcols = features][rep(1:.N, 4)]
     dt[, id := rep_len(1:n_xtest, .N)]
     dt[, id_combination := rep_len(1:n_combinations, .N), id]
@@ -33,18 +34,16 @@ test_that("Test prediction", {
     x <- prediction(dt, prediction_zero, explainer)
 
     # Test -----------
-    lnms <- c("dt", "model", "p", "x_test", "is_groupwise")
-    expect_equal(class(x), c("shapr", "list"))
+    lnms <- c("p", "dt_mat")
+    expect_equal(class(x), "list")
     expect_equal(names(x), lnms)
-    expect_equal(x$model, explainer$model)
-    expect_equal(x$x_test, explainer$x_test)
     expect_equal(x$p, predict_model(explainer$model, explainer$x_test))
-    expect_true(data.table::is.data.table(x$dt))
-    expect_equal(ncol(x$dt), n_features + 1)
-    expect_equal(nrow(x$dt), nrow(explainer$x_test))
-    expect_equal(colnames(x$dt), c("none", features))
+    expect_true(data.table::is.data.table(x$dt_mat))
 
-    # Tets errors
+    # t(W %*% x$dt_mat) = shapley values
+    expect_equal(ncol(explainer$W), nrow(x$dt_mat))
+
+    # Tests errors
     expect_error(prediction(dt[id < n_xtest], prediction_zero, explainer))
   }
 })

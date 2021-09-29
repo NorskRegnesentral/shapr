@@ -61,11 +61,11 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       )
     )
   }
-  if (m_group > 13) {
+  if (m_group > 30) {
     stop(
       paste0(
         "For computational reasons, we are currently not supporting group-wise Shapley values \n",
-        "for more than 13 groups. Please reduce the number of groups."
+        "for more than 30 groups. Please reduce the number of groups."
       )
     )
   }
