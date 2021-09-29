@@ -57,7 +57,7 @@ group <- list(Q1=paste0("V",Q1_days),
 # Prepare the data for explanation
 explainer <- shapr(head(x_train,100), model,group = group)
 
-explain.timeseries <- function(x, explainer, approach, prediction_zero,
+explain.timeseries <- function(x, explainer, approach, prediction_zero,fixed_sigma = 0.1,
                                n_samples = 1e3, n_batches = 1, seed = 1, ...) {
 
 
@@ -67,12 +67,16 @@ explain.timeseries <- function(x, explainer, approach, prediction_zero,
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
   explainer$n_samples <- n_samples
+  explainer$fixed_sigma <- fixed_sigma
+
 
   r <- prepare_and_predict(explainer, n_batches, prediction_zero, ...)
 }
 
 #index_features <- NULL
 #x <- explainer
+#val <- t(t(-0.5 * D) / h_optim_vec^2)
+#W_kernel <- exp(val)
 
 prepare_data.timeseries <- function(x, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
@@ -94,7 +98,10 @@ prepare_data.timeseries <- function(x, index_features = NULL, ...) {
     dt_l[[i]] <- list()
     tmp <- list()
     tmp[[1]] <- as.data.table(x_test)
+    tmp[[1]][,w:=1]
     tmp[[nrow(S)]] <- as.data.table(x_test)
+    tmp[[nrow(S)]][,w:=1]
+
     for(j in 2:(nrow(S)-1)){
       diff_S <- diff(c(1,S[j,],1))
       Sbar_starts <- which(diff_S==-1)
@@ -107,6 +114,9 @@ prepare_data.timeseries <- function(x, index_features = NULL, ...) {
 
       Sbar_segments <- data.frame(Sbar_starts,Sbar_ends,cond_1,cond_2,len_Sbar_segment)
       tmp[[j]] <- matrix(rep(x_test,nrow(x_train)),nrow=nrow(x_train),byrow = T)
+
+      w_vec <- exp(-0.5*rowSums((matrix(rep(x_test[S[j,]==0,drop=F],nrow(x_train)),nrow=nrow(x_train),byrow = T)-x_train[,S[j,]==0,drop=F])^2)/x$fixed_sigma^2)
+
       for(k in seq_len(nrow(Sbar_segments))){
         impute_these <- seq(Sbar_segments$Sbar_starts[k],Sbar_segments$Sbar_ends[k])
 
@@ -129,9 +139,10 @@ prepare_data.timeseries <- function(x, index_features = NULL, ...) {
         tmp[[j]][,impute_these] <- pmax(pmin(to_impute,1),0)
       }
       tmp[[j]] <- as.data.table(tmp[[j]])
+      tmp[[j]][,w:=w_vec/sum(w_vec)]
     }
     dt_l[[i]] <- rbindlist(tmp,idcol = "id_combination")
-    dt_l[[i]][, w := 1/.N,by=id_combination] # IS THIS NECESSARY?
+    #dt_l[[i]][, w := 1/.N,by=id_combination] # IS THIS NECESSARY?
     dt_l[[i]][, id := i]
   }
 
@@ -144,7 +155,8 @@ explanation <- explain(
   x_test,
   approach = "timeseries",
   explainer = explainer,
-  prediction_zero = mean(y_all)
+  prediction_zero = mean(y_all),
+  fixed_sigma = 2
 )
 
 rowSums(explanation$dt)
@@ -234,6 +246,7 @@ x_explain_final2
 dt <- data.table(variable=x_explain_final2$variable,header=paste0("id: ",1:4,",  pred = ",unlist(round(pred_vec,2))))
 
 dt_plot <- melt_x_explain_final2[dt,on="variable"]
+library(ggplot2)
 gg_ts <- ggplot(dt_plot,aes(x=variable_num,y=value))+
   geom_rect(aes(xmin = min(Q1_days), xmax = max(Q1_days), ymin = -Inf, ymax = Inf), fill="grey60",alpha=.9)+
   geom_rect(aes(xmin = min(Q2_days), xmax = max(Q2_days), ymin = -Inf, ymax = Inf), fill="grey70")+
@@ -247,13 +260,21 @@ explanation_final2 <- explain(
   x_explain_final2[,.SD,.SDcols=paste0("V",1:365)],
   approach = "timeseries",
   explainer = explainer,
-  prediction_zero = mean(y_all)
+  prediction_zero = mean(y_all),
+  fixed_sigma = 2
 )
 
 gg_explain=plot(explanation_final2,plot_phi0 = F,feature_order = 4:1)
-
-gg_ts
 gg_explain
+
+library(patchwork)
+gg_ts/gg_explain
+
+#### Natural explanation:
+# id 1: Q3 increase prob, Q4 decrease # OK 1
+# id 2: Q2 increase, Q4 decrease # OK 1
+# id 3: Q2 dcrease, Q3+Q4 increase # Q2 not OK 1
+# id 4: Q3 increase # Not OK 1
 
 
 x_explain <- x_test[c(3,4),]
