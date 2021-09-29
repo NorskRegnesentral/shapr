@@ -317,7 +317,7 @@ test_that("Test functions in explanation.R", {
     ### Additional test to test that only the produced shapley values are the same as before
     fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")
     for (i in 1:length(ex_list)) {
-      expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+        expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
     }
 
 
@@ -666,7 +666,7 @@ test_that("test functions related to running explain in batch", {
   expect_equal(unlist(S_batch, use.names = FALSE), 1:n_comb)
 
 
-  S_batch <- create_S_batch(explainer, n_batches = n_batches, index_features = 1:10)
+  S_batch <- create_S_batch(explainer, n_batches = n_batches, index_S = 1:10)
   expect_equal(unlist(S_batch, use.names = FALSE), 1:10)
 
 })

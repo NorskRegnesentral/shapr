@@ -617,9 +617,9 @@ create_S_batch <- function(explainer, n_batches, index_S = NULL) {
 
   if (!is.null(index_S)) {
     # Rescale the number of batches to the percentage of observations used
-    n_batches <- max(1, floor(length(index_features) / nrow(explainer$S) * n_batches))
-    if (n_batches == 1) return(list(unique(index_features)))
-    x0 <- index_features
+    n_batches <- max(1, floor(length(index_S) / nrow(explainer$S) * n_batches))
+    if (n_batches == 1) return(list(unique(index_S)))
+    x0 <- index_S
   } else {
     x0 <- 1:no_samples
   }
