@@ -56,6 +56,8 @@ plot.shapr <- function(x,
                        plot_phi0 = TRUE,
                        index_x_test = NULL,
                        top_k_features = NULL,
+                       feature_order = NULL,
+                       horizontal_bars = TRUE,
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -108,13 +110,17 @@ plot.shapr <- function(x,
   plotting_dt <- plotting_dt[id %in% index_x_test]
   plotting_dt[, rank := data.table::frank(-abs(phi)), by = "id"]
   plotting_dt <- plotting_dt[rank <= top_k_features]
-  plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
+  if(is.null(feature_order)){
+    plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
+  } else {
+    plotting_dt[, description := factor(description, levels = unique(description[feature_order]))]
+  }
 
   # Plotting
   gg <- ggplot2::ggplot(plotting_dt) +
     ggplot2::facet_wrap(~header, scales = "free_y", labeller = "label_value", ncol = 2) +
+    ggplot2::coord_flip()+
     ggplot2::geom_col(ggplot2::aes(x = description, y = phi, fill = sign)) +
-    ggplot2::coord_flip() +
     ggplot2::scale_fill_manual(values = c("steelblue", "lightsteelblue"), drop = TRUE) +
     ggplot2::labs(
       y = "Feature contribution",
@@ -126,6 +132,7 @@ plot.shapr <- function(x,
       legend.position = "bottom",
       plot.title = ggplot2::element_text(hjust = 0.5)
     )
+
 
   return(gg)
 }
