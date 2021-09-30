@@ -147,6 +147,8 @@ x_test[IDs,]
 explanation_group$dt = round(explanation_group$dt[IDs,], 2)
 explanation_group$p = round(explanation_group$p[IDs], 2)
 
+saveRDS(explanation_group,"~/nr/project_stat/BI_PersonalisedMarketing/Explanations/Martin/car_insurance_explanations.rds")
+
 size = 7 # this is a good size for the paper
 theme_set(theme_bw()) # this makes a white background
 p1 = plot(explanation_group, plot_phi0 = F) + ggtitle("") +
