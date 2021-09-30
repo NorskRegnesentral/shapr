@@ -252,7 +252,7 @@ gg_ts <- ggplot(dt_plot,aes(x=variable_num,y=value))+
   geom_rect(aes(xmin = min(Q2_days), xmax = max(Q2_days), ymin = -Inf, ymax = Inf), fill="grey70")+
   geom_rect(aes(xmin = min(Q3_days), xmax = max(Q3_days), ymin = -Inf, ymax = Inf), fill="grey80")+
   geom_rect(aes(xmin = min(Q4_days), xmax = max(Q4_days), ymin = -Inf, ymax = Inf), fill="grey90")+
-#  theme_bw()+
+  #  theme_bw()+
   geom_line()+facet_wrap(vars(header))+
   ggtitle("Time series plots")+xlab("Days")+ylab("Balance (scaled)")
 
@@ -269,6 +269,52 @@ gg_explain
 
 library(patchwork)
 gg_ts/gg_explain
+
+
+size = 7 # this is a good size for the paper
+theme_set(theme_bw()) # this makes a white background
+p1 = plot(explanation_final2,plot_phi0 = F,feature_order = 4:1) + ggtitle("") +
+  ggplot2::facet_wrap(~header,  labeller = "label_value", ncol = 2) + # scales = "free_x",
+  ggplot2::theme(
+    legend.text = element_text(size = size),
+    legend.title = element_text(size = size),
+    axis.text = element_text(size = size),
+    axis.text.y = element_text(size = size),
+    axis.title = element_text(size = size),
+    strip.text = element_text(size = size)
+  )+xlab("Feature groups")+ylab("Feature group contributions")
+p1
+#
+ggsave( # new because the old figure is just IDs = c(1, 2, 3, 4)
+  "time-series_explanations.png",
+  plot = p1,
+  device = 'png',
+  path = '~/nr/project_stat/BI_PersonalisedMarketing/Explanations/Martin',
+  scale = 1,
+  width = 12,
+  height = 9,
+  units = "cm"
+)
+gg_ts_save <- gg_ts+ggtitle("")+  ggplot2::theme(
+  legend.text = element_text(size = size),
+  legend.title = element_text(size = size),
+  axis.text = element_text(size = size),
+  axis.text.y = element_text(size = size),
+  axis.title = element_text(size = size),
+  strip.text = element_text(size = size)
+)
+ggsave( # new because the old figure is just IDs = c(1, 2, 3, 4)
+  "time-series_plots.png",
+  plot = gg_ts_save,
+  device = 'png',
+  path = '~/nr/project_stat/BI_PersonalisedMarketing/Explanations/Martin',
+  scale = 1,
+  width = 12,
+  height = 9,
+  units = "cm"
+)
+
+
 
 #### Natural explanation:
 # id 1: Q3 increase prob, Q4 decrease # OK 1
