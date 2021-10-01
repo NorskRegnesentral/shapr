@@ -124,6 +124,19 @@ formula2 = as.formula(paste0("CLAIM_FLAG ~ ", temp))
 # 7 fit one random forest model to 9/10th of the data
 model = ranger(formula2, data = x_train,  probability = TRUE, importance = "impurity")
 
+
+test_preds <- predict(model,x_test,type="response")$predictions[,2]
+test_y <- as.numeric(x_test$CLAIM_FLAG)-1
+dt <- data.table(test_preds,test_y)
+setkey(dt,test_preds)
+
+pROC::auc(test_y,test_preds)
+#Area under the curve: 0.8347
+mean((test_y-test_preds)^2)
+#[1] 0.1477109
+
+pROC::auc(,as.numeric(x_test$CLAIM_FLAG)-1)
+
 p <- mean(as.numeric(as.character(x_train$CLAIM_FLAG)))
 group_names = list(Personal_Info = group1, Car_Info = group2, Track_Record = group3)
 
