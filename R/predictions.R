@@ -59,6 +59,11 @@ prediction <- function(dt, prediction_zero, explainer) {
   dt[first_element, c("keep", "w") := list(TRUE, 1.0)]
   dt <- dt[keep == TRUE][, keep := NULL]
 
+  # unscale_data if initially scaled
+  if(!is.null(explainer$scale_list)){
+    dt[,(feature_names) := unscale_data(.SD,explainer$scale_list),.SDcols=feature_names]
+  }
+
   # Predictions
   if (!all(dt[, unique(id_combination)] == 1)) { # Avoid warnings when predicting with empty newdata
     dt[id_combination != 1, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]

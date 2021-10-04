@@ -194,13 +194,20 @@ explain <- function(x, explainer, approach, prediction_zero,
 #' @rdname explain
 #' @export
 explain.independence <- function(x, explainer, approach, prediction_zero,
-                                 n_samples = 1e3, n_batches = 1, seed = 1, ...) {
+                                 n_samples = 1e3, n_batches = 1, seed = 1, standardize_data = FALSE, ...) {
 
 
   if (!is.null(seed)) set.seed(seed)
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  if(standardize_data){
+    std_list <- scale_data(explainer$x_train)
+    explainer$x_train <- std_list$x_dt
+    explainer$scale_list <- std_list$scale_list
+  } else {
+    explainer$scale_list <- NULL
+  }
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list,scale_list = explainer$scale_list)$x_dt)
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
@@ -243,12 +250,20 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
                               w_threshold = 0.95, type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               n_samples_aicc = 1000, eval_max_aicc = 20,
                               start_aicc = 0.1,
-                              cov_mat = NULL, ...) {
+                              cov_mat = NULL,
+                              standardize_data = FALSE,  ...) {
 
   if (!is.null(seed)) set.seed(seed)
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  if(standardize_data){
+    std_list <- scale_data(explainer$x_train)
+    explainer$x_train <- std_list$x_dt
+    explainer$scale_list <- std_list$scale_list
+  } else {
+    explainer$scale_list <- NULL
+  }
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list,scale_list = explainer$scale_list)$x_dt)
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec
@@ -295,12 +310,20 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #' @export
 explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
                              n_batches = 1, seed = 1,
-                             mu = NULL, cov_mat = NULL, ...) {
+                             mu = NULL, cov_mat = NULL,
+                             standardize_data = FALSE,...) {
 
   if (!is.null(seed)) set.seed(seed)
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  if(standardize_data){
+    std_list <- scale_data(explainer$x_train)
+    explainer$x_train <- std_list$x_dt
+    explainer$scale_list <- std_list$scale_list
+  } else {
+    explainer$scale_list <- NULL
+  }
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list,scale_list = explainer$scale_list)$x_dt)
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
@@ -337,12 +360,20 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
 #' @rdname explain
 #' @export
 explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                           n_batches = 1, seed = 1, ...) {
+                           n_batches = 1, seed = 1,
+                           standardize_data = FALSE, ...) {
 
   if (!is.null(seed)) set.seed(seed)
 
   # Setup
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  if(standardize_data){
+    std_list <- scale_data(explainer$x_train)
+    explainer$x_train <- std_list$x_dt
+    explainer$scale_list <- std_list$scale_list
+  } else {
+    explainer$scale_list <- NULL
+  }
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list,scale_list = explainer$scale_list)$x_dt)
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
@@ -403,7 +434,8 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
 explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
                           n_batches = 1, seed = 1,
                           mincriterion = 0.95, minsplit = 20,
-                          minbucket = 7, sample = TRUE, ...) {
+                          minbucket = 7, sample = TRUE,
+                          standardize_data = FALSE, ...) {
 
   if (!is.null(seed)) set.seed(seed)
 
@@ -413,7 +445,14 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1
   }
 
   # Add arguments to explainer object
-  explainer$x_test <- preprocess_data(x, explainer$feature_list)$x_dt
+  if(standardize_data){
+    std_list <- scale_data(explainer$x_train)
+    explainer$x_train <- std_list$x_dt
+    explainer$scale_list <- std_list$scale_list
+  } else {
+    explainer$scale_list <- NULL
+  }
+  explainer$x_test <- preprocess_data(x, explainer$feature_list,scale_list = explainer$scale_list)$x_dt
   explainer$approach <- approach
   explainer$mincriterion <- mincriterion
   explainer$minsplit <- minsplit
@@ -431,7 +470,8 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1
 #'
 #' @export
 explain.combined <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
-                             n_batches = 1, seed = 1, mu = NULL, cov_mat = NULL, ...) {
+                             n_batches = 1, seed = 1, mu = NULL, cov_mat = NULL,
+                             standardize_data = FALSE,...) {
 
   # for R CMD check
   row_id <- NULL
@@ -440,7 +480,14 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  if(standardize_data){
+    std_list <- scale_data(explainer$x_train)
+    explainer$x_train <- std_list$x_dt
+    explainer$scale_list <- std_list$scale_list
+  } else {
+    explainer$scale_list <- NULL
+  }
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list,scale_list = explainer$scale_list)$x_dt)
   explainer$n_samples <- n_samples
 
   dt_l <- list()
@@ -528,8 +575,8 @@ get_list_approaches <- function(n_features, approach) {
 #'
 #' @export
 explain.ctree_comb_mincrit <- function(x, explainer, approach,
-                                       prediction_zero, n_samples, n_batches = 1
-                                       , seed = 1, mincriterion, ...) {
+                                       prediction_zero, n_samples, n_batches = 1,
+                                       seed = 1, mincriterion, ...) {
 
   # For R CMD check
   row_id <- NULL

@@ -73,7 +73,7 @@ get_data_specs <- function(x) {
 #'   model_features <- get_model_specs(model)
 #'   preprocess_data(x_train, model_features)
 #' }
-preprocess_data <- function(x, feature_list) {
+preprocess_data <- function(x, feature_list,scale_list = NULL) {
   if (all(is.null(colnames(x)))) {
     stop(paste0("The data is missing column names"))
   }
@@ -89,14 +89,68 @@ preprocess_data <- function(x, feature_list) {
   update_data(x_dt, updater) # Updates x_dt by reference
 
 
+  if(is.null(scale_list)){
+    x_dt <- scale_data(x_dt,scale_list)$x_dt
+  }
 
   ret <- list(
     x_dt = x_dt,
     updated_feature_list = updater
-  )
+    )
 
   return(ret)
 }
+
+#' Scale data
+#'
+#' @param x Matrix, data.table or data.frame with training or testing data
+#' @param scale_list List with vectors elements \code{means} and \code{sds} which are used in the scaling (i.e. the
+#' output from the present function).
+#' If NULL, these are estimated form the data before they are applied.
+#'
+#' @details This function standardizes the data by subtracting the mean and dividing by the sd for each feature.
+#'
+#' @return List with scaled data and a scaling list with the mean and sd used to scale for easy unscaling.
+#'
+#' @seealso \code{\link[shapr:scale_data]{unscale_data}} for unscaling the scaled data
+#' @author Martin Jullum
+#'
+#' @keywords internal
+scale_data <- function(x,scale_list = NULL){
+  if(is.null(scale_list)){
+    scale_list <- list(means = colMeans(x),
+                       sds = apply(x,MARGIN = 2,FUN = "sd",na.rm=T))
+  }
+
+  x_scaled <- sweep(x,MARGIN = 2,STATS = scale_list$means,FUN = "-")
+  x_scaled <- sweep(x_scaled,MARGIN = 2,STATS = scale_list$sds,FUN = "*")
+  x_dt <- as.data.table(x_scaled)
+
+  return(list(x_dt = x_dt,
+              scale_list = scale_list))
+}
+
+#' Unscale data
+#'
+#' @param x Matrix, data.table or data.frame with scaled data
+#' @param scale_list List with vectors elements \code{means} and \code{sds} which are used in the scaling (i.e. the
+#' output from \code{\link[shapr:scale_data]{scale_data}})
+#'
+#' @details This function standardizes the data by subtracting the mean and dividing by the sd for each feature.
+#'
+#' @return List with scaled data and a scaling list with the mean and sd used to scale for easy unscaling.
+#'
+#' @seealso \code{\link[shapr:scale_data]{scale_data}} for scaling the original data
+#' @author Martin Jullum
+#'
+#' @keywords internal
+unscale_data <- function(x,scale_list){
+  x_unscaled <- sweep(x,MARGIN = 2,STATS = scale_list$means,FUN = "+")
+  x_unscaled <- sweep(x_unscaled,MARGIN = 2,STATS = scale_list$sds,FUN = "/")
+  x_dt <- as.data.table(x_unscaled)
+  return(x_dt)
+}
+
 
 
 #' Checks that two extracted feature lists have exactly the same properties
