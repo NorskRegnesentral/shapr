@@ -58,6 +58,7 @@ plot.shapr <- function(x,
                        top_k_features = NULL,
                        feature_order = NULL,
                        horizontal_bars = TRUE,
+                       include_title = TRUE,
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -125,13 +126,15 @@ plot.shapr <- function(x,
     ggplot2::labs(
       y = "Feature contribution",
       x = "Feature",
-      fill = "",
-      title = "Shapley value prediction explanation"
-    ) +
+      fill = ""
+    )
     ggplot2::theme(
       legend.position = "bottom",
       plot.title = ggplot2::element_text(hjust = 0.5)
     )
+    if(include_title){
+      gg <- gg + ggtitle("Shapley value prediction explanation")
+    }
 
 
   return(gg)
