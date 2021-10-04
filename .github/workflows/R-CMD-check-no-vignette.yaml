@@ -1,7 +1,5 @@
-# For help debugging build failures open an issue on the RStudio community with the 'github-actions' tag.
-# https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
-# This is slightly modified verison of this https://github.com/r-lib/actions/blob/master/examples/check-full.yaml
-# (added aug 10th 2021)
+# This is duplicate of R-CMD-check, but with arguments skipping the building of vignettes which often tends to fail
+# on older R versions.
 
 on:
   push:
@@ -13,7 +11,7 @@ on:
       - master
       - cranversion
 
-name: R-CMD-check
+name: R-CMD-check-no-vignette
 
 jobs:
   R-CMD-check:
@@ -25,12 +23,12 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: windows-latest, r: 'release'}
-          - {os: macOS-latest, r: 'release'}
-          - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
-          - {os: ubuntu-20.04,   r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest", http-user-agent: "R/4.1.0 (ubuntu-20.04) R (4.1.0 x86_64-pc-linux-gnu x86_64 linux-gnu) on GitHub Actions" }
-#          - {os: ubuntu-20.04,   r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"} # Added manually by martinju
-#          - {os: ubuntu-20.04,   r: '3.6', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"} # Added manually by martinju, remove some time in 2022
+#          - {os: windows-latest, r: 'release'}
+#          - {os: macOS-latest, r: 'release'}
+#          - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+#          - {os: ubuntu-20.04,   r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest", http-user-agent: "R/4.1.0 (ubuntu-20.04) R (4.1.0 x86_64-pc-linux-gnu x86_64 linux-gnu) on GitHub Actions" }
+          - {os: ubuntu-20.04,   r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"} # Added manually by martinju
+          - {os: ubuntu-20.04,   r: '3.6', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"} # Added manually by martinju, remove some time in 2022
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -79,7 +77,8 @@ jobs:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
         run: |
           options(crayon.enabled = TRUE)
-          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+          rcmdcheck::rcmdcheck(args = c("--no-manual", "--ignore-vignettes", "--no-build-vignettes"),
+          build_args = c("--no-manual", "--ignore-vignettes", "--no-build-vignettes"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
       - name: Upload check results

@@ -7,9 +7,9 @@
 #' the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.
 #' @param x_train Numeric matrix
 #' @param x_test Numeric matrix
-#' @param w_threshold Numeric vector of length 1, where \code{w_threshold > 0} and
-#' \code{w_threshold <= 1}. If \code{w_threshold = .8} we will choose the \code{K} samples with
-#' the largest weight so that the sum of the weights accounts for 80\% of the total weight.
+#'
+#' @inheritParams explain
+#' @inherit explain references
 #'
 #' @return data.table
 #'
@@ -71,18 +71,14 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #'
 #' @param x Explainer object. See \code{\link{explain}} for more information.
 #'
-#' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
-#' Monte Carlo integration for every conditional expectation.
-#'
 #' @param seed Positive integer. If \code{NULL} the seed will be inherited from the calling environment.
 #'
 #' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
 #' \code{NULL} means all combinations. Only used internally.
 #'
-#' @param x_test_gaussian Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
-#' \code{approach = "empirical"}.
-#'
 #' @param ... Currently not used.
+#'
+#' @return A `data.table` containing simulated data passed to \code{\link{prediction}}.
 #'
 #' @export
 #' @keywords internal
@@ -94,7 +90,56 @@ prepare_data <- function(x, ...) {
 
 #' @rdname prepare_data
 #' @export
-prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+prepare_data.independence <- function(x, index_features = NULL, ...) {
+  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+
+  if (is.null(index_features)) {
+    index_features <- x$X[, .I]
+  }
+
+  S <- x$S[index_features, , drop = FALSE]
+  x_train <- as.matrix(x$x_train)
+  n_train <- nrow(x_train)
+  n_samples <- min(x$n_samples, n_train)
+
+  index_s <- rep(seq(nrow(S)), each = n_samples)
+  w <- 1 / x$n_samples
+
+  n_col <- nrow(x$x_test)
+
+  dt_l <- list()
+  for (i in seq(n_col)) {
+    x_test <- x$x_test[i, , drop = FALSE]
+
+    # sampling index_xtrain
+    index_xtrain <- c(replicate(nrow(S), sample(x = seq(n_train), size = n_samples, replace = F)))
+
+    # Generate data used for prediction
+    dt_p <- observation_impute_cpp(
+      index_xtrain = index_xtrain,
+      index_s = index_s,
+      xtrain = x_train,
+      xtest = x_test,
+      S = S
+    )
+
+    # Add keys
+    dt_l[[i]] <- data.table::as.data.table(dt_p)
+    data.table::setnames(dt_l[[i]], colnames(x_train))
+    dt_l[[i]][, id_combination := index_s]
+    dt_l[[i]][, w := w] # IS THIS NECESSARY?
+    dt_l[[i]][, id := i]
+  }
+
+
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  return(dt)
+}
+
+
+#' @rdname prepare_data
+#' @export
+prepare_data.empirical <- function(x, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   # Get distance matrix ----------------
@@ -105,13 +150,13 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
   x$D <- distance_matrix(
     x$x_train,
     x$x_test,
-    x$X$features[index_features]
+    x$X$features[index_features],
+    mcov = x$cov_mat
   )
 
   # Setup
-  if (!is.null(seed)) set.seed(seed)
   n_col <- nrow(x$x_test)
-  no_empirical <- nrow(x$S[index_features, ])
+  no_empirical <- nrow(x$S[index_features, , drop = FALSE])
 
   h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
   h_optim_DT <- as.data.table(h_optim_mat)
@@ -122,7 +167,9 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
 
   if (kernel_metric == "independence") {
     x$w_threshold <- 1
-    paste0("w_threshold force set to 1 for kernel_metric = 'independence'")
+    message(
+      "\nSuccess with message:\nw_threshold force set to 1 for type = 'independence'"
+      )
   } else if (kernel_metric == "gaussian") {
     if (x$type == "fixed_sigma") {
       h_optim_mat[, ] <- x$fixed_sigma_vec
@@ -143,13 +190,13 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
     h_optim_vec[is.na(h_optim_vec)] <- 1
 
     if (kernel_metric == "independence") {
-      D <- D[sample.int(nrow(D)), ]
+      D <- D[sample.int(nrow(D)), ] + stats::runif(n = nrow(D) * ncol(D))
       h_optim_vec <- mean(D) * 1000
     }
 
     val <- t(t(-0.5 * D) / h_optim_vec^2)
     W_kernel <- exp(val)
-    S <- x$S[index_features, ]
+    S <- x$S[index_features, , drop = FALSE]
 
     ## Get imputed data
     dt_l[[i]] <- observation_impute(
@@ -158,7 +205,7 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
       x_train = as.matrix(x$x_train),
       x_test = x$x_test[i, , drop = FALSE],
       w_threshold = x$w_threshold,
-      n_samples = n_samples
+      n_samples = x$n_samples
     )
 
     dt_l[[i]][, id := i]
@@ -171,12 +218,12 @@ prepare_data.empirical <- function(x, seed = 1, n_samples = 1e3, index_features 
 
 #' @rdname prepare_data
 #' @export
-prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+prepare_data.gaussian <- function(x, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
-  if (!is.null(seed)) set.seed(seed)
+
   if (is.null(index_features)) {
     features <- x$X$features
   } else {
@@ -187,7 +234,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     l <- lapply(
       X = features,
       FUN = sample_gaussian,
-      n_samples = n_samples,
+      n_samples = x$n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
       m = ncol(x$x_test),
@@ -195,7 +242,7 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
-    dt_l[[i]][, w := 1 / n_samples]
+    dt_l[[i]][, w := 1 / x$n_samples]
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
@@ -204,24 +251,27 @@ prepare_data.gaussian <- function(x, seed = 1, n_samples = 1e3, index_features =
   return(dt)
 }
 
+
+
 #' @rdname prepare_data
 #' @export
-prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e3, index_features = NULL, ...) {
+prepare_data.copula <- function(x,  index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
-  if (!is.null(seed)) set.seed(seed)
   if (is.null(index_features)) {
     features <- x$X$features
   } else {
     features <- x$X$features[index_features]
   }
 
+  x_test_gaussian <- x$x_test_gaussian
+
   for (i in seq(n_xtest)) {
     l <- lapply(
       X = features,
       FUN = sample_copula,
-      n_samples = n_samples,
+      n_samples = x$n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
       m = ncol(x$x_test),
@@ -231,7 +281,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
-    dt_l[[i]][, w := 1 / n_samples]
+    dt_l[[i]][, w := 1 / x$n_samples]
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
@@ -239,9 +289,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
   return(dt)
 }
 
-#' @param n_samples Integer. The number of obs to sample from the leaf if \code{sample} = TRUE or if \code{sample}
-#' = FALSE but \code{n_samples} is less than the number of obs in the leaf.
-#'
+
 #' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
 #' used for different numbers of conditioned features, this will be a list with the features to pass.
 #'
@@ -258,7 +306,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, n_samples = 1e
 #'
 #' @rdname prepare_data
 #' @export
-prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NULL,
+prepare_data.ctree <- function(x,  index_features = NULL,
                                mc_cores = 1, mc_cores_create_ctree = mc_cores,
                                mc_cores_sample_ctree = mc_cores, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
@@ -266,7 +314,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
 
-  if (!is.null(seed)) set.seed(seed)
+
   if (is.null(index_features)) {
     features <- x$X$features
   } else {
@@ -290,7 +338,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
     l <- parallel::mclapply(
       X = all_trees,
       FUN = sample_ctree,
-      n_samples = n_samples,
+      n_samples = x$n_samples,
       x_test = x$x_test[i, , drop = FALSE],
       x_train = x$x_train,
       p = ncol(x$x_test),
@@ -300,7 +348,7 @@ prepare_data.ctree <- function(x, seed = 1, n_samples = 1e3, index_features = NU
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
-    dt_l[[i]][, w := 1 / n_samples]
+    dt_l[[i]][, w := 1 / x$n_samples]
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
