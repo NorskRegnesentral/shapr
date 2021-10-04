@@ -31,23 +31,21 @@ p <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation <- explain(
+explanation_scaled <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
   prediction_zero = p,
   standardize_data= T
-)
+  )
 
-explanation_scaled <- explain(
+explanation <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
   prediction_zero = p,
   standardize_data= F
 )
-
-
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.

@@ -89,7 +89,7 @@ preprocess_data <- function(x, feature_list,scale_list = NULL) {
   update_data(x_dt, updater) # Updates x_dt by reference
 
 
-  if(is.null(scale_list)){
+  if(!is.null(scale_list)){
     x_dt <- scale_data(x_dt,scale_list)$x_dt
   }
 
@@ -123,7 +123,7 @@ scale_data <- function(x,scale_list = NULL){
   }
 
   x_scaled <- sweep(x,MARGIN = 2,STATS = scale_list$means,FUN = "-")
-  x_scaled <- sweep(x_scaled,MARGIN = 2,STATS = scale_list$sds,FUN = "*")
+  x_scaled <- sweep(x_scaled,MARGIN = 2,STATS = scale_list$sds,FUN = "/")
   x_dt <- as.data.table(x_scaled)
 
   return(list(x_dt = x_dt,
@@ -145,8 +145,8 @@ scale_data <- function(x,scale_list = NULL){
 #'
 #' @keywords internal
 unscale_data <- function(x,scale_list){
-  x_unscaled <- sweep(x,MARGIN = 2,STATS = scale_list$means,FUN = "+")
-  x_unscaled <- sweep(x_unscaled,MARGIN = 2,STATS = scale_list$sds,FUN = "/")
+  x_unscaled <- sweep(x,MARGIN = 2,STATS = scale_list$sds,FUN = "*")
+  x_unscaled <- sweep(x_unscaled,MARGIN = 2,STATS = scale_list$means,FUN = "+")
   x_dt <- as.data.table(x_unscaled)
   return(x_dt)
 }
