@@ -201,9 +201,8 @@ explain.independence <- function(x, explainer, approach, prediction_zero,
 
   # Add arguments to explainer object
   if(standardize_data){
-    std_list <- scale_data(explainer$x_train)
-    explainer$x_train <- std_list$x_dt
-    explainer$scale_list <- std_list$scale_list
+    # Updates x_train by reference and stores the scaling mean and sd
+    explainer$scale_list <- scale_data(explainer$x_train,these_features = explainer$feature_list$numeric_features)
   } else {
     explainer$scale_list <- NULL
   }
@@ -257,9 +256,8 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 
   # Add arguments to explainer object
   if(standardize_data){
-    std_list <- scale_data(explainer$x_train)
-    explainer$x_train <- std_list$x_dt
-    explainer$scale_list <- std_list$scale_list
+    # Updates x_train by reference and stores the scaling mean and sd
+    explainer$scale_list <- scale_data(explainer$x_train,these_features = explainer$feature_list$numeric_features)
   } else {
     explainer$scale_list <- NULL
   }
@@ -317,9 +315,8 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
 
   # Add arguments to explainer object
   if(standardize_data){
-    std_list <- scale_data(explainer$x_train)
-    explainer$x_train <- std_list$x_dt
-    explainer$scale_list <- std_list$scale_list
+    # Updates x_train by reference and stores the scaling mean and sd
+    explainer$scale_list <- scale_data(explainer$x_train,these_features = explainer$feature_list$numeric_features)
   } else {
     explainer$scale_list <- NULL
   }
@@ -367,9 +364,8 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
 
   # Setup
   if(standardize_data){
-    std_list <- scale_data(explainer$x_train)
-    explainer$x_train <- std_list$x_dt
-    explainer$scale_list <- std_list$scale_list
+    # Updates x_train by reference and stores the scaling mean and sd
+    explainer$scale_list <- scale_data(explainer$x_train,these_features = explainer$feature_list$numeric_features)
   } else {
     explainer$scale_list <- NULL
   }
@@ -446,9 +442,8 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1
 
   # Add arguments to explainer object
   if(standardize_data){
-    std_list <- scale_data(explainer$x_train)
-    explainer$x_train <- std_list$x_dt
-    explainer$scale_list <- std_list$scale_list
+    # Updates x_train by reference and stores the scaling mean and sd
+    explainer$scale_list <- scale_data(explainer$x_train,these_features = explainer$feature_list$numeric_features)
   } else {
     explainer$scale_list <- NULL
   }
@@ -481,9 +476,8 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
   if(standardize_data){
-    std_list <- scale_data(explainer$x_train)
-    explainer$x_train <- std_list$x_dt
-    explainer$scale_list <- std_list$scale_list
+    # Updates x_train by reference and stores the scaling mean and sd
+    explainer$scale_list <- scale_data(explainer$x_train,these_features = explainer$feature_list$numeric_features)
   } else {
     explainer$scale_list <- NULL
   }

@@ -61,7 +61,7 @@ prediction <- function(dt, prediction_zero, explainer) {
 
   # unscale_data if initially scaled
   if(!is.null(explainer$scale_list)){
-    dt[,(feature_names) := unscale_data(.SD,explainer$scale_list),.SDcols=feature_names]
+    unscale_data(dt,explainer$scale_list,explainer$feature_list$numeric_features)
   }
 
   # Predictions

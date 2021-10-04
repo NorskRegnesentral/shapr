@@ -13,6 +13,7 @@
 #'   \item{classes}{a named character vector with the labels as names and the class types as elements}
 #'   \item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
 #'   (NULL if the feature is not a factor)}
+#'   \item{numeric_features{a character with features names for the numeric features}}
 #' }
 #' @author Martin Jullum
 #'
@@ -38,6 +39,8 @@ get_data_specs <- function(x) {
 
   # Defining all integer values as numeric
   feature_list$classes[feature_list$classes == "integer"] <- "numeric"
+
+  feature_list$numeric_features <- names(feature_list$classes[feature_list$classes=="numeric"])
 
   return(feature_list)
 }
@@ -90,7 +93,8 @@ preprocess_data <- function(x, feature_list,scale_list = NULL) {
 
 
   if(!is.null(scale_list)){
-    x_dt <- scale_data(x_dt,scale_list)$x_dt
+    # Updates x_dt by reference
+    scale_data(x_dt,scale_list,these_features = feature_list$numeric_features)
   }
 
   ret <- list(
@@ -103,52 +107,48 @@ preprocess_data <- function(x, feature_list,scale_list = NULL) {
 
 #' Scale data
 #'
-#' @param x Matrix, data.table or data.frame with training or testing data
+#' @param x_dt data.table with training or testing data
 #' @param scale_list List with vectors elements \code{means} and \code{sds} which are used in the scaling (i.e. the
 #' output from the present function).
 #' If NULL, these are estimated form the data before they are applied.
+#' @param these_features Character vector with names of the features to apply the scaling to
 #'
 #' @details This function standardizes the data by subtracting the mean and dividing by the sd for each feature.
+#' The data are update by reference and not returned
 #'
-#' @return List with scaled data and a scaling list with the mean and sd used to scale for easy unscaling.
+#' @return A scaling list with the mean and sd used to scale for easy unscaling.
 #'
 #' @seealso \code{\link[shapr:scale_data]{unscale_data}} for unscaling the scaled data
 #' @author Martin Jullum
 #'
 #' @keywords internal
-scale_data <- function(x,scale_list = NULL){
+scale_data <- function(x_dt,scale_list = NULL,these_features){
   if(is.null(scale_list)){
-    scale_list <- list(means = colMeans(x),
-                       sds = apply(x,MARGIN = 2,FUN = "sd",na.rm=T))
+    scale_list <- list(mean = colMeans(x_dt[,.SD, .SDcols= these_features]),
+                       sd = apply(x_dt[,.SD, .SDcols= these_features],MARGIN = 2,FUN = "sd",na.rm=T))
   }
 
-  x_scaled <- sweep(x,MARGIN = 2,STATS = scale_list$means,FUN = "-")
-  x_scaled <- sweep(x_scaled,MARGIN = 2,STATS = scale_list$sds,FUN = "/")
-  x_dt <- as.data.table(x_scaled)
+  x_dt[,(these_features):= sweep(.SD,MARGIN=2,STATS=scale_list$mean,FUN = "-"),.SDcols = these_features]
+  x_dt[,(these_features):= sweep(.SD,MARGIN=2,STATS=scale_list$sd,FUN = "/"),.SDcols = these_features]
 
-  return(list(x_dt = x_dt,
-              scale_list = scale_list))
+  return(scale_list)
 }
 
 #' Unscale data
 #'
-#' @param x Matrix, data.table or data.frame with scaled data
-#' @param scale_list List with vectors elements \code{means} and \code{sds} which are used in the scaling (i.e. the
-#' output from \code{\link[shapr:scale_data]{scale_data}})
+#' @inheritParams scale_data
+#' @details This function un-standardizes the data multiplying with the sd and adding the mean of each feature.
+#' The data are update by reference and not returned
 #'
-#' @details This function standardizes the data by subtracting the mean and dividing by the sd for each feature.
-#'
-#' @return List with scaled data and a scaling list with the mean and sd used to scale for easy unscaling.
+#' @return NULL
 #'
 #' @seealso \code{\link[shapr:scale_data]{scale_data}} for scaling the original data
 #' @author Martin Jullum
 #'
 #' @keywords internal
-unscale_data <- function(x,scale_list){
-  x_unscaled <- sweep(x,MARGIN = 2,STATS = scale_list$sds,FUN = "*")
-  x_unscaled <- sweep(x_unscaled,MARGIN = 2,STATS = scale_list$means,FUN = "+")
-  x_dt <- as.data.table(x_unscaled)
-  return(x_dt)
+unscale_data <- function(x_dt,scale_list,these_features){
+  x_dt[,(these_features):= sweep(.SD,MARGIN=2,STATS=scale_list$sd,FUN = "*"),.SDcols = these_features]
+  x_dt[,(these_features):= sweep(.SD,MARGIN=2,STATS=scale_list$mean,FUN = "+"),.SDcols = these_features]
 }
 
 
