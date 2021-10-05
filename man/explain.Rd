@@ -12,9 +12,26 @@
 \alias{explain.ctree_comb_mincrit}
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
-explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
+explain(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  n_samples = 1000,
+  n_batches = 1,
+  ...
+)
 
-\method{explain}{independence}(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
+\method{explain}{independence}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  n_samples = 1000,
+  n_batches = 1,
+  seed = 1,
+  ...
+)
 
 \method{explain}{empirical}(
   x,
@@ -22,12 +39,15 @@ explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
   approach,
   prediction_zero,
   n_samples = 1000,
+  n_batches = 1,
+  seed = 1,
   w_threshold = 0.95,
   type = "fixed_sigma",
   fixed_sigma_vec = 0.1,
   n_samples_aicc = 1000,
   eval_max_aicc = 20,
   start_aicc = 0.1,
+  cov_mat = NULL,
   ...
 )
 
@@ -37,6 +57,8 @@ explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
   approach,
   prediction_zero,
   n_samples = 1000,
+  n_batches = 1,
+  seed = 1,
   mu = NULL,
   cov_mat = NULL,
   ...
@@ -54,7 +76,16 @@ explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
   ...
 )
 
-\method{explain}{copula}(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
+\method{explain}{copula}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  n_samples = 1000,
+  n_batches = 1,
+  seed = 1,
+  ...
+)
 
 \method{explain}{ctree}(
   x,
@@ -62,6 +93,8 @@ explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
   approach,
   prediction_zero,
   n_samples = 1000,
+  n_batches = 1,
+  seed = 1,
   mincriterion = 0.95,
   minsplit = 20,
   minbucket = 7,
@@ -75,12 +108,24 @@ explain(x, explainer, approach, prediction_zero, n_samples = 1000, ...)
   approach,
   prediction_zero,
   n_samples = 1000,
+  n_batches = 1,
+  seed = 1,
   mu = NULL,
   cov_mat = NULL,
   ...
 )
 
-\method{explain}{ctree_comb_mincrit}(x, explainer, approach, prediction_zero, n_samples, mincriterion, ...)
+\method{explain}{ctree_comb_mincrit}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  n_samples,
+  n_batches = 1,
+  seed = 1,
+  mincriterion,
+  ...
+)
 }
 \arguments{
 \item{x}{A matrix or data.frame. Contains the the features, whose
@@ -90,9 +135,9 @@ predictions ought to be explained (test data).}
 See \code{\link{shapr}}.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
-\code{n_features} equals the total number of features in the model. All elements should
-either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
-information.}
+\code{n_features} equals the total number of features in the model. All elements should,
+either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, or \code{"independence"}.
+See details for more information.}
 
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
@@ -100,7 +145,16 @@ the response.}
 \item{n_samples}{Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
-\item{...}{Additional arguments passed to \code{\link{prepare_data}}}
+\item{n_batches}{Positive integer.
+Specifies how many batches the total number of feature combinations should be split into when calculating the
+contribution function for each test observation.
+The default value is 1.
+Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+This typically comes with a small increase in computation time.}
+
+\item{...}{Additional arguments passed to \code{\link{prepare_and_predict}}}
+
+\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 
 \item{w_threshold}{Numeric vector of length 1, with \code{0 < w_threshold <= 1} representing the minimum proportion
 of the total empirical weight that data samples should use. If e.g. \code{w_threshold = .8} we will choose the
@@ -126,13 +180,13 @@ optimizing the AICc. Note that this argument is only applicable when
 is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
 \code{"AICc_each_k"} or \code{"AICc_full"}}
 
-\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
-If \code{NULL} the expected values are estimated from the data. Note that this is only used
-when \code{approach = "gaussian"}  or \code{approach = "causal"}.}
-
 \item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. \code{NULL} means it is estimated from the data if needed
 (in the Gaussian or causal approach).}
+
+\item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
+If \code{NULL} the expected values are estimated from the data. Note that this is only used
+when \code{approach = "gaussian"}  or \code{approach = "causal"}.}
 
 \item{confounding}{Logical vector that specifies whether we assume confounding or not.
 If a single value is specified, then the assumption is set globally for all components.
@@ -188,9 +242,9 @@ such as the mean of the predictions in the training data are also reasonable.
 Explain the output of machine learning models with more accurately estimated Shapley values
 }
 \details{
-The most important thing to notice is that \code{shapr} has implemented four different
+The most important thing to notice is that \code{shapr} has implemented five different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
+\code{"gaussian"}, \code{"copula"}, \code{"ctree"} and \code{"independence"}.
 In addition, the user also has the option of combining the four approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,

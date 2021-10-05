@@ -95,7 +95,9 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #'   three features. In that case we have \code{2^3 = 8} unique combinations. If the j-th
 #'   observation for the i-th row equals \code{1} it indicates that the j-th feature is present in
 #'   the i-th combination. Otherwise it equals \code{0}.}
-#'   \item{W}{Second item}
+#'   \item{W}{Matrix. This matrix is equal to the matrix \code{R_D} in Equation 7 in the reference
+#'   of \code{link{explain}}. The Shapley value for a test observation will be equal to the matrix-vector product
+#'   of \code{W} and the contribution vector.}
 #'   \item{X}{data.table. Returned object from \code{\link{feature_combinations}}}
 #'   \item{x_train}{data.table. Transformed \code{x} into a data.table.}
 #'   \item{feature_list}{List. The \code{updated_feature_list} output from
@@ -251,13 +253,11 @@ shapr <- function(x, model, n_combinations = NULL, group = NULL,
 }
 
 #' @keywords internal
-distance_matrix <- function(x_train, x_test = NULL, list_features) {
+distance_matrix <- function(x_train, x_test = NULL, list_features, mcov) {
   if (is.null(x_test)) {
     return(NULL)
   }
 
-  # Get covariance matrix
-  mcov <- stats::cov(x_train)
   if (is.null(dim(x_test))) {
     x_test <- t(as.matrix(x_test))
   }

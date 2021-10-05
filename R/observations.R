@@ -76,10 +76,9 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
 #' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
 #' \code{NULL} means all combinations. Only used internally.
 #'
-#' @param x_test_gaussian Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
-#' \code{approach = "empirical"}.
-#'
 #' @param ... Currently not used.
+#'
+#' @return A `data.table` containing simulated data passed to \code{\link{prediction}}.
 #'
 #' @export
 #' @keywords internal
@@ -91,31 +90,29 @@ prepare_data <- function(x, ...) {
 
 #' @rdname prepare_data
 #' @export
-prepare_data.independence <- function(x, seed = 1, index_features = NULL, ...) {
+prepare_data.independence <- function(x, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   if (is.null(index_features)) {
     index_features <- x$X[, .I]
   }
 
-  S <- x$S[index_features, ]
+  S <- x$S[index_features, , drop = FALSE]
   x_train <- as.matrix(x$x_train)
   n_train <- nrow(x_train)
   n_samples <- min(x$n_samples, n_train)
 
-  index_s <- rep(seq(x$n_combinations), each = n_samples)
+  index_s <- rep(seq(nrow(S)), each = n_samples)
   w <- 1 / x$n_samples
 
   n_col <- nrow(x$x_test)
-
-  if (!is.null(seed)) set.seed(seed)
 
   dt_l <- list()
   for (i in seq(n_col)) {
     x_test <- x$x_test[i, , drop = FALSE]
 
     # sampling index_xtrain
-    index_xtrain <- c(replicate(x$n_combinations, sample(x = seq(n_train), size = n_samples, replace = F)))
+    index_xtrain <- c(replicate(nrow(S), sample(x = seq(n_train), size = n_samples, replace = F)))
 
     # Generate data used for prediction
     dt_p <- observation_impute_cpp(
@@ -140,11 +137,9 @@ prepare_data.independence <- function(x, seed = 1, index_features = NULL, ...) {
 }
 
 
-
-
 #' @rdname prepare_data
 #' @export
-prepare_data.empirical <- function(x, seed = 1, index_features = NULL, ...) {
+prepare_data.empirical <- function(x, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   # Get distance matrix ----------------
@@ -155,13 +150,13 @@ prepare_data.empirical <- function(x, seed = 1, index_features = NULL, ...) {
   x$D <- distance_matrix(
     x$x_train,
     x$x_test,
-    x$X$features[index_features]
+    x$X$features[index_features],
+    mcov = x$cov_mat
   )
 
   # Setup
-  if (!is.null(seed)) set.seed(seed)
   n_col <- nrow(x$x_test)
-  no_empirical <- nrow(x$S[index_features, ])
+  no_empirical <- nrow(x$S[index_features, , drop = FALSE])
 
   h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
   h_optim_DT <- as.data.table(h_optim_mat)
@@ -201,7 +196,7 @@ prepare_data.empirical <- function(x, seed = 1, index_features = NULL, ...) {
 
     val <- t(t(-0.5 * D) / h_optim_vec^2)
     W_kernel <- exp(val)
-    S <- x$S[index_features, ]
+    S <- x$S[index_features, , drop = FALSE]
 
     ## Get imputed data
     dt_l[[i]] <- observation_impute(
@@ -223,12 +218,12 @@ prepare_data.empirical <- function(x, seed = 1, index_features = NULL, ...) {
 
 #' @rdname prepare_data
 #' @export
-prepare_data.gaussian <- function(x, seed = 1, index_features = NULL, ...) {
+prepare_data.gaussian <- function(x, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
-  if (!is.null(seed)) set.seed(seed)
+
   if (is.null(index_features)) {
     features <- x$X$features
   } else {
@@ -260,6 +255,7 @@ prepare_data.gaussian <- function(x, seed = 1, index_features = NULL, ...) {
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   return(dt)
 }
+
 
 
 #' @rdname prepare_data
@@ -309,18 +305,20 @@ prepare_data.causal <- function(x, seed = 1, index_features = NULL, ...) {
   return(dt)
 }
 
+
 #' @rdname prepare_data
 #' @export
-prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, index_features = NULL, ...) {
+prepare_data.copula <- function(x,  index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
-  if (!is.null(seed)) set.seed(seed)
   if (is.null(index_features)) {
     features <- x$X$features
   } else {
     features <- x$X$features[index_features]
   }
+
+  x_test_gaussian <- x$x_test_gaussian
 
   for (i in seq(n_xtest)) {
     l <- lapply(
@@ -361,7 +359,7 @@ prepare_data.copula <- function(x, x_test_gaussian = 1, seed = 1, index_features
 #'
 #' @rdname prepare_data
 #' @export
-prepare_data.ctree <- function(x, seed = 1, index_features = NULL,
+prepare_data.ctree <- function(x,  index_features = NULL,
                                mc_cores = 1, mc_cores_create_ctree = mc_cores,
                                mc_cores_sample_ctree = mc_cores, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
@@ -369,7 +367,7 @@ prepare_data.ctree <- function(x, seed = 1, index_features = NULL,
   n_xtest <- nrow(x$x_test)
   dt_l <- list()
 
-  if (!is.null(seed)) set.seed(seed)
+
   if (is.null(index_features)) {
     features <- x$X$features
   } else {
