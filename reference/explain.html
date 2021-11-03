@@ -45,8 +45,6 @@
 
 
 
-
-
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
@@ -58,15 +56,9 @@
 
 
 
-  
-
-  
-
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    
-
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -86,7 +78,13 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li class="dropdown">
+        <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Vignettes
      
@@ -134,10 +132,27 @@
     <p>Explain the output of machine learning models with more accurately estimated Shapley values</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, n_samples <span class='op'>=</span> <span class='fl'>1000</span>, <span class='va'>...</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>explain</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>explainer</span>,
+  <span class='va'>approach</span>,
+  <span class='va'>prediction_zero</span>,
+  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
+  n_batches <span class='op'>=</span> <span class='fl'>1</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for independence</span>
-<span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, n_samples <span class='op'>=</span> <span class='fl'>1000</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>explain</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>explainer</span>,
+  <span class='va'>approach</span>,
+  <span class='va'>prediction_zero</span>,
+  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
+  n_batches <span class='op'>=</span> <span class='fl'>1</span>,
+  seed <span class='op'>=</span> <span class='fl'>1</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for empirical</span>
 <span class='fu'>explain</span><span class='op'>(</span>
@@ -146,6 +161,8 @@
   <span class='va'>approach</span>,
   <span class='va'>prediction_zero</span>,
   n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
+  n_batches <span class='op'>=</span> <span class='fl'>1</span>,
+  seed <span class='op'>=</span> <span class='fl'>1</span>,
   w_threshold <span class='op'>=</span> <span class='fl'>0.95</span>,
   type <span class='op'>=</span> <span class='st'>"fixed_sigma"</span>,
   fixed_sigma_vec <span class='op'>=</span> <span class='fl'>0.1</span>,
@@ -163,13 +180,24 @@
   <span class='va'>approach</span>,
   <span class='va'>prediction_zero</span>,
   n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
+  n_batches <span class='op'>=</span> <span class='fl'>1</span>,
+  seed <span class='op'>=</span> <span class='fl'>1</span>,
   mu <span class='op'>=</span> <span class='cn'>NULL</span>,
   cov_mat <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
 
 <span class='co'># S3 method for copula</span>
-<span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, n_samples <span class='op'>=</span> <span class='fl'>1000</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>explain</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>explainer</span>,
+  <span class='va'>approach</span>,
+  <span class='va'>prediction_zero</span>,
+  n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
+  n_batches <span class='op'>=</span> <span class='fl'>1</span>,
+  seed <span class='op'>=</span> <span class='fl'>1</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for ctree</span>
 <span class='fu'>explain</span><span class='op'>(</span>
@@ -178,6 +206,8 @@
   <span class='va'>approach</span>,
   <span class='va'>prediction_zero</span>,
   n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
+  n_batches <span class='op'>=</span> <span class='fl'>1</span>,
+  seed <span class='op'>=</span> <span class='fl'>1</span>,
   mincriterion <span class='op'>=</span> <span class='fl'>0.95</span>,
   minsplit <span class='op'>=</span> <span class='fl'>20</span>,
   minbucket <span class='op'>=</span> <span class='fl'>7</span>,
@@ -192,13 +222,25 @@
   <span class='va'>approach</span>,
   <span class='va'>prediction_zero</span>,
   n_samples <span class='op'>=</span> <span class='fl'>1000</span>,
+  n_batches <span class='op'>=</span> <span class='fl'>1</span>,
+  seed <span class='op'>=</span> <span class='fl'>1</span>,
   mu <span class='op'>=</span> <span class='cn'>NULL</span>,
   cov_mat <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
 
 <span class='co'># S3 method for ctree_comb_mincrit</span>
-<span class='fu'>explain</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>explainer</span>, <span class='va'>approach</span>, <span class='va'>prediction_zero</span>, <span class='va'>n_samples</span>, <span class='va'>mincriterion</span>, <span class='va'>...</span><span class='op'>)</span></code></pre></div>
+<span class='fu'>explain</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>explainer</span>,
+  <span class='va'>approach</span>,
+  <span class='va'>prediction_zero</span>,
+  <span class='va'>n_samples</span>,
+  n_batches <span class='op'>=</span> <span class='fl'>1</span>,
+  seed <span class='op'>=</span> <span class='fl'>1</span>,
+  <span class='va'>mincriterion</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -231,8 +273,21 @@ the response.</p></td>
 Monte Carlo integration for every conditional expectation. See also details.</p></td>
     </tr>
     <tr>
+      <th>n_batches</th>
+      <td><p>Positive integer.
+Specifies how many batches the total number of feature combinations should be split into when calculating the
+contribution function for each test observation.
+The default value is 1.
+Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+This typically comes with a small increase in computation time.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
-      <td><p>Additional arguments passed to <code><a href='prepare_data.html'>prepare_data</a></code></p></td>
+      <td><p>Additional arguments passed to <code><a href='prepare_and_predict.html'>prepare_and_predict</a></code></p></td>
+    </tr>
+    <tr>
+      <th>seed</th>
+      <td><p>Positive integer. If <code>NULL</code> the seed will be inherited from the calling environment.</p></td>
     </tr>
     <tr>
       <th>w_threshold</th>
@@ -338,7 +393,7 @@ Typically we set this value equal to the mean of the response variable in our tr
 such as the mean of the predictions in the training data are also reasonable.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The most important thing to notice is that <code>shapr</code> has implemented four different
+    <p>The most important thing to notice is that <code>shapr</code> has implemented five different
 approaches for estimating the conditional distributions of the data, namely <code>"empirical"</code>,
 <code>"gaussian"</code>, <code>"copula"</code>, <code>"ctree"</code> and <code>"independence"</code>.
 In addition, the user also has the option of combining the four approaches.
@@ -363,7 +418,7 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
     <p>Camilla Lingjaerde, Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"MASS"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"MASS"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
 <span class='r-in'>  <span class='co'># Load example data</span></span>
 <span class='r-in'>  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"Boston"</span>, package <span class='op'>=</span> <span class='st'>"MASS"</span><span class='op'>)</span></span>
 <span class='r-in'></span>
@@ -469,7 +524,7 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 <span class='r-out co'><span class='r-pr'>#&gt;</span> 1: 22.55229 8.718123 0.5741309</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> 2: 22.55229 6.838269 0.8479526</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> 3: 22.55229 1.842581 1.3183971</span>
-</code></pre></div>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -481,11 +536,11 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 
       <footer>
       <div class="copyright">
-  <p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p></p>
+  <p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
-  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
@@ -493,8 +548,6 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 
   
 
-
-  
 
   </body>
 </html>

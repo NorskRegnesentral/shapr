@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>sigma_hat_sq-function — rss_cpp • shapr</title>
+<title>Compute Shapley values in batches — create_S_batch • shapr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="sigma_hat_sq-function — rss_cpp" />
-<meta property="og:description" content="sigma_hat_sq-function" />
+<meta property="og:title" content="Compute Shapley values in batches — create_S_batch" />
+<meta property="og:description" content="Create a list of indexes used to compute Shapley values in batches." />
 
 
 
@@ -123,36 +123,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>sigma_hat_sq-function</h1>
-    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
-    <div class="hidden name"><code>rss_cpp.Rd</code></div>
+    <h1>Compute Shapley values in batches</h1>
+    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/explanation.R'><code>R/explanation.R</code></a></small>
+    <div class="hidden name"><code>create_S_batch.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>sigma_hat_sq-function</p>
+    <p>Create a list of indexes used to compute Shapley values in batches.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>rss_cpp</span><span class='op'>(</span><span class='va'>H</span>, <span class='va'>y</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>create_S_batch</span><span class='op'>(</span><span class='va'>explainer</span>, <span class='va'>n_batches</span>, index_S <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>H</th>
-      <td><p>Matrix. Output from <code><a href='hat_matrix_cpp.html'>hat_matrix_cpp</a></code></p></td>
+      <th>explainer</th>
+      <td><p>The binary matrix <code>S</code> returned from <code><a href='shapr.html'>shapr</a></code>.</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>Vector, i.e. representing the response variable</p></td>
+      <th>n_batches</th>
+      <td><p>Numeric value specifying how many batches <code>S</code> should be split into.</p></td>
+    </tr>
+    <tr>
+      <th>index_S</th>
+      <td><p>Numeric vector specifying which rows of <code>S</code> that should be considered.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Scalar</p>
-    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+    <p>A list of length <code>n_batches</code>.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Martin Jullum</p>
+    <p>If <code>index_S</code> is not <code>NULL</code> then the number of batches is scaled such that the
+total number of batches is equal <code>n_batches</code> and not within the rows specified by<code>index_S</code>.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

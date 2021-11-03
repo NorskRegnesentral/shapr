@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>sigma_hat_sq-function — rss_cpp • shapr</title>
+<title>Compute shapley values — compute_shapley • shapr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="sigma_hat_sq-function — rss_cpp" />
-<meta property="og:description" content="sigma_hat_sq-function" />
+<meta property="og:title" content="Compute shapley values — compute_shapley" />
+<meta property="og:description" content="Compute shapley values" />
 
 
 
@@ -123,36 +123,33 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>sigma_hat_sq-function</h1>
-    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
-    <div class="hidden name"><code>rss_cpp.Rd</code></div>
+    <h1>Compute shapley values</h1>
+    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/predictions.R'><code>R/predictions.R</code></a></small>
+    <div class="hidden name"><code>compute_shapley.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>sigma_hat_sq-function</p>
+    <p>Compute shapley values</p>
     </div>
 
-    <pre class="usage"><span class='fu'>rss_cpp</span><span class='op'>(</span><span class='va'>H</span>, <span class='va'>y</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>compute_shapley</span><span class='op'>(</span><span class='va'>explainer</span>, <span class='va'>contribution_mat</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>H</th>
-      <td><p>Matrix. Output from <code><a href='hat_matrix_cpp.html'>hat_matrix_cpp</a></code></p></td>
+      <th>explainer</th>
+      <td><p>An <code>explain</code> object.</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>Vector, i.e. representing the response variable</p></td>
+      <th>contribution_mat</th>
+      <td><p>The contribution matrix.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Scalar</p>
-    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
-
-    <p>Martin Jullum</p>
+    <p>A <code>data.table</code> with shapley values for each test observation.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

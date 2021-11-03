@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>sigma_hat_sq-function — rss_cpp • shapr</title>
+<title>Calculate Shapley values — prepare_and_predict • shapr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="sigma_hat_sq-function — rss_cpp" />
-<meta property="og:description" content="sigma_hat_sq-function" />
+<meta property="og:title" content="Calculate Shapley values — prepare_and_predict" />
+<meta property="og:description" content="Sample covariate values, predict and calculate Shapley values. The sampling and prediction can be done in batches
+if n_batches is greater than 1." />
 
 
 
@@ -123,36 +124,53 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>sigma_hat_sq-function</h1>
-    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
-    <div class="hidden name"><code>rss_cpp.Rd</code></div>
+    <h1>Calculate Shapley values</h1>
+    <small class="dont-index">Source: <a href='https://github.com/NorskRegnesentral/shapr/blob/master/R/explanation.R'><code>R/explanation.R</code></a></small>
+    <div class="hidden name"><code>prepare_and_predict.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>sigma_hat_sq-function</p>
+    <p>Sample covariate values, predict and calculate Shapley values. The sampling and prediction can be done in batches
+if <code>n_batches</code> is greater than 1.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>rss_cpp</span><span class='op'>(</span><span class='va'>H</span>, <span class='va'>y</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>prepare_and_predict</span><span class='op'>(</span><span class='va'>explainer</span>, <span class='va'>n_batches</span>, <span class='va'>prediction_zero</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>H</th>
-      <td><p>Matrix. Output from <code><a href='hat_matrix_cpp.html'>hat_matrix_cpp</a></code></p></td>
+      <th>explainer</th>
+      <td><p>An <code>explainer</code> object to use for explaining the observations.
+See <code><a href='shapr.html'>shapr</a></code>.</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>Vector, i.e. representing the response variable</p></td>
+      <th>n_batches</th>
+      <td><p>Positive integer.
+Specifies how many batches the total number of feature combinations should be split into when calculating the
+contribution function for each test observation.
+The default value is 1.
+Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+This typically comes with a small increase in computation time.</p></td>
+    </tr>
+    <tr>
+      <th>prediction_zero</th>
+      <td><p>Numeric. The prediction value for unseen data, typically equal to the mean of
+the response.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Arguments passed to <code><a href='prepare_data.html'>prepare_data</a></code> with exception of <code>only_return_contrib_dt</code>,
+which is only passed to explain. If <code>TRUE</code> the
+<code>data.table</code> from <code><a href='prediction.html'>prediction</a></code> is returned, else an object of class <code>shapr</code>.
+Each column (except for <code>row_id</code>) correspond to the vector <code>v_D</code> in Equation 7 in the reference.
+The Shapley values can be calculated by <code>t(explainer$W %*% dt_contrib[, -"row_id"]))</code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Scalar</p>
-    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
-
-    <p>Martin Jullum</p>
+    <p>A list. See <code><a href='explain.html'>explain</a></code> for more information.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

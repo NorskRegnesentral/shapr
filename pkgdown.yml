@@ -1,10 +1,10 @@
 pandoc: 2.7.3
-pkgdown: 1.6.1.9001
-pkgdown_sha: 705ff7c650bb1c7d46d35e72f27ad093689e2f29
+pkgdown: 1.6.1
+pkgdown_sha: ~
 articles:
   understanding_shapr: understanding_shapr.html
-last_built: 2021-09-17T12:13Z
+last_built: 2021-11-03T12:03Z
 urls:
-  reference: https://norskregnesentral.github.io/shapr/reference
-  article: https://norskregnesentral.github.io/shapr/articles
+  reference: https://norskregnesentral.github.io/shapr//reference
+  article: https://norskregnesentral.github.io/shapr//articles
 

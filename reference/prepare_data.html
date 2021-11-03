@@ -45,8 +45,6 @@
 
 
 
-
-
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
@@ -58,15 +56,9 @@
 
 
 
-  
-
-  
-
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    
-
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -86,7 +78,13 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li class="dropdown">
+        <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Vignettes
      
@@ -134,30 +132,29 @@
     <p>Generate data used for predictions</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for independence</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for empirical</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for gaussian</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for copula</span>
-<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, x_test_gaussian <span class='op'>=</span> <span class='fl'>1</span>, seed <span class='op'>=</span> <span class='fl'>1</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>prepare_data</span><span class='op'>(</span><span class='va'>x</span>, index_features <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for ctree</span>
 <span class='fu'>prepare_data</span><span class='op'>(</span>
   <span class='va'>x</span>,
-  seed <span class='op'>=</span> <span class='fl'>1</span>,
   index_features <span class='op'>=</span> <span class='cn'>NULL</span>,
   mc_cores <span class='op'>=</span> <span class='fl'>1</span>,
   mc_cores_create_ctree <span class='op'>=</span> <span class='va'>mc_cores</span>,
   mc_cores_sample_ctree <span class='op'>=</span> <span class='va'>mc_cores</span>,
   <span class='va'>...</span>
-<span class='op'>)</span></code></pre></div>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -171,18 +168,9 @@
       <td><p>Currently not used.</p></td>
     </tr>
     <tr>
-      <th>seed</th>
-      <td><p>Positive integer. If <code>NULL</code> the seed will be inherited from the calling environment.</p></td>
-    </tr>
-    <tr>
       <th>index_features</th>
       <td><p>List. Default is NULL but if either various methods are being used or various mincriterion are
 used for different numbers of conditioned features, this will be a list with the features to pass.</p></td>
-    </tr>
-    <tr>
-      <th>x_test_gaussian</th>
-      <td><p>Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
-<code>approach = "empirical"</code>.</p></td>
     </tr>
     <tr>
       <th>mc_cores</th>
@@ -201,8 +189,15 @@ parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows sys
 function.
 Defaults to <code>mc_cores</code>.</p></td>
     </tr>
+    <tr>
+      <th>seed</th>
+      <td><p>Positive integer. If <code>NULL</code> the seed will be inherited from the calling environment.</p></td>
+    </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A `data.table` containing simulated data passed to <code><a href='prediction.html'>prediction</a></code>.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -215,11 +210,11 @@ Defaults to <code>mc_cores</code>.</p></td>
 
       <footer>
       <div class="copyright">
-  <p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p></p>
+  <p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
-  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
@@ -227,8 +222,6 @@ Defaults to <code>mc_cores</code>.</p></td>
 
   
 
-
-  
 
   </body>
 </html>
