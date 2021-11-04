@@ -129,6 +129,8 @@ prepare_data.independence <- function(x, index_features = NULL, ...) {
     dt_l[[i]][, id_combination := index_s]
     dt_l[[i]][, w := w] # IS THIS NECESSARY?
     dt_l[[i]][, id := i]
+
+    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
 
 
