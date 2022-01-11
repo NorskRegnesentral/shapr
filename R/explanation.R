@@ -629,6 +629,8 @@ create_S_batch <- function(explainer, n_batches, index_S = NULL) {
   return(S_groups)
 }
 
+
+
 #' Calculate Shapley values
 #'
 #' Sample covariate values, predict and calculate Shapley values. The sampling and prediction can be done in batches
@@ -655,24 +657,41 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, ...) {
 
   S_batch <- create_S_batch(explainer, n_batches, index_S)
   pred_batch <- list()
-  r_batch <- list()
-  p <- NA
+   # OLD
+  # r_batch <- list()
+  # p <- NA
+  #
+  # for (batch in seq_along(S_batch)) {
+  #
+  #   dt <- prepare_data(explainer, index_features = S_batch[[batch]], ...)
+  #   r_batch[[batch]] <- prediction(dt, prediction_zero, explainer)
+  #   r_batch[[batch]]$dt_mat[, row_id := S_batch[[batch]]]
+  #   if (!is.null(r_batch[[batch]]$p)) p <- r_batch[[batch]]$p
+  #   #
+  #   if (length(S_batch) > 1) {
+  #     cat("Batch no", batch, "of", length(S_batch), "completed.\n")
+  #   }
+  #
+  # }
 
-  for (batch in seq_along(S_batch)) {
-
-    dt <- prepare_data(explainer, index_features = S_batch[[batch]], ...)
-    r_batch[[batch]] <- prediction(dt, prediction_zero, explainer)
-    r_batch[[batch]]$dt_mat[, row_id := S_batch[[batch]]]
-
-    if (!is.null(r_batch[[batch]]$p)) p <- r_batch[[batch]]$p
-
-    if (length(S_batch) > 1) {
-      cat("Batch no", batch, "of", length(S_batch), "completed.\n")
-    }
-
+  batchfun <- function(S){
+    dt <- prepare_data(explainer, index_features = S, ...)
+    r_batch_i <- prediction(dt, prediction_zero, explainer)
+    r_batch_i$dt_mat[, row_id := S]
+    r_batch_i
   }
 
+  r_batch <- future.apply::future_lapply(S_batch,batchfun,future.seed = NULL)
   dt_mat <- rbindlist(lapply(r_batch, "[[", "dt_mat"))
+
+  p <- unlist(lapply(r_batch, "[[", "p"),use.names = F)
+  if(!is.null(p)){
+    names(p) <- seq_len(nrow(explainer$x_test)) # Safe also for n_test = 1
+  } else {
+    p <- NA
+  }
+
+
 
   if (only_return_contrib_dt) {
     attr(dt_mat, "p") <- p
@@ -702,3 +721,5 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, ...) {
 print.shapr <- function(x, ...) {
   print(x$dt)
 }
+
+
