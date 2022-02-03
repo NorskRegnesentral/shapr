@@ -522,10 +522,10 @@ x_test_cat <- dt[1:6, x_var]
 
 
 # Fit a basic linear regression model to the training data
-model <- lm(medv ~ lstat + rm + dis + indus, data = xy_train_cat)
+model_mixed <- lm(medv ~ lstat + rm + dis + indus, data = xy_train_cat)
 
 # Prepare the data for explanation
-explainer <- shapr(x_train_cat, model)
+explainer <- shapr(x_train_cat, model_mixed)
 
 # Specifying the phi_0, i.e. the expected prediction without any features
 p <- mean(y_train_cat)
@@ -545,6 +545,40 @@ explanation_categorical <- explain(
 plot(explanation_categorical, plot_phi0 = FALSE, index_x_test = c(1, 6))
 
 ```
+
+## Explain groups of features
+
+In some cases, especially when the number of features is very large, it may be more appropriate to explain predictions
+in terms of groups of features instead of single features, see (@jullum2021efficient) for intuition and real world
+examples. Explaining prediction in terms of groups of features is very easy using `shapr`: 
+
+```{r}
+
+# Define the feature groups
+
+group_list <- list(A = c("lstat","rm"),
+              B = c("dis","indus"))
+
+# Set up the explainer using the groups
+explainer_group <- shapr(x_train,model,group = group_list)
+
+
+# Use the combined approach
+explanation_group <- explain(
+  x_test,
+  approach = "empirical",
+  explainer = explainer_group,
+  prediction_zero = p
+)
+
+# Prints the group-wise explanations
+explanation_group
+
+# Plots the group-wise explanations
+plot(explanation_group, plot_phi0 = T, index_x_test = c(1, 6))
+
+```
+
 
 ## Explain custom models
 
