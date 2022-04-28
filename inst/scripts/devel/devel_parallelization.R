@@ -28,50 +28,116 @@ explainer <- shapr(x_train, model)
 # Specifying the phi_0, i.e. the expected prediction without any features
 p <- mean(y_train)
 
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
+
+# No specification (sequential)
+start <- proc.time()
+explanation0 <- explain(
+  x_test,
+  approach = "gaussian",
+  explainer = explainer,
+  prediction_zero = p,n_batches = 32
+)
+stop <- proc.time()
+time0 <- stop-start
 
 
-#plan(cluster, workers = c("localhost","samba8.ad.nr.no"))
-#cl <- parallel::makeCluster(c("localhost","samba8.ad.nr.no"))
+# Sequential
+start <- proc.time()
+future::plan("sequential")
+explanation1 <- explain(
+  x_test,
+  approach = "gaussian",
+  explainer = explainer,
+  prediction_zero = p,n_batches = 32
+)
+stop <- proc.time()
+time1 <- stop-start
 
+# Try to set multicore (in Rstudio this is disabled so falls back to sequential)
 start <- proc.time()
 future::plan("multicore",workers=5)  ## defaults to availableCores() workers
-explanation <- explain(
+explanation2 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
   prediction_zero = p,n_batches = 32
 )
 stop <- proc.time()
-stop-start
+time2 <- stop-start
 
-future::plan("multisession",workers = 10)  ## defaults to availableCores() workers
-
+# Multisession with 2 workers
 start <- proc.time()
-future::plan("sequential")  ## defaults to availableCores() workers
-explanation <- explain(
+future::plan("multisession",workers = 2)  ## defaults to availableCores() workers
+explanation3 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
   prediction_zero = p,n_batches = 32
 )
 stop <- proc.time()
-stop-start
+time3 <- stop-start
 
+# Multisession with 5 workers
 start <- proc.time()
-future::plan("multisession",workers=2)  ## defaults to availableCores() workers
-explanation <- explain(
+future::plan("multisession",workers=5)  ## defaults to availableCores() workers
+explanation4 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
   prediction_zero = p,n_batches = 32
 )
 stop <- proc.time()
-stop-start
+time4 <- stop-start
+
+# Multisession with 10 workers
+start <- proc.time()
+future::plan("multisession",workers=10)  ## defaults to availableCores() workers
+explanation5 <- explain(
+  x_test,
+  approach = "gaussian",
+  explainer = explainer,
+  prediction_zero = p,n_batches = 32
+)
+stop <- proc.time()
+time5 <- stop-start
+
+# Multisession with 20 workers
+start <- proc.time()
+future::plan("multisession",workers=20)
+explanation6 <- explain(
+  x_test,
+  approach = "gaussian",
+  explainer = explainer,
+  prediction_zero = p,n_batches = 32
+)
+stop <- proc.time()
+time6 <- stop-start
+
+# Trying to set up a cluster and run it there
+start <- proc.time()
+cl <- parallel::makeCluster(c("samba9", "samba10"))
+plan(cluster, workers = cl)
+explanation4 <- explain(
+  x_test,
+  approach = "gaussian",
+  explainer = explainer,
+  prediction_zero = p,n_batches = 32
+)
+stop <- proc.time()
+time4 <- stop-start
+
+
+
+
+
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$dt)
+head(explanation0$dt,2)
+head(explanation1$dt,2)
+head(explanation2$dt,2)
+head(explanation3$dt,2)
+head(explanation4$dt,2)
+head(explanation5$dt,2)
+head(explanation6$dt,2)
 
-# Finally we plot the resulting explanations
-plot(explanation)
+cbind(time0,time1,time2,time3,time4)
