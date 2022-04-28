@@ -32,7 +32,8 @@ Imports:
     Rcpp (>= 0.12.15),
     condMVNorm,
     mvnfast,
-    Matrix
+    Matrix,
+    future.apply
 Suggests: 
     ranger,
     xgboost,

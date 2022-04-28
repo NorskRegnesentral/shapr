@@ -4,7 +4,7 @@
 \alias{prepare_and_predict}
 \title{Calculate Shapley values}
 \usage{
-prepare_and_predict(explainer, n_batches, prediction_zero, ...)
+prepare_and_predict(explainer, n_batches, prediction_zero, seed, ...)
 }
 \arguments{
 \item{explainer}{An \code{explainer} object to use for explaining the observations.
@@ -19,6 +19,8 @@ This typically comes with a small increase in computation time.}
 
 \item{prediction_zero}{Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.}
+
+\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 
 \item{...}{Arguments passed to \code{\link{prepare_data}} with exception of \code{only_return_contrib_dt},
 which is only passed to explain. If \code{TRUE} the

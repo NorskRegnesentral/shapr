@@ -115,16 +115,19 @@ time6 <- stop-start
 
 # Trying to set up a cluster and run it there
 start <- proc.time()
-cl <- parallel::makeCluster(c("samba9", "samba10"))
+cl <- parallel::makeCluster(c(rep("hpc01",5),rep("hpc02",5),rep("hpc03",6)),
+                            rscript = "/nr/prog/AppServerDefaults/Ubuntu_18.04_x86_64/bin/Rscript")
 plan(cluster, workers = cl)
-explanation4 <- explain(
+#plan(remote, workers = cl)
+explanation7 <- explain(
   x_test,
   approach = "gaussian",
   explainer = explainer,
   prediction_zero = p,n_batches = 32
 )
 stop <- proc.time()
-time4 <- stop-start
+parallel::stopCluster(cl)
+time7 <- stop-start
 
 
 
@@ -139,5 +142,6 @@ head(explanation3$dt,2)
 head(explanation4$dt,2)
 head(explanation5$dt,2)
 head(explanation6$dt,2)
+head(explanation7$dt,2)
 
-cbind(time0,time1,time2,time3,time4)
+cbind(time0,time1,time2,time3,time4,time5,time6,time7)
