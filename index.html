@@ -46,7 +46,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
      
     <span class="caret"></span>
@@ -87,9 +87,8 @@
 <div class="page-header"><h1 id="shapr-">shapr <img src="reference/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"><a class="anchor" aria-label="anchor" href="#shapr-"></a>
 </h1></div>
 <!-- badges: start -->
-
 <p>The most common machine learning task is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features. When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction. However, explaining predictions from complex, or seemingly simple, machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable explanations.</p>
-<p>Shapley values is the only prediction explanation framework with a solid theoretical foundation (Lundberg and Lee (2017)). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. Popular methods like Shapley Sampling Values (Štrumbelj and Kononenko (2014)), SHAP/Kernel SHAP (Lundberg and Lee (2017)), and to some extent TreeSHAP (Lundberg, Erion, and Lee (2018)), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. Aas, Jullum, and Løland (2021) extends and improves the Kernel SHAP method of Lundberg and Lee (2017) to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. <a href="https://arxiv.org/abs/1903.10464" class="external-link">See the paper for details</a>.</p>
+<p>Shapley values is the only prediction explanation framework with a solid theoretical foundation (Lundberg and Lee (2017)). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. Popular methods like Shapley Sampling Values (Štrumbelj and Kononenko (2014)), SHAP/Kernel SHAP (Lundberg and Lee (2017)), and to some extent TreeSHAP (Lundberg, Erion, and Lee (2018)), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. Aas, Jullum, and Løland (2021) extends and improves the Kernel SHAP method of Lundberg and Lee (2017) to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. <a href="https://www.sciencedirect.com/science/article/pii/S0004370221000539" class="external-link">See the paper for details</a>.</p>
 <p>This package implements the methodology of Aas, Jullum, and Løland (2021).</p>
 <p>The following methodology/features are currently implemented:</p>
 <ul>
@@ -99,10 +98,7 @@
 <li>Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of Aas, Jullum, and Løland (2021).</li>
 <li>Accounting for feature dependence using conditional inference trees (Redelmeier, Jullum, and Aas (2020)).</li>
 <li>Combining any of the four methods.</li>
-<li>Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai
-<ol start="1998" style="list-style-type: decimal">
-<li>when optimizing the bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2021).</li>
-</ol>
+<li>Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai<ol start="1998" style="list-style-type: decimal"><li>when optimizing the bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2021).</li></ol>
 </li>
 <li>Functionality for visualizing the explanations.</li>
 <li>Support for models not supported natively.</li>
@@ -214,27 +210,13 @@ Current methodological restrictions:
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references hanging-indent">
-<div id="ref-aas2019explaining">
-<p>Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298.</p>
-</div>
-<div id="ref-hurvich1998smoothing">
-<p>Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998. “Smoothing Parameter Selection in Nonparametric Regression Using an Improved Akaike Information Criterion.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 60 (2): 271–93.</p>
-</div>
-<div id="ref-lundberg2018consistent">
-<p>Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent Individualized Feature Attribution for Tree Ensembles.” <em>arXiv Preprint arXiv:1802.03888</em>.</p>
-</div>
-<div id="ref-lundberg2017unified">
-<p>Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.</p>
-</div>
-<div id="ref-lime_api">
-<p>Pedersen, Thomas Lin, and Michaël Benesty. 2019. <em>Lime: Local Interpretable Model-Agnostic Explanations</em>. <a href="https://CRAN.R-project.org/package=lime" class="external-link uri">https://CRAN.R-project.org/package=lime</a>.</p>
-</div>
-<div id="ref-redelmeier2020explaining">
-<p>Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predictive Models with Mixed Features Using Shapley Values and Conditional Inference Trees.” In <em>International Cross-Domain Conference for Machine Learning and Knowledge Extraction</em>, 117–37. Springer.</p>
-</div>
-<div id="ref-vstrumbelj2014explaining">
-<p>Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models and Individual Predictions with Feature Contributions.” <em>Knowledge and Information Systems</em> 41 (3): 647–65.</p>
-</div>
+<div id="ref-aas2019explaining"><p>Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298.</p></div>
+<div id="ref-hurvich1998smoothing"><p>Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998. “Smoothing Parameter Selection in Nonparametric Regression Using an Improved Akaike Information Criterion.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 60 (2): 271–93.</p></div>
+<div id="ref-lundberg2018consistent"><p>Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent Individualized Feature Attribution for Tree Ensembles.” <em>arXiv Preprint arXiv:1802.03888</em>.</p></div>
+<div id="ref-lundberg2017unified"><p>Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.</p></div>
+<div id="ref-lime_api"><p>Pedersen, Thomas Lin, and Michaël Benesty. 2019. <em>Lime: Local Interpretable Model-Agnostic Explanations</em>. <a href="https://CRAN.R-project.org/package=lime" class="external-link uri">https://CRAN.R-project.org/package=lime</a>.</p></div>
+<div id="ref-redelmeier2020explaining"><p>Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predictive Models with Mixed Features Using Shapley Values and Conditional Inference Trees.” In <em>International Cross-Domain Conference for Machine Learning and Knowledge Extraction</em>, 117–37. Springer.</p></div>
+<div id="ref-vstrumbelj2014explaining"><p>Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models and Individual Predictions with Feature Contributions.” <em>Knowledge and Information Systems</em> 41 (3): 647–65.</p></div>
 </div>
 </div>
 </div>
@@ -307,7 +289,7 @@ Current methodological restrictions:
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>

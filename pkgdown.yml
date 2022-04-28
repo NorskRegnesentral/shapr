@@ -1,9 +1,9 @@
 pandoc: 2.7.3
-pkgdown: 2.0.2
+pkgdown: 2.0.3
 pkgdown_sha: ~
 articles:
   understanding_shapr: understanding_shapr.html
-last_built: 2022-02-03T07:10Z
+last_built: 2022-04-28T06:29Z
 urls:
   reference: https://norskregnesentral.github.io/shapr/reference
   article: https://norskregnesentral.github.io/shapr/articles
