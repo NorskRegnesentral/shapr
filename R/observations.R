@@ -99,17 +99,18 @@ prepare_data.independence <- function(x, index_features = NULL, ...) {
 
   S <- x$S[index_features, , drop = FALSE]
   x_train <- as.matrix(x$x_train)
+  x_test0 <- as.matrix(x$x_test)
   n_train <- nrow(x_train)
   n_samples <- min(x$n_samples, n_train)
 
   index_s <- rep(seq(nrow(S)), each = n_samples)
   w <- 1 / x$n_samples
 
-  n_col <- nrow(x$x_test)
+  n_col <- nrow(x_test0)
 
   dt_l <- list()
   for (i in seq(n_col)) {
-    x_test <- x$x_test[i, , drop = FALSE]
+    x_test <- x_test0[i, , drop = FALSE]
 
     # sampling index_xtrain
     index_xtrain <- c(replicate(nrow(S), sample(x = seq(n_train), size = n_samples, replace = F)))
@@ -205,7 +206,7 @@ prepare_data.empirical <- function(x, index_features = NULL, ...) {
       W_kernel = W_kernel,
       S = S,
       x_train = as.matrix(x$x_train),
-      x_test = x$x_test[i, , drop = FALSE],
+      x_test = as.matrix(x$x_test[i, , drop = FALSE]),
       w_threshold = x$w_threshold,
       n_samples = x$n_samples
     )
@@ -223,7 +224,8 @@ prepare_data.empirical <- function(x, index_features = NULL, ...) {
 prepare_data.gaussian <- function(x, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
-  n_xtest <- nrow(x$x_test)
+  x_test0 <- as.matrix(x$x_test)
+  n_xtest <- nrow(x_test0)
   dt_l <- list()
 
   if (is.null(index_features)) {
@@ -239,8 +241,8 @@ prepare_data.gaussian <- function(x, index_features = NULL, ...) {
       n_samples = x$n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
-      m = ncol(x$x_test),
-      x_test = x$x_test[i, , drop = FALSE]
+      m = ncol(x_test0),
+      x_test = x_test0[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
@@ -259,7 +261,9 @@ prepare_data.gaussian <- function(x, index_features = NULL, ...) {
 #' @export
 prepare_data.copula <- function(x,  index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
-  n_xtest <- nrow(x$x_test)
+
+  x_test0 <- as.matrix(x$x_test)
+  n_xtest <- nrow(x_test0)
   dt_l <- list()
   if (is.null(index_features)) {
     features <- x$X$features
@@ -277,7 +281,7 @@ prepare_data.copula <- function(x,  index_features = NULL, ...) {
       mu = x$mu,
       cov_mat = x$cov_mat,
       m = ncol(x$x_test),
-      x_test = x$x_test[i, , drop = FALSE],
+      x_test = x_test0[i, , drop = FALSE],
       x_train = as.matrix(x$x_train),
       x_test_gaussian = x_test_gaussian[i, , drop = FALSE]
     )
