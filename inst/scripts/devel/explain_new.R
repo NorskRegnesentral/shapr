@@ -66,6 +66,24 @@ dt <- future.apply::future_lapply(X = explainer$S_batch,
 dt <- batch_prepare_vS(explainer$S_batch[[4]],explainer)
 
 
+explanation_new <- explain_new(
+  x_test,
+  approach = "gaussian",
+  explainer = explainer,
+  prediction_zero = p,
+  n_samples = 10^5
+)
+
+explanation_old <- explain(
+  x_test,
+  approach = "gaussian",
+  explainer = explainer,
+  prediction_zero = p,
+  n_samples = 10^5
+)
+
+explanation_new$dt_shapley
+explanation_old$dt
 
 
 prepare_data(explainer, index_features = explainer$S_batch[[1]])

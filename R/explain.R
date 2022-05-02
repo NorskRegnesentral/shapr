@@ -73,6 +73,12 @@ explain_new <- function(x,explainer, approach, prediction_zero,
   if(keep_samp_for_vS){
     dt_samp_for_vS_list <- list()
   }
+
+  #r_batch <- future.apply::future_lapply(X = explainer$S_batch,
+  #                                       FUN = compute_vS,
+  #                                       explainer = explainer,
+  #                                       future.seed = explainer$seed)
+
   for(i in seq_along(explainer$S_batch)){
 
     S <- explainer$S_batch[[i]]
@@ -91,13 +97,9 @@ explain_new <- function(x,explainer, approach, prediction_zero,
     dt_samp_for_vS <- rbindlist(dt_samp_for_vS_list)
   }
 
-  p <- get_p(dt_vS,explainer) ### CONT HERE ###
+  p <- get_p(dt_vS,explainer)
 
-  #r_batch <- future.apply::future_lapply(X = explainer$S_batch,
-  #                                       FUN = compute_vS,
-  #                                       explainer = explainer,
-  #                                       future.seed = explainer$seed)
-
+  dt_shapley <- compute_shapley_new(explainer, dt_vS)
 
   # setup <- explain_setup(x=x,
   #                        explainer = explainer,
@@ -111,9 +113,39 @@ explain_new <- function(x,explainer, approach, prediction_zero,
   #
   # output <- compute_Shapley(vS_dt = vS_dt,
   #                           setup = setup)
-  # return(output)
+  output <- list(dt_shapley = dt_shapley,
+                 explainer = explainer,
+                 p = p,
+                 dt_vS = dt_vS)
+
+  return(output)
 
 }
+
+#' Compute shapley values
+#' @param explainer An \code{explain} object.
+#' @param dt_vS The contribution matrix.
+#' @return A \code{data.table} with shapley values for each test observation.
+#' @export
+#' @keywords internal
+compute_shapley_new <- function(explainer, dt_vS) {
+
+  feature_names <- colnames(explainer$x_test)
+  if (!explainer$is_groupwise) {
+    shap_names <- feature_names
+  } else {
+    shap_names <- names(explainer$group)
+  }
+
+
+  kshap <- t(explainer$W %*% as.matrix(dt_vS[,-"id_combination"]))
+  dt_kshap <- data.table::as.data.table(kshap)
+  colnames(dt_kshap) <- c("none", shap_names)
+
+  return(dt_kshap)
+
+}
+
 
 #' @export
 explain_setup <- function(x, explainer, approach, prediction_zero,
