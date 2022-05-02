@@ -7,7 +7,18 @@ compute_vS <- function(S,explainer){
 
 #' @export
 batch_prepare_vS <- function(S,explainer){
-  dt <- prepare_data(explainer, index_features = S) # TODO: Modify prepare_data such that it gives does not give copies of the same observation
+
+  max_id_combination <- explainer$n_combinations
+
+  if(!(max_id_combination %in% S)){ # Not doing this for the largest id combination (should check if this is faster or slower, actually)
+    dt <- prepare_data(explainer, index_features = S)
+  } else {
+    S <- S[S!=max_id_combination]
+    dt <- prepare_data(explainer, index_features = S)
+    dt_max <- data.table(explainer$x_test,id_combination=max_id_combination,w=1,id=seq_len(nrow(explainer$x_test)))
+    dt <- rbind(dt,dt_max)
+    setkey(dt,id,id_combination)
+  }
 }
 
 #' @export
@@ -17,9 +28,9 @@ batch_get_preds <- function(dt,S,explainer){
   r_batch_i
 }
 
-get_p <- function(dt_vS,explainer){# TODO: Add max_id_comb to explainer to be extracted and used here
+get_p <- function(dt_vS,explainer){
 
-  max_id_combination <- explainer$X[,max(id_combination)]
+  max_id_combination <- explainer$n_combinations
   p <- unlist(dt_vS[id_combination==max_id_combination,][,id_combination:=NULL])
 
   p
@@ -31,7 +42,7 @@ compute_preds <- function(dt, explainer) {
   id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
 
   # Setup
-  feature_names <- colnames(explainer$x_test)
+  feature_names <- explainer$feature_list$labels
 
   # Predictions
   if (!all(dt[, unique(id_combination)] == 1)) { # Avoid warnings when predicting with empty newdata
@@ -91,7 +102,10 @@ explain_new <- function(x,explainer, approach, prediction_zero,
     }
   }
 
-  dt_vS <- rbindlist(dt_vS_list)
+  dt_vS0 <- as.data.table(rbind(c(1,rep(explainer$prediction_zero,nrow(explainer$x_test)))))
+  names(dt_vS0) <- c("id_combination",1:nrow(explainer$x_test))
+
+  dt_vS <- rbind(dt_vS0,rbindlist(dt_vS_list))
 
   if(keep_samp_for_vS){
     dt_samp_for_vS <- rbindlist(dt_samp_for_vS_list)
@@ -130,9 +144,8 @@ explain_new <- function(x,explainer, approach, prediction_zero,
 #' @keywords internal
 compute_shapley_new <- function(explainer, dt_vS) {
 
-  feature_names <- colnames(explainer$x_test)
   if (!explainer$is_groupwise) {
-    shap_names <- feature_names
+    shap_names <- explainer$feature_list$labels
   } else {
     shap_names <- names(explainer$group)
   }

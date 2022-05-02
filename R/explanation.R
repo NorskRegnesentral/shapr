@@ -611,23 +611,23 @@ get_list_ctree_mincrit <- function(n_features, mincriterion) {
 #' @keywords internal
 create_S_batch <- function(explainer, n_batches, index_S = NULL) {
 
-  no_samples <- nrow(explainer$S)
+  no_samples <- explainer$n_combinations
 
   if (n_batches == 1) {
     if (!is.null(index_S)) {
       return(list(index_S))
     } else {
-      return(list(1:nrow(explainer$S)))
+      return(list(2:nrow(explainer$S)))
     }
   }
 
-  if (!is.null(index_S)) {
-    # Rescale the number of batches to the percentage of observations used
-    n_batches <- max(1, floor(length(index_S) / nrow(explainer$S) * n_batches))
+  if (!is.null(index_S)){
+    # Rescale the number of batches to the percentage of observations used for combined approach
+    n_batches <- max(1, floor(length(index_S) / no_samples * n_batches))
     if (n_batches == 1) return(list(unique(index_S)))
-    x0 <- index_S
+    x0 <- index_S # TODO: Need to remove index = 1 if it exists here.
   } else {
-    x0 <- 1:no_samples
+    x0 <- 2:no_samples # Ignoring the first
   }
   S_groups <- split(x0, cut(x0, n_batches, labels = FALSE))
 
