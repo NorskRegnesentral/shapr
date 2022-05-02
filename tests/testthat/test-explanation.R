@@ -631,7 +631,7 @@ test_that("Test functions related to groups in explanation.R", {
     ex_list[[5]] <- explain(x_test, explainer2, approach = "gaussian", prediction_zero = p0)
 
     # Checking that all explain objects produce the same as before
-    expect_known_value(ex_list, file = "test_objects/explanation_explain_group_obj_list.rds")
+    expect_known_value(ex_list, file = "test_objects/explanation_explain_group_obj_list.rds",update = FALSE)
 
     ### Additional test that only the produced shapley values are the same as before
     fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_group_obj_list.rds")
@@ -691,7 +691,7 @@ test_that("prepare_and_predict", {
     explainer$approach <- "independence"
     explainer$n_samples <- 100
 
-    res <- prepare_and_predict(explainer, n_batches = 1, p0)
+    res <- prepare_and_predict(explainer, n_batches = 1, p0,seed=NULL)
 
     expect_true(is.list(res))
     expect_s3_class(res, "shapr")
@@ -699,7 +699,7 @@ test_that("prepare_and_predict", {
 
 
     # return the contribution matrix
-    res <- prepare_and_predict(explainer, n_batches = 1, p0, only_return_contrib_dt = TRUE)
+    res <- prepare_and_predict(explainer, n_batches = 1, p0, only_return_contrib_dt = TRUE,seed=NULL)
     expect_s3_class(res, "data.table")
 
   }
