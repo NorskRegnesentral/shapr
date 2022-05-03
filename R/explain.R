@@ -10,7 +10,10 @@ batch_prepare_vS <- function(S,explainer){
 
   max_id_combination <- explainer$n_combinations
 
-  if(!(max_id_combination %in% S)){ # Not doing this for the largest id combination (should check if this is faster or slower, actually)
+  # TODO: Check what is the fastest approach to deal with the last observation.
+  # Not doing this for the largest id combination (should check if this is faster or slower, actually)
+  # An alternative would be to delete rows from the dt which is provided by prepare_data.
+  if(!(max_id_combination %in% S)){
     dt <- prepare_data(explainer, index_features = S)
   } else {
     S <- S[S!=max_id_combination]
@@ -80,10 +83,7 @@ explain_new <- function(x,explainer, approach, prediction_zero,
                              seed = seed, ...)
 
 # Starting off with a loop instead of a lapply call
-  dt_vS_list <- list()
-  if(keep_samp_for_vS){
-    dt_samp_for_vS_list <- list()
-  }
+  dt_vS_list <- dt_samp_for_vS_list <- list()
 
   #r_batch <- future.apply::future_lapply(X = explainer$S_batch,
   #                                       FUN = compute_vS,
@@ -105,11 +105,11 @@ explain_new <- function(x,explainer, approach, prediction_zero,
   dt_vS0 <- as.data.table(rbind(c(1,rep(explainer$prediction_zero,nrow(explainer$x_test)))))
   names(dt_vS0) <- c("id_combination",1:nrow(explainer$x_test))
 
-  dt_vS <- rbind(dt_vS0,rbindlist(dt_vS_list))
+  dt_vS_list[[length(dt_vS_list)+1]] <- dt_vS0
 
-  if(keep_samp_for_vS){
-    dt_samp_for_vS <- rbindlist(dt_samp_for_vS_list)
-  }
+  dt_vS <- rbindlist(dt_vS_list)
+  setorder(dt_vS,id_combination)
+  dt_samp_for_vS <- rbindlist(dt_samp_for_vS_list)
 
   p <- get_p(dt_vS,explainer)
 
@@ -164,10 +164,6 @@ compute_shapley_new <- function(explainer, dt_vS) {
 explain_setup <- function(x, explainer, approach, prediction_zero,
                           n_samples = 1e3, n_batches = 1, seed = 1, ...) {
 
-  #TODO: May consider only returning the new objects to avoid uncessary copying/overwriting existing object
-  #      which is almost identical
-
-
   # Check input for x
   if (!is.matrix(x) & !is.data.frame(x)) {
     stop("x should be a matrix or a data.frame/data.table.")
@@ -198,7 +194,7 @@ explain_setup <- function(x, explainer, approach, prediction_zero,
   explainer$n_samples <- n_samples
   explainer$n_batches <- n_batches
   explainer$seed <- seed
-  explainer$S_batch <- create_S_batch(explainer, n_batches, NULL) # TODO: Modify create_S_batch such that id_combination=1 is kept outside (and handled elsewhere)
+  explainer$S_batch <- create_S_batch(explainer, n_batches, NULL)
 
   explainer <- setup_approach(explainer, ...)
 
