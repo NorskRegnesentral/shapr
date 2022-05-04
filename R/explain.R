@@ -201,16 +201,32 @@ explain_setup <- function(x, explainer, approach, prediction_zero,
 }
 
 #' @export
+get_cov_mat <- function(x_train,min_eigen_value = 1e-06){
+  cov_mat <- stats::cov(x_train)
+  eigen_values <- eigen(cov_mat)$values
+  if (any(eigen_values <= min_eigen_value)) {
+    cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
+  }
+  return(cov_mat)
+}
+
+#' @export
+get_mu_vec <- function(x_train,min_eigen_value = 1e-06){
+  unname(colMeans(x_train))
+}
+
+
+#' @export
 setup_approach <- function(explainer,...){
 
   this_class <- ""
   # TODO: Currently we ignore combined approaches. Sort out that later (it used to work)
 
-#  if (length(approach) > 1) {
-#    class(this_class) <- "combined"
-#  }  else {
+  if (length(approach) > 1) {
+    class(this_class) <- "combined"
+  }  else {
     class(this_class) <- explainer$approach
-#  }
+  }
 
   UseMethod("setup_approach", this_class)
 
@@ -247,16 +263,10 @@ setup_approach.empirical <- function(explainer,
     ))
   }
 
+
   # If cov_mat is not provided directly, use sample covariance of training data
   if (is.null(cov_mat)) {
-    cov_mat <- stats::cov(explainer$x_train)
-  }
-  # Make sure that covariance matrix is positive-definite
-  eigen_values <- eigen(cov_mat)$values
-  if (any(eigen_values <= 1e-06)) {
-    explainer$cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
-  } else {
-    explainer$cov_mat <- cov_mat
+    explainer$cov_mat <- get_cov_mat(explainer$x_train)
   }
 
   return(explainer)
@@ -269,20 +279,14 @@ setup_approach.gaussian <- function(explainer,
 
   # If mu is not provided directly, use mean of training data
   if (is.null(mu)) {
-    explainer$mu <- unname(colMeans(explainer$x_train))
+    explainer$mu <- get_mu_vec(explainer$x_train)
   } else {
     explainer$mu <- mu
   }
 
   # If cov_mat is not provided directly, use sample covariance of training data
   if (is.null(cov_mat)) {
-    cov_mat <- stats::cov(explainer$x_train)
-  }
-
-  # Make sure that covariance matrix is positive-definite
-  eigen_values <- eigen(cov_mat)$values
-  if (any(eigen_values <= 1e-06)) {
-    explainer$cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
+    explainer$cov_mat <- get_cov_mat(explainer$x_train)
   } else {
     explainer$cov_mat <- cov_mat
   }
@@ -295,11 +299,16 @@ setup_approach.gaussian <- function(explainer,
 setup_approach.copula <- function(explainer, ...){
 
   # Prepare transformed data
+
+  explainer$mu <- rep(0, ncol(explainer$x_train))
   x_train <- apply(
     X = explainer$x_train,
     MARGIN = 2,
     FUN = gaussian_transform
   )
+  explainer$cov_mat <- get_cov_mat(x_train)
+
+
   x_test_gaussian <- apply(
     X = rbind(explainer$x_test, explainer$x_train),
     MARGIN = 2,
@@ -310,17 +319,9 @@ setup_approach.copula <- function(explainer, ...){
   if (is.null(dim(x_test_gaussian))) {
     x_test_gaussian <- t(as.matrix(x_test_gaussian))
   }
-
-  explainer$mu <- rep(0, ncol(explainer$x_train))
-  cov_mat <- stats::cov(x_train) # Gaussian transformed cov. mat
-  eigen_values <- eigen(cov_mat)$values
-  if (any(eigen_values <= 1e-06)) {
-    explainer$cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
-  } else {
-    explainer$cov_mat <- cov_mat
-  }
-
   explainer$x_test_gaussian <- x_test_gaussian
+
+
 
   return(explainer)
 }

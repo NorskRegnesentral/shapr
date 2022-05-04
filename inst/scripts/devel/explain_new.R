@@ -30,6 +30,8 @@ p <- mean(y_train)
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 
+##### TESTS ####
+
 explanation_new <- explain_new(
   x_test,
   approach = "gaussian",
@@ -37,7 +39,6 @@ explanation_new <- explain_new(
   prediction_zero = p,
   n_samples = 5*10^5,n_batches = 1
 )
-##### TESTS ####
 
 explanation_new$dt_shapley
 #none    lstat         rm        dis     indus
