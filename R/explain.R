@@ -1,4 +1,55 @@
 
+
+#' @export
+create_S_batch_new <- function(explainer, n_batches,seed=NULL){
+
+  if(length(explainer$approach)>1){
+    explainer$X[!(n_features %in% c(0,explainer$n_features)),approach:=explainer$approach[n_features]]
+
+    # Finding the number of batches per approach
+    batch_count_dt <- explainer$X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(explainer$n_combinations-2)*n_batches)),
+                                                        n_S_per_approach = .N),by=approach]
+    batch_count_dt[,n_leftover_first_batch:=n_S_per_approach%%n_batches_per_approach]
+    setorder(batch_count_dt,-n_leftover_first_batch)
+
+    approach_vec <- batch_count_dt[,approach]
+    n_batch_vec <- batch_count_dt[,n_batches_per_approach]
+
+    # Randomize order before ordering spreading the batches on the different approaches as evenly as possible with respect to shapley_weight
+    set.seed(seed)
+    explainer$X[,randomorder:=sample(.N)]
+    setorder(explainer$X,randomorder) # To avoid smaller id_combinations always proceeding large ones
+    setorder(explainer$X,shapley_weight)
+
+    batch_counter <- 0
+    for(i in seq_along(approach_vec)){
+      explainer$X[approach==approach_vec[i],batch:=ceiling(.I/.N*n_batch_vec[i])+batch_counter]
+      batch_counter <- explainer$X[approach==approach_vec[i],max(batch)]
+    }
+  } else {
+    explainer$X[!(n_features %in% c(0,explainer$n_features)),approach:=explainer$approach]
+
+    # Sprading the batches
+    set.seed(seed)
+    explainer$X[,randomorder:=sample(.N)]
+    setorder(explainer$X,randomorder)
+    setorder(explainer$X,shapley_weight)
+    explainer$X[!(n_features %in% c(0,explainer$n_features)),batch:=ceiling(.I/.N*n_batches)]
+
+  }
+
+  # Assigning batch 1 (which always is the smallest) to the full prediction.
+  explainer$X[,randomorder:=NULL]
+  explainer$X[id_combination==max(id_combination),batch:=1]
+  setkey(explainer$X,id_combination)
+
+  # Create a list of the batch splits
+  S_groups <- split(explainer$X[id_combination!=1,id_combination],explainer$X[id_combination!=1,batch])
+
+  return(S_groups)
+}
+
+
 #' @export
 compute_vS <- function(S,explainer){
   dt <- batch_prepare_vS(S,explainer)
@@ -194,7 +245,7 @@ explain_setup <- function(x, explainer, approach, prediction_zero,
   explainer$n_samples <- n_samples
   explainer$n_batches <- n_batches
   explainer$seed <- seed
-  explainer$S_batch <- create_S_batch(explainer, n_batches, NULL)
+  explainer$S_batch <- create_S_batch_new(explainer, n_batches)
 
   explainer <- setup_approach(explainer, ...)
 
@@ -222,7 +273,7 @@ setup_approach <- function(explainer,...){
   this_class <- ""
   # TODO: Currently we ignore combined approaches. Sort out that later (it used to work)
 
-  if (length(approach) > 1) {
+  if (length(explainer$approach) > 1) {
     class(this_class) <- "combined"
   }  else {
     class(this_class) <- explainer$approach

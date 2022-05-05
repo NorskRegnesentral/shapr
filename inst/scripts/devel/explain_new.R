@@ -115,13 +115,24 @@ explanation_new$dt_shapley
 # str(explainer,max.level = 1)
 # str(setup,max.level=1)
 #
- explainer <- explain_setup(
+explainer0 <- explain_setup(
    x_test,
    approach = "empirical",
    explainer = explainer,
    prediction_zero = p,
    n_batches = 4
  )
+
+explainer0 <- explain_setup(
+  x_test,
+  approach = c("empirical","copula","ctree","gaussian"),
+  explainer = explainer,
+  prediction_zero = p,
+  n_batches = 7
+)
+
+explainer0$X
+
 #
 #
 # dt <- future.apply::future_lapply(X = explainer$S_batch,
