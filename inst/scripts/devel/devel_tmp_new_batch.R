@@ -10,24 +10,7 @@ explainer <- explain_setup(
 )
 
 
-explainer$approach
-
-
-n_batches = 5
-
-
-explainer$X[!(n_features %in% c(0,explainer$n_features)),approach:=explainer$approach[n_features]]
-batch_count_dt <- explainer$X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(explainer$n_combinations-2)*n_batches))),by=approach]
-Xlist <- list()
-approach_vec <- batch_count_dt[,approach]
-n_batch_vec <- batch_count_dt[,n_batches_per_approach]
-batch_counter <- 0
-for(i in seq_along(approach_vec)){
-  Xlist[[i]]=explainer$X[approach==approach_vec[i]][,randomorder:=sample(.N)][order(randomorder)][order(shapley_weight),batch:=ceiling(.I/.N*n_batch_vec[i])+batch_counter]
-  batch_counter <- Xlist[[i]][,max(batch)]
-}
-
-explainer$X <- rbindlist(Xlist)[randomorder:=NULL]
+explainer$approach = c("empirical","empirical","gaussian","copula")
 
 
 
