@@ -121,10 +121,27 @@ compute_MCint <- function(dt, explainer) {
 }
 
 #' @export
+run_batch <- function(S,explainer,keep_samp_for_vS){
+  dt <- batch_prepare_vS(S = S,explainer = explainer) # Make it optional to store and return the dt_list
+  compute_preds(dt,explainer) # Updating dt by reference
+
+  dt_vS <- compute_MCint(dt,explainer)
+
+  if(keep_samp_for_vS){
+    return(list(dt_vS = dt_vS,dt_samp_for_vS=dt))
+  } else {
+    return(dt_vS = dt_vS)
+  }
+}
+
+
+#' @export
 explain_new <- function(x,explainer, approach, prediction_zero,
                         n_samples = 1e3, n_batches = 1, seed = 1, keep_samp_for_vS = FALSE, ...){
 
+  ## TODO: Inclue a test of the prediction function here
 
+  # Adding setups the explainer object
   explainer <- explain_setup(x = x,
                              explainer = explainer,
                              approach = approach,
@@ -133,55 +150,64 @@ explain_new <- function(x,explainer, approach, prediction_zero,
                              n_batches = n_batches,
                              seed = seed, ...)
 
-# Starting off with a loop instead of a lapply call
-  dt_vS_list <- dt_samp_for_vS_list <- list()
+  # Accross all batches get the data we will predict on, predict on them, and do the MC integration
+  batch_out_list <- future.apply::future_lapply(X = explainer$S_batch,
+                                                FUN = run_batch,
+                                                explainer = explainer,
+                                                keep_samp_for_vS = keep_samp_for_vS,
+                                                future.seed = explainer$seed)
+  #alternative using for loop
+#  batch_out_list <- list()
+#  for(i in seq_along(explainer$S_batch)){
+#    dt <- batch_prepare_vS(S = S,explainer = explainer) # Make it optional to store and return the dt_list
+#    compute_preds(dt,explainer) # Updating dt by reference
+#
+#    dt_vS <- compute_MCint(dt,explainer)
+#
+#    if(keep_samp_for_vS){
+#      batch_out_list[[i]] <- list(dt_vS = dt_vS,dt_samp_for_vS=dt)
+#    } else {
+#      batch_out_list[[i]] <- dt_vS
+#    }
+#  }
 
-  #r_batch <- future.apply::future_lapply(X = explainer$S_batch,
-  #                                       FUN = compute_vS,
-  #                                       explainer = explainer,
-  #                                       future.seed = explainer$seed)
-
-  for(i in seq_along(explainer$S_batch)){
-
-    S <- explainer$S_batch[[i]]
-    dt <- batch_prepare_vS(S = S,explainer = explainer) # Make it optional to store and return the dt_list
-    compute_preds(dt,explainer) # Updating dt by reference
-
-    dt_vS_list[[i]] <- compute_MCint(dt,explainer)
-    if(keep_samp_for_vS){
-      dt_samp_for_vS_list[[i]] <- dt
-    }
-  }
-
+  # Appending the zero-prediction to the list
   dt_vS0 <- as.data.table(rbind(c(1,rep(explainer$prediction_zero,nrow(explainer$x_test)))))
   names(dt_vS0) <- c("id_combination",1:nrow(explainer$x_test))
 
-  dt_vS_list[[length(dt_vS_list)+1]] <- dt_vS0
+  # Extracting/merging the data tables from the batch running
+  #TODO: Need a memory and speed optimized way to transform the output form dt_vS_list to two different lists,
+  # I.e. without copying the data more than once. For now I have modified run_batch such that it if keep_samp_for_vS=FALSE
+  # then there is only one copy, but there are two if keep_samp_for_vS=TRUE. This might be OK since the latter is used rarely
+  if(keep_samp_for_vS){
+    batch_out_list[[length(batch_out_list)+1]] <- list(dt_vS0,NULL)
 
-  dt_vS <- rbindlist(dt_vS_list)
+    dt_vS <- rbindlist(lapply(batch_out_list, `[[`, 1))
+
+    dt_samp_for_vS <- rbindlist(lapply(batch_out_list, `[[`, 2))
+    setorder(dt_samp_for_vS,id_combination)
+
+  } else {
+    batch_out_list[[length(batch_out_list)+1]] <- dt_vS0
+
+    dt_vS <- rbindlist(batch_out_list)
+    dt_samp_for_vS <- NULL
+  }
+
+
   setorder(dt_vS,id_combination)
-  dt_samp_for_vS <- rbindlist(dt_samp_for_vS_list)
 
+  # Extract the predictions we are explaining
   p <- get_p(dt_vS,explainer)
 
+  # Compute the Shapley values
   dt_shapley <- compute_shapley_new(explainer, dt_vS)
 
-  # setup <- explain_setup(x=x,
-  #                        explainer = explainer,
-  #                        approach = approach,
-  #                        prediction_zero = prediction_zero,
-  #                        n_samples = n_samples,
-  #                        n_batches = n_batches, ...)
-  #
-  # vS_dt <- compute_vS(setup = setup)
-  #
-  #
-  # output <- compute_Shapley(vS_dt = vS_dt,
-  #                           setup = setup)
   output <- list(dt_shapley = dt_shapley,
                  explainer = explainer,
                  p = p,
-                 dt_vS = dt_vS)
+                 dt_vS = dt_vS,
+                 dt_samp_for_vS = dt_samp_for_vS)
 
   return(output)
 

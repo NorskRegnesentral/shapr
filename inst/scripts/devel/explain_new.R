@@ -115,7 +115,7 @@ explanation_new$dt_shapley
 # str(explainer,max.level = 1)
 # str(setup,max.level=1)
 #
-explainer0 <- explain_setup(
+explainer <- explain_setup(
    x_test,
    approach = "empirical",
    explainer = explainer,
