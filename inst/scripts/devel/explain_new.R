@@ -22,7 +22,10 @@ model <- xgboost(
 )
 
 # Prepare the data for explanation
-explainer <- shapr(x_train, model)
+explainer <- shapr(x_train,model)
+explainer2 <- shapr(x_train,model,ignore_model=T)
+explainer3 <- shapr(x_train,ignore_model=T)
+
 
 # Specifying the phi_0, i.e. the expected prediction without any features
 p <- mean(y_train)
@@ -35,7 +38,7 @@ p <- mean(y_train)
 explanation_new <- explain_new(
   x_test,
   approach = "gaussian",
-  explainer = explainer,
+  explainer = explainer1,
   prediction_zero = p,
   n_samples = 5*10^5,n_batches = 1
 )

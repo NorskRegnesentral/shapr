@@ -141,9 +141,10 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #'   # 4 (which equals 2^(#groups))
 #' }
 shapr <- function(x,
-                  model,
+                  model = NULL,
                   n_combinations = NULL,
-                  group = NULL) {
+                  group = NULL,...) {
+
 
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
@@ -151,12 +152,23 @@ shapr <- function(x,
   }
 
   # Setup
+  #explainer <- init_explainer(environment(),...)
   explainer <- as.list(environment())
+  explainer <- append(explainer,list(...))
+  if(is.null(explainer$ignore_model)){
+    explainer$ignore_model <- FALSE
+  }
+
   explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
 
 
   # Check features of training data against model specification
-  feature_list_model <- get_model_specs(model)
+  if(explainer$ignore_model){
+    explainer$model <- NULL
+    feature_list_model <- get_model_specs.default("")
+  } else {
+    feature_list_model <- get_model_specs(model)
+  }
 
   processed_list <- preprocess_data(
     x = x,
@@ -185,16 +197,18 @@ shapr <- function(x,
   }
 
   # Checking that the prediction function works
-  tmp <- predict_model(model, head(x_train, 2))
-  if (!(all(is.numeric(tmp)) & length(tmp) == 2)) {
-    stop(
-      paste0(
-        "The predict_model function of class ", class(model), " is invalid.\n",
-        "See the 'Advanced usage' section of the vignette:\n",
-        "vignette('understanding_shapr', package = 'shapr')\n",
-        "for more information on running shapr with custom models.\n"
+  if(!explainer$ignore_model){
+    tmp <- predict_model(model, head(x_train, 2))
+    if (!(all(is.numeric(tmp)) & length(tmp) == 2)) {
+      stop(
+        paste0(
+          "The predict_model function of class ", class(model), " is invalid.\n",
+          "See the 'Advanced usage' section of the vignette:\n",
+          "vignette('understanding_shapr', package = 'shapr')\n",
+          "for more information on running shapr with custom models.\n"
+        )
       )
-    )
+    }
   }
 
   # Get all combinations ----------------

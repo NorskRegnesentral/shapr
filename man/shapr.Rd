@@ -4,7 +4,7 @@
 \alias{shapr}
 \title{Create an explainer object with Shapley weights for test data.}
 \usage{
-shapr(x, model, n_combinations = NULL, group = NULL)
+shapr(x, model = NULL, n_combinations = NULL, group = NULL, ...)
 }
 \arguments{
 \item{x}{Numeric matrix or data.frame/data.table. Contains the data used to estimate the (conditional)
