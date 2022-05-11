@@ -38,7 +38,7 @@ Suggests:
     ranger,
     xgboost,
     mgcv,
-    testthat, 
+    testthat (>= 3.0.0),
     knitr,
     rmarkdown,
     roxygen2,
@@ -52,3 +52,4 @@ LinkingTo:
     RcppArmadillo,
     Rcpp
 VignetteBuilder: knitr
+Config/testthat/edition: 3
