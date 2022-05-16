@@ -1,21 +1,10 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
-})
-
-test_that("bullets", {
-  expect_snapshot(cat("a"))
-  expect_snapshot(cat(c("a", "b")))
-})
-
-
 library(data.table)
-set.seed(123)
+set.seed(1234)
 
 data <- data.table::as.data.table(airquality)
 data[,Month_factor:=as.factor(Month)]
 data[,Ozone_sub30:=(Ozone<30)*1]
 data[,Ozone_sub30_factor:=as.factor(Ozone_sub30)]
-
 
 data_complete <- data[complete.cases(airquality),]
 data_complete <- data_complete[sample(1:.N)] # Sh
@@ -44,17 +33,13 @@ lm_formula_mixed <- as.formula(paste0(y_var_numeric," ~ ",paste0(x_var_mixed,col
 model_lm_numeric <- lm(lm_formula_numeric,data = data_complete)
 model_lm_mixed <- lm(lm_formula_mixed,data = data_complete)
 
+test_that("Output shapr lm", {
 
-test_that("Initial test", {
-
-  # explainer_lm_numeric <- shapr(x_train_numeric, model_lm_numeric)
+  explainer_lm_numeric <- shapr(x_train_numeric, model_lm_numeric)
   explainer_lm_mixed <- shapr(x_train_mixed, model_lm_mixed)
 
-
-  testthat::expect_snapshot(shapr(x_train_numeric, model_lm_numeric))
-
-  #testthat::expect_snapshot_output(shapr(x_train_numeric, model_lm_numeric))
-
-  #testthat::expect_snapshot_value(shapr(x_train_numeric, model_lm_numeric))
+  expect_snapshot_file(helper_rds(explainer_lm_numeric,"explainer_lm_numeric.rds"),compare = compare_rds)
+  expect_snapshot_file(helper_rds(explainer_lm_mixed,"explainer_lm_mixed.rds"),compare = compare_rds)
 
 })
+

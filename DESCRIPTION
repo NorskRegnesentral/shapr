@@ -25,7 +25,9 @@ LazyData: true
 ByteCompile: true
 Language: en-US
 RoxygenNote: 7.1.2
-Depends: R (>= 3.5.0)
+Depends: 
+    R (>= 3.5.0),
+    data.table
 Imports: 
     stats,
     data.table,
