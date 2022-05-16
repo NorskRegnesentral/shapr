@@ -26,8 +26,7 @@ ByteCompile: true
 Language: en-US
 RoxygenNote: 7.1.2
 Depends: 
-    R (>= 3.5.0),
-    data.table
+    R (>= 3.5.0)
 Imports: 
     stats,
     data.table,
