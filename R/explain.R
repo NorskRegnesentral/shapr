@@ -193,6 +193,50 @@ run_batch <- function(S,explainer,keep_samp_for_vS){
   }
 }
 
+#' @export
+explain_final <- function(x_train,
+                          x_explain,
+                          model = NULL,
+                          approach,
+                          n_combinations = NULL,
+                          group = NULL,
+                          prediction_zero,
+                          n_samples = 1e3,
+                          n_batches = 1,
+                          seed = 1,
+                          keep_samp_for_vS = FALSE,
+                          ...){
+
+  explainer <- shapr(x=x_train, model = model, n_combinations = n_combinations, group = group, ...)
+
+
+  # Adding setups the explainer object
+  explainer <- explain_setup(x = x_explain,
+                             explainer = explainer,
+                             approach = approach,
+                             prediction_zero = prediction_zero,
+                             n_samples = n_samples,
+                             n_batches = n_batches,
+                             seed = seed, ...)
+
+  # Accross all batches get the data we will predict on, predict on them, and do the MC integration
+  vS_list <- future.apply::future_lapply(X = explainer$S_batch,
+                                         FUN = run_batch,
+                                         explainer = explainer,
+                                         keep_samp_for_vS = keep_samp_for_vS,
+                                         future.seed = explainer$seed)
+
+  output <- finalize_explanation(vS_list = vS_list,
+                                 explainer = explainer,
+                                 keep_samp_for_vS = keep_samp_for_vS)
+
+  attr(output, "class") <- c("shapr", "list")
+
+
+  return(output)
+
+}
+
 
 #' @export
 explain_new <- function(x,explainer, approach, prediction_zero,
