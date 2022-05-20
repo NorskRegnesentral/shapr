@@ -233,6 +233,9 @@ explain_new <- function(x,explainer, approach, prediction_zero,
                                  explainer = explainer,
                                  keep_samp_for_vS = keep_samp_for_vS)
 
+  attr(output, "class") <- c("shapr", "list")
+
+
   return(output)
 
 }
