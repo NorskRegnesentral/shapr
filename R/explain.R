@@ -198,14 +198,23 @@ explain_final <- function(x_train,
                           x_explain,
                           model = NULL,
                           approach,
+                          prediction_zero,
                           n_combinations = NULL,
                           group = NULL,
-                          prediction_zero,
                           n_samples = 1e3,
                           n_batches = 1,
                           seed = 1,
                           keep_samp_for_vS = FALSE,
                           ...){
+
+  # Overview of what should happen in this function (and in what order)
+
+  # Basic check of the necessary input being available
+  # LATER: Make list with all parameters (n_combinations, seed, n_batches, approach, etc)
+  # LATER: Make a list with all internal objects (X, S, S_batch, etc)
+  # extract feature info from model if available
+  # check compatability of x_train, x_explain and model
+  #
 
   explainer <- shapr(x=x_train, model = model, n_combinations = n_combinations, group = group, ...)
 
