@@ -248,7 +248,7 @@ shapr <- function(x,
   explainer$is_groupwise <- is_groupwise
   explainer$n_combinations <- nrow(feature_matrix)
 
-  attr(explainer, "class") <- c("explainer", "list")
+  #attr(explainer, "class") <- c("explainer", "list")
 
   return(explainer)
 }

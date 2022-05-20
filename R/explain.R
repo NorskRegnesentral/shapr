@@ -233,6 +233,9 @@ explain_new <- function(x,explainer, approach, prediction_zero,
                                  explainer = explainer,
                                  keep_samp_for_vS = keep_samp_for_vS)
 
+  attr(output, "class") <- c("shapr", "list")
+
+
   return(output)
 
 }
@@ -444,6 +447,22 @@ setup_approach.ctree <- function(explainer,
   return(explainer)
 }
 
+#' @export
+setup_approach.combined <- function(explainer,...){
+
+  #l <- get_list_approaches(explainer$X$n_features, explainer$approach)
+
+  org_approach <- explainer$approach
+  unique_approaches <- unique(org_approach)
+
+  for(i in unique_approaches){
+    explainer$approach <- i
+    explainer <- setup_approach(explainer,...)
+  }
+  explainer$approach <- org_approach
+
+  return(explainer)
+}
 
 
 
