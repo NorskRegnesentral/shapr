@@ -97,9 +97,20 @@ prepare_data.independence <- function(x, index_features = NULL, ...) {
     index_features <- x$X[, .I]
   }
 
+  non_numeric_features <- x$feature_list$labels[x$feature_list$classes!="numeric"]
+
   S <- x$S[index_features, , drop = FALSE]
-  x_train <- as.matrix(x$x_train)
-  x_test0 <- as.matrix(x$x_test)
+  x_train <- copy(x$x_train)
+  x_test0 <- copy(x$x_test)
+
+  if(length(non_numeric_features)>0){
+    x_train[,(non_numeric_features):=lapply(.SD,function(x){as.numeric(as.character(x))}),.SDcols=non_numeric_features]
+    x_test0[,(non_numeric_features):=lapply(.SD,function(x){as.numeric(as.character(x))}),.SDcols=non_numeric_features]
+  }
+
+  x_train <- as.matrix(x_train)
+  x_test0 <- as.matrix(x_test0)
+
   n_train <- nrow(x_train)
   n_samples <- min(x$n_samples, n_train)
 
@@ -178,9 +189,9 @@ prepare_data.empirical <- function(x, index_features = NULL, ...) {
       h_optim_mat[, ] <- x$fixed_sigma_vec
     } else {
       if (x$type == "AICc_each_k") {
-        h_optim_mat <- compute_AICc_each_k(x, h_optim_mat)
+        h_optim_mat <- compute_AICc_each_k(x, index_features)
       } else if (x$type == "AICc_full") {
-        h_optim_mat <- compute_AICc_full(x, h_optim_mat)
+        h_optim_mat <- compute_AICc_full(x, index_features)
       } else {
         stop("type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
       }
@@ -371,7 +382,7 @@ prepare_data.ctree <- function(x,  index_features = NULL,
 
 
 #' @keywords internal
-compute_AICc_each_k <- function(x, h_optim_mat) {
+compute_AICc_each_k <- function(x, index_features) {
   id_combination <- n_features <- NULL # due to NSE notes in R CMD check
   stopifnot(
     data.table::is.data.table(x$X),
@@ -388,12 +399,18 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
   x$n_samples_aicc <- nrow(optimsamp)
   nloops <- nrow(x$x_test) # No of observations in test data
 
+  h_optim_mat <- matrix(NA, ncol = ncol(x$x_test), nrow = nrow(x$X))
+
+  if (is.null(index_features)) {
+    index_features <- x$X[, .I]
+  }
+
   # Optimization is done only once for all distributions which conditions on
   # exactly k variables
-  these_k <- unique(x$X$n_features[-c(1, nrow(x$S))])
+  these_k <- unique(x$X$n_features[index_features])
 
   for (i in these_k) {
-    these_cond <- x$X[n_features == i, id_combination]
+    these_cond <- x$X[index_features][n_features == i, id_combination]
     cutters <- 1:x$n_samples_aicc
     no_cond <- length(these_cond)
     cond_samp <- cut(
@@ -420,9 +437,9 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
         these_test <- sample(x = these_test, size = nrow(x$x_train), replace = TRUE)
         current_cond_samp <- rep(unique(cond_samp), each = nrow(x$x_train))
 
-        S <- x$S[this_cond, ]
-        S.cols <- which(as.logical(S))
-        Sbar.cols <- which(as.logical(1 - S))
+        this_S <- x$S[this_cond, ]
+        S.cols <- which(as.logical(this_S))
+        Sbar.cols <- which(as.logical(1 - this_S))
 
         X_list[[j]] <- as.matrix(subset(x$x_train, select = S.cols)[these_train, ])
         mcov_list[[j]] <- stats::cov(X_list[[j]])
@@ -462,12 +479,12 @@ compute_AICc_each_k <- function(x, h_optim_mat) {
       h_optim_mat[these_cond, loop] <- nlm.obj$par
     }
   }
-  return(h_optim_mat)
+  return(h_optim_mat[index_features,,drop=F])
 }
 
 
 #' @keywords internal
-compute_AICc_full <- function(x, h_optim_mat) {
+compute_AICc_full <- function(x, index_features) {
   ntest <- nrow(x$x_test)
   if (is.null(dim(x$x_test))) {
     nloops <- 1
@@ -482,7 +499,14 @@ compute_AICc_full <- function(x, h_optim_mat) {
   x$n_samples_aicc <- nrow(optimsamp)
   nloops <- nrow(x$x_test) # No of observations in test data
 
-  ind_of_vars_to_cond_on <- 2:(nrow(x$S) - 1)
+  h_optim_mat <- matrix(NA, ncol = ncol(x$x_test), nrow = nrow(x$X))
+
+  if (is.null(index_features)) {
+    index_features <- x$X[, .I]
+  }
+
+
+  ind_of_vars_to_cond_on <- index_features
   for (i in ind_of_vars_to_cond_on) {
     S <- x$S[i, ]
     S.cols <- which(as.logical(S))
@@ -535,5 +559,5 @@ compute_AICc_full <- function(x, h_optim_mat) {
       h_optim_mat[i, loop] <- nlm.obj$par
     }
   }
-  return(h_optim_mat)
+  return(h_optim_mat[index_features,,drop=F])
 }
