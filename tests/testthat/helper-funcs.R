@@ -1,6 +1,7 @@
 
 helper_rds <- function(code,filename="tmp.rds"){
   path <- file.path(tempdir(),filename)
+  testthat::expect_snapshot_output({cat(paste0("Output from ",filename,"\n"));code})
   saveRDS(code,file = path)
 
   path
