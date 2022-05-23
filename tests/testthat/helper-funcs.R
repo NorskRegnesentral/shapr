@@ -20,10 +20,12 @@ expect_snapshot_rds <- function(code,name = "tmp"){
   name_full <- paste0(name,".rds")
   path <- file.path(tempdir(),name_full)
 
-  announce_snapshot_file(name = name_full)
+  announce_snapshot_file(path = path)
 
-  testthat::expect_snapshot_output({cat(paste0("Output from ",name,"\n"));code}) # Test the printed output
-  saveRDS(code,file = path)
+  out <- code
+
+  testthat::expect_snapshot_output(out) # Test the printed output
+  saveRDS(out,file = path)
 
   expect_snapshot_file(path,compare=compare_rds) # Test the returned object
 }
