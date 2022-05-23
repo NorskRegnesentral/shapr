@@ -293,6 +293,11 @@ shapley_setup <- function(explainer){
   return(explainer)
 }
 
+#' @export
+get_supported_approaches <- function(){
+  substring(rownames(attr(methods(prepare_data),"info")),first = 14)
+}
+
 
 #' @export
 explain_final <- function(x_train,
@@ -349,15 +354,16 @@ explain_final <- function(x_train,
   ##### DATA CHECKING AND PROCESSING ###########
   explainer <- process_all_data(explainer,model,x_train,x_explain)
 
+
   if (!(is.vector(approach) &&
         is.atomic(approach) &&
         (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
-        all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "independence"))))
+        all(is.element(approach, get_supported_approaches())))
   ) {
     stop(
       paste(
         "It seems that you passed a non-valid value for approach.",
-        "It should be either 'empirical', 'gaussian', 'copula', 'ctree', 'independence' or",
+        "It should be either \n",paste0(shapr::get_supported_approaches(),collapse=", "),"\nor",
         "a vector of length=ncol(x) with only the above characters."
       )
     )
