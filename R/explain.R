@@ -44,11 +44,15 @@ finalize_explanation <- function(vS_list,explainer,keep_samp_for_vS = FALSE){
   # Compute the Shapley values
   dt_shapley <- compute_shapley_new(explainer, processed_vS_list$dt_vS)
 
+
   output <- list(dt_shapley=dt_shapley,
                  explainer = explainer,
                  p = p,
                  dt_vS = processed_vS_list$dt_vS,
                  dt_samp_for_vS = processed_vS_list$dt_samp_for_vS)
+  attr(output, "class") <- c("shapr", "list")
+
+
   return(output)
 }
 
@@ -194,6 +198,97 @@ run_batch <- function(S,explainer,keep_samp_for_vS){
 }
 
 #' @export
+process_all_data <- function(explainer,model,x_train,x_explain){
+
+  # Extracting model specs from model
+  if(explainer$ignore_model){
+    explainer$model <- NULL
+    feature_list_model <- get_model_specs.default("")
+  } else {
+    feature_list_model <- get_model_specs(model)
+  }
+
+  # process x_train
+  processed_list <- preprocess_data(
+    x = x_train,
+    feature_list = feature_list_model
+  )
+  explainer$x_train <- processed_list$x_dt
+  explainer$feature_list <- processed_list$updated_feature_list
+
+  # process x_explain
+  explainer$x_test <- preprocess_data(x_explain, explainer$feature_list)$x_dt
+
+  # get number of features
+  explainer$n_features <- ncol(explainer$x_train)
+
+  # Processes groups if specified. Otherwise do nothing
+  explainer$is_groupwise <- !is.null(explainer$group)
+  if (explainer$is_groupwise) {
+    group_list <- process_groups(
+      group = explainer$group,
+      feature_labels = explainer$feature_list$labels
+    )
+    explainer$group <- group_list$group
+    explainer$group_num <- group_list$group_num
+  }
+  return(explainer)
+}
+
+#' @export
+test_model <- function(explainer,model){
+  if(!explainer$ignore_model){
+    tmp <- predict_model(model, head(explainer$x_train, 2))
+    if (!(all(is.numeric(tmp)) & length(tmp) == 2)) {
+      stop(
+        paste0(
+          "The predict_model function of class ", class(model), " is invalid.\n",
+          "See the 'Advanced usage' section of the vignette:\n",
+          "vignette('understanding_shapr', package = 'shapr')\n",
+          "for more information on running shapr with custom models.\n"
+        )
+      )
+    }
+  }
+}
+
+#' @export
+shapley_setup <- function(explainer){
+  # Get all combinations ----------------
+  explainer$X <- feature_combinations(
+    m = explainer$n_features,
+    exact = explainer$exact,
+    n_combinations = explainer$n_combinations,
+    weight_zero_m = 10^6,
+    group_num = explainer$group_num
+  )
+
+  # Get weighted matrix ----------------
+  explainer$W <- weight_matrix(
+    X = explainer$X,
+    normalize_W_weights = TRUE,
+    is_groupwise = explainer$is_groupwise
+  )
+
+  ## Get feature matrix ---------
+  explainer$S <- feature_matrix_cpp(
+    features = explainer$X[["features"]],
+    m = explainer$n_features
+  )
+
+  # Updating explainer$exact as done in feature_combinations
+  if (!explainer$exact && explainer$n_combinations > (2^explainer$n_features - 2)) {
+    explainer$exact <- TRUE
+  }
+
+  explainer$group_num <- NULL # TODO: Checking whether I could just do this processing where needed instead of storing it
+  explainer$n_combinations <- nrow(explainer$S) # Updating this parameter in the end based on what is actually used. This will be obsolete later
+
+  return(explainer)
+}
+
+
+#' @export
 explain_final <- function(x_train,
                           x_explain,
                           model = NULL,
@@ -214,12 +309,44 @@ explain_final <- function(x_train,
   # LATER: Make a list with all internal objects (X, S, S_batch, etc)
   # extract feature info from model if available
   # check compatability of x_train, x_explain and model
+  # Merge all non-model stuff from shapr() into explain_setup
+
   #
+  # Checks input argument
+  if (!is.matrix(x_train) & !is.data.frame(x_train)) {
+    stop("x_train should be a matrix or a dataframe.")
+  }
+  #TODO: Some more checking here (which in the end is put into a separate input checking function)
 
-  explainer <- shapr(x=x_train, model = model, n_combinations = n_combinations, group = group, ...)
 
 
-  # Adding setups the explainer object
+  # Setup
+  #explainer <- init_explainer(environment(),...)
+  explainer <- as.list(environment())
+  explainer <- append(explainer,list(...))
+  if(is.null(explainer$ignore_model)){
+    explainer$ignore_model <- FALSE
+  }
+
+  explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
+
+
+
+
+
+  ##### DATA CHECKING AND PROCESSING ###########
+  explainer <- process_all_data(explainer,model,x_train,x_explain)
+
+
+  # Checking that the prediction function works
+  test_model(explainer,model)
+
+  # setup the Shapley framework
+  explainer <- shapley_setup(explainer)
+
+  # TODO: Merge most of the stuff from explain_setup into shapley setup (all that does not have to do with approach)
+  # AND put the input checking further up
+  # Setups the explainer object
   explainer <- explain_setup(x = x_explain,
                              explainer = explainer,
                              approach = approach,
@@ -234,12 +361,9 @@ explain_final <- function(x_train,
                                          explainer = explainer,
                                          keep_samp_for_vS = keep_samp_for_vS,
                                          future.seed = explainer$seed)
-
   output <- finalize_explanation(vS_list = vS_list,
                                  explainer = explainer,
                                  keep_samp_for_vS = keep_samp_for_vS)
-
-  attr(output, "class") <- c("shapr", "list")
 
 
   return(output)
@@ -345,7 +469,6 @@ explain_setup <- function(x, explainer, approach, prediction_zero,
   }
 
   # Add arguments to explainer object
-  explainer$x_test <- preprocess_data(x, explainer$feature_list)$x_dt
   explainer$approach <- approach
   explainer$prediction_zero <- prediction_zero
   explainer$n_samples <- n_samples
