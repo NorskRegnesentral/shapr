@@ -64,13 +64,13 @@ init_explainer <- function(...){
 
 
 #' @export
-create_S_batch_new <- function(explainer, n_batches,seed=NULL){
+create_S_batch_new <- function(explainer,seed=NULL){
 
   if(length(explainer$approach)>1){
     explainer$X[!(n_features %in% c(0,explainer$n_features)),approach:=explainer$approach[n_features]]
 
     # Finding the number of batches per approach
-    batch_count_dt <- explainer$X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(explainer$n_combinations-2)*n_batches)),
+    batch_count_dt <- explainer$X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(explainer$n_combinations-2)*explainer$n_batches)),
                                                         n_S_per_approach = .N),by=approach]
     batch_count_dt[,n_leftover_first_batch:=n_S_per_approach%%n_batches_per_approach]
     setorder(batch_count_dt,-n_leftover_first_batch)
@@ -97,7 +97,7 @@ create_S_batch_new <- function(explainer, n_batches,seed=NULL){
     explainer$X[,randomorder:=sample(.N)]
     setorder(explainer$X,randomorder)
     setorder(explainer$X,shapley_weight)
-    explainer$X[!(n_features %in% c(0,explainer$n_features)),batch:=ceiling(.I/.N*n_batches)]
+    explainer$X[!(n_features %in% c(0,explainer$n_features)),batch:=ceiling(.I/.N*explainer$n_batches)]
 
   }
 
@@ -252,6 +252,8 @@ test_model <- function(explainer,model){
   }
 }
 
+
+
 #' @export
 shapley_setup <- function(explainer){
   # Get all combinations ----------------
@@ -281,8 +283,12 @@ shapley_setup <- function(explainer){
     explainer$exact <- TRUE
   }
 
-  explainer$group_num <- NULL # TODO: Checking whether I could just do this processing where needed instead of storing it
   explainer$n_combinations <- nrow(explainer$S) # Updating this parameter in the end based on what is actually used. This will be obsolete later
+
+  explainer$S_batch <- create_S_batch_new(explainer)
+
+
+  explainer$group_num <- NULL # TODO: Checking whether I could just do this processing where needed instead of storing it
 
   return(explainer)
 }
@@ -300,7 +306,7 @@ explain_final <- function(x_train,
                           n_batches = 1,
                           seed = 1,
                           keep_samp_for_vS = FALSE,
-                          ...){
+                          ...){ # ... is further arguments passed to setup_approach
 
   # Overview of what should happen in this function (and in what order)
 
@@ -311,15 +317,6 @@ explain_final <- function(x_train,
   # check compatability of x_train, x_explain and model
   # Merge all non-model stuff from shapr() into explain_setup
 
-  #
-  # Checks input argument
-  if (!is.matrix(x_train) & !is.data.frame(x_train)) {
-    stop("x_train should be a matrix or a dataframe.")
-  }
-  #TODO: Some more checking here (which in the end is put into a separate input checking function)
-
-
-
   # Setup
   #explainer <- init_explainer(environment(),...)
   explainer <- as.list(environment())
@@ -327,16 +324,44 @@ explain_final <- function(x_train,
   if(is.null(explainer$ignore_model)){
     explainer$ignore_model <- FALSE
   }
-
   explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
 
 
+  #
+  # Checks input argument
+  if (!is.matrix(x_train) & !is.data.frame(x_train)) {
+    stop("x_train should be a matrix or a dataframe.")
+  }
+  # Check input for x
+  if (!is.matrix(x_explain) & !is.data.frame(x_explain)) {
+    stop("x should be a matrix or a data.frame/data.table.")
+  }
 
+  #if (n_batches < 1 || n_batches > nrow(explainer$S)) {
+  #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
+  #}
+  # Check input for approach
+
+
+  #TODO: Some more checking here (which in the end is put into a separate input checking function)
 
 
   ##### DATA CHECKING AND PROCESSING ###########
   explainer <- process_all_data(explainer,model,x_train,x_explain)
 
+  if (!(is.vector(approach) &&
+        is.atomic(approach) &&
+        (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
+        all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "independence"))))
+  ) {
+    stop(
+      paste(
+        "It seems that you passed a non-valid value for approach.",
+        "It should be either 'empirical', 'gaussian', 'copula', 'ctree', 'independence' or",
+        "a vector of length=ncol(x) with only the above characters."
+      )
+    )
+  }
 
   # Checking that the prediction function works
   test_model(explainer,model)
@@ -347,13 +372,8 @@ explain_final <- function(x_train,
   # TODO: Merge most of the stuff from explain_setup into shapley setup (all that does not have to do with approach)
   # AND put the input checking further up
   # Setups the explainer object
-  explainer <- explain_setup(x = x_explain,
-                             explainer = explainer,
-                             approach = approach,
-                             prediction_zero = prediction_zero,
-                             n_samples = n_samples,
-                             n_batches = n_batches,
-                             seed = seed, ...)
+  explainer <- setup_approach(explainer, ...)
+
 
   # Accross all batches get the data we will predict on, predict on them, and do the MC integration
   vS_list <- future.apply::future_lapply(X = explainer$S_batch,
@@ -361,6 +381,7 @@ explain_final <- function(x_train,
                                          explainer = explainer,
                                          keep_samp_for_vS = keep_samp_for_vS,
                                          future.seed = explainer$seed)
+
   output <- finalize_explanation(vS_list = vS_list,
                                  explainer = explainer,
                                  keep_samp_for_vS = keep_samp_for_vS)
@@ -445,36 +466,7 @@ compute_shapley_new <- function(explainer, dt_vS) {
 explain_setup <- function(x, explainer, approach, prediction_zero,
                           n_samples = 1e3, n_batches = 1, seed = 1, ...) {
 
-  # Check input for x
-  if (!is.matrix(x) & !is.data.frame(x)) {
-    stop("x should be a matrix or a data.frame/data.table.")
-  }
 
-  if (n_batches < 1 || n_batches > nrow(explainer$S)) {
-    stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
-  }
-  # Check input for approach
-  if (!(is.vector(approach) &&
-        is.atomic(approach) &&
-        (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
-        all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "independence"))))
-  ) {
-    stop(
-      paste(
-        "It seems that you passed a non-valid value for approach.",
-        "It should be either 'empirical', 'gaussian', 'copula', 'ctree', 'independence' or",
-        "a vector of length=ncol(x) with only the above characters."
-      )
-    )
-  }
-
-  # Add arguments to explainer object
-  explainer$approach <- approach
-  explainer$prediction_zero <- prediction_zero
-  explainer$n_samples <- n_samples
-  explainer$n_batches <- n_batches
-  explainer$seed <- seed
-  explainer$S_batch <- create_S_batch_new(explainer, n_batches)
 
   explainer <- setup_approach(explainer, ...)
 
@@ -500,7 +492,6 @@ get_mu_vec <- function(x_train,min_eigen_value = 1e-06){
 setup_approach <- function(explainer,...){
 
   this_class <- ""
-  # TODO: Currently we ignore combined approaches. Sort out that later (it used to work)
 
   if (length(explainer$approach) > 1) {
     class(this_class) <- "combined"
