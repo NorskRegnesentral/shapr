@@ -38,48 +38,48 @@ test_that("Output shapr lm", {
 
   # lm_numeric with different approaches
   out <- explain_final(x_train_numeric,x_test_numeric,model_lm_numeric,approach="independence",prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_numeric_independence.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_numeric_independence")
 
   out <- explain_final(x_train_numeric,x_test_numeric,model_lm_numeric,approach="empirical",prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_numeric_empirical.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_numeric_empirical")
 
   set.seed(123)
   out <- explain_final(x_train_numeric,x_test_numeric,model_lm_numeric,approach="empirical",prediction_zero=p0,n_combinations = 8,type = "AICc_each_k")
-  expect_snapshot_file(helper_rds(out,"output_lm_numeric_empirical_AICc_each.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_numeric_empirical_AICc_each")
 
   set.seed(123)
   out <- explain_final(x_train_numeric,x_test_numeric,model_lm_numeric,approach="empirical",prediction_zero=p0,n_combinations = 8,type = "AICc_full")
-  expect_snapshot_file(helper_rds(out,"output_lm_numeric_empirical_AICc_full.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_numeric_empirical_AICc_full")
 
   out <- explain_final(x_train_numeric,x_test_numeric,model_lm_numeric,approach="gaussian",prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_numeric_gaussian.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_numeric_gaussian")
 
   out <- explain_final(x_train_numeric,x_test_numeric,model_lm_numeric,approach="copula",prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_numeric_copula.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_numeric_copula")
 
   out <- explain_final(x_train_numeric,x_test_numeric,model_lm_numeric,approach="ctree",prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_numeric_ctree.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_numeric_ctree")
 
   out <- explain_final(x_train_numeric,x_test_numeric,model_lm_numeric,approach = c("gaussian","empirical","ctree","independence","empirical"),prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_numeric_comb1.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_numeric_comb1")
 
   out <- explain_final(x_train_numeric,x_test_numeric,model_lm_numeric,approach = c("ctree","copula","independence","copula","empirical"),prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_numeric_comb2.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_numeric_comb2")
 
   out <- explain_final(x_train_numeric,x_test_numeric,model_lm_numeric,approach =  c("independence","empirical","gaussian","empirical","gaussian"),prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_numeric_comb3.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_numeric_comb3")
 
 
   # lm_mixed with different approahces
   out <- explain_final(x_train_mixed,x_test_mixed,model_lm_mixed,approach="independence",prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_mixed_independence.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_mixed_independence")
 
   out <- explain_final(x_train_mixed,x_test_mixed,model_lm_mixed,approach="ctree",prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_mixed_ctree.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_mixed_ctree")
 
   set.seed(123)
   out <- explain_final(x_train_mixed,x_test_mixed,model_lm_mixed,approach=c("ctree","independence","ctree","independence","independence"),prediction_zero=p0)
-  expect_snapshot_file(helper_rds(out,"output_lm_mixed_comb.rds"),compare = compare_rds)
+  expect_snapshot_rds(out,"output_lm_mixed_comb")
 
 })
 
