@@ -64,13 +64,18 @@ init_explainer <- function(...){
 
 
 #' @export
-create_S_batch_new <- function(explainer,seed=NULL){
+create_S_batch_new <- function(internal,seed=NULL){
 
-  if(length(explainer$approach)>1){
-    explainer$X[!(n_features %in% c(0,explainer$n_features)),approach:=explainer$approach[n_features]]
+
+  parameters <- internal$parameters
+  X <- internal$objects$X
+
+
+  if(length(parameters$approach)>1){
+    X[!(n_features %in% c(0,parameters$n_features)),approach:=parameters$approach[n_features]]
 
     # Finding the number of batches per approach
-    batch_count_dt <- explainer$X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(explainer$n_combinations-2)*explainer$n_batches)),
+    batch_count_dt <- X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(parameters$n_combinations-2)*parameters$n_batches)),
                                                         n_S_per_approach = .N),by=approach]
     batch_count_dt[,n_leftover_first_batch:=n_S_per_approach%%n_batches_per_approach]
     setorder(batch_count_dt,-n_leftover_first_batch)
@@ -80,34 +85,34 @@ create_S_batch_new <- function(explainer,seed=NULL){
 
     # Randomize order before ordering spreading the batches on the different approaches as evenly as possible with respect to shapley_weight
     set.seed(seed)
-    explainer$X[,randomorder:=sample(.N)]
-    setorder(explainer$X,randomorder) # To avoid smaller id_combinations always proceeding large ones
-    setorder(explainer$X,shapley_weight)
+    X[,randomorder:=sample(.N)]
+    setorder(X,randomorder) # To avoid smaller id_combinations always proceeding large ones
+    setorder(X,shapley_weight)
 
     batch_counter <- 0
     for(i in seq_along(approach_vec)){
-      explainer$X[approach==approach_vec[i],batch:=ceiling(.I/.N*n_batch_vec[i])+batch_counter]
-      batch_counter <- explainer$X[approach==approach_vec[i],max(batch)]
+      X[approach==approach_vec[i],batch:=ceiling(.I/.N*n_batch_vec[i])+batch_counter]
+      batch_counter <- X[approach==approach_vec[i],max(batch)]
     }
   } else {
-    explainer$X[!(n_features %in% c(0,explainer$n_features)),approach:=explainer$approach]
+    X[!(n_features %in% c(0,parameters$n_features)),approach:=parameters$approach]
 
-    # Sprading the batches
+    # Spreading the batches
     set.seed(seed)
-    explainer$X[,randomorder:=sample(.N)]
-    setorder(explainer$X,randomorder)
-    setorder(explainer$X,shapley_weight)
-    explainer$X[!(n_features %in% c(0,explainer$n_features)),batch:=ceiling(.I/.N*explainer$n_batches)]
+    X[,randomorder:=sample(.N)]
+    setorder(X,randomorder)
+    setorder(X,shapley_weight)
+    X[!(n_features %in% c(0,parameters$n_features)),batch:=ceiling(.I/.N*parameters$n_batches)]
 
   }
 
   # Assigning batch 1 (which always is the smallest) to the full prediction.
-  explainer$X[,randomorder:=NULL]
-  explainer$X[id_combination==max(id_combination),batch:=1]
-  setkey(explainer$X,id_combination)
+  X[,randomorder:=NULL]
+  X[id_combination==max(id_combination),batch:=1]
+  setkey(X,id_combination)
 
   # Create a list of the batch splits
-  S_groups <- split(explainer$X[id_combination!=1,id_combination],explainer$X[id_combination!=1,batch])
+  S_groups <- split(X[id_combination!=1,id_combination],X[id_combination!=1,batch])
 
   return(S_groups)
 }
@@ -120,22 +125,25 @@ compute_vS <- function(S,explainer){
 }
 
 #' @export
-batch_prepare_vS <- function(S,explainer){
+batch_prepare_vS <- function(S,internal){
 
-  max_id_combination <- explainer$n_combinations
+  max_id_combination <- internal$parameters$n_combinations
+  x_explain <- internal$objects$x_explain
+
 
   # TODO: Check what is the fastest approach to deal with the last observation.
   # Not doing this for the largest id combination (should check if this is faster or slower, actually)
   # An alternative would be to delete rows from the dt which is provided by prepare_data.
   if(!(max_id_combination %in% S)){
-    dt <- prepare_data(explainer, index_features = S)
+    dt <- prepare_data(internal, index_features = S)
   } else {
     S <- S[S!=max_id_combination]
-    dt <- prepare_data(explainer, index_features = S)
-    dt_max <- data.table(explainer$x_explain,id_combination=max_id_combination,w=1,id=seq_len(nrow(explainer$x_explain)))
+    dt <- prepare_data(internal, index_features = S)
+    dt_max <- data.table(x_explain,id_combination=max_id_combination,w=1,id=seq_len(internal$parameters$n_explain))
     dt <- rbind(dt,dt_max)
     setkey(dt,id,id_combination)
   }
+  return(dt)
 }
 
 #' @export
@@ -184,8 +192,10 @@ compute_MCint <- function(dt, explainer) {
 }
 
 #' @export
-run_batch <- function(S,explainer,keep_samp_for_vS){
-  dt <- batch_prepare_vS(S = S,explainer = explainer) # Make it optional to store and return the dt_list
+run_batch <- function(S,internal){
+
+  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+  dt <- batch_prepare_vS(S = S,internal = internal) # Make it optional to store and return the dt_list
   compute_preds(dt,explainer) # Updating dt by reference
 
   dt_vS <- compute_MCint(dt,explainer)
@@ -198,11 +208,11 @@ run_batch <- function(S,explainer,keep_samp_for_vS){
 }
 
 #' @export
-process_all_data <- function(explainer,model,x_train,x_explain){
+process_all_data <- function(internal,model){
 
   # Extracting model specs from model
-  if(explainer$ignore_model){
-    explainer$model <- NULL
+  if(internal$parameters$ignore_model){
+    model <- NULL
     feature_list_model <- get_model_specs.default("")
   } else {
     feature_list_model <- get_model_specs(model)
@@ -210,92 +220,164 @@ process_all_data <- function(explainer,model,x_train,x_explain){
 
   # process x_train
   processed_list <- preprocess_data(
-    x = x_train,
+    x = internal$data$x_train,
     feature_list = feature_list_model
   )
-  explainer$x_train <- processed_list$x_dt
-  explainer$feature_list <- processed_list$updated_feature_list
+  internal$data$x_train <- processed_list$x_dt
+  internal$parameters$feature_list <- processed_list$updated_feature_list
 
   # process x_explain
-  explainer$x_explain <- preprocess_data(x_explain, explainer$feature_list)$x_dt
+  internal$data$x_explain <- preprocess_data(internal$data$x_explain, internal$parameters$feature_list)$x_dt
 
-  # get number of features
-  explainer$n_features <- ncol(explainer$x_train)
+  # get number of features and observationst to explain
+  internal$parameters$n_features <- ncol(internal$data$x_explain)
+  internal$parameters$n_explain <-  nrow(internal$data$x_explain)
+  internal$parameters$n_train <-  nrow(internal$data$x_train)
+
 
   # Processes groups if specified. Otherwise do nothing
-  explainer$is_groupwise <- !is.null(explainer$group)
-  if (explainer$is_groupwise) {
+  internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
+  if (internal$parameters$is_groupwise) {
     group_list <- process_groups(
-      group = explainer$group,
-      feature_labels = explainer$feature_list$labels
+      group = internal$parameters$group,
+      feature_labels = internal$parameters$feature_list$labels
     )
-    explainer$group <- group_list$group
-    explainer$group_num <- group_list$group_num
+    internal$parameters$group <- group_list$group
+    internal$parameters$group_num <- group_list$group_num
   }
-  return(explainer)
+  return(internal)
 }
 
 #' @export
-test_model <- function(explainer,model){
-  if(!explainer$ignore_model){
-    tmp <- predict_model(model, head(explainer$x_train, 2))
-    if (!(all(is.numeric(tmp)) & length(tmp) == 2)) {
-      stop(
-        paste0(
-          "The predict_model function of class ", class(model), " is invalid.\n",
-          "See the 'Advanced usage' section of the vignette:\n",
-          "vignette('understanding_shapr', package = 'shapr')\n",
-          "for more information on running shapr with custom models.\n"
-        )
+test_model <- function(x,model){
+  tmp <- predict_model(model, x)
+  if (!(all(is.numeric(tmp)) & length(tmp) == 2)) {
+    stop(
+      paste0(
+        "The predict_model function of class ", class(model), " is invalid.\n",
+        "See the 'Advanced usage' section of the vignette:\n",
+        "vignette('understanding_shapr', package = 'shapr')\n",
+        "for more information on running shapr with custom models.\n"
       )
-    }
+    )
   }
 }
 
 
 
 #' @export
-shapley_setup <- function(explainer){
+shapley_setup <- function(internal){
+
+  parameters <- internal$parameters
+  objects <- list()
   # Get all combinations ----------------
-  explainer$X <- feature_combinations(
-    m = explainer$n_features,
-    exact = explainer$exact,
-    n_combinations = explainer$n_combinations,
+  objects$X <- feature_combinations(
+    m = parameters$n_features,
+    exact = parameters$exact,
+    n_combinations = parameters$n_combinations,
     weight_zero_m = 10^6,
-    group_num = explainer$group_num
+    group_num = parameters$group_num
   )
 
   # Get weighted matrix ----------------
-  explainer$W <- weight_matrix(
-    X = explainer$X,
+  objects$W <- weight_matrix(
+    X = parameters$X,
     normalize_W_weights = TRUE,
-    is_groupwise = explainer$is_groupwise
+    is_groupwise = parameters$is_groupwise
   )
 
   ## Get feature matrix ---------
-  explainer$S <- feature_matrix_cpp(
-    features = explainer$X[["features"]],
-    m = explainer$n_features
+  objects$S <- feature_matrix_cpp(
+    features = objects$X[["features"]],
+    m = parameters$n_features
   )
 
-  # Updating explainer$exact as done in feature_combinations
-  if (!explainer$exact && explainer$n_combinations > (2^explainer$n_features - 2)) {
-    explainer$exact <- TRUE
+  # Updating parameters$exact as done in feature_combinations
+  if (!parameters$exact && parameters$n_combinations > (2^parameters$n_features - 2)) {
+    parameters$exact <- TRUE
   }
 
-  explainer$n_combinations <- nrow(explainer$S) # Updating this parameter in the end based on what is actually used. This will be obsolete later
+  parameters$n_combinations <- nrow(objects$S) # Updating this parameter in the end based on what is actually used. This will be obsolete later
 
-  explainer$S_batch <- create_S_batch_new(explainer)
+  objects$S_batch <- create_S_batch_new(internal)
 
 
-  explainer$group_num <- NULL # TODO: Checking whether I could just do this processing where needed instead of storing it
+  parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed instead of storing it
 
-  return(explainer)
+
+  internal$parameters <- parameters
+  internal$objects <- objects
+
+  return(internal)
 }
 
 #' @export
 get_supported_approaches <- function(){
   substring(rownames(attr(methods(prepare_data),"info")),first = 14)
+}
+
+#' @export
+get_parameters <- function(approach,prediction_zero,n_combinations,group,n_samples,n_batches,seed,keep_samp_for_vS,...){
+  parameters <- list(approach = approach,
+                     prediction_zero = prediction_zero,
+                     n_combinations = n_combinations,
+                     group = group,
+                     n_samples = n_samples,
+                     n_batches = n_batches,
+                     seed = seed,
+                     keep_samp_for_vS = keep_samp_for_vS)
+  parameters <- append(parameters,list(...))
+  if(is.null(parameters$ignore_model)){
+    parameters$ignore_model <- FALSE
+  }
+  parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
+
+  # TODO: Add any additional internal parameters here
+  # TODO: Add testing of correct format for the input here
+
+  #if (n_batches < 1 || n_batches > nrow(explainer$S)) {
+  #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
+  #}
+
+
+  return(parameters)
+}
+
+#' @export
+data <- get_data(x_train,x_explain){
+
+  # Check format for x_train
+  if (!is.matrix(x_train) & !is.data.frame(x_train)) {
+    stop("x_train should be a matrix or a dataframe.")
+  }
+  # Check format of x_explain
+  if (!is.matrix(x_explain) & !is.data.frame(x_explain)) {
+    stop("x should be a matrix or a data.frame/data.table.")
+  }
+
+  data <- list(x_train = x_train,
+               x_explain = x_explain)
+}
+
+#' @export
+check_approach <- function(internal){
+  # Check input for approach
+
+  approach <- internal$parameters$approach
+  n_features <- internal$parameters$n_features
+  if (!(is.vector(approach) &&
+        is.atomic(approach) &&
+        (length(approach) == 1 | length(approach) == n_features) &&
+        all(is.element(approach, get_supported_approaches())))
+  ) {
+    stop(
+      paste(
+        "It seems that you passed a non-valid value for approach.",
+        "It should be either \n",paste0(get_supported_approaches(),collapse=", "),"\nor",
+        "a vector of length=ncol(x) with only the above characters."
+      )
+    )
+  }
 }
 
 
@@ -324,66 +406,42 @@ explain_final <- function(x_train,
 
   # Setup
   #explainer <- init_explainer(environment(),...)
-  explainer <- as.list(environment())
-  explainer <- append(explainer,list(...))
-  if(is.null(explainer$ignore_model)){
-    explainer$ignore_model <- FALSE
-  }
-  explainer$exact <- ifelse(is.null(n_combinations), TRUE, FALSE)
 
+  # This is where we store everything
+  internal <- list()
 
-  #
-  # Checks input argument
-  if (!is.matrix(x_train) & !is.data.frame(x_train)) {
-    stop("x_train should be a matrix or a dataframe.")
-  }
-  # Check input for x
-  if (!is.matrix(x_explain) & !is.data.frame(x_explain)) {
-    stop("x should be a matrix or a data.frame/data.table.")
-  }
+  # Structure the input
+  internal$parameters <- get_parameters(approach = approach,
+                                        prediction_zero = prediction_zero,
+                                        n_combinations = n_combinations,
+                                        group = group,
+                                        n_samples = n_samples,
+                                        n_batches = n_batches,
+                                        seed = seed,
+                                        keep_samp_for_vS = keep_samp_for_vS,...)
 
-  #if (n_batches < 1 || n_batches > nrow(explainer$S)) {
-  #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
-  #}
-  # Check input for approach
-
-
-  #TODO: Some more checking here (which in the end is put into a separate input checking function)
-
+  internal$data <- get_data(x_train,x_explain)
 
   ##### DATA CHECKING AND PROCESSING ###########
-  explainer <- process_all_data(explainer,model,x_train,x_explain)
+  internal <- process_all_data(internal,model)
 
+  # Checking that the prediction function works (duplicate in Python)
+  test_model(head(internal$data$x_train, 2),model)
 
-  if (!(is.vector(approach) &&
-        is.atomic(approach) &&
-        (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
-        all(is.element(approach, get_supported_approaches())))
-  ) {
-    stop(
-      paste(
-        "It seems that you passed a non-valid value for approach.",
-        "It should be either \n",paste0(shapr::get_supported_approaches(),collapse=", "),"\nor",
-        "a vector of length=ncol(x) with only the above characters."
-      )
-    )
-  }
-
-  # Checking that the prediction function works
-  test_model(explainer,model)
+  # Checking the format of approach
+  check_approach(internal)
 
   # setup the Shapley framework
-  explainer <- shapley_setup(explainer)
+  internal <- shapley_setup(internal)
 
   # Setup for approach
-  explainer <- setup_approach(explainer, ...)
+  internal <- setup_approach(internal, ...)
 
   # Accross all batches get the data we will predict on, predict on them, and do the MC integration
-  vS_list <- future.apply::future_lapply(X = explainer$S_batch,
+  vS_list <- future.apply::future_lapply(X = internal$objects$S_batch,
                                          FUN = run_batch,
-                                         explainer = explainer,
-                                         keep_samp_for_vS = keep_samp_for_vS,
-                                         future.seed = explainer$seed)
+                                         internal = internal,
+                                         future.seed = internal$parameters$seed)
 
   output <- finalize_explanation(vS_list = vS_list,
                                  explainer = explainer,
@@ -492,14 +550,16 @@ get_mu_vec <- function(x_train,min_eigen_value = 1e-06){
 
 
 #' @export
-setup_approach <- function(explainer,...){
+setup_approach <- function(internal,...){
+
+  approach <- internal$parameters$approach
 
   this_class <- ""
 
-  if (length(explainer$approach) > 1) {
+  if (length(approach) > 1) {
     class(this_class) <- "combined"
   }  else {
-    class(this_class) <- explainer$approach
+    class(this_class) <- approach
   }
 
   UseMethod("setup_approach", this_class)
@@ -507,12 +567,12 @@ setup_approach <- function(explainer,...){
   }
 
 #' @export
-setup_approach.independence <- function(explainer,...){
-  return(explainer)
+setup_approach.independence <- function(internal,...){
+  return(internal)
 }
 
 #' @export
-setup_approach.empirical <- function(explainer,
+setup_approach.empirical <- function(internal,
                                      seed = 1,
                                      w_threshold = 0.95,
                                      type = "fixed_sigma",
@@ -522,13 +582,16 @@ setup_approach.empirical <- function(explainer,
                                      start_aicc = 0.1,
                                      cov_mat = NULL,...){
 
+  parameters <- internal$parameters
+  x_train <- internal$data$x_train
+
   # Add arguments to explainer object
-  explainer$type <- type
-  explainer$fixed_sigma_vec <- fixed_sigma_vec
-  explainer$n_samples_aicc <- n_samples_aicc
-  explainer$eval_max_aicc <- eval_max_aicc
-  explainer$start_aicc <- start_aicc
-  explainer$w_threshold <- w_threshold
+  parameters$type <- type
+  parameters$fixed_sigma_vec <- fixed_sigma_vec
+  parameters$n_samples_aicc <- n_samples_aicc
+  parameters$eval_max_aicc <- eval_max_aicc
+  parameters$start_aicc <- start_aicc
+  parameters$w_threshold <- w_threshold
 
   if (type == "independence") {
     warning(paste0(
@@ -540,98 +603,112 @@ setup_approach.empirical <- function(explainer,
 
   # If cov_mat is not provided directly, use sample covariance of training data
   if (is.null(cov_mat)) {
-    explainer$cov_mat <- get_cov_mat(explainer$x_train)
+    parameters$cov_mat <- get_cov_mat(x_train)
   }
 
-  return(explainer)
+  internal$parameters <- parameters
+
+  return(internal)
 }
 
 #' @export
-setup_approach.gaussian <- function(explainer,
+setup_approach.gaussian <- function(internal,
                                     mu = NULL,
                                     cov_mat = NULL, ...){
 
+  parameters <- internal$parameters
+  x_train <- internal$data$x_train
+
   # If mu is not provided directly, use mean of training data
   if (is.null(mu)) {
-    explainer$mu <- get_mu_vec(explainer$x_train)
+    parameters$mu <- get_mu_vec(x_train)
   } else {
-    explainer$mu <- mu
+    parameters$mu <- mu
   }
 
   # If cov_mat is not provided directly, use sample covariance of training data
   if (is.null(cov_mat)) {
-    explainer$cov_mat <- get_cov_mat(explainer$x_train)
+    parameters$cov_mat <- get_cov_mat(x_train)
   } else {
-    explainer$cov_mat <- cov_mat
+    parameters$cov_mat <- cov_mat
   }
 
-  return(explainer)
+  internal$parameters <- parameters
+
+  return(internal)
 }
 
 
 #' @export
-setup_approach.copula <- function(explainer, ...){
+setup_approach.copula <- function(internal, ...){
+
+  parameters <- internal$parameters
+  x_train <- internal$data$x_train
+  x_explain <- internal$data$x_explain
+
 
   # Prepare transformed data
-
-  explainer$mu <- rep(0, ncol(explainer$x_train))
+  parameters$mu <- rep(0, ncol(x_train))
   x_train <- apply(
-    X = explainer$x_train,
+    X = x_train,
     MARGIN = 2,
     FUN = gaussian_transform
   )
-  explainer$cov_mat <- get_cov_mat(x_train)
+  parameters$cov_mat <- get_cov_mat(x_train)
 
 
   x_explain_gaussian <- apply(
-    X = rbind(explainer$x_explain, explainer$x_train),
+    X = rbind(x_explain, x_train),
     MARGIN = 2,
     FUN = gaussian_transform_separate,
-    n_y = nrow(explainer$x_explain)
+    n_y = nrow(x_explain)
   )
 
   if (is.null(dim(x_explain_gaussian))) {
     x_explain_gaussian <- t(as.matrix(x_explain_gaussian))
   }
-  explainer$x_explain_gaussian <- x_explain_gaussian
 
+  internal$data$x_explain_gaussian <- x_explain_gaussian # TODO: Change to this a data.table for consistency (not speed/memory)
+  internal$parameters <- parameters
 
-
-  return(explainer)
+  return(internal)
 }
 
 
 #' @export
-setup_approach.ctree <- function(explainer,
-                                  mincriterion = 0.95,
-                                  minsplit = 20,
-                                  minbucket = 7,
-                                  sample = TRUE, ...){
+setup_approach.ctree <- function(internal,
+                                 mincriterion = 0.95,
+                                 minsplit = 20,
+                                 minbucket = 7,
+                                 sample = TRUE, ...){
+
+  parameters <- internal$parameters
+
 
   # Add arguments to explainer object
-  explainer$mincriterion <- mincriterion
-  explainer$minsplit <- minsplit
-  explainer$minbucket <- minbucket
-  explainer$sample <- sample
+  parameters$mincriterion <- mincriterion
+  parameters$minsplit <- minsplit
+  parameters$minbucket <- minbucket
+  parameters$sample <- sample
 
-  return(explainer)
+  internal$parameters <- parameters
+
+  return(internal)
 }
 
 #' @export
-setup_approach.combined <- function(explainer,...){
+setup_approach.combined <- function(internal,...){
 
-  #l <- get_list_approaches(explainer$X$n_features, explainer$approach)
-
-  org_approach <- explainer$approach
+  org_approach <- internal$parameters$approach
   unique_approaches <- unique(org_approach)
 
   for(i in unique_approaches){
-    explainer$approach <- i
-    explainer <- setup_approach(explainer,...)
+    internal$parameters$approach <- i
+    internal <- setup_approach(internal,...)
   }
-  explainer$approach <- org_approach
+  internal$parameters$approach <- org_approach
 
-  return(explainer)
+  return(internal)
 }
 
 

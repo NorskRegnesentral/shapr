@@ -82,62 +82,69 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, w_threshold = .7
 #'
 #' @export
 #' @keywords internal
-prepare_data <- function(x, ...) {
+prepare_data <- function(internal, ...) {
   this_class <- ""
-  class(this_class) <- x$approach
+  class(this_class) <- internal$parameters$approach
   UseMethod("prepare_data", this_class)
 }
 
 #' @rdname prepare_data
 #' @export
-prepare_data.independence <- function(x, index_features = NULL, ...) {
+prepare_data.independence <- function(internal, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
+  parameters <- internal$parameters
+
+  x_train0 <- copy(internal$data$x_train)
+  x_explain0 <- copy(internal$data$x_explain)
+
+  feature_list <- internal$parameters$feature_list
+  n_samples <- internal$parameters$n_samples
+  n_train <- internal$parameters$n_train
+
+  X <- internal$objects$X
+  S <- internal$objects$S
+
   if (is.null(index_features)) {
-    index_features <- x$X[, .I]
+    index_features <- X[, .I]
   }
 
-  non_numeric_features <- x$feature_list$labels[x$feature_list$classes!="numeric"]
+  non_numeric_features <- feature_list$labels[feature_list$classes!="numeric"]
 
-  S <- x$S[index_features, , drop = FALSE]
-  x_train <- copy(x$x_train)
-  x_explain0 <- copy(x$x_explain)
+  S0 <- S[index_features, , drop = FALSE]
 
   if(length(non_numeric_features)>0){
-    x_train[,(non_numeric_features):=lapply(.SD,function(x){as.numeric(as.character(x))}),.SDcols=non_numeric_features]
+    x_train0[,(non_numeric_features):=lapply(.SD,function(x){as.numeric(as.character(x))}),.SDcols=non_numeric_features]
     x_explain0[,(non_numeric_features):=lapply(.SD,function(x){as.numeric(as.character(x))}),.SDcols=non_numeric_features]
   }
 
-  x_train <- as.matrix(x_train)
-  x_explain0 <- as.matrix(x_explain0)
+  x_train0_mat <- as.matrix(x_train0)
+  x_explain0_mat <- as.matrix(x_explain0)
 
-  n_train <- nrow(x_train)
-  n_samples <- min(x$n_samples, n_train)
-
-  index_s <- rep(seq(nrow(S)), each = n_samples)
-  w <- 1 / x$n_samples
+  index_s <- rep(seq(nrow(S)), each = min(n_samples, n_train))
+  w <- 1 / n_samples # Yes, not n_samples0
 
   n_col <- nrow(x_explain0)
 
   dt_l <- list()
   for (i in seq(n_col)) {
-    x_explain <- x_explain0[i, , drop = FALSE]
+    x_explain00 <- x_explain0[i, , drop = FALSE]
 
     # sampling index_xtrain
-    index_xtrain <- c(replicate(nrow(S), sample(x = seq(n_train), size = n_samples, replace = F)))
+    index_xtrain <- c(replicate(nrow(S0), sample(x = seq(n_train), size = n_samples, replace = F)))
 
     # Generate data used for prediction
     dt_p <- observation_impute_cpp(
       index_xtrain = index_xtrain,
       index_s = index_s,
-      xtrain = x_train,
-      xtest = x_explain,
-      S = S
+      xtrain = x_train0_mat,
+      xtest = x_explain0_mat,
+      S = S0
     )
 
     # Add keys
     dt_l[[i]] <- data.table::as.data.table(dt_p)
-    data.table::setnames(dt_l[[i]], colnames(x_train))
+    data.table::setnames(dt_l[[i]], feature_list$labels)
     dt_l[[i]][, id_combination := index_s]
     dt_l[[i]][, w := w] # IS THIS NECESSARY?
     dt_l[[i]][, id := i]
