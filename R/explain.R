@@ -2,8 +2,8 @@
 #' @export
 postprocess_vS_list <- function(vS_list,explainer,keep_samp_for_vS = FALSE){
   # Appending the zero-prediction to the list
-  dt_vS0 <- as.data.table(rbind(c(1,rep(explainer$prediction_zero,nrow(explainer$x_test)))))
-  names(dt_vS0) <- c("id_combination",1:nrow(explainer$x_test))
+  dt_vS0 <- as.data.table(rbind(c(1,rep(explainer$prediction_zero,nrow(explainer$x_explain)))))
+  names(dt_vS0) <- c("id_combination",1:nrow(explainer$x_explain))
 
   # Extracting/merging the data tables from the batch running
   #TODO: Need a memory and speed optimized way to transform the output form dt_vS_list to two different lists,
@@ -132,7 +132,7 @@ batch_prepare_vS <- function(S,explainer){
   } else {
     S <- S[S!=max_id_combination]
     dt <- prepare_data(explainer, index_features = S)
-    dt_max <- data.table(explainer$x_test,id_combination=max_id_combination,w=1,id=seq_len(nrow(explainer$x_test)))
+    dt_max <- data.table(explainer$x_explain,id_combination=max_id_combination,w=1,id=seq_len(nrow(explainer$x_explain)))
     dt <- rbind(dt,dt_max)
     setkey(dt,id,id_combination)
   }
@@ -217,7 +217,7 @@ process_all_data <- function(explainer,model,x_train,x_explain){
   explainer$feature_list <- processed_list$updated_feature_list
 
   # process x_explain
-  explainer$x_test <- preprocess_data(x_explain, explainer$feature_list)$x_dt
+  explainer$x_explain <- preprocess_data(x_explain, explainer$feature_list)$x_dt
 
   # get number of features
   explainer$n_features <- ncol(explainer$x_train)
@@ -375,11 +375,8 @@ explain_final <- function(x_train,
   # setup the Shapley framework
   explainer <- shapley_setup(explainer)
 
-  # TODO: Merge most of the stuff from explain_setup into shapley setup (all that does not have to do with approach)
-  # AND put the input checking further up
-  # Setups the explainer object
+  # Setup for approach
   explainer <- setup_approach(explainer, ...)
-
 
   # Accross all batches get the data we will predict on, predict on them, and do the MC integration
   vS_list <- future.apply::future_lapply(X = explainer$S_batch,
@@ -586,17 +583,17 @@ setup_approach.copula <- function(explainer, ...){
   explainer$cov_mat <- get_cov_mat(x_train)
 
 
-  x_test_gaussian <- apply(
-    X = rbind(explainer$x_test, explainer$x_train),
+  x_explain_gaussian <- apply(
+    X = rbind(explainer$x_explain, explainer$x_train),
     MARGIN = 2,
     FUN = gaussian_transform_separate,
-    n_y = nrow(explainer$x_test)
+    n_y = nrow(explainer$x_explain)
   )
 
-  if (is.null(dim(x_test_gaussian))) {
-    x_test_gaussian <- t(as.matrix(x_test_gaussian))
+  if (is.null(dim(x_explain_gaussian))) {
+    x_explain_gaussian <- t(as.matrix(x_explain_gaussian))
   }
-  explainer$x_test_gaussian <- x_test_gaussian
+  explainer$x_explain_gaussian <- x_explain_gaussian
 
 
 
@@ -641,7 +638,7 @@ setup_approach.combined <- function(explainer,...){
 
 #
 # #  # Check that the number of test observations equals max(id)
-# #  stopifnot(nrow(explainer$x_test) == dt[, max(id)])
+# #  stopifnot(nrow(explainer$x_explain) == dt[, max(id)])
 # data.table::setkeyv(dt, c("id", "id_combination"))
 #
 #   # Reducing the prediction data.table
@@ -658,7 +655,7 @@ setup_approach.combined <- function(explainer,...){
 #     p_all <- NULL
 #   } else {
 #     p_all <- dt[id_combination == max_id_combination, p_hat]
-#     names(p_all) <- 1:nrow(explainer$x_test)
+#     names(p_all) <- 1:nrow(explainer$x_explain)
 #   }
 #
 #
@@ -701,7 +698,7 @@ setup_approach.combined <- function(explainer,...){
 #
 #
 # # Add arguments to explainer object
-# explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+# explainer$x_explain <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
 # explainer$approach <- approach
 # explainer$n_samples <- n_samples
 #

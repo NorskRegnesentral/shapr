@@ -50,10 +50,10 @@
 #'   \item{dt}{data.table}
 #'   \item{model}{Model object}
 #'   \item{p}{Numeric vector}
-#'   \item{x_test}{data.table}
+#'   \item{x_explain}{data.table}
 #' }
 #'
-#' Note that the returned items \code{model}, \code{p} and \code{x_test} are mostly added due
+#' Note that the returned items \code{model}, \code{p} and \code{x_explain} are mostly added due
 #' to the implementation of \code{plot.shapr}. If you only want to look at the numerical results
 #' it is sufficient to focus on \code{dt}. \code{dt} is a data.table where the number of rows equals
 #' the number of observations you'd like to explain, and the number of columns equals \code{m +1},
@@ -89,7 +89,7 @@
 #'
 #'   # Split data into test- and training data
 #'   x_train <- head(Boston, -3)
-#'   x_test <- tail(Boston, 3)
+#'   x_explain <- tail(Boston, 3)
 #'
 #'   # Fit a linear model
 #'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
@@ -101,32 +101,32 @@
 #'   p <- mean(x_train$medv)
 #'
 #'   # Empirical approach
-#'   explain1 <- explain(x_test, explainer,
+#'   explain1 <- explain(x_explain, explainer,
 #'     approach = "empirical",
 #'     prediction_zero = p, n_samples = 1e2
 #'   )
 #'
 #'   # Gaussian approach
-#'   explain2 <- explain(x_test, explainer,
+#'   explain2 <- explain(x_explain, explainer,
 #'     approach = "gaussian",
 #'     prediction_zero = p, n_samples = 1e2
 #'   )
 #'
 #'   # Gaussian copula approach
-#'   explain3 <- explain(x_test, explainer,
+#'   explain3 <- explain(x_explain, explainer,
 #'     approach = "copula",
 #'     prediction_zero = p, n_samples = 1e2
 #'   )
 #'
 #'   # ctree approach
-#'   explain4 <- explain(x_test, explainer,
+#'   explain4 <- explain(x_explain, explainer,
 #'     approach = "ctree",
 #'     prediction_zero = p
 #'   )
 #'
 #'   # Combined approach
 #'   approach <- c("gaussian", "gaussian", "empirical", "empirical")
-#'   explain5 <- explain(x_test, explainer,
+#'   explain5 <- explain(x_explain, explainer,
 #'     approach = approach,
 #'     prediction_zero = p, n_samples = 1e2
 #'   )
@@ -143,7 +143,7 @@
 #'   group <- list(A = c("lstat", "rm"), B = c("dis", "indus"))
 #'   explainer_group <- shapr(x_train, model, group = group)
 #'   explain_groups <- explain(
-#'     x_test,
+#'     x_explain,
 #'     explainer_group,
 #'     approach = "empirical",
 #'     prediction_zero = p,
@@ -199,7 +199,7 @@ explain.independence <- function(x, explainer, approach, prediction_zero,
 
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$x_explain <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
@@ -249,7 +249,7 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$x_explain <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
   explainer$type <- type
   explainer$fixed_sigma_vec <- fixed_sigma_vec
@@ -302,7 +302,7 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples 
                              mu = NULL, cov_mat = NULL, ...) {
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$x_explain <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
@@ -345,7 +345,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
                            n_batches = 1, seed = 1, ...) {
 
   # Setup
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$x_explain <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 
@@ -355,15 +355,15 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
     MARGIN = 2,
     FUN = gaussian_transform
   )
-  x_test_gaussian <- apply(
-    X = rbind(explainer$x_test, explainer$x_train),
+  x_explain_gaussian <- apply(
+    X = rbind(explainer$x_explain, explainer$x_train),
     MARGIN = 2,
     FUN = gaussian_transform_separate,
-    n_y = nrow(explainer$x_test)
+    n_y = nrow(explainer$x_explain)
   )
 
-  if (is.null(dim(x_test_gaussian))) {
-    x_test_gaussian <- t(as.matrix(x_test_gaussian))
+  if (is.null(dim(x_explain_gaussian))) {
+    x_explain_gaussian <- t(as.matrix(x_explain_gaussian))
   }
 
   explainer$mu <- rep(0, ncol(explainer$x_train))
@@ -375,7 +375,7 @@ explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 
     explainer$cov_mat <- cov_mat
   }
 
-  explainer$x_test_gaussian <- x_test_gaussian
+  explainer$x_explain_gaussian <- x_explain_gaussian
 
   r <- prepare_and_predict(explainer = explainer,
                            n_batches = n_batches,
@@ -418,7 +418,7 @@ explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1
   }
 
   # Add arguments to explainer object
-  explainer$x_test <- preprocess_data(x, explainer$feature_list)$x_dt
+  explainer$x_explain <- preprocess_data(x, explainer$feature_list)$x_dt
   explainer$approach <- approach
   explainer$mincriterion <- mincriterion
   explainer$minsplit <- minsplit
@@ -447,7 +447,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$x_explain <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$n_samples <- n_samples
 
   dt_l <- list()
@@ -471,7 +471,7 @@ explain.combined <- function(x, explainer, approach, prediction_zero, n_samples 
   res <- list(dt = dt_kshap,
               model = explainer$model,
               p = p,
-              x_test = explainer$x_test,
+              x_explain = explainer$x_explain,
               is_groupwise = explainer$is_groupwise)
 
   attr(res, "class") <- c("shapr", "list")
@@ -548,7 +548,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
   # Get indices of combinations
   l <- get_list_ctree_mincrit(explainer$X$n_features, mincriterion)
   explainer$return <- TRUE # this is important so that you don't use prediction() twice
-  explainer$x_test <- as.matrix(x)
+  explainer$x_explain <- as.matrix(x)
 
   dt_l <- list()
   for (i in seq_along(l)) {
@@ -572,7 +572,7 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
   res <- list(dt = dt_kshap,
               model = explainer$model,
               p = p,
-              x_test = explainer$x_test,
+              x_explain = explainer$x_explain,
               is_groupwise = explainer$is_groupwise)
 
   attr(res, "class") <- c("shapr", "list")
@@ -693,7 +693,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, seed, ...
 
   p <- unlist(lapply(r_batch, "[[", "p"),use.names = F)
   if(!is.null(p)){
-    names(p) <- seq_len(nrow(explainer$x_test)) # Safe also for n_test = 1
+    names(p) <- seq_len(nrow(explainer$x_explain)) # Safe also for n_test = 1
   } else {
     p <- NA
   }
@@ -714,7 +714,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, seed, ...
   res <- list(dt = dt_kshap,
               model = explainer$model,
               p = p,
-              x_test = explainer$x_test,
+              x_explain = explainer$x_explain,
               is_groupwise = explainer$is_groupwise)
 
   attr(res, "class") <- c("shapr", "list")

@@ -6,7 +6,7 @@
 #' and \code{m} equals the total number of sampled/non-sampled feature combinations and
 #' the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.
 #' @param x_train Numeric matrix
-#' @param x_test Numeric matrix
+#' @param x_explain Numeric matrix
 #'
 #' @inheritParams explain
 #' @inherit explain references
@@ -16,7 +16,7 @@
 #' @keywords internal
 #'
 #' @author Nikolai Sellereite
-observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n_samples = 1e3) {
+observation_impute <- function(W_kernel, S, x_train, x_explain, w_threshold = .7, n_samples = 1e3) {
 
   # Check input
   stopifnot(is.matrix(W_kernel) & is.matrix(S))
@@ -54,7 +54,7 @@ observation_impute <- function(W_kernel, S, x_train, x_test, w_threshold = .7, n
     index_xtrain = dt_melt[["index_x_train"]],
     index_s = dt_melt[["index_s"]],
     xtrain = x_train,
-    xtest = x_test,
+    xtest = x_explain,
     S = S
   )
 
@@ -101,15 +101,15 @@ prepare_data.independence <- function(x, index_features = NULL, ...) {
 
   S <- x$S[index_features, , drop = FALSE]
   x_train <- copy(x$x_train)
-  x_test0 <- copy(x$x_test)
+  x_explain0 <- copy(x$x_explain)
 
   if(length(non_numeric_features)>0){
     x_train[,(non_numeric_features):=lapply(.SD,function(x){as.numeric(as.character(x))}),.SDcols=non_numeric_features]
-    x_test0[,(non_numeric_features):=lapply(.SD,function(x){as.numeric(as.character(x))}),.SDcols=non_numeric_features]
+    x_explain0[,(non_numeric_features):=lapply(.SD,function(x){as.numeric(as.character(x))}),.SDcols=non_numeric_features]
   }
 
   x_train <- as.matrix(x_train)
-  x_test0 <- as.matrix(x_test0)
+  x_explain0 <- as.matrix(x_explain0)
 
   n_train <- nrow(x_train)
   n_samples <- min(x$n_samples, n_train)
@@ -117,11 +117,11 @@ prepare_data.independence <- function(x, index_features = NULL, ...) {
   index_s <- rep(seq(nrow(S)), each = n_samples)
   w <- 1 / x$n_samples
 
-  n_col <- nrow(x_test0)
+  n_col <- nrow(x_explain0)
 
   dt_l <- list()
   for (i in seq(n_col)) {
-    x_test <- x_test0[i, , drop = FALSE]
+    x_explain <- x_explain0[i, , drop = FALSE]
 
     # sampling index_xtrain
     index_xtrain <- c(replicate(nrow(S), sample(x = seq(n_train), size = n_samples, replace = F)))
@@ -131,7 +131,7 @@ prepare_data.independence <- function(x, index_features = NULL, ...) {
       index_xtrain = index_xtrain,
       index_s = index_s,
       xtrain = x_train,
-      xtest = x_test,
+      xtest = x_explain,
       S = S
     )
 
@@ -163,18 +163,18 @@ prepare_data.empirical <- function(x, index_features = NULL, ...) {
 
   x$D <- distance_matrix(
     x$x_train,
-    x$x_test,
+    x$x_explain,
     x$X$features[index_features],
     mcov = x$cov_mat
   )
 
   # Setup
-  n_col <- nrow(x$x_test)
+  n_col <- nrow(x$x_explain)
   no_empirical <- nrow(x$S[index_features, , drop = FALSE])
 
   h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
   h_optim_DT <- as.data.table(h_optim_mat)
-  data.table::setnames(h_optim_DT, paste0("Testobs_", seq(nrow(x$x_test))))
+  data.table::setnames(h_optim_DT, paste0("Testobs_", seq(nrow(x$x_explain))))
   varcomb <- NULL # due to NSE notes in R CMD check
   h_optim_DT[, varcomb := .I]
   kernel_metric <- ifelse(x$type == "independence", x$type, "gaussian")
@@ -217,7 +217,7 @@ prepare_data.empirical <- function(x, index_features = NULL, ...) {
       W_kernel = W_kernel,
       S = S,
       x_train = as.matrix(x$x_train),
-      x_test = as.matrix(x$x_test[i, , drop = FALSE]),
+      x_explain = as.matrix(x$x_explain[i, , drop = FALSE]),
       w_threshold = x$w_threshold,
       n_samples = x$n_samples
     )
@@ -235,8 +235,8 @@ prepare_data.empirical <- function(x, index_features = NULL, ...) {
 prepare_data.gaussian <- function(x, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
-  x_test0 <- as.matrix(x$x_test)
-  n_xtest <- nrow(x_test0)
+  x_explain0 <- as.matrix(x$x_explain)
+  n_xtest <- nrow(x_explain0)
   dt_l <- list()
 
   if (is.null(index_features)) {
@@ -252,8 +252,8 @@ prepare_data.gaussian <- function(x, index_features = NULL, ...) {
       n_samples = x$n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
-      m = ncol(x_test0),
-      x_test = x_test0[i, , drop = FALSE]
+      m = ncol(x_explain0),
+      x_explain = x_explain0[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
@@ -273,8 +273,8 @@ prepare_data.gaussian <- function(x, index_features = NULL, ...) {
 prepare_data.copula <- function(x,  index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
-  x_test0 <- as.matrix(x$x_test)
-  n_xtest <- nrow(x_test0)
+  x_explain0 <- as.matrix(x$x_explain)
+  n_xtest <- nrow(x_explain0)
   dt_l <- list()
   if (is.null(index_features)) {
     features <- x$X$features
@@ -282,7 +282,7 @@ prepare_data.copula <- function(x,  index_features = NULL, ...) {
     features <- x$X$features[index_features]
   }
 
-  x_test_gaussian <- x$x_test_gaussian
+  x_explain_gaussian <- x$x_explain_gaussian
 
   for (i in seq(n_xtest)) {
     l <- lapply(
@@ -291,10 +291,10 @@ prepare_data.copula <- function(x,  index_features = NULL, ...) {
       n_samples = x$n_samples,
       mu = x$mu,
       cov_mat = x$cov_mat,
-      m = ncol(x$x_test),
-      x_test = x_test0[i, , drop = FALSE],
+      m = ncol(x$x_explain),
+      x_explain = x_explain0[i, , drop = FALSE],
       x_train = as.matrix(x$x_train),
-      x_test_gaussian = x_test_gaussian[i, , drop = FALSE]
+      x_explain_gaussian = x_explain_gaussian[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
@@ -328,7 +328,7 @@ prepare_data.ctree <- function(x,  index_features = NULL,
                                mc_cores_sample_ctree = mc_cores, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
-  n_xtest <- nrow(x$x_test)
+  n_xtest <- nrow(x$x_explain)
   dt_l <- list()
 
 
@@ -356,9 +356,9 @@ prepare_data.ctree <- function(x,  index_features = NULL,
       X = all_trees,
       FUN = sample_ctree,
       n_samples = x$n_samples,
-      x_test = x$x_test[i, , drop = FALSE],
+      x_explain = x$x_explain[i, , drop = FALSE],
       x_train = x$x_train,
-      p = ncol(x$x_test),
+      p = ncol(x$x_explain),
       sample = x$sample,
       mc.cores = mc_cores_sample_ctree,
       mc.set.seed = FALSE
@@ -371,10 +371,10 @@ prepare_data.ctree <- function(x,  index_features = NULL,
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  dt[id_combination %in% c(1, 2^ncol(x$x_test)), w := 1.0]
+  dt[id_combination %in% c(1, 2^ncol(x$x_explain)), w := 1.0]
 
   # only return unique dt
-  dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_test), "id")]
+  dt2 <- dt[, sum(w), by = c("id_combination", colnames(x$x_explain), "id")]
   setnames(dt2, "V1", "w")
 
   return(dt2)
@@ -392,14 +392,14 @@ compute_AICc_each_k <- function(x, index_features) {
 
   optimsamp <- sample_combinations(
     ntrain = nrow(x$x_train),
-    ntest = nrow(x$x_test),
+    ntest = nrow(x$x_explain),
     nsamples = x$n_samples_aicc,
     joint_sampling = FALSE
   )
   x$n_samples_aicc <- nrow(optimsamp)
-  nloops <- nrow(x$x_test) # No of observations in test data
+  nloops <- nrow(x$x_explain) # No of observations in test data
 
-  h_optim_mat <- matrix(NA, ncol = ncol(x$x_test), nrow = nrow(x$X))
+  h_optim_mat <- matrix(NA, ncol = ncol(x$x_explain), nrow = nrow(x$X))
 
   if (is.null(index_features)) {
     index_features <- x$X[, .I]
@@ -445,7 +445,7 @@ compute_AICc_each_k <- function(x, index_features) {
         mcov_list[[j]] <- stats::cov(X_list[[j]])
 
         Xtrain.Sbar <- subset(x$x_train, select = Sbar.cols)[these_train, ]
-        Xtest.S <- subset(x$x_test, select = S.cols)[these_test, ]
+        Xtest.S <- subset(x$x_explain, select = S.cols)[these_test, ]
         X.pred.list[[j]] <- cbind(Xtrain.Sbar, Xtest.S)
 
         # Ensure colnames are correct:
@@ -485,8 +485,8 @@ compute_AICc_each_k <- function(x, index_features) {
 
 #' @keywords internal
 compute_AICc_full <- function(x, index_features) {
-  ntest <- nrow(x$x_test)
-  if (is.null(dim(x$x_test))) {
+  ntest <- nrow(x$x_explain)
+  if (is.null(dim(x$x_explain))) {
     nloops <- 1
     ntest <- 1
   }
@@ -497,9 +497,9 @@ compute_AICc_full <- function(x, index_features) {
     joint_sampling = FALSE
   )
   x$n_samples_aicc <- nrow(optimsamp)
-  nloops <- nrow(x$x_test) # No of observations in test data
+  nloops <- nrow(x$x_explain) # No of observations in test data
 
-  h_optim_mat <- matrix(NA, ncol = ncol(x$x_test), nrow = nrow(x$X))
+  h_optim_mat <- matrix(NA, ncol = ncol(x$x_explain), nrow = nrow(x$X))
 
   if (is.null(index_features)) {
     index_features <- x$X[, .I]
@@ -527,7 +527,7 @@ compute_AICc_full <- function(x, index_features) {
       mcov_list <- list(stats::cov(X_list[[1]]))
 
       Xtrain.Sbar <- subset(x$x_train, select = Sbar.cols)[these_train, ]
-      Xtest.S <- subset(x$x_test, select = S.cols)[these_test, ]
+      Xtest.S <- subset(x$x_explain, select = S.cols)[these_test, ]
       X.pred <- cbind(Xtrain.Sbar, Xtest.S)
 
       # Ensure colnames are correct:

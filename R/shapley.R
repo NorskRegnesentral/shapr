@@ -254,19 +254,19 @@ shapr <- function(x,
 }
 
 #' @keywords internal
-distance_matrix <- function(x_train, x_test = NULL, list_features, mcov) {
-  if (is.null(x_test)) {
+distance_matrix <- function(x_train, x_explain = NULL, list_features, mcov) {
+  if (is.null(x_explain)) {
     return(NULL)
   }
 
-  if (is.null(dim(x_test))) {
-    x_test <- t(as.matrix(x_test))
+  if (is.null(dim(x_explain))) {
+    x_explain <- t(as.matrix(x_explain))
   }
   # Note that D equals D_S(,)^2 in the paper
   D <- mahalanobis_distance_cpp(
     featureList = list_features,
     Xtrain_mat = as.matrix(x_train),
-    Xtest_mat = as.matrix(x_test),
+    Xtest_mat = as.matrix(x_explain),
     mcov = mcov,
     S_scale_dist = TRUE
   )

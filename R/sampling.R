@@ -3,9 +3,9 @@
 #' @param index_given Integer vector. The indices of the features to condition upon. Note that
 #' \code{min(index_given) >= 1} and \code{max(index_given) <= m}.
 #' @param m Positive integer. The total number of features.
-#' @param x_test_gaussian Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
+#' @param x_explain_gaussian Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
 #' after quantile-transforming them to standard Gaussian variables.
-#' @param x_test Numeric matrix. Contains the features of the observation whose
+#' @param x_explain Numeric matrix. Contains the features of the observation whose
 #' predictions ought to be explained (test data).
 #'
 #' @return data.table
@@ -13,10 +13,10 @@
 #' @keywords internal
 #'
 #' @author Martin Jullum
-sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_test_gaussian, x_train, x_test) {
+sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_explain_gaussian, x_train, x_explain) {
   # Handles the unconditional and full conditional separtely when predicting
   if (length(index_given) %in% c(0, m)) {
-    ret <- matrix(x_test, ncol = m, nrow = 1)
+    ret <- matrix(x_explain, ncol = m, nrow = 1)
   } else {
     dependent_ind <- (1:length(mu))[-index_given]
 
@@ -25,7 +25,7 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_test_gaussia
       sigma = cov_mat,
       dependent.ind = dependent_ind,
       given.ind = index_given,
-      X.given = x_test_gaussian[index_given]
+      X.given = x_explain_gaussian[index_given]
     )
 
     ret0_z <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
@@ -38,10 +38,10 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_test_gaussia
     )
 
     ret <- matrix(NA, ncol = m, nrow = n_samples)
-    ret[, index_given] <- rep(x_test[index_given], each = n_samples)
+    ret[, index_given] <- rep(x_explain[index_given], each = n_samples)
     ret[, dependent_ind] <- ret0_x
   }
-  colnames(ret) <- colnames(x_test)
+  colnames(ret) <- colnames(x_explain)
   return(as.data.table(ret))
 }
 
@@ -55,25 +55,25 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_test_gaussia
 #' @keywords internal
 #'
 #' @author Martin Jullum
-sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_test) {
+sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_explain) {
 
   # Check input
-  stopifnot(is.matrix(x_test))
+  stopifnot(is.matrix(x_explain))
 
   # Handles the unconditional and full conditional separtely when predicting
-  cnms <- colnames(x_test)
+  cnms <- colnames(x_explain)
   if (length(index_given) %in% c(0, m)) {
-    return(data.table::as.data.table(x_test))
+    return(data.table::as.data.table(x_explain))
   }
 
   dependent_ind <- (1:length(mu))[-index_given]
-  x_test_gaussian <- x_test[index_given]
+  x_explain_gaussian <- x_explain[index_given]
   tmp <- condMVNorm::condMVN(
     mean = mu,
     sigma = cov_mat,
     dependent.ind = dependent_ind,
     given.ind = index_given,
-    X.given = x_test_gaussian
+    X.given = x_explain_gaussian
   )
 
   # Makes the conditional covariance matrix symmetric in the rare case where numerical instability made it unsymmetric
@@ -84,7 +84,7 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_test) {
   ret0 <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
 
   ret <- matrix(NA, ncol = m, nrow = n_samples)
-  ret[, index_given] <- rep(x_test_gaussian, each = n_samples)
+  ret[, index_given] <- rep(x_explain_gaussian, each = n_samples)
   ret[, dependent_ind] <- ret0
 
   colnames(ret) <- cnms
@@ -154,7 +154,7 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #'
 #' @param n_samples Numeric. Indicates how many samples to use for MCMC.
 #'
-#' @param x_test Matrix, data.frame or data.table with the features of the observation whose
+#' @param x_explain Matrix, data.frame or data.table with the features of the observation whose
 #' predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
 #'
 #' @param x_train Matrix, data.frame or data.table with training data.
@@ -179,8 +179,8 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #'   mu <- rep(1, m)
 #'   cov_mat <- cov(matrix(rnorm(n * m), n, m))
 #'   x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
-#'   x_test <- MASS::mvrnorm(1, mu, cov_mat)
-#'   x_test_dt <- data.table::setDT(as.list(x_test))
+#'   x_explain <- MASS::mvrnorm(1, mu, cov_mat)
+#'   x_explain_dt <- data.table::setDT(as.list(x_explain))
 #'   given_ind <- c(4, 7)
 #'   dependent_ind <- (1:dim(x_train)[2])[-given_ind]
 #'   x <- x_train[, given_ind, with = FALSE]
@@ -195,33 +195,33 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 #'   ))
 #'   tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
 #'   shapr:::sample_ctree(
-#'     tree = tree, n_samples = n_samples, x_test = x_test_dt, x_train = x_train,
-#'     p = length(x_test), sample = TRUE
+#'     tree = tree, n_samples = n_samples, x_explain = x_explain_dt, x_train = x_train,
+#'     p = length(x_explain), sample = TRUE
 #'   )
 #' }
 sample_ctree <- function(tree,
                          n_samples,
-                         x_test,
+                         x_explain,
                          x_train,
                          p,
                          sample) {
   datact <- tree$tree
   using_partykit <- (class(datact)[1] != "BinaryTree")
 
-  cnms <- colnames(x_test)
+  cnms <- colnames(x_explain)
   if (length(tree$given_ind) %in% c(0, p)) {
-    ret <- x_test
+    ret <- x_explain
   } else {
     given_ind <- tree$given_ind
 
     dependent_ind <- tree$dependent_ind
 
-    x_test_given <- x_test[,
+    x_explain_given <- x_explain[,
       given_ind,
       drop = FALSE,
       with = FALSE
     ] #
-    xp <- x_test_given
+    xp <- x_explain_given
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
 
     if (using_partykit) {
@@ -258,7 +258,7 @@ sample_ctree <- function(tree,
       with = FALSE
     ])
 
-    givenDT <- data.table::data.table(x_test[1,
+    givenDT <- data.table::data.table(x_explain[1,
       given_ind,
       drop = FALSE,
       with = FALSE
