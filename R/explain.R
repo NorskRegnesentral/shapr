@@ -1,9 +1,15 @@
 
 #' @export
-postprocess_vS_list <- function(vS_list,explainer,keep_samp_for_vS = FALSE){
+postprocess_vS_list <- function(vS_list,internal){
+
+
+  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+  prediction_zero <- internal$parameters$prediction_zero
+  n_explain <- internal$parameters$n_explain
+
   # Appending the zero-prediction to the list
-  dt_vS0 <- as.data.table(rbind(c(1,rep(explainer$prediction_zero,nrow(explainer$x_explain)))))
-  names(dt_vS0) <- c("id_combination",1:nrow(explainer$x_explain))
+  dt_vS0 <- as.data.table(rbind(c(1,rep(prediction_zero,n_explain))))
+  names(dt_vS0) <- c("id_combination",seq_len(n_explain))
 
   # Extracting/merging the data tables from the batch running
   #TODO: Need a memory and speed optimized way to transform the output form dt_vS_list to two different lists,
@@ -32,21 +38,23 @@ postprocess_vS_list <- function(vS_list,explainer,keep_samp_for_vS = FALSE){
 }
 
 #' @export
-finalize_explanation <- function(vS_list,explainer,keep_samp_for_vS = FALSE){
+finalize_explanation <- function(vS_list,internal){
+
+  keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
   processed_vS_list <- postprocess_vS_list(vS_list = vS_list,
-                                           explainer = explainer,
-                                           keep_samp_for_vS = keep_samp_for_vS)
+                                           internal = internal)
 
   # Extract the predictions we are explaining
-  p <- get_p(processed_vS_list$dt_vS,explainer)
+  p <- get_p(processed_vS_list$dt_vS,internal)
 
   # Compute the Shapley values
-  dt_shapley <- compute_shapley_new(explainer, processed_vS_list$dt_vS)
+  dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
 
 
+  # TODO: Consider adding some of the output here to internal as well
   output <- list(dt_shapley=dt_shapley,
-                 explainer = explainer,
+                 internal = internal,
                  p = p,
                  dt_vS = processed_vS_list$dt_vS,
                  dt_samp_for_vS = processed_vS_list$dt_samp_for_vS)
@@ -129,17 +137,17 @@ batch_prepare_vS <- function(S,internal){
 
   max_id_combination <- internal$parameters$n_combinations
   x_explain <- internal$objects$x_explain
-
+  n_explain <- internal$parameters$n_explain
 
   # TODO: Check what is the fastest approach to deal with the last observation.
   # Not doing this for the largest id combination (should check if this is faster or slower, actually)
   # An alternative would be to delete rows from the dt which is provided by prepare_data.
   if(!(max_id_combination %in% S)){
-    dt <- prepare_data(internal, index_features = S)
+    dt <- prepare_data(internal, index_features = S) #TODO: Need to handle the need for model for the AIC-versions here (skip for Python)
   } else {
     S <- S[S!=max_id_combination]
     dt <- prepare_data(internal, index_features = S)
-    dt_max <- data.table(x_explain,id_combination=max_id_combination,w=1,id=seq_len(internal$parameters$n_explain))
+    dt_max <- data.table(x_explain,id_combination=max_id_combination,w=1,id=seq_len(n_explain))
     dt <- rbind(dt,dt_max)
     setkey(dt,id,id_combination)
   }
@@ -153,32 +161,33 @@ batch_get_preds <- function(dt,S,explainer){
   r_batch_i
 }
 
-get_p <- function(dt_vS,explainer){
+get_p <- function(dt_vS,internal){
 
-  max_id_combination <- explainer$n_combinations
+  max_id_combination <- internal$parameters$n_combinations
   p <- unlist(dt_vS[id_combination==max_id_combination,][,id_combination:=NULL])
 
   p
 
 }
 
-compute_preds <- function(dt, explainer) {
+compute_preds <- function(dt, internal,model) {
 
   id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
 
   # Setup
-  feature_names <- explainer$feature_list$labels
+  feature_names <- internal$parameters$feature_list$labels
+  prediction_zero <- internal$parameters$prediction_zero
 
   # Predictions
   if (!all(dt[, unique(id_combination)] == 1)) { # Avoid warnings when predicting with empty newdata
-    dt[id_combination != 1, p_hat := predict_model(explainer$model, newdata = .SD), .SDcols = feature_names]
+    dt[id_combination != 1, p_hat := predict_model(model, newdata = .SD), .SDcols = feature_names]
   }
-  dt[id_combination == 1, p_hat := explainer$prediction_zero]
+  dt[id_combination == 1, p_hat := prediction_zero]
 
   return(dt)
 }
 
-compute_MCint <- function(dt, explainer) {
+compute_MCint <- function(dt) {
 
   w <- k <- p_hat <- NULL # due to NSE notes in R CMD check
 
@@ -192,13 +201,14 @@ compute_MCint <- function(dt, explainer) {
 }
 
 #' @export
-run_batch <- function(S,internal){
+run_batch <- function(S,internal,model){
 
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
-  dt <- batch_prepare_vS(S = S,internal = internal) # Make it optional to store and return the dt_list
-  compute_preds(dt,explainer) # Updating dt by reference
 
-  dt_vS <- compute_MCint(dt,explainer)
+  dt <- batch_prepare_vS(S = S,internal = internal) # Make it optional to store and return the dt_list
+  compute_preds(dt,internal,model) # Updating dt by reference
+
+  dt_vS <- compute_MCint(dt)
 
   if(keep_samp_for_vS){
     return(list(dt_vS = dt_vS,dt_samp_for_vS=dt))
@@ -344,7 +354,7 @@ get_parameters <- function(approach,prediction_zero,n_combinations,group,n_sampl
 }
 
 #' @export
-data <- get_data(x_train,x_explain){
+get_data <- function(x_train,x_explain){
 
   # Check format for x_train
   if (!is.matrix(x_train) & !is.data.frame(x_train)) {
@@ -441,11 +451,11 @@ explain_final <- function(x_train,
   vS_list <- future.apply::future_lapply(X = internal$objects$S_batch,
                                          FUN = run_batch,
                                          internal = internal,
+                                         model = model,
                                          future.seed = internal$parameters$seed)
 
   output <- finalize_explanation(vS_list = vS_list,
-                                 explainer = explainer,
-                                 keep_samp_for_vS = keep_samp_for_vS)
+                                 internal = internal)
 
 
   return(output)
@@ -505,16 +515,20 @@ explain_new <- function(x,explainer, approach, prediction_zero,
 #' @return A \code{data.table} with shapley values for each test observation.
 #' @export
 #' @keywords internal
-compute_shapley_new <- function(explainer, dt_vS) {
+compute_shapley_new <- function(internal, dt_vS) {
+
+  is_groupwise <- internal$parameters$is_groupwise
+  labels <- internal$parameters$feature_list$labels
+  W <- internal$objects$W
 
   if (!explainer$is_groupwise) {
-    shap_names <- explainer$feature_list$labels
+    shap_names <- labels
   } else {
-    shap_names <- names(explainer$group)
+    shap_names <- names(internal$parameters$group) #TODO: Add group_names (and feature_names) to internal earlier
   }
 
 
-  kshap <- t(explainer$W %*% as.matrix(dt_vS[,-"id_combination"]))
+  kshap <- t(W %*% as.matrix(dt_vS[,-"id_combination"]))
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", shap_names)
 
