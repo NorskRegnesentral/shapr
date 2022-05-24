@@ -119,7 +119,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   x_train0_mat <- as.matrix(x_train0)
   x_explain0_mat <- as.matrix(x_explain0)
 
-  index_s <- rep(seq(nrow(S)), each = min(n_samples, n_train))
+  index_s <- rep(seq(nrow(S0)), each = min(n_samples, n_train))
   w <- 1 / n_samples # Yes, not n_samples0
 
   n_col <- nrow(x_explain0)
@@ -129,7 +129,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
     x_explain00 <- x_explain0[i, , drop = FALSE]
 
     # sampling index_xtrain
-    index_xtrain <- c(replicate(nrow(S0), sample(x = seq(n_train), size = n_samples, replace = F)))
+    index_xtrain <- c(replicate(nrow(S0), sample(x = seq(n_train), size = min(n_samples, n_train), replace = F)))
 
     # Generate data used for prediction
     dt_p <- observation_impute_cpp(
@@ -196,7 +196,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
   data.table::setnames(h_optim_DT, paste0("Testobs_", seq_len(n_explain)))
   varcomb <- NULL # due to NSE notes in R CMD check
   h_optim_DT[, varcomb := .I]
-  kernel_metric <- ifelse(x$type == "independence", type, "gaussian")
+  kernel_metric <- ifelse(type == "independence", type, "gaussian")
 
   if (kernel_metric == "independence") {
     w_threshold <- 1
@@ -227,7 +227,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
       h_optim_vec <- mean(D) * 1000
     }
 
-    val <- t(t(-0.5 * D) / h_optim_vec^2)
+    val <- t(t(-0.5 * D0) / h_optim_vec^2)
     W_kernel <- exp(val)
     S0 <- S[index_features, , drop = FALSE]
 
@@ -268,9 +268,9 @@ prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
   dt_l <- list()
 
   if (is.null(index_features)) {
-    features <- X[,features]
+    features <- X$features
   } else {
-    features <- X[,features[index_features]]
+    features <- X$features[index_features]
   }
 
   for (i in seq_len(n_explain)) {
@@ -316,9 +316,9 @@ prepare_data.copula <- function(internal,  index_features = NULL, ...) {
   x_explain0 <- as.matrix(x_explain)
   dt_l <- list()
   if (is.null(index_features)) {
-    features <- X[,features]
+    features <- X$features
   } else {
-    features <- X[,features[index_features]]
+    features <- X$features[index_features]
   }
 
 
@@ -382,9 +382,9 @@ prepare_data.ctree <- function(internal,  index_features = NULL, ...) {
 
 
   if (is.null(index_features)) {
-    features <- X[,features]
+    features <- X$features
   } else {
-    features <- X[,features[index_features]]
+    features <- X$features[index_features]
   }
 
 

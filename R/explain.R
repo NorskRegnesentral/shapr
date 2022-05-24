@@ -75,15 +75,19 @@ init_explainer <- function(...){
 create_S_batch_new <- function(internal,seed=NULL){
 
 
-  parameters <- internal$parameters
+  n_features0 <- internal$parameters$n_features
+  approach0 <- internal$parameters$approach
+  n_combinations <- internal$parameters$n_combinations
+  n_batches <- internal$parameters$n_batches
+
   X <- internal$objects$X
 
 
-  if(length(parameters$approach)>1){
-    X[!(n_features %in% c(0,parameters$n_features)),approach:=parameters$approach[n_features]]
+  if(length(approach0)>1){
+    X[!(n_features %in% c(0,n_features0)),approach:=approach0[n_features]]
 
     # Finding the number of batches per approach
-    batch_count_dt <- X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(parameters$n_combinations-2)*parameters$n_batches)),
+    batch_count_dt <- X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(n_combinations-2)*n_batches)),
                                                         n_S_per_approach = .N),by=approach]
     batch_count_dt[,n_leftover_first_batch:=n_S_per_approach%%n_batches_per_approach]
     setorder(batch_count_dt,-n_leftover_first_batch)
@@ -103,14 +107,14 @@ create_S_batch_new <- function(internal,seed=NULL){
       batch_counter <- X[approach==approach_vec[i],max(batch)]
     }
   } else {
-    X[!(n_features %in% c(0,parameters$n_features)),approach:=parameters$approach]
+    X[!(n_features %in% c(0,n_features0)),approach:=approach0]
 
     # Spreading the batches
     set.seed(seed)
     X[,randomorder:=sample(.N)]
     setorder(X,randomorder)
     setorder(X,shapley_weight)
-    X[!(n_features %in% c(0,parameters$n_features)),batch:=ceiling(.I/.N*parameters$n_batches)]
+    X[!(n_features %in% c(0,n_features0)),batch:=ceiling(.I/.N*n_batches)]
 
   }
 
@@ -136,7 +140,7 @@ compute_vS <- function(S,explainer){
 batch_prepare_vS <- function(S,internal){
 
   max_id_combination <- internal$parameters$n_combinations
-  x_explain <- internal$objects$x_explain
+  x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
 
   # TODO: Check what is the fastest approach to deal with the last observation.
@@ -278,45 +282,51 @@ test_model <- function(x,model){
 #' @export
 shapley_setup <- function(internal){
 
-  parameters <- internal$parameters
-  objects <- list()
+  exact <- internal$parameters$exact
+  n_features <- internal$parameters$n_features
+  n_combinations <- internal$parameters$n_combinations
+  group_num <- internal$parameters$group_num
+  is_groupwise <- internal$parameters$is_groupwise
+
+
+  X <- internal$objects$X
+
   # Get all combinations ----------------
-  objects$X <- feature_combinations(
-    m = parameters$n_features,
-    exact = parameters$exact,
-    n_combinations = parameters$n_combinations,
+  X <- feature_combinations(
+    m = n_features,
+    exact = exact,
+    n_combinations = n_combinations,
     weight_zero_m = 10^6,
-    group_num = parameters$group_num
+    group_num = group_num
   )
 
   # Get weighted matrix ----------------
-  objects$W <- weight_matrix(
-    X = parameters$X,
+  W <- weight_matrix(
+    X = X,
     normalize_W_weights = TRUE,
-    is_groupwise = parameters$is_groupwise
+    is_groupwise = is_groupwise
   )
 
   ## Get feature matrix ---------
-  objects$S <- feature_matrix_cpp(
-    features = objects$X[["features"]],
-    m = parameters$n_features
+  S <- feature_matrix_cpp(
+    features = X[["features"]],
+    m = n_features
   )
 
+  #### Updating parameters ####
+
   # Updating parameters$exact as done in feature_combinations
-  if (!parameters$exact && parameters$n_combinations > (2^parameters$n_features - 2)) {
-    parameters$exact <- TRUE
+  if (!exact && n_combinations > (2^n_features - 2)) {
+    internal$parameters$exact <- TRUE
   }
 
-  parameters$n_combinations <- nrow(objects$S) # Updating this parameter in the end based on what is actually used. This will be obsolete later
+  internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used. This will be obsolete later
+  internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed instead of storing it
 
-  objects$S_batch <- create_S_batch_new(internal)
+  internal$objects <- list(X = X, W = W, S = S)
 
+  internal$objects$S_batch <- create_S_batch_new(internal)
 
-  parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed instead of storing it
-
-
-  internal$parameters <- parameters
-  internal$objects <- objects
 
   return(internal)
 }
@@ -521,7 +531,7 @@ compute_shapley_new <- function(internal, dt_vS) {
   labels <- internal$parameters$feature_list$labels
   W <- internal$objects$W
 
-  if (!explainer$is_groupwise) {
+  if (!is_groupwise) {
     shap_names <- labels
   } else {
     shap_names <- names(internal$parameters$group) #TODO: Add group_names (and feature_names) to internal earlier
