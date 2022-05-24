@@ -673,16 +673,16 @@ setup_approach.copula <- function(internal, ...){
 
   # Prepare transformed data
   parameters$mu <- rep(0, ncol(x_train))
-  x_train <- apply(
+  x_train0 <- apply(
     X = x_train,
     MARGIN = 2,
     FUN = gaussian_transform
   )
-  parameters$cov_mat <- get_cov_mat(x_train)
+  parameters$cov_mat <- get_cov_mat(x_train0)
 
 
   x_explain_gaussian <- apply(
-    X = rbind(x_explain, x_train),
+    X = rbind(x_explain, x_train0),
     MARGIN = 2,
     FUN = gaussian_transform_separate,
     n_y = nrow(x_explain)
