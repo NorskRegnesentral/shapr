@@ -99,6 +99,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   feature_list <- internal$parameters$feature_list
   n_samples <- internal$parameters$n_samples
   n_train <- internal$parameters$n_train
+  n_explain <- internal$parameters$n_explain
 
   X <- internal$objects$X
   S <- internal$objects$S
@@ -122,11 +123,11 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   index_s <- rep(seq(nrow(S0)), each = min(n_samples, n_train))
   w <- 1 / n_samples # Yes, not n_samples0
 
-  n_col <- nrow(x_explain0)
+  n_col <- n_explain
 
   dt_l <- list()
   for (i in seq(n_col)) {
-    x_explain00 <- x_explain0[i, , drop = FALSE]
+    x_explain00_mat <- x_explain0_mat[i, , drop = FALSE]
 
     # sampling index_xtrain
     index_xtrain <- c(replicate(nrow(S0), sample(x = seq(n_train), size = min(n_samples, n_train), replace = F)))
@@ -136,7 +137,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
       index_xtrain = index_xtrain,
       index_s = index_s,
       xtrain = x_train0_mat,
-      xtest = x_explain0_mat,
+      xtest = x_explain00_mat,
       S = S0
     )
 
