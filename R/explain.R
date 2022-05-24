@@ -51,6 +51,7 @@ finalize_explanation <- function(vS_list,internal){
   # Compute the Shapley values
   dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
 
+  internal$model <- NULL # Clearnig out the model (only added for AICc-types of empirical approach)
 
   # TODO: Consider adding some of the output here to internal as well
   output <- list(dt_shapley=dt_shapley,
@@ -241,7 +242,8 @@ process_all_data <- function(internal,model){
   internal$parameters$feature_list <- processed_list$updated_feature_list
 
   # process x_explain
-  internal$data$x_explain <- preprocess_data(internal$data$x_explain, internal$parameters$feature_list)$x_dt
+  internal$data$x_explain <- preprocess_data(internal$data$x_explain,
+                                             internal$parameters$feature_list)$x_dt
 
   # get number of features and observationst to explain
   internal$parameters$n_features <- ncol(internal$data$x_explain)
@@ -455,7 +457,7 @@ explain_final <- function(x_train,
   internal <- shapley_setup(internal)
 
   # Setup for approach
-  internal <- setup_approach(internal, ...)
+  internal <- setup_approach(internal, model = model, ...) # model only needed for type AICc of approach empirical
 
   # Accross all batches get the data we will predict on, predict on them, and do the MC integration
   vS_list <- future.apply::future_lapply(X = internal$objects$S_batch,
@@ -604,7 +606,21 @@ setup_approach.empirical <- function(internal,
                                      n_samples_aicc = 1000,
                                      eval_max_aicc = 20,
                                      start_aicc = 0.1,
-                                     cov_mat = NULL,...){
+                                     cov_mat = NULL,
+                                     model = NULL,...){
+  if (type == "independence") {
+    warning(paste0(
+      "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
+      "Please use approach = 'independence' instead."
+    ))
+  }
+
+  if (type %in% c("AICc_each_k","AICc_full") & internal$parameters$ignore_model==TRUE) {
+    stop(paste0(
+      "Using type = ",type," for approach = 'empirical' is not available in Python.\n",
+    ))
+  }
+
 
   parameters <- internal$parameters
   x_train <- internal$data$x_train
@@ -617,13 +633,6 @@ setup_approach.empirical <- function(internal,
   parameters$start_aicc <- start_aicc
   parameters$w_threshold <- w_threshold
 
-  if (type == "independence") {
-    warning(paste0(
-      "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
-      "Please use approach = 'independence' instead in the call to explain()."
-    ))
-  }
-
 
   # If cov_mat is not provided directly, use sample covariance of training data
   if (is.null(cov_mat)) {
@@ -631,6 +640,7 @@ setup_approach.empirical <- function(internal,
   }
 
   internal$parameters <- parameters
+  internal$model <- model
 
   return(internal)
 }

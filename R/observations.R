@@ -209,9 +209,9 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
       h_optim_mat[, ] <- fixed_sigma_vec
     } else {
       if (type == "AICc_each_k") {
-        h_optim_mat <- compute_AICc_each_k(internal, model, index_features)
+        h_optim_mat <- compute_AICc_each_k(internal, internal$model, index_features)
       } else if (x$type == "AICc_full") {
-        h_optim_mat <- compute_AICc_full(internal, model, index_features)
+        h_optim_mat <- compute_AICc_full(internal, internal$model, index_features)
       } else {
         stop("type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
       }
