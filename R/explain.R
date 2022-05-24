@@ -682,7 +682,7 @@ setup_approach.copula <- function(internal, ...){
 
 
   x_explain_gaussian <- apply(
-    X = rbind(x_explain, x_train0),
+    X = rbind(x_explain, x_train),
     MARGIN = 2,
     FUN = gaussian_transform_separate,
     n_y = nrow(x_explain)
