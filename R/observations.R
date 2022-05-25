@@ -210,7 +210,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
     } else {
       if (type == "AICc_each_k") {
         h_optim_mat <- compute_AICc_each_k(internal, internal$model, index_features)
-      } else if (x$type == "AICc_full") {
+      } else if (type == "AICc_full") {
         h_optim_mat <- compute_AICc_full(internal, internal$model, index_features)
       } else {
         stop("type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
@@ -439,8 +439,8 @@ compute_AICc_each_k <- function(internal, model, index_features) {
   n_combinations <- internal$parameters$n_combinations
   n_features <- internal$parameters$n_features
   labels <- internal$parameters$feature_list$labels
-  start_aicc <- internal$parameters$feature_list$start_aicc
-  eval_max_aicc <- internal$parameters$feature_list$eval_max_aicc
+  start_aicc <- internal$parameters$start_aicc
+  eval_max_aicc <- internal$parameters$eval_max_aicc
 
   X <- internal$objects$X
   S <- internal$objects$S
@@ -555,8 +555,8 @@ compute_AICc_full <- function(internal, model, index_features) {
   n_combinations <- internal$parameters$n_combinations
   n_features <- internal$parameters$n_features
   labels <- internal$parameters$feature_list$labels
-  start_aicc <- internal$parameters$feature_list$start_aicc
-  eval_max_aicc <- internal$parameters$feature_list$eval_max_aicc
+  start_aicc <- internal$parameters$start_aicc
+  eval_max_aicc <- internal$parameters$eval_max_aicc
 
   X <- internal$objects$X
   S <- internal$objects$S
@@ -573,7 +573,6 @@ compute_AICc_full <- function(internal, model, index_features) {
     nsamples = n_samples_aicc,
     joint_sampling = FALSE
   )
-  x$n_samples_aicc <- nrow(optimsamp)
   nloops <- n_explain # No of observations in test data
 
   h_optim_mat <- matrix(NA, ncol = n_features, nrow = n_combinations)
@@ -585,9 +584,9 @@ compute_AICc_full <- function(internal, model, index_features) {
 
   ind_of_vars_to_cond_on <- index_features
   for (i in ind_of_vars_to_cond_on) {
-    S <- S[i, ]
-    S.cols <- which(as.logical(S))
-    Sbar.cols <- which(as.logical(1 - S))
+    S0 <- S[i, ]
+    S.cols <- which(as.logical(S0))
+    Sbar.cols <- which(as.logical(1 - S0))
 
     # Loop over each observation to explain:
     for (loop in 1:nloops) {
