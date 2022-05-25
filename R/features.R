@@ -426,13 +426,13 @@ helper_feature <- function(m, feature_sample) {
 #'   y_var <- "medv"
 #'   x_train <- as.data.frame(Boston[401:411, x_var])
 #'   y_train <- Boston[401:408, y_var]
-#'   x_test <- as.data.frame(Boston[1:4, x_var])
+#'   x_explain <- as.data.frame(Boston[1:4, x_var])
 #'
 #'   # convert to factors for illustational purpose
 #'   x_train$rm <- factor(round(x_train$rm))
-#'   x_test$rm <- factor(round(x_test$rm), levels = levels(x_train$rm))
+#'   x_explain$rm <- factor(round(x_explain$rm), levels = levels(x_train$rm))
 #'
-#'   dummylist <- make_dummies(traindata = x_train, testdata = x_test)
+#'   dummylist <- make_dummies(traindata = x_train, testdata = x_explain)
 #' }
 make_dummies <- function(traindata, testdata) {
   if (all(is.null(colnames(traindata)))) {

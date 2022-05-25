@@ -43,12 +43,12 @@
 #'   data("Boston", package = "MASS")
 #'   # Split data into test- and training data
 #'   x_train <- head(Boston, -3)
-#'   x_test <- tail(Boston, 3)
+#'   x_explain <- tail(Boston, 3)
 #'   # Fit a linear model
 #'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 #'
 #'   # Predicting for a model with a standardized format
-#'   predict_model(x = model, newdata = x_test)
+#'   predict_model(x = model, newdata = x_explain)
 #' }
 predict_model <- function(x, newdata) {
   UseMethod("predict_model", x)

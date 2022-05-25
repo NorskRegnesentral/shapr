@@ -5,9 +5,9 @@
 #' @param x An \code{shapr} object. See \code{\link{explain}}.
 #' @param digits Integer. Number of significant digits to use in the feature description
 #' @param plot_phi0 Logical. Whether to include \code{phi0} in the plot
-#' @param index_x_test Integer vector. Which of the test observations to plot. E.g. if you have
+#' @param index_x_explain Integer vector. Which of the test observations to plot. E.g. if you have
 #' explained 10 observations using \code{\link{explain}}, you can generate a plot for the first 5
-#' observations by setting \code{index_x_test = 1:5}.
+#' observations by setting \code{index_x_explain = 1:5}.
 #' @param top_k_features Integer. How many features to include in the plot. E.g. if you have 15
 #' features in your model you can plot the 5 most important features, for each explanation, by setting
 #' \code{top_k_features = 1:5}.
@@ -26,7 +26,7 @@
 #'
 #'   # Split data into test- and training data
 #'   x_train <- head(Boston, -3)
-#'   x_test <- tail(Boston, 3)
+#'   x_explain <- tail(Boston, 3)
 #'
 #'   # Fit a linear model
 #'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
@@ -38,7 +38,7 @@
 #'   p <- mean(x_train$medv)
 #'
 #'   # Empirical approach
-#'   explanation <- explain(x_test,
+#'   explanation <- explain(x_explain,
 #'     explainer,
 #'     approach = "empirical",
 #'     prediction_zero = p,
@@ -54,34 +54,34 @@
 plot.shapr <- function(x,
                        digits = 3,
                        plot_phi0 = TRUE,
-                       index_x_test = NULL,
+                       index_x_explain = NULL,
                        top_k_features = NULL,
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   }
 
-  if (is.null(index_x_test)) index_x_test <- seq(nrow(x$x_test))
-  if (is.null(top_k_features)) top_k_features <- ncol(x$x_test) + 1
+  if (is.null(index_x_explain)) index_x_explain <- seq(nrow(x$explainer$x_explain))
+  if (is.null(top_k_features)) top_k_features <- ncol(x$explainer$x_explain) + 1
   id <- phi <- NULL # due to NSE notes in R CMD check
 
-  is_groupwise <- x$is_groupwise
+  is_groupwise <- x$explainer$is_groupwise
 
   # melting Kshap
-  shap_names <- colnames(x$dt)[-1]
-  KshapDT <- data.table::copy(x$dt)
+  shap_names <- colnames(x$dt_shapley)[-1]
+  KshapDT <- data.table::copy(x$dt_shapley)
   KshapDT[, id := .I]
   meltKshap <- data.table::melt(KshapDT, id.vars = "id", value.name = "phi")
   meltKshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
   # Converting and melting Xtest
   if (!is_groupwise) {
-    desc_mat <- format(x$x_test, digits = digits)
+    desc_mat <- format(x$explainer$x_explain, digits = digits)
     for (i in 1:ncol(desc_mat)) {
       desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
     }
   } else {
-    desc_mat <- format(x$dt[, -1], digits = digits)
+    desc_mat <- format(x$dt_shapley[, -1], digits = digits)
     for (i in 1:ncol(desc_mat)) {
       desc_mat[, i] <- paste0(shap_names[i])
     }
@@ -105,7 +105,7 @@ plot.shapr <- function(x,
   if (!plot_phi0) {
     plotting_dt <- plotting_dt[variable != "none"]
   }
-  plotting_dt <- plotting_dt[id %in% index_x_test]
+  plotting_dt <- plotting_dt[id %in% index_x_explain]
   plotting_dt[, rank := data.table::frank(-abs(phi)), by = "id"]
   plotting_dt <- plotting_dt[rank <= top_k_features]
   plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]

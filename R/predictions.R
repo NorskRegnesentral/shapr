@@ -44,11 +44,11 @@ prediction <- function(dt, prediction_zero, explainer) {
   )
 
   # Setup
-  feature_names <- colnames(explainer$x_test)
+  feature_names <- colnames(explainer$x_explain)
   data.table::setkeyv(dt, c("id", "id_combination"))
 
   # Check that the number of test observations equals max(id)
-  stopifnot(nrow(explainer$x_test) == dt[, max(id)])
+  stopifnot(nrow(explainer$x_explain) == dt[, max(id)])
 
   # Reducing the prediction data.table
   max_id_combination <- nrow(explainer$S)
@@ -69,7 +69,7 @@ prediction <- function(dt, prediction_zero, explainer) {
     p_all <- NULL
   } else {
     p_all <- dt[id_combination == max_id_combination, p_hat]
-    names(p_all) <- 1:nrow(explainer$x_test)
+    names(p_all) <- 1:nrow(explainer$x_explain)
   }
 
 
@@ -93,7 +93,7 @@ prediction <- function(dt, prediction_zero, explainer) {
 #' @keywords internal
 compute_shapley <- function(explainer, contribution_mat) {
 
-  feature_names <- colnames(explainer$x_test)
+  feature_names <- colnames(explainer$x_explain)
   if (!explainer$is_groupwise) {
     shap_names <- feature_names
   } else {
