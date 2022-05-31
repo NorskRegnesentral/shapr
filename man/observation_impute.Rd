@@ -8,7 +8,7 @@ observation_impute(
   W_kernel,
   S,
   x_train,
-  x_test,
+  x_explain,
   w_threshold = 0.7,
   n_samples = 1000
 )
@@ -23,7 +23,7 @@ the total number of unique features, respectively. Note that \code{m = ncol(x_tr
 
 \item{x_train}{Numeric matrix}
 
-\item{x_test}{Numeric matrix}
+\item{x_explain}{Numeric matrix}
 
 \item{w_threshold}{Numeric vector of length 1, with \code{0 < w_threshold <= 1} representing the minimum proportion
 of the total empirical weight that data samples should use. If e.g. \code{w_threshold = .8} we will choose the

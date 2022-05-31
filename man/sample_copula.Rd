@@ -10,9 +10,9 @@ sample_copula(
   mu,
   cov_mat,
   m,
-  x_test_gaussian,
+  x_explain_gaussian,
   x_train,
-  x_test
+  x_explain
 )
 }
 \arguments{
@@ -21,10 +21,10 @@ sample_copula(
 
 \item{m}{Positive integer. The total number of features.}
 
-\item{x_test_gaussian}{Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
+\item{x_explain_gaussian}{Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
 after quantile-transforming them to standard Gaussian variables.}
 
-\item{x_test}{Numeric matrix. Contains the features of the observation whose
+\item{x_explain}{Numeric matrix. Contains the features of the observation whose
 predictions ought to be explained (test data).}
 }
 \value{

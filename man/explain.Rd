@@ -197,10 +197,10 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
   \item{dt}{data.table}
   \item{model}{Model object}
   \item{p}{Numeric vector}
-  \item{x_test}{data.table}
+  \item{x_explain}{data.table}
 }
 
-Note that the returned items \code{model}, \code{p} and \code{x_test} are mostly added due
+Note that the returned items \code{model}, \code{p} and \code{x_explain} are mostly added due
 to the implementation of \code{plot.shapr}. If you only want to look at the numerical results
 it is sufficient to focus on \code{dt}. \code{dt} is a data.table where the number of rows equals
 the number of observations you'd like to explain, and the number of columns equals \code{m +1},
@@ -250,7 +250,7 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 
   # Split data into test- and training data
   x_train <- head(Boston, -3)
-  x_test <- tail(Boston, 3)
+  x_explain <- tail(Boston, 3)
 
   # Fit a linear model
   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
@@ -262,32 +262,32 @@ if (requireNamespace("MASS", quietly = TRUE)) {
   p <- mean(x_train$medv)
 
   # Empirical approach
-  explain1 <- explain(x_test, explainer,
+  explain1 <- explain(x_explain, explainer,
     approach = "empirical",
     prediction_zero = p, n_samples = 1e2
   )
 
   # Gaussian approach
-  explain2 <- explain(x_test, explainer,
+  explain2 <- explain(x_explain, explainer,
     approach = "gaussian",
     prediction_zero = p, n_samples = 1e2
   )
 
   # Gaussian copula approach
-  explain3 <- explain(x_test, explainer,
+  explain3 <- explain(x_explain, explainer,
     approach = "copula",
     prediction_zero = p, n_samples = 1e2
   )
 
   # ctree approach
-  explain4 <- explain(x_test, explainer,
+  explain4 <- explain(x_explain, explainer,
     approach = "ctree",
     prediction_zero = p
   )
 
   # Combined approach
   approach <- c("gaussian", "gaussian", "empirical", "empirical")
-  explain5 <- explain(x_test, explainer,
+  explain5 <- explain(x_explain, explainer,
     approach = approach,
     prediction_zero = p, n_samples = 1e2
   )
@@ -304,7 +304,7 @@ if (requireNamespace("MASS", quietly = TRUE)) {
   group <- list(A = c("lstat", "rm"), B = c("dis", "indus"))
   explainer_group <- shapr(x_train, model, group = group)
   explain_groups <- explain(
-    x_test,
+    x_explain,
     explainer_group,
     approach = "empirical",
     prediction_zero = p,

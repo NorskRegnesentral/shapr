@@ -4,12 +4,12 @@
 \alias{compute_shapley_new}
 \title{Compute shapley values}
 \usage{
-compute_shapley_new(explainer, dt_vS)
+compute_shapley_new(internal, dt_vS)
 }
 \arguments{
-\item{explainer}{An \code{explain} object.}
-
 \item{dt_vS}{The contribution matrix.}
+
+\item{explainer}{An \code{explain} object.}
 }
 \value{
 A \code{data.table} with shapley values for each test observation.
