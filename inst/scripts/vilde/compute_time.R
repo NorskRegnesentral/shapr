@@ -1,15 +1,16 @@
 library(MASS)
+library(shapr)
 
 # skisse til script for å måle tid
 
-n_vars <- c(5, 10, 20) #number of features
-n_train <- c(1e2, 1e3, 1e4)
-n_test <- c(5, 10, 20)
+n_vars <- c(5, 10) #number of features
+n_train <- c(1e3, 1e4)
+n_test <- c(5, 20)
 correlation <- c(TRUE, FALSE)
 model <- c("xgboost", "lm")
 approach <- c("independence") #add more
-n_batches <- c(1, 10, 100)
-n_samples <- c(1e3, 1e4, 1e5)
+n_batches <- c(5, 10, 50)
+n_samples <- c(1e3, 1e4)
 
 combos <- expand.grid(n_vars,
                       n_test,
@@ -32,12 +33,12 @@ names(combos) <- c("n_vars", "n_test", "n_train", "correlation", "model", "appro
 # i data.frame fra denne funksjonen og legge tiden til som en ny kolonne
 # beregn tid med proc.time eller microbenchmark
 
-i <- 1 # loop later
+i <- nrow(combos) # loop later
 
 correlation <- combos[i,"correlation"]
 n_vars <- combos[i,"n_vars"]
-n_train <- combos[i, "n_train"]
-n_test <- combos[i, "n_test"]
+n_train <- combos[i,"n_train"]
+n_test <- combos[i,"n_test"]
 
 if (correlation == FALSE){
   sigma <- diag(n_vars+1) # independent features
@@ -46,9 +47,43 @@ if (correlation == FALSE){
 }
 
 data <- mvrnorm(n = n_train + n_test, rep(0, n_vars+1), sigma)
-x_train <- data[-1:-n_train, 1:n_vars] #first n_vars columns are x variables
-y_train <- data[-1:-n_train, n_vars+1]
-x_test <- data[1:n_train, 1:n_vars]
+colnames(data)[n_vars+1] <- "Y"
+colnames(data)[1:n_vars] <- paste0("X", 1:n_vars)
+
+x_train <- data[-1:-n_test, 1:n_vars] #first n_vars columns are x variables
+y_train <- data[-1:-n_test, n_vars+1]
+x_test <- data[1:n_test, 1:n_vars]
+
+if (combos[i,"model"]=="xgboost"){
+  model <- xgboost(
+    data = x_train,
+    label = y_train,
+    nround = 20,
+    verbose = FALSE
+  )
+} else if (combos[i,"model"]=="lm"){
+  formula <- paste(colnames(data)[1:n_vars], collapse="+")
+  formula <- as.formula(paste0("Y~",formula)) # Y ~ X1 + X2 +...
+  model <- lm(formula, data.frame(data[-1:-n_test,]))
+}
+
+p <- mean(y_train)
+approach <- combos[i,"approach"]
+n_batches <- combos[i,"n_batches"]
+
+time0 <- proc.time()
+
+explain_final(x_train,
+              x_test,
+              model,
+              approach=as.character(approach),
+              prediction_zero=p,
+              n_batches = n_batches)
+
+time1 <- proc.time()
+tot_time <- time1-time0
+
+combos$time[i] <- tot_time[["elapsed"]]
 
 # samle resultater i en csv fil
 
