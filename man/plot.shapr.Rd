@@ -8,7 +8,7 @@
   x,
   digits = 3,
   plot_phi0 = TRUE,
-  index_x_test = NULL,
+  index_x_explain = NULL,
   top_k_features = NULL,
   ...
 )
@@ -20,9 +20,9 @@
 
 \item{plot_phi0}{Logical. Whether to include \code{phi0} in the plot}
 
-\item{index_x_test}{Integer vector. Which of the test observations to plot. E.g. if you have
+\item{index_x_explain}{Integer vector. Which of the test observations to plot. E.g. if you have
 explained 10 observations using \code{\link{explain}}, you can generate a plot for the first 5
-observations by setting \code{index_x_test = 1:5}.}
+observations by setting \code{index_x_explain = 1:5}.}
 
 \item{top_k_features}{Integer. How many features to include in the plot. E.g. if you have 15
 features in your model you can plot the 5 most important features, for each explanation, by setting
@@ -47,7 +47,7 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 
   # Split data into test- and training data
   x_train <- head(Boston, -3)
-  x_test <- tail(Boston, 3)
+  x_explain <- tail(Boston, 3)
 
   # Fit a linear model
   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
@@ -59,7 +59,7 @@ if (requireNamespace("MASS", quietly = TRUE)) {
   p <- mean(x_train$medv)
 
   # Empirical approach
-  explanation <- explain(x_test,
+  explanation <- explain(x_explain,
     explainer,
     approach = "empirical",
     prediction_zero = p,

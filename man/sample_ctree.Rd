@@ -4,7 +4,7 @@
 \alias{sample_ctree}
 \title{Sample ctree variables from a given conditional inference tree}
 \usage{
-sample_ctree(tree, n_samples, x_test, x_train, p, sample)
+sample_ctree(tree, n_samples, x_explain, x_train, p, sample)
 }
 \arguments{
 \item{tree}{List. Contains tree which is an object of type ctree built from the party package.
@@ -12,7 +12,7 @@ Also contains given_ind, the features to condition upon.}
 
 \item{n_samples}{Numeric. Indicates how many samples to use for MCMC.}
 
-\item{x_test}{Matrix, data.frame or data.table with the features of the observation whose
+\item{x_explain}{Matrix, data.frame or data.table with the features of the observation whose
 predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.}
 
 \item{x_train}{Matrix, data.frame or data.table with training data.}
@@ -37,8 +37,8 @@ if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly
   mu <- rep(1, m)
   cov_mat <- cov(matrix(rnorm(n * m), n, m))
   x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
-  x_test <- MASS::mvrnorm(1, mu, cov_mat)
-  x_test_dt <- data.table::setDT(as.list(x_test))
+  x_explain <- MASS::mvrnorm(1, mu, cov_mat)
+  x_explain_dt <- data.table::setDT(as.list(x_explain))
   given_ind <- c(4, 7)
   dependent_ind <- (1:dim(x_train)[2])[-given_ind]
   x <- x_train[, given_ind, with = FALSE]
@@ -53,8 +53,8 @@ if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly
   ))
   tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
   shapr:::sample_ctree(
-    tree = tree, n_samples = n_samples, x_test = x_test_dt, x_train = x_train,
-    p = length(x_test), sample = TRUE
+    tree = tree, n_samples = n_samples, x_explain = x_explain_dt, x_train = x_train,
+    p = length(x_explain), sample = TRUE
   )
 }
 }

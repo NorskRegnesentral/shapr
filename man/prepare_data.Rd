@@ -9,32 +9,27 @@
 \alias{prepare_data.ctree}
 \title{Generate data used for predictions}
 \usage{
-prepare_data(x, ...)
+prepare_data(internal, ...)
 
-\method{prepare_data}{independence}(x, index_features = NULL, ...)
+\method{prepare_data}{independence}(internal, index_features = NULL, ...)
 
-\method{prepare_data}{empirical}(x, index_features = NULL, ...)
+\method{prepare_data}{empirical}(internal, index_features = NULL, ...)
 
-\method{prepare_data}{gaussian}(x, index_features = NULL, ...)
+\method{prepare_data}{gaussian}(internal, index_features = NULL, ...)
 
-\method{prepare_data}{copula}(x, index_features = NULL, ...)
+\method{prepare_data}{copula}(internal, index_features = NULL, ...)
 
-\method{prepare_data}{ctree}(
-  x,
-  index_features = NULL,
-  mc_cores = 1,
-  mc_cores_create_ctree = mc_cores,
-  mc_cores_sample_ctree = mc_cores,
-  ...
-)
+\method{prepare_data}{ctree}(internal, index_features = NULL, ...)
 }
 \arguments{
-\item{x}{Explainer object. See \code{\link{explain}} for more information.}
-
 \item{...}{Currently not used.}
 
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
 used for different numbers of conditioned features, this will be a list with the features to pass.}
+
+\item{x}{Explainer object. See \code{\link{explain}} for more information.}
+
+\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 
 \item{mc_cores}{Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
 tree building (\code{create_ctree}) and tree sampling (\code{sample_ctree}). Defaults to 1. Note: Uses
@@ -46,8 +41,6 @@ parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows sys
 \item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction
 function.
 Defaults to \code{mc_cores}.}
-
-\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 }
 \value{
 A `data.table` containing simulated data passed to \code{\link{prediction}}.
