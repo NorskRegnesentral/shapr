@@ -726,7 +726,7 @@ prepare_and_predict <- function(explainer, n_batches, prediction_zero, seed, ...
 
 #' @export
 print.shapr <- function(x, ...) {
-  print(x$dt_shapley)
+  print(x$shapley_values)
 }
 
 

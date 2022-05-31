@@ -53,14 +53,12 @@ finalize_explanation <- function(vS_list,internal){
 
   internal$model <- NULL # Clearnig out the model (only added for AICc-types of empirical approach)
 
-  # TODO: Consider adding some of the output here to internal as well
-  output <- list(dt_shapley=dt_shapley,
-                 internal = internal,
-                 p = p,
-                 dt_vS = processed_vS_list$dt_vS,
-                 dt_samp_for_vS = processed_vS_list$dt_samp_for_vS)
-  attr(output, "class") <- c("shapr", "list")
+  internal$output <- processed_vS_list
 
+  output <- list(shapley_values=dt_shapley,
+                 internal = internal,
+                 predictions = p)
+  attr(output, "class") <- c("shapr", "list")
 
   return(output)
 }
