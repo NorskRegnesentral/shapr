@@ -60,28 +60,30 @@ plot.shapr <- function(x,
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   }
+  #TODO: This functions needs to be updated to the new shapr paradigm -- and we could possibly add more functionality
+  # like what shap() has in their package.
 
-  if (is.null(index_x_explain)) index_x_explain <- seq(nrow(x$explainer$x_explain))
-  if (is.null(top_k_features)) top_k_features <- ncol(x$explainer$x_explain) + 1
+  if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
+  if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
   id <- phi <- NULL # due to NSE notes in R CMD check
 
-  is_groupwise <- x$explainer$is_groupwise
+  is_groupwise <- x$internal$parameters$is_groupwise
 
   # melting Kshap
-  shap_names <- colnames(x$dt_shapley)[-1]
-  KshapDT <- data.table::copy(x$dt_shapley)
+  shap_names <- colnames(x$shapley_values)[-1]
+  KshapDT <- data.table::copy(x$shapley_values)
   KshapDT[, id := .I]
   meltKshap <- data.table::melt(KshapDT, id.vars = "id", value.name = "phi")
   meltKshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
   # Converting and melting Xtest
   if (!is_groupwise) {
-    desc_mat <- format(x$explainer$x_explain, digits = digits)
+    desc_mat <- format(x$internal$data$x_explain, digits = digits)
     for (i in 1:ncol(desc_mat)) {
       desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
     }
   } else {
-    desc_mat <- format(x$dt_shapley[, -1], digits = digits)
+    desc_mat <- format(x$shapley_values[, -1], digits = digits)
     for (i in 1:ncol(desc_mat)) {
       desc_mat[, i] <- paste0(shap_names[i])
     }

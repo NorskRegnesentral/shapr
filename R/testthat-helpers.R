@@ -32,7 +32,7 @@ expect_snapshot_rds <- function(code,name = "tmp"){
 
 
 
-
+#' @export
 snapshot_review_man <- function(path,...){
   changed <- testthat:::snapshot_meta(path)
   these_rds <- (tools::file_ext(changed$name)=="rds")
