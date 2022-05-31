@@ -1,5 +1,6 @@
 library(MASS)
 library(shapr)
+library(data.table)
 
 # skisse til script for å måle tid
 
