@@ -1,6 +1,7 @@
 library(MASS)
 library(shapr)
 library(data.table)
+library(xgboost)
 
 # skisse til script for å måle tid
 
@@ -20,8 +21,8 @@ n_train <- c(1e3, 1e4)
 n_test <- c(5, 20)
 correlation <- c(0, 0.25, 0.75) #rho, 0, 0.25, 0.75
 model <- c("xgboost", "lm")
-approach <- c("independence", "gaussian", "copula", "empirical", "ctree") #add more
-n_batches <- c(1, 2,4,6,8,10, 15,20,25,30,35,40,45,50) #2^n_vars er max, hopp over tilfeller hvor overskrider max
+approach <- c("independence", "gaussian", "copula", "empirical")#, "ctree") #add more
+n_batches <- c(1, 2, 4, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50) #2^n_vars er max, hopp over tilfeller hvor overskrider max
 n_samples <- c(1e3, 1e4)
 
 combos <- expand.grid(n_vars,
@@ -85,5 +86,5 @@ time1 <- proc.time()
 tot_time <- time1-time0
 
 combos$time[i] <- tot_time[["elapsed"]]
-fwrite(combos[i,], file = "C:/Users/vilde.NR/Documents/GitHub/shapr/inst/scripts/vilde/results_test.csv",append = TRUE)
+fwrite(combos[i,], file = "C:/Users/vilde/Documents/GitHub/shapr/inst/scripts/vilde/results_test.csv",append = TRUE)
 }
