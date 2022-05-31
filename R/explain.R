@@ -57,7 +57,7 @@ finalize_explanation <- function(vS_list,internal){
 
   output <- list(shapley_values=dt_shapley,
                  internal = internal,
-                 predictions = p)
+                 pred_explain = p)
   attr(output, "class") <- c("shapr", "list")
 
   return(output)

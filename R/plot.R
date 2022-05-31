@@ -60,6 +60,8 @@ plot.shapr <- function(x,
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   }
+  #TODO: This functions needs to be updated to the new shapr paradigm -- and we could possibly add more functionality
+  # like what shap() has in their package.
 
   if (is.null(index_x_explain)) index_x_explain <- seq(nrow(x$explainer$x_explain))
   if (is.null(top_k_features)) top_k_features <- ncol(x$explainer$x_explain) + 1
