@@ -24,6 +24,7 @@ explain_final <- function(x_train,
   # Setup
   #explainer <- init_explainer(environment(),...)
 
+  # TODO: create a set_internal function which incorporates the get_parameters and get_data functions below
   # This is where we store everything
   internal <- list()
 
@@ -40,6 +41,8 @@ explain_final <- function(x_train,
   internal$data <- get_data(x_train,x_explain)
 
   ##### DATA CHECKING AND PROCESSING ###########
+
+  # TODO: Separate model here and create a check_model function
   internal <- process_all_data(internal,model)
 
   # Checking that the prediction function works (duplicate in Python)
