@@ -93,5 +93,5 @@ time1 <- proc.time()
 tot_time <- time1-time0
 
 combos$time[i] <- tot_time[["elapsed"]]
-fwrite(combos[i,], file = "C:/Users/vilde/Documents/GitHub/shapr/inst/scripts/vilde/results_parallel.csv",append = TRUE)
+fwrite(combos[i,], file = "inst/scripts/vilde/results_parallel.csv",append = TRUE)
 }
