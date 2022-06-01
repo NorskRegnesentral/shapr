@@ -2,28 +2,20 @@ library(MASS)
 library(shapr)
 library(data.table)
 library(xgboost)
+library(future)
 
-# skisse til script for å måle tid
-
-# plan:
-# simulere normalfordelte data ( også inkludere betingede variabler)
-# finn en funksjon som simulerer multivariat normalfordeling
-# sjekke hvordan ulike approaches, batches, antall variabler, osv påvirker tid.
-# dvs. vi ser på:
-# n_train, n_test, #features (max 10), correlation, model (xsboost,lm), approach,n_batches, n_samples (til monte carlo integral)
-# organiser mulige kombinasjoner av disse med expand.grid, så kan man loope mellom rader i data.frame fra denne funksjonen og legge tiden til som en ny kolonne
-# beregn tid med proc.time eller microbenchmark
-# samle resultater i en csv fil
-
+#har beregnet i=1 til i=1843, skal begynne med i=1844 for å fortsette
 
 n_vars <- c(5, 10) #number of features
 n_train <- c(1e3, 1e4)
 n_test <- c(5, 20)
-correlation <- c(0, 0.25, 0.75) #rho, 0, 0.25, 0.75
+correlation <- c(0, 0.25, 0.75)
 model <- c("xgboost", "lm")
-approach <- c("independence", "gaussian", "copula", "empirical")#, "ctree") #add more
+approach <- c("independence", "gaussian", "copula", "empirical")#, "ctree")
 n_batches <- c(1, 2, 4, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50) #2^n_vars er max, hopp over tilfeller hvor overskrider max
 n_samples <- c(1e3, 1e4)
+computer_name <- c(paste0(Sys.info()[["sysname"]], Sys.info()[["user"]])) #my computer name as system name+username
+n_cores <- c(1,2,4,6,8)
 
 combos <- expand.grid(n_vars,
                       n_test,
@@ -32,9 +24,22 @@ combos <- expand.grid(n_vars,
                       model,
                       approach,
                       n_batches,
-                      n_samples
+                      n_samples,
+                      n_cores,
+                      computer_name
                       )
-names(combos) <- c("n_vars", "n_test", "n_train", "correlation", "model", "approach", "n_batches", "n_samples")
+
+names(combos) <- c("n_vars",
+                   "n_test",
+                   "n_train",
+                   "correlation",
+                   "model",
+                   "approach",
+                   "n_batches",
+                   "n_samples",
+                   "n_cores",
+                   "computer_name"
+                   )
 
 for (i in 1:nrow(combos)){
 
@@ -74,8 +79,10 @@ if (combos[i,"model"]=="xgboost"){
 
 p <- mean(y_train)
 approach <- combos[i,"approach"]
+n_cores <- combos[i,"n_cores"]
 
 time0 <- proc.time()
+plan(multisession, workers = n_cores)
 explain_final(x_train,
               x_test,
               model,
@@ -86,5 +93,5 @@ time1 <- proc.time()
 tot_time <- time1-time0
 
 combos$time[i] <- tot_time[["elapsed"]]
-fwrite(combos[i,], file = "C:/Users/vilde/Documents/GitHub/shapr/inst/scripts/vilde/results_test.csv",append = TRUE)
+fwrite(combos[i,], file = "C:/Users/vilde/Documents/GitHub/shapr/inst/scripts/vilde/results_parallel.csv",append = TRUE)
 }
