@@ -6,7 +6,7 @@ library(future)
 
 #har beregnet i=1 til i=1843, skal begynne med i=1844 for å fortsette
 
-n_vars <- c(5, 10) #number of features
+n_vars <- c(5, 7, 10) #number of features
 n_train <- c(1e3, 1e4)
 n_test <- c(5, 20)
 correlation <- c(0.5)
