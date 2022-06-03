@@ -6,16 +6,16 @@ library(future)
 
 #har beregnet i=1 til i=1843, skal begynne med i=1844 for å fortsette
 
-n_vars <- c(5, 7, 10) #number of features
-n_train <- c(1e3, 1e4)
-n_test <- c(5, 20)
+n_vars <- c(5, 7, 10, 8, 12) #number of features
+n_train <- c(1e3, 1e4, 5e4)
+n_test <- c(5, 20, 10, 30, 50, 100)
 correlation <- c(0.5)
 model <- c("xgboost")
-n_batches <- c(1, 2, 4, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50) #2^n_vars er max, hopp over tilfeller hvor overskrider max
+n_batches <- c(1, 10, 30, 50, 2, 4, 6, 8, 15, 20, 25, 35, 40, 45) #2^n_vars er max, hopp over tilfeller hvor overskrider max
 n_samples <- c(1e3)
 computer_name <- c(paste0(Sys.info()[["sysname"]], Sys.info()[["user"]])) #my computer name as system name+username
 n_cores <- c(1,2,4,6,8)
-approach <- c("independence", "gaussian", "copula", "empirical", "ctree")
+approach <- c("independence", "gaussian")#, "copula", "empirical", "ctree")
 
 combos <- expand.grid(n_vars,
                       n_test,
@@ -34,11 +34,11 @@ names(combos) <- c("n_vars",
                    "n_train",
                    "correlation",
                    "model",
-                   "approach",
                    "n_batches",
                    "n_samples",
                    "n_cores",
-                   "computer_name"
+                   "computer_name",
+                   "approach"
                    )
 
 for (i in 1:nrow(combos)){
@@ -93,5 +93,5 @@ time1 <- proc.time()
 tot_time <- time1-time0
 
 combos$time[i] <- tot_time[["elapsed"]]
-fwrite(combos[i,], file = "inst/scripts/vilde/results_parallel.csv",append = TRUE)
+fwrite(combos[i,], file = "inst/scripts/vilde/results_independence_gaussian.csv",append = TRUE)
 }
