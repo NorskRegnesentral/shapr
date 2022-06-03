@@ -9,11 +9,11 @@ library(future)
 n_vars <- c(5, 10) #number of features
 n_train <- c(1e3, 1e4)
 n_test <- c(5, 20)
-correlation <- c(0, 0.25, 0.75)
-model <- c("xgboost", "lm")
+correlation <- c(0)
+model <- c("xgboost")
 approach <- c("independence", "gaussian", "copula", "empirical")#, "ctree")
 n_batches <- c(1, 2, 4, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50) #2^n_vars er max, hopp over tilfeller hvor overskrider max
-n_samples <- c(1e3, 1e4)
+n_samples <- c(1e3)
 computer_name <- c(paste0(Sys.info()[["sysname"]], Sys.info()[["user"]])) #my computer name as system name+username
 n_cores <- c(1,2,4,6,8)
 
