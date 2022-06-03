@@ -9,24 +9,24 @@ library(future)
 n_vars <- c(5, 10) #number of features
 n_train <- c(1e3, 1e4)
 n_test <- c(5, 20)
-correlation <- c(0)
+correlation <- c(0.5)
 model <- c("xgboost")
-approach <- c("independence", "gaussian", "copula", "empirical")#, "ctree")
 n_batches <- c(1, 2, 4, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50) #2^n_vars er max, hopp over tilfeller hvor overskrider max
 n_samples <- c(1e3)
 computer_name <- c(paste0(Sys.info()[["sysname"]], Sys.info()[["user"]])) #my computer name as system name+username
 n_cores <- c(1,2,4,6,8)
+approach <- c("independence", "gaussian", "copula", "empirical", "ctree")
 
 combos <- expand.grid(n_vars,
                       n_test,
                       n_train,
                       correlation,
                       model,
-                      approach,
                       n_batches,
                       n_samples,
                       n_cores,
-                      computer_name
+                      computer_name,
+                      approach
                       )
 
 names(combos) <- c("n_vars",
