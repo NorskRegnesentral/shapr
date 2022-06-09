@@ -56,6 +56,7 @@ plot.shapr <- function(x,
                        plot_phi0 = TRUE,
                        index_x_explain = NULL,
                        top_k_features = NULL,
+                       plot_type = "bar",
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -111,23 +112,56 @@ plot.shapr <- function(x,
   plotting_dt[, rank := data.table::frank(-abs(phi)), by = "id"]
   plotting_dt <- plotting_dt[rank <= top_k_features]
   plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
+  plotting_dt[, description_rev := factor(description, levels = unique(description[order(-abs(phi))]))] # need reverse rank order of feature descriptions for waterfall plot
+  setorder(plotting_dt, rank)
+  plotting_dt[, end:= cumsum(phi), by = id]
+  expected <- plotting_dt[variable == "none", phi][[1]] #should E(f(x)) be extracted from x in a more "general" way..?
+  plotting_dt[, start := c(expected, head(end, -1)), by = id]
 
-  # Plotting
-  gg <- ggplot2::ggplot(plotting_dt) +
-    ggplot2::facet_wrap(~header, scales = "free_y", labeller = "label_value", ncol = 2) +
-    ggplot2::geom_col(ggplot2::aes(x = description, y = phi, fill = sign)) +
-    ggplot2::coord_flip() +
-    ggplot2::scale_fill_manual(values = c("steelblue", "lightsteelblue"), drop = TRUE) +
-    ggplot2::labs(
-      y = "Feature contribution",
-      x = "Feature",
-      fill = "",
-      title = "Shapley value prediction explanation"
-    ) +
-    ggplot2::theme(
-      legend.position = "bottom",
-      plot.title = ggplot2::element_text(hjust = 0.5)
-    )
+  # Plotting regular bar plot
+
+  if (plot_type == "bar"){
+    gg <- ggplot2::ggplot(plotting_dt) +
+      ggplot2::facet_wrap(~header, scales = "free_y", labeller = "label_value", ncol = 2) +
+      ggplot2::geom_col(ggplot2::aes(x = description, y = phi, fill = sign)) +
+      ggplot2::coord_flip() +
+      ggplot2::scale_fill_manual(values = c("steelblue", "lightsteelblue"), drop = TRUE) +
+      ggplot2::labs(
+        y = "Feature contribution",
+        x = "Feature",
+        fill = "",
+        title = "Shapley value prediction explanation"
+      ) +
+      ggplot2::theme(
+        legend.position = "bottom",
+        plot.title = ggplot2::element_text(hjust = 0.5)
+      )
+  } else if (plot_type == "waterfall"){
+    gg <- ggplot2::ggplot(plotting_dt[variable != "none", ], aes(x = description_rev, fill = sign)) +
+      ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol = 2) +
+      ggplot2::geom_rect(aes(x=description_rev, xmin = rank - 0.45 - 1, xmax = rank + 0.45 - 1, ymin = end, ymax = start)) +
+      ggplot2::coord_flip(clip = 'off', xlim=c(0, max(plotting_dt[, rank]))) +
+      ggplot2::scale_fill_manual(values = c("#F8766D", "#00BA38"), drop = TRUE) +
+      ggplot2::labs(
+        y = "Prediction",
+        x = "Feature",
+        fill = "",
+        title = "Shapley value prediction explanation"
+      ) +
+      ggplot2::theme(
+        legend.position = "bottom",
+        plot.title = ggplot2::element_text(hjust = 0.5)
+      ) +
+      geom_segment(x=-Inf, xend = 1.45, y=expected, yend=expected, linetype="dashed", col="#F8766D") +
+      geom_segment(aes(x=ifelse(rank==last(rank), rank-0.45-1, rank-0.45-1), xend = ifelse(rank==last(rank), rank, rank+1.45-1),
+                       y=end, yend=end), linetype="dashed", col="#F8766D") +
+      geom_text(size=2.5, parse=TRUE,
+                data    = plotting_dt[variable != "none", ],
+                mapping = aes(x = last(rank)+0.1, y = pred, label = paste0("f(x)==", format(pred, digits=digits)))
+      ) +
+      geom_text(size=2.5, aes(label = format(phi, digits=digits), x=rank-1, y=start + (end-start)/2), position = position_dodge(width = 1))
+  }
+
 
   return(gg)
 }
