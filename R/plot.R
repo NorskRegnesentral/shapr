@@ -129,7 +129,7 @@ plot.shapr <- function(x,
   plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start)-max(end))/20, ifelse(sign=="Increases", col[1], col[2]), "white"), by=id]
   text_color <- plotting_dt[variable!="none", text_color]
   plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start)-max(end))/20, 0, 0.5), by=id]
-  plotting_dt[, arrow_color := ifelse(sign == "Increasing", "#00BA38","#F8766D")]
+  plotting_dt[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
   N_features <- max(plotting_dt[, rank_waterfall])
 
   if (plot_type == "bar"){
