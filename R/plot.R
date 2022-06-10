@@ -57,6 +57,7 @@ plot.shapr <- function(x,
                        index_x_explain = NULL,
                        top_k_features = NULL,
                        plot_type = "bar",
+                       col = c("#00BA38","#F8766D"), #first increasing color, then decreasing color
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -110,15 +111,26 @@ plot.shapr <- function(x,
   }
   plotting_dt <- plotting_dt[id %in% index_x_explain]
   plotting_dt[, rank := data.table::frank(-abs(phi)), by = "id"]
-  plotting_dt <- plotting_dt[rank <= top_k_features]
+
+  plotting_dt[, rank_waterfall := data.table::frank(abs(phi)), by = "id"]
+  plotting_dt[variable=="none", rank_waterfall:=0]
+  plotting_dt <- plotting_dt[rank <= top_k_features] # needs to be changed
   plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
-  plotting_dt[, description_rev := factor(description, levels = unique(description[order(-abs(phi))]))] # need reverse rank order of feature descriptions for waterfall plot
-  setorder(plotting_dt, rank)
+  setorder(plotting_dt, rank_waterfall)
   plotting_dt[, end:= cumsum(phi), by = id]
   expected <- plotting_dt[variable == "none", phi][[1]] #should E(f(x)) be extracted from x in a more "general" way..?
   plotting_dt[, start := c(expected, head(end, -1)), by = id]
+  plotting_dt[, phi_significant := format(phi, digits = digits), by=id]
 
-  # Plotting regular bar plot
+  # waterfall plotting helper columns
+  plotting_dt[, x_segment := ifelse(rank==last(rank), rank-0.45, rank-0.45)]
+  plotting_dt[, x_end_segment := ifelse(rank==last(rank), rank+1, rank+1.45)]
+  plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start)-max(end))/20, ifelse(end>start, end+0.1, start), start + (end - start)/2 ), by=id]
+  plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start)-max(end))/20, ifelse(sign=="Increases", col[1], col[2]), "white"), by=id]
+  text_color <- plotting_dt[variable!="none", text_color]
+  plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start)-max(end))/20, 0, 0.5), by=id]
+  plotting_dt[, arrow_color := ifelse(sign == "Increasing", "#00BA38","#F8766D")]
+  N_features <- max(plotting_dt[, rank_waterfall])
 
   if (plot_type == "bar"){
     gg <- ggplot2::ggplot(plotting_dt) +
@@ -137,31 +149,32 @@ plot.shapr <- function(x,
         plot.title = ggplot2::element_text(hjust = 0.5)
       )
   } else if (plot_type == "waterfall"){
-    gg <- ggplot2::ggplot(plotting_dt[variable != "none", ], aes(x = description_rev, fill = sign)) +
-      ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol = 2) +
-      ggplot2::geom_rect(aes(x=description_rev, xmin = rank - 0.45 - 1, xmax = rank + 0.45 - 1, ymin = end, ymax = start)) +
-      ggplot2::coord_flip(clip = 'off', xlim=c(0, max(plotting_dt[, rank]))) +
-      ggplot2::scale_fill_manual(values = c("#F8766D", "#00BA38"), drop = TRUE) +
+    gg <- ggplot2::ggplot(plotting_dt[variable != "none", ], aes(x = description, fill = sign)) +
+      ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol=2) + #fix wrt ncol and layout for arbitrary num. obs.
+      ggplot2::geom_rect(aes(x=description, xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start), show.legend = FALSE) +
+      ggplot2::coord_flip(clip = 'off', xlim=c(0, N_features+1.1)) +
+      ggplot2::scale_fill_manual(values = col, drop = TRUE) + #why drop=TRUE?
       ggplot2::labs(
         y = "Prediction",
         x = "Feature",
         fill = "",
-        title = "Shapley value prediction explanation"
-      ) +
+        title = "Shapley value prediction explanation") +
+      ggplot2::theme_classic()+ #maybe?
       ggplot2::theme(
-        legend.position = "bottom",
-        plot.title = ggplot2::element_text(hjust = 0.5)
-      ) +
-      geom_segment(x=-Inf, xend = 1.45, y=expected, yend=expected, linetype="dashed", col="#F8766D") +
-      geom_segment(aes(x=ifelse(rank==last(rank), rank-0.45-1, rank-0.45-1), xend = ifelse(rank==last(rank), rank, rank+1.45-1),
-                       y=end, yend=end), linetype="dashed", col="#F8766D") +
-      geom_text(size=2.5, parse=TRUE,
-                data    = plotting_dt[variable != "none", ],
-                mapping = aes(x = last(rank)+0.1, y = pred, label = paste0("f(x)==", format(pred, digits=digits)))
-      ) +
-      geom_text(size=2.5, aes(label = format(phi, digits=digits), x=rank-1, y=start + (end-start)/2), position = position_dodge(width = 1))
+        plot.title = ggplot2::element_text(hjust = 0.5)) +
+      ggplot2::geom_segment(x=-Inf, xend = 1.3, y=expected, yend=expected, linetype="dotted", col="dark grey", size=0.01) +
+      ggplot2::geom_segment(aes(x=-Inf, xend = max(rank_waterfall)+1, y=pred, yend=pred), linetype="dotted", col="dark grey", size=0.01) +
+      ggplot2::geom_text(size=2.5, col=text_color, aes(label = format(phi_significant, digits=digits),
+                                                       x=rank_waterfall, y=y_text, vjust=0.5, hjust=hjust_text)) +
+      ggplot2::geom_text(size=2.5, parse=TRUE, aes(x = -Inf, y = expected,
+                                                   label = paste0("~phi[0]==", format(expected, digits=digits)),
+                                                   vjust=0, hjust=0)) +
+      ggplot2::geom_segment(aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
+                            arrow=arrow(length = unit(0.03, "npc")), show.legend = FALSE) +
+      ggplot2::geom_text(size=2.5, parse=TRUE,
+                mapping = aes(x = N_features+1, y = pred, label = paste0("italic(f(x))==", format(pred, digits=digits)), vjust=0, hjust=1)) +
+      ggplot2::scale_color_manual(values=col) +
+      annotation_custom(grid::linesGrob(y = c(0, 0.02),  gp = gpar(col = "black", lwd = 1.5)), ymin=expected, ymax=expected, xmin=-Inf, xmax=Inf)
   }
-
-
   return(gg)
 }
