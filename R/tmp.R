@@ -220,47 +220,6 @@ run_batch <- function(S,internal,model){
   }
 }
 
-#' @export
-process_all_data <- function(internal,model){
-
-  # Extracting model specs from model
-  if(internal$parameters$ignore_model){
-    model <- NULL
-    feature_list_model <- get_model_specs.default("")
-  } else {
-    feature_list_model <- get_model_specs(model)
-  }
-
-  # process x_train
-  processed_list <- preprocess_data(
-    x = internal$data$x_train,
-    feature_list = feature_list_model
-  )
-  internal$data$x_train <- processed_list$x_dt
-  internal$parameters$feature_list <- processed_list$updated_feature_list
-
-  # process x_explain
-  internal$data$x_explain <- preprocess_data(internal$data$x_explain,
-                                             internal$parameters$feature_list)$x_dt
-
-  # get number of features and observationst to explain
-  internal$parameters$n_features <- ncol(internal$data$x_explain)
-  internal$parameters$n_explain <-  nrow(internal$data$x_explain)
-  internal$parameters$n_train <-  nrow(internal$data$x_train)
-
-
-  # Processes groups if specified. Otherwise do nothing
-  internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
-  if (internal$parameters$is_groupwise) {
-    group_list <- process_groups(
-      group = internal$parameters$group,
-      feature_labels = internal$parameters$feature_list$labels
-    )
-    internal$parameters$group <- group_list$group
-    internal$parameters$group_num <- group_list$group_num
-  }
-  return(internal)
-}
 
 #' @export
 test_model <- function(x,model){
@@ -336,48 +295,7 @@ get_supported_approaches <- function(){
   substring(rownames(attr(methods(prepare_data),"info")),first = 14)
 }
 
-#' @export
-get_parameters <- function(approach,prediction_zero,n_combinations,group,n_samples,n_batches,seed,keep_samp_for_vS,...){
-  parameters <- list(approach = approach,
-                     prediction_zero = prediction_zero,
-                     n_combinations = n_combinations,
-                     group = group,
-                     n_samples = n_samples,
-                     n_batches = n_batches,
-                     seed = seed,
-                     keep_samp_for_vS = keep_samp_for_vS)
-  parameters <- append(parameters,list(...))
-  if(is.null(parameters$ignore_model)){
-    parameters$ignore_model <- FALSE
-  }
-  parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
 
-  # TODO: Add any additional internal parameters here
-  # TODO: Add testing of correct format for the input here
-
-  #if (n_batches < 1 || n_batches > nrow(explainer$S)) {
-  #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
-  #}
-
-
-  return(parameters)
-}
-
-#' @export
-get_data <- function(x_train,x_explain){
-
-  # Check format for x_train
-  if (!is.matrix(x_train) & !is.data.frame(x_train)) {
-    stop("x_train should be a matrix or a dataframe.")
-  }
-  # Check format of x_explain
-  if (!is.matrix(x_explain) & !is.data.frame(x_explain)) {
-    stop("x should be a matrix or a data.frame/data.table.")
-  }
-
-  data <- list(x_train = x_train,
-               x_explain = x_explain)
-}
 
 #' @export
 check_approach <- function(internal){
