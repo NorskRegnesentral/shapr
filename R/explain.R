@@ -12,17 +12,20 @@ explain_final <- function(x_train,
                           keep_samp_for_vS = FALSE,
                           ...){ # ... is further arguments passed to setup_approach
 
-  # Overview of what should happen in this function (and in what order)
+  # NEW Overview
 
-  # Basic check of the necessary input being available
-  # LATER: Make list with all parameters (n_combinations, seed, n_batches, approach, etc)
-  # LATER: Make a list with all internal objects (X, S, S_batch, etc)
-  # extract feature info from model if available
-  # check compatability of x_train, x_explain and model
-  # Merge all non-model stuff from shapr() into explain_setup
+  # setup_explain(ALL INPUT) # This is the main setup function called by explain which includes the below subfunctions
+  # The subfunctions should go into files with the name setup-set_internal, setup-check_model and so on, which each
+  # includes all of the necessary functions used by those functions
+    # set_internal() # Creating the internal based on all input except model
+    # check_model(model) # Extracting the model specification
+    # check_data(internal) # Process the data (put the data scaling in here eventually)
+    # test_model(internal,model) # Test whether the model predicts without error
+    # check_approach(internal) #
+    # setup_shapley(internal) #
+    # setup_approach(internal) #
+  # compute_vS(internal,model) #
 
-  # Setup
-  #explainer <- init_explainer(environment(),...)
 
   # TODO: create a set_internal function which incorporates the get_parameters and get_data functions below
   # This is where we store everything
