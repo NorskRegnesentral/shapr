@@ -97,44 +97,58 @@ plot.shapr <- function(x,
   # Data table for plotting
   plotting_dt <- merge(meltKshap, melt_desc_dt)
 
-
   # Adding the predictions
   predDT <- data.table::data.table(id = KshapDT$id, pred = x$p)
   plotting_dt <- merge(plotting_dt, predDT, by = "id")
 
   # Adding header for each individual plot
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
-  plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
+  plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits+1))]
 
-  if (!plot_phi0) {
-    plotting_dt <- plotting_dt[variable != "none"]
-  }
+  plotting_dt[variable!="none", rank := data.table::frank(-abs(phi)), by = "id"]
+  plotting_dt[variable=="none", rank:=0]
+
+  N_features <- x$internal$parameters$n_features
   plotting_dt <- plotting_dt[id %in% index_x_explain]
-  plotting_dt[, rank := data.table::frank(-abs(phi)), by = "id"]
+  plotting_dt[rank > top_k_features,  phi:= sum(phi), by=id]
+  plotting_dt[rank > top_k_features, variable:="rest", by=id]
+  plotting_dt[variable == "rest", rank:=min(rank), by=id]
+  plotting_dt[variable == "rest", description := paste(N_features - top_k_features,"other features")]
+  plotting_dt[variable == "rest", sign:=ifelse(phi < 0, "Decreases", "Increases")]
 
-  plotting_dt[, rank_waterfall := data.table::frank(abs(phi)), by = "id"]
+  plotting_dt <- unique(plotting_dt)
+
+  plotting_dt[variable!="none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
   plotting_dt[variable=="none", rank_waterfall:=0]
-  plotting_dt <- plotting_dt[rank <= top_k_features] # needs to be changed
+
+  #plotting_dt <- plotting_dt[rank <= top_k_features]
   plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
+
   setorder(plotting_dt, rank_waterfall)
   plotting_dt[, end:= cumsum(phi), by = id]
-  expected <- plotting_dt[variable == "none", phi][[1]] #should E(f(x)) be extracted from x in a more "general" way..?
+  expected <- plotting_dt[variable == "none", phi][[1]] #should phi0 be extracted from x in a more "general" way..?
   plotting_dt[, start := c(expected, head(end, -1)), by = id]
   plotting_dt[, phi_significant := format(phi, digits = digits), by=id]
 
   # waterfall plotting helper columns
-  plotting_dt[, x_segment := ifelse(rank==last(rank), rank-0.45, rank-0.45)]
-  plotting_dt[, x_end_segment := ifelse(rank==last(rank), rank+1, rank+1.45)]
-  plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start)-max(end))/20, ifelse(end>start, end+0.1, start), start + (end - start)/2 ), by=id]
-  plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start)-max(end))/20, ifelse(sign=="Increases", col[1], col[2]), "white"), by=id]
+  plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start)-max(end))/15,
+                                 ifelse(end>start, end, start),
+                                 start + (end - start)/2 ), by=id]
+  plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start)-max(end))/15,
+                                     ifelse(sign=="Increases", col[1], col[2]),
+                                     "white"), by=id]
   text_color <- plotting_dt[variable!="none", text_color]
-  plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start)-max(end))/20, 0, 0.5), by=id]
+  plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start)-max(end))/15, 0, 0.5), by=id]
   plotting_dt[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
   N_features <- max(plotting_dt[, rank_waterfall])
 
   if (plot_type == "bar"){
+    if (!plot_phi0) {
+      plotting_dt <- plotting_dt[variable != "none"]
+    }
+
     gg <- ggplot2::ggplot(plotting_dt) +
-      ggplot2::facet_wrap(~header, scales = "free_y", labeller = "label_value", ncol = 2) +
+      ggplot2::facet_wrap(~header, scales = "free_y", labeller = "label_value") +
       ggplot2::geom_col(ggplot2::aes(x = description, y = phi, fill = sign)) +
       ggplot2::coord_flip() +
       ggplot2::scale_fill_manual(values = c("steelblue", "lightsteelblue"), drop = TRUE) +
@@ -167,14 +181,15 @@ plot.shapr <- function(x,
       ggplot2::geom_text(size=2.5, col=text_color, aes(label = format(phi_significant, digits=digits),
                                                        x=rank_waterfall, y=y_text, vjust=0.5, hjust=hjust_text)) +
       ggplot2::geom_text(size=2.5, parse=TRUE, aes(x = -Inf, y = expected,
-                                                   label = paste0("~phi[0]==", format(expected, digits=digits)),
+                                                   label = paste0("~phi[0]==", format(expected, digits=digits+1)),
                                                    vjust=0, hjust=0)) +
       ggplot2::geom_segment(aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
                             arrow=arrow(length = unit(0.03, "npc")), show.legend = FALSE) +
       ggplot2::geom_text(size=2.5, parse=TRUE,
-                mapping = aes(x = N_features+1, y = pred, label = paste0("italic(f(x))==", format(pred, digits=digits)), vjust=0, hjust=1)) +
-      ggplot2::scale_color_manual(values=col) +
-      annotation_custom(grid::linesGrob(y = c(0, 0.02),  gp = gpar(col = "black", lwd = 1.5)), ymin=expected, ymax=expected, xmin=-Inf, xmax=Inf)
+                mapping = aes(x = N_features+1, y = pred, label = paste0("italic(f(x))==", format(pred, digits=digits+1)),
+                              vjust=0, hjust=ifelse(pred > expected, 1, 0))) +
+      ggplot2::scale_color_manual(values=col)
+      #annotation_custom(grid::linesGrob(y = c(0, 0.02),  gp = gpar(col = "black", lwd = 1.5)), ymin=expected, ymax=expected, xmin=-Inf, xmax=Inf)
   }
   return(gg)
 }
