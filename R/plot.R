@@ -131,14 +131,14 @@ plot.shapr <- function(x,
   plotting_dt[, phi_significant := format(phi, digits = digits), by=id]
 
   # waterfall plotting helper columns
-  plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start)-max(end))/15,
+  plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/15,
                                  ifelse(end>start, end, start),
                                  start + (end - start)/2 ), by=id]
-  plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start)-max(end))/15,
+  plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/15,
                                      ifelse(sign=="Increases", col[1], col[2]),
                                      "white"), by=id]
   text_color <- plotting_dt[variable!="none", text_color]
-  plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start)-max(end))/15, 0, 0.5), by=id]
+  plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/15, 0, 0.5), by=id]
   plotting_dt[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
   N_features <- max(plotting_dt[, rank_waterfall])
 
@@ -164,7 +164,7 @@ plot.shapr <- function(x,
       )
   } else if (plot_type == "waterfall"){
     gg <- ggplot2::ggplot(plotting_dt[variable != "none", ], aes(x = description, fill = sign)) +
-      ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol=2) + #fix wrt ncol and layout for arbitrary num. obs.
+      ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value") + #fix wrt ncol and layout for arbitrary num. obs.
       ggplot2::geom_rect(aes(x=description, xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start), show.legend = FALSE) +
       ggplot2::coord_flip(clip = 'off', xlim=c(0, N_features+1.1)) +
       ggplot2::scale_fill_manual(values = col, drop = TRUE) + #why drop=TRUE?
@@ -186,7 +186,7 @@ plot.shapr <- function(x,
       ggplot2::geom_segment(aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
                             arrow=arrow(length = unit(0.03, "npc")), show.legend = FALSE) +
       ggplot2::geom_text(size=2.5, parse=TRUE,
-                mapping = aes(x = N_features+1, y = pred, label = paste0("italic(f(x))==", format(pred, digits=digits+1)),
+                mapping = aes(x = N_features+0.8, y = pred, label = paste0("italic(f(x))==", format(pred, digits=digits+1)),
                               vjust=0, hjust=ifelse(pred > expected, 1, 0))) +
       ggplot2::scale_color_manual(values=col)
       #annotation_custom(grid::linesGrob(y = c(0, 0.02),  gp = gpar(col = "black", lwd = 1.5)), ymin=expected, ymax=expected, xmin=-Inf, xmax=Inf)
