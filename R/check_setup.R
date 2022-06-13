@@ -37,7 +37,7 @@ check_setup <- function(x_train,
     feature_list_model <- get_model_specs(model)
   }
 
-  internal <- process_all_data(internal,feature_list)
+  internal <- process_all_data(internal,feature_list_model)
 
   return(internal)
 }

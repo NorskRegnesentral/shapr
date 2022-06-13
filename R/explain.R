@@ -49,6 +49,7 @@ explain_final <- function(x_train,
 
   internal <- check_setup(x_train = x_train,
                           x_explain = x_explain,
+                          model = model,
                           approach = approach,
                           prediction_zero = prediction_zero,
                           n_combinations = n_combinations,
