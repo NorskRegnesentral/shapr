@@ -14,6 +14,20 @@ explain_final <- function(x_train,
 
   # NEW Overview
 
+  # check_setup(ALL INPUT) # This is the main setup function called by explain which includes the below subfunctions
+  # The subfunctions should go into files with the name setup-set_internal, setup-check_model and so on, which each
+  # includes all of the necessary functions used by those functions
+    # set_internal() # Creating the internal based on all input except model
+    # check_model(model) # Extracting the model specification
+    # check_data(internal) # Process the data (put the data scaling in here eventually)
+  # test_model(internal,model) # Test whether the model predicts without error
+  # setup_computation
+    # check_approach(internal) #
+    # setup_shapley(internal) #
+    # setup_approach(internal) #
+  # compute_vS(internal,model) #
+
+
   # setup_explain(ALL INPUT) # This is the main setup function called by explain which includes the below subfunctions
   # The subfunctions should go into files with the name setup-set_internal, setup-check_model and so on, which each
   # includes all of the necessary functions used by those functions
