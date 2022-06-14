@@ -89,12 +89,12 @@ get_data <- function(x_train,x_explain){
 #' @keywords internal
 process_all_data <- function(internal,feature_list){
 
-
   # process x_train
   processed_list <- preprocess_data(
     x = internal$data$x_train,
     feature_list = feature_list
   )
+
   internal$data$x_train <- processed_list$x_dt
   internal$parameters$feature_list <- processed_list$updated_feature_list
 

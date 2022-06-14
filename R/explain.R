@@ -59,28 +59,15 @@ explain_final <- function(x_train,
                           seed = seed,
                           keep_samp_for_vS = keep_samp_for_vS,...)
 
-
-  # TODO: create a set_internal function which incorporates the get_parameters and get_data functions below
-  # This is where we store everything
-
   # Checking that the prediction function works (duplicate in Python)
-  test_model(head(internal$data$x_train, 2),model)
+  test_model(internal,model)
 
-  # Checking the format of approach
-  check_approach(internal)
-
-  # setup the Shapley framework
-  internal <- shapley_setup(internal)
-
-  # Setup for approach
-  internal <- setup_approach(internal, model = model, ...) # model only needed for type AICc of approach empirical
+  # TODO: Remove the ellipsis below by extracting those parameters from internal (if not NULL) within setup_approach
+  internal <- setup_computation(internal,model,...)# model only needed for type AICc of approach empirical, otherwise ignored
 
   # Accross all batches get the data we will predict on, predict on them, and do the MC integration
-  vS_list <- future.apply::future_lapply(X = internal$objects$S_batch,
-                                         FUN = run_batch,
-                                         internal = internal,
-                                         model = model,
-                                         future.seed = internal$parameters$seed)
+
+  vS_list <- compute_vS_new(internal,model)
 
   output <- finalize_explanation(vS_list = vS_list,
                                  internal = internal)

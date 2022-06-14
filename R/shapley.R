@@ -18,45 +18,6 @@ shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
   x
 }
 
-#' Calculate weighted matrix
-#'
-#' @param X data.table
-#' @param normalize_W_weights Logical. Whether to normalize the weights for the combinations to sum to 1 for
-#' increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations
-#' except combination \code{1} and \code{2^m}.
-#' @param is_groupwise Logical. Indicating whether group wise Shapley values are to be computed.
-#'
-#' @return Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
-#' @keywords internal
-#'
-#' @author Nikolai Sellereite, Martin Jullum
-weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
-
-  # Fetch weights
-  w <- X[["shapley_weight"]]
-
-  if (normalize_W_weights) {
-    w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
-  }
-
-  if (!is_groupwise) {
-    W <- weight_matrix_cpp(
-      subsets = X[["features"]],
-      m = X[.N][["n_features"]],
-      n = X[, .N],
-      w = w
-    )
-  } else {
-    W <- weight_matrix_cpp(
-      subsets = X[["groups"]],
-      m = X[.N][["n_groups"]],
-      n = X[, .N],
-      w = w
-    )
-  }
-
-  return(W)
-}
 
 #' Create an explainer object with Shapley weights for test data.
 #'
