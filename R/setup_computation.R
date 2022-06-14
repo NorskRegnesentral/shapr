@@ -22,20 +22,28 @@ check_approach <- function(internal){
 
   approach <- internal$parameters$approach
   n_features <- internal$parameters$n_features
+  supported_models <- get_supported_approaches()
+
   if (!(is.vector(approach) &&
         is.atomic(approach) &&
         (length(approach) == 1 | length(approach) == n_features) &&
-        all(is.element(approach, get_supported_approaches())))
+        all(is.element(approach, supported_models)))
   ) {
     stop(
       paste(
         "It seems that you passed a non-valid value for approach.",
-        "It should be either \n",paste0(get_supported_approaches(),collapse=", "),"\nor",
+        "It should be either \n",paste0(supported_models,collapse=", "),"\nor",
         "a vector of length=ncol(x) with only the above characters."
       )
     )
   }
 }
+
+#' @export
+get_supported_approaches <- function(){
+  substring(rownames(attr(methods(prepare_data),"info")),first = 14)
+}
+
 
 #' @keywords internal
 shapley_setup <- function(internal){

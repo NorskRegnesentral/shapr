@@ -113,7 +113,6 @@ shapr <- function(x,
   }
 
   # Setup
-  #explainer <- init_explainer(environment(),...)
   explainer <- as.list(environment())
   explainer <- append(explainer,list(...))
   if(is.null(explainer$ignore_model)){

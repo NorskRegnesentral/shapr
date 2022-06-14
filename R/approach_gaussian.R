@@ -69,3 +69,19 @@ prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   return(dt)
 }
+
+#' @export
+get_cov_mat <- function(x_train,min_eigen_value = 1e-06){
+  cov_mat <- stats::cov(x_train)
+  eigen_values <- eigen(cov_mat)$values
+  if (any(eigen_values <= min_eigen_value)) {
+    cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
+  }
+  return(cov_mat)
+}
+
+#' @export
+get_mu_vec <- function(x_train,min_eigen_value = 1e-06){
+  unname(colMeans(x_train))
+}
+
