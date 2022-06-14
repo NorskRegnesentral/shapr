@@ -73,7 +73,7 @@ explain_final <- function(x_train,
   # Getting the samples for the conditional distributions with specified approach
   # predicting with these samples
   # performing MC integration on these to estimate the conditional expectation
-  vS_list <- compute_vS_new(internal,model)
+  vS_list <- compute_vS(internal,model)
 
   # Compute Shapley values based on conditional expectations
   # Organize function output

@@ -1,6 +1,6 @@
 
 #' @export
-compute_vS_new <- function(internal,model,method="lapply"){
+compute_vS <- function(internal,model,method="lapply"){
 
 
   if(method=="lapply"){
@@ -12,25 +12,20 @@ compute_vS_new <- function(internal,model,method="lapply"){
   }else{
 
     keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
-    dt_vS <- list()
-    if(keep_samp_for_vS){
-      dt_samp_for_vS <- list()
-    }
+    ret <- list()
 
     for(i in seq_along(internal$objects$S_batch)){
+      S <- internal$objects$S_batch[[i]]
       dt <- batch_prepare_vS(S = S,internal = internal) # Make it optional to store and return the dt_list
       compute_preds(dt,internal,model) # Updating dt by reference
 
-      dt_vS[[i]] <- compute_MCint(dt)
+      dt_vS <- compute_MCint(dt)
 
       if(keep_samp_for_vS){
-        dt_samp_for_vS[[i]] <- copy(dt)
+        ret[[i]] <- list(dt_vS = dt_vS,dt_samp_for_vS=dt)
+      } else {
+        ret[[i]] <- copy(dt_vS)
       }
-    }
-    if(keep_samp_for_vS){
-      ret <- list(dt_vS = dt_vS,dt_samp_for_vS=dt_samp_for_vS)
-    } else {
-      ret <- dt_vS
     }
   }
 
