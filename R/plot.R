@@ -107,30 +107,29 @@ plot.shapr <- function(x,
 
   plotting_dt[variable!="none", rank := data.table::frank(-abs(phi)), by = "id"]
   plotting_dt[variable=="none", rank:=0]
-
   N_features <- x$internal$parameters$n_features
   plotting_dt <- plotting_dt[id %in% index_x_explain]
+
+  # collapse phi-value for features that are not in top k features
   plotting_dt[rank > top_k_features,  phi:= sum(phi), by=id]
   plotting_dt[rank > top_k_features, variable:="rest", by=id]
   plotting_dt[variable == "rest", rank:=min(rank), by=id]
   plotting_dt[variable == "rest", description := paste(N_features - top_k_features,"other features")]
   plotting_dt[variable == "rest", sign:=ifelse(phi < 0, "Decreases", "Increases")]
-
   plotting_dt <- unique(plotting_dt)
 
   plotting_dt[variable!="none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
   plotting_dt[variable=="none", rank_waterfall:=0]
-
-  #plotting_dt <- plotting_dt[rank <= top_k_features]
   plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
 
+  # compute start and end values for waterfall rectangles
   setorder(plotting_dt, rank_waterfall)
   plotting_dt[, end:= cumsum(phi), by = id]
-  expected <- plotting_dt[variable == "none", phi][[1]] #should phi0 be extracted from x in a more "general" way..?
+  expected <- x$internal$parameters$prediction_zero
   plotting_dt[, start := c(expected, head(end, -1)), by = id]
   plotting_dt[, phi_significant := format(phi, digits = digits), by=id]
 
-  # waterfall plotting helper columns
+  # waterfall plotting helpers
   plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/10,
                                  ifelse(expected<pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
                                  start + (end - start)/2 ), by=id]
@@ -144,56 +143,54 @@ plot.shapr <- function(x,
   n_obs <- max(plotting_dt[,id])
   plotting_dt[, pred_label := paste0("italic(f(x))==", format(pred, digits=digits+1))]
   plotting_dt[, pred_x:= N_features+0.8]
+  phi0_label <- paste0("~phi[0]==", format(expected, digits=digits+1))
+
+  if (!plot_phi0 | plot_type=="waterfall") {
+    plotting_dt <- plotting_dt[variable != "none"]
+  }
+
+  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x=description, fill=sign)) +
+    ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value") +
+    ggplot2::theme_classic(base_family = "sans") +
+    ggplot2::theme(legend.position = "bottom",
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   strip.background = element_rect(colour = "white", fill = "white")) +
+    ggplot2::scale_fill_manual(values = col, drop = TRUE)
 
   if (plot_type == "bar"){
-    if (!plot_phi0) {
-      plotting_dt <- plotting_dt[variable != "none"]
-    }
-
-    gg <- ggplot2::ggplot(plotting_dt) +
-      ggplot2::facet_wrap(~header, scales = "free_y", labeller = "label_value") +
-      ggplot2::geom_col(ggplot2::aes(x = description, y = phi, fill = sign)) +
+    gg <- gg + ggplot2::geom_col(ggplot2::aes(y=phi)) +
       ggplot2::coord_flip() +
-      ggplot2::scale_fill_manual(values = c("steelblue", "lightsteelblue"), drop = TRUE) +
       ggplot2::labs(
         y = "Feature contribution",
         x = "Feature",
         fill = "",
         title = "Shapley value prediction explanation"
-      ) +
-      ggplot2::theme(
-        legend.position = "bottom",
-        plot.title = ggplot2::element_text(hjust = 0.5)
       )
   } else if (plot_type == "waterfall"){
-    gg <- ggplot2::ggplot(plotting_dt[variable != "none", ], aes(x = description, fill = sign)) +
-      ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value") + #fix wrt ncol and layout for arbitrary num. obs.
-      ggplot2::geom_segment(aes(x=-Inf, xend = max(rank_waterfall)+0.8, y=pred, yend=pred), linetype="dotted", col="dark grey", size=0.25) +
-      ggplot2::geom_rect(aes(x=description, xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start), show.legend = FALSE) +
+    gg <- gg + ggplot2::geom_segment(ggplot2::aes(x=-Inf, xend = max(rank_waterfall)+0.8, y=pred, yend=pred),
+                                     linetype="dotted", col="grey30", size=0.25) +
       ggplot2::coord_flip(clip = 'off', xlim=c(0.5, N_features+1.1)) +
-      ggplot2::scale_fill_manual(values = col, drop = TRUE) + #why drop=TRUE?
-      ggplot2::labs(
-        y = "Prediction",
-        x = "Feature",
-        fill = "",
-        title = "Shapley value prediction explanation") +
-      ggplot2::theme_classic(base_family = "sans")+ #maybe?
-      ggplot2::theme(
-        plot.title = ggplot2::element_text(hjust = 0.5)) +
-      ggplot2::geom_segment(x=-Inf, xend = 1.3, y=expected, yend=expected, linetype="dotted", col="dark grey", size=0.25) +
-      ggplot2::geom_text(size=2.5, family = "sans", col=text_color, aes(label = format(phi_significant, digits=digits),
-                                                       x=rank_waterfall, y=y_text, vjust=0.5, hjust=hjust_text)) +
-      ggplot2::annotate("text", parse=TRUE, x = -Inf, y = expected, label = paste0("~phi[0]==", format(expected, digits=digits+1)),
-                        size=2.5, family = "sans", col="grey30",vjust=0, hjust=0 ) +
+      ggplot2::labs(y = "Prediction",
+                    x = "Feature",
+                    fill = "",
+                    title = "Shapley value prediction explanation") +
+      ggplot2::geom_rect(ggplot2::aes(x=description, xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
+                         show.legend = NA) +
+      ggplot2::geom_segment(x=-Inf, xend = 1.3, y=expected, yend=expected,
+                            linetype="dotted", col="grey30", size=0.25) +
+      ggplot2::geom_text(ggplot2::aes(label = phi_significant,
+                                      x = rank_waterfall, y = y_text,
+                                      vjust = 0.5, hjust = hjust_text),
+                         size=2.5, family = "sans", col = text_color) +
+      ggplot2::annotate("text", parse = TRUE, x = -Inf, y = expected, label = phi0_label,
+                       size=2.5, family = "sans", col = "grey30", vjust = 0, hjust = 0) +
       ggplot2::geom_segment(aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
                             arrow=arrow(length = unit(0.03, "npc")), show.legend = FALSE) +
-      ggplot2::geom_text(data=plotting_dt[1:n_obs,], aes(x = pred_x, y = pred, label = pred_label,
-                         vjust=0, hjust=ifelse(pred > expected, 1, 0)),
-                         parse=TRUE, family = "sans", col="grey30", size = 2.5) +
-      ggplot2::scale_color_manual(values=col) #+
-      # ggplot2::geom_text(size=2.5, family = "sans", col="grey30", parse=TRUE, aes(x = -Inf, y = expected,
-      #                                              label = paste0("~phi[0]==", format(expected, digits=digits+1)),
-      #                                              vjust=0, hjust=0)) +
+      ggplot2::scale_color_manual(values=col) +
+      ggplot2::geom_text(data=plotting_dt[1:n_obs,],
+                         ggplot2::aes(x = pred_x, y = pred, label = pred_label,
+                                      vjust = 0, hjust = ifelse(pred > expected, 1, 0)),
+                         parse=TRUE, family = "sans", col="grey30", size = 2.5)
       #annotation_custom(grid::linesGrob(y = c(0, 0.02),  gp = gpar(col = "black", lwd = 1.5)), ymin=expected, ymax=expected, xmin=-Inf, xmax=Inf)
   }
   return(gg)
