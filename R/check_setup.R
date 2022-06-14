@@ -526,4 +526,59 @@ process_groups <- function(group, feature_labels) {
   return(list(group = group, group_num = group_num))
 }
 
+#' Check that the group parameter has the right form and content
+#'
+#' @inheritParams shapr
+#' @param feature_labels Vector of characters. Contains the feature labels used by the model
+#'
+#' @return Error or NULL
+#'
+#' @keywords internal
+check_groups <- function(feature_labels, group) {
+  if (!is.list(group)) {
+    stop("group must be a list")
+  }
+
+  group_features <- unlist(group)
+
+  # Checking that the group_features are characters
+  if (!all(is.character(group_features))) {
+    stop("All components of group should be a character.")
+  }
+
+  # Check that all features in group are in feature labels or used by model
+  if (!all(group_features %in% feature_labels)) {
+    missing_group_feature <- group_features[!(group_features %in% feature_labels)]
+    stop(
+      paste0(
+        "The group feature(s) ", paste0(missing_group_feature, collapse = ", "), " are not\n",
+        "among the features specified by the model/data. Delete from group."
+      )
+    )
+  }
+
+  # Check that all feature used by model are in group
+  if (!all(feature_labels %in% group_features)) {
+    missing_features <- feature_labels[!(feature_labels %in% group_features)]
+    stop(
+      paste0(
+        "The model/data feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
+        "belong to one of the groups. Add to a group."
+      )
+    )
+  }
+
+  # Check uniqueness of group_features
+  if (length(group_features) != length(unique(group_features))) {
+    dups <- group_features[duplicated(group_features)]
+    stop(
+      paste0(
+        "Feature(s) ", paste0(dups, collapse = ", "), " are found in more than one group or ",
+        "multiple times per group.\n",
+        "Make sure each feature is only represented in one group, and only once."
+      )
+    )
+  }
+  return(NULL)
+}
 

@@ -307,6 +307,43 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   return(X)
 }
 
+#' Calculate Shapley weight
+#'
+#' @param m Positive integer. Total number of features/feature groups.
+#' @param n_components Positive integer. Represents the number of features/feature groups you want to sample from
+#' a feature space consisting of \code{m} unique features/feature groups. Note that \code{ 0 < = n_components <= m}.
+#' @param N Positive integer. The number of unique combinations when sampling \code{n_components} features/feature
+#' groups, without replacement, from a sample space consisting of \code{m} different features/feature groups.
+#' @param weight_zero_m Positive integer. Represents the Shapley weight for two special
+#' cases, i.e. the case where you have either \code{0} or \code{m} features/feature groups.
+#'
+#' @return Numeric
+#' @keywords internal
+#'
+#' @author Nikolai Sellereite
+shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
+  x <- (m - 1) / (N * n_components * (m - n_components))
+  x[!is.finite(x)] <- weight_zero_m
+  x
+}
+
+
+#' @keywords internal
+helper_feature <- function(m, feature_sample) {
+  sample_frequence <- is_duplicate <- NULL # due to NSE notes in R CMD check
+
+  x <- feature_matrix_cpp(feature_sample, m)
+  dt <- data.table::data.table(x)
+  cnms <- paste0("V", seq(m))
+  data.table::setnames(dt, cnms)
+  dt[, sample_frequence := as.integer(.N), by = cnms]
+  dt[, is_duplicate := duplicated(dt)]
+  dt[, (cnms) := NULL]
+
+  return(dt)
+}
+
+
 #' Analogue to feature_exact, but for groups instead.
 #'
 #' @inheritParams shapley_weights
@@ -334,6 +371,16 @@ feature_group <- function(group_num, weight_zero_m = 10^6) {
 
   return(dt)
 }
+
+#' @keywords internal
+group_fun <- function(x, group_num) {
+  if (length(x) != 0) {
+    unlist(group_num[x])
+  } else {
+    integer(0)
+  }
+}
+
 
 #' Analogue to feature_not_exact, but for groups instead.
 #'

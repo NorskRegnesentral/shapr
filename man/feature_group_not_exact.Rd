@@ -10,10 +10,6 @@ feature_group_not_exact(group_num, n_combinations = 200, weight_zero_m = 10^6)
 \item{group_num}{List. Contains vector of integers indicating the feature numbers for the
 different groups.}
 
-\item{n_combinations}{Integer. The number of feature combinations to sample. If \code{NULL},
-the exact method is used and all combinations are considered. The maximum number of
-combinations equals \code{2^ncol(x)}.}
-
 \item{weight_zero_m}{Positive integer. Represents the Shapley weight for two special
 cases, i.e. the case where you have either \code{0} or \code{m} features/feature groups.}
 }

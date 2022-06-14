@@ -209,6 +209,63 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, w_threshold = .7
   return(dt_p)
 }
 
+#' Helper function to sample a combination of training and testing rows, which does not risk
+#' getting the same observation twice. Need to improve this help file.
+#'
+#' @param ntrain Positive integer. Number of training observations to sample from.
+#'
+#' @param ntest Positive integer. Number of test observations to sample from.
+#'
+#' @param nsamples Positive integer. Number of samples.
+#'
+#' @param joint_sampling Logical. Indicates whether train- and test data should be sampled
+#' separately or in a joint sampling space. If they are sampled separately (which typically
+#' would be used when optimizing more than one distribution at once) we sample with replacement
+#' if \code{nsamples > ntrain}. Note that this solution is not optimal. Be careful if you're
+#' doing optimization over every test observation when \code{nsamples > ntrain}.
+#'
+#' @return data.frame
+#'
+#' @keywords internal
+#'
+#' @author Martin Jullum
+sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) {
+  if (!joint_sampling) {
+
+    # Sample training data
+    samp_train <- sample(
+      x = ntrain,
+      size = nsamples,
+      replace = ifelse(nsamples < ntrain, FALSE, TRUE)
+    )
+
+    # Sample test data
+    samp_test <- sample(
+      x = ntest,
+      size = nsamples,
+      replace = ifelse(nsamples < ntrain, nsamples > ntest, TRUE)
+    )
+  } else {
+    n <- ntrain * ntest
+    if (nsamples < n) {
+      input_samp <- sample(
+        x = n,
+        size = nsamples,
+        replace = FALSE
+      )
+    } else {
+      input_samp <- seq(n)
+    }
+
+    samp_train <- (input_samp - 1) %% ntrain + 1
+    samp_test <- (input_samp - 1) %/% ntrain + 1
+  }
+  ret <- data.frame(samp_train = samp_train, samp_test = samp_test)
+
+  return(ret)
+}
+
+
 #' @keywords internal
 compute_AICc_each_k <- function(internal, model, index_features) {
   id_combination <- n_features <- NULL # due to NSE notes in R CMD check
@@ -420,3 +477,29 @@ compute_AICc_full <- function(internal, model, index_features) {
   return(h_optim_mat[index_features,,drop=F])
 }
 
+#' @keywords internal
+distance_matrix <- function(x_train, x_explain = NULL, list_features, mcov) {
+  if (is.null(x_explain)) {
+    return(NULL)
+  }
+
+  if (is.null(dim(x_explain))) {
+    x_explain <- t(as.matrix(x_explain))
+  }
+  # Note that D equals D_S(,)^2 in the paper
+  D <- mahalanobis_distance_cpp(
+    featureList = list_features,
+    Xtrain_mat = as.matrix(x_train),
+    Xtest_mat = as.matrix(x_explain),
+    mcov = mcov,
+    S_scale_dist = TRUE
+  )
+
+  # Normalize distance rows to ensure numerical stability in later operations
+  colmin <- apply(X = D, MARGIN = c(2, 3), FUN = min)
+  for (i in 1:dim(D)[3]) {
+    D[, , i] <- t(t(D[, , i]) - colmin[, i])
+  }
+
+  return(D)
+}
