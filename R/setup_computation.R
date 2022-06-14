@@ -1,7 +1,7 @@
 
 
 #' @export
-setup_computation <- function(internal, model, ...){
+setup_computation <- function(internal, model){
   # model only needed for type AICc of approach empirical, otherwise ignored
 
   # TODO: Consider moving this to the initial checking function
@@ -13,7 +13,7 @@ setup_computation <- function(internal, model, ...){
   internal <- shapley_setup(internal)
 
   # Setup for approach
-  internal <- setup_approach(internal, model = model, ...)
+  internal <- setup_approach(internal, model = model)
 
   return(internal)
 }

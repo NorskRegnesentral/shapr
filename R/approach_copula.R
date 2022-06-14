@@ -1,5 +1,5 @@
 #' @keywords internal
-setup_approach.copula <- function(internal, ...){
+setup_approach.copula <- function(internal,...){
 
   parameters <- internal$parameters
   x_train <- internal$data$x_train

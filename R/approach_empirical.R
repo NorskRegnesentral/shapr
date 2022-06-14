@@ -8,39 +8,33 @@ setup_approach.empirical <- function(internal,
                                      eval_max_aicc = 20,
                                      start_aicc = 0.1,
                                      cov_mat = NULL,
-                                     model = NULL,...){
-  if (type == "independence") {
+                                     model = NULL){
+
+  defaults <- mget(c("w_threshold","type","fixed_sigma_vec","n_samples_aicc","eval_max_aicc","start_aicc"))
+
+  internal <- insert_defaults(internal,defaults)
+
+  if (internal$parameters$type == "independence") {
     warning(paste0(
       "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
       "Please use approach = 'independence' instead."
     ))
   }
 
-  if (type %in% c("AICc_each_k","AICc_full") & internal$parameters$ignore_model==TRUE) {
+  if (internal$parameters$type %in% c("AICc_each_k","AICc_full") & internal$parameters$ignore_model==TRUE) {
     stop(paste0(
-      "Using type = ",type," for approach = 'empirical' is not available in Python.\n",
+      "Using type = ",internal$parameters$type," for approach = 'empirical' is not available in Python.\n",
     ))
   }
 
 
-  parameters <- internal$parameters
   x_train <- internal$data$x_train
-
-  # Add arguments to explainer object
-  parameters$type <- type
-  parameters$fixed_sigma_vec <- fixed_sigma_vec
-  parameters$n_samples_aicc <- n_samples_aicc
-  parameters$eval_max_aicc <- eval_max_aicc
-  parameters$start_aicc <- start_aicc
-  parameters$w_threshold <- w_threshold
-
 
   # If cov_mat is not provided directly, use sample covariance of training data
   if (is.null(cov_mat)) {
-    parameters$cov_mat <- get_cov_mat(x_train)
+    internal$parameters$cov_mat <- get_cov_mat(x_train)
   }
 
-  internal$parameters <- parameters
   internal$model <- model
 
   return(internal)

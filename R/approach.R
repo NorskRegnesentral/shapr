@@ -51,7 +51,16 @@ prepare_data <- function(internal, ...) {
   UseMethod("prepare_data", this_class)
 }
 
+#' @keywords internal
+insert_defaults <- function(internal,defaults){
+  par_names <- names(defaults)
 
+  overwrite_names <- par_names[!(par_names %in% names(internal$parameters))]
+
+  internal$parameters <- append(internal$parameters,defaults[overwrite_names])
+
+  return(internal)
+}
 
 
 

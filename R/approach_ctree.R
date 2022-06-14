@@ -3,18 +3,12 @@ setup_approach.ctree <- function(internal,
                                  mincriterion = 0.95,
                                  minsplit = 20,
                                  minbucket = 7,
-                                 sample = TRUE, ...){
+                                 sample = TRUE,...){
 
-  parameters <- internal$parameters
+  defaults <- mget(c("mincriterion","minsplit","minbucket","sample"))
 
+  internal <- insert_defaults(internal,defaults)
 
-  # Add arguments to explainer object
-  parameters$mincriterion <- mincriterion
-  parameters$minsplit <- minsplit
-  parameters$minbucket <- minbucket
-  parameters$sample <- sample
-
-  internal$parameters <- parameters
 
   return(internal)
 }
