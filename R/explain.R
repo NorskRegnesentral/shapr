@@ -1,18 +1,21 @@
+#' Main function
+#'
+#' @description Main function
 #' @export
-explain_final <- function(x_train,
-                          x_explain,
-                          model = NULL,
-                          approach,
-                          prediction_zero,
-                          n_combinations = NULL,
-                          group = NULL,
-                          n_samples = 1e3,
-                          n_batches = 1,
-                          seed = 1,
-                          keep_samp_for_vS = FALSE,
-                          ...){ # ... is further arguments passed to setup_approach
+explain <- function(x_train,
+                    x_explain,
+                    model = NULL,
+                    approach,
+                    prediction_zero,
+                    n_combinations = NULL,
+                    group = NULL,
+                    n_samples = 1e3,
+                    n_batches = 1,
+                    seed = 1,
+                    keep_samp_for_vS = FALSE,
+                    ...){ # ... is further arguments passed to setup_approach
 
-    # Sets up input parameters, data and preprocess the data if needed
+  # Sets up input parameters, data and preprocess the data if needed
   internal <- check_setup(x_train = x_train,
                           x_explain = x_explain,
                           model = model,
