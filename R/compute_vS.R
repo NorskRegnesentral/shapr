@@ -1,11 +1,40 @@
 
 #' @export
-compute_vS_new <- function(internal,model){
-  future.apply::future_lapply(X = internal$objects$S_batch,
-                              FUN = run_batch,
-                              internal = internal,
-                              model = model,
-                              future.seed = internal$parameters$seed)
+compute_vS_new <- function(internal,model,method="lapply"){
+
+
+  if(method=="lapply"){
+    ret <- future.apply::future_lapply(X = internal$objects$S_batch,
+                                       FUN = run_batch, #TODO: Change name on run_batch
+                                       internal = internal,
+                                       model = model,
+                                       future.seed = internal$parameters$seed)
+  }else{
+
+    keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+    dt_vS <- list()
+    if(keep_samp_for_vS){
+      dt_samp_for_vS <- list()
+    }
+
+    for(i in seq_along(internal$objects$S_batch)){
+      dt <- batch_prepare_vS(S = S,internal = internal) # Make it optional to store and return the dt_list
+      compute_preds(dt,internal,model) # Updating dt by reference
+
+      dt_vS[[i]] <- compute_MCint(dt)
+
+      if(keep_samp_for_vS){
+        dt_samp_for_vS[[i]] <- copy(dt)
+      }
+    }
+    if(keep_samp_for_vS){
+      ret <- list(dt_vS = dt_vS,dt_samp_for_vS=dt_samp_for_vS)
+    } else {
+      ret <- dt_vS
+    }
+  }
+
+  return(ret)
 }
 
 #' @keywords internal

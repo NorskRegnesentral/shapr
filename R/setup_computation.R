@@ -4,8 +4,10 @@
 setup_computation <- function(internal, model, ...){
   # model only needed for type AICc of approach empirical, otherwise ignored
 
+  # TODO: Consider moving this to the initial checking function
   # Checking the format of approach
   check_approach(internal)
+
 
   # setup the Shapley framework
   internal <- shapley_setup(internal)
