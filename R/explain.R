@@ -13,7 +13,7 @@ explain <- function(x_train,
                     n_batches = 1,
                     seed = 1,
                     keep_samp_for_vS = FALSE,
-                    ...){ # ... is further arguments passed to setup_approach
+                    ...){ # ... is further arguments passed to specific approaches
 
   # Sets up input parameters, data and preprocess the data if needed
   internal <- check_setup(x_train = x_train,
