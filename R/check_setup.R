@@ -1,45 +1,124 @@
-#' Fetches feature information from a given data set
-#'
-#' @param x matrix, data.frame or data.table The data to extract feature information from.
-#'
-#' @details This function is used to extract the feature information to be checked against the corresponding
-#' information extracted from the model and other data sets. The function is called from
-#' \code{\link[shapr:preprocess_data]{preprocess_data}}
-#' and \code{\link[shapr:make_dummies]{make_dummies}}
-#'
-#' @return A list with the following elements:
-#' \describe{
-#'   \item{labels}{character vector with the feature names to compute Shapley values for}
-#'   \item{classes}{a named character vector with the labels as names and the class types as elements}
-#'   \item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
-#'   (NULL if the feature is not a factor)}
-#' }
-#' @author Martin Jullum
-#'
-#' @keywords internal
+
+
+
 #' @export
-#'
-#' @examples
-#' # Load example data
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   data("Boston", package = "MASS")
-#'   # Split data into test- and training data
-#'   x_train <- data.table::as.data.table(head(Boston))
-#'   x_train[, rad := as.factor(rad)]
-#'   get_data_specs(x_train)
-#' }
-get_data_specs <- function(x) {
-  x <- data.table::as.data.table(x)
+check_setup <- function(x_train,
+                        x_explain,
+                        model,
+                        approach,
+                        prediction_zero,
+                        n_combinations,
+                        group,
+                        n_samples,
+                        n_batches,
+                        seed,
+                        keep_samp_for_vS,...){
 
-  feature_list <- list()
-  feature_list$labels <- names(x)
-  feature_list$classes <- unlist(lapply(x, class))
-  feature_list$factor_levels <- lapply(x, levels)
 
-  # Defining all integer values as numeric
-  feature_list$classes[feature_list$classes == "integer"] <- "numeric"
+  internal <- list()
 
-  return(feature_list)
+  internal$parameters <- get_parameters(approach = approach,
+                                        prediction_zero = prediction_zero,
+                                        n_combinations = n_combinations,
+                                        group = group,
+                                        n_samples = n_samples,
+                                        n_batches = n_batches,
+                                        seed = seed,
+                                        keep_samp_for_vS = keep_samp_for_vS,...)
+
+  internal$data <- get_data(x_train,x_explain)
+
+
+
+  # Extracting model specs from model
+  if(internal$parameters$ignore_model){
+    feature_list_model <- get_model_specs.default("")
+  } else {
+    feature_list_model <- get_model_specs(model)
+  }
+
+  internal <- process_all_data(internal,feature_list_model)
+
+  return(internal)
+}
+
+#' @keywords internal
+get_parameters <- function(approach,prediction_zero,n_combinations,group,n_samples,n_batches,seed,keep_samp_for_vS,...){
+  parameters <- list(approach = approach,
+                     prediction_zero = prediction_zero,
+                     n_combinations = n_combinations,
+                     group = group,
+                     n_samples = n_samples,
+                     n_batches = n_batches,
+                     seed = seed,
+                     keep_samp_for_vS = keep_samp_for_vS)
+  parameters <- append(parameters,list(...))
+  if(is.null(parameters$ignore_model)){
+    parameters$ignore_model <- FALSE
+  }
+  parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
+
+  # TODO: Add any additional internal parameters here
+  # TODO: Add testing of correct format for the input here
+
+  #if (n_batches < 1 || n_batches > nrow(explainer$S)) {
+  #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
+  #}
+
+
+  return(parameters)
+}
+
+#' @keywords internal
+get_data <- function(x_train,x_explain){
+
+  # Check format for x_train
+  if (!is.matrix(x_train) & !is.data.frame(x_train)) {
+    stop("x_train should be a matrix or a dataframe.")
+  }
+  # Check format of x_explain
+  if (!is.matrix(x_explain) & !is.data.frame(x_explain)) {
+    stop("x should be a matrix or a data.frame/data.table.")
+  }
+
+  data <- list(x_train = x_train,
+               x_explain = x_explain)
+}
+
+
+#' @keywords internal
+process_all_data <- function(internal,feature_list){
+
+  # process x_train
+  processed_list <- preprocess_data(
+    x = internal$data$x_train,
+    feature_list = feature_list
+  )
+
+  internal$data$x_train <- processed_list$x_dt
+  internal$parameters$feature_list <- processed_list$updated_feature_list
+
+  # process x_explain
+  internal$data$x_explain <- preprocess_data(internal$data$x_explain,
+                                             internal$parameters$feature_list)$x_dt
+
+  # get number of features and observationst to explain
+  internal$parameters$n_features <- ncol(internal$data$x_explain)
+  internal$parameters$n_explain <-  nrow(internal$data$x_explain)
+  internal$parameters$n_train <-  nrow(internal$data$x_train)
+
+
+  # Processes groups if specified. Otherwise do nothing
+  internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
+  if (internal$parameters$is_groupwise) {
+    group_list <- process_groups(
+      group = internal$parameters$group,
+      feature_labels = internal$parameters$feature_list$labels
+    )
+    internal$parameters$group <- group_list$group
+    internal$parameters$group_num <- group_list$group_num
+  }
+  return(internal)
 }
 
 #' Process (check and update) data according to specified feature list
@@ -84,7 +163,7 @@ preprocess_data <- function(x, feature_list) {
   feature_list_data$specs_type <- "data"
 
   updater <- check_features(feature_list, feature_list_data,
-    use_1_as_truth = T
+                            use_1_as_truth = T
   )
   update_data(x_dt, updater) # Updates x_dt by reference
 
@@ -97,7 +176,6 @@ preprocess_data <- function(x, feature_list) {
 
   return(ret)
 }
-
 
 #' Checks that two extracted feature lists have exactly the same properties
 #'
@@ -293,6 +371,51 @@ check_features <- function(f_list_1, f_list_2,
   return(f_list_1) #
 }
 
+
+#' Fetches feature information from a given data set
+#'
+#' @param x matrix, data.frame or data.table The data to extract feature information from.
+#'
+#' @details This function is used to extract the feature information to be checked against the corresponding
+#' information extracted from the model and other data sets. The function is called from
+#' \code{\link[shapr:preprocess_data]{preprocess_data}}
+#' and \code{\link[shapr:make_dummies]{make_dummies}}
+#'
+#' @return A list with the following elements:
+#' \describe{
+#'   \item{labels}{character vector with the feature names to compute Shapley values for}
+#'   \item{classes}{a named character vector with the labels as names and the class types as elements}
+#'   \item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
+#'   (NULL if the feature is not a factor)}
+#' }
+#' @author Martin Jullum
+#'
+#' @keywords internal
+#' @export
+#'
+#' @examples
+#' # Load example data
+#' if (requireNamespace("MASS", quietly = TRUE)) {
+#'   data("Boston", package = "MASS")
+#'   # Split data into test- and training data
+#'   x_train <- data.table::as.data.table(head(Boston))
+#'   x_train[, rad := as.factor(rad)]
+#'   get_data_specs(x_train)
+#' }
+get_data_specs <- function(x) {
+  x <- data.table::as.data.table(x)
+
+  feature_list <- list()
+  feature_list$labels <- names(x)
+  feature_list$classes <- unlist(lapply(x, class))
+  feature_list$factor_levels <- lapply(x, levels)
+
+  # Defining all integer values as numeric
+  feature_list$classes[feature_list$classes == "integer"] <- "numeric"
+
+  return(feature_list)
+}
+
 #' Updates data by reference according to the updater argument.
 #'
 #' @description \code{data} is updated, i.e. unused columns and factor levels are removed as described in
@@ -337,9 +460,9 @@ update_data <- function(data, updater) {
     message(paste0(
       "\nSuccess with message:\n",
       "The columns(s) ",
-        paste0(cnms_remove, collapse = ", "),
-        " is not used by the model and thus removed from the data."
-      )
+      paste0(cnms_remove, collapse = ", "),
+      " is not used by the model and thus removed from the data."
+    )
     )
     data[, (cnms_remove) := NULL]
   }
@@ -359,8 +482,8 @@ update_data <- function(data, updater) {
 
       for (i in changed_levels) {
         data.table::set(data,
-          j = i,
-          value = factor(unlist(data[, new_labels[i], with = F], use.names = F), levels = factor_levels[[i]])
+                        j = i,
+                        value = factor(unlist(data[, new_labels[i], with = F], use.names = F), levels = factor_levels[[i]])
         )
       }
     }
@@ -368,6 +491,7 @@ update_data <- function(data, updater) {
 
   return(NULL)
 }
+
 
 #' Process (check and update names) the group list
 #'
@@ -401,3 +525,60 @@ process_groups <- function(group, feature_labels) {
 
   return(list(group = group, group_num = group_num))
 }
+
+#' Check that the group parameter has the right form and content
+#'
+#' @inheritParams shapr
+#' @param feature_labels Vector of characters. Contains the feature labels used by the model
+#'
+#' @return Error or NULL
+#'
+#' @keywords internal
+check_groups <- function(feature_labels, group) {
+  if (!is.list(group)) {
+    stop("group must be a list")
+  }
+
+  group_features <- unlist(group)
+
+  # Checking that the group_features are characters
+  if (!all(is.character(group_features))) {
+    stop("All components of group should be a character.")
+  }
+
+  # Check that all features in group are in feature labels or used by model
+  if (!all(group_features %in% feature_labels)) {
+    missing_group_feature <- group_features[!(group_features %in% feature_labels)]
+    stop(
+      paste0(
+        "The group feature(s) ", paste0(missing_group_feature, collapse = ", "), " are not\n",
+        "among the features specified by the model/data. Delete from group."
+      )
+    )
+  }
+
+  # Check that all feature used by model are in group
+  if (!all(feature_labels %in% group_features)) {
+    missing_features <- feature_labels[!(feature_labels %in% group_features)]
+    stop(
+      paste0(
+        "The model/data feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
+        "belong to one of the groups. Add to a group."
+      )
+    )
+  }
+
+  # Check uniqueness of group_features
+  if (length(group_features) != length(unique(group_features))) {
+    dups <- group_features[duplicated(group_features)]
+    stop(
+      paste0(
+        "Feature(s) ", paste0(dups, collapse = ", "), " are found in more than one group or ",
+        "multiple times per group.\n",
+        "Make sure each feature is only represented in one group, and only once."
+      )
+    )
+  }
+  return(NULL)
+}
+
