@@ -12,7 +12,9 @@ check_setup <- function(x_train,
                         n_samples,
                         n_batches,
                         seed,
-                        keep_samp_for_vS,...){
+                        keep_samp_for_vS,
+                        predict_model,
+                        get_model_specs,...){
 
 
   internal <- list()
@@ -28,13 +30,17 @@ check_setup <- function(x_train,
 
   internal$data <- get_data(x_train,x_explain)
 
+  internal$funcs <- get_funcs(predict_model,
+                              get_model_specs,
+                              class_model = class(model),
+                              ignore_model = internal$parameters$ignore_model)
 
 
   # Extracting model specs from model
-  if(internal$parameters$ignore_model){
-    feature_list_model <- get_model_specs.default("")
-  } else {
+  if(!is.null(internal$funcs$get_model_specs)){
     feature_list_model <- get_model_specs(model)
+  } else {
+    feature_list_model <- get_model_specs.default("")
   }
 
   internal <- process_all_data(internal,feature_list_model)
@@ -83,6 +89,45 @@ get_data <- function(x_train,x_explain){
 
   data <- list(x_train = x_train,
                x_explain = x_explain)
+}
+
+get_funcs <- function(predict_model,get_model_specs,class_model,ignore_model){
+
+  funcs <- list(predict_model = predict_model,
+                get_model_specs = get_model_specs)
+
+  supported_models <- get_supported_models()
+
+  if(is.null(funcs$predict_model)){
+    if(ignore_model){
+      stop("The function 'predict_model' must be passed as an argument to function explain() in Python.\n")
+    }
+
+    native_func_available <- supported_models[predict_model==TRUE,class_model %in% model_class]
+    if(native_func_available){
+      funcs$predict_model <- get(paste0("predict_model.",class_model))
+    } else {
+      stop(
+        "You passed a model to explain() which is not natively supported. See ?shapr::explain or the vignette\n",
+        "for more information on how to run shapr with custom models."
+      )
+    }
+  }
+
+  if(is.null(funcs$get_model_specs) & !ignore_model){
+    native_func_available <- supported_models[get_model_specs==TRUE,class_model %in% model_class]
+    if(native_func_available){
+      funcs$get_model_specs <- get(paste0("get_model_specs.",class_model))
+    } else {
+      message(
+        "Note: You passed a model to explain() that is not natively supported.\n",
+        "By default, all feature consistency checking is thus disabled.\n",
+        "This can be enabled for your custom model by passing a 'get_model_specs' function as an argument to explain(),\n",
+        "see ?shapr::explain for further details."
+      )
+    }
+  }
+  return(funcs)
 }
 
 

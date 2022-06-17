@@ -13,6 +13,8 @@ explain <- function(x_train,
                     n_batches = 1,
                     seed = 1,
                     keep_samp_for_vS = FALSE,
+                    predict_model = NULL,
+                    get_model_specs = NULL,
                     ...){ # ... is further arguments passed to specific approaches
 
   # Sets up input parameters, data and preprocess the data if needed
@@ -26,7 +28,9 @@ explain <- function(x_train,
                           n_samples = n_samples,
                           n_batches = n_batches,
                           seed = seed,
-                          keep_samp_for_vS = keep_samp_for_vS,...)
+                          keep_samp_for_vS = keep_samp_for_vS,
+                          predict_model = predict_model,
+                          get_model_specs = get_model_specs,...)
 
   # Tests that the model predicts as intended
   test_model(internal,model)

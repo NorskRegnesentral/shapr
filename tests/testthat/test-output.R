@@ -34,7 +34,13 @@ model_lm_mixed <- lm(lm_formula_mixed,data = data_complete)
 
 p0 <- data_train[,mean(get(y_var_numeric))]
 
+tmp <- function(x,newdata){
+  predict(x, as.data.frame(newdata))+rnorm(nrow(x))
+}
 
+#class(model_lm_numeric) = "sdad"
+
+#explain(x_train_numeric,x_test_numeric,model_lm_numeric,approach="independence",prediction_zero=p0,predict_model=tmp)
 # lm_numeric with different approahces
 
 test_that("output_lm_numeric_independence", {
