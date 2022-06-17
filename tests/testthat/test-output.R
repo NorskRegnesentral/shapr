@@ -34,7 +34,7 @@ model_lm_mixed <- lm(lm_formula_mixed,data = data_complete)
 
 p0 <- data_train[,mean(get(y_var_numeric))]
 
-# lm_numeric with different approahces
+# lm_numeric with different approaches
 
 test_that("output_lm_numeric_independence", {
   expect_snapshot_rds(
@@ -120,6 +120,9 @@ test_that("output_lm_mixed_comb", {
     "output_lm_mixed_comb")
 })
 
+
+
+### Custom model by passing predict_model
 test_that("output_custom_lm_numeric_independence_1", {
   set.seed(123)
   custom_pred_func <- function(x,newdata){
@@ -139,9 +142,9 @@ test_that("output_custom_lm_numeric_independence_2", {
   set.seed(123)
   class(model_custom_lm_numeric) = "whatever"
 
-  expect_message(custom <- explain(x_train_numeric,x_test_numeric,model_custom_lm_numeric,approach="independence",prediction_zero=p0,predict_model = custom_pred_func))
 
-  expect_snapshot_rds(custom,"output_custom_lm_numeric_independence_2")
+  expect_snapshot_rds((custom <- explain(x_train_numeric,x_test_numeric,model_custom_lm_numeric,approach="independence",prediction_zero=p0,predict_model = custom_pred_func)),
+                      "output_custom_lm_numeric_independence_2")
 
   native <- explain(x_train_numeric,x_test_numeric,model_lm_numeric,approach="independence",prediction_zero=p0)
 
