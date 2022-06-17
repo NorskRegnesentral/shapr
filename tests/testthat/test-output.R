@@ -34,13 +34,6 @@ model_lm_mixed <- lm(lm_formula_mixed,data = data_complete)
 
 p0 <- data_train[,mean(get(y_var_numeric))]
 
-tmp <- function(x,newdata){
-  predict(x, as.data.frame(newdata))+rnorm(nrow(x))
-}
-
-#class(model_lm_numeric) = "sdad"
-
-#explain(x_train_numeric,x_test_numeric,model_lm_numeric,approach="independence",prediction_zero=p0,predict_model=tmp)
 # lm_numeric with different approahces
 
 test_that("output_lm_numeric_independence", {
@@ -126,5 +119,38 @@ test_that("output_lm_mixed_comb", {
     explain(x_train_mixed,x_test_mixed,model_lm_mixed,approach=c("ctree","independence","ctree","independence","independence"),prediction_zero=p0),
     "output_lm_mixed_comb")
 })
+
+test_that("output_custom_lm_numeric_independence_1", {
+  set.seed(123)
+  custom_pred_func <- function(x,newdata){
+    beta <- coef(x)
+    X <- cbind(1,newdata)
+    return(as.vector(beta%*%t(X)))
+  }
+
+  model_custom_lm_numeric <- model_lm_numeric
+
+  expect_snapshot_rds(
+    explain(x_train_numeric,x_test_numeric,model_custom_lm_numeric,approach="independence",prediction_zero=p0,predict_model = custom_pred_func),
+    "output_custom_lm_numeric_independence_1")
+})
+
+test_that("output_custom_lm_numeric_independence_2", {
+  set.seed(123)
+  class(model_custom_lm_numeric) = "whatever"
+
+  expect_message(custom <- explain(x_train_numeric,x_test_numeric,model_custom_lm_numeric,approach="independence",prediction_zero=p0,predict_model = custom_pred_func))
+
+  expect_snapshot_rds(custom,"output_custom_lm_numeric_independence_2")
+
+  native <- explain(x_train_numeric,x_test_numeric,model_lm_numeric,approach="independence",prediction_zero=p0)
+
+  # Check that the printed Shapley values are identical
+  expect_equal(custom$shapley_values,
+               native$shapley_values)
+
+})
+
+
 
 

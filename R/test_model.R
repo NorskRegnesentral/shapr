@@ -1,7 +1,7 @@
 #' @export
 test_model <- function(internal,model){
   x <- head(internal$data$x_train, 2)
-  tmp <- predict_model(model, x)
+  tmp <- internal$funcs$predict_model(model, x)
   if (!(all(is.numeric(tmp)) & length(tmp) == 2)) {
     stop(
       paste0(
