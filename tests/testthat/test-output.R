@@ -1,4 +1,7 @@
 library(data.table)
+
+options(digits=5) # To avoid round off errors when printing output on different systems
+
 set.seed(1234)
 
 data <- data.table::as.data.table(airquality)
