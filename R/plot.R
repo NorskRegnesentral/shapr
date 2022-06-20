@@ -32,23 +32,23 @@
 #'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 #'
 #'   # Create an explainer object
-#'   explainer <- shapr(x_train, model)
+#'   #explainer <- shapr(x_train, model)
 #'
 #'   # Explain predictions
-#'   p <- mean(x_train$medv)
+#'   #p <- mean(x_train$medv)
 #'
 #'   # Empirical approach
-#'   explanation <- explain(x_explain,
-#'     explainer,
-#'     approach = "empirical",
-#'     prediction_zero = p,
-#'     n_samples = 1e2
-#'   )
+#'   #explanation <- explain(x_explain,
+#'  #   explainer,
+#'  #   approach = "empirical",
+#'  #   prediction_zero = p,
+#'  #   n_samples = 1e2
+#'  # )
 #'
-#'   if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'     # Plot the explantion (this function)
-#'     plot(explanation)
-#'   }
+#'   #if (requireNamespace("ggplot2", quietly = TRUE)) {
+#'    # # Plot the explantion (this function)
+#'    # plot(explanation)
+#'   #}
 #' }
 #' @author Martin Jullum
 plot.shapr <- function(x,

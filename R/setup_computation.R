@@ -385,7 +385,6 @@ group_fun <- function(x, group_num) {
 #' Analogue to feature_not_exact, but for groups instead.
 #'
 #' @inheritParams shapley_weights
-#' @inheritParams shapr
 #' @inheritParams feature_group
 #'
 #' @return data.table with all feature group combinations, shapley weights etc.
@@ -519,7 +518,7 @@ create_S_batch_new <- function(internal,seed=NULL){
     batch_count_dt <- X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(n_combinations-2)*n_batches)),
                                               n_S_per_approach = .N),by=approach]
     batch_count_dt[,n_leftover_first_batch:=n_S_per_approach%%n_batches_per_approach]
-    setorder(batch_count_dt,-n_leftover_first_batch)
+    data.table::setorder(batch_count_dt,-n_leftover_first_batch)
 
     approach_vec <- batch_count_dt[,approach]
     n_batch_vec <- batch_count_dt[,n_batches_per_approach]
@@ -527,8 +526,8 @@ create_S_batch_new <- function(internal,seed=NULL){
     # Randomize order before ordering spreading the batches on the different approaches as evenly as possible with respect to shapley_weight
     set.seed(seed)
     X[,randomorder:=sample(.N)]
-    setorder(X,randomorder) # To avoid smaller id_combinations always proceeding large ones
-    setorder(X,shapley_weight)
+    data.table::setorder(X,randomorder) # To avoid smaller id_combinations always proceeding large ones
+    data.table::setorder(X,shapley_weight)
 
     batch_counter <- 0
     for(i in seq_along(approach_vec)){
@@ -541,8 +540,8 @@ create_S_batch_new <- function(internal,seed=NULL){
     # Spreading the batches
     set.seed(seed)
     X[,randomorder:=sample(.N)]
-    setorder(X,randomorder)
-    setorder(X,shapley_weight)
+    data.table::setorder(X,randomorder)
+    data.table::setorder(X,shapley_weight)
     X[!(n_features %in% c(0,n_features0)),batch:=ceiling(.I/.N*n_batches)]
 
   }

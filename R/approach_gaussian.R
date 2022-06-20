@@ -70,6 +70,9 @@ prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
   return(dt)
 }
 
+#' get_cov_mat
+#'
+#' @param x_train ...
 #' @export
 get_cov_mat <- function(x_train,min_eigen_value = 1e-06){
   cov_mat <- stats::cov(x_train)
@@ -80,6 +83,9 @@ get_cov_mat <- function(x_train,min_eigen_value = 1e-06){
   return(cov_mat)
 }
 
+#' get_mu_vec
+#'
+#' @param x_train ...
 #' @export
 get_mu_vec <- function(x_train,min_eigen_value = 1e-06){
   unname(colMeans(x_train))

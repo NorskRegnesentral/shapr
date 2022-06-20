@@ -16,6 +16,8 @@ explain(
   n_batches = 1,
   seed = 1,
   keep_samp_for_vS = FALSE,
+  predict_model = NULL,
+  get_model_specs = NULL,
   ...
 )
 }

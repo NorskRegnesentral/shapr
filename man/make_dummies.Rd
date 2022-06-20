@@ -21,7 +21,7 @@ one-hot encoded variables.}
 \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
 one-hot encoded variables.}
 \item{traindata_new}{Original traindata with correct column ordering and factor levels. To be passed to
-\code{\link[shapr:shapr]{shapr}.}}
+shapr}
 \item{testdata_new}{Original testdata with correct column ordering and factor levels. To be passed to
 \code{\link[shapr:explain]{explain}.}}
 }

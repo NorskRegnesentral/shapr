@@ -145,47 +145,6 @@ model_checker.default <- function(x) {
 #'   get_model_specs(model)
 #' }
 get_model_specs <- function(x) {
-  model_class <- NULL # Due to NSE notes in R CMD check
-
-  required_model_objects <- "predict_model"
-  recommended_model_objects <- "get_model_specs"
-
-  # Start with all checking for native models
-  model_info <- get_supported_models()[model_class == class(x)[1], ]
-  available_model_objects <- names(which(unlist(model_info[, 2:3])))
-
-  if (nrow(model_info) == 0) {
-    stop(
-      "You passed a model to shapr which is not natively supported See ?shapr::shapr or the vignette\n",
-      "for more information on how to run shapr with custom models."
-    )
-  }
-
-  if (!(all(required_model_objects %in% available_model_objects))) {
-    this_object_missing <- which(!(required_model_objects %in% available_model_objects))
-    stop(
-      paste0(
-        "The following required model objects are not available for your custom model: ",
-        paste0(required_model_objects[this_object_missing], collapse = ", "), ".\n",
-        "See the 'Advanced usage' section of the vignette:\n",
-        "vignette('understanding_shapr', package = 'shapr')\n",
-        "for more information.\n"
-      )
-    )
-  }
-
-  if (!(all(recommended_model_objects %in% available_model_objects))) {
-    this_object_missing <- which(!(recommended_model_objects %in% available_model_objects))
-    message(
-      paste0(
-        paste0(recommended_model_objects[this_object_missing], collapse = ", "), " is not available for your custom ",
-        "model. All feature consistency checking between model and data is disabled.\n",
-        "See the 'Advanced usage' section of the vignette:\n",
-        "vignette('understanding_shapr', package = 'shapr')\n",
-        "for more information.\n"
-      )
-    )
-  }
 
 
   UseMethod("get_model_specs", x)

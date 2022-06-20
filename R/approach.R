@@ -41,7 +41,7 @@ setup_approach.combined <- function(internal,...){
 #'
 #' @param ... Currently not used.
 #'
-#' @return A `data.table` containing simulated data passed to \code{\link{prediction}}.
+#' @return A data.table containing simulated data passed to prediction()}.
 #'
 #' @export
 #' @keywords internal
