@@ -1,6 +1,8 @@
 
 
-
+#' check_setup
+#'
+#' @param x_train ...
 #' @export
 check_setup <- function(x_train,
                         x_explain,
@@ -540,7 +542,7 @@ update_data <- function(data, updater) {
 
 #' Process (check and update names) the group list
 #'
-#' @inheritParams shapr
+#'
 #' @param feature_labels Vector of characters. Contains the feature labels used by the model
 #'
 #' @details This function takes care of all preprocessing and checking of the provided data in \code{x} against
@@ -573,7 +575,7 @@ process_groups <- function(group, feature_labels) {
 
 #' Check that the group parameter has the right form and content
 #'
-#' @inheritParams shapr
+#'
 #' @param feature_labels Vector of characters. Contains the feature labels used by the model
 #'
 #' @return Error or NULL

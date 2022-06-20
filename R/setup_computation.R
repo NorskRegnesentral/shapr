@@ -385,7 +385,6 @@ group_fun <- function(x, group_num) {
 #' Analogue to feature_not_exact, but for groups instead.
 #'
 #' @inheritParams shapley_weights
-#' @inheritParams shapr
 #' @inheritParams feature_group
 #'
 #' @return data.table with all feature group combinations, shapley weights etc.

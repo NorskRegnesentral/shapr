@@ -1,4 +1,7 @@
 
+#' compute_vS
+#'
+#' @param internal ...
 #' @export
 compute_vS <- function(internal,model,method="lapply"){
 

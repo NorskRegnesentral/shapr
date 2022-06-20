@@ -1,3 +1,6 @@
+#' finalize_explanation
+#'
+#' @param vS_list ...
 #' @export
 finalize_explanation <- function(vS_list,internal){
 

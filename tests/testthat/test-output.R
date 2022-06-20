@@ -140,6 +140,13 @@ test_that("output_custom_lm_numeric_independence_1", {
 
 test_that("output_custom_lm_numeric_independence_2", {
   set.seed(123)
+  custom_pred_func <- function(x,newdata){
+    beta <- coef(x)
+    X <- cbind(1,newdata)
+    return(as.vector(beta%*%t(X)))
+  }
+
+  model_custom_lm_numeric <- model_lm_numeric
   class(model_custom_lm_numeric) = "whatever"
 
 
