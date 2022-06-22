@@ -64,7 +64,7 @@ postprocess_vS_list <- function(vS_list,internal){
     dt_samp_for_vS <- NULL
   }
 
-  setorder(dt_vS,id_combination)
+  data.table::setorder(dt_vS,id_combination)
 
   output <- list(dt_vS = dt_vS,
                  dt_samp_for_vS = dt_samp_for_vS)

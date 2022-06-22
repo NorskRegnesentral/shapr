@@ -510,9 +510,10 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #' @keywords internal
 create_S_batch_new <- function(internal,seed=NULL){
 
-  n_features <- approach <- n_leftover_first_batch <- n_S_per_approach <- NULL # due to NSE notes in R CMD check
-  n_batches_per_approach <- randomorder <- NULL # due to NSE notes in R CMD check
-
+  # due to NSE notes in R CMD check
+  n_features <- approach <- n_leftover_first_batch <- n_S_per_approach <- NULL
+  n_batches_per_approach <- randomorder <- shapley_weight <- batch <- NULL
+  id_combination <- NULL
 
   n_features0 <- internal$parameters$n_features
   approach0 <- internal$parameters$approach

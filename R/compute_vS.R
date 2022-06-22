@@ -59,7 +59,7 @@ run_batch <- function(S,internal,model){
 #' @keywords internal
 batch_prepare_vS <- function(S,internal){
 
-  id <- NULL # due to NSE notes in R CMD check
+  id <- id_combination <- NULL # due to NSE notes in R CMD check
 
 
   max_id_combination <- internal$parameters$n_combinations
