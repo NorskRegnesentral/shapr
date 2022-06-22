@@ -72,7 +72,10 @@ prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
 
 #' get_cov_mat
 #'
-#' @param x_train ...
+#' @inheritParams explain
+#' @param min_eigen_value Numeric
+#' Specifies the smallest allowed eigen value before the covariance matrix of \code{x_train} is assumed to not be
+#' positive definite, and [Matrix::nearPD()] is used to find the nearest one.
 #' @export
 get_cov_mat <- function(x_train,min_eigen_value = 1e-06){
   cov_mat <- stats::cov(x_train)
@@ -85,9 +88,9 @@ get_cov_mat <- function(x_train,min_eigen_value = 1e-06){
 
 #' get_mu_vec
 #'
-#' @param x_train ...
+#' @inheritParams explain
 #' @export
-get_mu_vec <- function(x_train,min_eigen_value = 1e-06){
+get_mu_vec <- function(x_train){
   unname(colMeans(x_train))
 }
 

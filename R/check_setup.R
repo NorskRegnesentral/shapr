@@ -1,8 +1,7 @@
 
 
 #' check_setup
-#'
-#' @param x_train ...
+#' @inheritParams explain
 #' @export
 check_setup <- function(x_train,
                         x_explain,
@@ -94,6 +93,8 @@ get_data <- function(x_train,x_explain){
 }
 
 get_funcs <- function(predict_model,get_model_specs,class_model,ignore_model){
+
+  model_class <- NULL # due to NSE
 
   funcs <- list(predict_model = predict_model,
                 get_model_specs = get_model_specs)

@@ -23,3 +23,6 @@
 #'
 #' @useDynLib shapr, .registration = TRUE
 NULL
+
+#' @keywords internal
+"_PACKAGE"

@@ -7,7 +7,13 @@
 get_cov_mat(x_train, min_eigen_value = 1e-06)
 }
 \arguments{
-\item{x_train}{...}
+\item{x_train}{Matrix or data.frame/data.table.
+Contains the data used to estimate the (conditional) distributions for the features
+needed to properly estimate the conditional expectations in the Shapley formula.}
+
+\item{min_eigen_value}{Numeric
+Specifies the smallest allowed eigen value before the covariance matrix of \code{x_train} is assumed to not be
+positive definite, and [Matrix::nearPD()] is used to find the nearest one.}
 }
 \description{
 get_cov_mat

@@ -24,12 +24,20 @@ the total number of unique features, respectively. Note that \code{m = ncol(x_tr
 \item{x_train}{Numeric matrix}
 
 \item{x_explain}{Numeric matrix}
+
+\item{n_samples}{Positive integer.
+Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation. See also details.}
 }
 \value{
 data.table
 }
 \description{
 Generate permutations of training data using test observations
+}
+\references{
+Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
 Nikolai Sellereite

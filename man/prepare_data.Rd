@@ -45,7 +45,7 @@ function.
 Defaults to \code{mc_cores}.}
 }
 \value{
-
+A data.table containing simulated data passed to prediction().
 }
 \description{
 Generate data used for predictions

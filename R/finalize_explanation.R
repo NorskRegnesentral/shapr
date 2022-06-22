@@ -1,6 +1,10 @@
-#' finalize_explanation
+#' Computes the Shapley values given \code{v(S)}
 #'
-#' @param vS_list ...
+#' @inherit explain
+#' @inheritParams default_doc
+#' @param vS_list List
+#' Output from [compute_vS()]
+#'
 #' @export
 finalize_explanation <- function(vS_list,internal){
 
@@ -31,6 +35,7 @@ finalize_explanation <- function(vS_list,internal){
 #' @keywords internal
 postprocess_vS_list <- function(vS_list,internal){
 
+  id_combination <- NULL # due to NSE
 
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
   prediction_zero <- internal$parameters$prediction_zero
@@ -50,7 +55,7 @@ postprocess_vS_list <- function(vS_list,internal){
     dt_vS <- rbindlist(lapply(vS_list, `[[`, 1))
 
     dt_samp_for_vS <- rbindlist(lapply(vS_list, `[[`, 2))
-    setorder(dt_samp_for_vS,id_combination)
+    data.table::setorder(dt_samp_for_vS,id_combination)
 
   } else {
     vS_list[[length(vS_list)+1]] <- dt_vS0
@@ -59,7 +64,7 @@ postprocess_vS_list <- function(vS_list,internal){
     dt_samp_for_vS <- NULL
   }
 
-  setorder(dt_vS,id_combination)
+  data.table::setorder(dt_vS,id_combination)
 
   output <- list(dt_vS = dt_vS,
                  dt_samp_for_vS = dt_samp_for_vS)
@@ -68,6 +73,8 @@ postprocess_vS_list <- function(vS_list,internal){
 
 #' @keywords internal
 get_p <- function(dt_vS,internal){
+
+  id_combination <- NULL # due to NSE
 
   max_id_combination <- internal$parameters$n_combinations
   p <- unlist(dt_vS[id_combination==max_id_combination,][,id_combination:=NULL])

@@ -1,4 +1,8 @@
-#' @export
+
+#' Model testing function
+#'
+#' @inheritParams default_doc
+#' @keywords internal
 test_model <- function(internal,model){
   x <- head(internal$data$x_train, 2)
   tmp <- internal$funcs$predict_model(model, x)
