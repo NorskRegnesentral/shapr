@@ -1,7 +1,11 @@
 
-#' compute_vS
+#' Computes \code{v(S)} for all features subsets \code{S}.
 #'
-#' @param internal ...
+#' @inheritParams default_doc
+#'
+#' @param method Character
+#' Indicates whether the lappy method (default) or loop method should be used.
+#'
 #' @export
 compute_vS <- function(internal,model,method="lapply"){
 
@@ -55,6 +59,9 @@ run_batch <- function(S,internal,model){
 #' @keywords internal
 batch_prepare_vS <- function(S,internal){
 
+  id <- NULL # due to NSE notes in R CMD check
+
+
   max_id_combination <- internal$parameters$n_combinations
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
@@ -90,7 +97,7 @@ compute_preds <- function(dt, internal,model) {
 
 compute_MCint <- function(dt) {
 
-  w <- k <- p_hat <- NULL # due to NSE notes in R CMD check
+  id_combination <- id <- w <- k <- p_hat <- NULL # due to NSE notes in R CMD check
 
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]

@@ -1,5 +1,8 @@
 
-
+#' Sets up everything for the Shapley values computation in [shapr::explain()]
+#'
+#' @inheritParams default_doc
+#' @inherit default_doc
 #' @export
 setup_computation <- function(internal, model){
   # model only needed for type AICc of approach empirical, otherwise ignored
@@ -41,6 +44,11 @@ check_approach <- function(internal){
   }
 }
 
+#' Gets the implemented approaches
+#'
+#' @return Character vector.
+#' The names of the implemented approaches that can be passed to argument \code{approach} in [explain()].
+#'
 #' @export
 get_supported_approaches <- function(){
   substring(rownames(attr(methods(prepare_data),"info")),first = 14)
@@ -502,6 +510,9 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 #' @keywords internal
 create_S_batch_new <- function(internal,seed=NULL){
 
+  n_features <- approach <- n_leftover_first_batch <- n_S_per_approach <- NULL # due to NSE notes in R CMD check
+  n_batches_per_approach <- randomorder <- NULL # due to NSE notes in R CMD check
+
 
   n_features0 <- internal$parameters$n_features
   approach0 <- internal$parameters$approach
@@ -524,7 +535,6 @@ create_S_batch_new <- function(internal,seed=NULL){
     n_batch_vec <- batch_count_dt[,n_batches_per_approach]
 
     # Randomize order before ordering spreading the batches on the different approaches as evenly as possible with respect to shapley_weight
-    set.seed(seed)
     X[,randomorder:=sample(.N)]
     data.table::setorder(X,randomorder) # To avoid smaller id_combinations always proceeding large ones
     data.table::setorder(X,shapley_weight)
@@ -538,7 +548,6 @@ create_S_batch_new <- function(internal,seed=NULL){
     X[!(n_features %in% c(0,n_features0)),approach:=approach0]
 
     # Spreading the batches
-    set.seed(seed)
     X[,randomorder:=sample(.N)]
     data.table::setorder(X,randomorder)
     data.table::setorder(X,shapley_weight)

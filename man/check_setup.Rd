@@ -22,7 +22,84 @@ check_setup(
 )
 }
 \arguments{
-\item{x_train}{...}
+\item{x_train}{Matrix or data.frame/data.table.
+Contains the data used to estimate the (conditional) distributions for the features
+needed to properly estimate the conditional expectations in the Shapley formula.}
+
+\item{x_explain}{A matrix or data.frame/data.table.
+Contains the the features, whose predictions ought to be explained.}
+
+\item{model}{The model whose predictions we want to explain.
+Run [get_supported_models()]
+for a table of which models \code{explain} supports natively. Unsupported models
+can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
+see details for more information.}
+
+\item{approach}{Character vector of length \code{1} or \code{n_features}.
+\code{n_features} equals the total number of features in the model. All elements should,
+either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, or \code{"independence"}.
+See details for more information.}
+
+\item{prediction_zero}{Numeric.
+The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
+features.
+Typically we set this value equal to the mean of the response variable in our training data, but other choices
+such as the mean of the predictions in the training data are also reasonable.}
+
+\item{n_combinations}{Integer.
+The number of feature combinations to sample. If \code{NULL},
+the exact method is used and all combinations are considered. The maximum number of
+combinations equals \code{2^ncol(x)}.}
+
+\item{group}{List.
+If \code{NULL} regular feature wise Shapley values are computed.
+If provided, group wise Shapley values are computed. \code{group} then has length equal to
+the number of groups. The list element contains character vectors with the features included
+in each of the different groups.}
+
+\item{n_samples}{Positive integer.
+Indicating the maximum number of samples to use in the
+Monte Carlo integration for every conditional expectation. See also details.}
+
+\item{n_batches}{Positive integer.
+Specifies how many batches the total number of feature combinations should be split into when calculating the
+contribution function for each test observation.
+The default value is 1.
+Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+This typically comes with a small increase in computation time.}
+
+\item{seed}{Positive integer.
+Specifies the seed before any randomness based code is being run.
+If \code{NULL} the seed will be inherited from the calling environment.}
+
+\item{keep_samp_for_vS}{Logical.
+Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
+(in \code{internal$output})}
+
+\item{predict_model}{Function.
+The prediction function used when \code{model} is not natively supported.
+(Run [get_supported_models()] for a list of natively supported
+models.)
+The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
+and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
+\code{NULL} (the default) uses functions specified internally.
+Can also be used to override the default function for natively supported model classes.}
+
+\item{get_model_specs}{Function.
+An optional function for checking model/data consistency when \code{model} is not natively supported.
+(Run [get_supported_models()] for a list of natively supported
+models.)
+The function takes \code{model} as argument and provides a list with 3 elements:
+\describe{
+  \item{labels}{Character vector with the names of each feature.}
+  \item{classes}{Character vector with the classes of each features.}
+  \item{factor_levels}{Character vector with the levels for any categorical features.}
+}
+If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
+disabled for unsupported model classes.
+Can also be used to override the default function for natively supported model classes.}
+
+\item{...}{Additional arguments passed to [setup_approach()] for specific approaches.}
 }
 \description{
 check_setup
