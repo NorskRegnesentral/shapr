@@ -2,18 +2,31 @@
 #'
 #' @description Plots the individual prediction explanations.
 #'
-#' @param x An \code{shapr} object. See \code{\link{explain}}.
-#' @param digits Integer. Number of significant digits to use in the feature description
-#' @param plot_phi0 Logical. Whether to include \code{phi0} in the plot
-#' @param index_x_explain Integer vector. Which of the test observations to plot. E.g. if you have
+#' @param x An \code{shapr} object.
+#'  The output from [explain()].
+#' @param plot_type Character.
+#'  Specifies the type of plot to produce.
+#'  \code{"bar"} (the default) gives a regular horizontal bar plot of the Shapley value magnitudes.
+#'  \code{"waterfall"} gives a waterfall plot indicating the changes in the prediction score due to each features
+#'  contribution (their Shapley values).
+#' @param digits Integer.
+#' Number of significant digits to use in the feature description
+#' @param plot_phi0 Logical.
+#' Whether to include \code{phi0} in the plot.
+#' @param index_x_explain Integer vector.
+#' Which of the test observations to plot. E.g. if you have
 #' explained 10 observations using \code{\link{explain}}, you can generate a plot for the first 5
 #' observations by setting \code{index_x_explain = 1:5}.
-#' @param top_k_features Integer. How many features to include in the plot. E.g. if you have 15
+#' @param top_k_features Integer.
+#' How many features to include in the plot. E.g. if you have 15
 #' features in your model you can plot the 5 most important features, for each explanation, by setting
 #' \code{top_k_features = 1:5}.
+#' @param col Character vector (or length 2).
+#' The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
+#' Shapley values, respectively.
 #' @param ... Currently not used.
 #'
-#' @details See \code{vignette("understanding_shapr", package = "shapr")} for an example of
+#' @details See the examples below, or \code{vignette("understanding_shapr", package = "shapr")} for an examples of
 #' how you should use the function.
 #'
 #' @return ggplot object with plots of the Shapley value explanations
@@ -31,39 +44,34 @@
 #'   # Fit a linear model
 #'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 #'
-#'   # Create an explainer object
-#'   #explainer <- shapr(x_train, model)
+#'   # Define unconditional expectation
+#'   p <- mean(x_train$medv)
 #'
 #'   # Explain predictions
-#'   #p <- mean(x_train$medv)
+#'   explanation <- explain(x_train,x_explain,model,approach="empirical",prediction_zero=p)
 #'
-#'   # Empirical approach
-#'   #explanation <- explain(x_explain,
-#'  #   explainer,
-#'  #   approach = "empirical",
-#'  #   prediction_zero = p,
-#'  #   n_samples = 1e2
-#'  # )
+#'   # Plot the explantion (this function)
+#'   if (requireNamespace("ggplot2", quietly = TRUE)) {
+#'    plot(explanation) # Regular bar plot
 #'
-#'   #if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'    # # Plot the explantion (this function)
-#'    # plot(explanation)
-#'   #}
+#'    plot(explanation, plot_type = "waterfall") # Waterfall plot
+#'   }
 #' }
-#' @author Martin Jullum
+#' @author Martin Jullum, Vilde Ung
 plot.shapr <- function(x,
+                       plot_type = "bar",
                        digits = 3,
                        plot_phi0 = TRUE,
                        index_x_explain = NULL,
                        top_k_features = NULL,
-                       plot_type = "bar",
                        col = c("#00BA38","#F8766D"), #first increasing color, then decreasing color
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   }
-  #TODO: This functions needs to be updated to the new shapr paradigm -- and we could possibly add more functionality
-  # like what shap() has in their package.
+
+  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
+  pred_label  <- pred_x <- element_rect <- NULL
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
@@ -123,7 +131,7 @@ plot.shapr <- function(x,
   plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
 
   # compute start and end values for waterfall rectangles
-  setorder(plotting_dt, rank_waterfall)
+  data.table::setorder(plotting_dt, rank_waterfall)
   plotting_dt[, end:= cumsum(phi), by = id]
   expected <- x$internal$parameters$prediction_zero
   plotting_dt[, start := c(expected, head(end, -1)), by = id]
@@ -154,7 +162,7 @@ plot.shapr <- function(x,
     ggplot2::theme_classic(base_family = "sans") +
     ggplot2::theme(legend.position = "bottom",
                    plot.title = ggplot2::element_text(hjust = 0.5),
-                   strip.background = element_rect(colour = "white", fill = "white")) +
+                   strip.background = ggplot2::element_rect(colour = "white", fill = "white")) +
     ggplot2::scale_fill_manual(values = col, drop = TRUE)
 
   if (plot_type == "bar"){
@@ -184,8 +192,8 @@ plot.shapr <- function(x,
                          size=2.5, family = "sans", col = text_color) +
       ggplot2::annotate("text", parse = TRUE, x = -Inf, y = expected, label = phi0_label,
                        size=2.5, family = "sans", col = "grey30", vjust = 0, hjust = 0) +
-      ggplot2::geom_segment(aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
-                            arrow=arrow(length = unit(0.03, "npc")), show.legend = FALSE) +
+      ggplot2::geom_segment(ggplot2::aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
+                            arrow=ggplot2::arrow(length = ggplot2::unit(0.03, "npc")), show.legend = FALSE) +
       ggplot2::scale_color_manual(values=col) +
       ggplot2::geom_text(data=plotting_dt[1:n_obs,],
                          ggplot2::aes(x = pred_x, y = pred, label = pred_label,
