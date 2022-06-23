@@ -1,3 +1,112 @@
+
+#' Sets up everything for the Shapley values computation in [shapr::explain()]
+#'
+#' @inheritParams default_doc
+#' @inherit default_doc
+#' @export
+setup_computation <- function(internal, model){
+  # model only needed for type AICc of approach empirical, otherwise ignored
+
+  # TODO: Consider moving this to the initial checking function
+  # Checking the format of approach
+  check_approach(internal)
+
+
+  # setup the Shapley framework
+  internal <- shapley_setup(internal)
+
+  # Setup for approach
+  internal <- setup_approach(internal, model = model)
+
+  return(internal)
+}
+
+#' @keywords internal
+check_approach <- function(internal){
+  # Check input for approach
+
+  approach <- internal$parameters$approach
+  n_features <- internal$parameters$n_features
+  supported_models <- get_supported_approaches()
+
+  if (!(is.vector(approach) &&
+        is.atomic(approach) &&
+        (length(approach) == 1 | length(approach) == n_features) &&
+        all(is.element(approach, supported_models)))
+  ) {
+    stop(
+      paste(
+        "It seems that you passed a non-valid value for approach.",
+        "It should be either \n",paste0(supported_models,collapse=", "),"\nor",
+        "a vector of length=ncol(x) with only the above characters."
+      )
+    )
+  }
+}
+
+#' Gets the implemented approaches
+#'
+#' @return Character vector.
+#' The names of the implemented approaches that can be passed to argument \code{approach} in [explain()].
+#'
+#' @export
+get_supported_approaches <- function(){
+  substring(rownames(attr(methods(prepare_data),"info")),first = 14)
+}
+
+
+#' @keywords internal
+shapley_setup <- function(internal){
+
+  exact <- internal$parameters$exact
+  n_features <- internal$parameters$n_features
+  n_combinations <- internal$parameters$n_combinations
+  group_num <- internal$parameters$group_num
+  is_groupwise <- internal$parameters$is_groupwise
+
+
+  X <- internal$objects$X
+
+  # Get all combinations ----------------
+  X <- feature_combinations(
+    m = n_features,
+    exact = exact,
+    n_combinations = n_combinations,
+    weight_zero_m = 10^6,
+    group_num = group_num
+  )
+
+  # Get weighted matrix ----------------
+  W <- weight_matrix(
+    X = X,
+    normalize_W_weights = TRUE,
+    is_groupwise = is_groupwise
+  )
+
+  ## Get feature matrix ---------
+  S <- feature_matrix_cpp(
+    features = X[["features"]],
+    m = n_features
+  )
+
+  #### Updating parameters ####
+
+  # Updating parameters$exact as done in feature_combinations
+  if (!exact && n_combinations > (2^n_features - 2)) {
+    internal$parameters$exact <- TRUE
+  }
+
+  internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used. This will be obsolete later
+  internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed instead of storing it
+
+  internal$objects <- list(X = X, W = W, S = S)
+
+  internal$objects$S_batch <- create_S_batch_new(internal)
+
+
+  return(internal)
+}
+
 #' Define feature combinations, and fetch additional information about each unique combination
 #'
 #' @param m Positive integer. Total number of features.
@@ -145,100 +254,6 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 }
 
 #' @keywords internal
-group_fun <- function(x, group_num) {
-  if (length(x) != 0) {
-    unlist(group_num[x])
-  } else {
-    integer(0)
-  }
-}
-
-#' Analogue to feature_exact, but for groups instead.
-#'
-#' @inheritParams shapley_weights
-#' @param group_num List. Contains vector of integers indicating the feature numbers for the
-#' different groups.
-#'
-#' @return data.table with all feature group combinations, shapley weights etc.
-#'
-#' @keywords internal
-feature_group <- function(group_num, weight_zero_m = 10^6) {
-
-  # due to NSE notes in R CMD check
-  features <- id_combination <- n_features <- shapley_weight <- N <- groups <- n_groups <- NULL
-
-  m <- length(group_num)
-  dt <- data.table::data.table(id_combination = seq(2^m))
-  combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
-
-  dt[, groups := unlist(combinations, recursive = FALSE)]
-  dt[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
-  dt[, n_groups := length(groups[[1]]), id_combination]
-  dt[, n_features := length(features[[1]]), id_combination]
-  dt[, N := .N, n_groups]
-  dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_groups, weight_zero_m)]
-
-  return(dt)
-}
-
-#' Check that the group parameter has the right form and content
-#'
-#' @inheritParams shapr
-#' @param feature_labels Vector of characters. Contains the feature labels used by the model
-#'
-#' @return Error or NULL
-#'
-#' @keywords internal
-check_groups <- function(feature_labels, group) {
-  if (!is.list(group)) {
-    stop("group must be a list")
-  }
-
-  group_features <- unlist(group)
-
-  # Checking that the group_features are characters
-  if (!all(is.character(group_features))) {
-    stop("All components of group should be a character.")
-  }
-
-  # Check that all features in group are in feature labels or used by model
-  if (!all(group_features %in% feature_labels)) {
-    missing_group_feature <- group_features[!(group_features %in% feature_labels)]
-    stop(
-      paste0(
-        "The group feature(s) ", paste0(missing_group_feature, collapse = ", "), " are not\n",
-        "among the features specified by the model/data. Delete from group."
-      )
-    )
-  }
-
-  # Check that all feature used by model are in group
-  if (!all(feature_labels %in% group_features)) {
-    missing_features <- feature_labels[!(feature_labels %in% group_features)]
-    stop(
-      paste0(
-        "The model/data feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
-        "belong to one of the groups. Add to a group."
-      )
-    )
-  }
-
-  # Check uniqueness of group_features
-  if (length(group_features) != length(unique(group_features))) {
-    dups <- group_features[duplicated(group_features)]
-    stop(
-      paste0(
-        "Feature(s) ", paste0(dups, collapse = ", "), " are found in more than one group or ",
-        "multiple times per group.\n",
-        "Make sure each feature is only represented in one group, and only once."
-      )
-    )
-  }
-  return(NULL)
-}
-
-
-#' @keywords internal
 feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   features <- id_combination <- n_features <- shapley_weight <- N <- NULL # due to NSE notes in R CMD check
 
@@ -300,10 +315,84 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   return(X)
 }
 
+#' Calculate Shapley weight
+#'
+#' @param m Positive integer. Total number of features/feature groups.
+#' @param n_components Positive integer. Represents the number of features/feature groups you want to sample from
+#' a feature space consisting of \code{m} unique features/feature groups. Note that \code{ 0 < = n_components <= m}.
+#' @param N Positive integer. The number of unique combinations when sampling \code{n_components} features/feature
+#' groups, without replacement, from a sample space consisting of \code{m} different features/feature groups.
+#' @param weight_zero_m Positive integer. Represents the Shapley weight for two special
+#' cases, i.e. the case where you have either \code{0} or \code{m} features/feature groups.
+#'
+#' @return Numeric
+#' @keywords internal
+#'
+#' @author Nikolai Sellereite
+shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
+  x <- (m - 1) / (N * n_components * (m - n_components))
+  x[!is.finite(x)] <- weight_zero_m
+  x
+}
+
+
+#' @keywords internal
+helper_feature <- function(m, feature_sample) {
+  sample_frequence <- is_duplicate <- NULL # due to NSE notes in R CMD check
+
+  x <- feature_matrix_cpp(feature_sample, m)
+  dt <- data.table::data.table(x)
+  cnms <- paste0("V", seq(m))
+  data.table::setnames(dt, cnms)
+  dt[, sample_frequence := as.integer(.N), by = cnms]
+  dt[, is_duplicate := duplicated(dt)]
+  dt[, (cnms) := NULL]
+
+  return(dt)
+}
+
+
+#' Analogue to feature_exact, but for groups instead.
+#'
+#' @inheritParams shapley_weights
+#' @param group_num List. Contains vector of integers indicating the feature numbers for the
+#' different groups.
+#'
+#' @return data.table with all feature group combinations, shapley weights etc.
+#'
+#' @keywords internal
+feature_group <- function(group_num, weight_zero_m = 10^6) {
+
+  # due to NSE notes in R CMD check
+  features <- id_combination <- n_features <- shapley_weight <- N <- groups <- n_groups <- NULL
+
+  m <- length(group_num)
+  dt <- data.table::data.table(id_combination = seq(2^m))
+  combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
+
+  dt[, groups := unlist(combinations, recursive = FALSE)]
+  dt[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
+  dt[, n_groups := length(groups[[1]]), id_combination]
+  dt[, n_features := length(features[[1]]), id_combination]
+  dt[, N := .N, n_groups]
+  dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_groups, weight_zero_m)]
+
+  return(dt)
+}
+
+#' @keywords internal
+group_fun <- function(x, group_num) {
+  if (length(x) != 0) {
+    unlist(group_num[x])
+  } else {
+    integer(0)
+  }
+}
+
+
 #' Analogue to feature_not_exact, but for groups instead.
 #'
 #' @inheritParams shapley_weights
-#' @inheritParams shapr
 #' @inheritParams feature_group
 #'
 #' @return data.table with all feature group combinations, shapley weights etc.
@@ -378,177 +467,103 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
 }
 
 
-
-
-#' @keywords internal
-helper_feature <- function(m, feature_sample) {
-  sample_frequence <- is_duplicate <- NULL # due to NSE notes in R CMD check
-
-  x <- feature_matrix_cpp(feature_sample, m)
-  dt <- data.table::data.table(x)
-  cnms <- paste0("V", seq(m))
-  data.table::setnames(dt, cnms)
-  dt[, sample_frequence := as.integer(.N), by = cnms]
-  dt[, is_duplicate := duplicated(dt)]
-  dt[, (cnms) := NULL]
-
-  return(dt)
-}
-
-#' Initiate the making of dummy variables
+#' Calculate weighted matrix
 #'
-#' @param traindata data.table or data.frame.
+#' @param X data.table
+#' @param normalize_W_weights Logical. Whether to normalize the weights for the combinations to sum to 1 for
+#' increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations
+#' except combination \code{1} and \code{2^m}.
+#' @param is_groupwise Logical. Indicating whether group wise Shapley values are to be computed.
 #'
-#' @param testdata data.table or data.frame. New data that has the same
-#' feature names, types, and levels as \code{traindata}.
-#'
-#' @return A list that contains the following entries:
-#' \describe{
-#' \item{feature_list}{List. Output from \code{check_features}}
-#' \item{train_dummies}{A data.frame containing all of the factors in \code{traindata} as
-#' one-hot encoded variables.}
-#' \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
-#' one-hot encoded variables.}
-#' \item{traindata_new}{Original traindata with correct column ordering and factor levels. To be passed to
-#' \code{\link[shapr:shapr]{shapr}.}}
-#' \item{testdata_new}{Original testdata with correct column ordering and factor levels. To be passed to
-#' \code{\link[shapr:explain]{explain}.}}
-#' }
-#'
-#' @export
-#'
-#' @author Annabelle Redelmeier, Martin Jullum
-#'
-#' @examples
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   data("Boston", package = "MASS")
-#'   x_var <- c("lstat", "rm", "dis", "indus")
-#'   y_var <- "medv"
-#'   x_train <- as.data.frame(Boston[401:411, x_var])
-#'   y_train <- Boston[401:408, y_var]
-#'   x_explain <- as.data.frame(Boston[1:4, x_var])
-#'
-#'   # convert to factors for illustational purpose
-#'   x_train$rm <- factor(round(x_train$rm))
-#'   x_explain$rm <- factor(round(x_explain$rm), levels = levels(x_train$rm))
-#'
-#'   dummylist <- make_dummies(traindata = x_train, testdata = x_explain)
-#' }
-make_dummies <- function(traindata, testdata) {
-  if (all(is.null(colnames(traindata)))) {
-    stop(paste0("The traindata is missing column names"))
-  }
-
-  if (all(is.null(colnames(testdata)))) {
-    stop(paste0("The testdata is missing column names"))
-  }
-
-  train_dt <- data.table::as.data.table(traindata)
-  test_dt <- data.table::as.data.table(testdata)
-
-  feature_list_train <- get_data_specs(train_dt)
-  feature_list_test <- get_data_specs(test_dt)
-
-  feature_list_train$specs_type <- "traindata"
-  feature_list_test$specs_type <- "testdata"
-
-  updater <- check_features(feature_list_train, feature_list_test, F)
-
-  # Reorderes factor levels so that they match each other
-  update_data(train_dt, updater)
-  update_data(test_dt, updater)
-
-  feature_list <- updater
-
-  # Extracts the components
-  factor_features <- feature_list$labels[updater$classes == "factor"]
-
-  if (length(factor_features) > 0) {
-    factor_list <- feature_list$factor_levels[factor_features]
-    feature_list$contrasts_list <- lapply(train_dt[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
-
-    # get train dummies
-    m <- model.frame(
-      data = train_dt,
-      xlev = factor_list
-    )
-    train_dummies <- model.matrix(
-      object = ~ . + 0,
-      data = m,
-      contrasts.arg = feature_list$contrasts_list
-    )
-
-    # get test dummies
-    m <- model.frame(
-      data = test_dt,
-      xlev = factor_list
-    )
-    test_dummies <- model.matrix(
-      object = ~ . + 0,
-      data = m,
-      contrasts.arg = feature_list$contrasts_list
-    )
-  } else {
-    train_dummies <- train_dt
-    test_dummies <- test_dt
-  }
-
-  return(list(
-    feature_list = feature_list,
-    train_dummies = train_dummies, test_dummies = test_dummies, traindata_new = train_dt,
-    testdata_new = test_dt
-  ))
-}
-
-#' Apply dummy variables - this is an internal function intended only to be used in
-#' predict_model.xgb.Booster()
-#'
-#' @param feature_list List. The \code{feature_list} object in the output object after running
-#' \code{\link[shapr:make_dummies]{make_dummies}}
-#'
-#' @param testdata data.table or data.frame. New data that has the same
-#' feature names, types, and levels as \code{feature_list}.
-#'
-#' @return A data.table with all features but where the factors in \code{testdata} are
-#' one-hot encoded variables as specified in feature_list
-#'
-#' @author Annabelle Redelmeier, Martin Jullum
-#'
+#' @return Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
 #' @keywords internal
 #'
-apply_dummies <- function(feature_list, testdata) {
-  if (all(is.null(colnames(testdata)))) {
-    stop(paste0("The testdata is missing column names"))
+#' @author Nikolai Sellereite, Martin Jullum
+weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
+
+  # Fetch weights
+  w <- X[["shapley_weight"]]
+
+  if (normalize_W_weights) {
+    w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
   }
-  test_dt <- data.table::as.data.table(testdata)
 
-  feature_list_test <- get_data_specs(test_dt)
-
-  feature_list_test$specs_type <- "testdata"
-
-  updater <- check_features(feature_list, feature_list_test, F)
-
-  # Reorderes factor levels so that they match
-  update_data(test_dt, updater)
-
-  factor_features <- feature_list$labels[updater$classes == "factor"] # check which features are factors
-
-  if (length(factor_features) > 0) {
-    factor_list <- feature_list$factor_levels[factor_features]
-
-    m <- model.frame(
-      data = test_dt,
-      xlev = factor_list
-    )
-
-    x <- model.matrix(
-      object = ~ . + 0,
-      data = m,
-      contrasts.arg = feature_list$contrasts_list
+  if (!is_groupwise) {
+    W <- weight_matrix_cpp(
+      subsets = X[["features"]],
+      m = X[.N][["n_features"]],
+      n = X[, .N],
+      w = w
     )
   } else {
-    x <- test_dt
+    W <- weight_matrix_cpp(
+      subsets = X[["groups"]],
+      m = X[.N][["n_groups"]],
+      n = X[, .N],
+      w = w
+    )
   }
 
-  return(x)
+  return(W)
 }
+
+#' @keywords internal
+create_S_batch_new <- function(internal,seed=NULL){
+
+  # due to NSE notes in R CMD check
+  n_features <- approach <- n_leftover_first_batch <- n_S_per_approach <- NULL
+  n_batches_per_approach <- randomorder <- shapley_weight <- batch <- NULL
+  id_combination <- NULL
+
+  n_features0 <- internal$parameters$n_features
+  approach0 <- internal$parameters$approach
+  n_combinations <- internal$parameters$n_combinations
+  n_batches <- internal$parameters$n_batches
+
+  X <- internal$objects$X
+
+
+  if(length(approach0)>1){
+    X[!(n_features %in% c(0,n_features0)),approach:=approach0[n_features]]
+
+    # Finding the number of batches per approach
+    batch_count_dt <- X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(n_combinations-2)*n_batches)),
+                                              n_S_per_approach = .N),by=approach]
+    batch_count_dt[,n_leftover_first_batch:=n_S_per_approach%%n_batches_per_approach]
+    data.table::setorder(batch_count_dt,-n_leftover_first_batch)
+
+    approach_vec <- batch_count_dt[,approach]
+    n_batch_vec <- batch_count_dt[,n_batches_per_approach]
+
+    # Randomize order before ordering spreading the batches on the different approaches as evenly as possible with respect to shapley_weight
+    X[,randomorder:=sample(.N)]
+    data.table::setorder(X,randomorder) # To avoid smaller id_combinations always proceeding large ones
+    data.table::setorder(X,shapley_weight)
+
+    batch_counter <- 0
+    for(i in seq_along(approach_vec)){
+      X[approach==approach_vec[i],batch:=ceiling(.I/.N*n_batch_vec[i])+batch_counter]
+      batch_counter <- X[approach==approach_vec[i],max(batch)]
+    }
+  } else {
+    X[!(n_features %in% c(0,n_features0)),approach:=approach0]
+
+    # Spreading the batches
+    X[,randomorder:=sample(.N)]
+    data.table::setorder(X,randomorder)
+    data.table::setorder(X,shapley_weight)
+    X[!(n_features %in% c(0,n_features0)),batch:=ceiling(.I/.N*n_batches)]
+
+  }
+
+  # Assigning batch 1 (which always is the smallest) to the full prediction.
+  X[,randomorder:=NULL]
+  X[id_combination==max(id_combination),batch:=1]
+  setkey(X,id_combination)
+
+  # Create a list of the batch splits
+  S_groups <- split(X[id_combination!=1,id_combination],X[id_combination!=1,batch])
+
+  return(S_groups)
+}
+
