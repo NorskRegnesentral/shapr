@@ -135,7 +135,7 @@ plot.shapr <- function(x,
   plotting_dt[, end:= cumsum(phi), by = id]
   expected <- x$internal$parameters$prediction_zero
   plotting_dt[, start := c(expected, head(end, -1)), by = id]
-  plotting_dt[, phi_significant := format(phi, digits = digits), by=id]
+  plotting_dt[, phi_significant := format(phi, digits=digits), by=id]
 
   # waterfall plotting helpers
   plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/10,
@@ -177,7 +177,9 @@ plot.shapr <- function(x,
   } else if (plot_type == "waterfall"){
     gg <- gg + ggplot2::geom_segment(ggplot2::aes(x=-Inf, xend = max(rank_waterfall)+0.8, y=pred, yend=pred),
                                      linetype="dotted", col="grey30", size=0.25) +
-      ggplot2::coord_flip(clip = 'off', xlim=c(0.5, N_features+1.1)) +
+      ggplot2::coord_flip(clip = 'off', xlim=c(0.5, ifelse(N_features+N_features*0.11 < N_features+0.5,
+                                                           N_features+0.5,
+                                                           N_features+N_features*0.11)))  +
       ggplot2::labs(y = "Prediction",
                     x = "Feature",
                     fill = "",
