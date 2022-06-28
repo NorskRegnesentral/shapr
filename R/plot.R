@@ -113,28 +113,36 @@ plot.shapr <- function(x,
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits+1))]
 
-  plotting_dt[variable!="none", rank := data.table::frank(-abs(phi)), by = "id"]
-  plotting_dt[variable=="none", rank:=0]
+  plotting_dt[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
+  plotting_dt[variable == "none", rank := 0]
   N_features <- x$internal$parameters$n_features
   plotting_dt <- plotting_dt[id %in% index_x_explain]
 
   # collapse phi-value for features that are not in top k features
   plotting_dt[rank > top_k_features,  phi:= sum(phi), by=id]
   plotting_dt[rank > top_k_features, variable:="rest", by=id]
-  plotting_dt[variable == "rest", rank:=min(rank), by=id]
-  plotting_dt[variable == "rest", description := paste(N_features - top_k_features,"other features")]
-  plotting_dt[variable == "rest", sign:=ifelse(phi < 0, "Decreases", "Increases")]
+  plotting_dt[variable == "rest", rank := min(rank), by=id]
+  plotting_dt[variable == "rest", description := paste(N_features - top_k_features, "other features")]
+  plotting_dt[variable == "rest", sign := ifelse(phi < 0, "Decreases", "Increases")]
   plotting_dt <- unique(plotting_dt)
 
-  plotting_dt[variable!="none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
-  plotting_dt[variable=="none", rank_waterfall:=0]
-  plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
+  #unique label for correct order when plotting
+  plotting_dt[, unique_label := seq_along(description)]
+  plotting_dt[variable == "none", unique_label := 0] #such that none is always at top of plot
+  plotting_dt[variable == "rest", unique_label := -1] #such that rest is always at bottom of plot
+  unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(abs(phi))]], 0)
+  plotting_dt[, unique_label := factor(unique_label, levels = unique_levels)]
+
+  plotting_dt[variable != "none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
+  plotting_dt[variable == "none", rank_waterfall := 0]
+  #plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
 
   # compute start and end values for waterfall rectangles
   data.table::setorder(plotting_dt, rank_waterfall)
   plotting_dt[, end:= cumsum(phi), by = id]
   expected <- x$internal$parameters$prediction_zero
   plotting_dt[, start := c(expected, head(end, -1)), by = id]
+
   plotting_dt[, phi_significant := format(phi, digits=digits), by=id]
 
   # waterfall plotting helpers
@@ -153,19 +161,31 @@ plot.shapr <- function(x,
   plotting_dt[, pred_x:= N_features+0.8]
   plotting_dt[, phi0_label := paste0("~phi[0]==", format(expected, digits=digits+1))]
   plotting_dt[, phi0_x:= 0]
-  #phi0_label <- paste0("~phi[0]==", format(expected, digits=digits+1))
 
-  if (!plot_phi0 | plot_type=="waterfall") {
-    plotting_dt <- plotting_dt[variable != "none"]
+  # helpers for labelling y-axis correctly
+  desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(abs(phi))]]
+
+  if (top_k_features != x$internal$parameters$n_features){ #if there is a rest feature
+    desc_labels <- c(paste(x$internal$parameters$n_features - top_k_features, "other features"),
+                     desc_labels)
   }
 
-  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x=description, fill=sign)) +
+  if (!plot_phi0 | plot_type == "waterfall") { #if none is not to be included in plot
+    plotting_dt <- plotting_dt[variable != "none"]
+  } else {
+    desc_labels <- c(desc_labels, "None")
+  }
+
+  breaks <- levels(droplevels(plotting_dt[,unique_label])) #removes -1 if no rest and 0 if no none
+
+  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x=unique_label, fill=sign)) +
     ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol=2) +
     ggplot2::theme_classic(base_family = "sans") +
     ggplot2::theme(legend.position = "bottom",
                    plot.title = ggplot2::element_text(hjust = 0.5),
                    strip.background = ggplot2::element_rect(colour = "white", fill = "white")) +
-    ggplot2::scale_fill_manual(values = col, drop = TRUE)
+    ggplot2::scale_fill_manual(values = col, drop = TRUE) +
+    scale_x_discrete(breaks = breaks, labels = desc_labels)
 
   if (plot_type == "bar"){
     gg <- gg + ggplot2::geom_col(ggplot2::aes(y=phi)) +
@@ -186,7 +206,7 @@ plot.shapr <- function(x,
                     x = "Feature",
                     fill = "",
                     title = "Shapley value prediction explanation") +
-      ggplot2::geom_rect(ggplot2::aes(x=description, xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
+      ggplot2::geom_rect(ggplot2::aes(xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
                          show.legend = NA) +
       ggplot2::geom_segment(x=-Inf, xend = 1.3, y=expected, yend=expected,
                             linetype="dotted", col="grey30", size=0.25) +
@@ -194,8 +214,6 @@ plot.shapr <- function(x,
                                       x = rank_waterfall, y = y_text,
                                       vjust = 0.5, hjust = hjust_text),
                          size=2.5, family = "sans", col = text_color) +
-      #ggplot2::annotate("text", parse = TRUE, x = -Inf, y = expected, label = phi0_label,
-      #                 size=2.5, family = "sans", col = "grey30", vjust = 0, hjust = 0) +
       ggplot2::geom_segment(ggplot2::aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
                             arrow=ggplot2::arrow(length = ggplot2::unit(0.03, "npc")), show.legend = FALSE) +
       ggplot2::scale_color_manual(values=col) +
