@@ -26,8 +26,8 @@
 #' Shapley values, respectively.
 #' @param plot_order Character.
 #' Specifies what order to plot the features.
-#'  \code{"largest_first"} (the default) plots the features ordered from largest to smallest phi value.
-#'  \code{"smallest_first"} plots the features ordered from smallest to largest phi value.
+#'  \code{"largest_first"} (the default) plots the features ordered from largest to smallest Shapley value.
+#'  \code{"smallest_first"} plots the features ordered from smallest to largest Shapley value.
 #'  \code{"original"} plots the features in the original order of the data table.
 #' @param ... Currently not used.
 #'
@@ -74,6 +74,12 @@ plot.shapr <- function(x,
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+  }
+  if(!(plot_type%in%c("bar", "waterfall"))){
+    stop(paste(plot_type, "is an invalid plot type. Try 'bar' or 'waterfall'."))
+  }
+  if(!(plot_order%in%c("largest_first", "smallest_first", "original"))){
+    stop(paste(plot_order, "is an invalid plot order. Try 'largest_first', 'smallest_first' or 'original'."))
   }
 
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
