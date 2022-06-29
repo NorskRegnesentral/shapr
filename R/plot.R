@@ -25,9 +25,9 @@
 #' The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
 #' Shapley values, respectively.
 #' @param plot_order Character.
-#' Specifies what order to plot the features.
-#'  \code{"largest_first"} (the default) plots the features ordered from largest to smallest Shapley value.
-#'  \code{"smallest_first"} plots the features ordered from smallest to largest Shapley value.
+#' Specifies what order to plot the features with respect to the magnitude of the shapley values.
+#'  \code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
+#'  \code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
 #'  \code{"original"} plots the features in the original order of the data table.
 #' @param ... Currently not used.
 #'
