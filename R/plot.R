@@ -24,6 +24,11 @@
 #' @param col Character vector (or length 2).
 #' The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
 #' Shapley values, respectively.
+#' @param plot_order Character.
+#' Specifies what order to plot the features.
+#'  \code{"largest_first"} (the default) plots the features ordered from largest to smallest phi value.
+#'  \code{"smallest_first"} plots the features ordered from smallest to largest phi value.
+#'  \code{"original"} plots the features in the original order of the data table.
 #' @param ... Currently not used.
 #'
 #' @details See the examples below, or \code{vignette("understanding_shapr", package = "shapr")} for an examples of
@@ -65,6 +70,7 @@ plot.shapr <- function(x,
                        index_x_explain = NULL,
                        top_k_features = NULL,
                        col = c("#00BA38","#F8766D"), #first increasing color, then decreasing color
+                       plot_order = "largest_first",
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -113,7 +119,13 @@ plot.shapr <- function(x,
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits+1))]
 
-  plotting_dt[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
+  if(plot_order == "largest_first"){
+    plotting_dt[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
+  } else if (plot_order == "smallest_first"){
+    plotting_dt[variable != "none", rank := data.table::frank(abs(phi)), by = "id"]
+  } else if (plot_order == "original"){
+    plotting_dt[variable != "none", rank := seq_along(phi), by = "id"]
+  }
   plotting_dt[variable == "none", rank := 0]
   N_features <- x$internal$parameters$n_features
   plotting_dt <- plotting_dt[id %in% index_x_explain]
@@ -126,14 +138,25 @@ plot.shapr <- function(x,
   plotting_dt[variable == "rest", sign := ifelse(phi < 0, "Decreases", "Increases")]
   plotting_dt <- unique(plotting_dt)
 
-  #unique label for correct order when plotting
-  plotting_dt[, unique_label := seq_along(description)]
+  #unique label for correct order when plotting multiple observations
+  plotting_dt[, unique_label := rev(seq_along(description))]
   plotting_dt[variable == "none", unique_label := 0] #such that none is always at top of plot
   plotting_dt[variable == "rest", unique_label := -1] #such that rest is always at bottom of plot
-  unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(abs(phi))]], 0)
+  if(plot_order=="largest_first"){
+    unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(abs(phi))]], 0)
+  } else if(plot_order=="smallest_first"){
+    unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(-abs(phi))]], 0)
+  } else if (plot_order == "original"){
+    unique_levels <- c(-1, rev(plotting_dt[variable != "none" & variable != "rest", unique_label]), 0)
+  }
   plotting_dt[, unique_label := factor(unique_label, levels = unique_levels)]
-
-  plotting_dt[variable != "none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
+  if(plot_order=="largest_first"){
+    plotting_dt[variable != "none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
+  } else if(plot_order=="smallest_first"){
+    plotting_dt[variable != "none", rank_waterfall := data.table::frank(-abs(phi)), by = "id"]
+  } else if (plot_order == "original"){
+    plotting_dt[variable != "none", rank_waterfall := rev(seq_along(phi)), by = "id"]
+  }
   plotting_dt[variable == "none", rank_waterfall := 0]
   #plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
 
@@ -146,37 +169,58 @@ plot.shapr <- function(x,
   plotting_dt[, phi_significant := format(phi, digits=digits), by=id]
 
   # waterfall plotting helpers
-  plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
-                                 ifelse(expected<pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
-                                 start + (end - start)/2 ), by=id]
+  if (plot_order=="largest_first"){
+    plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
+                                   ifelse(expected<pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
+                                   start + (end - start)/2 ), by=id]
+  } else if(plot_order=="smallest_first"){
+    plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
+                                   ifelse(expected>pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
+                                   start + (end - start)/2 ), by=id]
+  }else if (plot_order == "original"){
+    plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
+                                   ifelse(expected>pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
+                                   start + (end - start)/2 ), by=id]
+  }
   plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
                                      ifelse(sign=="Increases", col[1], col[2]),
                                      "white"), by=id]
   text_color <- plotting_dt[variable!="none", text_color]
-  plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 1, 0), 0.5), by=id]
+  if(plot_order=="largest_first"){
+    plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 1, 0), 0.5), by=id]
+
+  } else if(plot_order=="smallest_first"){
+    plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 0, 1), 0.5), by=id]
+
+  } else if (plot_order == "original"){
+    plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 0, 1), 0.5), by=id]
+  }
   plotting_dt[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
   N_features <- max(plotting_dt[, rank_waterfall])
-  n_obs <- max(plotting_dt[,id])
+  n_obs <- max(plotting_dt[,id]) #wrong? should count length of unique id vector
   plotting_dt[, pred_label := paste0("italic(f(x))==", format(pred, digits=digits+1))]
   plotting_dt[, pred_x:= N_features+0.8]
   plotting_dt[, phi0_label := paste0("~phi[0]==", format(expected, digits=digits+1))]
   plotting_dt[, phi0_x:= 0]
 
   # helpers for labelling y-axis correctly
-  desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(abs(phi))]]
-
+  if(plot_order=="largest_first"){
+    desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(abs(phi))]]
+  } else if(plot_order=="smallest_first"){
+    desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(-abs(phi))]]
+  }else if (plot_order == "original"){
+    desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(unique_label)]]
+  }
   if (top_k_features != x$internal$parameters$n_features){ #if there is a rest feature
     desc_labels <- c(paste(x$internal$parameters$n_features - top_k_features, "other features"),
                      desc_labels)
   }
-
   if (!plot_phi0 | plot_type == "waterfall") { #if none is not to be included in plot
     plotting_dt <- plotting_dt[variable != "none"]
   } else {
     desc_labels <- c(desc_labels, "None")
   }
-
-  breaks <- levels(droplevels(plotting_dt[,unique_label])) #removes -1 if no rest and 0 if no none
+  breaks <- levels(droplevels(plotting_dt[, unique_label])) #removes -1 if no rest and 0 if no none
 
   gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x=unique_label, fill=sign)) +
     ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol=2) +
