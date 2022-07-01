@@ -70,13 +70,13 @@ plot.shapr <- function(x,
                        index_x_explain = NULL,
                        top_k_features = NULL,
                        col = c("#00BA38","#F8766D"), #first increasing color, then decreasing color
-                       plot_order = "largest_first",
+                       plot_order = "largest_first"
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   }
-  if(!(plot_type%in%c("bar", "waterfall"))){
-    stop(paste(plot_type, "is an invalid plot type. Try 'bar' or 'waterfall'."))
+  if(!(plot_type%in%c("bar", "waterfall", "scatter", "beeswarm"))){
+    stop(paste(plot_type, "is an invalid plot type. Try plot_type='bar', plot_type='waterfall', \n plot_type='scatter', or plot_type='beeswarm'."))
   }
   if(!(plot_order%in%c("largest_first", "smallest_first", "original"))){
     stop(paste(plot_order, "is an invalid plot order. Try 'largest_first', 'smallest_first' or 'original'."))
@@ -124,6 +124,66 @@ plot.shapr <- function(x,
   # Adding header for each individual plot
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits+1))]
+
+  # Add feature values to data table
+  feature_vals <- data.table::copy(x$internal$data$x_explain)
+  feature_vals <- as.data.table(cbind(none=NA, feature_vals))
+  feature_vals[, id:=.I]
+  melt_feature_vals <- melt(feature_vals, id.vars = "id", value.name = "feature_value")
+  plotting_dt <- merge(plotting_dt, melt_feature_vals, by=c("id", "variable"))
+
+  if(plot_type=="scatter"){
+    # compute bin values for histogram
+    n_feat_vals <- plotting_dt[ ,.N, by=variable][1,"N"]
+    if(n_feat_vals > 500){
+      num_breaks <- 50
+    } else if(n_feat_vals > 200){
+      num_breaks <- 20
+    } else if(n_feat_vals > 100){
+      num_breaks <- 10
+    } else {
+      num_breaks <-5
+    }
+
+    features_to_plot <- unique(plotting_dt[,variable]) #now we loop over every single feature, which might not be desirable
+    #TODO: make it easy for user to determine which features to plot
+    histogram_dt_list <- list()
+    for(feature_name in features_to_plot){
+      y_max <- max(plotting_dt[variable==feature_name, phi])
+      y_min <- min(plotting_dt[variable==feature_name, phi])
+      y_tot <- y_max-y_min
+      count_tot <- sum(hist(plotting_dt[variable==feature_name, feature_value], breaks = num_breaks, plot=FALSE)$count)
+      count_scale <- y_tot/count_tot
+
+      xvals <- hist(plotting_dt[variable==feature_name, feature_value], breaks = num_breaks, plot=FALSE)$breaks
+      x_start <- xvals[-length(xvals)]
+      x_end <- xvals[-1]
+      y_end <- count_scale*hist(plotting_dt[variable==feature_name, feature_value], breaks = num_breaks, plot=FALSE)$count + y_min
+
+      bins_dt <- data.table(x_start = x_start,
+                            x_end = x_end,
+                            y_end = y_end,
+                            y_start = y_min,
+                            variable = feature_name)
+
+      histogram_dt_list[[feature_name]] <- bins_dt
+    }
+
+    histogram_dt <- rbindlist(histogram_dt_list)
+    #TODO: Make plotting historgram in scatter plot optional
+    gg <- ggplot(plotting_dt) +
+      ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value", ncol=2) +
+      geom_rect(data=histogram_dt, aes(xmin=x_start, xmax=x_end, ymin=y_start,ymax=y_end), fill = "grey80") +
+      geom_point(aes(x=feature_value, y=phi), colour="steelblue") +
+      ggplot2::theme_classic(base_family = "sans") +
+      ggplot2::theme(legend.position = "bottom",
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     strip.background = ggplot2::element_rect(colour = "white", fill = "grey90"),
+                     panel.grid.major.y = element_line(colour = "grey90")
+      ) +
+      labs(x = "Feature values",
+           y = "Shapley values")
+  } else{ #if not scatter plot
 
   if(plot_order == "largest_first"){
     plotting_dt[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
@@ -237,6 +297,7 @@ plot.shapr <- function(x,
     ggplot2::scale_fill_manual(values = col, drop = TRUE) +
     scale_x_discrete(breaks = breaks, labels = desc_labels)
 
+
   if (plot_type == "bar"){
     gg <- gg + ggplot2::geom_col(ggplot2::aes(y=phi)) +
       ggplot2::coord_flip() +
@@ -276,6 +337,21 @@ plot.shapr <- function(x,
                                       vjust = 0, hjust = ifelse(pred < expected, 1, 0)),
                          parse=TRUE, family = "sans", col="grey30", size = 2.5)
       #annotation_custom(grid::linesGrob(y = c(0, 0.02),  gp = gpar(col = "black", lwd = 1.5)), ymin=expected, ymax=expected, xmin=-Inf, xmax=Inf)
-  }
+  } else if(plot_type=="beeswarm"){
+    plotting_dt[, feature_value_grade := (feature_value - min(feature_value)) / (max(feature_value) - min(feature_value)), by = variable]
+
+    #TODO: might not be desirable to use ggbeeswarm package, and if so, must implement different solution
+    gg <- ggplot(plotting_dt, aes(x = variable, y = phi, color = feature_value_grade)) +
+      guides(color = guide_colourbar(ticks = FALSE,
+                                     barwidth = 0.5, barheight = 10,
+                                     title="Feature value")) +
+      geom_hline(yintercept = 0 , color="grey70", size = 0.5)+
+      ggbeeswarm::geom_beeswarm(priority = 'random', cex = 0.5)+
+      coord_flip() +
+      theme_classic() +
+      theme(panel.grid.major.y = element_line(colour = "grey90", linetype = "dashed")) +
+      labs(x = "", y = "Shapley value") +
+      scale_color_continuous(breaks = c(0, 1), labels = c("Low", "High"))
+  }}
   return(gg)
 }
