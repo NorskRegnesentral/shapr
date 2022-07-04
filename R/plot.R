@@ -29,6 +29,12 @@
 #'  \code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
 #'  \code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
 #'  \code{"original"} plots the features in the original order of the data table.
+#' @param features_to_plot Integer or character vector.
+#' Specifies what features to include in (scatter) plot. Can be a numerical vector indicating feature index, or a character
+#' vector, indicating the name(s) of the feature(s) to plot.
+#' @param histogram Logical.
+#' Whether to include a histogram indicating the distribution of the data when making the scatter plot. Note that the
+#' bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.
 #' @param ... Currently not used.
 #'
 #' @details See the examples below, or \code{vignette("understanding_shapr", package = "shapr")} for an examples of
@@ -70,7 +76,9 @@ plot.shapr <- function(x,
                        index_x_explain = NULL,
                        top_k_features = NULL,
                        col = c("#00BA38","#F8766D"), #first increasing color, then decreasing color
-                       plot_order = "largest_first"
+                       plot_order = "largest_first",
+                       features_to_plot = NULL,
+                       histogram = TRUE,
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -129,12 +137,14 @@ plot.shapr <- function(x,
   feature_vals <- data.table::copy(x$internal$data$x_explain)
   feature_vals <- as.data.table(cbind(none=NA, feature_vals))
   feature_vals[, id:=.I]
-  melt_feature_vals <- melt(feature_vals, id.vars = "id", value.name = "feature_value")
+  melt_feature_vals <- melt(feature_vals, id.vars = "id", value.name = "feature_value") #this gives a warning because none-values are NA...
   plotting_dt <- merge(plotting_dt, melt_feature_vals, by=c("id", "variable"))
 
   if(plot_type=="scatter"){
+    plotting_dt <- plotting_dt[variable != "none", ]
+
     # compute bin values for histogram
-    n_feat_vals <- plotting_dt[ ,.N, by=variable][1,"N"]
+    n_feat_vals <- plotting_dt[ ,.N, by=variable][1,"N"] #does this give me the number of points plotted..?
     if(n_feat_vals > 500){
       num_breaks <- 50
     } else if(n_feat_vals > 200){
@@ -145,8 +155,18 @@ plot.shapr <- function(x,
       num_breaks <-5
     }
 
-    features_to_plot <- unique(plotting_dt[,variable]) #now we loop over every single feature, which might not be desirable
-    #TODO: make it easy for user to determine which features to plot
+    if(is.null(features_to_plot)){
+      features_to_plot <- unique(plotting_dt[, variable])
+    } else if(is.numeric(features_to_plot)){
+      features_to_plot <- plotting_dt[features_to_plot, unique(variable)] #i.e. plot first 4 features if features_to_polt = 1:4
+    } else if(is.character(features_to_plot)){
+
+      if(any(!(features_to_plot %in% unique(plotting_dt[, variable])))){
+        stop("Some of all of the listed feature names do not match the names in the data.")
+      }
+    }
+
+
     histogram_dt_list <- list()
     for(feature_name in features_to_plot){
       y_max <- max(plotting_dt[variable==feature_name, phi])
@@ -170,11 +190,15 @@ plot.shapr <- function(x,
     }
 
     histogram_dt <- rbindlist(histogram_dt_list)
-    #TODO: Make plotting historgram in scatter plot optional
+    plotting_dt <- plotting_dt[variable %in% features_to_plot, ]
     gg <- ggplot(plotting_dt) +
-      ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value", ncol=2) +
-      geom_rect(data=histogram_dt, aes(xmin=x_start, xmax=x_end, ymin=y_start,ymax=y_end), fill = "grey80") +
-      geom_point(aes(x=feature_value, y=phi), colour="steelblue") +
+      ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
+
+    if(histogram){# plotting historgram in scatter plot optional
+      gg <- gg + geom_rect(data=histogram_dt, aes(xmin=x_start, xmax=x_end, ymin=y_start,ymax=y_end), fill = "grey80")
+    }
+
+    gg <- gg + geom_point(aes(x=feature_value, y=phi), colour="steelblue") +
       ggplot2::theme_classic(base_family = "sans") +
       ggplot2::theme(legend.position = "bottom",
                      plot.title = ggplot2::element_text(hjust = 0.5),
@@ -183,7 +207,7 @@ plot.shapr <- function(x,
       ) +
       labs(x = "Feature values",
            y = "Shapley values")
-  } else{ #if not scatter plot
+  } else { #if not scatter plot
 
   if(plot_order == "largest_first"){
     plotting_dt[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
