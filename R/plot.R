@@ -198,7 +198,7 @@ plot.shapr <- function(x,
       gg <- gg + geom_rect(data=histogram_dt, aes(xmin=x_start, xmax=x_end, ymin=y_start,ymax=y_end), fill = "grey80")
     }
 
-    gg <- gg + geom_point(aes(x=feature_value, y=phi), colour="steelblue") +
+    gg <- gg + geom_point(aes(x=feature_value, y=phi), colour=col[1]) + #need to document that the color is specified like his
       ggplot2::theme_classic(base_family = "sans") +
       ggplot2::theme(legend.position = "bottom",
                      plot.title = ggplot2::element_text(hjust = 0.5),
@@ -207,175 +207,181 @@ plot.shapr <- function(x,
       ) +
       labs(x = "Feature values",
            y = "Shapley values")
-  } else { #if not scatter plot
-
-  if(plot_order == "largest_first"){
-    plotting_dt[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
-  } else if (plot_order == "smallest_first"){
-    plotting_dt[variable != "none", rank := data.table::frank(abs(phi)), by = "id"]
-  } else if (plot_order == "original"){
-    plotting_dt[variable != "none", rank := seq_along(phi), by = "id"]
-  }
-  plotting_dt[variable == "none", rank := 0]
-  N_features <- x$internal$parameters$n_features
-  plotting_dt <- plotting_dt[id %in% index_x_explain]
-
-  # collapse phi-value for features that are not in top k features
-  plotting_dt[rank > top_k_features,  phi:= sum(phi), by=id]
-  plotting_dt[rank > top_k_features, variable:="rest", by=id]
-  plotting_dt[variable == "rest", rank := min(rank), by=id]
-  plotting_dt[variable == "rest", description := paste(N_features - top_k_features, "other features")]
-  plotting_dt[variable == "rest", sign := ifelse(phi < 0, "Decreases", "Increases")]
-  plotting_dt <- unique(plotting_dt)
-
-  #unique label for correct order when plotting multiple observations
-  plotting_dt[, unique_label := rev(seq_along(description))]
-  plotting_dt[variable == "none", unique_label := 0] #such that none is always at top of plot
-  plotting_dt[variable == "rest", unique_label := -1] #such that rest is always at bottom of plot
-  if(plot_order=="largest_first"){
-    unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(abs(phi))]], 0)
-  } else if(plot_order=="smallest_first"){
-    unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(-abs(phi))]], 0)
-  } else if (plot_order == "original"){
-    unique_levels <- c(-1, rev(plotting_dt[variable != "none" & variable != "rest", unique_label]), 0)
-  }
-  plotting_dt[, unique_label := factor(unique_label, levels = unique_levels)]
-  if(plot_order=="largest_first"){
-    plotting_dt[variable != "none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
-  } else if(plot_order=="smallest_first"){
-    plotting_dt[variable != "none", rank_waterfall := data.table::frank(-abs(phi)), by = "id"]
-  } else if (plot_order == "original"){
-    plotting_dt[variable != "none", rank_waterfall := rev(seq_along(phi)), by = "id"]
-  }
-  plotting_dt[variable == "none", rank_waterfall := 0]
-  #plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
-
-  # compute start and end values for waterfall rectangles
-  data.table::setorder(plotting_dt, rank_waterfall)
-  plotting_dt[, end:= cumsum(phi), by = id]
-  expected <- x$internal$parameters$prediction_zero
-  plotting_dt[, start := c(expected, head(end, -1)), by = id]
-
-  plotting_dt[, phi_significant := format(phi, digits=digits), by=id]
-
-  # waterfall plotting helpers
-  if (plot_order=="largest_first"){
-    plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
-                                   ifelse(expected<pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
-                                   start + (end - start)/2 ), by=id]
-  } else if(plot_order=="smallest_first"){
-    plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
-                                   ifelse(expected>pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
-                                   start + (end - start)/2 ), by=id]
-  }else if (plot_order == "original"){
-    plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
-                                   ifelse(expected>pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
-                                   start + (end - start)/2 ), by=id]
-  }
-  plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
-                                     ifelse(sign=="Increases", col[1], col[2]),
-                                     "white"), by=id]
-  text_color <- plotting_dt[variable!="none", text_color]
-  if(plot_order=="largest_first"){
-    plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 1, 0), 0.5), by=id]
-
-  } else if(plot_order=="smallest_first"){
-    plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 0, 1), 0.5), by=id]
-
-  } else if (plot_order == "original"){
-    plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 0, 1), 0.5), by=id]
-  }
-  plotting_dt[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
-  N_features <- max(plotting_dt[, rank_waterfall])
-  n_obs <- max(plotting_dt[,id]) #wrong? should count length of unique id vector
-  plotting_dt[, pred_label := paste0("italic(f(x))==", format(pred, digits=digits+1))]
-  plotting_dt[, pred_x:= N_features+0.8]
-  plotting_dt[, phi0_label := paste0("~phi[0]==", format(expected, digits=digits+1))]
-  plotting_dt[, phi0_x:= 0]
-
-  # helpers for labelling y-axis correctly
-  if(plot_order=="largest_first"){
-    desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(abs(phi))]]
-  } else if(plot_order=="smallest_first"){
-    desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(-abs(phi))]]
-  }else if (plot_order == "original"){
-    desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(unique_label)]]
-  }
-  if (top_k_features != x$internal$parameters$n_features){ #if there is a rest feature
-    desc_labels <- c(paste(x$internal$parameters$n_features - top_k_features, "other features"),
-                     desc_labels)
-  }
-  if (!plot_phi0 | plot_type == "waterfall") { #if none is not to be included in plot
-    plotting_dt <- plotting_dt[variable != "none"]
-  } else {
-    desc_labels <- c(desc_labels, "None")
-  }
-  breaks <- levels(droplevels(plotting_dt[, unique_label])) #removes -1 if no rest and 0 if no none
-
-  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x=unique_label, fill=sign)) +
-    ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol=2) +
-    ggplot2::theme_classic(base_family = "sans") +
-    ggplot2::theme(legend.position = "bottom",
-                   plot.title = ggplot2::element_text(hjust = 0.5),
-                   strip.background = ggplot2::element_rect(colour = "white", fill = "white")) +
-    ggplot2::scale_fill_manual(values = col, drop = TRUE) +
-    scale_x_discrete(breaks = breaks, labels = desc_labels)
-
-
-  if (plot_type == "bar"){
-    gg <- gg + ggplot2::geom_col(ggplot2::aes(y=phi)) +
-      ggplot2::coord_flip() +
-      ggplot2::labs(
-        y = "Feature contribution",
-        x = "Feature",
-        fill = "",
-        title = "Shapley value prediction explanation"
-      )
-  } else if (plot_type == "waterfall"){
-    gg <- gg + ggplot2::geom_segment(ggplot2::aes(x=-Inf, xend = max(rank_waterfall)+0.8, y=pred, yend=pred),
-                                     linetype="dotted", col="grey30", size=0.25) +
-      ggplot2::coord_flip(clip = 'off', xlim=c(0.5, ifelse(N_features+N_features*0.11 < N_features+0.5,
-                                                           N_features+0.5,
-                                                           N_features+N_features*0.11)))  +
-      ggplot2::labs(y = "Prediction",
-                    x = "Feature",
-                    fill = "",
-                    title = "Shapley value prediction explanation") +
-      ggplot2::geom_rect(ggplot2::aes(xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
-                         show.legend = NA) +
-      ggplot2::geom_segment(x=-Inf, xend = 1.3, y=expected, yend=expected,
-                            linetype="dotted", col="grey30", size=0.25) +
-      ggplot2::geom_text(ggplot2::aes(label = phi_significant,
-                                      x = rank_waterfall, y = y_text,
-                                      vjust = 0.5, hjust = hjust_text),
-                         size=2.5, family = "sans", col = text_color) +
-      ggplot2::geom_segment(ggplot2::aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
-                            arrow=ggplot2::arrow(length = ggplot2::unit(0.03, "npc")), show.legend = FALSE) +
-      ggplot2::scale_color_manual(values=col) +
-      ggplot2::geom_text(data=plotting_dt[1:n_obs,],
-                         ggplot2::aes(x = pred_x, y = pred, label = pred_label,
-                                      vjust = 0, hjust = ifelse(pred > expected, 1, 0)),
-                         parse=TRUE, family = "sans", col="grey30", size = 2.5) +
-      ggplot2::geom_text(data=plotting_dt[1:n_obs,],
-                         ggplot2::aes(x = phi0_x, y = expected, label = phi0_label,
-                                      vjust = 0, hjust = ifelse(pred < expected, 1, 0)),
-                         parse=TRUE, family = "sans", col="grey30", size = 2.5)
-      #annotation_custom(grid::linesGrob(y = c(0, 0.02),  gp = gpar(col = "black", lwd = 1.5)), ymin=expected, ymax=expected, xmin=-Inf, xmax=Inf)
   } else if(plot_type=="beeswarm"){
     plotting_dt[, feature_value_grade := (feature_value - min(feature_value)) / (max(feature_value) - min(feature_value)), by = variable]
-
+    plotting_dt <- plotting_dt[variable!="none",]
     #TODO: might not be desirable to use ggbeeswarm package, and if so, must implement different solution
     gg <- ggplot(plotting_dt, aes(x = variable, y = phi, color = feature_value_grade)) +
-      guides(color = guide_colourbar(ticks = FALSE,
-                                     barwidth = 0.5, barheight = 10,
-                                     title="Feature value")) +
       geom_hline(yintercept = 0 , color="grey70", size = 0.5)+
       ggbeeswarm::geom_beeswarm(priority = 'random', cex = 0.5)+
       coord_flip() +
       theme_classic() +
       theme(panel.grid.major.y = element_line(colour = "grey90", linetype = "dashed")) +
       labs(x = "", y = "Shapley value") +
-      scale_color_continuous(breaks = c(0, 1), labels = c("Low", "High"))
-  }}
+      scale_color_gradient(low=col[2], high = col[1], breaks = c(0,1), labels=c("Low", "High"), name="Feature\nvalue") +
+      guides(color = guide_colourbar(ticks = FALSE,
+                                     barwidth = 0.5, barheight = 10))
+  } else { #if not scatter or beeswarm plot
+
+    if(plot_order == "largest_first"){
+      plotting_dt[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
+    } else if (plot_order == "smallest_first"){
+      plotting_dt[variable != "none", rank := data.table::frank(abs(phi)), by = "id"]
+    } else if (plot_order == "original"){
+      plotting_dt[variable != "none", rank := seq_along(phi), by = "id"]
+    }
+    plotting_dt[variable == "none", rank := 0]
+    N_features <- x$internal$parameters$n_features
+    plotting_dt <- plotting_dt[id %in% index_x_explain]
+
+    # collapse phi-value for features that are not in top k features
+    plotting_dt[rank > top_k_features,  phi:= sum(phi), by=id]
+    plotting_dt[rank > top_k_features, variable:="rest", by=id]
+    plotting_dt[variable == "rest", rank := min(rank), by=id]
+    plotting_dt[variable == "rest", description := paste(N_features - top_k_features, "other features")]
+    plotting_dt[variable == "rest", sign := ifelse(phi < 0, "Decreases", "Increases")]
+    plotting_dt <- unique(plotting_dt)
+
+    #unique label for correct order when plotting multiple observations
+    plotting_dt[, unique_label := rev(seq_along(description))]
+    plotting_dt[variable == "none", unique_label := 0] #such that none is always at top of plot
+    plotting_dt[variable == "rest", unique_label := -1] #such that rest is always at bottom of plot
+    if(plot_order=="largest_first"){
+      unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(abs(phi))]], 0)
+    } else if(plot_order=="smallest_first"){
+      unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(-abs(phi))]], 0)
+    } else if (plot_order == "original"){
+      unique_levels <- c(-1, rev(plotting_dt[variable != "none" & variable != "rest", unique_label]), 0)
+    }
+    plotting_dt[, unique_label := factor(unique_label, levels = unique_levels)]
+    if(plot_order=="largest_first"){
+      plotting_dt[variable != "none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
+    } else if(plot_order=="smallest_first"){
+      plotting_dt[variable != "none", rank_waterfall := data.table::frank(-abs(phi)), by = "id"]
+    } else if (plot_order == "original"){
+      plotting_dt[variable != "none", rank_waterfall := rev(seq_along(phi)), by = "id"]
+    }
+    plotting_dt[variable == "none", rank_waterfall := 0]
+    #plotting_dt[, description := factor(description, levels = unique(description[order(abs(phi))]))]
+
+    # compute start and end values for waterfall rectangles
+    data.table::setorder(plotting_dt, rank_waterfall)
+    plotting_dt[, end:= cumsum(phi), by = id]
+    expected <- x$internal$parameters$prediction_zero
+    plotting_dt[, start := c(expected, head(end, -1)), by = id]
+
+    plotting_dt[, phi_significant := format(phi, digits=digits), by=id]
+
+    # waterfall plotting helpers
+    if (plot_order=="largest_first"){
+      plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
+                                     ifelse(expected<pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
+                                     start + (end - start)/2 ), by=id]
+    } else if(plot_order=="smallest_first"){
+      plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
+                                     ifelse(expected>pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
+                                     start + (end - start)/2 ), by=id]
+    }else if (plot_order == "original"){
+      plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
+                                     ifelse(expected>pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
+                                     start + (end - start)/2 ), by=id]
+    }
+    plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
+                                       ifelse(sign=="Increases", col[1], col[2]),
+                                       "white"), by=id]
+    text_color <- plotting_dt[variable!="none", text_color]
+    if(plot_order=="largest_first"){
+      plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 1, 0), 0.5), by=id]
+
+    } else if(plot_order=="smallest_first"){
+      plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 0, 1), 0.5), by=id]
+
+    } else if (plot_order == "original"){
+      plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 0, 1), 0.5), by=id]
+    }
+    plotting_dt[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
+    N_features <- max(plotting_dt[, rank_waterfall])
+    n_obs <- max(plotting_dt[,id]) #wrong? should count length of unique id vector
+    plotting_dt[, pred_label := paste0("italic(f(x))==", format(pred, digits=digits+1))]
+    plotting_dt[, pred_x:= N_features+0.8]
+    plotting_dt[, phi0_label := paste0("~phi[0]==", format(expected, digits=digits+1))]
+    plotting_dt[, phi0_x:= 0]
+
+    # helpers for labelling y-axis correctly
+    if(plot_order=="largest_first"){
+      desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(abs(phi))]]
+    } else if(plot_order=="smallest_first"){
+      desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(-abs(phi))]]
+    }else if (plot_order == "original"){
+      desc_labels <- plotting_dt[variable!="none" & variable != "rest", description[order(unique_label)]]
+    }
+    if (top_k_features < x$internal$parameters$n_features){ #if there is a rest feature
+      desc_labels <- c(paste(x$internal$parameters$n_features - top_k_features, "other features"),
+                       desc_labels)
+    }
+    if (!plot_phi0 | plot_type == "waterfall") { #if none is not to be included in plot
+      plotting_dt <- plotting_dt[variable != "none"]
+    } else {
+      desc_labels <- c(desc_labels, "None")
+    }
+
+    if(length(plotting_dt[,unique(id)]) > 10){
+      stop("Too many observations to plot together! Try for instance setting index_x_explain = 1:10
+           so that the max. is not exceeded.")
+    }
+
+    breaks <- levels(droplevels(plotting_dt[, unique_label])) #removes -1 if no rest and 0 if no none
+
+    gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x=unique_label, fill=sign)) +
+      ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol=2) +
+      ggplot2::theme_classic(base_family = "sans") +
+      ggplot2::theme(legend.position = "bottom",
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     strip.background = ggplot2::element_rect(colour = "white", fill = "white")) +
+      ggplot2::scale_fill_manual(values = col, drop = TRUE) +
+      scale_x_discrete(breaks = breaks, labels = desc_labels)
+
+
+    if (plot_type == "bar"){
+      gg <- gg + ggplot2::geom_col(ggplot2::aes(y=phi)) +
+        ggplot2::coord_flip() +
+        ggplot2::labs(
+          y = "Feature contribution",
+          x = "Feature",
+          fill = "",
+          title = "Shapley value prediction explanation"
+        )
+    } else if (plot_type == "waterfall"){
+      gg <- gg + ggplot2::geom_segment(ggplot2::aes(x=-Inf, xend = max(rank_waterfall)+0.8, y=pred, yend=pred),
+                                       linetype="dotted", col="grey30", size=0.25) +
+        ggplot2::coord_flip(clip = 'off', xlim=c(0.5, ifelse(N_features+N_features*0.11 < N_features+0.5,
+                                                             N_features+0.5,
+                                                             N_features+N_features*0.11)))  +
+        ggplot2::labs(y = "Prediction",
+                      x = "Feature",
+                      fill = "",
+                      title = "Shapley value prediction explanation") +
+        ggplot2::geom_rect(ggplot2::aes(xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
+                           show.legend = NA) +
+        ggplot2::geom_segment(x=-Inf, xend = 1.3, y=expected, yend=expected,
+                              linetype="dotted", col="grey30", size=0.25) +
+        ggplot2::geom_text(ggplot2::aes(label = phi_significant,
+                                        x = rank_waterfall, y = y_text,
+                                        vjust = 0.5, hjust = hjust_text),
+                           size=2.5, family = "sans", col = text_color) +
+        ggplot2::geom_segment(ggplot2::aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
+                              arrow=ggplot2::arrow(length = ggplot2::unit(0.03, "npc")), show.legend = FALSE) +
+        ggplot2::scale_color_manual(values=col) +
+        ggplot2::geom_text(data=plotting_dt[1:n_obs,],
+                           ggplot2::aes(x = pred_x, y = pred, label = pred_label,
+                                        vjust = 0, hjust = ifelse(pred > expected, 1, 0)),
+                           parse=TRUE, family = "sans", col="grey30", size = 2.5) +
+        ggplot2::geom_text(data=plotting_dt[1:n_obs,],
+                           ggplot2::aes(x = phi0_x, y = expected, label = phi0_label,
+                                        vjust = 0, hjust = ifelse(pred < expected, 1, 0)),
+                           parse=TRUE, family = "sans", col="grey30", size = 2.5)
+        #annotation_custom(grid::linesGrob(y = c(0, 0.02),  gp = gpar(col = "black", lwd = 1.5)), ymin=expected, ymax=expected, xmin=-Inf, xmax=Inf)
+    }
+  }
   return(gg)
 }
