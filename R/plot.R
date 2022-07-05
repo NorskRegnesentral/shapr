@@ -71,7 +71,7 @@ plot.shapr <- function(x,
   }
 
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  pred_label  <- pred_x <- element_rect <- NULL
+  pred_label  <- pred_x <- element_rect <- phi0_label <-  phi0_x <- NULL
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
