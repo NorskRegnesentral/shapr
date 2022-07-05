@@ -193,7 +193,7 @@ plot.shapr <- function(x,
       ggplot2::geom_text(ggplot2::aes(label = phi_significant,
                                       x = rank_waterfall, y = y_text,
                                       vjust = 0.5, hjust = hjust_text),
-                         size=2.5, family = "sans", col = text_color) +
+                         size=3, family = "sans", col = text_color) +
       #ggplot2::annotate("text", parse = TRUE, x = -Inf, y = expected, label = phi0_label,
       #                 size=2.5, family = "sans", col = "grey30", vjust = 0, hjust = 0) +
       ggplot2::geom_segment(ggplot2::aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
@@ -201,7 +201,7 @@ plot.shapr <- function(x,
       ggplot2::scale_color_manual(values=col) +
       ggplot2::geom_text(data=plotting_dt[1:n_obs,],
                          ggplot2::aes(x = pred_x, y = pred, label = pred_label,
-                                      vjust = 0, hjust = ifelse(pred > expected, 1, 0)),
+                                      vjust = 0.5, hjust = ifelse(pred > expected, 1.03, -0.03)),
                          parse=TRUE, family = "sans", col="grey30", size = 2.5) +
       ggplot2::geom_text(data=plotting_dt[1:n_obs,],
                          ggplot2::aes(x = phi0_x, y = expected, label = phi0_label,
