@@ -142,59 +142,22 @@ plot.shapr <- function(x,
 
   if(plot_type=="scatter"){
     plotting_dt <- plotting_dt[variable != "none", ]
-
-    # compute bin values for histogram
-    n_feat_vals <- plotting_dt[ ,.N, by=variable][1,"N"] #does this give me the number of points plotted..?
-    if(n_feat_vals > 500){
-      num_breaks <- 50
-    } else if(n_feat_vals > 200){
-      num_breaks <- 20
-    } else if(n_feat_vals > 100){
-      num_breaks <- 10
-    } else {
-      num_breaks <-5
-    }
-
     if(is.null(features_to_plot)){
       features_to_plot <- unique(plotting_dt[, variable])
     } else if(is.numeric(features_to_plot)){
       features_to_plot <- plotting_dt[features_to_plot, unique(variable)] #i.e. plot first 4 features if features_to_plot = 1:4
     } else if(is.character(features_to_plot)){
       if(any(!(features_to_plot %in% unique(plotting_dt[, variable])))){
-        stop("Some of all of the listed feature names do not match the names in the data.")
+        stop("Some or all of the listed feature names do not match the names in the data.")
       }
     }
-
-    if(histogram){
-      histogram_dt_list <- list()
-      for(feature_name in features_to_plot){
-        y_max <- max(plotting_dt[variable==feature_name, phi])
-        y_min <- min(plotting_dt[variable==feature_name, phi])
-        y_tot <- y_max-y_min
-        count_tot <- sum(hist(plotting_dt[variable==feature_name, feature_value], breaks = num_breaks, plot=FALSE)$count)
-        count_scale <- y_tot/count_tot
-
-        xvals <- hist(plotting_dt[variable==feature_name, feature_value], breaks = num_breaks, plot=FALSE)$breaks
-        x_start <- xvals[-length(xvals)]
-        x_end <- xvals[-1]
-        y_end <- count_scale*hist(plotting_dt[variable==feature_name, feature_value], breaks = num_breaks, plot=FALSE)$count + y_min
-
-        bins_dt <- data.table(x_start = x_start,
-                              x_end = x_end,
-                              y_end = y_end,
-                              y_start = y_min,
-                              variable = feature_name)
-
-        histogram_dt_list[[feature_name]] <- bins_dt
-      }
-      histogram_dt <- rbindlist(histogram_dt_list)
-    }
-
     plotting_dt <- plotting_dt[variable %in% features_to_plot, ]
     gg <- ggplot(plotting_dt) +
       ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
 
-    if(histogram){# plotting histogram in scatter plot optional
+    # compute bin values for histogram
+    if(histogram){
+      histogram_dt <- compute_histogram_values(plotting_dt, features_to_plot)
       gg <- gg + geom_rect(data=histogram_dt, aes(xmin=x_start, xmax=x_end, ymin=y_start,ymax=y_end), fill = "grey80")
     }
 
@@ -415,4 +378,45 @@ plot.shapr <- function(x,
         }
   }
   return(gg)
+}
+
+compute_histogram_values <- function(plotting_dt, features_to_plot){
+
+  n_feat_vals <- plotting_dt[ , .N, by=variable][1,"N"] #number of points to plot
+  if(n_feat_vals > 500){
+    num_breaks <- 50
+  } else if(n_feat_vals > 200){
+    num_breaks <- 20
+  } else if(n_feat_vals > 100){
+    num_breaks <- 10
+  } else {
+    num_breaks <-5
+  }
+
+  histogram_dt_list <- list()
+  for(feature_name in features_to_plot){
+    x <- plotting_dt[variable==feature_name, feature_value]
+    histogram <- hist(x, breaks = seq(min(x), max(x), length.out = num_breaks), plot=FALSE)
+    y_max <- max(plotting_dt[variable==feature_name, phi])
+    y_min <- min(plotting_dt[variable==feature_name, phi])
+    y_tot <- y_max-y_min
+    count_tot <- sum(histogram$count)
+    count_scale <- y_tot/count_tot
+
+    xvals <- histogram$breaks
+    x_start <- xvals[-length(xvals)]
+    x_end <- xvals[-1]
+    y_end <- count_scale*histogram$count + y_min
+
+    bins_dt <- data.table(x_start = x_start,
+                          x_end = x_end,
+                          y_end = y_end,
+                          y_start = y_min,
+                          variable = feature_name)
+
+    histogram_dt_list[[feature_name]] <- bins_dt
+  }
+  histogram_dt <- rbindlist(histogram_dt_list)
+
+  return(histogram_dt)
 }
