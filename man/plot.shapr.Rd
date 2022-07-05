@@ -6,27 +6,44 @@
 \usage{
 \method{plot}{shapr}(
   x,
+  plot_type = "bar",
   digits = 3,
   plot_phi0 = TRUE,
   index_x_explain = NULL,
   top_k_features = NULL,
+  col = c("#00BA38", "#F8766D"),
   ...
 )
 }
 \arguments{
-\item{x}{An \code{shapr} object. See \code{\link{explain}}.}
+\item{x}{An \code{shapr} object.
+The output from [explain()].}
 
-\item{digits}{Integer. Number of significant digits to use in the feature description}
+\item{plot_type}{Character.
+Specifies the type of plot to produce.
+\code{"bar"} (the default) gives a regular horizontal bar plot of the Shapley value magnitudes.
+\code{"waterfall"} gives a waterfall plot indicating the changes in the prediction score due to each features
+contribution (their Shapley values).}
 
-\item{plot_phi0}{Logical. Whether to include \code{phi0} in the plot}
+\item{digits}{Integer.
+Number of significant digits to use in the feature description}
 
-\item{index_x_explain}{Integer vector. Which of the test observations to plot. E.g. if you have
+\item{plot_phi0}{Logical.
+Whether to include \code{phi0} in the plot.}
+
+\item{index_x_explain}{Integer vector.
+Which of the test observations to plot. E.g. if you have
 explained 10 observations using \code{\link{explain}}, you can generate a plot for the first 5
 observations by setting \code{index_x_explain = 1:5}.}
 
-\item{top_k_features}{Integer. How many features to include in the plot. E.g. if you have 15
+\item{top_k_features}{Integer.
+How many features to include in the plot. E.g. if you have 15
 features in your model you can plot the 5 most important features, for each explanation, by setting
 \code{top_k_features = 1:5}.}
+
+\item{col}{Character vector (or length 2).
+The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
+Shapley values, respectively.}
 
 \item{...}{Currently not used.}
 }
@@ -37,7 +54,7 @@ ggplot object with plots of the Shapley value explanations
 Plots the individual prediction explanations.
 }
 \details{
-See \code{vignette("understanding_shapr", package = "shapr")} for an example of
+See the examples below, or \code{vignette("understanding_shapr", package = "shapr")} for an examples of
 how you should use the function.
 }
 \examples{
@@ -52,26 +69,20 @@ if (requireNamespace("MASS", quietly = TRUE)) {
   # Fit a linear model
   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
 
-  # Create an explainer object
-  #explainer <- shapr(x_train, model)
+  # Define unconditional expectation
+  p <- mean(x_train$medv)
 
   # Explain predictions
-  #p <- mean(x_train$medv)
+  explanation <- explain(x_train,x_explain,model,approach="empirical",prediction_zero=p)
 
-  # Empirical approach
-  #explanation <- explain(x_explain,
- #   explainer,
- #   approach = "empirical",
- #   prediction_zero = p,
- #   n_samples = 1e2
- # )
+  # Plot the explantion (this function)
+  if (requireNamespace("ggplot2", quietly = TRUE)) {
+   plot(explanation) # Regular bar plot
 
-  #if (requireNamespace("ggplot2", quietly = TRUE)) {
-   # # Plot the explantion (this function)
-   # plot(explanation)
-  #}
+   plot(explanation, plot_type = "waterfall") # Waterfall plot
+  }
 }
 }
 \author{
-Martin Jullum
+Martin Jullum, Vilde Ung
 }
