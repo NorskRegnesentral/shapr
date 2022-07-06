@@ -98,6 +98,7 @@ plot.shapr <- function(x,
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
 
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
@@ -145,7 +146,8 @@ plot.shapr <- function(x,
     feature_vals <- data.table::copy(x$internal$data$x_explain)
     feature_vals <- as.data.table(cbind(none=NA, feature_vals))
     feature_vals[, id:=.I]
-    melt_feature_vals <- suppressWarnings(melt(feature_vals, id.vars = "id", value.name = "feature_value")) #this gives a warning because none-values are NA...
+    melt_feature_vals <- suppressWarnings(data.table::melt(feature_vals, id.vars = "id",
+                                                           value.name = "feature_value")) #this gives a warning because none-values are NA...
     plotting_dt <- merge(plotting_dt, melt_feature_vals, by=c("id", "variable"))
   }
 
@@ -253,6 +255,7 @@ compute_histogram_values <- function(plotting_dt, features_to_plot){
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
 
   histogram_dt_list <- list()
   for(feature_name in features_to_plot){
@@ -289,6 +292,8 @@ make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
+
   plotting_dt <- plotting_dt[variable != "none", ]
 
   if(is.null(features_to_plot)){
@@ -330,6 +335,8 @@ make_beeswarm_plot <- function(plotting_dt, col){
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
+
   plotting_dt <- plotting_dt[variable!="none",]
 
   # scale obs. features value to their distance from min. feature value relative to the distance between min. and max. feature value
@@ -378,6 +385,8 @@ make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels){
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
+
   if (!(plot_phi0)) {
     plotting_dt <- plotting_dt[variable != "none", ]
   }
@@ -438,6 +447,8 @@ make_waterfall_plot <- function(plotting_dt,
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
+
   # waterfall plotting helpers
   if (plot_order=="largest_first" | plot_order == "original"){
     plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
