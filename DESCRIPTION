@@ -6,15 +6,15 @@ Description: Complex machine learning models are often hard to interpret. Howeve
   prediction. Shapley values is the only method for such prediction explanation framework 
   with a solid theoretical foundation. Previously known methods for estimating the Shapley 
   values do, however, assume feature independence. This package implements the method 
-  described in Aas, Jullum and LC8land (2019) <arXiv:1903.10464>, which accounts for any feature 
+  described in Aas, Jullum and Løland (2019) <arXiv:1903.10464>, which accounts for any feature 
   dependence, and thereby produces more accurate estimates of the true Shapley values.
 Authors@R: c(
     person("Nikolai", "Sellereite", email = "nikolaisellereite@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-4671-0337")),
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = c("cre", "aut"), comment = c(ORCID = "0000-0003-3908-5155")),
     person("Annabelle", "Redelmeier", email = "Annabelle.Redelmeier@nr.no", role = "aut"),
-    person("Anders", "LC8land", email = "Anders.Loland@nr.no", role = "ctb"), 
+    person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
     person("Jens Christian", "Wahl", email = "Jens.Christian.Wahl@nr.no", role = "ctb"), 
-    person("Camilla", "LingjC&rde", role = "ctb"),
+    person("Camilla", "Lingjærde", role = "ctb"),
     person("Norsk Regnesentral", role =  c("cph", "fnd"))
     )
 URL: https://norskregnesentral.github.io/shapr/, https://github.com/NorskRegnesentral/shapr
