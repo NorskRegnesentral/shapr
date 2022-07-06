@@ -136,12 +136,15 @@ plot.shapr <- function(x,
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits+1))]
 
-  # Add feature values to data table
-  feature_vals <- data.table::copy(x$internal$data$x_explain)
-  feature_vals <- as.data.table(cbind(none=NA, feature_vals))
-  feature_vals[, id:=.I]
-  melt_feature_vals <- suppressWarnings(melt(feature_vals, id.vars = "id", value.name = "feature_value")) #this gives a warning because none-values are NA...
-  plotting_dt <- merge(plotting_dt, melt_feature_vals, by=c("id", "variable"))
+  if(plot_type == "scatter" | plot_type == "beeswarm"){
+    # Add feature values to data table
+    feature_vals <- data.table::copy(x$internal$data$x_explain)
+    feature_vals <- as.data.table(cbind(none=NA, feature_vals))
+    feature_vals[, id:=.I]
+    melt_feature_vals <- suppressWarnings(melt(feature_vals, id.vars = "id", value.name = "feature_value")) #this gives a warning because none-values are NA...
+    plotting_dt <- merge(plotting_dt, melt_feature_vals, by=c("id", "variable"))
+  }
+
 
   if(plot_type=="scatter"){
     gg <- make_scatter_plot(plotting_dt, features_to_plot, histogram, col)
@@ -402,7 +405,7 @@ make_waterfall_plot <- function(plotting_dt,
                                 breaks,
                                 desc_labels){
   # waterfall plotting helpers
-  if (plot_order=="largest_first"){
+  if (plot_order=="largest_first" | plot_order == "original"){
     plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
                                    ifelse(expected<pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
                                    start + (end - start)/2 ), by=id]
@@ -410,25 +413,21 @@ make_waterfall_plot <- function(plotting_dt,
     plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
                                    ifelse(expected>pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
                                    start + (end - start)/2 ), by=id]
-  }else if (plot_order == "original"){
-    plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
-                                   ifelse(expected>pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
-                                   start + (end - start)/2 ), by=id]
   }
+
   plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
                                      ifelse(sign=="Increases", col[1], col[2]),
                                      "white"), by=id]
   text_color <- plotting_dt[variable!="none", text_color]
 
-  if(plot_order=="largest_first"){
+  if(plot_order=="largest_first"| plot_order == "original"){
     plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 1, 0), 0.5), by=id]
 
   } else if(plot_order=="smallest_first"){
     plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 0, 1), 0.5), by=id]
 
-  } else if (plot_order == "original"){
-    plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 0, 1), 0.5), by=id]
   }
+
   plotting_dt[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
   N_features <- max(plotting_dt[, rank_waterfall])
   n_obs <- length(plotting_dt[,unique(id)])
