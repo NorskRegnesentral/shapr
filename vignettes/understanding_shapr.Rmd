@@ -235,7 +235,7 @@ Gaussian copula, and ctree approaches can be used instead by setting the argumen
 library(xgboost)
 library(shapr)
 data("airquality")
-airquality = airquality[complete.cases(airquality), ]
+airquality <- airquality[complete.cases(airquality), ]
 
 x_var <- c("Solar.R", "Wind", "Temp", "Month")
 y_var <- "Ozone"
