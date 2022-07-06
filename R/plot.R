@@ -94,7 +94,10 @@ plot.shapr <- function(x,
   }
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  unique_label <- NULL
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
+  id <- phi <- NULL # due to NSE notes in R CMD check
 
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
@@ -244,8 +247,12 @@ compute_histogram_values <- function(plotting_dt, features_to_plot){
   } else {
     num_breaks <-5
   }
-
-  x_start <- x_end <- y_end <- y_start <- variable <- NULL #NSE warnings
+  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  unique_label <- NULL
+  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
+  id <- phi <- NULL # due to NSE notes in R CMD check
 
   histogram_dt_list <- list()
   for(feature_name in features_to_plot){
@@ -276,6 +283,12 @@ compute_histogram_values <- function(plotting_dt, features_to_plot){
 }
 
 make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
+  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  unique_label <- NULL
+  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
+  id <- phi <- NULL # due to NSE notes in R CMD check
   plotting_dt <- plotting_dt[variable != "none", ]
 
   if(is.null(features_to_plot)){
@@ -311,6 +324,12 @@ make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
 }
 
 make_beeswarm_plot <- function(plotting_dt, col){
+  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  unique_label <- NULL
+  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
+  id <- phi <- NULL # due to NSE notes in R CMD check
   plotting_dt <- plotting_dt[variable!="none",]
 
   # scale obs. features value to their distance from min. feature value relative to the distance between min. and max. feature value
@@ -353,6 +372,12 @@ make_beeswarm_plot <- function(plotting_dt, col){
 }
 
 make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels){
+  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  unique_label <- NULL
+  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
+  id <- phi <- NULL # due to NSE notes in R CMD check
   if (!(plot_phi0)) {
     plotting_dt <- plotting_dt[variable != "none", ]
   }
@@ -406,6 +431,13 @@ make_waterfall_plot <- function(plotting_dt,
                                 plot_order,
                                 breaks,
                                 desc_labels){
+
+  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  unique_label <- NULL
+  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
+  id <- phi <- NULL # due to NSE notes in R CMD check
   # waterfall plotting helpers
   if (plot_order=="largest_first" | plot_order == "original"){
     plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
