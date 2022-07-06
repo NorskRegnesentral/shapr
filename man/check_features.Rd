@@ -24,17 +24,19 @@ Checks that two extracted feature lists have exactly the same properties
 }
 \examples{
 # Load example data
-if (requireNamespace("MASS", quietly = TRUE)) {
-  data("Boston", package = "MASS")
-  # Split data into test- and training data
-  x_train <- data.table::as.data.table(head(Boston))
-  x_train[, rad := as.factor(rad)]
-  data_features <- get_data_specs(x_train)
-  model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+data("airquality")
+airquality <- airquality[complete.cases(airquality), ]
+# Split data into test- and training data
+x_train <- head(airquality, -3)
+x_explain <- tail(airquality, 3)
+# Split data into test- and training data
+x_train <- data.table::as.data.table(head(airquality))
+x_train[, Temp := as.factor(Temp)]
+data_features <- get_data_specs(x_train)
+model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 
-  model_features <- get_model_specs(model)
-  check_features(model_features, data_features)
-}
+model_features <- get_model_specs(model)
+check_features(model_features, data_features)
 }
 \author{
 Martin Jullum
