@@ -394,6 +394,78 @@ make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels){
     size=2.5, family = "sans", col = text_color_bar
     )
 
+  # waterfall plotting helpers
+  plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
+                                 ifelse(expected<pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
+                                 start + (end - start)/2 ), by=id]
+  plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
+                                     ifelse(sign=="Increases", col[1], col[2]),
+                                     "white"), by=id]
+  text_color <- plotting_dt[variable!="none", text_color]
+  plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 1, 0), 0.5), by=id]
+  plotting_dt[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
+  N_features <- max(plotting_dt[, rank_waterfall])
+  n_obs <- max(plotting_dt[,id])
+  plotting_dt[, pred_label := paste0("italic(f(x))==", format(pred, digits=digits+1))]
+  plotting_dt[, pred_x:= N_features+0.8]
+  plotting_dt[, phi0_label := paste0("~phi[0]==", format(expected, digits=digits+1))]
+  plotting_dt[, phi0_x:= 0]
+  #phi0_label <- paste0("~phi[0]==", format(expected, digits=digits+1))
+
+  if (!plot_phi0 | plot_type=="waterfall") {
+    plotting_dt <- plotting_dt[variable != "none"]
+  }
+
+  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x=description, fill=sign)) +
+    ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol=2) +
+    ggplot2::theme_classic(base_family = "sans") +
+    ggplot2::theme(legend.position = "bottom",
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   strip.background = ggplot2::element_rect(colour = "white", fill = "white")) +
+    ggplot2::scale_fill_manual(values = col, drop = TRUE)
+
+  if (plot_type == "bar"){
+    gg <- gg + ggplot2::geom_col(ggplot2::aes(y=phi)) +
+      ggplot2::coord_flip() +
+      ggplot2::labs(
+        y = "Feature contribution",
+        x = "Feature",
+        fill = "",
+        title = "Shapley value prediction explanation"
+      )
+  } else if (plot_type == "waterfall"){
+    gg <- gg + ggplot2::geom_segment(ggplot2::aes(x=-Inf, xend = max(rank_waterfall)+0.8, y=pred, yend=pred),
+                                     linetype="dotted", col="grey30", size=0.25) +
+      ggplot2::coord_flip(clip = 'off', xlim=c(0.5, ifelse(N_features+N_features*0.11 < N_features+0.5,
+                                                           N_features+0.5,
+                                                           N_features+N_features*0.11)))  +
+      ggplot2::labs(y = "Prediction",
+                    x = "Feature",
+                    fill = "",
+                    title = "Shapley value prediction explanation") +
+      ggplot2::geom_rect(ggplot2::aes(x=description, xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
+                         show.legend = NA) +
+      ggplot2::geom_segment(x=-Inf, xend = 1.3, y=expected, yend=expected,
+                            linetype="dotted", col="grey30", size=0.25) +
+      ggplot2::geom_text(ggplot2::aes(label = phi_significant,
+                                      x = rank_waterfall, y = y_text,
+                                      vjust = 0.5, hjust = hjust_text),
+                         size=3, family = "sans", col = text_color) +
+      #ggplot2::annotate("text", parse = TRUE, x = -Inf, y = expected, label = phi0_label,
+      #                 size=2.5, family = "sans", col = "grey30", vjust = 0, hjust = 0) +
+      ggplot2::geom_segment(ggplot2::aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
+                            arrow=ggplot2::arrow(length = ggplot2::unit(0.03, "npc")), show.legend = FALSE) +
+      ggplot2::scale_color_manual(values=col) +
+      ggplot2::geom_text(data=plotting_dt[1:n_obs,],
+                         ggplot2::aes(x = pred_x, y = pred, label = pred_label,
+                                      vjust = 0.5, hjust = ifelse(pred > expected, 1.03, -0.03)),
+                         parse=TRUE, family = "sans", col="grey30", size = 2.5) +
+      ggplot2::geom_text(data=plotting_dt[1:n_obs,],
+                         ggplot2::aes(x = phi0_x, y = expected, label = phi0_label,
+                                      vjust = 0, hjust = ifelse(pred < expected, 1, 0)),
+                         parse=TRUE, family = "sans", col="grey30", size = 2.5)
+      #annotation_custom(grid::linesGrob(y = c(0, 0.02),  gp = gpar(col = "black", lwd = 1.5)), ymin=expected, ymax=expected, xmin=-Inf, xmax=Inf)
+  }
   return(gg)
 }
 
