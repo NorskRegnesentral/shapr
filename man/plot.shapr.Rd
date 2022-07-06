@@ -12,6 +12,9 @@
   index_x_explain = NULL,
   top_k_features = NULL,
   col = c("#00BA38", "#F8766D"),
+  plot_order = "largest_first",
+  features_to_plot = NULL,
+  histogram = TRUE,
   ...
 )
 }
@@ -44,6 +47,20 @@ features in your model you can plot the 5 most important features, for each expl
 \item{col}{Character vector (or length 2).
 The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
 Shapley values, respectively.}
+
+\item{plot_order}{Character.
+Specifies what order to plot the features with respect to the magnitude of the shapley values.
+ \code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
+ \code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
+ \code{"original"} plots the features in the original order of the data table.}
+
+\item{features_to_plot}{Integer or character vector.
+Specifies what features to include in (scatter) plot. Can be a numerical vector indicating feature index, or a character
+vector, indicating the name(s) of the feature(s) to plot.}
+
+\item{histogram}{Logical.
+Whether to include a histogram indicating the distribution of the data when making the scatter plot. Note that the
+bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.}
 
 \item{...}{Currently not used.}
 }

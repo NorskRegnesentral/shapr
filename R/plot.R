@@ -96,9 +96,7 @@ plot.shapr <- function(x,
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
   unique_label <- NULL
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
-  id <- phi <- NULL # due to NSE notes in R CMD check
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
 
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
@@ -255,7 +253,7 @@ compute_histogram_values <- function(plotting_dt, features_to_plot){
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
 
   histogram_dt_list <- list()
   for(feature_name in features_to_plot){
@@ -292,7 +290,7 @@ make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
 
   plotting_dt <- plotting_dt[variable != "none", ]
 
@@ -385,7 +383,7 @@ make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels){
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
 
   if (!(plot_phi0)) {
     plotting_dt <- plotting_dt[variable != "none", ]
@@ -447,7 +445,7 @@ make_waterfall_plot <- function(plotting_dt,
   pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
 
   # waterfall plotting helpers
   if (plot_order=="largest_first" | plot_order == "original"){
