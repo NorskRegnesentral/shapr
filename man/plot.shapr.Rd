@@ -11,7 +11,7 @@
   plot_phi0 = TRUE,
   index_x_explain = NULL,
   top_k_features = NULL,
-  col = c("#00BA38", "#F8766D"),
+  col = NULL,
   plot_order = "largest_first",
   features_to_plot = NULL,
   histogram = TRUE,
