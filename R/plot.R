@@ -75,7 +75,7 @@ plot.shapr <- function(x,
                        plot_phi0 = TRUE,
                        index_x_explain = NULL,
                        top_k_features = NULL,
-                       col = c("#00BA38","#F8766D"), #first increasing color, then decreasing color
+                       col = NULL, #first increasing color, then decreasing color
                        plot_order = "largest_first",
                        features_to_plot = NULL,
                        histogram = TRUE,
@@ -88,9 +88,6 @@ plot.shapr <- function(x,
   }
   if(!(plot_order%in%c("largest_first", "smallest_first", "original"))){
     stop(paste(plot_order, "is an invalid plot order. Try plot_order='largest_first', plot_order='smallest_first' or plot_order='original'."))
-  }
-  if(all(col %in% c("#00BA38","#F8766D")) & plot_type == "beeswarm"){
-    message("Using red, yellow and green as default colors for the beeswarm color bar.")
   }
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
@@ -292,6 +289,10 @@ make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
   id <- phi <- NULL # due to NSE notes in R CMD check
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
 
+  if(is.null(col)){
+    col = "#619CFF"
+  }
+
   plotting_dt <- plotting_dt[variable != "none", ]
 
   if(is.null(features_to_plot)){
@@ -314,7 +315,7 @@ make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
     gg <- gg + ggplot2::geom_rect(data=histogram_dt, ggplot2::aes(xmin=x_start, xmax=x_end, ymin=y_start,ymax=y_end), fill = "grey80")
   }
 
-  gg <- gg + ggplot2::geom_point(ggplot2::aes(x=feature_value, y=phi), colour=col[1]) + #need to document that the color is specified like his
+  gg <- gg + ggplot2::geom_point(ggplot2::aes(x=feature_value, y=phi), colour=col) +
     ggplot2::theme_classic(base_family = "sans") +
     ggplot2::theme(legend.position = "bottom",
                    plot.title = ggplot2::element_text(hjust = 0.5),
@@ -327,6 +328,16 @@ make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
 }
 
 make_beeswarm_plot <- function(plotting_dt, col){
+
+  if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
+    stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
+  }
+
+  if(all(col %in% c("#00BA38","#F8766D"))){
+    message("Using red, yellow and green as default colors for the beeswarm color bar.")
+  }
+
+
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
   unique_label <- NULL
@@ -334,6 +345,14 @@ make_beeswarm_plot <- function(plotting_dt, col){
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
+
+
+  if(is.null(col)){
+    col = c("#F8766D","yellow","#00BA38")
+  }
+  if (!(length(col) %in% c(2,3))){
+    stop("'col' must be of length 2 or 3")
+  }
 
   plotting_dt <- plotting_dt[variable!="none",]
 
@@ -351,21 +370,14 @@ make_beeswarm_plot <- function(plotting_dt, col){
     ggplot2::guides(color = ggplot2::guide_colourbar(ticks = FALSE,
                                    barwidth = 0.5, barheight = 10))
 
-  if(identical( c("#00BA38","#F8766D"), col)){ #check is col-parameter is the default
-    gg <- gg +
-      ggplot2::scale_color_gradient2(low = col[2], mid = "yellow", high = col[1],
-                                     midpoint = 0.5,
-                                     breaks = c(0,1),
-                                     labels = c("Low", "High"),
-                                     name = "Feature \n value")
-  } else if (length(col)==3){ # allow user to specify three colors
+  if(length(col)==3){ #check is col-parameter is the default
     gg <- gg +
       ggplot2::scale_color_gradient2(low = col[3], mid = col[2], high = col[1],
                                      midpoint = 0.5,
                                      breaks = c(0,1),
                                      labels = c("Low", "High"),
                                      name = "Feature \n value")
-  } else { # otherwise just use two
+  } else if (length(col)==2){ # allow user to specify three colors
     gg <- gg +
       ggplot2::scale_color_gradient(low = col[2], high = col[1],
                                     breaks = c(0,1),
@@ -384,6 +396,14 @@ make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels){
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
+
+  if(is.null(col)){
+    col = c("#00BA38","#F8766D")
+  }
+  if (length(col)!=2){
+    stop("'col' must be of length 2")
+  }
+
 
   if (!(plot_phi0)) {
     plotting_dt <- plotting_dt[variable != "none", ]
@@ -446,6 +466,13 @@ make_waterfall_plot <- function(plotting_dt,
   header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   id <- phi <- NULL # due to NSE notes in R CMD check
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
+
+  if(is.null(col)){
+    col = c("#00BA38","#F8766D")
+  }
+  if (length(col)!=2){
+    stop("'col' must be of length 2")
+  }
 
   # waterfall plotting helpers
   if (plot_order=="largest_first" | plot_order == "original"){
