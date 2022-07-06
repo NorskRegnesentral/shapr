@@ -60,8 +60,6 @@ with `?function_name`.
 ----------------------------- ------------------------------------------------------
 Function Name                 Description
 ----------------------------- ------------------------------------------------------
-`shapr`                       Get Shapley weights for test data.
-
 `explain`                     Computes kernel SHAP values for test data.
 
 `plot.shapr`                  Plots the individual prediction explanations. Uses facet_wrap of ggplot. 
@@ -225,7 +223,7 @@ The conditional inference trees are fit using the *party* and *partykit* package
 `shapr` supports computation of Shapley values with any predictive model which takes a set of 
 numeric features and produces a numeric outcome. Note that the ctree method takes both numeric and categorical variables. Check under "Advanced usage" for an example of how this can be done. 
 
-The following example shows how a simple `xgboost` model is trained using the Boston Housing Data, 
+The following example shows how a simple `xgboost` model is trained using the `airquality` dataset, 
 and how `shapr` can be used to explain the individual predictions. Note that the empirical conditional 
 distribution approach is the default (i.e. `approach = "empirical"`), and that the Gaussian, 
 Gaussian copula, and ctree approaches can be used instead by setting the argument `approach` to either 
@@ -234,6 +232,7 @@ Gaussian copula, and ctree approaches can be used instead by setting the argumen
 ```{r, warning=FALSE}
 library(xgboost)
 library(shapr)
+
 data("airquality")
 airquality <- airquality[complete.cases(airquality), ]
 

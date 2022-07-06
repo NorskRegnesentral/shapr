@@ -100,7 +100,7 @@ You can always check out the latest version of the vignette [here](https://norsk
 ## Example
 `shapr` supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome. 
 
-The following example shows how a simple `xgboost` model is trained using the *Boston Housing Data*, and how `shapr` explains the individual predictions. 
+The following example shows how a simple `xgboost` model is trained using the *airquality* dataset, and how `shapr` explains the individual predictions. 
 
 
 ```{r basic_example, warning = FALSE}
