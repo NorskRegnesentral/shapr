@@ -92,9 +92,10 @@ plot.shapr <- function(x,
   if(all(col %in% c("#00BA38","#F8766D")) & plot_type == "beeswarm"){
     message("Using red, yellow and green as default colors for the beeswarm color bar.")
   }
-
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  pred_label  <- pred_x <- element_rect <- NULL
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
@@ -196,7 +197,6 @@ plot.shapr <- function(x,
       plotting_dt[variable != "none", rank_waterfall := rev(seq_along(phi)), by = "id"]
     }
     plotting_dt[variable == "none", rank_waterfall := 0]
-    data.table::setorder(plotting_dt, rank_waterfall)
 
     # compute start and end values for waterfall rectangles
     data.table::setorder(plotting_dt, rank_waterfall)
@@ -234,7 +234,7 @@ plot.shapr <- function(x,
 }
 
 compute_histogram_values <- function(plotting_dt, features_to_plot){
-  n_feat_vals <- plotting_dt[ , .N, by=variable][1,"N"] #number of points to plot
+  n_feat_vals <- plotting_dt[ , .N, by = variable][1,"N"] #number of points to plot
   if(n_feat_vals > 500){
     num_breaks <- 50
   } else if(n_feat_vals > 200){
@@ -244,6 +244,8 @@ compute_histogram_values <- function(plotting_dt, features_to_plot){
   } else {
     num_breaks <-5
   }
+
+  x_start <- x_end <- y_end <- y_start <- variable <- NULL #NSE warnings
 
   histogram_dt_list <- list()
   for(feature_name in features_to_plot){
@@ -268,7 +270,7 @@ compute_histogram_values <- function(plotting_dt, features_to_plot){
 
     histogram_dt_list[[feature_name]] <- bins_dt
   }
-  histogram_dt <- rbindlist(histogram_dt_list)
+  histogram_dt <- data.table::rbindlist(histogram_dt_list)
 
   return(histogram_dt)
 }
@@ -293,15 +295,15 @@ make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
   # compute bin values for histogram
   if(histogram){
     histogram_dt <- compute_histogram_values(plotting_dt, features_to_plot)
-    gg <- gg + geom_rect(data=histogram_dt, aes(xmin=x_start, xmax=x_end, ymin=y_start,ymax=y_end), fill = "grey80")
+    gg <- gg + ggplot2::geom_rect(data=histogram_dt, ggplot2::aes(xmin=x_start, xmax=x_end, ymin=y_start,ymax=y_end), fill = "grey80")
   }
 
-  gg <- gg + ggplot2::geom_point(aes(x=feature_value, y=phi), colour=col[1]) + #need to document that the color is specified like his
+  gg <- gg + ggplot2::geom_point(ggplot2::aes(x=feature_value, y=phi), colour=col[1]) + #need to document that the color is specified like his
     ggplot2::theme_classic(base_family = "sans") +
     ggplot2::theme(legend.position = "bottom",
                    plot.title = ggplot2::element_text(hjust = 0.5),
                    strip.background = ggplot2::element_rect(colour = "white", fill = "grey90"),
-                   panel.grid.major.y = element_line(colour = "grey90")
+                   panel.grid.major.y = ggplot2::element_line(colour = "grey90")
     ) +
     ggplot2::labs(x = "Feature values",
          y = "Shapley values")
@@ -315,14 +317,14 @@ make_beeswarm_plot <- function(plotting_dt, col){
   # in order to have a global color bar indicating magnitude of obs. feature value
   plotting_dt[, feature_value_grade := (feature_value - min(feature_value)) / (max(feature_value) - min(feature_value)), by = variable]
 
-  gg <- ggplot2::ggplot(plotting_dt, aes(x = variable, y = phi, color = feature_value_grade)) +
+  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x = variable, y = phi, color = feature_value_grade)) +
     ggplot2::geom_hline(yintercept = 0 , color="grey70", size = 0.5)+
     ggbeeswarm::geom_beeswarm(priority = 'random', cex = 0.4) + #the cex-parameter doesnt generalize well, should use corral but not available yet....
     ggplot2::coord_flip() +
     ggplot2::theme_classic() +
     ggplot2::theme(panel.grid.major.y = element_line(colour = "grey90", linetype = "dashed")) +
     ggplot2::labs(x = "", y = "Shapley value")+
-    ggplot2::guides(color = guide_colourbar(ticks = FALSE,
+    ggplot2::guides(color = ggplot2::guide_colourbar(ticks = FALSE,
                                    barwidth = 0.5, barheight = 10))
 
   if(identical( c("#00BA38","#F8766D"), col)){ #check is col-parameter is the default
@@ -378,7 +380,7 @@ make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels){
                    plot.title = ggplot2::element_text(hjust = 0.5),
                    strip.background = ggplot2::element_rect(colour = "white", fill = "white")) +
     ggplot2::scale_fill_manual(values = col, drop = TRUE) +
-    scale_x_discrete(breaks = breaks, labels = desc_labels) +
+    ggplot2::scale_x_discrete(breaks = breaks, labels = desc_labels) +
     ggplot2::geom_col(ggplot2::aes(y=phi)) +
     ggplot2::coord_flip() +
     ggplot2::labs(
@@ -394,78 +396,6 @@ make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels){
     size=2.5, family = "sans", col = text_color_bar
     )
 
-  # waterfall plotting helpers
-  plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
-                                 ifelse(expected<pred, ifelse(end>start, end, start), ifelse(end<start,end,start)),
-                                 start + (end - start)/2 ), by=id]
-  plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8,
-                                     ifelse(sign=="Increases", col[1], col[2]),
-                                     "white"), by=id]
-  text_color <- plotting_dt[variable!="none", text_color]
-  plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end)-max(start, end))/8, ifelse(expected>pred, 1, 0), 0.5), by=id]
-  plotting_dt[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
-  N_features <- max(plotting_dt[, rank_waterfall])
-  n_obs <- max(plotting_dt[,id])
-  plotting_dt[, pred_label := paste0("italic(f(x))==", format(pred, digits=digits+1))]
-  plotting_dt[, pred_x:= N_features+0.8]
-  plotting_dt[, phi0_label := paste0("~phi[0]==", format(expected, digits=digits+1))]
-  plotting_dt[, phi0_x:= 0]
-  #phi0_label <- paste0("~phi[0]==", format(expected, digits=digits+1))
-
-  if (!plot_phi0 | plot_type=="waterfall") {
-    plotting_dt <- plotting_dt[variable != "none"]
-  }
-
-  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x=description, fill=sign)) +
-    ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol=2) +
-    ggplot2::theme_classic(base_family = "sans") +
-    ggplot2::theme(legend.position = "bottom",
-                   plot.title = ggplot2::element_text(hjust = 0.5),
-                   strip.background = ggplot2::element_rect(colour = "white", fill = "white")) +
-    ggplot2::scale_fill_manual(values = col, drop = TRUE)
-
-  if (plot_type == "bar"){
-    gg <- gg + ggplot2::geom_col(ggplot2::aes(y=phi)) +
-      ggplot2::coord_flip() +
-      ggplot2::labs(
-        y = "Feature contribution",
-        x = "Feature",
-        fill = "",
-        title = "Shapley value prediction explanation"
-      )
-  } else if (plot_type == "waterfall"){
-    gg <- gg + ggplot2::geom_segment(ggplot2::aes(x=-Inf, xend = max(rank_waterfall)+0.8, y=pred, yend=pred),
-                                     linetype="dotted", col="grey30", size=0.25) +
-      ggplot2::coord_flip(clip = 'off', xlim=c(0.5, ifelse(N_features+N_features*0.11 < N_features+0.5,
-                                                           N_features+0.5,
-                                                           N_features+N_features*0.11)))  +
-      ggplot2::labs(y = "Prediction",
-                    x = "Feature",
-                    fill = "",
-                    title = "Shapley value prediction explanation") +
-      ggplot2::geom_rect(ggplot2::aes(x=description, xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
-                         show.legend = NA) +
-      ggplot2::geom_segment(x=-Inf, xend = 1.3, y=expected, yend=expected,
-                            linetype="dotted", col="grey30", size=0.25) +
-      ggplot2::geom_text(ggplot2::aes(label = phi_significant,
-                                      x = rank_waterfall, y = y_text,
-                                      vjust = 0.5, hjust = hjust_text),
-                         size=3, family = "sans", col = text_color) +
-      #ggplot2::annotate("text", parse = TRUE, x = -Inf, y = expected, label = phi0_label,
-      #                 size=2.5, family = "sans", col = "grey30", vjust = 0, hjust = 0) +
-      ggplot2::geom_segment(ggplot2::aes(x=rank_waterfall+0.45, xend = rank_waterfall+0.45, y = start, yend = end, color=sign),
-                            arrow=ggplot2::arrow(length = ggplot2::unit(0.03, "npc")), show.legend = FALSE) +
-      ggplot2::scale_color_manual(values=col) +
-      ggplot2::geom_text(data=plotting_dt[1:n_obs,],
-                         ggplot2::aes(x = pred_x, y = pred, label = pred_label,
-                                      vjust = 0.5, hjust = ifelse(pred > expected, 1.03, -0.03)),
-                         parse=TRUE, family = "sans", col="grey30", size = 2.5) +
-      ggplot2::geom_text(data=plotting_dt[1:n_obs,],
-                         ggplot2::aes(x = phi0_x, y = expected, label = phi0_label,
-                                      vjust = 0, hjust = ifelse(pred < expected, 1, 0)),
-                         parse=TRUE, family = "sans", col="grey30", size = 2.5)
-      #annotation_custom(grid::linesGrob(y = c(0, 0.02),  gp = gpar(col = "black", lwd = 1.5)), ymin=expected, ymax=expected, xmin=-Inf, xmax=Inf)
-  }
   return(gg)
 }
 
