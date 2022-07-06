@@ -6,7 +6,13 @@
 \alias{shapr-package}
 \title{shapr: Prediction Explanation with Dependence-Aware Shapley Values}
 \description{
-Complex machine learning models are often hard to interpret. However, in many situations it is crucial to understand and explain why a model made a specific prediction. Shapley values is the only method for such prediction explanation framework with a solid theoretical foundation. Previously known methods for estimating the Shapley values do, however, assume feature independence. This package implements the method described in Aas, Jullum and LC8land (2019) \href{https://arxiv.org/abs/1903.10464}{arXiv:1903.10464}, which accounts for any feature dependence, and thereby produces more accurate estimates of the true Shapley values.
+Complex machine learning models are often hard to interpret. However, in 
+  many situations it is crucial to understand and explain why a model made a specific 
+  prediction. Shapley values is the only method for such prediction explanation framework 
+  with a solid theoretical foundation. Previously known methods for estimating the Shapley 
+  values do, however, assume feature independence. This package implements the method 
+  described in Aas, Jullum and Løland (2019) \href{https://arxiv.org/abs/1903.10464}{arXiv:1903.10464}, which accounts for any feature 
+  dependence, and thereby produces more accurate estimates of the true Shapley values.
 }
 \seealso{
 Useful links:
@@ -28,9 +34,9 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item Anders LC8land \email{Anders.Loland@nr.no} [contributor]
+  \item Anders Løland \email{Anders.Loland@nr.no} [contributor]
   \item Jens Christian Wahl \email{Jens.Christian.Wahl@nr.no} [contributor]
-  \item Camilla LingjC&rde [contributor]
+  \item Camilla Lingjærde [contributor]
   \item Norsk Regnesentral [copyright holder, funder]
 }
 
