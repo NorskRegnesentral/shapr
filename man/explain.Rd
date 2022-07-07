@@ -100,6 +100,9 @@ If \code{NULL} (the default) internal functions are used for natively supported 
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
+\item{show_progressbar}{Logical.
+Whether to show a progressbar across the batches for the Shapley value computation.}
+
 \item{...}{Additional arguments passed to [setup_approach()] for specific approaches.}
 }
 \value{

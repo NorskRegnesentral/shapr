@@ -79,7 +79,8 @@
 #' If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
-
+#' @param show_progressbar Logical.
+#' Whether to show a progressbar across the batches for the Shapley value computation.
 #' @param ... Additional arguments passed to [setup_approach()] for specific approaches.
 #'
 #' @details The most important thing to notice is that \code{shapr} has implemented five different
@@ -156,8 +157,8 @@ explain <- function(x_train,
 
   if(show_progressbar){
     # Enable progressbar, and reset on option on exit
-    old_global_handler <- handlers(global=NA)
-    handlers(global=TRUE)
+    old_global_handler <- progressr::handlers(global=NA)
+    progressr::handlers(global=TRUE)
     on.exit(handlers(global = old_global_handler), add = TRUE)
 
     # Setting default handler depending on GUI and installed packages
@@ -173,9 +174,7 @@ explain <- function(x_train,
     }
 
     # Set default handler if not set outside explain()
-    old_handlers <- handlers(c("beepr", "progress"))
-    on.exit(handlers(old_handlers), add = TRUE)
-    handlers(default = default_handler)
+    progressr::handlers(default = default_handler)
 
   }
 
