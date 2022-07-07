@@ -248,7 +248,7 @@ explain <- function(x_train,
     # Enable progressbar, and reset on option on exit
     old_global_handler <- progressr::handlers(global=NA)
     progressr::handlers(global=TRUE)
-    on.exit(handlers(global = old_global_handler), add = TRUE)
+    on.exit(progressr::handlers(global = old_global_handler), add = TRUE)
 
     # Setting default handler depending on GUI and installed packages
     is_Rstudio <- (Sys.getenv("RSTUDIO") == "1" && !nzchar(Sys.getenv("RSTUDIO_TERM")))
