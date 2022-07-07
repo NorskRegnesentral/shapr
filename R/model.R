@@ -38,18 +38,17 @@
 #'
 #' @author Martin Jullum
 #' @examples
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   # Load example data
-#'   data("Boston", package = "MASS")
-#'   # Split data into test- and training data
-#'   x_train <- head(Boston, -3)
-#'   x_explain <- tail(Boston, 3)
-#'   # Fit a linear model
-#'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#' # Load example data
+#' data("airquality")
+#' airquality <- airquality[complete.cases(airquality), ]
+#' # Split data into test- and training data
+#' x_train <- head(airquality, -3)
+#' x_explain <- tail(airquality, 3)
+#' # Fit a linear model
+#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 #'
-#'   # Predicting for a model with a standardized format
-#'   predict_model(x = model, newdata = x_explain)
-#' }
+#' # Predicting for a model with a standardized format
+#' predict_model(x = model, newdata = x_explain)
 predict_model <- function(x, newdata) {
   UseMethod("predict_model", x)
 }
@@ -87,17 +86,18 @@ predict_model.default <- function(x, newdata) {
 #' @keywords internal
 #'
 #' @examples
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   # Load example data
-#'   data("Boston", package = "MASS")
-#'   # Split data into test- and training data
-#'   x_train <- head(Boston, -3)
-#'   # Fit a linear model
-#'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#' # Load example data
+#' data("airquality")
+#' airquality <- airquality[complete.cases(airquality), ]
+#' # Split data into test- and training data
+#' x_train <- head(airquality, -3)
+#' x_explain <- tail(airquality, 3)
+#' # Fit a linear model
+#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 #'
-#'   # Checking the model object
-#'   model_checker(x = model)
-#' }
+#' # Checking the model object
+#' model_checker(x = model)
+
 model_checker <- function(x) {
   UseMethod("model_checker", x)
 }
@@ -134,16 +134,16 @@ model_checker.default <- function(x) {
 #' @export
 #'
 #' @examples
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   # Load example data
-#'   data("Boston", package = "MASS")
-#'   # Split data into test- and training data
-#'   x_train <- data.table::as.data.table(head(Boston))
-#'   x_train[, rad := as.factor(rad)]
-#'   model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
-#'
-#'   get_model_specs(model)
-#' }
+#' # Load example data
+#' data("airquality")
+#' airquality <- airquality[complete.cases(airquality), ]
+#' # Split data into test- and training data
+#' x_train <- head(airquality, -3)
+#' x_explain <- tail(airquality, 3)
+#' # Fit a linear model
+#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
+#' get_model_specs(model)
+
 get_model_specs <- function(x) {
 
 

@@ -188,17 +188,19 @@ process_all_data <- function(internal,feature_list){
 #'
 #' @examples
 #' # Load example data
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   data("Boston", package = "MASS")
-#'   # Split data into test- and training data
-#'   x_train <- data.table::as.data.table(head(Boston))
-#'   x_train[, rad := as.factor(rad)]
-#'   data_features <- get_data_specs(x_train)
-#'   model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+#' data("airquality")
+#' airquality <- airquality[complete.cases(airquality), ]
+#' # Split data into test- and training data
+#' x_train <- head(airquality, -3)
+#' x_explain <- tail(airquality, 3)
+#' # Split data into test- and training data
+#' x_train <- data.table::as.data.table(head(airquality))
+#' x_train[, Temp := as.factor(Temp)]
+#' data_features <- get_data_specs(x_train)
+#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 #'
-#'   model_features <- get_model_specs(model)
-#'   preprocess_data(x_train, model_features)
-#' }
+#' model_features <- get_model_specs(model)
+#' preprocess_data(x_train, model_features)
 preprocess_data <- function(x, feature_list) {
   if (all(is.null(colnames(x)))) {
     stop(paste0("The data is missing column names"))
@@ -243,17 +245,19 @@ preprocess_data <- function(x, feature_list) {
 #'
 #' @examples
 #' # Load example data
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   data("Boston", package = "MASS")
-#'   # Split data into test- and training data
-#'   x_train <- data.table::as.data.table(head(Boston))
-#'   x_train[, rad := as.factor(rad)]
-#'   data_features <- get_data_specs(x_train)
-#'   model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+#' data("airquality")
+#' airquality <- airquality[complete.cases(airquality), ]
+#' # Split data into test- and training data
+#' x_train <- head(airquality, -3)
+#' x_explain <- tail(airquality, 3)
+#' # Split data into test- and training data
+#' x_train <- data.table::as.data.table(head(airquality))
+#' x_train[, Temp := as.factor(Temp)]
+#' data_features <- get_data_specs(x_train)
+#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 #'
-#'   model_features <- get_model_specs(model)
-#'   check_features(model_features, data_features)
-#' }
+#' model_features <- get_model_specs(model)
+#' check_features(model_features, data_features)
 check_features <- function(f_list_1, f_list_2,
                            use_1_as_truth = T) {
   if (is.null(f_list_1$specs_type)) {
@@ -442,13 +446,15 @@ check_features <- function(f_list_1, f_list_2,
 #'
 #' @examples
 #' # Load example data
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   data("Boston", package = "MASS")
-#'   # Split data into test- and training data
-#'   x_train <- data.table::as.data.table(head(Boston))
-#'   x_train[, rad := as.factor(rad)]
-#'   get_data_specs(x_train)
-#' }
+#' data("airquality")
+#' airquality <- airquality[complete.cases(airquality), ]
+#' # Split data into test- and training data
+#' x_train <- head(airquality, -3)
+#' x_explain <- tail(airquality, 3)
+#' # Split data into test- and training data
+#' x_train <- data.table::as.data.table(head(airquality))
+#' x_train[, Temp := as.factor(Temp)]
+#' get_data_specs(x_train)
 get_data_specs <- function(x) {
   x <- data.table::as.data.table(x)
 
@@ -483,18 +489,21 @@ get_data_specs <- function(x) {
 #'
 #' @examples
 #' # Load example data
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   data("Boston", package = "MASS")
-#'   # Split data into test- and training data
-#'   x_train <- data.table::as.data.table(head(Boston))
-#'   x_train[, rad := as.factor(rad)]
-#'   data_features <- get_data_specs(x_train)
-#'   model <- lm(medv ~ lstat + rm + rad + indus, data = x_train)
+#' data("airquality")
+#' airquality <- airquality[complete.cases(airquality), ]
+#' # Split data into test- and training data
+#' x_train <- head(airquality, -3)
+#' x_explain <- tail(airquality, 3)
+#' # Split data into test- and training data
+#' x_train <- data.table::as.data.table(head(airquality))
+#' x_train[, Temp := as.factor(Temp)]
+#' data_features <- get_data_specs(x_train)
+#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 #'
-#'   model_features <- get_model_specs(model)
-#'   updater <- check_features(model_features, data_features)
-#'   update_data(x_train, updater)
-#' }
+#' model_features <- get_model_specs(model)
+#' updater <- check_features(model_features, data_features)
+#' update_data(x_train, updater)
+
 update_data <- function(data, updater) {
   # Operates on data by reference, so no copying of data here
 
