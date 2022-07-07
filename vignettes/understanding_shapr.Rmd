@@ -43,7 +43,9 @@ Shapley values is regarded to be the only model-agnostic explanation method with
 foundation (@lundberg2017unified). Kernel SHAP is a computationally efficient approximation to 
 Shapley values in higher dimensions, but it assumes independent features. @aas2019explaining extend 
 the Kernel SHAP method to handle dependent features, resulting in more accurate approximations to 
-the true Shapley values. See the [paper](https://arxiv.org/abs/1903.10464) (@aas2019explaining) for further details.
+the true Shapley values. 
+See the [paper](https://www.sciencedirect.com/sdfe/reader/pii/S0004370221000539/pdf) 
+(@aas2019explaining) for further details.
 
 
 <a id="overview"></a>
@@ -121,8 +123,11 @@ Kernel SHAP method may give a completely wrong answer. This can be avoided by es
 conditional distribution $p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)$ directly 
 and generating samples from this distribution. With this small change, the contributions and 
 Shapley values may then be approximated as in the ordinary Kernel SHAP framework. @aas2019explaining 
-propose three different approaches for estimating the conditional probabilities. The methods may 
-also be combined, such that e.g. one method is used when conditioning on a small number of features, 
+propose three different approaches for estimating the conditional probabilities which are implemented:
+`empirical`, `gaussian` and `copula`.
+The package also implements the method `ctree` method from @redelmeier2020explaining. 
+The original `independence` approach of @lundberg2017unified is also available.
+The methods may also be combined, such that e.g. one method is used when conditioning on a small number of features, 
 while another method is used otherwise.
 
 <a id="gaussian"></a>
@@ -210,7 +215,7 @@ Conditional inference trees is a special tree fitting procedure that relies on h
 We use conditional inference trees (*ctree*) to model the conditional distribution, $p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)$, found in the Shapley methodology.
 First, we fit a different conditional inference tree to each conditional distribution.
 Once a tree is fit for given dependent features, the end node of $\boldsymbol{x}_{\mathcal{S}}^*$ is found. Then, we sample from this end node and use the resulting samples, 
-$\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K$, when approximating the conditional expectations as in Kernel SHAP. See @Redelmeier2020ctree for more details. 
+$\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K$, when approximating the conditional expectations as in Kernel SHAP. See @redelmeier2020explaining for more details. 
 
 The conditional inference trees are fit using the *party* and *partykit* packages (@partykit_package). 
 
@@ -225,9 +230,9 @@ numeric features and produces a numeric outcome. Note that the ctree method take
 
 The following example shows how a simple `xgboost` model is trained using the `airquality` dataset, 
 and how `shapr` can be used to explain the individual predictions. Note that the empirical conditional 
-distribution approach is the default (i.e. `approach = "empirical"`), and that the Gaussian, 
-Gaussian copula, and ctree approaches can be used instead by setting the argument `approach` to either 
-`"gaussian"`, `"copula"`, or `"ctree`".
+distribution approach is the default (i.e. `approach = "empirical"`).
+The Gaussian, Gaussian copula, ctree or independence approaches can be used instead by setting the argument `approach` to either 
+`"gaussian"`, `"copula"`, `"ctree"` or `"independence"`.
 
 ```{r, warning=FALSE}
 library(xgboost)
@@ -536,29 +541,31 @@ plot(explanation_group, plot_phi0 = TRUE, index_x_explain = c(1, 6))
 Any continuous response regression model or binary classification model of these model classes, can be explained with 
 the package directly as exemplified above.
 Moreover, essentially any feature dependent prediction model can be explained by the package by specifying two (or one) 
-simple additional functions to the class your model belongs to. 
+simple additional functions for your model.
 
-*Note: The below procedure for specifying custom models was changed in shapr v0.2.0*
-The first class function is `predict_model`, taking the model and data (as a `matrix` or `data.frame/data.table`) as 
+*Note: The below procedure for specifying custom models was changed in shapr v0.3.0*
+The first function is `predict_model`, taking the model and data (as a `matrix` or `data.frame/data.table`) as 
 input and outputting the corresponding prediction as a numeric vector. 
-The second (optional, but highly recommended) class function is `get_model_specs`, taking the model as input and 
+The second (optional, but highly recommended) function is `get_model_specs`, taking the model as input and 
 outputting a list with the following elements: 
 *labels* (vector with the feature names to compute Shapley values for), 
 *classes* (a named vector with the labels as names and the class type as elements), 
 *factor_levels* (a named list with the labels as names and vectors with the factor levels as elements (NULL if the 
 feature is not a factor)). 
-The `get_model_specs` function is used to check that the format of the data passed to `shapr` and `explain` have the 
+The `get_model_specs` function is used to check that the format of the data passed to `explain` have the 
 correct format in terms of the necessary feature columns being available and having the correct class/attributes.
-It is highly recommended to do such checks in order to ensure correct usage of `shapr` and `explain`. 
-If, for some reason, such checking is not desirable, one does not have to provide the `get_model_specs` function class.
+It is highly recommended to do such checks in order to ensure correct usage of `explain`. 
+If, for some reason, such checking is not desirable, one does not have to provide the `get_model_specs` function.
 This will, however, throw a warning that all feature consistency checking against the model is disabled.
 
-Once the above class functions are created, one can explain predictions from this model class as before.
+Once the above functions are created, you can explain predictions from this model as before by passing the functions
+through the input arguments `predict_model` and `get_model_specs` of `explain()`.
+
 These functions **can** be made general enough to handle all supported model types of that class, or they can be made
 minimal, possibly only allowing explanation of the specific version of the model class at hand. 
 Below we give examples of both full support versions of these functions and a minimal version which skips the
 `get_model_specs` function. 
-We do this for the `gbm` model class from the `gbm` package, fitted to the same Boston data set as used above.
+We do this for the `gbm` model class from the `gbm` package, fitted to the same airquality data set as used above.
 
 
 ```{r}
@@ -573,7 +580,7 @@ model <- gbm::gbm(
   distribution = "gaussian"
 )
 #### Full feature versions of the three required model functions ####
-predict_model.gbm <- function(x, newdata) {
+MY_predict_model <- function(x, newdata) {
   
   if (!requireNamespace('gbm', quietly = TRUE)) {
     stop('The gbm package is required for predicting train models')
@@ -589,7 +596,7 @@ predict_model.gbm <- function(x, newdata) {
     predict(x, as.data.frame(newdata),n.trees = x$n.trees)
   }
 }
-get_model_specs.gbm <- function(x){
+MY_get_model_specs <- function(x){
   feature_list = list()
   feature_list$labels <- labels(x$Terms)
   m <- length(feature_list$labels)
@@ -601,25 +608,26 @@ get_model_specs.gbm <- function(x){
 # Prepare the data for explanation
 set.seed(123)
 p0 <- mean(xy_train[, y_var])
-explanation <- explain(x_train, x_test, model = model, approach = "empirical", prediction_zero = p0)
+explanation <- explain(x_train, x_test, model = model, approach = "empirical", prediction_zero = p0,
+                       predict_model = MY_predict_model,
+                       get_model_specs = MY_get_model_specs)
 # Plot results
-plot(explanation)
+plot(explanation, index_x_explain = c(1, 6))
+
 #### Minimal version of the three required model functions ####      
 # Note: Working only for this exact version of the model class 
 # Avoiding to define get_model_specs skips all feature         
 # consistency checking between your data and model             
-# Removing the previously defined functions to simulate a fresh start
-rm(predict_model.gbm)
-rm(get_model_specs.gbm)
-predict_model.gbm <- function(x, newdata) {
+MY_MINIMAL_predict_model <- function(x, newdata) {
     predict(x, as.data.frame(newdata),n.trees = x$n.trees)
 }
 # Prepare the data for explanation
 set.seed(123)
 p0 <- mean(xy_train[, y_var])
-explanation <- explain(x_train, x_test, model = model, approach = "empirical", prediction_zero = p0)
+explanation <- explain(x_train, x_test, model = model, approach = "empirical", prediction_zero = p0,
+                       predict_model = MY_MINIMAL_predict_model)
 # Plot results
-plot(explanation)
+plot(explanation, index_x_explain = c(1, 6))
 ```
 
 
@@ -636,7 +644,7 @@ As mentioned above, the original (independence assuming) Kernel SHAP implementat
 approximated by setting a large $\sigma$ value using our empirical approach. If we specify that the 
 distances to *all* training observations should be used (i.e. setting `approach = "empirical"` and
 `w_threshold = 1` when using `explain`, we can approximate the original method arbitrarily 
-well by increasing $\sigma$. For completeness of the `shapr`, we have also implemented 
+well by increasing $\sigma$. For completeness of the `shapr` package, we have also implemented 
 a version of the original method, which samples training observations independently with respect to 
 their distances to test observations (i.e. without the large-$\sigma$ approximation). This method is 
 available by using `approach = "independence"` in `explain`. 
