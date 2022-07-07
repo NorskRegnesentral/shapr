@@ -18,6 +18,7 @@ explain(
   keep_samp_for_vS = FALSE,
   predict_model = NULL,
   get_model_specs = NULL,
+  show_progressbar = TRUE,
   ...
 )
 }

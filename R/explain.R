@@ -149,9 +149,35 @@ explain <- function(x_train,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
+                    show_progressbar = TRUE,
                     ...){ # ... is further arguments passed to specific approaches
 
   set.seed(seed)
+
+  if(show_progressbar){
+    # Enable progressbar, and reset on option on exit
+    old_global_handler <- handlers(global=NA)
+    handlers(global=TRUE)
+    on.exit(handlers(global = old_global_handler), add = TRUE)
+
+    # Setting default handler depending on GUI and installed packages
+    is_Rstudio <- (Sys.getenv("RSTUDIO") == "1" && !nzchar(Sys.getenv("RSTUDIO_TERM")))
+    has_rstudioapi <- requireNamespace("rstudioapi", quietly = TRUE)
+    has_progress <- requireNamespace("progress", quietly = TRUE)
+    if(is_Rstudio & has_rstudioapi){
+      default_handler <- progressr::handler_rstudio
+    } else if (has_progress){
+      default_handler <- progressr::handler_progress
+    } else {
+      default_handler <- progressr::handler_txtprogressbar
+    }
+
+    # Set default handler if not set outside explain()
+    old_handlers <- handlers(c("beepr", "progress"))
+    on.exit(handlers(old_handlers), add = TRUE)
+    handlers(default = default_handler)
+
+  }
 
   # Sets up input parameters, data and preprocess the data if needed
   internal <- check_setup(x_train = x_train,
