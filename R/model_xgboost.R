@@ -85,20 +85,20 @@ model_checker.xgb.Booster <- function(x) {
 #' @author Annabelle Redelmeier, Martin Jullum
 #'
 #' @examples
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   data("Boston", package = "MASS")
-#'   x_var <- c("lstat", "rm", "dis", "indus")
-#'   y_var <- "medv"
-#'   x_train <- as.data.frame(Boston[401:411, x_var])
-#'   y_train <- Boston[401:408, y_var]
-#'   x_explain <- as.data.frame(Boston[1:4, x_var])
+#' # Load example data
+#' data("airquality")
+#' airquality <- airquality[complete.cases(airquality), ]
+#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#' y_var <- "Ozone"
+#' x_train <- as.data.frame(airquality[100:110, x_var])
+#' y_train <- airquality[100:110, y_var]
+#' x_explain <- as.data.frame(airquality[1:4, x_var])
 #'
-#'   # convert to factors for illustational purpose
-#'   x_train$rm <- factor(round(x_train$rm))
-#'   x_explain$rm <- factor(round(x_explain$rm), levels = levels(x_train$rm))
+#' # convert to factors for illustational purpose
+#' x_train$Temp <- factor(round(x_train$Temp, -1))
+#' x_explain$Temp <- factor(round(x_explain$Temp, -1), levels = levels(x_train$Temp))
 #'
-#'   dummylist <- make_dummies(traindata = x_train, testdata = x_explain)
-#' }
+#' dummylist <- make_dummies(traindata = x_train, testdata = x_explain)
 make_dummies <- function(traindata, testdata) {
   if (all(is.null(colnames(traindata)))) {
     stop(paste0("The traindata is missing column names"))

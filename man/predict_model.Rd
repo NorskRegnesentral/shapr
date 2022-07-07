@@ -64,18 +64,17 @@ From R: \code{vignette("understanding_shapr", package = "shapr")}  \cr
 Web: \url{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models}
 }
 \examples{
-if (requireNamespace("MASS", quietly = TRUE)) {
-  # Load example data
-  data("Boston", package = "MASS")
-  # Split data into test- and training data
-  x_train <- head(Boston, -3)
-  x_explain <- tail(Boston, 3)
-  # Fit a linear model
-  model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+# Load example data
+data("airquality")
+airquality <- airquality[complete.cases(airquality), ]
+# Split data into test- and training data
+x_train <- head(airquality, -3)
+x_explain <- tail(airquality, 3)
+# Fit a linear model
+model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 
-  # Predicting for a model with a standardized format
-  predict_model(x = model, newdata = x_explain)
-}
+# Predicting for a model with a standardized format
+predict_model(x = model, newdata = x_explain)
 }
 \author{
 Martin Jullum
