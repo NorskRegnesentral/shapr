@@ -644,7 +644,7 @@ As mentioned above, the original (independence assuming) Kernel SHAP implementat
 approximated by setting a large $\sigma$ value using our empirical approach. If we specify that the 
 distances to *all* training observations should be used (i.e. setting `approach = "empirical"` and
 `w_threshold = 1` when using `explain`, we can approximate the original method arbitrarily 
-well by increasing $\sigma$. For completeness of the `shapr`, we have also implemented 
+well by increasing $\sigma$. For completeness of the `shapr` package, we have also implemented 
 a version of the original method, which samples training observations independently with respect to 
 their distances to test observations (i.e. without the large-$\sigma$ approximation). This method is 
 available by using `approach = "independence"` in `explain`. 
