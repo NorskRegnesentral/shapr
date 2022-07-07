@@ -10,7 +10,7 @@
 #'  \code{"waterfall"} gives a waterfall plot indicating the changes in the prediction score due to each features
 #'  contribution (their Shapley values).
 #'  \code{"scatter"} plots the feature values on the x-axis and Shapley values on the y-axis, as well as
-#'  (optionally) a background histogram showing the distribution of the feature data.
+#'  (optionally) a background scatter_hist showing the distribution of the feature data.
 #'  \code{"beeswarm"} summarises the distribution of the Shapley values along the x-axis for all the features. Each point gives
 #'  the shapley value of a given instance, where the points are colored by the feature value of that instance.
 #' @param digits Integer.
@@ -45,11 +45,13 @@
 #'  \code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
 #'  \code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
 #'  \code{"original"} plots the features in the original order of the data table.
-#' @param features_to_plot Integer or character vector.
-#' Specifies what features to include in (scatter) plot. Can be a numerical vector indicating feature index, or a character
-#' vector, indicating the name(s) of the feature(s) to plot.
-#' @param histogram Logical.
-#' Whether to include a histogram indicating the distribution of the data when making the scatter plot. Note that the
+#' @param scatter_features Integer or character vector.
+#' Only used for \code{plot_type = "scatter"}.
+#' Specifies what features to include in (scatter) plot. Can be a numerical vector indicating feature index, or a
+#' character vector, indicating the name(s) of the feature(s) to plot.
+#' @param scatter_hist Logical.
+#' Only used for \code{plot_type = "scatter"}.
+#' Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note that the
 #' bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.
 #' @param ... Currently not used.
 #'
@@ -93,8 +95,8 @@ plot.shapr <- function(x,
                        top_k_features = NULL,
                        col = NULL, #first increasing color, then decreasing color
                        plot_order = "largest_first",
-                       features_to_plot = NULL,
-                       histogram = TRUE,
+                       scatter_features = NULL,
+                       scatter_hist = TRUE,
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -162,7 +164,7 @@ plot.shapr <- function(x,
 
 
   if(plot_type=="scatter"){
-    gg <- make_scatter_plot(plotting_dt, features_to_plot, histogram, col)
+    gg <- make_scatter_plot(plotting_dt, scatter_features, scatter_hist, col)
 
   } else if (plot_type=="beeswarm"){
     gg <- make_beeswarm_plot(plotting_dt, col)
@@ -247,7 +249,7 @@ plot.shapr <- function(x,
   return(gg)
 }
 
-compute_histogram_values <- function(plotting_dt, features_to_plot){
+compute_scatter_hist_values <- function(plotting_dt, scatter_features){
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
   unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
@@ -265,20 +267,20 @@ compute_histogram_values <- function(plotting_dt, features_to_plot){
     num_breaks <-5
   }
 
-  histogram_dt_list <- list()
-  for(feature_name in features_to_plot){
+  scatter_hist_dt_list <- list()
+  for(feature_name in scatter_features){
     x <- plotting_dt[variable==feature_name, feature_value]
-    histogram <- hist(x, breaks = seq(min(x), max(x), length.out = num_breaks), plot=FALSE)
+    scatter_hist <- hist(x, breaks = seq(min(x), max(x), length.out = num_breaks), plot=FALSE)
     y_max <- max(plotting_dt[variable==feature_name, phi])
     y_min <- min(plotting_dt[variable==feature_name, phi])
     y_tot <- y_max-y_min
-    count_tot <- sum(histogram$count)
+    count_tot <- sum(scatter_hist$count)
     count_scale <- y_tot/count_tot
 
-    xvals <- histogram$breaks
+    xvals <- scatter_hist$breaks
     x_start <- xvals[-length(xvals)]
     x_end <- xvals[-1]
-    y_end <- count_scale*histogram$count + y_min
+    y_end <- count_scale*scatter_hist$count + y_min
 
     bins_dt <- data.table(x_start = x_start,
                           x_end = x_end,
@@ -286,14 +288,14 @@ compute_histogram_values <- function(plotting_dt, features_to_plot){
                           y_start = y_min,
                           variable = feature_name)
 
-    histogram_dt_list[[feature_name]] <- bins_dt
+    scatter_hist_dt_list[[feature_name]] <- bins_dt
   }
-  histogram_dt <- data.table::rbindlist(histogram_dt_list)
+  scatter_hist_dt <- data.table::rbindlist(scatter_hist_dt_list)
 
-  return(histogram_dt)
+  return(scatter_hist_dt)
 }
 
-make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
+make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col){
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
   unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
@@ -306,24 +308,24 @@ make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
 
   plotting_dt <- plotting_dt[variable != "none", ]
 
-  if(is.null(features_to_plot)){
-    features_to_plot <- unique(plotting_dt[, variable])
-  } else if(is.numeric(features_to_plot)){
-    features_to_plot <- plotting_dt[features_to_plot, unique(variable)] #i.e. plot first 4 features if features_to_plot = 1:4
-  } else if(is.character(features_to_plot)){
-    if(any(!(features_to_plot %in% unique(plotting_dt[, variable])))){
-      stop("Some or all of the listed feature names in 'features_to_plot' do not match the names in the data.")
+  if(is.null(scatter_features)){
+    scatter_features <- unique(plotting_dt[, variable])
+  } else if(is.numeric(scatter_features)){
+    scatter_features <- plotting_dt[scatter_features, unique(variable)] #i.e. plot first 4 features if scatter_features = 1:4
+  } else if(is.character(scatter_features)){
+    if(any(!(scatter_features %in% unique(plotting_dt[, variable])))){
+      stop("Some or all of the listed feature names in 'scatter_features' do not match the names in the data.")
     }
   }
 
-  plotting_dt <- plotting_dt[variable %in% features_to_plot, ]
+  plotting_dt <- plotting_dt[variable %in% scatter_features, ]
   gg <- ggplot2::ggplot(plotting_dt) +
     ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
 
-  # compute bin values for histogram
-  if(histogram){
-    histogram_dt <- compute_histogram_values(plotting_dt, features_to_plot)
-    gg <- gg + ggplot2::geom_rect(data=histogram_dt, ggplot2::aes(xmin=x_start, xmax=x_end, ymin=y_start,ymax=y_end), fill = "grey80")
+  # compute bin values for scatter_hist
+  if(scatter_hist){
+    scatter_hist_dt <- compute_scatter_hist_values(plotting_dt, scatter_features)
+    gg <- gg + ggplot2::geom_rect(data=scatter_hist_dt, ggplot2::aes(xmin=x_start, xmax=x_end, ymin=y_start,ymax=y_end), fill = "grey80")
   }
 
   gg <- gg + ggplot2::geom_point(ggplot2::aes(x=feature_value, y=phi), colour=col) +

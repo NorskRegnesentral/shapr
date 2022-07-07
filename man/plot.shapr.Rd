@@ -13,8 +13,8 @@
   top_k_features = NULL,
   col = NULL,
   plot_order = "largest_first",
-  features_to_plot = NULL,
-  histogram = TRUE,
+  scatter_features = NULL,
+  scatter_hist = TRUE,
   ...
 )
 }
@@ -28,7 +28,7 @@ Specifies the type of plot to produce.
 \code{"waterfall"} gives a waterfall plot indicating the changes in the prediction score due to each features
 contribution (their Shapley values).
 \code{"scatter"} plots the feature values on the x-axis and Shapley values on the y-axis, as well as
-(optionally) a background histogram showing the distribution of the feature data.
+(optionally) a background scatter_hist showing the distribution of the feature data.
 \code{"beeswarm"} summarises the distribution of the Shapley values along the x-axis for all the features. Each point gives
 the shapley value of a given instance, where the points are colored by the feature value of that instance.}
 
@@ -70,12 +70,14 @@ Specifies what order to plot the features with respect to the magnitude of the s
  \code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
  \code{"original"} plots the features in the original order of the data table.}
 
-\item{features_to_plot}{Integer or character vector.
-Specifies what features to include in (scatter) plot. Can be a numerical vector indicating feature index, or a character
-vector, indicating the name(s) of the feature(s) to plot.}
+\item{scatter_features}{Integer or character vector.
+Only used for \code{plot_type = "scatter"}.
+Specifies what features to include in (scatter) plot. Can be a numerical vector indicating feature index, or a
+character vector, indicating the name(s) of the feature(s) to plot.}
 
-\item{histogram}{Logical.
-Whether to include a histogram indicating the distribution of the data when making the scatter plot. Note that the
+\item{scatter_hist}{Logical.
+Only used for \code{plot_type = "scatter"}.
+Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note that the
 bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.}
 
 \item{...}{Currently not used.}
