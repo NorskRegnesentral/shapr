@@ -9,6 +9,10 @@
 #'  \code{"bar"} (the default) gives a regular horizontal bar plot of the Shapley value magnitudes.
 #'  \code{"waterfall"} gives a waterfall plot indicating the changes in the prediction score due to each features
 #'  contribution (their Shapley values).
+#'  \code{"scatter"} plots the feature values on the x-axis and Shapley values on the y-axis, as well as
+#'  (optionally) a background histogram showing the distribution of the feature data.
+#'  \code{"beeswarm"} summarises the distribution of the Shapley values along the x-axis for all the features. Each point gives
+#'  the shapley value of a given instance, where the points are colored by the feature value of that instance.
 #' @param digits Integer.
 #' Number of significant digits to use in the feature description
 #' @param plot_phi0 Logical.
@@ -21,9 +25,21 @@
 #' How many features to include in the plot. E.g. if you have 15
 #' features in your model you can plot the 5 most important features, for each explanation, by setting
 #' \code{top_k_features = 1:5}.
-#' @param col Character vector (or length 2).
+#' @param col Character vector (length depends on plot type).
 #' The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
 #' Shapley values, respectively.
+#' The default is \code{col=NULL}, plotting with the default colors respective to the plot type.
+#' For \code{plot_type = "bar"} and \code{plot_type = "waterfall"}, the default is \code{c("#00BA38","#F8766D")}.
+#' For \code{plot_type = "beeswarm"}, the default is \code{c("#F8766D","yellow","#00BA38")}.
+#' For \code{plot_type = "scatter"}, the default is \code{"#619CFF"}.
+#'
+#' If you want to alter the colors i the plot, the length of the \code{col} vector depends on plot type.
+#' For \code{plot_type = "bar"} or \code{plot_type = "waterfall"}, two colors should be provided, first for positive and then for negative Shapley values.
+#' For \code{plot_type = "beeswarm"}, either two or three colors can be given. If two colors are given, then the first color determines
+#' the color that points with high feature values will have, and the second determines the color of points with low feature values.
+#' If three colors are given, then the first colors high feature values, the second colors mid-range feature values, and the third colors low feature values.
+#' For instance, \code{col = c("red", "yellow", "blue")} will make high values red, mid-range values yellow, and low values blue.
+#' For \code{plot_type = "scatter"}, a single color is to be given, which determines the color of the points on the scatter plot.
 #' @param plot_order Character.
 #' Specifies what order to plot the features with respect to the magnitude of the shapley values.
 #'  \code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
@@ -91,14 +107,13 @@ plot.shapr <- function(x,
   }
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
-  unique_label <- NULL
-  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
+  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
+  header <- variable <- pred <- description <- NULL
 
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
-  id <- phi <- NULL # due to NSE notes in R CMD check
 
   is_groupwise <- x$internal$parameters$is_groupwise
 
@@ -133,7 +148,6 @@ plot.shapr <- function(x,
   plotting_dt <- merge(plotting_dt, predDT, by = "id")
 
   # Adding header for each individual plot
-  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
   plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits+1))]
 
   if(plot_type == "scatter" | plot_type == "beeswarm"){
@@ -234,6 +248,12 @@ plot.shapr <- function(x,
 }
 
 compute_histogram_values <- function(plotting_dt, features_to_plot){
+  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
+  header <- variable <- pred <- description <- NULL
+
   n_feat_vals <- plotting_dt[ , .N, by = variable][1,"N"] #number of points to plot
   if(n_feat_vals > 500){
     num_breaks <- 50
@@ -244,13 +264,6 @@ compute_histogram_values <- function(plotting_dt, features_to_plot){
   } else {
     num_breaks <-5
   }
-  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
-  unique_label <- NULL
-  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
-  id <- phi <- NULL # due to NSE notes in R CMD check
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
 
   histogram_dt_list <- list()
   for(feature_name in features_to_plot){
@@ -283,11 +296,9 @@ compute_histogram_values <- function(plotting_dt, features_to_plot){
 make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
-  unique_label <- NULL
-  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
-  id <- phi <- NULL # due to NSE notes in R CMD check
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
+  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
+  header <- variable <- pred <- description <- NULL
 
   if(is.null(col)){
     col = "#619CFF"
@@ -301,7 +312,7 @@ make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
     features_to_plot <- plotting_dt[features_to_plot, unique(variable)] #i.e. plot first 4 features if features_to_plot = 1:4
   } else if(is.character(features_to_plot)){
     if(any(!(features_to_plot %in% unique(plotting_dt[, variable])))){
-      stop("Some or all of the listed feature names in features_to_plot do not match the names in the data.")
+      stop("Some or all of the listed feature names in 'features_to_plot' do not match the names in the data.")
     }
   }
 
@@ -328,6 +339,11 @@ make_scatter_plot <- function(plotting_dt, features_to_plot, histogram, col){
 }
 
 make_beeswarm_plot <- function(plotting_dt, col){
+  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
+  header <- variable <- pred <- description <- NULL
 
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
     stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
@@ -336,16 +352,6 @@ make_beeswarm_plot <- function(plotting_dt, col){
   if(all(col %in% c("#00BA38","#F8766D"))){
     message("Using red, yellow and green as default colors for the beeswarm color bar.")
   }
-
-
-  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
-  unique_label <- NULL
-  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
-  id <- phi <- NULL # due to NSE notes in R CMD check
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- pred_label <- NULL
-
 
   if(is.null(col)){
     col = c("#F8766D","yellow","#00BA38")
@@ -391,11 +397,9 @@ make_beeswarm_plot <- function(plotting_dt, col){
 make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels){
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
-  unique_label <- NULL
-  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
-  id <- phi <- NULL # due to NSE notes in R CMD check
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
+  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
+  header <- variable <- pred <- description <- NULL
 
   if(is.null(col)){
     col = c("#00BA38","#F8766D")
@@ -458,14 +462,11 @@ make_waterfall_plot <- function(plotting_dt,
                                 plot_order,
                                 breaks,
                                 desc_labels){
-
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
-  unique_label <- NULL
-  pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  header <- variable <- pred <- description <- NULL # due to NSE notes in R CMD check
-  id <- phi <- NULL # due to NSE notes in R CMD check
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- NULL
+  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
+  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
+  header <- variable <- pred <- description <- NULL
 
   if(is.null(col)){
     col = c("#00BA38","#F8766D")
