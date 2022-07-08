@@ -72,6 +72,8 @@
 #' # Fit a linear model
 #' model <- lm(Ozone ~ Solar.R + Wind+ Temp + Month, data = dat_train)
 #'
+#' p <- mean(dat_train$Ozone)
+#'
 #' x <- explain(
 #' dat_train,
 #' dat_explain,
