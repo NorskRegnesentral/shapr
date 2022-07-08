@@ -62,28 +62,42 @@
 #'
 #' @export
 #' @examples
-#' # Load example data
+#'
 #' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]
 #' # Split data into test- and training data
-#' x_train <- head(airquality, -3)
-#' x_explain <- tail(airquality, 3)
+#' train <- head(airquality, -50)
+#' test <- tail(airquality, 50)
+#'
 #' # Fit a linear model
-#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
+#' model <- lm(Ozone ~ Solar.R + Wind+ Temp + Month, data = train)
 #'
-#' # Define unconditional expectation
-#' p <- mean(x_train$Ozone)
+#' x <- explain(
+#' train,
+#' test,
+#' model = model,
+#' approach = "empirical",
+#' prediction_zero = p
+#' )
 #'
-#' # Explain predictions
-#' explanation <- explain(x_train,x_explain,model,approach="empirical",prediction_zero=p)
-#'
-#' # Plot the explantion (this function)
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'  plot(explanation) # Regular bar plot
+#' # The default plotting option is a bar plot of the Shapley values
+#' # We draw bar plots for the first 4 observations
+#' plot(x, index_x_explain = 1:4)
 #'
-#'  plot(explanation, plot_type = "waterfall") # Waterfall plot
-#'   }
-
+#' # We can also make waterfall plots
+#' plot(x, plot_type = "waterfall", index_x_explain = 1:4)
+#' plot(x, plot_type = "waterfall", index_x_explain = 1:4, top_k_features = 2) # top_k_features = 2 shows the 2 features with largest contribution
+#'
+#' # Or scatter plots showing the distribution of the shapley values and feature values
+#' plot(x, plot_type = "scatter")
+#' plot(x, plot_type = "scatter", scatter_features = "Temp") # if we only want the scatter plot for a specific feature
+#'
+#' # Or a beeswarm plot summarising the Shapley values and feature values for all features
+#' plot(x, plot_type = "beeswarm")
+#' plot(x, plot_type = "beeswarm", col = c("red", "black")) # we can change colors
+#' }
+#'
 #' @author Martin Jullum, Vilde Ung
 plot.shapr <- function(x,
                        plot_type = "bar",
