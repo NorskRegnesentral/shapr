@@ -18,7 +18,6 @@ explain(
   keep_samp_for_vS = FALSE,
   predict_model = NULL,
   get_model_specs = NULL,
-  show_progressbar = TRUE,
   ...
 )
 }
@@ -99,9 +98,6 @@ The function takes \code{model} as argument and provides a list with 3 elements:
 If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
-
-\item{show_progressbar}{Logical.
-Whether to show a progressbar across the batches for the Shapley value computation.}
 
 \item{...}{Additional arguments passed to [setup_approach()] for specific approaches.}
 }
