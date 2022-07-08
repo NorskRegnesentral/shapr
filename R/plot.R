@@ -387,7 +387,7 @@ make_beeswarm_plot <- function(plotting_dt, col, index_x_explain, x){
   plotting_dt <- plotting_dt[variable!="none",]
 
   train_dt <- data.table::copy(x$internal$data$x_train)
-  train_dt <- melt(train_dt[,id:=.I], id.vars = "id", value.name = "feature_value")
+  train_dt <- data.table::melt(train_dt[,id:=.I], id.vars = "id", value.name = "feature_value")
   train_dt[, `:=`(max=max(feature_value),min=min(feature_value)), by=variable]
   train_dt <- train_dt[,.(variable,max,min)]
   train_dt <- unique(train_dt)
