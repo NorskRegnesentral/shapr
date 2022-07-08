@@ -272,10 +272,16 @@ compute_scatter_hist_values <- function(plotting_dt, scatter_features){
   scatter_hist_dt_list <- list()
   for(feature_name in scatter_features){
     x <- plotting_dt[variable==feature_name, feature_value]
-    scatter_hist_object <- hist(x, breaks = seq(min(x), max(x), length.out = num_breaks), plot=FALSE)
+    if(min(x)==max(x)){
+      scatter_hist_object <- hist(x, breaks = 1, plot=FALSE)
+
+    } else{
+      scatter_hist_object <- hist(x, breaks = seq(min(x), max(x), length.out = num_breaks), plot=FALSE)
+
+    }
     y_max <- max(plotting_dt[variable==feature_name, phi])
     y_min <- min(plotting_dt[variable==feature_name, phi])
-    y_tot <- y_max-y_min
+    y_tot <- y_max-y_min #what if these happen to be the same...?
     count_tot <- sum(scatter_hist_object$count)
     count_scale <- y_tot/count_tot
 
@@ -371,6 +377,8 @@ make_beeswarm_plot <- function(plotting_dt, col, index_x_explain){
   # scale obs. features value to their distance from min. feature value relative to the distance between min. and max. feature value
   # in order to have a global color bar indicating magnitude of obs. feature value
   plotting_dt[, feature_value_grade := (feature_value - min(feature_value)) / (max(feature_value) - min(feature_value)), by = variable]
+  # make sure features with only one value are also scaled
+  plotting_dt[is.nan(feature_value_grade), feature_value_grade := 0.5, by = variable]
 
   # Only plot the desired observations
   plotting_dt <- plotting_dt[id %in% index_x_explain]
