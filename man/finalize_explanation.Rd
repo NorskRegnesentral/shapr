@@ -67,6 +67,96 @@ For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in e
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
 \code{w_threshold} argument.
 }
+\examples{
+
+# Load example data
+data("airquality")
+airquality <- airquality[complete.cases(airquality), ]
+# Split data into test- and training data
+x_train <- head(airquality, -3)
+x_test <- tail(airquality, 3)
+
+  # Fit a linear model
+model <- lm(Ozone ~ Solar.R + Wind+ Temp + Month, data = x_train)
+
+# Explain predictions
+p <- mean(x_train$Ozone)
+
+# Empirical approach
+explain1 <- explain(
+  x_train,
+  x_test,
+  model = model,
+  approach = "empirical",
+  prediction_zero = p,
+  n_samples = 1e2
+)
+
+# Gaussian approach
+explain2 <- explain(
+  x_train,
+  x_test,
+  model = model,
+  approach = "gaussian",
+  prediction_zero = p,
+  n_samples = 1e2
+)
+
+# Gaussian copula approach
+explain3 <- explain(
+  x_train,
+  x_test,
+  model = model,
+  approach = "copula",
+  prediction_zero = p,
+  n_samples = 1e2
+)
+
+# ctree approach
+explain4 <- explain(
+  x_train,
+  x_test,
+  model = model,
+  approach = "ctree",
+  prediction_zero = p,
+  n_samples = 1e2
+)
+
+# Combined approach
+approach <- c("gaussian", "gaussian", "empirical", "empirical")
+explain5 <- explain(
+  x_train,
+  x_test,
+  model = model,
+  approach = approach,
+  prediction_zero = p,
+  n_samples = 1e2
+)
+
+# Print the Shapley values
+print(explain1$shapley_values)
+
+# Plot the results
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  plot(explain1)
+  plot(explain1, plot_type = "waterfall")
+}
+
+# Group-wise explanations
+group_list <- list(A = c("Temp", "Month"), B = c("Wind", "Solar.R"))
+
+explain_groups <- explain(
+  x_train,
+  x_test,
+  model = model,
+  group = group_list,
+  approach = "empirical",
+  prediction_zero = p,
+  n_samples = 1e2
+)
+print(explain_groups$shapley_values)
+
+}
 \references{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
