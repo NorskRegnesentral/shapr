@@ -113,7 +113,6 @@ plot.shapr <- function(x,
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
   header <- variable <- pred <- description <- NULL
 
-
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
 
@@ -162,15 +161,18 @@ plot.shapr <- function(x,
     plotting_dt <- merge(plotting_dt, melt_feature_vals, by=c("id", "variable"))
   }
 
-
   if(plot_type=="scatter"){
+    # Only plot the desired observations
+    plotting_dt <- plotting_dt[id %in% index_x_explain]
     gg <- make_scatter_plot(plotting_dt, scatter_features, scatter_hist, col)
 
   } else if (plot_type=="beeswarm"){
-    gg <- make_beeswarm_plot(plotting_dt, col)
+    gg <- make_beeswarm_plot(plotting_dt, col, index_x_explain)
 
   } else { #if bar og waterfall plot
+    # Only plot the desired observations
     plotting_dt <- plotting_dt[id %in% index_x_explain]
+
     if(length(plotting_dt[, unique(id)]) > 10){
       stop("Too many observations to plot together! Try for instance setting index_x_explain = 1:10 so that the max. is not exceeded.")
     }
@@ -270,17 +272,17 @@ compute_scatter_hist_values <- function(plotting_dt, scatter_features){
   scatter_hist_dt_list <- list()
   for(feature_name in scatter_features){
     x <- plotting_dt[variable==feature_name, feature_value]
-    scatter_hist <- hist(x, breaks = seq(min(x), max(x), length.out = num_breaks), plot=FALSE)
+    scatter_hist_object <- hist(x, breaks = seq(min(x), max(x), length.out = num_breaks), plot=FALSE)
     y_max <- max(plotting_dt[variable==feature_name, phi])
     y_min <- min(plotting_dt[variable==feature_name, phi])
     y_tot <- y_max-y_min
-    count_tot <- sum(scatter_hist$count)
+    count_tot <- sum(scatter_hist_object$count)
     count_scale <- y_tot/count_tot
 
-    xvals <- scatter_hist$breaks
+    xvals <- scatter_hist_object$breaks
     x_start <- xvals[-length(xvals)]
     x_end <- xvals[-1]
-    y_end <- count_scale*scatter_hist$count + y_min
+    y_end <- count_scale*scatter_hist_object$count + y_min
 
     bins_dt <- data.table(x_start = x_start,
                           x_end = x_end,
@@ -304,6 +306,8 @@ make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col){
 
   if(is.null(col)){
     col = "#619CFF"
+  } else if (length(col) != 1){
+    stop("'col' must be of length 1 when making scatter plot.")
   }
 
   plotting_dt <- plotting_dt[variable != "none", ]
@@ -340,7 +344,7 @@ make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col){
   return(gg)
 }
 
-make_beeswarm_plot <- function(plotting_dt, col){
+make_beeswarm_plot <- function(plotting_dt, col, index_x_explain){
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
   sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
   unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
@@ -359,7 +363,7 @@ make_beeswarm_plot <- function(plotting_dt, col){
     col = c("#F8766D","yellow","#00BA38")
   }
   if (!(length(col) %in% c(2,3))){
-    stop("'col' must be of length 2 or 3")
+    stop("'col' must be of length 2 or 3 when making beeswarm plot.")
   }
 
   plotting_dt <- plotting_dt[variable!="none",]
@@ -367,6 +371,9 @@ make_beeswarm_plot <- function(plotting_dt, col){
   # scale obs. features value to their distance from min. feature value relative to the distance between min. and max. feature value
   # in order to have a global color bar indicating magnitude of obs. feature value
   plotting_dt[, feature_value_grade := (feature_value - min(feature_value)) / (max(feature_value) - min(feature_value)), by = variable]
+
+  # Only plot the desired observations
+  plotting_dt <- plotting_dt[id %in% index_x_explain]
 
   gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x = variable, y = phi, color = feature_value_grade)) +
     ggplot2::geom_hline(yintercept = 0 , color="grey70", size = 0.5)+
@@ -383,12 +390,14 @@ make_beeswarm_plot <- function(plotting_dt, col){
       ggplot2::scale_color_gradient2(low = col[3], mid = col[2], high = col[1],
                                      midpoint = 0.5,
                                      breaks = c(0,1),
+                                     limits = c(0,1),
                                      labels = c("Low", "High"),
                                      name = "Feature \n value")
   } else if (length(col)==2){ # allow user to specify three colors
     gg <- gg +
       ggplot2::scale_color_gradient(low = col[2], high = col[1],
                                     breaks = c(0,1),
+                                    limits = c(0,1),
                                     labels = c("Low", "High"),
                                     name = "Feature \n value")
   }
@@ -407,7 +416,7 @@ make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels){
     col = c("#00BA38","#F8766D")
   }
   if (length(col)!=2){
-    stop("'col' must be of length 2")
+    stop("'col' must be of length 2 when making bar plot.")
   }
 
 
@@ -474,7 +483,7 @@ make_waterfall_plot <- function(plotting_dt,
     col = c("#00BA38","#F8766D")
   }
   if (length(col)!=2){
-    stop("'col' must be of length 2")
+    stop("'col' must be of length 2 when making waterfall plot.")
   }
 
   # waterfall plotting helpers
