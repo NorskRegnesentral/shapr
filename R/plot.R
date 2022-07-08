@@ -388,7 +388,7 @@ make_beeswarm_plot <- function(plotting_dt, col, index_x_explain){
     ggbeeswarm::geom_beeswarm(priority = 'random', cex = 0.4) + #the cex-parameter doesnt generalize well, should use corral but not available yet....
     ggplot2::coord_flip() +
     ggplot2::theme_classic() +
-    ggplot2::theme(panel.grid.major.y = element_line(colour = "grey90", linetype = "dashed")) +
+    ggplot2::theme(panel.grid.major.y = ggplot2::element_line(colour = "grey90", linetype = "dashed")) +
     ggplot2::labs(x = "", y = "Shapley value")+
     ggplot2::guides(color = ggplot2::guide_colourbar(ticks = FALSE,
                                    barwidth = 0.5, barheight = 10))
