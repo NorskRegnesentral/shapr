@@ -120,11 +120,13 @@ plot(x, index_x_explain = 1:4)
 
 # We can also make waterfall plots
 plot(x, plot_type = "waterfall", index_x_explain = 1:4)
-plot(x, plot_type = "waterfall", index_x_explain = 1:4, top_k_features = 2) # top_k_features = 2 shows the 2 features with largest contribution
+# And only showing the 2 features with largest contribution
+plot(x, plot_type = "waterfall", index_x_explain = 1:4, top_k_features = 2)
 
 # Or scatter plots showing the distribution of the shapley values and feature values
 plot(x, plot_type = "scatter")
-plot(x, plot_type = "scatter", scatter_features = "Temp") # if we only want the scatter plot for a specific feature
+# And only for a specific feature
+plot(x, plot_type = "scatter", scatter_features = "Temp")
 
 # Or a beeswarm plot summarising the Shapley values and feature values for all features
 plot(x, plot_type = "beeswarm")
