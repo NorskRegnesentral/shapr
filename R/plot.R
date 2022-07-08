@@ -120,10 +120,10 @@ plot.shapr <- function(x,
     stop(paste(plot_order, "is an invalid plot order. Try plot_order='largest_first', plot_order='smallest_first' or plot_order='original'."))
   }
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
   unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- NULL
+  header <- variable <- pred <- description <- min <- max <- NULL
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
@@ -179,7 +179,7 @@ plot.shapr <- function(x,
     gg <- make_scatter_plot(plotting_dt, scatter_features, scatter_hist, col)
 
   } else if (plot_type=="beeswarm"){
-    gg <- make_beeswarm_plot(plotting_dt, col, index_x_explain)
+    gg <- make_beeswarm_plot(plotting_dt, col, index_x_explain, x)
 
   } else { #if bar og waterfall plot
     # Only plot the desired observations
@@ -265,10 +265,10 @@ plot.shapr <- function(x,
 
 compute_scatter_hist_values <- function(plotting_dt, scatter_features){
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
   unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- NULL
+  header <- variable <- pred <- description <- min <- max <- NULL
 
   n_feat_vals <- plotting_dt[ , .N, by = variable][1,"N"] #number of points to plot
   if(n_feat_vals > 500){
@@ -317,10 +317,10 @@ compute_scatter_hist_values <- function(plotting_dt, scatter_features){
 
 make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col){
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
   unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- NULL
+  header <- variable <- pred <- description <- min <- max <- NULL
 
   if(is.null(col)){
     col = "#619CFF"
@@ -362,12 +362,12 @@ make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col){
   return(gg)
 }
 
-make_beeswarm_plot <- function(plotting_dt, col, index_x_explain){
+make_beeswarm_plot <- function(plotting_dt, col, index_x_explain, x){
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
   unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- NULL
+  header <- variable <- pred <- description <- min <- max <- NULL
 
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
     stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
@@ -382,16 +382,27 @@ make_beeswarm_plot <- function(plotting_dt, col, index_x_explain){
 
   plotting_dt <- plotting_dt[variable!="none",]
 
+  train_dt <- data.table::copy(x$internal$data$x_train)
+  train_dt <- melt(train_dt[,id:=.I], id.vars = "id", value.name = "feature_value")
+  train_dt[, `:=`(max=max(feature_value),min=min(feature_value)), by=variable]
+  train_dt <- train_dt[,.(variable,max,min)]
+  train_dt <- unique(train_dt)
+  plotting_dt <- merge(plotting_dt, train_dt, by="variable")
+
   # scale obs. features value to their distance from min. feature value relative to the distance between min. and max. feature value
-  # in order to have a global color bar indicating magnitude of obs. feature value
-  plotting_dt[, feature_value_grade := (feature_value - min(feature_value)) / (max(feature_value) - min(feature_value)), by = variable]
+  # in order to have a global color bar indicating magnitude of obs. feature value.
+  # The feature values are scaled wrt the training data
+  plotting_dt[feature_value <= max & feature_value >= min, feature_value_scaled := (feature_value - min) / (max - min), by = variable]
+  plotting_dt[feature_value > max, feature_value_scaled := 1]
+  plotting_dt[feature_value < min, feature_value_scaled := 0]
+
   # make sure features with only one value are also scaled
-  plotting_dt[is.nan(feature_value_grade), feature_value_grade := 0.5, by = variable]
+  plotting_dt[is.nan(feature_value_scaled), feature_value_scaled := 0.5, by = variable]
 
   # Only plot the desired observations
   plotting_dt <- plotting_dt[id %in% index_x_explain]
 
-  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x = variable, y = phi, color = feature_value_grade)) +
+  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x = variable, y = phi, color = feature_value_scaled)) +
     ggplot2::geom_hline(yintercept = 0 , color="grey70", size = 0.5)+
     ggbeeswarm::geom_beeswarm(priority = 'random', cex = 0.4) + #the cex-parameter doesnt generalize well, should use corral but not available yet....
     ggplot2::coord_flip() +
@@ -423,10 +434,10 @@ make_beeswarm_plot <- function(plotting_dt, col, index_x_explain){
 
 make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels){
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
   unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- NULL
+  header <- variable <- pred <- description <- min <- max <- NULL
 
   if(is.null(col)){
     col = c("#00BA38","#F8766D")
@@ -490,10 +501,10 @@ make_waterfall_plot <- function(plotting_dt,
                                 breaks,
                                 desc_labels){
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_grade <- text_color_bar <- NULL
+  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
   unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
   x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- NULL
+  header <- variable <- pred <- description <- min <- max <- NULL
 
   if(is.null(col)){
     col = c("#00BA38","#F8766D")
