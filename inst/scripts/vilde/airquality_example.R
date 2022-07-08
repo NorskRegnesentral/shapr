@@ -8,6 +8,8 @@ test <- tail(airquality, 50)
 # Fit a linear model
 model <- lm(Ozone ~ Solar.R + Wind+ Temp + Month, data = x_train)
 
+p <- mean(train$Ozone)
+
 x <- explain(
   train,
   test,
