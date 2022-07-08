@@ -11,7 +11,10 @@
   plot_phi0 = TRUE,
   index_x_explain = NULL,
   top_k_features = NULL,
-  col = c("#00BA38", "#F8766D"),
+  col = NULL,
+  plot_order = "largest_first",
+  scatter_features = NULL,
+  scatter_hist = TRUE,
   ...
 )
 }
@@ -23,7 +26,11 @@ The output from [explain()].}
 Specifies the type of plot to produce.
 \code{"bar"} (the default) gives a regular horizontal bar plot of the Shapley value magnitudes.
 \code{"waterfall"} gives a waterfall plot indicating the changes in the prediction score due to each features
-contribution (their Shapley values).}
+contribution (their Shapley values).
+\code{"scatter"} plots the feature values on the x-axis and Shapley values on the y-axis, as well as
+(optionally) a background scatter_hist showing the distribution of the feature data.
+\code{"beeswarm"} summarises the distribution of the Shapley values along the x-axis for all the features. Each point gives
+the shapley value of a given instance, where the points are colored by the feature value of that instance.}
 
 \item{digits}{Integer.
 Number of significant digits to use in the feature description}
@@ -41,9 +48,37 @@ How many features to include in the plot. E.g. if you have 15
 features in your model you can plot the 5 most important features, for each explanation, by setting
 \code{top_k_features = 1:5}.}
 
-\item{col}{Character vector (or length 2).
+\item{col}{Character vector (length depends on plot type).
 The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
-Shapley values, respectively.}
+Shapley values, respectively.
+The default is \code{col=NULL}, plotting with the default colors respective to the plot type.
+For \code{plot_type = "bar"} and \code{plot_type = "waterfall"}, the default is \code{c("#00BA38","#F8766D")}.
+For \code{plot_type = "beeswarm"}, the default is \code{c("#F8766D","yellow","#00BA38")}.
+For \code{plot_type = "scatter"}, the default is \code{"#619CFF"}.
+
+If you want to alter the colors i the plot, the length of the \code{col} vector depends on plot type.
+For \code{plot_type = "bar"} or \code{plot_type = "waterfall"}, two colors should be provided, first for positive and then for negative Shapley values.
+For \code{plot_type = "beeswarm"}, either two or three colors can be given. If two colors are given, then the first color determines
+the color that points with high feature values will have, and the second determines the color of points with low feature values.
+If three colors are given, then the first colors high feature values, the second colors mid-range feature values, and the third colors low feature values.
+For instance, \code{col = c("red", "yellow", "blue")} will make high values red, mid-range values yellow, and low values blue.
+For \code{plot_type = "scatter"}, a single color is to be given, which determines the color of the points on the scatter plot.}
+
+\item{plot_order}{Character.
+Specifies what order to plot the features with respect to the magnitude of the shapley values.
+ \code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
+ \code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
+ \code{"original"} plots the features in the original order of the data table.}
+
+\item{scatter_features}{Integer or character vector.
+Only used for \code{plot_type = "scatter"}.
+Specifies what features to include in (scatter) plot. Can be a numerical vector indicating feature index, or a
+character vector, indicating the name(s) of the feature(s) to plot.}
+
+\item{scatter_hist}{Logical.
+Only used for \code{plot_type = "scatter"}.
+Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note that the
+bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.}
 
 \item{...}{Currently not used.}
 }
@@ -58,27 +93,46 @@ See the examples below, or \code{vignette("understanding_shapr", package = "shap
 how you should use the function.
 }
 \examples{
-# Load example data
+
 data("airquality")
 airquality <- airquality[complete.cases(airquality), ]
 # Split data into test- and training data
-x_train <- head(airquality, -3)
-x_explain <- tail(airquality, 3)
+dat_train <- head(airquality, -50)
+dat_explain <- tail(airquality, 50)
+
 # Fit a linear model
-model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
+model <- lm(Ozone ~ Solar.R + Wind+ Temp + Month, data = dat_train)
 
-# Define unconditional expectation
-p <- mean(x_train$Ozone)
+p <- mean(dat_train$Ozone)
 
-# Explain predictions
-explanation <- explain(x_train,x_explain,model,approach="empirical",prediction_zero=p)
+x <- explain(
+dat_train,
+dat_explain,
+model = model,
+approach = "empirical",
+prediction_zero = p
+)
 
-# Plot the explantion (this function)
 if (requireNamespace("ggplot2", quietly = TRUE)) {
- plot(explanation) # Regular bar plot
+# The default plotting option is a bar plot of the Shapley values
+# We draw bar plots for the first 4 observations
+plot(x, index_x_explain = 1:4)
 
- plot(explanation, plot_type = "waterfall") # Waterfall plot
-  }
+# We can also make waterfall plots
+plot(x, plot_type = "waterfall", index_x_explain = 1:4)
+# And only showing the 2 features with largest contribution
+plot(x, plot_type = "waterfall", index_x_explain = 1:4, top_k_features = 2)
+
+# Or scatter plots showing the distribution of the shapley values and feature values
+plot(x, plot_type = "scatter")
+# And only for a specific feature
+plot(x, plot_type = "scatter", scatter_features = "Temp")
+
+# Or a beeswarm plot summarising the Shapley values and feature values for all features
+plot(x, plot_type = "beeswarm")
+plot(x, plot_type = "beeswarm", col = c("red", "black")) # we can change colors
+}
+
 }
 \author{
 Martin Jullum, Vilde Ung
