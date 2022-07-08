@@ -9,13 +9,9 @@
 #' @export
 compute_vS <- function(internal,model,method="lapply"){
 
-
   if(method=="lapply"){
-    ret <- future.apply::future_lapply(X = internal$objects$S_batch,
-                                       FUN = run_batch, #TODO: Change name on run_batch
-                                       internal = internal,
-                                       model = model,
-                                       future.seed = internal$parameters$seed)
+    ret <- progress_run_batch(S_batch = internal$objects$S_batch, internal=internal, model=model)
+
   }else{
 
     keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
@@ -39,9 +35,21 @@ compute_vS <- function(internal,model,method="lapply"){
   return(ret)
 }
 
-#' @keywords internal
-run_batch <- function(S,internal,model){
+progress_run_batch <- function(S_batch, internal, model){
+  p <- progressr::progressor(along = S_batch)
+  ret <- future.apply::future_lapply(X = S_batch,
+                                     FUN = run_batch, #TODO: Change name on run_batch
+                                     internal = internal,
+                                     model = model,
+                                     p = p,
+                                     future.seed = internal$parameters$seed)
+  return(ret)
+}
 
+
+#' @keywords internal
+run_batch <- function(S, internal, model, p){
+  p(message="Estimating v(S)") #TODO: Add a message to state what batch has been computed
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
   dt <- batch_prepare_vS(S = S,internal = internal) # Make it optional to store and return the dt_list
