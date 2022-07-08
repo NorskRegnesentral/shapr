@@ -361,10 +361,6 @@ make_beeswarm_plot <- function(plotting_dt, col, index_x_explain){
     stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
   }
 
-  if(all(col %in% c("#00BA38","#F8766D"))){
-    message("Using red, yellow and green as default colors for the beeswarm color bar.")
-  }
-
   if(is.null(col)){
     col = c("#F8766D","yellow","#00BA38")
   }
