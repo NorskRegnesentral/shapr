@@ -50,7 +50,7 @@ Suggests:
     party,
     partykit,
     waldo,
-    progressr
+    progressr,
     ggbeeswarm
 LinkingTo: 
     RcppArmadillo,
