@@ -97,15 +97,17 @@ how you should use the function.
 data("airquality")
 airquality <- airquality[complete.cases(airquality), ]
 # Split data into test- and training data
-train <- head(airquality, -50)
-test <- tail(airquality, 50)
+dat_train <- head(airquality, -50)
+dat_explain <- tail(airquality, 50)
 
 # Fit a linear model
-model <- lm(Ozone ~ Solar.R + Wind+ Temp + Month, data = train)
+model <- lm(Ozone ~ Solar.R + Wind+ Temp + Month, data = dat_train)
+
+p <- mean(dat_train$Ozone)
 
 x <- explain(
-train,
-test,
+dat_train,
+dat_explain,
 model = model,
 approach = "empirical",
 prediction_zero = p
