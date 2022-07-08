@@ -62,30 +62,28 @@
 #'
 #' @export
 #' @examples
-#' if (requireNamespace("MASS", quietly = TRUE)) {
-#'   #' # Load example data
-#'   data("Boston", package = "MASS")
+#' # Load example data
+#' data("airquality")
+#' airquality <- airquality[complete.cases(airquality), ]
+#' # Split data into test- and training data
+#' x_train <- head(airquality, -3)
+#' x_explain <- tail(airquality, 3)
+#' # Fit a linear model
+#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 #'
-#'   # Split data into test- and training data
-#'   x_train <- head(Boston, -3)
-#'   x_explain <- tail(Boston, 3)
+#' # Define unconditional expectation
+#' p <- mean(x_train$Ozone)
 #'
-#'   # Fit a linear model
-#'   model <- lm(medv ~ lstat + rm + dis + indus, data = x_train)
+#' # Explain predictions
+#' explanation <- explain(x_train,x_explain,model,approach="empirical",prediction_zero=p)
 #'
-#'   # Define unconditional expectation
-#'   p <- mean(x_train$medv)
+#' # Plot the explantion (this function)
+#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#'  plot(explanation) # Regular bar plot
 #'
-#'   # Explain predictions
-#'   explanation <- explain(x_train,x_explain,model,approach="empirical",prediction_zero=p)
-#'
-#'   # Plot the explantion (this function)
-#'   if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'    plot(explanation) # Regular bar plot
-#'
-#'    plot(explanation, plot_type = "waterfall") # Waterfall plot
+#'  plot(explanation, plot_type = "waterfall") # Waterfall plot
 #'   }
-#' }
+
 #' @author Martin Jullum, Vilde Ung
 plot.shapr <- function(x,
                        plot_type = "bar",
