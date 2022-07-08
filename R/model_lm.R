@@ -30,4 +30,3 @@ get_model_specs.lm <- function(x) {
 model_checker.lm <- function(x) {
   NULL
 }
-

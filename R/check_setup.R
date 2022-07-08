@@ -15,7 +15,7 @@ check_setup <- function(x_train,
                         seed,
                         keep_samp_for_vS,
                         predict_model,
-                        get_model_specs,...){
+                        get_model_specs, ...) {
 
 
   internal <- list()
@@ -27,9 +27,9 @@ check_setup <- function(x_train,
                                         n_samples = n_samples,
                                         n_batches = n_batches,
                                         seed = seed,
-                                        keep_samp_for_vS = keep_samp_for_vS,...)
+                                        keep_samp_for_vS = keep_samp_for_vS, ...)
 
-  internal$data <- get_data(x_train,x_explain)
+  internal$data <- get_data(x_train, x_explain)
 
   internal$funcs <- get_funcs(predict_model,
                               get_model_specs,
@@ -38,19 +38,20 @@ check_setup <- function(x_train,
 
 
   # Extracting model specs from model
-  if(!is.null(internal$funcs$get_model_specs)){
+  if (!is.null(internal$funcs$get_model_specs)) {
     feature_list_model <- get_model_specs(model)
   } else {
     feature_list_model <- get_model_specs.default("")
   }
 
-  internal <- process_all_data(internal,feature_list_model)
+  internal <- process_all_data(internal, feature_list_model)
 
   return(internal)
 }
 
 #' @keywords internal
-get_parameters <- function(approach,prediction_zero,n_combinations,group,n_samples,n_batches,seed,keep_samp_for_vS,...){
+get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
+                           n_batches, seed, keep_samp_for_vS, ...) {
   parameters <- list(approach = approach,
                      prediction_zero = prediction_zero,
                      n_combinations = n_combinations,
@@ -59,8 +60,8 @@ get_parameters <- function(approach,prediction_zero,n_combinations,group,n_sampl
                      n_batches = n_batches,
                      seed = seed,
                      keep_samp_for_vS = keep_samp_for_vS)
-  parameters <- append(parameters,list(...))
-  if(is.null(parameters$ignore_model)){
+  parameters <- append(parameters, list(...))
+  if (is.null(parameters$ignore_model)) {
     parameters$ignore_model <- FALSE
   }
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
@@ -77,7 +78,7 @@ get_parameters <- function(approach,prediction_zero,n_combinations,group,n_sampl
 }
 
 #' @keywords internal
-get_data <- function(x_train,x_explain){
+get_data <- function(x_train, x_explain) {
 
   # Check format for x_train
   if (!is.matrix(x_train) & !is.data.frame(x_train)) {
@@ -92,7 +93,7 @@ get_data <- function(x_train,x_explain){
                x_explain = x_explain)
 }
 
-get_funcs <- function(predict_model,get_model_specs,class_model,ignore_model){
+get_funcs <- function(predict_model, get_model_specs, class_model, ignore_model) {
 
   model_class <- NULL # due to NSE
 
@@ -101,11 +102,11 @@ get_funcs <- function(predict_model,get_model_specs,class_model,ignore_model){
 
   supported_models <- get_supported_models()
 
-  if(!ignore_model){
-    if(is.null(funcs$predict_model)){
-      native_func_available <- supported_models[predict_model==TRUE,class_model %in% model_class]
-      if(native_func_available){
-        funcs$predict_model <- get(paste0("predict_model.",class_model))
+  if (!ignore_model) {
+    if (is.null(funcs$predict_model)) {
+      native_func_available <- supported_models[predict_model == TRUE, class_model %in% model_class]
+      if (native_func_available) {
+        funcs$predict_model <- get(paste0("predict_model.", class_model))
       } else {
         stop(
           "You passed a model to explain() which is not natively supported. See ?shapr::explain or the vignette\n",
@@ -114,15 +115,16 @@ get_funcs <- function(predict_model,get_model_specs,class_model,ignore_model){
       }
     }
 
-    if(is.null(funcs$get_model_specs)){
-      native_func_available <- supported_models[get_model_specs==TRUE,class_model %in% model_class]
-      if(native_func_available){
-        funcs$get_model_specs <- get(paste0("get_model_specs.",class_model))
+    if (is.null(funcs$get_model_specs)) {
+      native_func_available <- supported_models[get_model_specs == TRUE, class_model %in% model_class]
+      if (native_func_available) {
+        funcs$get_model_specs <- get(paste0("get_model_specs.", class_model))
       } else {
         message(
           "Note: You passed a model to explain() that is not natively supported.\n",
           "By default, all feature consistency checking is thus disabled.\n",
-          "This can be enabled for your custom model by passing a 'get_model_specs' function as an argument to explain(),\n",
+          "This can be enabled for your custom model by passing a 'get_model_specs'
+          function as an argument to explain(),\n",
           "see ?shapr::explain for further details."
         )
       }
@@ -134,7 +136,7 @@ get_funcs <- function(predict_model,get_model_specs,class_model,ignore_model){
 
 
 #' @keywords internal
-process_all_data <- function(internal,feature_list){
+process_all_data <- function(internal, feature_list) {
 
   # process x_train
   processed_list <- preprocess_data(
@@ -539,7 +541,8 @@ update_data <- function(data, updater) {
       for (i in changed_levels) {
         data.table::set(data,
                         j = i,
-                        value = factor(unlist(data[, new_labels[i], with = F], use.names = F), levels = factor_levels[[i]])
+                        value = factor(unlist(data[, new_labels[i], with = F], use.names = F),
+                                       levels = factor_levels[[i]])
         )
       }
     }
@@ -637,4 +640,3 @@ check_groups <- function(feature_labels, group) {
   }
   return(NULL)
 }
-

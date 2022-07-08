@@ -238,7 +238,7 @@ explain <- function(x_train,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
-                    ...){ # ... is further arguments passed to specific approaches
+                    ...) { # ... is further arguments passed to specific approaches
 
   set.seed(seed)
 
@@ -255,22 +255,23 @@ explain <- function(x_train,
                           seed = seed,
                           keep_samp_for_vS = keep_samp_for_vS,
                           predict_model = predict_model,
-                          get_model_specs = get_model_specs,...)
+                          get_model_specs = get_model_specs, ...)
 
   # Tests that the model predicts as intended
-  test_model(internal,model)
+  test_model(internal, model)
 
   # Check the approach (to be moved to check_setup later), setting up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
   # TODO: Remove the ellipsis below by extracting those parameters from internal (if not NULL) within setup_approach
-  internal <- setup_computation(internal,model)# model only needed for type AICc of approach empirical, otherwise ignored
+  # model only needed for type AICc of approach empirical, otherwise ignored
+  internal <- setup_computation(internal, model)
 
   # Accross all batches get the data we will predict on, predict on them, and do the MC integration
 
   # Getting the samples for the conditional distributions with specified approach
   # predicting with these samples
   # performing MC integration on these to estimate the conditional expectation
-  vS_list <- compute_vS(internal,model)
+  vS_list <- compute_vS(internal, model)
 
   # Compute Shapley values based on conditional expectations
   # Organize function output

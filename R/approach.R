@@ -1,5 +1,5 @@
 #' @keywords internal
-setup_approach <- function(internal,...){
+setup_approach <- function(internal, ...) {
 
   approach <- internal$parameters$approach
 
@@ -16,14 +16,14 @@ setup_approach <- function(internal,...){
 }
 
 #' @export
-setup_approach.combined <- function(internal,...){
+setup_approach.combined <- function(internal, ...) {
 
   org_approach <- internal$parameters$approach
   unique_approaches <- unique(org_approach)
 
-  for(i in unique_approaches){
+  for (i in unique_approaches) {
     internal$parameters$approach <- i
-    internal <- setup_approach(internal,...)
+    internal <- setup_approach(internal, ...)
   }
   internal$parameters$approach <- org_approach
 
@@ -52,18 +52,12 @@ prepare_data <- function(internal, ...) {
 }
 
 #' @keywords internal
-insert_defaults <- function(internal,defaults){
+insert_defaults <- function(internal, defaults) {
   par_names <- names(defaults)
 
   overwrite_names <- par_names[!(par_names %in% names(internal$parameters))]
 
-  internal$parameters <- append(internal$parameters,defaults[overwrite_names])
+  internal$parameters <- append(internal$parameters, defaults[overwrite_names])
 
   return(internal)
 }
-
-
-
-
-
-

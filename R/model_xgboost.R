@@ -217,4 +217,3 @@ apply_dummies <- function(feature_list, testdata) {
 
   return(x)
 }
-

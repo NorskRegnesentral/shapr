@@ -3,7 +3,7 @@
 #'
 #' @inheritParams default_doc
 #' @keywords internal
-test_model <- function(internal,model){
+test_model <- function(internal, model) {
   x <- head(internal$data$x_train, 2)
   tmp <- internal$funcs$predict_model(model, x)
   if (!(all(is.numeric(tmp)) & length(tmp) == 2)) {

@@ -1,7 +1,7 @@
 #' @keywords internal
 setup_approach.gaussian <- function(internal,
                                     mu = NULL,
-                                    cov_mat = NULL,...){
+                                    cov_mat = NULL, ...) {
 
   parameters <- internal$parameters
   x_train <- internal$data$x_train
@@ -77,7 +77,7 @@ prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
 #' Specifies the smallest allowed eigen value before the covariance matrix of \code{x_train} is assumed to not be
 #' positive definite, and [Matrix::nearPD()] is used to find the nearest one.
 #' @export
-get_cov_mat <- function(x_train,min_eigen_value = 1e-06){
+get_cov_mat <- function(x_train, min_eigen_value = 1e-06) {
   cov_mat <- stats::cov(x_train)
   eigen_values <- eigen(cov_mat)$values
   if (any(eigen_values <= min_eigen_value)) {
@@ -90,7 +90,7 @@ get_cov_mat <- function(x_train,min_eigen_value = 1e-06){
 #'
 #' @inheritParams explain
 #' @export
-get_mu_vec <- function(x_train){
+get_mu_vec <- function(x_train) {
   unname(colMeans(x_train))
 }
 
@@ -138,4 +138,3 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_explain) {
   colnames(ret) <- cnms
   return(as.data.table(ret))
 }
-

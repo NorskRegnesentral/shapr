@@ -3,11 +3,11 @@ setup_approach.ctree <- function(internal,
                                  mincriterion = 0.95,
                                  minsplit = 20,
                                  minbucket = 7,
-                                 sample = TRUE,...){
+                                 sample = TRUE, ...) {
 
-  defaults <- mget(c("mincriterion","minsplit","minbucket","sample"))
+  defaults <- mget(c("mincriterion", "minsplit", "minbucket", "sample"))
 
-  internal <- insert_defaults(internal,defaults)
+  internal <- insert_defaults(internal, defaults)
 
 
   return(internal)
@@ -330,4 +330,3 @@ sample_ctree <- function(tree,
 
   return(data.table::as.data.table(ret))
 }
-

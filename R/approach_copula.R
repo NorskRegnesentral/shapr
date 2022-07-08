@@ -1,5 +1,5 @@
 #' @keywords internal
-setup_approach.copula <- function(internal,...){
+setup_approach.copula <- function(internal, ...) {
 
   parameters <- internal$parameters
   x_train <- internal$data$x_train
@@ -26,8 +26,8 @@ setup_approach.copula <- function(internal,...){
   if (is.null(dim(x_explain_gaussian))) {
     x_explain_gaussian <- t(as.matrix(x_explain_gaussian))
   }
-
-  internal$data$x_explain_gaussian <- x_explain_gaussian # TODO: Change to this a data.table for consistency (not speed/memory)
+  # TODO: Change to this a data.table for consistency (not speed/memory)
+  internal$data$x_explain_gaussian <- x_explain_gaussian
   internal$parameters <- parameters
 
   return(internal)
@@ -86,7 +86,8 @@ prepare_data.copula <- function(internal,  index_features = NULL, ...) {
 #' @param index_given Integer vector. The indices of the features to condition upon. Note that
 #' \code{min(index_given) >= 1} and \code{max(index_given) <= m}.
 #' @param m Positive integer. The total number of features.
-#' @param x_explain_gaussian Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
+#' @param x_explain_gaussian Numeric matrix. Contains the observation whose predictions ought
+#' to be explained (test data),
 #' after quantile-transforming them to standard Gaussian variables.
 #' @param x_explain Numeric matrix. Contains the features of the observation whose
 #' predictions ought to be explained (test data).
@@ -186,4 +187,3 @@ gaussian_transform <- function(x) {
   z <- stats::qnorm(u)
   return(z)
 }
-
