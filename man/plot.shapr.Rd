@@ -29,8 +29,9 @@ Specifies the type of plot to produce.
 contribution (their Shapley values).
 \code{"scatter"} plots the feature values on the x-axis and Shapley values on the y-axis, as well as
 (optionally) a background scatter_hist showing the distribution of the feature data.
-\code{"beeswarm"} summarises the distribution of the Shapley values along the x-axis for all the features. Each point gives
-the shapley value of a given instance, where the points are colored by the feature value of that instance.}
+\code{"beeswarm"} summarises the distribution of the Shapley values along the x-axis for all the features.
+Each point gives the shapley value of a given instance, where the points are colored by the feature value
+of that instance.}
 
 \item{digits}{Integer.
 Number of significant digits to use in the feature description}
@@ -57,12 +58,14 @@ For \code{plot_type = "beeswarm"}, the default is \code{c("#F8766D","yellow","#0
 For \code{plot_type = "scatter"}, the default is \code{"#619CFF"}.
 
 If you want to alter the colors i the plot, the length of the \code{col} vector depends on plot type.
-For \code{plot_type = "bar"} or \code{plot_type = "waterfall"}, two colors should be provided, first for positive and then for negative Shapley values.
-For \code{plot_type = "beeswarm"}, either two or three colors can be given. If two colors are given, then the first color determines
-the color that points with high feature values will have, and the second determines the color of points with low feature values.
-If three colors are given, then the first colors high feature values, the second colors mid-range feature values, and the third colors low feature values.
-For instance, \code{col = c("red", "yellow", "blue")} will make high values red, mid-range values yellow, and low values blue.
-For \code{plot_type = "scatter"}, a single color is to be given, which determines the color of the points on the scatter plot.}
+For \code{plot_type = "bar"} or \code{plot_type = "waterfall"}, two colors should be provided, first for positive and
+then for negative Shapley values. For \code{plot_type = "beeswarm"}, either two or three colors can be given. If two
+colors are given, then the first color determines the color that points with high feature values will have, and the
+second determines the color of points with low feature values. If three colors are given, then the first colors high
+feature values, the second colors mid-range feature values, and the third colors low feature values. For instance,
+\code{col = c("red", "yellow", "blue")} will make high values red, mid-range values yellow, and low values blue. For
+\code{plot_type = "scatter"}, a single color is to be given, which determines the color of the points on the
+scatter plot.}
 
 \item{plot_order}{Character.
 Specifies what order to plot the features with respect to the magnitude of the shapley values.

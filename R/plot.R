@@ -537,12 +537,12 @@ make_waterfall_plot <- function(plotting_dt,
     plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
                                    ifelse(expected < pred, ifelse(end > start, end, start),
                                           ifelse(end < start, end, start)),
-                                   start + (end - start) / 2 ), by = id]
+                                   start + (end - start) / 2), by = id]
   } else if (plot_order == "smallest_first") {
     plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
                                    ifelse(expected > pred, ifelse(end > start, end, start),
                                           ifelse(end < start, end, start)),
-                                   start + (end - start) / 2 ), by = id]
+                                   start + (end - start) / 2), by = id]
   }
 
   plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
