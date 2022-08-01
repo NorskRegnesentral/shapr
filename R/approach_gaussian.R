@@ -2,7 +2,6 @@
 setup_approach.gaussian <- function(internal,
                                     mu = NULL,
                                     cov_mat = NULL, ...) {
-
   parameters <- internal$parameters
   x_train <- internal$data$x_train
 

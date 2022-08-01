@@ -138,8 +138,8 @@
 #' x_train <- head(airquality, -3)
 #' x_test <- tail(airquality, 3)
 #'
-#'   # Fit a linear model
-#' model <- lm(Ozone ~ Solar.R + Wind+ Temp + Month, data = x_train)
+#' # Fit a linear model
+#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 #'
 #' # Explain predictions
 #' p <- mean(x_train$Ozone)
@@ -222,7 +222,7 @@
 #'
 #' @author Martin Jullum
 #'
-#'@references
+#' @references
 #'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 #'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 explain <- function(x_train,
@@ -243,19 +243,21 @@ explain <- function(x_train,
   set.seed(seed)
 
   # Sets up input parameters, data and preprocess the data if needed
-  internal <- check_setup(x_train = x_train,
-                          x_explain = x_explain,
-                          model = model,
-                          approach = approach,
-                          prediction_zero = prediction_zero,
-                          n_combinations = n_combinations,
-                          group = group,
-                          n_samples = n_samples,
-                          n_batches = n_batches,
-                          seed = seed,
-                          keep_samp_for_vS = keep_samp_for_vS,
-                          predict_model = predict_model,
-                          get_model_specs = get_model_specs, ...)
+  internal <- check_setup(
+    x_train = x_train,
+    x_explain = x_explain,
+    model = model,
+    approach = approach,
+    prediction_zero = prediction_zero,
+    n_combinations = n_combinations,
+    group = group,
+    n_samples = n_samples,
+    n_batches = n_batches,
+    seed = seed,
+    keep_samp_for_vS = keep_samp_for_vS,
+    predict_model = predict_model,
+    get_model_specs = get_model_specs, ...
+  )
 
   # Tests that the model predicts as intended
   test_model(internal, model)
@@ -275,10 +277,11 @@ explain <- function(x_train,
 
   # Compute Shapley values based on conditional expectations
   # Organize function output
-  output <- finalize_explanation(vS_list = vS_list,
-                                 internal = internal)
+  output <- finalize_explanation(
+    vS_list = vS_list,
+    internal = internal
+  )
 
 
   return(output)
-
 }

@@ -8,12 +8,9 @@
 #'
 #' @export
 compute_vS <- function(internal, model, method = "lapply") {
-
   if (method == "lapply") {
     ret <- progress_run_batch(S_batch = internal$objects$S_batch, internal = internal, model = model)
-
   } else {
-
     keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
     ret <- list()
 
@@ -37,12 +34,14 @@ compute_vS <- function(internal, model, method = "lapply") {
 
 progress_run_batch <- function(S_batch, internal, model) {
   p <- progressr::progressor(along = S_batch)
-  ret <- future.apply::future_lapply(X = S_batch,
-                                     FUN = run_batch, # TODO: Change name on run_batch
-                                     internal = internal,
-                                     model = model,
-                                     p = p,
-                                     future.seed = internal$parameters$seed)
+  ret <- future.apply::future_lapply(
+    X = S_batch,
+    FUN = run_batch, # TODO: Change name on run_batch
+    internal = internal,
+    model = model,
+    p = p,
+    future.seed = internal$parameters$seed
+  )
   return(ret)
 }
 
@@ -66,7 +65,6 @@ run_batch <- function(S, internal, model, p) {
 
 #' @keywords internal
 batch_prepare_vS <- function(S, internal) {
-
   id <- id_combination <- NULL # due to NSE notes in R CMD check
 
 
@@ -92,7 +90,6 @@ batch_prepare_vS <- function(S, internal) {
 
 #' @keywords internal
 compute_preds <- function(dt, internal, model) {
-
   id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
 
   # Setup
@@ -105,7 +102,6 @@ compute_preds <- function(dt, internal, model) {
 }
 
 compute_MCint <- function(dt) {
-
   id_combination <- id <- w <- k <- p_hat <- NULL # due to NSE notes in R CMD check
 
   # Calculate contributions

@@ -9,7 +9,6 @@ setup_approach.empirical <- function(internal,
                                      start_aicc = 0.1,
                                      cov_mat = NULL,
                                      model = NULL) {
-
   defaults <- mget(c("w_threshold", "type", "fixed_sigma_vec", "n_samples_aicc", "eval_max_aicc", "start_aicc"))
 
   internal <- insert_defaults(internal, defaults)
@@ -379,7 +378,6 @@ compute_AICc_each_k <- function(internal, model, index_features) {
 
 #' @keywords internal
 compute_AICc_full <- function(internal, model, index_features) {
-
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
   n_train <- internal$parameters$n_train

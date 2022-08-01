@@ -16,25 +16,26 @@ check_setup <- function(x_train,
                         keep_samp_for_vS,
                         predict_model,
                         get_model_specs, ...) {
-
-
   internal <- list()
 
-  internal$parameters <- get_parameters(approach = approach,
-                                        prediction_zero = prediction_zero,
-                                        n_combinations = n_combinations,
-                                        group = group,
-                                        n_samples = n_samples,
-                                        n_batches = n_batches,
-                                        seed = seed,
-                                        keep_samp_for_vS = keep_samp_for_vS, ...)
+  internal$parameters <- get_parameters(
+    approach = approach,
+    prediction_zero = prediction_zero,
+    n_combinations = n_combinations,
+    group = group,
+    n_samples = n_samples,
+    n_batches = n_batches,
+    seed = seed,
+    keep_samp_for_vS = keep_samp_for_vS, ...
+  )
 
   internal$data <- get_data(x_train, x_explain)
 
   internal$funcs <- get_funcs(predict_model,
-                              get_model_specs,
-                              class_model = class(model),
-                              ignore_model = internal$parameters$ignore_model)
+    get_model_specs,
+    class_model = class(model),
+    ignore_model = internal$parameters$ignore_model
+  )
 
 
   # Extracting model specs from model
@@ -52,14 +53,16 @@ check_setup <- function(x_train,
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, ...) {
-  parameters <- list(approach = approach,
-                     prediction_zero = prediction_zero,
-                     n_combinations = n_combinations,
-                     group = group,
-                     n_samples = n_samples,
-                     n_batches = n_batches,
-                     seed = seed,
-                     keep_samp_for_vS = keep_samp_for_vS)
+  parameters <- list(
+    approach = approach,
+    prediction_zero = prediction_zero,
+    n_combinations = n_combinations,
+    group = group,
+    n_samples = n_samples,
+    n_batches = n_batches,
+    seed = seed,
+    keep_samp_for_vS = keep_samp_for_vS
+  )
   parameters <- append(parameters, list(...))
   if (is.null(parameters$ignore_model)) {
     parameters$ignore_model <- FALSE
@@ -69,9 +72,9 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
   # TODO: Add any additional internal parameters here
   # TODO: Add testing of correct format for the input here
 
-  #if (n_batches < 1 || n_batches > nrow(explainer$S)) {
+  # if (n_batches < 1 || n_batches > nrow(explainer$S)) {
   #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
-  #}
+  # }
 
 
   return(parameters)
@@ -89,16 +92,19 @@ get_data <- function(x_train, x_explain) {
     stop("x should be a matrix or a data.frame/data.table.")
   }
 
-  data <- list(x_train = x_train,
-               x_explain = x_explain)
+  data <- list(
+    x_train = x_train,
+    x_explain = x_explain
+  )
 }
 
 get_funcs <- function(predict_model, get_model_specs, class_model, ignore_model) {
-
   model_class <- NULL # due to NSE
 
-  funcs <- list(predict_model = predict_model,
-                get_model_specs = get_model_specs)
+  funcs <- list(
+    predict_model = predict_model,
+    get_model_specs = get_model_specs
+  )
 
   supported_models <- get_supported_models()
 
@@ -148,13 +154,15 @@ process_all_data <- function(internal, feature_list) {
   internal$parameters$feature_list <- processed_list$updated_feature_list
 
   # process x_explain
-  internal$data$x_explain <- preprocess_data(internal$data$x_explain,
-                                             internal$parameters$feature_list)$x_dt
+  internal$data$x_explain <- preprocess_data(
+    internal$data$x_explain,
+    internal$parameters$feature_list
+  )$x_dt
 
   # get number of features and observationst to explain
   internal$parameters$n_features <- ncol(internal$data$x_explain)
-  internal$parameters$n_explain <-  nrow(internal$data$x_explain)
-  internal$parameters$n_train <-  nrow(internal$data$x_train)
+  internal$parameters$n_explain <- nrow(internal$data$x_explain)
+  internal$parameters$n_train <- nrow(internal$data$x_train)
 
 
   # Processes groups if specified. Otherwise do nothing
@@ -214,7 +222,7 @@ preprocess_data <- function(x, feature_list) {
   feature_list_data$specs_type <- "data"
 
   updater <- check_features(feature_list, feature_list_data,
-                            use_1_as_truth = T
+    use_1_as_truth = T
   )
   update_data(x_dt, updater) # Updates x_dt by reference
 
@@ -505,7 +513,7 @@ get_data_specs <- function(x) {
 #' model_features <- get_model_specs(model)
 #' updater <- check_features(model_features, data_features)
 #' update_data(x_train, updater)
-
+#'
 update_data <- function(data, updater) {
   # Operates on data by reference, so no copying of data here
 
@@ -520,8 +528,7 @@ update_data <- function(data, updater) {
       "The columns(s) ",
       paste0(cnms_remove, collapse = ", "),
       " is not used by the model and thus removed from the data."
-    )
-    )
+    ))
     data[, (cnms_remove) := NULL]
   }
   data.table::setcolorder(data, new_labels)
@@ -540,9 +547,10 @@ update_data <- function(data, updater) {
 
       for (i in changed_levels) {
         data.table::set(data,
-                        j = i,
-                        value = factor(unlist(data[, new_labels[i], with = F], use.names = F),
-                                       levels = factor_levels[[i]])
+          j = i,
+          value = factor(unlist(data[, new_labels[i], with = F], use.names = F),
+            levels = factor_levels[[i]]
+          )
         )
       }
     }
@@ -573,7 +581,8 @@ process_groups <- function(group, feature_labels) {
   if (is.null(names(group))) {
     message(
       "\nSuccess with message:\n
-      Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc.")
+      Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc."
+    )
     names(group) <- paste0("group", seq_along(group))
   }
 

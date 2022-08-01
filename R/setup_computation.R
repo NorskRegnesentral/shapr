@@ -30,9 +30,9 @@ check_approach <- function(internal) {
   supported_models <- get_supported_approaches()
 
   if (!(is.vector(approach) &&
-        is.atomic(approach) &&
-        (length(approach) == 1 | length(approach) == n_features) &&
-        all(is.element(approach, supported_models)))
+    is.atomic(approach) &&
+    (length(approach) == 1 | length(approach) == n_features) &&
+    all(is.element(approach, supported_models)))
   ) {
     stop(
       paste(
@@ -57,7 +57,6 @@ get_supported_approaches <- function() {
 
 #' @keywords internal
 shapley_setup <- function(internal) {
-
   exact <- internal$parameters$exact
   n_features <- internal$parameters$n_features
   n_combinations <- internal$parameters$n_combinations
@@ -97,9 +96,9 @@ shapley_setup <- function(internal) {
   }
 
   internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used.
-                                                # This will be obsolete later
+  # This will be obsolete later
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
-                                        # instead of storing it
+  # instead of storing it
 
   internal$objects <- list(X = X, W = W, S = S)
 
@@ -147,8 +146,6 @@ shapley_setup <- function(internal) {
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL) {
-
-
   m_group <- length(group_num) # The number of groups
 
   # Force user to use a natural number for n_combinations if m > 13
@@ -529,11 +526,13 @@ create_S_batch_new <- function(internal, seed = NULL) {
     X[!(n_features %in% c(0, n_features0)), approach := approach0[n_features]]
 
     # Finding the number of batches per approach
-    batch_count_dt <- X[!is.na(approach), list(n_batches_per_approach =
-                                                 pmax(1, round(.N / (n_combinations - 2) * n_batches)),
-                                              n_S_per_approach = .N), by = approach]
+    batch_count_dt <- X[!is.na(approach), list(
+      n_batches_per_approach =
+        pmax(1, round(.N / (n_combinations - 2) * n_batches)),
+      n_S_per_approach = .N
+    ), by = approach]
     batch_count_dt[, n_leftover_first_batch := n_S_per_approach %% n_batches_per_approach]
-    data.table::setorder(batch_count_dt, - n_leftover_first_batch)
+    data.table::setorder(batch_count_dt, -n_leftover_first_batch)
 
     approach_vec <- batch_count_dt[, approach]
     n_batch_vec <- batch_count_dt[, n_batches_per_approach]
@@ -557,7 +556,6 @@ create_S_batch_new <- function(internal, seed = NULL) {
     data.table::setorder(X, randomorder)
     data.table::setorder(X, shapley_weight)
     X[!(n_features %in% c(0, n_features0)), batch := ceiling(.I / .N * n_batches)]
-
   }
 
   # Assigning batch 1 (which always is the smallest) to the full prediction.

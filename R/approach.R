@@ -1,23 +1,20 @@
 #' @keywords internal
 setup_approach <- function(internal, ...) {
-
   approach <- internal$parameters$approach
 
   this_class <- ""
 
   if (length(approach) > 1) {
     class(this_class) <- "combined"
-  }  else {
+  } else {
     class(this_class) <- approach
   }
 
   UseMethod("setup_approach", this_class)
-
 }
 
 #' @export
 setup_approach.combined <- function(internal, ...) {
-
   org_approach <- internal$parameters$approach
   unique_approaches <- unique(org_approach)
 

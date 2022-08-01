@@ -4,7 +4,6 @@ setup_approach.ctree <- function(internal,
                                  minsplit = 20,
                                  minbucket = 7,
                                  sample = TRUE, ...) {
-
   defaults <- mget(c("mincriterion", "minsplit", "minbucket", "sample"))
 
   internal <- insert_defaults(internal, defaults)
@@ -30,7 +29,7 @@ setup_approach.ctree <- function(internal,
 #'
 #' @rdname prepare_data
 #' @export
-prepare_data.ctree <- function(internal,  index_features = NULL, ...) {
+prepare_data.ctree <- function(internal, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   x_train <- internal$data$x_train
@@ -165,40 +164,40 @@ create_ctree <- function(given_ind,
     if (use_partykit == "on_error") {
       datact <- tryCatch(expr = {
         party::ctree(fmla,
-                     data = df,
-                     controls = party::ctree_control(
-                       minbucket = minbucket,
-                       mincriterion = mincriterion
-                     )
+          data = df,
+          controls = party::ctree_control(
+            minbucket = minbucket,
+            mincriterion = mincriterion
+          )
         )
       }, error = function(ex) {
         warning("party::ctree ran into the error: ", ex, "Using partykit::ctree instead!")
         partykit::ctree(fmla,
-                        data = df,
-                        control = partykit::ctree_control(
-                          minbucket = minbucket,
-                          mincriterion = mincriterion,
-                          splitstat = "maximum"
-                        )
+          data = df,
+          control = partykit::ctree_control(
+            minbucket = minbucket,
+            mincriterion = mincriterion,
+            splitstat = "maximum"
+          )
         )
       })
     } else if (use_partykit == "never") {
       datact <- party::ctree(fmla,
-                             data = df,
-                             controls = party::ctree_control(
-                               minbucket = minbucket,
-                               mincriterion = mincriterion
-                             )
+        data = df,
+        controls = party::ctree_control(
+          minbucket = minbucket,
+          mincriterion = mincriterion
+        )
       )
     } else if (use_partykit == "always") {
       warning("Using partykit::ctree instead of party::ctree!")
       datact <- partykit::ctree(fmla,
-                                data = df,
-                                control = partykit::ctree_control(
-                                  minbucket = minbucket,
-                                  mincriterion = mincriterion,
-                                  splitstat = "maximum"
-                                )
+        data = df,
+        control = partykit::ctree_control(
+          minbucket = minbucket,
+          mincriterion = mincriterion,
+          splitstat = "maximum"
+        )
       )
     } else {
       stop("use_partykit needs to be one of 'on_error', 'never', or 'always'. See ?create_ctree for details.")
@@ -277,9 +276,9 @@ sample_ctree <- function(tree,
     dependent_ind <- tree$dependent_ind
 
     x_explain_given <- x_explain[,
-                                 given_ind,
-                                 drop = FALSE,
-                                 with = FALSE
+      given_ind,
+      drop = FALSE,
+      with = FALSE
     ] #
     xp <- x_explain_given
     colnames(xp) <- paste0("V", given_ind) # this is important for where() below
@@ -308,20 +307,20 @@ sample_ctree <- function(tree,
       newrowno <- rowno[fit.nodes == pred.nodes]
     } else {
       newrowno <- sample(rowno[fit.nodes == pred.nodes], n_samples,
-                         replace = TRUE
+        replace = TRUE
       )
     }
 
     depDT <- data.table::data.table(x_train[newrowno,
-                                            dependent_ind,
-                                            drop = FALSE,
-                                            with = FALSE
+      dependent_ind,
+      drop = FALSE,
+      with = FALSE
     ])
 
     givenDT <- data.table::data.table(x_explain[1,
-                                                given_ind,
-                                                drop = FALSE,
-                                                with = FALSE
+      given_ind,
+      drop = FALSE,
+      with = FALSE
     ])
     ret <- cbind(depDT, givenDT)
     data.table::setcolorder(ret, colnames(x_train))

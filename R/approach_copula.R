@@ -1,6 +1,5 @@
 #' @keywords internal
 setup_approach.copula <- function(internal, ...) {
-
   parameters <- internal$parameters
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
@@ -35,7 +34,7 @@ setup_approach.copula <- function(internal, ...) {
 
 #' @rdname prepare_data
 #' @export
-prepare_data.copula <- function(internal,  index_features = NULL, ...) {
+prepare_data.copula <- function(internal, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   x_train <- internal$data$x_train

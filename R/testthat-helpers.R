@@ -2,25 +2,23 @@
 helper_rds <- function(code, name = "tmp.rds") {
   path <- file.path(tempdir(), name)
   testthat::expect_snapshot_output({
-    cat(paste0("Output from ", name, "\n")); code
-    })
+    cat(paste0("Output from ", name, "\n"))
+    code
+  })
   saveRDS(code, file = path)
 
   path
 }
 
 compare_rds <- function(old, new) {
-
   old <- readRDS(old)
   new <- readRDS(new)
 
-  check <- all.equal(old, new, tolerance = 10^ (-6)) # Increase tolerance
+  check <- all.equal(old, new, tolerance = 10^(-6)) # Increase tolerance
   ifelse(is.character(check), FALSE, check)
 }
 
 expect_snapshot_rds <- function(code, name = "tmp") {
-
-
   name_full <- paste0(name, ".rds")
   path <- file.path(tempdir(), name_full)
 

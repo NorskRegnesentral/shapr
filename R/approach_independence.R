@@ -31,12 +31,14 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   if (length(non_numeric_features) > 0) {
     x_train0[, (non_numeric_features) := lapply(.SD, function(x) {
       as.numeric(as.character(x))
-      }),
-             .SDcols = non_numeric_features]
+    }),
+    .SDcols = non_numeric_features
+    ]
     x_explain0[, (non_numeric_features) := lapply(.SD, function(x) {
       as.numeric(as.character(x))
-      }),
-               .SDcols = non_numeric_features]
+    }),
+    .SDcols = non_numeric_features
+    ]
   }
 
   x_train0_mat <- as.matrix(x_train0)
