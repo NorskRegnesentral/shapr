@@ -33,7 +33,7 @@ compute_vS <- function(internal, model, method = "lapply") {
 }
 
 progress_run_batch <- function(S_batch, internal, model) {
-  p <- progressr::progressor(along = S_batch)
+  p <- progressr::progressor(sum(lengths(S_batch)))
   ret <- future.apply::future_lapply(
     X = S_batch,
     FUN = run_batch, # TODO: Change name on run_batch
@@ -48,7 +48,8 @@ progress_run_batch <- function(S_batch, internal, model) {
 
 #' @keywords internal
 run_batch <- function(S, internal, model, p) {
-  p(message = "Estimating v(S)") # TODO: Add a message to state what batch has been computed
+  p(amount = length(S),
+    message = "Estimating v(S)") # TODO: Add a message to state what batch has been computed
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
