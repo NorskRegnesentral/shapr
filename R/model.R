@@ -97,7 +97,7 @@ predict_model.default <- function(x, newdata) {
 #'
 #' # Checking the model object
 #' model_checker(x = model)
-
+#'
 model_checker <- function(x) {
   UseMethod("model_checker", x)
 }
@@ -143,10 +143,8 @@ model_checker.default <- function(x) {
 #' # Fit a linear model
 #' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 #' get_model_specs(model)
-
+#'
 get_model_specs <- function(x) {
-
-
   UseMethod("get_model_specs", x)
 }
 

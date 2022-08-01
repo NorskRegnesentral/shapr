@@ -4,7 +4,7 @@
 #' @inheritParams default_doc
 #' @inherit default_doc
 #' @export
-setup_computation <- function(internal, model){
+setup_computation <- function(internal, model) {
   # model only needed for type AICc of approach empirical, otherwise ignored
 
   # TODO: Consider moving this to the initial checking function
@@ -22,7 +22,7 @@ setup_computation <- function(internal, model){
 }
 
 #' @keywords internal
-check_approach <- function(internal){
+check_approach <- function(internal) {
   # Check input for approach
 
   approach <- internal$parameters$approach
@@ -30,14 +30,14 @@ check_approach <- function(internal){
   supported_models <- get_supported_approaches()
 
   if (!(is.vector(approach) &&
-        is.atomic(approach) &&
-        (length(approach) == 1 | length(approach) == n_features) &&
-        all(is.element(approach, supported_models)))
+    is.atomic(approach) &&
+    (length(approach) == 1 | length(approach) == n_features) &&
+    all(is.element(approach, supported_models)))
   ) {
     stop(
       paste(
         "It seems that you passed a non-valid value for approach.",
-        "It should be either \n",paste0(supported_models,collapse=", "),"\nor",
+        "It should be either \n", paste0(supported_models, collapse = ", "), "\nor",
         "a vector of length=ncol(x) with only the above characters."
       )
     )
@@ -50,14 +50,13 @@ check_approach <- function(internal){
 #' The names of the implemented approaches that can be passed to argument \code{approach} in [explain()].
 #'
 #' @export
-get_supported_approaches <- function(){
-  substring(rownames(attr(methods(prepare_data),"info")),first = 14)
+get_supported_approaches <- function() {
+  substring(rownames(attr(methods(prepare_data), "info")), first = 14)
 }
 
 
 #' @keywords internal
-shapley_setup <- function(internal){
-
+shapley_setup <- function(internal) {
   exact <- internal$parameters$exact
   n_features <- internal$parameters$n_features
   n_combinations <- internal$parameters$n_combinations
@@ -96,8 +95,10 @@ shapley_setup <- function(internal){
     internal$parameters$exact <- TRUE
   }
 
-  internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used. This will be obsolete later
-  internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed instead of storing it
+  internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used.
+  # This will be obsolete later
+  internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
+  # instead of storing it
 
   internal$objects <- list(X = X, W = W, S = S)
 
@@ -145,8 +146,6 @@ shapley_setup <- function(internal){
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
 feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL) {
-
-
   m_group <- length(group_num) # The number of groups
 
   # Force user to use a natural number for n_combinations if m > 13
@@ -508,7 +507,7 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 }
 
 #' @keywords internal
-create_S_batch_new <- function(internal,seed=NULL){
+create_S_batch_new <- function(internal, seed = NULL) {
 
   # due to NSE notes in R CMD check
   n_features <- approach <- n_leftover_first_batch <- n_S_per_approach <- NULL
@@ -523,47 +522,49 @@ create_S_batch_new <- function(internal,seed=NULL){
   X <- internal$objects$X
 
 
-  if(length(approach0)>1){
-    X[!(n_features %in% c(0,n_features0)),approach:=approach0[n_features]]
+  if (length(approach0) > 1) {
+    X[!(n_features %in% c(0, n_features0)), approach := approach0[n_features]]
 
     # Finding the number of batches per approach
-    batch_count_dt <- X[!is.na(approach),list(n_batches_per_approach=pmax(1,round(.N/(n_combinations-2)*n_batches)),
-                                              n_S_per_approach = .N),by=approach]
-    batch_count_dt[,n_leftover_first_batch:=n_S_per_approach%%n_batches_per_approach]
-    data.table::setorder(batch_count_dt,-n_leftover_first_batch)
+    batch_count_dt <- X[!is.na(approach), list(
+      n_batches_per_approach =
+        pmax(1, round(.N / (n_combinations - 2) * n_batches)),
+      n_S_per_approach = .N
+    ), by = approach]
+    batch_count_dt[, n_leftover_first_batch := n_S_per_approach %% n_batches_per_approach]
+    data.table::setorder(batch_count_dt, -n_leftover_first_batch)
 
-    approach_vec <- batch_count_dt[,approach]
-    n_batch_vec <- batch_count_dt[,n_batches_per_approach]
+    approach_vec <- batch_count_dt[, approach]
+    n_batch_vec <- batch_count_dt[, n_batches_per_approach]
 
-    # Randomize order before ordering spreading the batches on the different approaches as evenly as possible with respect to shapley_weight
-    X[,randomorder:=sample(.N)]
-    data.table::setorder(X,randomorder) # To avoid smaller id_combinations always proceeding large ones
-    data.table::setorder(X,shapley_weight)
+    # Randomize order before ordering spreading the batches on the different approaches as evenly as possible
+    # with respect to shapley_weight
+    X[, randomorder := sample(.N)]
+    data.table::setorder(X, randomorder) # To avoid smaller id_combinations always proceeding large ones
+    data.table::setorder(X, shapley_weight)
 
     batch_counter <- 0
-    for(i in seq_along(approach_vec)){
-      X[approach==approach_vec[i],batch:=ceiling(.I/.N*n_batch_vec[i])+batch_counter]
-      batch_counter <- X[approach==approach_vec[i],max(batch)]
+    for (i in seq_along(approach_vec)) {
+      X[approach == approach_vec[i], batch := ceiling(.I / .N * n_batch_vec[i]) + batch_counter]
+      batch_counter <- X[approach == approach_vec[i], max(batch)]
     }
   } else {
-    X[!(n_features %in% c(0,n_features0)),approach:=approach0]
+    X[!(n_features %in% c(0, n_features0)), approach := approach0]
 
     # Spreading the batches
-    X[,randomorder:=sample(.N)]
-    data.table::setorder(X,randomorder)
-    data.table::setorder(X,shapley_weight)
-    X[!(n_features %in% c(0,n_features0)),batch:=ceiling(.I/.N*n_batches)]
-
+    X[, randomorder := sample(.N)]
+    data.table::setorder(X, randomorder)
+    data.table::setorder(X, shapley_weight)
+    X[!(n_features %in% c(0, n_features0)), batch := ceiling(.I / .N * n_batches)]
   }
 
   # Assigning batch 1 (which always is the smallest) to the full prediction.
-  X[,randomorder:=NULL]
-  X[id_combination==max(id_combination),batch:=1]
-  setkey(X,id_combination)
+  X[, randomorder := NULL]
+  X[id_combination == max(id_combination), batch := 1]
+  setkey(X, id_combination)
 
   # Create a list of the batch splits
-  S_groups <- split(X[id_combination!=1,id_combination],X[id_combination!=1,batch])
+  S_groups <- split(X[id_combination != 1, id_combination], X[id_combination != 1, batch])
 
   return(S_groups)
 }
-

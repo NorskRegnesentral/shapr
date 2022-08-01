@@ -15,52 +15,56 @@ check_setup <- function(x_train,
                         seed,
                         keep_samp_for_vS,
                         predict_model,
-                        get_model_specs,...){
-
-
+                        get_model_specs, ...) {
   internal <- list()
 
-  internal$parameters <- get_parameters(approach = approach,
-                                        prediction_zero = prediction_zero,
-                                        n_combinations = n_combinations,
-                                        group = group,
-                                        n_samples = n_samples,
-                                        n_batches = n_batches,
-                                        seed = seed,
-                                        keep_samp_for_vS = keep_samp_for_vS,...)
+  internal$parameters <- get_parameters(
+    approach = approach,
+    prediction_zero = prediction_zero,
+    n_combinations = n_combinations,
+    group = group,
+    n_samples = n_samples,
+    n_batches = n_batches,
+    seed = seed,
+    keep_samp_for_vS = keep_samp_for_vS, ...
+  )
 
-  internal$data <- get_data(x_train,x_explain)
+  internal$data <- get_data(x_train, x_explain)
 
   internal$funcs <- get_funcs(predict_model,
-                              get_model_specs,
-                              class_model = class(model),
-                              ignore_model = internal$parameters$ignore_model)
+    get_model_specs,
+    class_model = class(model),
+    ignore_model = internal$parameters$ignore_model
+  )
 
 
   # Extracting model specs from model
-  if(!is.null(internal$funcs$get_model_specs)){
+  if (!is.null(internal$funcs$get_model_specs)) {
     feature_list_model <- get_model_specs(model)
   } else {
     feature_list_model <- get_model_specs.default("")
   }
 
-  internal <- process_all_data(internal,feature_list_model)
+  internal <- process_all_data(internal, feature_list_model)
 
   return(internal)
 }
 
 #' @keywords internal
-get_parameters <- function(approach,prediction_zero,n_combinations,group,n_samples,n_batches,seed,keep_samp_for_vS,...){
-  parameters <- list(approach = approach,
-                     prediction_zero = prediction_zero,
-                     n_combinations = n_combinations,
-                     group = group,
-                     n_samples = n_samples,
-                     n_batches = n_batches,
-                     seed = seed,
-                     keep_samp_for_vS = keep_samp_for_vS)
-  parameters <- append(parameters,list(...))
-  if(is.null(parameters$ignore_model)){
+get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
+                           n_batches, seed, keep_samp_for_vS, ...) {
+  parameters <- list(
+    approach = approach,
+    prediction_zero = prediction_zero,
+    n_combinations = n_combinations,
+    group = group,
+    n_samples = n_samples,
+    n_batches = n_batches,
+    seed = seed,
+    keep_samp_for_vS = keep_samp_for_vS
+  )
+  parameters <- append(parameters, list(...))
+  if (is.null(parameters$ignore_model)) {
     parameters$ignore_model <- FALSE
   }
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
@@ -68,16 +72,16 @@ get_parameters <- function(approach,prediction_zero,n_combinations,group,n_sampl
   # TODO: Add any additional internal parameters here
   # TODO: Add testing of correct format for the input here
 
-  #if (n_batches < 1 || n_batches > nrow(explainer$S)) {
+  # if (n_batches < 1 || n_batches > nrow(explainer$S)) {
   #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
-  #}
+  # }
 
 
   return(parameters)
 }
 
 #' @keywords internal
-get_data <- function(x_train,x_explain){
+get_data <- function(x_train, x_explain) {
 
   # Check format for x_train
   if (!is.matrix(x_train) & !is.data.frame(x_train)) {
@@ -88,24 +92,27 @@ get_data <- function(x_train,x_explain){
     stop("x should be a matrix or a data.frame/data.table.")
   }
 
-  data <- list(x_train = x_train,
-               x_explain = x_explain)
+  data <- list(
+    x_train = x_train,
+    x_explain = x_explain
+  )
 }
 
-get_funcs <- function(predict_model,get_model_specs,class_model,ignore_model){
-
+get_funcs <- function(predict_model, get_model_specs, class_model, ignore_model) {
   model_class <- NULL # due to NSE
 
-  funcs <- list(predict_model = predict_model,
-                get_model_specs = get_model_specs)
+  funcs <- list(
+    predict_model = predict_model,
+    get_model_specs = get_model_specs
+  )
 
   supported_models <- get_supported_models()
 
-  if(!ignore_model){
-    if(is.null(funcs$predict_model)){
-      native_func_available <- supported_models[predict_model==TRUE,class_model %in% model_class]
-      if(native_func_available){
-        funcs$predict_model <- get(paste0("predict_model.",class_model))
+  if (!ignore_model) {
+    if (is.null(funcs$predict_model)) {
+      native_func_available <- supported_models[predict_model == TRUE, class_model %in% model_class]
+      if (native_func_available) {
+        funcs$predict_model <- get(paste0("predict_model.", class_model))
       } else {
         stop(
           "You passed a model to explain() which is not natively supported. See ?shapr::explain or the vignette\n",
@@ -114,15 +121,16 @@ get_funcs <- function(predict_model,get_model_specs,class_model,ignore_model){
       }
     }
 
-    if(is.null(funcs$get_model_specs)){
-      native_func_available <- supported_models[get_model_specs==TRUE,class_model %in% model_class]
-      if(native_func_available){
-        funcs$get_model_specs <- get(paste0("get_model_specs.",class_model))
+    if (is.null(funcs$get_model_specs)) {
+      native_func_available <- supported_models[get_model_specs == TRUE, class_model %in% model_class]
+      if (native_func_available) {
+        funcs$get_model_specs <- get(paste0("get_model_specs.", class_model))
       } else {
         message(
           "Note: You passed a model to explain() that is not natively supported.\n",
           "By default, all feature consistency checking is thus disabled.\n",
-          "This can be enabled for your custom model by passing a 'get_model_specs' function as an argument to explain(),\n",
+          "This can be enabled for your custom model by passing a 'get_model_specs'
+          function as an argument to explain(),\n",
           "see ?shapr::explain for further details."
         )
       }
@@ -134,7 +142,7 @@ get_funcs <- function(predict_model,get_model_specs,class_model,ignore_model){
 
 
 #' @keywords internal
-process_all_data <- function(internal,feature_list){
+process_all_data <- function(internal, feature_list) {
 
   # process x_train
   processed_list <- preprocess_data(
@@ -146,13 +154,15 @@ process_all_data <- function(internal,feature_list){
   internal$parameters$feature_list <- processed_list$updated_feature_list
 
   # process x_explain
-  internal$data$x_explain <- preprocess_data(internal$data$x_explain,
-                                             internal$parameters$feature_list)$x_dt
+  internal$data$x_explain <- preprocess_data(
+    internal$data$x_explain,
+    internal$parameters$feature_list
+  )$x_dt
 
   # get number of features and observationst to explain
   internal$parameters$n_features <- ncol(internal$data$x_explain)
-  internal$parameters$n_explain <-  nrow(internal$data$x_explain)
-  internal$parameters$n_train <-  nrow(internal$data$x_train)
+  internal$parameters$n_explain <- nrow(internal$data$x_explain)
+  internal$parameters$n_train <- nrow(internal$data$x_train)
 
 
   # Processes groups if specified. Otherwise do nothing
@@ -212,7 +222,7 @@ preprocess_data <- function(x, feature_list) {
   feature_list_data$specs_type <- "data"
 
   updater <- check_features(feature_list, feature_list_data,
-                            use_1_as_truth = T
+    use_1_as_truth = T
   )
   update_data(x_dt, updater) # Updates x_dt by reference
 
@@ -503,7 +513,7 @@ get_data_specs <- function(x) {
 #' model_features <- get_model_specs(model)
 #' updater <- check_features(model_features, data_features)
 #' update_data(x_train, updater)
-
+#'
 update_data <- function(data, updater) {
   # Operates on data by reference, so no copying of data here
 
@@ -518,8 +528,7 @@ update_data <- function(data, updater) {
       "The columns(s) ",
       paste0(cnms_remove, collapse = ", "),
       " is not used by the model and thus removed from the data."
-    )
-    )
+    ))
     data[, (cnms_remove) := NULL]
   }
   data.table::setcolorder(data, new_labels)
@@ -538,8 +547,10 @@ update_data <- function(data, updater) {
 
       for (i in changed_levels) {
         data.table::set(data,
-                        j = i,
-                        value = factor(unlist(data[, new_labels[i], with = F], use.names = F), levels = factor_levels[[i]])
+          j = i,
+          value = factor(unlist(data[, new_labels[i], with = F], use.names = F),
+            levels = factor_levels[[i]]
+          )
         )
       }
     }
@@ -570,7 +581,8 @@ process_groups <- function(group, feature_labels) {
   if (is.null(names(group))) {
     message(
       "\nSuccess with message:\n
-      Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc.")
+      Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc."
+    )
     names(group) <- paste0("group", seq_along(group))
   }
 
@@ -637,4 +649,3 @@ check_groups <- function(feature_labels, group) {
   }
   return(NULL)
 }
-

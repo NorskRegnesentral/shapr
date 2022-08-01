@@ -8,11 +8,10 @@ setup_approach.empirical <- function(internal,
                                      eval_max_aicc = 20,
                                      start_aicc = 0.1,
                                      cov_mat = NULL,
-                                     model = NULL){
+                                     model = NULL) {
+  defaults <- mget(c("w_threshold", "type", "fixed_sigma_vec", "n_samples_aicc", "eval_max_aicc", "start_aicc"))
 
-  defaults <- mget(c("w_threshold","type","fixed_sigma_vec","n_samples_aicc","eval_max_aicc","start_aicc"))
-
-  internal <- insert_defaults(internal,defaults)
+  internal <- insert_defaults(internal, defaults)
 
   if (internal$parameters$type == "independence") {
     warning(paste0(
@@ -21,9 +20,9 @@ setup_approach.empirical <- function(internal,
     ))
   }
 
-  if (internal$parameters$type %in% c("AICc_each_k","AICc_full") & internal$parameters$ignore_model==TRUE) {
+  if (internal$parameters$type %in% c("AICc_each_k", "AICc_full") & internal$parameters$ignore_model == TRUE) {
     stop(paste0(
-      "Using type = ",internal$parameters$type," for approach = 'empirical' is not available in Python.\n",
+      "Using type = ", internal$parameters$type, " for approach = 'empirical' is not available in Python.\n",
     ))
   }
 
@@ -301,7 +300,7 @@ compute_AICc_each_k <- function(internal, model, index_features) {
 
   # Optimization is done only once for all distributions which conditions on
   # exactly k variables
-  these_k <- unique(X[,n_features[index_features]])
+  these_k <- unique(X[, n_features[index_features]])
 
   for (i in these_k) {
     these_cond <- X[index_features][n_features == i, id_combination]
@@ -373,13 +372,12 @@ compute_AICc_each_k <- function(internal, model, index_features) {
       h_optim_mat[these_cond, loop] <- nlm.obj$par
     }
   }
-  return(h_optim_mat[index_features,,drop=F])
+  return(h_optim_mat[index_features, , drop = F])
 }
 
 
 #' @keywords internal
 compute_AICc_full <- function(internal, model, index_features) {
-
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
   n_train <- internal$parameters$n_train
@@ -468,7 +466,7 @@ compute_AICc_full <- function(internal, model, index_features) {
       h_optim_mat[i, loop] <- nlm.obj$par
     }
   }
-  return(h_optim_mat[index_features,,drop=F])
+  return(h_optim_mat[index_features, , drop = F])
 }
 
 #' @keywords internal

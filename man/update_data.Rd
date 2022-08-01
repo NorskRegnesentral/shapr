@@ -36,6 +36,7 @@ model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 model_features <- get_model_specs(model)
 updater <- check_features(model_features, data_features)
 update_data(x_train, updater)
+
 }
 \author{
 Martin Jullum

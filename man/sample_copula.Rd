@@ -21,7 +21,8 @@ sample_copula(
 
 \item{m}{Positive integer. The total number of features.}
 
-\item{x_explain_gaussian}{Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
+\item{x_explain_gaussian}{Numeric matrix. Contains the observation whose predictions ought
+to be explained (test data),
 after quantile-transforming them to standard Gaussian variables.}
 
 \item{x_explain}{Numeric matrix. Contains the features of the observation whose

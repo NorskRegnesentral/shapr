@@ -1,6 +1,6 @@
 
 #' @keywords internal
-setup_approach.independence <- function(internal,...){
+setup_approach.independence <- function(internal, ...) {
   return(internal)
 }
 
@@ -24,13 +24,21 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
     index_features <- X[, .I]
   }
 
-  non_numeric_features <- feature_list$labels[feature_list$classes!="numeric"]
+  non_numeric_features <- feature_list$labels[feature_list$classes != "numeric"]
 
   S0 <- S[index_features, , drop = FALSE]
 
-  if(length(non_numeric_features)>0){
-    x_train0[,(non_numeric_features):=lapply(.SD,function(x){as.numeric(as.character(x))}),.SDcols=non_numeric_features]
-    x_explain0[,(non_numeric_features):=lapply(.SD,function(x){as.numeric(as.character(x))}),.SDcols=non_numeric_features]
+  if (length(non_numeric_features) > 0) {
+    x_train0[, (non_numeric_features) := lapply(.SD, function(x) {
+      as.numeric(as.character(x))
+    }),
+    .SDcols = non_numeric_features
+    ]
+    x_explain0[, (non_numeric_features) := lapply(.SD, function(x) {
+      as.numeric(as.character(x))
+    }),
+    .SDcols = non_numeric_features
+    ]
   }
 
   x_train0_mat <- as.matrix(x_train0)
