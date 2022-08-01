@@ -54,6 +54,7 @@ x_explain <- tail(airquality, 3)
 # Fit a linear model
 model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 get_model_specs(model)
+
 }
 \author{
 Martin Jullum

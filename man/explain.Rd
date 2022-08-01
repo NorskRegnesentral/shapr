@@ -162,8 +162,8 @@ airquality <- airquality[complete.cases(airquality), ]
 x_train <- head(airquality, -3)
 x_test <- tail(airquality, 3)
 
-  # Fit a linear model
-model <- lm(Ozone ~ Solar.R + Wind+ Temp + Month, data = x_train)
+# Fit a linear model
+model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 
 # Explain predictions
 p <- mean(x_train$Ozone)

@@ -52,5 +52,6 @@ model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 
 # Checking the model object
 model_checker(x = model)
+
 }
 \keyword{internal}
