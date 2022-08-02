@@ -11,7 +11,7 @@ y_var <- "medv"
 
 x_train <- as.matrix(Boston[-1:-15, x_var])
 y_train <- Boston[-1:-15, y_var]
-x_test <- as.matrix(Boston[1:15, x_var])
+x_test <- as.matrix(Boston[1:100, x_var])
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost(
@@ -48,6 +48,11 @@ x <- explain(x_train, x_test, model, approach="independence", prediction_zero=p,
 # you can edit the symbol used to draw completed progress in the progress bar (as well as other features) with handler_progress()
 handlers(handler_progress(complete = "#"))
 x <- explain(x_train, x_test, model, approach="copula", prediction_zero=p, n_batches = 4)
+
+plan("sequential")
+
+handlers("progress")
+x <- explain(x_train, x_test, model, approach=c(rep("ctree",4),"independence","independence"), prediction_zero=p, n_batches = 4)
 
 
 
