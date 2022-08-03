@@ -243,7 +243,7 @@ explain <- function(x_train,
   set.seed(seed)
 
   # Sets up input parameters, data and preprocess the data if needed
-  internal <- check_setup(
+  internal <- setup(
     x_train = x_train,
     x_explain = x_explain,
     model = model,

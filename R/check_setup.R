@@ -3,19 +3,19 @@
 #' check_setup
 #' @inheritParams explain
 #' @export
-check_setup <- function(x_train,
-                        x_explain,
-                        model,
-                        approach,
-                        prediction_zero,
-                        n_combinations,
-                        group,
-                        n_samples,
-                        n_batches,
-                        seed,
-                        keep_samp_for_vS,
-                        predict_model,
-                        get_model_specs, ...) {
+setup <- function(x_train,
+                  x_explain,
+                  model,
+                  approach,
+                  prediction_zero,
+                  n_combinations,
+                  group,
+                  n_samples,
+                  n_batches,
+                  seed,
+                  keep_samp_for_vS,
+                  predict_model,
+                  get_model_specs, ...) {
   internal <- list()
 
   internal$parameters <- get_parameters(
@@ -29,9 +29,13 @@ check_setup <- function(x_train,
     keep_samp_for_vS = keep_samp_for_vS, ...
   )
 
-  internal$data <- get_data(x_train, x_explain)
+  internal$data <- get_data(
+    x_train,
+    x_explain
+    )
 
-  internal$funcs <- get_funcs(predict_model,
+  internal$funcs <- get_funcs(
+    predict_model,
     get_model_specs,
     class_model = class(model),
     ignore_model = internal$parameters$ignore_model
@@ -53,6 +57,7 @@ check_setup <- function(x_train,
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, ...) {
+  # Getting basic input parameters
   parameters <- list(
     approach = approach,
     prediction_zero = prediction_zero,
@@ -63,10 +68,16 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS
   )
+
+  # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
+
+  # Setting ignore_model to FALSE if not provided by ...
   if (is.null(parameters$ignore_model)) {
     parameters$ignore_model <- FALSE
   }
+
+  # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
 
   # TODO: Add any additional internal parameters here
@@ -83,6 +94,7 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
 #' @keywords internal
 get_data <- function(x_train, x_explain) {
 
+  # TODO: Later require data.frame (or data.table here)
   # Check format for x_train
   if (!is.matrix(x_train) & !is.data.frame(x_train)) {
     stop("x_train should be a matrix or a dataframe.")
@@ -110,28 +122,32 @@ get_funcs <- function(predict_model, get_model_specs, class_model, ignore_model)
 
   if (!ignore_model) {
     if (is.null(funcs$predict_model)) {
+      # Get internal definition of predict_model if exists
       native_func_available <- supported_models[predict_model == TRUE, class_model %in% model_class]
       if (native_func_available) {
         funcs$predict_model <- get(paste0("predict_model.", class_model))
       } else {
         stop(
-          "You passed a model to explain() which is not natively supported. See ?shapr::explain or the vignette\n",
-          "for more information on how to run shapr with custom models."
+          "You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' ",
+          "function to explain().\n",
+          "See ?shapr::explain or the vignette for more information on how to run shapr with custom models."
         )
       }
     }
 
     if (is.null(funcs$get_model_specs)) {
+      # Get internal definition of get_model_specs if exists
       native_func_available <- supported_models[get_model_specs == TRUE, class_model %in% model_class]
       if (native_func_available) {
         funcs$get_model_specs <- get(paste0("get_model_specs.", class_model))
       } else {
+        funcs$get_model_specs <- NULL
         message(
-          "Note: You passed a model to explain() that is not natively supported.\n",
-          "By default, all feature consistency checking is thus disabled.\n",
-          "This can be enabled for your custom model by passing a 'get_model_specs'
-          function as an argument to explain(),\n",
-          "see ?shapr::explain for further details."
+          "Note: You passed a model to explain() which is not natively supported, and did not supply the ",
+          "'get_model_specs' function to explain().\n",
+          "All feature consistency checking is thus disabled.\n",
+          "See ?shapr::explain or the vignette for more information on how to enable feature consistency checking",
+          "for custom models."
         )
       }
     }
