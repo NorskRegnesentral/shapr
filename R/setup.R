@@ -41,15 +41,35 @@ setup <- function(x_train,
     ignore_model = internal$parameters$ignore_model
   )
 
+  internal$parameters <- get_extra_parameters(internal)
+
+
+  internal <- process_all_data(internal, feature_list_model)
+
+  return(internal)
+}
+
+
+#' @keywords internal
+get_extra_parameters <- function(internal,model){
+
 
   # Extracting model specs from model
   if (!is.null(internal$funcs$get_model_specs)) {
-    feature_list_model <- get_model_specs(model)
+    internal$feature_specs <- internal$funcs$get_model_specs(model)
   } else {
-    feature_list_model <- get_model_specs.default("")
+    internal$feature_specs <- get_model_specs.default("")
   }
 
-  internal <- process_all_data(internal, feature_list_model)
+
+  # get number of features and observationst to explain
+  internal$parameters$n_features <- ncol(internal$data$x_explain)
+  internal$parameters$n_explain <- nrow(internal$data$x_explain)
+  internal$parameters$n_train <- nrow(internal$data$x_train)
+
+
+  # Processes groups if specified. Otherwise do nothing
+  internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
 
   return(internal)
 }
@@ -170,14 +190,8 @@ process_all_data <- function(internal, feature_list) {
     internal$parameters$feature_list
   )$x_dt
 
-  # get number of features and observationst to explain
-  internal$parameters$n_features <- ncol(internal$data$x_explain)
-  internal$parameters$n_explain <- nrow(internal$data$x_explain)
-  internal$parameters$n_train <- nrow(internal$data$x_train)
-
 
   # Processes groups if specified. Otherwise do nothing
-  internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
   if (internal$parameters$is_groupwise) {
     group_list <- process_groups(
       group = internal$parameters$group,
