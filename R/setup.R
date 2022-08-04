@@ -41,12 +41,100 @@ setup <- function(x_train,
     ignore_model = internal$parameters$ignore_model
   )
 
-  internal$parameters <- get_extra_parameters(internal)
+  internal$objects <- list()
 
+  internal <- get_extra_parameters(internal,model)
+
+  check_data(internal)
 
   internal <- process_all_data(internal, feature_list_model)
 
   return(internal)
+}
+
+#' @keywords internal
+check_data <- function(internal){
+
+  x_train <- internal$data$x_train
+  x_explain <- internal$data$x_explain
+
+  model_feature_spec <- internal$objects$model_feature_specs
+
+  x_train_feature_spec <- get_data_specs(x_train)
+  x_explain_feature_spec <- get_data_specs(x_explain)
+
+  NA_labels <- any(is.na(model_feature_spec$labels))
+  NA_classes <- any(is.na(model_feature_spec$classes))
+  NA_factor_levels <- any(is.na(model_feature_spec$factor_levels))
+
+  if(NA_labels){
+    message("Note: Feature names extracted from the model contains NA.\n",
+            "Consistency check between model and data is therefore disabled.\n")
+    # Check x_train vs x_explain
+    compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
+  } else if(NA_classes){
+    message("Note: Feature classes extracted from the model contains NA.\n",
+            "Assuming feature classes from the data are correct.\n")
+
+    model_feature_spec$classes <- x_train_feature_spec$classes
+    model_feature_spec$factor_levels <- x_train_feature_spec$factor_levels
+
+    # First check model vs x_train
+    # Then x_train vs x_explain
+    compare_feature_specs(model_feature_spec,x_train_feature_spec,"model","x_train")
+    compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
+  } else if (NA_factor_levels){
+
+    message("Note: Feature factor levels extracted from the model contains NA.\n",
+            "Assuming feature factor levels from the data are correct.\n")
+
+    model_feature_spec$factor_levels <- x_train_feature_spec$factor_levels
+
+    # First check model vs x_train
+    # Then x_train vs x_explain
+    compare_feature_specs(model_feature_spec,x_train_feature_spec,"model","x_train")
+    compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
+
+  }
+
+  } else if(is.null(model_feature_spec)){
+    message("Note: You passed a model to explain() which is not natively supported, and did not supply the ",
+            "'get_model_specs' function to explain().\n",
+            "Consistency check between model and data is therefore disabled.\n")
+
+    # Check x_train vs x_explain
+    compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
+
+  } else {
+
+    # First check model vs x_train
+    # Then x_train vs x_explain
+    compare_feature_specs(model_feature_spec,x_train_feature_spec,"model","x_train")
+    compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
+
+  }
+
+
+
+}
+
+compare_vecs <- function(vec1,vec2,vec_type,name1,name2){
+  if(!identical(vec1,vec2)){
+    stop(paste0("Feature ",vec_type," are not identical for ",name1," and ",name2,".\n"))
+    #message <- waldo::compare(vec1, vec2, x_arg = name1, y_arg = name2)
+    #stop(paste0("Feature ",vec_type," are not equal for ",name1," and ",name2,":\n",message))
+  }
+}
+
+compare_feature_specs <- function(spec1,spec2,name1="model",name2="x_train"){
+  compare_vecs(spec1$labels,spec2$labels,"names",name1,name2)
+  compare_vecs(spec1$classes,spec2$classes,"classes",name1,name2)
+
+  factor_classes <- which(spec1$classes == "factor")
+  if (length(factor_classes) > 0) {
+    compare_vecs(spec1$factor_levels,spec1$factor_levels,"factor levels",name1,name2)
+  }
+
 }
 
 
@@ -56,9 +144,9 @@ get_extra_parameters <- function(internal,model){
 
   # Extracting model specs from model
   if (!is.null(internal$funcs$get_model_specs)) {
-    internal$feature_specs <- internal$funcs$get_model_specs(model)
+    internal$objects$model_feature_specs <- internal$funcs$get_model_specs(model)
   } else {
-    internal$feature_specs <- get_model_specs.default("")
+    internal$objects$model_feature_specs <- NULL # get_model_specs.default("")
   }
 
 
@@ -115,18 +203,34 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
 get_data <- function(x_train, x_explain) {
 
   # TODO: Later require data.frame (or data.table here)
-  # Check format for x_train
+
+  # Check data object type
+  stop_message <- ""
   if (!is.matrix(x_train) & !is.data.frame(x_train)) {
-    stop("x_train should be a matrix or a dataframe.")
+    stop_message <- paste0(stop_message,"x_train should be a matrix or a data.frame/data.table.\n")
   }
-  # Check format of x_explain
   if (!is.matrix(x_explain) & !is.data.frame(x_explain)) {
-    stop("x should be a matrix or a data.frame/data.table.")
+    stop_message <- paste0(stop_message,"x_explain should be a matrix or a data.frame/data.table.\n")
+  }
+  if(stop_message!=""){
+    stop(stop_message)
   }
 
+  # Check column names
+  if (all(is.null(colnames(x_train)))) {
+    stop_message <- paste0(stop_message,"x_train misses column names.\n")
+  }
+  if (all(is.null(colnames(x_explain)))) {
+    stop_message <- paste0(stop_message,"x_explain misses column names.\n")
+  }
+  if(stop_message!=""){
+    stop(stop_message)
+  }
+
+
   data <- list(
-    x_train = x_train,
-    x_explain = x_explain
+    x_train = data.table::as.data.table(x_train),
+    x_explain = data.table::as.data.table(x_explain)
   )
 }
 
@@ -159,7 +263,7 @@ get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
 
     if (is.null(funcs$get_model_specs)) {
       # Get internal definition of get_model_specs if exists
-      native_func_available <- supported_models[get_model_specs == TRUE, class_model %in% model_class]
+      native_func_available <- supported_models[get_model_specs == TRUE, class %in% model_class]
       if (native_func_available) {
         funcs$get_model_specs <- get(paste0("get_model_specs.", class))
       } else {
@@ -237,11 +341,6 @@ process_all_data <- function(internal, feature_list) {
 #' model_features <- get_model_specs(model)
 #' preprocess_data(x_train, model_features)
 preprocess_data <- function(x, feature_list) {
-  if (all(is.null(colnames(x)))) {
-    stop(paste0("The data is missing column names"))
-  }
-
-  x_dt <- data.table::as.data.table(x)
 
   feature_list_data <- get_data_specs(x_dt)
   feature_list_data$specs_type <- "data"
@@ -491,7 +590,6 @@ check_features <- function(f_list_1, f_list_2,
 #' x_train[, Temp := as.factor(Temp)]
 #' get_data_specs(x_train)
 get_data_specs <- function(x) {
-  x <- data.table::as.data.table(x)
 
   feature_list <- list()
   feature_list$labels <- names(x)
