@@ -67,11 +67,20 @@ check_data <- function(internal){
   NA_classes <- any(is.na(model_feature_spec$classes))
   NA_factor_levels <- any(is.na(model_feature_spec$factor_levels))
 
-  if(NA_labels){
+  if(is.null(model_feature_spec)){
+    message("Note: You passed a model to explain() which is not natively supported, and did not supply the ",
+            "'get_model_specs' function to explain().\n",
+            "Consistency checks between model and data is therefore disabled.\n")
+
+    model_feature_spec <- x_train_feature_spec
+
+  } else if(NA_labels){
+
     message("Note: Feature names extracted from the model contains NA.\n",
-            "Consistency check between model and data is therefore disabled.\n")
-    # Check x_train vs x_explain
-    compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
+            "Consistency checks between model and data is therefore disabled.\n")
+
+    model_feature_spec <- x_train_feature_spec
+
   } else if(NA_classes){
     message("Note: Feature classes extracted from the model contains NA.\n",
             "Assuming feature classes from the data are correct.\n")
@@ -79,10 +88,6 @@ check_data <- function(internal){
     model_feature_spec$classes <- x_train_feature_spec$classes
     model_feature_spec$factor_levels <- x_train_feature_spec$factor_levels
 
-    # First check model vs x_train
-    # Then x_train vs x_explain
-    compare_feature_specs(model_feature_spec,x_train_feature_spec,"model","x_train")
-    compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
   } else if (NA_factor_levels){
 
     message("Note: Feature factor levels extracted from the model contains NA.\n",
@@ -90,39 +95,33 @@ check_data <- function(internal){
 
     model_feature_spec$factor_levels <- x_train_feature_spec$factor_levels
 
-    # First check model vs x_train
-    # Then x_train vs x_explain
-    compare_feature_specs(model_feature_spec,x_train_feature_spec,"model","x_train")
-    compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
-
-  }
-
-  } else if(is.null(model_feature_spec)){
-    message("Note: You passed a model to explain() which is not natively supported, and did not supply the ",
-            "'get_model_specs' function to explain().\n",
-            "Consistency check between model and data is therefore disabled.\n")
-
-    # Check x_train vs x_explain
-    compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
-
-  } else {
-
-    # First check model vs x_train
-    # Then x_train vs x_explain
-    compare_feature_specs(model_feature_spec,x_train_feature_spec,"model","x_train")
-    compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
-
   }
 
 
+  # First check model vs x_train (possibly modified)
+  # Then x_train vs x_explain
+  compare_feature_specs(model_feature_spec,x_train_feature_spec,"model","x_train")
+  compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
 
 }
 
 compare_vecs <- function(vec1,vec2,vec_type,name1,name2){
   if(!identical(vec1,vec2)){
-    stop(paste0("Feature ",vec_type," are not identical for ",name1," and ",name2,".\n"))
-    #message <- waldo::compare(vec1, vec2, x_arg = name1, y_arg = name2)
-    #stop(paste0("Feature ",vec_type," are not equal for ",name1," and ",name2,":\n",message))
+    if(is.null(names(vec1))){
+      text_vec1 <- paste(vec1, collapse = ", ")
+    } else {
+      text_vec1 <- paste(names(vec1), vec1, sep = ": ", collapse = ", ")
+    }
+    if(is.null(names(vec2))){
+      text_vec2 <- paste(vec2, collapse = ", ")
+    } else {
+      text_vec2 <- paste(names(vec2), vec1, sep = ": ", collapse = ", ")
+    }
+
+    stop(paste0("Feature ",vec_type," are not identical for ",name1," and ",name2,".\n",
+                name1," provided: ",text_vec1,",\n",
+                name2," provided: ",text_vec2,".\n")
+         )
   }
 }
 
@@ -132,7 +131,10 @@ compare_feature_specs <- function(spec1,spec2,name1="model",name2="x_train"){
 
   factor_classes <- which(spec1$classes == "factor")
   if (length(factor_classes) > 0) {
-    compare_vecs(spec1$factor_levels,spec1$factor_levels,"factor levels",name1,name2)
+    for(fact in names(factor_classes)){
+      vec_type = paste0("factor levels for feature '",fact,"'")
+      compare_vecs(spec1$factor_levels[[fact]],spec2$factor_levels[[fact]],vec_type,name1,name2)
+    }
   }
 
 }
