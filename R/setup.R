@@ -74,12 +74,12 @@ get_objects <- function(get_model_specs,model){
 #' @keywords internal
 check_parameters <- function(internal){
 
-  feature_labels <- internal$parameters$feature_labels
+  feature_names <- internal$parameters$feature_names
   group <- internal$parameters$group
 
   # Check groups
   if(!is.null(group)){
-    check_groups(feature_labels,group)
+    check_groups(feature_names,group)
   }
 
   #TODO: Add checks of all other parameters here
@@ -191,7 +191,7 @@ get_extra_parameters <- function(internal){
   internal$parameters$n_train <- nrow(internal$data$x_train)
 
   # Names of features (already checked to be OK)
-  internal$parameters$feature_labels = names(internal$data$x_explain)
+  internal$parameters$feature_names = names(internal$data$x_explain)
 
   # Update feature_specs (in case model based spec included NAs)
   internal$objects$feature_specs = get_data_specs(internal$data$x_explain)
@@ -213,7 +213,7 @@ get_extra_parameters <- function(internal){
 
     # Make group list with numeric feature indicators
     internal$objects$group_num <- lapply(group, FUN = function(x) {
-      match(x, internal$parameters$feature_labels)
+      match(x, internal$parameters$feature_names)
     })
   }
 
@@ -380,12 +380,12 @@ get_data_specs <- function(x) {
 #' Check that the group parameter has the right form and content
 #'
 #'
-#' @param feature_labels Vector of characters. Contains the feature labels used by the model
+#' @param feature_names Vector of characters. Contains the feature labels used by the model
 #'
 #' @return Error or NULL
 #'
 #' @keywords internal
-check_groups <- function(feature_labels, group) {
+check_groups <- function(feature_names, group) {
   if (!is.list(group)) {
     stop("group must be a list")
   }
@@ -398,8 +398,8 @@ check_groups <- function(feature_labels, group) {
   }
 
   # Check that all features in group are in feature labels or used by model
-  if (!all(group_features %in% feature_labels)) {
-    missing_group_feature <- group_features[!(group_features %in% feature_labels)]
+  if (!all(group_features %in% feature_names)) {
+    missing_group_feature <- group_features[!(group_features %in% feature_names)]
     stop(
       paste0(
         "The group feature(s) ", paste0(missing_group_feature, collapse = ", "), " are not\n",
@@ -409,8 +409,8 @@ check_groups <- function(feature_labels, group) {
   }
 
   # Check that all feature used by model are in group
-  if (!all(feature_labels %in% group_features)) {
-    missing_features <- feature_labels[!(feature_labels %in% group_features)]
+  if (!all(feature_names %in% group_features)) {
+    missing_features <- feature_names[!(feature_names %in% group_features)]
     stop(
       paste0(
         "The model/data feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",

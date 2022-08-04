@@ -95,7 +95,7 @@ compute_preds <- function(dt, internal, model) {
   id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
 
   # Setup
-  feature_names <- internal$objects$feature_spec$labels
+  feature_names <- internal$parameters$feature_names
 
   # Predictions
   dt[id_combination != 1, p_hat := internal$funcs$predict_model(model, newdata = .SD), .SDcols = feature_names]

@@ -4,10 +4,10 @@
 \alias{check_groups}
 \title{Check that the group parameter has the right form and content}
 \usage{
-check_groups(feature_labels, group)
+check_groups(feature_names, group)
 }
 \arguments{
-\item{feature_labels}{Vector of characters. Contains the feature labels used by the model}
+\item{feature_names}{Vector of characters. Contains the feature labels used by the model}
 }
 \value{
 Error or NULL
