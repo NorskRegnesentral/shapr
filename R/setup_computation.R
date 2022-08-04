@@ -60,9 +60,9 @@ shapley_setup <- function(internal) {
   exact <- internal$parameters$exact
   n_features <- internal$parameters$n_features
   n_combinations <- internal$parameters$n_combinations
-  group_num <- internal$parameters$group_num
   is_groupwise <- internal$parameters$is_groupwise
 
+  group_num <- internal$objects$group_num
 
   X <- internal$objects$X
 

@@ -15,7 +15,7 @@ feature names, types, and levels as \code{traindata}.}
 \value{
 A list that contains the following entries:
 \describe{
-\item{feature_list}{List. Output from \code{check_features}}
+\item{feature_spec}{List. Output from \code{check_features}}
 \item{train_dummies}{A data.frame containing all of the factors in \code{traindata} as
 one-hot encoded variables.}
 \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as

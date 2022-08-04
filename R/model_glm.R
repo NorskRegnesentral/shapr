@@ -17,15 +17,15 @@ predict_model.glm <- function(x, newdata) {
 get_model_specs.glm <- function(x) {
   model_checker(x) # Checking if the model is supported
 
-  feature_list <- list()
-  feature_list$labels <- labels(x$terms)
-  m <- length(feature_list$labels)
+  feature_spec <- list()
+  feature_spec$labels <- labels(x$terms)
+  m <- length(feature_spec$labels)
 
-  feature_list$classes <- attr(x$terms, "dataClasses")[-1]
-  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[names(x$xlevels)] <- x$xlevels
+  feature_spec$classes <- attr(x$terms, "dataClasses")[-1]
+  feature_spec$factor_levels <- setNames(vector("list", m), feature_spec$labels)
+  feature_spec$factor_levels[names(x$xlevels)] <- x$xlevels
 
-  return(feature_list)
+  return(feature_spec)
 }
 
 #' @rdname model_checker

@@ -5,18 +5,18 @@
 \title{Apply dummy variables - this is an internal function intended only to be used in
 predict_model.xgb.Booster()}
 \usage{
-apply_dummies(feature_list, testdata)
+apply_dummies(feature_spec, testdata)
 }
 \arguments{
-\item{feature_list}{List. The \code{feature_list} object in the output object after running
+\item{feature_spec}{List. The \code{feature_spec} object in the output object after running
 \code{\link[shapr:make_dummies]{make_dummies}}}
 
 \item{testdata}{data.table or data.frame. New data that has the same
-feature names, types, and levels as \code{feature_list}.}
+feature names, types, and levels as \code{feature_spec}.}
 }
 \value{
 A data.table with all features but where the factors in \code{testdata} are
-one-hot encoded variables as specified in feature_list
+one-hot encoded variables as specified in feature_spec
 }
 \description{
 Apply dummy variables - this is an internal function intended only to be used in
