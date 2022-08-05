@@ -103,9 +103,12 @@ check_data <- function(internal){
   x_train_feature_specs <- get_data_specs(x_train)
   x_explain_feature_specs <- get_data_specs(x_explain)
 
+  factors_exists <- any(model_feature_specs$classes=="factor")
+
   NA_labels <- any(is.na(model_feature_specs$labels))
   NA_classes <- any(is.na(model_feature_specs$classes))
   NA_factor_levels <- any(is.na(model_feature_specs$factor_levels))
+
 
   if(is.null(model_feature_specs)){
     message("Note: You passed a model to explain() which is not natively supported, and did not supply a ",
@@ -128,7 +131,7 @@ check_data <- function(internal){
     model_feature_specs$classes <- x_train_feature_specs$classes
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
 
-  } else if (NA_factor_levels){
+  } else if (factors_exists & NA_factor_levels){
 
     message("Note: Feature factor levels extracted from the model contains NA.\n",
             "Assuming feature factor levels from the data are correct.\n")
