@@ -327,30 +327,27 @@ x_var_cat <- c("Solar.R", "Wind", "Temp", "Month")
 y_var <- "Ozone"
 # convert to factors
 airquality$Month = as.factor(airquality$Month)
-x_train_cat <- airquality[-1:-6, x_var_cat]
-y_train <- airquality[-1:-6, y_var]
-x_test_cat <- airquality[1:6, x_var_cat]
-# -- special function when using categorical data + xgboost
-dummylist <- make_dummies(traindata = x_train_cat, testdata = x_test_cat)
-x_train_dummy <- dummylist$train_dummies
-x_test_dummy <- dummylist$test_dummies
-# Fitting a basic xgboost model to the training data
-model_cat <- xgboost::xgboost(
-  data = x_train_dummy,
-  label = y_train,
-  nround = 20,
-  verbose = FALSE
-)
-model_cat$feature_list <- dummylist$feature_list
-# explainer_cat <- shapr(dummylist$traindata_new, model_cat)
-p <- mean(y_train)
+
+airquality_train <- airquality[-(1:6),]
+airquality_test <- airquality[1:6,]
+
+x_train_cat <- airquality_train[, x_var_cat]
+x_test_cat <- airquality_test[, x_var_cat]
+
+# Fitting a lm model here as xgboost does not handle categorical features directly (work around in example below)
+lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " + ")))
+
+model_lm_cat <- lm(lm_formula,airquality_train)
+
+p <- mean(airquality_train[,y_var])
 explanation_cat <- explain(
-  dummylist$traindata_new,
-  dummylist$testdata_new,
-  model = model_cat,
+  x_train_cat,
+  x_test_cat,
+  model = model_lm_cat,
   approach = "ctree",
   prediction_zero = p
 )
+
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
 plot(explanation_cat, plot_phi0 = FALSE, index_x_explain = c(1, 6))
@@ -468,38 +465,6 @@ explanation_combined <- explain(
 )
 ```
 
-## Using ctree when features are mixed numerical and categorical
-
-```{r}
-x_var <- c("Solar.R", "Wind", "Temp", "Month")
-y_var <- "Ozone"
-# Convert two features as factors
-dt <- airquality[, c(x_var, y_var)]
-dt$Wind <- as.factor(round(dt$Wind / 5) * 5)
-dt$Temp <- as.factor(round(dt$Temp / 5) * 5)
-xy_train_cat <- dt[-1:-6, ]
-y_train_cat <- dt[-1:-6, y_var]
-x_train_cat <- dt[-1:-6, x_var]
-x_test_cat <- dt[1:6, x_var]
-# Fit a basic linear regression model to the training data
-model_mixed <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = xy_train_cat)
-
-# Specifying the phi_0, i.e. the expected prediction without any features
-p <- mean(y_train_cat)
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-explanation_categorical <- explain(
-  x_train_cat,
-  x_test_cat,
-  model = model_mixed,
-  approach = "ctree",
-  prediction_zero = p
-)
-# Note that nothing has to be specified to tell "ctree" that two of the features are 
-# cateogrical and two are numerical
-# Plot the resulting explanations for observations 1 and 6, excluding 
-# the no-covariate effect
-plot(explanation_categorical, plot_phi0 = FALSE, index_x_explain = c(1, 6))
-```
 
 ## Explain groups of features
 
@@ -597,13 +562,13 @@ MY_predict_model <- function(x, newdata) {
   }
 }
 MY_get_model_specs <- function(x){
-  feature_list = list()
-  feature_list$labels <- labels(x$Terms)
-  m <- length(feature_list$labels)
-  feature_list$classes <- attr(x$Terms,"dataClasses")[-1]
-  feature_list$factor_levels <- setNames(vector("list", m), feature_list$labels)
-  feature_list$factor_levels[feature_list$classes=="factor"] <- NA # the model object doesn't contain factor levels info
-  return(feature_list)
+  feature_specs = list()
+  feature_specs$labels <- labels(x$Terms)
+  m <- length(feature_specs$labels)
+  feature_specs$classes <- attr(x$Terms,"dataClasses")[-1]
+  feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
+  feature_specs$factor_levels[feature_specs$classes=="factor"] <- NA # the model object doesn't contain factor levels info
+  return(feature_specs)
 }
 # Prepare the data for explanation
 set.seed(123)

@@ -12,7 +12,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   x_train0 <- copy(internal$data$x_train)
   x_explain0 <- copy(internal$data$x_explain)
 
-  feature_list <- internal$parameters$feature_list
+  feature_specs <- internal$objects$feature_specs
   n_samples <- internal$parameters$n_samples
   n_train <- internal$parameters$n_train
   n_explain <- internal$parameters$n_explain
@@ -24,7 +24,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
     index_features <- X[, .I]
   }
 
-  non_numeric_features <- feature_list$labels[feature_list$classes != "numeric"]
+  non_numeric_features <- feature_specs$labels[feature_specs$classes != "numeric"]
 
   S0 <- S[index_features, , drop = FALSE]
 
@@ -67,7 +67,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
 
     # Add keys
     dt_l[[i]] <- data.table::as.data.table(dt_p)
-    data.table::setnames(dt_l[[i]], feature_list$labels)
+    data.table::setnames(dt_l[[i]], feature_specs$labels)
     dt_l[[i]][, id_combination := index_s]
     dt_l[[i]][, w := w] # IS THIS NECESSARY?
     dt_l[[i]][, id := i]

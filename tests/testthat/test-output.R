@@ -180,3 +180,51 @@ test_that("output_custom_lm_numeric_independence_2", {
     native$shapley_values
   )
 })
+
+test_that("output_custom_xgboost_mixed_dummy_ctree", {
+  if (requireNamespace("xgboost", quietly = TRUE)) {
+    x_train_mixed_dummy <- model.matrix(~.+0,x_train_mixed)
+    x_test_mixed_dummy <- model.matrix(~.+0,x_test_mixed)
+
+    y_train <- data_train[, get(y_var_numeric)]
+
+    # Fitting a basic xgboost model to the training data
+    model_xgboost_mixed_dummy <- xgboost::xgboost(
+      data = x_train_mixed_dummy,
+      label = y_train,
+      nround = 20,
+      verbose = FALSE
+    )
+
+    predict_model.xgboost_dummy <- function(x,newdata){
+      newdata_dummy <- model.matrix(~.+0,newdata)
+
+      predict(x, newdata_dummy)
+    }
+
+    # Check that created predict_model works as intended
+    expect_equal(
+      predict_model.xgboost_dummy(model_xgboost_mixed_dummy,x_test_mixed),
+      predict(model_xgboost_mixed_dummy,x_test_mixed_dummy)
+    )
+
+    # Specifying the phi_0, i.e. the expected prediction without any features
+    p0 <- data_train[, mean(get(y_var_numeric))]
+
+
+    expect_snapshot_rds({
+      custom <- explain(x_train_mixed,
+                        x_test_mixed,
+                        model_xgboost_mixed_dummy,
+                        approach = "ctree",
+                        prediction_zero = p0,
+                        predict_model = predict_model.xgboost_dummy,
+                        get_model_specs = NA)
+      custom$internal$funcs$predict_model <- "Deleted on purpose" # To avoid issues with package updates of xgboost
+      custom
+      },"output_custom_xgboost_mixed_dummy_ctree"
+    )
+  }
+})
+
+

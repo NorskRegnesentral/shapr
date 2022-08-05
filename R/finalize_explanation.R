@@ -94,7 +94,7 @@ get_p <- function(dt_vS, internal) {
 #' @keywords internal
 compute_shapley_new <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
-  labels <- internal$parameters$feature_list$labels
+  labels <- internal$parameters$feature_names
   W <- internal$objects$W
 
   if (!is_groupwise) {

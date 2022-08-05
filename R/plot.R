@@ -67,22 +67,33 @@
 #' @examples
 #'
 #' data("airquality")
+#' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]
+#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#' y_var <- "Ozone"
+#'
 #' # Split data into test- and training data
-#' dat_train <- head(airquality, -50)
-#' dat_explain <- tail(airquality, 50)
+#' data_train <- head(airquality, -50)
+#' data_test <- tail(airquality, 50)
+#'
+#' x_train <- data_train[, x_var]
+#' x_test <- data_test[,x_var]
 #'
 #' # Fit a linear model
-#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = dat_train)
+#' lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
+#' model <- lm(lm_formula, data = data_train)
 #'
-#' p <- mean(dat_train$Ozone)
+#' # Explain predictions
+#' p <- mean(data_train[,y_var])
 #'
+#' # Empirical approach
 #' x <- explain(
-#'   dat_train,
-#'   dat_explain,
+#'   x_train,
+#'   x_test,
 #'   model = model,
 #'   approach = "empirical",
-#'   prediction_zero = p
+#'   prediction_zero = p,
+#'   n_samples = 1e2
 #' )
 #'
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {

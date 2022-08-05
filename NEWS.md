@@ -20,7 +20,7 @@ only a single function *predict_model*.
   passed to *shapr* and *explain*. The features in the data are checked for consistency with what can be extracted
   from the model object. If the model object is missing some of the necessary information, the info from the data
   is used instead. The system checks feature labels, classes, and any factor levels.
-* Due to the previous point, the *feature_labels* option previously used for custom models is removed.
+* Due to the previous point, the *feature_names* option previously used for custom models is removed.
 * Added a manual testing script for custom model (currently cannot be handled by testthat due to environment issues).
 * A few under-the-hood changes for checking in the *shapr* function.
 
