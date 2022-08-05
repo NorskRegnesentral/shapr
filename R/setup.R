@@ -82,6 +82,8 @@ check_parameters <- function(internal){
     check_groups(feature_names,group)
   }
 
+  check_approach(internal)
+
   #TODO: Add checks of all other parameters here
 
   # if (n_batches < 1 || n_batches > nrow(explainer$S)) {
@@ -226,6 +228,18 @@ get_extra_parameters <- function(internal){
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, ...) {
+
+  # Check input for approach
+
+  # approach is checked later
+  # prediction_zero
+  if(!(is.numeric(prediction_zero) &&
+       length(prediction_zero)==1 &&
+       !is.na(prediction_zero))){
+    stop("`prediction_zero` must be a numeric of length 1.")
+  }
+
+
   # Getting basic input parameters
   parameters <- list(
     approach = approach,
@@ -431,3 +445,37 @@ check_groups <- function(feature_names, group) {
   }
   return(NULL)
 }
+
+#' @keywords internal
+check_approach <- function(internal) {
+  # Check length of approach
+
+  approach <- internal$parameters$approach
+  n_features <- internal$parameters$n_features
+  supported_models <- get_supported_approaches()
+
+  if (!(is.character(approach)&&
+        is.vector(approach) &&
+        is.atomic(approach) &&
+        (length(approach) == 1 | length(approach) == n_features) &&
+        all(is.element(approach, supported_models)))
+  ) {
+    stop(
+      paste(
+        "`approach` must be one of the following: \n", paste0(supported_models, collapse = ", "), "\n",
+        "or a vector of length equal to the number of features (",n_features,") with only the above strings."
+      )
+    )
+  }
+}
+
+#' Gets the implemented approaches
+#'
+#' @return Character vector.
+#' The names of the implemented approaches that can be passed to argument \code{approach} in [explain()].
+#'
+#' @export
+get_supported_approaches <- function() {
+  substring(rownames(attr(methods(prepare_data), "info")), first = 14)
+}
+
