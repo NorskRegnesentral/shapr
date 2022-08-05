@@ -1,4 +1,13 @@
-# check_data gives correct messages
+# error with custom model without providing predict_model
+
+    Code
+      explain(x_train_mixed, x_test_mixed, model_custom_lm_mixed, approach = "independence",
+        prediction_zero = p0)
+    Error <simpleError>
+      You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain().
+      See ?shapr::explain or the vignette for more information on how to run shapr with custom models.
+
+# messages with missing detail in get_model_specs
 
     Code
       explain(x_train_mixed, x_test_mixed, model_custom_lm_mixed, approach = "independence",

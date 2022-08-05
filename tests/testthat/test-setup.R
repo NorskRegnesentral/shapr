@@ -32,16 +32,31 @@ model_lm_mixed <- lm(lm_formula_mixed, data = data_complete)
 
 p0 <- data_train[, mean(get(y_var_numeric))]
 
-test_that("check_data gives correct messages", {
+model_custom_lm_mixed <- model_lm_mixed
+class(model_custom_lm_mixed) <- "whatever"
+
+test_that("error with custom model without providing predict_model",{
   set.seed(123)
+  # Custom model with no predict_model
+  expect_snapshot(
+    explain(x_train_mixed,
+            x_test_mixed,
+            model_custom_lm_mixed,
+            approach = "independence",
+            prediction_zero = p0),
+    error = T
+  )
+
+})
+
+test_that("messages with missing detail in get_model_specs", {
+  set.seed(123)
+
   custom_predict_model <- function(x, newdata) {
     beta <- coef(x)
     X <- model.matrix(~.,newdata)
     return(as.vector(beta %*% t(X)))
   }
-
-  model_custom_lm_mixed <- model_lm_mixed
-  class(model_custom_lm_mixed) <- "whatever"
 
   # Custom model with no get_model_specs
   expect_snapshot(
