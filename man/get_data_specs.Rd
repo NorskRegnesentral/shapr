@@ -23,9 +23,7 @@ Fetches feature information from a given data set
 }
 \details{
 This function is used to extract the feature information to be checked against the corresponding
-information extracted from the model and other data sets. The function is called from
-\code{\link[shapr:check_data]{check_data}}
-and \code{\link[shapr:make_dummies]{make_dummies}}
+information extracted from the model and other data sets. The function is called from internally
 }
 \examples{
 # Load example data

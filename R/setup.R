@@ -333,9 +333,7 @@ get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
 #' @param x matrix, data.frame or data.table The data to extract feature information from.
 #'
 #' @details This function is used to extract the feature information to be checked against the corresponding
-#' information extracted from the model and other data sets. The function is called from
-#' \code{\link[shapr:check_data]{check_data}}
-#' and \code{\link[shapr:make_dummies]{make_dummies}}
+#' information extracted from the model and other data sets. The function is called from internally
 #'
 #' @return A list with the following elements:
 #' \describe{

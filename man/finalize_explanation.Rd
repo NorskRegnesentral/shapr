@@ -72,15 +72,22 @@ Aas et al. (2021), i.e. the maximum number of observations (with largest weights
 # Load example data
 data("airquality")
 airquality <- airquality[complete.cases(airquality), ]
+x_var <- c("Solar.R", "Wind", "Temp", "Month")
+y_var <- "Ozone"
+
 # Split data into test- and training data
-x_train <- head(airquality, -3)
-x_test <- tail(airquality, 3)
+data_train <- head(airquality, -3)
+data_test <- tail(airquality, 3)
+
+x_train <- data_train[, x_var]
+x_test <- data_test[,x_var]
 
 # Fit a linear model
-model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
+lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
+model <- lm(lm_formula, data = data_train)
 
 # Explain predictions
-p <- mean(x_train$Ozone)
+p <- mean(data_train[,y_var])
 
 # Empirical approach
 explain1 <- explain(
