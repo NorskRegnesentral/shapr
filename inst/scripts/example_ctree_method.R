@@ -78,7 +78,7 @@ model_cat <- xgboost::xgboost(
   nround = 20,
   verbose = FALSE
 )
-model_cat$feature_spec <- dummylist$feature_spec
+model_cat$feature_specs <- dummylist$feature_specs
 
 explainer_cat <- shapr(dummylist$traindata_new, model_cat)
 

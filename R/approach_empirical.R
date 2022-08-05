@@ -270,7 +270,7 @@ compute_AICc_each_k <- function(internal, model, index_features) {
   n_samples_aicc <- internal$parameters$n_samples_aicc
   n_combinations <- internal$parameters$n_combinations
   n_features <- internal$parameters$n_features
-  labels <- internal$objects$feature_spec$labels
+  labels <- internal$objects$feature_specs$labels
   start_aicc <- internal$parameters$start_aicc
   eval_max_aicc <- internal$parameters$eval_max_aicc
 
@@ -385,7 +385,7 @@ compute_AICc_full <- function(internal, model, index_features) {
   n_samples_aicc <- internal$parameters$n_samples_aicc
   n_combinations <- internal$parameters$n_combinations
   n_features <- internal$parameters$n_features
-  labels <- internal$objects$feature_spec$labels
+  labels <- internal$objects$feature_specs$labels
   start_aicc <- internal$parameters$start_aicc
   eval_max_aicc <- internal$parameters$eval_max_aicc
 

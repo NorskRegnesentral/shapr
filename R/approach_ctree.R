@@ -41,7 +41,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
   minsplit <- internal$parameters$minsplit
   minbucket <- internal$parameters$minbucket
   sample <- internal$parameters$sample
-  labels <- internal$objects$feature_spec$labels
+  labels <- internal$objects$feature_specs$labels
 
   X <- internal$objects$X
 

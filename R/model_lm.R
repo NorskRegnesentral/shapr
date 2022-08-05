@@ -13,15 +13,15 @@ predict_model.lm <- function(x, newdata) {
 get_model_specs.lm <- function(x) {
   model_checker(x) # Checking if the model is supported
 
-  feature_spec <- list()
-  feature_spec$labels <- labels(x$terms)
-  m <- length(feature_spec$labels)
+  feature_specs <- list()
+  feature_specs$labels <- labels(x$terms)
+  m <- length(feature_specs$labels)
 
-  feature_spec$classes <- attr(x$terms, "dataClasses")[-1]
-  feature_spec$factor_levels <- setNames(vector("list", m), feature_spec$labels)
-  feature_spec$factor_levels[names(x$xlevels)] <- x$xlevels
+  feature_specs$classes <- attr(x$terms, "dataClasses")[-1]
+  feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
+  feature_specs$factor_levels[names(x$xlevels)] <- x$xlevels
 
-  return(feature_spec)
+  return(feature_specs)
 }
 
 

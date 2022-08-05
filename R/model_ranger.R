@@ -17,17 +17,17 @@ predict_model.ranger <- function(x, newdata) {
 get_model_specs.ranger <- function(x) {
   model_checker(x) # Checking if the model is supported
 
-  feature_spec <- list()
-  feature_spec$labels <- unique_features(x$forest$independent.variable.names)
-  m <- length(feature_spec$labels)
+  feature_specs <- list()
+  feature_specs$labels <- unique_features(x$forest$independent.variable.names)
+  m <- length(feature_specs$labels)
 
-  feature_spec$classes <- setNames(rep(NA, m), feature_spec$labels) # Not supported
-  feature_spec$factor_levels <- setNames(vector("list", m), feature_spec$labels)
+  feature_specs$classes <- setNames(rep(NA, m), feature_specs$labels) # Not supported
+  feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
 
   # Only provided when respect.unordered.factors == T
-  feature_spec$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels
+  feature_specs$factor_levels[names(x$forest$covariate.levels)] <- x$forest$covariate.levels
 
-  return(feature_spec)
+  return(feature_specs)
 }
 
 

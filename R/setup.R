@@ -63,9 +63,9 @@ get_objects <- function(get_model_specs,model){
 
   # Extracting model specs from model
   if (is.function(get_model_specs)) {
-    objects$feature_spec <- get_model_specs(model)
+    objects$feature_specs <- get_model_specs(model)
   } else {
-    objects$feature_spec <- NULL
+    objects$feature_specs <- NULL
   }
 
   return(objects)
@@ -98,50 +98,50 @@ check_data <- function(internal){
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
-  model_feature_spec <- internal$objects$feature_spec
+  model_feature_specs <- internal$objects$feature_specs
 
-  x_train_feature_spec <- get_data_specs(x_train)
-  x_explain_feature_spec <- get_data_specs(x_explain)
+  x_train_feature_specs <- get_data_specs(x_train)
+  x_explain_feature_specs <- get_data_specs(x_explain)
 
-  NA_labels <- any(is.na(model_feature_spec$labels))
-  NA_classes <- any(is.na(model_feature_spec$classes))
-  NA_factor_levels <- any(is.na(model_feature_spec$factor_levels))
+  NA_labels <- any(is.na(model_feature_specs$labels))
+  NA_classes <- any(is.na(model_feature_specs$classes))
+  NA_factor_levels <- any(is.na(model_feature_specs$factor_levels))
 
-  if(is.null(model_feature_spec)){
+  if(is.null(model_feature_specs)){
     message("Note: You passed a model to explain() which is not natively supported, and did not supply a ",
             "'get_model_specs' function to explain().\n",
             "Consistency checks between model and data is therefore disabled.\n")
 
-    model_feature_spec <- x_train_feature_spec
+    model_feature_specs <- x_train_feature_specs
 
   } else if(NA_labels){
 
     message("Note: Feature names extracted from the model contains NA.\n",
             "Consistency checks between model and data is therefore disabled.\n")
 
-    model_feature_spec <- x_train_feature_spec
+    model_feature_specs <- x_train_feature_specs
 
   } else if(NA_classes){
     message("Note: Feature classes extracted from the model contains NA.\n",
             "Assuming feature classes from the data are correct.\n")
 
-    model_feature_spec$classes <- x_train_feature_spec$classes
-    model_feature_spec$factor_levels <- x_train_feature_spec$factor_levels
+    model_feature_specs$classes <- x_train_feature_specs$classes
+    model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
 
   } else if (NA_factor_levels){
 
     message("Note: Feature factor levels extracted from the model contains NA.\n",
             "Assuming feature factor levels from the data are correct.\n")
 
-    model_feature_spec$factor_levels <- x_train_feature_spec$factor_levels
+    model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
 
   }
 
 
   # First check model vs x_train (possibly modified)
   # Then x_train vs x_explain
-  compare_feature_specs(model_feature_spec,x_train_feature_spec,"model","x_train")
-  compare_feature_specs(x_train_feature_spec,x_explain_feature_spec,"x_train","x_explain")
+  compare_feature_specss(model_feature_specs,x_train_feature_specs,"model","x_train")
+  compare_feature_specss(x_train_feature_specs,x_explain_feature_specs,"x_train","x_explain")
 
 
 }
@@ -166,7 +166,7 @@ compare_vecs <- function(vec1,vec2,vec_type,name1,name2){
   }
 }
 
-compare_feature_specs <- function(spec1,spec2,name1="model",name2="x_train"){
+compare_feature_specss <- function(spec1,spec2,name1="model",name2="x_train"){
   compare_vecs(spec1$labels,spec2$labels,"names",name1,name2)
   compare_vecs(spec1$classes,spec2$classes,"classes",name1,name2)
 
@@ -193,8 +193,8 @@ get_extra_parameters <- function(internal){
   # Names of features (already checked to be OK)
   internal$parameters$feature_names = names(internal$data$x_explain)
 
-  # Update feature_specs (in case model based spec included NAs)
-  internal$objects$feature_spec = get_data_specs(internal$data$x_explain)
+  # Update feature_specss (in case model based spec included NAs)
+  internal$objects$feature_specs = get_data_specs(internal$data$x_explain)
 
   # Processes groups if specified. Otherwise do nothing
   internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
@@ -362,15 +362,15 @@ get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
 #' get_data_specs(x_train)
 get_data_specs <- function(x) {
 
-  feature_spec <- list()
-  feature_spec$labels <- names(x)
-  feature_spec$classes <- unlist(lapply(x, class))
-  feature_spec$factor_levels <- lapply(x, levels)
+  feature_specs <- list()
+  feature_specs$labels <- names(x)
+  feature_specs$classes <- unlist(lapply(x, class))
+  feature_specs$factor_levels <- lapply(x, levels)
 
   # Defining all integer values as numeric
-  feature_spec$classes[feature_spec$classes == "integer"] <- "numeric"
+  feature_specs$classes[feature_specs$classes == "integer"] <- "numeric"
 
-  return(feature_spec)
+  return(feature_specs)
 }
 
 

@@ -5,10 +5,10 @@ predict_model.xgb.Booster <- function(x, newdata) {
     stop("The xgboost package is required for predicting xgboost models")
   }
 
-  if (is.null(x$feature_spec)) {
+  if (is.null(x$feature_specs)) {
     predict(x, as.matrix(newdata))
   } else {
-    newdata_dummy <- apply_dummies(feature_spec = x$feature_spec, testdata = newdata)
+    newdata_dummy <- apply_dummies(feature_specs = x$feature_specs, testdata = newdata)
     predict(x, as.matrix(newdata_dummy))
   }
 }
@@ -18,18 +18,18 @@ predict_model.xgb.Booster <- function(x, newdata) {
 get_model_specs.xgb.Booster <- function(x) {
   model_checker(x) # Checking if the model is supported
 
-  feature_spec <- list()
-  if (is.null(x[["feature_spec"]])) {
-    feature_spec$labels <- x$feature_names
-    m <- length(feature_spec$labels)
+  feature_specs <- list()
+  if (is.null(x[["feature_specs"]])) {
+    feature_specs$labels <- x$feature_names
+    m <- length(feature_specs$labels)
 
-    feature_spec$classes <- setNames(rep(NA, m), feature_spec$labels) # Not supported
-    feature_spec$factor_levels <- setNames(vector("list", m), feature_spec$labels)
+    feature_specs$classes <- setNames(rep(NA, m), feature_specs$labels) # Not supported
+    feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
   } else {
-    feature_spec <- x$feature_spec
+    feature_specs <- x$feature_specs
   }
 
-  return(feature_spec)
+  return(feature_specs)
 }
 
 #' @rdname model_checker
@@ -69,7 +69,7 @@ model_checker.xgb.Booster <- function(x) {
 #'
 #' @return A list that contains the following entries:
 #' \describe{
-#' \item{feature_spec}{List. Output from \code{check_features}}
+#' \item{feature_specs}{List. Output from \code{check_features}}
 #' \item{train_dummies}{A data.frame containing all of the factors in \code{traindata} as
 #' one-hot encoded variables.}
 #' \item{test_dummies}{A data.frame containing all of the factors in \code{testdata} as
@@ -111,26 +111,26 @@ make_dummies <- function(traindata, testdata) {
   train_dt <- data.table::as.data.table(traindata)
   test_dt <- data.table::as.data.table(testdata)
 
-  feature_spec_train <- get_data_specs(train_dt)
-  feature_spec_test <- get_data_specs(test_dt)
+  feature_specs_train <- get_data_specs(train_dt)
+  feature_specs_test <- get_data_specs(test_dt)
 
-  feature_spec_train$specs_type <- "traindata"
-  feature_spec_test$specs_type <- "testdata"
+  feature_specs_train$specs_type <- "traindata"
+  feature_specs_test$specs_type <- "testdata"
 
-  updater <- check_features(feature_spec_train, feature_spec_test, F)
+  updater <- check_features(feature_specs_train, feature_specs_test, F)
 
   # Reorderes factor levels so that they match each other
   update_data(train_dt, updater)
   update_data(test_dt, updater)
 
-  feature_spec <- updater
+  feature_specs <- updater
 
   # Extracts the components
-  factor_features <- feature_spec$labels[updater$classes == "factor"]
+  factor_features <- feature_specs$labels[updater$classes == "factor"]
 
   if (length(factor_features) > 0) {
-    factor_list <- feature_spec$factor_levels[factor_features]
-    feature_spec$contrasts_list <- lapply(train_dt[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
+    factor_list <- feature_specs$factor_levels[factor_features]
+    feature_specs$contrasts_list <- lapply(train_dt[, factor_features, with = FALSE], contrasts, contrasts = FALSE)
 
     # get train dummies
     m <- model.frame(
@@ -140,7 +140,7 @@ make_dummies <- function(traindata, testdata) {
     train_dummies <- model.matrix(
       object = ~ . + 0,
       data = m,
-      contrasts.arg = feature_spec$contrasts_list
+      contrasts.arg = feature_specs$contrasts_list
     )
 
     # get test dummies
@@ -151,7 +151,7 @@ make_dummies <- function(traindata, testdata) {
     test_dummies <- model.matrix(
       object = ~ . + 0,
       data = m,
-      contrasts.arg = feature_spec$contrasts_list
+      contrasts.arg = feature_specs$contrasts_list
     )
   } else {
     train_dummies <- train_dt
@@ -159,7 +159,7 @@ make_dummies <- function(traindata, testdata) {
   }
 
   return(list(
-    feature_spec = feature_spec,
+    feature_specs = feature_specs,
     train_dummies = train_dummies, test_dummies = test_dummies, traindata_new = train_dt,
     testdata_new = test_dt
   ))
@@ -168,38 +168,38 @@ make_dummies <- function(traindata, testdata) {
 #' Apply dummy variables - this is an internal function intended only to be used in
 #' predict_model.xgb.Booster()
 #'
-#' @param feature_spec List. The \code{feature_spec} object in the output object after running
+#' @param feature_specs List. The \code{feature_specs} object in the output object after running
 #' \code{\link[shapr:make_dummies]{make_dummies}}
 #'
 #' @param testdata data.table or data.frame. New data that has the same
-#' feature names, types, and levels as \code{feature_spec}.
+#' feature names, types, and levels as \code{feature_specs}.
 #'
 #' @return A data.table with all features but where the factors in \code{testdata} are
-#' one-hot encoded variables as specified in feature_spec
+#' one-hot encoded variables as specified in feature_specs
 #'
 #' @author Annabelle Redelmeier, Martin Jullum
 #'
 #' @keywords internal
 #'
-apply_dummies <- function(feature_spec, testdata) {
+apply_dummies <- function(feature_specs, testdata) {
   if (all(is.null(colnames(testdata)))) {
     stop(paste0("The testdata is missing column names"))
   }
   test_dt <- data.table::as.data.table(testdata)
 
-  feature_spec_test <- get_data_specs(test_dt)
+  feature_specs_test <- get_data_specs(test_dt)
 
-  feature_spec_test$specs_type <- "testdata"
+  feature_specs_test$specs_type <- "testdata"
 
-  updater <- check_features(feature_spec, feature_spec_test, F)
+  updater <- check_features(feature_specs, feature_specs_test, F)
 
   # Reorderes factor levels so that they match
   update_data(test_dt, updater)
 
-  factor_features <- feature_spec$labels[updater$classes == "factor"] # check which features are factors
+  factor_features <- feature_specs$labels[updater$classes == "factor"] # check which features are factors
 
   if (length(factor_features) > 0) {
-    factor_list <- feature_spec$factor_levels[factor_features]
+    factor_list <- feature_specs$factor_levels[factor_features]
 
     m <- model.frame(
       data = test_dt,
@@ -209,7 +209,7 @@ apply_dummies <- function(feature_spec, testdata) {
     x <- model.matrix(
       object = ~ . + 0,
       data = m,
-      contrasts.arg = feature_spec$contrasts_list
+      contrasts.arg = feature_specs$contrasts_list
     )
   } else {
     x <- test_dt

@@ -78,7 +78,7 @@ explain.independence2 <- function(x, explainer, approach, prediction_zero,
   if (!is.null(seed)) set.seed(seed)
 
   # Add arguments to explainer object
-  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_spec)$x_dt)
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_specs)$x_dt)
   explainer$approach <- approach
   explainer$n_samples <- n_samples
 

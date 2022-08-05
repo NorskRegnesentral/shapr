@@ -50,15 +50,15 @@ predict_model.gbm <- function(x, newdata) {
 }
 
 get_model_specs.gbm <- function(x){
-  feature_spec = list()
-  feature_spec$labels <- labels(x$Terms)
-  m <- length(feature_spec$labels)
+  feature_specs = list()
+  feature_specs$labels <- labels(x$Terms)
+  m <- length(feature_specs$labels)
 
-  feature_spec$classes <- attr(x$Terms,"dataClasses")[-1]
-  feature_spec$factor_levels <- setNames(vector("list", m), feature_spec$labels)
-  feature_spec$factor_levels[feature_spec$classes=="factor"] <- NA # the model object doesn't contain factor levels info
+  feature_specs$classes <- attr(x$Terms,"dataClasses")[-1]
+  feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
+  feature_specs$factor_levels[feature_specs$classes=="factor"] <- NA # the model object doesn't contain factor levels info
 
-  return(feature_spec)
+  return(feature_specs)
 }
 
 # Prepare the data for explanation
