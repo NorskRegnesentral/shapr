@@ -194,7 +194,7 @@ get_extra_parameters <- function(internal){
   internal$parameters$feature_names = names(internal$data$x_explain)
 
   # Update feature_specs (in case model based spec included NAs)
-  internal$objects$feature_specs = get_data_specs(internal$data$x_explain)
+  internal$objects$feature_spec = get_data_specs(internal$data$x_explain)
 
   # Processes groups if specified. Otherwise do nothing
   internal$parameters$is_groupwise <- !is.null(internal$parameters$group)

@@ -100,8 +100,9 @@ shapley_setup <- function(internal) {
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
   # instead of storing it
 
-  internal$objects <- list(X = X, W = W, S = S)
-
+  internal$objects$X <- X
+  internal$objects$W <- W
+  internal$objects$S <- S
   internal$objects$S_batch <- create_S_batch_new(internal)
 
 
