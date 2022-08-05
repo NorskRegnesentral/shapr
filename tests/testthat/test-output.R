@@ -212,11 +212,18 @@ test_that("output_custom_xgboost_mixed_dummy_ctree", {
     p0 <- data_train[, mean(get(y_var_numeric))]
 
 
-    expect_snapshot_rds(
-      explain(x_train_mixed, x_test_mixed, model_xgboost_mixed_dummy, approach = "ctree", prediction_zero = p0, predict_model = predict_model.xgboost_dummy, get_model_specs = NA),
-      "output_custom_xgboost_mixed_dummy_ctree"
+    expect_snapshot_rds({
+      custom <- explain(x_train_mixed,
+                        x_test_mixed,
+                        model_xgboost_mixed_dummy,
+                        approach = "ctree",
+                        prediction_zero = p0,
+                        predict_model = predict_model.xgboost_dummy,
+                        get_model_specs = NA)
+      custom$internal$funcs$predict_model <- "Deleted on purpose" # To avoid issues with package updates of xgboost
+      custom
+      },"output_custom_xgboost_mixed_dummy_ctree"
     )
-
   }
 })
 
