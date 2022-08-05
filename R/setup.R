@@ -62,10 +62,10 @@ get_objects <- function(get_model_specs,model){
   objects <- list()
 
   # Extracting model specs from model
-  if (!is.null(get_model_specs)) {
+  if (is.function(get_model_specs)) {
     objects$feature_spec <- get_model_specs(model)
   } else {
-    objects$feature_spec <- NULL # get_model_specs.default("")
+    objects$feature_spec <- NULL
   }
 
   return(objects)
@@ -108,7 +108,7 @@ check_data <- function(internal){
   NA_factor_levels <- any(is.na(model_feature_spec$factor_levels))
 
   if(is.null(model_feature_spec)){
-    message("Note: You passed a model to explain() which is not natively supported, and did not supply the ",
+    message("Note: You passed a model to explain() which is not natively supported, and did not supply a ",
             "'get_model_specs' function to explain().\n",
             "Consistency checks between model and data is therefore disabled.\n")
 
@@ -319,8 +319,6 @@ get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
       native_func_available <- supported_models[get_model_specs == TRUE, class %in% model_class]
       if (native_func_available) {
         funcs$get_model_specs <- get(paste0("get_model_specs.", class))
-      } else {
-        funcs$get_model_specs <- NULL
       }
     }
   }
