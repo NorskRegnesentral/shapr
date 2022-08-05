@@ -5,12 +5,7 @@ predict_model.xgb.Booster <- function(x, newdata) {
     stop("The xgboost package is required for predicting xgboost models")
   }
 
-  if (is.null(x$feature_specs)) {
-    predict(x, as.matrix(newdata))
-  } else {
-    newdata_dummy <- apply_dummies(feature_specs = x$feature_specs, testdata = newdata)
-    predict(x, as.matrix(newdata_dummy))
-  }
+  predict(x, as.matrix(newdata))
 }
 
 #' @rdname get_model_specs
@@ -19,15 +14,11 @@ get_model_specs.xgb.Booster <- function(x) {
   model_checker(x) # Checking if the model is supported
 
   feature_specs <- list()
-  if (is.null(x[["feature_specs"]])) {
-    feature_specs$labels <- x$feature_names
-    m <- length(feature_specs$labels)
+  feature_specs$labels <- x$feature_names
+  m <- length(feature_specs$labels)
 
-    feature_specs$classes <- setNames(rep(NA, m), feature_specs$labels) # Not supported
-    feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
-  } else {
-    feature_specs <- x$feature_specs
-  }
+  feature_specs$classes <- setNames(rep(NA, m), feature_specs$labels) # Not supported
+  feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
 
   return(feature_specs)
 }
