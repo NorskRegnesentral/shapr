@@ -508,6 +508,7 @@ create_S_batch_new <- function(internal, seed = NULL) {
 
     # Randomize order before ordering spreading the batches on the different approaches as evenly as possible
     # with respect to shapley_weight
+    set.seed(seed)
     X[, randomorder := sample(.N)]
     data.table::setorder(X, randomorder) # To avoid smaller id_combinations always proceeding large ones
     data.table::setorder(X, shapley_weight)

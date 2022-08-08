@@ -48,13 +48,25 @@ setup <- function(x_train,
 
   check_data(internal)
 
-  internal <- get_extra_parameters(internal) # This includes both extra parameters and other objects
-
   check_parameters(internal)
 
+  internal <- get_extra_parameters(internal) # This includes both extra parameters and other objects
+
+  check_compatability(internal)
 
   return(internal)
 }
+
+check_compatability <- function(){
+
+  # check parameter compatability here.
+
+  # if (n_batches < 1 || n_batches > nrow(explainer$S)) {
+  #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
+  # }
+
+}
+
 
 #' @keywords internal
 get_objects <- function(get_model_specs,model){
@@ -82,13 +94,9 @@ check_parameters <- function(internal){
     check_groups(feature_names,group)
   }
 
+  # Check approach
   check_approach(internal)
 
-  #TODO: Add checks of all other parameters here
-
-  # if (n_batches < 1 || n_batches > nrow(explainer$S)) {
-  #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
-  # }
 
 }
 
@@ -145,8 +153,8 @@ check_data <- function(internal){
 
   # First check model vs x_train (possibly modified)
   # Then x_train vs x_explain
-  compare_feature_specss(model_feature_specs,x_train_feature_specs,"model","x_train")
-  compare_feature_specss(x_train_feature_specs,x_explain_feature_specs,"x_train","x_explain")
+  compare_feature_specs(model_feature_specs,x_train_feature_specs,"model","x_train")
+  compare_feature_specs(x_train_feature_specs,x_explain_feature_specs,"x_train","x_explain")
 
 
 }
@@ -171,7 +179,7 @@ compare_vecs <- function(vec1,vec2,vec_type,name1,name2){
   }
 }
 
-compare_feature_specss <- function(spec1,spec2,name1="model",name2="x_train"){
+compare_feature_specs <- function(spec1,spec2,name1="model",name2="x_train"){
   compare_vecs(spec1$labels,spec2$labels,"names",name1,name2)
   compare_vecs(spec1$classes,spec2$classes,"classes",name1,name2)
 
@@ -229,14 +237,44 @@ get_extra_parameters <- function(internal){
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, ...) {
 
-  # Check input for approach
+  # Check input type for approach
 
   # approach is checked later
+
   # prediction_zero
   if(!(is.numeric(prediction_zero) &&
        length(prediction_zero)==1 &&
        !is.na(prediction_zero))){
-    stop("`prediction_zero` must be a numeric of length 1.")
+    stop("`prediction_zero` must be a single numeric.")
+  }
+  # n_combinations
+  if(!(is.wholenumber(n_combinations) &&
+       length(n_combinations)==1 &&
+       !is.na(n_combinations) &&
+       n_combinations > 0) |
+    !is.null(n_combinations)){
+    stop("`n_combinations` must be NULL or a single positive integer.")
+  }
+  # group is checked later
+  # n_samples
+  if(!(is.wholenumber(n_samples) &&
+       length(n_samples)==1 &&
+       !is.na(n_samples) &&
+       n_samples > 0)){
+    stop("`n_samples` must be a single positive integer.")
+  }
+  # n_batches
+  if(!(is.wholenumber(n_batches) &&
+       length(n_batches)==1 &&
+       !is.na(n_batches) &&
+       n_batches > 0)){
+    stop("`n_batches` must be a single positive integer.")
+  }
+  # seed is already set, so we know it works
+  # keep_samp_for_vS
+  if(!(is.logical(keep_samp_for_vS) &&
+       length(keep_samp_for_vS)==1)){
+    stop("`keep_samp_for_vS` must be single logical.")
   }
 
 
@@ -258,21 +296,22 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
   # Setting ignore_model to FALSE if not provided by ...
   if (is.null(parameters$ignore_model)) {
     parameters$ignore_model <- FALSE
+  } else {
+    # ignore_model
+    if(!(is.logical(ignore_model) &&
+         length(ignore_model)==1)){
+      stop("`ignore_model` must be NULL or a single logical.")
+    }
   }
 
   # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
-
-  # TODO: Add any additional internal parameters here
-
 
   return(parameters)
 }
 
 #' @keywords internal
 get_data <- function(x_train, x_explain) {
-
-  # TODO: Later require data.frame (or data.table here)
 
   # Check data object type
   stop_message <- ""
@@ -308,6 +347,17 @@ get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
   model_class <- NULL # due to NSE
 
   class <- class(model)
+
+  # predict_model
+  if(!(is.function(predict_model)) ||
+     !(is.null(predict_model))){
+    stop("`predict_model` must be NULL or a function.")
+  }
+  # get_model_specs
+  if(!(is.function(get_model_specs)) ||
+     !(is.null(get_model_specs))){
+    stop("`get_model_specs` must be NULL or a function.")
+  }
 
   funcs <- list(
     predict_model = predict_model,
@@ -426,7 +476,7 @@ check_groups <- function(feature_names, group) {
     missing_features <- feature_names[!(feature_names %in% group_features)]
     stop(
       paste0(
-        "The model/data feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
+        "The feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
         "belong to one of the groups. Add to a group."
       )
     )
@@ -456,7 +506,6 @@ check_approach <- function(internal) {
 
   if (!(is.character(approach)&&
         is.vector(approach) &&
-        is.atomic(approach) &&
         (length(approach) == 1 | length(approach) == n_features) &&
         all(is.element(approach, supported_models)))
   ) {
