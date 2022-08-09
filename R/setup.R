@@ -48,23 +48,49 @@ setup <- function(x_train,
 
   check_data(internal)
 
-  check_parameters(internal)
-
   internal <- get_extra_parameters(internal) # This includes both extra parameters and other objects
 
-  check_compatability(internal)
+  check_parameters(internal)
 
   return(internal)
 }
 
-check_compatability <- function(){
+#' @keywords internal
+check_parameters <- function(internal){
 
-  # check parameter compatability here.
+  # Check groups
+  feature_names <- internal$parameters$feature_names
+  group <- internal$parameters$group
+  if(!is.null(group)){
+    check_groups(feature_names,group)
+  }
 
-  # if (n_batches < 1 || n_batches > nrow(explainer$S)) {
-  #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
-  # }
+  # Checking n_batches vs n_combinations etc
+  check_n_batches(internal)
 
+  # Check approach
+  check_approach(internal)
+
+}
+
+#' @keywords internal
+check_n_batches <- function(internal){
+  n_batches <- internal$parameters$n_batches
+  n_features <- internal$parameters$n_features
+  n_combinations <- internal$parameters$n_combinations
+  is_groupwise <- internal$parameters$is_groupwise
+  n_groups <- internal$parameters$n_groups
+
+  if(!is_groupwise){
+    actual_n_combinations <- ifelse(is.null(n_combinations),2^n_features)
+  } else {
+    actual_n_combinations <- ifelse(is.null(n_combinations),2^n_groups)
+  }
+
+  if (n_batches > actual_n_combinations) {
+    stop(paste0("`n_batches` (",n_batches,") is greater than the number feature combinations/`n_combinations` (",
+                actual_n_combinations,")"))
+  }
 }
 
 
@@ -83,22 +109,6 @@ get_objects <- function(get_model_specs,model){
   return(objects)
 }
 
-#' @keywords internal
-check_parameters <- function(internal){
-
-  feature_names <- internal$parameters$feature_names
-  group <- internal$parameters$group
-
-  # Check groups
-  if(!is.null(group)){
-    check_groups(feature_names,group)
-  }
-
-  # Check approach
-  check_approach(internal)
-
-
-}
 
 
 #' @keywords internal
@@ -209,9 +219,9 @@ get_extra_parameters <- function(internal){
   # Update feature_specss (in case model based spec included NAs)
   internal$objects$feature_specs = get_data_specs(internal$data$x_explain)
 
-  # Processes groups if specified. Otherwise do nothing
   internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
 
+  # Processes groups if specified. Otherwise do nothing
   if(internal$parameters$is_groupwise){
     group <- internal$parameters$group
 
@@ -228,6 +238,12 @@ get_extra_parameters <- function(internal){
     internal$objects$group_num <- lapply(group, FUN = function(x) {
       match(x, internal$parameters$feature_names)
     })
+
+    internal$parameters$n_groups <- length(group)
+
+  } else {
+    internal$objects$group_num <- NULL
+    internal$parameters$n_groups <- NULL
   }
 
   return(internal)
@@ -248,11 +264,11 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     stop("`prediction_zero` must be a single numeric.")
   }
   # n_combinations
-  if(!(is.wholenumber(n_combinations) &&
+  if(!is.null(n_combinations) &&
+     !(is.wholenumber(n_combinations) &&
        length(n_combinations)==1 &&
        !is.na(n_combinations) &&
-       n_combinations > 0) |
-    !is.null(n_combinations)){
+       n_combinations > 0)){
     stop("`n_combinations` must be NULL or a single positive integer.")
   }
   # group is checked later
@@ -349,12 +365,12 @@ get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
   class <- class(model)
 
   # predict_model
-  if(!(is.function(predict_model)) ||
+  if(!(is.function(predict_model)) &&
      !(is.null(predict_model))){
     stop("`predict_model` must be NULL or a function.")
   }
   # get_model_specs
-  if(!(is.function(get_model_specs)) ||
+  if(!(is.function(get_model_specs)) &&
      !(is.null(get_model_specs))){
     stop("`get_model_specs` must be NULL or a function.")
   }
@@ -493,7 +509,6 @@ check_groups <- function(feature_names, group) {
       )
     )
   }
-  return(NULL)
 }
 
 #' @keywords internal
