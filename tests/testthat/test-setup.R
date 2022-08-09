@@ -514,4 +514,51 @@ test_that("erroneous input: `x_train/x_explain`", {
   },
   error = T)
 
+  # missing column names in both x_train and x_explain
+  expect_snapshot({
+    x_train_no_column_names <- as.data.frame(x_train_numeric)
+    x_explain_no_column_names <- as.data.frame(x_explain_numeric)
+    names(x_explain_no_column_names) <- NULL
+    explain(x_train = x_train_no_column_names,
+            x_explain = x_explain_no_column_names,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
   })
+
+test_that("erroneous input: `predict_model`", {
+  set.seed(123)
+
+  # not a function
+  expect_snapshot({
+    predict_model_nonfunction <- "bla"
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            predict_model = predict_model_nonfunction)
+  },
+  error = T)
+
+})
+
+test_that("erroneous input: `get_model_specs`", {
+  set.seed(123)
+
+  # not a function
+  expect_snapshot({
+    get_model_specs_nonfunction <- "bla"
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            get_model_specs = get_model_specs_nonfunction)
+  },
+  error = T)
+
+})

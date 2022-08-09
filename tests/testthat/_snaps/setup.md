@@ -363,3 +363,32 @@
     Error <simpleError>
       x_explain misses column names.
 
+---
+
+    Code
+      x_train_no_column_names <- as.data.frame(x_train_numeric)
+      x_explain_no_column_names <- as.data.frame(x_explain_numeric)
+      names(x_explain_no_column_names) <- NULL
+      explain(x_train = x_train_no_column_names, x_explain = x_explain_no_column_names,
+        model_lm_numeric, approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_explain misses column names.
+
+# erroneous input: `predict_model`
+
+    Code
+      predict_model_nonfunction <- "bla"
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, predict_model = predict_model_nonfunction)
+    Error <simpleError>
+      `predict_model` must be NULL or a function.
+
+# erroneous input: `get_model_specs`
+
+    Code
+      get_model_specs_nonfunction <- "bla"
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_nonfunction)
+    Error <simpleError>
+      `get_model_specs` must be NULL, NA or a function.
+
