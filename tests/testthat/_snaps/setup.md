@@ -149,3 +149,57 @@
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
 
+# incorrect input: `n_samples` gives the correct error
+
+    Code
+      n_samples_non_numeric_1 <- "bla"
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0, n_samples = n_samples_non_numeric_1)
+    Error <simpleError>
+      `n_samples` must be a single positive integer.
+
+---
+
+    Code
+      n_samples_non_numeric_2 <- TRUE
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0, n_samples = n_samples_non_numeric_2)
+    Error <simpleError>
+      `n_samples` must be a single positive integer.
+
+---
+
+    Code
+      n_samples_non_integer <- 10.5
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0, n_samples = n_samples_non_integer)
+    Error <simpleError>
+      `n_samples` must be a single positive integer.
+
+---
+
+    Code
+      n_samples_too_long <- c(1, 2)
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0, n_samples = n_samples_too_long)
+    Error <simpleError>
+      `n_samples` must be a single positive integer.
+
+---
+
+    Code
+      n_samples_is_NA <- as.numeric(NA)
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0, n_samples = n_samples_is_NA)
+    Error <simpleError>
+      `n_samples` must be a single positive integer.
+
+---
+
+    Code
+      n_samples_non_positive <- 0
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0, n_samples = n_samples_non_positive)
+    Error <simpleError>
+      `n_samples` must be a single positive integer.
+
