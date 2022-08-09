@@ -63,7 +63,7 @@
       1: 40.752  4.48359 18.4777 12.316 -3.4762     -0.21431
       2: 40.752 -0.85689  9.7603 25.769 -3.4762      9.40306
 
-# incorrect input: `prediction_zero` gives the correct error
+# erroneous input: `prediction_zero`
 
     Code
       explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
@@ -95,7 +95,7 @@
     Error <simpleError>
       `prediction_zero` must be a single numeric.
 
-# incorrect input: `n_combinations` gives the correct error
+# erroneous input: `n_combinations`
 
     Code
       n_combinations_non_numeric_1 <- "bla"
@@ -149,7 +149,7 @@
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
 
-# incorrect input: `n_samples` gives the correct error
+# erroneous input: `n_samples`
 
     Code
       n_samples_non_numeric_1 <- "bla"
@@ -203,7 +203,7 @@
     Error <simpleError>
       `n_samples` must be a single positive integer.
 
-# incorrect input: `n_batches` gives the correct error
+# erroneous input: `n_batches`
 
     Code
       n_batches_non_numeric_1 <- "bla"
@@ -266,4 +266,40 @@
         prediction_zero = p0, n_combinations = n_combinations, n_batches = n_batches_too_large)
     Error <simpleError>
       `n_batches` (11) is greater than the number feature combinations/`n_combinations` (10)
+
+# erroneous input: `keep_samp_for_vS`
+
+    Code
+      keep_samp_for_vS_non_logical_1 <- "bla"
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_non_logical_1)
+    Error <simpleError>
+      `keep_samp_for_vS` must be single logical.
+
+---
+
+    Code
+      keep_samp_for_vS_non_logical_2 <- NULL
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_non_logical_2)
+    Error <simpleError>
+      `keep_samp_for_vS` must be single logical.
+
+---
+
+    Code
+      keep_samp_for_vS_too_long <- c(TRUE, FALSE)
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
+    Error <simpleError>
+      `keep_samp_for_vS` must be single logical.
+
+---
+
+    Code
+      expect_snapshot({
+        keep_samp_for_vS_too_long <- c(TRUE, FALSE)
+        explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+          prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
+      }, error = T)
 

@@ -91,7 +91,7 @@ test_that("messages with missing detail in get_model_specs", {
 
 })
 
-test_that("incorrect input: `prediction_zero` gives the correct error", {
+test_that("erroneous input: `prediction_zero`", {
   set.seed(123)
 
   # non-numeric 1
@@ -141,7 +141,7 @@ test_that("incorrect input: `prediction_zero` gives the correct error", {
 
 })
 
-test_that("incorrect input: `n_combinations` gives the correct error", {
+test_that("erroneous input: `n_combinations`", {
   set.seed(123)
 
   # non-numeric 1
@@ -222,7 +222,7 @@ test_that("incorrect input: `n_combinations` gives the correct error", {
 
 })
 
-test_that("incorrect input: `n_samples` gives the correct error", {
+test_that("erroneous input: `n_samples`", {
   set.seed(123)
 
   # non-numeric 1
@@ -300,7 +300,7 @@ test_that("incorrect input: `n_samples` gives the correct error", {
 
 })
 
-test_that("incorrect input: `n_batches` gives the correct error", {
+test_that("erroneous input: `n_batches`", {
   set.seed(123)
 
   # non-numeric 1
@@ -392,3 +392,47 @@ test_that("incorrect input: `n_batches` gives the correct error", {
 
 
 })
+
+test_that("erroneous input: `keep_samp_for_vS`", {
+  set.seed(123)
+
+  # non-logical 1
+  expect_snapshot({
+    keep_samp_for_vS_non_logical_1 <- "bla"
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            keep_samp_for_vS = keep_samp_for_vS_non_logical_1)
+  },
+  error = T)
+
+  # non-logical 2
+  expect_snapshot({
+    keep_samp_for_vS_non_logical_2 <- NULL
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            keep_samp_for_vS = keep_samp_for_vS_non_logical_2)
+  },
+  error = T)
+
+
+  # length > 1
+  expect_snapshot({
+    expect_snapshot({
+      keep_samp_for_vS_too_long <- c(TRUE,FALSE)
+      explain(x_train_numeric,
+              x_test_numeric,
+              model_lm_numeric,
+              approach = "independence",
+              prediction_zero = p0,
+              keep_samp_for_vS = keep_samp_for_vS_too_long)
+    },
+    error = T)
+  })
+})
+
