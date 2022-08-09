@@ -82,9 +82,9 @@ check_n_batches <- function(internal){
   n_groups <- internal$parameters$n_groups
 
   if(!is_groupwise){
-    actual_n_combinations <- ifelse(is.null(n_combinations),2^n_features)
+    actual_n_combinations <- ifelse(is.null(n_combinations),2^n_features,n_combinations)
   } else {
-    actual_n_combinations <- ifelse(is.null(n_combinations),2^n_groups)
+    actual_n_combinations <- ifelse(is.null(n_combinations),2^n_groups,n_combinations)
   }
 
   if (n_batches > actual_n_combinations) {
@@ -370,9 +370,10 @@ get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
     stop("`predict_model` must be NULL or a function.")
   }
   # get_model_specs
-  if(!(is.function(get_model_specs)) &&
-     !(is.null(get_model_specs))){
-    stop("`get_model_specs` must be NULL or a function.")
+  if(!is.function(get_model_specs) &&
+     !is.null(get_model_specs) &&
+     !is.na(get_model_specs)){
+    stop("`get_model_specs` must be NULL, NA or a function.") # NA is used to avoid using internally defined get_model_specs where this is defined and not valid for the specified model
   }
 
   funcs <- list(
