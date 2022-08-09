@@ -267,6 +267,17 @@
     Error <simpleError>
       `n_batches` (11) is greater than the number feature combinations/`n_combinations` (10)
 
+# erroneous input: `seed`
+
+    Code
+      seed_not_integer_interpretable <- "bla"
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0, seed = seed_not_integer_interpretable)
+    Warning <simpleWarning>
+      NAs introduced by coercion
+    Error <simpleError>
+      supplied seed is not a valid integer
+
 # erroneous input: `keep_samp_for_vS`
 
     Code

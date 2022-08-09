@@ -393,6 +393,23 @@ test_that("erroneous input: `n_batches`", {
 
 })
 
+test_that("erroneous input: `seed`", {
+  set.seed(123)
+
+  # Not interpretable as integer
+  expect_snapshot({
+    seed_not_integer_interpretable <- "bla"
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            seed = seed_not_integer_interpretable)
+  },
+  error = T)
+})
+
+
 test_that("erroneous input: `keep_samp_for_vS`", {
   set.seed(123)
 
