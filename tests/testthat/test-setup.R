@@ -9,7 +9,7 @@ test_that("error with custom model without providing predict_model",{
   # Custom model with no predict_model
   expect_snapshot(
     explain(x_train_mixed,
-            x_test_mixed,
+            x_explain_mixed,
             model_custom_lm_mixed,
             approach = "independence",
             prediction_zero = p0),
@@ -33,7 +33,7 @@ test_that("messages with missing detail in get_model_specs", {
   # Custom model with no get_model_specs
   expect_snapshot(
     explain(x_train_mixed,
-            x_test_mixed,
+            x_explain_mixed,
             model_custom_lm_mixed,
             approach = "independence",
             prediction_zero = p0,
@@ -48,7 +48,7 @@ test_that("messages with missing detail in get_model_specs", {
 
   expect_snapshot(
     explain(x_train_mixed,
-            x_test_mixed,
+            x_explain_mixed,
             model_custom_lm_mixed,
             approach = "independence",
             prediction_zero = p0,
@@ -63,7 +63,7 @@ test_that("messages with missing detail in get_model_specs", {
 
   expect_snapshot(
     explain(x_train_mixed,
-            x_test_mixed,
+            x_explain_mixed,
             model_custom_lm_mixed,
             approach = "independence",
             prediction_zero = p0,
@@ -80,7 +80,7 @@ test_that("messages with missing detail in get_model_specs", {
 
   expect_snapshot(
     explain(x_train_mixed,
-            x_test_mixed,
+            x_explain_mixed,
             model_custom_lm_mixed,
             approach = "independence",
             prediction_zero = p0,
@@ -98,7 +98,7 @@ test_that("erroneous input: `prediction_zero`", {
   p0_non_numeric_1 <- "bla"
   expect_snapshot(
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0_non_numeric_1),
@@ -109,7 +109,7 @@ test_that("erroneous input: `prediction_zero`", {
   p0_non_numeric_2 <- NULL
   expect_snapshot(
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0_non_numeric_2),
@@ -121,7 +121,7 @@ test_that("erroneous input: `prediction_zero`", {
   p0_too_long <- c(1,2)
   expect_snapshot(
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0_too_long),
@@ -132,7 +132,7 @@ test_that("erroneous input: `prediction_zero`", {
   p0_is_NA <- as.numeric(NA)
   expect_snapshot(
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0_is_NA),
@@ -148,7 +148,7 @@ test_that("erroneous input: `n_combinations`", {
   expect_snapshot({
     n_combinations_non_numeric_1 <- "bla"
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -160,7 +160,7 @@ test_that("erroneous input: `n_combinations`", {
   expect_snapshot({
     n_combinations_non_numeric_2 <- TRUE
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -173,7 +173,7 @@ test_that("erroneous input: `n_combinations`", {
   expect_snapshot({
     n_combinations_non_integer <- 10.5
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -187,7 +187,7 @@ test_that("erroneous input: `n_combinations`", {
   expect_snapshot({
     n_combinations_too_long <- c(1,2)
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -199,7 +199,7 @@ test_that("erroneous input: `n_combinations`", {
   expect_snapshot({
     n_combinations_is_NA <- as.numeric(NA)
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -211,7 +211,7 @@ test_that("erroneous input: `n_combinations`", {
   expect_snapshot({
     n_combinations_non_positive <- 0
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -229,7 +229,7 @@ test_that("erroneous input: `n_samples`", {
   expect_snapshot({
     n_samples_non_numeric_1 <- "bla"
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -241,7 +241,7 @@ test_that("erroneous input: `n_samples`", {
   expect_snapshot({
     n_samples_non_numeric_2 <- TRUE
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -253,7 +253,7 @@ test_that("erroneous input: `n_samples`", {
   expect_snapshot({
     n_samples_non_integer <- 10.5
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -265,7 +265,7 @@ test_that("erroneous input: `n_samples`", {
   expect_snapshot({
     n_samples_too_long <- c(1,2)
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -277,7 +277,7 @@ test_that("erroneous input: `n_samples`", {
   expect_snapshot({
     n_samples_is_NA <- as.numeric(NA)
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -289,7 +289,7 @@ test_that("erroneous input: `n_samples`", {
   expect_snapshot({
     n_samples_non_positive <- 0
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -307,7 +307,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot({
     n_batches_non_numeric_1 <- "bla"
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -319,7 +319,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot({
     n_batches_non_numeric_2 <- TRUE
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -331,7 +331,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot({
     n_batches_non_integer <- 10.5
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -343,7 +343,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot({
     n_batches_too_long <- c(1,2)
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -355,7 +355,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot({
     n_batches_is_NA <- as.numeric(NA)
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -367,7 +367,7 @@ test_that("erroneous input: `n_batches`", {
   expect_snapshot({
     n_batches_non_positive <- 0
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -380,7 +380,7 @@ test_that("erroneous input: `n_batches`", {
     n_combinations <- 10
     n_batches_too_large <- 11
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -400,7 +400,7 @@ test_that("erroneous input: `seed`", {
   expect_snapshot({
     seed_not_integer_interpretable <- "bla"
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -417,7 +417,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
   expect_snapshot({
     keep_samp_for_vS_non_logical_1 <- "bla"
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -429,7 +429,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
   expect_snapshot({
     keep_samp_for_vS_non_logical_2 <- NULL
     explain(x_train_numeric,
-            x_test_numeric,
+            x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
@@ -443,7 +443,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
     expect_snapshot({
       keep_samp_for_vS_too_long <- c(TRUE,FALSE)
       explain(x_train_numeric,
-              x_test_numeric,
+              x_explain_numeric,
               model_lm_numeric,
               approach = "independence",
               prediction_zero = p0,

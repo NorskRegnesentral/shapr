@@ -19,13 +19,13 @@ x_var_numeric <- c("Solar.R", "Wind", "Temp", "Month", "Day")
 x_var_mixed <- c("Solar.R", "Wind", "Temp", "Day", "Month_factor")
 
 data_train <- head(data_complete, -2)
-data_test <- tail(data_complete, 2)
+data_explain <- tail(data_complete, 2)
 
 x_train_numeric <- data_train[, ..x_var_numeric]
 x_train_mixed <- data_train[, ..x_var_mixed]
 
-x_test_numeric <- data_test[, ..x_var_numeric]
-x_test_mixed <- data_test[, ..x_var_mixed]
+x_explain_numeric <- data_explain[, ..x_var_numeric]
+x_explain_mixed <- data_explain[, ..x_var_mixed]
 
 lm_formula_numeric <- as.formula(paste0(y_var_numeric, " ~ ", paste0(x_var_numeric, collapse = " + ")))
 lm_formula_mixed <- as.formula(paste0(y_var_numeric, " ~ ", paste0(x_var_mixed, collapse = " + ")))

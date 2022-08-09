@@ -331,10 +331,10 @@ get_data <- function(x_train, x_explain) {
 
   # Check data object type
   stop_message <- ""
-  if (!is.matrix(x_train) & !is.data.frame(x_train)) {
+  if (!is.matrix(x_train) && !is.data.frame(x_train)) {
     stop_message <- paste0(stop_message,"x_train should be a matrix or a data.frame/data.table.\n")
   }
-  if (!is.matrix(x_explain) & !is.data.frame(x_explain)) {
+  if (!is.matrix(x_explain) && !is.data.frame(x_explain)) {
     stop_message <- paste0(stop_message,"x_explain should be a matrix or a data.frame/data.table.\n")
   }
   if(stop_message!=""){
