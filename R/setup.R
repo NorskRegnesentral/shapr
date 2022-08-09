@@ -271,7 +271,13 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
        n_combinations > 0)){
     stop("`n_combinations` must be NULL or a single positive integer.")
   }
-  # group is checked later
+
+  # group (checked more thoroughly later)
+  if (!is.null(group) &&
+      !is.list(group)){
+    stop("`group` must be NULL or a list")
+  }
+
   # n_samples
   if(!(is.wholenumber(n_samples) &&
        length(n_samples)==1 &&
@@ -483,7 +489,7 @@ check_groups <- function(feature_names, group) {
     stop(
       paste0(
         "The group feature(s) ", paste0(missing_group_feature, collapse = ", "), " are not\n",
-        "among the features specified by the model/data. Delete from group."
+        "among the features in the data: ",paste0(feature_names,collapse = ", "),". Delete from group."
       )
     )
   }
@@ -493,7 +499,7 @@ check_groups <- function(feature_names, group) {
     missing_features <- feature_names[!(feature_names %in% group_features)]
     stop(
       paste0(
-        "The feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
+        "The data feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
         "belong to one of the groups. Add to a group."
       )
     )

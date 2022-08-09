@@ -392,3 +392,54 @@
     Error <simpleError>
       `get_model_specs` must be NULL, NA or a function.
 
+# erroneous input: `group`
+
+    Code
+      group_non_list <- "bla"
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, group = group_non_list)
+    Error <simpleError>
+      `group` must be NULL or a list
+
+---
+
+    Code
+      group_with_non_characters <- list(A = 1, B = 2)
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, group = group_with_non_characters)
+    Error <simpleError>
+      All components of group should be a character.
+
+---
+
+    Code
+      group_with_non_data_features <- list(A = c("Solar.R", "Wind",
+        "not_a_data_feature"), B = c("Temp", "Month", "Day"))
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, group = group_with_non_data_features)
+    Error <simpleError>
+      The group feature(s) not_a_data_feature are not
+      among the features in the data: Solar.R, Wind, Temp, Month, Day. Delete from group.
+
+---
+
+    Code
+      group_with_missing_data_features <- list(A = c("Solar.R"), B = c("Temp",
+        "Month", "Day"))
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, group = group_with_missing_data_features)
+    Error <simpleError>
+      The data feature(s) Wind do not
+      belong to one of the groups. Add to a group.
+
+---
+
+    Code
+      group_with_duplicated_data_features <- list(A = c("Solar.R", "Solar.R", "Wind"),
+      B = c("Temp", "Month", "Day"))
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, group = group_with_duplicated_data_features)
+    Error <simpleError>
+      Feature(s) Solar.R are found in more than one group or multiple times per group.
+      Make sure each feature is only represented in one group, and only once.
+

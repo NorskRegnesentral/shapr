@@ -562,3 +562,72 @@ test_that("erroneous input: `get_model_specs`", {
   error = T)
 
 })
+
+test_that("erroneous input: `group`", {
+  set.seed(123)
+
+  # not a list
+  expect_snapshot({
+    group_non_list <- "bla"
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = group_non_list)
+  },
+  error = T)
+
+  # non-characters in list
+  expect_snapshot({
+    group_with_non_characters <- list(A=1,B=2)
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = group_with_non_characters)
+  },
+  error = T)
+
+  # group features not in data
+  expect_snapshot({
+    group_with_non_data_features <- list(A=c("Solar.R","Wind","not_a_data_feature"),
+                                    B=c("Temp", "Month", "Day"))
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = group_with_non_data_features)
+  },
+  error = T)
+
+  # missing feature in group
+  expect_snapshot({
+    group_with_missing_data_features <- list(A=c("Solar.R"),
+                                         B=c("Temp", "Month", "Day"))
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = group_with_missing_data_features)
+  },
+  error = T)
+
+  # missing feature in group
+  expect_snapshot({
+    group_with_duplicated_data_features <- list(A=c("Solar.R","Solar.R","Wind"),
+                                             B=c("Temp", "Month", "Day"))
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = group_with_duplicated_data_features)
+  },
+  error = T)
+
+
+})
