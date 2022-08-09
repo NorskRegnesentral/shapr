@@ -631,3 +631,42 @@ test_that("erroneous input: `group`", {
 
 
 })
+
+test_that("erroneous input: `approach`", {
+  set.seed(123)
+
+  # not a character (vector)
+  expect_snapshot({
+    approach_non_character <- 1
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = approach_non_character,
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # incorrect length
+  expect_snapshot({
+    approach_incorrect_length <- c("empirical","gaussian")
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = approach_incorrect_length,
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # incorrect character
+  expect_snapshot({
+    approach_incorrect_character <- "bla"
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = approach_incorrect_character,
+            prediction_zero = p0)
+  },
+  error = T)
+
+
+})

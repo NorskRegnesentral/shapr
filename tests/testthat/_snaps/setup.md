@@ -443,3 +443,36 @@
       Feature(s) Solar.R are found in more than one group or multiple times per group.
       Make sure each feature is only represented in one group, and only once.
 
+# erroneous input: `approach`
+
+    Code
+      approach_non_character <- 1
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = approach_non_character, prediction_zero = p0)
+    Error <simpleError>
+      `approach` must be one of the following: 
+       copula, ctree, empirical, gaussian, independence 
+       or a vector of length equal to the number of features ( 5 ) with only the above strings.
+
+---
+
+    Code
+      approach_incorrect_length <- c("empirical", "gaussian")
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = approach_incorrect_length, prediction_zero = p0)
+    Error <simpleError>
+      `approach` must be one of the following: 
+       copula, ctree, empirical, gaussian, independence 
+       or a vector of length equal to the number of features ( 5 ) with only the above strings.
+
+---
+
+    Code
+      approach_incorrect_character <- "bla"
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = approach_incorrect_character, prediction_zero = p0)
+    Error <simpleError>
+      `approach` must be one of the following: 
+       copula, ctree, empirical, gaussian, independence 
+       or a vector of length equal to the number of features ( 5 ) with only the above strings.
+

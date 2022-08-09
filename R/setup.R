@@ -527,7 +527,6 @@ check_approach <- function(internal) {
   supported_models <- get_supported_approaches()
 
   if (!(is.character(approach)&&
-        is.vector(approach) &&
         (length(approach) == 1 | length(approach) == n_features) &&
         all(is.element(approach, supported_models)))
   ) {
