@@ -140,3 +140,84 @@ test_that("incorrect input: `prediction_zero` gives the correct error", {
   )
 
 })
+
+test_that("incorrect input: `n_combinations` gives the correct error", {
+  set.seed(123)
+
+  # non-numeric 1
+  expect_snapshot({
+    n_combinations_non_numeric_1 <- "bla"
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            n_combinations = n_combinations_non_numeric_1)
+    },
+    error = T)
+
+  # non-numeric 2
+  expect_snapshot({
+    n_combinations_non_numeric_2 <- TRUE
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            n_combinations = n_combinations_non_numeric_2)
+  },
+  error = T)
+
+
+  # non-integer
+  expect_snapshot({
+    n_combinations_non_integer <- 10.5
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            n_combinations = n_combinations_non_integer)
+  },
+  error = T)
+
+
+
+  # length > 1
+  expect_snapshot({
+    n_combinations_too_long <- c(1,2)
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            n_combinations = n_combinations_too_long)
+  },
+  error = T)
+
+  # NA-numeric
+  expect_snapshot({
+    n_combinations_is_NA <- as.numeric(NA)
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            n_combinations = n_combinations_is_NA)
+  },
+  error = T)
+
+  # Non-positive
+  expect_snapshot({
+    n_combinations_non_positive <- 0
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            n_combinations = n_combinations_non_positive)
+  },
+  error = T)
+
+
+})
