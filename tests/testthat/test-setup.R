@@ -409,7 +409,6 @@ test_that("erroneous input: `seed`", {
   error = T)
 })
 
-
 test_that("erroneous input: `keep_samp_for_vS`", {
   set.seed(123)
 
@@ -453,3 +452,66 @@ test_that("erroneous input: `keep_samp_for_vS`", {
   })
 })
 
+test_that("erroneous input: `x_train/x_explain`", {
+  set.seed(123)
+
+  # not matrix or data.table 1
+  expect_snapshot({
+    x_train_wrong_format <- c(a=1,b=2)
+    explain(x_train = x_train_wrong_format,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # not matrix or data.table 2
+  expect_snapshot({
+    x_explain_wrong_format <- c(a=1,b=2)
+    explain(x_train = x_explain_numeric,
+            x_explain = x_explain_wrong_format,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # not matrix or data.table 3
+  expect_snapshot({
+    x_train_wrong_format <- c(a=1,b=2)
+    x_explain_wrong_format <- c(a=3,b=4)
+    explain(x_train = x_train_wrong_format,
+            x_explain = x_explain_wrong_format,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+
+  # missing column names x_train
+  expect_snapshot({
+    x_train_no_column_names <- as.data.frame(x_train_numeric)
+    names(x_train_no_column_names) <- NULL
+    explain(x_train = x_train_no_column_names,
+            x_explain = x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # missing column names x_explain
+  expect_snapshot({
+    x_explain_no_column_names <- as.data.frame(x_explain_numeric)
+    names(x_explain_no_column_names) <- NULL
+    explain(x_train = x_train_numeric,
+            x_explain = x_explain_no_column_names,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+  })

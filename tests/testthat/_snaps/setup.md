@@ -314,3 +314,52 @@
           prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
       }, error = T)
 
+# erroneous input: `x_train/x_explain`
+
+    Code
+      x_train_wrong_format <- c(a = 1, b = 2)
+      explain(x_train = x_train_wrong_format, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_train should be a matrix or a data.frame/data.table.
+
+---
+
+    Code
+      x_explain_wrong_format <- c(a = 1, b = 2)
+      explain(x_train = x_explain_numeric, x_explain = x_explain_wrong_format,
+        model_lm_numeric, approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_explain should be a matrix or a data.frame/data.table.
+
+---
+
+    Code
+      x_train_wrong_format <- c(a = 1, b = 2)
+      x_explain_wrong_format <- c(a = 3, b = 4)
+      explain(x_train = x_train_wrong_format, x_explain = x_explain_wrong_format,
+        model_lm_numeric, approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_train should be a matrix or a data.frame/data.table.
+      x_explain should be a matrix or a data.frame/data.table.
+
+---
+
+    Code
+      x_train_no_column_names <- as.data.frame(x_train_numeric)
+      names(x_train_no_column_names) <- NULL
+      explain(x_train = x_train_no_column_names, x_explain = x_explain_numeric,
+        model_lm_numeric, approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_train misses column names.
+
+---
+
+    Code
+      x_explain_no_column_names <- as.data.frame(x_explain_numeric)
+      names(x_explain_no_column_names) <- NULL
+      explain(x_train = x_train_numeric, x_explain = x_explain_no_column_names,
+        model_lm_numeric, approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_explain misses column names.
+
