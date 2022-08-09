@@ -90,3 +90,53 @@ test_that("messages with missing detail in get_model_specs", {
 
 
 })
+
+test_that("incorrect input: `prediction_zero` gives the correct error", {
+  set.seed(123)
+
+  # non-numeric 1
+  p0_non_numeric_1 <- "bla"
+  expect_snapshot(
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0_non_numeric_1),
+    error = T
+  )
+
+  # non-numeric 2
+  p0_non_numeric_2 <- NULL
+  expect_snapshot(
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0_non_numeric_2),
+    error = T
+  )
+
+
+  # length > 1
+  p0_too_long <- c(1,2)
+  expect_snapshot(
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0_too_long),
+    error = T
+  )
+
+  # NA-numeric
+  p0_is_NA <- as.numeric(NA)
+  expect_snapshot(
+    explain(x_train_numeric,
+            x_test_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0_is_NA),
+    error = T
+  )
+
+})

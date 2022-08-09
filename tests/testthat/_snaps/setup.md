@@ -63,3 +63,35 @@
       1: 40.752  4.48359 18.4777 12.316 -3.4762     -0.21431
       2: 40.752 -0.85689  9.7603 25.769 -3.4762      9.40306
 
+# incorrect input: `prediction_zero` gives the correct error
+
+    Code
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0_non_numeric_1)
+    Error <simpleError>
+      `prediction_zero` must be a single numeric.
+
+---
+
+    Code
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0_non_numeric_2)
+    Error <simpleError>
+      `prediction_zero` must be a single numeric.
+
+---
+
+    Code
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0_too_long)
+    Error <simpleError>
+      `prediction_zero` must be a single numeric.
+
+---
+
+    Code
+      explain(x_train_numeric, x_test_numeric, model_lm_numeric, approach = "independence",
+        prediction_zero = p0_is_NA)
+    Error <simpleError>
+      `prediction_zero` must be a single numeric.
+
