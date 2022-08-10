@@ -2,7 +2,7 @@
 
 #' check_setup
 #' @inheritParams explain
-#' @param ignore_model Whether to ignore any checking related to model.
+#' @param is_python Whether to ignore any checking related to model.
 #' @export
 setup <- function(x_train,
                   x_explain,
@@ -17,7 +17,7 @@ setup <- function(x_train,
                   keep_samp_for_vS,
                   predict_model,
                   get_model_specs,
-                  ignore_model = FALSE, ...) {
+                  is_python = FALSE, ...) {
   internal <- list()
 
   internal$parameters <- get_parameters(
@@ -29,7 +29,7 @@ setup <- function(x_train,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    ignore_model = ignore_model, ...
+    is_python = is_python, ...
   )
 
   internal$data <- get_data(
@@ -41,7 +41,7 @@ setup <- function(x_train,
     predict_model,
     get_model_specs,
     model = model,
-    ignore_model = internal$parameters$ignore_model
+    is_python = internal$parameters$is_python
   )
 
   internal$objects <- get_objects(
@@ -254,7 +254,7 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, ignore_model = FALSE, ...) {
+                           n_batches, seed, keep_samp_for_vS, is_python = FALSE, ...) {
 
   # Check input type for approach
 
@@ -313,20 +313,20 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    ignore_model = ignore_model
+    is_python = is_python
   )
 
   # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
 
-  # Setting ignore_model to FALSE if not provided by
+  # Setting is_python to FALSE if not provided by
   # and checking its type
-  if (is.null(ignore_model)) {
-    parameters$ignore_model <- FALSE
+  if (is.null(is_python)) {
+    parameters$is_python <- FALSE
   } else {
-    if(!(is.logical(ignore_model) &&
-         length(ignore_model)==1)){
-      stop("`ignore_model` must be NULL or a single logical.")
+    if(!(is.logical(is_python) &&
+         length(is_python)==1)){
+      stop("`is_python` must be NULL or a single logical.")
     }
   }
 
@@ -369,7 +369,7 @@ get_data <- function(x_train, x_explain) {
   )
 }
 
-get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
+get_funcs <- function(predict_model, get_model_specs, model, is_python) {
   model_class <- NULL # due to NSE
 
   class <- class(model)
@@ -393,7 +393,7 @@ get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
 
   supported_models <- get_supported_models()
 
-  if (!ignore_model) {
+  if (!is_python) {
     if (is.null(funcs$predict_model)) {
       # Get internal definition of predict_model if exists
       native_func_available <- supported_models[predict_model == TRUE, class %in% model_class]

@@ -5,12 +5,12 @@
 #' @keywords internal
 check_model <- function(internal, model) {
 
-  ignore_model <- internal$parameters$ignore_model
+  is_python <- internal$parameters$is_python
   x_train <- internal$data$x_train
   predict_model <- internal$funcs$predict_model
 
-  if(ignore_model){
-    stop("`ignore_model=TRUE` is only allowed in the Python wrapper of the shapr package.")
+  if(is_python){
+    stop("`is_python=TRUE` is only allowed in the Python wrapper of the shapr package.")
   }
 
   if(is.null(model)){

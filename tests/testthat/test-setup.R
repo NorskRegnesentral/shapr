@@ -180,7 +180,7 @@ test_that("erroneous input: `x_train/x_explain`", {
 
 })
 
-test_that("erroneous input: `model/ignore_model`", {
+test_that("erroneous input: `model/is_python`", {
   set.seed(123)
 
   expect_snapshot({
@@ -196,15 +196,15 @@ test_that("erroneous input: `model/ignore_model`", {
   error = T)
 
   expect_snapshot({
-    # ignore_model is TRUE
-    ignore_model_TRUE <- TRUE
+    # is_python is TRUE
+    is_python_TRUE <- TRUE
 
     explain(x_train = x_train_numeric,
             x_explain = x_explain_numeric,
             model = model_lm_numeric,
             approach = "independence",
             prediction_zero = p0,
-            ignore_model = ignore_model_TRUE
+            is_python = is_python_TRUE
     )
   },
   error = T)

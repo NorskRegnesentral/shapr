@@ -23,8 +23,8 @@ model <- xgboost(
 
 # Prepare the data for explanation
 explainer <- shapr(x_train,model)
-explainer2 <- shapr(x_train,model,ignore_model=T)
-explainer3 <- shapr(x_train,ignore_model=T)
+explainer2 <- shapr(x_train,model,is_python=T)
+explainer3 <- shapr(x_train,is_python=T)
 
 
 # Specifying the phi_0, i.e. the expected prediction without any features

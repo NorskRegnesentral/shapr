@@ -20,7 +20,7 @@ setup_approach.empirical <- function(internal,
     ))
   }
 
-  if (internal$parameters$type %in% c("AICc_each_k", "AICc_full") & internal$parameters$ignore_model == TRUE) {
+  if (internal$parameters$type %in% c("AICc_each_k", "AICc_full") & internal$parameters$is_python == TRUE) {
     stop(paste0(
       "Using type = ", internal$parameters$type, " for approach = 'empirical' is not available in Python.\n",
     ))
