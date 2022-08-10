@@ -18,14 +18,23 @@ check_model <- function(internal, model) {
   }
 
   x <- head(x_train, 2)
-  tmp <- predict_model(model, x)
+  tmp <- tryCatch(predict_model(model, x),error = errorfun)
+  if(class(tmp)=="error"){
+    stop(paste0("The predict_model function of class `", class(model), "` is invalid.\n",
+                "See the 'Advanced usage' section of the vignette:\n",
+                "vignette('understanding_shapr', package = 'shapr')\n",
+                "for more information on running shapr with custom models.\n",
+                "A basic function test threw the following error:\n",as.character(tmp[[1]])))
+  }
+
   if (!(all(is.numeric(tmp)) &&
         length(tmp) == 2)) {
     stop(
       paste0(
-        "The predict_model function of class ", class(model), " is invalid.\n",
+        "The predict_model function of class `", class(model),
+        "` does not return a numeric output of the desired length.\n",
         "See the 'Advanced usage' section of the vignette:\n",
-        "vignette('understanding_shapr', package = 'shapr')\n",
+        "vignette('understanding_shapr', package = 'shapr')\n\n",
         "for more information on running shapr with custom models.\n"
       )
     )

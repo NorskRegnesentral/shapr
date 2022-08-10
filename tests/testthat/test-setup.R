@@ -544,6 +544,55 @@ test_that("erroneous input: `predict_model`", {
   },
   error = T)
 
+  # non-numeric output
+  expect_snapshot({
+    predict_model_non_numeric_output <- function(model,x){"bla"}
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            predict_model = predict_model_non_numeric_output)
+  },
+  error = T)
+
+  # incorrect output length
+  expect_snapshot({
+    predict_model_incorrect_output_length <- function(model,x){rep(1,nrow(x)+1)}
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            predict_model = predict_model_incorrect_output_length)
+  },
+  error = T)
+
+  # invalid function format
+  expect_snapshot({
+    predict_model_invalid_argument <- function(model){rep(1,nrow(x))}
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            predict_model = predict_model_invalid_argument)
+  },
+  error = T)
+
+  # error within function
+  expect_snapshot({
+    predict_model_error <- function(model,x){1+"bla"}
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            predict_model = predict_model_error)
+  },
+  error = T)
+
+
 })
 
 test_that("erroneous input: `get_model_specs`", {
@@ -665,6 +714,36 @@ test_that("erroneous input: `approach`", {
             model_lm_numeric,
             approach = approach_incorrect_character,
             prediction_zero = p0)
+  },
+  error = T)
+
+
+})
+
+test_that("erroneous input: `model/ignore_model`", {
+  set.seed(123)
+
+  # model is NULL
+  expect_snapshot({
+    model_NULL <- NULL
+    explain(x_train = x_train_numeric,
+            x_explain = x_explain_numeric,
+            model = model_NULL,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # ignore_model is TRUE
+  expect_snapshot({
+    ignore_model_TRUE <- TRUE
+    explain(x_train = x_train_numeric,
+            x_explain = x_explain_numeric,
+            model = model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            ignore_model = ignore_model_TRUE
+            )
   },
   error = T)
 
