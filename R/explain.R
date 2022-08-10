@@ -234,7 +234,7 @@
 #'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 explain <- function(x_train,
                     x_explain,
-                    model = NULL,
+                    model,
                     approach,
                     prediction_zero,
                     n_combinations = NULL,
@@ -249,11 +249,12 @@ explain <- function(x_train,
 
   set.seed(seed)
 
+  model_objects <- model_setup_R(predict_model, get_model_specs, model)
+
   # Sets up input parameters, data and preprocess the data if needed
   internal <- setup(
     x_train = x_train,
     x_explain = x_explain,
-    model = model,
     approach = approach,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
@@ -262,12 +263,11 @@ explain <- function(x_train,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    predict_model = predict_model,
-    get_model_specs = get_model_specs, ...
+    model_objects = model_objects, ...
   )
 
   # Tests that the model predicts as intended
-  check_model(internal, model)
+  check_prediction_R(internal, model)
 
   # Check the approach (to be moved to check_setup later), setting up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach

@@ -6,7 +6,6 @@
 #' @export
 setup <- function(x_train,
                   x_explain,
-                  model,
                   approach,
                   prediction_zero,
                   n_combinations,
@@ -15,8 +14,7 @@ setup <- function(x_train,
                   n_batches,
                   seed,
                   keep_samp_for_vS,
-                  predict_model,
-                  get_model_specs,
+                  model_objects,
                   is_python = FALSE, ...) {
   internal <- list()
 
@@ -37,17 +35,7 @@ setup <- function(x_train,
     x_explain
     )
 
-  internal$funcs <- get_funcs(
-    predict_model,
-    get_model_specs,
-    model = model,
-    is_python = internal$parameters$is_python
-  )
-
-  internal$objects <- get_objects(
-    internal$funcs$get_model_specs,
-    model
-  )
+  internal$model_objects <- model_objects
 
   check_data(internal)
 
@@ -97,20 +85,6 @@ check_n_batches <- function(internal){
 }
 
 
-#' @keywords internal
-get_objects <- function(get_model_specs,model){
-
-  objects <- list()
-
-  # Extracting model specs from model
-  if (is.function(get_model_specs)) {
-    objects$feature_specs <- get_model_specs(model)
-  } else {
-    objects$feature_specs <- NULL
-  }
-
-  return(objects)
-}
 
 
 
@@ -121,7 +95,7 @@ check_data <- function(internal){
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
-  model_feature_specs <- internal$objects$feature_specs
+  model_feature_specs <- internal$model_objects$feature_specs
 
   x_train_feature_specs <- get_data_specs(x_train)
   x_explain_feature_specs <- get_data_specs(x_explain)
@@ -254,7 +228,7 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, is_python = FALSE, ...) {
+                           n_batches, seed, keep_samp_for_vS, is_python, ...) {
 
   # Check input type for approach
 
@@ -369,56 +343,6 @@ get_data <- function(x_train, x_explain) {
   )
 }
 
-get_funcs <- function(predict_model, get_model_specs, model, is_python) {
-  model_class <- NULL # due to NSE
-
-  class <- class(model)
-
-  # predict_model
-  if(!(is.function(predict_model)) &&
-     !(is.null(predict_model))){
-    stop("`predict_model` must be NULL or a function.")
-  }
-  # get_model_specs
-  if(!is.function(get_model_specs) &&
-     !is.null(get_model_specs) &&
-     !is.na(get_model_specs)){
-    stop("`get_model_specs` must be NULL, NA or a function.") # NA is used to avoid using internally defined get_model_specs where this is defined and not valid for the specified model
-  }
-
-  funcs <- list(
-    predict_model = predict_model,
-    get_model_specs = get_model_specs
-  )
-
-  supported_models <- get_supported_models()
-
-  if (!is_python) {
-    if (is.null(funcs$predict_model)) {
-      # Get internal definition of predict_model if exists
-      native_func_available <- supported_models[predict_model == TRUE, class %in% model_class]
-      if (native_func_available) {
-        funcs$predict_model <- get(paste0("predict_model.", class))
-      } else {
-        stop(
-          "You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' ",
-          "function to explain().\n",
-          "See ?shapr::explain or the vignette for more information on how to run shapr with custom models."
-        )
-      }
-    }
-
-    if (is.null(funcs$get_model_specs)) {
-      # Get internal definition of get_model_specs if exists
-      native_func_available <- supported_models[get_model_specs == TRUE, class %in% model_class]
-      if (native_func_available) {
-        funcs$get_model_specs <- get(paste0("get_model_specs.", class))
-      }
-    }
-  }
-
-  return(funcs)
-}
 
 
 

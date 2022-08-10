@@ -5,16 +5,14 @@
 #' @keywords internal
 check_prediction_R <- function(internal, model) {
 
-  is_python <- internal$parameters$is_python # TODO: Remove?
+  is_python <- internal$parameters$is_python
   x_train <- internal$data$x_train
   predict_model <- internal$funcs$predict_model
 
-  # TODO: Remove?
   if(is_python){
     stop("`is_python=TRUE` is only allowed in the Python wrapper of the shapr package.")
   }
 
-  # TODO: Move to setup_model_R?
   if(is.null(model)){
     stop("Argument `model` is missing.")
   }
