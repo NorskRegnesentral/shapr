@@ -15,7 +15,8 @@ setup <- function(x_train,
                   seed,
                   keep_samp_for_vS,
                   predict_model,
-                  get_model_specs, ...) {
+                  get_model_specs,
+                  ignore_model = FALSE, ...) {
   internal <- list()
 
   internal$parameters <- get_parameters(
@@ -26,7 +27,8 @@ setup <- function(x_train,
     n_samples = n_samples,
     n_batches = n_batches,
     seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS, ...
+    keep_samp_for_vS = keep_samp_for_vS,
+    ignore_mode = ignore_model, ...
   )
 
   internal$data <- get_data(
@@ -251,7 +253,7 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, ...) {
+                           n_batches, seed, keep_samp_for_vS, ignore_model = FALSE, ...) {
 
   # Check input type for approach
 
@@ -309,7 +311,8 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     n_samples = n_samples,
     n_batches = n_batches,
     seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS
+    keep_samp_for_vS = keep_samp_for_vS,
+    ignore_model = ignore_model
   )
 
   # Getting additional parameters from ...
@@ -317,7 +320,6 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
 
   # Setting ignore_model to FALSE if not provided by
   # and checking its type
-  ignore_model <- parameters$ignore_model
   if (is.null(ignore_model)) {
     parameters$ignore_model <- FALSE
   } else {

@@ -18,6 +18,7 @@ setup(
   keep_samp_for_vS,
   predict_model,
   get_model_specs,
+  ignore_model = FALSE,
   ...
 )
 }
