@@ -315,11 +315,12 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
   # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
 
-  # Setting ignore_model to FALSE if not provided by ...
-  if (is.null(parameters$ignore_model)) {
+  # Setting ignore_model to FALSE if not provided by
+  # and checking its type
+  ignore_model <- parameters$ignore_model
+  if (is.null(ignore_model)) {
     parameters$ignore_model <- FALSE
   } else {
-    # ignore_model
     if(!(is.logical(ignore_model) &&
          length(ignore_model)==1)){
       stop("`ignore_model` must be NULL or a single logical.")

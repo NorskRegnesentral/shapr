@@ -151,8 +151,12 @@
       ignore_model_TRUE <- TRUE
       explain(x_train = x_train_numeric, x_explain = x_explain_numeric, model = model_lm_numeric,
         approach = "independence", prediction_zero = p0, ignore_model = ignore_model_TRUE)
+    Message <simpleMessage>
+      Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
+      Consistency checks between model and data is therefore disabled.
+      
     Error <simpleError>
-      object 'ignore_model' not found
+      `ignore_model=TRUE` is only allowed in the Python wrapper of the shapr package.
 
 # erroneous input: `approach`
 
