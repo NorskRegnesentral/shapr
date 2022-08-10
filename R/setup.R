@@ -2,6 +2,7 @@
 
 #' check_setup
 #' @inheritParams explain
+#' @param ignore_model Whether to ignore any checking related to model.
 #' @export
 setup <- function(x_train,
                   x_explain,
