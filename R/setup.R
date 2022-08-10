@@ -528,15 +528,15 @@ check_approach <- function(internal) {
 
   approach <- internal$parameters$approach
   n_features <- internal$parameters$n_features
-  supported_models <- get_supported_approaches()
+  supported_approaches <- get_supported_approaches()
 
   if (!(is.character(approach)&&
         (length(approach) == 1 | length(approach) == n_features) &&
-        all(is.element(approach, supported_models)))
+        all(is.element(approach, supported_approaches)))
   ) {
     stop(
       paste(
-        "`approach` must be one of the following: \n", paste0(supported_models, collapse = ", "), "\n",
+        "`approach` must be one of the following: \n", paste0(supported_approaches, collapse = ", "), "\n",
         "or a vector of length equal to the number of features (",n_features,") with only the above strings."
       )
     )
