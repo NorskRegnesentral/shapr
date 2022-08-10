@@ -28,7 +28,7 @@ setup <- function(x_train,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    ignore_mode = ignore_model, ...
+    ignore_model = ignore_model, ...
   )
 
   internal$data <- get_data(
