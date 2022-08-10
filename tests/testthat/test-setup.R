@@ -3,16 +3,19 @@
 test_that("error with custom model without providing predict_model",{
   set.seed(123)
 
-  model_custom_lm_mixed <- model_lm_mixed
-  class(model_custom_lm_mixed) <- "whatever"
 
-  # Custom model with no predict_model
-  expect_snapshot(
+  expect_snapshot({
+    # Custom model with no predict_model
+
+    model_custom_lm_mixed <- model_lm_mixed
+    class(model_custom_lm_mixed) <- "whatever"
+
     explain(x_train_mixed,
             x_explain_mixed,
             model_custom_lm_mixed,
             approach = "independence",
-            prediction_zero = p0),
+            prediction_zero = p0)
+    },
     error = T
   )
 
@@ -30,8 +33,8 @@ test_that("messages with missing detail in get_model_specs", {
     return(as.vector(beta %*% t(X)))
   }
 
-  # Custom model with no get_model_specs
-  expect_snapshot(
+  expect_snapshot({
+    # Custom model with no get_model_specs
     explain(x_train_mixed,
             x_explain_mixed,
             model_custom_lm_mixed,
@@ -39,14 +42,15 @@ test_that("messages with missing detail in get_model_specs", {
             prediction_zero = p0,
             predict_model = custom_predict_model,
             get_model_specs = NA)
-  )
+  })
 
-  # Custom model where get_model_specs gives NA-labels
-  custom_get_model_specs_no_labels <- function(x){
-    feature_specs <- list(labels = NA, classes = NA, factor_levels = NA)
-  }
 
-  expect_snapshot(
+  expect_snapshot({
+    # Custom model where get_model_specs gives NA-labels
+    custom_get_model_specs_no_labels <- function(x){
+      feature_specs <- list(labels = NA, classes = NA, factor_levels = NA)
+    }
+
     explain(x_train_mixed,
             x_explain_mixed,
             model_custom_lm_mixed,
@@ -54,14 +58,15 @@ test_that("messages with missing detail in get_model_specs", {
             prediction_zero = p0,
             predict_model = custom_predict_model,
             get_model_specs = custom_get_model_specs_no_labels)
-  )
+  })
 
-  # Custom model where get_model_specs gives NA-classes
-  custom_get_model_specs_no_classes <- function(x){
-    feature_specs <- list(labels = labels(x$terms), classes = NA, factor_levels = NA)
-  }
 
-  expect_snapshot(
+  expect_snapshot({
+    # Custom model where get_model_specs gives NA-classes
+    custom_get_model_specs_no_classes <- function(x){
+      feature_specs <- list(labels = labels(x$terms), classes = NA, factor_levels = NA)
+    }
+
     explain(x_train_mixed,
             x_explain_mixed,
             model_custom_lm_mixed,
@@ -69,16 +74,17 @@ test_that("messages with missing detail in get_model_specs", {
             prediction_zero = p0,
             predict_model = custom_predict_model,
             get_model_specs = custom_get_model_specs_no_classes)
-  )
+  })
 
-  # Custom model where get_model_specs gives NA-factor levels
-  custom_get_model_specs_no_factor_levels <- function(x){
-    feature_specs <- list(labels = labels(x$terms),
-                          classes = attr(x$terms, "dataClasses")[-1],
-                          factor_levels = NA)
+
+  expect_snapshot({
+    # Custom model where get_model_specs gives NA-factor levels
+    custom_get_model_specs_no_factor_levels <- function(x){
+      feature_specs <- list(labels = labels(x$terms),
+                            classes = attr(x$terms, "dataClasses")[-1],
+                            factor_levels = NA)
     }
 
-  expect_snapshot(
     explain(x_train_mixed,
             x_explain_mixed,
             model_custom_lm_mixed,
@@ -86,7 +92,7 @@ test_that("messages with missing detail in get_model_specs", {
             prediction_zero = p0,
             predict_model = custom_predict_model,
             get_model_specs = custom_get_model_specs_no_factor_levels)
-  )
+  })
 
 
 })
@@ -94,9 +100,10 @@ test_that("messages with missing detail in get_model_specs", {
 test_that("erroneous input: `x_train/x_explain`", {
   set.seed(123)
 
-  # not matrix or data.table 1
   expect_snapshot({
+    # not matrix or data.table 1
     x_train_wrong_format <- c(a=1,b=2)
+
     explain(x_train = x_train_wrong_format,
             x_explain_numeric,
             model_lm_numeric,
@@ -105,9 +112,10 @@ test_that("erroneous input: `x_train/x_explain`", {
   },
   error = T)
 
-  # not matrix or data.table 2
   expect_snapshot({
+    # not matrix or data.table 2
     x_explain_wrong_format <- c(a=1,b=2)
+
     explain(x_train = x_explain_numeric,
             x_explain = x_explain_wrong_format,
             model_lm_numeric,
@@ -116,10 +124,11 @@ test_that("erroneous input: `x_train/x_explain`", {
   },
   error = T)
 
-  # not matrix or data.table 3
   expect_snapshot({
+    # not matrix or data.table 3
     x_train_wrong_format <- c(a=1,b=2)
     x_explain_wrong_format <- c(a=3,b=4)
+
     explain(x_train = x_train_wrong_format,
             x_explain = x_explain_wrong_format,
             model_lm_numeric,
@@ -129,10 +138,11 @@ test_that("erroneous input: `x_train/x_explain`", {
   error = T)
 
 
-  # missing column names x_train
   expect_snapshot({
+    # missing column names x_train
     x_train_no_column_names <- as.data.frame(x_train_numeric)
     names(x_train_no_column_names) <- NULL
+
     explain(x_train = x_train_no_column_names,
             x_explain = x_explain_numeric,
             model_lm_numeric,
@@ -141,10 +151,11 @@ test_that("erroneous input: `x_train/x_explain`", {
   },
   error = T)
 
-  # missing column names x_explain
   expect_snapshot({
+    # missing column names x_explain
     x_explain_no_column_names <- as.data.frame(x_explain_numeric)
     names(x_explain_no_column_names) <- NULL
+
     explain(x_train = x_train_numeric,
             x_explain = x_explain_no_column_names,
             model_lm_numeric,
@@ -153,11 +164,12 @@ test_that("erroneous input: `x_train/x_explain`", {
   },
   error = T)
 
-  # missing column names in both x_train and x_explain
   expect_snapshot({
+    # missing column names in both x_train and x_explain
     x_train_no_column_names <- as.data.frame(x_train_numeric)
     x_explain_no_column_names <- as.data.frame(x_explain_numeric)
     names(x_explain_no_column_names) <- NULL
+
     explain(x_train = x_train_no_column_names,
             x_explain = x_explain_no_column_names,
             model_lm_numeric,
@@ -171,9 +183,10 @@ test_that("erroneous input: `x_train/x_explain`", {
 test_that("erroneous input: `model/ignore_model`", {
   set.seed(123)
 
-  # model is NULL
   expect_snapshot({
+    # model is NULL
     model_NULL <- NULL
+
     explain(x_train = x_train_numeric,
             x_explain = x_explain_numeric,
             model = model_NULL,
@@ -182,9 +195,10 @@ test_that("erroneous input: `model/ignore_model`", {
   },
   error = T)
 
-  # ignore_model is TRUE
   expect_snapshot({
+    # ignore_model is TRUE
     ignore_model_TRUE <- TRUE
+
     explain(x_train = x_train_numeric,
             x_explain = x_explain_numeric,
             model = model_lm_numeric,
@@ -201,9 +215,10 @@ test_that("erroneous input: `model/ignore_model`", {
 test_that("erroneous input: `approach`", {
   set.seed(123)
 
-  # not a character (vector)
   expect_snapshot({
+    # not a character (vector)
     approach_non_character <- 1
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -212,9 +227,10 @@ test_that("erroneous input: `approach`", {
   },
   error = T)
 
-  # incorrect length
   expect_snapshot({
+    # incorrect length
     approach_incorrect_length <- c("empirical","gaussian")
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -223,9 +239,10 @@ test_that("erroneous input: `approach`", {
   },
   error = T)
 
-  # incorrect character
   expect_snapshot({
+    # incorrect character
     approach_incorrect_character <- "bla"
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -240,59 +257,64 @@ test_that("erroneous input: `approach`", {
 test_that("erroneous input: `prediction_zero`", {
   set.seed(123)
 
-  # non-numeric 1
-  p0_non_numeric_1 <- "bla"
-  expect_snapshot(
+  expect_snapshot({
+    # non-numeric 1
+    p0_non_numeric_1 <- "bla"
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
-            prediction_zero = p0_non_numeric_1),
-    error = T
-  )
+            prediction_zero = p0_non_numeric_1)
+    },
+    error = T)
 
-  # non-numeric 2
-  p0_non_numeric_2 <- NULL
-  expect_snapshot(
+  expect_snapshot({
+    # non-numeric 2
+    p0_non_numeric_2 <- NULL
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
-            prediction_zero = p0_non_numeric_2),
-    error = T
-  )
+            prediction_zero = p0_non_numeric_2)
+    },
+    error = T)
 
 
-  # length > 1
-  p0_too_long <- c(1,2)
-  expect_snapshot(
+  expect_snapshot({
+    # length > 1
+    p0_too_long <- c(1,2)
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
-            prediction_zero = p0_too_long),
-    error = T
-  )
+            prediction_zero = p0_too_long)
+    },
+    error = T)
 
-  # NA-numeric
-  p0_is_NA <- as.numeric(NA)
-  expect_snapshot(
+  expect_snapshot({
+    # NA-numeric
+    p0_is_NA <- as.numeric(NA)
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
             approach = "independence",
-            prediction_zero = p0_is_NA),
-    error = T
-  )
+            prediction_zero = p0_is_NA)
+  },
+    error = T)
 
 })
 
 test_that("erroneous input: `n_combinations`", {
   set.seed(123)
 
-  # non-numeric 1
   expect_snapshot({
+    # non-numeric 1
     n_combinations_non_numeric_1 <- "bla"
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -302,9 +324,10 @@ test_that("erroneous input: `n_combinations`", {
     },
     error = T)
 
-  # non-numeric 2
   expect_snapshot({
+    # non-numeric 2
     n_combinations_non_numeric_2 <- TRUE
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -315,9 +338,10 @@ test_that("erroneous input: `n_combinations`", {
   error = T)
 
 
-  # non-integer
   expect_snapshot({
+    # non-integer
     n_combinations_non_integer <- 10.5
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -329,9 +353,10 @@ test_that("erroneous input: `n_combinations`", {
 
 
 
-  # length > 1
   expect_snapshot({
+    # length > 1
     n_combinations_too_long <- c(1,2)
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -341,9 +366,10 @@ test_that("erroneous input: `n_combinations`", {
   },
   error = T)
 
-  # NA-numeric
   expect_snapshot({
+    # NA-numeric
     n_combinations_is_NA <- as.numeric(NA)
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -353,9 +379,10 @@ test_that("erroneous input: `n_combinations`", {
   },
   error = T)
 
-  # Non-positive
   expect_snapshot({
+    # Non-positive
     n_combinations_non_positive <- 0
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -371,9 +398,10 @@ test_that("erroneous input: `n_combinations`", {
 test_that("erroneous input: `group`", {
   set.seed(123)
 
-  # not a list
   expect_snapshot({
+    # not a list
     group_non_list <- "bla"
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -383,9 +411,10 @@ test_that("erroneous input: `group`", {
   },
   error = T)
 
-  # non-characters in list
   expect_snapshot({
+    # non-characters in list
     group_with_non_characters <- list(A=1,B=2)
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -395,8 +424,8 @@ test_that("erroneous input: `group`", {
   },
   error = T)
 
-  # group features not in data
   expect_snapshot({
+    # group features not in data
     group_with_non_data_features <- list(A=c("Solar.R","Wind","not_a_data_feature"),
                                          B=c("Temp", "Month", "Day"))
     explain(x_train = x_train_numeric,
@@ -408,8 +437,8 @@ test_that("erroneous input: `group`", {
   },
   error = T)
 
-  # missing feature in group
   expect_snapshot({
+    # missing feature in group
     group_with_missing_data_features <- list(A=c("Solar.R"),
                                              B=c("Temp", "Month", "Day"))
     explain(x_train = x_train_numeric,
@@ -421,8 +450,8 @@ test_that("erroneous input: `group`", {
   },
   error = T)
 
-  # missing feature in group
   expect_snapshot({
+    # missing feature in group
     group_with_duplicated_data_features <- list(A=c("Solar.R","Solar.R","Wind"),
                                                 B=c("Temp", "Month", "Day"))
     explain(x_train = x_train_numeric,
@@ -440,9 +469,10 @@ test_that("erroneous input: `group`", {
 test_that("erroneous input: `n_samples`", {
   set.seed(123)
 
-  # non-numeric 1
   expect_snapshot({
+    # non-numeric 1
     n_samples_non_numeric_1 <- "bla"
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -452,9 +482,10 @@ test_that("erroneous input: `n_samples`", {
   },
   error = T)
 
-  # non-numeric 2
   expect_snapshot({
+    # non-numeric 2
     n_samples_non_numeric_2 <- TRUE
+
     explain(x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -464,8 +495,8 @@ test_that("erroneous input: `n_samples`", {
   },
   error = T)
 
-  # non-integer
   expect_snapshot({
+    # non-integer
     n_samples_non_integer <- 10.5
     explain(x_train_numeric,
             x_explain_numeric,
@@ -673,6 +704,7 @@ test_that("erroneous input: `predict_model`", {
   # not a function
   expect_snapshot({
     predict_model_nonfunction <- "bla"
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -682,9 +714,10 @@ test_that("erroneous input: `predict_model`", {
   },
   error = T)
 
-  # non-numeric output
   expect_snapshot({
+    # non-numeric output
     predict_model_non_numeric_output <- function(model,x){"bla"}
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -694,9 +727,10 @@ test_that("erroneous input: `predict_model`", {
   },
   error = T)
 
-  # incorrect output length
   expect_snapshot({
+    # incorrect output length
     predict_model_incorrect_output_length <- function(model,x){rep(1,nrow(x)+1)}
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -706,9 +740,10 @@ test_that("erroneous input: `predict_model`", {
   },
   error = T)
 
-  # invalid function format
   expect_snapshot({
+    # invalid function format
     predict_model_invalid_argument <- function(model){rep(1,nrow(x))}
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -718,9 +753,10 @@ test_that("erroneous input: `predict_model`", {
   },
   error = T)
 
-  # error within function
   expect_snapshot({
+    # error within function
     predict_model_error <- function(model,x){1+"bla"}
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,
@@ -736,9 +772,10 @@ test_that("erroneous input: `predict_model`", {
 test_that("erroneous input: `get_model_specs`", {
   set.seed(123)
 
-  # not a function
   expect_snapshot({
+    # not a function
     get_model_specs_nonfunction <- "bla"
+
     explain(x_train = x_train_numeric,
             x_explain_numeric,
             model_lm_numeric,

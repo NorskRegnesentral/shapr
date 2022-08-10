@@ -1,6 +1,8 @@
 # error with custom model without providing predict_model
 
     Code
+      model_custom_lm_mixed <- model_lm_mixed
+      class(model_custom_lm_mixed) <- "whatever"
       explain(x_train_mixed, x_explain_mixed, model_custom_lm_mixed, approach = "independence",
         prediction_zero = p0)
     Error <simpleError>
@@ -24,6 +26,9 @@
 ---
 
     Code
+      custom_get_model_specs_no_labels <- (function(x) {
+        feature_specs <- list(labels = NA, classes = NA, factor_levels = NA)
+      })
       explain(x_train_mixed, x_explain_mixed, model_custom_lm_mixed, approach = "independence",
         prediction_zero = p0, predict_model = custom_predict_model, get_model_specs = custom_get_model_specs_no_labels)
     Message <simpleMessage>
@@ -38,6 +43,9 @@
 ---
 
     Code
+      custom_get_model_specs_no_classes <- (function(x) {
+        feature_specs <- list(labels = labels(x$terms), classes = NA, factor_levels = NA)
+      })
       explain(x_train_mixed, x_explain_mixed, model_custom_lm_mixed, approach = "independence",
         prediction_zero = p0, predict_model = custom_predict_model, get_model_specs = custom_get_model_specs_no_classes)
     Message <simpleMessage>
@@ -52,6 +60,10 @@
 ---
 
     Code
+      custom_get_model_specs_no_factor_levels <- (function(x) {
+        feature_specs <- list(labels = labels(x$terms), classes = attr(x$terms,
+        "dataClasses")[-1], factor_levels = NA)
+      })
       explain(x_train_mixed, x_explain_mixed, model_custom_lm_mixed, approach = "independence",
         prediction_zero = p0, predict_model = custom_predict_model, get_model_specs = custom_get_model_specs_no_factor_levels)
     Message <simpleMessage>
@@ -178,6 +190,7 @@
 # erroneous input: `prediction_zero`
 
     Code
+      p0_non_numeric_1 <- "bla"
       explain(x_train_numeric, x_explain_numeric, model_lm_numeric, approach = "independence",
         prediction_zero = p0_non_numeric_1)
     Error <simpleError>
@@ -186,6 +199,7 @@
 ---
 
     Code
+      p0_non_numeric_2 <- NULL
       explain(x_train_numeric, x_explain_numeric, model_lm_numeric, approach = "independence",
         prediction_zero = p0_non_numeric_2)
     Error <simpleError>
@@ -194,6 +208,7 @@
 ---
 
     Code
+      p0_too_long <- c(1, 2)
       explain(x_train_numeric, x_explain_numeric, model_lm_numeric, approach = "independence",
         prediction_zero = p0_too_long)
     Error <simpleError>
@@ -202,6 +217,7 @@
 ---
 
     Code
+      p0_is_NA <- as.numeric(NA)
       explain(x_train_numeric, x_explain_numeric, model_lm_numeric, approach = "independence",
         prediction_zero = p0_is_NA)
     Error <simpleError>
