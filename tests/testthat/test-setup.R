@@ -91,6 +91,152 @@ test_that("messages with missing detail in get_model_specs", {
 
 })
 
+test_that("erroneous input: `x_train/x_explain`", {
+  set.seed(123)
+
+  # not matrix or data.table 1
+  expect_snapshot({
+    x_train_wrong_format <- c(a=1,b=2)
+    explain(x_train = x_train_wrong_format,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # not matrix or data.table 2
+  expect_snapshot({
+    x_explain_wrong_format <- c(a=1,b=2)
+    explain(x_train = x_explain_numeric,
+            x_explain = x_explain_wrong_format,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # not matrix or data.table 3
+  expect_snapshot({
+    x_train_wrong_format <- c(a=1,b=2)
+    x_explain_wrong_format <- c(a=3,b=4)
+    explain(x_train = x_train_wrong_format,
+            x_explain = x_explain_wrong_format,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+
+  # missing column names x_train
+  expect_snapshot({
+    x_train_no_column_names <- as.data.frame(x_train_numeric)
+    names(x_train_no_column_names) <- NULL
+    explain(x_train = x_train_no_column_names,
+            x_explain = x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # missing column names x_explain
+  expect_snapshot({
+    x_explain_no_column_names <- as.data.frame(x_explain_numeric)
+    names(x_explain_no_column_names) <- NULL
+    explain(x_train = x_train_numeric,
+            x_explain = x_explain_no_column_names,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # missing column names in both x_train and x_explain
+  expect_snapshot({
+    x_train_no_column_names <- as.data.frame(x_train_numeric)
+    x_explain_no_column_names <- as.data.frame(x_explain_numeric)
+    names(x_explain_no_column_names) <- NULL
+    explain(x_train = x_train_no_column_names,
+            x_explain = x_explain_no_column_names,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+})
+
+test_that("erroneous input: `model/ignore_model`", {
+  set.seed(123)
+
+  # model is NULL
+  expect_snapshot({
+    model_NULL <- NULL
+    explain(x_train = x_train_numeric,
+            x_explain = x_explain_numeric,
+            model = model_NULL,
+            approach = "independence",
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # ignore_model is TRUE
+  expect_snapshot({
+    ignore_model_TRUE <- TRUE
+    explain(x_train = x_train_numeric,
+            x_explain = x_explain_numeric,
+            model = model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            ignore_model = ignore_model_TRUE
+    )
+  },
+  error = T)
+
+
+})
+
+test_that("erroneous input: `approach`", {
+  set.seed(123)
+
+  # not a character (vector)
+  expect_snapshot({
+    approach_non_character <- 1
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = approach_non_character,
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # incorrect length
+  expect_snapshot({
+    approach_incorrect_length <- c("empirical","gaussian")
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = approach_incorrect_length,
+            prediction_zero = p0)
+  },
+  error = T)
+
+  # incorrect character
+  expect_snapshot({
+    approach_incorrect_character <- "bla"
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = approach_incorrect_character,
+            prediction_zero = p0)
+  },
+  error = T)
+
+
+})
+
 test_that("erroneous input: `prediction_zero`", {
   set.seed(123)
 
@@ -216,6 +362,75 @@ test_that("erroneous input: `n_combinations`", {
             approach = "independence",
             prediction_zero = p0,
             n_combinations = n_combinations_non_positive)
+  },
+  error = T)
+
+
+})
+
+test_that("erroneous input: `group`", {
+  set.seed(123)
+
+  # not a list
+  expect_snapshot({
+    group_non_list <- "bla"
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = group_non_list)
+  },
+  error = T)
+
+  # non-characters in list
+  expect_snapshot({
+    group_with_non_characters <- list(A=1,B=2)
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = group_with_non_characters)
+  },
+  error = T)
+
+  # group features not in data
+  expect_snapshot({
+    group_with_non_data_features <- list(A=c("Solar.R","Wind","not_a_data_feature"),
+                                         B=c("Temp", "Month", "Day"))
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = group_with_non_data_features)
+  },
+  error = T)
+
+  # missing feature in group
+  expect_snapshot({
+    group_with_missing_data_features <- list(A=c("Solar.R"),
+                                             B=c("Temp", "Month", "Day"))
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = group_with_missing_data_features)
+  },
+  error = T)
+
+  # missing feature in group
+  expect_snapshot({
+    group_with_duplicated_data_features <- list(A=c("Solar.R","Solar.R","Wind"),
+                                                B=c("Temp", "Month", "Day"))
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = group_with_duplicated_data_features)
   },
   error = T)
 
@@ -452,83 +667,6 @@ test_that("erroneous input: `keep_samp_for_vS`", {
   })
 })
 
-test_that("erroneous input: `x_train/x_explain`", {
-  set.seed(123)
-
-  # not matrix or data.table 1
-  expect_snapshot({
-    x_train_wrong_format <- c(a=1,b=2)
-    explain(x_train = x_train_wrong_format,
-            x_explain_numeric,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0)
-  },
-  error = T)
-
-  # not matrix or data.table 2
-  expect_snapshot({
-    x_explain_wrong_format <- c(a=1,b=2)
-    explain(x_train = x_explain_numeric,
-            x_explain = x_explain_wrong_format,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0)
-  },
-  error = T)
-
-  # not matrix or data.table 3
-  expect_snapshot({
-    x_train_wrong_format <- c(a=1,b=2)
-    x_explain_wrong_format <- c(a=3,b=4)
-    explain(x_train = x_train_wrong_format,
-            x_explain = x_explain_wrong_format,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0)
-  },
-  error = T)
-
-
-  # missing column names x_train
-  expect_snapshot({
-    x_train_no_column_names <- as.data.frame(x_train_numeric)
-    names(x_train_no_column_names) <- NULL
-    explain(x_train = x_train_no_column_names,
-            x_explain = x_explain_numeric,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0)
-  },
-  error = T)
-
-  # missing column names x_explain
-  expect_snapshot({
-    x_explain_no_column_names <- as.data.frame(x_explain_numeric)
-    names(x_explain_no_column_names) <- NULL
-    explain(x_train = x_train_numeric,
-            x_explain = x_explain_no_column_names,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0)
-  },
-  error = T)
-
-  # missing column names in both x_train and x_explain
-  expect_snapshot({
-    x_train_no_column_names <- as.data.frame(x_train_numeric)
-    x_explain_no_column_names <- as.data.frame(x_explain_numeric)
-    names(x_explain_no_column_names) <- NULL
-    explain(x_train = x_train_no_column_names,
-            x_explain = x_explain_no_column_names,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0)
-  },
-  error = T)
-
-  })
-
 test_that("erroneous input: `predict_model`", {
   set.seed(123)
 
@@ -612,140 +750,5 @@ test_that("erroneous input: `get_model_specs`", {
 
 })
 
-test_that("erroneous input: `group`", {
-  set.seed(123)
-
-  # not a list
-  expect_snapshot({
-    group_non_list <- "bla"
-    explain(x_train = x_train_numeric,
-            x_explain_numeric,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0,
-            group = group_non_list)
-  },
-  error = T)
-
-  # non-characters in list
-  expect_snapshot({
-    group_with_non_characters <- list(A=1,B=2)
-    explain(x_train = x_train_numeric,
-            x_explain_numeric,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0,
-            group = group_with_non_characters)
-  },
-  error = T)
-
-  # group features not in data
-  expect_snapshot({
-    group_with_non_data_features <- list(A=c("Solar.R","Wind","not_a_data_feature"),
-                                    B=c("Temp", "Month", "Day"))
-    explain(x_train = x_train_numeric,
-            x_explain_numeric,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0,
-            group = group_with_non_data_features)
-  },
-  error = T)
-
-  # missing feature in group
-  expect_snapshot({
-    group_with_missing_data_features <- list(A=c("Solar.R"),
-                                         B=c("Temp", "Month", "Day"))
-    explain(x_train = x_train_numeric,
-            x_explain_numeric,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0,
-            group = group_with_missing_data_features)
-  },
-  error = T)
-
-  # missing feature in group
-  expect_snapshot({
-    group_with_duplicated_data_features <- list(A=c("Solar.R","Solar.R","Wind"),
-                                             B=c("Temp", "Month", "Day"))
-    explain(x_train = x_train_numeric,
-            x_explain_numeric,
-            model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0,
-            group = group_with_duplicated_data_features)
-  },
-  error = T)
 
 
-})
-
-test_that("erroneous input: `approach`", {
-  set.seed(123)
-
-  # not a character (vector)
-  expect_snapshot({
-    approach_non_character <- 1
-    explain(x_train = x_train_numeric,
-            x_explain_numeric,
-            model_lm_numeric,
-            approach = approach_non_character,
-            prediction_zero = p0)
-  },
-  error = T)
-
-  # incorrect length
-  expect_snapshot({
-    approach_incorrect_length <- c("empirical","gaussian")
-    explain(x_train = x_train_numeric,
-            x_explain_numeric,
-            model_lm_numeric,
-            approach = approach_incorrect_length,
-            prediction_zero = p0)
-  },
-  error = T)
-
-  # incorrect character
-  expect_snapshot({
-    approach_incorrect_character <- "bla"
-    explain(x_train = x_train_numeric,
-            x_explain_numeric,
-            model_lm_numeric,
-            approach = approach_incorrect_character,
-            prediction_zero = p0)
-  },
-  error = T)
-
-
-})
-
-test_that("erroneous input: `model/ignore_model`", {
-  set.seed(123)
-
-  # model is NULL
-  expect_snapshot({
-    model_NULL <- NULL
-    explain(x_train = x_train_numeric,
-            x_explain = x_explain_numeric,
-            model = model_NULL,
-            approach = "independence",
-            prediction_zero = p0)
-  },
-  error = T)
-
-  # ignore_model is TRUE
-  expect_snapshot({
-    ignore_model_TRUE <- TRUE
-    explain(x_train = x_train_numeric,
-            x_explain = x_explain_numeric,
-            model = model_lm_numeric,
-            approach = "independence",
-            prediction_zero = p0,
-            ignore_model = ignore_model_TRUE
-            )
-  },
-  error = T)
-
-
-})

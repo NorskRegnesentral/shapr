@@ -63,6 +63,118 @@
       1: 40.752  4.48359 18.4777 12.316 -3.4762     -0.21431
       2: 40.752 -0.85689  9.7603 25.769 -3.4762      9.40306
 
+# erroneous input: `x_train/x_explain`
+
+    Code
+      x_train_wrong_format <- c(a = 1, b = 2)
+      explain(x_train = x_train_wrong_format, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_train should be a matrix or a data.frame/data.table.
+
+---
+
+    Code
+      x_explain_wrong_format <- c(a = 1, b = 2)
+      explain(x_train = x_explain_numeric, x_explain = x_explain_wrong_format,
+        model_lm_numeric, approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_explain should be a matrix or a data.frame/data.table.
+
+---
+
+    Code
+      x_train_wrong_format <- c(a = 1, b = 2)
+      x_explain_wrong_format <- c(a = 3, b = 4)
+      explain(x_train = x_train_wrong_format, x_explain = x_explain_wrong_format,
+        model_lm_numeric, approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_train should be a matrix or a data.frame/data.table.
+      x_explain should be a matrix or a data.frame/data.table.
+
+---
+
+    Code
+      x_train_no_column_names <- as.data.frame(x_train_numeric)
+      names(x_train_no_column_names) <- NULL
+      explain(x_train = x_train_no_column_names, x_explain = x_explain_numeric,
+        model_lm_numeric, approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_train misses column names.
+
+---
+
+    Code
+      x_explain_no_column_names <- as.data.frame(x_explain_numeric)
+      names(x_explain_no_column_names) <- NULL
+      explain(x_train = x_train_numeric, x_explain = x_explain_no_column_names,
+        model_lm_numeric, approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_explain misses column names.
+
+---
+
+    Code
+      x_train_no_column_names <- as.data.frame(x_train_numeric)
+      x_explain_no_column_names <- as.data.frame(x_explain_numeric)
+      names(x_explain_no_column_names) <- NULL
+      explain(x_train = x_train_no_column_names, x_explain = x_explain_no_column_names,
+        model_lm_numeric, approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      x_explain misses column names.
+
+# erroneous input: `model/ignore_model`
+
+    Code
+      model_NULL <- NULL
+      explain(x_train = x_train_numeric, x_explain = x_explain_numeric, model = model_NULL,
+        approach = "independence", prediction_zero = p0)
+    Error <simpleError>
+      You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain().
+      See ?shapr::explain or the vignette for more information on how to run shapr with custom models.
+
+---
+
+    Code
+      ignore_model_TRUE <- TRUE
+      explain(x_train = x_train_numeric, x_explain = x_explain_numeric, model = model_lm_numeric,
+        approach = "independence", prediction_zero = p0, ignore_model = ignore_model_TRUE)
+    Error <simpleError>
+      object 'ignore_model' not found
+
+# erroneous input: `approach`
+
+    Code
+      approach_non_character <- 1
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = approach_non_character, prediction_zero = p0)
+    Error <simpleError>
+      `approach` must be one of the following: 
+       copula, ctree, empirical, gaussian, independence 
+       or a vector of length equal to the number of features ( 5 ) with only the above strings.
+
+---
+
+    Code
+      approach_incorrect_length <- c("empirical", "gaussian")
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = approach_incorrect_length, prediction_zero = p0)
+    Error <simpleError>
+      `approach` must be one of the following: 
+       copula, ctree, empirical, gaussian, independence 
+       or a vector of length equal to the number of features ( 5 ) with only the above strings.
+
+---
+
+    Code
+      approach_incorrect_character <- "bla"
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = approach_incorrect_character, prediction_zero = p0)
+    Error <simpleError>
+      `approach` must be one of the following: 
+       copula, ctree, empirical, gaussian, independence 
+       or a vector of length equal to the number of features ( 5 ) with only the above strings.
+
 # erroneous input: `prediction_zero`
 
     Code
@@ -148,6 +260,57 @@
         prediction_zero = p0, n_combinations = n_combinations_non_positive)
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
+
+# erroneous input: `group`
+
+    Code
+      group_non_list <- "bla"
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, group = group_non_list)
+    Error <simpleError>
+      `group` must be NULL or a list
+
+---
+
+    Code
+      group_with_non_characters <- list(A = 1, B = 2)
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, group = group_with_non_characters)
+    Error <simpleError>
+      All components of group should be a character.
+
+---
+
+    Code
+      group_with_non_data_features <- list(A = c("Solar.R", "Wind",
+        "not_a_data_feature"), B = c("Temp", "Month", "Day"))
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, group = group_with_non_data_features)
+    Error <simpleError>
+      The group feature(s) not_a_data_feature are not
+      among the features in the data: Solar.R, Wind, Temp, Month, Day. Delete from group.
+
+---
+
+    Code
+      group_with_missing_data_features <- list(A = c("Solar.R"), B = c("Temp",
+        "Month", "Day"))
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, group = group_with_missing_data_features)
+    Error <simpleError>
+      The data feature(s) Wind do not
+      belong to one of the groups. Add to a group.
+
+---
+
+    Code
+      group_with_duplicated_data_features <- list(A = c("Solar.R", "Solar.R", "Wind"),
+      B = c("Temp", "Month", "Day"))
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, group = group_with_duplicated_data_features)
+    Error <simpleError>
+      Feature(s) Solar.R are found in more than one group or multiple times per group.
+      Make sure each feature is only represented in one group, and only once.
 
 # erroneous input: `n_samples`
 
@@ -314,66 +477,6 @@
           prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
       }, error = T)
 
-# erroneous input: `x_train/x_explain`
-
-    Code
-      x_train_wrong_format <- c(a = 1, b = 2)
-      explain(x_train = x_train_wrong_format, x_explain_numeric, model_lm_numeric,
-        approach = "independence", prediction_zero = p0)
-    Error <simpleError>
-      x_train should be a matrix or a data.frame/data.table.
-
----
-
-    Code
-      x_explain_wrong_format <- c(a = 1, b = 2)
-      explain(x_train = x_explain_numeric, x_explain = x_explain_wrong_format,
-        model_lm_numeric, approach = "independence", prediction_zero = p0)
-    Error <simpleError>
-      x_explain should be a matrix or a data.frame/data.table.
-
----
-
-    Code
-      x_train_wrong_format <- c(a = 1, b = 2)
-      x_explain_wrong_format <- c(a = 3, b = 4)
-      explain(x_train = x_train_wrong_format, x_explain = x_explain_wrong_format,
-        model_lm_numeric, approach = "independence", prediction_zero = p0)
-    Error <simpleError>
-      x_train should be a matrix or a data.frame/data.table.
-      x_explain should be a matrix or a data.frame/data.table.
-
----
-
-    Code
-      x_train_no_column_names <- as.data.frame(x_train_numeric)
-      names(x_train_no_column_names) <- NULL
-      explain(x_train = x_train_no_column_names, x_explain = x_explain_numeric,
-        model_lm_numeric, approach = "independence", prediction_zero = p0)
-    Error <simpleError>
-      x_train misses column names.
-
----
-
-    Code
-      x_explain_no_column_names <- as.data.frame(x_explain_numeric)
-      names(x_explain_no_column_names) <- NULL
-      explain(x_train = x_train_numeric, x_explain = x_explain_no_column_names,
-        model_lm_numeric, approach = "independence", prediction_zero = p0)
-    Error <simpleError>
-      x_explain misses column names.
-
----
-
-    Code
-      x_train_no_column_names <- as.data.frame(x_train_numeric)
-      x_explain_no_column_names <- as.data.frame(x_explain_numeric)
-      names(x_explain_no_column_names) <- NULL
-      explain(x_train = x_train_no_column_names, x_explain = x_explain_no_column_names,
-        model_lm_numeric, approach = "independence", prediction_zero = p0)
-    Error <simpleError>
-      x_explain misses column names.
-
 # erroneous input: `predict_model`
 
     Code
@@ -453,107 +556,4 @@
         approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_nonfunction)
     Error <simpleError>
       `get_model_specs` must be NULL, NA or a function.
-
-# erroneous input: `group`
-
-    Code
-      group_non_list <- "bla"
-      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
-        approach = "independence", prediction_zero = p0, group = group_non_list)
-    Error <simpleError>
-      `group` must be NULL or a list
-
----
-
-    Code
-      group_with_non_characters <- list(A = 1, B = 2)
-      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
-        approach = "independence", prediction_zero = p0, group = group_with_non_characters)
-    Error <simpleError>
-      All components of group should be a character.
-
----
-
-    Code
-      group_with_non_data_features <- list(A = c("Solar.R", "Wind",
-        "not_a_data_feature"), B = c("Temp", "Month", "Day"))
-      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
-        approach = "independence", prediction_zero = p0, group = group_with_non_data_features)
-    Error <simpleError>
-      The group feature(s) not_a_data_feature are not
-      among the features in the data: Solar.R, Wind, Temp, Month, Day. Delete from group.
-
----
-
-    Code
-      group_with_missing_data_features <- list(A = c("Solar.R"), B = c("Temp",
-        "Month", "Day"))
-      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
-        approach = "independence", prediction_zero = p0, group = group_with_missing_data_features)
-    Error <simpleError>
-      The data feature(s) Wind do not
-      belong to one of the groups. Add to a group.
-
----
-
-    Code
-      group_with_duplicated_data_features <- list(A = c("Solar.R", "Solar.R", "Wind"),
-      B = c("Temp", "Month", "Day"))
-      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
-        approach = "independence", prediction_zero = p0, group = group_with_duplicated_data_features)
-    Error <simpleError>
-      Feature(s) Solar.R are found in more than one group or multiple times per group.
-      Make sure each feature is only represented in one group, and only once.
-
-# erroneous input: `approach`
-
-    Code
-      approach_non_character <- 1
-      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
-        approach = approach_non_character, prediction_zero = p0)
-    Error <simpleError>
-      `approach` must be one of the following: 
-       copula, ctree, empirical, gaussian, independence 
-       or a vector of length equal to the number of features ( 5 ) with only the above strings.
-
----
-
-    Code
-      approach_incorrect_length <- c("empirical", "gaussian")
-      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
-        approach = approach_incorrect_length, prediction_zero = p0)
-    Error <simpleError>
-      `approach` must be one of the following: 
-       copula, ctree, empirical, gaussian, independence 
-       or a vector of length equal to the number of features ( 5 ) with only the above strings.
-
----
-
-    Code
-      approach_incorrect_character <- "bla"
-      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
-        approach = approach_incorrect_character, prediction_zero = p0)
-    Error <simpleError>
-      `approach` must be one of the following: 
-       copula, ctree, empirical, gaussian, independence 
-       or a vector of length equal to the number of features ( 5 ) with only the above strings.
-
-# erroneous input: `model/ignore_model`
-
-    Code
-      model_NULL <- NULL
-      explain(x_train = x_train_numeric, x_explain = x_explain_numeric, model = model_NULL,
-        approach = "independence", prediction_zero = p0)
-    Error <simpleError>
-      You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain().
-      See ?shapr::explain or the vignette for more information on how to run shapr with custom models.
-
----
-
-    Code
-      ignore_model_TRUE <- TRUE
-      explain(x_train = x_train_numeric, x_explain = x_explain_numeric, model = model_lm_numeric,
-        approach = "independence", prediction_zero = p0, ignore_model = ignore_model_TRUE)
-    Error <simpleError>
-      object 'ignore_model' not found
 
