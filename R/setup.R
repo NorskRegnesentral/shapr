@@ -2,6 +2,7 @@
 
 #' check_setup
 #' @inheritParams explain
+#' @param ignore_model Whether to ignore any checking related to model.
 #' @export
 setup <- function(x_train,
                   x_explain,
@@ -15,7 +16,8 @@ setup <- function(x_train,
                   seed,
                   keep_samp_for_vS,
                   predict_model,
-                  get_model_specs, ...) {
+                  get_model_specs,
+                  ignore_model = FALSE, ...) {
   internal <- list()
 
   internal$parameters <- get_parameters(
@@ -26,7 +28,8 @@ setup <- function(x_train,
     n_samples = n_samples,
     n_batches = n_batches,
     seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS, ...
+    keep_samp_for_vS = keep_samp_for_vS,
+    ignore_model = ignore_model, ...
   )
 
   internal$data <- get_data(
@@ -52,9 +55,47 @@ setup <- function(x_train,
 
   check_parameters(internal)
 
-
   return(internal)
 }
+
+#' @keywords internal
+check_parameters <- function(internal){
+
+  # Check groups
+  feature_names <- internal$parameters$feature_names
+  group <- internal$parameters$group
+  if(!is.null(group)){
+    check_groups(feature_names,group)
+  }
+
+  # Checking n_batches vs n_combinations etc
+  check_n_batches(internal)
+
+  # Check approach
+  check_approach(internal)
+
+}
+
+#' @keywords internal
+check_n_batches <- function(internal){
+  n_batches <- internal$parameters$n_batches
+  n_features <- internal$parameters$n_features
+  n_combinations <- internal$parameters$n_combinations
+  is_groupwise <- internal$parameters$is_groupwise
+  n_groups <- internal$parameters$n_groups
+
+  if(!is_groupwise){
+    actual_n_combinations <- ifelse(is.null(n_combinations),2^n_features,n_combinations)
+  } else {
+    actual_n_combinations <- ifelse(is.null(n_combinations),2^n_groups,n_combinations)
+  }
+
+  if (n_batches > actual_n_combinations) {
+    stop(paste0("`n_batches` (",n_batches,") is greater than the number feature combinations/`n_combinations` (",
+                actual_n_combinations,")"))
+  }
+}
+
 
 #' @keywords internal
 get_objects <- function(get_model_specs,model){
@@ -71,24 +112,6 @@ get_objects <- function(get_model_specs,model){
   return(objects)
 }
 
-#' @keywords internal
-check_parameters <- function(internal){
-
-  feature_names <- internal$parameters$feature_names
-  group <- internal$parameters$group
-
-  # Check groups
-  if(!is.null(group)){
-    check_groups(feature_names,group)
-  }
-
-  #TODO: Add checks of all other parameters here
-
-  # if (n_batches < 1 || n_batches > nrow(explainer$S)) {
-  #  stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
-  # }
-
-}
 
 
 #' @keywords internal
@@ -143,8 +166,8 @@ check_data <- function(internal){
 
   # First check model vs x_train (possibly modified)
   # Then x_train vs x_explain
-  compare_feature_specss(model_feature_specs,x_train_feature_specs,"model","x_train")
-  compare_feature_specss(x_train_feature_specs,x_explain_feature_specs,"x_train","x_explain")
+  compare_feature_specs(model_feature_specs,x_train_feature_specs,"model","x_train")
+  compare_feature_specs(x_train_feature_specs,x_explain_feature_specs,"x_train","x_explain")
 
 
 }
@@ -169,7 +192,7 @@ compare_vecs <- function(vec1,vec2,vec_type,name1,name2){
   }
 }
 
-compare_feature_specss <- function(spec1,spec2,name1="model",name2="x_train"){
+compare_feature_specs <- function(spec1,spec2,name1="model",name2="x_train"){
   compare_vecs(spec1$labels,spec2$labels,"names",name1,name2)
   compare_vecs(spec1$classes,spec2$classes,"classes",name1,name2)
 
@@ -199,9 +222,9 @@ get_extra_parameters <- function(internal){
   # Update feature_specss (in case model based spec included NAs)
   internal$objects$feature_specs = get_data_specs(internal$data$x_explain)
 
-  # Processes groups if specified. Otherwise do nothing
   internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
 
+  # Processes groups if specified. Otherwise do nothing
   if(internal$parameters$is_groupwise){
     group <- internal$parameters$group
 
@@ -218,6 +241,12 @@ get_extra_parameters <- function(internal){
     internal$objects$group_num <- lapply(group, FUN = function(x) {
       match(x, internal$parameters$feature_names)
     })
+
+    internal$parameters$n_groups <- length(group)
+
+  } else {
+    internal$objects$group_num <- NULL
+    internal$parameters$n_groups <- NULL
   }
 
   return(internal)
@@ -225,7 +254,55 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, ...) {
+                           n_batches, seed, keep_samp_for_vS, ignore_model = FALSE, ...) {
+
+  # Check input type for approach
+
+  # approach is checked later
+
+  # prediction_zero
+  if(!(is.numeric(prediction_zero) &&
+       length(prediction_zero)==1 &&
+       !is.na(prediction_zero))){
+    stop("`prediction_zero` must be a single numeric.")
+  }
+  # n_combinations
+  if(!is.null(n_combinations) &&
+     !(is.wholenumber(n_combinations) &&
+       length(n_combinations)==1 &&
+       !is.na(n_combinations) &&
+       n_combinations > 0)){
+    stop("`n_combinations` must be NULL or a single positive integer.")
+  }
+
+  # group (checked more thoroughly later)
+  if (!is.null(group) &&
+      !is.list(group)){
+    stop("`group` must be NULL or a list")
+  }
+
+  # n_samples
+  if(!(is.wholenumber(n_samples) &&
+       length(n_samples)==1 &&
+       !is.na(n_samples) &&
+       n_samples > 0)){
+    stop("`n_samples` must be a single positive integer.")
+  }
+  # n_batches
+  if(!(is.wholenumber(n_batches) &&
+       length(n_batches)==1 &&
+       !is.na(n_batches) &&
+       n_batches > 0)){
+    stop("`n_batches` must be a single positive integer.")
+  }
+  # seed is already set, so we know it works
+  # keep_samp_for_vS
+  if(!(is.logical(keep_samp_for_vS) &&
+       length(keep_samp_for_vS)==1)){
+    stop("`keep_samp_for_vS` must be single logical.")
+  }
+
+
   # Getting basic input parameters
   parameters <- list(
     approach = approach,
@@ -235,22 +312,26 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     n_samples = n_samples,
     n_batches = n_batches,
     seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS
+    keep_samp_for_vS = keep_samp_for_vS,
+    ignore_model = ignore_model
   )
 
   # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
 
-  # Setting ignore_model to FALSE if not provided by ...
-  if (is.null(parameters$ignore_model)) {
+  # Setting ignore_model to FALSE if not provided by
+  # and checking its type
+  if (is.null(ignore_model)) {
     parameters$ignore_model <- FALSE
+  } else {
+    if(!(is.logical(ignore_model) &&
+         length(ignore_model)==1)){
+      stop("`ignore_model` must be NULL or a single logical.")
+    }
   }
 
   # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
-
-  # TODO: Add any additional internal parameters here
-
 
   return(parameters)
 }
@@ -258,14 +339,12 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
 #' @keywords internal
 get_data <- function(x_train, x_explain) {
 
-  # TODO: Later require data.frame (or data.table here)
-
   # Check data object type
   stop_message <- ""
-  if (!is.matrix(x_train) & !is.data.frame(x_train)) {
+  if (!is.matrix(x_train) && !is.data.frame(x_train)) {
     stop_message <- paste0(stop_message,"x_train should be a matrix or a data.frame/data.table.\n")
   }
-  if (!is.matrix(x_explain) & !is.data.frame(x_explain)) {
+  if (!is.matrix(x_explain) && !is.data.frame(x_explain)) {
     stop_message <- paste0(stop_message,"x_explain should be a matrix or a data.frame/data.table.\n")
   }
   if(stop_message!=""){
@@ -294,6 +373,18 @@ get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
   model_class <- NULL # due to NSE
 
   class <- class(model)
+
+  # predict_model
+  if(!(is.function(predict_model)) &&
+     !(is.null(predict_model))){
+    stop("`predict_model` must be NULL or a function.")
+  }
+  # get_model_specs
+  if(!is.function(get_model_specs) &&
+     !is.null(get_model_specs) &&
+     !is.na(get_model_specs)){
+    stop("`get_model_specs` must be NULL, NA or a function.") # NA is used to avoid using internally defined get_model_specs where this is defined and not valid for the specified model
+  }
 
   funcs <- list(
     predict_model = predict_model,
@@ -402,7 +493,7 @@ check_groups <- function(feature_names, group) {
     stop(
       paste0(
         "The group feature(s) ", paste0(missing_group_feature, collapse = ", "), " are not\n",
-        "among the features specified by the model/data. Delete from group."
+        "among the features in the data: ",paste0(feature_names,collapse = ", "),". Delete from group."
       )
     )
   }
@@ -412,7 +503,7 @@ check_groups <- function(feature_names, group) {
     missing_features <- feature_names[!(feature_names %in% group_features)]
     stop(
       paste0(
-        "The model/data feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
+        "The data feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
         "belong to one of the groups. Add to a group."
       )
     )
@@ -429,5 +520,36 @@ check_groups <- function(feature_names, group) {
       )
     )
   }
-  return(NULL)
 }
+
+#' @keywords internal
+check_approach <- function(internal) {
+  # Check length of approach
+
+  approach <- internal$parameters$approach
+  n_features <- internal$parameters$n_features
+  supported_models <- get_supported_approaches()
+
+  if (!(is.character(approach)&&
+        (length(approach) == 1 | length(approach) == n_features) &&
+        all(is.element(approach, supported_models)))
+  ) {
+    stop(
+      paste(
+        "`approach` must be one of the following: \n", paste0(supported_models, collapse = ", "), "\n",
+        "or a vector of length equal to the number of features (",n_features,") with only the above strings."
+      )
+    )
+  }
+}
+
+#' Gets the implemented approaches
+#'
+#' @return Character vector.
+#' The names of the implemented approaches that can be passed to argument \code{approach} in [explain()].
+#'
+#' @export
+get_supported_approaches <- function() {
+  substring(rownames(attr(methods(prepare_data), "info")), first = 14)
+}
+

@@ -267,7 +267,7 @@ explain <- function(x_train,
   )
 
   # Tests that the model predicts as intended
-  test_model(internal, model)
+  check_model(internal, model)
 
   # Check the approach (to be moved to check_setup later), setting up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach

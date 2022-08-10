@@ -18,6 +18,7 @@ setup(
   keep_samp_for_vS,
   predict_model,
   get_model_specs,
+  ignore_model = FALSE,
   ...
 )
 }
@@ -98,6 +99,8 @@ The function takes \code{model} as argument and provides a list with 3 elements:
 If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
+
+\item{ignore_model}{Whether to ignore any checking related to model.}
 
 \item{...}{Additional arguments passed to [setup_approach()] for specific approaches.}
 }

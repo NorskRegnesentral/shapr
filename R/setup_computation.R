@@ -21,38 +21,6 @@ setup_computation <- function(internal, model) {
   return(internal)
 }
 
-#' @keywords internal
-check_approach <- function(internal) {
-  # Check input for approach
-
-  approach <- internal$parameters$approach
-  n_features <- internal$parameters$n_features
-  supported_models <- get_supported_approaches()
-
-  if (!(is.vector(approach) &&
-    is.atomic(approach) &&
-    (length(approach) == 1 | length(approach) == n_features) &&
-    all(is.element(approach, supported_models)))
-  ) {
-    stop(
-      paste(
-        "It seems that you passed a non-valid value for approach.",
-        "It should be either \n", paste0(supported_models, collapse = ", "), "\nor",
-        "a vector of length=ncol(x) with only the above characters."
-      )
-    )
-  }
-}
-
-#' Gets the implemented approaches
-#'
-#' @return Character vector.
-#' The names of the implemented approaches that can be passed to argument \code{approach} in [explain()].
-#'
-#' @export
-get_supported_approaches <- function() {
-  substring(rownames(attr(methods(prepare_data), "info")), first = 14)
-}
 
 
 #' @keywords internal
@@ -540,6 +508,7 @@ create_S_batch_new <- function(internal, seed = NULL) {
 
     # Randomize order before ordering spreading the batches on the different approaches as evenly as possible
     # with respect to shapley_weight
+    set.seed(seed)
     X[, randomorder := sample(.N)]
     data.table::setorder(X, randomorder) # To avoid smaller id_combinations always proceeding large ones
     data.table::setorder(X, shapley_weight)
