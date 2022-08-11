@@ -7,7 +7,7 @@
 explain(
   x_train,
   x_explain,
-  model = NULL,
+  model,
   approach,
   prediction_zero,
   n_combinations = NULL,

@@ -249,7 +249,7 @@ explain <- function(x_train,
 
   set.seed(seed)
 
-  model_objects <- model_setup_R(predict_model, get_model_specs, model)
+  model_objects <- get_model_objects_R(predict_model, get_model_specs, model)
 
   # Sets up input parameters, data and preprocess the data if needed
   internal <- setup(
@@ -267,7 +267,9 @@ explain <- function(x_train,
   )
 
   # Tests that the model predicts as intended
-  check_prediction_R(internal, model)
+  check_prediction_R(x_test = head(internal$data$x_train,2),
+                     predict_model = internal$objects$predict_model, # Important to pick this from model_objects/internal in R
+                     model = model)
 
   # Check the approach (to be moved to check_setup later), setting up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach

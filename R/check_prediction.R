@@ -3,22 +3,9 @@
 #'
 #' @inheritParams default_doc
 #' @keywords internal
-check_prediction_R <- function(internal, model) {
+check_prediction_R <- function(x_test, predict_model, model) {
 
-  is_python <- internal$parameters$is_python
-  x_train <- internal$data$x_train
-  predict_model <- internal$funcs$predict_model
-
-  if(is_python){
-    stop("`is_python=TRUE` is only allowed in the Python wrapper of the shapr package.")
-  }
-
-  if(is.null(model)){
-    stop("Argument `model` is missing.")
-  }
-
-  x <- head(x_train, 2)
-  tmp <- tryCatch(predict_model(model, x),error = errorfun)
+  tmp <- tryCatch(predict_model(model, x_test),error = errorfun)
   if(class(tmp)[1]=="error"){
     stop(paste0("The predict_model function of class `", class(model), "` is invalid.\n",
                 "See the 'Advanced usage' section of the vignette:\n",

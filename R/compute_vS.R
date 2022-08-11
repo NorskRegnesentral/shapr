@@ -98,7 +98,7 @@ compute_preds <- function(dt, internal, model) {
   feature_names <- internal$parameters$feature_names
 
   # Predictions
-  dt[id_combination != 1, p_hat := internal$funcs$predict_model(model, newdata = .SD), .SDcols = feature_names]
+  dt[id_combination != 1, p_hat := internal$objects$predict_model(model, newdata = .SD), .SDcols = feature_names]
 
   return(dt)
 }

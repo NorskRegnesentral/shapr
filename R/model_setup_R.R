@@ -1,5 +1,11 @@
 
-model_setup_R <- function(predict_model, get_model_specs, model){
+get_model_objects_R <- function(predict_model, get_model_specs, model){
+
+  # Checks data predict_model and get_model_specs are proper functions (R + py)
+  # Extracts natively supported functions for predict_model and/or get_model_specs if exists and not passed (R only)
+  # (TODO) Checks that get_model_specs provide the right output format (R and py)
+
+  # The output of predict_model is checked in check_prediction_R (R and py)
 
   model_class <- NULL # due to NSE
 
@@ -25,7 +31,7 @@ model_setup_R <- function(predict_model, get_model_specs, model){
   supported_models <- get_supported_models()
 
   # Get native predict_model if not passed and exists
-  if (is.null(funcs$predict_model)) {
+  if (is.null(predict_model)) {
     native_func_available <- supported_models[predict_model == TRUE, model_class0 %in% model_class]
     if (native_func_available) {
       model_objects$predict_model <- get(paste0("predict_model.", model_class0))
@@ -45,7 +51,6 @@ model_setup_R <- function(predict_model, get_model_specs, model){
       model_objects$get_model_specs <- get(paste0("get_model_specs.", model_class0))
     }
   }
-
 
   # Get feature_specs
   if (is.function(model_objects$get_model_specs)) {

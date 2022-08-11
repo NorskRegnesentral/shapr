@@ -7,7 +7,6 @@
 setup(
   x_train,
   x_explain,
-  model,
   approach,
   prediction_zero,
   n_combinations,
@@ -16,8 +15,7 @@ setup(
   n_batches,
   seed,
   keep_samp_for_vS,
-  predict_model,
-  get_model_specs,
+  model_objects,
   is_python = FALSE,
   ...
 )
@@ -29,12 +27,6 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 
 \item{x_explain}{A matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.}
-
-\item{model}{The model whose predictions we want to explain.
-Run [get_supported_models()]
-for a table of which models \code{explain} supports natively. Unsupported models
-can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
-see details for more information.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should,
@@ -76,29 +68,6 @@ If \code{NULL} the seed will be inherited from the calling environment.}
 \item{keep_samp_for_vS}{Logical.
 Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
 (in \code{internal$output})}
-
-\item{predict_model}{Function.
-The prediction function used when \code{model} is not natively supported.
-(Run [get_supported_models()] for a list of natively supported
-models.)
-The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
-and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
-\code{NULL} (the default) uses functions specified internally.
-Can also be used to override the default function for natively supported model classes.}
-
-\item{get_model_specs}{Function.
-An optional function for checking model/data consistency when \code{model} is not natively supported.
-(Run [get_supported_models()] for a list of natively supported
-models.)
-The function takes \code{model} as argument and provides a list with 3 elements:
-\describe{
-  \item{labels}{Character vector with the names of each feature.}
-  \item{classes}{Character vector with the classes of each features.}
-  \item{factor_levels}{Character vector with the levels for any categorical features.}
-}
-If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
-disabled for unsupported model classes.
-Can also be used to override the default function for natively supported model classes.}
 
 \item{is_python}{Whether to ignore any checking related to model.}
 

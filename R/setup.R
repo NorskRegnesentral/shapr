@@ -35,7 +35,7 @@ setup <- function(x_train,
     x_explain
     )
 
-  internal$model_objects <- model_objects
+  internal$objects <- model_objects
 
   check_data(internal)
 
@@ -95,7 +95,7 @@ check_data <- function(internal){
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
-  model_feature_specs <- internal$model_objects$feature_specs
+  model_feature_specs <- internal$objects$feature_specs
 
   x_train_feature_specs <- get_data_specs(x_train)
   x_explain_feature_specs <- get_data_specs(x_explain)
