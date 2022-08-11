@@ -769,6 +769,62 @@ test_that("erroneous input: `get_model_specs`", {
   },
   error = T)
 
+
+  expect_snapshot({
+    # wrong output (not list)
+    get_model_specs_output_not_list <- function(x){"bla"}
+
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            get_model_specs = get_model_specs_output_not_list)
+  },
+  error = T)
+
+  expect_snapshot({
+    # wrong output (wrong length)
+    get_model_specs_output_too_long <- function(x){list(1,2,3,4)}
+
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            get_model_specs = get_model_specs_output_too_long)
+  },
+  error = T)
+
+  expect_snapshot({
+    # wrong output (wrong length)
+    get_model_specs_output_wrong_names <- function(x){list(labels=1,
+                                                           classes=2,
+                                                           not_a_name=3)}
+
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            get_model_specs = get_model_specs_output_wrong_names)
+  },
+  error = T)
+
+  expect_snapshot({
+    # wrong output (wrong length)
+    get_model_specs_error <- function(x){1+"bla"}
+
+    explain(x_train = x_train_numeric,
+            x_explain_numeric,
+            model_lm_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            get_model_specs = get_model_specs_error)
+  },
+  error = T)
+
+
 })
 
 

@@ -8,7 +8,8 @@ setup_approach.empirical <- function(internal,
                                      eval_max_aicc = 20,
                                      start_aicc = 0.1,
                                      cov_mat = NULL,
-                                     model = NULL) {
+                                     model = NULL,
+                                     predict_model = NULL) {
   defaults <- mget(c("w_threshold", "type", "fixed_sigma_vec", "n_samples_aicc", "eval_max_aicc", "start_aicc"))
 
   internal <- insert_defaults(internal, defaults)
@@ -22,7 +23,7 @@ setup_approach.empirical <- function(internal,
 
   if (internal$parameters$type %in% c("AICc_each_k", "AICc_full") & internal$parameters$is_python == TRUE) {
     stop(paste0(
-      "Using type = ", internal$parameters$type, " for approach = 'empirical' is not available in Python.\n",
+      "Type = ", internal$parameters$type, " for approach = 'empirical' is not available in Python.\n",
     ))
   }
 
@@ -34,7 +35,8 @@ setup_approach.empirical <- function(internal,
     internal$parameters$cov_mat <- get_cov_mat(x_train)
   }
 
-  internal$model <- model
+  internal$tmp <- list(model = model,
+                       predict_model = predict_model)
 
   return(internal)
 }
@@ -57,6 +59,9 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
   w_threshold <- internal$parameters$w_threshold
   fixed_sigma_vec <- internal$parameters$fixed_sigma_vec
   n_samples <- internal$parameters$n_samples
+
+  model <- internal$tmp$model
+  predict_model <- internal$tmp$predict_model
 
 
   if (is.null(index_features)) {
@@ -92,9 +97,9 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
       h_optim_mat[, ] <- fixed_sigma_vec
     } else {
       if (type == "AICc_each_k") {
-        h_optim_mat <- compute_AICc_each_k(internal, internal$model, index_features)
+        h_optim_mat <- compute_AICc_each_k(internal, model, predict_model, index_features)
       } else if (type == "AICc_full") {
-        h_optim_mat <- compute_AICc_full(internal, internal$model, index_features)
+        h_optim_mat <- compute_AICc_full(internal, model, predict_model, index_features)
       } else {
         stop("type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
       }
@@ -260,7 +265,7 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 
 
 #' @keywords internal
-compute_AICc_each_k <- function(internal, model, index_features) {
+compute_AICc_each_k <- function(internal, model, predict_model, index_features) {
   id_combination <- n_features <- NULL # due to NSE notes in R CMD check
 
   x_train <- internal$data$x_train
@@ -377,7 +382,7 @@ compute_AICc_each_k <- function(internal, model, index_features) {
 
 
 #' @keywords internal
-compute_AICc_full <- function(internal, model, index_features) {
+compute_AICc_full <- function(internal, model, predict_model, index_features) {
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
   n_train <- internal$parameters$n_train

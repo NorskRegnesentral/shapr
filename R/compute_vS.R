@@ -7,32 +7,40 @@
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
 #' @export
-compute_vS <- function(internal, model, method = "future") {
+compute_vS <- function(internal, model, predict_model, method = "future") {
+
+  S_batch <- internal$objects$S_batch
+
   if (method == "future") {
-    ret <- future_compute_vS_batch(S_batch = internal$objects$S_batch, internal = internal, model = model)
+    ret <- future_compute_vS_batch(S_batch = S_batch,
+                                   internal = internal,
+                                   model = model,
+                                   predict_model = predict_model)
   } else {
 
     # Doing the same as above without future without progressbar or paralellization
     ret <- list()
-    for (i in seq_along(internal$objects$S_batch)) {
-      S <- internal$objects$S_batch[[i]]
+    for (i in seq_along(S_batch)) {
+      S <- S_batch[[i]]
 
-      ret[[i]] <- compute_vS_batch(S=S,
+      ret[[i]] <- batch_compute_vS(S=S,
                                    internal = internal,
-                                   model = model)
+                                   model = model,
+                                   predict_model = predict_model)
     }
   }
 
   return(ret)
 }
 
-future_compute_vS_batch <- function(S_batch, internal, model) {
+future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
   p <- progressr::progressor(sum(lengths(S_batch)))
   ret <- future.apply::future_lapply(
     X = S_batch,
-    FUN = compute_vS_batch,
+    FUN = batch_compute_vS,
     internal = internal,
     model = model,
+    predict_model = predict_model,
     p = p,
     future.seed = internal$parameters$seed
   )
@@ -41,14 +49,15 @@ future_compute_vS_batch <- function(S_batch, internal, model) {
 
 
 #' @keywords internal
-compute_vS_batch <- function(S, internal, model, p = NULL) {
+batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+  feature_names <- internal$parameters$feature_names
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
 
   compute_preds(dt,   # Updating dt by reference
-                feature_names = internal$parameters$feature_names,
-                predict_model = internal$objects$predict_model,
+                feature_names = feature_names,
+                predict_model = predict_model,
                 model)
 
   dt_vS <- compute_MCint(dt)
@@ -68,7 +77,6 @@ compute_vS_batch <- function(S, internal, model, p = NULL) {
 #' @keywords internal
 batch_prepare_vS <- function(S, internal) {
   id <- id_combination <- NULL # due to NSE notes in R CMD check
-
 
   max_id_combination <- internal$parameters$n_combinations
   x_explain <- internal$data$x_explain

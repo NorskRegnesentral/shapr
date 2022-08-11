@@ -249,7 +249,8 @@ explain <- function(x_train,
 
   set.seed(seed)
 
-  model_objects <- get_model_objects_R(predict_model, get_model_specs, model)
+  feature_specs <- get_feature_specs(get_model_specs, model)
+
 
   # Sets up input parameters, data and preprocess the data if needed
   internal <- setup(
@@ -263,26 +264,26 @@ explain <- function(x_train,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    model_objects = model_objects, ...
+    feature_specs = feature_specs, ...
   )
 
-  # Tests that the model predicts as intended
-  check_prediction_R(x_test = head(internal$data$x_train,2),
-                     predict_model = internal$objects$predict_model, # Important to pick this from model_objects/internal in R
-                     model = model)
+  # Checks that prediction works + Tests that the model predicts as intended
+  predict_model <- get_predict_model(x_test = head(internal$data$x_train,2),
+                                     predict_model = predict_model,
+                                     model = model)
 
   # Check the approach (to be moved to check_setup later), setting up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
   # TODO: Remove the ellipsis below by extracting those parameters from internal (if not NULL) within setup_approach
   # model only needed for type AICc of approach empirical, otherwise ignored
-  internal <- setup_computation(internal, model)
+  internal <- setup_computation(internal, model, predict_model)
 
   # Accross all batches get the data we will predict on, predict on them, and do the MC integration
 
   # Getting the samples for the conditional distributions with specified approach
   # predicting with these samples
   # performing MC integration on these to estimate the conditional expectation
-  vS_list <- compute_vS(internal, model)
+  vS_list <- compute_vS(internal, model, predict_model)
 
   # Compute Shapley values based on conditional expectations
   # Organize function output

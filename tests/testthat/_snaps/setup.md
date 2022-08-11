@@ -5,6 +5,10 @@
       class(model_custom_lm_mixed) <- "whatever"
       explain(x_train_mixed, x_explain_mixed, model_custom_lm_mixed, approach = "independence",
         prediction_zero = p0)
+    Message <simpleMessage>
+      Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
+      Consistency checks between model and data is therefore disabled.
+      
     Error <simpleError>
       You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain().
       See ?shapr::explain or the vignette for more information on how to run shapr with custom models.
@@ -561,4 +565,64 @@
         approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_nonfunction)
     Error <simpleError>
       `get_model_specs` must be NULL, NA or a function.
+
+---
+
+    Code
+      get_model_specs_output_not_list <- (function(x) {
+        "bla"
+      })
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_not_list)
+    Error <simpleError>
+      The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
+      See the 'Advanced usage' section of the vignette:
+      vignette('understanding_shapr', package = 'shapr')
+      for more information on running shapr with custom models and the required output format of get_model_specs.
+
+---
+
+    Code
+      get_model_specs_output_too_long <- (function(x) {
+        list(1, 2, 3, 4)
+      })
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_too_long)
+    Error <simpleError>
+      The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
+      See the 'Advanced usage' section of the vignette:
+      vignette('understanding_shapr', package = 'shapr')
+      for more information on running shapr with custom models and the required output format of get_model_specs.
+
+---
+
+    Code
+      get_model_specs_output_wrong_names <- (function(x) {
+        list(labels = 1, classes = 2, not_a_name = 3)
+      })
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_wrong_names)
+    Error <simpleError>
+      The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
+      See the 'Advanced usage' section of the vignette:
+      vignette('understanding_shapr', package = 'shapr')
+      for more information on running shapr with custom models and the required output format of get_model_specs.
+
+---
+
+    Code
+      get_model_specs_error <- (function(x) {
+        1 + "bla"
+      })
+      explain(x_train = x_train_numeric, x_explain_numeric, model_lm_numeric,
+        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_error)
+    Error <simpleError>
+      The get_model_specs function of class `lm` is invalid.
+      See the 'Advanced usage' section of the vignette:
+      vignette('understanding_shapr', package = 'shapr')
+      for more information on running shapr with custom models.
+      Note that `get_model_specs` is not required (can be set to NULL)
+      unless you require consistency checks between model and data.
+      A basic function test threw the following error:
+      Error in 1 + "bla": non-numeric argument to binary operator
 

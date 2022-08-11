@@ -16,7 +16,7 @@ setup <- function(x_train,
                   n_batches,
                   seed,
                   keep_samp_for_vS,
-                  model_objects,
+                  feature_specs,
                   is_python = FALSE, ...) {
   internal <- list()
 
@@ -37,7 +37,7 @@ setup <- function(x_train,
     x_explain
     )
 
-  internal$objects <- model_objects
+  internal$objects <- list(feature_specs=feature_specs)
 
   check_data(internal)
 

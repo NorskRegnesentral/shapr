@@ -15,7 +15,7 @@ setup(
   n_batches,
   seed,
   keep_samp_for_vS,
-  model_objects,
+  feature_specs,
   is_python = FALSE,
   ...
 )
@@ -69,7 +69,9 @@ If \code{NULL} the seed will be inherited from the calling environment.}
 Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
 (in \code{internal$output})}
 
-\item{is_python}{Whether to ignore any checking related to model.}
+\item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
+never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
+running the AICc-versions of the empirical as that requires data based optimization.}
 
 \item{...}{Additional arguments passed to [setup_approach()] for specific approaches.}
 }

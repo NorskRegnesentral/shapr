@@ -4,7 +4,7 @@
 \alias{setup_computation}
 \title{Sets up everything for the Shapley values computation in [shapr::explain()]}
 \usage{
-setup_computation(internal, model)
+setup_computation(internal, model, predict_model)
 }
 \arguments{
 \item{internal}{List.

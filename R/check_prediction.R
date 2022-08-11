@@ -3,8 +3,41 @@
 #'
 #' @inheritParams default_doc
 #' @keywords internal
-check_prediction_R <- function(x_test, predict_model, model) {
+get_predict_model <- function(x_test, predict_model, model) {
 
+  # Checks the predict_model input
+  # Get native predict_model if not passed and exists
+  # Checks whether prediction works and spits out prediction in the correct format
+  # Returns the predict_model to use
+
+  model_class <- NULL # due to NSE
+
+  model_class0 <- class(model)
+
+  # checks predict_model
+  if(!(is.function(predict_model)) &&
+     !(is.null(predict_model))){
+    stop("`predict_model` must be NULL or a function.")
+  }
+
+  supported_models <- get_supported_models()
+
+  # Get native predict_model if not passed and exists
+  if (is.null(predict_model)) {
+    native_func_available <- supported_models[predict_model == TRUE, model_class0 %in% model_class]
+    if (native_func_available) {
+      predict_model <- get(paste0("predict_model.", model_class0))
+    } else {
+      stop(
+        "You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' ",
+        "function to explain().\n",
+        "See ?shapr::explain or the vignette for more information on how to run shapr with custom models."
+      )
+    }
+  }
+
+
+  # Tests prediction with some data
   tmp <- tryCatch(predict_model(model, x_test),error = errorfun)
   if(class(tmp)[1]=="error"){
     stop(paste0("The predict_model function of class `", class(model), "` is invalid.\n",
@@ -26,4 +59,5 @@ check_prediction_R <- function(x_test, predict_model, model) {
       )
     )
   }
+  return(predict_model)
 }
