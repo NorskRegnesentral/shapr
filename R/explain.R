@@ -249,10 +249,13 @@ explain <- function(x_train,
 
   set.seed(seed)
 
+  # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
 
 
-  # Sets up input parameters, data and preprocess the data if needed
+  # Sets up and organize input parameters and data
+  # Checks the input parameters and their compatability
+  # Checks data/model compatability
   internal <- setup(
     x_train = x_train,
     x_explain = x_explain,
@@ -267,25 +270,24 @@ explain <- function(x_train,
     feature_specs = feature_specs, ...
   )
 
-  # Checks that prediction works + Tests that the model predicts as intended
+  # Gets predict_model (if not passed to explain)
+  # Checks that predict_model gives correct format
   predict_model <- get_predict_model(x_test = head(internal$data$x_train,2),
                                      predict_model = predict_model,
                                      model = model)
 
-  # Check the approach (to be moved to check_setup later), setting up the Shapley (sampling) framework and prepares the
+  # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
-  # TODO: Remove the ellipsis below by extracting those parameters from internal (if not NULL) within setup_approach
-  # model only needed for type AICc of approach empirical, otherwise ignored
+  # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
   internal <- setup_computation(internal, model, predict_model)
 
-  # Accross all batches get the data we will predict on, predict on them, and do the MC integration
-
-  # Getting the samples for the conditional distributions with specified approach
-  # predicting with these samples
-  # performing MC integration on these to estimate the conditional expectation
+  # Compute the v(S):
+  # Get the samples for the conditional distributions with the specified approach
+  # Predict with these samples
+  # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model)
 
-  # Compute Shapley values based on conditional expectations
+  # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
   output <- finalize_explanation(
     vS_list = vS_list,
