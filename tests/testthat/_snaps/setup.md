@@ -135,28 +135,13 @@
     Error <simpleError>
       x_explain misses column names.
 
-# erroneous input: `model/ignore_model`
+# erroneous input: `model`
 
     Code
-      model_NULL <- NULL
-      explain(x_train = x_train_numeric, x_explain = x_explain_numeric, model = model_NULL,
-        approach = "independence", prediction_zero = p0)
+      explain(x_train = x_train_numeric, x_explain = x_explain_numeric, approach = "independence",
+        prediction_zero = p0)
     Error <simpleError>
-      You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' function to explain().
-      See ?shapr::explain or the vignette for more information on how to run shapr with custom models.
-
----
-
-    Code
-      ignore_model_TRUE <- TRUE
-      explain(x_train = x_train_numeric, x_explain = x_explain_numeric, model = model_lm_numeric,
-        approach = "independence", prediction_zero = p0, ignore_model = ignore_model_TRUE)
-    Message <simpleMessage>
-      Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-      Consistency checks between model and data is therefore disabled.
-      
-    Error <simpleError>
-      `ignore_model=TRUE` is only allowed in the Python wrapper of the shapr package.
+      argument "model" is missing, with no default
 
 # erroneous input: `approach`
 
@@ -550,7 +535,7 @@
       vignette('understanding_shapr', package = 'shapr')
       for more information on running shapr with custom models.
       A basic function test threw the following error:
-      Error in predict_model(model, x): unused argument (x)
+      Error in predict_model(model, x_test): unused argument (x_test)
 
 ---
 

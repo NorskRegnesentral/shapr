@@ -2,7 +2,9 @@
 
 #' check_setup
 #' @inheritParams explain
-#' @param is_python Whether to ignore any checking related to model.
+#' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
+#' never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
+#' running the AICc-versions of the empirical as that requires data based optimization.
 #' @export
 setup <- function(x_train,
                   x_explain,
@@ -293,16 +295,6 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
   # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
 
-  # Setting is_python to FALSE if not provided by
-  # and checking its type
-  if (is.null(is_python)) {
-    parameters$is_python <- FALSE
-  } else {
-    if(!(is.logical(is_python) &&
-         length(is_python)==1)){
-      stop("`is_python` must be NULL or a single logical.")
-    }
-  }
 
   # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
