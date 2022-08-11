@@ -5,10 +5,10 @@
 #' @keywords internal
 get_predict_model <- function(x_test, predict_model, model) {
 
-  # Checks the predict_model input
-  # Get native predict_model if not passed and exists
-  # Checks whether prediction works and spits out prediction in the correct format
-  # Returns the predict_model to use
+  # Checks that predict_model is a proper function (R + py)
+  # Extracts natively supported functions for predict_model if exists and not passed (R only)
+  # Checks that predict_model provide the right output format (R and py)
+  # Returns the predict_model to use subsequently (R only)
 
   model_class <- NULL # due to NSE
 

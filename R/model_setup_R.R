@@ -1,9 +1,10 @@
 
 get_feature_specs <- function(get_model_specs, model){
 
-  # Checks get_model_specs are proper functions (R + py)
+  # Checks that get_model_specs is a proper function (R + py)
   # Extracts natively supported functions for get_model_specs if exists and not passed (R only)
-  # (TODO) Checks that get_model_specs provide the right output format (R and py)
+  # Apply get_model_specs on model and checks that it provides the right output format (R and py)
+  # Returns the feature_specs (R and py)
 
   model_class <- NULL # due to NSE
 

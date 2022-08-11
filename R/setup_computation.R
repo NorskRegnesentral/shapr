@@ -2,6 +2,7 @@
 #' Sets up everything for the Shapley values computation in [shapr::explain()]
 #'
 #' @inheritParams default_doc
+#' @inheritParams explain
 #' @inherit default_doc
 #' @export
 setup_computation <- function(internal, model, predict_model) {

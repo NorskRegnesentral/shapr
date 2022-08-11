@@ -2,6 +2,13 @@
 
 #' check_setup
 #' @inheritParams explain
+#' @param feature_specs List. The output from [get_model_specs()] or [get_data_specs()].
+#' Contains the 3 elements:
+#' \describe{
+#'   \item{labels}{Character vector with the names of each feature.}
+#'   \item{classes}{Character vector with the classes of each features.}
+#'   \item{factor_levels}{Character vector with the levels for any categorical features.}
+#'   }
 #' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 #' never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
