@@ -20,7 +20,8 @@ finalize_explanation <- function(vS_list, internal) {
   # Compute the Shapley values
   dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
 
-  internal$model <- NULL # Clearnig out the model (only added for AICc-types of empirical approach)
+  # Clearnig out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
+  internal$tmp <- NULL
 
   internal$output <- processed_vS_list
 
