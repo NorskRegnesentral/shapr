@@ -1,7 +1,7 @@
 #' Explain the output of machine learning models with more accurately estimated Shapley values
 #'
-#' @description Computes Shapley values for observations in \code{x_explain} from the specified \code{model},
-#' by using the method specified in \code{approach} to estimate the conditional expectation \code{}
+#' @description Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
+#' \code{model} by using the method specified in \code{approach} to estimate the conditional expectation \code{}
 #'
 #' @param x_train Matrix or data.frame/data.table.
 #' Contains the data used to estimate the (conditional) distributions for the features
@@ -232,9 +232,9 @@
 #' @references
 #'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 #'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
-explain <- function(x_train,
+explain <- function(model,
                     x_explain,
-                    model,
+                    x_train,
                     approach,
                     prediction_zero,
                     n_combinations = NULL,
