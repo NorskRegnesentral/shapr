@@ -1,8 +1,8 @@
 #' Generate predictions for different model classes
 #'
-#' @description Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-#' \code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and
-#' \code{\link[xgboost:xgb.train]{xgboost::xgb.train}} with binary or continuous
+#' @description Performs prediction of response [stats::lm()], [stats::glm()],
+#' [ranger::ranger()],  [mgcv::gam()] and
+#' [xgboost::xgb.train()] with binary or continuous
 #' response. See details for more information.
 #'
 #' @param x Model object for the model to be explained.
@@ -10,17 +10,17 @@
 #'
 #' @details The following models are currently supported:
 #' \itemize{
-#' \item \code{\link[stats:lm]{stats::lm}}
-#' \item \code{\link[stats:glm]{stats::glm}}
-#' \item \code{\link[ranger:ranger]{ranger::ranger}}
-#' \item \code{\link[mgcv:gam]{mgcv::gam}}
-#' \item \code{\link[xgboost:xgb.train]{xgboost::xgb.train}}
+#' \item [stats::lm()]
+#' \item [stats::glm()]
+#' \item [ranger::ranger()]
+#' \item [mgcv::gam()]
+#' \item [xgboost::xgb.train()]
 #' }
 #'
-#' The returned object \code{p} always satisfies the following properties:
+#' The returned object `p` always satisfies the following properties:
 #' \itemize{
-#' \item \code{is.atomic(p)} equals \code{TRUE}
-#' \item \code{is.double(p)} equals \code{TRUE}
+#' \item `is.atomic(p)` equals `TRUE`
+#' \item `is.double(p)` equals `TRUE`
 #' }
 #'
 #' If you have a binary classification model we'll always return the probability prediction
@@ -28,8 +28,8 @@
 #'
 #' For more details on how to explain other types of models (i.e. custom models), see the Advanced usage section
 #' of the vignette: \cr
-#' From R: \code{vignette("understanding_shapr", package = "shapr")}  \cr
-#' Web: \url{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models}
+#' From R: `vignette("understanding_shapr", package = "shapr")`  \cr
+#' Web: <https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models>
 #'
 #' @return Numeric
 #'
@@ -71,14 +71,14 @@ predict_model.default <- function(x, newdata) {
 
 #' Check that the type of model is supported by the explanation method
 #'
-#' @description The function checks whether the model given by \code{x} is supported.
-#' If \code{x} is not a supported model the function will return an error message, otherwise it return NULL
+#' @description The function checks whether the model given by `x` is supported.
+#' If `x` is not a supported model the function will return an error message, otherwise it return NULL
 #' (meaning all types of models with this class is supported)
 #'
 #' @inheritParams predict_model
 #'
-#' @details See \code{\link{predict_model}} for more information about
-#' what type of models \code{shapr} currently support.
+#' @details See [predict_model()] for more information about
+#' what type of models `shapr` currently support.
 #'
 #' @return Error or NULL
 #'
@@ -117,8 +117,8 @@ model_checker.default <- function(x) {
 #'
 #' @inheritParams predict_model
 #'
-#' @details This function is used to extract the feature information to be checked against data passed to \code{shapr}
-#' and \code{explain}. The function is called from \code{preprocess_data}.
+#' @details This function is used to extract the feature information to be checked against data passed to `shapr`
+#' and `explain`. The function is called from `preprocess_data`.
 #'
 #' @return A list with the following elements:
 #' \describe{

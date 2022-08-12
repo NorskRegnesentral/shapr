@@ -13,7 +13,7 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 
 \item{min_eigen_value}{Numeric
 Specifies the smallest allowed eigen value before the covariance matrix of \code{x_train} is assumed to not be
-positive definite, and [Matrix::nearPD()] is used to find the nearest one.}
+positive definite, and \code{\link[Matrix:nearPD]{Matrix::nearPD()}} is used to find the nearest one.}
 }
 \description{
 get_cov_mat

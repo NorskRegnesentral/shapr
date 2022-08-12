@@ -29,12 +29,12 @@ setup_approach.combined <- function(internal, ...) {
 
 #' Generate data used for predictions
 #'
-#' @param x Explainer object. See \code{\link{explain}} for more information.
+#' @param x Explainer object. See [explain()] for more information.
 #'
-#' @param seed Positive integer. If \code{NULL} the seed will be inherited from the calling environment.
+#' @param seed Positive integer. If `NULL` the seed will be inherited from the calling environment.
 #'
 #' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
-#' \code{NULL} means all combinations. Only used internally.
+#' `NULL` means all combinations. Only used internally.
 #'
 #' @param ... Currently not used.
 #'

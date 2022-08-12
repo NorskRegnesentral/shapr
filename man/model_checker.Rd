@@ -37,7 +37,7 @@ If \code{x} is not a supported model the function will return an error message, 
 (meaning all types of models with this class is supported)
 }
 \details{
-See \code{\link{predict_model}} for more information about
+See \code{\link[=predict_model]{predict_model()}} for more information about
 what type of models \code{shapr} currently support.
 }
 \examples{

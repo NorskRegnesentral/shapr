@@ -1,5 +1,5 @@
 
-#' Computes \code{v(S)} for all features subsets \code{S}.
+#' Computes `v(S)` for all features subsets `S`.
 #'
 #' @inheritParams default_doc
 #' @inheritParams explain

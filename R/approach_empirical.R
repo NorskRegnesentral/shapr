@@ -154,10 +154,10 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 #' Generate permutations of training data using test observations
 #'
 #' @param W_kernel Numeric matrix. Contains all nonscaled weights between training and test
-#' observations for all feature combinations. The dimension equals \code{n_train x m}.
-#' @param S Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations}
-#' and \code{m} equals the total number of sampled/non-sampled feature combinations and
-#' the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.
+#' observations for all feature combinations. The dimension equals `n_train x m`.
+#' @param S Integer matrix of dimension `n_combinations x m`, where `n_combinations`
+#' and `m` equals the total number of sampled/non-sampled feature combinations and
+#' the total number of unique features, respectively. Note that `m = ncol(x_train)`.
 #' @param x_train Numeric matrix
 #' @param x_explain Numeric matrix
 #'
@@ -232,8 +232,8 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, w_threshold = .7
 #' @param joint_sampling Logical. Indicates whether train- and test data should be sampled
 #' separately or in a joint sampling space. If they are sampled separately (which typically
 #' would be used when optimizing more than one distribution at once) we sample with replacement
-#' if \code{nsamples > ntrain}. Note that this solution is not optimal. Be careful if you're
-#' doing optimization over every test observation when \code{nsamples > ntrain}.
+#' if `nsamples > ntrain`. Note that this solution is not optimal. Be careful if you're
+#' doing optimization over every test observation when `nsamples > ntrain`.
 #'
 #' @return data.frame
 #'

@@ -12,10 +12,10 @@ get_data_specs(x)
 \value{
 A list with the following elements:
 \describe{
-  \item{labels}{character vector with the feature names to compute Shapley values for}
-  \item{classes}{a named character vector with the labels as names and the class types as elements}
-  \item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
-  (NULL if the feature is not a factor)}
+\item{labels}{character vector with the feature names to compute Shapley values for}
+\item{classes}{a named character vector with the labels as names and the class types as elements}
+\item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
+(NULL if the feature is not a factor)}
 }
 }
 \description{

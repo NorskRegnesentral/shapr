@@ -16,16 +16,16 @@ setup_approach.ctree <- function(internal,
 #' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
 #' used for different numbers of conditioned features, this will be a list with the features to pass.
 #'
-#' @param  mc_cores Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
-#' tree building (\code{create_ctree}) and tree sampling (\code{sample_ctree}). Defaults to 1. Note: Uses
+#' @param  mc_cores Integer. Only for class `ctree` currently. The number of cores to use in paralellization of the
+#' tree building (`create_ctree`) and tree sampling (`sample_ctree`). Defaults to 1. Note: Uses
 #' parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows systems.
 #'
-#' @param  mc_cores_create_ctree Integer. Same as \code{mc_cores}, but specific for the tree building function
-#' #' Defaults to \code{mc_cores}.
+#' @param  mc_cores_create_ctree Integer. Same as `mc_cores`, but specific for the tree building function
+#' #' Defaults to `mc_cores`.
 #'
-#' @param  mc_cores_sample_ctree Integer. Same as \code{mc_cores}, but specific for the tree building prediction
+#' @param  mc_cores_sample_ctree Integer. Same as `mc_cores`, but specific for the tree building prediction
 #' function.
-#' Defaults to \code{mc_cores}.
+#' Defaults to `mc_cores`.
 #'
 #' @rdname prepare_data
 #' @export
@@ -108,12 +108,12 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
 #'
 #' @param minbucket Numeric value. Equal to the minimum sum of weights in a terminal node.
 #'
-#' @param use_partykit String. In some semi-rare cases \code{partyk::ctree} runs into an error related to the LINPACK
-#' used by R. To get around this problem, one may fall back to using the newer (but slower) \code{partykit::ctree}
-#' function, which is a reimplementation of the same method. Setting this parameter to \code{"on_error"} (default)
-#' falls back to  \code{partykit::ctree}, if \code{party::ctree} fails. Other options are \code{"never"}, which always
-#' uses \code{party::ctree}, and \code{"always"}, which always uses \code{partykit::ctree}. A warning message is
-#' created whenever \code{partykit::ctree} is used.
+#' @param use_partykit String. In some semi-rare cases `partyk::ctree` runs into an error related to the LINPACK
+#' used by R. To get around this problem, one may fall back to using the newer (but slower) `partykit::ctree`
+#' function, which is a reimplementation of the same method. Setting this parameter to `"on_error"` (default)
+#' falls back to  `partykit::ctree`, if `party::ctree` fails. Other options are `"never"`, which always
+#' uses `party::ctree`, and `"always"`, which always uses `partykit::ctree`. A warning message is
+#' created whenever `partykit::ctree` is used.
 #'
 #' @return List with conditional inference tree and the variables conditioned/not conditioned on.
 #'
@@ -214,7 +214,7 @@ create_ctree <- function(given_ind,
 #' @param n_samples Numeric. Indicates how many samples to use for MCMC.
 #'
 #' @param x_explain Matrix, data.frame or data.table with the features of the observation whose
-#' predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.
+#' predictions ought to be explained (test data). Dimension `1xp` or `px1`.
 #'
 #' @param x_train Matrix, data.frame or data.table with training data.
 #'
@@ -224,7 +224,7 @@ create_ctree <- function(given_ind,
 #' of the tree whereas False indicates that the method takes all the observations if it is
 #' less than n_samples.
 #'
-#' @return data.table with \code{n_samples} (conditional) Gaussian samples
+#' @return data.table with `n_samples` (conditional) Gaussian samples
 #'
 #' @keywords internal
 #'

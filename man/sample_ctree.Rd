@@ -13,7 +13,7 @@ Also contains given_ind, the features to condition upon.}
 \item{n_samples}{Numeric. Indicates how many samples to use for MCMC.}
 
 \item{x_explain}{Matrix, data.frame or data.table with the features of the observation whose
-predictions ought to be explained (test data). Dimension \code{1xp} or \code{px1}.}
+predictions ought to be explained (test data). Dimension \verb{1xp} or \code{px1}.}
 
 \item{x_train}{Matrix, data.frame or data.table with training data.}
 

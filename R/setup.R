@@ -10,7 +10,7 @@
 #'   \item{factor_levels}{Character vector with the levels for any categorical features.}
 #'   }
 #' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
-#' never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
+#' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
 #' @export
 setup <- function(x_train,
@@ -469,7 +469,7 @@ check_approach <- function(internal) {
 #' Gets the implemented approaches
 #'
 #' @return Character vector.
-#' The names of the implemented approaches that can be passed to argument \code{approach} in [explain()].
+#' The names of the implemented approaches that can be passed to argument `approach` in [explain()].
 #'
 #' @export
 get_supported_approaches <- function() {

@@ -29,7 +29,7 @@ prepare_data(internal, ...)
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
 used for different numbers of conditioned features, this will be a list with the features to pass.}
 
-\item{x}{Explainer object. See \code{\link{explain}} for more information.}
+\item{x}{Explainer object. See \code{\link[=explain]{explain()}} for more information.}
 
 \item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 

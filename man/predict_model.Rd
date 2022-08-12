@@ -34,19 +34,19 @@ predict_model(x, newdata)
 Numeric
 }
 \description{
-Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-\code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and
-\code{\link[xgboost:xgb.train]{xgboost::xgb.train}} with binary or continuous
+Performs prediction of response \code{\link[stats:lm]{stats::lm()}}, \code{\link[stats:glm]{stats::glm()}},
+\code{\link[ranger:ranger]{ranger::ranger()}},  \code{\link[mgcv:gam]{mgcv::gam()}} and
+\code{\link[xgboost:xgb.train]{xgboost::xgb.train()}} with binary or continuous
 response. See details for more information.
 }
 \details{
 The following models are currently supported:
 \itemize{
-\item \code{\link[stats:lm]{stats::lm}}
-\item \code{\link[stats:glm]{stats::glm}}
-\item \code{\link[ranger:ranger]{ranger::ranger}}
-\item \code{\link[mgcv:gam]{mgcv::gam}}
-\item \code{\link[xgboost:xgb.train]{xgboost::xgb.train}}
+\item \code{\link[stats:lm]{stats::lm()}}
+\item \code{\link[stats:glm]{stats::glm()}}
+\item \code{\link[ranger:ranger]{ranger::ranger()}}
+\item \code{\link[mgcv:gam]{mgcv::gam()}}
+\item \code{\link[xgboost:xgb.train]{xgboost::xgb.train()}}
 }
 
 The returned object \code{p} always satisfies the following properties:

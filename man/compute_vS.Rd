@@ -9,7 +9,7 @@ compute_vS(internal, model, predict_model, method = "future")
 \arguments{
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within
-\code{\link[shapr:explain]{shapr:::explain()}}.
+\code{\link[=explain]{shapr:::explain()}}.
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{functions}, \code{output}.}
 
 \item{model}{Objects.
@@ -17,7 +17,7 @@ The model object that ought to be explained}
 
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
-(Run [get_supported_models()] for a list of natively supported
+(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported
 models.)
 The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
 and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.

@@ -76,11 +76,11 @@ shapley_setup <- function(internal) {
 #' Define feature combinations, and fetch additional information about each unique combination
 #'
 #' @param m Positive integer. Total number of features.
-#' @param exact Logical. If \code{TRUE} all \code{2^m} combinations are generated, otherwise a
+#' @param exact Logical. If `TRUE` all `2^m` combinations are generated, otherwise a
 #' subsample of the combinations is used.
-#' @param n_combinations Positive integer. Note that if \code{exact = TRUE},
-#' \code{n_combinations} is ignored. However, if \code{m > 12} you'll need to add a positive integer
-#' value for \code{n_combinations}.
+#' @param n_combinations Positive integer. Note that if `exact = TRUE`,
+#' `n_combinations` is ignored. However, if `m > 12` you'll need to add a positive integer
+#' value for `n_combinations`.
 #' @param weight_zero_m Numeric. The value to use as a replacement for infinite combination
 #' weights when doing numerical operations.
 #' @param group_num List. Contains vector of integers indicating the feature numbers for the
@@ -89,14 +89,14 @@ shapley_setup <- function(internal) {
 #' @return A data.table that contains the following columns:
 #' \describe{
 #' \item{id_combination}{Positive integer. Represents a unique key for each combination. Note that the table
-#' is sorted by \code{id_combination}, so that is always equal to \code{x[["id_combination"]] = 1:nrow(x)}.}
-#' \item{features}{List. Each item of the list is an integer vector where \code{features[[i]]}
-#' represents the indices of the features included in combination \code{i}. Note that all the items
-#' are sorted such that \code{features[[i]] == sort(features[[i]])} is always true.}
-#' \item{n_features}{Vector of positive integers. \code{n_features[i]} equals the number of features in combination
-#' \code{i}, i.e. \code{n_features[i] = length(features[[i]])}.}.
-#' \item{N}{Positive integer. The number of unique ways to sample \code{n_features[i]} features
-#' from \code{m} different features, without replacement.}
+#' is sorted by `id_combination`, so that is always equal to `x[["id_combination"]] = 1:nrow(x)`.}
+#' \item{features}{List. Each item of the list is an integer vector where `features[[i]]`
+#' represents the indices of the features included in combination `i`. Note that all the items
+#' are sorted such that `features[[i]] == sort(features[[i]])` is always true.}
+#' \item{n_features}{Vector of positive integers. `n_features[i]` equals the number of features in combination
+#' `i`, i.e. `n_features[i] = length(features[[i]])`.}.
+#' \item{N}{Positive integer. The number of unique ways to sample `n_features[i]` features
+#' from `m` different features, without replacement.}
 #' }
 #'
 #' @export
@@ -283,11 +283,11 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 #'
 #' @param m Positive integer. Total number of features/feature groups.
 #' @param n_components Positive integer. Represents the number of features/feature groups you want to sample from
-#' a feature space consisting of \code{m} unique features/feature groups. Note that \code{ 0 < = n_components <= m}.
-#' @param N Positive integer. The number of unique combinations when sampling \code{n_components} features/feature
-#' groups, without replacement, from a sample space consisting of \code{m} different features/feature groups.
+#' a feature space consisting of `m` unique features/feature groups. Note that ` 0 < = n_components <= m`.
+#' @param N Positive integer. The number of unique combinations when sampling `n_components` features/feature
+#' groups, without replacement, from a sample space consisting of `m` different features/feature groups.
 #' @param weight_zero_m Positive integer. Represents the Shapley weight for two special
-#' cases, i.e. the case where you have either \code{0} or \code{m} features/feature groups.
+#' cases, i.e. the case where you have either `0` or `m` features/feature groups.
 #'
 #' @return Numeric
 #' @keywords internal
@@ -436,10 +436,10 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
 #' @param X data.table
 #' @param normalize_W_weights Logical. Whether to normalize the weights for the combinations to sum to 1 for
 #' increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations
-#' except combination \code{1} and \code{2^m}.
+#' except combination `1` and `2^m`.
 #' @param is_groupwise Logical. Indicating whether group wise Shapley values are to be computed.
 #'
-#' @return Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
+#' @return Numeric matrix. See [weight_matrix_cpp()] for more information.
 #' @keywords internal
 #'
 #' @author Nikolai Sellereite, Martin Jullum

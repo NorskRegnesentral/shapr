@@ -8,19 +8,19 @@ finalize_explanation(vS_list, internal)
 }
 \arguments{
 \item{vS_list}{List
-Output from [compute_vS()]}
+Output from \code{\link[=compute_vS]{compute_vS()}}}
 
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within
-\code{\link[shapr:explain]{shapr:::explain()}}.
+\code{\link[=explain]{shapr:::explain()}}.
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{functions}, \code{output}.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-  \item{shapley_values}{data.table with the estimated Shapley values}
-  \item{internal}{List with the different parameters, data and functions used internally}
-  \item{pred_explain}{Numeric vector with the predictions for the explained observations.}
+\item{shapley_values}{data.table with the estimated Shapley values}
+\item{internal}{List with the different parameters, data and functions used internally}
+\item{pred_explain}{Numeric vector with the predictions for the explained observations.}
 }
 
 \code{shapley_values} is a data.table where the number of rows equals
@@ -36,17 +36,17 @@ The magnitude of the value is also important to notice. E.g. if \code{shapley_va
 \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
 feature was larger than the j-th feature.
 
-The first column in \code{dt}, called `none`, is the prediction value not assigned to any of the features
+The first column in \code{dt}, called \code{none}, is the prediction value not assigned to any of the features
 (\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
 It's equal for all observations and set by the user through the argument \code{prediction_zero}.
-The difference between the prediction and `none` is distributed among the other features.
+The difference between the prediction and \code{none} is distributed among the other features.
 In theory this value should be the expected prediction without conditioning on any features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable. [explain()] [shapr::explain()]
+such as the mean of the predictions in the training data are also reasonable. \code{\link[=explain]{explain()}} \code{\link[=explain]{explain()}}
 }
 \description{
-Computes Shapley values for observations in \code{x_explain} from the specified \code{model},
-by using the method specified in \code{approach} to estimate the conditional expectation \code{}
+Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
+\code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
 }
 \details{
 The most important thing to notice is that \code{shapr} has implemented five different
@@ -166,7 +166,7 @@ print(explain_groups$shapley_values)
 }
 \references{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
-  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
 Martin Jullum

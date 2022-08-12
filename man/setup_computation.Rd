@@ -2,14 +2,14 @@
 % Please edit documentation in R/setup_computation.R
 \name{setup_computation}
 \alias{setup_computation}
-\title{Sets up everything for the Shapley values computation in [shapr::explain()]}
+\title{Sets up everything for the Shapley values computation in \code{\link[=explain]{explain()}}}
 \usage{
 setup_computation(internal, model, predict_model)
 }
 \arguments{
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within
-\code{\link[shapr:explain]{shapr:::explain()}}.
+\code{\link[=explain]{shapr:::explain()}}.
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{functions}, \code{output}.}
 
 \item{model}{Objects.
@@ -17,7 +17,7 @@ The model object that ought to be explained}
 
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
-(Run [get_supported_models()] for a list of natively supported
+(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported
 models.)
 The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
 and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
@@ -27,12 +27,12 @@ Can also be used to override the default function for natively supported model c
 \value{
 List \code{internal}
 It holds all parameters, data, functions and computed objects used within
-\code{\link[shapr:explain]{shapr:::explain()}}.
+\code{\link[=explain]{shapr:::explain()}}.
 The list contains one or more of the elements \code{parameters}, \code{data},
-\code{functions}, \code{output}. [explain()]
-[roxygen2::roxygenize()]
-[explain()]
+\code{functions}, \code{output}. \code{\link[=explain]{explain()}}
+\code{\link[roxygen2:roxygenize]{roxygen2::roxygenize()}}
+\code{\link[=explain]{explain()}}
 }
 \description{
-Sets up everything for the Shapley values computation in [shapr::explain()]
+Sets up everything for the Shapley values computation in \code{\link[=explain]{explain()}}
 }

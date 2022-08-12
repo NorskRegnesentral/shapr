@@ -94,7 +94,7 @@ prepare_data.copula <- function(internal, index_features = NULL, ...) {
 #' Sample conditional variables using the Gaussian copula approach
 #'
 #' @param index_given Integer vector. The indices of the features to condition upon. Note that
-#' \code{min(index_given) >= 1} and \code{max(index_given) <= m}.
+#' `min(index_given) >= 1` and `max(index_given) <= m`.
 #' @param m Positive integer. The total number of features.
 #' @param x_explain_gaussian Numeric matrix. Contains the observation whose predictions ought
 #' to be explained (test data),
@@ -142,11 +142,11 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_explain_gaus
 
 #' Transforms new data to a standardized normal distribution
 #'
-#' @param zx Numeric vector. The first \code{n_z} items are the Gaussian data, and the last part is
+#' @param zx Numeric vector. The first `n_z` items are the Gaussian data, and the last part is
 #' the data with the original transformation.
-#' @param n_z Positive integer. Number of elements of \code{zx} that belongs to new data.
+#' @param n_z Positive integer. Number of elements of `zx` that belongs to new data.
 #'
-#' @return Numeric vector of length \code{n_z}
+#' @return Numeric vector of length `n_z`
 #'
 #' @keywords internal
 #'
@@ -163,9 +163,9 @@ inv_gaussian_transform <- function(zx, n_z) {
 
 #' Transforms new data to standardized normal (dimension 1) based on other data transformations
 #'
-#' @param yx Numeric vector. The first \code{n_y} items is the data that is transformed, and last
+#' @param yx Numeric vector. The first `n_y` items is the data that is transformed, and last
 #' part is the data with the original transformation.
-#' @param n_y Positive integer. Number of elements of \code{yx} that belongs to the gaussian data.
+#' @param n_y Positive integer. Number of elements of `yx` that belongs to the gaussian data.
 #'
 #' @return Vector of back-transformed Gaussian data
 #'
@@ -187,7 +187,7 @@ gaussian_transform_separate <- function(yx, n_y) {
 #'
 #' @param x Numeric vector.The data which should be transformed to a standard normal distribution.
 #'
-#' @return Numeric vector of length \code{length(x)}
+#' @return Numeric vector of length `length(x)`
 #'
 #' @keywords internal
 #'

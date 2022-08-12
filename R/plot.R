@@ -2,63 +2,63 @@
 #'
 #' @description Plots the individual prediction explanations.
 #'
-#' @param x An \code{shapr} object.
+#' @param x An `shapr` object.
 #'  The output from [explain()].
 #' @param plot_type Character.
 #'  Specifies the type of plot to produce.
-#'  \code{"bar"} (the default) gives a regular horizontal bar plot of the Shapley value magnitudes.
-#'  \code{"waterfall"} gives a waterfall plot indicating the changes in the prediction score due to each features
+#'  `"bar"` (the default) gives a regular horizontal bar plot of the Shapley value magnitudes.
+#'  `"waterfall"` gives a waterfall plot indicating the changes in the prediction score due to each features
 #'  contribution (their Shapley values).
-#'  \code{"scatter"} plots the feature values on the x-axis and Shapley values on the y-axis, as well as
+#'  `"scatter"` plots the feature values on the x-axis and Shapley values on the y-axis, as well as
 #'  (optionally) a background scatter_hist showing the distribution of the feature data.
-#'  \code{"beeswarm"} summarises the distribution of the Shapley values along the x-axis for all the features.
+#'  `"beeswarm"` summarises the distribution of the Shapley values along the x-axis for all the features.
 #'  Each point gives the shapley value of a given instance, where the points are colored by the feature value
 #'  of that instance.
 #' @param digits Integer.
 #' Number of significant digits to use in the feature description
 #' @param plot_phi0 Logical.
-#' Whether to include \code{phi0} in the plot.
+#' Whether to include `phi0` in the plot.
 #' @param index_x_explain Integer vector.
 #' Which of the test observations to plot. E.g. if you have
-#' explained 10 observations using \code{\link{explain}}, you can generate a plot for the first 5
-#' observations by setting \code{index_x_explain = 1:5}.
+#' explained 10 observations using [explain()], you can generate a plot for the first 5
+#' observations by setting `index_x_explain = 1:5`.
 #' @param top_k_features Integer.
 #' How many features to include in the plot. E.g. if you have 15
 #' features in your model you can plot the 5 most important features, for each explanation, by setting
-#' \code{top_k_features = 1:5}.
+#' `top_k_features = 1:5`.
 #' @param col Character vector (length depends on plot type).
 #' The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
 #' Shapley values, respectively.
-#' The default is \code{col=NULL}, plotting with the default colors respective to the plot type.
-#' For \code{plot_type = "bar"} and \code{plot_type = "waterfall"}, the default is \code{c("#00BA38","#F8766D")}.
-#' For \code{plot_type = "beeswarm"}, the default is \code{c("#F8766D","yellow","#00BA38")}.
-#' For \code{plot_type = "scatter"}, the default is \code{"#619CFF"}.
+#' The default is `col=NULL`, plotting with the default colors respective to the plot type.
+#' For `plot_type = "bar"` and `plot_type = "waterfall"`, the default is `c("#00BA38","#F8766D")`.
+#' For `plot_type = "beeswarm"`, the default is `c("#F8766D","yellow","#00BA38")`.
+#' For `plot_type = "scatter"`, the default is `"#619CFF"`.
 #'
-#' If you want to alter the colors i the plot, the length of the \code{col} vector depends on plot type.
-#' For \code{plot_type = "bar"} or \code{plot_type = "waterfall"}, two colors should be provided, first for positive and
-#' then for negative Shapley values. For \code{plot_type = "beeswarm"}, either two or three colors can be given. If two
+#' If you want to alter the colors i the plot, the length of the `col` vector depends on plot type.
+#' For `plot_type = "bar"` or `plot_type = "waterfall"`, two colors should be provided, first for positive and
+#' then for negative Shapley values. For `plot_type = "beeswarm"`, either two or three colors can be given. If two
 #' colors are given, then the first color determines the color that points with high feature values will have, and the
 #' second determines the color of points with low feature values. If three colors are given, then the first colors high
 #' feature values, the second colors mid-range feature values, and the third colors low feature values. For instance,
-#' \code{col = c("red", "yellow", "blue")} will make high values red, mid-range values yellow, and low values blue. For
-#' \code{plot_type = "scatter"}, a single color is to be given, which determines the color of the points on the
+#' `col = c("red", "yellow", "blue")` will make high values red, mid-range values yellow, and low values blue. For
+#' `plot_type = "scatter"`, a single color is to be given, which determines the color of the points on the
 #' scatter plot.
 #' @param plot_order Character.
 #' Specifies what order to plot the features with respect to the magnitude of the shapley values.
-#'  \code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
-#'  \code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
-#'  \code{"original"} plots the features in the original order of the data table.
+#'  `"largest_first"` (the default) plots the features ordered from largest to smallest absolute Shapley value.
+#'  `"smallest_first"` plots the features ordered from smallest to largest absolute Shapley value.
+#'  `"original"` plots the features in the original order of the data table.
 #' @param scatter_features Integer or character vector.
-#' Only used for \code{plot_type = "scatter"}.
+#' Only used for `plot_type = "scatter"`.
 #' Specifies what features to include in (scatter) plot. Can be a numerical vector indicating feature index, or a
 #' character vector, indicating the name(s) of the feature(s) to plot.
 #' @param scatter_hist Logical.
-#' Only used for \code{plot_type = "scatter"}.
+#' Only used for `plot_type = "scatter"`.
 #' Whether to include a scatter_hist indicating the distribution of the data when making the scatter plot. Note that the
 #' bins are scaled so that when all the bins are stacked they fit the span of the y-axis of the plot.
 #' @param ... Currently not used.
 #'
-#' @details See the examples below, or \code{vignette("understanding_shapr", package = "shapr")} for an examples of
+#' @details See the examples below, or `vignette("understanding_shapr", package = "shapr")` for an examples of
 #' how you should use the function.
 #'
 #' @return ggplot object with plots of the Shapley value explanations

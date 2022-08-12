@@ -5,9 +5,9 @@
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(
-  x_train,
-  x_explain,
   model,
+  x_explain,
+  x_train,
   approach,
   prediction_zero,
   n_combinations = NULL,
@@ -22,18 +22,18 @@ explain(
 )
 }
 \arguments{
-\item{x_train}{Matrix or data.frame/data.table.
-Contains the data used to estimate the (conditional) distributions for the features
-needed to properly estimate the conditional expectations in the Shapley formula.}
+\item{model}{The model whose predictions we want to explain.
+Run \code{\link[=get_supported_models]{get_supported_models()}}
+for a table of which models \code{explain} supports natively. Unsupported models
+can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
+see details for more information.}
 
 \item{x_explain}{A matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.}
 
-\item{model}{The model whose predictions we want to explain.
-Run [get_supported_models()]
-for a table of which models \code{explain} supports natively. Unsupported models
-can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
-see details for more information.}
+\item{x_train}{Matrix or data.frame/data.table.
+Contains the data used to estimate the (conditional) distributions for the features
+needed to properly estimate the conditional expectations in the Shapley formula.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should,
@@ -78,7 +78,7 @@ Indicates whether the samples used in the Monte Carlo estimation of v_S should b
 
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
-(Run [get_supported_models()] for a list of natively supported
+(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported
 models.)
 The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
 and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
@@ -87,26 +87,26 @@ Can also be used to override the default function for natively supported model c
 
 \item{get_model_specs}{Function.
 An optional function for checking model/data consistency when \code{model} is not natively supported.
-(Run [get_supported_models()] for a list of natively supported
+(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported
 models.)
 The function takes \code{model} as argument and provides a list with 3 elements:
 \describe{
-  \item{labels}{Character vector with the names of each feature.}
-  \item{classes}{Character vector with the classes of each features.}
-  \item{factor_levels}{Character vector with the levels for any categorical features.}
+\item{labels}{Character vector with the names of each feature.}
+\item{classes}{Character vector with the classes of each features.}
+\item{factor_levels}{Character vector with the levels for any categorical features.}
 }
 If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
-\item{...}{Additional arguments passed to [setup_approach()] for specific approaches.}
+\item{...}{Additional arguments passed to \code{\link[=setup_approach]{setup_approach()}} for specific approaches.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-  \item{shapley_values}{data.table with the estimated Shapley values}
-  \item{internal}{List with the different parameters, data and functions used internally}
-  \item{pred_explain}{Numeric vector with the predictions for the explained observations.}
+\item{shapley_values}{data.table with the estimated Shapley values}
+\item{internal}{List with the different parameters, data and functions used internally}
+\item{pred_explain}{Numeric vector with the predictions for the explained observations.}
 }
 
 \code{shapley_values} is a data.table where the number of rows equals
@@ -122,17 +122,17 @@ The magnitude of the value is also important to notice. E.g. if \code{shapley_va
 \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
 feature was larger than the j-th feature.
 
-The first column in \code{dt}, called `none`, is the prediction value not assigned to any of the features
+The first column in \code{dt}, called \code{none}, is the prediction value not assigned to any of the features
 (\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
 It's equal for all observations and set by the user through the argument \code{prediction_zero}.
-The difference between the prediction and `none` is distributed among the other features.
+The difference between the prediction and \code{none} is distributed among the other features.
 In theory this value should be the expected prediction without conditioning on any features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable. [explain()] [shapr::explain()]
+such as the mean of the predictions in the training data are also reasonable. \code{\link[=explain]{explain()}} \code{\link[=explain]{explain()}}
 }
 \description{
-Computes Shapley values for observations in \code{x_explain} from the specified \code{model},
-by using the method specified in \code{approach} to estimate the conditional expectation \code{}
+Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
+\code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
 }
 \details{
 The most important thing to notice is that \code{shapr} has implemented five different
@@ -252,7 +252,7 @@ print(explain_groups$shapley_values)
 }
 \references{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
-  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
 Martin Jullum
