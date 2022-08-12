@@ -178,6 +178,8 @@ test_that("erroneous input: `x_train/x_explain`", {
   },
   error = T)
 
+
+
 })
 
 test_that("erroneous input: `model`", {
@@ -827,5 +829,43 @@ test_that("erroneous input: `get_model_specs`", {
 
 })
 
+test_that("incompatible input: `data/approach`", {
+  set.seed(123)
+
+  expect_snapshot({
+    # factor model/data with approach gaussian
+    non_factor_approach_1 <- "gaussian"
+    explain(x_train = x_explain_mixed,
+            x_explain_mixed,
+            model_lm_mixed,
+            approach = non_factor_approach_1,
+            prediction_zero = p0)
+  },
+  error = T)
+
+  expect_snapshot({
+    # factor model/data with approach empirical
+    non_factor_approach_2 <- "empirical"
+    explain(x_train = x_explain_mixed,
+            x_explain_mixed,
+            model_lm_mixed,
+            approach = non_factor_approach_2,
+            prediction_zero = p0)
+  },
+  error = T)
+
+  expect_snapshot({
+    # factor model/data with approach copula
+    non_factor_approach_3 <- "copula"
+    explain(x_train = x_explain_mixed,
+            x_explain_mixed,
+            model_lm_mixed,
+            approach = non_factor_approach_3,
+            prediction_zero = p0)
+  },
+  error = T)
+
+
+})
 
 

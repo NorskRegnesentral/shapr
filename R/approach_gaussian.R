@@ -4,6 +4,16 @@ setup_approach.gaussian <- function(internal,
                                     cov_mat = NULL, ...) {
   parameters <- internal$parameters
   x_train <- internal$data$x_train
+  feature_specs <- internal$objects$feature_specs
+
+  # Checking if factor features are present
+  if(any(feature_specs$classes=="factor")){
+    factor_features <- names(which(feature_specs$classes=="factor"))
+    factor_approaches <- get_factor_approaches()
+    stop(paste0("The following feature(s) are factor(s): ",factor_features,".\n",
+                "approach = 'gaussian' does not support factor features.\n",
+                "Please change approach to one of ",paste0(factor_approaches,collapse=", "),"."))
+  }
 
   # If mu is not provided directly, use mean of training data
   if (is.null(mu)) {

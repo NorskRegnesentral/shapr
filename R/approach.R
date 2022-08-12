@@ -58,3 +58,8 @@ insert_defaults <- function(internal, defaults) {
 
   return(internal)
 }
+
+#' @keywords internal
+get_factor_approaches <- function(){
+  c("'independence' (not recommended)", "'ctree'")
+}
