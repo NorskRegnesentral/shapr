@@ -10,6 +10,12 @@
     1: 40.752  7.2098 22.0306  0.41757 5.8050 -2.1733
     2: 40.752  5.5946 -1.7351 18.17269 1.3886  2.6399
 
+# output_lm_numeric_empirical_independence
+
+         none  Solar.R   Wind   Temp    Month     Day
+    1: 40.752  4.42903 19.814 12.271  0.77897 -4.0031
+    2: 40.752 -0.69895 10.523 25.541 -5.30094 -4.0031
+
 # output_lm_numeric_empirical_AICc_each
 
          none Solar.R   Wind    Temp   Month     Day

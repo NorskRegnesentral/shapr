@@ -15,6 +15,14 @@ test_that("output_lm_numeric_empirical", {
   )
 })
 
+test_that("output_lm_numeric_empirical_independence", {
+  set.seed(123)
+  expect_snapshot_rds(
+    explain(x_train_numeric, x_explain_numeric, model_lm_numeric, approach = "empirical", prediction_zero = p0, type = "independence"),
+    "output_lm_numeric_empirical_independence"
+  )
+})
+
 test_that("output_lm_numeric_empirical_AICc_each", {
   set.seed(123)
   expect_snapshot_rds(
