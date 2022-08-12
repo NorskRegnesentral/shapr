@@ -10,7 +10,7 @@ setup_computation(internal, model, predict_model)
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within
 \code{\link[=explain]{shapr:::explain()}}.
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{functions}, \code{output}.}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 
 \item{model}{Objects.
 The model object that ought to be explained}
@@ -26,12 +26,9 @@ Can also be used to override the default function for natively supported model c
 }
 \value{
 List \code{internal}
-It holds all parameters, data, functions and computed objects used within
-\code{\link[=explain]{shapr:::explain()}}.
+It holds all parameters, data, and computed objects used within \verb{[explain()]}.
 The list contains one or more of the elements \code{parameters}, \code{data},
-\code{functions}, \code{output}. \code{\link[=explain]{explain()}}
-\code{\link[roxygen2:roxygenize]{roxygen2::roxygenize()}}
-\code{\link[=explain]{explain()}}
+\code{output}.
 }
 \description{
 Sets up everything for the Shapley values computation in \code{\link[=explain]{explain()}}

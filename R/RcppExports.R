@@ -11,7 +11,7 @@
 #' @export
 #' @keywords internal
 #'
-#' @return Matrix of dimension `ncol(X)*ncol(X)`
+#' @return Matrix of dimension \code{ncol(X)*ncol(X)}
 #' @author Martin Jullum
 hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
     .Call(`_shapr_hat_matrix_cpp`, X, mcov, S_scale_dist, h)
@@ -19,7 +19,7 @@ hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
 
 #' sigma_hat_sq-function
 #'
-#' @param H Matrix. Output from [hat_matrix_cpp()]
+#' @param H Matrix. Output from \code{\link{hat_matrix_cpp}}
 #' @param y Vector, i.e. representing the response variable
 #'
 #' @export
@@ -82,11 +82,11 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 
 #' (Generalized) Mahalanobis distance
 #'
-#' Used to get the Euclidean distance as well by setting `mcov` = `diag(m)`.
+#' Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
 #'
 #' @param featureList List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.
-#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (`stats::cov(Xtrain_mat)`) gives Mahalanobis distance,
-#' `diag(m)` gives the Euclidean distance.
+#' @param mcov Matrix. The Sigma-matrix in the Mahalanobis distance formula (\code{stats::cov(Xtrain_mat)}) gives Mahalanobis distance,
+#' \code{diag(m)} gives the Euclidean distance.
 #' @param S_scale_dist Logical indicating
 #' @param Xtrain_mat Matrix
 #' @param Xtest_mat Matrix
@@ -107,32 +107,32 @@ sample_features_cpp <- function(m, n_features) {
 
 #' Get imputed data
 #'
-#' @param index_xtrain Positive integer. Represents a sequence of row indices from `xtrain`,
-#' i.e. `min(index_xtrain) >= 1` and `max(index_xtrain) <= nrow(xtrain)`.
+#' @param index_xtrain Positive integer. Represents a sequence of row indices from \code{xtrain},
+#' i.e. \code{min(index_xtrain) >= 1} and \code{max(index_xtrain) <= nrow(xtrain)}.
 #'
-#' @param index_s Positive integer. Represents a sequence of row indices from `S`,
-#' i.e. `min(index_s) >= 1` and `max(index_s) <= nrow(S)`.
+#' @param index_s Positive integer. Represents a sequence of row indices from \code{S},
+#' i.e. \code{min(index_s) >= 1} and \code{max(index_s) <= nrow(S)}.
 #'
 #' @param xtrain Numeric matrix.
 #'
 #' @param xtest Numeric matrix. Represents a single test observation.
 #'
-#' @param S Integer matrix of dimension `n_combinations x m`, where `n_combinations` equals
-#' the total number of sampled/non-sampled feature combinations and `m` equals
-#' the total number of unique features. Note that `m = ncol(xtrain)`. See details
+#' @param S Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations} equals
+#' the total number of sampled/non-sampled feature combinations and \code{m} equals
+#' the total number of unique features. Note that \code{m = ncol(xtrain)}. See details
 #' for more information.
 #'
-#' @details `S(i, j) = 1` if and only if feature `j` is present in feature
-#' combination `i`, otherwise `S(i, j) = 0`. I.e. if `m = 3`, there
-#' are `2^3 = 8` unique ways to combine the features. In this case `dim(S) = c(8, 3)`.
-#' Let's call the features `x1, x2, x3` and take a closer look at the combination
-#' represented by `s = c(x1, x2)`. If this combination is represented by the second row,
-#' the following is true: `S[2, 1:3] = c(1, 1, 0)`.
+#' @details \code{S(i, j) = 1} if and only if feature \code{j} is present in feature
+#' combination \code{i}, otherwise \code{S(i, j) = 0}. I.e. if \code{m = 3}, there
+#' are \code{2^3 = 8} unique ways to combine the features. In this case \code{dim(S) = c(8, 3)}.
+#' Let's call the features \code{x1, x2, x3} and take a closer look at the combination
+#' represented by \code{s = c(x1, x2)}. If this combination is represented by the second row,
+#' the following is true: \code{S[2, 1:3] = c(1, 1, 0)}.
 #'
-#' The returned object, `X`, is a numeric matrix where
-#' `dim(X) = c(length(index_xtrain), ncol(xtrain))`. If feature `j` is present in
-#' the k-th observation, that is `S[index_[k], j] == 1`, `X[k, j] = xtest[1, j]`.
-#' Otherwise `X[k, j] = xtrain[index_xtrain[k], j]`.
+#' The returned object, \code{X}, is a numeric matrix where
+#' \code{dim(X) = c(length(index_xtrain), ncol(xtrain))}. If feature \code{j} is present in
+#' the k-th observation, that is \code{S[index_[k], j] == 1}, \code{X[k, j] = xtest[1, j]}.
+#' Otherwise \code{X[k, j] = xtrain[index_xtrain[k], j]}.
 #'
 #' @export
 #' @keywords internal
@@ -150,9 +150,9 @@ observation_impute_cpp <- function(index_xtrain, index_s, xtrain, xtest, S) {
 #' vector representing a valid combination of features/feature groups.
 #' @param m Integer. Number of features/feature groups
 #' @param n Integer. Number of combinations
-#' @param w Numeric vector of length `n`, i.e. `w[i]` equals
-#' the Shapley weight of feature/feature group combination `i`, represented by
-#' `subsets[[i]]`.
+#' @param w Numeric vector of length \code{n}, i.e. \code{w[i]} equals
+#' the Shapley weight of feature/feature group combination \code{i}, represented by
+#' \code{subsets[[i]]}.
 #'
 #' @export
 #' @keywords internal

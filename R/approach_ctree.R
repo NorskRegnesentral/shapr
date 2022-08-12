@@ -13,22 +13,12 @@ setup_approach.ctree <- function(internal,
 }
 
 
+#' @inheritParams default_doc
 #' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
 #' used for different numbers of conditioned features, this will be a list with the features to pass.
 #'
-#' @param  mc_cores Integer. Only for class `ctree` currently. The number of cores to use in paralellization of the
-#' tree building (`create_ctree`) and tree sampling (`sample_ctree`). Defaults to 1. Note: Uses
-#' parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows systems.
-#'
-#' @param  mc_cores_create_ctree Integer. Same as `mc_cores`, but specific for the tree building function
-#' #' Defaults to `mc_cores`.
-#'
-#' @param  mc_cores_sample_ctree Integer. Same as `mc_cores`, but specific for the tree building prediction
-#' function.
-#' Defaults to `mc_cores`.
-#'
 #' @rdname prepare_data
-#' @export
+#' @keywords internal
 prepare_data.ctree <- function(internal, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
@@ -73,7 +63,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
       n_samples = n_samples,
       x_explain = x_explain[i, , drop = FALSE],
       x_train = x_train,
-      p = n_features,
+      n_features = n_features,
       sample = sample
     )
 
@@ -119,28 +109,6 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
 #'
 #' @keywords internal
 #' @author Annabelle Redelmeier, Martin Jullum
-#'
-#' @export
-#'
-#' @examples
-#' if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
-#'   m <- 10
-#'   n <- 40
-#'   n_samples <- 50
-#'   mu <- rep(1, m)
-#'   cov_mat <- cov(matrix(rnorm(n * m), n, m))
-#'   x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
-#'   given_ind <- c(4, 7)
-#'   mincriterion <- 0.95
-#'   minsplit <- 20
-#'   minbucket <- 7
-#'   sample <- TRUE
-#'   create_ctree(
-#'     given_ind = given_ind, x_train = x_train,
-#'     mincriterion = mincriterion, minsplit = minsplit,
-#'     minbucket = minbucket, use_partykit = "on_error"
-#'   )
-#' }
 create_ctree <- function(given_ind,
                          x_train,
                          mincriterion,
@@ -214,11 +182,11 @@ create_ctree <- function(given_ind,
 #' @param n_samples Numeric. Indicates how many samples to use for MCMC.
 #'
 #' @param x_explain Matrix, data.frame or data.table with the features of the observation whose
-#' predictions ought to be explained (test data). Dimension `1xp` or `px1`.
+#' predictions ought to be explained (test data). Dimension `1\timesp` or `p\times1`.
 #'
 #' @param x_train Matrix, data.frame or data.table with training data.
 #'
-#' @param p Positive integer. The number of features.
+#' @param n_features Positive integer. The number of features.
 #'
 #' @param sample Boolean. True indicates that the method samples from the terminal node
 #' of the tree whereas False indicates that the method takes all the observations if it is
@@ -229,46 +197,17 @@ create_ctree <- function(given_ind,
 #' @keywords internal
 #'
 #' @author Annabelle Redelmeier
-#'
-#' @examples
-#' if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
-#'   m <- 10
-#'   n <- 40
-#'   n_samples <- 50
-#'   mu <- rep(1, m)
-#'   cov_mat <- cov(matrix(rnorm(n * m), n, m))
-#'   x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
-#'   x_explain <- MASS::mvrnorm(1, mu, cov_mat)
-#'   x_explain_dt <- data.table::setDT(as.list(x_explain))
-#'   given_ind <- c(4, 7)
-#'   dependent_ind <- (1:dim(x_train)[2])[-given_ind]
-#'   x <- x_train[, given_ind, with = FALSE]
-#'   y <- x_train[, dependent_ind, with = FALSE]
-#'   df <- data.table::data.table(cbind(y, x))
-#'   colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
-#'   ynam <- paste0("Y", 1:ncol(y))
-#'   fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
-#'   datact <- party::ctree(fmla, data = df, controls = party::ctree_control(
-#'     minbucket = 7,
-#'     mincriterion = 0.95
-#'   ))
-#'   tree <- list(tree = datact, given_ind = given_ind, dependent_ind = dependent_ind)
-#'   shapr:::sample_ctree(
-#'     tree = tree, n_samples = n_samples, x_explain = x_explain_dt, x_train = x_train,
-#'     p = length(x_explain), sample = TRUE
-#'   )
-#' }
 sample_ctree <- function(tree,
                          n_samples,
                          x_explain,
                          x_train,
-                         p,
+                         n_features,
                          sample) {
   datact <- tree$tree
   using_partykit <- (class(datact)[1] != "BinaryTree")
 
   cnms <- colnames(x_explain)
-  if (length(tree$given_ind) %in% c(0, p)) {
+  if (length(tree$given_ind) %in% c(0, n_features)) {
     ret <- x_explain
   } else {
     given_ind <- tree$given_ind

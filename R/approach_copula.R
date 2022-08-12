@@ -43,6 +43,7 @@ setup_approach.copula <- function(internal, ...) {
   return(internal)
 }
 
+#' @inheritParams default_doc
 #' @rdname prepare_data
 #' @export
 prepare_data.copula <- function(internal, index_features = NULL, ...) {

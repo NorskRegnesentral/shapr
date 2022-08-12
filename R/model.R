@@ -1,12 +1,18 @@
-#' Generate predictions for different model classes
+#' Generate predictions for input data with specified model
 #'
-#' @description Performs prediction of response [stats::lm()], [stats::glm()],
-#' [ranger::ranger()],  [mgcv::gam()] and
+#' @description Performs prediction of response
+#' [stats::lm()],
+#' [stats::glm()],
+#' [ranger::ranger()],
+#' [mgcv::gam()] and
 #' [xgboost::xgb.train()] with binary or continuous
 #' response. See details for more information.
 #'
+#' NOTE: You should never need to call this function explicitly.
+#' It is exported just to be easier accessible for users, see details.
+#'
 #' @param x Model object for the model to be explained.
-#' @param newdata A data frame (or matrix) in which to look for variables with which to predict.
+#' @param newdata A data.frame/data.table with the features to predict from.
 #'
 #' @details The following models are currently supported:
 #' \itemize{
@@ -17,21 +23,18 @@
 #' \item [xgboost::xgb.train()]
 #' }
 #'
-#' The returned object `p` always satisfies the following properties:
-#' \itemize{
-#' \item `is.atomic(p)` equals `TRUE`
-#' \item `is.double(p)` equals `TRUE`
-#' }
-#'
 #' If you have a binary classification model we'll always return the probability prediction
 #' for a single class.
 #'
-#' For more details on how to explain other types of models (i.e. custom models), see the Advanced usage section
+#' If you are explaining a model not supported natively, you need to create the `[predict_model()]` function yourself,
+#' and pass it on to as an argument to `[explain()]`.
+#'
+#' For more details on how to explain such non-supported models (i.e. custom models), see the Advanced usage section
 #' of the vignette: \cr
 #' From R: `vignette("understanding_shapr", package = "shapr")`  \cr
 #' Web: <https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models>
 #'
-#' @return Numeric
+#' @return Numeric. Vector of size equal to the number of rows in `newdata`.
 #'
 #' @export
 #' @keywords internal
@@ -69,7 +72,7 @@ predict_model.default <- function(x, newdata) {
 
 
 
-#' Check that the type of model is supported by the explanation method
+#' Check that the type of model is supported by the native implementation of the model class
 #'
 #' @description The function checks whether the model given by `x` is supported.
 #' If `x` is not a supported model the function will return an error message, otherwise it return NULL
@@ -77,27 +80,11 @@ predict_model.default <- function(x, newdata) {
 #'
 #' @inheritParams predict_model
 #'
-#' @details See [predict_model()] for more information about
-#' what type of models `shapr` currently support.
+#' @seealso See [predict_model()] for more information about what type of models `shapr` currently support.
 #'
 #' @return Error or NULL
 #'
-#' @export
 #' @keywords internal
-#'
-#' @examples
-#' # Load example data
-#' data("airquality")
-#' airquality <- airquality[complete.cases(airquality), ]
-#' # Split data into test- and training data
-#' x_train <- head(airquality, -3)
-#' x_explain <- tail(airquality, 3)
-#' # Fit a linear model
-#' model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
-#'
-#' # Checking the model object
-#' model_checker(x = model)
-#'
 model_checker <- function(x) {
   UseMethod("model_checker", x)
 }
@@ -113,12 +100,18 @@ model_checker.default <- function(x) {
 
 
 
-#' Fetches feature information from a given model object
+#' Fetches feature information from natively supported models
 #'
 #' @inheritParams predict_model
 #'
-#' @details This function is used to extract the feature information to be checked against data passed to `shapr`
-#' and `explain`. The function is called from `preprocess_data`.
+#' @description This function is used to extract the feature information from the model to be checked against the
+#' corresponding feature information in the data passed to `[explain()]`.
+#'
+#' NOTE: You should never need to call this function explicitly.
+#' It is exported just to be easier accessible for users, see details.
+#'
+#' @details If you are explaining a model not supported natively, you may (optionally) enable such checking by
+#' creating this function yourself and passing it on to `[explain()]`.
 #'
 #' @return A list with the following elements:
 #' \describe{
@@ -127,6 +120,9 @@ model_checker.default <- function(x) {
 #'   \item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
 #'   (NULL if the feature is not a factor)}
 #' }
+#'
+#' @seealso For model classes not supported natively, you NEED to create an analogue to `[predict_model()]`. See it's
+#' help file for details.
 #'
 #' @author Martin Jullum
 #'
@@ -151,7 +147,7 @@ get_model_specs <- function(x) {
 #' @rdname get_model_specs
 get_model_specs.default <- function(x) {
 
-  # For custom models where there is no
+  # For custom models where there is no information
   return(list(labels = NA, classes = NA, factor_levels = NA))
 }
 

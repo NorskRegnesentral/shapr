@@ -139,10 +139,10 @@
 #'
 #' # Split data into test- and training data
 #' data_train <- head(airquality, -3)
-#' data_test <- tail(airquality, 3)
+#' data_explain <- tail(airquality, 3)
 #'
 #' x_train <- data_train[, x_var]
-#' x_test <- data_test[,x_var]
+#' x_explain <- data_explain[,x_var]
 #'
 #' # Fit a linear model
 #' lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
@@ -153,9 +153,9 @@
 #'
 #' # Empirical approach
 #' explain1 <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   approach = "empirical",
 #'   prediction_zero = p,
 #'   n_samples = 1e2
@@ -163,9 +163,9 @@
 #'
 #' # Gaussian approach
 #' explain2 <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = p,
 #'   n_samples = 1e2
@@ -173,9 +173,9 @@
 #'
 #' # Gaussian copula approach
 #' explain3 <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   approach = "copula",
 #'   prediction_zero = p,
 #'   n_samples = 1e2
@@ -183,9 +183,9 @@
 #'
 #' # ctree approach
 #' explain4 <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   approach = "ctree",
 #'   prediction_zero = p,
 #'   n_samples = 1e2
@@ -194,9 +194,9 @@
 #' # Combined approach
 #' approach <- c("gaussian", "gaussian", "empirical", "empirical")
 #' explain5 <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   approach = approach,
 #'   prediction_zero = p,
 #'   n_samples = 1e2
@@ -215,9 +215,9 @@
 #' group_list <- list(A = c("Temp", "Month"), B = c("Wind", "Solar.R"))
 #'
 #' explain_groups <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   group = group_list,
 #'   approach = "empirical",
 #'   prediction_zero = p,

@@ -10,7 +10,7 @@ compute_vS(internal, model, predict_model, method = "future")
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within
 \code{\link[=explain]{shapr:::explain()}}.
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{functions}, \code{output}.}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 
 \item{model}{Objects.
 The model object that ought to be explained}

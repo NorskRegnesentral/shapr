@@ -24,6 +24,11 @@ prepare_data(internal, ...)
 \method{prepare_data}{independence}(internal, index_features = NULL, ...)
 }
 \arguments{
+\item{internal}{List.
+Holds all parameters, data, functions and computed objects used within
+\code{\link[=explain]{shapr:::explain()}}.
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
+
 \item{...}{Currently not used.}
 
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
@@ -32,17 +37,6 @@ used for different numbers of conditioned features, this will be a list with the
 \item{x}{Explainer object. See \code{\link[=explain]{explain()}} for more information.}
 
 \item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
-
-\item{mc_cores}{Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
-tree building (\code{create_ctree}) and tree sampling (\code{sample_ctree}). Defaults to 1. Note: Uses
-parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows systems.}
-
-\item{mc_cores_create_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building function
-#' Defaults to \code{mc_cores}.}
-
-\item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction
-function.
-Defaults to \code{mc_cores}.}
 }
 \value{
 A data.table containing simulated data passed to prediction().
