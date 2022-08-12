@@ -626,3 +626,36 @@
       A basic function test threw the following error:
       Error in 1 + "bla": non-numeric argument to binary operator
 
+# incompatible input: `data/approach`
+
+    Code
+      non_factor_approach_1 <- "gaussian"
+      explain(x_train = x_explain_mixed, x_explain_mixed, model_lm_mixed, approach = non_factor_approach_1,
+        prediction_zero = p0)
+    Error <simpleError>
+      The following feature(s) are factor(s): Month_factor.
+      approach = 'gaussian' does not support factor features.
+      Please change approach to one of 'independence' (not recommended), 'ctree'.
+
+---
+
+    Code
+      non_factor_approach_2 <- "empirical"
+      explain(x_train = x_explain_mixed, x_explain_mixed, model_lm_mixed, approach = non_factor_approach_2,
+        prediction_zero = p0)
+    Error <simpleError>
+      The following feature(s) are factor(s): Month_factor.
+      approach = 'empirical' does not support factor features.
+      Please change approach to one of 'independence' (not recommended), 'ctree'.
+
+---
+
+    Code
+      non_factor_approach_3 <- "copula"
+      explain(x_train = x_explain_mixed, x_explain_mixed, model_lm_mixed, approach = non_factor_approach_3,
+        prediction_zero = p0)
+    Error <simpleError>
+      The following feature(s) are factor(s): Month_factor.
+      approach = 'copula' does not support factor features.
+      Please change approach to one of 'independence' (not recommended), 'ctree'.
+

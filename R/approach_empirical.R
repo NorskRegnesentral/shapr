@@ -14,6 +14,19 @@ setup_approach.empirical <- function(internal,
 
   internal <- insert_defaults(internal, defaults)
 
+  # Checking if factor features are present
+  feature_specs <- internal$objects$feature_specs
+  if(any(feature_specs$classes=="factor")){
+    factor_features <- names(which(feature_specs$classes=="factor"))
+    factor_approaches <- get_factor_approaches()
+    stop(
+      paste0("The following feature(s) are factor(s): ",factor_features,".\n",
+             "approach = 'empirical' does not support factor features.\n",
+             "Please change approach to one of ",paste0(factor_approaches,collapse=", "),".")
+    )
+  }
+
+
   if (internal$parameters$type == "independence") {
     warning(paste0(
       "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
