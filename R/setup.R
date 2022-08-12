@@ -2,11 +2,19 @@
 
 #' check_setup
 #' @inheritParams explain
-#' @param ignore_model Whether to ignore any checking related to model.
+#' @param feature_specs List. The output from [get_model_specs()] or [get_data_specs()].
+#' Contains the 3 elements:
+#' \describe{
+#'   \item{labels}{Character vector with the names of each feature.}
+#'   \item{classes}{Character vector with the classes of each features.}
+#'   \item{factor_levels}{Character vector with the levels for any categorical features.}
+#'   }
+#' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
+#' never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
+#' running the AICc-versions of the empirical as that requires data based optimization.
 #' @export
 setup <- function(x_train,
                   x_explain,
-                  model,
                   approach,
                   prediction_zero,
                   n_combinations,
@@ -15,9 +23,8 @@ setup <- function(x_train,
                   n_batches,
                   seed,
                   keep_samp_for_vS,
-                  predict_model,
-                  get_model_specs,
-                  ignore_model = FALSE, ...) {
+                  feature_specs,
+                  is_python = FALSE, ...) {
   internal <- list()
 
   internal$parameters <- get_parameters(
@@ -29,7 +36,7 @@ setup <- function(x_train,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    ignore_model = ignore_model, ...
+    is_python = is_python, ...
   )
 
   internal$data <- get_data(
@@ -37,17 +44,7 @@ setup <- function(x_train,
     x_explain
     )
 
-  internal$funcs <- get_funcs(
-    predict_model,
-    get_model_specs,
-    model = model,
-    ignore_model = internal$parameters$ignore_model
-  )
-
-  internal$objects <- get_objects(
-    internal$funcs$get_model_specs,
-    model
-  )
+  internal$objects <- list(feature_specs=feature_specs)
 
   check_data(internal)
 
@@ -97,20 +94,6 @@ check_n_batches <- function(internal){
 }
 
 
-#' @keywords internal
-get_objects <- function(get_model_specs,model){
-
-  objects <- list()
-
-  # Extracting model specs from model
-  if (is.function(get_model_specs)) {
-    objects$feature_specs <- get_model_specs(model)
-  } else {
-    objects$feature_specs <- NULL
-  }
-
-  return(objects)
-}
 
 
 
@@ -254,7 +237,7 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, ignore_model = FALSE, ...) {
+                           n_batches, seed, keep_samp_for_vS, is_python, ...) {
 
   # Check input type for approach
 
@@ -313,22 +296,12 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    ignore_model = ignore_model
+    is_python = is_python
   )
 
   # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
 
-  # Setting ignore_model to FALSE if not provided by
-  # and checking its type
-  if (is.null(ignore_model)) {
-    parameters$ignore_model <- FALSE
-  } else {
-    if(!(is.logical(ignore_model) &&
-         length(ignore_model)==1)){
-      stop("`ignore_model` must be NULL or a single logical.")
-    }
-  }
 
   # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
@@ -369,56 +342,6 @@ get_data <- function(x_train, x_explain) {
   )
 }
 
-get_funcs <- function(predict_model, get_model_specs, model, ignore_model) {
-  model_class <- NULL # due to NSE
-
-  class <- class(model)
-
-  # predict_model
-  if(!(is.function(predict_model)) &&
-     !(is.null(predict_model))){
-    stop("`predict_model` must be NULL or a function.")
-  }
-  # get_model_specs
-  if(!is.function(get_model_specs) &&
-     !is.null(get_model_specs) &&
-     !is.na(get_model_specs)){
-    stop("`get_model_specs` must be NULL, NA or a function.") # NA is used to avoid using internally defined get_model_specs where this is defined and not valid for the specified model
-  }
-
-  funcs <- list(
-    predict_model = predict_model,
-    get_model_specs = get_model_specs
-  )
-
-  supported_models <- get_supported_models()
-
-  if (!ignore_model) {
-    if (is.null(funcs$predict_model)) {
-      # Get internal definition of predict_model if exists
-      native_func_available <- supported_models[predict_model == TRUE, class %in% model_class]
-      if (native_func_available) {
-        funcs$predict_model <- get(paste0("predict_model.", class))
-      } else {
-        stop(
-          "You passed a model to explain() which is not natively supported, and did not supply the 'predict_model' ",
-          "function to explain().\n",
-          "See ?shapr::explain or the vignette for more information on how to run shapr with custom models."
-        )
-      }
-    }
-
-    if (is.null(funcs$get_model_specs)) {
-      # Get internal definition of get_model_specs if exists
-      native_func_available <- supported_models[get_model_specs == TRUE, class %in% model_class]
-      if (native_func_available) {
-        funcs$get_model_specs <- get(paste0("get_model_specs.", class))
-      }
-    }
-  }
-
-  return(funcs)
-}
 
 
 

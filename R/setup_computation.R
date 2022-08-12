@@ -2,21 +2,17 @@
 #' Sets up everything for the Shapley values computation in [shapr::explain()]
 #'
 #' @inheritParams default_doc
+#' @inheritParams explain
 #' @inherit default_doc
 #' @export
-setup_computation <- function(internal, model) {
-  # model only needed for type AICc of approach empirical, otherwise ignored
-
-  # TODO: Consider moving this to the initial checking function
-  # Checking the format of approach
-  check_approach(internal)
-
+setup_computation <- function(internal, model, predict_model) {
+  # model and predict_model are only needed for type AICc of approach empirical, otherwise ignored
 
   # setup the Shapley framework
   internal <- shapley_setup(internal)
 
   # Setup for approach
-  internal <- setup_approach(internal, model = model)
+  internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
   return(internal)
 }

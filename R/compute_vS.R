@@ -2,43 +2,46 @@
 #' Computes \code{v(S)} for all features subsets \code{S}.
 #'
 #' @inheritParams default_doc
+#' @inheritParams explain
 #'
 #' @param method Character
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
 #' @export
-compute_vS <- function(internal, model, method = "lapply") {
-  if (method == "lapply") {
-    ret <- progress_run_batch(S_batch = internal$objects$S_batch, internal = internal, model = model)
+compute_vS <- function(internal, model, predict_model, method = "future") {
+
+  S_batch <- internal$objects$S_batch
+
+  if (method == "future") {
+    ret <- future_compute_vS_batch(S_batch = S_batch,
+                                   internal = internal,
+                                   model = model,
+                                   predict_model = predict_model)
   } else {
-    keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+
+    # Doing the same as above without future without progressbar or paralellization
     ret <- list()
+    for (i in seq_along(S_batch)) {
+      S <- S_batch[[i]]
 
-    for (i in seq_along(internal$objects$S_batch)) {
-      S <- internal$objects$S_batch[[i]]
-      dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
-      compute_preds(dt, internal, model) # Updating dt by reference
-
-      dt_vS <- compute_MCint(dt)
-
-      if (keep_samp_for_vS) {
-        ret[[i]] <- list(dt_vS = dt_vS, dt_samp_for_vS = dt)
-      } else {
-        ret[[i]] <- copy(dt_vS)
-      }
+      ret[[i]] <- batch_compute_vS(S=S,
+                                   internal = internal,
+                                   model = model,
+                                   predict_model = predict_model)
     }
   }
 
   return(ret)
 }
 
-progress_run_batch <- function(S_batch, internal, model) {
+future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
   p <- progressr::progressor(sum(lengths(S_batch)))
   ret <- future.apply::future_lapply(
     X = S_batch,
-    FUN = run_batch, # TODO: Change name on run_batch
+    FUN = batch_compute_vS,
     internal = internal,
     model = model,
+    predict_model = predict_model,
     p = p,
     future.seed = internal$parameters$seed
   )
@@ -47,16 +50,23 @@ progress_run_batch <- function(S_batch, internal, model) {
 
 
 #' @keywords internal
-run_batch <- function(S, internal, model, p) {
+batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+  feature_names <- internal$parameters$feature_names
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
-  compute_preds(dt, internal, model) # Updating dt by reference
+
+  compute_preds(dt,   # Updating dt by reference
+                feature_names = feature_names,
+                predict_model = predict_model,
+                model)
 
   dt_vS <- compute_MCint(dt)
 
-  p(amount = length(S),
-    message = "Estimating v(S)") # TODO: Add a message to state what batch has been computed
+  if(!is.null(p)){
+    p(amount = length(S),
+      message = "Estimating v(S)") # TODO: Add a message to state what batch has been computed
+  }
 
   if (keep_samp_for_vS) {
     return(list(dt_vS = dt_vS, dt_samp_for_vS = dt))
@@ -68,7 +78,6 @@ run_batch <- function(S, internal, model, p) {
 #' @keywords internal
 batch_prepare_vS <- function(S, internal) {
   id <- id_combination <- NULL # due to NSE notes in R CMD check
-
 
   max_id_combination <- internal$parameters$n_combinations
   x_explain <- internal$data$x_explain
@@ -91,14 +100,11 @@ batch_prepare_vS <- function(S, internal) {
 }
 
 #' @keywords internal
-compute_preds <- function(dt, internal, model) {
+compute_preds <- function(dt, feature_names, predict_model, model) {
   id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
 
-  # Setup
-  feature_names <- internal$parameters$feature_names
-
   # Predictions
-  dt[id_combination != 1, p_hat := internal$funcs$predict_model(model, newdata = .SD), .SDcols = feature_names]
+  dt[id_combination != 1, p_hat := predict_model(model, newdata = .SD), .SDcols = feature_names]
 
   return(dt)
 }
