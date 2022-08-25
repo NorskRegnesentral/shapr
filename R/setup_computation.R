@@ -227,40 +227,60 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   w <- shapley_weights(m = m, N = n, n_features) * n
   p <- w / sum(w)
 
-  # Sample number of chosen features ----------
-  X <- data.table::data.table(
-    n_features = c(
-      0,
-      sample(
-        x = n_features,
-        size = n_combinations,
-        replace = TRUE,
-        prob = p
-      ),
-      m
+  X_res = data.table()
+
+  while (nrow(X_res) < n_combinations) {
+
+    # Sample number of chosen features ----------
+    X <- data.table::data.table(
+      n_features = c(
+        0,
+        sample(
+          x = n_features,
+          size = 10000, # This is just a rough guess of how many samples we should use
+          replace = TRUE,
+          prob = p
+        ),
+        m
+      )
     )
-  )
-  X[, n_features := as.integer(n_features)]
+    X[, n_features := as.integer(n_features)]
 
-  # Sample specific set of features -------
-  data.table::setkeyv(X, "n_features")
-  feature_sample <- sample_features_cpp(m, X[["n_features"]])
+    # Sample specific set of features -------
+    data.table::setkeyv(X, "n_features")
+    feature_sample <- sample_features_cpp(m, X[["n_features"]])
 
-  # Get number of occurences and duplicated rows-------
-  is_duplicate <- NULL # due to NSE notes in R CMD check
-  r <- helper_feature(m, feature_sample)
-  X[, is_duplicate := r[["is_duplicate"]]]
+    # Get number of occurences and duplicated rows-------
+    is_duplicate <- NULL # due to NSE notes in R CMD check
+    r <- helper_feature(m, feature_sample)
+    X[, is_duplicate := r[["is_duplicate"]]]
 
-  # When we sample combinations the Shapley weight is equal
-  # to the frequency of the given combination
-  X[, shapley_weight := r[["sample_frequence"]]]
+    # When we sample combinations the Shapley weight is equal
+    # to the frequency of the given combination
+    X[, shapley_weight := r[["sample_frequence"]]]
 
-  # Populate table and remove duplicated rows -------
-  X[, features := feature_sample]
-  if (any(X[["is_duplicate"]])) {
-    X <- X[is_duplicate == FALSE]
+    # Populate table and remove duplicated rows -------
+    X[, features := feature_sample]
+    if (any(X[["is_duplicate"]])) {
+      X <- X[is_duplicate == FALSE]
+    }
+    X[, is_duplicate := NULL]
+
+    # To be able to aggregate by feature it can't be a list
+    X[, features_tmp := sapply(features, paste, collapse = " ")]
+
+    X_res = rbindlist(list(X_res, X), use.names = TRUE)
+
+    # Aggregate weights by how many samples of a combination we observe
+    X_res = X_res[, .(n_features = data.table::first(n_features),
+                      shapley_weight = sum(shapley_weight),
+                      features = features[1]), features_tmp]
+
   }
-  X[, is_duplicate := NULL]
+
+  X_res[, features_tmp := NULL]
+  X = data.table::copy(X_res); rm(X_res)
+  data.table::setorder(X, n_features)
 
   # Add shapley weight and number of combinations
   X[c(1, .N), shapley_weight := weight_zero_m]
