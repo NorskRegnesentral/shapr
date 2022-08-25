@@ -28,7 +28,7 @@
 #' such as the mean of the predictions in the training data are also reasonable.
 #'
 #' @param n_combinations Integer.
-#' The number of feature combinations to sample. If \code{NULL},
+#' The number of unique feature combinations to sample. If \code{NULL},
 #' the exact method is used and all combinations are considered. The maximum number of
 #' combinations equals \code{2^ncol(x)}.
 #'

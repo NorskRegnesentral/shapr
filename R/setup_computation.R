@@ -237,7 +237,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
         0,
         sample(
           x = n_features,
-          size = 10000, # This is just a rough guess of how many samples we should use
+          size = n_combinations - nrow(X_res), # This is just a rough guess of how many samples we should use
           replace = TRUE,
           prob = p
         ),
@@ -266,7 +266,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
     }
     X[, is_duplicate := NULL]
 
-    # To be able to aggregate by feature it can't be a list
+    # Make feature list into character
     X[, features_tmp := sapply(features, paste, collapse = " ")]
 
     X_res = rbindlist(list(X_res, X), use.names = TRUE)
@@ -279,6 +279,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   }
 
   X_res[, features_tmp := NULL]
+
   X = data.table::copy(X_res); rm(X_res)
   data.table::setorder(X, n_features)
 
