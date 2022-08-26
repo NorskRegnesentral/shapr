@@ -22,7 +22,7 @@ get_model_specs.gam <- function(x) {
   model_checker(x) # Checking if the model is supported
 
   feature_specs <- list()
-  feature_specs$labels <- labels(x$terms)
+  feature_specs$labels <- all.vars(formula(x))[-1]
   m <- length(feature_specs$labels)
 
   feature_specs$classes <- attr(x$terms, "dataClasses")[-1]
