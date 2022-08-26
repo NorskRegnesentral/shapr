@@ -237,7 +237,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
         0,
         sample(
           x = n_features,
-          size = n_combinations - nrow(X_res), # This is just a rough guess of how many samples we should use
+          size = n_combinations - nrow(X_res),
           replace = TRUE,
           prob = p
         ),
