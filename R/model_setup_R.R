@@ -8,7 +8,7 @@ get_feature_specs <- function(get_model_specs, model){
 
   model_class <- NULL # due to NSE
 
-  model_class0 <- class(model)
+  model_class0 <- class(model)[1]
 
   # get_model_specs
   if(!is.function(get_model_specs) &&
