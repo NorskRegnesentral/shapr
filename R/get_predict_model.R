@@ -12,7 +12,7 @@ get_predict_model <- function(x_test, predict_model, model) {
 
   model_class <- NULL # due to NSE
 
-  model_class0 <- class(model)
+  model_class0 <- class(model)[1]
 
   # checks predict_model
   if(!(is.function(predict_model)) &&
