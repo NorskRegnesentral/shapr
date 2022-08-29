@@ -230,7 +230,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   X_res = data.table()
 
   while (nrow(X_res) < n_combinations) {
-
+  cat("Sampling", n_combinations - nrow(X_res), "samples\n")
     # Sample number of chosen features ----------
     X <- data.table::data.table(
       n_features = c(
