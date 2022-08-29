@@ -26,6 +26,8 @@ get_model_specs.gam <- function(x) {
   m <- length(feature_specs$labels)
 
   feature_specs$classes <- attr(x$terms, "dataClasses")[-1]
+  # Use same order as labels for classes
+  feature_specs$classes <- feature_specs$classes[feature_specs$labels]
   feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
   feature_specs$factor_levels[names(x$xlevels)] <- x$xlevels
 
