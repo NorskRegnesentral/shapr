@@ -868,7 +868,7 @@ test_that("incompatible input: `data/approach`", {
 
 })
 
-test_that("Correct dimension of S", {
+test_that("Correct dimension of S when sampling combinations", {
 
   n_combinations = 10
 
