@@ -227,14 +227,12 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   w <- shapley_weights(m = m, N = n, n_features) * n
   p <- w / sum(w)
 
-  # X_res = data.table()
   feature_sample_all = list()
   unique_samples = 0
-  time1 <<- Sys.time()
-  while (unique_samples < n_combinations) {
-    # cat("Sampling", n_combinations - unique_samples, "samples\n")
-    # Sample number of chosen features ----------
 
+  while (unique_samples < n_combinations) {
+
+    # Sample number of chosen features ----------
     n_features_sample = c(
       0,
       sample(
@@ -251,8 +249,8 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
     feature_sample <- sample_features_cpp(m, n_features_sample)
     feature_sample_all <- c(feature_sample_all, feature_sample)
     unique_samples = length(unique(feature_sample_all))
-    # X_res = rbindlist(list(X_res, X))
   }
+
   X = data.table(n_features = sapply(feature_sample_all, length))
   X[, n_features := as.integer(n_features)]
 
@@ -276,17 +274,12 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   # Make feature list into character
   X[, features_tmp := sapply(features, paste, collapse = " ")]
 
-  #X_res = rbindlist(list(X_res, X), use.names = TRUE)
-
   # Aggregate weights by how many samples of a combination we observe
   X = X[, .(n_features = data.table::first(n_features),
             shapley_weight = sum(shapley_weight),
             features = features[1]), features_tmp]
 
   X[, features_tmp := NULL]
-  time2 <<- Sys.time()
-
-  # X = data.table::copy(X_res); rm(X_res)
   data.table::setorder(X, n_features)
 
   # Add shapley weight and number of combinations
