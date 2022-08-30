@@ -227,60 +227,66 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   w <- shapley_weights(m = m, N = n, n_features) * n
   p <- w / sum(w)
 
-  X_res = data.table()
-
-  while (nrow(X_res) < n_combinations) {
-  cat("Sampling", n_combinations - nrow(X_res), "samples\n")
+  # X_res = data.table()
+  feature_sample_all = list()
+  unique_samples = 0
+  time1 <<- Sys.time()
+  while (unique_samples < n_combinations) {
+    # cat("Sampling", n_combinations - unique_samples, "samples\n")
     # Sample number of chosen features ----------
-    X <- data.table::data.table(
-      n_features = c(
-        0,
-        sample(
-          x = n_features,
-          size = n_combinations - nrow(X_res),
-          replace = TRUE,
-          prob = p
-        ),
-        m
-      )
+
+    n_features_sample = c(
+      0,
+      sample(
+        x = n_features,
+        size = n_combinations - unique_samples,
+        replace = TRUE,
+        prob = p
+      ),
+      m
     )
-    X[, n_features := as.integer(n_features)]
+
 
     # Sample specific set of features -------
-    data.table::setkeyv(X, "n_features")
-    feature_sample <- sample_features_cpp(m, X[["n_features"]])
-
-    # Get number of occurences and duplicated rows-------
-    is_duplicate <- NULL # due to NSE notes in R CMD check
-    r <- helper_feature(m, feature_sample)
-    X[, is_duplicate := r[["is_duplicate"]]]
-
-    # When we sample combinations the Shapley weight is equal
-    # to the frequency of the given combination
-    X[, shapley_weight := r[["sample_frequence"]]]
-
-    # Populate table and remove duplicated rows -------
-    X[, features := feature_sample]
-    if (any(X[["is_duplicate"]])) {
-      X <- X[is_duplicate == FALSE]
-    }
-    X[, is_duplicate := NULL]
-
-    # Make feature list into character
-    X[, features_tmp := sapply(features, paste, collapse = " ")]
-
-    X_res = rbindlist(list(X_res, X), use.names = TRUE)
-
-    # Aggregate weights by how many samples of a combination we observe
-    X_res = X_res[, .(n_features = data.table::first(n_features),
-                      shapley_weight = sum(shapley_weight),
-                      features = features[1]), features_tmp]
-
+    feature_sample <- sample_features_cpp(m, n_features_sample)
+    feature_sample_all <- c(feature_sample_all, feature_sample)
+    unique_samples = length(unique(feature_sample_all))
+    # X_res = rbindlist(list(X_res, X))
   }
+  X = data.table(n_features = sapply(feature_sample_all, length))
+  X[, n_features := as.integer(n_features)]
 
-  X_res[, features_tmp := NULL]
+  # Get number of occurences and duplicated rows-------
+  is_duplicate <- NULL # due to NSE notes in R CMD check
+  r <- helper_feature(m, feature_sample_all)
+  X[, is_duplicate := r[["is_duplicate"]]]
 
-  X = data.table::copy(X_res); rm(X_res)
+  # When we sample combinations the Shapley weight is equal
+  # to the frequency of the given combination
+  X[, shapley_weight := r[["sample_frequence"]]]
+
+  # Populate table and remove duplicated rows -------
+  X[, features := feature_sample_all]
+  if (any(X[["is_duplicate"]])) {
+    X <- X[is_duplicate == FALSE]
+  }
+  X[, is_duplicate := NULL]
+  data.table::setkeyv(X, "n_features")
+
+  # Make feature list into character
+  X[, features_tmp := sapply(features, paste, collapse = " ")]
+
+  #X_res = rbindlist(list(X_res, X), use.names = TRUE)
+
+  # Aggregate weights by how many samples of a combination we observe
+  X = X[, .(n_features = data.table::first(n_features),
+            shapley_weight = sum(shapley_weight),
+            features = features[1]), features_tmp]
+
+  X[, features_tmp := NULL]
+  time2 <<- Sys.time()
+
+  # X = data.table::copy(X_res); rm(X_res)
   data.table::setorder(X, n_features)
 
   # Add shapley weight and number of combinations
