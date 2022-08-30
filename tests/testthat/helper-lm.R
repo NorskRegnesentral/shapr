@@ -29,8 +29,11 @@ x_explain_mixed <- data_explain[, ..x_var_mixed]
 
 lm_formula_numeric <- as.formula(paste0(y_var_numeric, " ~ ", paste0(x_var_numeric, collapse = " + ")))
 lm_formula_mixed <- as.formula(paste0(y_var_numeric, " ~ ", paste0(x_var_mixed, collapse = " + ")))
+lm_formula_interaction <- Ozone ~ Solar.R * Wind
+
 
 model_lm_numeric <- lm(lm_formula_numeric, data = data_complete)
 model_lm_mixed <- lm(lm_formula_mixed, data = data_complete)
+model_lm_interaction <- lm(lm_formula_interaction, data = data_complete)
 
 p0 <- data_train[, mean(get(y_var_numeric))]
