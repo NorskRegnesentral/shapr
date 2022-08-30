@@ -868,4 +868,19 @@ test_that("incompatible input: `data/approach`", {
 
 })
 
+test_that("Correct dimension of S", {
+
+  n_combinations = 10
+
+  res = explain(x_train = x_explain_mixed,
+                x_explain_mixed,
+                model_lm_mixed,
+                prediction_zero = p0,
+                approach = "ctree",
+                n_combinations = n_combinations)
+
+  expect_equal(nrow(res$internal$objects$S), n_combinations)
+
+})
+
 

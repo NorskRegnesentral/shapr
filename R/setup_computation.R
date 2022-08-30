@@ -227,31 +227,30 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   w <- shapley_weights(m = m, N = n, n_features) * n
   p <- w / sum(w)
 
-  feature_sample_all = list()
-  unique_samples = 0
+  feature_sample_all <- list()
+  unique_samples <- 0
 
-  while (unique_samples < n_combinations) {
+  while (unique_samples < n_combinations - 2) {
 
     # Sample number of chosen features ----------
-    n_features_sample = c(
-      0,
-      sample(
-        x = n_features,
-        size = n_combinations - unique_samples,
-        replace = TRUE,
-        prob = p
-      ),
-      m
-    )
+    n_features_sample <- sample(
+      x = n_features,
+      size = n_combinations - unique_samples - 2, # Sample -2 as we add zero and m samples below
+      replace = TRUE,
+      prob = p
+      )
+
 
 
     # Sample specific set of features -------
     feature_sample <- sample_features_cpp(m, n_features_sample)
     feature_sample_all <- c(feature_sample_all, feature_sample)
-    unique_samples = length(unique(feature_sample_all))
+    unique_samples <- length(unique(feature_sample_all))
   }
 
-  X = data.table(n_features = sapply(feature_sample_all, length))
+  # Add zero and m features
+  feature_sample_all = c(list(integer(0)), feature_sample_all, list(c(1:m)))
+  X <- data.table(n_features = sapply(feature_sample_all, length))
   X[, n_features := as.integer(n_features)]
 
   # Get number of occurences and duplicated rows-------
@@ -275,7 +274,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   X[, features_tmp := sapply(features, paste, collapse = " ")]
 
   # Aggregate weights by how many samples of a combination we observe
-  X = X[, .(n_features = data.table::first(n_features),
+  X <- X[, .(n_features = data.table::first(n_features),
             shapley_weight = sum(shapley_weight),
             features = features[1]), features_tmp]
 
