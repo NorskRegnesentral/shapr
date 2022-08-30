@@ -149,14 +149,14 @@ check_data <- function(internal){
 
   # First check model vs x_train (possibly modified)
   # Then x_train vs x_explain
-  compare_feature_specs(model_feature_specs,x_train_feature_specs,"model","x_train")
-  compare_feature_specs(x_train_feature_specs,x_explain_feature_specs,"x_train","x_explain")
+  compare_feature_specs(model_feature_specs, x_train_feature_specs, "model", "x_train", sort_labels = TRUE)
+  compare_feature_specs(x_train_feature_specs, x_explain_feature_specs, "x_train", "x_explain")
 
 
 }
 
 compare_vecs <- function(vec1,vec2,vec_type,name1,name2){
-  if(!identical(vec1,vec2)){
+  if(!identical(vec1, vec2)){
     if(is.null(names(vec1))){
       text_vec1 <- paste(vec1, collapse = ", ")
     } else {
@@ -175,15 +175,20 @@ compare_vecs <- function(vec1,vec2,vec_type,name1,name2){
   }
 }
 
-compare_feature_specs <- function(spec1,spec2,name1="model",name2="x_train"){
-  compare_vecs(spec1$labels,spec2$labels,"names",name1,name2)
-  compare_vecs(spec1$classes,spec2$classes,"classes",name1,name2)
+compare_feature_specs <- function(spec1, spec2, name1 = "model", name2 = "x_train", sort_labels = FALSE){
+
+  if (sort_labels) {
+    compare_vecs(sort(spec1$labels), sort(spec2$labels), "names", name1, name2)
+  } else {
+    compare_vecs(spec1$labels, spec2$labels, "names", name1, name2)
+  }
+  compare_vecs(spec1$classes, spec2$classes, "classes", name1, name2)
 
   factor_classes <- which(spec1$classes == "factor")
   if (length(factor_classes) > 0) {
     for(fact in names(factor_classes)){
-      vec_type = paste0("factor levels for feature '",fact,"'")
-      compare_vecs(spec1$factor_levels[[fact]],spec2$factor_levels[[fact]],vec_type,name1,name2)
+      vec_type = paste0("factor levels for feature '", fact, "'")
+      compare_vecs(spec1$factor_levels[[fact]], spec2$factor_levels[[fact]], vec_type, name1, name2)
     }
   }
 
