@@ -179,10 +179,11 @@ compare_feature_specs <- function(spec1, spec2, name1 = "model", name2 = "x_trai
 
   if (sort_labels) {
     compare_vecs(sort(spec1$labels), sort(spec2$labels), "names", name1, name2)
+    compare_vecs(spec1$classes[sort(names(spec1$classes))], spec2$classes[sort(names(spec2$classes))], "classes", name1, name2)
   } else {
     compare_vecs(spec1$labels, spec2$labels, "names", name1, name2)
+    compare_vecs(spec1$classes, spec2$classes, "classes", name1, name2)
   }
-  compare_vecs(spec1$classes, spec2$classes, "classes", name1, name2)
 
   factor_classes <- which(spec1$classes == "factor")
   if (length(factor_classes) > 0) {

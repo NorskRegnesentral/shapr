@@ -206,4 +206,15 @@ test_that("output_lm_numeric_interaction", {
     )
 })
 
+test_that("output_lm_numeric_column_order", {
 
+  res1 <- explain(x_train_numeric, x_explain_numeric, model_lm_numeric, approach = "empirical", prediction_zero = p0)
+  res2 <- explain(x_train_numeric[, ncol(x_train_numeric):1], x_explain_numeric[, ncol(x_explain_numeric):1],
+                  model_lm_numeric_col_order, approach = "empirical", prediction_zero = p0)
+
+  # Shapley values should be identical, but the columns are in different order
+  expect_equal(res1$shapley_values[, mget(sort(names(res1$shapley_values)))],
+               res2$shapley_values[, mget(sort(names(res2$shapley_values)))])
+
+
+})
