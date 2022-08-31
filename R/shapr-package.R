@@ -9,6 +9,8 @@
 #'
 #' @importFrom stats as.formula
 #'
+#' @importFrom stats formula
+#'
 #' @importFrom stats model.matrix
 #'
 #' @importFrom stats model.frame
