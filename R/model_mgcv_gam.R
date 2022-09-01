@@ -22,10 +22,12 @@ get_model_specs.gam <- function(x) {
   model_checker(x) # Checking if the model is supported
 
   feature_specs <- list()
-  feature_specs$labels <- labels(x$terms)
+  feature_specs$labels <- all.vars(formula(x))[-1]
   m <- length(feature_specs$labels)
 
   feature_specs$classes <- attr(x$terms, "dataClasses")[-1]
+  # Use same order as labels for classes
+  feature_specs$classes <- feature_specs$classes[feature_specs$labels]
   feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
   feature_specs$factor_levels[names(x$xlevels)] <- x$xlevels
 

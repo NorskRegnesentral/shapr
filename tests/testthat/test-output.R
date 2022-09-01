@@ -197,4 +197,13 @@ test_that("output_custom_xgboost_mixed_dummy_ctree", {
   }
 })
 
+test_that("output_lm_numeric_interaction", {
+  x_train_interaction <- x_train_numeric[, mget(all.vars(formula(model_lm_interaction))[-1])]
+  x_explain_interaction <- x_explain_numeric[, mget(all.vars(formula(model_lm_interaction))[-1])]
+    expect_snapshot_rds(
+      explain(x_train_interaction, x_explain_interaction, model_lm_interaction, approach = "independence", prediction_zero = p0),
+      "output_lm_numeric_interaction"
+    )
+})
+
 
