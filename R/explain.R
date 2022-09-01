@@ -98,7 +98,7 @@
 #' from the leaf node (see an exception related to the `sample` argument).
 #' For `approach="empirical"`, `n_samples` is  the \eqn{K} parameter in equations (14-15) of
 #' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-#' `w_threshold` argument.
+#' `empirical.eta` argument.
 #'
 #'
 #' @return Object of class `c("shapr", "list")`. Contains the following items:

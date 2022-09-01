@@ -151,7 +151,7 @@ For \code{approach="ctree"}, \code{n_samples} corresponds to the number of sampl
 from the leaf node (see an exception related to the \code{sample} argument).
 For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-\code{w_threshold} argument.
+\code{empirical.eta} argument.
 }
 \examples{
 

@@ -26,7 +26,7 @@
     Message <simpleMessage>
       
       Success with message:
-      w_threshold force set to 1 for type = 'independence'
+      empirical.eta force set to 1 for type = 'independence'
     Output
            none  Solar.R   Wind   Temp    Month     Day
       1: 40.752  4.42903 19.814 12.271  0.77897 -4.0031

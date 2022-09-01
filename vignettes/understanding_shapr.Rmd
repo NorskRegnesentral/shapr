@@ -388,9 +388,9 @@ explanation_ctree <- explain(
   x_train = x_train,
   approach = "ctree",
   prediction_zero = p0,
-  mincriterion = 0.80, 
-  minsplit = 20,
-  minbucket = 20
+  ctree.mincriterion = 0.80, 
+  ctree.minsplit = 20,
+  ctree.minbucket = 20
 )
 # Default parameters (based on (Hothorn, 2006)) are:
 # mincriterion = 0.95
@@ -427,9 +427,9 @@ Monte Carlo integration for every conditional expectation is controlled by the a
 need to pass a numeric value for the argument `prediction_zero`, which represents the prediction value when not 
 conditioning on any features. We recommend setting this equal to the mean of the response, but other values, like the 
 mean prediction of a large test data set is also a possibility. If the empirical method is used, specific settings for 
-that approach, like a vector of fixed $\sigma$ values can be specified through the argument `sigma_vec`. See `?explain` 
+that approach, like a vector of fixed $\sigma$ values can be specified through the argument `empirical.fixed_sigma_vec`. See `?explain` 
 for more information. If `approach = "gaussian"`, you may specify the mean vector and covariance matrix of the data 
-generating distribution by the arguments `mu` and `cov_mat`. If not specified, they are estimated from the training data.  
+generating distribution by the arguments `gaussian.mu` and `gaussian.cov_mat`. If not specified, they are estimated from the training data.  
 
 <a id="advanced"></a>
 
@@ -646,7 +646,7 @@ plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 As mentioned above, the original (independence assuming) Kernel SHAP implementation can be 
 approximated by setting a large $\sigma$ value using our empirical approach. If we specify that the 
 distances to *all* training observations should be used (i.e. setting `approach = "empirical"` and
-`w_threshold = 1` when using `explain`, we can approximate the original method arbitrarily 
+`empirical.eta = 1` when using `explain`, we can approximate the original method arbitrarily 
 well by increasing $\sigma$. For completeness of the `shapr` package, we have also implemented 
 a version of the original method, which samples training observations independently with respect to 
 their distances to test observations (i.e. without the large-$\sigma$ approximation). This method is 
