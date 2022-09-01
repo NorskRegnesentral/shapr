@@ -18,6 +18,7 @@ setup_approach.ctree <- function(internal,
 #' used for different numbers of conditioned features, this will be a list with the features to pass.
 #'
 #' @rdname prepare_data
+#' @export
 #' @keywords internal
 prepare_data.ctree <- function(internal, index_features = NULL, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
