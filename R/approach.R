@@ -1,4 +1,8 @@
-#' @inheritParams default_doc
+#' Set up the framework chosen approach
+#'
+#' The different choices of `approach` takes different (optional) parameters, which are forwarded from [explain()].
+#' See the various input
+#'
 #' @export
 setup_approach <- function(internal, ...) {
   approach <- internal$parameters$approach
@@ -14,6 +18,7 @@ setup_approach <- function(internal, ...) {
   UseMethod("setup_approach", this_class)
 }
 
+#' @inheritParams default_doc
 #' @export
 setup_approach.combined <- function(internal, ...) {
   org_approach <- internal$parameters$approach

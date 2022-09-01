@@ -9,7 +9,7 @@ observation_impute(
   S,
   x_train,
   x_explain,
-  w_threshold = 0.7,
+  explain.eta = 0.7,
   n_samples = 1000
 )
 }

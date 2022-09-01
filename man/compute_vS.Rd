@@ -8,8 +8,7 @@ compute_vS(internal, model, predict_model, method = "future")
 }
 \arguments{
 \item{internal}{List.
-Holds all parameters, data, functions and computed objects used within
-\code{\link[=explain]{shapr:::explain()}}.
+Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 
 \item{model}{Objects.
