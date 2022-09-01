@@ -1,4 +1,5 @@
-#' @keywords internal
+#' @inheritParams default_doc
+#' @export
 setup_approach <- function(internal, ...) {
   approach <- internal$parameters$approach
 

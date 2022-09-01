@@ -1,4 +1,6 @@
-#' @keywords internal
+#' @inheritParams default_doc
+#' @rdname setup_approach
+#' @export
 setup_approach.copula <- function(internal, ...) {
   parameters <- internal$parameters
   x_train <- internal$data$x_train

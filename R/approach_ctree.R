@@ -1,4 +1,6 @@
-#' @keywords internal
+#' @inheritParams default_doc
+#' @rdname setup_approach
+#' @export
 setup_approach.ctree <- function(internal,
                                  mincriterion = 0.95,
                                  minsplit = 20,

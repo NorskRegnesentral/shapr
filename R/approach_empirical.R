@@ -1,4 +1,6 @@
-#' @keywords internal
+#' @inheritParams default_doc
+#' @rdname setup_approach
+#' @export
 setup_approach.empirical <- function(internal,
                                      seed = 1,
                                      w_threshold = 0.95,
