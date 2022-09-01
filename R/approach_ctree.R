@@ -1,12 +1,32 @@
-#' @inheritParams default_doc
 #' @rdname setup_approach
+#'
+#' @param ctree.mincriterion Numeric scalar or vector. (default = 0.95)
+#' Either a scalar or vector of length equal to the number of features in the model.
+#' Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
+#' If it is a vector, this indicates which value to use when conditioning on various numbers of features.
+#'
+#' @param ctree.minsplit Numeric scalar. (default = 20)
+#' Determines minimum value that the sum of the left and right daughter nodes required for a split.
+#'
+#' @param ctree.minbucket Numeric scalar. (default = 7)
+#' Determines the minimum sum of weights in a terminal node required for a split
+#'
+#' @param ctree.sample Boolean.
+#' If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
+#' If FALSE and the number of observations in the leaf node is less than \code{n_samples},
+#' the method will take all observations in the leaf.
+#' If FALSE and the number of observations in the leaf node is more than \code{n_samples},
+#' the method will sample \code{n_samples} observations (with replacement).
+#' This means that there will always be sampling in the leaf unless
+#' \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.
+#'
 #' @export
 setup_approach.ctree <- function(internal,
-                                 mincriterion = 0.95,
-                                 minsplit = 20,
-                                 minbucket = 7,
-                                 sample = TRUE, ...) {
-  defaults <- mget(c("mincriterion", "minsplit", "minbucket", "sample"))
+                                 ctree.mincriterion = 0.95,
+                                 ctree.minsplit = 20,
+                                 ctree.minbucket = 7,
+                                 ctree.sample = TRUE, ...) {
+  defaults <- mget(c("ctree.mincriterion", "ctree.minsplit", "ctree.minbucket", "ctree.sample"))
 
   internal <- insert_defaults(internal, defaults)
 
@@ -16,13 +36,11 @@ setup_approach.ctree <- function(internal,
 
 
 #' @inheritParams default_doc
-#' @param index_features List. Default is NULL but if either various methods are being used or various mincriterion are
-#' used for different numbers of conditioned features, this will be a list with the features to pass.
 #'
 #' @rdname prepare_data
 #' @export
 #' @keywords internal
-prepare_data.ctree <- function(internal, index_features = NULL, ...) {
+prepare_data.ctree <- function(internal, ...) {
   id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   x_train <- internal$data$x_train
@@ -30,10 +48,10 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
   n_explain <- internal$parameters$n_explain
   n_samples <- internal$parameters$n_samples
   n_features <- internal$parameters$n_features
-  mincriterion <- internal$parameters$mincriterion
-  minsplit <- internal$parameters$minsplit
-  minbucket <- internal$parameters$minbucket
-  sample <- internal$parameters$sample
+  ctree.mincriterion <- internal$parameters$ctree.mincriterion
+  ctree.minsplit <- internal$parameters$ctree.minsplit
+  ctree.minbucket <- internal$parameters$ctree.minbucket
+  ctree.sample <- internal$parameters$ctree.sample
   labels <- internal$objects$feature_specs$labels
 
   X <- internal$objects$X
@@ -54,9 +72,9 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
     X = features,
     FUN = create_ctree,
     x_train = x_train,
-    mincriterion = mincriterion,
-    minsplit = minsplit,
-    minbucket = minbucket
+    mincriterion = ctree.mincriterion,
+    minsplit = ctree.minsplit,
+    minbucket = ctree.minbucket
   )
 
   for (i in seq_len(n_explain)) {
@@ -67,7 +85,7 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
       x_explain = x_explain[i, , drop = FALSE],
       x_train = x_train,
       n_features = n_features,
-      sample = sample
+      sample = ctree.sample
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
@@ -90,16 +108,18 @@ prepare_data.ctree <- function(internal, index_features = NULL, ...) {
 #'
 #' @param given_ind Numeric value. Indicates which features are conditioned on.
 #'
-#' @param x_train Numeric vector. Indicates the specific values of features for individual i.
+#' @inheritParams default_doc
 #'
-#' @param mincriterion Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional
-#' independence tests.
-#' Can also be a vector equal to the length of the number of features indicating which mincriterion to use
-#' when conditioning on various numbers of features.
+#' @param mincriterion Numeric scalar or vector. (default = 0.95)
+#' Either a scalar or vector of length equal to the number of features in the model.
+#' Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
+#' If it is a vector, this indicates which value to use when conditioning on various numbers of features.
 #'
-#' @param minsplit Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.
+#' @param minsplit Numeric scalar. (default = 20)
+#' Determines minimum value that the sum of the left and right daughter nodes required for a split.
 #'
-#' @param minbucket Numeric value. Equal to the minimum sum of weights in a terminal node.
+#' @param minbucket Numeric scalar. (default = 7)
+#' Determines the minimum sum of weights in a terminal node required for a split
 #'
 #' @param use_partykit String. In some semi-rare cases `partyk::ctree` runs into an error related to the LINPACK
 #' used by R. To get around this problem, one may fall back to using the newer (but slower) `partykit::ctree`

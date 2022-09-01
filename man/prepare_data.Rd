@@ -15,7 +15,7 @@ prepare_data(internal, ...)
 
 \method{prepare_data}{copula}(internal, index_features = NULL, ...)
 
-\method{prepare_data}{ctree}(internal, index_features = NULL, ...)
+\method{prepare_data}{ctree}(internal, ...)
 
 \method{prepare_data}{empirical}(internal, index_features = NULL, ...)
 
@@ -30,8 +30,8 @@ The list contains one or more of the elements \code{parameters}, \code{data}, \c
 
 \item{...}{Currently not used.}
 
-\item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
-used for different numbers of conditioned features, this will be a list with the features to pass.}
+\item{index_features}{Positive integer vector. Specifies the indices of combinations to apply to the present method.
+\code{NULL} means all combinations. Only used internally.}
 
 \item{x}{Explainer object. See \code{\link[=explain]{explain()}} for more information.}
 

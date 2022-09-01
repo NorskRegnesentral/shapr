@@ -17,10 +17,10 @@ setup_approach(internal, ...)
 
 \method{setup_approach}{ctree}(
   internal,
-  mincriterion = 0.95,
-  minsplit = 20,
-  minbucket = 7,
-  sample = TRUE,
+  ctree.mincriterion = 0.95,
+  ctree.minsplit = 20,
+  ctree.minbucket = 7,
+  ctree.sample = TRUE,
   ...
 )
 
@@ -37,14 +37,30 @@ setup_approach(internal, ...)
   predict_model = NULL
 )
 
-\method{setup_approach}{gaussian}(internal, mu = NULL, cov_mat = NULL, ...)
+\method{setup_approach}{gaussian}(internal, gaussian.mu = NULL, gaussian.cov_mat = NULL, ...)
 
 \method{setup_approach}{independence}(internal, ...)
 }
 \arguments{
-\item{internal}{List.
-Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
+\item{ctree.mincriterion}{Numeric scalar or vector. (default = 0.95)
+Either a scalar or vector of length equal to the number of features in the model.
+Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
+If it is a vector, this indicates which value to use when conditioning on various numbers of features.}
+
+\item{ctree.minsplit}{Numeric scalar. (default = 20)
+Determines minimum value that the sum of the left and right daughter nodes required for a split.}
+
+\item{ctree.minbucket}{Numeric scalar. (default = 7)
+Determines the minimum sum of weights in a terminal node required for a split}
+
+\item{ctree.sample}{Boolean.
+If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
+If FALSE and the number of observations in the leaf node is less than \code{n_samples},
+the method will take all observations in the leaf.
+If FALSE and the number of observations in the leaf node is more than \code{n_samples},
+the method will sample \code{n_samples} observations (with replacement).
+This means that there will always be sampling in the leaf unless
+\code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
 
 \item{explain.type}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}. TODO: Describe better what the methods do here.}
@@ -76,8 +92,13 @@ Only used for \code{explain.type} is either \code{"AICc_each_k"} or \code{"AICc_
 Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 \code{NULL} means it is estimated from \code{x_train}.}
 
-\item{model}{Objects.
-The model object that ought to be explained}
+\item{gaussian.mu}{Numeric vector. (Optional)
+Containing the mean of the data generating distribution.
+\code{NULL} means it is estimated from the \code{x_train}.}
+
+\item{gaussian.cov_mat}{Numeric matrix. (Optional)
+Containing the covariance matrix of the data generating distribution.
+\code{NULL} means it is estimated from the \code{x_train}.}
 }
 \description{
 The different choices of \code{approach} takes different (optional) parameters, which are forwarded from \code{\link[=explain]{explain()}}.
