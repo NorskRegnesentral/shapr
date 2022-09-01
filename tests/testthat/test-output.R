@@ -31,7 +31,7 @@ test_that("output_lm_numeric_empirical_independence", {
             x_train = x_train_numeric,
             approach = "empirical",
             prediction_zero = p0,
-            explain.type = "independence"),
+            empirical.type = "independence"),
     "output_lm_numeric_empirical_independence"
   )
 })
@@ -45,7 +45,7 @@ test_that("output_lm_numeric_empirical_AICc_each", {
             approach = "empirical",
             prediction_zero = p0,
             n_combinations = 8,
-            explain.type = "AICc_each_k"),
+            empirical.type = "AICc_each_k"),
     "output_lm_numeric_empirical_AICc_each"
   )
 })
@@ -59,7 +59,7 @@ test_that("output_lm_numeric_empirical_AICc_full", {
             approach = "empirical",
             prediction_zero = p0,
             n_combinations = 8,
-            explain.type = "AICc_full"),
+            empirical.type = "AICc_full"),
     "output_lm_numeric_empirical_AICc_full"
   )
 })

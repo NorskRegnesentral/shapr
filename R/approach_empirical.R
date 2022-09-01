@@ -1,49 +1,49 @@
 #' @rdname setup_approach
 #'
-#' @param explain.type Character. (default = `"fixed_sigma"`)
+#' @param empirical.type Character. (default = `"fixed_sigma"`)
 #' Should be equal to either `"independence"`,`"fixed_sigma"`, `"AICc_each_k"` `"AICc_full"`. TODO: Describe better what the methods do here.
 #'
-#' @param explain.eta Numeric. (default = 0.95)
+#' @param empirical.eta Numeric. (default = 0.95)
 #' Needs to be `0 < eta <= 1`.
 #' Represents the minimum proportion of the total empirical weight that data samples should use.
 #' If e.g. `eta = .8` we will choose the `K` samples with the largest weight so that the sum of the weights
 #' accounts for 80\% of the total weight.
 #' `eta` is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).
 #'
-#' @param explain.fixed_sigma_vec Numeric. (default = 0.1)
+#' @param empirical.fixed_sigma_vec Numeric. (default = 0.1)
 #' Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
-#' Only used when `explain.type = "fixed_sigma"`
+#' Only used when `empirical.type = "fixed_sigma"`
 #'
-#' @param explain.n_samples_aicc Positive integer. (default = 1000)
+#' @param empirical.n_samples_aicc Positive integer. (default = 1000)
 #' Number of samples to consider in AICc optimization.
-#' Only used for `explain.type` is either `"AICc_each_k"` or `"AICc_full"`.
+#' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
-#' @param explain.eval_max_aicc Positive integer. (default = 20)
+#' @param empirical.eval_max_aicc Positive integer. (default = 20)
 #' Maximum number of iterations when optimizing the AICc.
-#' Only used for `explain.type` is either `"AICc_each_k"` or `"AICc_full"`.
+#' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
-#' @param explain.start_aicc Numeric. (default = 0.1)
+#' @param empirical.start_aicc Numeric. (default = 0.1)
 #' Start value of the `sigma` parameter when optimizing the AICc.
-#' Only used for `explain.type` is either `"AICc_each_k"` or `"AICc_full"`.
+#' Only used for `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
 #'
-#' @param explain.cov_mat Numeric matrix. (Optional, default = NULL)
+#' @param empirical.cov_mat Numeric matrix. (Optional, default = NULL)
 #' Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 #' `NULL` means it is estimated from `x_train`.
 #'
 #' @export
 setup_approach.empirical <- function(internal,
-                                     explain.type = "fixed_sigma",
-                                     explain.eta = 0.95,
-                                     explain.fixed_sigma_vec = 0.1,
-                                     explain.n_samples_aicc = 1000,
-                                     explain.eval_max_aicc = 20,
-                                     explain.start_aicc = 0.1,
-                                     explain.cov_mat = NULL,
+                                     empirical.type = "fixed_sigma",
+                                     empirical.eta = 0.95,
+                                     empirical.fixed_sigma_vec = 0.1,
+                                     empirical.n_samples_aicc = 1000,
+                                     empirical.eval_max_aicc = 20,
+                                     empirical.start_aicc = 0.1,
+                                     empirical.cov_mat = NULL,
                                      model = NULL,
                                      predict_model = NULL){ #TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
 
-  defaults <- mget(c("explain.eta", "explain.type", "explain.fixed_sigma_vec", "explain.n_samples_aicc", "explain.eval_max_aicc", "explain.start_aicc"))
+  defaults <- mget(c("empirical.eta", "empirical.type", "empirical.fixed_sigma_vec", "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"))
 
   internal <- insert_defaults(internal, defaults)
 
@@ -60,25 +60,25 @@ setup_approach.empirical <- function(internal,
   }
 
 
-  if (internal$parameters$explain.type == "independence") {
+  if (internal$parameters$empirical.type == "independence") {
     warning(paste0(
-      "Using explain.type = 'independence' for approach = 'empirical' is deprecated.\n",
+      "Using empirical.type = 'independence' for approach = 'empirical' is deprecated.\n",
       "Please use approach = 'independence' instead."
     ))
   }
 
-  if (internal$parameters$explain.type %in% c("AICc_each_k", "AICc_full") & internal$parameters$is_python == TRUE) {
+  if (internal$parameters$empirical.type %in% c("AICc_each_k", "AICc_full") & internal$parameters$is_python == TRUE) {
     stop(paste0(
-      "explain.type = ", internal$parameters$explain.type, " for approach = 'empirical' is not available in Python.\n",
+      "empirical.type = ", internal$parameters$empirical.type, " for approach = 'empirical' is not available in Python.\n",
     ))
   }
 
 
   x_train <- internal$data$x_train
 
-  # If explain.cov_mat is not provided directly, use sample covariance of training data
-  if (is.null(explain.cov_mat)) {
-    internal$parameters$explain.cov_mat <- get_cov_mat(x_train)
+  # If empirical.cov_mat is not provided directly, use sample covariance of training data
+  if (is.null(empirical.cov_mat)) {
+    internal$parameters$empirical.cov_mat <- get_cov_mat(x_train)
   }
 
   internal$tmp <- list(model = model,
@@ -96,14 +96,14 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
-  explain.cov_mat <- internal$parameters$explain.cov_mat
+  empirical.cov_mat <- internal$parameters$empirical.cov_mat
   X <- internal$objects$X
   S <- internal$objects$S
 
   n_explain <- internal$parameters$n_explain
-  explain.type <- internal$parameters$explain.type
-  explain.eta <- internal$parameters$explain.eta
-  explain.fixed_sigma_vec <- internal$parameters$explain.fixed_sigma_vec
+  empirical.type <- internal$parameters$empirical.type
+  empirical.eta <- internal$parameters$empirical.eta
+  empirical.fixed_sigma_vec <- internal$parameters$empirical.fixed_sigma_vec
   n_samples <- internal$parameters$n_samples
 
   model <- internal$tmp$model
@@ -119,7 +119,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
     x_train,
     x_explain,
     X$features[index_features],
-    mcov = explain.cov_mat
+    mcov = empirical.cov_mat
   )
 
   # Setup
@@ -131,23 +131,23 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
   data.table::setnames(h_optim_DT, paste0("Testobs_", seq_len(n_explain)))
   varcomb <- NULL # due to NSE notes in R CMD check
   h_optim_DT[, varcomb := .I]
-  kernel_metric <- ifelse(explain.type == "independence", explain.type, "gaussian")
+  kernel_metric <- ifelse(empirical.type == "independence", empirical.type, "gaussian")
 
   if (kernel_metric == "independence") {
-    explain.eta <- 1
+    empirical.eta <- 1
     message(
-      "\nSuccess with message:\nexplain.eta force set to 1 for explain.type = 'independence'"
+      "\nSuccess with message:\nempirical.eta force set to 1 for empirical.type = 'independence'"
     )
   } else if (kernel_metric == "gaussian") {
-    if (explain.type == "fixed_sigma") {
-      h_optim_mat[, ] <- explain.fixed_sigma_vec
+    if (empirical.type == "fixed_sigma") {
+      h_optim_mat[, ] <- empirical.fixed_sigma_vec
     } else {
-      if (explain.type == "AICc_each_k") {
+      if (empirical.type == "AICc_each_k") {
         h_optim_mat <- compute_AICc_each_k(internal, model, predict_model, index_features)
-      } else if (explain.type == "AICc_full") {
+      } else if (empirical.type == "AICc_full") {
         h_optim_mat <- compute_AICc_full(internal, model, predict_model, index_features)
       } else {
-        stop("explain.type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
+        stop("empirical.type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
       }
     }
   }
@@ -172,7 +172,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
       S = S0,
       x_train = as.matrix(x_train),
       x_explain = as.matrix(x_explain[i, , drop = FALSE]),
-      explain.eta = explain.eta,
+      empirical.eta = empirical.eta,
       n_samples = n_samples
     )
 
@@ -202,7 +202,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 #' @keywords internal
 #'
 #' @author Nikolai Sellereite
-observation_impute <- function(W_kernel, S, x_train, x_explain, explain.eta = .7, n_samples = 1e3) {
+observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = .7, n_samples = 1e3) {
 
   # Check input
   stopifnot(is.matrix(W_kernel) & is.matrix(S))
@@ -229,9 +229,9 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, explain.eta = .7
   knms <- c("index_s", "weight")
   data.table::setkeyv(dt_melt, knms)
   dt_melt[, weight := weight / sum(weight), by = "index_s"]
-  if (explain.eta < 1) {
+  if (empirical.eta < 1) {
     dt_melt[, wcum := cumsum(weight), by = "index_s"]
-    dt_melt <- dt_melt[wcum > 1 - explain.eta][, wcum := NULL]
+    dt_melt <- dt_melt[wcum > 1 - empirical.eta][, wcum := NULL]
   }
   dt_melt <- dt_melt[, tail(.SD, n_samples), by = "index_s"]
 
@@ -318,12 +318,12 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
   x_explain <- internal$data$x_explain
   n_train <- internal$parameters$n_train
   n_explain <- internal$parameters$n_explain
-  explain.n_samples_aicc <- internal$parameters$explain.n_samples_aicc
+  empirical.n_samples_aicc <- internal$parameters$empirical.n_samples_aicc
   n_combinations <- internal$parameters$n_combinations
   n_features <- internal$parameters$n_features
   labels <- internal$objects$feature_specs$labels
-  explain.start_aicc <- internal$parameters$explain.start_aicc
-  explain.eval_max_aicc <- internal$parameters$explain.eval_max_aicc
+  empirical.start_aicc <- internal$parameters$empirical.start_aicc
+  empirical.eval_max_aicc <- internal$parameters$empirical.eval_max_aicc
 
   X <- internal$objects$X
   S <- internal$objects$S
@@ -337,10 +337,10 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
   optimsamp <- sample_combinations(
     ntrain = n_train,
     ntest = n_explain,
-    nsamples = explain.n_samples_aicc,
+    nsamples = empirical.n_samples_aicc,
     joint_sampling = FALSE
   )
-  explain.n_samples_aicc <- nrow(optimsamp)
+  empirical.n_samples_aicc <- nrow(optimsamp)
   nloops <- n_explain # No of observations in test data
 
   h_optim_mat <- matrix(NA, ncol = n_features, nrow = n_combinations)
@@ -355,7 +355,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
 
   for (i in these_k) {
     these_cond <- X[index_features][n_features == i, id_combination]
-    cutters <- seq_len(explain.n_samples_aicc)
+    cutters <- seq_len(empirical.n_samples_aicc)
     no_cond <- length(these_cond)
     cond_samp <- cut(
       x = cutters,
@@ -408,7 +408,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
       names(y_list) <- NULL
       ## Doing the numerical optimization -------
       nlm.obj <- suppressWarnings(stats::nlminb(
-        start = explain.start_aicc,
+        start = empirical.start_aicc,
         objective = aicc_full_cpp,
         X_list = X_list,
         mcov_list = mcov_list,
@@ -417,7 +417,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
         negative = F,
         lower = 0,
         control = list(
-          eval.max = explain.eval_max_aicc
+          eval.max = empirical.eval_max_aicc
         )
       ))
       h_optim_mat[these_cond, loop] <- nlm.obj$par
@@ -433,12 +433,12 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
   x_explain <- internal$data$x_explain
   n_train <- internal$parameters$n_train
   n_explain <- internal$parameters$n_explain
-  explain.n_samples_aicc <- internal$parameters$explain.n_samples_aicc
+  empirical.n_samples_aicc <- internal$parameters$empirical.n_samples_aicc
   n_combinations <- internal$parameters$n_combinations
   n_features <- internal$parameters$n_features
   labels <- internal$objects$feature_specs$labels
-  explain.start_aicc <- internal$parameters$explain.start_aicc
-  explain.eval_max_aicc <- internal$parameters$explain.eval_max_aicc
+  empirical.start_aicc <- internal$parameters$empirical.start_aicc
+  empirical.eval_max_aicc <- internal$parameters$empirical.eval_max_aicc
 
   X <- internal$objects$X
   S <- internal$objects$S
@@ -452,7 +452,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
   optimsamp <- sample_combinations(
     ntrain = n_train,
     ntest = ntest,
-    nsamples = explain.n_samples_aicc,
+    nsamples = empirical.n_samples_aicc,
     joint_sampling = FALSE
   )
   nloops <- n_explain # No of observations in test data
@@ -500,7 +500,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
 
       ## Running the nonlinear optimization
       nlm.obj <- suppressWarnings(stats::nlminb(
-        start = explain.start_aicc,
+        start = empirical.start_aicc,
         objective = aicc_full_cpp,
         X_list = X_list,
         mcov_list = mcov_list,
@@ -509,7 +509,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
         negative = F,
         lower = 0,
         control = list(
-          eval.max = explain.eval_max_aicc
+          eval.max = empirical.eval_max_aicc
         )
       ))
 
