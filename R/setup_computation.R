@@ -373,6 +373,8 @@ group_fun <- function(x, group_num) {
 
 #' Analogue to feature_not_exact, but for groups instead.
 #'
+#' Analogue to feature_not_exact, but for groups instead.
+#'
 #' @inheritParams shapley_weights
 #' @inheritParams feature_group
 #'
@@ -390,33 +392,28 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
   w <- shapley_weights(m = m, N = n, n_groups) * n
   p <- w / sum(w)
 
-  feature_sample_all <- list()
-  unique_samples <- 0
-
-  while (unique_samples < n_combinations - 2) {
-
-    # Sample number of chosen features ----------
-    n_features_sample <- sample(
-      x = n_groups,
-      size = n_combinations - unique_samples - 2, # Sample -2 as we add zero and m samples below
-      replace = TRUE,
-      prob = p
+  # Sample number of chosen features ----------
+  X <- data.table::data.table(
+    n_groups = c(
+      0,
+      sample(
+        x = n_groups,
+        size = n_combinations,
+        replace = TRUE,
+        prob = p
+      ),
+      m
     )
-
-    # Sample specific set of features -------
-    feature_sample <- sample_features_cpp(m, n_features_sample)
-    feature_sample_all <- c(feature_sample_all, feature_sample)
-    unique_samples <- length(unique(feature_sample_all))
-  }
-
-  # Add zero and m features
-  feature_sample_all = c(list(integer(0)), feature_sample_all, list(c(1:m)))
-  X <- data.table(n_groups = sapply(feature_sample_all, length))
+  )
   X[, n_groups := as.integer(n_groups)]
+
+  # Sample specific set of features -------
+  data.table::setkeyv(X, "n_groups")
+  group_sample <- sample_features_cpp(m, X[["n_groups"]])
 
   # Get number of occurences and duplicated rows-------
   is_duplicate <- NULL # due to NSE notes in R CMD check
-  r <- helper_feature(m, feature_sample_all)
+  r <- helper_feature(m, group_sample)
   X[, is_duplicate := r[["is_duplicate"]]]
 
   # When we sample combinations the Shapley weight is equal
@@ -424,24 +421,11 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
   X[, shapley_weight := r[["sample_frequence"]]]
 
   # Populate table and remove duplicated rows -------
-  X[, groups := feature_sample_all]
+  X[, groups := group_sample]
   if (any(X[["is_duplicate"]])) {
     X <- X[is_duplicate == FALSE]
   }
   X[, is_duplicate := NULL]
-  data.table::setkeyv(X, "n_groups")
-
-  # Make feature list into character
-  X[, groups_tmp := sapply(groups, paste, collapse = " ")]
-
-  # Aggregate weights by how many samples of a combination we observe
-  X <- X[, .(n_groups = data.table::first(n_groups),
-             shapley_weight = sum(shapley_weight),
-             groups = groups[1]), groups_tmp]
-
-  X[, groups_tmp := NULL]
-  data.table::setorder(X, n_groups)
-
 
   # Add shapley weight and number of combinations
   X[c(1, .N), shapley_weight := weight_zero_m]
@@ -452,7 +436,7 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
 
   # Adding feature info
   X[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
-  X[, n_features := sapply(X$features, length)]
+  X[, n_features := length(features[[1]]), id_combination]
 
 
   # Set column order and key table
@@ -464,7 +448,6 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
 
   return(X)
 }
-
 
 #' Calculate weighted matrix
 #'
