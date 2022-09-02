@@ -15,7 +15,7 @@ prepare_data(internal, ...)
 
 \method{prepare_data}{copula}(internal, index_features = NULL, ...)
 
-\method{prepare_data}{ctree}(internal, ...)
+\method{prepare_data}{ctree}(internal, index_features = NULL, ...)
 
 \method{prepare_data}{empirical}(internal, index_features = NULL, ...)
 
