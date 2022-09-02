@@ -8,6 +8,8 @@
 #' Containing the covariance matrix of the data generating distribution.
 #' `NULL` means it is estimated from the `x_train`.
 #'
+#' @inheritParams default_doc_explain
+#'
 #' @export
 setup_approach.gaussian <- function(internal,
                                     gaussian.mu = NULL,

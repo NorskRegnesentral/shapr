@@ -31,6 +31,9 @@
 #' Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 #' `NULL` means it is estimated from `x_train`.
 #'
+#' @inheritParams default_doc_explain
+#' @inheritParams default_doc
+#'
 #' @export
 setup_approach.empirical <- function(internal,
                                      empirical.type = "fixed_sigma",
@@ -41,7 +44,7 @@ setup_approach.empirical <- function(internal,
                                      empirical.start_aicc = 0.1,
                                      empirical.cov_mat = NULL,
                                      model = NULL,
-                                     predict_model = NULL){ #TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
+                                     predict_model = NULL, ...){ #TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
 
   defaults <- mget(c("empirical.eta", "empirical.type", "empirical.fixed_sigma_vec", "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"))
 

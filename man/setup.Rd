@@ -80,8 +80,6 @@ Contains the 3 elements:
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
-
-\item{...}{Additional arguments passed to \code{\link[=setup_approach]{setup_approach()}} for specific approaches.}
 }
 \description{
 check_setup

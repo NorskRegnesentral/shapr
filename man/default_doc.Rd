@@ -2,7 +2,7 @@
 % Please edit documentation in R/documentation.R
 \name{default_doc}
 \alias{default_doc}
-\title{Unexported documentation helper function}
+\title{Unexported documentation helper function.}
 \usage{
 default_doc()
 }
@@ -12,7 +12,12 @@ Holds all parameters, data, functions and computed objects used within \code{\li
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 
 \item{model}{Objects.
-The model object that ought to be explained}
+The model object that ought to be explained.
+See the documentation of \code{\link[=explain]{explain()}} for details.}
+
+\item{predict_model}{Function.
+The prediction function used when \code{model} is not natively supported.
+See the documentation of \code{\link[=explain]{explain()}} for details.}
 }
 \value{
 List \code{internal}
@@ -20,6 +25,6 @@ It holds all parameters, data, and computed objects used within \code{\link[=exp
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.
 }
 \description{
-Unexported documentation helper function
+Unexported documentation helper function.
 }
 \keyword{internal}

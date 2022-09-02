@@ -79,8 +79,12 @@
 #' If `NULL` (the default) internal functions are used for natively supported model classes, and the checking is
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
-
-#' @param ... Additional arguments passed to [setup_approach()] for specific approaches.
+#'
+#' @inheritDotParams setup_approach.empirical
+#' @inheritDotParams setup_approach.independence
+#' @inheritDotParams setup_approach.gaussian
+#' @inheritDotParams setup_approach.copula
+#' @inheritDotParams setup_approach.ctree
 #'
 #' @details The most important thing to notice is that `shapr` has implemented five different
 #' approaches for estimating the conditional distributions of the data, namely `"empirical"`,
@@ -224,6 +228,7 @@
 #'   n_samples = 1e2
 #' )
 #' print(explain_groups$shapley_values)
+#'
 #'
 #' @export
 #'

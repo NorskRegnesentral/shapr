@@ -20,6 +20,8 @@
 #' This means that there will always be sampling in the leaf unless
 #' `sample` = FALSE AND the number of obs in the node is less than `n_samples`.
 #'
+#' @inheritParams default_doc_explain
+#'
 #' @export
 setup_approach.ctree <- function(internal,
                                  ctree.mincriterion = 0.95,

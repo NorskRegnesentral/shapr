@@ -1,7 +1,10 @@
 #' Set up the framework chosen approach
 #'
 #' The different choices of `approach` takes different (optional) parameters, which are forwarded from [explain()].
-#' See the various input
+#'
+#' @param ... `approach`-specific arguments. See below.
+#'
+#' @inheritParams default_doc_explain
 #'
 #' @export
 setup_approach <- function(internal, ...) {

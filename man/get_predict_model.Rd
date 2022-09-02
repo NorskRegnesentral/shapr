@@ -7,8 +7,13 @@
 get_predict_model(x_test, predict_model, model)
 }
 \arguments{
+\item{predict_model}{Function.
+The prediction function used when \code{model} is not natively supported.
+See the documentation of \code{\link[=explain]{explain()}} for details.}
+
 \item{model}{Objects.
-The model object that ought to be explained}
+The model object that ought to be explained.
+See the documentation of \code{\link[=explain]{explain()}} for details.}
 }
 \description{
 Model testing function

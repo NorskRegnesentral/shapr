@@ -99,7 +99,56 @@ If \code{NULL} (the default) internal functions are used for natively supported 
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
-\item{...}{Additional arguments passed to \code{\link[=setup_approach]{setup_approach()}} for specific approaches.}
+\item{...}{
+  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}
+  \describe{
+    \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
+Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}. TODO: Describe better what the methods do here.}
+    \item{\code{empirical.eta}}{Numeric. (default = 0.95)
+Needs to be \verb{0 < eta <= 1}.
+Represents the minimum proportion of the total empirical weight that data samples should use.
+If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
+accounts for 80\\% of the total weight.
+\code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
+    \item{\code{empirical.fixed_sigma_vec}}{Numeric. (default = 0.1)
+Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
+Only used when \code{empirical.type = "fixed_sigma"}}
+    \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
+Number of samples to consider in AICc optimization.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.eval_max_aicc}}{Positive integer. (default = 20)
+Maximum number of iterations when optimizing the AICc.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.start_aicc}}{Numeric. (default = 0.1)
+Start value of the \code{sigma} parameter when optimizing the AICc.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional, default = NULL)
+Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
+\code{NULL} means it is estimated from \code{x_train}.}
+    \item{\code{internal}}{Not used.}
+    \item{\code{gaussian.mu}}{Numeric vector. (Optional)
+Containing the mean of the data generating distribution.
+\code{NULL} means it is estimated from the \code{x_train}.}
+    \item{\code{gaussian.cov_mat}}{Numeric matrix. (Optional)
+Containing the covariance matrix of the data generating distribution.
+\code{NULL} means it is estimated from the \code{x_train}.}
+    \item{\code{ctree.mincriterion}}{Numeric scalar or vector. (default = 0.95)
+Either a scalar or vector of length equal to the number of features in the model.
+Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
+If it is a vector, this indicates which value to use when conditioning on various numbers of features.}
+    \item{\code{ctree.minsplit}}{Numeric scalar. (default = 20)
+Determines minimum value that the sum of the left and right daughter nodes required for a split.}
+    \item{\code{ctree.minbucket}}{Numeric scalar. (default = 7)
+Determines the minimum sum of weights in a terminal node required for a split}
+    \item{\code{ctree.sample}}{Boolean.
+If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
+If FALSE and the number of observations in the leaf node is less than \code{n_samples},
+the method will take all observations in the leaf.
+If FALSE and the number of observations in the leaf node is more than \code{n_samples},
+the method will sample \code{n_samples} observations (with replacement).
+This means that there will always be sampling in the leaf unless
+\code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
+  }}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
@@ -248,6 +297,7 @@ explain_groups <- explain(
   n_samples = 1e2
 )
 print(explain_groups$shapley_values)
+
 
 }
 \references{

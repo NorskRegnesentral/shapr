@@ -34,7 +34,8 @@ setup_approach(internal, ...)
   empirical.start_aicc = 0.1,
   empirical.cov_mat = NULL,
   model = NULL,
-  predict_model = NULL
+  predict_model = NULL,
+  ...
 )
 
 \method{setup_approach}{gaussian}(internal, gaussian.mu = NULL, gaussian.cov_mat = NULL, ...)
@@ -42,6 +43,10 @@ setup_approach(internal, ...)
 \method{setup_approach}{independence}(internal, ...)
 }
 \arguments{
+\item{internal}{Not used.}
+
+\item{...}{\code{approach}-specific arguments. See below.}
+
 \item{ctree.mincriterion}{Numeric scalar or vector. (default = 0.95)
 Either a scalar or vector of length equal to the number of features in the model.
 Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
@@ -92,6 +97,14 @@ Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AIC
 Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 \code{NULL} means it is estimated from \code{x_train}.}
 
+\item{model}{Objects.
+The model object that ought to be explained.
+See the documentation of \code{\link[=explain]{explain()}} for details.}
+
+\item{predict_model}{Function.
+The prediction function used when \code{model} is not natively supported.
+See the documentation of \code{\link[=explain]{explain()}} for details.}
+
 \item{gaussian.mu}{Numeric vector. (Optional)
 Containing the mean of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
@@ -102,5 +115,4 @@ Containing the covariance matrix of the data generating distribution.
 }
 \description{
 The different choices of \code{approach} takes different (optional) parameters, which are forwarded from \code{\link[=explain]{explain()}}.
-See the various input
 }

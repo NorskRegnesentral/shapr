@@ -1,5 +1,7 @@
 #' @rdname setup_approach
 #'
+#' @inheritParams default_doc_explain
+#'
 #' @export
 setup_approach.copula <- function(internal, ...) {
   parameters <- internal$parameters
