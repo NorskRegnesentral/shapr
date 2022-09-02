@@ -147,9 +147,10 @@ check_data <- function(internal){
   }
 
 
-  # First check model vs x_train (possibly modified)
-  # Then x_train vs x_explain
+  # Check model vs x_train (allowing different label ordering in specs from model)
   compare_feature_specs(model_feature_specs, x_train_feature_specs, "model", "x_train", sort_labels = TRUE)
+
+  # Then x_train vs x_explain (requiring exact same order)
   compare_feature_specs(x_train_feature_specs, x_explain_feature_specs, "x_train", "x_explain")
 
 
