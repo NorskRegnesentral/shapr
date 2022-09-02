@@ -67,6 +67,8 @@ check_parameters <- function(internal){
     check_groups(feature_names,group)
   }
 
+  check_n_combinations(internal)
+
   # Checking n_batches vs n_combinations etc
   check_n_batches(internal)
 
@@ -74,6 +76,22 @@ check_parameters <- function(internal){
   check_approach(internal)
 
 }
+
+#' @keywords internal
+check_n_combinations <- function(internal) {
+
+  if (is.null(internal$parameters$group)) {
+    if (internal$parameters$n_combinations <= ncol(internal$data$x_train)) {
+      stop("`n_combinations` has to be greater than the number of columns in `x_train`")
+    }
+  } else {
+    if (internal$parameters$n_combinations <= length(internal$parameters$group)) {
+      stop("`n_combinations` has to be greater than the number of groups")
+    }
+  }
+}
+
+
 
 #' @keywords internal
 check_n_batches <- function(internal){
