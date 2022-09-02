@@ -883,6 +883,27 @@ test_that("Correct dimension of S when sampling combinations", {
 
 })
 
+test_that("Correct dimension of S when sampling combinations with groups", {
+
+  n_combinations = 5
+
+  groups = list(A = c("Solar.R", "Wind"),
+                B = c("Temp", "Month_factor"),
+                C = "Day")
+
+  res = explain(model = model_lm_mixed,
+                x_explain = x_explain_mixed,
+                x_train = x_explain_mixed,
+                prediction_zero = p0,
+                approach = "ctree",
+                group = groups,
+                n_combinations = n_combinations)
+
+  expect_equal(nrow(res$internal$objects$S), n_combinations)
+
+})
+
+
 
 test_that("data feature ordering is output_lm_numeric_column_order", {
 
@@ -915,4 +936,5 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 
 
 })
+
 
