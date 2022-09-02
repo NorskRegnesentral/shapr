@@ -13,9 +13,12 @@
 #' The prediction function used when `model` is not natively supported.
 #' See the documentation of [explain()] for details.
 #'
+#' @param ... Further arguments passed to `approach`-specific functions.
+#'
 #' @return List `internal`
 #' It holds all parameters, data, and computed objects used within [explain()].
 #' The list contains one or more of the elements `parameters`, `data`, `objects`, `output`.
+#'
 #'
 #' @keywords internal
 default_doc <- function() {

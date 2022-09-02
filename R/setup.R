@@ -2,6 +2,8 @@
 
 #' check_setup
 #' @inheritParams explain
+#' @inheritParams default_doc
+#'
 #' @param feature_specs List. The output from [get_model_specs()] or [get_data_specs()].
 #' Contains the 3 elements:
 #' \describe{

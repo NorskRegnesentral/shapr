@@ -18,6 +18,8 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
+
+\item{...}{Further arguments passed to \code{approach}-specific functions.}
 }
 \value{
 List \code{internal}
