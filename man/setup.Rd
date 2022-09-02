@@ -40,9 +40,10 @@ Typically we set this value equal to the mean of the response variable in our tr
 such as the mean of the predictions in the training data are also reasonable.}
 
 \item{n_combinations}{Integer.
-The number of feature combinations to sample. If \code{NULL},
-the exact method is used and all combinations are considered. The maximum number of
-combinations equals \code{2^ncol(x)}.}
+If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.
+If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
+If \code{n_combinations = NULL}, the exact method is used and all combinations are considered.
+The maximum number of combinations equals \code{2^m}, where \code{m} is the number of features.}
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.

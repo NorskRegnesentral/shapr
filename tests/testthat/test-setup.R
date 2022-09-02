@@ -868,6 +868,22 @@ test_that("incompatible input: `data/approach`", {
 
 })
 
+test_that("Correct dimension of S when sampling combinations", {
+
+  n_combinations = 10
+
+  res = explain(x_train = x_explain_mixed,
+                x_explain_mixed,
+                model_lm_mixed,
+                prediction_zero = p0,
+                approach = "ctree",
+                n_combinations = n_combinations)
+
+  expect_equal(nrow(res$internal$objects$S), n_combinations)
+
+})
+
+
 test_that("data feature ordering is output_lm_numeric_column_order", {
 
   explain.original <- explain(x_train_numeric, x_explain_numeric,
