@@ -37,18 +37,18 @@
     Code
       (out <- code)
     Output
-           none Solar.R   Wind    Temp   Month     Day
-      1: 40.752  9.7136 27.305 -8.9187 13.4754 -8.2860
-      2: 40.752  5.8227 15.143  5.0823 -4.8571  4.8696
+           none Solar.R    Wind   Temp   Month    Day
+      1: 40.752 -18.549 19.4454 10.011 19.5361 2.8456
+      2: 40.752 -17.486  6.4034 28.922  4.8873 3.3335
 
 # output_lm_numeric_empirical_AICc_full
 
     Code
       (out <- code)
     Output
-           none Solar.R   Wind    Temp   Month     Day
-      1: 40.752  9.9617 25.455 -9.0014 15.9878 -9.1131
-      2: 40.752  5.1766 15.687  5.2976 -5.8801  5.7797
+           none Solar.R    Wind   Temp   Month    Day
+      1: 40.752 -19.515 18.8463 10.479 20.7526 2.7263
+      2: 40.752 -17.621  4.7818 29.694  6.1072 3.0986
 
 # output_lm_numeric_gaussian
 

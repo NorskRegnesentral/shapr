@@ -281,4 +281,3 @@ test_that("output_lm_numeric_interaction", {
     )
 })
 
-

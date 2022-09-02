@@ -868,4 +868,42 @@ test_that("incompatible input: `data/approach`", {
 
 })
 
+test_that("Correct dimension of S when sampling combinations", {
+
+  n_combinations = 10
+
+  res = explain(x_train = x_explain_mixed,
+                x_explain_mixed,
+                model_lm_mixed,
+                prediction_zero = p0,
+                approach = "ctree",
+                n_combinations = n_combinations)
+
+  expect_equal(nrow(res$internal$objects$S), n_combinations)
+
+})
+
+
+test_that("data feature ordering is output_lm_numeric_column_order", {
+
+  explain.original <- explain(x_train_numeric, x_explain_numeric,
+                              model_lm_numeric, approach = "empirical", prediction_zero = p0)
+
+  explain.new_data_feature_order <- explain(x_train_numeric[, ncol(x_train_numeric):1], x_explain_numeric[, ncol(x_explain_numeric):1],
+                                    model_lm_numeric, approach = "empirical", prediction_zero = p0)
+
+  explain.new_model_feature_order <- explain(x_train_numeric, x_explain_numeric,
+                                             model_lm_numeric_col_order, approach = "empirical", prediction_zero = p0)
+
+  # Same Shapley values, but different order
+  expect_false(identical(explain.original$shapley_values,
+                         explain.new_data_feature_order$shapley_values))
+  expect_equal(explain.original$shapley_values[, mget(sort(names(explain.original$shapley_values)))],
+               explain.new_data_feature_order$shapley_values[, mget(sort(names(explain.new_data_feature_order$shapley_values)))])
+
+  # Same Shapley values in same order
+  expect_equal(explain.original, explain.new_model_feature_order)
+
+
+})
 
