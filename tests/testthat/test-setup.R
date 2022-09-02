@@ -913,6 +913,37 @@ test_that("Correct dimension of S when sampling combinations", {
   expect_equal(nrow(res$internal$objects$S), n_combinations)
 
 })
+test_that("Error with too low `n_combinations`", {
+
+  n_combinations = ncol(x_explain_numeric) - 1
+
+  expect_error(
+    explain(model = model_lm_numeric,
+                x_explain = x_explain_numeric,
+                x_train = x_explain_numeric,
+                prediction_zero = p0,
+                approach = "gaussian",
+                n_combinations = n_combinations)
+  )
+
+  # Same for groups
+  groups = list(A = c("Solar.R", "Wind"),
+                B = c("Temp", "Month"),
+                C = "Day")
+
+  n_combinations = length(groups) - 1
+
+  expect_error(
+    explain(model = model_lm_numeric,
+                x_explain = x_explain_numeric,
+                x_train = x_explain_numeric,
+                prediction_zero = p0,
+                approach = "gaussian",
+                group = groups,
+                n_combinations = n_combinations)
+  )
+})
+
 
 test_that("Correct dimension of S when sampling combinations with groups", {
 
