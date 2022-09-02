@@ -872,9 +872,9 @@ test_that("Correct dimension of S when sampling combinations", {
 
   n_combinations = 10
 
-  res = explain(x_train = x_explain_mixed,
-                x_explain_mixed,
-                model_lm_mixed,
+  res = explain(model = model_lm_mixed,
+                x_explain = x_explain_mixed,
+                x_train = x_explain_mixed,
                 prediction_zero = p0,
                 approach = "ctree",
                 n_combinations = n_combinations)
@@ -886,14 +886,23 @@ test_that("Correct dimension of S when sampling combinations", {
 
 test_that("data feature ordering is output_lm_numeric_column_order", {
 
-  explain.original <- explain(x_train_numeric, x_explain_numeric,
-                              model_lm_numeric, approach = "empirical", prediction_zero = p0)
+  explain.original <- explain(model = model_lm_numeric,
+                              x_explain = x_explain_numeric,
+                              x_train = x_train_numeric,
+                              approach = "empirical",
+                              prediction_zero = p0)
 
-  explain.new_data_feature_order <- explain(x_train_numeric[, ncol(x_train_numeric):1], x_explain_numeric[, ncol(x_explain_numeric):1],
-                                    model_lm_numeric, approach = "empirical", prediction_zero = p0)
+  explain.new_data_feature_order <- explain(model = model_lm_numeric,
+                                            x_explain = x_explain_numeric[, ncol(x_explain_numeric):1],
+                                            x_train = x_train_numeric[, ncol(x_train_numeric):1],
+                                            approach = "empirical",
+                                            prediction_zero = p0)
 
-  explain.new_model_feature_order <- explain(x_train_numeric, x_explain_numeric,
-                                             model_lm_numeric_col_order, approach = "empirical", prediction_zero = p0)
+  explain.new_model_feature_order <- explain(model = model_lm_numeric_col_order,
+                                             x_explain = x_explain_numeric,
+                                             x_train = x_train_numeric,
+                                             approach = "empirical",
+                                             prediction_zero = p0)
 
   # Same Shapley values, but different order
   expect_false(identical(explain.original$shapley_values,
