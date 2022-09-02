@@ -2,29 +2,31 @@
 % Please edit documentation in R/documentation.R
 \name{default_doc}
 \alias{default_doc}
-\title{Unexported documentation helper function}
+\title{Unexported documentation helper function.}
 \usage{
 default_doc()
 }
 \arguments{
 \item{internal}{List.
-Holds all parameters, data, functions and computed objects used within
-\code{\link[shapr:explain]{shapr:::explain()}}.
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{functions}, \code{output}.}
+Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 
 \item{model}{Objects.
-The model object that ought to be explained}
+The model object that ought to be explained.
+See the documentation of \code{\link[=explain]{explain()}} for details.}
+
+\item{predict_model}{Function.
+The prediction function used when \code{model} is not natively supported.
+See the documentation of \code{\link[=explain]{explain()}} for details.}
+
+\item{...}{Further arguments passed to \code{approach}-specific functions.}
 }
 \value{
 List \code{internal}
-It holds all parameters, data, functions and computed objects used within
-\code{\link[shapr:explain]{shapr:::explain()}}.
-The list contains one or more of the elements \code{parameters}, \code{data},
-\code{functions}, \code{output}. [explain()]
-[roxygen2::roxygenize()]
-[explain()]
+It holds all parameters, data, and computed objects used within \code{\link[=explain]{explain()}}.
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.
 }
 \description{
-Unexported documentation helper function
+Unexported documentation helper function.
 }
 \keyword{internal}

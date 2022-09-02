@@ -5,9 +5,9 @@
 \title{Explain the output of machine learning models with more accurately estimated Shapley values}
 \usage{
 explain(
-  x_train,
-  x_explain,
   model,
+  x_explain,
+  x_train,
   approach,
   prediction_zero,
   n_combinations = NULL,
@@ -22,18 +22,18 @@ explain(
 )
 }
 \arguments{
-\item{x_train}{Matrix or data.frame/data.table.
-Contains the data used to estimate the (conditional) distributions for the features
-needed to properly estimate the conditional expectations in the Shapley formula.}
+\item{model}{The model whose predictions we want to explain.
+Run \code{\link[=get_supported_models]{get_supported_models()}}
+for a table of which models \code{explain} supports natively. Unsupported models
+can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
+see details for more information.}
 
 \item{x_explain}{A matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.}
 
-\item{model}{The model whose predictions we want to explain.
-Run [get_supported_models()]
-for a table of which models \code{explain} supports natively. Unsupported models
-can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
-see details for more information.}
+\item{x_train}{Matrix or data.frame/data.table.
+Contains the data used to estimate the (conditional) distributions for the features
+needed to properly estimate the conditional expectations in the Shapley formula.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should,
@@ -79,7 +79,7 @@ Indicates whether the samples used in the Monte Carlo estimation of v_S should b
 
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
-(Run [get_supported_models()] for a list of natively supported
+(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported
 models.)
 The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
 and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
@@ -88,26 +88,75 @@ Can also be used to override the default function for natively supported model c
 
 \item{get_model_specs}{Function.
 An optional function for checking model/data consistency when \code{model} is not natively supported.
-(Run [get_supported_models()] for a list of natively supported
+(Run \code{\link[=get_supported_models]{get_supported_models()}} for a list of natively supported
 models.)
 The function takes \code{model} as argument and provides a list with 3 elements:
 \describe{
-  \item{labels}{Character vector with the names of each feature.}
-  \item{classes}{Character vector with the classes of each features.}
-  \item{factor_levels}{Character vector with the levels for any categorical features.}
+\item{labels}{Character vector with the names of each feature.}
+\item{classes}{Character vector with the classes of each features.}
+\item{factor_levels}{Character vector with the levels for any categorical features.}
 }
 If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
-\item{...}{Additional arguments passed to [setup_approach()] for specific approaches.}
+\item{...}{
+  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}
+  \describe{
+    \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
+Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}. TODO: Describe better what the methods do here.}
+    \item{\code{empirical.eta}}{Numeric. (default = 0.95)
+Needs to be \verb{0 < eta <= 1}.
+Represents the minimum proportion of the total empirical weight that data samples should use.
+If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
+accounts for 80\\% of the total weight.
+\code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
+    \item{\code{empirical.fixed_sigma_vec}}{Numeric. (default = 0.1)
+Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
+Only used when \code{empirical.type = "fixed_sigma"}}
+    \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
+Number of samples to consider in AICc optimization.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.eval_max_aicc}}{Positive integer. (default = 20)
+Maximum number of iterations when optimizing the AICc.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.start_aicc}}{Numeric. (default = 0.1)
+Start value of the \code{sigma} parameter when optimizing the AICc.
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+    \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional, default = NULL)
+Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
+\code{NULL} means it is estimated from \code{x_train}.}
+    \item{\code{internal}}{Not used.}
+    \item{\code{gaussian.mu}}{Numeric vector. (Optional)
+Containing the mean of the data generating distribution.
+\code{NULL} means it is estimated from the \code{x_train}.}
+    \item{\code{gaussian.cov_mat}}{Numeric matrix. (Optional)
+Containing the covariance matrix of the data generating distribution.
+\code{NULL} means it is estimated from the \code{x_train}.}
+    \item{\code{ctree.mincriterion}}{Numeric scalar or vector. (default = 0.95)
+Either a scalar or vector of length equal to the number of features in the model.
+Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
+If it is a vector, this indicates which value to use when conditioning on various numbers of features.}
+    \item{\code{ctree.minsplit}}{Numeric scalar. (default = 20)
+Determines minimum value that the sum of the left and right daughter nodes required for a split.}
+    \item{\code{ctree.minbucket}}{Numeric scalar. (default = 7)
+Determines the minimum sum of weights in a terminal node required for a split}
+    \item{\code{ctree.sample}}{Boolean.
+If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
+If FALSE and the number of observations in the leaf node is less than \code{n_samples},
+the method will take all observations in the leaf.
+If FALSE and the number of observations in the leaf node is more than \code{n_samples},
+the method will sample \code{n_samples} observations (with replacement).
+This means that there will always be sampling in the leaf unless
+\code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
+  }}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-  \item{shapley_values}{data.table with the estimated Shapley values}
-  \item{internal}{List with the different parameters, data and functions used internally}
-  \item{pred_explain}{Numeric vector with the predictions for the explained observations.}
+\item{shapley_values}{data.table with the estimated Shapley values}
+\item{internal}{List with the different parameters, data and functions used internally}
+\item{pred_explain}{Numeric vector with the predictions for the explained observations.}
 }
 
 \code{shapley_values} is a data.table where the number of rows equals
@@ -123,17 +172,17 @@ The magnitude of the value is also important to notice. E.g. if \code{shapley_va
 \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
 feature was larger than the j-th feature.
 
-The first column in \code{dt}, called `none`, is the prediction value not assigned to any of the features
+The first column in \code{dt}, called \code{none}, is the prediction value not assigned to any of the features
 (\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
 It's equal for all observations and set by the user through the argument \code{prediction_zero}.
-The difference between the prediction and `none` is distributed among the other features.
+The difference between the prediction and \code{none} is distributed among the other features.
 In theory this value should be the expected prediction without conditioning on any features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable. [explain()] [shapr::explain()]
+such as the mean of the predictions in the training data are also reasonable. \code{\link[=explain]{explain()}} \code{\link[=explain]{explain()}}
 }
 \description{
-Computes Shapley values for observations in \code{x_explain} from the specified \code{model},
-by using the method specified in \code{approach} to estimate the conditional expectation \code{}
+Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
+\code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
 }
 \details{
 The most important thing to notice is that \code{shapr} has implemented five different
@@ -152,7 +201,7 @@ For \code{approach="ctree"}, \code{n_samples} corresponds to the number of sampl
 from the leaf node (see an exception related to the \code{sample} argument).
 For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-\code{w_threshold} argument.
+\code{empirical.eta} argument.
 }
 \examples{
 
@@ -164,10 +213,10 @@ y_var <- "Ozone"
 
 # Split data into test- and training data
 data_train <- head(airquality, -3)
-data_test <- tail(airquality, 3)
+data_explain <- tail(airquality, 3)
 
 x_train <- data_train[, x_var]
-x_test <- data_test[,x_var]
+x_explain <- data_explain[,x_var]
 
 # Fit a linear model
 lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
@@ -178,9 +227,9 @@ p <- mean(data_train[,y_var])
 
 # Empirical approach
 explain1 <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "empirical",
   prediction_zero = p,
   n_samples = 1e2
@@ -188,9 +237,9 @@ explain1 <- explain(
 
 # Gaussian approach
 explain2 <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "gaussian",
   prediction_zero = p,
   n_samples = 1e2
@@ -198,9 +247,9 @@ explain2 <- explain(
 
 # Gaussian copula approach
 explain3 <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "copula",
   prediction_zero = p,
   n_samples = 1e2
@@ -208,9 +257,9 @@ explain3 <- explain(
 
 # ctree approach
 explain4 <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "ctree",
   prediction_zero = p,
   n_samples = 1e2
@@ -219,9 +268,9 @@ explain4 <- explain(
 # Combined approach
 approach <- c("gaussian", "gaussian", "empirical", "empirical")
 explain5 <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = approach,
   prediction_zero = p,
   n_samples = 1e2
@@ -240,9 +289,9 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
 group_list <- list(A = c("Temp", "Month"), B = c("Wind", "Solar.R"))
 
 explain_groups <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   group = group_list,
   approach = "empirical",
   prediction_zero = p,
@@ -250,10 +299,11 @@ explain_groups <- explain(
 )
 print(explain_groups$shapley_values)
 
+
 }
 \references{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
-  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
 Martin Jullum

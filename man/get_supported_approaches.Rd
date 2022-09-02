@@ -8,7 +8,7 @@ get_supported_approaches()
 }
 \value{
 Character vector.
-The names of the implemented approaches that can be passed to argument \code{approach} in [explain()].
+The names of the implemented approaches that can be passed to argument \code{approach} in \code{\link[=explain]{explain()}}.
 }
 \description{
 Gets the implemented approaches

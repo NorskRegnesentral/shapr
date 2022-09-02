@@ -9,15 +9,15 @@ observation_impute(
   S,
   x_train,
   x_explain,
-  w_threshold = 0.7,
+  empirical.eta = 0.7,
   n_samples = 1000
 )
 }
 \arguments{
 \item{W_kernel}{Numeric matrix. Contains all nonscaled weights between training and test
-observations for all feature combinations. The dimension equals \code{n_train x m}.}
+observations for all feature combinations. The dimension equals \verb{n_train x m}.}
 
-\item{S}{Integer matrix of dimension \code{n_combinations x m}, where \code{n_combinations}
+\item{S}{Integer matrix of dimension \verb{n_combinations x m}, where \code{n_combinations}
 and \code{m} equals the total number of sampled/non-sampled feature combinations and
 the total number of unique features, respectively. Note that \code{m = ncol(x_train)}.}
 
@@ -37,7 +37,7 @@ Generate permutations of training data using test observations
 }
 \references{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
-  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
 Nikolai Sellereite

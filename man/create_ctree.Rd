@@ -16,16 +16,16 @@ create_ctree(
 \arguments{
 \item{given_ind}{Numeric value. Indicates which features are conditioned on.}
 
-\item{x_train}{Numeric vector. Indicates the specific values of features for individual i.}
+\item{mincriterion}{Numeric scalar or vector. (default = 0.95)
+Either a scalar or vector of length equal to the number of features in the model.
+Value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
+If it is a vector, this indicates which value to use when conditioning on various numbers of features.}
 
-\item{mincriterion}{Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional
-independence tests.
-Can also be a vector equal to the length of the number of features indicating which mincriterion to use
-when conditioning on various numbers of features.}
+\item{minsplit}{Numeric scalar. (default = 20)
+Determines minimum value that the sum of the left and right daughter nodes required for a split.}
 
-\item{minsplit}{Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.}
-
-\item{minbucket}{Numeric value. Equal to the minimum sum of weights in a terminal node.}
+\item{minbucket}{Numeric scalar. (default = 7)
+Determines the minimum sum of weights in a terminal node required for a split}
 
 \item{use_partykit}{String. In some semi-rare cases \code{partyk::ctree} runs into an error related to the LINPACK
 used by R. To get around this problem, one may fall back to using the newer (but slower) \code{partykit::ctree}
@@ -39,26 +39,6 @@ List with conditional inference tree and the variables conditioned/not condition
 }
 \description{
 Make all conditional inference trees
-}
-\examples{
-if (requireNamespace("MASS", quietly = TRUE) & requireNamespace("party", quietly = TRUE)) {
-  m <- 10
-  n <- 40
-  n_samples <- 50
-  mu <- rep(1, m)
-  cov_mat <- cov(matrix(rnorm(n * m), n, m))
-  x_train <- data.table::data.table(MASS::mvrnorm(n, mu, cov_mat))
-  given_ind <- c(4, 7)
-  mincriterion <- 0.95
-  minsplit <- 20
-  minbucket <- 7
-  sample <- TRUE
-  create_ctree(
-    given_ind = given_ind, x_train = x_train,
-    mincriterion = mincriterion, minsplit = minsplit,
-    minbucket = minbucket, use_partykit = "on_error"
-  )
-}
 }
 \author{
 Annabelle Redelmeier, Martin Jullum

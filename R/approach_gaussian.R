@@ -1,7 +1,19 @@
-#' @keywords internal
+#' @rdname setup_approach
+#'
+#' @param gaussian.mu Numeric vector. (Optional)
+#' Containing the mean of the data generating distribution.
+#' `NULL` means it is estimated from the `x_train`.
+#'
+#' @param gaussian.cov_mat Numeric matrix. (Optional)
+#' Containing the covariance matrix of the data generating distribution.
+#' `NULL` means it is estimated from the `x_train`.
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
 setup_approach.gaussian <- function(internal,
-                                    mu = NULL,
-                                    cov_mat = NULL, ...) {
+                                    gaussian.mu = NULL,
+                                    gaussian.cov_mat = NULL, ...) {
   parameters <- internal$parameters
   x_train <- internal$data$x_train
   feature_specs <- internal$objects$feature_specs
@@ -15,18 +27,18 @@ setup_approach.gaussian <- function(internal,
                 "Please change approach to one of ",paste0(factor_approaches,collapse=", "),"."))
   }
 
-  # If mu is not provided directly, use mean of training data
-  if (is.null(mu)) {
-    parameters$mu <- get_mu_vec(x_train)
+  # If gaussian.mu is not provided directly, use mean of training data
+  if (is.null(gaussian.mu)) {
+    parameters$gaussian.mu <- get_mu_vec(x_train)
   } else {
-    parameters$mu <- mu
+    parameters$gaussian.mu <- gaussian.mu
   }
 
-  # If cov_mat is not provided directly, use sample covariance of training data
-  if (is.null(cov_mat)) {
-    parameters$cov_mat <- get_cov_mat(x_train)
+  # If gaussian.cov_mat is not provided directly, use sample covariance of training data
+  if (is.null(gaussian.cov_mat)) {
+    parameters$gaussian.cov_mat <- get_cov_mat(x_train)
   } else {
-    parameters$cov_mat <- cov_mat
+    parameters$gaussian.cov_mat <- gaussian.cov_mat
   }
 
   internal$parameters <- parameters
@@ -42,9 +54,9 @@ prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
-  cov_mat <- internal$parameters$cov_mat
+  gaussian.cov_mat <- internal$parameters$gaussian.cov_mat
   n_samples <- internal$parameters$n_samples
-  mu <- internal$parameters$mu
+  gaussian.mu <- internal$parameters$gaussian.mu
   n_features <- internal$parameters$n_features
 
   X <- internal$objects$X
@@ -63,8 +75,8 @@ prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
       X = features,
       FUN = sample_gaussian,
       n_samples = n_samples,
-      mu = mu,
-      cov_mat = cov_mat,
+      mu = gaussian.mu,
+      cov_mat = gaussian.cov_mat,
       m = n_features,
       x_explain = x_explain0[i, , drop = FALSE]
     )
@@ -83,7 +95,7 @@ prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
 #'
 #' @inheritParams explain
 #' @param min_eigen_value Numeric
-#' Specifies the smallest allowed eigen value before the covariance matrix of \code{x_train} is assumed to not be
+#' Specifies the smallest allowed eigen value before the covariance matrix of `x_train` is assumed to not be
 #' positive definite, and [Matrix::nearPD()] is used to find the nearest one.
 #' @export
 get_cov_mat <- function(x_train, min_eigen_value = 1e-06) {

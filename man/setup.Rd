@@ -70,19 +70,19 @@ If \code{NULL} the seed will be inherited from the calling environment.}
 Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
 (in \code{internal$output})}
 
-\item{feature_specs}{List. The output from [get_model_specs()] or [get_data_specs()].
+\item{feature_specs}{List. The output from \code{\link[=get_model_specs]{get_model_specs()}} or \code{\link[=get_data_specs]{get_data_specs()}}.
 Contains the 3 elements:
 \describe{
-  \item{labels}{Character vector with the names of each feature.}
-  \item{classes}{Character vector with the classes of each features.}
-  \item{factor_levels}{Character vector with the levels for any categorical features.}
-  }}
+\item{labels}{Character vector with the names of each feature.}
+\item{classes}{Character vector with the classes of each features.}
+\item{factor_levels}{Character vector with the levels for any categorical features.}
+}}
 
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
 
-\item{...}{Additional arguments passed to [setup_approach()] for specific approaches.}
+\item{...}{Further arguments passed to \code{approach}-specific functions.}
 }
 \description{
 check_setup

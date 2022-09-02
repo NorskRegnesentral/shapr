@@ -21,12 +21,12 @@
     Code
       (out <- code)
     Warning <simpleWarning>
-      Using type = 'independence' for approach = 'empirical' is deprecated.
+      Using empirical.type = 'independence' for approach = 'empirical' is deprecated.
       Please use approach = 'independence' instead.
     Message <simpleMessage>
       
       Success with message:
-      w_threshold force set to 1 for type = 'independence'
+      empirical.eta force set to 1 for empirical.type = 'independence'
     Output
            none  Solar.R   Wind   Temp    Month     Day
       1: 40.752  4.42903 19.814 12.271  0.77897 -4.0031

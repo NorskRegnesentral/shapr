@@ -16,7 +16,7 @@ except combination \code{1} and \code{2^m}.}
 \item{is_groupwise}{Logical. Indicating whether group wise Shapley values are to be computed.}
 }
 \value{
-Numeric matrix. See \code{\link{weight_matrix_cpp}} for more information.
+Numeric matrix. See \code{\link[=weight_matrix_cpp]{weight_matrix_cpp()}} for more information.
 }
 \description{
 Calculate weighted matrix

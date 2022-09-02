@@ -20,7 +20,7 @@
 }
 \arguments{
 \item{x}{An \code{shapr} object.
-The output from [explain()].}
+The output from \code{\link[=explain]{explain()}}.}
 
 \item{plot_type}{Character.
 Specifies the type of plot to produce.
@@ -41,7 +41,7 @@ Whether to include \code{phi0} in the plot.}
 
 \item{index_x_explain}{Integer vector.
 Which of the test observations to plot. E.g. if you have
-explained 10 observations using \code{\link{explain}}, you can generate a plot for the first 5
+explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the first 5
 observations by setting \code{index_x_explain = 1:5}.}
 
 \item{top_k_features}{Integer.
@@ -50,7 +50,7 @@ features in your model you can plot the 5 most important features, for each expl
 \code{top_k_features = 1:5}.}
 
 \item{col}{Character vector (length depends on plot type).
-The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
+The color codes (hex codes or other names understood by \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}) for positive and negative
 Shapley values, respectively.
 The default is \code{col=NULL}, plotting with the default colors respective to the plot type.
 For \code{plot_type = "bar"} and \code{plot_type = "waterfall"}, the default is \code{c("#00BA38","#F8766D")}.
@@ -69,9 +69,9 @@ scatter plot.}
 
 \item{plot_order}{Character.
 Specifies what order to plot the features with respect to the magnitude of the shapley values.
- \code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
- \code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
- \code{"original"} plots the features in the original order of the data table.}
+\code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
+\code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
+\code{"original"} plots the features in the original order of the data table.}
 
 \item{scatter_features}{Integer or character vector.
 Only used for \code{plot_type = "scatter"}.
@@ -105,10 +105,10 @@ y_var <- "Ozone"
 
 # Split data into test- and training data
 data_train <- head(airquality, -50)
-data_test <- tail(airquality, 50)
+data_explain <- tail(airquality, 50)
 
 x_train <- data_train[, x_var]
-x_test <- data_test[,x_var]
+x_explain <- data_explain[,x_var]
 
 # Fit a linear model
 lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
@@ -119,9 +119,9 @@ p <- mean(data_train[,y_var])
 
 # Empirical approach
 x <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "empirical",
   prediction_zero = p,
   n_samples = 1e2

@@ -1,7 +1,7 @@
 #' Explain the output of machine learning models with more accurately estimated Shapley values
 #'
-#' @description Computes Shapley values for observations in \code{x_explain} from the specified \code{model},
-#' by using the method specified in \code{approach} to estimate the conditional expectation \code{}
+#' @description Computes dependence-aware Shapley values for observations in `x_explain` from the specified
+#' `model` by using the method specified in `approach` to estimate the conditional expectation.
 #'
 #' @param x_train Matrix or data.frame/data.table.
 #' Contains the data used to estimate the (conditional) distributions for the features
@@ -12,13 +12,13 @@
 #'
 #' @param model The model whose predictions we want to explain.
 #' Run [get_supported_models()]
-#' for a table of which models \code{explain} supports natively. Unsupported models
-#' can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
+#' for a table of which models `explain` supports natively. Unsupported models
+#' can still be explained by passing `predict_model` and (optionally) `get_model_specs`,
 #' see details for more information.
 #'
-#' @param approach Character vector of length \code{1} or \code{n_features}.
-#' \code{n_features} equals the total number of features in the model. All elements should,
-#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, or \code{"independence"}.
+#' @param approach Character vector of length `1` or `n_features`.
+#' `n_features` equals the total number of features in the model. All elements should,
+#' either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, or `"independence"`.
 #' See details for more information.
 #'
 #' @param prediction_zero Numeric.
@@ -28,14 +28,14 @@
 #' such as the mean of the predictions in the training data are also reasonable.
 #'
 #' @param n_combinations Integer.
-#' If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.
-#' If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
-#' If \code{n_combinations = NULL}, the exact method is used and all combinations are considered.
-#' The maximum number of combinations equals \code{2^m}, where \code{m} is the number of features.
+#' If `group = NULL`, `n_combinations` represents the number of unique feature combinations to sample.
+#' If `group != NULL`, `n_combinations` represents the number of unique group combinations to sample.
+#' If `n_combinations = NULL`, the exact method is used and all combinations are considered.
+#' The maximum number of combinations equals `2^m`, where `m` is the number of features.
 #'
 #' @param group List.
-#' If \code{NULL} regular feature wise Shapley values are computed.
-#' If provided, group wise Shapley values are computed. \code{group} then has length equal to
+#' If `NULL` regular feature wise Shapley values are computed.
+#' If provided, group wise Shapley values are computed. `group` then has length equal to
 #' the number of groups. The list element contains character vectors with the features included
 #' in each of the different groups.
 #'
@@ -52,79 +52,83 @@
 #'
 #' @param seed Positive integer.
 #' Specifies the seed before any randomness based code is being run.
-#' If \code{NULL} the seed will be inherited from the calling environment.
+#' If `NULL` the seed will be inherited from the calling environment.
 #'
 #' @param keep_samp_for_vS Logical.
 #' Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
-#' (in \code{internal$output})
+#' (in `internal$output`)
 #'
 #' @param predict_model Function.
-#' The prediction function used when \code{model} is not natively supported.
+#' The prediction function used when `model` is not natively supported.
 #' (Run [get_supported_models()] for a list of natively supported
 #' models.)
-#' The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
+#' The function must have two arguments, `model` and `newdata` which specify, respectively, the model
 #' and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
-#' \code{NULL} (the default) uses functions specified internally.
+#' `NULL` (the default) uses functions specified internally.
 #' Can also be used to override the default function for natively supported model classes.
 #'
 #' @param get_model_specs Function.
-#' An optional function for checking model/data consistency when \code{model} is not natively supported.
+#' An optional function for checking model/data consistency when `model` is not natively supported.
 #' (Run [get_supported_models()] for a list of natively supported
 #' models.)
-#' The function takes \code{model} as argument and provides a list with 3 elements:
+#' The function takes `model` as argument and provides a list with 3 elements:
 #' \describe{
 #'   \item{labels}{Character vector with the names of each feature.}
 #'   \item{classes}{Character vector with the classes of each features.}
 #'   \item{factor_levels}{Character vector with the levels for any categorical features.}
 #' }
-#' If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
+#' If `NULL` (the default) internal functions are used for natively supported model classes, and the checking is
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
-
-#' @param ... Additional arguments passed to [setup_approach()] for specific approaches.
 #'
-#' @details The most important thing to notice is that \code{shapr} has implemented five different
-#' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-#' \code{"gaussian"}, \code{"copula"}, \code{"ctree"} and \code{"independence"}.
+#' @inheritDotParams setup_approach.empirical
+#' @inheritDotParams setup_approach.independence
+#' @inheritDotParams setup_approach.gaussian
+#' @inheritDotParams setup_approach.copula
+#' @inheritDotParams setup_approach.ctree
+#'
+#' @details The most important thing to notice is that `shapr` has implemented five different
+#' approaches for estimating the conditional distributions of the data, namely `"empirical"`,
+#' `"gaussian"`, `"copula"`, `"ctree"` and `"independence"`.
 #' In addition, the user also has the option of combining the four approaches.
 #' E.g., if you're in a situation where you have trained a model that consists of 10 features,
-#' and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
-#' the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
+#' and you'd like to use the `"gaussian"` approach when you condition on a single feature,
+#' the `"empirical"` approach if you condition on 2-5 features, and `"copula"` version
 #' if you condition on more than 5 features this can be done by simply passing
-#' \code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
-#' \code{"approach[i]" = "gaussian"} means that you'd like to use the \code{"gaussian"} approach
-#' when conditioning on \code{i} features.
+#' `approach = c("gaussian", rep("empirical", 4), rep("copula", 5))`. If
+#' `"approach[i]" = "gaussian"` means that you'd like to use the `"gaussian"` approach
+#' when conditioning on `i` features.
 #'
-#' For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
-#' from the leaf node (see an exception related to the \code{sample} argument).
-#' For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in equations (14-15) of
+#' For `approach="ctree"`, `n_samples` corresponds to the number of samples
+#' from the leaf node (see an exception related to the `sample` argument).
+#' For `approach="empirical"`, `n_samples` is  the \eqn{K} parameter in equations (14-15) of
 #' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-#' \code{w_threshold} argument.
+#' `empirical.eta` argument.
 #'
 #'
-#' @return Object of class \code{c("shapr", "list")}. Contains the following items:
+#' @return Object of class `c("shapr", "list")`. Contains the following items:
 #' \describe{
 #'   \item{shapley_values}{data.table with the estimated Shapley values}
 #'   \item{internal}{List with the different parameters, data and functions used internally}
 #'   \item{pred_explain}{Numeric vector with the predictions for the explained observations.}
 #' }
 #'
-#' \code{shapley_values} is a data.table where the number of rows equals
-#' the number of observations you'd like to explain, and the number of columns equals \code{m +1},
-#' where \code{m} equals the total number of features in your model.
+#' `shapley_values` is a data.table where the number of rows equals
+#' the number of observations you'd like to explain, and the number of columns equals `m +1`,
+#' where `m` equals the total number of features in your model.
 #'
-#' If \code{shapley_values[i, j + 1] > 0} it indicates that the j-th feature increased the prediction for
-#' the i-th observation. Likewise, if \code{shapley_values[i, j + 1] < 0} it indicates that the j-th feature
+#' If `shapley_values[i, j + 1] > 0` it indicates that the j-th feature increased the prediction for
+#' the i-th observation. Likewise, if `shapley_values[i, j + 1] < 0` it indicates that the j-th feature
 #' decreased the prediction for the i-th observation.
-#' The magnitude of the value is also important to notice. E.g. if \code{shapley_values[i, k + 1]} and
-#' \code{shapley_values[i, j + 1]} are greater than \code{0}, where \code{j != k}, and
-#' \code{shapley_values[i, k + 1]} > \code{shapley_values[i, j + 1]} this indicates that feature
-#' \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
+#' The magnitude of the value is also important to notice. E.g. if `shapley_values[i, k + 1]` and
+#' `shapley_values[i, j + 1]` are greater than `0`, where `j != k`, and
+#' `shapley_values[i, k + 1]` > `shapley_values[i, j + 1]` this indicates that feature
+#' `j` and `k` both increased the value of the prediction, but that the effect of the k-th
 #' feature was larger than the j-th feature.
 #'
-#' The first column in \code{dt}, called `none`, is the prediction value not assigned to any of the features
+#' The first column in `dt`, called `none`, is the prediction value not assigned to any of the features
 #' (\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
-#' It's equal for all observations and set by the user through the argument \code{prediction_zero}.
+#' It's equal for all observations and set by the user through the argument `prediction_zero`.
 #' The difference between the prediction and `none` is distributed among the other features.
 #' In theory this value should be the expected prediction without conditioning on any features.
 #' Typically we set this value equal to the mean of the response variable in our training data, but other choices
@@ -140,10 +144,10 @@
 #'
 #' # Split data into test- and training data
 #' data_train <- head(airquality, -3)
-#' data_test <- tail(airquality, 3)
+#' data_explain <- tail(airquality, 3)
 #'
 #' x_train <- data_train[, x_var]
-#' x_test <- data_test[,x_var]
+#' x_explain <- data_explain[,x_var]
 #'
 #' # Fit a linear model
 #' lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
@@ -154,9 +158,9 @@
 #'
 #' # Empirical approach
 #' explain1 <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   approach = "empirical",
 #'   prediction_zero = p,
 #'   n_samples = 1e2
@@ -164,9 +168,9 @@
 #'
 #' # Gaussian approach
 #' explain2 <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   approach = "gaussian",
 #'   prediction_zero = p,
 #'   n_samples = 1e2
@@ -174,9 +178,9 @@
 #'
 #' # Gaussian copula approach
 #' explain3 <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   approach = "copula",
 #'   prediction_zero = p,
 #'   n_samples = 1e2
@@ -184,9 +188,9 @@
 #'
 #' # ctree approach
 #' explain4 <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   approach = "ctree",
 #'   prediction_zero = p,
 #'   n_samples = 1e2
@@ -195,9 +199,9 @@
 #' # Combined approach
 #' approach <- c("gaussian", "gaussian", "empirical", "empirical")
 #' explain5 <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   approach = approach,
 #'   prediction_zero = p,
 #'   n_samples = 1e2
@@ -216,15 +220,16 @@
 #' group_list <- list(A = c("Temp", "Month"), B = c("Wind", "Solar.R"))
 #'
 #' explain_groups <- explain(
-#'   x_train,
-#'   x_test,
 #'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
 #'   group = group_list,
 #'   approach = "empirical",
 #'   prediction_zero = p,
 #'   n_samples = 1e2
 #' )
 #' print(explain_groups$shapley_values)
+#'
 #'
 #' @export
 #'
@@ -233,9 +238,9 @@
 #' @references
 #'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
 #'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
-explain <- function(x_train,
+explain <- function(model,
                     x_explain,
-                    model,
+                    x_train,
                     approach,
                     prediction_zero,
                     n_combinations = NULL,

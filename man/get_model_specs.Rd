@@ -9,7 +9,7 @@
 \alias{get_model_specs.gam}
 \alias{get_model_specs.ranger}
 \alias{get_model_specs.xgb.Booster}
-\title{Fetches feature information from a given model object}
+\title{Fetches feature information from natively supported models}
 \usage{
 get_model_specs(x)
 
@@ -31,18 +31,22 @@ get_model_specs(x)
 \value{
 A list with the following elements:
 \describe{
-  \item{labels}{character vector with the feature names to compute Shapley values for}
-  \item{classes}{a named character vector with the labels as names and the class type as elements}
-  \item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
-  (NULL if the feature is not a factor)}
+\item{labels}{character vector with the feature names to compute Shapley values for}
+\item{classes}{a named character vector with the labels as names and the class type as elements}
+\item{factor_levels}{a named list with the labels as names and character vectors with the factor levels as elements
+(NULL if the feature is not a factor)}
 }
 }
 \description{
-Fetches feature information from a given model object
+This function is used to extract the feature information from the model to be checked against the
+corresponding feature information in the data passed to \verb{[explain()]}.
+
+NOTE: You should never need to call this function explicitly.
+It is exported just to be easier accessible for users, see details.
 }
 \details{
-This function is used to extract the feature information to be checked against data passed to \code{shapr}
-and \code{explain}. The function is called from \code{preprocess_data}.
+If you are explaining a model not supported natively, you may (optionally) enable such checking by
+creating this function yourself and passing it on to \verb{[explain()]}.
 }
 \examples{
 # Load example data
@@ -55,6 +59,10 @@ x_explain <- tail(airquality, 3)
 model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
 get_model_specs(model)
 
+}
+\seealso{
+For model classes not supported natively, you NEED to create an analogue to \verb{[predict_model()]}. See it's
+help file for details.
 }
 \author{
 Martin Jullum

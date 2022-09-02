@@ -9,7 +9,7 @@
 \alias{predict_model.gam}
 \alias{predict_model.ranger}
 \alias{predict_model.xgb.Booster}
-\title{Generate predictions for different model classes}
+\title{Generate predictions for input data with specified model}
 \usage{
 predict_model(x, newdata)
 
@@ -28,37 +28,40 @@ predict_model(x, newdata)
 \arguments{
 \item{x}{Model object for the model to be explained.}
 
-\item{newdata}{A data frame (or matrix) in which to look for variables with which to predict.}
+\item{newdata}{A data.frame/data.table with the features to predict from.}
 }
 \value{
-Numeric
+Numeric. Vector of size equal to the number of rows in \code{newdata}.
 }
 \description{
-Performs prediction of response \code{\link[stats]{lm}}, \code{\link[stats]{glm}},
-\code{\link[ranger]{ranger}},  \code{\link[mgcv:gam]{mgcv::gam}} and
-\code{\link[xgboost:xgb.train]{xgboost::xgb.train}} with binary or continuous
+Performs prediction of response
+\code{\link[stats:lm]{stats::lm()}},
+\code{\link[stats:glm]{stats::glm()}},
+\code{\link[ranger:ranger]{ranger::ranger()}},
+\code{\link[mgcv:gam]{mgcv::gam()}} and
+\code{\link[xgboost:xgb.train]{xgboost::xgb.train()}} with binary or continuous
 response. See details for more information.
+
+NOTE: You should never need to call this function explicitly.
+It is exported just to be easier accessible for users, see details.
 }
 \details{
 The following models are currently supported:
 \itemize{
-\item \code{\link[stats:lm]{stats::lm}}
-\item \code{\link[stats:glm]{stats::glm}}
-\item \code{\link[ranger:ranger]{ranger::ranger}}
-\item \code{\link[mgcv:gam]{mgcv::gam}}
-\item \code{\link[xgboost:xgb.train]{xgboost::xgb.train}}
-}
-
-The returned object \code{p} always satisfies the following properties:
-\itemize{
-\item \code{is.atomic(p)} equals \code{TRUE}
-\item \code{is.double(p)} equals \code{TRUE}
+\item \code{\link[stats:lm]{stats::lm()}}
+\item \code{\link[stats:glm]{stats::glm()}}
+\item \code{\link[ranger:ranger]{ranger::ranger()}}
+\item \code{\link[mgcv:gam]{mgcv::gam()}}
+\item \code{\link[xgboost:xgb.train]{xgboost::xgb.train()}}
 }
 
 If you have a binary classification model we'll always return the probability prediction
 for a single class.
 
-For more details on how to explain other types of models (i.e. custom models), see the Advanced usage section
+If you are explaining a model not supported natively, you need to create the \verb{[predict_model()]} function yourself,
+and pass it on to as an argument to \verb{[explain()]}.
+
+For more details on how to explain such non-supported models (i.e. custom models), see the Advanced usage section
 of the vignette: \cr
 From R: \code{vignette("understanding_shapr", package = "shapr")}  \cr
 Web: \url{https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models}

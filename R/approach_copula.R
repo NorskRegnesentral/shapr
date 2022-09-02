@@ -1,4 +1,8 @@
-#' @keywords internal
+#' @rdname setup_approach
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
 setup_approach.copula <- function(internal, ...) {
   parameters <- internal$parameters
   x_train <- internal$data$x_train
@@ -17,13 +21,13 @@ setup_approach.copula <- function(internal, ...) {
   }
 
   # Prepare transformed data
-  parameters$mu <- rep(0, ncol(x_train))
+  parameters$copula.mu <- rep(0, ncol(x_train))
   x_train0 <- apply(
     X = x_train,
     MARGIN = 2,
     FUN = gaussian_transform
   )
-  parameters$cov_mat <- get_cov_mat(x_train0)
+  parameters$copula.cov_mat <- get_cov_mat(x_train0)
 
 
   x_explain_gaussian <- apply(
@@ -37,12 +41,13 @@ setup_approach.copula <- function(internal, ...) {
     x_explain_gaussian <- t(as.matrix(x_explain_gaussian))
   }
   # TODO: Change to this a data.table for consistency (not speed/memory)
-  internal$data$x_explain_gaussian <- x_explain_gaussian
+  internal$data$copula.x_explain_gaussian <- x_explain_gaussian
   internal$parameters <- parameters
 
   return(internal)
 }
 
+#' @inheritParams default_doc
 #' @rdname prepare_data
 #' @export
 prepare_data.copula <- function(internal, index_features = NULL, ...) {
@@ -51,12 +56,12 @@ prepare_data.copula <- function(internal, index_features = NULL, ...) {
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
-  cov_mat <- internal$parameters$cov_mat
+  copula.cov_mat <- internal$parameters$copula.cov_mat
   n_samples <- internal$parameters$n_samples
-  mu <- internal$parameters$mu
+  copula.mu <- internal$parameters$copula.mu
   n_features <- internal$parameters$n_features
 
-  x_explain_gaussian <- internal$data$x_explain_gaussian
+  copula.x_explain_gaussian <- internal$data$copula.x_explain_gaussian
   X <- internal$objects$X
 
 
@@ -74,12 +79,12 @@ prepare_data.copula <- function(internal, index_features = NULL, ...) {
       X = features,
       FUN = sample_copula,
       n_samples = n_samples,
-      mu = mu,
-      cov_mat = cov_mat,
+      mu = copula.mu,
+      cov_mat = copula.cov_mat,
       m = n_features,
       x_explain = x_explain0[i, , drop = FALSE],
       x_train = as.matrix(x_train),
-      x_explain_gaussian = x_explain_gaussian[i, , drop = FALSE]
+      x_explain_gaussian = copula.x_explain_gaussian[i, , drop = FALSE]
     )
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
@@ -94,7 +99,7 @@ prepare_data.copula <- function(internal, index_features = NULL, ...) {
 #' Sample conditional variables using the Gaussian copula approach
 #'
 #' @param index_given Integer vector. The indices of the features to condition upon. Note that
-#' \code{min(index_given) >= 1} and \code{max(index_given) <= m}.
+#' `min(index_given) >= 1` and `max(index_given) <= m`.
 #' @param m Positive integer. The total number of features.
 #' @param x_explain_gaussian Numeric matrix. Contains the observation whose predictions ought
 #' to be explained (test data),
@@ -142,11 +147,11 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_explain_gaus
 
 #' Transforms new data to a standardized normal distribution
 #'
-#' @param zx Numeric vector. The first \code{n_z} items are the Gaussian data, and the last part is
+#' @param zx Numeric vector. The first `n_z` items are the Gaussian data, and the last part is
 #' the data with the original transformation.
-#' @param n_z Positive integer. Number of elements of \code{zx} that belongs to new data.
+#' @param n_z Positive integer. Number of elements of `zx` that belongs to new data.
 #'
-#' @return Numeric vector of length \code{n_z}
+#' @return Numeric vector of length `n_z`
 #'
 #' @keywords internal
 #'
@@ -163,9 +168,9 @@ inv_gaussian_transform <- function(zx, n_z) {
 
 #' Transforms new data to standardized normal (dimension 1) based on other data transformations
 #'
-#' @param yx Numeric vector. The first \code{n_y} items is the data that is transformed, and last
+#' @param yx Numeric vector. The first `n_y` items is the data that is transformed, and last
 #' part is the data with the original transformation.
-#' @param n_y Positive integer. Number of elements of \code{yx} that belongs to the gaussian data.
+#' @param n_y Positive integer. Number of elements of `yx` that belongs to the gaussian data.
 #'
 #' @return Vector of back-transformed Gaussian data
 #'
@@ -187,7 +192,7 @@ gaussian_transform_separate <- function(yx, n_y) {
 #'
 #' @param x Numeric vector.The data which should be transformed to a standard normal distribution.
 #'
-#' @return Numeric vector of length \code{length(x)}
+#' @return Numeric vector of length `length(x)`
 #'
 #' @keywords internal
 #'

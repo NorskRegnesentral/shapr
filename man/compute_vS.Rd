@@ -8,21 +8,16 @@ compute_vS(internal, model, predict_model, method = "future")
 }
 \arguments{
 \item{internal}{List.
-Holds all parameters, data, functions and computed objects used within
-\code{\link[shapr:explain]{shapr:::explain()}}.
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{functions}, \code{output}.}
+Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 
 \item{model}{Objects.
-The model object that ought to be explained}
+The model object that ought to be explained.
+See the documentation of \code{\link[=explain]{explain()}} for details.}
 
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.
-(Run [get_supported_models()] for a list of natively supported
-models.)
-The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
-and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
-\code{NULL} (the default) uses functions specified internally.
-Can also be used to override the default function for natively supported model classes.}
+See the documentation of \code{\link[=explain]{explain()}} for details.}
 
 \item{method}{Character
 Indicates whether the lappy method (default) or loop method should be used.}

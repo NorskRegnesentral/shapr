@@ -8,19 +8,18 @@ finalize_explanation(vS_list, internal)
 }
 \arguments{
 \item{vS_list}{List
-Output from [compute_vS()]}
+Output from \code{\link[=compute_vS]{compute_vS()}}}
 
 \item{internal}{List.
-Holds all parameters, data, functions and computed objects used within
-\code{\link[shapr:explain]{shapr:::explain()}}.
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{functions}, \code{output}.}
+Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
-  \item{shapley_values}{data.table with the estimated Shapley values}
-  \item{internal}{List with the different parameters, data and functions used internally}
-  \item{pred_explain}{Numeric vector with the predictions for the explained observations.}
+\item{shapley_values}{data.table with the estimated Shapley values}
+\item{internal}{List with the different parameters, data and functions used internally}
+\item{pred_explain}{Numeric vector with the predictions for the explained observations.}
 }
 
 \code{shapley_values} is a data.table where the number of rows equals
@@ -36,17 +35,17 @@ The magnitude of the value is also important to notice. E.g. if \code{shapley_va
 \code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
 feature was larger than the j-th feature.
 
-The first column in \code{dt}, called `none`, is the prediction value not assigned to any of the features
+The first column in \code{dt}, called \code{none}, is the prediction value not assigned to any of the features
 (\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
 It's equal for all observations and set by the user through the argument \code{prediction_zero}.
-The difference between the prediction and `none` is distributed among the other features.
+The difference between the prediction and \code{none} is distributed among the other features.
 In theory this value should be the expected prediction without conditioning on any features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable. [explain()] [shapr::explain()]
+such as the mean of the predictions in the training data are also reasonable. \code{\link[=explain]{explain()}} \code{\link[=explain]{explain()}}
 }
 \description{
-Computes Shapley values for observations in \code{x_explain} from the specified \code{model},
-by using the method specified in \code{approach} to estimate the conditional expectation \code{}
+Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
+\code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
 }
 \details{
 The most important thing to notice is that \code{shapr} has implemented five different
@@ -65,7 +64,7 @@ For \code{approach="ctree"}, \code{n_samples} corresponds to the number of sampl
 from the leaf node (see an exception related to the \code{sample} argument).
 For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in equations (14-15) of
 Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
-\code{w_threshold} argument.
+\code{empirical.eta} argument.
 }
 \examples{
 
@@ -77,10 +76,10 @@ y_var <- "Ozone"
 
 # Split data into test- and training data
 data_train <- head(airquality, -3)
-data_test <- tail(airquality, 3)
+data_explain <- tail(airquality, 3)
 
 x_train <- data_train[, x_var]
-x_test <- data_test[,x_var]
+x_explain <- data_explain[,x_var]
 
 # Fit a linear model
 lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
@@ -91,9 +90,9 @@ p <- mean(data_train[,y_var])
 
 # Empirical approach
 explain1 <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "empirical",
   prediction_zero = p,
   n_samples = 1e2
@@ -101,9 +100,9 @@ explain1 <- explain(
 
 # Gaussian approach
 explain2 <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "gaussian",
   prediction_zero = p,
   n_samples = 1e2
@@ -111,9 +110,9 @@ explain2 <- explain(
 
 # Gaussian copula approach
 explain3 <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "copula",
   prediction_zero = p,
   n_samples = 1e2
@@ -121,9 +120,9 @@ explain3 <- explain(
 
 # ctree approach
 explain4 <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "ctree",
   prediction_zero = p,
   n_samples = 1e2
@@ -132,9 +131,9 @@ explain4 <- explain(
 # Combined approach
 approach <- c("gaussian", "gaussian", "empirical", "empirical")
 explain5 <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = approach,
   prediction_zero = p,
   n_samples = 1e2
@@ -153,9 +152,9 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
 group_list <- list(A = c("Temp", "Month"), B = c("Wind", "Solar.R"))
 
 explain_groups <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   group = group_list,
   approach = "empirical",
   prediction_zero = p,
@@ -163,10 +162,11 @@ explain_groups <- explain(
 )
 print(explain_groups$shapley_values)
 
+
 }
 \references{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
-  More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{
 Martin Jullum

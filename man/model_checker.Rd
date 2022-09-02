@@ -9,7 +9,7 @@
 \alias{model_checker.gam}
 \alias{model_checker.ranger}
 \alias{model_checker.xgb.Booster}
-\title{Check that the type of model is supported by the explanation method}
+\title{Check that the type of model is supported by the native implementation of the model class}
 \usage{
 model_checker(x)
 
@@ -36,22 +36,7 @@ The function checks whether the model given by \code{x} is supported.
 If \code{x} is not a supported model the function will return an error message, otherwise it return NULL
 (meaning all types of models with this class is supported)
 }
-\details{
-See \code{\link{predict_model}} for more information about
-what type of models \code{shapr} currently support.
-}
-\examples{
-# Load example data
-data("airquality")
-airquality <- airquality[complete.cases(airquality), ]
-# Split data into test- and training data
-x_train <- head(airquality, -3)
-x_explain <- tail(airquality, 3)
-# Fit a linear model
-model <- lm(Ozone ~ Solar.R + Wind + Temp + Month, data = x_train)
-
-# Checking the model object
-model_checker(x = model)
-
+\seealso{
+See \code{\link[=predict_model]{predict_model()}} for more information about what type of models \code{shapr} currently support.
 }
 \keyword{internal}

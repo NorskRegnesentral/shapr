@@ -1,4 +1,12 @@
-#' @keywords internal
+#' Set up the framework chosen approach
+#'
+#' The different choices of `approach` takes different (optional) parameters, which are forwarded from [explain()].
+#'
+#' @param ... `approach`-specific arguments. See below.
+#'
+#' @inheritParams default_doc_explain
+#'
+#' @export
 setup_approach <- function(internal, ...) {
   approach <- internal$parameters$approach
 
@@ -13,6 +21,7 @@ setup_approach <- function(internal, ...) {
   UseMethod("setup_approach", this_class)
 }
 
+#' @inheritParams default_doc
 #' @export
 setup_approach.combined <- function(internal, ...) {
   org_approach <- internal$parameters$approach
@@ -29,12 +38,12 @@ setup_approach.combined <- function(internal, ...) {
 
 #' Generate data used for predictions
 #'
-#' @param x Explainer object. See \code{\link{explain}} for more information.
+#' @param x Explainer object. See [explain()] for more information.
 #'
-#' @param seed Positive integer. If \code{NULL} the seed will be inherited from the calling environment.
+#' @param seed Positive integer. If `NULL` the seed will be inherited from the calling environment.
 #'
 #' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
-#' \code{NULL} means all combinations. Only used internally.
+#' `NULL` means all combinations. Only used internally.
 #'
 #' @param ... Currently not used.
 #'

@@ -1,4 +1,4 @@
-#' Computes the Shapley values given \code{v(S)}
+#' Computes the Shapley values given `v(S)`
 #'
 #' @inherit explain
 #' @inheritParams default_doc
@@ -88,9 +88,9 @@ get_p <- function(dt_vS, internal) {
 }
 
 #' Compute shapley values
-#' @param explainer An \code{explain} object.
+#' @param explainer An `explain` object.
 #' @param dt_vS The contribution matrix.
-#' @return A \code{data.table} with shapley values for each test observation.
+#' @return A `data.table` with shapley values for each test observation.
 #' @export
 #' @keywords internal
 compute_shapley_new <- function(internal, dt_vS) {
