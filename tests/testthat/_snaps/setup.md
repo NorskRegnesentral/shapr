@@ -485,14 +485,6 @@
         explain(x_train_numeric, x_explain_numeric, model_lm_numeric, approach = "independence",
           prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
       }, error = T)
-    Warning <testthat_warn>
-      Adding new snapshot:
-      Code
-        keep_samp_for_vS_too_long <- c(TRUE, FALSE)
-        explain(x_train_numeric, x_explain_numeric, model_lm_numeric, approach = "independence",
-          prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
-      Error <simpleError>
-        `keep_samp_for_vS` must be single logical.
 
 # erroneous input: `predict_model`
 
