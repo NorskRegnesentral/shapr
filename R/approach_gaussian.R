@@ -2,11 +2,11 @@
 #'
 #' @param gaussian.mu Numeric vector. (Optional)
 #' Containing the mean of the data generating distribution.
-#' \code{NULL} means it is estimated from the `x_train`.
+#' `NULL` means it is estimated from the `x_train`.
 #'
 #' @param gaussian.cov_mat Numeric matrix. (Optional)
 #' Containing the covariance matrix of the data generating distribution.
-#' \code{NULL} means it is estimated from the `x_train`.
+#' `NULL` means it is estimated from the `x_train`.
 #'
 #' @export
 setup_approach.gaussian <- function(internal,

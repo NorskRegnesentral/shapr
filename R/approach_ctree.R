@@ -12,13 +12,13 @@
 #' Determines the minimum sum of weights in a terminal node required for a split
 #'
 #' @param ctree.sample Boolean.
-#' If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
-#' If FALSE and the number of observations in the leaf node is less than \code{n_samples},
+#' If TRUE, then the method always samples `n_samples` observations from the leaf nodes (with replacement).
+#' If FALSE and the number of observations in the leaf node is less than `n_samples`,
 #' the method will take all observations in the leaf.
-#' If FALSE and the number of observations in the leaf node is more than \code{n_samples},
-#' the method will sample \code{n_samples} observations (with replacement).
+#' If FALSE and the number of observations in the leaf node is more than `n_samples`,
+#' the method will sample `n_samples` observations (with replacement).
 #' This means that there will always be sampling in the leaf unless
-#' \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.
+#' `sample` = FALSE AND the number of obs in the node is less than `n_samples`.
 #'
 #' @export
 setup_approach.ctree <- function(internal,

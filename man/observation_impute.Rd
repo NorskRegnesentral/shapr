@@ -9,7 +9,7 @@ observation_impute(
   S,
   x_train,
   x_explain,
-  explain.eta = 0.7,
+  empirical.eta = 0.7,
   n_samples = 1000
 )
 }

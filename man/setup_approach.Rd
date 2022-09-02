@@ -26,13 +26,13 @@ setup_approach(internal, ...)
 
 \method{setup_approach}{empirical}(
   internal,
-  explain.type = "fixed_sigma",
-  explain.eta = 0.95,
-  explain.fixed_sigma_vec = 0.1,
-  explain.n_samples_aicc = 1000,
-  explain.eval_max_aicc = 20,
-  explain.start_aicc = 0.1,
-  explain.cov_mat = NULL,
+  empirical.type = "fixed_sigma",
+  empirical.eta = 0.95,
+  empirical.fixed_sigma_vec = 0.1,
+  empirical.n_samples_aicc = 1000,
+  empirical.eval_max_aicc = 20,
+  empirical.start_aicc = 0.1,
+  empirical.cov_mat = NULL,
   model = NULL,
   predict_model = NULL
 )
@@ -62,33 +62,33 @@ the method will sample \code{n_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
 
-\item{explain.type}{Character. (default = \code{"fixed_sigma"})
+\item{empirical.type}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}. TODO: Describe better what the methods do here.}
 
-\item{explain.eta}{Numeric. (default = 0.95)
+\item{empirical.eta}{Numeric. (default = 0.95)
 Needs to be \verb{0 < eta <= 1}.
 Represents the minimum proportion of the total empirical weight that data samples should use.
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
 
-\item{explain.fixed_sigma_vec}{Numeric. (default = 0.1)
+\item{empirical.fixed_sigma_vec}{Numeric. (default = 0.1)
 Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
-Only used when \code{explain.type = "fixed_sigma"}}
+Only used when \code{empirical.type = "fixed_sigma"}}
 
-\item{explain.n_samples_aicc}{Positive integer. (default = 1000)
+\item{empirical.n_samples_aicc}{Positive integer. (default = 1000)
 Number of samples to consider in AICc optimization.
-Only used for \code{explain.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
-\item{explain.eval_max_aicc}{Positive integer. (default = 20)
+\item{empirical.eval_max_aicc}{Positive integer. (default = 20)
 Maximum number of iterations when optimizing the AICc.
-Only used for \code{explain.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
-\item{explain.start_aicc}{Numeric. (default = 0.1)
+\item{empirical.start_aicc}{Numeric. (default = 0.1)
 Start value of the \code{sigma} parameter when optimizing the AICc.
-Only used for \code{explain.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
+Only used for \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
-\item{explain.cov_mat}{Numeric matrix. (Optional, default = NULL)
+\item{empirical.cov_mat}{Numeric matrix. (Optional, default = NULL)
 Containing the covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 \code{NULL} means it is estimated from \code{x_train}.}
 
