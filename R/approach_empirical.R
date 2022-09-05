@@ -44,7 +44,7 @@ setup_approach.empirical <- function(internal,
                                      empirical.start_aicc = 0.1,
                                      empirical.cov_mat = NULL,
                                      model = NULL,
-                                     predict_model = NULL, ...){ #TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
+                                     predict_model = NULL, ...) { # TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
 
   defaults <- mget(c("empirical.eta", "empirical.type", "empirical.fixed_sigma_vec", "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"))
 
@@ -52,13 +52,15 @@ setup_approach.empirical <- function(internal,
 
   # Checking if factor features are present
   feature_specs <- internal$objects$feature_specs
-  if(any(feature_specs$classes=="factor")){
-    factor_features <- names(which(feature_specs$classes=="factor"))
+  if (any(feature_specs$classes == "factor")) {
+    factor_features <- names(which(feature_specs$classes == "factor"))
     factor_approaches <- get_factor_approaches()
     stop(
-      paste0("The following feature(s) are factor(s): ",factor_features,".\n",
-             "approach = 'empirical' does not support factor features.\n",
-             "Please change approach to one of ",paste0(factor_approaches,collapse=", "),".")
+      paste0(
+        "The following feature(s) are factor(s): ", factor_features, ".\n",
+        "approach = 'empirical' does not support factor features.\n",
+        "Please change approach to one of ", paste0(factor_approaches, collapse = ", "), "."
+      )
     )
   }
 
@@ -84,8 +86,10 @@ setup_approach.empirical <- function(internal,
     internal$parameters$empirical.cov_mat <- get_cov_mat(x_train)
   }
 
-  internal$tmp <- list(model = model,
-                       predict_model = predict_model)
+  internal$tmp <- list(
+    model = model,
+    predict_model = predict_model
+  )
 
   return(internal)
 }

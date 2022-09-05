@@ -147,14 +147,14 @@
 #' data_explain <- tail(airquality, 3)
 #'
 #' x_train <- data_train[, x_var]
-#' x_explain <- data_explain[,x_var]
+#' x_explain <- data_explain[, x_var]
 #'
 #' # Fit a linear model
 #' lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
 #' model <- lm(lm_formula, data = data_train)
 #'
 #' # Explain predictions
-#' p <- mean(data_train[,y_var])
+#' p <- mean(data_train[, y_var])
 #'
 #' # Empirical approach
 #' explain1 <- explain(
@@ -230,7 +230,6 @@
 #' )
 #' print(explain_groups$shapley_values)
 #'
-#'
 #' @export
 #'
 #' @author Martin Jullum
@@ -278,9 +277,11 @@ explain <- function(model,
 
   # Gets predict_model (if not passed to explain)
   # Checks that predict_model gives correct format
-  predict_model <- get_predict_model(x_test = head(internal$data$x_train,2),
-                                     predict_model = predict_model,
-                                     model = model)
+  predict_model <- get_predict_model(
+    x_test = head(internal$data$x_train, 2),
+    predict_model = predict_model,
+    model = model
+  )
 
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach

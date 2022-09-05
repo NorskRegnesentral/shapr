@@ -3,22 +3,26 @@
 
 test_that("output_lm_numeric_independence", {
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = "independence",
-            prediction_zero = p0),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "independence",
+      prediction_zero = p0
+    ),
     "output_lm_numeric_independence"
   )
 })
 
 test_that("output_lm_numeric_empirical", {
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = "empirical",
-            prediction_zero = p0),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "empirical",
+      prediction_zero = p0
+    ),
     "output_lm_numeric_empirical"
   )
 })
@@ -26,12 +30,14 @@ test_that("output_lm_numeric_empirical", {
 test_that("output_lm_numeric_empirical_independence", {
   set.seed(123)
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = "empirical",
-            prediction_zero = p0,
-            empirical.type = "independence"),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "empirical",
+      prediction_zero = p0,
+      empirical.type = "independence"
+    ),
     "output_lm_numeric_empirical_independence"
   )
 })
@@ -39,13 +45,15 @@ test_that("output_lm_numeric_empirical_independence", {
 test_that("output_lm_numeric_empirical_AICc_each", {
   set.seed(123)
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = "empirical",
-            prediction_zero = p0,
-            n_combinations = 8,
-            empirical.type = "AICc_each_k"),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "empirical",
+      prediction_zero = p0,
+      n_combinations = 8,
+      empirical.type = "AICc_each_k"
+    ),
     "output_lm_numeric_empirical_AICc_each"
   )
 })
@@ -53,79 +61,93 @@ test_that("output_lm_numeric_empirical_AICc_each", {
 test_that("output_lm_numeric_empirical_AICc_full", {
   set.seed(123)
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = "empirical",
-            prediction_zero = p0,
-            n_combinations = 8,
-            empirical.type = "AICc_full"),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "empirical",
+      prediction_zero = p0,
+      n_combinations = 8,
+      empirical.type = "AICc_full"
+    ),
     "output_lm_numeric_empirical_AICc_full"
   )
 })
 
 test_that("output_lm_numeric_gaussian", {
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = "gaussian",
-            prediction_zero = p0),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "gaussian",
+      prediction_zero = p0
+    ),
     "output_lm_numeric_gaussian"
   )
 })
 
 test_that("output_lm_numeric_copula", {
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = "copula",
-            prediction_zero = p0),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "copula",
+      prediction_zero = p0
+    ),
     "output_lm_numeric_copula"
   )
 })
 
 test_that("output_lm_numeric_ctree", {
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = "ctree",
-            prediction_zero = p0),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "ctree",
+      prediction_zero = p0
+    ),
     "output_lm_numeric_ctree"
   )
 })
 
 test_that("output_lm_numeric_comb1", {
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = c("gaussian", "empirical", "ctree", "independence", "empirical"),
-            prediction_zero = p0),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = c("gaussian", "empirical", "ctree", "independence", "empirical"),
+      prediction_zero = p0
+    ),
     "output_lm_numeric_comb1"
   )
 })
 
 test_that("output_lm_numeric_comb2", {
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = c("ctree", "copula", "independence", "copula", "empirical"),
-            prediction_zero = p0),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = c("ctree", "copula", "independence", "copula", "empirical"),
+      prediction_zero = p0
+    ),
     "output_lm_numeric_comb2"
   )
 })
 
 test_that("output_lm_numeric_comb3", {
   expect_snapshot_rds(
-    explain(model = model_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = c("independence", "empirical", "gaussian", "empirical", "gaussian"),
-            prediction_zero = p0),
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = c("independence", "empirical", "gaussian", "empirical", "gaussian"),
+      prediction_zero = p0
+    ),
     "output_lm_numeric_comb3"
   )
 })
@@ -135,22 +157,26 @@ test_that("output_lm_numeric_comb3", {
 
 test_that("output_lm_mixed_independence", {
   expect_snapshot_rds(
-    explain(model = model_lm_mixed,
-            x_explain = x_explain_mixed,
-            x_train = x_train_mixed,
-            approach = "independence",
-            prediction_zero = p0),
+    explain(
+      model = model_lm_mixed,
+      x_explain = x_explain_mixed,
+      x_train = x_train_mixed,
+      approach = "independence",
+      prediction_zero = p0
+    ),
     "output_lm_mixed_independence"
   )
 })
 
 test_that("output_lm_mixed_ctree", {
   expect_snapshot_rds(
-    explain(model = model_lm_mixed,
-            x_explain = x_explain_mixed,
-            x_train = x_train_mixed,
-            approach = "ctree",
-            prediction_zero = p0),
+    explain(
+      model = model_lm_mixed,
+      x_explain = x_explain_mixed,
+      x_train = x_train_mixed,
+      approach = "ctree",
+      prediction_zero = p0
+    ),
     "output_lm_mixed_ctree"
   )
 })
@@ -158,11 +184,13 @@ test_that("output_lm_mixed_ctree", {
 test_that("output_lm_mixed_comb", {
   set.seed(123)
   expect_snapshot_rds(
-    explain(model = model_lm_mixed,
-            x_explain = x_explain_mixed,
-            x_train = x_train_mixed,
-            approach = c("ctree", "independence", "ctree", "independence", "independence"),
-            prediction_zero = p0),
+    explain(
+      model = model_lm_mixed,
+      x_explain = x_explain_mixed,
+      x_train = x_train_mixed,
+      approach = c("ctree", "independence", "ctree", "independence", "independence"),
+      prediction_zero = p0
+    ),
     "output_lm_mixed_comb"
   )
 })
@@ -181,12 +209,14 @@ test_that("output_custom_lm_numeric_independence_1", {
   model_custom_lm_numeric <- model_lm_numeric
 
   expect_snapshot_rds(
-    explain(model = model_custom_lm_numeric,
-            x_explain = x_explain_numeric,
-            x_train = x_train_numeric,
-            approach = "independence",
-            prediction_zero = p0,
-            predict_model = custom_pred_func),
+    explain(
+      model = model_custom_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "independence",
+      prediction_zero = p0,
+      predict_model = custom_pred_func
+    ),
     "output_custom_lm_numeric_independence_1"
   )
 })
@@ -204,20 +234,24 @@ test_that("output_custom_lm_numeric_independence_2", {
 
 
   expect_snapshot_rds(
-    (custom <- explain(model = model_custom_lm_numeric,
-                       x_explain = x_explain_numeric,
-                       x_train = x_train_numeric,
-                       approach = "independence",
-                       prediction_zero = p0,
-                       predict_model = custom_pred_func)),
+    (custom <- explain(
+      model = model_custom_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "independence",
+      prediction_zero = p0,
+      predict_model = custom_pred_func
+    )),
     "output_custom_lm_numeric_independence_2"
   )
 
-  native <- explain(model = model_lm_numeric,
-                    x_explain = x_explain_numeric,
-                    x_train = x_train_numeric,
-                    approach = "independence",
-                    prediction_zero = p0)
+  native <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "independence",
+    prediction_zero = p0
+  )
 
   # Check that the printed Shapley values are identical
   expect_equal(
@@ -228,8 +262,8 @@ test_that("output_custom_lm_numeric_independence_2", {
 
 test_that("output_custom_xgboost_mixed_dummy_ctree", {
   if (requireNamespace("xgboost", quietly = TRUE)) {
-    x_train_mixed_dummy <- model.matrix(~.+0,x_train_mixed)
-    x_explain_mixed_dummy <- model.matrix(~.+0,x_explain_mixed)
+    x_train_mixed_dummy <- model.matrix(~ . + 0, x_train_mixed)
+    x_explain_mixed_dummy <- model.matrix(~ . + 0, x_explain_mixed)
 
     y_train <- data_train[, get(y_var_numeric)]
 
@@ -241,33 +275,37 @@ test_that("output_custom_xgboost_mixed_dummy_ctree", {
       verbose = FALSE
     )
 
-    predict_model.xgboost_dummy <- function(x,newdata){
-      newdata_dummy <- model.matrix(~.+0,newdata)
+    predict_model.xgboost_dummy <- function(x, newdata) {
+      newdata_dummy <- model.matrix(~ . + 0, newdata)
 
       predict(x, newdata_dummy)
     }
 
     # Check that created predict_model works as intended
     expect_equal(
-      predict_model.xgboost_dummy(model_xgboost_mixed_dummy,x_explain_mixed),
-      predict(model_xgboost_mixed_dummy,x_explain_mixed_dummy)
+      predict_model.xgboost_dummy(model_xgboost_mixed_dummy, x_explain_mixed),
+      predict(model_xgboost_mixed_dummy, x_explain_mixed_dummy)
     )
 
     # Specifying the phi_0, i.e. the expected prediction without any features
     p0 <- data_train[, mean(get(y_var_numeric))]
 
 
-    expect_snapshot_rds({
-      custom <- explain(model = model_xgboost_mixed_dummy,
-                        x_train = x_train_mixed,
-                        x_explain = x_explain_mixed,
-                        approach = "ctree",
-                        prediction_zero = p0,
-                        predict_model = predict_model.xgboost_dummy,
-                        get_model_specs = NA)
-#      custom$internal$objects$predict_model <- "Deleted on purpose" # To avoid issues with package updates of xgboost
-      custom
-      },"output_custom_xgboost_mixed_dummy_ctree"
+    expect_snapshot_rds(
+      {
+        custom <- explain(
+          model = model_xgboost_mixed_dummy,
+          x_train = x_train_mixed,
+          x_explain = x_explain_mixed,
+          approach = "ctree",
+          prediction_zero = p0,
+          predict_model = predict_model.xgboost_dummy,
+          get_model_specs = NA
+        )
+        #      custom$internal$objects$predict_model <- "Deleted on purpose" # To avoid issues with package updates of xgboost
+        custom
+      },
+      "output_custom_xgboost_mixed_dummy_ctree"
     )
   }
 })
@@ -275,13 +313,14 @@ test_that("output_custom_xgboost_mixed_dummy_ctree", {
 test_that("output_lm_numeric_interaction", {
   x_train_interaction <- x_train_numeric[, mget(all.vars(formula(model_lm_interaction))[-1])]
   x_explain_interaction <- x_explain_numeric[, mget(all.vars(formula(model_lm_interaction))[-1])]
-    expect_snapshot_rds(
-      explain(model = model_lm_interaction,
-              x_explain = x_explain_interaction,
-              x_train = x_train_interaction,
-              approach = "independence",
-              prediction_zero = p0),
-      "output_lm_numeric_interaction"
-    )
+  expect_snapshot_rds(
+    explain(
+      model = model_lm_interaction,
+      x_explain = x_explain_interaction,
+      x_train = x_train_interaction,
+      approach = "independence",
+      prediction_zero = p0
+    ),
+    "output_lm_numeric_interaction"
+  )
 })
-

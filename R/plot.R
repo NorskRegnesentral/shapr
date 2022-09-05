@@ -77,14 +77,14 @@
 #' data_explain <- tail(airquality, 50)
 #'
 #' x_train <- data_train[, x_var]
-#' x_explain <- data_explain[,x_var]
+#' x_explain <- data_explain[, x_var]
 #'
 #' # Fit a linear model
 #' lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
 #' model <- lm(lm_formula, data = data_train)
 #'
 #' # Explain predictions
-#' p <- mean(data_train[,y_var])
+#' p <- mean(data_train[, y_var])
 #'
 #' # Empirical approach
 #' x <- explain(

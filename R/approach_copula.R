@@ -10,13 +10,15 @@ setup_approach.copula <- function(internal, ...) {
 
   # Checking if factor features are present
   feature_specs <- internal$objects$feature_specs
-  if(any(feature_specs$classes=="factor")){
-    factor_features <- names(which(feature_specs$classes=="factor"))
+  if (any(feature_specs$classes == "factor")) {
+    factor_features <- names(which(feature_specs$classes == "factor"))
     factor_approaches <- get_factor_approaches()
     stop(
-      paste0("The following feature(s) are factor(s): ",factor_features,".\n",
-             "approach = 'copula' does not support factor features.\n",
-             "Please change approach to one of ",paste0(factor_approaches,collapse=", "),".")
+      paste0(
+        "The following feature(s) are factor(s): ", factor_features, ".\n",
+        "approach = 'copula' does not support factor features.\n",
+        "Please change approach to one of ", paste0(factor_approaches, collapse = ", "), "."
+      )
     )
   }
 

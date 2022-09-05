@@ -238,7 +238,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
       size = n_combinations - unique_samples - 2, # Sample -2 as we add zero and m samples below
       replace = TRUE,
       prob = p
-      )
+    )
 
     # Sample specific set of features -------
     feature_sample <- sample_features_cpp(m, n_features_sample)
@@ -247,7 +247,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   }
 
   # Add zero and m features
-  feature_sample_all = c(list(integer(0)), feature_sample_all, list(c(1:m)))
+  feature_sample_all <- c(list(integer(0)), feature_sample_all, list(c(1:m)))
   X <- data.table(n_features = sapply(feature_sample_all, length))
   X[, n_features := as.integer(n_features)]
 
@@ -272,9 +272,11 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   X[, features_tmp := sapply(features, paste, collapse = " ")]
 
   # Aggregate weights by how many samples of a combination we observe
-  X <- X[, .(n_features = data.table::first(n_features),
-            shapley_weight = sum(shapley_weight),
-            features = features[1]), features_tmp]
+  X <- X[, .(
+    n_features = data.table::first(n_features),
+    shapley_weight = sum(shapley_weight),
+    features = features[1]
+  ), features_tmp]
 
   X[, features_tmp := NULL]
   data.table::setorder(X, n_features)
@@ -413,7 +415,7 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
   }
 
   # Add zero and m features
-  feature_sample_all = c(list(integer(0)), feature_sample_all, list(c(1:m)))
+  feature_sample_all <- c(list(integer(0)), feature_sample_all, list(c(1:m)))
   X <- data.table(n_groups = sapply(feature_sample_all, length))
   X[, n_groups := as.integer(n_groups)]
 
@@ -438,9 +440,11 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
   X[, groups_tmp := sapply(groups, paste, collapse = " ")]
 
   # Aggregate weights by how many samples of a combination we have
-  X <- X[, .(n_groups = data.table::first(n_groups),
-             shapley_weight = sum(shapley_weight),
-             groups = groups[1]), groups_tmp]
+  X <- X[, .(
+    n_groups = data.table::first(n_groups),
+    shapley_weight = sum(shapley_weight),
+    groups = groups[1]
+  ), groups_tmp]
 
   X[, groups_tmp := NULL]
   data.table::setorder(X, n_groups)

@@ -30,6 +30,6 @@ default_doc <- function() {
 #'
 #' @param internal Not used.
 #' @keywords internal
-default_doc_explain <- function(){
+default_doc_explain <- function() {
   NULL
 }
