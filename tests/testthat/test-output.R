@@ -23,6 +23,18 @@ test_that("output_lm_numeric_empirical", {
   )
 })
 
+test_that("output_lm_numeric_empirical_n_combinations", {
+  expect_snapshot_rds(
+    explain(model = model_lm_numeric,
+            x_explain = x_explain_numeric,
+            x_train = x_train_numeric,
+            approach = "empirical",
+            prediction_zero = p0,
+            n_combinations = 20),
+    "output_lm_numeric_empirical_n_combinations"
+  )
+})
+
 test_that("output_lm_numeric_empirical_independence", {
   set.seed(123)
   expect_snapshot_rds(
