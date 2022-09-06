@@ -21,7 +21,6 @@ setup_approach.gaussian <- function(internal,
   feature_specs <- internal$objects$feature_specs
 
   # TO DO: gaussian.mu should probably be extracted from internal$parameters$gaussian.mu...
-  print(gaussian.mu)
 
   # Checking if factor features are present
   if(any(feature_specs$classes=="factor")){

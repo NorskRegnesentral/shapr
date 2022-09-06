@@ -84,8 +84,6 @@ setup_approach.categorical <- function(internal,
 
   internal$parameters$joint_probability_dt <- joint_probability_dt
 
-  print(joint_probability_dt)
-
   return(internal)
 }
 
