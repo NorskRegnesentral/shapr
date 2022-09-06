@@ -16,6 +16,20 @@ x_test <- Boston[ind_x_test, x_var]
 x_train = train[, x_var]
 head(train)
 
+x_train = fread("../shapr/x_train.csv")
+x_test = fread("../shapr/x_test.csv")
+
+data = rbind(x_train, x_test)
+data$feat_1_ = factor(data$feat_1_)
+data$feat_2_ = factor(data$feat_2_)
+data$feat_3_ = factor(data$feat_3_)
+
+x_train = data[1:1000,]
+x_test = data[-c(1:1000),]
+
+joint_prob_dt = fread("../shapr/joint_prob_dt.csv")
+
+p = -0.03051648
 
 # data <- data.frame(rad = c(1, 1, 1, 2, 1, 1, 1, 1),
 #                    chas = c(1, 2, 3, 4, 1, 2, 1, 2),
