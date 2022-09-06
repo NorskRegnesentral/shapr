@@ -1,12 +1,12 @@
 #' @rdname setup_approach
 #'
-#' @param joint_prob_dt Data.table. (Optional)
+#' @param joint_probability_dt Data.table. (Optional)
 #' Containing the joint probability distribution for each combination of feature
 #' values.
 #' `NULL` means it is estimated from the `x_train` and `x_explain`.
 #'
 #' @param epsilon Numeric value. (Optional)
-#' If \code{joint_prob_dt} is not supplied, probabilities/frequencies are
+#' If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
 #' estimated using `x_train`. If certain observations occur in `x_train` and NOT in `x_explain`,
 #' then epsilon is used as the proportion of times that these observations occurs in the training data.
 #' In theory, this proportion should be zero, but this causes an error later in the Shapley computation.
@@ -15,7 +15,7 @@
 #'
 #' @export
 setup_approach.categorical <- function(internal,
-                                       joint_prob_dt = NULL,
+                                       joint_probability_dt = NULL,
                                        epsilon = 0.001,
                                        ...) {
   joint_prob <- N <- id_all <- NULL
@@ -32,7 +32,7 @@ setup_approach.categorical <- function(internal,
   }
 
   # estimate joint_prob_dt if it is not passed to the function
-  if (is.null(joint_prob_dt)) {
+  if (is.null(joint_probability_dt)) {
     train <- data.table::copy(x_train)
     joint_prob_dt0 <- train[,  .N, eval(cnms)]
 
@@ -49,34 +49,34 @@ setup_approach.categorical <- function(internal,
     joint_prob_dt0[, joint_prob := joint_prob / sum(joint_prob)]
     data.table::setkeyv(joint_prob_dt0, cnms)
 
-    joint_prob_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
+    joint_probability_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
 
   } else {
     for (i in colnames(x_explain)) {
-      is_error <- !(i %in% names(joint_prob_dt)) |
-        !all(levels(x_explain[[i]]) %in% levels(joint_prob_dt[[i]]))
+      is_error <- !(i %in% names(joint_probability_dt)) |
+        !all(levels(x_explain[[i]]) %in% levels(joint_probability_dt[[i]]))
 
       if (is_error > 0) {
-        stop("All features in test observations should belong to joint_prob_dt and have the same
-             levels as the features in joint_prob_dt.")
+        stop("All features in test observations should belong to joint_probability_dt and have the same
+             levels as the features in joint_probability_dt")
       }
     }
 
-    is_error <- !("joint_prob" %in% names(joint_prob_dt)) |
-      !all(joint_prob_dt$joint_prob <= 1) |
-      !all(joint_prob_dt$joint_prob >= 0) |
-      (round(sum(joint_prob_dt$joint_prob), 3) != 1)
+    is_error <- !("joint_prob" %in% names(joint_probability_dt)) |
+      !all(joint_probability_dt$joint_prob <= 1) |
+      !all(joint_probability_dt$joint_prob >= 0) |
+      (round(sum(joint_probability_dt$joint_prob), 3) != 1)
 
     if (is_error > 0) {
-      stop('joint_prob_dt must include a column of joint probabilities where the column is called
-      "joint_prob", joint_prob_dt$joint_prob must all be greater or equal to 0 and less than or
-      equal to 1, and sum(joint_prob_dt$joint_prob must equal 1.')
+      stop('joint_probability_dt must include a column of joint probabilities where the column is called
+      "joint_prob", joint_probability_dt$joint_prob must all be greater or equal to 0 and less than or
+      equal to 1, and sum(joint_probability_dt$joint_prob must equal 1.')
     }
 
-    joint_prob_dt <- joint_prob_dt[, id_all := .I]
+    joint_probability_dt <- joint_probability_dt[, id_all := .I]
   }
 
-  internal$joint_prob_dt <- joint_prob_dt
+  internal$joint_probability_dt <- joint_probability_dt
 
   return(internal)
 }
@@ -104,10 +104,13 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   }
   feature_names <- internal$parameters$feature_names
 
-  # id_all is the combination of feature values from the training data
-  # id_all is the same as id but it's every combination of features
-  # not necessarily the ones in the testing data
-  joint_prob_dt <- internal$joint_prob_dt
+  # 3 id columns: id, id_combination, and id_all
+  # id: for each x_explain observation
+  # id_combination: the rows of the S matrix
+  # id_all: identifies the unique combinations of feature values from
+  # the training data (not necessarily the ones in the testing data)
+
+  joint_probability_dt <- internal$joint_probability_dt
 
   feature_conditioned <- paste0(feature_names, "_conditioned")
   feature_conditioned_id <- c(feature_conditioned, "id")
@@ -118,20 +121,22 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 
   data.table::setnames(S_dt, c(feature_conditioned, "id_combination"))
 
+  # (1) Compute marginal probabilities
+
   # multiply table of probabilities nrow(S) times
-  joint_prob_mult <- joint_prob_dt[rep(id_all, nrow(S))]
+  joint_probability_mult <- joint_probability_dt[rep(id_all, nrow(S))]
 
-  data.table::setkeyv(joint_prob_mult, "id_all")
-  j_S_dt <- cbind(joint_prob_mult, S_dt) # first time with conditioned features 1s and NAs
+  data.table::setkeyv(joint_probability_mult, "id_all")
+  j_S_dt <- cbind(joint_probability_mult, S_dt) # combine joint probability and S matrix
 
-  j_S_feat <- as.matrix(j_S_dt[, feature_names, with = FALSE])
-  j_S_mat <- as.matrix(j_S_dt[, feature_conditioned, with = FALSE])
+  j_S_feat <- as.matrix(j_S_dt[, feature_names, with = FALSE]) # with zeros
+  j_S_feat_cond <- as.matrix(j_S_dt[, feature_conditioned, with = FALSE])
 
-  j_S_feat[which(is.na(j_S_mat))] <- NA
+  j_S_feat[which(is.na(j_S_feat_cond))] <- NA # with NAs
   j_S_feat_with_NA <- data.table::as.data.table(j_S_feat)
 
   # now we have a data.table with the conditioned
-  # features and the feature value but no ids or anything else
+  # features and the feature value but no ids
   data.table::setnames(j_S_feat_with_NA, feature_conditioned)
 
   j_S_no_conditioned_features <- data.table::copy(j_S_dt)
@@ -141,50 +146,45 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   j_S_all_feat <- cbind(j_S_no_conditioned_features, j_S_feat_with_NA) # features match id_all
 
   # compute all marginal probabilities
+  print(j_S_all_feat)
   marg_dt <- j_S_all_feat[, .(marg_prob = sum(joint_prob)), by = feature_conditioned]
-  cond_dt <- j_S_all_feat[marg_dt, on = feature_conditioned] # features match id_all
 
-  # compute all conditional probabilities
+  # (2) Compute conditional probabilities
+
+  cond_dt <- j_S_all_feat[marg_dt, on = feature_conditioned]
   cond_dt[, cond_prob := joint_prob / marg_prob]
   cond_dt[id_combination == 1, marg_prob := 0]
   cond_dt[id_combination == 1, cond_prob := 1]
 
-  # this is just to test marginals
+  # check marginal probabilities
   cond_dt_unique <- unique(cond_dt, by = feature_conditioned)
   test <- cond_dt_unique[id_combination != 1][, .(sum_prob = sum(marg_prob)),
                                               by = "id_combination"][["sum_prob"]]
   if (!all(round(test) == 1)) {
-    print("Warning - not all marginals sum to 1. There could be a problem going on
+    print("Warning - not all marginal probabilities sum to 1. There could be a problem
           with the joint probabilities. Consider checking.")
   }
 
-  # make the x_explain
+  # make x_explain
   data.table::setkeyv(cond_dt, c("id_combination", "id_all"))
   x_explain_with_id <- data.table::copy(x_explain)[, id := .I]
-  dt_just_explain <- cond_dt[x_explain_with_id, on = feature_names] # features match id_all
+  dt_just_explain <- cond_dt[x_explain_with_id, on = feature_names]
 
-  # this is a really important step! It allows us to get the proper "w" which will
-  # be used in predict()
+  # this is a really important step to get the proper "w" which will be used in compute_preds()
   dt_explain_just_conditioned <- dt_just_explain[, feature_conditioned_id, with = FALSE]
 
   cond_dt[, id_all := NULL]
+  dt <- cond_dt[dt_explain_just_conditioned, on = feature_conditioned, allow.cartesian = TRUE]
 
-  # features, id_combination, marg_prob, and cond_prob come from cond_dt
-  # features_conditioned and id come from dt_test_just_conditioned
-  dt <- cond_dt[dt_explain_just_conditioned, on = feature_conditioned, allow.cartesian = TRUE] # features do not match id
-
-  # this is just to test conditional probabilities
+  # check conditional probabilities
   test <- dt[id_combination != 1][, .(sum_prob = sum(cond_prob)),
                                   by = c("id_combination", "id")][["sum_prob"]]
   if (!all(round(test) == 1)) {
-    print("Warning - not all conditional probabilities sum to 1. There could be a problem going on
+    print("Warning - not all conditional probabilities sum to 1. There could be a problem
           with the joint probabilities. Consider checking.")
   }
 
-  dt[, w := cond_prob]
-  dt[, cond_prob := NULL]
-
-  data.table::setcolorder(dt, c("id_combination", "id"))
+  setnames(dt, "cond_prob", "w")
   data.table::setkeyv(dt, c("id_combination", "id"))
 
   # here we merge so that we only return the combintations found in our actual test data

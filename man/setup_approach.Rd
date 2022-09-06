@@ -14,7 +14,7 @@
 \usage{
 setup_approach(internal, ...)
 
-\method{setup_approach}{categorical}(internal, joint_prob_dt = NULL, epsilon = 0.001, ...)
+\method{setup_approach}{categorical}(internal, joint_probability_dt = NULL, epsilon = 0.001, ...)
 
 \method{setup_approach}{copula}(internal, ...)
 
@@ -50,13 +50,13 @@ setup_approach(internal, ...)
 
 \item{...}{\code{approach}-specific arguments. See below.}
 
-\item{joint_prob_dt}{Data.table. (Optional)
+\item{joint_probability_dt}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
 values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
 
 \item{epsilon}{Numeric value. (Optional)
-If \code{joint_prob_dt} is not supplied, probabilities/frequencies are
+If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
