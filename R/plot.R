@@ -172,7 +172,7 @@ plot.shapr <- function(x,
   plotting_dt <- merge(meltKshap, melt_desc_dt)
 
   # Adding the predictions
-  predDT <- data.table::data.table(id = KshapDT$id, pred = x$p)
+  predDT <- data.table::data.table(id = KshapDT$id, pred = x$pred_explain)
   plotting_dt <- merge(plotting_dt, predDT, by = "id")
 
   # Adding header for each individual plot
