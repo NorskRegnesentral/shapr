@@ -1,4 +1,3 @@
-library(xgboost)
 library(shapr)
 library(MASS)
 
@@ -24,21 +23,12 @@ p <- mean(train$medv)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation <- explain(
+
+explain(
   x_train = x_train,
   x_explain = x_test,
   model = model,
-  approach = "categorical",
+  approach = "categorical", #  "ctree",
   prediction_zero = p
 )
-#>
-#> Success with message:
-#> The specified model provides feature classes that are NA. The classes of data are taken as the truth.
 
-# Printing the Shapley values for the test data.
-# For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$shapley_values)
-#> 6: 43.08571  0.4786417 -5.248686 -12.55344  -6.645738
-
-# Finally we plot the resulting explanations
-plot(explanation)
