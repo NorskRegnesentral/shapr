@@ -276,6 +276,9 @@ explain <- function(model,
     feature_specs = feature_specs, ...
   )
 
+  # print(joint_probability_dt)
+  # print(internal$parameters$gaussian.mu)
+
   # Gets predict_model (if not passed to explain)
   # Checks that predict_model gives correct format
   predict_model <- get_predict_model(x_test = head(internal$data$x_train,2),

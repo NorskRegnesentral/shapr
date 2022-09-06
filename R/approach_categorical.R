@@ -15,10 +15,11 @@
 #'
 #' @export
 setup_approach.categorical <- function(internal,
-                                       joint_probability_dt = NULL,
+                                       # joint_probability_dt = NULL,
                                        epsilon = 0.001,
                                        ...) {
-  joint_prob <- N <- id_all <- NULL
+  # TO DO: Check with MJ that this is ok
+  joint_probability_dt <- internal$parameters$joint_probability_dt
   cnms <- internal$parameters$feature_names
 
   feature_specs <- internal$objects$feature_specs
@@ -53,12 +54,17 @@ setup_approach.categorical <- function(internal,
 
   } else {
     for (i in colnames(x_explain)) {
-      is_error <- !(i %in% names(joint_probability_dt)) |
-        !all(levels(x_explain[[i]]) %in% levels(joint_probability_dt[[i]]))
+
+      is_error <- !(i %in% names(joint_probability_dt))
 
       if (is_error > 0) {
-        stop("All features in test observations should belong to joint_probability_dt and have the same
-             levels as the features in joint_probability_dt")
+        stop(paste0(i, " is in x_explain but not in joint_probability_dt."))
+      }
+
+      is_error <- !all(levels(x_explain[[i]]) %in% levels(joint_probability_dt[[i]]))
+
+      if (is_error > 0) {
+        stop(paste0(i, " in x_explain has a different feature level than in joint_probability_dt."))
       }
     }
 
@@ -68,15 +74,17 @@ setup_approach.categorical <- function(internal,
       (round(sum(joint_probability_dt$joint_prob), 3) != 1)
 
     if (is_error > 0) {
-      stop('joint_probability_dt must include a column of joint probabilities where the column is called
-      "joint_prob", joint_probability_dt$joint_prob must all be greater or equal to 0 and less than or
-      equal to 1, and sum(joint_probability_dt$joint_prob must equal 1.')
+      stop('joint_probability_dt must include a column of joint probabilities called "joint_prob".
+      joint_prob must all be greater or equal to 0 and less than or
+      equal to 1, and sum(joint_prob) must equal to 1.')
     }
 
     joint_probability_dt <- joint_probability_dt[, id_all := .I]
   }
 
-  internal$joint_probability_dt <- joint_probability_dt
+  internal$parameters$joint_probability_dt <- joint_probability_dt
+
+  print(joint_probability_dt)
 
   return(internal)
 }
@@ -110,7 +118,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   # id_all: identifies the unique combinations of feature values from
   # the training data (not necessarily the ones in the testing data)
 
-  joint_probability_dt <- internal$joint_probability_dt
+  joint_probability_dt <- internal$parameters$joint_probability_dt
 
   feature_conditioned <- paste0(feature_names, "_conditioned")
   feature_conditioned_id <- c(feature_conditioned, "id")
@@ -146,7 +154,6 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   j_S_all_feat <- cbind(j_S_no_conditioned_features, j_S_feat_with_NA) # features match id_all
 
   # compute all marginal probabilities
-  print(j_S_all_feat)
   marg_dt <- j_S_all_feat[, .(marg_prob = sum(joint_prob)), by = feature_conditioned]
 
   # (2) Compute conditional probabilities
