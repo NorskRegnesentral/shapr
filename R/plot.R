@@ -147,10 +147,10 @@ plot.shapr <- function(x,
 
   # melting Kshap
   shap_names <- colnames(x$shapley_values)[-1]
-  KshapDT <- data.table::copy(x$shapley_values)
-  KshapDT[, id := .I]
-  meltKshap <- data.table::melt(KshapDT, id.vars = "id", value.name = "phi")
-  meltKshap[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
+  dt_shap <- data.table::copy(x$shapley_values)
+  dt_shap[, id := .I]
+  dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
+  dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
 
   # Converting and melting Xtest
   if (!is_groupwise) {
@@ -165,18 +165,18 @@ plot.shapr <- function(x,
     }
   }
 
-  desc_dt <- data.table::as.data.table(cbind(none = "none", desc_mat))
-  melt_desc_dt <- data.table::melt(desc_dt[, id := .I], id.vars = "id", value.name = "description")
+  dt_desc <- data.table::as.data.table(cbind(none = "none", desc_mat))
+  dt_desc_long <- data.table::melt(dt_desc[, id := .I], id.vars = "id", value.name = "description")
 
   # Data table for plotting
-  plotting_dt <- merge(meltKshap, melt_desc_dt)
+  dt_plot <- merge(dt_shap_long, dt_desc_long)
 
   # Adding the predictions
-  predDT <- data.table::data.table(id = KshapDT$id, pred = x$pred_explain)
-  plotting_dt <- merge(plotting_dt, predDT, by = "id")
+  dt_pred <- data.table::data.table(id = dt_shap$id, pred = x$pred_explain)
+  dt_plot <- merge(dt_plot, dt_pred, by = "id")
 
   # Adding header for each individual plot
-  plotting_dt[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
+  dt_plot[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
 
   if (plot_type == "scatter" | plot_type == "beeswarm") {
     # Add feature values to data table
@@ -188,41 +188,41 @@ plot.shapr <- function(x,
       value.name = "feature_value"
     ))
     # this gives a warning because none-values are NA...
-    plotting_dt <- merge(plotting_dt, melt_feature_vals, by = c("id", "variable"))
+    dt_plot <- merge(dt_plot, melt_feature_vals, by = c("id", "variable"))
   }
 
   if (plot_type == "scatter") {
     # Only plot the desired observations
-    plotting_dt <- plotting_dt[id %in% index_x_explain]
-    gg <- make_scatter_plot(plotting_dt, scatter_features, scatter_hist, col)
+    dt_plot <- dt_plot[id %in% index_x_explain]
+    gg <- make_scatter_plot(dt_plot, scatter_features, scatter_hist, col)
   } else if (plot_type == "beeswarm") {
-    gg <- make_beeswarm_plot(plotting_dt, col, index_x_explain, x)
+    gg <- make_beeswarm_plot(dt_plot, col, index_x_explain, x)
   } else { # if bar og waterfall plot
     # Only plot the desired observations
-    plotting_dt <- plotting_dt[id %in% index_x_explain]
+    dt_plot <- dt_plot[id %in% index_x_explain]
 
-    if (length(plotting_dt[, unique(id)]) > 10) {
+    if (length(dt_plot[, unique(id)]) > 10) {
       stop("Too many observations to plot together! Try for instance setting index_x_explain = 1:10 so that the max.
            is not exceeded.")
     }
 
-    plotting_dt <- order_for_plot(plotting_dt, x$internal$parameters$n_features, plot_order, top_k_features)
+    dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, plot_order, top_k_features)
 
 
     # compute start and end values for waterfall rectangles
-    data.table::setorder(plotting_dt, rank_waterfall)
-    plotting_dt[, end := cumsum(phi), by = id]
+    data.table::setorder(dt_plot, rank_waterfall)
+    dt_plot[, end := cumsum(phi), by = id]
     expected <- x$internal$parameters$prediction_zero
-    plotting_dt[, start := c(expected, head(end, -1)), by = id]
-    plotting_dt[, phi_significant := format(phi, digits = digits), by = id]
+    dt_plot[, start := c(expected, head(end, -1)), by = id]
+    dt_plot[, phi_significant := format(phi, digits = digits), by = id]
 
     # helpers for labelling y-axis correctly
     if (plot_order == "largest_first") {
-      desc_labels <- plotting_dt[variable != "none" & variable != "rest", description[order(abs(phi))]]
+      desc_labels <- dt_plot[variable != "none" & variable != "rest", description[order(abs(phi))]]
     } else if (plot_order == "smallest_first") {
-      desc_labels <- plotting_dt[variable != "none" & variable != "rest", description[order(-abs(phi))]]
+      desc_labels <- dt_plot[variable != "none" & variable != "rest", description[order(-abs(phi))]]
     } else if (plot_order == "original") {
-      desc_labels <- plotting_dt[variable != "none" & variable != "rest", description[order(unique_label)]]
+      desc_labels <- dt_plot[variable != "none" & variable != "rest", description[order(unique_label)]]
     }
     if (top_k_features < x$internal$parameters$n_features) { # if there is a "rest" of collapsed lower-rank features
       desc_labels <- c(
@@ -231,16 +231,16 @@ plot.shapr <- function(x,
       )
     }
     if (!plot_phi0 | plot_type == "waterfall") { # if none is not to be included in plot
-      plotting_dt <- plotting_dt[variable != "none"]
+      dt_plot <- dt_plot[variable != "none"]
     } else {
       desc_labels <- c(desc_labels, "None")
     }
-    breaks <- levels(droplevels(plotting_dt[, unique_label])) # removes -1 if no rest and 0 if no none in plot
+    breaks <- levels(droplevels(dt_plot[, unique_label])) # removes -1 if no rest and 0 if no none in plot
 
     if (plot_type == "bar") {
-      gg <- make_bar_plot(plotting_dt, plot_phi0, col, breaks, desc_labels)
+      gg <- make_bar_plot(dt_plot, plot_phi0, col, breaks, desc_labels)
     } else if (plot_type == "waterfall") {
-      gg <- make_waterfall_plot(plotting_dt, expected, col, digits, plot_order, breaks, desc_labels)
+      gg <- make_waterfall_plot(dt_plot, expected, col, digits, plot_order, breaks, desc_labels)
     }
   }
   return(gg)
@@ -248,7 +248,7 @@ plot.shapr <- function(x,
 
 compute_scatter_hist_values <- function(plotting_dt, scatter_features) {
 
-  n_feat_vals <- plotting_dt[, .N, by = variable][1, "N"] # number of points to plot
+  n_feat_vals <- dt_plot[, .N, by = variable][1, "N"] # number of points to plot
   if (n_feat_vals > 500) {
     num_breaks <- 50
   } else if (n_feat_vals > 200) {
@@ -259,16 +259,16 @@ compute_scatter_hist_values <- function(plotting_dt, scatter_features) {
     num_breaks <- 5
   }
 
-  scatter_hist_dt_list <- list()
+  dt_scatter_hist_list <- list()
   for (feature_name in scatter_features) {
-    x <- plotting_dt[variable == feature_name, feature_value]
+    x <- dt_plot[variable == feature_name, feature_value]
     if (min(x) == max(x)) {
       scatter_hist_object <- hist(x, breaks = 1, plot = FALSE)
     } else {
       scatter_hist_object <- hist(x, breaks = seq(min(x), max(x), length.out = num_breaks), plot = FALSE)
     }
-    y_max <- max(plotting_dt[variable == feature_name, phi])
-    y_min <- min(plotting_dt[variable == feature_name, phi])
+    y_max <- max(dt_plot[variable == feature_name, phi])
+    y_min <- min(dt_plot[variable == feature_name, phi])
     y_tot <- y_max - y_min # what if these happen to be the same...?
     count_tot <- sum(scatter_hist_object$count)
     count_scale <- y_tot / count_tot
@@ -278,7 +278,7 @@ compute_scatter_hist_values <- function(plotting_dt, scatter_features) {
     x_end <- xvals[-1]
     y_end <- count_scale * scatter_hist_object$count + y_min
 
-    bins_dt <- data.table(
+    dt_bins <- data.table(
       x_start = x_start,
       x_end = x_end,
       y_end = y_end,
@@ -286,11 +286,11 @@ compute_scatter_hist_values <- function(plotting_dt, scatter_features) {
       variable = feature_name
     )
 
-    scatter_hist_dt_list[[feature_name]] <- bins_dt
+    dt_scatter_hist_list[[feature_name]] <- dt_bins
   }
-  scatter_hist_dt <- data.table::rbindlist(scatter_hist_dt_list)
+  dt_scatter_hist <- data.table::rbindlist(dt_scatter_hist_list)
 
-  return(scatter_hist_dt)
+  return(dt_scatter_hist)
 }
 
 make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col) {
@@ -301,28 +301,28 @@ make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col) 
     stop("'col' must be of length 1 when making scatter plot.")
   }
 
-  plotting_dt <- plotting_dt[variable != "none", ]
+  dt_plot <- dt_plot[variable != "none", ]
 
   if (is.null(scatter_features)) {
-    scatter_features <- unique(plotting_dt[, variable])
+    scatter_features <- unique(dt_plot[, variable])
   } else if (is.numeric(scatter_features)) {
     # i.e. plot first 4 features if scatter_features = 1:4
-    scatter_features <- plotting_dt[scatter_features, unique(variable)]
+    scatter_features <- dt_plot[scatter_features, unique(variable)]
   } else if (is.character(scatter_features)) {
-    if (any(!(scatter_features %in% unique(plotting_dt[, variable])))) {
+    if (any(!(scatter_features %in% unique(dt_plot[, variable])))) {
       stop("Some or all of the listed feature names in 'scatter_features' do not match the names in the data.")
     }
   }
 
-  plotting_dt <- plotting_dt[variable %in% scatter_features, ]
-  gg <- ggplot2::ggplot(plotting_dt) +
+  dt_plot <- dt_plot[variable %in% scatter_features, ]
+  gg <- ggplot2::ggplot(dt_plot) +
     ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
 
   # compute bin values for scatter_hist
   if (scatter_hist) {
-    scatter_hist_dt <- compute_scatter_hist_values(plotting_dt, scatter_features)
+    dt_scatter_hist <- compute_scatter_hist_values(dt_plot, scatter_features)
     gg <- gg + ggplot2::geom_rect(
-      data = scatter_hist_dt,
+      data = dt_scatter_hist,
       ggplot2::aes(
         xmin = x_start, xmax = x_end,
         ymin = y_start, ymax = y_end
@@ -345,47 +345,47 @@ make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col) 
   return(gg)
 }
 
-order_for_plot <- function(plotting_dt, N_features, plot_order, top_k_features) {
+order_for_plot <- function(dt_plot, N_features, plot_order, top_k_features) {
 
   if (plot_order == "largest_first") {
-    plotting_dt[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
+    dt_plot[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
   } else if (plot_order == "smallest_first") {
-    plotting_dt[variable != "none", rank := data.table::frank(abs(phi)), by = "id"]
+    dt_plot[variable != "none", rank := data.table::frank(abs(phi)), by = "id"]
   } else if (plot_order == "original") {
-    plotting_dt[variable != "none", rank := seq_along(phi), by = "id"]
+    dt_plot[variable != "none", rank := seq_along(phi), by = "id"]
   }
-  plotting_dt[variable == "none", rank := 0]
+  dt_plot[variable == "none", rank := 0]
 
   # collapse phi-value for features that are not in top k features
-  plotting_dt[rank > top_k_features, phi := sum(phi), by = id]
-  plotting_dt[rank > top_k_features, variable := "rest", by = id]
-  plotting_dt[variable == "rest", rank := min(rank), by = id]
-  plotting_dt[variable == "rest", description := paste(N_features - top_k_features, "other features")]
-  plotting_dt[variable == "rest", sign := ifelse(phi < 0, "Decreases", "Increases")]
-  plotting_dt <- unique(plotting_dt)
+  dt_plot[rank > top_k_features, phi := sum(phi), by = id]
+  dt_plot[rank > top_k_features, variable := "rest", by = id]
+  dt_plot[variable == "rest", rank := min(rank), by = id]
+  dt_plot[variable == "rest", description := paste(N_features - top_k_features, "other features")]
+  dt_plot[variable == "rest", sign := ifelse(phi < 0, "Decreases", "Increases")]
+  dt_plot <- unique(dt_plot)
 
   # unique label for correct order when plotting multiple observations
-  plotting_dt[, unique_label := rev(seq_along(description))]
-  plotting_dt[variable == "none", unique_label := 0] # such that none is always at top of plot
-  plotting_dt[variable == "rest", unique_label := -1] # such that rest is always at bottom of plot
+  dt_plot[, unique_label := rev(seq_along(description))]
+  dt_plot[variable == "none", unique_label := 0] # such that none is always at top of plot
+  dt_plot[variable == "rest", unique_label := -1] # such that rest is always at bottom of plot
   if (plot_order == "largest_first") {
-    unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(abs(phi))]], 0)
+    unique_levels <- c(-1, dt_plot[variable != "none" & variable != "rest", unique_label[order(abs(phi))]], 0)
   } else if (plot_order == "smallest_first") {
-    unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(-abs(phi))]], 0)
+    unique_levels <- c(-1, dt_plot[variable != "none" & variable != "rest", unique_label[order(-abs(phi))]], 0)
   } else if (plot_order == "original") {
-    unique_levels <- c(-1, rev(plotting_dt[variable != "none" & variable != "rest", unique_label]), 0)
+    unique_levels <- c(-1, rev(dt_plot[variable != "none" & variable != "rest", unique_label]), 0)
   }
-  plotting_dt[, unique_label := factor(unique_label, levels = unique_levels)]
+  dt_plot[, unique_label := factor(unique_label, levels = unique_levels)]
   if (plot_order == "largest_first") {
-    plotting_dt[variable != "none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
+    dt_plot[variable != "none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
   } else if (plot_order == "smallest_first") {
-    plotting_dt[variable != "none", rank_waterfall := data.table::frank(-abs(phi)), by = "id"]
+    dt_plot[variable != "none", rank_waterfall := data.table::frank(-abs(phi)), by = "id"]
   } else if (plot_order == "original") {
-    plotting_dt[variable != "none", rank_waterfall := rev(seq_along(phi)), by = "id"]
+    dt_plot[variable != "none", rank_waterfall := rev(seq_along(phi)), by = "id"]
   }
-  plotting_dt[variable == "none", rank_waterfall := 0]
+  dt_plot[variable == "none", rank_waterfall := 0]
 
-  return(plotting_dt)
+  return(dt_plot)
 
 }
 
@@ -403,33 +403,35 @@ make_beeswarm_plot <- function(plotting_dt, col, index_x_explain, x) {
     stop("'col' must be of length 2 or 3 when making beeswarm plot.")
   }
 
-  plotting_dt <- plotting_dt[variable != "none", ]
+  dt_plot <- dt_plot[variable != "none"]
 
-  train_dt <- data.table::copy(x$internal$data$x_train)
-  train_dt <- data.table::melt(train_dt[, id := .I], id.vars = "id", value.name = "feature_value")
-  train_dt[, `:=`(max = max(feature_value), min = min(feature_value)), by = variable]
-  train_dt <- train_dt[, .(variable, max, min)]
-  train_dt <- unique(train_dt)
-  plotting_dt <- merge(plotting_dt, train_dt, by = "variable")
+  dt_train <- data.table::copy(x$internal$data$x_train)
+  dt_train <- suppressWarnings( # suppress warnings for coercion from int to double
+    data.table::melt(dt_train[, id := .I], id.vars = "id", value.name = "feature_value")
+  )
+  dt_train[, `:=`(max = max(feature_value), min = min(feature_value)), by = variable]
+  dt_train <- dt_train[, .(variable, max, min)]
+  dt_train <- unique(dt_train)
+  dt_plot <- merge(dt_plot, dt_train, by = "variable")
 
   # scale obs. features value to their distance from min. feature value relative to the distance
   # between min. and max. feature value in order to have a global color bar indicating magnitude
   # of obs. feature value.
   # The feature values are scaled wrt the training data
-  plotting_dt[feature_value <= max & feature_value >= min,
+  dt_plot[feature_value <= max & feature_value >= min,
     feature_value_scaled := (feature_value - min) / (max - min),
     by = variable
   ]
-  plotting_dt[feature_value > max, feature_value_scaled := 1]
-  plotting_dt[feature_value < min, feature_value_scaled := 0]
+  dt_plot[feature_value > max, feature_value_scaled := 1]
+  dt_plot[feature_value < min, feature_value_scaled := 0]
 
   # make sure features with only one value are also scaled
-  plotting_dt[is.nan(feature_value_scaled), feature_value_scaled := 0.5, by = variable]
+  dt_plot[is.nan(feature_value_scaled), feature_value_scaled := 0.5, by = variable]
 
   # Only plot the desired observations
-  plotting_dt <- plotting_dt[id %in% index_x_explain]
+  dt_plot <- dt_plot[id %in% index_x_explain]
 
-  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x = variable, y = phi, color = feature_value_scaled)) +
+  gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = variable, y = phi, color = feature_value_scaled)) +
     ggplot2::geom_hline(yintercept = 0, color = "grey70", size = 0.5) +
     ggbeeswarm::geom_beeswarm(priority = "random", cex = 0.4) +
     # the cex-parameter doesnt generalize well, should use corral but not available yet....
@@ -455,7 +457,8 @@ make_beeswarm_plot <- function(plotting_dt, col, index_x_explain, x) {
   } else if (length(col) == 2) { # allow user to specify three colors
     gg <- gg +
       ggplot2::scale_color_gradient(
-        low = col[2], high = col[1],
+        low = col[2],
+        high = col[1],
         breaks = c(0, 1),
         limits = c(0, 1),
         labels = c("Low", "High"),
@@ -477,29 +480,29 @@ make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels) {
 
 
   if (!(plot_phi0)) {
-    plotting_dt <- plotting_dt[variable != "none", ]
+    dt_plot <- dt_plot[variable != "none", ]
   }
 
   # bar plotting helpers
-  plotting_dt[, y_text_bar := ifelse(abs(phi) > max(abs(phi)) / 8, phi / 2, 0), by = id]
+  dt_plot[, y_text_bar := ifelse(abs(phi) > max(abs(phi)) / 8, phi / 2, 0), by = id]
   # text placement depends on the direction of the largest bar, in order for text not to be clipped
-  plotting_dt[, positive := sign[which.max(abs(phi))] == "Increases", by = id]
-  plotting_dt[, hjust_text_bar := ifelse(abs(phi) > max(abs(phi)) / 8, 0.5, 1), by = id]
-  plotting_dt[positive == TRUE & y_text_bar == 0, hjust_text_bar := 0]
-  plotting_dt[positive == TRUE & y_text_bar == 0, y_text_bar := ifelse(phi > 0, phi, 0)]
-  plotting_dt[positive == FALSE & y_text_bar == 0, y_text_bar := ifelse(phi < 0, phi, 0)]
+  dt_plot[, positive := sign[which.max(abs(phi))] == "Increases", by = id]
+  dt_plot[, hjust_text_bar := ifelse(abs(phi) > max(abs(phi)) / 8, 0.5, 1), by = id]
+  dt_plot[positive == TRUE & y_text_bar == 0, hjust_text_bar := 0]
+  dt_plot[positive == TRUE & y_text_bar == 0, y_text_bar := ifelse(phi > 0, phi, 0)]
+  dt_plot[positive == FALSE & y_text_bar == 0, y_text_bar := ifelse(phi < 0, phi, 0)]
 
-  plotting_dt[, text_color_bar := ifelse(abs(phi) > max(abs(phi)) / 8, "white", ifelse(sign == "Increases",
+  dt_plot[, text_color_bar := ifelse(abs(phi) > max(abs(phi)) / 8, "white", ifelse(sign == "Increases",
     col[1], col[2]
   )), by = id]
   if (plot_phi0) {
-    text_color_bar <- plotting_dt[, text_color_bar]
+    text_color_bar <- dt_plot[, text_color_bar]
   } else {
-    text_color_bar <- plotting_dt[variable != "none", text_color_bar]
+    text_color_bar <- dt_plot[variable != "none", text_color_bar]
   }
 
   # make plot
-  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x = unique_label, fill = sign)) +
+  gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = unique_label, fill = sign)) +
     ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol = 2) +
     ggplot2::theme_classic(base_family = "sans") +
     ggplot2::theme(
@@ -528,7 +531,7 @@ make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels) {
   return(gg)
 }
 
-make_waterfall_plot <- function(plotting_dt,
+make_waterfall_plot <- function(dt_plot,
                                 expected,
                                 col,
                                 digits,
@@ -545,14 +548,14 @@ make_waterfall_plot <- function(plotting_dt,
 
   # waterfall plotting helpers
   if (plot_order == "largest_first" | plot_order == "original") {
-    plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
+    dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
       ifelse(expected < pred, ifelse(end > start, end, start),
         ifelse(end < start, end, start)
       ),
       start + (end - start) / 2
     ), by = id]
   } else if (plot_order == "smallest_first") {
-    plotting_dt[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
+    dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
       ifelse(expected > pred, ifelse(end > start, end, start),
         ifelse(end < start, end, start)
       ),
@@ -560,31 +563,31 @@ make_waterfall_plot <- function(plotting_dt,
     ), by = id]
   }
 
-  plotting_dt[, text_color := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
+  dt_plot[, text_color := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
     ifelse(sign == "Increases", col[1], col[2]),
     "white"
   ), by = id]
-  text_color <- plotting_dt[variable != "none", text_color]
+  text_color <- dt_plot[variable != "none", text_color]
 
   if (plot_order == "largest_first" | plot_order == "original") {
-    plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
+    dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
       ifelse(expected > pred, 1, 0), 0.5
     ), by = id]
   } else if (plot_order == "smallest_first") {
-    plotting_dt[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
+    dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
       ifelse(expected > pred, 0, 1), 0.5
     ), by = id]
   }
 
-  plotting_dt[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
-  N_features <- max(plotting_dt[, rank_waterfall])
-  n_obs <- length(plotting_dt[, unique(id)])
-  plotting_dt[, pred_label := paste0("italic(f(x)) == ", format(pred, digits = digits + 1))]
-  plotting_dt[, pred_x := N_features + 0.8]
-  plotting_dt[, phi0_label := paste0("~phi[0]==", format(expected, digits = digits + 1))]
-  plotting_dt[, phi0_x := 0]
+  dt_plot[, arrow_color := ifelse(sign == "Increasing", col[1], col[2])]
+  N_features <- max(dt_plot[, rank_waterfall])
+  n_obs <- length(dt_plot[, unique(id)])
+  dt_plot[, pred_label := paste0("italic(f(x)) == ", format(pred, digits = digits + 1))]
+  dt_plot[, pred_x := N_features + 0.8]
+  dt_plot[, phi0_label := paste0("~phi[0]==", format(expected, digits = digits + 1))]
+  dt_plot[, phi0_x := 0]
 
-  gg <- ggplot2::ggplot(plotting_dt, ggplot2::aes(x = unique_label, fill = sign)) +
+  gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = unique_label, fill = sign)) +
     ggplot2::facet_wrap(~header, scales = "free", labeller = "label_value", ncol = 2) +
     ggplot2::theme_classic(base_family = "sans") +
     ggplot2::theme(
@@ -629,7 +632,7 @@ make_waterfall_plot <- function(plotting_dt,
     ) +
     ggplot2::scale_color_manual(values = col) +
     ggplot2::geom_text(
-      data = plotting_dt[1:n_obs, ],
+      data = dt_plot[1:n_obs, ],
       ggplot2::aes(
         x = pred_x, y = pred, label = pred_label,
         vjust = 0, hjust = ifelse(pred > expected, 1, 0)
@@ -637,7 +640,7 @@ make_waterfall_plot <- function(plotting_dt,
       parse = TRUE, family = "sans", col = "grey30", size = 2.5
     ) +
     ggplot2::geom_text(
-      data = plotting_dt[1:n_obs, ],
+      data = dt_plot[1:n_obs, ],
       ggplot2::aes(
         x = phi0_x, y = expected, label = phi0_label,
         vjust = 0, hjust = ifelse(pred < expected, 1, 0)

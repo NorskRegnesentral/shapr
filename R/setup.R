@@ -63,29 +63,15 @@ check_parameters <- function(internal){
   # Check groups
   feature_names <- internal$parameters$feature_names
   group <- internal$parameters$group
-<<<<<<< HEAD
   n_combinations <- internal$parameters$n_combinations
 
-=======
->>>>>>> 1a84bc9 (small fix)
   if (!is.null(group)){
     check_groups(feature_names,group)
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
   if (!is.null(n_combinations)) {
     check_n_combinations(internal)
   }
-=======
-  check_n_combinations(internal)
->>>>>>> d3f27ef (add checks for too few n_combinations)
-=======
-  if (!is.null(internal$parameters$n_combinations)) {
-    check_n_combinations(internal)
-  }
->>>>>>> 1a84bc9 (small fix)
 
   # Checking n_batches vs n_combinations etc
   check_n_batches(internal)
