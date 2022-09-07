@@ -20,41 +20,35 @@ setup_approach.categorical <- function(internal,
                                        ...) {
   # TO DO: Check with MJ that this is ok
   joint_probability_dt <- internal$parameters$joint_probability_dt
-  cnms <- internal$parameters$feature_names
+  feature_names <- internal$parameters$feature_names
 
   feature_specs <- internal$objects$feature_specs
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
-  # n_features <- internal$parameters$n_features
 
-  if (!all(feature_specs$classes=="factor")) {
-    stop("All test observations should be factors to use the categorical method.")
+  if (!all(feature_specs$classes == "factor")) {
+    stop("All features should be factors to use the categorical method.")
   }
 
   # estimate joint_prob_dt if it is not passed to the function
   if (is.null(joint_probability_dt)) {
-    train <- data.table::copy(x_train)
-    joint_prob_dt0 <- train[,  .N, eval(cnms)]
+    joint_prob_dt0 <- x_train[, .N, eval(feature_names)]
 
-    test <- data.table::data.table(x_explain)
+    explain_not_in_train <- data.table::setkeyv(data.table::setDT(x_explain), feature_names)[!x_train]
+    N_explain_not_in_train <- nrow(unique(explain_not_in_train))
 
-    test_not_in_train <- data.table::setkeyv(data.table::setDT(test), cnms)[!train]
-    N_test_not_in_train <- nrow(unique(test_not_in_train))
-
-    if (N_test_not_in_train > 0) {
-      joint_prob_dt0 <- rbind(joint_prob_dt0, cbind(test_not_in_train, N = epsilon))
+    if (N_explain_not_in_train > 0) {
+      joint_prob_dt0 <- rbind(joint_prob_dt0, cbind(explain_not_in_train, N = epsilon))
     }
 
     joint_prob_dt0[, joint_prob := N / .N]
     joint_prob_dt0[, joint_prob := joint_prob / sum(joint_prob)]
-    data.table::setkeyv(joint_prob_dt0, cnms)
+    data.table::setkeyv(joint_prob_dt0, feature_names)
 
     joint_probability_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
-
   } else {
     for (i in colnames(x_explain)) {
-
       is_error <- !(i %in% names(joint_probability_dt))
 
       if (is_error > 0) {
@@ -64,7 +58,7 @@ setup_approach.categorical <- function(internal,
       is_error <- !all(levels(x_explain[[i]]) %in% levels(joint_probability_dt[[i]]))
 
       if (is_error > 0) {
-        stop(paste0(i, " in x_explain has a different feature level than in joint_probability_dt."))
+        stop(paste0(i, " in x_explain has factor levels than in joint_probability_dt."))
       }
     }
 
@@ -75,8 +69,8 @@ setup_approach.categorical <- function(internal,
 
     if (is_error > 0) {
       stop('joint_probability_dt must include a column of joint probabilities called "joint_prob".
-      joint_prob must all be greater or equal to 0 and less than or
-      equal to 1, and sum(joint_prob) must equal to 1.')
+      joint_prob must all be greater or equal to 0 and less than or equal to 1.
+      sum(joint_prob) must equal to 1.')
     }
 
     joint_probability_dt <- joint_probability_dt[, id_all := .I]
@@ -94,11 +88,10 @@ setup_approach.categorical <- function(internal,
 #' @export
 #' @keywords internal
 prepare_data.categorical <- function(internal, index_features = NULL, ...) {
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
+  id <- id_combination <- w <- NULL
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
-  # n_features <- internal$parameters$n_features
 
   X <- internal$objects$X
   S <- internal$objects$S
@@ -114,7 +107,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   # id: for each x_explain observation
   # id_combination: the rows of the S matrix
   # id_all: identifies the unique combinations of feature values from
-  # the training data (not necessarily the ones in the testing data)
+  # the training data (not necessarily the ones in the explain data)
 
   joint_probability_dt <- internal$parameters$joint_probability_dt
 
@@ -163,9 +156,10 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 
   # check marginal probabilities
   cond_dt_unique <- unique(cond_dt, by = feature_conditioned)
-  test <- cond_dt_unique[id_combination != 1][, .(sum_prob = sum(marg_prob)),
-                                              by = "id_combination"][["sum_prob"]]
-  if (!all(round(test) == 1)) {
+  check <- cond_dt_unique[id_combination != 1][, .(sum_prob = sum(marg_prob)),
+    by = "id_combination"
+  ][["sum_prob"]]
+  if (!all(round(check) == 1)) {
     print("Warning - not all marginal probabilities sum to 1. There could be a problem
           with the joint probabilities. Consider checking.")
   }
@@ -182,9 +176,10 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   dt <- cond_dt[dt_explain_just_conditioned, on = feature_conditioned, allow.cartesian = TRUE]
 
   # check conditional probabilities
-  test <- dt[id_combination != 1][, .(sum_prob = sum(cond_prob)),
-                                  by = c("id_combination", "id")][["sum_prob"]]
-  if (!all(round(test) == 1)) {
+  check <- dt[id_combination != 1][, .(sum_prob = sum(cond_prob)),
+    by = c("id_combination", "id")
+  ][["sum_prob"]]
+  if (!all(round(check) == 1)) {
     print("Warning - not all conditional probabilities sum to 1. There could be a problem
           with the joint probabilities. Consider checking.")
   }
@@ -192,13 +187,11 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   setnames(dt, "cond_prob", "w")
   data.table::setkeyv(dt, c("id_combination", "id"))
 
-  # here we merge so that we only return the combintations found in our actual test data
+  # here we merge so that we only return the combintations found in our actual explain data
   # this merge does not change the number of rows in dt
   # dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
   # dt[n_features %in% c(0, ncol(x_explain)), w := 1.0]
   dt[id_combination %in% c(1, 2^ncol(x_explain)), w := 1.0]
-  ret_col = c("id_combination", "id", feature_names,  "w")
+  ret_col <- c("id_combination", "id", feature_names, "w")
   return(dt[id_combination %in% index_features, ..ret_col])
 }
-
-

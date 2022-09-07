@@ -12,32 +12,33 @@ ind_x_test <- 1:4
 train <- Boston[-ind_x_test, c(x_var, y_var)]
 x_test <- Boston[ind_x_test, x_var]
 x_train = train[, x_var]
-head(train)
+
+model <- lm(medv ~ rad + chas, data = train)
 
 # ------------------------------
 # To test the categorical method when we know the results
 
-# data = fread("../shapr/data.csv")
-# data$feat_1_ = factor(data$feat_1_)
-# data$feat_2_ = factor(data$feat_2_)
-# data$feat_3_ = factor(data$feat_3_)
-#
-# x_train = data[1:1000, c("feat_1_", "feat_2_", "feat_3_")]
-# x_test = data[1001:1005, c("feat_1_", "feat_2_", "feat_3_")]
-#
-# joint_prob_dt = fread("../shapr/joint_prob_dt.csv")
-#
-# p <- mean(data[1:1000,][['response']])
-#
-# joint_prob_dt[, feat_1_ := as.factor(feat_1_)]
-# joint_prob_dt[, feat_2_ := as.factor(feat_2_)]
-# joint_prob_dt[, feat_3_ := as.factor(feat_3_)]
+data = fread("../shapr/data.csv")
+data$feat_1_ = factor(data$feat_1_)
+data$feat_2_ = factor(data$feat_2_)
+data$feat_3_ = factor(data$feat_3_)
 
-# model <- lm(response ~ feat_1_ + feat_2_ + feat_3_, data = data[1:1000, ])
+x_train = data[1:1000, c("feat_1_", "feat_2_", "feat_3_")]
+x_test = data[1001:1005, c("feat_1_", "feat_2_", "feat_3_")]
+
+joint_prob_dt = fread("../shapr/joint_prob_dt.csv")
+
+p <- mean(data[1:1000,][['response']])
+
+joint_prob_dt[, feat_1_ := as.factor(feat_1_)]
+joint_prob_dt[, feat_2_ := as.factor(feat_2_)]
+joint_prob_dt[, feat_3_ := as.factor(feat_3_)]
+
+train = data[1:1000,]
+
+model <- lm(response ~ feat_1_ + feat_2_ + feat_3_, data = train)
 
 # ------------------------------
-
-model <- lm(medv ~ rad + chas, data = train)
 
 temp = explain(
   x_train = x_train,
@@ -53,3 +54,10 @@ print(temp)
 # 2: -0.030511 15.709 11.035
 # 3: -0.030511 15.709 11.035
 # 4: -0.030511 16.624 10.883
+
+#         none feat_1_  feat_2_    feat_3_
+# 1: -0.030516 0.20455  0.29895  0.1381985
+# 2: -0.030516 0.23079  0.35300 -0.0480793
+# 3: -0.030516 0.13084  0.32979 -0.8297798
+# 4: -0.030516 0.23133 -0.88754  0.1923399
+# 5: -0.030516 0.27954 -0.84447 -0.0049256
