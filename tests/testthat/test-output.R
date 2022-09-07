@@ -44,7 +44,7 @@ test_that("output_lm_numeric_empirical_AICc_each", {
             x_train = x_train_numeric,
             approach = "empirical",
             prediction_zero = p0,
-            n_combinations = 8,
+            n_combinations = 20,
             empirical.type = "AICc_each_k"),
     "output_lm_numeric_empirical_AICc_each"
   )
