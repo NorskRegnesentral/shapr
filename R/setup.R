@@ -90,7 +90,7 @@ check_n_combinations <- function(internal) {
   n_features <- explanation$internal$parameters$n_features
   n_groups <- explanation$internal$parameters$n_groups
 
-  if (is.null(group)) {
+  if (!is_groupwise) {
     if (n_combinations <= n_features) {
       stop("`n_combinations` has to be greater than the number of features.")
     }
