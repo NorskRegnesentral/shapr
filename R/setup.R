@@ -87,8 +87,8 @@ check_n_combinations <- function(internal) {
 
   is_groupwise <- internal$parameters$is_groupwise
   n_combinations <- internal$parameters$n_combinations
-  n_features <- explanation$internal$parameters$n_features
-  n_groups <- explanation$internal$parameters$n_groups
+  n_features <- internal$parameters$n_features
+  n_groups <- internal$parameters$n_groups
 
   if (!is_groupwise) {
     if (n_combinations <= n_features) {
