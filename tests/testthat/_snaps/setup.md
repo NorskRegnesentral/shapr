@@ -275,6 +275,25 @@
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
 
+---
+
+    Code
+      n_combinations = ncol(x_explain_numeric) - 1
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        prediction_zero = p0, approach = "gaussian", n_combinations = n_combinations)
+    Error <simpleError>
+      `n_combinations` has to be greater than the number of features.
+
+---
+
+    Code
+      groups = list(A = c("Solar.R", "Wind"), B = c("Temp", "Month"), C = "Day")
+      n_combinations = length(groups) - 1
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        prediction_zero = p0, approach = "gaussian", group = groups, n_combinations = n_combinations)
+    Error <simpleError>
+      `n_combinations` has to be greater than the number of groups.
+
 # erroneous input: `group`
 
     Code

@@ -63,8 +63,15 @@ check_parameters <- function(internal){
   # Check groups
   feature_names <- internal$parameters$feature_names
   group <- internal$parameters$group
-  if(!is.null(group)){
+  n_combinations <- internal$parameters$n_combinations
+
+  if (!is.null(group)){
     check_groups(feature_names,group)
+  }
+
+
+  if (!is.null(n_combinations)) {
+    check_n_combinations(internal)
   }
 
   # Checking n_batches vs n_combinations etc
@@ -74,6 +81,27 @@ check_parameters <- function(internal){
   check_approach(internal)
 
 }
+
+#' @keywords internal
+check_n_combinations <- function(internal) {
+
+  is_groupwise <- internal$parameters$is_groupwise
+  n_combinations <- internal$parameters$n_combinations
+  n_features <- internal$parameters$n_features
+  n_groups <- internal$parameters$n_groups
+
+  if (!is_groupwise) {
+    if (n_combinations <= n_features) {
+      stop("`n_combinations` has to be greater than the number of features.")
+    }
+  } else {
+    if (n_combinations <= n_groups) {
+      stop("`n_combinations` has to be greater than the number of groups.")
+    }
+  }
+}
+
+
 
 #' @keywords internal
 check_n_batches <- function(internal){
