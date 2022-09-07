@@ -1,4 +1,5 @@
 library(shapr)
+library(data.table)
 library(MASS)
 
 # ------------------------------
@@ -45,8 +46,8 @@ temp = explain(
   x_explain = x_test,
   model = model,
   approach = "categorical",
-  prediction_zero = p
-  # joint_probability_dt = joint_prob_dt
+  prediction_zero = p,
+  joint_probability_dt = joint_prob_dt
 )
 print(temp)
 #         none    rad   chas
@@ -55,9 +56,22 @@ print(temp)
 # 3: -0.030511 15.709 11.035
 # 4: -0.030511 16.624 10.883
 
+# Without joint prob dt
 #         none feat_1_  feat_2_    feat_3_
 # 1: -0.030516 0.20455  0.29895  0.1381985
 # 2: -0.030516 0.23079  0.35300 -0.0480793
 # 3: -0.030516 0.13084  0.32979 -0.8297798
 # 4: -0.030516 0.23133 -0.88754  0.1923399
 # 5: -0.030516 0.27954 -0.84447 -0.0049256
+
+# With joint prob dt
+# none   feat_1_    feat_2_       feat_3_
+# 1: -0.03051645 0.2211416  0.3030599  0.1174976222
+# 2: -0.03051648 0.2312988  0.3611456 -0.0567361622
+# 3: -0.03051644 0.1437691  0.3371903 -0.8501081617
+# 4: -0.03051647 0.2446707 -0.8627886  0.1542449764
+# 5: -0.03051649 0.2140973 -0.7843376  0.0003764934
+
+#      none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+# 1: 40.752       6.1998             7.8422          2.852     70.2288
+# 2: 40.752      -3.7270             9.8283          5.626      4.1224

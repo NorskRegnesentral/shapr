@@ -48,6 +48,7 @@ setup_approach.categorical <- function(internal,
 
     joint_probability_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
   } else {
+
     for (i in colnames(x_explain)) {
       is_error <- !(i %in% names(joint_probability_dt))
 
@@ -60,6 +61,7 @@ setup_approach.categorical <- function(internal,
       if (is_error > 0) {
         stop(paste0(i, " in x_explain has factor levels than in joint_probability_dt."))
       }
+
     }
 
     is_error <- !("joint_prob" %in% names(joint_probability_dt)) |
