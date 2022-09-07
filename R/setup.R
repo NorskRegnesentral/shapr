@@ -63,11 +63,14 @@ check_parameters <- function(internal){
   # Check groups
   feature_names <- internal$parameters$feature_names
   group <- internal$parameters$group
+  n_combinations <- internal$parameters$n_combinations
+
   if (!is.null(group)){
     check_groups(feature_names,group)
   }
 
-  if (!is.null(internal$parameters$n_combinations)) {
+
+  if (!is.null(n_combinations)) {
     check_n_combinations(internal)
   }
 
@@ -82,13 +85,18 @@ check_parameters <- function(internal){
 #' @keywords internal
 check_n_combinations <- function(internal) {
 
-  if (is.null(internal$parameters$group)) {
-    if (internal$parameters$n_combinations <= ncol(internal$data$x_train)) {
-      stop("`n_combinations` has to be greater than the number of columns in `x_train`")
+  is_groupwise <- internal$parameters$is_groupwise
+  n_combinations <- internal$parameters$n_combinations
+  n_features <- explanation$internal$parameters$n_features
+  n_groups <- explanation$internal$parameters$n_groups
+
+  if (is.null(group)) {
+    if (n_combinations <= n_features) {
+      stop("`n_combinations` has to be greater than the number of features.")
     }
   } else {
-    if (internal$parameters$n_combinations <= length(internal$parameters$group)) {
-      stop("`n_combinations` has to be greater than the number of groups")
+    if (n_combinations <= n_groups) {
+      stop("`n_combinations` has to be greater than the number of groups.")
     }
   }
 }
