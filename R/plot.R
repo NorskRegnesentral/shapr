@@ -211,44 +211,8 @@ plot.shapr <- function(x,
            is not exceeded.")
     }
 
-    if (plot_order == "largest_first") {
-      plotting_dt[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
-    } else if (plot_order == "smallest_first") {
-      plotting_dt[variable != "none", rank := data.table::frank(abs(phi)), by = "id"]
-    } else if (plot_order == "original") {
-      plotting_dt[variable != "none", rank := seq_along(phi), by = "id"]
-    }
-    plotting_dt[variable == "none", rank := 0]
-    N_features <- x$internal$parameters$n_features
+    plotting_dt <- order_for_plot(plotting_dt, x$internal$parameters$n_features, plot_order, top_k_features)
 
-    # collapse phi-value for features that are not in top k features
-    plotting_dt[rank > top_k_features, phi := sum(phi), by = id]
-    plotting_dt[rank > top_k_features, variable := "rest", by = id]
-    plotting_dt[variable == "rest", rank := min(rank), by = id]
-    plotting_dt[variable == "rest", description := paste(N_features - top_k_features, "other features")]
-    plotting_dt[variable == "rest", sign := ifelse(phi < 0, "Decreases", "Increases")]
-    plotting_dt <- unique(plotting_dt)
-
-    # unique label for correct order when plotting multiple observations
-    plotting_dt[, unique_label := rev(seq_along(description))]
-    plotting_dt[variable == "none", unique_label := 0] # such that none is always at top of plot
-    plotting_dt[variable == "rest", unique_label := -1] # such that rest is always at bottom of plot
-    if (plot_order == "largest_first") {
-      unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(abs(phi))]], 0)
-    } else if (plot_order == "smallest_first") {
-      unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(-abs(phi))]], 0)
-    } else if (plot_order == "original") {
-      unique_levels <- c(-1, rev(plotting_dt[variable != "none" & variable != "rest", unique_label]), 0)
-    }
-    plotting_dt[, unique_label := factor(unique_label, levels = unique_levels)]
-    if (plot_order == "largest_first") {
-      plotting_dt[variable != "none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
-    } else if (plot_order == "smallest_first") {
-      plotting_dt[variable != "none", rank_waterfall := data.table::frank(-abs(phi)), by = "id"]
-    } else if (plot_order == "original") {
-      plotting_dt[variable != "none", rank_waterfall := rev(seq_along(phi)), by = "id"]
-    }
-    plotting_dt[variable == "none", rank_waterfall := 0]
 
     # compute start and end values for waterfall rectangles
     data.table::setorder(plotting_dt, rank_waterfall)
@@ -395,6 +359,51 @@ make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col) 
     )
   return(gg)
 }
+
+order_for_plot <- function(plotting_dt, N_features, plot_order, top_k_features) {
+
+  if (plot_order == "largest_first") {
+    plotting_dt[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
+  } else if (plot_order == "smallest_first") {
+    plotting_dt[variable != "none", rank := data.table::frank(abs(phi)), by = "id"]
+  } else if (plot_order == "original") {
+    plotting_dt[variable != "none", rank := seq_along(phi), by = "id"]
+  }
+  plotting_dt[variable == "none", rank := 0]
+
+  # collapse phi-value for features that are not in top k features
+  plotting_dt[rank > top_k_features, phi := sum(phi), by = id]
+  plotting_dt[rank > top_k_features, variable := "rest", by = id]
+  plotting_dt[variable == "rest", rank := min(rank), by = id]
+  plotting_dt[variable == "rest", description := paste(N_features - top_k_features, "other features")]
+  plotting_dt[variable == "rest", sign := ifelse(phi < 0, "Decreases", "Increases")]
+  plotting_dt <- unique(plotting_dt)
+
+  # unique label for correct order when plotting multiple observations
+  plotting_dt[, unique_label := rev(seq_along(description))]
+  plotting_dt[variable == "none", unique_label := 0] # such that none is always at top of plot
+  plotting_dt[variable == "rest", unique_label := -1] # such that rest is always at bottom of plot
+  if (plot_order == "largest_first") {
+    unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(abs(phi))]], 0)
+  } else if (plot_order == "smallest_first") {
+    unique_levels <- c(-1, plotting_dt[variable != "none" & variable != "rest", unique_label[order(-abs(phi))]], 0)
+  } else if (plot_order == "original") {
+    unique_levels <- c(-1, rev(plotting_dt[variable != "none" & variable != "rest", unique_label]), 0)
+  }
+  plotting_dt[, unique_label := factor(unique_label, levels = unique_levels)]
+  if (plot_order == "largest_first") {
+    plotting_dt[variable != "none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
+  } else if (plot_order == "smallest_first") {
+    plotting_dt[variable != "none", rank_waterfall := data.table::frank(-abs(phi)), by = "id"]
+  } else if (plot_order == "original") {
+    plotting_dt[variable != "none", rank_waterfall := rev(seq_along(phi)), by = "id"]
+  }
+  plotting_dt[variable == "none", rank_waterfall := 0]
+
+  return(plotting_dt)
+
+}
+
 
 make_beeswarm_plot <- function(plotting_dt, col, index_x_explain, x) {
   rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL
