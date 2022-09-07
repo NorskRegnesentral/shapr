@@ -14,7 +14,7 @@
 \usage{
 setup_approach(internal, ...)
 
-\method{setup_approach}{categorical}(internal, joint_probability_dt = NULL, epsilon = 0.001, ...)
+\method{setup_approach}{categorical}(internal, epsilon = 0.001, ...)
 
 \method{setup_approach}{copula}(internal, ...)
 
@@ -49,11 +49,6 @@ setup_approach(internal, ...)
 \item{internal}{Not used.}
 
 \item{...}{\code{approach}-specific arguments. See below.}
-
-\item{joint_probability_dt}{Data.table. (Optional)
-Containing the joint probability distribution for each combination of feature
-values.
-\code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
 
 \item{epsilon}{Numeric value. (Optional)
 If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
@@ -126,6 +121,11 @@ Containing the mean of the data generating distribution.
 \item{gaussian.cov_mat}{Numeric matrix. (Optional)
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
+
+\item{joint_probability_dt}{Data.table. (Optional)
+Containing the joint probability distribution for each combination of feature
+values.
+\code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
 }
 \description{
 The different choices of \code{approach} takes different (optional) parameters, which are forwarded from \code{\link[=explain]{explain()}}.
