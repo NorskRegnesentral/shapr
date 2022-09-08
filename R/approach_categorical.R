@@ -15,13 +15,16 @@
 #'
 #' @export
 setup_approach.categorical <- function(internal,
-                                       # joint_probability_dt = NULL,
-                                       epsilon = 0.001,
+                                       categorical.joint_probability_dt = NULL,
+                                       categorical.epsilon = 0.001,
                                        ...) {
-  # TO DO: Check with MJ that this is ok
-  joint_probability_dt <- internal$parameters$joint_probability_dt
-  feature_names <- internal$parameters$feature_names
+  defaults <- mget(c("categorical.joint_probability_dt", "categorical.epsilon"))
+  internal <- insert_defaults(internal, defaults)
 
+  joint_probability_dt <- internal$parameters$categorical.joint_probability_dt
+  epsilon <- internal$parameters$epsilon
+
+  feature_names <- internal$parameters$feature_names
   feature_specs <- internal$objects$feature_specs
 
   x_train <- internal$data$x_train
@@ -39,7 +42,7 @@ setup_approach.categorical <- function(internal,
     N_explain_not_in_train <- nrow(unique(explain_not_in_train))
 
     if (N_explain_not_in_train > 0) {
-      joint_prob_dt0 <- rbind(joint_prob_dt0, cbind(explain_not_in_train, N = epsilon))
+      joint_prob_dt0 <- rbind(joint_prob_dt0, cbind(explain_not_in_train, N = categorical.epsilon))
     }
 
     joint_prob_dt0[, joint_prob := N / .N]
@@ -78,7 +81,7 @@ setup_approach.categorical <- function(internal,
     joint_probability_dt <- joint_probability_dt[, id_all := .I]
   }
 
-  internal$parameters$joint_probability_dt <- joint_probability_dt
+  internal$parameters$categorical.joint_probability_dt <- joint_probability_dt
 
   return(internal)
 }
@@ -94,6 +97,8 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
+
+  joint_probability_dt <- internal$parameters$categorical.joint_probability_dt
 
   X <- internal$objects$X
   S <- internal$objects$S
@@ -111,7 +116,6 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   # id_all: identifies the unique combinations of feature values from
   # the training data (not necessarily the ones in the explain data)
 
-  joint_probability_dt <- internal$parameters$joint_probability_dt
 
   feature_conditioned <- paste0(feature_names, "_conditioned")
   feature_conditioned_id <- c(feature_conditioned, "id")
