@@ -18,7 +18,7 @@
 #'
 #' @param approach Character vector of length `1` or `n_features`.
 #' `n_features` equals the total number of features in the model. All elements should,
-#' either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, or `"independence"`.
+#' either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"` or `"independence"`.
 #' See details for more information.
 #'
 #' @param prediction_zero Numeric.
@@ -86,11 +86,12 @@
 #' @inheritDotParams setup_approach.gaussian
 #' @inheritDotParams setup_approach.copula
 #' @inheritDotParams setup_approach.ctree
+#' @inheritDotParams setup_approach.categorical
 #'
-#' @details The most important thing to notice is that `shapr` has implemented five different
+#' @details The most important thing to notice is that `shapr` has implemented six different
 #' approaches for estimating the conditional distributions of the data, namely `"empirical"`,
-#' `"gaussian"`, `"copula"`, `"ctree"` and `"independence"`.
-#' In addition, the user also has the option of combining the four approaches.
+#' `"gaussian"`, `"copula"`, `"ctree"`, `"categorical"` and `"independence"`.
+#' In addition, the user also has the option of combining the different approaches.
 #' E.g., if you're in a situation where you have trained a model that consists of 10 features,
 #' and you'd like to use the `"gaussian"` approach when you condition on a single feature,
 #' the `"empirical"` approach if you condition on 2-5 features, and `"copula"` version
@@ -275,6 +276,9 @@ explain <- function(model,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs, ...
   )
+
+  # print(joint_probability_dt)
+  # print(internal$parameters$gaussian.mu)
 
   # Gets predict_model (if not passed to explain)
   # Checks that predict_model gives correct format

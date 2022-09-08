@@ -86,6 +86,24 @@
       1: 40.752 5.69022 24.4988  2.3756  4.6042 -3.8790
       2: 40.752 0.29536  8.3215 24.1690 -2.3619 -4.3632
 
+# output_lm_categorical_ctree
+
+    Code
+      (out <- code)
+    Output
+           none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+      1: 40.752       2.3834             17.221       -0.38759     67.9057
+      2: 40.752      -6.0032             15.461        8.28892     -1.8965
+
+# output_lm_categorical_method
+
+    Code
+      (out <- code)
+    Output
+           none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+      1: 40.752       6.1998             7.8422          2.852     70.2288
+      2: 40.752      -3.7270             9.8283          5.626      4.1224
+
 # output_lm_numeric_comb1
 
     Code

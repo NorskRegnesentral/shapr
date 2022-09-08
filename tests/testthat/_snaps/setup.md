@@ -160,7 +160,7 @@
         approach = approach_non_character, prediction_zero = p0)
     Error <simpleError>
       `approach` must be one of the following: 
-       copula, ctree, empirical, gaussian, independence 
+       categorical, copula, ctree, empirical, gaussian, independence 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 ---
@@ -171,7 +171,7 @@
         approach = approach_incorrect_length, prediction_zero = p0)
     Error <simpleError>
       `approach` must be one of the following: 
-       copula, ctree, empirical, gaussian, independence 
+       categorical, copula, ctree, empirical, gaussian, independence 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 ---
@@ -182,7 +182,7 @@
         approach = approach_incorrect_character, prediction_zero = p0)
     Error <simpleError>
       `approach` must be one of the following: 
-       copula, ctree, empirical, gaussian, independence 
+       categorical, copula, ctree, empirical, gaussian, independence 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 # erroneous input: `prediction_zero`
@@ -660,7 +660,7 @@
     Error <simpleError>
       The following feature(s) are factor(s): Month_factor.
       approach = 'gaussian' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'categorical'.
 
 ---
 
@@ -671,7 +671,7 @@
     Error <simpleError>
       The following feature(s) are factor(s): Month_factor.
       approach = 'empirical' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'categorical'.
 
 ---
 
@@ -682,5 +682,5 @@
     Error <simpleError>
       The following feature(s) are factor(s): Month_factor.
       approach = 'copula' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'categorical'.
 

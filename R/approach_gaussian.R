@@ -14,9 +14,13 @@
 setup_approach.gaussian <- function(internal,
                                     gaussian.mu = NULL,
                                     gaussian.cov_mat = NULL, ...) {
+
+
   parameters <- internal$parameters
   x_train <- internal$data$x_train
   feature_specs <- internal$objects$feature_specs
+
+  # TO DO: gaussian.mu should probably be extracted from internal$parameters$gaussian.mu...
 
   # Checking if factor features are present
   if(any(feature_specs$classes=="factor")){
