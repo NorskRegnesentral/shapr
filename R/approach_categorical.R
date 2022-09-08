@@ -18,6 +18,8 @@ setup_approach.categorical <- function(internal,
                                        categorical.joint_probability_dt = NULL,
                                        categorical.epsilon = 0.001,
                                        ...) {
+  joint_prob <- N <- id_all <- NULL # NSE
+
   defaults <- mget(c("categorical.joint_probability_dt", "categorical.epsilon"))
   internal <- insert_defaults(internal, defaults)
 
@@ -93,7 +95,7 @@ setup_approach.categorical <- function(internal,
 #' @export
 #' @keywords internal
 prepare_data.categorical <- function(internal, index_features = NULL, ...) {
-  id <- id_combination <- w <- NULL
+  id <- id_combination <- w <- id_all <- joint_prob <- cond_prob <- marg_prob <- NULL
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
@@ -199,5 +201,5 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   # dt[n_features %in% c(0, ncol(x_explain)), w := 1.0]
   dt[id_combination %in% c(1, 2^ncol(x_explain)), w := 1.0]
   ret_col <- c("id_combination", "id", feature_names, "w")
-  return(dt[id_combination %in% index_features, ..ret_col])
+  return(dt[id_combination %in% index_features, mget(ret_col)])
 }
