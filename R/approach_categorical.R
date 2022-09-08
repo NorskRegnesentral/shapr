@@ -1,11 +1,11 @@
 #' @rdname setup_approach
 #'
-#' @param joint_probability_dt Data.table. (Optional)
+#' @param categorical.joint_probability_dt Data.table. (Optional)
 #' Containing the joint probability distribution for each combination of feature
 #' values.
 #' `NULL` means it is estimated from the `x_train` and `x_explain`.
 #'
-#' @param epsilon Numeric value. (Optional)
+#' @param categorical.epsilon Numeric value. (Optional)
 #' If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
 #' estimated using `x_train`. If certain observations occur in `x_train` and NOT in `x_explain`,
 #' then epsilon is used as the proportion of times that these observations occurs in the training data.

@@ -149,7 +149,11 @@ If FALSE and the number of observations in the leaf node is more than \code{n_sa
 the method will sample \code{n_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
-    \item{\code{epsilon}}{Numeric value. (Optional)
+    \item{\code{categorical.joint_probability_dt}}{Data.table. (Optional)
+Containing the joint probability distribution for each combination of feature
+values.
+\code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
+    \item{\code{categorical.epsilon}}{Numeric value. (Optional)
 If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
