@@ -131,8 +131,9 @@ Shapley values may then be approximated as in the ordinary Kernel SHAP framework
 propose three different approaches for estimating the conditional probabilities which are implemented:
 `empirical`, `gaussian` and `copula`.
 The package also implements the method `ctree` method from @redelmeier2020explaining. 
+If all features are categorical, the package implements a `categorical` method. 
 The original `independence` approach of @lundberg2017unified is also available.
-The methods may also be combined, such that e.g. one method is used when conditioning on a small number of features, 
+The methods may also be combined, such that e.g., one method is used when conditioning on a small number of features, 
 while another method is used otherwise.
 
 <a id="gaussian"></a>
@@ -224,6 +225,16 @@ $\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K$, when approximating the con
 
 The conditional inference trees are fit using the *party* and *partykit* packages (@partykit_package). 
 
+
+## Categorical Approach
+
+When the features are all categorical, we can estimate the conditional expectations using basic statistical formulas. 
+For example, if we have three features, $x_1, x_2, x_3$ with three levels each (indicated as 1, 2, 3), and we are provided with a table of counts indicating how many times each combination of feature values occurs, we can estimate the marginal and conditional probabilities as follows. 
+Marginal probabilities are estimated by dividing the number of times a given feature (or features) takes on a certain value in the data set with the total number of observations in the data set. 
+Condititional probabilities (for example, $P(X_1 = 1 | X_2 = 1)$) are estimated by first subsetting the data set to reflect the conditioning (i.e., extracting all rows where $X_2 = 1$), and then dividing the number of times the feature on the left hand side of $|$ takes the given value in this subset by the total number of observations in this subset. 
+Once the marginal and conditional probabilities are estimated for all combinations of feature values, each conditional expectation can be calculated. For example, the expected value of $X_1$ given $X_2 = 1$ and $X_3 = 2$ is
+$$E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1, X_3=2) = \sum_{x} x \frac{P(X_1 = x, X_2 = 1, X_3 = 2)}{P(X_2=1, X_3=2)}.$$.
+
 <a id="ex"></a>
 
 <br>
@@ -233,11 +244,11 @@ The conditional inference trees are fit using the *party* and *partykit* package
 `shapr` supports computation of Shapley values with any predictive model which takes a set of 
 numeric features and produces a numeric outcome. Note that the ctree method takes both numeric and categorical variables. Check under "Advanced usage" for an example of how this can be done. 
 
-The following example shows how a simple `xgboost` model is trained using the `airquality` dataset, 
+The following example shows how a simple `xgboost` model is trained using the `airquality` data set, 
 and how `shapr` can be used to explain the individual predictions. Note that the empirical conditional 
 distribution approach is the default (i.e. `approach = "empirical"`).
-The Gaussian, Gaussian copula, ctree or independence approaches can be used instead by setting the argument `approach` to either 
-`"gaussian"`, `"copula"`, `"ctree"` or `"independence"`.
+The Gaussian, Gaussian copula, ctree, categorical or independence approaches can be used instead by setting the argument `approach` to either 
+`"gaussian"`, `"copula"`, `"ctree"`, `"categorical"` or `"independence"`.
 
 ```{r, warning=FALSE}
 library(xgboost)
@@ -332,10 +343,9 @@ plot(explanation_ctree, plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
 
-We can use mixed (i.e continuous, categorical, ordinal) data with ctree. Use ctree with categorical data in the following manner:
+We can use mixed (i.e continuous, categorical, ordinal) data with ctree. Use ctree with mixed data in the following manner:
 
 ```{r}
-
 data("airquality")
 data <- data.table::as.data.table(airquality)
 data <- data[complete.cases(data), ]
@@ -345,19 +355,19 @@ x_train <- data[-ind_x_explain, ..x_var]
 y_train <- data[-ind_x_explain, get(y_var)]
 x_explain <- data[ind_x_explain, ..x_var]
 
-
 # convert to factors
-data[,Month_factor := as.factor(Month)]
+data[, Month_factor := as.factor(Month)]
 
-data_train_cat <- data[-ind_x_explain,]
-data_explain_cat <- data[ind_x_explain,]
+data_train_cat <- data[-ind_x_explain, ]
+data_explain_cat <- data[ind_x_explain, ]
 
 x_var_cat <- c("Solar.R", "Wind", "Temp", "Month_factor")
 
 x_train_cat <- data_train_cat[, ..x_var_cat]
 x_explain_cat <- data_explain_cat[, ..x_var_cat]
 
-# Fitting a lm model here as xgboost does not handle categorical features directly (work around in example below)
+# Fitting an lm model here as xgboost does not handle categorical features directly
+# (work around in example below)
 lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " + ")))
 
 model_lm_cat <- lm(lm_formula,data_train_cat)
@@ -397,6 +407,55 @@ explanation_ctree <- explain(
 # minsplit = 20
 # minbucket = 7
 ```
+
+
+If __all__ features are categorical, the categorical approach is used as follows:
+
+```{r}
+
+data("airquality")
+data <- data.table::as.data.table(airquality)
+data <- data[complete.cases(data), ]
+
+ind_x_explain <- 1:6
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
+
+# convert _all_ features to factors
+data[, Solar.R_factor := as.factor(cut(Solar.R, 10))]
+data[, Wind_factor := as.factor(cut(Wind, 3))]
+data[, Temp_factor := as.factor(cut(Temp, 2))]
+data[, Month_factor := as.factor(Month)]
+
+data_train_cat <- data[-ind_x_explain, ]
+data_explain_cat <- data[ind_x_explain, ]
+
+
+x_var_cat <- c("Solar.R_factor", "Wind_factor", "Temp_factor", "Month_factor")
+
+x_train_cat <- data_train_cat[, ..x_var_cat]
+x_explain_cat <- data_explain_cat[, ..x_var_cat]
+
+# Fitting an lm model here as xgboost does not handle categorical features directly 
+# (work around in example below)
+lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " + ")))
+
+model_lm_cat <- lm(lm_formula,data_train_cat)
+
+p0 <- mean(y_train)
+explanation_cat_method <- explain(
+    model = model_lm_cat,
+    x_explain = x_explain_cat,
+    x_train = x_train_cat,
+    approach = "categorical",
+    prediction_zero = p0
+)
+# Plot the resulting explanations for observations 1 and 6, excluding 
+# the no-covariate effect
+plot(explanation_cat_method, plot_phi0 = FALSE, index_x_explain = c(1, 6))
+```
+
 
 
 ## Main arguments in `shapr`
@@ -442,11 +501,9 @@ generating distribution by the arguments `gaussian.mu` and `gaussian.cov_mat`. I
 
 ## Combined approach
 
-In addition to letting the user select one of the three aforementioned approaches for estimating the conditional 
+In addition to letting the user select one of the five aforementioned approaches for estimating the conditional 
 distribution of the data (i.e. `approach` equals either [`"gaussian"`](#gaussian), [`"copula"`](#copula),
-[`"empirical"`](#empirical) or 
-[`"ctree"`](#ctree)) the package allows the user to combine the four approaches. To simplify the usage, 
-the flexibility is restricted such that the same approach is used when conditioning on the same number of features. 
+[`"empirical"`](#empirical), [`"ctree"`](#ctree) or [`"categorical"`](#categorical)), the package allows the user to combine the five approaches. To simplify the usage, the flexibility is restricted such that the same approach is used when conditioning on the same number of features. 
 This is also in line @aas2019explaining[, Section 3.4]. 
 
 This can be done by setting `approach` equal to a character vector, where the length of the vector is equal to the 
