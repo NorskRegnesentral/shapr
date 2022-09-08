@@ -383,7 +383,7 @@ group_fun <- function(x, group_num) {
 #' @keywords internal
 feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero_m = 10^6) {
   # due to NSE notes in R CMD check
-  features <- id_combination <- n_features <- shapley_weight <- N <- groups <- n_groups <- NULL
+  features <- id_combination <- n_features <- shapley_weight <- N <- groups <- n_groups <- groups_tmp <- NULL
 
   # Find weights for given number of features ----------
   m <- length(group_num)
