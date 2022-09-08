@@ -197,7 +197,7 @@ plot.shapr <- function(x,
     gg <- make_scatter_plot(dt_plot, scatter_features, scatter_hist, col)
   } else if (plot_type == "beeswarm") {
     gg <- make_beeswarm_plot(dt_plot, col, index_x_explain, x)
-  } else { # if bar og waterfall plot
+  } else { # if bar or waterfall plot
     # Only plot the desired observations
     dt_plot <- dt_plot[id %in% index_x_explain]
 
@@ -346,6 +346,8 @@ make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col) 
 }
 
 order_for_plot <- function(dt_plot, N_features, plot_order, top_k_features) {
+  # due to NSE notes in R CMD check
+  variable <- phi <- id <- description <- unique_label <- rank_waterfall <- NULL
 
   if (plot_order == "largest_first") {
     dt_plot[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
