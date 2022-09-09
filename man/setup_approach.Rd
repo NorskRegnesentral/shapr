@@ -10,7 +10,7 @@
 \alias{setup_approach.empirical}
 \alias{setup_approach.gaussian}
 \alias{setup_approach.independence}
-\alias{timeseries}
+\alias{setup_approach.timeseries}
 \title{Set up the framework chosen approach}
 \usage{
 setup_approach(internal, ...)
@@ -51,7 +51,7 @@ setup_approach(internal, ...)
 
 \method{setup_approach}{independence}(internal, ...)
 
-timeseries(internal, ...)
+\method{setup_approach}{timeseries}(internal, timeseries.fixed_sigma_vec = 0.1, ...)
 }
 \arguments{
 \item{internal}{Not used.}
@@ -134,6 +134,9 @@ Containing the mean of the data generating distribution.
 \item{gaussian.cov_mat}{Numeric matrix. (Optional)
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
+
+\item{timeseries.fixed_sigma_vec}{Numeric. (default = 0.1)
+Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?}
 }
 \description{
 The different choices of \code{approach} takes different (optional) parameters, which are forwarded from \code{\link[=explain]{explain()}}.

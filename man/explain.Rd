@@ -101,7 +101,7 @@ disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}
+  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
   \describe{
     \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}. TODO: Describe better what the methods do here.}
@@ -158,6 +158,8 @@ If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
+    \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (default = 0.1)
+Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?}
   }}
 }
 \value{

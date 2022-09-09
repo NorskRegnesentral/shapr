@@ -1,6 +1,6 @@
 #' @rdname setup_approach
 #'
-#' @param timeseries.fixed_sigma_vec Numeric. (default = 0.1)
+#' @param timeseries.fixed_sigma_vec Numeric. (default = 2)
 #' Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
 #'
 #'
@@ -8,7 +8,7 @@
 #'
 #' @export
 setup_approach.timeseries <- function(internal,
-                                      timeseries.fixed_sigma_vec = 0.1,
+                                      timeseries.fixed_sigma_vec = 2,
                                       ...) {
   defaults <- mget("timeseries.fixed_sigma_vec")
 
@@ -44,7 +44,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
   timeseries.fixed_sigma_vec <- internal$parameters$timeseries.fixed_sigma_vec
 
-  # print(x_explain)
+  # print(timeseries.fixed_sigma_vec)
 
   X <- internal$objects$X
   S <- internal$objects$S
@@ -57,8 +57,6 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
     features <- X$features[index_features] # list of [1],
   }
   feature_names <- internal$parameters$feature_names
-
-  # print(feature_names)
 
   x_train <- as.matrix(x_train)
   x_explain <- as.matrix(x_explain)
@@ -97,13 +95,12 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
       # print(dim(x_train[, S[j, ] == 0, drop = F]))
       # print(dim(matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)),
       #                  nrow = nrow(x_train), byrow = T)))
-      print(rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
-                       x_train[, S[j, ] == 0, drop = F]) ^ 2)) # 100-1000
-
-
+      # print(rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
+      #                  x_train[, S[j, ] == 0, drop = F]) ^ 2)) # 100-1000
       w_vec <- exp(-0.5 * rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
                                      x_train[, S[j, ] == 0, drop = F]) ^ 2)
                    / timeseries.fixed_sigma_vec ^ 2)
+
       # print(w_vec)
       # print(nrow(Sbar_segments)) # 1 or 2
       for(k in seq_len(nrow(Sbar_segments))){
@@ -150,8 +147,10 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  print(dt[id == 1][is.na(w)])
+  # print(dt[id == 1][is.na(w)])
   # print(table(dt[id == 1][is.na(w)][['id_combination']])) # 2 3 4 6 7 9
-
-  return(dt)
+  ret_col <- c("id_combination", "id", feature_names, "w")
+  # print(dt[id == 6][id_combination %in% index_features, mget(ret_col)])
+  # print(dt)
+  return(dt[id_combination %in% index_features, mget(ret_col)])
 }
