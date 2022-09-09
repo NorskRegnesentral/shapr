@@ -124,5 +124,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   ret_col <- c("id_combination", "id", feature_names, "w")
+  print(dt[id == 1])
+
   return(dt[id_combination %in% index_features, mget(ret_col)])
 }
