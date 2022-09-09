@@ -4,9 +4,9 @@ library(shapr)
 devtools::load_all()
 
 set.seed(1)
-n_train = 2
-n_test = 2
-n_features = 4
+n_train = 1000
+n_test = 6
+n_features = 20
 x = rnorm((n_train + n_test) * (n_features + 5), mean = 2, sd = 2)
 # x = 1:((n_train + n_test +1) * n_features)
 # x = matrix(x, nrow = n_train + n_test, byrow = T)
@@ -70,10 +70,8 @@ explanation_group <- explain(
   approach = "timeseries",
   prediction_zero = p0,
   group = group,
-  timeseries.fixed_sigma_vec = 0.1
+  timeseries.fixed_sigma_vec = 2
 )
-
-
 
 explanation_group
 
