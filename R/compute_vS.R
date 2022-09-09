@@ -94,6 +94,7 @@ batch_prepare_vS <- function(S, internal) {
     dt <- prepare_data(internal, index_features = S)
     dt_max <- data.table(x_explain, id_combination = max_id_combination, w = 1, id = seq_len(n_explain))
     dt <- rbind(dt, dt_max)
+
     setkey(dt, id, id_combination)
   }
   return(dt)

@@ -16,6 +16,15 @@
       1: 40.752  7.2098 22.0306  0.41757 5.8050 -2.1733
       2: 40.752  5.5946 -1.7351 18.17269 1.3886  2.6399
 
+# output_lm_numeric_empirical_n_combinations
+
+    Code
+      (out <- code)
+    Output
+           none Solar.R     Wind     Temp  Month     Day
+      1: 40.752 0.33558 23.79725 -0.43589 9.5413 0.05153
+      2: 40.752 3.29535  0.49771 13.95255 1.4244 6.89079
+
 # output_lm_numeric_empirical_independence
 
     Code
@@ -76,6 +85,24 @@
            none Solar.R    Wind    Temp   Month     Day
       1: 40.752 5.69022 24.4988  2.3756  4.6042 -3.8790
       2: 40.752 0.29536  8.3215 24.1690 -2.3619 -4.3632
+
+# output_lm_categorical_ctree
+
+    Code
+      (out <- code)
+    Output
+           none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+      1: 40.752       2.3834             17.221       -0.38759     67.9057
+      2: 40.752      -6.0032             15.461        8.28892     -1.8965
+
+# output_lm_categorical_method
+
+    Code
+      (out <- code)
+    Output
+           none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+      1: 40.752       6.1998             7.8422          2.852     70.2288
+      2: 40.752      -3.7270             9.8283          5.626      4.1224
 
 # output_lm_numeric_comb1
 

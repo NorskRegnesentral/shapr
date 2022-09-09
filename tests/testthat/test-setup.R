@@ -378,6 +378,37 @@ test_that("erroneous input: `n_combinations`", {
   },
   error = T)
 
+  expect_snapshot({
+    # Too low n_combinations (smaller than # features
+    n_combinations = ncol(x_explain_numeric) - 1
+
+    explain(model = model_lm_numeric,
+            x_explain = x_explain_numeric,
+            x_train = x_train_numeric,
+            prediction_zero = p0,
+            approach = "gaussian",
+            n_combinations = n_combinations)
+  },
+  error = T)
+
+
+  expect_snapshot({
+    # Too low n_combinations (smaller than # groups
+    groups = list(A = c("Solar.R", "Wind"),
+                  B = c("Temp", "Month"),
+                  C = "Day")
+
+    n_combinations = length(groups) - 1
+
+    explain(model = model_lm_numeric,
+            x_explain = x_explain_numeric,
+            x_train = x_train_numeric,
+            prediction_zero = p0,
+            approach = "gaussian",
+            group = groups,
+            n_combinations = n_combinations)
+  },
+  error = T)
 
 })
 
@@ -935,6 +966,25 @@ test_that("Correct dimension of S when sampling combinations with groups", {
 })
 
 
+test_that("Correct dimension of S when sampling combinations with groups", {
+
+  n_combinations = 5
+
+  groups = list(A = c("Solar.R", "Wind"),
+                B = c("Temp", "Month_factor"),
+                C = "Day")
+
+  res = explain(model = model_lm_mixed,
+                x_explain = x_explain_mixed,
+                x_train = x_explain_mixed,
+                prediction_zero = p0,
+                approach = "ctree",
+                group = groups,
+                n_combinations = n_combinations)
+
+  expect_equal(nrow(res$internal$objects$S), n_combinations)
+
+})
 
 test_that("data feature ordering is output_lm_numeric_column_order", {
 

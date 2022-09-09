@@ -160,7 +160,7 @@
         approach = approach_non_character, prediction_zero = p0)
     Error <simpleError>
       `approach` must be one of the following: 
-       copula, ctree, empirical, gaussian, independence 
+       categorical, copula, ctree, empirical, gaussian, independence 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 ---
@@ -171,7 +171,7 @@
         approach = approach_incorrect_length, prediction_zero = p0)
     Error <simpleError>
       `approach` must be one of the following: 
-       copula, ctree, empirical, gaussian, independence 
+       categorical, copula, ctree, empirical, gaussian, independence 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 ---
@@ -182,7 +182,7 @@
         approach = approach_incorrect_character, prediction_zero = p0)
     Error <simpleError>
       `approach` must be one of the following: 
-       copula, ctree, empirical, gaussian, independence 
+       categorical, copula, ctree, empirical, gaussian, independence 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 # erroneous input: `prediction_zero`
@@ -274,6 +274,25 @@
         approach = "independence", prediction_zero = p0, n_combinations = n_combinations_non_positive)
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
+
+---
+
+    Code
+      n_combinations = ncol(x_explain_numeric) - 1
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        prediction_zero = p0, approach = "gaussian", n_combinations = n_combinations)
+    Error <simpleError>
+      `n_combinations` has to be greater than the number of features.
+
+---
+
+    Code
+      groups = list(A = c("Solar.R", "Wind"), B = c("Temp", "Month"), C = "Day")
+      n_combinations = length(groups) - 1
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        prediction_zero = p0, approach = "gaussian", group = groups, n_combinations = n_combinations)
+    Error <simpleError>
+      `n_combinations` has to be greater than the number of groups.
 
 # erroneous input: `group`
 
@@ -641,7 +660,7 @@
     Error <simpleError>
       The following feature(s) are factor(s): Month_factor.
       approach = 'gaussian' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'categorical'.
 
 ---
 
@@ -652,7 +671,7 @@
     Error <simpleError>
       The following feature(s) are factor(s): Month_factor.
       approach = 'empirical' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'categorical'.
 
 ---
 
@@ -663,5 +682,5 @@
     Error <simpleError>
       The following feature(s) are factor(s): Month_factor.
       approach = 'copula' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'categorical'.
 
