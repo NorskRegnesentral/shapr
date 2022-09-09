@@ -1,7 +1,7 @@
 #' @rdname setup_approach
 #'
-#' @param timeseries.fixed_sigma_vec Numeric. (default = 2)
-#' Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
+#' @param timeseries.fixed_sigma_vec Numeric. (Default = 2)
+#' Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?
 #'
 #'
 #' @inheritParams default_doc_explain
@@ -24,8 +24,6 @@ setup_approach.timeseries <- function(internal,
     stop("All features should be numeric to use the timeseries method.")
   }
 
-  # internal$parameters$categorical.joint_probability_dt <- joint_probability_dt
-
   return(internal)
 }
 
@@ -44,24 +42,20 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
   timeseries.fixed_sigma_vec <- internal$parameters$timeseries.fixed_sigma_vec
 
-  # print(timeseries.fixed_sigma_vec)
-
   X <- internal$objects$X
   S <- internal$objects$S
 
-  # print(S)
-
-  if (is.null(index_features)) { # 2,3
-    features <- X$features # list of [1], [2], [2, 3]
+  if (is.null(index_features)) {
+    features <- X$features
   } else {
-    features <- X$features[index_features] # list of [1],
+    features <- X$features[index_features]
   }
   feature_names <- internal$parameters$feature_names
 
   x_train <- as.matrix(x_train)
   x_explain <- as.matrix(x_explain)
 
-  n_row <- nrow(x_explain) # huh???
+  n_row <- nrow(x_explain)
 
   dt_l <- list()
 
@@ -75,82 +69,60 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
     tmp[[nrow(S)]] <- as.data.table(x_explain_i)
     tmp[[nrow(S)]][, w := 1]
 
-    # print(nrow(S) - 1)
     for(j in 2:(nrow(S) - 1)){ # 2 to 15
       diff_S <- diff(c(1, S[j, ], 1))
       Sbar_starts <- which(diff_S == -1)
       Sbar_ends <- which(diff_S == 1) - 1
 
-      cond_1 <- Sbar_starts - 1 # 7, 0 14, 0 21,
-      cond_2 <- Sbar_ends + 1 #
+      cond_1 <- Sbar_starts - 1
+      cond_2 <- Sbar_ends + 1
       cond_1[cond_1 == 0] <- cond_2[cond_1 == 0]
       cond_2[cond_2 == (ncol(S) + 1)] <- cond_1[cond_2 == (ncol(S) + 1)]
       len_Sbar_segment <- Sbar_ends - Sbar_starts + 1
 
       Sbar_segments <- data.frame(Sbar_starts, Sbar_ends, cond_1, cond_2, len_Sbar_segment)
+
       tmp[[j]] <- matrix(rep(x_explain_i, nrow(x_train)), nrow = nrow(x_train), byrow = T)
-      # print(head(tmp[[j]], 1)) # 29 columns, same rows
-      # print(S[j, ] == 0)
-      # print(length(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train))))
-      # print(dim(x_train[, S[j, ] == 0, drop = F]))
-      # print(dim(matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)),
-      #                  nrow = nrow(x_train), byrow = T)))
-      # print(rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
-      #                  x_train[, S[j, ] == 0, drop = F]) ^ 2)) # 100-1000
+
       w_vec <- exp(-0.5 * rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
                                      x_train[, S[j, ] == 0, drop = F]) ^ 2)
                    / timeseries.fixed_sigma_vec ^ 2)
 
-      # print(w_vec)
-      # print(nrow(Sbar_segments)) # 1 or 2
       for(k in seq_len(nrow(Sbar_segments))){
-        # print(k) # 1, 1, 2, 1, 2, 1
-        # print(Sbar_segments$Sbar_starts[k])
-        # print(Sbar_segments$Sbar_ends[k])
 
-        # 1, 7
-        # 1, 8
-        # 2, 14
-        # 1, 15
-        # 2, 21
         impute_these <- seq(Sbar_segments$Sbar_starts[k], Sbar_segments$Sbar_ends[k])
-        # print(impute_these) # which ones to shift
-        # print("---")
+
         x_explain_cond_1 <- x_explain_i[, Sbar_segments$cond_1[k]]
         x_explain_cond_2 <- x_explain_i[, Sbar_segments$cond_2[k]]
-        # print(x_explain_cond_1) # the left end point
-        # print(x_explain_cond_2) # the right end point
 
         x_train_starts <- x_train[, Sbar_segments$Sbar_starts[k]]
         x_train_ends <- x_train[, Sbar_segments$Sbar_ends[k]]
 
-        a_test <- x_explain_cond_1
+        a_explain <- x_explain_cond_1
         a_train <- x_train_starts
 
-        b_test <- (x_explain_cond_2 - x_explain_cond_1) / Sbar_segments$len_Sbar_segment[k]
+        b_explain <- (x_explain_cond_2 - x_explain_cond_1) / Sbar_segments$len_Sbar_segment[k]
         b_train <- (x_train_ends - x_train_starts) / Sbar_segments$len_Sbar_segment[k]
 
-        lin_mod_test <- a_test + b_test * 0:(Sbar_segments$len_Sbar_segment[k] - 1)
+        lin_mod_explain <- a_explain + b_explain * 0:(Sbar_segments$len_Sbar_segment[k] - 1)
         lin_mod_train <- a_train + b_train %o% (0:(Sbar_segments$len_Sbar_segment[k] - 1))
 
-        to_impute <- (x_train[, impute_these] - lin_mod_train) + matrix(rep(lin_mod_test, nrow(x_train)),
+        to_impute <- (x_train[, impute_these] - lin_mod_train) + matrix(rep(lin_mod_explain, nrow(x_train)),
                                                                         nrow = nrow(x_train), byrow = T)
-        tmp[[j]][, impute_these] <- pmax(pmin(to_impute, 1), 0)
+
+        tmp[[j]][, impute_these] <- to_impute # pmax(pmin(to_impute, 1), 0) #ASK MJ: REMOVE THIS??
       }
-      # print(tmp[[j]])
+
       tmp[[j]] <- as.data.table(tmp[[j]])
       tmp[[j]][, w := w_vec / sum(w_vec)]
     }
+
     dt_l[[i]] <- rbindlist(tmp, idcol = "id_combination")
-    # dt_l[[i]][, w := 1/.N, by = id_combination] # IS THIS NECESSARY?
+    # dt_l[[i]][, w := 1 / .N, by = id_combination] # IS THIS NECESSARY?
     dt_l[[i]][, id := i]
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
-  # print(dt[id == 1][is.na(w)])
-  # print(table(dt[id == 1][is.na(w)][['id_combination']])) # 2 3 4 6 7 9
   ret_col <- c("id_combination", "id", feature_names, "w")
-  # print(dt[id == 6][id_combination %in% index_features, mget(ret_col)])
-  # print(dt)
   return(dt[id_combination %in% index_features, mget(ret_col)])
 }
