@@ -1,30 +1,18 @@
 #' @rdname setup_approach
 #'
-#' @param timeseries.joint_probability_dt Data.table. (Optional)
-#' Containing the joint probability distribution for each combination of feature
-#' values.
-#' `NULL` means it is estimated from the `x_train` and `x_explain`.
+#' @param timeseries.fixed_sigma_vec Numeric. (default = 0.1)
+#' Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
 #'
-#' @param categorical.epsilon Numeric value. (Optional)
-#' If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
-#' estimated using `x_train`. If certain observations occur in `x_train` and NOT in `x_explain`,
-#' then epsilon is used as the proportion of times that these observations occurs in the training data.
-#' In theory, this proportion should be zero, but this causes an error later in the Shapley computation.
 #'
 #' @inheritParams default_doc_explain
 #'
 #' @export
-setup_approach.categorical <- function(internal,
-                                       categorical.joint_probability_dt = NULL,
-                                       categorical.epsilon = 0.001,
-                                       ...) {
-  joint_prob <- N <- id_all <- NULL # NSE
+setup_approach.timeseries <- function(internal,
+                                      timeseries.fixed_sigma_vec = 0.1,
+                                      ...) {
+  defaults <- mget("timeseries.fixed_sigma_vec")
 
-  defaults <- mget(c("categorical.joint_probability_dt", "categorical.epsilon"))
   internal <- insert_defaults(internal, defaults)
-
-  joint_probability_dt <- internal$parameters$categorical.joint_probability_dt
-  epsilon <- internal$parameters$epsilon
 
   feature_names <- internal$parameters$feature_names
   feature_specs <- internal$objects$feature_specs
@@ -32,58 +20,11 @@ setup_approach.categorical <- function(internal,
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
-  if (!all(feature_specs$classes == "factor")) {
-    stop("All features should be factors to use the categorical method.")
+  if (!all(feature_specs$classes == "numeric")) {
+    stop("All features should be numeric to use the timeseries method.")
   }
 
-  # estimate joint_prob_dt if it is not passed to the function
-  if (is.null(joint_probability_dt)) {
-    joint_prob_dt0 <- x_train[, .N, eval(feature_names)]
-
-    explain_not_in_train <- data.table::setkeyv(data.table::setDT(x_explain), feature_names)[!x_train]
-    N_explain_not_in_train <- nrow(unique(explain_not_in_train))
-
-    if (N_explain_not_in_train > 0) {
-      joint_prob_dt0 <- rbind(joint_prob_dt0, cbind(explain_not_in_train, N = categorical.epsilon))
-    }
-
-    joint_prob_dt0[, joint_prob := N / .N]
-    joint_prob_dt0[, joint_prob := joint_prob / sum(joint_prob)]
-    data.table::setkeyv(joint_prob_dt0, feature_names)
-
-    joint_probability_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
-  } else {
-
-    for (i in colnames(x_explain)) {
-      is_error <- !(i %in% names(joint_probability_dt))
-
-      if (is_error > 0) {
-        stop(paste0(i, " is in x_explain but not in joint_probability_dt."))
-      }
-
-      is_error <- !all(levels(x_explain[[i]]) %in% levels(joint_probability_dt[[i]]))
-
-      if (is_error > 0) {
-        stop(paste0(i, " in x_explain has factor levels than in joint_probability_dt."))
-      }
-
-    }
-
-    is_error <- !("joint_prob" %in% names(joint_probability_dt)) |
-      !all(joint_probability_dt$joint_prob <= 1) |
-      !all(joint_probability_dt$joint_prob >= 0) |
-      (round(sum(joint_probability_dt$joint_prob), 3) != 1)
-
-    if (is_error > 0) {
-      stop('joint_probability_dt must include a column of joint probabilities called "joint_prob".
-      joint_prob must all be greater or equal to 0 and less than or equal to 1.
-      sum(joint_prob) must equal to 1.')
-    }
-
-    joint_probability_dt <- joint_probability_dt[, id_all := .I]
-  }
-
-  internal$parameters$categorical.joint_probability_dt <- joint_probability_dt
+  # internal$parameters$categorical.joint_probability_dt <- joint_probability_dt
 
   return(internal)
 }
@@ -94,16 +35,21 @@ setup_approach.categorical <- function(internal,
 #' @rdname prepare_data
 #' @export
 #' @keywords internal
-prepare_data.categorical <- function(internal, index_features = NULL, ...) {
+prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
+
   id <- id_combination <- w <- id_all <- joint_prob <- cond_prob <- marg_prob <- NULL
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
-  joint_probability_dt <- internal$parameters$categorical.joint_probability_dt
+  timeseries.fixed_sigma_vec <- internal$parameters$timeseries.fixed_sigma_vec
+
+  # print(x_explain)
 
   X <- internal$objects$X
   S <- internal$objects$S
+
+  # print(S)
 
   if (is.null(index_features)) { # 2,3
     features <- X$features # list of [1], [2], [2, 3]
@@ -112,94 +58,100 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   }
   feature_names <- internal$parameters$feature_names
 
-  # 3 id columns: id, id_combination, and id_all
-  # id: for each x_explain observation
-  # id_combination: the rows of the S matrix
-  # id_all: identifies the unique combinations of feature values from
-  # the training data (not necessarily the ones in the explain data)
+  # print(feature_names)
+
+  x_train <- as.matrix(x_train)
+  x_explain <- as.matrix(x_explain)
+
+  n_row <- nrow(x_explain) # huh???
+
+  dt_l <- list()
+
+  for (i in seq(n_row)) { # 1 to 6
+    x_explain_i <- x_explain[i, , drop = FALSE]
+
+    dt_l[[i]] <- list()
+    tmp <- list()
+    tmp[[1]] <- as.data.table(x_explain_i)
+    tmp[[1]][, w := 1]
+    tmp[[nrow(S)]] <- as.data.table(x_explain_i)
+    tmp[[nrow(S)]][, w := 1]
+
+    # print(nrow(S) - 1)
+    for(j in 2:(nrow(S) - 1)){ # 2 to 15
+      diff_S <- diff(c(1, S[j, ], 1))
+      Sbar_starts <- which(diff_S == -1)
+      Sbar_ends <- which(diff_S == 1) - 1
+
+      cond_1 <- Sbar_starts - 1 # 7, 0 14, 0 21,
+      cond_2 <- Sbar_ends + 1 #
+      cond_1[cond_1 == 0] <- cond_2[cond_1 == 0]
+      cond_2[cond_2 == (ncol(S) + 1)] <- cond_1[cond_2 == (ncol(S) + 1)]
+      len_Sbar_segment <- Sbar_ends - Sbar_starts + 1
+
+      Sbar_segments <- data.frame(Sbar_starts, Sbar_ends, cond_1, cond_2, len_Sbar_segment)
+      tmp[[j]] <- matrix(rep(x_explain_i, nrow(x_train)), nrow = nrow(x_train), byrow = T)
+      # print(head(tmp[[j]], 1)) # 29 columns, same rows
+      # print(S[j, ] == 0)
+      # print(length(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train))))
+      # print(dim(x_train[, S[j, ] == 0, drop = F]))
+      # print(dim(matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)),
+      #                  nrow = nrow(x_train), byrow = T)))
+      print(rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
+                       x_train[, S[j, ] == 0, drop = F]) ^ 2)) # 100-1000
 
 
-  feature_conditioned <- paste0(feature_names, "_conditioned")
-  feature_conditioned_id <- c(feature_conditioned, "id")
+      w_vec <- exp(-0.5 * rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
+                                     x_train[, S[j, ] == 0, drop = F]) ^ 2)
+                   / timeseries.fixed_sigma_vec ^ 2)
+      # print(w_vec)
+      # print(nrow(Sbar_segments)) # 1 or 2
+      for(k in seq_len(nrow(Sbar_segments))){
+        # print(k) # 1, 1, 2, 1, 2, 1
+        # print(Sbar_segments$Sbar_starts[k])
+        # print(Sbar_segments$Sbar_ends[k])
 
-  S_dt <- data.table::data.table(S)
-  S_dt[S_dt == 0] <- NA
-  S_dt[, id_combination := 1:nrow(S_dt)]
+        # 1, 7
+        # 1, 8
+        # 2, 14
+        # 1, 15
+        # 2, 21
+        impute_these <- seq(Sbar_segments$Sbar_starts[k], Sbar_segments$Sbar_ends[k])
+        # print(impute_these) # which ones to shift
+        # print("---")
+        x_explain_cond_1 <- x_explain_i[, Sbar_segments$cond_1[k]]
+        x_explain_cond_2 <- x_explain_i[, Sbar_segments$cond_2[k]]
+        # print(x_explain_cond_1) # the left end point
+        # print(x_explain_cond_2) # the right end point
 
-  data.table::setnames(S_dt, c(feature_conditioned, "id_combination"))
+        x_train_starts <- x_train[, Sbar_segments$Sbar_starts[k]]
+        x_train_ends <- x_train[, Sbar_segments$Sbar_ends[k]]
 
-  # (1) Compute marginal probabilities
+        a_test <- x_explain_cond_1
+        a_train <- x_train_starts
 
-  # multiply table of probabilities nrow(S) times
-  joint_probability_mult <- joint_probability_dt[rep(id_all, nrow(S))]
+        b_test <- (x_explain_cond_2 - x_explain_cond_1) / Sbar_segments$len_Sbar_segment[k]
+        b_train <- (x_train_ends - x_train_starts) / Sbar_segments$len_Sbar_segment[k]
 
-  data.table::setkeyv(joint_probability_mult, "id_all")
-  j_S_dt <- cbind(joint_probability_mult, S_dt) # combine joint probability and S matrix
+        lin_mod_test <- a_test + b_test * 0:(Sbar_segments$len_Sbar_segment[k] - 1)
+        lin_mod_train <- a_train + b_train %o% (0:(Sbar_segments$len_Sbar_segment[k] - 1))
 
-  j_S_feat <- as.matrix(j_S_dt[, feature_names, with = FALSE]) # with zeros
-  j_S_feat_cond <- as.matrix(j_S_dt[, feature_conditioned, with = FALSE])
-
-  j_S_feat[which(is.na(j_S_feat_cond))] <- NA # with NAs
-  j_S_feat_with_NA <- data.table::as.data.table(j_S_feat)
-
-  # now we have a data.table with the conditioned
-  # features and the feature value but no ids
-  data.table::setnames(j_S_feat_with_NA, feature_conditioned)
-
-  j_S_no_conditioned_features <- data.table::copy(j_S_dt)
-  j_S_no_conditioned_features[, (feature_conditioned) := NULL]
-
-  # dt with conditioned features (correct values) + ids + joint_prob
-  j_S_all_feat <- cbind(j_S_no_conditioned_features, j_S_feat_with_NA) # features match id_all
-
-  # compute all marginal probabilities
-  marg_dt <- j_S_all_feat[, .(marg_prob = sum(joint_prob)), by = feature_conditioned]
-
-  # (2) Compute conditional probabilities
-
-  cond_dt <- j_S_all_feat[marg_dt, on = feature_conditioned]
-  cond_dt[, cond_prob := joint_prob / marg_prob]
-  cond_dt[id_combination == 1, marg_prob := 0]
-  cond_dt[id_combination == 1, cond_prob := 1]
-
-  # check marginal probabilities
-  cond_dt_unique <- unique(cond_dt, by = feature_conditioned)
-  check <- cond_dt_unique[id_combination != 1][, .(sum_prob = sum(marg_prob)),
-                                               by = "id_combination"
-  ][["sum_prob"]]
-  if (!all(round(check) == 1)) {
-    print("Warning - not all marginal probabilities sum to 1. There could be a problem
-          with the joint probabilities. Consider checking.")
+        to_impute <- (x_train[, impute_these] - lin_mod_train) + matrix(rep(lin_mod_test, nrow(x_train)),
+                                                                        nrow = nrow(x_train), byrow = T)
+        tmp[[j]][, impute_these] <- pmax(pmin(to_impute, 1), 0)
+      }
+      # print(tmp[[j]])
+      tmp[[j]] <- as.data.table(tmp[[j]])
+      tmp[[j]][, w := w_vec / sum(w_vec)]
+    }
+    dt_l[[i]] <- rbindlist(tmp, idcol = "id_combination")
+    # dt_l[[i]][, w := 1/.N, by = id_combination] # IS THIS NECESSARY?
+    dt_l[[i]][, id := i]
   }
 
-  # make x_explain
-  data.table::setkeyv(cond_dt, c("id_combination", "id_all"))
-  x_explain_with_id <- data.table::copy(x_explain)[, id := .I]
-  dt_just_explain <- cond_dt[x_explain_with_id, on = feature_names]
+  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  print(dt[id == 1][is.na(w)])
+  # print(table(dt[id == 1][is.na(w)][['id_combination']])) # 2 3 4 6 7 9
 
-  # this is a really important step to get the proper "w" which will be used in compute_preds()
-  dt_explain_just_conditioned <- dt_just_explain[, feature_conditioned_id, with = FALSE]
-
-  cond_dt[, id_all := NULL]
-  dt <- cond_dt[dt_explain_just_conditioned, on = feature_conditioned, allow.cartesian = TRUE]
-
-  # check conditional probabilities
-  check <- dt[id_combination != 1][, .(sum_prob = sum(cond_prob)),
-                                   by = c("id_combination", "id")
-  ][["sum_prob"]]
-  if (!all(round(check) == 1)) {
-    print("Warning - not all conditional probabilities sum to 1. There could be a problem
-          with the joint probabilities. Consider checking.")
-  }
-
-  setnames(dt, "cond_prob", "w")
-  data.table::setkeyv(dt, c("id_combination", "id"))
-
-  # here we merge so that we only return the combintations found in our actual explain data
-  # this merge does not change the number of rows in dt
-  # dt <- merge(dt, x$X[, .(id_combination, n_features)], by = "id_combination")
-  # dt[n_features %in% c(0, ncol(x_explain)), w := 1.0]
-  dt[id_combination %in% c(1, 2^ncol(x_explain)), w := 1.0]
-  ret_col <- c("id_combination", "id", feature_names, "w")
-  return(dt[id_combination %in% index_features, mget(ret_col)])
+  return(dt)
 }

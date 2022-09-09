@@ -87,6 +87,7 @@
 #' @inheritDotParams setup_approach.copula
 #' @inheritDotParams setup_approach.ctree
 #' @inheritDotParams setup_approach.categorical
+#' @inheritDotParams setup_approach.timeseries
 #'
 #' @details The most important thing to notice is that `shapr` has implemented six different
 #' approaches for estimating the conditional distributions of the data, namely `"empirical"`,
@@ -276,9 +277,6 @@ explain <- function(model,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs, ...
   )
-
-  # print(joint_probability_dt)
-  # print(internal$parameters$gaussian.mu)
 
   # Gets predict_model (if not passed to explain)
   # Checks that predict_model gives correct format
