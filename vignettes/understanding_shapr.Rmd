@@ -557,7 +557,7 @@ examples. Explaining prediction in terms of groups of features is very easy usin
 group_list <- list(A = c("Temp", "Month"),
               B = c("Wind", "Solar.R"))
 
-# Use the combined approach
+# Use the empirical approach
 explanation_group <- explain(
   model = model,
   x_explain = x_explain,
