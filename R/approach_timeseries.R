@@ -43,7 +43,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
   X <- internal$objects$X
   S <- internal$objects$S
-
+  # print(S[1,])
   if (is.null(index_features)) {
     features <- X$features
   } else {
@@ -55,6 +55,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
   x_explain <- as.matrix(x_explain)
 
   n_row <- nrow(x_explain)
+  # print(n_row) # 2
 
   dt_l <- list()
 
@@ -68,6 +69,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
     tmp[[nrow(S)]][, w := 1]
 
     for(j in 2:(nrow(S) - 1)){ # 2 to 15
+
       diff_S <- diff(c(1, S[j, ], 1))
       Sbar_starts <- which(diff_S == -1)
       Sbar_ends <- which(diff_S == 1) - 1
@@ -87,7 +89,14 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
                    / timeseries.fixed_sigma_vec ^ 2)
 
       if(j == 13){
-        print(head(w_vec))
+        # print(S[j, ])
+        print(x_explain_i)
+        #          V1     V2    V3     V4
+        # [1,] 3.6424 3.1878 3.838 3.5643
+        #           V1     V2     V3     V4
+        # [1,] -0.9415 1.0437 2.8359 4.7174
+        # print(x_explain_i[S[j, ] == 0, drop = F])
+        # print(head(w_vec))
       }
 
       for(k in seq_len(nrow(Sbar_segments))){
