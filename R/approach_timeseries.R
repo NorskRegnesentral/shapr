@@ -3,14 +3,19 @@
 #' @param timeseries.fixed_sigma_vec Numeric. (Default = 2)
 #' Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?
 #'
+#' @param timeseries.bounds Numeric vector of length two. (Default = c(NULL, NULL))
+#' If one or both of these bounds are not NULL, we restrict the sampled time series to be
+#' between these bounds.
+#' This is useful if the underlying time series are scaled between 0 and 1, for example.
 #'
 #' @inheritParams default_doc_explain
 #'
 #' @export
 setup_approach.timeseries <- function(internal,
                                       timeseries.fixed_sigma_vec = 2,
+                                      timeseries.bounds = c(NULL, NULL),
                                       ...) {
-  defaults <- mget("timeseries.fixed_sigma_vec")
+  defaults <- mget(c("timeseries.fixed_sigma_vec", "timeseries.bounds"))
 
   internal <- insert_defaults(internal, defaults)
 
@@ -40,10 +45,12 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
   x_explain <- internal$data$x_explain
 
   timeseries.fixed_sigma_vec <- internal$parameters$timeseries.fixed_sigma_vec
+  timeseries.upper_bound <- internal$parameters$timeseries.bounds[1]
+  timeseries.lower_bound <- internal$parameters$timeseries.bounds[2]
 
   X <- internal$objects$X
   S <- internal$objects$S
-  # print(S[1,])
+
   if (is.null(index_features)) {
     features <- X$features
   } else {
@@ -55,11 +62,10 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
   x_explain <- as.matrix(x_explain)
 
   n_row <- nrow(x_explain)
-  # print(n_row) # 2
 
   dt_l <- list()
 
-  for (i in seq(n_row)) { # 1 to 6
+  for (i in seq(n_row)) {
     x_explain_i <- x_explain[i, , drop = FALSE]
     dt_l[[i]] <- list()
     tmp <- list()
@@ -68,7 +74,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
     tmp[[nrow(S)]] <- as.data.table(x_explain_i)
     tmp[[nrow(S)]][, w := 1]
 
-    for(j in 2:(nrow(S) - 1)){ # 2 to 15
+    for(j in 2:(nrow(S) - 1)){
 
       diff_S <- diff(c(1, S[j, ], 1))
       Sbar_starts <- which(diff_S == -1)
@@ -87,18 +93,6 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
       w_vec <- exp(-0.5 * rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
                                      x_train[, S[j, ] == 0, drop = F]) ^ 2)
                    / timeseries.fixed_sigma_vec ^ 2)
-
-      if(j == 13){
-        # print(S[j, ])
-        # print(x_explain_i)
-        #          V1     V2    V3     V4
-        # [1,] 3.6424 3.1878 3.838 3.5643
-        #           V1     V2     V3     V4
-        # [1,] -0.9415 1.0437 2.8359 4.7174
-        # print(x_explain_i[S[j, ] == 0, drop = F])
-        # print(head(w_vec))
-      }
-      # print(w_vec)
 
       for(k in seq_len(nrow(Sbar_segments))){
 
@@ -121,8 +115,14 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
         to_impute <- (x_train[, impute_these] - lin_mod_train) + matrix(rep(lin_mod_explain, nrow(x_train)),
                                                                         nrow = nrow(x_train), byrow = T)
-
-        tmp[[j]][, impute_these] <- to_impute # pmax(pmin(to_impute, 1), 0) #ASK MJ: REMOVE THIS??
+        # If the bounds are not null, we floor/ceiling the new time series values
+        if(!is.null(timeseries.lower_bound)){
+          to_impute <- pmin(to_impute, timeseries.lower_bound)
+        }
+        if(!is.null(timeseries.upper_bound)){
+          to_impute <- pmax(to_impute, timeseries.upper_bound)
+        }
+        tmp[[j]][, impute_these] <- to_impute
       }
 
       tmp[[j]] <- as.data.table(tmp[[j]])
@@ -136,7 +136,6 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   ret_col <- c("id_combination", "id", feature_names, "w")
-  # print(dt[id == 1])
 
   return(dt[id_combination %in% index_features, mget(ret_col)])
 }

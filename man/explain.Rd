@@ -158,8 +158,12 @@ If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
-    \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (default = 0.1)
-Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?}
+    \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
+Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
+    \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))
+If one or both of these bounds are not NULL, we restrict the sampled time series to be
+between these bounds.
+This is useful if the underlying time series are scaled between 0 and 1, for example.}
   }}
 }
 \value{

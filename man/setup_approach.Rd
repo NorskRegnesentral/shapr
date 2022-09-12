@@ -51,7 +51,12 @@ setup_approach(internal, ...)
 
 \method{setup_approach}{independence}(internal, ...)
 
-\method{setup_approach}{timeseries}(internal, timeseries.fixed_sigma_vec = 0.1, ...)
+\method{setup_approach}{timeseries}(
+  internal,
+  timeseries.fixed_sigma_vec = 2,
+  timeseries.bounds = c(NULL, NULL),
+  ...
+)
 }
 \arguments{
 \item{internal}{Not used.}
@@ -135,8 +140,13 @@ Containing the mean of the data generating distribution.
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
 
-\item{timeseries.fixed_sigma_vec}{Numeric. (default = 0.1)
-Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?}
+\item{timeseries.fixed_sigma_vec}{Numeric. (Default = 2)
+Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
+
+\item{timeseries.bounds}{Numeric vector of length two. (Default = c(NULL, NULL))
+If one or both of these bounds are not NULL, we restrict the sampled time series to be
+between these bounds.
+This is useful if the underlying time series are scaled between 0 and 1, for example.}
 }
 \description{
 The different choices of \code{approach} takes different (optional) parameters, which are forwarded from \code{\link[=explain]{explain()}}.

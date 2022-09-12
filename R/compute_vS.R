@@ -55,7 +55,7 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   feature_names <- internal$parameters$feature_names
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
-  # print(dt)
+
   compute_preds(dt,   # Updating dt by reference
                 feature_names = feature_names,
                 predict_model = predict_model,
@@ -107,21 +107,17 @@ compute_preds <- function(dt, feature_names, predict_model, model) {
   # Predictions
   dt[id_combination != 1, p_hat := predict_model(model, newdata = .SD), .SDcols = feature_names]
 
-  # print(dt)
-
   return(dt)
 }
 
 compute_MCint <- function(dt) {
   id_combination <- id <- w <- k <- p_hat <- NULL # due to NSE notes in R CMD check
-  print(dt)
+
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
   data.table::setkeyv(dt_res, c("id", "id_combination"))
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = "k")
   # dt_mat[, id_combination := NULL]
-
-  print(dt_mat)
 
   dt_mat
 }

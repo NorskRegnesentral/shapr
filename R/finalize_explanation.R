@@ -13,7 +13,6 @@ finalize_explanation <- function(vS_list, internal) {
     vS_list = vS_list,
     internal = internal
   )
-  # print(processed_vS_list$dt_vS)
 
   # Extract the predictions we are explaining
   p <- get_p(processed_vS_list$dt_vS, internal)
