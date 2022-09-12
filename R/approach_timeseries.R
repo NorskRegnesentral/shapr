@@ -34,8 +34,7 @@ setup_approach.timeseries <- function(internal,
 #' @export
 #' @keywords internal
 prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
-
-  id <- id_combination <- w <- id_all <- joint_prob <- cond_prob <- marg_prob <- NULL
+  id <- id_combination <- w <- NULL
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
@@ -61,7 +60,6 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
   for (i in seq(n_row)) { # 1 to 6
     x_explain_i <- x_explain[i, , drop = FALSE]
-
     dt_l[[i]] <- list()
     tmp <- list()
     tmp[[1]] <- as.data.table(x_explain_i)
@@ -87,6 +85,10 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
       w_vec <- exp(-0.5 * rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
                                      x_train[, S[j, ] == 0, drop = F]) ^ 2)
                    / timeseries.fixed_sigma_vec ^ 2)
+
+      if(j == 13){
+        print(head(w_vec))
+      }
 
       for(k in seq_len(nrow(Sbar_segments))){
 
