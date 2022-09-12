@@ -205,7 +205,6 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
 
 #' @keywords internal
 feature_exact <- function(m, weight_zero_m = 10^6) {
-  features <- id_combination <- n_features <- shapley_weight <- N <- NULL # due to NSE notes in R CMD check
 
   dt <- data.table::data.table(id_combination = seq(2^m))
   combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
@@ -219,7 +218,6 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 
 #' @keywords internal
 feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
-  features <- id_combination <- n_features <- shapley_weight <- N <- features_tmp <- NULL # due to NSE notes
 
   # Find weights for given number of features ----------
   n_features <- seq(m - 1)
@@ -319,7 +317,6 @@ shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
 
 #' @keywords internal
 helper_feature <- function(m, feature_sample) {
-  sample_frequence <- is_duplicate <- NULL # due to NSE notes in R CMD check
 
   x <- feature_matrix_cpp(feature_sample, m)
   dt <- data.table::data.table(x)
@@ -343,9 +340,6 @@ helper_feature <- function(m, feature_sample) {
 #'
 #' @keywords internal
 feature_group <- function(group_num, weight_zero_m = 10^6) {
-
-  # due to NSE notes in R CMD check
-  features <- id_combination <- n_features <- shapley_weight <- N <- groups <- n_groups <- NULL
 
   m <- length(group_num)
   dt <- data.table::data.table(id_combination = seq(2^m))
@@ -382,8 +376,6 @@ group_fun <- function(x, group_num) {
 #'
 #' @keywords internal
 feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero_m = 10^6) {
-  # due to NSE notes in R CMD check
-  features <- id_combination <- n_features <- shapley_weight <- N <- groups <- n_groups <- groups_tmp <- NULL
 
   # Find weights for given number of features ----------
   m <- length(group_num)
@@ -509,11 +501,6 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 
 #' @keywords internal
 create_S_batch_new <- function(internal, seed = NULL) {
-
-  # due to NSE notes in R CMD check
-  n_features <- approach <- n_leftover_first_batch <- n_S_per_approach <- NULL
-  n_batches_per_approach <- randomorder <- shapley_weight <- batch <- NULL
-  id_combination <- NULL
 
   n_features0 <- internal$parameters$n_features
   approach0 <- internal$parameters$approach

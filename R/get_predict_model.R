@@ -10,8 +10,6 @@ get_predict_model <- function(x_test, predict_model, model) {
   # Checks that predict_model provide the right output format (R and py)
   # Returns the predict_model to use subsequently (R only)
 
-  model_class <- NULL # due to NSE
-
   model_class0 <- class(model)[1]
 
   # checks predict_model
