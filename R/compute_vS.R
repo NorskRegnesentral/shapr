@@ -114,7 +114,7 @@ compute_preds <- function(dt, feature_names, predict_model, model) {
 
 compute_MCint <- function(dt) {
   id_combination <- id <- w <- k <- p_hat <- NULL # due to NSE notes in R CMD check
-
+  print(dt)
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
   data.table::setkeyv(dt_res, c("id", "id_combination"))
