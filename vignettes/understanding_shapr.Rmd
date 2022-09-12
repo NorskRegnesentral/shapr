@@ -429,27 +429,21 @@ explanation_ctree <- explain(
 # minbucket = 7
 ```
 
-## Main arguments in `shapr`
-
-When using `shapr`, the default behavior is to use all feature
-combinations in the Shapley formula. Kernel SHAP's sampling based
-approach may be used by specifying `n_combinations`, which is the number
-of feature combinations to sample. If not specified, the exact method is
-used. The computation time grows approximately exponentially with the
-number of samples. The training data and the model whose predictions we
-wish to explain must be provided through the arguments `x` and `model`.
-Note that `x` must be a `data.frame` or a `matrix`, and all elements
-must be finite numerical values. Currently we do not support categorical
-features or missing values.
 
 ## Main arguments in `explain`
 
-The test data given by `x`, whose predicted values we wish to explain,
-must be provided. Note that `x` must be a `data.frame` or a `matrix,`
-where all elements are finite numerical values. One must also provide
-the object returned by `shapr` through the argument `explainer`. The
-default approach when computing the Shapley values is the empirical
-approach (i.e. `approach = "empirical"`). If you'd like to use a
+When using `explain`, the default behavior is to use all feature
+combinations in the Shapley formula. Kernel SHAP's sampling based
+approach may be used by specifying `n_combinations`, which is the number
+of unique feature combinations to sample. If not specified, the exact method is
+used. The computation time grows approximately exponentially with the
+number of features. The training data and the model whose predictions we
+wish to explain must be provided through the arguments `x_train` and `model`.
+The data whose predicted values we wish to explain must be given by the argument 
+`x_explain`. Note that both `x_train` and `x_explain` must be a `data.frame` or a `matrix`, 
+and all elements must be finite numerical values. Currently we do not support missing values.
+The default approach when computing the Shapley 
+values is the empirical approach (i.e. `approach = "empirical"`). If you'd like to use a
 different approach you'll need to set `approach` equal to either
 `copula` or `gaussian`, or a vector of them, with length equal to the
 number of features. If a vector, a combined approach is used, and
