@@ -13,6 +13,7 @@ finalize_explanation <- function(vS_list, internal) {
     vS_list = vS_list,
     internal = internal
   )
+  print(processed_vS_list$dt_vS)
 
   # Extract the predictions we are explaining
   p <- get_p(processed_vS_list$dt_vS, internal)
@@ -84,7 +85,7 @@ get_p <- function(dt_vS, internal) {
   max_id_combination <- internal$parameters$n_combinations
   p <- unlist(dt_vS[id_combination == max_id_combination, ][, id_combination := NULL])
 
-  p
+  return(p)
 }
 
 #' Compute shapley values

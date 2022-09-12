@@ -90,7 +90,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
       if(j == 13){
         # print(S[j, ])
-        print(x_explain_i)
+        # print(x_explain_i)
         #          V1     V2    V3     V4
         # [1,] 3.6424 3.1878 3.838 3.5643
         #           V1     V2     V3     V4
@@ -135,7 +135,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   ret_col <- c("id_combination", "id", feature_names, "w")
-  print(dt[id == 1])
+  # print(dt[id == 1])
 
   return(dt[id_combination %in% index_features, mget(ret_col)])
 }
