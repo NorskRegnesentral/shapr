@@ -90,14 +90,15 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
       if(j == 13){
         # print(S[j, ])
-        # print(x_explain_i)
+        print(x_explain_i)
         #          V1     V2    V3     V4
         # [1,] 3.6424 3.1878 3.838 3.5643
         #           V1     V2     V3     V4
         # [1,] -0.9415 1.0437 2.8359 4.7174
-        # print(x_explain_i[S[j, ] == 0, drop = F])
-        # print(head(w_vec))
+        print(x_explain_i[S[j, ] == 0, drop = F])
+        print(head(w_vec))
       }
+      # print(w_vec)
 
       for(k in seq_len(nrow(Sbar_segments))){
 

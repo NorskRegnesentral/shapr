@@ -27,25 +27,6 @@ group <- list(Q1 = paste0("V", Q1_days),
               Q3 = paste0("V", Q3_days),
               Q4 = paste0("V", Q4_days))
 
-
-par(mfrow=c(2,2))
-plot(ts(matrix(x[1,])))
-abline(v = c(5, 10, 15),
-       col = c("blue", "red"),
-       lty = c(1, 2), lwd = c(1, 3))
-plot(ts(matrix(x[2,])))
-abline(v = c(5, 10, 15),
-       col = c("blue", "red"),
-       lty = c(1, 2), lwd = c(1, 3))
-# plot(ts(matrix(x[10,])))
-# abline(v = c(5, 10, 15),
-#        col = c("blue", "red"),
-#        lty = c(1, 2), lwd = c(1, 3))
-# plot(ts(matrix(x[101,])))
-# abline(v = c(5, 10, 15),
-#        col = c("blue", "red"),
-#        lty = c(1, 2), lwd = c(1, 3))
-
 response = paste0("V", n_features + 1)
 formula = as.formula(paste0(response, "~ ", paste0("V", 1:n_features, collapse = " + ")))
 
@@ -82,16 +63,6 @@ explanation_group <- explain(
 
 explanation_group
 
-plot(explanation_group)
-
-explanation_independence <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "empirical",
-  prediction_zero = p0,
-  empirical.fixed_sigma_vec = 0.1
-)
 # W
 
 #       [,1]        [,2]        [,3]        [,4]        [,5]        [,6]        [,7]        [,8]        [,9]       [,10]       [,11]
