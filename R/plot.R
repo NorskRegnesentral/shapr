@@ -346,8 +346,6 @@ make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col) 
 }
 
 order_for_plot <- function(dt_plot, N_features, plot_order, top_k_features) {
-  # due to NSE notes in R CMD check
-  variable <- phi <- id <- description <- unique_label <- rank_waterfall <- NULL
 
   if (plot_order == "largest_first") {
     dt_plot[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
