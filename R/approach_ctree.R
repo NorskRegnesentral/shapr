@@ -43,7 +43,6 @@ setup_approach.ctree <- function(internal,
 #' @export
 #' @keywords internal
 prepare_data.ctree <- function(internal, index_features = NULL, ...) {
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain

@@ -10,7 +10,6 @@ setup_approach.independence <- function(internal, ...) {
 #' @rdname prepare_data
 #' @export
 prepare_data.independence <- function(internal, index_features = NULL, ...) {
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   x_train0 <- copy(internal$data$x_train)
   x_explain0 <- copy(internal$data$x_explain)
