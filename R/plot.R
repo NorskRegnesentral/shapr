@@ -246,7 +246,7 @@ plot.shapr <- function(x,
   return(gg)
 }
 
-compute_scatter_hist_values <- function(plotting_dt, scatter_features) {
+compute_scatter_hist_values <- function(dt_plot, scatter_features) {
 
   n_feat_vals <- dt_plot[, .N, by = variable][1, "N"] # number of points to plot
   if (n_feat_vals > 500) {
@@ -293,7 +293,7 @@ compute_scatter_hist_values <- function(plotting_dt, scatter_features) {
   return(dt_scatter_hist)
 }
 
-make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col) {
+make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col) {
 
   if (is.null(col)) {
     col <- "#619CFF"
@@ -390,7 +390,7 @@ order_for_plot <- function(dt_plot, N_features, plot_order, top_k_features) {
 }
 
 
-make_beeswarm_plot <- function(plotting_dt, col, index_x_explain, x) {
+make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x) {
 
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
     stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
@@ -469,7 +469,7 @@ make_beeswarm_plot <- function(plotting_dt, col, index_x_explain, x) {
   return(gg)
 }
 
-make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels) {
+make_bar_plot <- function(dt_plot, plot_phi0, col, breaks, desc_labels) {
 
   if (is.null(col)) {
     col <- c("#00BA38", "#F8766D")
