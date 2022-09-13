@@ -362,7 +362,7 @@ plot(explanation, plot_type = "beeswarm")
 ```
 
 Lastly, the `plot_type = "scatter"` plots the feature values on the x-axis and Shapley values on the y-axis, as well as
-(optionally) a background scatter_hist showing the distribution of the feature data. :
+(optionally) a background scatter_hist showing the distribution of the feature data:
 
 ```{r}
 plot(explanation, plot_type = "scatter", scatter_hist = TRUE)
