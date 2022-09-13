@@ -542,7 +542,7 @@ In addition to letting the user select one of the five aforementioned
 approaches for estimating the conditional distribution of the data (i.e.
 `approach` equals either [`"gaussian"`](#gaussian),
 [`"copula"`](#copula), [`"empirical"`](#empirical) or
-[`"ctree"`](#ctree) or [`"categorical"`](#categorical)), the package allows the user to combine the give
+[`"ctree"`](#ctree) or [`"categorical"`](#categorical)), the package allows the user to combine the given
 approaches. To simplify the usage, the flexibility is restricted such
 that the same approach is used when conditioning on the same number of
 features. This is also in line @aas2019explaining [, Section 3.4].
