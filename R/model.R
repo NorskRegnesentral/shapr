@@ -157,11 +157,6 @@ get_model_specs.default <- function(x) {
 #' @keywords internal
 get_supported_models <- function() {
 
-  # Fixing NSE notes in R CMD check
-  rn <- get_model_specs <- native_get_model_specs <- from <- NULL
-  predict_model <- native_predict_model <- NULL
-  native <- NULL
-
   DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs), "info"), keep.rownames = T)
 
   DT_get_model_specs[, rn := substring(as.character(rn), first = 17)]

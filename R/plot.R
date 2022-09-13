@@ -139,11 +139,6 @@ plot.shapr <- function(x,
     stop(paste(plot_order, "is an invalid plot order. Try plot_order='largest_first',
                plot_order='smallest_first' or plot_order='original'."))
   }
-  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
-  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- min <- max <- NULL
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
@@ -288,11 +283,6 @@ plot.shapr <- function(x,
 }
 
 compute_scatter_hist_values <- function(plotting_dt, scatter_features) {
-  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
-  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- min <- max <- NULL
 
   n_feat_vals <- plotting_dt[, .N, by = variable][1, "N"] # number of points to plot
   if (n_feat_vals > 500) {
@@ -340,11 +330,6 @@ compute_scatter_hist_values <- function(plotting_dt, scatter_features) {
 }
 
 make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col) {
-  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL # due to NSE warnings
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
-  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- min <- max <- NULL
 
   if (is.null(col)) {
     col <- "#619CFF"
@@ -397,11 +382,6 @@ make_scatter_plot <- function(plotting_dt, scatter_features, scatter_hist, col) 
 }
 
 make_beeswarm_plot <- function(plotting_dt, col, index_x_explain, x) {
-  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
-  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- min <- max <- NULL
 
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
     stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
@@ -478,11 +458,6 @@ make_beeswarm_plot <- function(plotting_dt, col, index_x_explain, x) {
 }
 
 make_bar_plot <- function(plotting_dt, plot_phi0, col, breaks, desc_labels) {
-  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- text_color_bar <- NULL
-  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- min <- max <- NULL
 
   if (is.null(col)) {
     col <- c("#00BA38", "#F8766D")
@@ -551,11 +526,6 @@ make_waterfall_plot <- function(plotting_dt,
                                 plot_order,
                                 breaks,
                                 desc_labels) {
-  rank_waterfall <- end <- start <- phi_significant <- y_text <- hjust_text <- arrow_color <- NULL
-  sign <- y_text_bar <- hjust_text_bar <- feature_value <- positive <- feature_value_scaled <- NULL
-  unique_label <- pred_label <- pred_x <- element_rect <- element_line <- guide_colourbar <- NULL
-  x_start <- x_end <- y_start <- y_end <- phi0_x <- phi0_label <- id <- phi <- NULL
-  header <- variable <- pred <- description <- min <- max <- text_color_bar <- NULL
 
   if (is.null(col)) {
     col <- c("#00BA38", "#F8766D")

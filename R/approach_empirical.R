@@ -94,7 +94,6 @@ setup_approach.empirical <- function(internal,
 #' @rdname prepare_data
 #' @export
 prepare_data.empirical <- function(internal, index_features = NULL, ...) {
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
@@ -315,7 +314,6 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 
 #' @keywords internal
 compute_AICc_each_k <- function(internal, model, predict_model, index_features) {
-  id_combination <- n_features <- NULL # due to NSE notes in R CMD check
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain

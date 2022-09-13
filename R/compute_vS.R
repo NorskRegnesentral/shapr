@@ -77,7 +77,6 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
 
 #' @keywords internal
 batch_prepare_vS <- function(S, internal) {
-  id <- id_combination <- NULL # due to NSE notes in R CMD check
 
   max_id_combination <- internal$parameters$n_combinations
   x_explain <- internal$data$x_explain
@@ -102,7 +101,6 @@ batch_prepare_vS <- function(S, internal) {
 
 #' @keywords internal
 compute_preds <- function(dt, feature_names, predict_model, model) {
-  id_combination <- p_hat <- NULL # due to NSE notes in R CMD check
 
   # Predictions
   dt[id_combination != 1, p_hat := predict_model(model, newdata = .SD), .SDcols = feature_names]
@@ -111,7 +109,6 @@ compute_preds <- function(dt, feature_names, predict_model, model) {
 }
 
 compute_MCint <- function(dt) {
-  id_combination <- id <- w <- k <- p_hat <- NULL # due to NSE notes in R CMD check
 
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]

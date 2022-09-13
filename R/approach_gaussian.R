@@ -53,7 +53,6 @@ setup_approach.gaussian <- function(internal,
 #' @rdname prepare_data
 #' @export
 prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
-  id <- id_combination <- w <- NULL # due to NSE notes in R CMD check
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
