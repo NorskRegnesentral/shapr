@@ -17,6 +17,7 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
                                    internal = internal,
                                    model = model,
                                    predict_model = predict_model)
+    # print(ret)
   } else {
 
     # Doing the same as above without future without progressbar or paralellization
@@ -45,6 +46,7 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
     p = p,
     future.seed = internal$parameters$seed
   )
+  print(ret)
   return(ret)
 }
 
@@ -55,14 +57,13 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   feature_names <- internal$parameters$feature_names
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
-
+  # print(model)
   compute_preds(dt,   # Updating dt by reference
                 feature_names = feature_names,
                 predict_model = predict_model,
                 model)
-
+  # print(dt)
   dt_vS <- compute_MCint(dt)
-
   if(!is.null(p)){
     p(amount = length(S),
       message = "Estimating v(S)") # TODO: Add a message to state what batch has been computed
@@ -71,6 +72,7 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   if (keep_samp_for_vS) {
     return(list(dt_vS = dt_vS, dt_samp_for_vS = dt))
   } else {
+    # print(dt_vS)
     return(dt_vS = dt_vS)
   }
 }
@@ -93,7 +95,11 @@ batch_prepare_vS <- function(S, internal) {
     S <- S[S != max_id_combination]
     dt <- prepare_data(internal, index_features = S)
     dt_max <- data.table(x_explain, id_combination = max_id_combination, w = 1, id = seq_len(n_explain))
+    # print(head(dt_max))
+    # print(head(dt))
+    # cols = names(dt)
     dt <- rbind(dt, dt_max)
+    # print(dt)
 
     setkey(dt, id, id_combination)
   }
