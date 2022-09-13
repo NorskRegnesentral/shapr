@@ -415,7 +415,7 @@ plot(explanation_cat, plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
 We can specify parameters used to build the conditional inference trees
-using the following manner. Default values are based on
+in the following manner. Default values are based on
 @hothorn2006unbiased.
 
 ```{r}
