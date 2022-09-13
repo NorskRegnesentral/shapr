@@ -347,7 +347,7 @@ plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
 ```
 
 The final two plot options, `"beeswarm"` and `"scatter"`, can be useful when you have many observations that you want to explain. For the purpose of illustration, we explain the whole `airquality` dataset (including the training data) for these plot types. 
-The `plot_type = "beeswarm"` summarises the distribution of the Shapley values along the x-axis for all the features. Each point gives the shapley value of a given instance, where the points are colored by the feature value of that instance:
+The `plot_type = "beeswarm"` summarises the distribution of the Shapley values along the x-axis across all features. Each point gives the Shapley value of a given instance, where the points are colored by the feature value of that instance:
 
 ```{r}
 x_explain <- data[, ..x_var]
