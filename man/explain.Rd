@@ -37,7 +37,7 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should,
-either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"} or \code{"independence"}.
+either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 
 \item{prediction_zero}{Numeric.
@@ -202,7 +202,7 @@ Computes dependence-aware Shapley values for observations in \code{x_explain} fr
 \details{
 The most important thing to notice is that \code{shapr} has implemented six different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"categorical"} and \code{"independence"}.
+\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
 In addition, the user also has the option of combining the different approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,

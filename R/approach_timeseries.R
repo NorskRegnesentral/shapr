@@ -74,8 +74,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
     tmp[[nrow(S)]] <- as.data.table(x_explain_i)
     tmp[[nrow(S)]][, w := 1]
 
-    for(j in 2:(nrow(S) - 1)){
-
+    for (j in 2:(nrow(S) - 1)) {
       diff_S <- diff(c(1, S[j, ], 1))
       Sbar_starts <- which(diff_S == -1)
       Sbar_ends <- which(diff_S == 1) - 1
@@ -91,11 +90,10 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
       tmp[[j]] <- matrix(rep(x_explain_i, nrow(x_train)), nrow = nrow(x_train), byrow = T)
 
       w_vec <- exp(-0.5 * rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
-                                     x_train[, S[j, ] == 0, drop = F]) ^ 2)
-                   / timeseries.fixed_sigma_vec ^ 2)
+        x_train[, S[j, ] == 0, drop = F])^2)
+      / timeseries.fixed_sigma_vec^2)
 
-      for(k in seq_len(nrow(Sbar_segments))){
-
+      for (k in seq_len(nrow(Sbar_segments))) {
         impute_these <- seq(Sbar_segments$Sbar_starts[k], Sbar_segments$Sbar_ends[k])
 
         x_explain_cond_1 <- x_explain_i[, Sbar_segments$cond_1[k]]
@@ -114,12 +112,13 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
         lin_mod_train <- a_train + b_train %o% (0:(Sbar_segments$len_Sbar_segment[k] - 1))
 
         to_impute <- (x_train[, impute_these] - lin_mod_train) + matrix(rep(lin_mod_explain, nrow(x_train)),
-                                                                        nrow = nrow(x_train), byrow = T)
+          nrow = nrow(x_train), byrow = T
+        )
         # If the bounds are not null, we floor/ceiling the new time series values
-        if(!is.null(timeseries.lower_bound)){
+        if (!is.null(timeseries.lower_bound)) {
           to_impute <- pmin(to_impute, timeseries.lower_bound)
         }
-        if(!is.null(timeseries.upper_bound)){
+        if (!is.null(timeseries.upper_bound)) {
           to_impute <- pmax(to_impute, timeseries.upper_bound)
         }
         tmp[[j]][, impute_these] <- to_impute
@@ -140,6 +139,5 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   ret_col <- c("id_combination", "id", feature_names, "w")
-
   return(dt[id_combination %in% index_features, mget(ret_col)])
 }

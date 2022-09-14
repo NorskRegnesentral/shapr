@@ -27,12 +27,3 @@ x_explain_timeseries = data_timeseries[1:2, 1:8]
 x_train_timeseries = data_timeseries[99:100, 1:8]
 
 p0_timeseries <- mean(data_timeseries[, 'X8'])
-#
-# devtools::load_all()
-
-tt = explain(model = model_lm_timeseries,
-        x_explain = x_explain_timeseries,
-        x_train = x_train_timeseries,
-        approach = "timeseries",
-        prediction_zero = p0_timeseries,
-        group = group_timeseries)

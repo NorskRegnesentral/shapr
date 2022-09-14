@@ -50,7 +50,7 @@ Computes dependence-aware Shapley values for observations in \code{x_explain} fr
 \details{
 The most important thing to notice is that \code{shapr} has implemented six different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"categorical"} and \code{"independence"}.
+\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
 In addition, the user also has the option of combining the different approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
