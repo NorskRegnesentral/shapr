@@ -180,21 +180,26 @@ plot.shapr <- function(x,
 
   if (plot_type == "scatter" | plot_type == "beeswarm") {
     # Add feature values to data table
-    feature_vals <- data.table::copy(x$internal$data$x_explain)
-    feature_vals <- as.data.table(cbind(none = NA, feature_vals))
-    feature_vals[, id := .I]
-    melt_feature_vals <- suppressWarnings(data.table::melt(feature_vals,
+    dt_feature_vals <- data.table::copy(x$internal$data$x_explain)
+    dt_feature_vals <- as.data.table(cbind(none = NA, dt_feature_vals))
+    dt_feature_vals[, id := .I]
+
+    # Deal with numeric and factor variables separately
+    factor_features <- dt_feature_vals[, sapply(.SD, function(x) is.factor(x) | is.character(x)), .SDcols = shap_names]
+    factor_features <- shap_names[factor_features]
+
+    dt_feature_vals_long <- suppressWarnings(data.table::melt(dt_feature_vals,
       id.vars = "id",
       value.name = "feature_value"
     ))
     # this gives a warning because none-values are NA...
-    dt_plot <- merge(dt_plot, melt_feature_vals, by = c("id", "variable"))
+    dt_plot <- merge(dt_plot, dt_feature_vals_long, by = c("id", "variable"))
   }
 
   if (plot_type == "scatter") {
     # Only plot the desired observations
     dt_plot <- dt_plot[id %in% index_x_explain]
-    gg <- make_scatter_plot(dt_plot, scatter_features, scatter_hist, col)
+    gg <- make_scatter_plot(dt_plot, scatter_features, scatter_hist, col, factor_features)
   } else if (plot_type == "beeswarm") {
     gg <- make_beeswarm_plot(dt_plot, col, index_x_explain, x)
   } else { # if bar or waterfall plot
@@ -293,7 +298,7 @@ compute_scatter_hist_values <- function(dt_plot, scatter_features) {
   return(dt_scatter_hist)
 }
 
-make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col) {
+make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, factor_cols) {
 
   if (is.null(col)) {
     col <- "#619CFF"
@@ -314,23 +319,36 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col) {
     }
   }
 
-  dt_plot <- dt_plot[variable %in% scatter_features, ]
-  gg <- ggplot2::ggplot(dt_plot) +
+  dt_plot <- dt_plot[variable %in% scatter_features]
+  dt_plot_numeric <- dt_plot[!variable %in% factor_cols]
+  dt_plot_numeric[, feature_value := as.numeric(feature_value)]
+  dt_plot_factor <- dt_plot[variable %in% factor_cols]
+
+  gg_numeric <- ggplot2::ggplot(dt_plot_numeric) +
+    ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
+
+  gg_factor <- ggplot2::ggplot(dt_plot_factor) +
     ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
 
   # compute bin values for scatter_hist
   if (scatter_hist) {
-    dt_scatter_hist <- compute_scatter_hist_values(dt_plot, scatter_features)
-    gg <- gg + ggplot2::geom_rect(
+    dt_scatter_hist <- compute_scatter_hist_values(dt_plot_numeric,
+                                                   scatter_features[!scatter_features %in% factor_cols])
+
+    # Plot numeric features
+    gg_numeric <- gg_numeric + ggplot2::geom_rect(
       data = dt_scatter_hist,
       ggplot2::aes(
         xmin = x_start, xmax = x_end,
         ymin = y_start, ymax = y_end
       ), fill = "grey80"
     )
+
+    gg_factor <- gg_factor + ggplot2::geom_col(ggplot2::aes(feature_value, phi), fill = "grey80")
+
   }
 
-  gg <- gg + ggplot2::geom_point(ggplot2::aes(x = feature_value, y = phi), colour = col) +
+  gg_numeric <- gg_numeric + ggplot2::geom_point(ggplot2::aes(x = feature_value, y = phi), colour = col) +
     ggplot2::theme_classic(base_family = "sans") +
     ggplot2::theme(
       legend.position = "bottom",
@@ -342,6 +360,26 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col) {
       x = "Feature values",
       y = "Shapley values"
     )
+
+  gg_factor <- gg_factor +
+    ggplot2::geom_point(ggplot2::aes(x = feature_value, y = phi), colour = col) +
+    ggplot2::theme_classic(base_family = "sans") +
+    ggplot2::theme(
+      legend.position = "bottom",
+      plot.title = ggplot2::element_text(hjust = 0.5),
+      strip.background = ggplot2::element_rect(colour = "white", fill = "grey90"),
+      panel.grid.major.y = ggplot2::element_line(colour = "grey90")
+    ) +
+    ggplot2::labs(
+      x = "Feature values",
+      y = "Shapley values"
+    )
+
+  if (nrow(dt_plot_factor) == 0) gg_factor = NULL
+  if (nrow(dt_plot_numeric) == 0) gg_numeric = NULL
+
+  gg <- patchwork:::`/.ggplot`(gg_numeric, gg_factor)
+
   return(gg)
 }
 
