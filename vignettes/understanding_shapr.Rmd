@@ -491,12 +491,17 @@ explanation_cat_method <- explain(
 )
 ```
 
-With time series data, the timeseries approach can be used. Instead of deriving a Shapley value for each time point, we derive a Shapley value for groups of consecutive time points, indicated using the `group` attribute. Other optional parameters include `timeseries.fixed_sigma_vec` and `timeseries.bounds` (a vector indicating upper and lower bounds of the time series if necessary).  
+Shapley values can be used to explain any predictive model. 
+For predictive models taking time series as input, `approach='timeseries'` can be used. 
+In such models, joint behavior of consecutive time points is often more important for the outcome than the single time points. 
+Therefore, it makes sense to derive Shapley value segments of the time series instead of for each single time point.
+In `shapr` this can be achieved through the `group` attribute. 
+Other optional parameters of `approach='timeseries'` are `timeseries.fixed_sigma_vec` and `timeseries.bounds` (a vector indicating upper and lower bounds of the time series if necessary).  
 
 ```{r}
-# Simulate time series data
-set.seed(1)
 
+# Simulate time series data with AR(1)-structure
+set.seed(1)
 data_ts = data.frame(matrix(NA, ncol = 41, nrow = 4))
 for(n in 1:100){
   set.seed(n)
@@ -508,28 +513,37 @@ for(n in 1:100){
   }
   data_ts[n, ] = m_1[-1]
 }
+data_ts <- data.table::as.data.table(data_ts)
 
-group_timeseries <- list(Q1 = paste0("X", 1:10),
-                         Q2 = paste0("X", 11:20),
-                         Q3 = paste0("X", 21:30),
-                         Q4 = paste0("X", 31:40))
+x_var_ts <- paste0("X",1:40)
+y_var_ts <- "X41"
+  
+ind_x_explain <- 1:6
+data_ts_train <- data_ts[-ind_x_explain] 
+
+# Creating a predictive model (for illustration just predicting the next point in the time series with a linear model)
+lm_ts_formula = as.formula(X41 ~ .)
+model_lm_ts = lm(lm_ts_formula, data_ts_train)
+
+x_explain_ts = data_ts[ind_x_explain, ..x_var_ts]
+x_train_ts = data_ts[-ind_x_explain, ..x_var_ts]
+
+# Spitting the time series into 4 segments
+group_ts <- list(S1 = paste0("X", 1:10),
+                 S2 = paste0("X", 11:20),
+                 S3 = paste0("X", 21:30),
+                 S4 = paste0("X", 31:40))
 
 
-lm_ts_formula = as.formula(paste0("X41", "~ ", paste0("X", 1:40, collapse = " + ")))
-model_lm_timeseries = lm(lm_ts_formula, data_ts)
+p0_ts <- mean(unlist(data_ts_train[, ..y_var_ts]))
 
-x_explain_timeseries = data_ts[1:2, 1:40]
-x_train_timeseries = data_ts[99:100, 1:40]
-
-p0_timeseries <- mean(data_ts[, 'X41'])
-
-explanation_cat_method <- explain(
-    model = model_lm_timeseries,
-    x_explain = x_explain_timeseries,
-    x_train = x_train_timeseries,
+explanation_timeseries <- explain(
+    model = model_lm_ts,
+    x_explain = x_explain_ts,
+    x_train = x_train_ts,
     approach = "timeseries",
-    prediction_zero = p0_timeseries,
-    group = group_timeseries
+    prediction_zero = p0_ts,
+    group = group_ts
 )
 ```
 

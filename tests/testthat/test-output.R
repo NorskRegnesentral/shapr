@@ -133,16 +133,16 @@ test_that("output_lm_categorical_method", {
 
 test_that("output_lm_timeseries_method", {
   expect_snapshot_rds(
-    explain(model = model_lm_timeseries,
-            x_explain = x_explain_timeseries,
-            x_train = x_train_timeseries,
-            approach = "timeseries",
-            prediction_zero = p0_timeseries,
-            group = group_timeseries),
+    explanation_timeseries <- explain(
+      model = model_lm_ts,
+      x_explain = x_explain_ts,
+      x_train = x_train_ts,
+      approach = "timeseries",
+      prediction_zero = p0_ts,
+      group = group_ts),
     "output_lm_timeseries_method"
   )
 })
-
 
 test_that("output_lm_numeric_comb1", {
   expect_snapshot_rds(
