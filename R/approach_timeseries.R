@@ -127,6 +127,10 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
       tmp[[j]] <- as.data.table(tmp[[j]])
       tmp[[j]][, w := w_vec / sum(w_vec)]
+
+      # tmp[[j]], j > 1 will have default data.table names V1, V2, ...
+      # while tmp[[1]] will have the same names as the features
+      names(tmp[[j]]) <- names(tmp[[1]])
     }
 
     dt_l[[i]] <- rbindlist(tmp, idcol = "id_combination")
@@ -136,8 +140,6 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   ret_col <- c("id_combination", "id", feature_names, "w")
-  # print(ret_col)
-  # print(dt[id_combination %in% index_features, mget(ret_col)])
 
   return(dt[id_combination %in% index_features, mget(ret_col)])
 }
