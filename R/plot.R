@@ -306,7 +306,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     stop("'col' must be of length 1 when making scatter plot.")
   }
 
-  dt_plot <- dt_plot[variable != "none", ]
+  dt_plot <- dt_plot[variable != "none"]
 
   if (is.null(scatter_features)) {
     scatter_features <- unique(dt_plot[, variable])
