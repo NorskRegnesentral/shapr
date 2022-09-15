@@ -326,14 +326,14 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 
   dt_plot_factor <- dt_plot[variable %in% factor_cols]
   dt_plot_factor[, type := "factor"]
-  max_feature_value = dt_plot_numeric[, max(feature_value)]
+  max_feature_value <- dt_plot_numeric[, max(feature_value)]
   data.table::setnames(dt_plot_factor, "feature_value", "feature_value_factor")
   data.table::setorderv(dt_plot_factor, c("variable", "feature_value_factor"))
   dt_plot_factor[, feature_value := .GRP + max_feature_value, .(feature_value_factor, variable)]
-  dt_factor_lookup = dt_plot_factor[, .(variable, feature_value_factor, feature_value)]
+  dt_factor_lookup <- dt_plot_factor[, .(variable, feature_value_factor, feature_value)]
 
 
-  dt_plot_numeric = rbind(dt_plot_numeric, dt_plot_factor[, mget(names(dt_plot_numeric))])
+  dt_plot_numeric <- rbind(dt_plot_numeric, dt_plot_factor[, mget(names(dt_plot_numeric))])
 
   gg_numeric <- ggplot2::ggplot(dt_plot_numeric) +
     ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
@@ -375,8 +375,8 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     return(labels)
   }
 
-  lookup = data.table(breaks = dt_factor_lookup$feature_value, labels = dt_factor_lookup$feature_value_factor)
-  gg_numeric = gg_numeric + ggplot2::scale_x_continuous(labels = custom_label_func)
+  lookup <- data.table(breaks = dt_factor_lookup$feature_value, labels = dt_factor_lookup$feature_value_factor)
+  gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(labels = custom_label_func)
 
   return(gg_numeric)
 }

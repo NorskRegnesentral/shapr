@@ -51,8 +51,7 @@ Suggests:
     partykit,
     waldo,
     progressr,
-    ggbeeswarm, 
-    patchwork
+    ggbeeswarm
 LinkingTo: 
     RcppArmadillo,
     Rcpp
