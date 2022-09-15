@@ -253,7 +253,7 @@ plot.shapr <- function(x,
 
 compute_scatter_hist_values <- function(dt_plot, scatter_features) {
 
-  n_feat_vals <- dt_plot[, .N, by = variable][1, "N"] # number of points to plot
+  n_feat_vals <- dt_plot[, .N, by = variable][, head(N, 1)] # number of points to plot
   if (n_feat_vals > 500) {
     num_breaks <- 50
   } else if (n_feat_vals > 200) {
@@ -322,18 +322,25 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
   dt_plot <- dt_plot[variable %in% scatter_features]
   dt_plot_numeric <- dt_plot[!variable %in% factor_cols]
   dt_plot_numeric[, feature_value := as.numeric(feature_value)]
+  dt_plot_numeric[, type := "numeric"]
+
   dt_plot_factor <- dt_plot[variable %in% factor_cols]
+  dt_plot_factor[, type := "factor"]
+  max_feature_value = dt_plot_numeric[, max(feature_value)]
+  data.table::setnames(dt_plot_factor, "feature_value", "feature_value_factor")
+  data.table::setorderv(dt_plot_factor, c("variable", "feature_value_factor"))
+  dt_plot_factor[, feature_value := .GRP + max_feature_value, .(feature_value_factor, variable)]
+  dt_factor_lookup = dt_plot_factor[, .(variable, feature_value_factor, feature_value)]
+
+
+  dt_plot_numeric = rbind(dt_plot_numeric, dt_plot_factor[, mget(names(dt_plot_numeric))])
 
   gg_numeric <- ggplot2::ggplot(dt_plot_numeric) +
     ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
 
-  gg_factor <- ggplot2::ggplot(dt_plot_factor) +
-    ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
-
   # compute bin values for scatter_hist
   if (scatter_hist) {
-    dt_scatter_hist <- compute_scatter_hist_values(dt_plot_numeric,
-                                                   scatter_features[!scatter_features %in% factor_cols])
+    dt_scatter_hist <- compute_scatter_hist_values(dt_plot_numeric, scatter_features)
 
     # Plot numeric features
     gg_numeric <- gg_numeric + ggplot2::geom_rect(
@@ -343,9 +350,6 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
         ymin = y_start, ymax = y_end
       ), fill = "grey80"
     )
-
-    gg_factor <- gg_factor + ggplot2::geom_col(ggplot2::aes(feature_value, phi), fill = "grey80")
-
   }
 
   gg_numeric <- gg_numeric + ggplot2::geom_point(ggplot2::aes(x = feature_value, y = phi), colour = col) +
@@ -361,26 +365,20 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
       y = "Shapley values"
     )
 
-  gg_factor <- gg_factor +
-    ggplot2::geom_point(ggplot2::aes(x = feature_value, y = phi), colour = col) +
-    ggplot2::theme_classic(base_family = "sans") +
-    ggplot2::theme(
-      legend.position = "bottom",
-      plot.title = ggplot2::element_text(hjust = 0.5),
-      strip.background = ggplot2::element_rect(colour = "white", fill = "grey90"),
-      panel.grid.major.y = ggplot2::element_line(colour = "grey90")
-    ) +
-    ggplot2::labs(
-      x = "Feature values",
-      y = "Shapley values"
-    )
+  custom_label_func <- function(breaks){
+    labels = as.character(breaks)
+    replace_these_breaks = which(breaks %in% lookup$breaks)
 
-  if (nrow(dt_plot_factor) == 0) gg_factor = NULL
-  if (nrow(dt_plot_numeric) == 0) gg_numeric = NULL
+    if(length(replace_these_breaks)>0){
+      labels[replace_these_breaks] <- lookup$labels[match(labels[replace_these_breaks],lookup$breaks)]
+    }
+    return(labels)
+  }
 
-  gg <- patchwork:::`/.ggplot`(gg_numeric, gg_factor)
+  lookup = data.table(breaks = dt_factor_lookup$feature_value, labels = dt_factor_lookup$feature_value_factor)
+  gg_numeric = gg_numeric + ggplot2::scale_x_continuous(labels = custom_label_func)
 
-  return(gg)
+  return(gg_numeric)
 }
 
 order_for_plot <- function(dt_plot, N_features, plot_order, top_k_features) {
