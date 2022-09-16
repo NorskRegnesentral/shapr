@@ -288,6 +288,8 @@ compute_scatter_hist_values <- function(dt_plot, scatter_features) {
     x <- dt_plot[variable == feature_name, feature_value]
     if (min(x) == max(x)) {
       scatter_hist_object <- hist(x, breaks = 1, plot = FALSE)
+      scatter_hist_object$breaks = c(x - .Machine$double.eps*10^10, x + .Machine$double.eps*10^10)
+
     } else {
       step <- (max(x)-min(x))/(num_breaks-1)
       scatter_hist_object <- hist(x, breaks = seq(min(x)-step/2, max(x)+step/2, by=step), plot = FALSE)
@@ -344,6 +346,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
   dt_plot_numeric[, feature_value := as.numeric(feature_value)]
   dt_plot_numeric[, type := "numeric"]
 
+  # Transform factor variables to numeric values to be able to use geom_rect
   dt_plot_factor <- dt_plot[variable %in% factor_cols]
   dt_plot_factor[, type := "factor"]
   max_feature_value <- ifelse(nrow(dt_plot_numeric)>0,ceiling(dt_plot_numeric[, max(feature_value)])+1,0)
@@ -352,9 +355,8 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
   dt_plot_factor[, feature_value := .GRP + max_feature_value, .(variable)]
   dt_plot_factor[, feature_value := feature_value+.GRP/100, .(feature_value_factor)]
 
-  dt_factor_lookup <- dt_plot_factor[, .(variable, feature_value_factor, feature_value)]
-
-
+  # A lookup table used later for matching numeric labels with the factor level
+  lookup <- unique(dt_plot_factor[, .(feature_value_factor, feature_value)])
   dt_plot_numeric <- rbind(dt_plot_numeric, dt_plot_factor[, mget(names(dt_plot_numeric))])
 
   gg_numeric <- ggplot2::ggplot(dt_plot_numeric) +
@@ -388,15 +390,17 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     )
 
   custom_label_func <- function(breaks){
+
+    breaks = round(breaks, 2)
     labels = as.character(breaks)
 
     factor_breaks <- which(breaks > max_feature_value)
     replace_these_breaks = which(breaks %in% lookup$breaks)
 
-    if(length(replace_these_breaks)>0){
-      labels[replace_these_breaks] <- lookup$labels[match(labels[replace_these_breaks],lookup$breaks)]
+    if (length(replace_these_breaks) > 0){
+      labels[replace_these_breaks] <- lookup$labels[match(labels[replace_these_breaks], lookup$breaks)]
     }
-    if(!identical(factor_breaks,replace_these_breaks)){
+    if (!identical(factor_breaks, replace_these_breaks)){
       hide_these_breaks <- factor_breaks[!(factor_breaks %in% replace_these_breaks)]
       labels[hide_these_breaks] <- ""
     }
@@ -406,8 +410,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     return(labels)
   }
 
-  lookup <- data.table(breaks = dt_factor_lookup$feature_value, labels = dt_factor_lookup$feature_value_factor)
-#  gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(breaks = unique(dt_factor_lookup$feature_value), labels = custom_label_func) # THIS CAN MAYBE BE MODIFIDED TO WORK. NOW IT WORKS WITH ONLY CATEOGRICAL FEATURES.
+  # gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(breaks = unique(dt_factor_lookup$feature_value), labels = custom_label_func) # THIS CAN MAYBE BE MODIFIDED TO WORK. NOW IT WORKS WITH ONLY CATEOGRICAL FEATURES.
   gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(labels = custom_label_func) # THIS WORKS WHEN YOU DON'T HAVE MANY LEVELS
 
   return(gg_numeric)
