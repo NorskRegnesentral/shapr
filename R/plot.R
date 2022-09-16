@@ -346,7 +346,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 
   dt_plot_factor <- dt_plot[variable %in% factor_cols]
   dt_plot_factor[, type := "factor"]
-  max_feature_value <- ceiling(dt_plot_numeric[, max(feature_value)])+1
+  max_feature_value <- ifelse(nrow(dt_plot_numeric)>0,ceiling(dt_plot_numeric[, max(feature_value)])+1,0)
   data.table::setnames(dt_plot_factor, "feature_value", "feature_value_factor")
   data.table::setorderv(dt_plot_factor, c("variable", "feature_value_factor"))
   dt_plot_factor[, feature_value := .GRP + max_feature_value, .(variable)]
@@ -407,7 +407,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
   }
 
   lookup <- data.table(breaks = dt_factor_lookup$feature_value, labels = dt_factor_lookup$feature_value_factor)
-  gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(labels = custom_label_func)
+  gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(breaks = unique(dt_factor_lookup$feature_value), labels = custom_label_func)
 
   return(gg_numeric)
 }
