@@ -251,26 +251,48 @@ plot.shapr <- function(x,
   return(gg)
 }
 
-compute_scatter_hist_values <- function(dt_plot, scatter_features) {
+get_num_breaks <- function(dt_plot,feature_name){
 
-  n_feat_vals <- dt_plot[, .N, by = variable][, head(N, 1)] # number of points to plot
-  if (n_feat_vals > 500) {
-    num_breaks <- 50
-  } else if (n_feat_vals > 200) {
-    num_breaks <- 20
-  } else if (n_feat_vals > 100) {
-    num_breaks <- 10
-  } else {
-    num_breaks <- 5
+  n_feat_vals <- length(dt_plot[variable==feature_name,unique(feature_value)]) # number of unique points to plot
+  type <- dt_plot[variable==feature_name,type][1]
+
+  if(type=="numeric"){
+
+    if (n_feat_vals > 500) {
+      num_breaks <- 50
+    } else if (n_feat_vals > 200) {
+      num_breaks <- 20
+    } else if (n_feat_vals > 100) {
+      num_breaks <- 10
+    } else {
+      num_breaks <- min(5,n_feat_vals+2)
+    }
+  } else { # If factor
+    num_breaks <- n_feat_vals
   }
+
+  return(num_breaks)
+}
+
+
+compute_scatter_hist_values <- function(dt_plot, scatter_features) {
 
   dt_scatter_hist_list <- list()
   for (feature_name in scatter_features) {
+
+    num_breaks = get_num_breaks(dt_plot,feature_name)
+
+    type <- dt_plot[variable==feature_name,type][1]
+
+
     x <- dt_plot[variable == feature_name, feature_value]
     if (min(x) == max(x)) {
       scatter_hist_object <- hist(x, breaks = 1, plot = FALSE)
     } else {
-      scatter_hist_object <- hist(x, breaks = seq(min(x), max(x), length.out = num_breaks), plot = FALSE)
+      step <- (max(x)-min(x))/(num_breaks-1)
+      scatter_hist_object <- hist(x, breaks = seq(min(x)-step/2, max(x)+step/2, by=step), plot = FALSE)
+      #scatter_hist_object <- hist(x, breaks = num_breaks, plot = FALSE)
+
     }
     y_max <- max(dt_plot[variable == feature_name, phi])
     y_min <- min(dt_plot[variable == feature_name, phi])
@@ -326,10 +348,12 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 
   dt_plot_factor <- dt_plot[variable %in% factor_cols]
   dt_plot_factor[, type := "factor"]
-  max_feature_value <- dt_plot_numeric[, max(feature_value)]
+  max_feature_value <- ceiling(dt_plot_numeric[, max(feature_value)])+1
   data.table::setnames(dt_plot_factor, "feature_value", "feature_value_factor")
   data.table::setorderv(dt_plot_factor, c("variable", "feature_value_factor"))
-  dt_plot_factor[, feature_value := .GRP + max_feature_value, .(feature_value_factor, variable)]
+  dt_plot_factor[, feature_value := .GRP + max_feature_value, .(variable)]
+  dt_plot_factor[, feature_value := feature_value+.GRP/100, .(feature_value_factor)]
+
   dt_factor_lookup <- dt_plot_factor[, .(variable, feature_value_factor, feature_value)]
 
 
