@@ -407,7 +407,8 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
   }
 
   lookup <- data.table(breaks = dt_factor_lookup$feature_value, labels = dt_factor_lookup$feature_value_factor)
-  gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(breaks = unique(dt_factor_lookup$feature_value), labels = custom_label_func)
+#  gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(breaks = unique(dt_factor_lookup$feature_value), labels = custom_label_func) # THIS CAN MAYBE BE MODIFIDED TO WORK. NOW IT WORKS WITH ONLY CATEOGRICAL FEATURES.
+  gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(labels = custom_label_func) # THIS WORKS WHEN YOU DON'T HAVE MANY LEVELS
 
   return(gg_numeric)
 }
