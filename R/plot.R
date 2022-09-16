@@ -291,8 +291,6 @@ compute_scatter_hist_values <- function(dt_plot, scatter_features) {
     } else {
       step <- (max(x)-min(x))/(num_breaks-1)
       scatter_hist_object <- hist(x, breaks = seq(min(x)-step/2, max(x)+step/2, by=step), plot = FALSE)
-      #scatter_hist_object <- hist(x, breaks = num_breaks, plot = FALSE)
-
     }
     y_max <- max(dt_plot[variable == feature_name, phi])
     y_min <- min(dt_plot[variable == feature_name, phi])
@@ -372,7 +370,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
       ggplot2::aes(
         xmin = x_start, xmax = x_end,
         ymin = y_start, ymax = y_end
-      ), fill = "grey80"
+      ), fill = "grey85",color="grey80"
     )
   }
 
@@ -391,11 +389,20 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 
   custom_label_func <- function(breaks){
     labels = as.character(breaks)
+
+    factor_breaks <- which(breaks > max_feature_value)
     replace_these_breaks = which(breaks %in% lookup$breaks)
 
     if(length(replace_these_breaks)>0){
       labels[replace_these_breaks] <- lookup$labels[match(labels[replace_these_breaks],lookup$breaks)]
     }
+    if(!identical(factor_breaks,replace_these_breaks)){
+      hide_these_breaks <- factor_breaks[!(factor_breaks %in% replace_these_breaks)]
+      labels[hide_these_breaks] <- ""
+    }
+
+    labels_numeric <- as.numeric(labels)
+
     return(labels)
   }
 
