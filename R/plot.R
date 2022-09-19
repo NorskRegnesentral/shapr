@@ -201,7 +201,7 @@ plot.shapr <- function(x,
     dt_plot <- dt_plot[id %in% index_x_explain]
     gg <- make_scatter_plot(dt_plot, scatter_features, scatter_hist, col, factor_features)
   } else if (plot_type == "beeswarm") {
-    gg <- make_beeswarm_plot(dt_plot, col, index_x_explain, x)
+    gg <- make_beeswarm_plot(dt_plot, col, index_x_explain, x, factor_features)
   } else { # if bar or waterfall plot
     # Only plot the desired observations
     dt_plot <- dt_plot[id %in% index_x_explain]
@@ -256,7 +256,7 @@ get_num_breaks <- function(dt_plot,feature_name){
   n_feat_vals <- length(dt_plot[variable==feature_name,unique(feature_value)]) # number of unique points to plot
   type <- dt_plot[variable==feature_name,type][1]
 
-  if(type=="numeric"){
+  if(type == "numeric"){
 
     if (n_feat_vals > 500) {
       num_breaks <- 50
@@ -265,7 +265,7 @@ get_num_breaks <- function(dt_plot,feature_name){
     } else if (n_feat_vals > 100) {
       num_breaks <- 10
     } else {
-      num_breaks <- min(5,n_feat_vals+2)
+      num_breaks <- min(5, n_feat_vals + 2)
     }
   } else { # If factor
     num_breaks <- n_feat_vals
@@ -280,20 +280,18 @@ compute_scatter_hist_values <- function(dt_plot, scatter_features) {
   dt_scatter_hist_list <- list()
   for (feature_name in scatter_features) {
 
-    num_breaks = get_num_breaks(dt_plot,feature_name)
-
-    type <- dt_plot[variable==feature_name,type][1]
-
+    num_breaks = get_num_breaks(dt_plot, feature_name)
 
     x <- dt_plot[variable == feature_name, feature_value]
+
     if (min(x) == max(x)) {
       scatter_hist_object <- hist(x, breaks = 1, plot = FALSE)
       scatter_hist_object$breaks = c(x - .Machine$double.eps*10^10, x + .Machine$double.eps*10^10)
-
     } else {
       step <- (max(x)-min(x))/(num_breaks-1)
       scatter_hist_object <- hist(x, breaks = seq(min(x)-step/2, max(x)+step/2, by=step), plot = FALSE)
     }
+
     y_max <- max(dt_plot[variable == feature_name, phi])
     y_min <- min(dt_plot[variable == feature_name, phi])
     y_tot <- y_max - y_min # what if these happen to be the same...?
@@ -342,33 +340,21 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
   }
 
   dt_plot <- dt_plot[variable %in% scatter_features]
-  dt_plot_numeric <- dt_plot[!variable %in% factor_cols]
-  dt_plot_numeric[, feature_value := as.numeric(feature_value)]
-  dt_plot_numeric[, type := "numeric"]
 
-  # Transform factor variables to numeric values to be able to use geom_rect
-  dt_plot_factor <- dt_plot[variable %in% factor_cols]
-  dt_plot_factor[, type := "factor"]
-  max_feature_value <- ifelse(nrow(dt_plot_numeric)>0,ceiling(dt_plot_numeric[, max(feature_value)])+1,0)
-  data.table::setnames(dt_plot_factor, "feature_value", "feature_value_factor")
-  data.table::setorderv(dt_plot_factor, c("variable", "feature_value_factor"))
-  dt_plot_factor[, feature_value := .GRP + max_feature_value, .(variable)]
-  dt_plot_factor[, feature_value := feature_value+.GRP/100, .(feature_value_factor)]
+  process_data <- process_factor_data(dt_plot, factor_cols)
+  dt_plot <- process_data$dt_plot
+  lookup <- process_data$lookup
+  max_feature_value <- process_data$max_feature_value
 
-  # A lookup table used later for matching numeric labels with the factor level
-  lookup <- unique(dt_plot_factor[, .(feature_value_factor, feature_value)])
-  data.table::setnames(lookup, c("feature_value_factor", "feature_value"), c("labels", "breaks"))
-  dt_plot_numeric <- rbind(dt_plot_numeric, dt_plot_factor[, mget(names(dt_plot_numeric))])
-
-  gg_numeric <- ggplot2::ggplot(dt_plot_numeric) +
+  gg <- ggplot2::ggplot(dt_plot) +
     ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
 
   # compute bin values for scatter_hist
   if (scatter_hist) {
-    dt_scatter_hist <- compute_scatter_hist_values(dt_plot_numeric, scatter_features)
+    dt_scatter_hist <- compute_scatter_hist_values(dt_plot, scatter_features)
 
     # Plot numeric features
-    gg_numeric <- gg_numeric + ggplot2::geom_rect(
+    gg <- gg + ggplot2::geom_rect(
       data = dt_scatter_hist,
       ggplot2::aes(
         xmin = x_start, xmax = x_end,
@@ -377,7 +363,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     )
   }
 
-  gg_numeric <- gg_numeric + ggplot2::geom_point(ggplot2::aes(x = feature_value, y = phi), colour = col) +
+  gg <- gg + ggplot2::geom_point(ggplot2::aes(x = feature_value, y = phi), colour = col) +
     ggplot2::theme_classic(base_family = "sans") +
     ggplot2::theme(
       legend.position = "bottom",
@@ -390,6 +376,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
       y = "Shapley values"
     )
 
+  # Function used by ggplot to map numerical values to the original factor values
   custom_label_func <- function(breaks){
 
     breaks = round(breaks, 2)
@@ -413,10 +400,9 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     return(labels)
   }
 
-  # gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(breaks = unique(dt_factor_lookup$feature_value), labels = custom_label_func) # THIS CAN MAYBE BE MODIFIDED TO WORK. NOW IT WORKS WITH ONLY CATEOGRICAL FEATURES.
-  gg_numeric <- gg_numeric + ggplot2::scale_x_continuous(labels = custom_label_func) # THIS WORKS WHEN YOU DON'T HAVE MANY LEVELS
+  gg <- gg + ggplot2::scale_x_continuous(labels = custom_label_func)
 
-  return(gg_numeric)
+  return(gg)
 }
 
 order_for_plot <- function(dt_plot, N_features, plot_order, top_k_features) {
@@ -464,7 +450,39 @@ order_for_plot <- function(dt_plot, N_features, plot_order, top_k_features) {
 }
 
 
-make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x) {
+#' Treat factors as numeric values
+#'
+#' Factors are given a numeric value above the highest numeric value in the data. The value of the different levels
+#' are sorted by factor and then level.
+#' @param dt data.table to plot
+#' @param factor_cols Columns that are factors or character
+#' @return A list of a lookup table with each factor and level and its numeric value, a data.table
+#' very similar to the input data, but now with numeric values for factors, and the maximum feature value.
+process_factor_data <- function(dt, factor_cols) {
+
+  dt_plot_numeric <- dt[!variable %in% factor_cols]
+  dt_plot_numeric[, feature_value := as.numeric(feature_value)]
+  dt_plot_numeric[, type := "numeric"]
+
+  dt_plot_factor <- dt[variable %in% factor_cols]
+  dt_plot_factor[, type := "factor"]
+  max_feature_value <- ifelse(nrow(dt_plot_numeric) > 0, ceiling(dt_plot_numeric[, max(feature_value)]) + 1, 0)
+  data.table::setnames(dt_plot_factor, "feature_value", "feature_value_factor")
+  data.table::setorderv(dt_plot_factor, c("variable", "feature_value_factor"))
+  dt_plot_factor[, feature_value := .GRP + max_feature_value, variable]
+  dt_plot_factor[, feature_value := feature_value + .GRP / 100, feature_value_factor]
+
+  # A lookup table used later for matching numeric labels with the factor level
+  lookup <- unique(dt_plot_factor[, .(feature_value_factor, feature_value)])
+  data.table::setnames(lookup, c("feature_value_factor", "feature_value"), c("labels", "breaks"))
+  dt_plot_numeric <- rbind(dt_plot_numeric, dt_plot_factor[, mget(names(dt_plot_numeric))])
+
+  return(list(lookup = lookup, dt_plot = dt_plot_numeric, max_feature_value = max_feature_value))
+
+}
+
+
+make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols) {
 
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
     stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
@@ -479,10 +497,15 @@ make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x) {
 
   dt_plot <- dt_plot[variable != "none"]
 
+  # Deal with factor variables
+  process_data <- process_factor_data(dt_plot, factor_cols)
+  dt_plot <- process_data$dt_plot
+
   dt_train <- data.table::copy(x$internal$data$x_train)
-  dt_train <- suppressWarnings( # suppress warnings for coercion from int to double
+  dt_train <- suppressWarnings( # suppress warnings for coercion from int to double or to factor
     data.table::melt(dt_train[, id := .I], id.vars = "id", value.name = "feature_value")
   )
+  dt_train <- process_factor_data(dt_train, factor_cols)$dt_plot
   dt_train[, `:=`(max = max(feature_value), min = min(feature_value)), by = variable]
   dt_train <- dt_train[, .(variable, max, min)]
   dt_train <- unique(dt_train)
@@ -504,6 +527,11 @@ make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x) {
 
   # Only plot the desired observations
   dt_plot <- dt_plot[id %in% index_x_explain]
+
+  # For factor variables, we want one line per factor level
+  # Give them a NA feature value to make the color grey
+  dt_plot[type == "factor", variable := description]
+  dt_plot[type == "factor", feature_value_scaled := NA]
 
   gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = variable, y = phi, color = feature_value_scaled)) +
     ggplot2::geom_hline(yintercept = 0, color = "grey70", size = 0.5) +
