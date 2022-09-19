@@ -84,7 +84,7 @@ get_p <- function(dt_vS, internal) {
   max_id_combination <- internal$parameters$n_combinations
   p <- unlist(dt_vS[id_combination == max_id_combination, ][, id_combination := NULL])
 
-  p
+  return(p)
 }
 
 #' Compute shapley values
