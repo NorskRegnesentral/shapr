@@ -95,7 +95,7 @@
       1: 40.752       2.3834             17.221       -0.38759     67.9057
       2: 40.752      -6.0032             15.461        8.28892     -1.8965
 
-# output_lm_categorical_method
+# output_lm_categorical_categorical
 
     Code
       (out <- code)
@@ -104,7 +104,16 @@
       1: 40.752       6.1998             7.8422          2.852     70.2288
       2: 40.752      -3.7270             9.8283          5.626      4.1224
 
-# output_lm_timeseries_method
+# output_lm_categorical_independence
+
+    Code
+      (out <- code)
+    Output
+           none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+      1: 40.752       3.5248             14.483        0.87628      68.239
+      2: 40.752      -5.1001             14.483        7.69533      -1.228
+
+# output_lm_ts_timeseries
 
     Code
       (out <- code)

@@ -120,7 +120,7 @@ test_that("output_lm_categorical_ctree", {
   )
 })
 
-test_that("output_lm_categorical_method", {
+test_that("output_lm_categorical_categorical", {
   expect_snapshot_rds(
     explain(model = model_lm_categorical,
             x_explain = x_explain_categorical,
@@ -131,7 +131,18 @@ test_that("output_lm_categorical_method", {
   )
 })
 
-test_that("output_lm_timeseries_method", {
+test_that("output_lm_categorical_independence", {
+  expect_snapshot_rds(
+    explain(model = model_lm_categorical,
+            x_explain = x_explain_categorical,
+            x_train = x_train_categorical,
+            approach = "independence",
+            prediction_zero = p0),
+    "output_lm_categorical_independence"
+  )
+})
+
+test_that("output_lm_ts_timeseries", {
   expect_snapshot_rds(
     explanation_timeseries <- explain(
       model = model_lm_ts,
