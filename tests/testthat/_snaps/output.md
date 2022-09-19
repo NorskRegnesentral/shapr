@@ -104,6 +104,15 @@
       1: 40.752       6.1998             7.8422          2.852     70.2288
       2: 40.752      -3.7270             9.8283          5.626      4.1224
 
+# output_lm_categorical_independence
+
+    Code
+      (out <- code)
+    Output
+           none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+      1: 40.752       3.5248             14.483        0.87628      68.239
+      2: 40.752      -5.1001             14.483        7.69533      -1.228
+
 # output_lm_numeric_comb1
 
     Code
