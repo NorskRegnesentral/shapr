@@ -42,7 +42,7 @@ consequently wrong interpretations of the predictions. Aas, Jullum, and
 Løland (2021) extends and improves the Kernel SHAP method of Lundberg
 and Lee (2017) to account for the dependence between the features,
 resulting in significantly more accurate approximations to the Shapley
-values. [See the paper for details](https://arxiv.org/abs/1903.10464).
+values. [See the paper for details](https://www.sciencedirect.com/science/article/pii/S0004370221000539).
 
 This package implements the methodology of Aas, Jullum, and Løland
 (2021).
