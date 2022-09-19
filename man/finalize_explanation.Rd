@@ -50,7 +50,7 @@ Computes dependence-aware Shapley values for observations in \code{x_explain} fr
 \details{
 The most important thing to notice is that \code{shapr} has implemented six different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"categorical"} and \code{"independence"}.
+\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
 In addition, the user also has the option of combining the different approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
@@ -79,14 +79,14 @@ data_train <- head(airquality, -3)
 data_explain <- tail(airquality, 3)
 
 x_train <- data_train[, x_var]
-x_explain <- data_explain[,x_var]
+x_explain <- data_explain[, x_var]
 
 # Fit a linear model
 lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
 model <- lm(lm_formula, data = data_train)
 
 # Explain predictions
-p <- mean(data_train[,y_var])
+p <- mean(data_train[, y_var])
 
 # Empirical approach
 explain1 <- explain(
@@ -162,10 +162,9 @@ explain_groups <- explain(
 )
 print(explain_groups$shapley_values)
 
-
 }
 \references{
-Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{

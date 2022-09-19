@@ -142,6 +142,19 @@ test_that("output_lm_categorical_independence", {
   )
 })
 
+test_that("output_lm_timeseries_method", {
+  expect_snapshot_rds(
+    explanation_timeseries <- explain(
+      model = model_lm_ts,
+      x_explain = x_explain_ts,
+      x_train = x_train_ts,
+      approach = "timeseries",
+      prediction_zero = p0_ts,
+      group = group_ts),
+    "output_lm_timeseries_method"
+  )
+})
+
 test_that("output_lm_numeric_comb1", {
   expect_snapshot_rds(
     explain(model = model_lm_numeric,
@@ -176,7 +189,7 @@ test_that("output_lm_numeric_comb3", {
 })
 
 
-# lm_mixed with different approahces
+# lm_mixed with different approaches
 
 test_that("output_lm_mixed_independence", {
   expect_snapshot_rds(

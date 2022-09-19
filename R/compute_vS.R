@@ -9,14 +9,15 @@
 #'
 #' @export
 compute_vS <- function(internal, model, predict_model, method = "future") {
-
   S_batch <- internal$objects$S_batch
 
   if (method == "future") {
-    ret <- future_compute_vS_batch(S_batch = S_batch,
-                                   internal = internal,
-                                   model = model,
-                                   predict_model = predict_model)
+    ret <- future_compute_vS_batch(
+      S_batch = S_batch,
+      internal = internal,
+      model = model,
+      predict_model = predict_model
+    )
   } else {
 
     # Doing the same as above without future without progressbar or paralellization
@@ -24,10 +25,12 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
     for (i in seq_along(S_batch)) {
       S <- S_batch[[i]]
 
-      ret[[i]] <- batch_compute_vS(S=S,
-                                   internal = internal,
-                                   model = model,
-                                   predict_model = predict_model)
+      ret[[i]] <- batch_compute_vS(
+        S = S,
+        internal = internal,
+        model = model,
+        predict_model = predict_model
+      )
     }
   }
 
@@ -56,16 +59,17 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
 
-  compute_preds(dt,   # Updating dt by reference
-                feature_names = feature_names,
-                predict_model = predict_model,
-                model)
-
+  compute_preds(dt, # Updating dt by reference
+    feature_names = feature_names,
+    predict_model = predict_model,
+    model
+  )
   dt_vS <- compute_MCint(dt)
-
-  if(!is.null(p)){
-    p(amount = length(S),
-      message = "Estimating v(S)") # TODO: Add a message to state what batch has been computed
+  if (!is.null(p)) {
+    p(
+      amount = length(S),
+      message = "Estimating v(S)"
+    ) # TODO: Add a message to state what batch has been computed
   }
 
   if (keep_samp_for_vS) {
@@ -93,7 +97,6 @@ batch_prepare_vS <- function(S, internal) {
     dt <- prepare_data(internal, index_features = S)
     dt_max <- data.table(x_explain, id_combination = max_id_combination, w = 1, id = seq_len(n_explain))
     dt <- rbind(dt, dt_max)
-
     setkey(dt, id, id_combination)
   }
   return(dt)

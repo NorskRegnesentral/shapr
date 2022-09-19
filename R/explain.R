@@ -18,7 +18,7 @@
 #'
 #' @param approach Character vector of length `1` or `n_features`.
 #' `n_features` equals the total number of features in the model. All elements should,
-#' either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"` or `"independence"`.
+#' either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"`, `"timeseries"`, or `"independence"`.
 #' See details for more information.
 #'
 #' @param prediction_zero Numeric.
@@ -87,10 +87,11 @@
 #' @inheritDotParams setup_approach.copula
 #' @inheritDotParams setup_approach.ctree
 #' @inheritDotParams setup_approach.categorical
+#' @inheritDotParams setup_approach.timeseries
 #'
 #' @details The most important thing to notice is that `shapr` has implemented six different
 #' approaches for estimating the conditional distributions of the data, namely `"empirical"`,
-#' `"gaussian"`, `"copula"`, `"ctree"`, `"categorical"` and `"independence"`.
+#' `"gaussian"`, `"copula"`, `"ctree"`, `"categorical"`, `"timeseries"`, and `"independence"`.
 #' In addition, the user also has the option of combining the different approaches.
 #' E.g., if you're in a situation where you have trained a model that consists of 10 features,
 #' and you'd like to use the `"gaussian"` approach when you condition on a single feature,
@@ -148,14 +149,14 @@
 #' data_explain <- tail(airquality, 3)
 #'
 #' x_train <- data_train[, x_var]
-#' x_explain <- data_explain[,x_var]
+#' x_explain <- data_explain[, x_var]
 #'
 #' # Fit a linear model
 #' lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
 #' model <- lm(lm_formula, data = data_train)
 #'
 #' # Explain predictions
-#' p <- mean(data_train[,y_var])
+#' p <- mean(data_train[, y_var])
 #'
 #' # Empirical approach
 #' explain1 <- explain(
@@ -231,13 +232,12 @@
 #' )
 #' print(explain_groups$shapley_values)
 #'
-#'
 #' @export
 #'
 #' @author Martin Jullum
 #'
 #' @references
-#'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+#'   Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
 #'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 explain <- function(model,
                     x_explain,
@@ -277,14 +277,13 @@ explain <- function(model,
     feature_specs = feature_specs, ...
   )
 
-  # print(joint_probability_dt)
-  # print(internal$parameters$gaussian.mu)
-
   # Gets predict_model (if not passed to explain)
   # Checks that predict_model gives correct format
-  predict_model <- get_predict_model(x_test = head(internal$data$x_train,2),
-                                     predict_model = predict_model,
-                                     model = model)
+  predict_model <- get_predict_model(
+    x_test = head(internal$data$x_train, 2),
+    predict_model = predict_model,
+    model = model
+  )
 
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
