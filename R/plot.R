@@ -357,6 +357,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 
   # A lookup table used later for matching numeric labels with the factor level
   lookup <- unique(dt_plot_factor[, .(feature_value_factor, feature_value)])
+  data.table::setnames(lookup, c("feature_value_factor", "feature_value"), c("labels", "breaks"))
   dt_plot_numeric <- rbind(dt_plot_numeric, dt_plot_factor[, mget(names(dt_plot_numeric))])
 
   gg_numeric <- ggplot2::ggplot(dt_plot_numeric) +
@@ -405,7 +406,9 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
       labels[hide_these_breaks] <- ""
     }
 
-    labels_numeric <- as.numeric(labels)
+    # If there is only one feature value, there is only 5 breaks, see get_num_breaks
+    # We therefore remove all labels except the median value.
+    if (length(unique(labels)) == 1) labels[-as.integer(length(labels) / 2 + 0.5)] <- ""
 
     return(labels)
   }
