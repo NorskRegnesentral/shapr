@@ -63,7 +63,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">preprocess_data</span><span class="op">(</span><span class="va">x</span>, <span class="va">feature_list</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">preprocess_data</span><span class="op">(</span><span class="va">x</span>, <span class="va">feature_list</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -71,14 +71,21 @@
     <dl><dt>x</dt>
 <dd><p>matrix, data.frame or data.table. The data to check input for and update
 according to the specification in <code>feature_list</code>.</p></dd>
+
+
 <dt>feature_list</dt>
 <dd><p>List. Output from running <code><a href="get_data_specs.html">get_data_specs</a></code> or
 <code><a href="get_model_specs.html">get_model_specs</a></code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>List with two named elements: <code>x_dt</code>: Checked and updated data <code>x</code> in data.table format, and
+    
+
+<p>List with two named elements: <code>x_dt</code>: Checked and updated data <code>x</code> in data.table format, and
 <code>update_feature_list</code> the output from <code><a href="check_features.html">check_features</a></code></p>
+
+
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -92,18 +99,18 @@ the feature_list which is typically the output from <code><a href="get_model_spe
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Load example data</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># Split data into test- and training data</span></span>
-<span class="r-in">  <span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">x_train</span><span class="op">[</span>, <span class="va">rad</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">rad</span><span class="op">)</span><span class="op">]</span></span>
-<span class="r-in">  <span class="va">data_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_data_specs.html">get_data_specs</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">rad</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">x_train</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="va">model_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_model_specs.html">get_model_specs</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">preprocess_data</span><span class="op">(</span><span class="va">x_train</span>, <span class="va">model_features</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Load example data</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Split data into test- and training data</span></span></span>
+<span class="r-in"><span>  <span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">x_train</span><span class="op">[</span>, <span class="va">rad</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">rad</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">data_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_data_specs.html">get_data_specs</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">rad</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">x_train</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">model_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_model_specs.html">get_model_specs</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">preprocess_data</span><span class="op">(</span><span class="va">x_train</span>, <span class="va">model_features</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The columns(s) crim, zn, chas, nox, age, dis, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
@@ -156,7 +163,7 @@ the feature_list which is typically the output from <code><a href="get_model_spe
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

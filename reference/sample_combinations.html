@@ -68,27 +68,36 @@ getting the same observation twice. Need to improve this help file.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">sample_combinations</span><span class="op">(</span><span class="va">ntrain</span>, <span class="va">ntest</span>, <span class="va">nsamples</span>, joint_sampling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sample_combinations</span><span class="op">(</span><span class="va">ntrain</span>, <span class="va">ntest</span>, <span class="va">nsamples</span>, joint_sampling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>ntrain</dt>
 <dd><p>Positive integer. Number of training observations to sample from.</p></dd>
+
+
 <dt>ntest</dt>
 <dd><p>Positive integer. Number of test observations to sample from.</p></dd>
+
+
 <dt>nsamples</dt>
 <dd><p>Positive integer. Number of samples.</p></dd>
+
+
 <dt>joint_sampling</dt>
 <dd><p>Logical. Indicates whether train- and test data should be sampled
 separately or in a joint sampling space. If they are sampled separately (which typically
 would be used when optimizing more than one distribution at once) we sample with replacement
 if <code>nsamples &gt; ntrain</code>. Note that this solution is not optimal. Be careful if you're
 doing optimization over every test observation when <code>nsamples &gt; ntrain</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>data.frame</p>
+    
+
+<p>data.frame</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -107,7 +116,7 @@ doing optimization over every test observation when <code>nsamples &gt; ntrain</
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

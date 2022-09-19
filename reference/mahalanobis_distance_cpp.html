@@ -63,32 +63,43 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">mahalanobis_distance_cpp</span><span class="op">(</span>
-  <span class="va">featureList</span>,
-  <span class="va">Xtrain_mat</span>,
-  <span class="va">Xtest_mat</span>,
-  <span class="va">mcov</span>,
-  <span class="va">S_scale_dist</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mahalanobis_distance_cpp</span><span class="op">(</span></span>
+<span>  <span class="va">featureList</span>,</span>
+<span>  <span class="va">Xtrain_mat</span>,</span>
+<span>  <span class="va">Xtest_mat</span>,</span>
+<span>  <span class="va">mcov</span>,</span>
+<span>  <span class="va">S_scale_dist</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>featureList</dt>
 <dd><p>List of vectors indicating all factor combinations that should be included in the computations. Assumes that the first one is empty.</p></dd>
+
+
 <dt>Xtrain_mat</dt>
 <dd><p>Matrix</p></dd>
+
+
 <dt>Xtest_mat</dt>
 <dd><p>Matrix</p></dd>
+
+
 <dt>mcov</dt>
 <dd><p>Matrix. The Sigma-matrix in the Mahalanobis distance formula (<code>stats::cov(Xtrain_mat)</code>) gives Mahalanobis distance,
 <code>diag(m)</code> gives the Euclidean distance.</p></dd>
+
+
 <dt>S_scale_dist</dt>
 <dd><p>Logical indicating</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.</p>
+    
+
+<p>Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -107,7 +118,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

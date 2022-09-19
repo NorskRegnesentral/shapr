@@ -63,7 +63,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">weight_matrix_cpp</span><span class="op">(</span><span class="va">subsets</span>, <span class="va">m</span>, <span class="va">n</span>, <span class="va">w</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">weight_matrix_cpp</span><span class="op">(</span><span class="va">subsets</span>, <span class="va">m</span>, <span class="va">n</span>, <span class="va">w</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -71,18 +71,27 @@
     <dl><dt>subsets</dt>
 <dd><p>List. Each of the elements equals an integer
 vector representing a valid combination of features/feature groups.</p></dd>
+
+
 <dt>m</dt>
 <dd><p>Integer. Number of features/feature groups</p></dd>
+
+
 <dt>n</dt>
 <dd><p>Integer. Number of combinations</p></dd>
+
+
 <dt>w</dt>
 <dd><p>Numeric vector of length <code>n</code>, i.e. <code>w[i]</code> equals
 the Shapley weight of feature/feature group combination <code>i</code>, represented by
 <code>subsets[[i]]</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Matrix of dimension n x m + 1</p>
+    
+
+<p>Matrix of dimension n x m + 1</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -101,7 +110,7 @@ the Shapley weight of feature/feature group combination <code>i</code>, represen
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

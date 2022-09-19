@@ -63,16 +63,16 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">sample_copula</span><span class="op">(</span>
-  <span class="va">index_given</span>,
-  <span class="va">n_samples</span>,
-  <span class="va">mu</span>,
-  <span class="va">cov_mat</span>,
-  <span class="va">m</span>,
-  <span class="va">x_test_gaussian</span>,
-  <span class="va">x_train</span>,
-  <span class="va">x_test</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sample_copula</span><span class="op">(</span></span>
+<span>  <span class="va">index_given</span>,</span>
+<span>  <span class="va">n_samples</span>,</span>
+<span>  <span class="va">mu</span>,</span>
+<span>  <span class="va">cov_mat</span>,</span>
+<span>  <span class="va">m</span>,</span>
+<span>  <span class="va">x_test_gaussian</span>,</span>
+<span>  <span class="va">x_train</span>,</span>
+<span>  <span class="va">x_test</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -80,18 +80,27 @@
     <dl><dt>index_given</dt>
 <dd><p>Integer vector. The indices of the features to condition upon. Note that
 <code>min(index_given) &gt;= 1</code> and <code>max(index_given) &lt;= m</code>.</p></dd>
+
+
 <dt>m</dt>
 <dd><p>Positive integer. The total number of features.</p></dd>
+
+
 <dt>x_test_gaussian</dt>
 <dd><p>Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
 after quantile-transforming them to standard Gaussian variables.</p></dd>
+
+
 <dt>x_test</dt>
 <dd><p>Numeric matrix. Contains the features of the observation whose
 predictions ought to be explained (test data).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>data.table</p>
+    
+
+<p>data.table</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -110,7 +119,7 @@ predictions ought to be explained (test data).</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

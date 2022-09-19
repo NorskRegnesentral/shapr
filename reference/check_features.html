@@ -63,23 +63,28 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">check_features</span><span class="op">(</span><span class="va">f_list_1</span>, <span class="va">f_list_2</span>, use_1_as_truth <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_features</span><span class="op">(</span><span class="va">f_list_1</span>, <span class="va">f_list_2</span>, use_1_as_truth <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>f_list_1, f_list_2</dt>
 <dd><p>List. As extracted from either <code>get_data_specs</code> or <code>get_model_specs</code>.</p></dd>
+
+
 <dt>use_1_as_truth</dt>
 <dd><p>Logical. If TRUE, <code>f_list_2</code> is compared to <code>f_list_1</code>, i.e. additional elements
 is allowed in <code>f_list_2</code>, and if <code>f_list_1</code>'s feature classes contains NAs, feature class check is
 ignored regardless of what is specified in <code>f_list_1</code>. If FALSE, <code>f_list_1</code> and <code>f_list_2</code> are
 equated and they need to contain exactly the same elements. Set to TRUE when comparing a model and data, and FALSE
 when comparing two data sets.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>List. The <code>f_list_1</code> is returned as inserted if there all check are carried out. If some info is
+    
+
+<p>List. The <code>f_list_1</code> is returned as inserted if there all check are carried out. If some info is
 missing from <code>f_list_1</code>, the function continues consistency checking using <code>f_list_2</code> and returns that.</p>
     </div>
     <div id="author">
@@ -89,18 +94,18 @@ missing from <code>f_list_1</code>, the function continues consistency checking 
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Load example data</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># Split data into test- and training data</span></span>
-<span class="r-in">  <span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">x_train</span><span class="op">[</span>, <span class="va">rad</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">rad</span><span class="op">)</span><span class="op">]</span></span>
-<span class="r-in">  <span class="va">data_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_data_specs.html">get_data_specs</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">rad</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">x_train</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="va">model_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_model_specs.html">get_model_specs</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">check_features</span><span class="op">(</span><span class="va">model_features</span>, <span class="va">data_features</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Load example data</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Split data into test- and training data</span></span></span>
+<span class="r-in"><span>  <span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">x_train</span><span class="op">[</span>, <span class="va">rad</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">rad</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">data_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_data_specs.html">get_data_specs</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">rad</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">x_train</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">model_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_model_specs.html">get_model_specs</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">check_features</span><span class="op">(</span><span class="va">model_features</span>, <span class="va">data_features</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $labels</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "lstat" "rm"    "rad"   "indus"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -139,7 +144,7 @@ missing from <code>f_list_1</code>, the function continues consistency checking 
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

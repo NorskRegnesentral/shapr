@@ -68,7 +68,7 @@ predict_model.xgb.Booster()</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">apply_dummies</span><span class="op">(</span><span class="va">feature_list</span>, <span class="va">testdata</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">apply_dummies</span><span class="op">(</span><span class="va">feature_list</span>, <span class="va">testdata</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -76,13 +76,18 @@ predict_model.xgb.Booster()</p>
     <dl><dt>feature_list</dt>
 <dd><p>List. The <code>feature_list</code> object in the output object after running
 <code><a href="make_dummies.html">make_dummies</a></code></p></dd>
+
+
 <dt>testdata</dt>
 <dd><p>data.table or data.frame. New data that has the same
 feature names, types, and levels as <code>feature_list</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data.table with all features but where the factors in <code>testdata</code> are
+    
+
+<p>A data.table with all features but where the factors in <code>testdata</code> are
 one-hot encoded variables as specified in feature_list</p>
     </div>
     <div id="author">
@@ -102,7 +107,7 @@ one-hot encoded variables as specified in feature_list</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

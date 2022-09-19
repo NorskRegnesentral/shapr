@@ -65,7 +65,7 @@ if <code>n_batches</code> is greater than 1.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">prepare_and_predict</span><span class="op">(</span><span class="va">explainer</span>, <span class="va">n_batches</span>, <span class="va">prediction_zero</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">prepare_and_predict</span><span class="op">(</span><span class="va">explainer</span>, <span class="va">n_batches</span>, <span class="va">prediction_zero</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -73,6 +73,8 @@ if <code>n_batches</code> is greater than 1.</p>
     <dl><dt>explainer</dt>
 <dd><p>An <code>explainer</code> object to use for explaining the observations.
 See <code><a href="shapr.html">shapr</a></code>.</p></dd>
+
+
 <dt>n_batches</dt>
 <dd><p>Positive integer.
 Specifies how many batches the total number of feature combinations should be split into when calculating the
@@ -80,19 +82,26 @@ contribution function for each test observation.
 The default value is 1.
 Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
 This typically comes with a small increase in computation time.</p></dd>
+
+
 <dt>prediction_zero</dt>
 <dd><p>Numeric. The prediction value for unseen data, typically equal to the mean of
 the response.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed to <code><a href="prepare_data.html">prepare_data</a></code> with exception of <code>only_return_contrib_dt</code>,
 which is only passed to explain. If <code>TRUE</code> the
 <code>data.table</code> from <code><a href="prediction.html">prediction</a></code> is returned, else an object of class <code>shapr</code>.
 Each column (except for <code>row_id</code>) correspond to the vector <code>v_D</code> in Equation 7 in the reference.
 The Shapley values can be calculated by <code>t(explainer$W %*% dt_contrib[, -"row_id"]))</code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list. See <code><a href="explain.html">explain</a></code> for more information.</p>
+    
+
+<p>A list. See <code><a href="explain.html">explain</a></code> for more information.</p>
     </div>
 
   </div>
@@ -107,7 +116,7 @@ The Shapley values can be calculated by <code>t(explainer$W %*% dt_contrib[, -"r
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

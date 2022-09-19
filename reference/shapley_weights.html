@@ -63,26 +63,35 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">shapley_weights</span><span class="op">(</span><span class="va">m</span>, <span class="va">N</span>, <span class="va">n_components</span>, weight_zero_m <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">shapley_weights</span><span class="op">(</span><span class="va">m</span>, <span class="va">N</span>, <span class="va">n_components</span>, weight_zero_m <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>m</dt>
 <dd><p>Positive integer. Total number of features/feature groups.</p></dd>
+
+
 <dt>N</dt>
 <dd><p>Positive integer. The number of unique combinations when sampling <code>n_components</code> features/feature
 groups, without replacement, from a sample space consisting of <code>m</code> different features/feature groups.</p></dd>
+
+
 <dt>n_components</dt>
 <dd><p>Positive integer. Represents the number of features/feature groups you want to sample from
 a feature space consisting of <code>m</code> unique features/feature groups. Note that <code> 0 &lt; = n_components &lt;= m</code>.</p></dd>
+
+
 <dt>weight_zero_m</dt>
 <dd><p>Positive integer. Represents the Shapley weight for two special
 cases, i.e. the case where you have either <code>0</code> or <code>m</code> features/feature groups.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Numeric</p>
+    
+
+<p>Numeric</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -101,7 +110,7 @@ cases, i.e. the case where you have either <code>0</code> or <code>m</code> feat
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

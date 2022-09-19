@@ -63,7 +63,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">sample_ctree</span><span class="op">(</span><span class="va">tree</span>, <span class="va">n_samples</span>, <span class="va">x_test</span>, <span class="va">x_train</span>, <span class="va">p</span>, <span class="va">sample</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sample_ctree</span><span class="op">(</span><span class="va">tree</span>, <span class="va">n_samples</span>, <span class="va">x_test</span>, <span class="va">x_train</span>, <span class="va">p</span>, <span class="va">sample</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -71,23 +71,36 @@
     <dl><dt>tree</dt>
 <dd><p>List. Contains tree which is an object of type ctree built from the party package.
 Also contains given_ind, the features to condition upon.</p></dd>
+
+
 <dt>n_samples</dt>
 <dd><p>Numeric. Indicates how many samples to use for MCMC.</p></dd>
+
+
 <dt>x_test</dt>
 <dd><p>Matrix, data.frame or data.table with the features of the observation whose
 predictions ought to be explained (test data). Dimension <code>1xp</code> or <code>px1</code>.</p></dd>
+
+
 <dt>x_train</dt>
 <dd><p>Matrix, data.frame or data.table with training data.</p></dd>
+
+
 <dt>p</dt>
 <dd><p>Positive integer. The number of features.</p></dd>
+
+
 <dt>sample</dt>
 <dd><p>Boolean. True indicates that the method samples from the terminal node
 of the tree whereas False indicates that the method takes all the observations if it is
 less than n_samples.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>data.table with <code>n_samples</code> (conditional) Gaussian samples</p>
+    
+
+<p>data.table with <code>n_samples</code> (conditional) Gaussian samples</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -96,33 +109,33 @@ less than n_samples.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"party"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
-<span class="r-in">  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">40</span></span>
-<span class="r-in">  <span class="va">n_samples</span> <span class="op">&lt;-</span> <span class="fl">50</span></span>
-<span class="r-in">  <span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">m</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">cov_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span> <span class="op">*</span> <span class="va">m</span><span class="op">)</span>, <span class="va">n</span>, <span class="va">m</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">mu</span>, <span class="va">cov_mat</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">x_test</span> <span class="op">&lt;-</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">mu</span>, <span class="va">cov_mat</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">x_test_dt</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">x_test</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">given_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">dependent_ind</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="va">given_ind</span><span class="op">]</span></span>
-<span class="r-in">  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x_train</span><span class="op">[</span>, <span class="va">given_ind</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
-<span class="r-in">  <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x_train</span><span class="op">[</span>, <span class="va">dependent_ind</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
-<span class="r-in">  <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">y</span>, <span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"V"</span>, <span class="va">given_ind</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">ynam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">fmla</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">ynam</span>, collapse <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span>, <span class="st">"~ ."</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">datact</span> <span class="op">&lt;-</span> <span class="fu">party</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/party/man/ctree.html" class="external-link">ctree</a></span><span class="op">(</span><span class="va">fmla</span>, data <span class="op">=</span> <span class="va">df</span>, controls <span class="op">=</span> <span class="fu">party</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/party/man/ctree_control.html" class="external-link">ctree_control</a></span><span class="op">(</span></span>
-<span class="r-in">    minbucket <span class="op">=</span> <span class="fl">7</span>,</span>
-<span class="r-in">    mincriterion <span class="op">=</span> <span class="fl">0.95</span></span>
-<span class="r-in">  <span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">datact</span>, given_ind <span class="op">=</span> <span class="va">given_ind</span>, dependent_ind <span class="op">=</span> <span class="va">dependent_ind</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">shapr</span><span class="fu">:::</span><span class="fu">sample_ctree</span><span class="op">(</span></span>
-<span class="r-in">    tree <span class="op">=</span> <span class="va">tree</span>, n_samples <span class="op">=</span> <span class="va">n_samples</span>, x_test <span class="op">=</span> <span class="va">x_test_dt</span>, x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
-<span class="r-in">    p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x_test</span><span class="op">)</span>, sample <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"party"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></span>
+<span class="r-in"><span>  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">40</span></span></span>
+<span class="r-in"><span>  <span class="va">n_samples</span> <span class="op">&lt;-</span> <span class="fl">50</span></span></span>
+<span class="r-in"><span>  <span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">m</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">cov_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span> <span class="op">*</span> <span class="va">m</span><span class="op">)</span>, <span class="va">n</span>, <span class="va">m</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">mu</span>, <span class="va">cov_mat</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">x_test</span> <span class="op">&lt;-</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">mu</span>, <span class="va">cov_mat</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">x_test_dt</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">x_test</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">given_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">dependent_ind</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="va">given_ind</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x_train</span><span class="op">[</span>, <span class="va">given_ind</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x_train</span><span class="op">[</span>, <span class="va">dependent_ind</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">y</span>, <span class="va">x</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"V"</span>, <span class="va">given_ind</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">ynam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">fmla</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">ynam</span>, collapse <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span>, <span class="st">"~ ."</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">datact</span> <span class="op">&lt;-</span> <span class="fu">party</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/party/man/ctree.html" class="external-link">ctree</a></span><span class="op">(</span><span class="va">fmla</span>, data <span class="op">=</span> <span class="va">df</span>, controls <span class="op">=</span> <span class="fu">party</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/party/man/ctree_control.html" class="external-link">ctree_control</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    minbucket <span class="op">=</span> <span class="fl">7</span>,</span></span>
+<span class="r-in"><span>    mincriterion <span class="op">=</span> <span class="fl">0.95</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">datact</span>, given_ind <span class="op">=</span> <span class="va">given_ind</span>, dependent_ind <span class="op">=</span> <span class="va">dependent_ind</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">shapr</span><span class="fu">:::</span><span class="fu">sample_ctree</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    tree <span class="op">=</span> <span class="va">tree</span>, n_samples <span class="op">=</span> <span class="va">n_samples</span>, x_test <span class="op">=</span> <span class="va">x_test_dt</span>, x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
+<span class="r-in"><span>    p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x_test</span><span class="op">)</span>, sample <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               V1         V2         V3        V4          V5          V6     V7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: -1.093876376  1.1063321  1.4138340 0.5981535  0.09245859  0.92925925 1.8679</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:  2.030356116  2.4249408  0.4725051 0.5981535  2.69054801  2.61612343 1.8679</span>
@@ -241,7 +254,7 @@ less than n_samples.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

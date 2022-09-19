@@ -63,14 +63,14 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">observation_impute</span><span class="op">(</span>
-  <span class="va">W_kernel</span>,
-  <span class="va">S</span>,
-  <span class="va">x_train</span>,
-  <span class="va">x_test</span>,
-  w_threshold <span class="op">=</span> <span class="fl">0.7</span>,
-  n_samples <span class="op">=</span> <span class="fl">1000</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">observation_impute</span><span class="op">(</span></span>
+<span>  <span class="va">W_kernel</span>,</span>
+<span>  <span class="va">S</span>,</span>
+<span>  <span class="va">x_train</span>,</span>
+<span>  <span class="va">x_test</span>,</span>
+<span>  w_threshold <span class="op">=</span> <span class="fl">0.7</span>,</span>
+<span>  n_samples <span class="op">=</span> <span class="fl">1000</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -78,26 +78,39 @@
     <dl><dt>W_kernel</dt>
 <dd><p>Numeric matrix. Contains all nonscaled weights between training and test
 observations for all feature combinations. The dimension equals <code>n_train x m</code>.</p></dd>
+
+
 <dt>S</dt>
 <dd><p>Integer matrix of dimension <code>n_combinations x m</code>, where <code>n_combinations</code>
 and <code>m</code> equals the total number of sampled/non-sampled feature combinations and
 the total number of unique features, respectively. Note that <code>m = ncol(x_train)</code>.</p></dd>
+
+
 <dt>x_train</dt>
 <dd><p>Numeric matrix</p></dd>
+
+
 <dt>x_test</dt>
 <dd><p>Numeric matrix</p></dd>
+
+
 <dt>w_threshold</dt>
 <dd><p>Numeric vector of length 1, with <code>0 &lt; w_threshold &lt;= 1</code> representing the minimum proportion
 of the total empirical weight that data samples should use. If e.g. <code>w_threshold = .8</code> we will choose the
 <code>K</code> samples with the largest weight so that the sum of the weights accounts for 80% of the total weight.
 <code>w_threshold</code> is the \(\eta\) parameter in equation (15) of Aas et al (2021).</p></dd>
+
+
 <dt>n_samples</dt>
 <dd><p>Positive integer. Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>data.table</p>
+    
+
+<p>data.table</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -121,7 +134,7 @@ Monte Carlo integration for every conditional expectation. See also details.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

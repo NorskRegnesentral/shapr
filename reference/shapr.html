@@ -63,7 +63,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">shapr</span><span class="op">(</span><span class="va">x</span>, <span class="va">model</span>, n_combinations <span class="op">=</span> <span class="cn">NULL</span>, group <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">shapr</span><span class="op">(</span><span class="va">x</span>, <span class="va">model</span>, n_combinations <span class="op">=</span> <span class="cn">NULL</span>, group <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -71,23 +71,32 @@
     <dl><dt>x</dt>
 <dd><p>Numeric matrix or data.frame/data.table. Contains the data used to estimate the (conditional)
 distributions for the features needed to properly estimate the conditional expectations in the Shapley formula.</p></dd>
+
+
 <dt>model</dt>
 <dd><p>The model whose predictions we want to explain. Run
 <code><a href="get_supported_models.html">shapr:::get_supported_models()</a></code>
 for a table of which models <code>shapr</code> supports natively.</p></dd>
+
+
 <dt>n_combinations</dt>
 <dd><p>Integer. The number of feature combinations to sample. If <code>NULL</code>,
 the exact method is used and all combinations are considered. The maximum number of
 combinations equals <code>2^ncol(x)</code>.</p></dd>
+
+
 <dt>group</dt>
 <dd><p>List. If <code>NULL</code> regular feature wise Shapley values are computed.
 If provided, group wise Shapley values are computed. <code>group</code> then has length equal to
 the number of groups. The list element contains character vectors with the features included
 in each of the different groups.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Named list that contains the following items:</p><dl><dt>exact</dt>
+    
+
+<p>Named list that contains the following items:</p><dl><dt>exact</dt>
 <dd><p>Boolean. Equals <code>TRUE</code> if <code>n_combinations = NULL</code> or
   <code>n_combinations &lt; 2^ncol(x)</code>, otherwise <code>FALSE</code>.</p></dd>
 
@@ -126,44 +135,44 @@ in each of the different groups.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="co"># Load example data</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">df</span> <span class="op">&lt;-</span> <span class="va">Boston</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Example using the exact method</span></span>
-<span class="r-in">  <span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span></span>
-<span class="r-in">  <span class="va">df0</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span>, <span class="va">x_var</span><span class="op">]</span></span>
-<span class="r-in">  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">dis</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu">shapr</span><span class="op">(</span><span class="va">df0</span>, <span class="va">model</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">explainer</span><span class="op">$</span><span class="va">X</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># 16 (which equals 2^4)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Example using approximation</span></span>
-<span class="r-in">  <span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span></span>
-<span class="r-in">  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu">shapr</span><span class="op">(</span><span class="va">df</span>, <span class="va">model</span>, n_combinations <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">explainer</span><span class="op">$</span><span class="va">X</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Example using approximation where n_combinations &gt; 2^m</span></span>
-<span class="r-in">  <span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span></span>
-<span class="r-in">  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">dis</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu">shapr</span><span class="op">(</span><span class="va">df0</span>, <span class="va">model</span>, n_combinations <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">explainer</span><span class="op">$</span><span class="va">X</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># 16 (which equals 2^4)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Example using groups</span></span>
-<span class="r-in">  <span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A<span class="op">=</span><span class="va">x_var</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, B<span class="op">=</span><span class="va">x_var</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="va">explainer_group</span> <span class="op">&lt;-</span> <span class="fu">shapr</span><span class="op">(</span><span class="va">df0</span>, <span class="va">model</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">explainer_group</span><span class="op">$</span><span class="va">X</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># 4 (which equals 2^(#groups))</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># Load example data</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">df</span> <span class="op">&lt;-</span> <span class="va">Boston</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Example using the exact method</span></span></span>
+<span class="r-in"><span>  <span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span></span></span>
+<span class="r-in"><span>  <span class="va">df0</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span>, <span class="va">x_var</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">dis</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu">shapr</span><span class="op">(</span><span class="va">df0</span>, <span class="va">model</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">explainer</span><span class="op">$</span><span class="va">X</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># 16 (which equals 2^4)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Example using approximation</span></span></span>
+<span class="r-in"><span>  <span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span></span></span>
+<span class="r-in"><span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu">shapr</span><span class="op">(</span><span class="va">df</span>, <span class="va">model</span>, n_combinations <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">explainer</span><span class="op">$</span><span class="va">X</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Example using approximation where n_combinations &gt; 2^m</span></span></span>
+<span class="r-in"><span>  <span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span></span></span>
+<span class="r-in"><span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">dis</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu">shapr</span><span class="op">(</span><span class="va">df0</span>, <span class="va">model</span>, n_combinations <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">explainer</span><span class="op">$</span><span class="va">X</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># 16 (which equals 2^4)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Example using groups</span></span></span>
+<span class="r-in"><span>  <span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A<span class="op">=</span><span class="va">x_var</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, B<span class="op">=</span><span class="va">x_var</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">explainer_group</span> <span class="op">&lt;-</span> <span class="fu">shapr</span><span class="op">(</span><span class="va">df0</span>, <span class="va">model</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">explainer_group</span><span class="op">$</span><span class="va">X</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># 4 (which equals 2^(#groups))</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 16</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
@@ -189,7 +198,7 @@ in each of the different groups.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

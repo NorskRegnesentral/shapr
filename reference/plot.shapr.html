@@ -63,39 +63,52 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for shapr</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  digits <span class="op">=</span> <span class="fl">3</span>,
-  plot_phi0 <span class="op">=</span> <span class="cn">TRUE</span>,
-  index_x_test <span class="op">=</span> <span class="cn">NULL</span>,
-  top_k_features <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for shapr</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  plot_phi0 <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  index_x_test <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  top_k_features <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>An <code>shapr</code> object. See <code><a href="explain.html">explain</a></code>.</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>Integer. Number of significant digits to use in the feature description</p></dd>
+
+
 <dt>plot_phi0</dt>
 <dd><p>Logical. Whether to include <code>phi0</code> in the plot</p></dd>
+
+
 <dt>index_x_test</dt>
 <dd><p>Integer vector. Which of the test observations to plot. E.g. if you have
 explained 10 observations using <code><a href="explain.html">explain</a></code>, you can generate a plot for the first 5
 observations by setting <code>index_x_test = 1:5</code>.</p></dd>
+
+
 <dt>top_k_features</dt>
 <dd><p>Integer. How many features to include in the plot. E.g. if you have 15
 features in your model you can plot the 5 most important features, for each explanation, by setting
 <code>top_k_features = 1:5</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Currently not used.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>ggplot object with plots of the Shapley value explanations</p>
+    
+
+<p>ggplot object with plots of the Shapley value explanations</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -109,36 +122,36 @@ how you should use the function.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="co">#' # Load example data</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Split data into test- and training data</span></span>
-<span class="r-in">  <span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Boston</span>, <span class="op">-</span><span class="fl">3</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">x_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">Boston</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Fit a linear model</span></span>
-<span class="r-in">  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">dis</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">x_train</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Create an explainer object</span></span>
-<span class="r-in">  <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="shapr.html">shapr</a></span><span class="op">(</span><span class="va">x_train</span>, <span class="va">model</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Explain predictions</span></span>
-<span class="r-in">  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">$</span><span class="va">medv</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Empirical approach</span></span>
-<span class="r-in">  <span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span><span class="va">x_test</span>,</span>
-<span class="r-in">    <span class="va">explainer</span>,</span>
-<span class="r-in">    approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
-<span class="r-in">    prediction_zero <span class="op">=</span> <span class="va">p</span>,</span>
-<span class="r-in">    n_samples <span class="op">=</span> <span class="fl">1e2</span></span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="co"># Plot the explantion (this function)</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">}</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co">#' # Load example data</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Split data into test- and training data</span></span></span>
+<span class="r-in"><span>  <span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Boston</span>, <span class="op">-</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">x_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">Boston</span>, <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Fit a linear model</span></span></span>
+<span class="r-in"><span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">lstat</span> <span class="op">+</span> <span class="va">rm</span> <span class="op">+</span> <span class="va">dis</span> <span class="op">+</span> <span class="va">indus</span>, data <span class="op">=</span> <span class="va">x_train</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Create an explainer object</span></span></span>
+<span class="r-in"><span>  <span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="shapr.html">shapr</a></span><span class="op">(</span><span class="va">x_train</span>, <span class="va">model</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Explain predictions</span></span></span>
+<span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">$</span><span class="va">medv</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Empirical approach</span></span></span>
+<span class="r-in"><span>  <span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span><span class="va">x_test</span>,</span></span>
+<span class="r-in"><span>    <span class="va">explainer</span>,</span></span>
+<span class="r-in"><span>    approach <span class="op">=</span> <span class="st">"empirical"</span>,</span></span>
+<span class="r-in"><span>    prediction_zero <span class="op">=</span> <span class="va">p</span>,</span></span>
+<span class="r-in"><span>    n_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="co"># Plot the explantion (this function)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Success with message:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The columns(s) crim, zn, chas, nox, age, rad, tax, ptratio, black, medv is not used by the model and thus removed from the data.</span>
@@ -160,7 +173,7 @@ how you should use the function.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

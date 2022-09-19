@@ -63,21 +63,28 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">create_S_batch</span><span class="op">(</span><span class="va">explainer</span>, <span class="va">n_batches</span>, index_S <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_S_batch</span><span class="op">(</span><span class="va">explainer</span>, <span class="va">n_batches</span>, index_S <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>explainer</dt>
 <dd><p>The binary matrix <code>S</code> returned from <code><a href="shapr.html">shapr</a></code>.</p></dd>
+
+
 <dt>n_batches</dt>
 <dd><p>Numeric value specifying how many batches <code>S</code> should be split into.</p></dd>
+
+
 <dt>index_S</dt>
 <dd><p>Numeric vector specifying which rows of <code>S</code> that should be considered.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list of length <code>n_batches</code>.</p>
+    
+
+<p>A list of length <code>n_batches</code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -97,7 +104,7 @@ total number of batches is equal <code>n_batches</code> and not within the rows 
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

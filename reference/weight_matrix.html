@@ -63,23 +63,30 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">weight_matrix</span><span class="op">(</span><span class="va">X</span>, normalize_W_weights <span class="op">=</span> <span class="cn">TRUE</span>, is_groupwise <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">weight_matrix</span><span class="op">(</span><span class="va">X</span>, normalize_W_weights <span class="op">=</span> <span class="cn">TRUE</span>, is_groupwise <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>X</dt>
 <dd><p>data.table</p></dd>
+
+
 <dt>normalize_W_weights</dt>
 <dd><p>Logical. Whether to normalize the weights for the combinations to sum to 1 for
 increased numerical stability before solving the WLS (weighted least squares). Applies to all combinations
 except combination <code>1</code> and <code>2^m</code>.</p></dd>
+
+
 <dt>is_groupwise</dt>
 <dd><p>Logical. Indicating whether group wise Shapley values are to be computed.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Numeric matrix. See <code><a href="weight_matrix_cpp.html">weight_matrix_cpp</a></code> for more information.</p>
+    
+
+<p>Numeric matrix. See <code><a href="weight_matrix_cpp.html">weight_matrix_cpp</a></code> for more information.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -98,7 +105,7 @@ except combination <code>1</code> and <code>2^m</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -83,10 +83,15 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
+
 <div class="section level1">
 <div class="page-header"><h1 id="shapr-">shapr <img src="reference/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"><a class="anchor" aria-label="anchor" href="#shapr-"></a>
 </h1></div>
 <!-- badges: start -->
+</div>
+<div class="section level1">
+<h1 id="note-this-package-is-undergoing-severe-restructuring-a-new-version-with-breaking-changes-will-be-available-on-github-soon">NOTE: This package is undergoing severe restructuring. A new version (with breaking changes) will be available on GitHub soon.<a class="anchor" aria-label="anchor" href="#note-this-package-is-undergoing-severe-restructuring-a-new-version-with-breaking-changes-will-be-available-on-github-soon"></a>
+</h1>
 <p>The most common machine learning task is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features. When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction. However, explaining predictions from complex, or seemingly simple, machine learning models is a practical and ethical question, as well as a legal issue. Can I trust the model? Is it biased? Can I explain it to others? We want to explain individual predictions from a complex machine learning model by learning simple, interpretable explanations.</p>
 <p>Shapley values is the only prediction explanation framework with a solid theoretical foundation (Lundberg and Lee (2017)). Unless the true distribution of the features are known, and there are less than say 10-15 features, these Shapley values needs to be estimated/approximated. Popular methods like Shapley Sampling Values (Štrumbelj and Kononenko (2014)), SHAP/Kernel SHAP (Lundberg and Lee (2017)), and to some extent TreeSHAP (Lundberg, Erion, and Lee (2018)), assume that the features are independent when approximating the Shapley values for prediction explanation. This may lead to very inaccurate Shapley values, and consequently wrong interpretations of the predictions. Aas, Jullum, and Løland (2021) extends and improves the Kernel SHAP method of Lundberg and Lee (2017) to account for the dependence between the features, resulting in significantly more accurate approximations to the Shapley values. <a href="https://www.sciencedirect.com/science/article/pii/S0004370221000539" class="external-link">See the paper for details</a>.</p>
 <p>This package implements the methodology of Aas, Jullum, and Løland (2021).</p>
@@ -98,8 +103,7 @@
 <li>Accounting for feature dependence using the Mahalanobis distance based empirical (conditional) distribution approach of Aas, Jullum, and Løland (2021).</li>
 <li>Accounting for feature dependence using conditional inference trees (Redelmeier, Jullum, and Aas (2020)).</li>
 <li>Combining any of the four methods.</li>
-<li>Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai<ol start="1998" style="list-style-type: decimal"><li>when optimizing the bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2021).</li></ol>
-</li>
+<li>Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai (1998) when optimizing the bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2021).</li>
 <li>Functionality for visualizing the explanations.</li>
 <li>Support for models not supported natively.</li>
 </ul>
@@ -121,17 +125,17 @@ Current methodological restrictions:
 </h2>
 <p>To install the current stable release from CRAN, use</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"shapr"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"shapr"</span><span class="op">)</span></span></code></pre></div>
 <p>To install the current development version, use</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span><span class="op">)</span></span></code></pre></div>
 <p>If you would like to install all packages of the models we currently support, use</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>If you would also like to build and view the vignette locally, use</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"understanding_shapr"</span>, <span class="st">"shapr"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"understanding_shapr"</span>, <span class="st">"shapr"</span><span class="op">)</span></span></code></pre></div>
 <p>You can always check out the latest version of the vignette <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html">here</a>.</p>
 </div>
 <div class="section level2">
@@ -140,64 +144,63 @@ Current methodological restrictions:
 <p><code>shapr</code> supports computation of Shapley values with any predictive model which takes a set of numeric features and produces a numeric outcome.</p>
 <p>The following example shows how a simple <code>xgboost</code> model is trained using the <em>Boston Housing Data</em>, and how <code>shapr</code> explains the individual predictions.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://norskregnesentral.github.io/shapr/">shapr</a></span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span>
-
-<span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span><span class="op">)</span>
-<span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span>
-
-<span class="va">ind_x_test</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>
-<span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_test</span>, <span class="va">x_var</span><span class="op">]</span><span class="op">)</span>
-<span class="va">y_train</span> <span class="op">&lt;-</span> <span class="va">Boston</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_test</span>, <span class="va">y_var</span><span class="op">]</span>
-<span class="va">x_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">[</span><span class="va">ind_x_test</span>, <span class="va">x_var</span><span class="op">]</span><span class="op">)</span>
-
-<span class="co"># Looking at the dependence between the features</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>
-<span class="co">#&gt;            lstat         rm        dis      indus</span>
-<span class="co">#&gt; lstat  1.0000000 -0.6108040 -0.4928126  0.5986263</span>
-<span class="co">#&gt; rm    -0.6108040  1.0000000  0.1999130 -0.3870571</span>
-<span class="co">#&gt; dis   -0.4928126  0.1999130  1.0000000 -0.7060903</span>
-<span class="co">#&gt; indus  0.5986263 -0.3870571 -0.7060903  1.0000000</span>
-
-<span class="co"># Fitting a basic xgboost model to the training data</span>
-<span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="va">x_train</span>,
-  label <span class="op">=</span> <span class="va">y_train</span>,
-  nround <span class="op">=</span> <span class="fl">20</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span>
-
-<span class="co"># Prepare the data for explanation</span>
-<span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">x_train</span>, <span class="va">model</span><span class="op">)</span>
-<span class="co">#&gt; The specified model provides feature classes that are NA. The classes of data are taken as the truth.</span>
-
-<span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">)</span>
-
-<span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span>
-<span class="co"># the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)</span>
-<span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/explain.html">explain</a></span><span class="op">(</span>
-  <span class="va">x_test</span>,
-  approach <span class="op">=</span> <span class="st">"empirical"</span>,
-  explainer <span class="op">=</span> <span class="va">explainer</span>,
-  prediction_zero <span class="op">=</span> <span class="va">p</span>
-<span class="op">)</span>
-
-<span class="co"># Printing the Shapley values for the test data.</span>
-<span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">dt</span><span class="op">)</span>
-<span class="co">#&gt;      none     lstat         rm       dis      indus</span>
-<span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span>
-<span class="co">#&gt; 2: 22.446 0.1671901 -0.7088401 0.9689005  0.3786871</span>
-<span class="co">#&gt; 3: 22.446 5.9888022  5.5450858 0.5660134 -1.4304351</span>
-<span class="co">#&gt; 4: 22.446 8.2142204  0.7507572 0.1893366  1.8298304</span>
-<span class="co">#&gt; 5: 22.446 0.5059898  5.6875103 0.8432238  2.2471150</span>
-<span class="co">#&gt; 6: 22.446 1.9929673 -3.6001958 0.8601984  3.1510531</span>
-
-<span class="co"># Finally we plot the resulting explanations</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://norskregnesentral.github.io/shapr/">shapr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Boston"</span>, package <span class="op">=</span> <span class="st">"MASS"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"dis"</span>, <span class="st">"indus"</span><span class="op">)</span></span>
+<span><span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"medv"</span></span>
+<span></span>
+<span><span class="va">ind_x_test</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span></span>
+<span><span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_test</span>, <span class="va">x_var</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">y_train</span> <span class="op">&lt;-</span> <span class="va">Boston</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_test</span>, <span class="va">y_var</span><span class="op">]</span></span>
+<span><span class="va">x_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">[</span><span class="va">ind_x_test</span>, <span class="va">x_var</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Looking at the dependence between the features</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span></span>
+<span><span class="co">#&gt;            lstat         rm        dis      indus</span></span>
+<span><span class="co">#&gt; lstat  1.0000000 -0.6108040 -0.4928126  0.5986263</span></span>
+<span><span class="co">#&gt; rm    -0.6108040  1.0000000  0.1999130 -0.3870571</span></span>
+<span><span class="co">#&gt; dis   -0.4928126  0.1999130  1.0000000 -0.7060903</span></span>
+<span><span class="co">#&gt; indus  0.5986263 -0.3870571 -0.7060903  1.0000000</span></span>
+<span><span class="co"># Fitting a basic xgboost model to the training data</span></span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  label <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span>  nround <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Prepare the data for explanation</span></span>
+<span><span class="va">explainer</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/shapr.html">shapr</a></span><span class="op">(</span><span class="va">x_train</span>, <span class="va">model</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Success with message:</span></span>
+<span><span class="co">#&gt; The specified model provides feature classes that are NA. The classes of data are taken as the truth.</span></span>
+<span><span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Computing the actual Shapley values with kernelSHAP accounting for feature dependence using</span></span>
+<span><span class="co"># the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)</span></span>
+<span><span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  <span class="va">x_test</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
+<span>  explainer <span class="op">=</span> <span class="va">explainer</span>,</span>
+<span>  prediction_zero <span class="op">=</span> <span class="va">p</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Printing the Shapley values for the test data.</span></span>
+<span><span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">dt</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      none     lstat         rm       dis      indus</span></span>
+<span><span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span></span>
+<span><span class="co">#&gt; 2: 22.446 0.1671901 -0.7088401 0.9689005  0.3786871</span></span>
+<span><span class="co">#&gt; 3: 22.446 5.9888022  5.5450858 0.5660134 -1.4304351</span></span>
+<span><span class="co">#&gt; 4: 22.446 8.2142204  0.7507572 0.1893366  1.8298304</span></span>
+<span><span class="co">#&gt; 5: 22.446 0.5059898  5.6875103 0.8432238  2.2471150</span></span>
+<span><span class="co">#&gt; 6: 22.446 1.9929673 -3.6001958 0.8601984  3.1510531</span></span>
+<span><span class="co"># Finally we plot the resulting explanations</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-basic_example-1.png" width="100%"></p>
 </div>
 <div class="section level2">
@@ -209,17 +212,18 @@ Current methodological restrictions:
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references hanging-indent">
-<div id="ref-aas2019explaining"><p>Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298.</p></div>
-<div id="ref-hurvich1998smoothing"><p>Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998. “Smoothing Parameter Selection in Nonparametric Regression Using an Improved Akaike Information Criterion.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 60 (2): 271–93.</p></div>
-<div id="ref-lundberg2018consistent"><p>Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent Individualized Feature Attribution for Tree Ensembles.” <em>arXiv Preprint arXiv:1802.03888</em>.</p></div>
-<div id="ref-lundberg2017unified"><p>Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.</p></div>
-<div id="ref-lime_api"><p>Pedersen, Thomas Lin, and Michaël Benesty. 2019. <em>Lime: Local Interpretable Model-Agnostic Explanations</em>. <a href="https://CRAN.R-project.org/package=lime" class="external-link uri">https://CRAN.R-project.org/package=lime</a>.</p></div>
-<div id="ref-redelmeier2020explaining"><p>Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predictive Models with Mixed Features Using Shapley Values and Conditional Inference Trees.” In <em>International Cross-Domain Conference for Machine Learning and Knowledge Extraction</em>, 117–37. Springer.</p></div>
-<div id="ref-vstrumbelj2014explaining"><p>Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models and Individual Predictions with Feature Contributions.” <em>Knowledge and Information Systems</em> 41 (3): 647–65.</p></div>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-aas2019explaining" class="csl-entry"><p>Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298.</p></div>
+<div id="ref-hurvich1998smoothing" class="csl-entry"><p>Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998. “Smoothing Parameter Selection in Nonparametric Regression Using an Improved Akaike Information Criterion.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 60 (2): 271–93.</p></div>
+<div id="ref-lundberg2018consistent" class="csl-entry"><p>Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent Individualized Feature Attribution for Tree Ensembles.” <em>arXiv Preprint arXiv:1802.03888</em>.</p></div>
+<div id="ref-lundberg2017unified" class="csl-entry"><p>Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.</p></div>
+<div id="ref-lime_api" class="csl-entry"><p>Pedersen, Thomas Lin, and Michaël Benesty. 2019. <em>Lime: Local Interpretable Model-Agnostic Explanations</em>. <a href="https://CRAN.R-project.org/package=lime" class="external-link uri">https://CRAN.R-project.org/package=lime</a>.</p></div>
+<div id="ref-redelmeier2020explaining" class="csl-entry"><p>Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predictive Models with Mixed Features Using Shapley Values and Conditional Inference Trees.” In <em>International Cross-Domain Conference for Machine Learning and Knowledge Extraction</em>, 117–37. Springer.</p></div>
+<div id="ref-vstrumbelj2014explaining" class="csl-entry"><p>Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models and Individual Predictions with Feature Contributions.” <em>Knowledge and Information Systems</em> 41 (3): 647–65.</p></div>
 </div>
 </div>
 </div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -289,7 +293,7 @@ Current methodological restrictions:
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

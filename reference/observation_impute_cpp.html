@@ -63,7 +63,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">observation_impute_cpp</span><span class="op">(</span><span class="va">index_xtrain</span>, <span class="va">index_s</span>, <span class="va">xtrain</span>, <span class="va">xtest</span>, <span class="va">S</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">observation_impute_cpp</span><span class="op">(</span><span class="va">index_xtrain</span>, <span class="va">index_s</span>, <span class="va">xtrain</span>, <span class="va">xtest</span>, <span class="va">S</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -71,22 +71,33 @@
     <dl><dt>index_xtrain</dt>
 <dd><p>Positive integer. Represents a sequence of row indices from <code>xtrain</code>,
 i.e. <code>min(index_xtrain) &gt;= 1</code> and <code>max(index_xtrain) &lt;= nrow(xtrain)</code>.</p></dd>
+
+
 <dt>index_s</dt>
 <dd><p>Positive integer. Represents a sequence of row indices from <code>S</code>,
 i.e. <code>min(index_s) &gt;= 1</code> and <code>max(index_s) &lt;= nrow(S)</code>.</p></dd>
+
+
 <dt>xtrain</dt>
 <dd><p>Numeric matrix.</p></dd>
+
+
 <dt>xtest</dt>
 <dd><p>Numeric matrix. Represents a single test observation.</p></dd>
+
+
 <dt>S</dt>
 <dd><p>Integer matrix of dimension <code>n_combinations x m</code>, where <code>n_combinations</code> equals
 the total number of sampled/non-sampled feature combinations and <code>m</code> equals
 the total number of unique features. Note that <code>m = ncol(xtrain)</code>. See details
 for more information.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Numeric matrix</p>
+    
+
+<p>Numeric matrix</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -118,7 +129,7 @@ Otherwise <code>X[k, j] = xtrain[index_xtrain[k], j]</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
