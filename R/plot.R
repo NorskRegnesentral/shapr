@@ -286,7 +286,7 @@ compute_scatter_hist_values <- function(dt_plot, scatter_features) {
 
     if (min(x) == max(x)) {
       scatter_hist_object <- hist(x, breaks = 1, plot = FALSE)
-      scatter_hist_object$breaks = c(x - .Machine$double.eps*10^10, x + .Machine$double.eps*10^10)
+      scatter_hist_object$breaks = c(x[1] - .Machine$double.eps*10^10, x[1] + .Machine$double.eps*10^10)
     } else {
       step <- (max(x)-min(x))/(num_breaks-1)
       scatter_hist_object <- hist(x, breaks = seq(min(x)-step/2, max(x)+step/2, by=step), plot = FALSE)
@@ -395,7 +395,9 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 
     # If there is only one feature value, there is only 5 breaks, see get_num_breaks
     # We therefore remove all labels except the median value.
-    if (length(unique(labels)) == 1) labels[-as.integer(length(labels) / 2 + 0.5)] <- ""
+    if (length(unique(labels)) == 1) {
+      labels[-ceiling(length(labels) / 2 + 0.5)] <- ""
+    }
 
     return(labels)
   }
