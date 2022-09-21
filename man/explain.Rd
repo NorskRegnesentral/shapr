@@ -5,6 +5,7 @@
 \alias{explain.independence}
 \alias{explain.empirical}
 \alias{explain.gaussian}
+\alias{explain.causal}
 \alias{explain.copula}
 \alias{explain.ctree}
 \alias{explain.combined}
@@ -60,6 +61,18 @@ explain(
   seed = 1,
   mu = NULL,
   cov_mat = NULL,
+  ...
+)
+
+\method{explain}{causal}(
+  x,
+  explainer,
+  approach,
+  prediction_zero,
+  n_samples = 1000,
+  mu = NULL,
+  cov_mat = NULL,
+  confounding = FALSE,
   ...
 )
 
@@ -169,11 +182,15 @@ is only applicable when \code{approach = "empirical"}, and \code{type} is either
 
 \item{cov_mat}{Numeric matrix. (Optional) Containing the covariance matrix of the data
 generating distribution. \code{NULL} means it is estimated from the data if needed
-(in the Gaussian approach).}
+(in the Gaussian or causal approach).}
 
 \item{mu}{Numeric vector. (Optional) Containing the mean of the data generating distribution.
 If \code{NULL} the expected values are estimated from the data. Note that this is only used
-when \code{approach = "gaussian"}.}
+when \code{approach = "gaussian"}  or \code{approach = "causal"}.}
+
+\item{confounding}{Logical vector that specifies whether we assume confounding or not.
+If a single value is specified, then the assumption is set globally for all components.
+Otherwise, the logical vector must contain a value for each component in the ordering.}
 
 \item{mincriterion}{Numeric value or vector where length of vector is the number of features in model.
 Value is equal to 1 - alpha where alpha is the nominal level of the conditional
@@ -316,7 +333,17 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 \references{
 Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+
+Frye, C., Rowat, C., & Feige, I. (2020). Asymmetric Shapley values:
+incorporating causal knowledge into model-agnostic explainability.
+Advances in Neural Information Processing Systems, 33.
+
+Heskes, T., Sijben, E., Bucur, I. G., & Claassen, T. (2020). Causal Shapley Values:
+Exploiting Causal Knowledge to Explain Individual Predictions of Complex Models.
+Advances in Neural Information Processing Systems, 33.
 }
 \author{
 Camilla Lingjaerde, Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier
+
+Tom Heskes, Ioan Gabriel Bucur
 }

@@ -4,7 +4,14 @@
 \alias{shapr}
 \title{Create an explainer object with Shapley weights for test data.}
 \usage{
-shapr(x, model, n_combinations = NULL, group = NULL)
+shapr(
+  x,
+  model,
+  n_combinations = NULL,
+  group = NULL,
+  asymmetric = FALSE,
+  causal_ordering = NULL
+)
 }
 \arguments{
 \item{x}{Numeric matrix or data.frame/data.table. Contains the data used to estimate the (conditional)
@@ -22,6 +29,15 @@ combinations equals \code{2^ncol(x)}.}
 If provided, group wise Shapley values are computed. \code{group} then has length equal to
 the number of groups. The list element contains character vectors with the features included
 in each of the different groups.}
+
+\item{asymmetric}{Logical. The flag specifies whether we want to compute
+asymmetric Shapley values. If so, a causal ordering also needs to be specified
+and we only consider variable permutations with the given causal ordering.}
+
+\item{causal_ordering}{List. Contains vectors specifying (partial) causal ordering.
+Each element in the list is a component in the order, which can contain one
+or more variable indices in a vector. For example, in list(1, c(2, 3)),
+2 > 1 and 3 > 1, but 2 and 3 are not comparable.}
 }
 \value{
 Named list that contains the following items:

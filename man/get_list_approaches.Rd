@@ -12,7 +12,7 @@ get_list_approaches(n_features, approach)
 of features.}
 
 \item{approach}{Character vector of length \code{m}. All elements should be
-either \code{"empirical"}, \code{"gaussian"} or \code{"copula"}.}
+either \code{"empirical"}, \code{"causal"}, \code{"gaussian"} or \code{"copula"}.}
 }
 \value{
 List

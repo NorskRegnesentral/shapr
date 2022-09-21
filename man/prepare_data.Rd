@@ -5,6 +5,7 @@
 \alias{prepare_data.independence}
 \alias{prepare_data.empirical}
 \alias{prepare_data.gaussian}
+\alias{prepare_data.causal}
 \alias{prepare_data.copula}
 \alias{prepare_data.ctree}
 \title{Generate data used for predictions}
@@ -16,6 +17,8 @@ prepare_data(x, ...)
 \method{prepare_data}{empirical}(x, index_features = NULL, ...)
 
 \method{prepare_data}{gaussian}(x, index_features = NULL, ...)
+
+\method{prepare_data}{causal}(x, seed = 1, index_features = NULL, ...)
 
 \method{prepare_data}{copula}(x, index_features = NULL, ...)
 
@@ -36,6 +39,8 @@ prepare_data(x, ...)
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
 used for different numbers of conditioned features, this will be a list with the features to pass.}
 
+\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
+
 \item{mc_cores}{Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
 tree building (\code{create_ctree}) and tree sampling (\code{sample_ctree}). Defaults to 1. Note: Uses
 parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows systems.}
@@ -46,13 +51,14 @@ parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows sys
 \item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction
 function.
 Defaults to \code{mc_cores}.}
-
-\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 }
 \value{
 A `data.table` containing simulated data passed to \code{\link{prediction}}.
 }
 \description{
 Generate data used for predictions
+}
+\author{
+Tom Heskes, Ioan Gabriel Bucur
 }
 \keyword{internal}

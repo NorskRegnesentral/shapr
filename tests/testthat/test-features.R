@@ -9,6 +9,12 @@ test_that("Test feature_combinations", {
   x1 <- feature_combinations(m = m, exact = exact, weight_zero_m = w)
   x2 <- feature_exact(m, w)
 
+  # Example 1a (asymmetric)
+  x1a <- feature_combinations(m = m, exact = exact, weight_zero_m = w,
+                                        asymmetric = TRUE, causal_ordering = split(1:m, 1:m))
+  x2a <- feature_exact(m, w, TRUE, causal_ordering = split(1:m, 1:m))
+  x3a <- feature_exact(m, w, TRUE) # default causal ordering allows all combinations
+
   # Example 2 -----------
   m <- 10
   exact <- FALSE
@@ -43,12 +49,26 @@ test_that("Test feature_combinations", {
     weight_zero_m = w
   )
 
+  # Example 3a (asymmetric)
+  y3a <- feature_combinations(
+    m = m,
+    exact = exact,
+    n_combinations = n_combinations,
+    weight_zero_m = w,
+    asymmetric = TRUE,
+    causal_ordering = split(1:m, 1:m)
+  )
+
   # Test results -----------
   expect_equal(x1, x2)
+  expect_equal(x1a, x2a)
+  expect_equal(x1, x3a)
   expect_equal(y1, y2)
   expect_equal(nrow(y3), 2^3)
+  expect_equal(nrow(y3a), 4)
   expect_error(feature_combinations(100))
   expect_error(feature_combinations(100, n_combinations = NULL))
+  expect_error(feature_combinations(10, asymmetric = TRUE, causal_ordering = NULL))
 })
 
 test_that("Test feature_exact", {
@@ -82,6 +102,29 @@ test_that("Test feature_exact", {
   expect_equal(x[["features"]], lfeatures)
   expect_equal(x[["n_features"]], n_components)
   expect_equal(x[["N"]], n)
+
+  # Example asymmetric
+  xa <- feature_exact(m, weight_zero_m, TRUE, split(1:m, 1:m))
+
+  # Define results -----------
+  lfeatures <- list(
+    integer(0),
+    1L,
+    c(1L, 2L),
+    c(1L, 2L, 3L)
+  )
+  id_combination <- c(1, 2, 5, 8)
+  n_components <- 0:3
+  n <- rep(1, 4)
+
+  # Tests -----------
+  expect_true(data.table::is.data.table(xa))
+  expect_equal(names(xa), cnms)
+  expect_equal(unname(sapply(xa, typeof)), classes)
+  expect_equal(xa[["id_combination"]], id_combination)
+  expect_equal(xa[["features"]], lfeatures)
+  expect_equal(xa[["n_features"]], n_components)
+  expect_equal(xa[["N"]], n)
 })
 
 test_that("Test feature_not_exact", {

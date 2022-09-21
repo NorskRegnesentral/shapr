@@ -11,6 +11,15 @@
 #' @param group_num List. Contains vector of integers indicating the feature numbers for the
 #' different groups.
 #'
+#' @param asymmetric Logical. The flag specifies whether we want to compute
+#' asymmetric Shapley values. If so, a causal ordering also needs to be specified
+#' and we only consider variable permutations with the given causal ordering.
+#'
+#' @param causal_ordering List. Contains vectors specifying (partial) causal ordering.
+#' Each element in the list is a component in the order, which can contain one
+#' or more variable indices in a vector. For example, in list(1, c(2, 3)),
+#' 2 > 1 and 3 > 1, but 2 and 3 are not comparable.
+#'
 #' @return A data.table that contains the following columns:
 #' \describe{
 #' \item{id_combination}{Positive integer. Represents a unique key for each combination. Note that the table
@@ -35,7 +44,8 @@
 #'
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
-feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL) {
+feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6,
+                                 group_num = NULL, asymmetric = FALSE, causal_ordering = list(1:m)) {
 
 
   m_group <- length(group_num) # The number of groups
@@ -103,8 +113,14 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   if (m_group == 0) {
     # Here if feature-wise Shapley values
     if (exact) {
-      dt <- feature_exact(m, weight_zero_m)
+      dt <- feature_exact(m, weight_zero_m, asymmetric, causal_ordering)
     } else {
+      if (asymmetric) {
+        cat(paste0(
+          "Input asymmetric = TRUE is not supported in combination with exact = FALSE.\n",
+          "Changing to asymmetric = FALSE"
+        ))
+      }
       dt <- feature_not_exact(m, n_combinations, weight_zero_m)
       stopifnot(
         data.table::is.data.table(dt),
@@ -126,12 +142,21 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       p <- NULL # due to NSE notes in R CMD check
       dt[, p := NULL]
     }
+
+    # TODO: change flag explicitly somewhere?
+    if (asymmetric) {
+      cat(paste0(
+        "Input asymmetric = TRUE is not supported for group-wise Shapley values.\n",
+        "Changing to asymmetric = FALSE"
+      ))
+    }
   }
   return(dt)
 }
 
 #' @keywords internal
-feature_exact <- function(m, weight_zero_m = 10^6) {
+feature_exact <- function(m, weight_zero_m = 10^6, asymmetric = FALSE, causal_ordering = list(1:m)) {
+
   features <- id_combination <- n_features <- shapley_weight <- N <- NULL # due to NSE notes in R CMD check
 
   dt <- data.table::data.table(id_combination = seq(2^m))
@@ -140,6 +165,14 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
   dt[, n_features := length(features[[1]]), id_combination]
   dt[, N := .N, n_features]
   dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m)]
+
+  if (asymmetric) {
+
+    # Filter out the features that do not agree with the order
+    dt <- dt[sapply(dt$features, respects_order, causal_ordering), ]
+    dt[, N := .(count = .N), by = n_features]
+    dt[, shapley_weight := .(shapley_weights(m, N, n_features))]
+  }
 
   return(dt)
 }
