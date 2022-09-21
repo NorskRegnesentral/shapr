@@ -350,7 +350,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     ggplot2::facet_wrap(~variable, scales = "free", labeller = "label_value")
 
   # compute bin values for scatter_hist
-  if (scatter_hist) {
+
     dt_scatter_hist <- compute_scatter_hist_values(dt_plot, scatter_features)
 
     # Plot numeric features
@@ -359,9 +359,9 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
       ggplot2::aes(
         xmin = x_start, xmax = x_end,
         ymin = y_start, ymax = y_end
-      ), fill = "grey85",color="grey80"
+      ), fill = ifelse(scatter_hist,"grey85",NA), # NA if no scatter_hist==FALSE
+      color=ifelse(scatter_hist,"grey80",NA)      # NA if no scatter_hist==FALSE
     )
-  }
 
   gg <- gg + ggplot2::geom_point(ggplot2::aes(x = feature_value, y = phi), colour = col) +
     ggplot2::theme_classic(base_family = "sans") +
