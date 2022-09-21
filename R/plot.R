@@ -286,7 +286,8 @@ compute_scatter_hist_values <- function(dt_plot, scatter_features) {
 
     if (min(x) == max(x)) {
       scatter_hist_object <- hist(x, breaks = 1, plot = FALSE)
-      scatter_hist_object$breaks = c(x[1] - .Machine$double.eps*10^10, x[1] + .Machine$double.eps*10^10)
+      # scatter_hist_object$breaks = c(x[1] - .Machine$double.eps*10^10, x[1] + .Machine$double.eps*10^10)
+      scatter_hist_object$breaks = c(x[1] - 0.01, x[1] + 0.01)
     } else {
       step <- (max(x)-min(x))/(num_breaks-1)
       scatter_hist_object <- hist(x, breaks = seq(min(x)-step/2, max(x)+step/2, by=step), plot = FALSE)
@@ -379,7 +380,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
   # Function used by ggplot to map numerical values to the original factor values
   custom_label_func <- function(breaks){
 
-    breaks = round(breaks, 2)
+    breaks = round(breaks, 3)
     labels = as.character(breaks)
 
     factor_breaks <- which(breaks > max_feature_value)
@@ -391,12 +392,6 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     if (!identical(factor_breaks, replace_these_breaks)){
       hide_these_breaks <- factor_breaks[!(factor_breaks %in% replace_these_breaks)]
       labels[hide_these_breaks] <- ""
-    }
-
-    # If there is only one feature value, there is only 5 breaks, see get_num_breaks
-    # We therefore remove all labels except the median value.
-    if (length(unique(labels)) == 1) {
-      labels[-ceiling(length(labels) / 2 + 0.5)] <- ""
     }
 
     return(labels)
