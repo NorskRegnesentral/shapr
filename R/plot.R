@@ -67,7 +67,6 @@
 #' @examples
 #'
 #' data("airquality")
-#' data("airquality")
 #' airquality <- airquality[complete.cases(airquality), ]
 #' x_var <- c("Solar.R", "Wind", "Temp", "Month")
 #' y_var <- "Ozone"
@@ -115,6 +114,42 @@
 #'   plot(x, plot_type = "beeswarm")
 #'   plot(x, plot_type = "beeswarm", col = c("red", "black")) # we can change colors
 #' }
+#'
+#' # Example of scatter and beeswarm plot with factor variables
+#' airquality$Month_factor <- as.factor(month.abb[airquality$Month])
+#' airquality <- airquality[complete.cases(airquality), ]
+#' x_var <- c("Solar.R", "Wind", "Temp", "Month_factor")
+#' y_var <- "Ozone"
+#'
+#' # Split data into test- and training data
+#' data_train <- airquality
+#' data_explain <- tail(airquality, 50)
+#'
+#' x_train <- data_train[, x_var]
+#' x_explain <- data_explain[, x_var]
+#'
+#' # Fit a linear model
+#' lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
+#' model <- lm(lm_formula, data = data_train)
+#'
+#' # Explain predictions
+#' p <- mean(data_train[, y_var])
+#'
+#' # Empirical approach
+#' x <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = "ctree",
+#'   prediction_zero = p,
+#'   n_samples = 1e2
+#' )
+#'
+#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#' plot(x, plot_type = "scatter")
+#' plot(x, plot_type = "beeswarm")
+#' }
+#'
 #'
 #' @author Martin Jullum, Vilde Ung
 plot.shapr <- function(x,
@@ -379,7 +414,6 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 
   # Function used by ggplot to map numerical values to the original factor values
   custom_label_func <- function(breaks){
-
     breaks = round(breaks, 3)
     labels = as.character(breaks)
 
