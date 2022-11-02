@@ -502,23 +502,6 @@
     Error <simpleError>
       `keep_samp_for_vS` must be single logical.
 
----
-
-    Code
-      expect_snapshot({
-        keep_samp_for_vS_too_long <- c(TRUE, FALSE)
-        explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-          approach = "independence", prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
-      }, error = T)
-    Warning <testthat_warn>
-      Adding new snapshot:
-      Code
-        keep_samp_for_vS_too_long <- c(TRUE, FALSE)
-        explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-          approach = "independence", prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
-      Error <simpleError>
-        `keep_samp_for_vS` must be single logical.
-
 # erroneous input: `predict_model`
 
     Code
