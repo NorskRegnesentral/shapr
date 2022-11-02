@@ -45,7 +45,7 @@ explanation_cat <- explain(
 )
 
 
-plot(explanation_cat, plot_phi0 = FALSE, plot_type = "scatter")
+plot(explanation_cat, bar_plot_phi0 = FALSE, plot_type = "scatter")
 plot(explanation_cat, plot_phi0 = FALSE, plot_type = "scatter", scatter_hist = FALSE)
 
 
@@ -66,9 +66,9 @@ explanation_cat <- explain(
 )
 
 # Works fine
-plot(explanation_cat, plot_phi0 = FALSE, plot_type = "scatter")
+plot(explanation_cat, bar_plot_phi0 = FALSE, plot_type = "scatter")
 # Wrong x-labels due to breaks being different from when scatter_hist = TRUE
-plot(explanation_cat, plot_phi0 = FALSE, plot_type = "scatter", scatter_hist = FALSE)
+plot(explanation_cat, bar_plot_phi0 = FALSE, plot_type = "scatter", scatter_hist = FALSE)
 
 
 
@@ -89,9 +89,9 @@ explanation_cat <- explain(
 )
 
 # Only 4 ticks in the x-axis for the factor
-plot(explanation_cat, plot_phi0 = FALSE, plot_type = "scatter")
+plot(explanation_cat, bar_plot_phi0 = FALSE, plot_type = "scatter")
 # Wrong x-labels due to breaks being different from when scatter_hist = TRUE
-plot(explanation_cat, plot_phi0 = FALSE, plot_type = "scatter", scatter_hist = FALSE)
+plot(explanation_cat, bar_plot_phi0 = FALSE, plot_type = "scatter", scatter_hist = FALSE)
 
 
 # Example 4 - few observations - to many x-ticks with same label  -----------------------------------------
@@ -111,7 +111,7 @@ explanation_cat <- explain(
 )
 
 # Duplicated labels on the x-axis
-plot(explanation_cat, plot_phi0 = FALSE, plot_type = "scatter")
+plot(explanation_cat, bar_plot_phi0 = FALSE, plot_type = "scatter")
 # Wrong x-labels due to breaks being different from when scatter_hist = TRUE
-plot(explanation_cat, plot_phi0 = FALSE, plot_type = "scatter", scatter_hist = FALSE)
+plot(explanation_cat, bar_plot_phi0 = FALSE, plot_type = "scatter", scatter_hist = FALSE)
 
