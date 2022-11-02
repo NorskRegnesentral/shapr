@@ -42,7 +42,7 @@ test_that("bar_plot_new_arguments", {
 
     vdiffr::expect_doppelganger(
       title = "bar_plot_no_phi0",
-      fig = plot(explain_mixed, plot_phi0 = FALSE)
+      fig = plot(explain_mixed, bar_plot_phi0 = FALSE)
     )
 
     vdiffr::expect_doppelganger(
@@ -62,7 +62,7 @@ test_that("bar_plot_new_arguments", {
 
     vdiffr::expect_doppelganger(
       title = "bar_plot_order_original",
-      fig = plot(explain_mixed,plot_order = "original")
+      fig = plot(explain_mixed,bar_plot_order = "original")
     )
   }
 )
@@ -73,11 +73,6 @@ test_that("waterfall_plot_new_arguments", {
   vdiffr::expect_doppelganger(
     title = "waterfall_plot_digits_5",
     fig = plot(explain_mixed,plot_type = "waterfall",digits = 5)
-  )
-
-  vdiffr::expect_doppelganger(
-    title = "waterfall_plot_no_phi0",
-    fig = plot(explain_mixed, plot_type = "waterfall")
   )
 
   vdiffr::expect_doppelganger(
@@ -95,10 +90,6 @@ test_that("waterfall_plot_new_arguments", {
     fig = plot(explain_mixed,plot_type = "waterfall", col = c("red", "black"))
   )
 
-  vdiffr::expect_doppelganger(
-    title = "waterfall_plot_order_original",
-    fig = plot(explain_mixed,plot_type = "waterfall")
-  )
 }
 )
 
@@ -134,5 +125,11 @@ test_that("beeswarm_plot_new_arguments", {
     title = "beeswarm_plot_new_colors",
     fig = plot(explain_mixed,plot_type = "beeswarm", col = c("red", "black"))
   )
+
+  vdiffr::expect_doppelganger(
+    title = "beeswarm_plot_index_x_explain_1_2",
+    fig = plot(explain_mixed,plot_type = "beeswarm", index_x_explain = c(1,2))
+  )
+
   }
 )

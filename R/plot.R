@@ -15,17 +15,19 @@
 #'  Each point gives the shapley value of a given instance, where the points are colored by the feature value
 #'  of that instance.
 #' @param digits Integer.
-#' Number of significant digits to use in the feature description
-#' @param plot_phi0 Logical.
-#' Whether to include `phi0` in the plot.
+#' Number of significant digits to use in the feature description.
+#' Applicable for `plot_type` `"bar"` and `"waterfall"`
+#' @param bar_plot_phi0 Logical.
+#' Whether to include `phi0` in the plot for  `plot_type = "bar"`.
 #' @param index_x_explain Integer vector.
 #' Which of the test observations to plot. E.g. if you have
 #' explained 10 observations using [explain()], you can generate a plot for the first 5
 #' observations by setting `index_x_explain = 1:5`.
 #' @param top_k_features Integer.
-#' How many features to include in the plot. E.g. if you have 15
-#' features in your model you can plot the 5 most important features, for each explanation, by setting
-#' `top_k_features = 1:5`.
+#' How many features to include in the plot.
+#' E.g. if you have 15 features in your model you can plot the 5 most important features,
+#' for each explanation, by setting `top_k_features = 1:5`.
+#' Applicable for `plot_type` `"bar"` and `"waterfall"`
 #' @param col Character vector (length depends on plot type).
 #' The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
 #' Shapley values, respectively.
@@ -36,15 +38,19 @@
 #'
 #' If you want to alter the colors i the plot, the length of the `col` vector depends on plot type.
 #' For `plot_type = "bar"` or `plot_type = "waterfall"`, two colors should be provided, first for positive and
-#' then for negative Shapley values. For `plot_type = "beeswarm"`, either two or three colors can be given. If two
-#' colors are given, then the first color determines the color that points with high feature values will have, and the
-#' second determines the color of points with low feature values. If three colors are given, then the first colors high
-#' feature values, the second colors mid-range feature values, and the third colors low feature values. For instance,
-#' `col = c("red", "yellow", "blue")` will make high values red, mid-range values yellow, and low values blue. For
-#' `plot_type = "scatter"`, a single color is to be given, which determines the color of the points on the
+#' then for negative Shapley values.
+#' For `plot_type = "beeswarm"`, either two or three colors can be given.
+#' If two colors are given, then the first color determines the color that points with high feature values will have,
+#' and the second determines the color of points with low feature values.
+#' If three colors are given, then the first colors high feature values, the second colors mid-range feature values,
+#' and the third colors low feature values.
+#' For instance, `col = c("red", "yellow", "blue")` will make high values red, mid-range values yellow,
+#' and low values blue.
+#' For `plot_type = "scatter"`, a single color is to be given, which determines the color of the points on the
 #' scatter plot.
-#' @param plot_order Character.
-#' Specifies what order to plot the features with respect to the magnitude of the shapley values.
+#' @param bar_plot_order Character.
+#' Specifies what order to plot the features with respect to the magnitude of the shapley values with
+#' `plot_type = "bar"`:
 #'  `"largest_first"` (the default) plots the features ordered from largest to smallest absolute Shapley value.
 #'  `"smallest_first"` plots the features ordered from smallest to largest absolute Shapley value.
 #'  `"original"` plots the features in the original order of the data table.
@@ -155,11 +161,11 @@
 plot.shapr <- function(x,
                        plot_type = "bar",
                        digits = 3,
-                       plot_phi0 = TRUE,
                        index_x_explain = NULL,
                        top_k_features = NULL,
                        col = NULL, # first increasing color, then decreasing color
-                       plot_order = "largest_first",
+                       bar_plot_phi0 = TRUE,
+                       bar_plot_order = "largest_first",
                        scatter_features = NULL,
                        scatter_hist = TRUE,
                        ...) {
@@ -170,9 +176,9 @@ plot.shapr <- function(x,
     stop(paste(plot_type, "is an invalid plot type. Try plot_type='bar', plot_type='waterfall',
                plot_type='scatter', or plot_type='beeswarm'."))
   }
-  if (!(plot_order %in% c("largest_first", "smallest_first", "original"))) {
-    stop(paste(plot_order, "is an invalid plot order. Try plot_order='largest_first',
-               plot_order='smallest_first' or plot_order='original'."))
+  if (!(bar_plot_order %in% c("largest_first", "smallest_first", "original"))) {
+    stop(paste(bar_plot_order, "is an invalid plot order. Try bar_plot_order='largest_first',
+               bar_plot_order='smallest_first' or bar_plot_order='original'."))
   }
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
@@ -246,7 +252,7 @@ plot.shapr <- function(x,
            is not exceeded.")
     }
 
-    dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, plot_order, top_k_features)
+    dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, bar_plot_order, top_k_features)
 
 
     # compute start and end values for waterfall rectangles
@@ -257,11 +263,11 @@ plot.shapr <- function(x,
     dt_plot[, phi_significant := format(phi, digits = digits), by = id]
 
     # helpers for labelling y-axis correctly
-    if (plot_order == "largest_first") {
+    if (bar_plot_order == "largest_first") {
       desc_labels <- dt_plot[variable != "none" & variable != "rest", description[order(abs(phi))]]
-    } else if (plot_order == "smallest_first") {
+    } else if (bar_plot_order == "smallest_first") {
       desc_labels <- dt_plot[variable != "none" & variable != "rest", description[order(-abs(phi))]]
-    } else if (plot_order == "original") {
+    } else if (bar_plot_order == "original") {
       desc_labels <- dt_plot[variable != "none" & variable != "rest", description[order(unique_label)]]
     }
     if (top_k_features < x$internal$parameters$n_features) { # if there is a "rest" of collapsed lower-rank features
@@ -270,7 +276,7 @@ plot.shapr <- function(x,
         desc_labels
       )
     }
-    if (!plot_phi0 | plot_type == "waterfall") { # if none is not to be included in plot
+    if (!bar_plot_phi0 | plot_type == "waterfall") { # if none is not to be included in plot
       dt_plot <- dt_plot[variable != "none"]
     } else {
       desc_labels <- c(desc_labels, "None")
@@ -278,9 +284,9 @@ plot.shapr <- function(x,
     breaks <- levels(droplevels(dt_plot[, unique_label])) # removes -1 if no rest and 0 if no none in plot
 
     if (plot_type == "bar") {
-      gg <- make_bar_plot(dt_plot, plot_phi0, col, breaks, desc_labels)
+      gg <- make_bar_plot(dt_plot, bar_plot_phi0, col, breaks, desc_labels)
     } else if (plot_type == "waterfall") {
-      gg <- make_waterfall_plot(dt_plot, expected, col, digits, plot_order, breaks, desc_labels)
+      gg <- make_waterfall_plot(dt_plot, expected, col, digits, bar_plot_order, breaks, desc_labels)
     }
   }
   return(gg)
@@ -436,13 +442,13 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
   return(gg)
 }
 
-order_for_plot <- function(dt_plot, N_features, plot_order, top_k_features) {
+order_for_plot <- function(dt_plot, N_features, bar_plot_order, top_k_features) {
 
-  if (plot_order == "largest_first") {
+  if (bar_plot_order == "largest_first") {
     dt_plot[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
-  } else if (plot_order == "smallest_first") {
+  } else if (bar_plot_order == "smallest_first") {
     dt_plot[variable != "none", rank := data.table::frank(abs(phi)), by = "id"]
-  } else if (plot_order == "original") {
+  } else if (bar_plot_order == "original") {
     dt_plot[variable != "none", rank := seq_along(phi), by = "id"]
   }
   dt_plot[variable == "none", rank := 0]
@@ -459,19 +465,19 @@ order_for_plot <- function(dt_plot, N_features, plot_order, top_k_features) {
   dt_plot[, unique_label := rev(seq_along(description))]
   dt_plot[variable == "none", unique_label := 0] # such that none is always at top of plot
   dt_plot[variable == "rest", unique_label := -1] # such that rest is always at bottom of plot
-  if (plot_order == "largest_first") {
+  if (bar_plot_order == "largest_first") {
     unique_levels <- c(-1, dt_plot[variable != "none" & variable != "rest", unique_label[order(abs(phi))]], 0)
-  } else if (plot_order == "smallest_first") {
+  } else if (bar_plot_order == "smallest_first") {
     unique_levels <- c(-1, dt_plot[variable != "none" & variable != "rest", unique_label[order(-abs(phi))]], 0)
-  } else if (plot_order == "original") {
+  } else if (bar_plot_order == "original") {
     unique_levels <- c(-1, rev(dt_plot[variable != "none" & variable != "rest", unique_label]), 0)
   }
   dt_plot[, unique_label := factor(unique_label, levels = unique_levels)]
-  if (plot_order == "largest_first") {
+  if (bar_plot_order == "largest_first") {
     dt_plot[variable != "none", rank_waterfall := data.table::frank(abs(phi)), by = "id"]
-  } else if (plot_order == "smallest_first") {
+  } else if (bar_plot_order == "smallest_first") {
     dt_plot[variable != "none", rank_waterfall := data.table::frank(-abs(phi)), by = "id"]
-  } else if (plot_order == "original") {
+  } else if (bar_plot_order == "original") {
     dt_plot[variable != "none", rank_waterfall := rev(seq_along(phi)), by = "id"]
   }
   dt_plot[variable == "none", rank_waterfall := 0]
@@ -602,7 +608,7 @@ make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols) {
   return(gg)
 }
 
-make_bar_plot <- function(dt_plot, plot_phi0, col, breaks, desc_labels) {
+make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels) {
 
   if (is.null(col)) {
     col <- c("#00BA38", "#F8766D")
@@ -612,7 +618,7 @@ make_bar_plot <- function(dt_plot, plot_phi0, col, breaks, desc_labels) {
   }
 
 
-  if (!(plot_phi0)) {
+  if (!(bar_plot_phi0)) {
     dt_plot <- dt_plot[variable != "none", ]
   }
 
@@ -628,7 +634,7 @@ make_bar_plot <- function(dt_plot, plot_phi0, col, breaks, desc_labels) {
   dt_plot[, text_color_bar := ifelse(abs(phi) > max(abs(phi)) / 8, "white", ifelse(sign == "Increases",
     col[1], col[2]
   )), by = id]
-  if (plot_phi0) {
+  if (bar_plot_phi0) {
     text_color_bar <- dt_plot[, text_color_bar]
   } else {
     text_color_bar <- dt_plot[variable != "none", text_color_bar]
@@ -668,7 +674,7 @@ make_waterfall_plot <- function(dt_plot,
                                 expected,
                                 col,
                                 digits,
-                                plot_order,
+                                bar_plot_order,
                                 breaks,
                                 desc_labels) {
 
@@ -680,14 +686,14 @@ make_waterfall_plot <- function(dt_plot,
   }
 
   # waterfall plotting helpers
-  if (plot_order == "largest_first" | plot_order == "original") {
+  if (bar_plot_order == "largest_first" | bar_plot_order == "original") {
     dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
       ifelse(expected < pred, ifelse(end > start, end, start),
         ifelse(end < start, end, start)
       ),
       start + (end - start) / 2
     ), by = id]
-  } else if (plot_order == "smallest_first") {
+  } else if (bar_plot_order == "smallest_first") {
     dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
       ifelse(expected > pred, ifelse(end > start, end, start),
         ifelse(end < start, end, start)
@@ -702,11 +708,11 @@ make_waterfall_plot <- function(dt_plot,
   ), by = id]
   text_color <- dt_plot[variable != "none", text_color]
 
-  if (plot_order == "largest_first" | plot_order == "original") {
+  if (bar_plot_order == "largest_first" | bar_plot_order == "original") {
     dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
       ifelse(expected > pred, 1, 0), 0.5
     ), by = id]
-  } else if (plot_order == "smallest_first") {
+  } else if (bar_plot_order == "smallest_first") {
     dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
       ifelse(expected > pred, 0, 1), 0.5
     ), by = id]
