@@ -37,7 +37,7 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should,
-either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"} or \code{"independence"}.
+either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 
 \item{prediction_zero}{Numeric.
@@ -101,7 +101,7 @@ disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}
+  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
   \describe{
     \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}. TODO: Describe better what the methods do here.}
@@ -158,6 +158,12 @@ If \code{joint_probability_dt} is not supplied, probabilities/frequencies are
 estimated using \code{x_train}. If certain observations occur in \code{x_train} and NOT in \code{x_explain},
 then epsilon is used as the proportion of times that these observations occurs in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
+    \item{\code{timeseries.fixed_sigma_vec}}{Numeric. (Default = 2)
+Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1?}
+    \item{\code{timeseries.bounds}}{Numeric vector of length two. (Default = c(NULL, NULL))
+If one or both of these bounds are not NULL, we restrict the sampled time series to be
+between these bounds.
+This is useful if the underlying time series are scaled between 0 and 1, for example.}
   }}
 }
 \value{
@@ -196,7 +202,7 @@ Computes dependence-aware Shapley values for observations in \code{x_explain} fr
 \details{
 The most important thing to notice is that \code{shapr} has implemented six different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"categorical"} and \code{"independence"}.
+\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
 In addition, the user also has the option of combining the different approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
@@ -225,14 +231,14 @@ data_train <- head(airquality, -3)
 data_explain <- tail(airquality, 3)
 
 x_train <- data_train[, x_var]
-x_explain <- data_explain[,x_var]
+x_explain <- data_explain[, x_var]
 
 # Fit a linear model
 lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
 model <- lm(lm_formula, data = data_train)
 
 # Explain predictions
-p <- mean(data_train[,y_var])
+p <- mean(data_train[, y_var])
 
 # Empirical approach
 explain1 <- explain(
@@ -308,10 +314,9 @@ explain_groups <- explain(
 )
 print(explain_groups$shapley_values)
 
-
 }
 \references{
-Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
 More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 }
 \author{

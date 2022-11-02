@@ -25,8 +25,8 @@
       
     Output
            none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.48359 18.4777 12.316 -3.4762     -0.21431
-      2: 40.752 -0.85689  9.7603 25.769 -3.4762      9.40306
+      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
+      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
 
 ---
 
@@ -43,8 +43,8 @@
       
     Output
            none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.48359 18.4777 12.316 -3.4762     -0.21431
-      2: 40.752 -0.85689  9.7603 25.769 -3.4762      9.40306
+      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
+      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
 
 ---
 
@@ -61,8 +61,8 @@
       
     Output
            none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.48359 18.4777 12.316 -3.4762     -0.21431
-      2: 40.752 -0.85689  9.7603 25.769 -3.4762      9.40306
+      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
+      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
 
 ---
 
@@ -80,8 +80,8 @@
       
     Output
            none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.48359 18.4777 12.316 -3.4762     -0.21431
-      2: 40.752 -0.85689  9.7603 25.769 -3.4762      9.40306
+      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
+      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
 
 # erroneous input: `x_train/x_explain`
 
@@ -160,7 +160,7 @@
         approach = approach_non_character, prediction_zero = p0)
     Error <simpleError>
       `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence 
+       categorical, copula, ctree, empirical, gaussian, independence, timeseries 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 ---
@@ -171,7 +171,7 @@
         approach = approach_incorrect_length, prediction_zero = p0)
     Error <simpleError>
       `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence 
+       categorical, copula, ctree, empirical, gaussian, independence, timeseries 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 ---
@@ -182,7 +182,7 @@
         approach = approach_incorrect_character, prediction_zero = p0)
     Error <simpleError>
       `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence 
+       categorical, copula, ctree, empirical, gaussian, independence, timeseries 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 # erroneous input: `prediction_zero`

@@ -120,7 +120,7 @@ test_that("output_lm_categorical_ctree", {
   )
 })
 
-test_that("output_lm_categorical_method", {
+test_that("output_lm_categorical_categorical", {
   expect_snapshot_rds(
     explain(model = model_lm_categorical,
             x_explain = x_explain_categorical,
@@ -128,6 +128,30 @@ test_that("output_lm_categorical_method", {
             approach = "categorical",
             prediction_zero = p0),
     "output_lm_categorical_method"
+  )
+})
+
+test_that("output_lm_categorical_independence", {
+  expect_snapshot_rds(
+    explain(model = model_lm_categorical,
+            x_explain = x_explain_categorical,
+            x_train = x_train_categorical,
+            approach = "independence",
+            prediction_zero = p0),
+    "output_lm_categorical_independence"
+  )
+})
+
+test_that("output_lm_ts_timeseries", {
+  expect_snapshot_rds(
+    explanation_timeseries <- explain(
+      model = model_lm_ts,
+      x_explain = x_explain_ts,
+      x_train = x_train_ts,
+      approach = "timeseries",
+      prediction_zero = p0_ts,
+      group = group_ts),
+    "output_lm_timeseries_method"
   )
 })
 
@@ -165,7 +189,7 @@ test_that("output_lm_numeric_comb3", {
 })
 
 
-# lm_mixed with different approahces
+# lm_mixed with different approaches
 
 test_that("output_lm_mixed_independence", {
   expect_snapshot_rds(
