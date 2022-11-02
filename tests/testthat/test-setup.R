@@ -702,7 +702,6 @@ test_that("erroneous input: `keep_samp_for_vS`", {
 
   # length > 1
   expect_snapshot({
-    expect_snapshot({
       keep_samp_for_vS_too_long <- c(TRUE,FALSE)
       explain(model = model_lm_numeric,
               x_explain = x_explain_numeric,
@@ -712,7 +711,6 @@ test_that("erroneous input: `keep_samp_for_vS`", {
               keep_samp_for_vS = keep_samp_for_vS_too_long)
     },
     error = T)
-  })
 })
 
 test_that("erroneous input: `predict_model`", {
