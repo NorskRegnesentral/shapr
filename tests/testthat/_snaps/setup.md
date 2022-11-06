@@ -24,9 +24,10 @@
       Consistency checks between model and data is therefore disabled.
       
     Output
-           none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
-      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
+           none Solar.R     Wind    Temp     Day Month_factor
+      1: 42.444 -4.7299   7.7495 17.7533 -2.6010      -7.5881
+      2: 42.444  2.3383  -3.1472 -5.3100 -1.6761      -7.5881
+      3: 42.444  3.8567 -17.4686 -1.4661  1.0987       3.3792
 
 ---
 
@@ -42,9 +43,10 @@
       Consistency checks between model and data is therefore disabled.
       
     Output
-           none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
-      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
+           none Solar.R     Wind    Temp     Day Month_factor
+      1: 42.444 -4.7299   7.7495 17.7533 -2.6010      -7.5881
+      2: 42.444  2.3383  -3.1472 -5.3100 -1.6761      -7.5881
+      3: 42.444  3.8567 -17.4686 -1.4661  1.0987       3.3792
 
 ---
 
@@ -60,9 +62,10 @@
       Assuming feature classes from the data are correct.
       
     Output
-           none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
-      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
+           none Solar.R     Wind    Temp     Day Month_factor
+      1: 42.444 -4.7299   7.7495 17.7533 -2.6010      -7.5881
+      2: 42.444  2.3383  -3.1472 -5.3100 -1.6761      -7.5881
+      3: 42.444  3.8567 -17.4686 -1.4661  1.0987       3.3792
 
 ---
 
@@ -79,9 +82,10 @@
       Assuming feature factor levels from the data are correct.
       
     Output
-           none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
-      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
+           none Solar.R     Wind    Temp     Day Month_factor
+      1: 42.444 -4.7299   7.7495 17.7533 -2.6010      -7.5881
+      2: 42.444  2.3383  -3.1472 -5.3100 -1.6761      -7.5881
+      3: 42.444  3.8567 -17.4686 -1.4661  1.0987       3.3792
 
 # erroneous input: `x_train/x_explain`
 
