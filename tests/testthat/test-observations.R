@@ -110,6 +110,8 @@ test_that("Check correct index_feature usage in prepare_data", {
   dt <- prepare_data(explainer, index_features = index_features)
   expect_identical(sort(dt[,unique(id_combination)]),index_features)
 
+  # party::ctree is attempted, but at least partykit::ctree must be available
+  skip_if_not_installed("partykit")
   explainer$mincriterion <- mincriterion
   explainer$minsplit <- minsplit
   explainer$minbucket <- minbucket
