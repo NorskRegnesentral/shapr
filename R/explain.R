@@ -81,6 +81,9 @@
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
+#' @param parallel Logical.
+#' Indicates whether the algorithm should be run in parallel (default) or sequentially.
+#'
 #' @inheritDotParams setup_approach.empirical
 #' @inheritDotParams setup_approach.independence
 #' @inheritDotParams setup_approach.gaussian
@@ -252,6 +255,7 @@ explain <- function(model,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
+                    parallel = TRUE,
                     ...) { # ... is further arguments passed to specific approaches
 
   set.seed(seed)
@@ -294,7 +298,7 @@ explain <- function(model,
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS(internal, model, predict_model)
+  vS_list <- compute_vS(internal, model, predict_model, parallel)
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output

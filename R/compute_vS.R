@@ -4,14 +4,14 @@
 #' @inheritParams default_doc
 #' @inheritParams explain
 #'
-#' @param method Character
+#' @param parallel Logical.
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
 #' @export
-compute_vS <- function(internal, model, predict_model, method = "future") {
+compute_vS <- function(internal, model, predict_model, parallel = TRUE) {
   S_batch <- internal$objects$S_batch
 
-  if (method == "future") {
+  if (parallel) {
     ret <- future_compute_vS_batch(
       S_batch = S_batch,
       internal = internal,
