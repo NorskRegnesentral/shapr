@@ -81,6 +81,10 @@
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
+#' @param output_size Integer.
+#' Indicates the size of the output for the model, to explain models with multiple outputs
+#' such as forecasts multiple steps ahead. The size of prediction_zero must match output_size.
+#'
 #' @param parallel Logical.
 #' Indicates whether the algorithm should be run in parallel (default) or sequentially.
 #'
@@ -255,6 +259,7 @@ explain <- function(model,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
+                    output_size = 1,
                     parallel = TRUE,
                     ...) { # ... is further arguments passed to specific approaches
 
@@ -272,6 +277,7 @@ explain <- function(model,
     x_explain = x_explain,
     approach = approach,
     prediction_zero = prediction_zero,
+    output_size = output_size,
     n_combinations = n_combinations,
     group = group,
     n_samples = n_samples,
@@ -286,7 +292,8 @@ explain <- function(model,
   predict_model <- get_predict_model(
     x_test = head(internal$data$x_train, 2),
     predict_model = predict_model,
-    model = model
+    model = model,
+    output_size = output_size
   )
 
   # Sets up the Shapley (sampling) framework and prepares the
@@ -298,7 +305,7 @@ explain <- function(model,
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS(internal, model, predict_model, parallel)
+  vS_list <- compute_vS(internal, model, predict_model, output_size, parallel)
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output

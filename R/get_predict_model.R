@@ -3,7 +3,7 @@
 #'
 #' @inheritParams default_doc
 #' @keywords internal
-get_predict_model <- function(x_test, predict_model, model) {
+get_predict_model <- function(x_test, predict_model, model, output_size) {
 
   # Checks that predict_model is a proper function (R + py)
   # Extracts natively supported functions for predict_model if exists and not passed (R only)
@@ -45,8 +45,8 @@ get_predict_model <- function(x_test, predict_model, model) {
                 "A basic function test threw the following error:\n",as.character(tmp[[1]])))
   }
 
-  if (!(all(is.numeric(tmp)) &&
-        length(tmp) == 2)) {
+  if (!((all(is.numeric(tmp)) || all(sapply(tmp, is.numeric))) &&
+        nrow(tmp) == 2 && ncol(tmp) == output_size)) {
     stop(
       paste0(
         "The predict_model function of class `", class(model),

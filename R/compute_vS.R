@@ -8,7 +8,7 @@
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
 #' @export
-compute_vS <- function(internal, model, predict_model, parallel = TRUE) {
+compute_vS <- function(internal, model, predict_model, output_size, parallel = TRUE) {
   S_batch <- internal$objects$S_batch
 
   if (parallel) {
@@ -16,7 +16,8 @@ compute_vS <- function(internal, model, predict_model, parallel = TRUE) {
       S_batch = S_batch,
       internal = internal,
       model = model,
-      predict_model = predict_model
+      predict_model = predict_model,
+      output_size = output_size
     )
   } else {
 
@@ -29,7 +30,8 @@ compute_vS <- function(internal, model, predict_model, parallel = TRUE) {
         S = S,
         internal = internal,
         model = model,
-        predict_model = predict_model
+        predict_model = predict_model,
+        output_size = output_size
       )
     }
   }
@@ -37,7 +39,7 @@ compute_vS <- function(internal, model, predict_model, parallel = TRUE) {
   return(ret)
 }
 
-future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
+future_compute_vS_batch <- function(S_batch, internal, model, predict_model, output_size = 1) {
   p <- progressr::progressor(sum(lengths(S_batch)))
   ret <- future.apply::future_lapply(
     X = S_batch,
@@ -46,25 +48,30 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
     model = model,
     predict_model = predict_model,
     p = p,
+    output_size = output_size,
     future.seed = internal$parameters$seed
   )
   return(ret)
 }
 
-
+#' @param output_size The number of outputs per row of new data from predict_model
 #' @keywords internal
-batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
+batch_compute_vS <- function(S, internal, model, predict_model, p = NULL, output_size = 1) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
   feature_names <- internal$parameters$feature_names
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
 
-  compute_preds(dt, # Updating dt by reference
+  pred_cols <- paste0("p_hat", seq_len(output_size))
+
+  compute_preds(
+    dt, # Updating dt by reference
     feature_names = feature_names,
     predict_model = predict_model,
-    model
+    model,
+    pred_cols
   )
-  dt_vS <- compute_MCint(dt)
+  dt_vS <- compute_MCint(dt, pred_cols)
   if (!is.null(p)) {
     p(
       amount = length(S),
@@ -103,20 +110,20 @@ batch_prepare_vS <- function(S, internal) {
 }
 
 #' @keywords internal
-compute_preds <- function(dt, feature_names, predict_model, model) {
+compute_preds <- function(dt, feature_names, predict_model, model, pred_cols) {
 
   # Predictions
-  dt[id_combination != 1, p_hat := predict_model(model, newdata = .SD), .SDcols = feature_names]
+  dt[id_combination != 1, (pred_cols) := predict_model(model, newdata = .SD), .SDcols = feature_names]
 
   return(dt)
 }
 
-compute_MCint <- function(dt) {
+compute_MCint <- function(dt, pred_cols) {
 
   # Calculate contributions
-  dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
+  dt_res <- dt[, lapply(.SD, function (x) .(x = sum(((x) * w) / sum(w)))), .(id, id_combination), .SDcols = pred_cols]
   data.table::setkeyv(dt_res, c("id", "id_combination"))
-  dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = "k")
+  dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = pred_cols)
   # dt_mat[, id_combination := NULL]
 
   dt_mat
