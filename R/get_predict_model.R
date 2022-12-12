@@ -50,7 +50,9 @@ get_predict_model <- function(x_test, predict_model, model, output_size) {
     stop(
       paste0(
         "The predict_model function of class `", class(model),
-        "` does not return a numeric output of the desired length.\n",
+        "` does not return a numeric output of the desired length\n",
+        "for single output models or a data.table of the correct\n",
+        "dimensions for a multiple output model.\n",
         "See the 'Advanced usage' section of the vignette:\n",
         "vignette('understanding_shapr', package = 'shapr')\n\n",
         "for more information on running shapr with custom models.\n"

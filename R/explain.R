@@ -26,6 +26,7 @@
 #' features.
 #' Typically we set this value equal to the mean of the response variable in our training data, but other choices
 #' such as the mean of the predictions in the training data are also reasonable.
+#' This can be set to a numeric vector, where the length denotes the output size of the predict function.
 #'
 #' @param n_combinations Integer.
 #' If `group = NULL`, `n_combinations` represents the number of unique feature combinations to sample.
@@ -64,6 +65,8 @@
 #' models.)
 #' The function must have two arguments, `model` and `newdata` which specify, respectively, the model
 #' and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
+#' In the case where prediction_zero has length over 1, the output should be a data.frame where the rows correspond
+#' to different rows of x_explain and the columns correspond to the multiple outputs of each prediction.
 #' `NULL` (the default) uses functions specified internally.
 #' Can also be used to override the default function for natively supported model classes.
 #'
@@ -80,13 +83,6 @@
 #' If `NULL` (the default) internal functions are used for natively supported model classes, and the checking is
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
-#'
-#' @param output_size Integer.
-#' Indicates the size of the output for the model, to explain models with multiple outputs
-#' such as forecasts multiple steps ahead. The size of prediction_zero must match output_size.
-#'
-#' @param parallel Logical.
-#' Indicates whether the algorithm should be run in parallel (default) or sequentially.
 #'
 #' @inheritDotParams setup_approach.empirical
 #' @inheritDotParams setup_approach.independence
@@ -259,11 +255,15 @@ explain <- function(model,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
-                    output_size = 1,
-                    parallel = TRUE,
                     ...) { # ... is further arguments passed to specific approaches
 
   set.seed(seed)
+
+  # This can be set to false for easier debugging.
+  parallel <- FALSE
+
+  # Output size of the predict_model function should be the length of prediction_zero.
+  output_size <- length(prediction_zero)
 
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
