@@ -177,8 +177,8 @@ def prebuilt_get_model_specs(model):
     if isinstance(model, BaseEstimator):
       return lambda m: {
         'labels': m.feature_names_in_,
-        'classes': None,
-        'factor_levels': None,
+        'classes': None, # Not available from model object
+        'factor_levels': None, # Not available from model object
       }
   except:
     pass
@@ -189,8 +189,8 @@ def prebuilt_get_model_specs(model):
     if isinstance(model, xgb.core.Booster):
       return lambda m: {
         'labels': np.array(m.feature_names),
-        'classes': None,
-        'factor_levels': None,
+        'classes': None, # Not available from model object
+        'factor_levels': None, # Not available from model object
       }
   except:
     pass
