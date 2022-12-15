@@ -29,3 +29,8 @@ df_shapley, pred_explain, internal = explain(
     prediction_zero = np.mean(y),
 )
 ```
+
+This works since `shaprpy` knows how to deal with models from `sklearn` and `xgboost`. 
+For other models, one can provide a custom `predict_model` function (and optionally a custom `get_model_specs`) to `shaprpy.explain`.
+
+See `/examples` for runnable examples, including an example of a custom PyTorch model.
