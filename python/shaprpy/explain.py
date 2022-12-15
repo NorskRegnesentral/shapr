@@ -129,17 +129,19 @@ def get_feature_specs(get_model_specs, model):
   if feature_specs is None:
     rfeature_specs = NULL
   else:
-    assert feature_specs['factor_levels'] is None, 'factor_levels != None not yet supported' 
     py2r_or_na = lambda v: py2r(v) if v is not None else NA
     def strvec_or_na(v):
       if v is None: return NA
       strvec = ro.StrVector(list(v.values()))
       strvec.names = list(v.keys())
       return strvec
+    def listvec_or_na(v):
+      if v is None: return NA
+      return ro.ListVector({k:list(val) for k,val in v.items()})
     rfeature_specs = ro.ListVector({
       'labels': py2r_or_na(feature_specs['labels']),
       'classes': strvec_or_na(feature_specs['classes']),
-      'factor_levels': NA, # Not yet supported
+      'factor_levels': listvec_or_na(feature_specs['factor_levels']),
     })
   return rfeature_specs
 
