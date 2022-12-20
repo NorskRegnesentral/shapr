@@ -1,5 +1,7 @@
 import warnings
 import numpy as np
+import pandas as pd
+from typing import Callable
 import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
 from rpy2.rinterface import NULL, NA
@@ -16,19 +18,79 @@ def maybe_null(val):
 
 def explain(
     model,
-    x_explain,
-    x_train,
-    approach,
-    prediction_zero,
-    n_combinations = None,
-    group = None,
-    n_samples = 1e3,
-    n_batches = 1,
-    seed = 1,
-    keep_samp_for_vS = False,
-    predict_model = None,
-    get_model_specs = None,
+    x_explain: pd.DataFrame,
+    x_train: pd.DataFrame,
+    approach: str,
+    prediction_zero: float,
+    n_combinations: int | None = None,
+    group: list | None = None,
+    n_samples: int = 1e3,
+    n_batches: int = 1,
+    seed: int | None = 1,
+    keep_samp_for_vS: bool = False,
+    predict_model: Callable = None,
+    get_model_specs: Callable = None,
   ):
+    '''Explain the output of machine learning models with more accurately estimated Shapley values.
+
+    Computes dependence-aware Shapley values for observations in `x_explain` from the specified
+    `model` by using the method specified in `approach` to estimate the conditional expectation.
+
+    Parameters
+    ----------
+    model: The model whose predictions we want to explain. 
+      `shaprpy` natively supports `sklearn` and `xgboost` models.
+      Unsupported models can still be explained by passing `predict_model` and (optionally) `get_model_specs`.
+    x_explain: Contains the the features, whose predictions ought to be explained.
+    x_train: Contains the data used to estimate the (conditional) distributions for the features
+      needed to properly estimate the conditional expectations in the Shapley formula.
+    approach: str or list[str] of length `n_features`.
+      `n_features` equals the total number of features in the model. All elements should,
+      either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"`, `"timeseries"`, or `"independence"`.
+    prediction_zero: The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
+      features. Typically we set this value equal to the mean of the response variable in our training data, but other 
+      choices such as the mean of the predictions in the training data are also reasonable.
+    n_combinations: If `group = None`, `n_combinations` represents the number of unique feature combinations to sample.
+      If `group != None`, `n_combinations` represents the number of unique group combinations to sample.
+      If `n_combinations = None`, the exact method is used and all combinations are considered.
+      The maximum number of combinations equals `2^m`, where `m` is the number of features.
+    group: If `None` regular feature wise Shapley values are computed.
+      If provided, group wise Shapley values are computed. `group` then has length equal to
+      the number of groups. TODO: Edit this: The list element contains character vectors with the features included
+      in each of the different groups.
+    n_samples: Indicating the maximum number of samples to use in the
+      Monte Carlo integration for every conditional expectation.
+    n_batches: Specifies how many batches the total number of feature combinations should be split into when calculating the
+      contribution function for each test observation.
+      The default value is 1.
+      Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+      This typically comes with a small increase in computation time.
+    seed: Specifies the seed before any randomness based code is being run.
+      If `None` the seed will be inherited from the calling environment.
+    keep_samp_for_vS: Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned (in `internal['output']`)
+    predict_model: The prediction function used when `model` is not natively supported.
+      The function must have two arguments, `model` and `newdata` which specify, respectively, the model
+      and a pandas.DataFrame to compute predictions for. The function must give the prediction as a numpy.Array.
+      `None` (the default) uses functions specified internally.
+      Can also be used to override the default function for natively supported model classes.
+    get_model_specs: An optional function for checking model/data consistency when `model` is not natively supported.
+      The function takes `model` as argument and provides a `dict with 3 elements:
+      - labels: list[str] with the names of each feature.
+      - classes: list[str] with the classes of each features.
+      - factor_levels: dict[str, list[str]] with the levels for any categorical features.
+      If `None` (the default) internal functions are used for natively supported model classes, and the checking is
+      disabled for unsupported model classes.
+      Can also be used to override the default function for natively supported model classes.
+
+    Returns
+    -------
+    pandas.DataFrame
+      A pandas.DataFrame with the Shapley values.
+    numpy.Array
+      A numpy.Array with the predictions on `x_explain`.
+    dict
+      A dictionary of additional information.
+    '''
 
     base.set_seed(seed)
 
