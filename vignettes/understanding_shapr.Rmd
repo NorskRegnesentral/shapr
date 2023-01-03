@@ -348,7 +348,8 @@ explanation <- explain(
 print(explanation$shapley_values)
 
 # Plot the resulting explanations for observations 1 and 6
-plot(explanation, plot_phi0 = FALSE, index_x_explain = c(1, 6))
+plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
+``` 
 
 ```
 
@@ -422,7 +423,7 @@ explanation_cat <- explain(
 
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
-plot(explanation_cat, plot_phi0 = FALSE, index_x_explain = c(1, 6))
+plot(explanation_cat, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
 We can specify parameters used to build the conditional inference trees
@@ -633,7 +634,7 @@ explanation_combined <- explain(
 )
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
-plot(explanation_combined, plot_phi0 = FALSE, index_x_explain = c(1, 6))
+plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
 As a second example using `"ctree"` for the first 3 features and
@@ -675,7 +676,7 @@ explanation_group <- explain(
 # Prints the group-wise explanations
 explanation_group
 # Plots the group-wise explanations
-plot(explanation_group, plot_phi0 = TRUE, index_x_explain = c(1, 6))
+plot(explanation_group, bar_plot_phi0 = TRUE, index_x_explain = c(1, 6))
 ```
 
 ## Explain custom models

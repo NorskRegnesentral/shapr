@@ -3,27 +3,30 @@
     Code
       (out <- code)
     Output
-           none  Solar.R   Wind   Temp    Month     Day
-      1: 40.752  4.42903 19.814 12.271  0.77897 -4.0031
-      2: 40.752 -0.69895 10.523 25.541 -5.30094 -4.0031
+           none Solar.R     Wind    Temp   Month     Day
+      1: 42.444  -4.537   8.2692 17.5175 -5.5812 -3.0665
+      2: 42.444   2.250  -3.3453 -5.2319 -5.5812 -1.9710
+      3: 42.444   3.708 -18.6102 -1.4404 -2.5412  1.3155
 
 # output_lm_numeric_empirical
 
     Code
       (out <- code)
     Output
-           none Solar.R    Wind     Temp  Month     Day
-      1: 40.752  7.2098 22.0306  0.41757 5.8050 -2.1733
-      2: 40.752  5.5946 -1.7351 18.17269 1.3886  2.6399
+           none  Solar.R     Wind    Temp     Month     Day
+      1: 42.444 -13.2521  15.5408 12.8258 -5.771786  3.2593
+      2: 42.444   2.7580  -3.3247 -7.9923 -7.127997  1.8075
+      3: 42.444   6.8046 -22.1255  3.7300 -0.092345 -5.8849
 
 # output_lm_numeric_empirical_n_combinations
 
     Code
       (out <- code)
     Output
-           none Solar.R     Wind     Temp  Month     Day
-      1: 40.752 0.33558 23.79725 -0.43589 9.5413 0.05153
-      2: 40.752 3.29535  0.49771 13.95255 1.4244 6.89079
+           none Solar.R     Wind    Temp   Month     Day
+      1: 42.444 -5.7946  15.3199  8.5572 -7.5465  2.0660
+      2: 42.444  3.2660  -3.2518 -7.6927 -7.6628  1.4620
+      3: 42.444  4.2901 -24.3947  6.7387 -1.0058 -3.1965
 
 # output_lm_numeric_empirical_independence
 
@@ -37,54 +40,60 @@
       Success with message:
       empirical.eta force set to 1 for empirical.type = 'independence'
     Output
-           none  Solar.R   Wind   Temp    Month     Day
-      1: 40.752  4.42903 19.814 12.271  0.77897 -4.0031
-      2: 40.752 -0.69895 10.523 25.541 -5.30094 -4.0031
+           none Solar.R     Wind    Temp   Month     Day
+      1: 42.444  -4.537   8.2692 17.5175 -5.5812 -3.0665
+      2: 42.444   2.250  -3.3453 -5.2319 -5.5812 -1.9710
+      3: 42.444   3.708 -18.6102 -1.4404 -2.5412  1.3155
 
 # output_lm_numeric_empirical_AICc_each
 
     Code
       (out <- code)
     Output
-           none Solar.R    Wind   Temp   Month    Day
-      1: 40.752 -18.549 19.4454 10.011 19.5361 2.8456
-      2: 40.752 -17.486  6.4034 28.922  4.8873 3.3335
+           none Solar.R     Wind      Temp     Month      Day
+      1: 42.444 -15.661   6.8230  17.50921   0.24632  3.68474
+      2: 42.444  10.697  -1.0634 -10.68038 -13.03054  0.19829
+      3: 42.444  14.648 -19.9462   0.96752  -7.34330 -5.89456
 
 # output_lm_numeric_empirical_AICc_full
 
     Code
       (out <- code)
     Output
-           none Solar.R    Wind   Temp   Month    Day
-      1: 40.752 -19.515 18.8463 10.479 20.7526 2.7263
-      2: 40.752 -17.621  4.7818 29.694  6.1072 3.0986
+           none Solar.R      Wind      Temp     Month      Day
+      1: 42.444 -14.975   6.31705  17.41032   0.28761  3.56230
+      2: 42.444  12.419   0.14816 -10.23384 -16.40958  0.19667
+      3: 42.444  15.741 -19.72496   0.99925  -8.69501 -5.88863
 
 # output_lm_numeric_gaussian
 
     Code
       (out <- code)
     Output
-           none Solar.R    Wind    Temp   Month     Day
-      1: 40.752  6.3579 24.4431  4.7647 0.36934 -2.6453
-      2: 40.752 -2.2563  9.8937 20.8231 0.74187 -3.1416
+           none Solar.R     Wind      Temp    Month      Day
+      1: 42.444 -8.5451   7.7793  14.58571  0.44747 -1.66534
+      2: 42.444  4.8261  -4.2948 -11.65488 -1.12497 -1.63091
+      3: 42.444  7.1628 -25.4913   0.36802 -0.54551  0.93769
 
 # output_lm_numeric_copula
 
     Code
       (out <- code)
     Output
-           none Solar.R   Wind    Temp    Month     Day
-      1: 40.752  5.9289 24.815  5.2796  0.37793 -3.1117
-      2: 40.752 -1.8044 10.121 21.7839 -0.46705 -3.5726
+           none Solar.R     Wind    Temp    Month     Day
+      1: 42.444 -6.3711   7.3549 14.4696 -0.61077 -2.2407
+      2: 42.444  4.1149  -4.1593 -9.9804 -1.93783 -1.9168
+      3: 42.444  5.9322 -25.0855  1.8573 -1.36243  1.0902
 
 # output_lm_numeric_ctree
 
     Code
       (out <- code)
     Output
-           none Solar.R    Wind    Temp   Month     Day
-      1: 40.752 5.69022 24.4988  2.3756  4.6042 -3.8790
-      2: 40.752 0.29536  8.3215 24.1690 -2.3619 -4.3632
+           none Solar.R     Wind    Temp    Month     Day
+      1: 42.444 -9.1239   9.5091 17.1391 -1.47110 -3.4511
+      2: 42.444  5.3416  -6.0971 -8.2321 -2.81286 -2.0790
+      3: 42.444  6.9013 -21.0785 -4.6865  0.14938  1.1461
 
 # output_lm_categorical_ctree
 
@@ -92,8 +101,9 @@
       (out <- code)
     Output
            none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
-      1: 40.752       2.3834             17.221       -0.38759     67.9057
-      2: 40.752      -6.0032             15.461        8.28892     -1.8965
+      1: 42.444      -6.2061             15.375        -6.7052     -2.9727
+      2: 42.444      -5.7645            -17.713        21.8663    -13.2194
+      3: 42.444       7.1013            -21.782         1.7300     -5.4132
 
 # output_lm_categorical_categorical
 
@@ -101,8 +111,9 @@
       (out <- code)
     Output
            none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
-      1: 40.752       6.1998             7.8422          2.852     70.2288
-      2: 40.752      -3.7270             9.8283          5.626      4.1224
+      1: 42.444      13.6562            -19.729         4.3687    -16.6592
+      2: 42.444      -5.4477             11.306       -11.4448      5.0777
+      3: 42.444      -7.4925            -12.267        19.6723    -14.7440
 
 # output_lm_categorical_independence
 
@@ -110,8 +121,9 @@
       (out <- code)
     Output
            none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
-      1: 40.752       3.5248             14.483        0.87628      68.239
-      2: 40.752      -5.1001             14.483        7.69533      -1.228
+      1: 42.444      -5.2522             13.951       -7.04069     -2.1667
+      2: 42.444      -5.2522            -15.615       20.08562    -14.0497
+      3: 42.444       4.8331            -15.615        0.59599     -8.1782
 
 # output_lm_ts_timeseries
 
@@ -127,63 +139,70 @@
     Code
       (out <- code)
     Output
-           none Solar.R    Wind    Temp   Month     Day
-      1: 40.752  6.3245 24.6634  4.5405 0.29326 -2.5319
-      2: 40.752 -1.9993  9.1793 20.4181 0.96189 -2.4993
+           none Solar.R     Wind      Temp    Month      Day
+      1: 42.444 -8.5797   7.9995  14.36083  0.37186 -1.55051
+      2: 42.444  5.0779  -5.0142 -12.06444 -0.89628 -0.98246
+      3: 42.444  7.2759 -25.4485   0.39529 -0.38682  0.59586
 
 # output_lm_numeric_comb2
 
     Code
       (out <- code)
     Output
-           none Solar.R   Wind    Temp   Month     Day
-      1: 40.752 5.75944 24.394  2.4967  4.5293 -3.8896
-      2: 40.752 0.16416  8.372 24.1075 -2.3507 -4.2323
+           none Solar.R     Wind    Temp       Month     Day
+      1: 42.444 -8.9566   9.4004 17.0610 -1.46782098 -3.4350
+      2: 42.444  5.3075  -5.9321 -8.1260 -2.93112830 -2.1977
+      3: 42.444  6.9132 -20.9687 -4.5388 -0.00042251  1.0265
 
 # output_lm_numeric_comb3
 
     Code
       (out <- code)
     Output
-           none  Solar.R   Wind   Temp    Month     Day
-      1: 40.752  4.42903 19.814 12.271  0.77897 -4.0031
-      2: 40.752 -0.69895 10.523 25.541 -5.30094 -4.0031
+           none Solar.R     Wind    Temp   Month     Day
+      1: 42.444  -4.537   8.2692 17.5175 -5.5812 -3.0665
+      2: 42.444   2.250  -3.3453 -5.2319 -5.5812 -1.9710
+      3: 42.444   3.708 -18.6102 -1.4404 -2.5412  1.3155
 
 # output_lm_mixed_independence
 
     Code
       (out <- code)
     Output
-           none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
-      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
+           none Solar.R     Wind    Temp     Day Month_factor
+      1: 42.444 -4.7299   7.7495 17.7533 -2.6010      -7.5881
+      2: 42.444  2.3383  -3.1472 -5.3100 -1.6761      -7.5881
+      3: 42.444  3.8567 -17.4686 -1.4661  1.0987       3.3792
 
 # output_lm_mixed_ctree
 
     Code
       (out <- code)
     Output
-           none  Solar.R    Wind    Temp     Day Month_factor
-      1: 40.752  4.99231 22.6295  1.6231 -3.5155       5.8569
-      2: 40.752 -0.25185  7.8194 26.8071 -1.1590      -8.8504
+           none Solar.R    Wind    Temp      Day Month_factor
+      1: 42.444 -9.1653  11.815 13.1837 -0.44731      -4.8021
+      2: 42.444  3.6525  -5.782 -6.5237 -0.43490      -6.2950
+      3: 42.444  6.2682 -21.441 -7.3226  1.63305      10.2624
 
 # output_lm_mixed_comb
 
     Code
       (out <- code)
     Output
-           none  Solar.R    Wind    Temp      Day Month_factor
-      1: 40.752  5.00933 22.6405  1.5599 -3.48455       5.8612
-      2: 40.752 -0.49171  8.1241 26.3643 -0.74807      -8.8834
+           none Solar.R     Wind    Temp      Day Month_factor
+      1: 42.444 -9.1534  11.4919 13.3405 -0.22906      -4.8662
+      2: 42.444  3.9355  -5.7652 -6.4033 -0.44621      -6.7038
+      3: 42.444  6.1291 -21.4164 -7.2078  1.55138      10.3436
 
 # output_custom_lm_numeric_independence_1
 
     Code
       (out <- code)
     Output
-           none  Solar.R   Wind   Temp    Month     Day
-      1: 40.752  4.42903 19.814 12.271  0.77897 -4.0031
-      2: 40.752 -0.69895 10.523 25.541 -5.30094 -4.0031
+           none Solar.R     Wind    Temp   Month     Day
+      1: 42.444  -4.537   8.2692 17.5175 -5.5812 -3.0665
+      2: 42.444   2.250  -3.3453 -5.2319 -5.5812 -1.9710
+      3: 42.444   3.708 -18.6102 -1.4404 -2.5412  1.3155
 
 # output_custom_lm_numeric_independence_2
 
@@ -194,9 +213,10 @@
       Consistency checks between model and data is therefore disabled.
       
     Output
-           none  Solar.R   Wind   Temp    Month     Day
-      1: 40.752  4.42903 19.814 12.271  0.77897 -4.0031
-      2: 40.752 -0.69895 10.523 25.541 -5.30094 -4.0031
+           none Solar.R     Wind    Temp   Month     Day
+      1: 42.444  -4.537   8.2692 17.5175 -5.5812 -3.0665
+      2: 42.444   2.250  -3.3453 -5.2319 -5.5812 -1.9710
+      3: 42.444   3.708 -18.6102 -1.4404 -2.5412  1.3155
 
 # output_custom_xgboost_mixed_dummy_ctree
 
@@ -207,16 +227,18 @@
       Consistency checks between model and data is therefore disabled.
       
     Output
-           none  Solar.R   Wind   Temp     Day Month_factor
-      1: 40.752 13.96512 76.943 12.957 -3.6138       3.2694
-      2: 40.752 -0.86312  1.618 34.588 -9.4797      -5.5401
+           none Solar.R    Wind    Temp      Day Month_factor
+      1: 42.444 -5.6026  13.054  20.434 0.085081      -0.2664
+      2: 42.444  4.6447 -12.570 -16.653 1.291334      -2.1574
+      3: 42.444  5.4512 -14.006 -19.719 1.325035       6.3851
 
 # output_lm_numeric_interaction
 
     Code
       (out <- code)
     Output
-           none Solar.R   Wind
-      1: 40.752 15.3512 36.655
-      2: 40.752 -2.6185 16.095
+           none  Solar.R     Wind
+      1: 42.444 -13.8181  10.5789
+      2: 42.444   4.6423  -6.2871
+      3: 42.444   4.4519 -34.6024
 

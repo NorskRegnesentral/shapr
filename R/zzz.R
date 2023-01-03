@@ -75,7 +75,9 @@
       "n_S_per_approach",
       "n_batches_per_approach",
       "randomorder",
-      "batch"
+      "batch",
+      "type",
+      "feature_value_factor"
     )
   )
   invisible()
