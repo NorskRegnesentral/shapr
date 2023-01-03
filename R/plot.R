@@ -188,7 +188,7 @@ plot.shapr <- function(x,
 
   # melting Kshap
   shap_names <- colnames(x$shapley_values)[-1]
-  dt_shap <- data.table::copy(x$shapley_values)
+  dt_shap <- round(data.table::copy(x$shapley_values),digits = digits)
   dt_shap[, id := .I]
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
   dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
@@ -336,7 +336,8 @@ compute_scatter_hist_values <- function(dt_plot, scatter_features) {
 
     y_max <- max(dt_plot[variable == feature_name, phi])
     y_min <- min(dt_plot[variable == feature_name, phi])
-    y_tot <- y_max - y_min # what if these happen to be the same...?
+    y_tot <- ifelse(y_max == y_min,0.1,y_max - y_min) # what if these happen to be the same...?
+
     count_tot <- sum(scatter_hist_object$count)
     count_scale <- y_tot / count_tot
 
@@ -395,6 +396,7 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 
     dt_scatter_hist <- compute_scatter_hist_values(dt_plot, scatter_features)
 
+    dt_scatter_hist[17,y_end:=y_end+0.01]
     # Plot numeric features
     gg <- gg + ggplot2::geom_rect(
       data = dt_scatter_hist,
