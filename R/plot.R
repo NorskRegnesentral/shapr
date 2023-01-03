@@ -571,7 +571,7 @@ make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols) {
   dt_plot[type == "factor", feature_value_scaled := NA]
 
   gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = variable, y = phi, color = feature_value_scaled)) +
-    ggplot2::geom_hline(yintercept = 0, color = "grey70", size = 0.5) +
+    ggplot2::geom_hline(yintercept = 0, color = "grey70", linewidth = 0.5) +
     ggbeeswarm::geom_beeswarm(priority = "random", cex = 0.4) +
     # the cex-parameter doesnt generalize well, should use corral but not available yet....
     ggplot2::coord_flip() +
@@ -737,7 +737,7 @@ make_waterfall_plot <- function(dt_plot,
     ggplot2::scale_fill_manual(values = col, drop = TRUE) +
     ggplot2::scale_x_discrete(breaks = breaks, labels = desc_labels) +
     ggplot2::geom_segment(ggplot2::aes(x = -Inf, xend = max(rank_waterfall) + 0.8, y = pred, yend = pred),
-      linetype = "dotted", col = "grey30", size = 0.25
+      linetype = "dotted", col = "grey30", linewidth = 0.25
     ) +
     ggplot2::coord_flip(clip = "off", xlim = c(0.5, ifelse(N_features + N_features * 0.11 < N_features + 0.5,
       N_features + 0.5,
@@ -754,7 +754,7 @@ make_waterfall_plot <- function(dt_plot,
     ) +
     ggplot2::geom_segment(
       x = -Inf, xend = 1.3, y = expected, yend = expected,
-      linetype = "dotted", col = "grey30", size = 0.25
+      linetype = "dotted", col = "grey30", linewidth = 0.25
     ) +
     ggplot2::geom_text(ggplot2::aes(
       label = phi_significant,
