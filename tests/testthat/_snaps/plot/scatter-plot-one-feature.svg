@@ -28,10 +28,10 @@
 <g clip-path='url(#cpMzIuNzl8NzE0LjUyfDM5LjQzfDU0NS4xMQ==)'>
 <rect x='32.79' y='39.43' width='681.73' height='505.68' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <polyline points='32.79,515.95 714.52,515.95 ' style='stroke-width: 1.07; stroke: #E5E5E5; stroke-linecap: butt;' />
-<polyline points='32.79,416.29 714.52,416.29 ' style='stroke-width: 1.07; stroke: #E5E5E5; stroke-linecap: butt;' />
+<polyline points='32.79,416.28 714.52,416.28 ' style='stroke-width: 1.07; stroke: #E5E5E5; stroke-linecap: butt;' />
 <polyline points='32.79,316.62 714.52,316.62 ' style='stroke-width: 1.07; stroke: #E5E5E5; stroke-linecap: butt;' />
 <polyline points='32.79,216.96 714.52,216.96 ' style='stroke-width: 1.07; stroke: #E5E5E5; stroke-linecap: butt;' />
-<polyline points='32.79,117.30 714.52,117.30 ' style='stroke-width: 1.07; stroke: #E5E5E5; stroke-linecap: butt;' />
+<polyline points='32.79,117.29 714.52,117.29 ' style='stroke-width: 1.07; stroke: #E5E5E5; stroke-linecap: butt;' />
 <rect x='63.78' y='368.89' width='123.95' height='153.24' style='stroke-width: 1.07; stroke: #CCCCCC; stroke-linecap: butt; stroke-linejoin: miter; fill: #D9D9D9;' />
 <rect x='187.73' y='368.89' width='123.95' height='153.24' style='stroke-width: 1.07; stroke: #CCCCCC; stroke-linecap: butt; stroke-linejoin: miter; fill: #D9D9D9;' />
 <rect x='311.68' y='522.13' width='123.95' height='0.00' style='stroke-width: 1.07; stroke: #CCCCCC; stroke-linecap: butt; stroke-linejoin: miter; fill: #D9D9D9;' />
@@ -67,12 +67,12 @@
 <text x='27.86' y='419.31' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='4.89px' lengthAdjust='spacingAndGlyphs'>0</text>
 <text x='27.86' y='319.65' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='4.89px' lengthAdjust='spacingAndGlyphs'>5</text>
 <text x='27.86' y='219.99' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='9.79px' lengthAdjust='spacingAndGlyphs'>10</text>
-<text x='27.86' y='120.33' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='9.79px' lengthAdjust='spacingAndGlyphs'>15</text>
+<text x='27.86' y='120.32' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='9.79px' lengthAdjust='spacingAndGlyphs'>15</text>
 <polyline points='30.05,515.95 32.79,515.95 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
-<polyline points='30.05,416.29 32.79,416.29 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='30.05,416.28 32.79,416.28 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='30.05,316.62 32.79,316.62 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='30.05,216.96 32.79,216.96 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
-<polyline points='30.05,117.30 32.79,117.30 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='30.05,117.29 32.79,117.29 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <text x='373.66' y='568.24' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='72.77px' lengthAdjust='spacingAndGlyphs'>Feature values</text>
 <text transform='translate(13.05,292.27) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='74.62px' lengthAdjust='spacingAndGlyphs'>Shapley values</text>
 <text x='373.66' y='14.56' text-anchor='middle' style='font-size: 13.20px; font-family: sans;' textLength='146.05px' lengthAdjust='spacingAndGlyphs'>scatter_plot_one_feature</text>
