@@ -396,7 +396,6 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 
     dt_scatter_hist <- compute_scatter_hist_values(dt_plot, scatter_features)
 
-    dt_scatter_hist[17,y_end:=y_end+0.01]
     # Plot numeric features
     gg <- gg + ggplot2::geom_rect(
       data = dt_scatter_hist,
