@@ -259,9 +259,6 @@ explain <- function(model,
 
   set.seed(seed)
 
-  # This can be set to false for easier debugging.
-  parallel <- TRUE
-
   # Output size of the predict_model function should be the length of prediction_zero.
   output_size <- length(prediction_zero)
 
@@ -305,7 +302,7 @@ explain <- function(model,
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS(internal, model, predict_model, output_size, parallel)
+  vS_list <- compute_vS(internal, model, predict_model, output_size, use_future = TRUE)
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output

@@ -6,14 +6,16 @@
 #'
 #' @param output_size Integer. The output size of the predict_model function.
 #'
-#' @param parallel Logical.
-#' Indicates whether the lappy method (default) or loop method should be used.
+#' @param use_future Logical.
+#' Indicates whether to the vS batches using `future.apply::future_lapply`
+#' (default) or with a simple loop. The latter is handy for
+#' debugging/development
 #'
 #' @export
-compute_vS <- function(internal, model, predict_model, output_size, parallel = TRUE) {
+compute_vS <- function(internal, model, predict_model, output_size, use_future = TRUE) {
   S_batch <- internal$objects$S_batch
 
-  if (parallel) {
+  if (use_future) {
     ret <- future_compute_vS_batch(
       S_batch = S_batch,
       internal = internal,
