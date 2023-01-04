@@ -24,10 +24,10 @@
       Consistency checks between model and data is therefore disabled.
       
     Output
-           none Solar.R     Wind    Temp     Day Month_factor
-      1: 42.444 -4.7299   7.7495 17.7533 -2.6010      -7.5881
-      2: 42.444  2.3383  -3.1472 -5.3100 -1.6761      -7.5881
-      3: 42.444  3.8567 -17.4686 -1.4661  1.0987       3.3792
+          none Solar.R    Wind   Temp    Day Month_factor
+      1: 42.44  -4.730   7.750 17.753 -2.601       -7.588
+      2: 42.44   2.338  -3.147 -5.310 -1.676       -7.588
+      3: 42.44   3.857 -17.469 -1.466  1.099        3.379
 
 ---
 
@@ -43,10 +43,10 @@
       Consistency checks between model and data is therefore disabled.
       
     Output
-           none Solar.R     Wind    Temp     Day Month_factor
-      1: 42.444 -4.7299   7.7495 17.7533 -2.6010      -7.5881
-      2: 42.444  2.3383  -3.1472 -5.3100 -1.6761      -7.5881
-      3: 42.444  3.8567 -17.4686 -1.4661  1.0987       3.3792
+          none Solar.R    Wind   Temp    Day Month_factor
+      1: 42.44  -4.730   7.750 17.753 -2.601       -7.588
+      2: 42.44   2.338  -3.147 -5.310 -1.676       -7.588
+      3: 42.44   3.857 -17.469 -1.466  1.099        3.379
 
 ---
 
@@ -62,10 +62,10 @@
       Assuming feature classes from the data are correct.
       
     Output
-           none Solar.R     Wind    Temp     Day Month_factor
-      1: 42.444 -4.7299   7.7495 17.7533 -2.6010      -7.5881
-      2: 42.444  2.3383  -3.1472 -5.3100 -1.6761      -7.5881
-      3: 42.444  3.8567 -17.4686 -1.4661  1.0987       3.3792
+          none Solar.R    Wind   Temp    Day Month_factor
+      1: 42.44  -4.730   7.750 17.753 -2.601       -7.588
+      2: 42.44   2.338  -3.147 -5.310 -1.676       -7.588
+      3: 42.44   3.857 -17.469 -1.466  1.099        3.379
 
 ---
 
@@ -82,10 +82,10 @@
       Assuming feature factor levels from the data are correct.
       
     Output
-           none Solar.R     Wind    Temp     Day Month_factor
-      1: 42.444 -4.7299   7.7495 17.7533 -2.6010      -7.5881
-      2: 42.444  2.3383  -3.1472 -5.3100 -1.6761      -7.5881
-      3: 42.444  3.8567 -17.4686 -1.4661  1.0987       3.3792
+          none Solar.R    Wind   Temp    Day Month_factor
+      1: 42.44  -4.730   7.750 17.753 -2.601       -7.588
+      2: 42.44   2.338  -3.147 -5.310 -1.676       -7.588
+      3: 42.44   3.857 -17.469 -1.466  1.099        3.379
 
 # erroneous input: `x_train/x_explain`
 
