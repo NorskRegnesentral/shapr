@@ -4,7 +4,7 @@
 \alias{compute_vS}
 \title{Computes \code{v(S)} for all features subsets \code{S}.}
 \usage{
-compute_vS(internal, model, predict_model, method = "future")
+compute_vS(internal, model, predict_model, output_size, parallel = TRUE)
 }
 \arguments{
 \item{internal}{List.
@@ -19,7 +19,7 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 The prediction function used when \code{model} is not natively supported.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
 
-\item{method}{Character
+\item{parallel}{Logical.
 Indicates whether the lappy method (default) or loop method should be used.}
 }
 \description{

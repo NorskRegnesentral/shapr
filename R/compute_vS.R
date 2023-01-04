@@ -54,6 +54,7 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model, out
   return(ret)
 }
 
+#' Batch computing `v(S)` for all features subsets `S`.
 #' @param output_size The number of outputs per row of new data from predict_model
 #' @keywords internal
 batch_compute_vS <- function(S, internal, model, predict_model, p = NULL, output_size = 1) {

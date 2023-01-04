@@ -9,6 +9,7 @@ setup(
   x_explain,
   approach,
   prediction_zero,
+  output_size,
   n_combinations,
   group,
   n_samples,
@@ -37,7 +38,8 @@ See details for more information.}
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
 features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable.}
+such as the mean of the predictions in the training data are also reasonable.
+This can be set to a numeric vector, where the length denotes the output size of the predict function.}
 
 \item{n_combinations}{Integer.
 If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.

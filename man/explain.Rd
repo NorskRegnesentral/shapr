@@ -44,7 +44,8 @@ See details for more information.}
 The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
 features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable.}
+such as the mean of the predictions in the training data are also reasonable.
+This can be set to a numeric vector, where the length denotes the output size of the predict function.}
 
 \item{n_combinations}{Integer.
 If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.
@@ -83,6 +84,8 @@ The prediction function used when \code{model} is not natively supported.
 models.)
 The function must have two arguments, \code{model} and \code{newdata} which specify, respectively, the model
 and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
+In the case where prediction_zero has length over 1, the output should be a data.frame where the rows correspond
+to different rows of x_explain and the columns correspond to the multiple outputs of each prediction.
 \code{NULL} (the default) uses functions specified internally.
 Can also be used to override the default function for natively supported model classes.}
 
