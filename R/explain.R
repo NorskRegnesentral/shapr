@@ -260,7 +260,7 @@ explain <- function(model,
   set.seed(seed)
 
   # This can be set to false for easier debugging.
-  parallel <- FALSE
+  parallel <- TRUE
 
   # Output size of the predict_model function should be the length of prediction_zero.
   output_size <- length(prediction_zero)
