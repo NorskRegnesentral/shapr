@@ -122,7 +122,7 @@ compute_preds <- function(dt, feature_names, predict_model, model, pred_cols) {
 compute_MCint <- function(dt, pred_cols) {
 
   # Calculate contributions
-  dt_res <- dt[, lapply(.SD, function (x) .(x = sum(((x) * w) / sum(w)))), .(id, id_combination), .SDcols = pred_cols]
+  dt_res <- dt[, lapply(.SD, function (x) sum(((x) * w) / sum(w))), .(id, id_combination), .SDcols = pred_cols]
   data.table::setkeyv(dt_res, c("id", "id_combination"))
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = pred_cols)
   # dt_mat[, id_combination := NULL]
