@@ -35,10 +35,6 @@ data.table
 \description{
 Generate permutations of training data using test observations
 }
-\references{
-Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
-More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
-}
 \author{
 Nikolai Sellereite
 }

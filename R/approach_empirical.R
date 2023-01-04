@@ -197,7 +197,6 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 #' @param x_explain Numeric matrix
 #'
 #' @inheritParams explain
-#' @inherit explain references
 #'
 #' @return data.table
 #'

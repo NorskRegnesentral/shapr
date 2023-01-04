@@ -8,11 +8,11 @@
   x,
   plot_type = "bar",
   digits = 3,
-  plot_phi0 = TRUE,
   index_x_explain = NULL,
   top_k_features = NULL,
   col = NULL,
-  plot_order = "largest_first",
+  bar_plot_phi0 = TRUE,
+  bar_plot_order = "largest_first",
   scatter_features = NULL,
   scatter_hist = TRUE,
   ...
@@ -34,10 +34,8 @@ Each point gives the shapley value of a given instance, where the points are col
 of that instance.}
 
 \item{digits}{Integer.
-Number of significant digits to use in the feature description}
-
-\item{plot_phi0}{Logical.
-Whether to include \code{phi0} in the plot.}
+Number of significant digits to use in the feature description.
+Applicable for \code{plot_type} \code{"bar"} and \code{"waterfall"}}
 
 \item{index_x_explain}{Integer vector.
 Which of the test observations to plot. E.g. if you have
@@ -45,9 +43,10 @@ explained 10 observations using \code{\link[=explain]{explain()}}, you can gener
 observations by setting \code{index_x_explain = 1:5}.}
 
 \item{top_k_features}{Integer.
-How many features to include in the plot. E.g. if you have 15
-features in your model you can plot the 5 most important features, for each explanation, by setting
-\code{top_k_features = 1:5}.}
+How many features to include in the plot.
+E.g. if you have 15 features in your model you can plot the 5 most important features,
+for each explanation, by setting \code{top_k_features = 1:5}.
+Applicable for \code{plot_type} \code{"bar"} and \code{"waterfall"}}
 
 \item{col}{Character vector (length depends on plot type).
 The color codes (hex codes or other names understood by \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}) for positive and negative
@@ -59,16 +58,23 @@ For \code{plot_type = "scatter"}, the default is \code{"#619CFF"}.
 
 If you want to alter the colors i the plot, the length of the \code{col} vector depends on plot type.
 For \code{plot_type = "bar"} or \code{plot_type = "waterfall"}, two colors should be provided, first for positive and
-then for negative Shapley values. For \code{plot_type = "beeswarm"}, either two or three colors can be given. If two
-colors are given, then the first color determines the color that points with high feature values will have, and the
-second determines the color of points with low feature values. If three colors are given, then the first colors high
-feature values, the second colors mid-range feature values, and the third colors low feature values. For instance,
-\code{col = c("red", "yellow", "blue")} will make high values red, mid-range values yellow, and low values blue. For
-\code{plot_type = "scatter"}, a single color is to be given, which determines the color of the points on the
+then for negative Shapley values.
+For \code{plot_type = "beeswarm"}, either two or three colors can be given.
+If two colors are given, then the first color determines the color that points with high feature values will have,
+and the second determines the color of points with low feature values.
+If three colors are given, then the first colors high feature values, the second colors mid-range feature values,
+and the third colors low feature values.
+For instance, \code{col = c("red", "yellow", "blue")} will make high values red, mid-range values yellow,
+and low values blue.
+For \code{plot_type = "scatter"}, a single color is to be given, which determines the color of the points on the
 scatter plot.}
 
-\item{plot_order}{Character.
-Specifies what order to plot the features with respect to the magnitude of the shapley values.
+\item{bar_plot_phi0}{Logical.
+Whether to include \code{phi0} in the plot for  \code{plot_type = "bar"}.}
+
+\item{bar_plot_order}{Character.
+Specifies what order to plot the features with respect to the magnitude of the shapley values with
+\code{plot_type = "bar"}:
 \code{"largest_first"} (the default) plots the features ordered from largest to smallest absolute Shapley value.
 \code{"smallest_first"} plots the features ordered from smallest to largest absolute Shapley value.
 \code{"original"} plots the features in the original order of the data table.}
@@ -97,7 +103,6 @@ how you should use the function.
 }
 \examples{
 
-data("airquality")
 data("airquality")
 airquality <- airquality[complete.cases(airquality), ]
 x_var <- c("Solar.R", "Wind", "Temp", "Month")
@@ -146,6 +151,42 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   plot(x, plot_type = "beeswarm")
   plot(x, plot_type = "beeswarm", col = c("red", "black")) # we can change colors
 }
+
+# Example of scatter and beeswarm plot with factor variables
+airquality$Month_factor <- as.factor(month.abb[airquality$Month])
+airquality <- airquality[complete.cases(airquality), ]
+x_var <- c("Solar.R", "Wind", "Temp", "Month_factor")
+y_var <- "Ozone"
+
+# Split data into test- and training data
+data_train <- airquality
+data_explain <- tail(airquality, 50)
+
+x_train <- data_train[, x_var]
+x_explain <- data_explain[, x_var]
+
+# Fit a linear model
+lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
+model <- lm(lm_formula, data = data_train)
+
+# Explain predictions
+p <- mean(data_train[, y_var])
+
+# Empirical approach
+x <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "ctree",
+  prediction_zero = p,
+  n_samples = 1e2
+)
+
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+plot(x, plot_type = "scatter")
+plot(x, plot_type = "beeswarm")
+}
+
 
 }
 \author{

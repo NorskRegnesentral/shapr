@@ -1,4 +1,4 @@
 #' @export
-print.shapr <- function(x, ...) {
-  print(x$shapley_values)
+print.shapr <- function(x,digits=4, ...) {
+  print(x$shapley_values,digits=digits)
 }

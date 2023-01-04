@@ -24,9 +24,10 @@
       Consistency checks between model and data is therefore disabled.
       
     Output
-           none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
-      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
+          none Solar.R    Wind   Temp    Day Month_factor
+      1: 42.44  -4.730   7.750 17.753 -2.601       -7.588
+      2: 42.44   2.338  -3.147 -5.310 -1.676       -7.588
+      3: 42.44   3.857 -17.469 -1.466  1.099        3.379
 
 ---
 
@@ -42,9 +43,10 @@
       Consistency checks between model and data is therefore disabled.
       
     Output
-           none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
-      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
+          none Solar.R    Wind   Temp    Day Month_factor
+      1: 42.44  -4.730   7.750 17.753 -2.601       -7.588
+      2: 42.44   2.338  -3.147 -5.310 -1.676       -7.588
+      3: 42.44   3.857 -17.469 -1.466  1.099        3.379
 
 ---
 
@@ -60,9 +62,10 @@
       Assuming feature classes from the data are correct.
       
     Output
-           none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
-      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
+          none Solar.R    Wind   Temp    Day Month_factor
+      1: 42.44  -4.730   7.750 17.753 -2.601       -7.588
+      2: 42.44   2.338  -3.147 -5.310 -1.676       -7.588
+      3: 42.44   3.857 -17.469 -1.466  1.099        3.379
 
 ---
 
@@ -79,9 +82,10 @@
       Assuming feature factor levels from the data are correct.
       
     Output
-           none  Solar.R    Wind   Temp     Day Month_factor
-      1: 40.752  4.61196 18.6061 12.444 -3.3478     -0.72777
-      2: 40.752 -0.72853  9.8887 25.898 -3.3478     -7.34468
+          none Solar.R    Wind   Temp    Day Month_factor
+      1: 42.44  -4.730   7.750 17.753 -2.601       -7.588
+      2: 42.44   2.338  -3.147 -5.310 -1.676       -7.588
+      3: 42.44   3.857 -17.469 -1.466  1.099        3.379
 
 # erroneous input: `x_train/x_explain`
 
@@ -501,15 +505,6 @@
         approach = "independence", prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
     Error <simpleError>
       `keep_samp_for_vS` must be single logical.
-
----
-
-    Code
-      expect_snapshot({
-        keep_samp_for_vS_too_long <- c(TRUE, FALSE)
-        explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-          approach = "independence", prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
-      }, error = T)
 
 # erroneous input: `predict_model`
 

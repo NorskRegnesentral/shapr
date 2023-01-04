@@ -71,7 +71,6 @@ check_parameters <- function(internal){
     check_groups(feature_names,group)
   }
 
-
   if (!is.null(n_combinations)) {
     check_n_combinations(internal)
   }
