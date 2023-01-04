@@ -18,3 +18,4 @@ inst/compare_lundberg\.xgb\.obj
 ^_pkgdown\.yml$
 ^pkgdown$
 ^.Rprofile
+^.idea$

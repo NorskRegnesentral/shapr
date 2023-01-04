@@ -41,6 +41,8 @@ Typically we set this value equal to the mean of the response variable in our tr
 such as the mean of the predictions in the training data are also reasonable.
 This can be set to a numeric vector, where the length denotes the output size of the predict function.}
 
+\item{output_size}{Integer. The output size of the predict_model function.}
+
 \item{n_combinations}{Integer.
 If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.
 If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.

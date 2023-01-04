@@ -4,6 +4,7 @@
 #' @inheritParams explain
 #' @inheritParams default_doc
 #'
+#' @param output_size Integer. The output size of the predict_model function.
 #' @param feature_specs List. The output from [get_model_specs()] or [get_data_specs()].
 #' Contains the 3 elements:
 #' \describe{

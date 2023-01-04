@@ -4,6 +4,8 @@
 #' @inheritParams default_doc
 #' @inheritParams explain
 #'
+#' @param output_size Integer. The output size of the predict_model function.
+#'
 #' @param parallel Logical.
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
