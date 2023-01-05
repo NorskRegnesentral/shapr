@@ -343,3 +343,14 @@ test_that("output_lm_numeric_interaction", {
     )
 })
 
+test_that("multiple_output_ar_numeric", {
+    expect_snapshot_rds(
+      explain(model = model_ar_temp,
+              x_explain = x_explain_ar,
+              x_train = x_train_ar,
+              approach = "empirical",
+              prediction_zero = p0_ar),
+      "multiple_output_ar_numeric"
+    )
+})
+
