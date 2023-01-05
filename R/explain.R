@@ -26,6 +26,7 @@
 #' features.
 #' Typically we set this value equal to the mean of the response variable in our training data, but other choices
 #' such as the mean of the predictions in the training data are also reasonable.
+#' This can be set to a numeric vector, where the length denotes the output size of the predict function.
 #'
 #' @param n_combinations Integer.
 #' If `group = NULL`, `n_combinations` represents the number of unique feature combinations to sample.
@@ -64,6 +65,8 @@
 #' models.)
 #' The function must have two arguments, `model` and `newdata` which specify, respectively, the model
 #' and a data.frame/data.table to compute predictions for. The function must give the prediction as a numeric vector.
+#' In the case where prediction_zero has length over 1, the output should be a data.frame where the rows correspond
+#' to different rows of x_explain and the columns correspond to the multiple outputs of each prediction.
 #' `NULL` (the default) uses functions specified internally.
 #' Can also be used to override the default function for natively supported model classes.
 #'
@@ -256,6 +259,9 @@ explain <- function(model,
 
   set.seed(seed)
 
+  # Output size of the predict_model function should be the length of prediction_zero.
+  output_size <- length(prediction_zero)
+
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
 
@@ -268,6 +274,7 @@ explain <- function(model,
     x_explain = x_explain,
     approach = approach,
     prediction_zero = prediction_zero,
+    output_size = output_size,
     n_combinations = n_combinations,
     group = group,
     n_samples = n_samples,
@@ -282,7 +289,8 @@ explain <- function(model,
   predict_model <- get_predict_model(
     x_test = head(internal$data$x_train, 2),
     predict_model = predict_model,
-    model = model
+    model = model,
+    output_size = output_size
   )
 
   # Sets up the Shapley (sampling) framework and prepares the
@@ -294,7 +302,7 @@ explain <- function(model,
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS(internal, model, predict_model)
+  vS_list <- compute_vS(internal, model, predict_model, output_size, use_future = TRUE)
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output

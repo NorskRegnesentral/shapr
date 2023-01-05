@@ -4,7 +4,7 @@
 \alias{get_predict_model}
 \title{Model testing function}
 \usage{
-get_predict_model(x_test, predict_model, model)
+get_predict_model(x_test, predict_model, model, output_size)
 }
 \arguments{
 \item{predict_model}{Function.

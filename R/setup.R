@@ -4,6 +4,7 @@
 #' @inheritParams explain
 #' @inheritParams default_doc
 #'
+#' @param output_size Integer. The output size of the predict_model function.
 #' @param feature_specs List. The output from [get_model_specs()] or [get_data_specs()].
 #' Contains the 3 elements:
 #' \describe{
@@ -19,6 +20,7 @@ setup <- function(x_train,
                   x_explain,
                   approach,
                   prediction_zero,
+                  output_size,
                   n_combinations,
                   group,
                   n_samples,
@@ -32,6 +34,7 @@ setup <- function(x_train,
   internal$parameters <- get_parameters(
     approach = approach,
     prediction_zero = prediction_zero,
+    output_size = output_size,
     n_combinations = n_combinations,
     group = group,
     n_samples = n_samples,
@@ -272,7 +275,7 @@ get_extra_parameters <- function(internal){
 }
 
 #' @keywords internal
-get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
+get_parameters <- function(approach, prediction_zero, output_size, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, is_python, ...) {
 
   # Check input type for approach
@@ -280,9 +283,9 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
   # approach is checked later
 
   # prediction_zero
-  if(!(is.numeric(prediction_zero) &&
-       length(prediction_zero)==1 &&
-       !is.na(prediction_zero))){
+  if(!(all(is.numeric(prediction_zero)) &&
+       length(prediction_zero)==output_size &&
+       all(!is.na(prediction_zero)))){
     stop("`prediction_zero` must be a single numeric.")
   }
   # n_combinations

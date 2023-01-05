@@ -46,7 +46,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 
   # Appending the zero-prediction to the list
   dt_vS0 <- as.data.table(rbind(c(1, rep(prediction_zero, n_explain))))
-  names(dt_vS0) <- c("id_combination", seq_len(n_explain))
+  names(dt_vS0) <- names(vS_list[[1]])
 
   # Extracting/merging the data tables from the batch running
   # TODO: Need a memory and speed optimized way to transform the output form dt_vS_list to two different lists,
@@ -104,7 +104,7 @@ compute_shapley_new <- function(internal, dt_vS) {
     shap_names <- names(internal$parameters$group) # TODO: Add group_names (and feature_names) to internal earlier
   }
 
-  kshap <- t(W %*% as.matrix(dt_vS[, -"id_combination"]))
+  kshap <- t(W %*% matrix(unlist(dt_vS[, -"id_combination"]), nrow=nrow(dt_vS)))
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", shap_names)
 
