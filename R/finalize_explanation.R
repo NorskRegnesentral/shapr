@@ -46,7 +46,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 
   # Appending the zero-prediction to the list
   dt_vS0 <- as.data.table(rbind(c(1, rep(prediction_zero, n_explain))))
-  names(dt_vS0) <- c("id_combination", seq_len(n_explain))
+  names(dt_vS0) <- names(vS_list[[1]])
 
   # Extracting/merging the data tables from the batch running
   # TODO: Need a memory and speed optimized way to transform the output form dt_vS_list to two different lists,

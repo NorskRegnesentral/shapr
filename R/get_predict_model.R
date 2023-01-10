@@ -3,7 +3,7 @@
 #'
 #' @inheritParams default_doc
 #' @keywords internal
-get_predict_model <- function(x_test, predict_model, model) {
+get_predict_model <- function(x_test, predict_model, model, output_size = 1) {
 
   # Checks that predict_model is a proper function (R + py)
   # Extracts natively supported functions for predict_model if exists and not passed (R only)
@@ -36,7 +36,7 @@ get_predict_model <- function(x_test, predict_model, model) {
 
 
   # Tests prediction with some data
-  tmp <- tryCatch(predict_model(model, x_test),error = errorfun)
+  tmp <- tryCatch(predict_model(model, x_test), error = errorfun)
   if(class(tmp)[1]=="error"){
     stop(paste0("The predict_model function of class `", class(model), "` is invalid.\n",
                 "See the 'Advanced usage' section of the vignette:\n",
@@ -45,12 +45,14 @@ get_predict_model <- function(x_test, predict_model, model) {
                 "A basic function test threw the following error:\n",as.character(tmp[[1]])))
   }
 
-  if (!(all(is.numeric(tmp)) &&
-        length(tmp) == 2)) {
+  if (!((all(is.numeric(tmp)) || all(sapply(tmp, is.numeric))) &&
+        (length(tmp) == 2 || (nrow(tmp) == 2 && ncol(tmp) == output_size)))) {
     stop(
       paste0(
         "The predict_model function of class `", class(model),
-        "` does not return a numeric output of the desired length.\n",
+        "` does not return a numeric output of the desired length\n",
+        "for single output models or a data.table of the correct\n",
+        "dimensions for a multiple output model.\n",
         "See the 'Advanced usage' section of the vignette:\n",
         "vignette('understanding_shapr', package = 'shapr')\n\n",
         "for more information on running shapr with custom models.\n"

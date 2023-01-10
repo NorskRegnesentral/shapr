@@ -236,10 +236,10 @@ get_extra_parameters <- function(internal){
   internal$parameters$n_train <- nrow(internal$data$x_train)
 
   # Names of features (already checked to be OK)
-  internal$parameters$feature_names = names(internal$data$x_explain)
+  internal$parameters$feature_names <- names(internal$data$x_explain)
 
   # Update feature_specss (in case model based spec included NAs)
-  internal$objects$feature_specs = get_data_specs(internal$data$x_explain)
+  internal$objects$feature_specs <- get_data_specs(internal$data$x_explain)
 
   internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
 
@@ -272,7 +272,7 @@ get_extra_parameters <- function(internal){
 }
 
 #' @keywords internal
-get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
+get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, is_python, ...) {
 
   # Check input type for approach
@@ -280,13 +280,13 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
   # approach is checked later
 
   # prediction_zero
-  if(!(is.numeric(prediction_zero) &&
-       length(prediction_zero)==1 &&
-       !is.na(prediction_zero))){
-    stop("`prediction_zero` must be a single numeric.")
+  if (!all((is.numeric(prediction_zero)) &&
+      length(prediction_zero) == output_size &&
+      all(!is.na(prediction_zero)))) {
+    stop("`prediction_zero` must match the output size of the model.")
   }
   # n_combinations
-  if(!is.null(n_combinations) &&
+  if (!is.null(n_combinations) &&
      !(is.wholenumber(n_combinations) &&
        length(n_combinations)==1 &&
        !is.na(n_combinations) &&
