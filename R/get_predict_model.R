@@ -1,9 +1,9 @@
 
-#' Model testing function
+#' Get predict_model function
 #'
 #' @inheritParams default_doc
 #' @keywords internal
-get_predict_model <- function(x_test, predict_model, model, output_size = 1) {
+get_predict_model <- function(predict_model, model) {
 
   # Checks that predict_model is a proper function (R + py)
   # Extracts natively supported functions for predict_model if exists and not passed (R only)
@@ -33,7 +33,14 @@ get_predict_model <- function(x_test, predict_model, model, output_size = 1) {
       )
     }
   }
+  return(predict_model)
+}
 
+#' Model testing function
+#'
+#' @inheritParams default_doc
+#' @keywords internal
+test_predict_model <- function (x_test, predict_model, model, output_size = 1) {
 
   # Tests prediction with some data
   tmp <- tryCatch(predict_model(model, x_test), error = errorfun)
@@ -59,5 +66,4 @@ get_predict_model <- function(x_test, predict_model, model, output_size = 1) {
       )
     )
   }
-  return(predict_model)
 }

@@ -278,8 +278,13 @@ explain <- function(model,
   )
 
   # Gets predict_model (if not passed to explain)
-  # Checks that predict_model gives correct format
   predict_model <- get_predict_model(
+    predict_model = predict_model,
+    model = model
+  )
+
+  # Checks that predict_model gives correct format
+  test_predict_model(
     x_test = head(internal$data$x_train, 2),
     predict_model = predict_model,
     model = model

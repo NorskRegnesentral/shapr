@@ -2,7 +2,7 @@
 #' TODO: Write documentation.
 explain_forecast <- function(model,
                     data,
-                    reg,
+                    reg = NULL,
                     train_idx,
                     explain_idx,
                     lags,
@@ -10,7 +10,7 @@ explain_forecast <- function(model,
                     approach,
                     prediction_zero,
                     n_combinations = NULL,
-                    group = NULL,
+                    group_lags = TRUE,
                     n_samples = 1e3,
                     n_batches = 1,
                     seed = 1,
@@ -37,6 +37,7 @@ explain_forecast <- function(model,
     approach = approach,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
+    group_lags = group_lags,
     n_samples = n_samples,
     n_batches = n_batches,
     seed = seed,
@@ -44,18 +45,17 @@ explain_forecast <- function(model,
     feature_specs = feature_specs, ...
   )
 
-  # Modify the prediction function to create its arguments internally.
-  formals(predict_model) <- formals(predict_model)[1:2]
-  new_code <- c(
-    paste0("newreg <- newdata[, -seq_len(", internal$data$n_endo, ")]"),
-    paste0("newdata <- newdata[, 1:", internal$data$n_endo, "]"),
-    paste0("horizon <- ", horizon)
-  )
-  body(predict_model) <- as.call(append(as.list(body(predict_model)), lapply(new_code, str2lang), after=1))
-
   # Gets predict_model (if not passed to explain)
-  # Checks that predict_model gives correct format
   predict_model <- get_predict_model(
+    predict_model = predict_model,
+    model = model
+  )
+
+  # Modify the prediction function to create its arguments internally to avoid modifying the rest of the framework.
+  predict_model <- append_forecast_predict(predict_model, internal$data$n_endo, horizon)
+
+  # Checks that predict_model gives correct format
+  test_predict_model(
     x_test = head(internal$data$x_train, 2),
     predict_model = predict_model,
     model = model,
@@ -84,6 +84,18 @@ explain_forecast <- function(model,
   return(output)
 }
 
+#' Modify the prediction function to create its arguments internally.
+append_forecast_predict <- function (predict_model, n_endo, horizon) {
+  formals(predict_model) <- formals(predict_model)[1:2]
+  new_code <- c(
+    paste0("newreg <- newdata[, -seq_len(", n_endo, ")]"),
+    paste0("newdata <- newdata[, 1:", n_endo, "]"),
+    paste0("horizon <- ", horizon)
+  )
+  body(predict_model) <- as.call(append(as.list(body(predict_model)), lapply(new_code, str2lang), after=1))
+  return(predict_model)
+}
+
 setup_forecast <- function(data,
                            reg,
                            train_idx,
@@ -93,6 +105,7 @@ setup_forecast <- function(data,
                            approach,
                            prediction_zero,
                            n_combinations,
+                           group_lags,
                            n_samples,
                            n_batches,
                            seed,
@@ -123,7 +136,9 @@ setup_forecast <- function(data,
     horizon
     )
 
-  internal$parameters$group <- internal$data$group
+  if (group_lags) {
+    internal$parameters$group <- internal$data$group
+  }
 
   internal$objects <- list(feature_specs=feature_specs)
 
@@ -154,28 +169,33 @@ get_data_forecast <- function (data, reg, train_idx, explain_idx, lags, horizon)
     stop("Each data column must have a lag order set in lags$data.")
   }
 
-  if (ncol(reg) != length(lags$reg)) {
-    stop("Each reg column must have a lag order set in lags$reg.")
+  if (!is.null(reg)) {
+    if (ncol(reg) != length(lags$reg)) {
+      stop("Each reg column must have a lag order set in lags$reg.")
+    }
+
+    if (nrow(reg) < nrow(data) + horizon) {
+      stop("The exogenous data must have at least as many observations as the data + the forecast horizon.")
+    }
+  } else {
+    reg <- matrix(NA, nrow(data) + horizon, 0)
   }
 
-  if (nrow(reg) < nrow(data) + horizon) {
-    stop("The exogenous data must have at least as many observations as the data + the forecast horizon.")
-  }
 
   max_lag <- max(c(lags$data, lags$reg))
 
-  if (any(c(train_idx, explain_idx) <= max_lag) ||
+  if (any(c(train_idx, explain_idx) < max_lag) ||
       any(c(train_idx, explain_idx) > nrow(data))) {
     stop(paste0("The train and explain indices must fit in the lagged data. The lagged data begins at index "),
          max_lag, " and ends at index ", nrow(data), ".")
   }
 
   # Create a matrix and groups of all lagged data.
-  data_reg <- cbind(data, reg[seq_len(nrow(data)), , drop = FALSE])
+  data_reg <- as.matrix(cbind(data, reg[seq_len(nrow(data)), , drop = FALSE]))
   data_lag <- lag_data(data_reg, c(lags$data, lags$reg))
 
   # Create a matrix and groups of the forecasted values of the exogenous data.
-  reg_fcast <- reg_forecast_setup(reg[seq.int(to = nrow(reg), length.out = nrow(data) - 1), , drop = FALSE], horizon, data_lag$group)
+  reg_fcast <- reg_forecast_setup(reg[seq.int(to = nrow(reg), from = max_lag), , drop = FALSE], horizon, data_lag$group)
 
   # Select the train and explain sets from the data and exogenous forecast values.
   train_idx <- train_idx - max_lag
