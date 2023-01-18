@@ -38,7 +38,12 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
 }
 
 future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
-  p <- progressr::progressor(sum(lengths(S_batch)))
+  if (requireNamespace("progressr", quietly = TRUE)) {
+    p <- progressr::progressor(sum(lengths(S_batch)))
+  } else {
+   p <- NULL
+  }
+
   ret <- future.apply::future_lapply(
     X = S_batch,
     FUN = batch_compute_vS,
@@ -59,12 +64,15 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
 
+  #print(object.size(dt),units="Mb")
   compute_preds(dt, # Updating dt by reference
     feature_names = feature_names,
     predict_model = predict_model,
     model
   )
   dt_vS <- compute_MCint(dt)
+  #print(object.size(dt),units="Mb")
+  #print(sort( sapply(ls(),function(x){format(object.size(get(x)),units="Mb")})))
   if (!is.null(p)) {
     p(
       amount = length(S),
