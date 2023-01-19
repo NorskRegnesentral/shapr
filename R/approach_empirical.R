@@ -124,6 +124,8 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
     mcov = empirical.cov_mat
   )
 
+  gc()
+
   # Setup
   n_col <- nrow(x_explain)
   no_empirical <- nrow(S[index_features, , drop = FALSE])
@@ -181,6 +183,8 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
     dt_l[[i]][, id := i]
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
+  rm(D)
+  gc()
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   return(dt)
@@ -540,8 +544,9 @@ distance_matrix <- function(x_train, x_explain = NULL, list_features, mcov) {
     mcov = mcov,
     S_scale_dist = TRUE
   )
+  gc()
 
-#  print(sort( sapply(ls(),function(x){format(object.size(get(x)),units="Mb")})))
+  print(sort( sapply(ls(),function(x){format(object.size(get(x)),units="Mb")})))
 #  print(dim(D))
 
   # Normalize distance rows to ensure numerical stability in later operations
