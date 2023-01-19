@@ -10,8 +10,8 @@
 #' accounts for 80\% of the total weight.
 #' `eta` is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).
 #'
-#' @param empirical.fixed_sigma_vec Numeric. (default = 0.1)
-#' Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
+#' @param empirical.fixed_sigma Positive numeric scalar. (default = 0.1)
+#' Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
 #' Only used when `empirical.type = "fixed_sigma"`
 #'
 #' @param empirical.n_samples_aicc Positive integer. (default = 1000)
@@ -38,7 +38,7 @@
 setup_approach.empirical <- function(internal,
                                      empirical.type = "fixed_sigma",
                                      empirical.eta = 0.95,
-                                     empirical.fixed_sigma_vec = 0.1,
+                                     empirical.fixed_sigma = 0.1,
                                      empirical.n_samples_aicc = 1000,
                                      empirical.eval_max_aicc = 20,
                                      empirical.start_aicc = 0.1,
@@ -46,7 +46,7 @@ setup_approach.empirical <- function(internal,
                                      model = NULL,
                                      predict_model = NULL, ...){ #TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
 
-  defaults <- mget(c("empirical.eta", "empirical.type", "empirical.fixed_sigma_vec", "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"))
+  defaults <- mget(c("empirical.eta", "empirical.type", "empirical.fixed_sigma", "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"))
 
   internal <- insert_defaults(internal, defaults)
 
@@ -74,6 +74,14 @@ setup_approach.empirical <- function(internal,
     stop(paste0(
       "empirical.type = ", internal$parameters$empirical.type, " for approach = 'empirical' is not available in Python.\n",
     ))
+  }
+
+  if(!(length(internal$parameters$empirical.fixed_sigma)==1 &&
+     is.numeric(internal$parameters$empirical.fixed_sigma) &&
+     internal$parameters$empirical.fixed_sigma>0)){
+    stop(
+      "empirical.fixed_sigma must be a positive numeric of length 1.\n"
+    )
   }
 
 
@@ -105,7 +113,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
   n_explain <- internal$parameters$n_explain
   empirical.type <- internal$parameters$empirical.type
   empirical.eta <- internal$parameters$empirical.eta
-  empirical.fixed_sigma_vec <- internal$parameters$empirical.fixed_sigma_vec
+  empirical.fixed_sigma <- internal$parameters$empirical.fixed_sigma
   n_samples <- internal$parameters$n_samples
 
   model <- internal$tmp$model
@@ -129,58 +137,85 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
   n_col <- nrow(x_explain)
   no_empirical <- nrow(S[index_features, , drop = FALSE])
 
-  h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
-  h_optim_DT <- as.data.table(h_optim_mat)
-  data.table::setnames(h_optim_DT, paste0("Testobs_", seq_len(n_explain)))
-  varcomb <- NULL # due to NSE notes in R CMD check
-  h_optim_DT[, varcomb := .I]
+
   kernel_metric <- ifelse(empirical.type == "independence", empirical.type, "gaussian")
 
-  if (kernel_metric == "independence") {
-    empirical.eta <- 1
-    message(
-      "\nSuccess with message:\nempirical.eta force set to 1 for empirical.type = 'independence'"
-    )
-  } else if (kernel_metric == "gaussian") {
-    if (empirical.type == "fixed_sigma") {
-      h_optim_mat[, ] <- empirical.fixed_sigma_vec
-    } else {
-      if (empirical.type == "AICc_each_k") {
-        h_optim_mat <- compute_AICc_each_k(internal, model, predict_model, index_features)
-      } else if (empirical.type == "AICc_full") {
-        h_optim_mat <- compute_AICc_full(internal, model, predict_model, index_features)
-      } else {
-        stop("empirical.type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
-      }
+  S0 <- S[index_features, , drop = FALSE]
+
+
+  # Increased efficiency for simplest and most common use case
+  if(kernel_metric == "gaussian" & empirical.type =="fixed_sigma" & length(empirical.fixed_sigma)==1){
+
+    W_kernel_full <- exp(-0.5*D/empirical.fixed_sigma^2)
+    dt_l <- list()
+
+    for (i in seq(n_col)) {
+
+      ## Get imputed data
+      dt_l[[i]] <- shapr:::observation_impute(
+        W_kernel = as.matrix(W_kernel_full[, i, ]),
+        S = S0,
+        x_train = as.matrix(x_train),
+        x_explain = as.matrix(x_explain[i, , drop = FALSE]),
+        empirical.eta = empirical.eta,
+        n_samples = n_samples
+      )
+
+      dt_l[[i]][, id := i]
+      if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+
     }
-  }
-  dt_l <- list()
-  for (i in seq(n_col)) {
-    D0 <- D[, i, ]
-    h_optim_vec <- h_optim_mat[, i]
-    h_optim_vec[is.na(h_optim_vec)] <- 1
+
+  } else {
+
+    h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
+
 
     if (kernel_metric == "independence") {
-      D0 <- D0[sample.int(nrow(D)), ] + stats::runif(n = nrow(D) * ncol(D))
-      h_optim_vec <- mean(D) * 1000
+      empirical.eta <- 1
+      message(
+        "\nSuccess with message:\nempirical.eta force set to 1 for empirical.type = 'independence'"
+      )
+    } else if (kernel_metric == "gaussian") {
+      if (empirical.type == "fixed_sigma") {
+        h_optim_mat[, ] <- empirical.fixed_sigma
+      } else {
+        if (empirical.type == "AICc_each_k") {
+          h_optim_mat <- compute_AICc_each_k(internal, model, predict_model, index_features)
+        } else if (empirical.type == "AICc_full") {
+          h_optim_mat <- compute_AICc_full(internal, model, predict_model, index_features)
+        } else {
+          stop("empirical.type must be equal to 'independence', 'fixed_sigma', 'AICc_each_k' or 'AICc_full'.")
+        }
+      }
     }
+    dt_l <- list()
+    for (i in seq(n_col)) {
+      D0 <- D[, i, ]
+      h_optim_vec <- h_optim_mat[, i]
+      h_optim_vec[is.na(h_optim_vec)] <- 1
 
-    val <- t(t(-0.5 * D0) / h_optim_vec^2)
-    W_kernel <- exp(val)
-    S0 <- S[index_features, , drop = FALSE]
+      if (kernel_metric == "independence") {
+        D0 <- D0[sample.int(nrow(D)), ] + stats::runif(n = nrow(D) * ncol(D))
+        h_optim_vec <- mean(D) * 1000
+      }
 
-    ## Get imputed data
-    dt_l[[i]] <- observation_impute(
-      W_kernel = W_kernel,
-      S = S0,
-      x_train = as.matrix(x_train),
-      x_explain = as.matrix(x_explain[i, , drop = FALSE]),
-      empirical.eta = empirical.eta,
-      n_samples = n_samples
-    )
+      val <- t(t(-0.5 * D0) / h_optim_vec^2)
+      W_kernel <- exp(val)
 
-    dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+      ## Get imputed data
+      dt_l[[i]] <- observation_impute(
+        W_kernel = W_kernel,
+        S = S0,
+        x_train = as.matrix(x_train),
+        x_explain = as.matrix(x_explain[i, , drop = FALSE]),
+        empirical.eta = empirical.eta,
+        n_samples = n_samples
+      )
+
+      dt_l[[i]][, id := i]
+      if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
+    }
   }
 
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
@@ -248,7 +283,7 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = 
     index_xtrain = dt_melt[["index_x_train"]],
     index_s = dt_melt[["index_s"]],
     xtrain = x_train,
-    xtest = x_explain,
+    xtest = x_explain, # TODO: change this to xexplain
     S = S
   )
 

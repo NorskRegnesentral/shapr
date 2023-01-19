@@ -111,8 +111,8 @@ Represents the minimum proportion of the total empirical weight that data sample
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
-    \item{\code{empirical.fixed_sigma_vec}}{Numeric. (default = 0.1)
-Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
+    \item{\code{empirical.fixed_sigma}}{Positive numeric scalar. (default = 0.1)
+Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
 Only used when \code{empirical.type = "fixed_sigma"}}
     \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
 Number of samples to consider in AICc optimization.
