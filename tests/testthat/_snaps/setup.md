@@ -466,7 +466,7 @@
         approach = "independence", prediction_zero = p0, n_combinations = n_combinations,
         n_batches = n_batches_too_large)
     Error <simpleError>
-      `n_batches` (11) is greater than the number feature combinations/`n_combinations` (10)
+      `n_batches` (11) must be smaller than the number feature combinations/`n_combinations` (10)
 
 # erroneous input: `seed`
 
