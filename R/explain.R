@@ -247,12 +247,14 @@ explain <- function(model,
                     n_combinations = NULL,
                     group = NULL,
                     n_samples = 1e3,
-                    n_batches = 1,
+                    n_batches = NULL,
                     seed = 1,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     ...) { # ... is further arguments passed to specific approaches
+
+  init_time <- Sys.time()
 
   set.seed(seed)
 
@@ -274,7 +276,8 @@ explain <- function(model,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    feature_specs = feature_specs, ...
+    feature_specs = feature_specs,
+    init_time = init_time,...
   )
 
   # Gets predict_model (if not passed to explain)
@@ -284,17 +287,23 @@ explain <- function(model,
     predict_model = predict_model,
     model = model
   )
+  internal$timing$test_prediction <- Sys.time() # Recording the prediction time as well
+
 
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
   # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
   internal <- setup_computation(internal, model, predict_model)
 
+
   # Compute the v(S):
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model)
+
+  internal$timing$compute_vS <- Sys.time() # Recording the prediction time as well
+
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
