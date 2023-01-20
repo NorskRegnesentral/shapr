@@ -7,7 +7,9 @@ test_that("output_lm_numeric_independence", {
             x_explain = x_explain_numeric,
             x_train = x_train_numeric,
             approach = "independence",
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_independence"
   )
 })
@@ -18,7 +20,9 @@ test_that("output_lm_numeric_empirical", {
             x_explain = x_explain_numeric,
             x_train = x_train_numeric,
             approach = "empirical",
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_empirical"
   )
 })
@@ -30,7 +34,9 @@ test_that("output_lm_numeric_empirical_n_combinations", {
             x_train = x_train_numeric,
             approach = "empirical",
             prediction_zero = p0,
-            n_combinations = 20),
+            n_combinations = 20,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_empirical_n_combinations"
   )
 })
@@ -43,7 +49,9 @@ test_that("output_lm_numeric_empirical_independence", {
             x_train = x_train_numeric,
             approach = "empirical",
             prediction_zero = p0,
-            empirical.type = "independence"),
+            empirical.type = "independence",
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_empirical_independence"
   )
 })
@@ -57,7 +65,9 @@ test_that("output_lm_numeric_empirical_AICc_each", {
             approach = "empirical",
             prediction_zero = p0,
             n_combinations = 8,
-            empirical.type = "AICc_each_k"),
+            empirical.type = "AICc_each_k",
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_empirical_AICc_each"
   )
 })
@@ -71,7 +81,9 @@ test_that("output_lm_numeric_empirical_AICc_full", {
             approach = "empirical",
             prediction_zero = p0,
             n_combinations = 8,
-            empirical.type = "AICc_full"),
+            empirical.type = "AICc_full",
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_empirical_AICc_full"
   )
 })
@@ -82,7 +94,9 @@ test_that("output_lm_numeric_gaussian", {
             x_explain = x_explain_numeric,
             x_train = x_train_numeric,
             approach = "gaussian",
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_gaussian"
   )
 })
@@ -93,7 +107,9 @@ test_that("output_lm_numeric_copula", {
             x_explain = x_explain_numeric,
             x_train = x_train_numeric,
             approach = "copula",
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_copula"
   )
 })
@@ -104,7 +120,9 @@ test_that("output_lm_numeric_ctree", {
             x_explain = x_explain_numeric,
             x_train = x_train_numeric,
             approach = "ctree",
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_ctree"
   )
 })
@@ -115,7 +133,9 @@ test_that("output_lm_categorical_ctree", {
             x_explain = x_explain_categorical,
             x_train = x_train_categorical,
             approach = "ctree",
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_categorical_ctree"
   )
 })
@@ -126,7 +146,9 @@ test_that("output_lm_categorical_categorical", {
             x_explain = x_explain_categorical,
             x_train = x_train_categorical,
             approach = "categorical",
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_categorical_method"
   )
 })
@@ -137,7 +159,9 @@ test_that("output_lm_categorical_independence", {
             x_explain = x_explain_categorical,
             x_train = x_train_categorical,
             approach = "independence",
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_categorical_independence"
   )
 })
@@ -150,7 +174,9 @@ test_that("output_lm_ts_timeseries", {
       x_train = x_train_ts,
       approach = "timeseries",
       prediction_zero = p0_ts,
-      group = group_ts),
+      group = group_ts,
+      n_batches = 1,
+      timing = FALSE),
     "output_lm_timeseries_method"
   )
 })
@@ -161,7 +187,9 @@ test_that("output_lm_numeric_comb1", {
             x_explain = x_explain_numeric,
             x_train = x_train_numeric,
             approach = c("gaussian", "empirical", "ctree", "independence", "empirical"),
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_comb1"
   )
 })
@@ -172,7 +200,9 @@ test_that("output_lm_numeric_comb2", {
             x_explain = x_explain_numeric,
             x_train = x_train_numeric,
             approach = c("ctree", "copula", "independence", "copula", "empirical"),
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_comb2"
   )
 })
@@ -183,7 +213,9 @@ test_that("output_lm_numeric_comb3", {
             x_explain = x_explain_numeric,
             x_train = x_train_numeric,
             approach = c("independence", "empirical", "gaussian", "empirical", "gaussian"),
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_numeric_comb3"
   )
 })
@@ -197,7 +229,9 @@ test_that("output_lm_mixed_independence", {
             x_explain = x_explain_mixed,
             x_train = x_train_mixed,
             approach = "independence",
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_mixed_independence"
   )
 })
@@ -208,7 +242,9 @@ test_that("output_lm_mixed_ctree", {
             x_explain = x_explain_mixed,
             x_train = x_train_mixed,
             approach = "ctree",
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_mixed_ctree"
   )
 })
@@ -220,7 +256,9 @@ test_that("output_lm_mixed_comb", {
             x_explain = x_explain_mixed,
             x_train = x_train_mixed,
             approach = c("ctree", "independence", "ctree", "independence", "independence"),
-            prediction_zero = p0),
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE),
     "output_lm_mixed_comb"
   )
 })
@@ -244,7 +282,9 @@ test_that("output_custom_lm_numeric_independence_1", {
             x_train = x_train_numeric,
             approach = "independence",
             prediction_zero = p0,
-            predict_model = custom_pred_func),
+            predict_model = custom_pred_func,
+            n_batches = 1,
+            timing = FALSE),
     "output_custom_lm_numeric_independence_1"
   )
 })
@@ -267,7 +307,9 @@ test_that("output_custom_lm_numeric_independence_2", {
                        x_train = x_train_numeric,
                        approach = "independence",
                        prediction_zero = p0,
-                       predict_model = custom_pred_func)),
+                       predict_model = custom_pred_func,
+                       n_batches = 1,
+                       timing = FALSE)),
     "output_custom_lm_numeric_independence_2"
   )
 
@@ -275,7 +317,9 @@ test_that("output_custom_lm_numeric_independence_2", {
                     x_explain = x_explain_numeric,
                     x_train = x_train_numeric,
                     approach = "independence",
-                    prediction_zero = p0)
+                    prediction_zero = p0,
+                    n_batches = 1,
+                    timing = FALSE)
 
   # Check that the printed Shapley values are identical
   expect_equal(
@@ -322,7 +366,9 @@ test_that("output_custom_xgboost_mixed_dummy_ctree", {
                         approach = "ctree",
                         prediction_zero = p0,
                         predict_model = predict_model.xgboost_dummy,
-                        get_model_specs = NA)
+                        get_model_specs = NA,
+                        n_batches = 1,
+                        timing = FALSE)
 #      custom$internal$objects$predict_model <- "Deleted on purpose" # To avoid issues with package updates of xgboost
       custom
       },"output_custom_xgboost_mixed_dummy_ctree"
@@ -338,7 +384,9 @@ test_that("output_lm_numeric_interaction", {
               x_explain = x_explain_interaction,
               x_train = x_train_interaction,
               approach = "independence",
-              prediction_zero = p0),
+              prediction_zero = p0,
+              n_batches = 1,
+              timing = FALSE),
       "output_lm_numeric_interaction"
     )
 })
