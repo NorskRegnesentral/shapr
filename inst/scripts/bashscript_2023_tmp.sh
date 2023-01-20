@@ -3,18 +3,18 @@
 #Create array of inputs - space separator
 #MJ: Define all input vectors here
 script_name="timing_script_2023.R"
-logfile_bash="memory_test_2023_new2.csv"
-logfile_Rscript="timing_test_2023_new2.csv"
+logfile_bash="memory_test_2023_tmp.csv"
+logfile_Rscript="timing_test_2023_tmp.csv"
 
 
 p_vec=(4 6 8 10 12 14 16)
-n_train_vec=(100 1000) #(100 1000 1000)
-n_explain_vec=(10 100) #(1 2 10 100)
+n_train_vec=(100) #(100 1000 1000)
+n_explain_vec=(10) #(1 2 10 100)
 n_batches_vec=(1 2 4 8 16 32 64) #(1 2 4 8 16 32)
 n_cores_vec=1 #(1 2 4 8 16 24 32)
-approach_vec=("empirical" "gaussian" "ctree" "copula" "independence")
+approach_vec=("empirical") #"gaussian" "ctree" "copula" "independence")
 multicore_method_vec=("sequential")
-reps=3
+reps=1
 
 ## get length of $distro array
 len_p_vec=${#p_vec[@]}

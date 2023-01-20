@@ -7,6 +7,7 @@ library(future)
 library(MASS)
 library(microbenchmark)
 library(data.table)
+library(profmem)
 
 # Initial setup
 max_n <- 10^5
@@ -32,10 +33,10 @@ y_all <- as.vector(cbind(1,x_all)%*%beta)+rnorm(max_n,mean = 0,sd = sigma_eps)
 
 
 this_rep <- 1
-p <- 8
+p <- 4
 n_train <- 1000
 n_explain <- 50
-n_batches <- 1
+n_batches <- 10
 n_cores <- 1
 approach <- "empirical"
 multicore_method <- "sequential"
@@ -66,7 +67,7 @@ n_batches_use <- min(2^p-2,n_batches)
 
 sys_time_start_explain <- Sys.time()
 
-#pp <- profmem({
+pp.old <- profmem({
 explanation <- explain(
   model = model,
   x_explain = x_explain,
@@ -75,8 +76,16 @@ explanation <- explain(
   n_batches = n_batches_use,
   prediction_zero = prediction_zero
 )
-#})
+},threshold=10^4)
+
 sys_time_end_explain <- Sys.time()
+
+pp[!is.na(pp$bytes) &pp$bytes >6*10^5,]
+
+plot(pp$bytes)
+points(pp.old$bytes,col=2)
+#"bytes"]
+pp.old[!is.na(pp.old$bytes) &pp.old$bytes >6*10^5,"bytes"]
 
 secs_explain <- as.double(difftime(sys_time_end_explain,sys_time_start_explain),units="secs")
 print(secs_explain)

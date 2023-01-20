@@ -28,7 +28,7 @@ y_all <- as.vector(cbind(1,x_all)%*%beta)+rnorm(max_n,mean = 0,sd = sigma_eps)
 
 # Arguments from bash
 args <- commandArgs(trailingOnly = TRUE)
-if(length(args)==0) args = c(1,10,1000,100,10,1,"empirical","sequential","timing_test_2023.csv")
+if(length(args)==0) args = c(0,4,100,10,16,1,"empirical","sequential","timing_test_2023_new2.csv")
 
 
 this_rep <- as.numeric(args[1])
@@ -71,8 +71,9 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = approach,
-  n_batches = n_batches_use,
-  prediction_zero = prediction_zero
+  n_batches = 9,
+  prediction_zero = prediction_zero,
+  n_combinations = 10,
 )
 
 sys_time_end_explain <- Sys.time()
@@ -97,7 +98,13 @@ timing <- list(p = p,
                sigma = sigma,
                mu_const = mu_const,
                beta0 = beta0,
-               sigma_eps = sigma_eps)
+               sigma_eps = sigma_eps,
+               timing_setup = explanation$timing$timing_secs["setup"],
+               timing_test_prediction = explanation$timing$timing_secs["test_prediction"],
+               timing_setup_computation = explanation$timing$timing_secs["setup_computation"],
+               timing_compute_vS = explanation$timing$timing_secs["compute_vS"],
+               timing_postprocessing = explanation$timing$timing_secs["postprocessing"],
+               timing_shapley_computation = explanation$timing$timing_secs["shapley_computation"])
 
 #print(unlist(timing))
 data.table::fwrite(timing,logfilename,append = T)
