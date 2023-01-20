@@ -152,7 +152,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
     for (i in seq(n_col)) {
 
       ## Get imputed data
-      dt_l[[i]] <- shapr:::observation_impute(
+      dt_l[[i]] <- observation_impute(
         W_kernel = as.matrix(W_kernel_full[, i, ]),
         S = S0,
         x_train = as.matrix(x_train),
