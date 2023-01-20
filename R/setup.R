@@ -75,6 +75,8 @@ check_and_set_parameters <- function(internal){
   group <- internal$parameters$group
   n_combinations <- internal$parameters$n_combinations
   n_features <- internal$parameters$n_features
+  n_groups <- internal$parameters$n_groups
+  is_groupwise <- internal$parameters$is_groupwise
 
 
   if (!is.null(group)){
@@ -85,7 +87,11 @@ check_and_set_parameters <- function(internal){
     check_n_combinations(internal)
     internal$parameters$used_n_combinations <- n_combinations
   } else {
-    internal$parameters$used_n_combinations <- 2^n_features
+    if(!is_groupwise){
+      internal$parameters$used_n_combinations <- 2^n_features
+    } else {
+      internal$parameters$used_n_combinations <- 2^n_groups
+    }
   }
 
   # Check approach
@@ -538,7 +544,7 @@ set_defaults <- function(internal) {
 
   approach <- internal$parameters$approach
   used_n_combinations <- internal$parameters$used_n_combinations
-  n_batches <- internal$parameters$used_n_combinations
+  n_batches <- internal$parameters$n_batches
 
   # n_batches
   if (is.null(n_batches)){
