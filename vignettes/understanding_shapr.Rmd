@@ -579,11 +579,12 @@ mean of the response, but other values, like the mean prediction of a
 large test data set is also a possibility. If the empirical method is
 used, specific settings for that approach, like a vector of fixed
 $\sigma$ values can be specified through the argument
-`empirical.fixed_sigma_vec`. See `?explain` for more information. If
+`empirical.fixed_sigma`. See `?explain` for more information. If
 `approach = "gaussian"`, you may specify the mean vector and covariance
 matrix of the data generating distribution by the arguments
 `gaussian.mu` and `gaussian.cov_mat`. If not specified, they are
 estimated from the training data.
+
 
 <a id="advanced"></a>
 
@@ -803,6 +804,18 @@ explanation_custom_minimal <- explain(
 # Plot results
 plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 ```
+
+# Efficiency and 
+
+NOTE: Write about memory saving (using batching), paralellization (with future) over batches, and progressbar over batches
+- need to experiment a bit with different batching defaults first, maybe.
+
+
+
+
+`shapr` provides progress updates of the computation of the Shapley values
+
+
 
 <a id="compare"></a>
 
