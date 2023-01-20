@@ -39,7 +39,7 @@ finalize_explanation <- function(vS_list, internal) {
     timing_list <- list(
       init_time= internal$timing$init,
       total_time_secs = sum(timing_secs),
-      timing_secs <- timing_secs
+      timing_secs = timing_secs
     )
   } else {
     timing_list <- NULL
