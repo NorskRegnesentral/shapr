@@ -71,9 +71,9 @@ explanation <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = approach,
-  n_batches = 9,
+  n_batches = n_batches_use,
   prediction_zero = prediction_zero,
-  n_combinations = 10,
+  n_combinations = 10^4
 )
 
 sys_time_end_explain <- Sys.time()
@@ -81,12 +81,15 @@ sys_time_end_explain <- Sys.time()
 secs_explain <- as.double(difftime(sys_time_end_explain,sys_time_start_explain),units="secs")
 print(secs_explain)
 
+explanation$timing$timing_secs
+
 timing <- list(p = p,
                n_train = n_train,
                n_explain = n_explain,
                n_batches = n_batches,
                n_cores = n_cores,
                approach = approach,
+               n_combinations = explanation$internal$parameters$used_n_combinations,
                sys_time_initial = as.character(sys_time_initial),
                sys_time_start_explain = as.character(sys_time_start_explain),
                sys_time_end_explain = as.character(sys_time_end_explain),
