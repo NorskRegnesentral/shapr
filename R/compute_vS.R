@@ -99,8 +99,12 @@ batch_prepare_vS <- function(S, internal) {
     # TODO: Need to handle the need for model for the AIC-versions here (skip for Python)
     dt <- prepare_data(internal, index_features = S)
   } else {
-    S <- S[S != max_id_combination]
-    dt <- prepare_data(internal, index_features = S)
+    if(length(S)>1){
+      S <- S[S != max_id_combination]
+      dt <- prepare_data(internal, index_features = S)
+    } else {
+      dt <- NULL # Special case for when the batch only include the largest id
+    }
     dt_max <- data.table(x_explain, id_combination = max_id_combination, w = 1, id = seq_len(n_explain))
     dt <- rbind(dt, dt_max)
     setkey(dt, id, id_combination)

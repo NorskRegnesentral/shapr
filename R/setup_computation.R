@@ -55,11 +55,12 @@ shapley_setup <- function(internal) {
   #### Updating parameters ####
 
   # Updating parameters$exact as done in feature_combinations
-  if (!exact && n_combinations > (2^n_features - 2)) {
+  if (!exact && n_combinations > 2^n_features) {
     internal$parameters$exact <- TRUE
   }
 
   internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used.
+
   # This will be obsolete later
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
   # instead of storing it
