@@ -146,8 +146,8 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   if (!exact) {
     if (m_group == 0) {
       # Switch to exact for feature-wise method
-      if (n_combinations > (2^m - 2)) {
-        n_combinations <- 2^m - 2
+      if (n_combinations > 2^m) {
+        n_combinations <- 2^m
         exact <- TRUE
         message(
           paste0(
@@ -159,8 +159,8 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       }
     } else {
       # Switch to exact for feature-wise method
-      if (n_combinations > (2^m_group - 2)) {
-        n_combinations <- 2^m_group - 2
+      if (n_combinations > (2^m_group)) {
+        n_combinations <- 2^m_group
         exact <- TRUE
         message(
           paste0(

@@ -116,8 +116,8 @@ check_n_batches <- function(internal){
     actual_n_combinations <- ifelse(is.null(n_combinations),2^n_groups,n_combinations)
   }
 
-  if (n_batches > actual_n_combinations) {
-    stop(paste0("`n_batches` (",n_batches,") is greater than the number feature combinations/`n_combinations` (",
+  if (n_batches >= actual_n_combinations) {
+    stop(paste0("`n_batches` (",n_batches,") must be smaller than the number feature combinations/`n_combinations` (",
                 actual_n_combinations,")"))
   }
 }
