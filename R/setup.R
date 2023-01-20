@@ -538,9 +538,12 @@ set_defaults <- function(internal) {
 
   approach <- internal$parameters$approach
   used_n_combinations <- internal$parameters$used_n_combinations
+  n_batches <- internal$parameters$used_n_combinations
 
   # n_batches
-  internal$parameters$n_batches <- get_default_n_batches(approach,used_n_combinations)
+  if (is.null(n_batches)){
+    internal$parameters$n_batches <- get_default_n_batches(approach,used_n_combinations)
+  }
 
   return(internal)
 
