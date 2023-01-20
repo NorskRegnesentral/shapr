@@ -77,15 +77,20 @@ check_and_set_parameters <- function(internal){
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
   is_groupwise <- internal$parameters$is_groupwise
+  exact <- internal$parameters$exact
 
 
   if (!is.null(group)){
     check_groups(feature_names,group)
   }
 
-  if (!is.null(n_combinations)) {
+  if (!exact) {
+    if(!is_groupwise){
+      internal$parameters$used_n_combinations <- min(2^n_features,n_combinations)
+    } else {
+      internal$parameters$used_n_combinations <- min(2^n_groups,n_combinations)
+    }
     check_n_combinations(internal)
-    internal$parameters$used_n_combinations <- n_combinations
   } else {
     if(!is_groupwise){
       internal$parameters$used_n_combinations <- 2^n_features
