@@ -81,6 +81,9 @@
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
+#' @param timing Logical.
+#' Whether the timing of the different parts of the `explain()` should saved in the model object.
+#'
 #' @inheritDotParams setup_approach.empirical
 #' @inheritDotParams setup_approach.independence
 #' @inheritDotParams setup_approach.gaussian
@@ -252,6 +255,7 @@ explain <- function(model,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
+                    timing = TRUE,
                     ...) { # ... is further arguments passed to specific approaches
 
   init_time <- Sys.time()
@@ -277,6 +281,7 @@ explain <- function(model,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
+    timing = timing,
     init_time = init_time,...
   )
 

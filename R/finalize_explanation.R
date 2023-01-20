@@ -30,13 +30,20 @@ finalize_explanation <- function(vS_list, internal) {
 
   internal$output <- processed_vS_list
 
-  timing_list <- list(
-    init_time= internal$timing$init,
+  if(internal$parameters$timing){
     timing_secs = mapply(FUN=difftime,
                          internal$timing[-1],
                          internal$timing[-length(internal$timing)],
                          units="secs")
-  )
+
+    timing_list <- list(
+      init_time= internal$timing$init,
+      total_time_secs = sum(timing_secs),
+      timing_secs <- timing_secs
+    )
+  } else {
+    timing_list <- NULL
+  }
 
   internal$timing <- NULL
 

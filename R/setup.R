@@ -15,7 +15,7 @@
 #' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
 #' @param init_time POSIXct-object
-#' Output from `Sys.time()` called at the start of `explain()`. Used to
+#' Output from `Sys.time()` called at the start of `explain()`. Used initialize the timing.
 #' @export
 setup <- function(x_train,
                   x_explain,
@@ -28,6 +28,7 @@ setup <- function(x_train,
                   seed,
                   keep_samp_for_vS,
                   feature_specs,
+                  timing,
                   init_time,
                   is_python = FALSE, ...) {
   internal <- list()
@@ -41,6 +42,7 @@ setup <- function(x_train,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
+    timing = timing,
     is_python = is_python, ...
   )
 
@@ -291,7 +293,7 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, is_python, ...) {
+                           n_batches, seed, keep_samp_for_vS, timing, is_python, ...) {
 
   # Check input type for approach
 
@@ -337,6 +339,12 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
 
   # seed is already set, so we know it works
   # keep_samp_for_vS
+  if(!(is.logical(timing) &&
+       length(timing)==1)){
+    stop("`timing` must be single logical.")
+  }
+
+    # keep_samp_for_vS
   if(!(is.logical(keep_samp_for_vS) &&
        length(keep_samp_for_vS)==1)){
     stop("`keep_samp_for_vS` must be single logical.")
@@ -353,6 +361,7 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
+    timing = timing,
     is_python = is_python
   )
 
@@ -545,13 +554,13 @@ get_default_n_batches <- function(approach,n_combinations) {
       suggestion <- ceiling(n_combinations/10)
       this_min <- 10
       this_max <- 1000
-      min_checked <- max(c(this_min,init))
+      min_checked <- max(c(this_min,suggestion))
       ret <- min(c(this_max,min_checked))
     } else {
       suggestion <- ceiling(n_combinations/100)
       this_min <- 2
       this_max <- 100
-      min_checked <- max(c(this_min,init))
+      min_checked <- max(c(this_min,suggestion))
       ret <- min(c(this_max,min_checked))
     }
   message(
