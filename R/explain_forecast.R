@@ -168,6 +168,7 @@ get_data_forecast <- function (data, reg, train_idx, explain_idx, lags, horizon)
   if (ncol(data) != length(lags$data)) {
     stop("Each data column must have a lag order set in lags$data.")
   }
+  data <- as.matrix(data)
 
   if (!is.null(reg)) {
     if (ncol(reg) != length(lags$reg)) {
@@ -177,6 +178,7 @@ get_data_forecast <- function (data, reg, train_idx, explain_idx, lags, horizon)
     if (nrow(reg) < nrow(data) + horizon) {
       stop("The exogenous data must have at least as many observations as the data + the forecast horizon.")
     }
+    reg <- as.matrix(reg)
   } else {
     reg <- matrix(NA, nrow(data) + horizon, 0)
   }

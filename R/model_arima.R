@@ -10,14 +10,14 @@ predict_model.Arima <- function(x, newdata, newreg, horizon) {
 
   for (i in seq_len(nrow(newdata))) {
     endo <- as.numeric(newdata[i, 1:n_endo])
-    exo <- matrix(newdata[i, -(1:n_endo)], n_endo)
+    exo <- matrix(as.numeric(newdata[i, -(1:n_endo)]), n_endo)
 
     if (ncol(exo) == 0) {
       x <- forecast::Arima(y = endo, model = x)
       prediction[i, ] <- predict(x, h = horizon)$pred
     } else {
       x <- forecast::Arima(y = endo, xreg = exo, model = x)
-      xreg <- matrix(newreg, n_endo)
+      xreg <- matrix(as.numeric(newreg[i, ]), horizon)
       prediction[i, ] <- predict(x, newxreg=xreg, h = horizon)$pred
     }
   }
