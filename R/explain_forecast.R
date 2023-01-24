@@ -45,21 +45,22 @@ explain_forecast <- function(model,
     feature_specs = feature_specs, ...
   )
 
+  # A list of extra parameters to be used when predicting.
+  extra <- list(type = "forecast", horizon = horizon, n_endo = internal$data$n_endo)
+
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(
     predict_model = predict_model,
     model = model
   )
 
-  # Modify the prediction function to create its arguments internally to avoid modifying the rest of the framework.
-  predict_model <- append_forecast_predict(predict_model, internal$data$n_endo, horizon)
-
   # Checks that predict_model gives correct format
   test_predict_model(
     x_test = head(internal$data$x_train, 2),
     predict_model = predict_model,
     model = model,
-    output_size = horizon
+    output_size = horizon,
+    extra = extra
   )
 
   # Sets up the Shapley (sampling) framework and prepares the
@@ -71,7 +72,7 @@ explain_forecast <- function(model,
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS(internal, model, predict_model, output_size = horizon, method = "regular")
+  vS_list <- compute_vS(internal, model, predict_model, output_size = horizon, method = "regular", extra = extra)
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
@@ -82,18 +83,6 @@ explain_forecast <- function(model,
 
 
   return(output)
-}
-
-#' Modify the prediction function to create its arguments internally.
-append_forecast_predict <- function (predict_model, n_endo, horizon) {
-  formals(predict_model) <- formals(predict_model)[1:2]
-  new_code <- c(
-    paste0("newreg <- newdata[, -seq_len(", n_endo, ")]"),
-    paste0("newdata <- newdata[, 1:", n_endo, "]"),
-    paste0("horizon <- ", horizon)
-  )
-  body(predict_model) <- as.call(append(as.list(body(predict_model)), lapply(new_code, str2lang), after=1))
-  return(predict_model)
 }
 
 setup_forecast <- function(data,

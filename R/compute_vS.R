@@ -8,7 +8,7 @@
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
 #' @export
-compute_vS <- function(internal, model, predict_model, output_size = 1, method = "future") {
+compute_vS <- function(internal, model, predict_model, output_size = 1, method = "future", extra = NULL) {
   S_batch <- internal$objects$S_batch
 
   if (method == "future") {
@@ -17,7 +17,8 @@ compute_vS <- function(internal, model, predict_model, output_size = 1, method =
       internal = internal,
       model = model,
       predict_model = predict_model,
-      output_size = output_size
+      output_size = output_size,
+      extra = extra
     )
   } else {
 
@@ -31,7 +32,8 @@ compute_vS <- function(internal, model, predict_model, output_size = 1, method =
         internal = internal,
         model = model,
         predict_model = predict_model,
-        output_size = output_size
+        output_size = output_size,
+        extra = extra
       )
     }
   }
@@ -39,7 +41,7 @@ compute_vS <- function(internal, model, predict_model, output_size = 1, method =
   return(ret)
 }
 
-future_compute_vS_batch <- function(S_batch, internal, model, predict_model, output_size = 1) {
+future_compute_vS_batch <- function(S_batch, internal, model, predict_model, output_size = 1, extra) {
   p <- progressr::progressor(sum(lengths(S_batch)))
   ret <- future.apply::future_lapply(
     X = S_batch,
@@ -49,14 +51,15 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model, out
     predict_model = predict_model,
     output_size = output_size,
     p = p,
-    future.seed = internal$parameters$seed
+    future.seed = internal$parameters$seed,
+    extra = extra
   )
   return(ret)
 }
 
 
 #' @keywords internal
-batch_compute_vS <- function(S, internal, model, predict_model, p = NULL, output_size = 1) {
+batch_compute_vS <- function(S, internal, model, predict_model, p = NULL, output_size = 1, extra) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
   feature_names <- internal$parameters$feature_names
 
@@ -68,7 +71,8 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL, output
     feature_names = feature_names,
     predict_model = predict_model,
     model,
-    pred_cols
+    pred_cols,
+    extra
   )
   dt_vS <- compute_MCint(dt, pred_cols)
   if (!is.null(p)) {
@@ -109,10 +113,22 @@ batch_prepare_vS <- function(S, internal) {
 }
 
 #' @keywords internal
-compute_preds <- function(dt, feature_names, predict_model, model, pred_cols) {
+compute_preds <- function(dt, feature_names, predict_model, model, pred_cols, extra) {
+
+  # Handle special cases such as calls from explain_forecast
+  if (!is.null(extra) && extra$type == "forecast") {
+    dt[id_combination != 1, (pred_cols) := predict_model(
+      x = model,
+      newdata = .SD[, 1:extra$n_endo],
+      newreg = .SD[, -(1:extra$n_endo)],
+      horizon = extra$horizon
+    ), .SDcols = feature_names]
+  }
 
   # Predictions
-  dt[id_combination != 1, (pred_cols) := predict_model(model, newdata = .SD), .SDcols = feature_names]
+  if (is.null(extra)) {
+    dt[id_combination != 1, (pred_cols) := predict_model(model, newdata = .SD), .SDcols = feature_names]
+  }
 
   return(dt)
 }

@@ -40,10 +40,19 @@ get_predict_model <- function(predict_model, model) {
 #'
 #' @inheritParams default_doc
 #' @keywords internal
-test_predict_model <- function (x_test, predict_model, model, output_size = 1) {
+test_predict_model <- function (x_test, predict_model, model, output_size = 1, extra = NULL) {
 
   # Tests prediction with some data
-  tmp <- tryCatch(predict_model(model, x_test), error = errorfun)
+  if (!is.null(extra) && extra$type == "forecast") {
+    tmp <- tryCatch(predict_model(
+      x = model,
+      newdata = x_test[, 1:extra$n_endo],
+      newreg = x_test[, -(1:extra$n_endo)],
+      horizon = extra$horizon
+    ), error = errorfun)
+  } else {
+    tmp <- tryCatch(predict_model(model, x_test), error = errorfun)
+  }
   if(class(tmp)[1]=="error"){
     stop(paste0("The predict_model function of class `", class(model), "` is invalid.\n",
                 "See the 'Advanced usage' section of the vignette:\n",
