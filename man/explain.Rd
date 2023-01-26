@@ -63,11 +63,12 @@ in each of the different groups.}
 Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
-\item{n_batches}{Positive integer.
+\item{n_batches}{Positive integer (or NULL).
 Specifies how many batches the total number of feature combinations should be split into when calculating the
 contribution function for each test observation.
-The default value is 1.
-Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
+which depends on \code{approach} and \code{n_combinations}.
+For models with many features, increasing the number of batches reduces the RAM allocation significantly.
 This typically comes with a small increase in computation time.}
 
 \item{seed}{Positive integer.

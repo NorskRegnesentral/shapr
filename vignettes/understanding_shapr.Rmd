@@ -811,102 +811,21 @@ Such batching comes at the cost of an increase in computation time, which depend
 When calling `shapr::explain()`, we allow the user to set the number of batches with the argument `n_batches`. 
 The default of this argument is `NULL`, which uses a (hopefully) reasonable trade-off between computation speed 
 and memory consumption which depends on `n_combinations` and `approach`.
-Below we a basic example of timing and memory consumption with differnt 
-`n_batches`:
+The memory/computation time trade-off is most apparent for models with more than say 6-7 features.
+Below we a basic example where `n_batches=10`:
 
 ```{r}
 
-Rprof_tab <- NULL
-# default n_batches (NULL), corresponding to 10 for this example
-Rprof(Rprof0  <- tempfile(), memory.profiling=TRUE,interval=0.001)
-  explanation <- explain(
+explanation_batch <- explain(
     model = model,
-    x_explain = x_explain_many,
+    x_explain = x_explain,
     x_train = x_train,
-    approach = "gaussian",
-    prediction_zero = p0
-    )
-Rprof(NULL)
-
-summary_Rprof <- summaryRprof(Rprof0, memory="both")
-memory <- max(summary_Rprof$by.total$mem.total)
-timing <- summary_Rprof$by.total$total.time[1] # Corresponding explain()
-Rprof_tab <- rbind(Rprof_tab,
-                   c(n_batches = "NULL (10)",
-                     memory = memory,
-                     timing = timing)
-                   )
-
-
-n_batches=1
-Rprof(Rprof0  <- tempfile(), memory.profiling=TRUE,interval=0.001)
-  explanation <- explain(
-    model = model,
-    x_explain = x_explain_many,
-    x_train = x_train,
-    approach = "gaussian",
+    approach = "empirical",
     prediction_zero = p0,
-    n_batches = n_batches
-    )
-Rprof(NULL)
-
-summary_Rprof <- summaryRprof(Rprof0, memory="both")
-memory <- max(summary_Rprof$by.total$mem.total)
-timing <- summary_Rprof$by.total$total.time[1] # Corresponding explain()
-Rprof_tab <- rbind(Rprof_tab,
-                   c(n_batches = n_batches,
-                     memory = memory,
-                     timing = timing)
-                   )
-
-n_batches=5
-Rprof(Rprof0  <- tempfile(), memory.profiling=TRUE,interval=0.001)
-  explanation <- explain(
-    model = model,
-    x_explain = x_explain_many,
-    x_train = x_train,
-    approach = "gaussian",
-    prediction_zero = p0,
-    n_batches = n_batches
-    )
-Rprof(NULL)
-
-summary_Rprof <- summaryRprof(Rprof0, memory="both")
-memory <- max(summary_Rprof$by.total$mem.total)
-timing <- summary_Rprof$by.total$total.time[1] # Corresponding explain()
-Rprof_tab <- rbind(Rprof_tab,
-                   c(n_batches = n_batches,
-                     memory = memory,
-                     timing = timing)
-                   )
-
-
-n_batches=15
-Rprof(Rprof0  <- tempfile(), memory.profiling=TRUE,interval=0.001)
-  explanation <- explain(
-    model = model,
-    x_explain = x_explain_many,
-    x_train = x_train,
-    approach = "gaussian",
-    prediction_zero = p0,
-    n_batches = n_batches
-    )
-Rprof(NULL)
-
-summary_Rprof <- summaryRprof(Rprof0, memory="both")
-memory <- max(summary_Rprof$by.total$mem.total)
-timing <- summary_Rprof$by.total$total.time[1] # Corresponding explain()
-Rprof_tab <- rbind(Rprof_tab,
-                   c(n_batches = n_batches,
-                     memory = memory,
-                     timing = timing)
-                   )
-
-print(Rprof_tab)
+    n_batches = 10
+)
 
 ```
-
-TODO: ADD EXAMPLE WITH N_BATCHES HERE, PRINTING THE COMPUTATION TIME, and writing out the memory consumed in this process manually (or with some base r package.)
 
 ## Parallelized computation
 
@@ -919,13 +838,32 @@ and also supports progress updates for the parallelized task (see below).
 
 Note that, since it takes some time to duplicate data into different processes/machines
 when running in parallel, it is not always preferrable to run `shapr::explain()` in parallel,
-at least not with many parallel sessions.
+at least not with many parallel sessions (hereby called __workers__).
 Parallelizatiob also increases the memory consumption proportionally, so you want
-to limit the number of parallel sessions for that reason too.
+to limit the number of workers for that reason too.
 In a future version of `shapr` we will provide experienced based automatic selection
-of the number of parallel sessions. In the meanwhile, this is all left to the user.
-TODO: ADD EXAMPLE WITH PARALLELIZATION HERE.
+of the number of workers. 
+In the meanwhile, this is all lef to the user, and we advice that `n_batches` equals some positive integer multiplied 
+by the number of workers.
+Below is a basic example of a parallelization with two workers.
 
+```{r}
+
+library(future)
+future::plan(multisession,workers=2)
+
+explanation_par <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "empirical",
+    prediction_zero = p0,
+    n_batches = 10
+)
+
+future::plan(sequential) # To return to non-parallel computation
+
+```
 
 ## Progress updates
 
@@ -960,6 +898,7 @@ A full code example of using `progressr` with `shapr` is shown below:
 
 
 ```{r,eval = FALSE}
+> library(progressr) 
 > progressr::handlers(global=TRUE)
 > # If no progression handler is specified, the txtprogressbar is used
 > # Other progression handlers:
