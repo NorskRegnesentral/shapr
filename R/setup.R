@@ -283,7 +283,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   if (!all((is.numeric(prediction_zero)) &&
       length(prediction_zero) == output_size &&
       all(!is.na(prediction_zero)))) {
-    stop("`prediction_zero` must match the output size of the model.")
+    stop(paste0("`prediction_zero` must match the output size of the model (",output_size,")."))
   }
   # n_combinations
   if (!is.null(n_combinations) &&
