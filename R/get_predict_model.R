@@ -61,8 +61,9 @@ test_predict_model <- function (x_test, predict_model, model, output_size = 1, e
                 "A basic function test threw the following error:\n",as.character(tmp[[1]])))
   }
 
+
   if (!((all(is.numeric(tmp)) || all(sapply(tmp, is.numeric))) &&
-        (length(tmp) == 2 || (nrow(tmp) == 2 && ncol(tmp) == output_size)))) {
+        (length(tmp) == 2 || (!is.null(dim(tmp)) && nrow(tmp) == 2 && ncol(tmp) == output_size)))) {
     stop(
       paste0(
         "The predict_model function of class `", class(model),

@@ -196,7 +196,7 @@
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         approach = "independence", prediction_zero = p0_non_numeric_1)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` must match the output size of the model (1).
 
 ---
 
@@ -205,7 +205,7 @@
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         approach = "independence", prediction_zero = p0_non_numeric_2)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` must match the output size of the model (1).
 
 ---
 
@@ -214,7 +214,7 @@
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         approach = "independence", prediction_zero = p0_too_long)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` must match the output size of the model (1).
 
 ---
 
@@ -223,7 +223,7 @@
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         approach = "independence", prediction_zero = p0_is_NA)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` must match the output size of the model (1).
 
 # erroneous input: `n_combinations`
 
@@ -524,7 +524,9 @@
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         approach = "independence", prediction_zero = p0, predict_model = predict_model_non_numeric_output)
     Error <simpleError>
-      The predict_model function of class `lm` does not return a numeric output of the desired length.
+      The predict_model function of class `lm` does not return a numeric output of the desired length
+      for single output models or a data.table of the correct
+      dimensions for a multiple output model.
       See the 'Advanced usage' section of the vignette:
       vignette('understanding_shapr', package = 'shapr')
       
@@ -539,7 +541,9 @@
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         approach = "independence", prediction_zero = p0, predict_model = predict_model_incorrect_output_length)
     Error <simpleError>
-      The predict_model function of class `lm` does not return a numeric output of the desired length.
+      The predict_model function of class `lm` does not return a numeric output of the desired length
+      for single output models or a data.table of the correct
+      dimensions for a multiple output model.
       See the 'Advanced usage' section of the vignette:
       vignette('understanding_shapr', package = 'shapr')
       
