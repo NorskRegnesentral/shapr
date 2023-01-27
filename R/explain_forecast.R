@@ -7,6 +7,8 @@
 #' @param explain_idx TODO: Write
 #' @param lags TODO: Write
 #' @param horizon TODO: Write
+#' @param group_lags TODO: Write
+#' @param ... TODO: Write
 #' TODO: Write documentation.
 explain_forecast <- function(model,
                     data,

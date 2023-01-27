@@ -14,7 +14,7 @@
 \alias{predict_model.xgb.Booster}
 \title{Generate predictions for input data with specified model}
 \usage{
-predict_model(x, newdata)
+predict_model(x, newdata, ...)
 
 \method{predict_model}{default}(x, newdata)
 

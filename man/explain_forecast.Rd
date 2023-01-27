@@ -42,8 +42,7 @@ see details for more information.}
 
 \item{lags}{TODO: Write}
 
-\item{horizon}{TODO: Write
-TODO: Write documentation.}
+\item{horizon}{TODO: Write}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should,
@@ -61,6 +60,8 @@ If \code{group = NULL}, \code{n_combinations} represents the number of unique fe
 If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
 If \code{n_combinations = NULL}, the exact method is used and all combinations are considered.
 The maximum number of combinations equals \code{2^m}, where \code{m} is the number of features.}
+
+\item{group_lags}{TODO: Write}
 
 \item{n_samples}{Positive integer.
 Indicating the maximum number of samples to use in the
@@ -103,6 +104,9 @@ The function takes \code{model} as argument and provides a list with 3 elements:
 If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
+
+\item{...}{TODO: Write
+TODO: Write documentation.}
 }
 \description{
 Explain a forecast.

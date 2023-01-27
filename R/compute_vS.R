@@ -4,7 +4,6 @@
 #' @inheritParams default_doc
 #' @inheritParams explain
 #'
-#'
 #' @param method Character
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
