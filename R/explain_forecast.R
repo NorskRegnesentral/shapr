@@ -1,4 +1,12 @@
 #' Explain a forecast.
+#'
+#' @inheritParams explain
+#' @param data TODO: Write
+#' @param reg TODO: Write
+#' @param train_idx TODO: Write
+#' @param explain_idx TODO: Write
+#' @param lags TODO: Write
+#' @param horizon TODO: Write
 #' TODO: Write documentation.
 explain_forecast <- function(model,
                     data,
