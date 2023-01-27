@@ -23,10 +23,6 @@
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
       
-    Message <packageStartupMessage>
-      Registered S3 method overwritten by 'quantmod':
-        method            from
-        as.zoo.data.frame zoo 
     Output
           none   Temp    Wind
       1: 77.88 -8.638 -5.1189
