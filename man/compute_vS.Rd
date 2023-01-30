@@ -26,6 +26,8 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 The prediction function used when \code{model} is not natively supported.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
 
+\item{output_size}{TODO: Document}
+
 \item{method}{Character
 Indicates whether the lappy method (default) or loop method should be used.}
 }

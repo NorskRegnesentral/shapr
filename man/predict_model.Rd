@@ -7,6 +7,7 @@
 \alias{predict_model.default}
 \alias{predict_model.ar}
 \alias{predict_model.Arima}
+\alias{predict_model.forecast_ARIMA}
 \alias{predict_model.glm}
 \alias{predict_model.lm}
 \alias{predict_model.gam}
@@ -21,6 +22,8 @@ predict_model(x, newdata, ...)
 \method{predict_model}{ar}(x, newdata, newreg, horizon, ...)
 
 \method{predict_model}{Arima}(x, newdata, newreg, horizon, ...)
+
+\method{predict_model}{forecast_ARIMA}(x, newdata, newreg, horizon, ...)
 
 \method{predict_model}{glm}(x, newdata, ...)
 

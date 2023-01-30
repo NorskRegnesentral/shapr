@@ -7,6 +7,7 @@
 \alias{model_checker.default}
 \alias{model_checker.ar}
 \alias{model_checker.Arima}
+\alias{model_checker.forecast_ARIMA}
 \alias{model_checker.glm}
 \alias{model_checker.lm}
 \alias{model_checker.gam}
@@ -21,6 +22,8 @@ model_checker(x)
 \method{model_checker}{ar}(x)
 
 \method{model_checker}{Arima}(x)
+
+\method{model_checker}{forecast_ARIMA}(x)
 
 \method{model_checker}{glm}(x)
 

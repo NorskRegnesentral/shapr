@@ -14,6 +14,8 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 \item{model}{Objects.
 The model object that ought to be explained.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
+
+\item{output_size}{TODO: Document}
 }
 \description{
 Model testing function
