@@ -16,6 +16,8 @@ The model object that ought to be explained.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
 
 \item{output_size}{TODO: Document}
+
+\item{extra}{TODO: Document}
 }
 \description{
 Model testing function

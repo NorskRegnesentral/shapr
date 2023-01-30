@@ -21,7 +21,7 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 
 \item{output_size}{TODO: Document}
 
-\item{horizon}{TODO: Document}
+\item{extra}{TODO: Document}
 
 \item{...}{Further arguments passed to \code{approach}-specific functions.}
 }

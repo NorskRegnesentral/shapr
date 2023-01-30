@@ -14,7 +14,7 @@
 #' See the documentation of [explain()] for details.
 #'
 #' @param output_size TODO: Document
-#' @param horizon TODO: Document
+#' @param extra TODO: Document
 #'
 #' @param ... Further arguments passed to `approach`-specific functions.
 #'
