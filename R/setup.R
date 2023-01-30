@@ -38,7 +38,9 @@ setup <- function(x_train,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    is_python = is_python, ...
+    is_python = is_python,
+    type = "normal",
+    ...
   )
 
   internal$data <- get_data(
@@ -332,7 +334,8 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    is_python = is_python
+    is_python = is_python,
+    output_size = output_size
   )
 
   # Getting additional parameters from ...

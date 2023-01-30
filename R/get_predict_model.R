@@ -40,15 +40,15 @@ get_predict_model <- function(predict_model, model) {
 #'
 #' @inheritParams default_doc
 #' @keywords internal
-test_predict_model <- function (x_test, predict_model, model, output_size = 1, extra = NULL) {
+test_predict_model <- function (x_test, predict_model, model, internal) {
 
   # Tests prediction with some data
-  if (!is.null(extra) && extra$type == "forecast") {
+  if (!is.null(internal$parameters$type) && internal$parameters$type == "forecast") {
     tmp <- tryCatch(predict_model(
       x = model,
-      newdata = x_test[, 1:extra$n_endo],
-      newreg = x_test[, -(1:extra$n_endo)],
-      horizon = extra$horizon
+      newdata = x_test[, 1:internal$data$n_endo],
+      newreg = x_test[, -(1:internal$data$n_endo)],
+      horizon = internal$parameters$horizon
     ), error = errorfun)
   } else {
     tmp <- tryCatch(predict_model(model, x_test), error = errorfun)
@@ -63,7 +63,7 @@ test_predict_model <- function (x_test, predict_model, model, output_size = 1, e
 
 
   if (!((all(sapply(tmp, is.numeric))) &&
-        (length(tmp) == 2 || (!is.null(dim(tmp)) && nrow(tmp) == 2 && ncol(tmp) == output_size)))) {
+        (length(tmp) == 2 || (!is.null(dim(tmp)) && nrow(tmp) == 2 && ncol(tmp) == internal$parameters$output_size)))) {
     stop(
       paste0(
         "The predict_model function of class `", class(model),
