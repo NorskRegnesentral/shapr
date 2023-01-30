@@ -56,19 +56,23 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
 batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
   feature_names <- internal$parameters$feature_names
+  type <- internal$parameters$type
+  horizon <- internal$parameters$horizon
+  n_endo <- internal$data$n_endo
+  output_size <- internal$parameters$output_size
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
 
-  pred_cols <- paste0("p_hat", seq_len(internal$parameters$output_size))
+  pred_cols <- paste0("p_hat", seq_len(output_size))
 
   compute_preds(dt, # Updating dt by reference
     feature_names = feature_names,
     predict_model = predict_model,
     model = model,
     pred_cols = pred_cols,
-    type = internal$parameters$type,
-    horizon = internal$parameters$horizon,
-    n_endo = internal$data$n_endo
+    type = type,
+    horizon = horizon,
+    n_endo = n_endo
   )
   dt_vS <- compute_MCint(dt, pred_cols)
   if (!is.null(p)) {
