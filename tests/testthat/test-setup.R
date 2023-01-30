@@ -735,7 +735,18 @@ test_that("erroneous input: `n_batches`", {
   },
   error = T)
 
-
+  # Larger than number of n_combinations without specification
+  expect_snapshot({
+    n_batches_too_large_2 <- 32
+    explain(model = model_lm_numeric,
+            x_explain = x_explain_numeric,
+            x_train = x_train_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            n_batches = n_batches_too_large_2,
+            timing = FALSE)
+  },
+  error = T)
 
 })
 
@@ -1030,6 +1041,7 @@ test_that("Correct dimension of S when sampling combinations", {
   expect_equal(nrow(res$internal$objects$S), n_combinations)
 
 })
+
 test_that("Error with too low `n_combinations`", {
 
   n_combinations = ncol(x_explain_numeric) - 1
@@ -1064,7 +1076,6 @@ test_that("Error with too low `n_combinations`", {
             timing = FALSE)
   )
 })
-
 
 test_that("Correct dimension of S when sampling combinations with groups", {
 
@@ -1126,4 +1137,109 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 
 })
 
+test_that("parallelization gives same output for seed independent approaches", {
+
+  # Empirical is seed independent
+  explain.empirical_sequential <- explain(model = model_lm_numeric,
+                                          x_explain = x_explain_numeric,
+                                          x_train = x_train_numeric,
+                                          approach = "empirical",
+                                          prediction_zero = p0,
+                                          n_batches = 10,
+                                          timing = FALSE)
+
+  future::plan(multisession,workers = 2) # Parallelized with 2 cores
+  explain.empirical_multisession <- explain(model = model_lm_numeric,
+                                            x_explain = x_explain_numeric,
+                                            x_train = x_train_numeric,
+                                            approach = "empirical",
+                                            prediction_zero = p0,
+                                            n_batches = 5,
+                                            timing = FALSE)
+
+  future::plan(sequential) # Resetting to sequential computation
+
+  expect_equal(explain.empirical_sequential,
+               explain.empirical_multisession)
+
+
+  # ctree is seed NOT independent
+  explain.ctree_sequential <- explain(model = model_lm_numeric,
+                                          x_explain = x_explain_numeric,
+                                          x_train = x_train_numeric,
+                                          approach = "ctree",
+                                          prediction_zero = p0,
+                                          n_batches = 10,
+                                          timing = FALSE)
+
+  future::plan(multisession,workers = 2) # Parallelized with 2 cores
+  explain.ctree_multisession <- explain(model = model_lm_numeric,
+                                            x_explain = x_explain_numeric,
+                                            x_train = x_train_numeric,
+                                            approach = "ctree",
+                                            prediction_zero = p0,
+                                            n_batches = 10,
+                                            timing = FALSE)
+
+  future::plan(sequential) # Resetting to sequential computation
+
+  # Difference in the output (due to sampling with different seeds within the batch computation)
+  expect_false(identical(explain.ctree_sequential,
+                         explain.ctree_multisession))
+
+})
+
+test_that("different n_batches gives same shapley values for seed independent approaches", {
+
+  # approach "empirical" is seed independent
+  explain.empirical_n_batches_5 <- explain(model = model_lm_numeric,
+                                           x_explain = x_explain_numeric,
+                                           x_train = x_train_numeric,
+                                           approach = "empirical",
+                                           prediction_zero = p0,
+                                           n_batches = 5,
+                                           timing = FALSE)
+
+  explain.empirical_n_batches_10 <- explain(model = model_lm_numeric,
+                                            x_explain = x_explain_numeric,
+                                            x_train = x_train_numeric,
+                                            approach = "empirical",
+                                            prediction_zero = p0,
+                                            n_batches = 10,
+                                            timing = FALSE)
+
+
+  # Difference in the objects (n_batches and related)
+  expect_false(identical(explain.empirical_n_batches_5,
+                         explain.empirical_n_batches_10))
+  # Same Shapley values
+  expect_equal(explain.empirical_n_batches_5$shapley_values,
+               explain.empirical_n_batches_10$shapley_values)
+
+
+  # approach "ctree" is seed dependent
+  explain.ctree_n_batches_5 <- explain(model = model_lm_numeric,
+                                 x_explain = x_explain_numeric,
+                                 x_train = x_train_numeric,
+                                 approach = "ctree",
+                                 prediction_zero = p0,
+                                 n_batches = 5,
+                                 timing = FALSE)
+
+  explain.ctree_n_batches_10 <- explain(model = model_lm_numeric,
+                                  x_explain = x_explain_numeric,
+                                  x_train = x_train_numeric,
+                                  approach = "ctree",
+                                  prediction_zero = p0,
+                                  n_batches = 10,
+                                  timing = FALSE)
+
+  # Difference in the objects (n_batches and related)
+  expect_false(identical(explain.ctree_n_batches_5,
+                         explain.ctree_n_batches_10))
+  # NEITHER same Shapley values
+  expect_false(identical(explain.ctree_n_batches_5$shapley_values,
+                         explain.ctree_n_batches_10$shapley_values))
+
+})
 

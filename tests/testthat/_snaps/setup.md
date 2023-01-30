@@ -501,6 +501,16 @@
     Error <simpleError>
       `n_batches` (11) must be smaller than the number feature combinations/`n_combinations` (10)
 
+---
+
+    Code
+      n_batches_too_large_2 <- 32
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        approach = "independence", prediction_zero = p0, n_batches = n_batches_too_large_2,
+        timing = FALSE)
+    Error <simpleError>
+      `n_batches` (32) must be smaller than the number feature combinations/`n_combinations` (32)
+
 # erroneous input: `seed`
 
     Code

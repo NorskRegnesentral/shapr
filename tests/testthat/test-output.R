@@ -391,3 +391,32 @@ test_that("output_lm_numeric_interaction", {
     )
 })
 
+test_that("output_lm_numeric_ctree_parallelized", {
+  expect_snapshot_rds({
+    future::plan(multisession,workers=2)
+    explain(model = model_lm_numeric,
+            x_explain = x_explain_numeric,
+            x_train = x_train_numeric,
+            approach = "ctree",
+            prediction_zero = p0,
+            n_batches = 1,
+            timing = FALSE)
+  },
+    "output_lm_numeric_ctree_parallelized"
+  )
+})
+
+test_that("output_lm_numeric_independence_more_batches", {
+  expect_snapshot_rds({
+    explain(model = model_lm_numeric,
+            x_explain = x_explain_numeric,
+            x_train = x_train_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            n_batches = 10,
+            timing = FALSE)
+  },
+  "output_lm_numeric_independence_n_batches_10"
+  )
+})
+
