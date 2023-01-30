@@ -1,10 +1,10 @@
 #' @rdname predict_model
 #' @export
-predict_model.Arima <- function(x, newdata, newreg, horizon) {
+predict_model.Arima <- predict_model.forecast_ARIMA <- function(x, newdata, newreg, horizon) {
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The stats package is required for predicting stats models")
   }
-  
+
   n_endo <- max(x$arma[1], x$arma[6] + x$arma[7] * x$arma[5] + 1)
   prediction <- matrix(NA, nrow(newdata), horizon)
 
@@ -27,7 +27,7 @@ predict_model.Arima <- function(x, newdata, newreg, horizon) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.Arima <- function(x) {
+get_model_specs.Arima <- get_model_specs.forecast_ARIMA <- function(x) {
   model_checker(x) # Checking if the model is supported
 
   feature_specs <- list()
@@ -45,6 +45,6 @@ get_model_specs.Arima <- function(x) {
 
 #' @rdname model_checker
 #' @export
-model_checker.Arima <- function(x) {
+model_checker.Arima <- model_checker.forecast_ARIMA <- function(x) {
   NULL
 }

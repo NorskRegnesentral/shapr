@@ -26,8 +26,26 @@ test_that("forecast_output_arima_numeric", {
                  horizon = 3,
                  approach = "empirical",
                  prediction_zero = p0_ar,
-                 group_lags = TRUE
+                 group_lags = FALSE
       ),
-      "multiple_output_ar_numeric"
+      "multiple_output_arima_numeric"
     )
 })
+
+test_that("forecast_output_forecast_ARIMA_group_numeric", {
+  expect_snapshot_rds(
+    explain_forecast(model = model_forecast_ARIMA_temp,
+                     data = data[1:150, "Temp"],
+                     reg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     lags = list(data=2, reg=2),
+                     horizon = 3,
+                     approach = "empirical",
+                     prediction_zero = p0_ar,
+                     group_lags = TRUE
+    ),
+    "multiple_output_forecast_ARIMA_group_numeric"
+  )
+})
+
