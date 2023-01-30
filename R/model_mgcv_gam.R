@@ -1,6 +1,6 @@
 #' @rdname predict_model
 #' @export
-predict_model.gam <- function(x, newdata) {
+predict_model.gam <- function(x, newdata, ...) {
   if (!requireNamespace("mgcv", quietly = TRUE)) {
     stop("The mgcv package is required for predicting gam models")
   }

@@ -11,7 +11,7 @@ test_that("forecast_output_ar_numeric", {
                  prediction_zero = p0_ar,
                  group_lags = FALSE
       ),
-      "multiple_output_ar_numeric"
+      "forecast_output_ar_numeric"
     )
 })
 
@@ -28,7 +28,7 @@ test_that("forecast_output_arima_numeric", {
                  prediction_zero = p0_ar,
                  group_lags = FALSE
       ),
-      "multiple_output_arima_numeric"
+      "forecast_output_arima_numeric"
     )
 })
 
@@ -45,7 +45,7 @@ test_that("forecast_output_forecast_ARIMA_group_numeric", {
                      prediction_zero = p0_ar,
                      group_lags = TRUE
     ),
-    "multiple_output_forecast_ARIMA_group_numeric"
+    "forecast_output_forecast_ARIMA_group_numeric"
   )
 })
 

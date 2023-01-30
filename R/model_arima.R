@@ -1,6 +1,6 @@
 #' @rdname predict_model
 #' @export
-predict_model.Arima <- predict_model.forecast_ARIMA <- function(x, newdata, newreg, horizon) {
+predict_model.Arima <- predict_model.forecast_ARIMA <- function(x, newdata, newreg, horizon, ...) {
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The stats package is required for predicting stats models")
   }

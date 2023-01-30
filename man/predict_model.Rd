@@ -14,28 +14,30 @@
 \alias{predict_model.xgb.Booster}
 \title{Generate predictions for input data with specified model}
 \usage{
-predict_model(x, newdata)
+predict_model(x, newdata, ...)
 
-\method{predict_model}{default}(x, newdata)
+\method{predict_model}{default}(x, newdata, ...)
 
-\method{predict_model}{ar}(x, newdata, newreg, horizon)
+\method{predict_model}{ar}(x, newdata, newreg, horizon, ...)
 
-\method{predict_model}{Arima}(x, newdata, newreg, horizon)
+\method{predict_model}{Arima}(x, newdata, newreg, horizon, ...)
 
-\method{predict_model}{glm}(x, newdata)
+\method{predict_model}{glm}(x, newdata, ...)
 
-\method{predict_model}{lm}(x, newdata)
+\method{predict_model}{lm}(x, newdata, ...)
 
-\method{predict_model}{gam}(x, newdata)
+\method{predict_model}{gam}(x, newdata, ...)
 
-\method{predict_model}{ranger}(x, newdata)
+\method{predict_model}{ranger}(x, newdata, ...)
 
-\method{predict_model}{xgb.Booster}(x, newdata)
+\method{predict_model}{xgb.Booster}(x, newdata, ...)
 }
 \arguments{
 \item{x}{Model object for the model to be explained.}
 
 \item{newdata}{A data.frame/data.table with the features to predict from.}
+
+\item{...}{\code{newreg} and \code{horizon} parameters used in models passed to \verb{[explain_forecast()]}}
 }
 \value{
 Numeric. Vector of size equal to the number of rows in \code{newdata}.

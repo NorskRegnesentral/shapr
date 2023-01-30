@@ -1,6 +1,6 @@
 #' @rdname predict_model
 #' @export
-predict_model.glm <- function(x, newdata) {
+predict_model.glm <- function(x, newdata, ...) {
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The stats package is required for predicting stats models")
   }
