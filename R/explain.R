@@ -302,10 +302,6 @@ explain <- function(model,
   # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model)
 
-  # TODO: Remove null assignment of horizon (snaps change if not applied is changed).
-  internal$parameters$horizon <- NULL
-  internal$parameters$group_lags = NULL
-
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output

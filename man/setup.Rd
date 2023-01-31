@@ -93,7 +93,22 @@ Contains the 3 elements:
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
 
-\item{...}{Further arguments passed to \code{approach}-specific functions.}
+\item{horizon}{TODO: Write}
+
+\item{data}{TODO: Write}
+
+\item{reg}{TODO: Write}
+
+\item{train_idx}{TODO: Write}
+
+\item{explain_idx}{TODO: Write}
+
+\item{lags}{TODO: Write}
+
+\item{group_lags}{TODO: Write}
+
+\item{...}{TODO: Write
+TODO: Write documentation.}
 }
 \description{
 check_setup

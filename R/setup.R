@@ -2,6 +2,7 @@
 
 #' check_setup
 #' @inheritParams explain
+#' @inheritParams explain_forecast
 #' @inheritParams default_doc
 #'
 #' @param feature_specs List. The output from [get_model_specs()] or [get_data_specs()].

@@ -86,9 +86,6 @@ explain_forecast <- function(model,
   vS_list <- compute_vS(internal, model, predict_model, method = "regular")
 
 
-  # MAKING TESTS PASS
-  # TODO: REMOVE
-  internal$parameters$group_lags = NULL
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
