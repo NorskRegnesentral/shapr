@@ -392,8 +392,8 @@ test_that("output_lm_numeric_interaction", {
 })
 
 test_that("output_lm_numeric_ctree_parallelized", {
+  future::plan("multisession",workers=2)
   expect_snapshot_rds({
-    future::plan(multisession,workers=2)
     explain(model = model_lm_numeric,
             x_explain = x_explain_numeric,
             x_train = x_train_numeric,
@@ -404,6 +404,7 @@ test_that("output_lm_numeric_ctree_parallelized", {
   },
     "output_lm_numeric_ctree_parallelized"
   )
+  future::plan("sequential")
 })
 
 test_that("output_lm_numeric_independence_more_batches", {
@@ -417,6 +418,25 @@ test_that("output_lm_numeric_independence_more_batches", {
             timing = FALSE)
   },
   "output_lm_numeric_independence_n_batches_10"
+  )
+})
+
+# Nothing special here, as the test does not record the actual progress output.
+# It just checks whether calling on progressr does not produce an error or unexpected output.
+test_that("output_lm_numeric_empirical_progress", {
+  progressr::handlers("txtprogressbar")
+  expect_snapshot_rds({
+    progressr::with_progress({
+    explain(model = model_lm_numeric,
+            x_explain = x_explain_numeric,
+            x_train = x_train_numeric,
+            approach = "empirical",
+            prediction_zero = p0,
+            n_batches = 10,
+            timing = FALSE)
+    })
+  },
+  "output_lm_numeric_empirical_progress"
   )
 })
 

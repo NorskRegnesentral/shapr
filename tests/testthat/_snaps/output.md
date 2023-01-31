@@ -242,3 +242,33 @@
       2: 42.44   4.642  -6.287
       3: 42.44   4.452 -34.602
 
+# output_lm_numeric_ctree_parallelized
+
+    Code
+      (out <- code)
+    Output
+          none Solar.R    Wind   Temp   Month    Day
+      1: 42.44  -9.124   9.509 17.139 -1.4711 -3.451
+      2: 42.44   5.342  -6.097 -8.232 -2.8129 -2.079
+      3: 42.44   6.901 -21.079 -4.687  0.1494  1.146
+
+# output_lm_numeric_independence_more_batches
+
+    Code
+      (out <- code)
+    Output
+          none Solar.R    Wind   Temp  Month    Day
+      1: 42.44  -4.537   8.269 17.517 -5.581 -3.066
+      2: 42.44   2.250  -3.345 -5.232 -5.581 -1.971
+      3: 42.44   3.708 -18.610 -1.440 -2.541  1.316
+
+# output_lm_numeric_empirical_progress
+
+    Code
+      (out <- code)
+    Output
+          none Solar.R    Wind   Temp    Month    Day
+      1: 42.44 -13.252  15.541 12.826 -5.77179  3.259
+      2: 42.44   2.758  -3.325 -7.992 -7.12800  1.808
+      3: 42.44   6.805 -22.126  3.730 -0.09235 -5.885
+

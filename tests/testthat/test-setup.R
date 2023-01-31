@@ -1137,7 +1137,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 
 })
 
-test_that("parallelization gives same output for seed independent approaches", {
+test_that("parallelization gives same output for any approach", {
 
   # Empirical is seed independent
   explain.empirical_sequential <- explain(model = model_lm_numeric,
@@ -1148,17 +1148,18 @@ test_that("parallelization gives same output for seed independent approaches", {
                                           n_batches = 10,
                                           timing = FALSE)
 
-  future::plan(multisession,workers = 2) # Parallelized with 2 cores
+  future::plan("multisession",workers = 2) # Parallelized with 2 cores
   explain.empirical_multisession <- explain(model = model_lm_numeric,
                                             x_explain = x_explain_numeric,
                                             x_train = x_train_numeric,
                                             approach = "empirical",
                                             prediction_zero = p0,
-                                            n_batches = 5,
+                                            n_batches = 10,
                                             timing = FALSE)
 
-  future::plan(sequential) # Resetting to sequential computation
+  future::plan("sequential") # Resetting to sequential computation
 
+  # Identical results
   expect_equal(explain.empirical_sequential,
                explain.empirical_multisession)
 
@@ -1172,7 +1173,7 @@ test_that("parallelization gives same output for seed independent approaches", {
                                           n_batches = 10,
                                           timing = FALSE)
 
-  future::plan(multisession,workers = 2) # Parallelized with 2 cores
+  future::plan("multisession",workers = 5) # Parallelized with 2 cores
   explain.ctree_multisession <- explain(model = model_lm_numeric,
                                             x_explain = x_explain_numeric,
                                             x_train = x_train_numeric,
@@ -1181,15 +1182,15 @@ test_that("parallelization gives same output for seed independent approaches", {
                                             n_batches = 10,
                                             timing = FALSE)
 
-  future::plan(sequential) # Resetting to sequential computation
+  future::plan("sequential") # Resetting to sequential computation
 
-  # Difference in the output (due to sampling with different seeds within the batch computation)
-  expect_false(identical(explain.ctree_sequential,
-                         explain.ctree_multisession))
+  # Identical results also for seed dependent methods.
+  expect_equal(explain.ctree_sequential,
+               explain.ctree_multisession)
 
 })
 
-test_that("different n_batches gives same shapley values for seed independent approaches", {
+test_that("different n_batches gives same/different shapley values for different approaches", {
 
   # approach "empirical" is seed independent
   explain.empirical_n_batches_5 <- explain(model = model_lm_numeric,
@@ -1219,20 +1220,20 @@ test_that("different n_batches gives same shapley values for seed independent ap
 
   # approach "ctree" is seed dependent
   explain.ctree_n_batches_5 <- explain(model = model_lm_numeric,
-                                 x_explain = x_explain_numeric,
-                                 x_train = x_train_numeric,
-                                 approach = "ctree",
-                                 prediction_zero = p0,
-                                 n_batches = 5,
-                                 timing = FALSE)
+                                       x_explain = x_explain_numeric,
+                                       x_train = x_train_numeric,
+                                       approach = "ctree",
+                                       prediction_zero = p0,
+                                       n_batches = 5,
+                                       timing = FALSE)
 
   explain.ctree_n_batches_10 <- explain(model = model_lm_numeric,
-                                  x_explain = x_explain_numeric,
-                                  x_train = x_train_numeric,
-                                  approach = "ctree",
-                                  prediction_zero = p0,
-                                  n_batches = 10,
-                                  timing = FALSE)
+                                        x_explain = x_explain_numeric,
+                                        x_train = x_train_numeric,
+                                        approach = "ctree",
+                                        prediction_zero = p0,
+                                        n_batches = 10,
+                                        timing = FALSE)
 
   # Difference in the objects (n_batches and related)
   expect_false(identical(explain.ctree_n_batches_5,
@@ -1241,5 +1242,5 @@ test_that("different n_batches gives same shapley values for seed independent ap
   expect_false(identical(explain.ctree_n_batches_5$shapley_values,
                          explain.ctree_n_batches_10$shapley_values))
 
-})
 
+})
