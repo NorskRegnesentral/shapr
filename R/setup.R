@@ -4,6 +4,9 @@
 #' @inheritParams explain
 #' @inheritParams explain_forecast
 #' @inheritParams default_doc
+#' @param type Character.
+#' Either "normal" or "forecast" corresponding to function `setup()` is called from,
+#' correspondingly the type of explanation that should be generated.
 #'
 #' @param feature_specs List. The output from [get_model_specs()] or [get_data_specs()].
 #' Contains the 3 elements:

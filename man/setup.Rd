@@ -93,6 +93,10 @@ Contains the 3 elements:
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
 
+\item{type}{Character.
+Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
+correspondingly the type of explanation that should be generated.}
+
 \item{horizon}{TODO: Write}
 
 \item{data}{TODO: Write}
