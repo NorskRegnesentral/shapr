@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain_forecast.R
 \name{explain_forecast}
 \alias{explain_forecast}
-\title{Explain a forecast.}
+\title{Explain a forecast from a time series model using Shapley values.}
 \usage{
 explain_forecast(
   model,
@@ -32,17 +32,33 @@ for a table of which models \code{explain} supports natively. Unsupported models
 can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
 see details for more information.}
 
-\item{data}{TODO: Write}
+\item{data}{Matrix or data.frame/data.table.
+Contains the endogenous variables used to estimate the (conditional) distributions
+needed to properly estimate the conditional expectations in the Shapley formula
+including the observations to be explained.}
 
-\item{reg}{TODO: Write}
+\item{reg}{Matrix or data.frame/data.table.
+Contains the exogenous variables used to estimate the (conditional) distributions
+needed to properly estimate the conditional expectations in the Shapley formula
+including the observations to be explained.
+As exogenous variables are used contemporaneusly when producing a forecast,
+this item should contain nrow(data) + horizon rows.}
 
-\item{train_idx}{TODO: Write}
+\item{train_idx}{Numeric vector
+The row indices in data and reg denoting points in time to use when estimating
+the Shapley values.}
 
-\item{explain_idx}{TODO: Write}
+\item{explain_idx}{Numeric vector
+The row indices in data and reg denoting points in time to explain.}
 
-\item{lags}{TODO: Write}
+\item{lags}{List.
+The first item should be named \code{data} and contain a Numeric vector which denotes
+the number of lags that should be used for each variable in \code{data} when making a forecast.
+If \code{reg != NULL}, a second Numeric vector named \code{reg} should also be present, denoting
+the number of lags that should be used for each variable in \code{reg} when making a forecast.}
 
-\item{horizon}{TODO: Write}
+\item{horizon}{Numeric.
+The forecast horizon to explain. Passed to the \code{predict_model} function.}
 
 \item{approach}{Character vector of length \code{1} or \code{n_features}.
 \code{n_features} equals the total number of features in the model. All elements should,
@@ -61,7 +77,9 @@ If \code{group != NULL}, \code{n_combinations} represents the number of unique g
 If \code{n_combinations = NULL}, the exact method is used and all combinations are considered.
 The maximum number of combinations equals \code{2^m}, where \code{m} is the number of features.}
 
-\item{group_lags}{TODO: Write}
+\item{group_lags}{Logical.
+If \code{TRUE} all lags of each variable are grouped together and explained as a group.
+If \code{FALSE} all lags of each variable are explained individually.}
 
 \item{n_samples}{Positive integer.
 Indicating the maximum number of samples to use in the
@@ -104,10 +122,80 @@ The function takes \code{model} as argument and provides a list with 3 elements:
 If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
+}
+\value{
+Object of class \code{c("shapr", "list")}. Contains the following items:
+\describe{
+\item{shapley_values}{data.table with the estimated Shapley values}
+\item{internal}{List with the different parameters, data and functions used internally}
+\item{pred_explain}{Numeric vector with the predictions for the explained observations.}
+}
 
-\item{...}{TODO: Write
-TODO: Write documentation.}
+\code{shapley_values} is a data.table where the number of rows equals
+the number of observations you'd like to explain, and the number of columns equals \code{m +1},
+where \code{m} equals the total number of features in your model.
+
+If \code{shapley_values[i, j + 1] > 0} it indicates that the j-th feature increased the prediction for
+the i-th observation. Likewise, if \code{shapley_values[i, j + 1] < 0} it indicates that the j-th feature
+decreased the prediction for the i-th observation.
+The magnitude of the value is also important to notice. E.g. if \code{shapley_values[i, k + 1]} and
+\code{shapley_values[i, j + 1]} are greater than \code{0}, where \code{j != k}, and
+\code{shapley_values[i, k + 1]} > \code{shapley_values[i, j + 1]} this indicates that feature
+\code{j} and \code{k} both increased the value of the prediction, but that the effect of the k-th
+feature was larger than the j-th feature.
+
+The first column in \code{dt}, called \code{none}, is the prediction value not assigned to any of the features
+(\ifelse{html}{\eqn{\phi}\out{<sub>0</sub>}}{\eqn{\phi_0}}).
+It's equal for all observations and set by the user through the argument \code{prediction_zero}.
+The difference between the prediction and \code{none} is distributed among the other features.
+In theory this value should be the expected prediction without conditioning on any features.
+Typically we set this value equal to the mean of the response variable in our training data, but other choices
+such as the mean of the predictions in the training data are also reasonable. \code{\link[=explain]{explain()}} \code{\link[=explain]{explain()}}
 }
 \description{
-Explain a forecast.
+Computes dependence-aware Shapley values for observations in \code{explain_idx} from the specified
+\code{model} by using the method specified in \code{approach} to estimate the conditional expectation.
+}
+\details{
+This function explains a forecast of length \code{horizon}. The argument \code{train_idx}
+is analogous to x_train in \code{explain()}, however, it just contains the time indices of where
+in the data the forecast should start for each training sample. In the same way \code{explain_idx}
+defines the time index (indices) which will precede a forecast to be explained.
+
+As any autoregressive forecast model will require a set of lags to make a forecast at an
+arbitrary point in time, \code{lags} define how many lags are required to "refit" the model at
+a given time index. This allows the different approaches to work in the same way they do for
+time-invariant models.
+}
+\examples{
+
+# Load example data
+data("airquality")
+data <- data.table::as.data.table(airquality)
+
+# Fit an AR(2) model.
+model_ar_temp <- ar(data$Temp, order = 2)
+
+# Calculate the zero prediction values for a three step forecast.
+p0_ar <- rep(mean(data$Temp), 3)
+
+# Empirical approach, explaining forecasts starting at T = 152 and T = 153.
+explain_forecast(model = model_ar_temp,
+  data = data[, "Temp"],
+  train_idx = 2:151,
+  explain_idx = 152:153,
+  lags = list(data=2),
+  horizon = 3,
+  approach = "empirical",
+  prediction_zero = p0_ar,
+  group_lags = FALSE
+)
+
+}
+\references{
+Aas, K., Jullum, M., & L<U+00F8>land, A. (2021). Explaining individual predictions when features are dependent:
+More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
+}
+\author{
+Martin Jullum
 }
