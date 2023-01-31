@@ -34,25 +34,43 @@ explain_forecast <- function(model,
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
 
-  # Sets up and organize input parameters and data
+  # TODO: Remove initial null assignment of parameters (snaps change when order is changed).
+  internal <- list(parameters=NULL)
+
+  # Sets up and organizes data
+  internal$data <- get_data_forecast(
+    data,
+    reg,
+    train_idx,
+    explain_idx,
+    lags,
+    horizon
+    )
+
+  if (group_lags) {
+    group <- internal$data$group
+  } else {
+    group <- NULL
+  }
+
+  # Sets up and organizes input parameters
   # Checks the input parameters and their compatability
   # Checks data/model compatability
-  internal <- setup_forecast(
-    data = data,
-    train_idx = train_idx,
-    explain_idx = explain_idx,
-    reg = reg,
-    lags = lags,
-    horizon = horizon,
+  internal <- setup(
+    internal = internal,
     approach = approach,
     prediction_zero = prediction_zero,
+    output_size = horizon,
     n_combinations = n_combinations,
-    group_lags = group_lags,
+    group = group,
     n_samples = n_samples,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    feature_specs = feature_specs, ...
+    feature_specs = feature_specs,
+    type = "forecast",
+    horizon = horizon,
+    ...
   )
 
   # Gets predict_model (if not passed to explain)
@@ -89,64 +107,6 @@ explain_forecast <- function(model,
 
 
   return(output)
-}
-
-setup_forecast <- function(data,
-                           reg,
-                           train_idx,
-                           explain_idx,
-                           lags,
-                           horizon,
-                           approach,
-                           prediction_zero,
-                           n_combinations,
-                           group_lags,
-                           n_samples,
-                           n_batches,
-                           seed,
-                           keep_samp_for_vS,
-                           feature_specs,
-                           is_python = FALSE, ...) {
-  internal <- list()
-
-  internal$parameters <- get_parameters(
-    approach = approach,
-    prediction_zero = prediction_zero,
-    output_size = horizon,
-    n_combinations = n_combinations,
-    group = NULL,
-    n_samples = n_samples,
-    n_batches = n_batches,
-    seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS,
-    is_python = is_python,
-    type = "forecast",
-    horizon = horizon,
-    ...
-  )
-
-  internal$data <- get_data_forecast(
-    data,
-    reg,
-    train_idx,
-    explain_idx,
-    lags,
-    horizon
-    )
-
-  if (group_lags) {
-    internal$parameters$group <- internal$data$group
-  }
-
-  internal$objects <- list(feature_specs=feature_specs)
-
-  check_data(internal)
-
-  internal <- get_extra_parameters(internal) # This includes both extra parameters and other objects
-
-  check_parameters(internal)
-
-  return(internal)
 }
 
 #' Set up data for explain_forecast

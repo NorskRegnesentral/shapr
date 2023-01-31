@@ -15,10 +15,10 @@
 #' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
 #' @export
-setup <- function(x_train,
-                  x_explain,
+setup <- function(internal,
                   approach,
                   prediction_zero,
+                  output_size = 1,
                   n_combinations,
                   group,
                   n_samples,
@@ -26,12 +26,15 @@ setup <- function(x_train,
                   seed,
                   keep_samp_for_vS,
                   feature_specs,
-                  is_python = FALSE, ...) {
-  internal <- list()
+                  is_python = FALSE,
+                  type = "normal",
+                  horizon = NULL,
+                  ...) {
 
   internal$parameters <- get_parameters(
     approach = approach,
     prediction_zero = prediction_zero,
+    output_size = output_size,
     n_combinations = n_combinations,
     group = group,
     n_samples = n_samples,
@@ -39,14 +42,10 @@ setup <- function(x_train,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     is_python = is_python,
-    type = "normal",
+    type = type,
+    horizon = horizon,
     ...
   )
-
-  internal$data <- get_data(
-    x_train,
-    x_explain
-    )
 
   internal$objects <- list(feature_specs=feature_specs)
 
@@ -275,7 +274,7 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, is_python, ...) {
+                           n_batches, seed, keep_samp_for_vS, is_python, type, horizon, ...) {
 
   # Check input type for approach
 
@@ -323,6 +322,16 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     stop("`keep_samp_for_vS` must be single logical.")
   }
 
+  # type
+  if (!(type %in% c("normal", "forecast"))) {
+    stop("`type` must be either `normal` or `forecast`.")
+  }
+
+  # horizon (only used for type "forecast")
+  if (type == "forecast" && horizon != output_size) {
+    stop(paste0("`horizon` must match the output size of the model (",output_size,")."))
+  }
+
 
   # Getting basic input parameters
   parameters <- list(
@@ -335,7 +344,9 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     is_python = is_python,
-    output_size = output_size
+    output_size = output_size,
+    type = type,
+    horizon = horizon
   )
 
   # Getting additional parameters from ...
