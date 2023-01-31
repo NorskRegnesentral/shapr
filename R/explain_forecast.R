@@ -39,12 +39,11 @@ explain_forecast <- function(model,
   # Checks the input parameters and their compatability
   # Checks data/model compatability
   internal <- setup(
-    internal = internal,
     approach = approach,
     prediction_zero = prediction_zero,
     output_size = horizon,
     n_combinations = n_combinations,
-    group = group,
+    group = NULL, # Temporary. Might be overwritten later due to group_lags
     n_samples = n_samples,
     n_batches = n_batches,
     seed = seed,
@@ -52,6 +51,11 @@ explain_forecast <- function(model,
     feature_specs = feature_specs,
     type = "forecast",
     horizon = horizon,
+    data = data,
+    reg = reg,
+    train_idx = train_idx,
+    explain_idx = explain_idx,
+    lags = lags,
     group_lags = group_lags,
     ...
   )
