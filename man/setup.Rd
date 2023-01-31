@@ -9,6 +9,7 @@ setup(
   x_explain,
   approach,
   prediction_zero,
+  output_size = 1,
   n_combinations,
   group,
   n_samples,
@@ -17,6 +18,14 @@ setup(
   keep_samp_for_vS,
   feature_specs,
   is_python = FALSE,
+  type = "normal",
+  horizon = NULL,
+  data = NULL,
+  reg = NULL,
+  train_idx = NULL,
+  explain_idx = NULL,
+  lags = NULL,
+  group_lags = NULL,
   ...
 )
 }
@@ -38,6 +47,8 @@ The prediction value for unseen data, i.e. an estimate of the expected predictio
 features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
 such as the mean of the predictions in the training data are also reasonable.}
+
+\item{output_size}{TODO: Document}
 
 \item{n_combinations}{Integer.
 If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.

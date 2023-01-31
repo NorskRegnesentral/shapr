@@ -4,7 +4,7 @@
 \alias{test_predict_model}
 \title{Model testing function}
 \usage{
-test_predict_model(x_test, predict_model, model, output_size = 1, extra = NULL)
+test_predict_model(x_test, predict_model, model, internal)
 }
 \arguments{
 \item{predict_model}{Function.
@@ -15,9 +15,9 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 The model object that ought to be explained.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
 
-\item{output_size}{TODO: Document}
-
-\item{extra}{TODO: Document}
+\item{internal}{List.
+Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 }
 \description{
 Model testing function
