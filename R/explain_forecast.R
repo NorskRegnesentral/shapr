@@ -34,24 +34,6 @@ explain_forecast <- function(model,
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
 
-  # TODO: Remove initial null assignment of parameters (snaps change when order is changed).
-  internal <- list(parameters=NULL)
-
-  # Sets up and organizes data
-  internal$data <- get_data_forecast(
-    data,
-    reg,
-    train_idx,
-    explain_idx,
-    lags,
-    horizon
-    )
-
-  if (group_lags) {
-    group <- internal$data$group
-  } else {
-    group <- NULL
-  }
 
   # Sets up and organizes input parameters
   # Checks the input parameters and their compatability
@@ -70,6 +52,7 @@ explain_forecast <- function(model,
     feature_specs = feature_specs,
     type = "forecast",
     horizon = horizon,
+    group_lags = group_lags,
     ...
   )
 
@@ -97,6 +80,11 @@ explain_forecast <- function(model,
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model, method = "regular")
+
+
+  # MAKING TESTS PASS
+  # TODO: REMOVE
+  internal$parameters$group_lags = NULL
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output

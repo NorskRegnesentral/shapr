@@ -15,7 +15,8 @@
 #' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
 #' @export
-setup <- function(internal,
+setup <- function(x_train,
+                  x_explain,
                   approach,
                   prediction_zero,
                   output_size = 1,
@@ -29,7 +30,16 @@ setup <- function(internal,
                   is_python = FALSE,
                   type = "normal",
                   horizon = NULL,
+                  data = NULL,
+                  reg = NULL,
+                  train_idx = NULL,
+                  explain_idx = NULL,
+                  lags = NULL,
+                  group_lags = NULL,
                   ...) {
+
+  internal <- list()
+
 
   internal$parameters <- get_parameters(
     approach = approach,
@@ -44,8 +54,32 @@ setup <- function(internal,
     is_python = is_python,
     type = type,
     horizon = horizon,
+    group_lags = group_lags,
     ...
   )
+
+  # Sets up and organizes data
+  if(type=="forecast"){
+    internal$data <- get_data_forecast(
+      data,
+      reg,
+      train_idx,
+      explain_idx,
+      lags,
+      horizon
+    )
+
+    # TODO: Consider handling this parameter update somewhere else (like in get_extra_parameters?)
+    if (group_lags) {
+      internal$parameters$group <- internal$data$group
+    }
+
+  } else {
+    internal$data <- get_data(
+      x_train,
+      x_explain
+    )
+  }
 
   internal$objects <- list(feature_specs=feature_specs)
 
@@ -274,7 +308,7 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, is_python, type, horizon, ...) {
+                           n_batches, seed, keep_samp_for_vS, is_python, type, horizon, group_lags = NULL, ...) {
 
   # Check input type for approach
 
@@ -322,6 +356,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     stop("`keep_samp_for_vS` must be single logical.")
   }
 
+
   # type
   if (!(type %in% c("normal", "forecast"))) {
     stop("`type` must be either `normal` or `forecast`.")
@@ -330,6 +365,10 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   # horizon (only used for type "forecast")
   if (type == "forecast" && horizon != output_size) {
     stop(paste0("`horizon` must match the output size of the model (",output_size,")."))
+  }
+
+  if(type == "forecast" && !(is.logical(group_lags) && length(group_lags)==1)){
+    stop("`group_lags` must be a single logical.")
   }
 
 
@@ -346,7 +385,8 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     is_python = is_python,
     output_size = output_size,
     type = type,
-    horizon = horizon
+    horizon = horizon,
+    group_lags = group_lags
   )
 
   # Getting additional parameters from ...

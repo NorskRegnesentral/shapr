@@ -259,20 +259,13 @@ explain <- function(model,
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
 
-  # TODO: Remove initial null assignment of parameters (snaps change when order is changed).
-  internal <- list(parameters=NULL)
-
-  # Sets up and organizes data
-  internal$data <- get_data(
-    x_train,
-    x_explain
-    )
 
   # Sets up and organizes input parameters
   # Checks the input parameters and their compatability
   # Checks data/model compatability
   internal <- setup(
-    internal = internal,
+    x_train = x_train,
+    x_explain = x_explain,
     approach = approach,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
@@ -311,6 +304,8 @@ explain <- function(model,
 
   # TODO: Remove null assignment of horizon (snaps change if not applied is changed).
   internal$parameters$horizon <- NULL
+  internal$parameters$group_lags = NULL
+
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
