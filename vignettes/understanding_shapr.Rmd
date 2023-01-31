@@ -585,6 +585,41 @@ matrix of the data generating distribution by the arguments
 `gaussian.mu` and `gaussian.cov_mat`. If not specified, they are
 estimated from the training data.
 
+## Explaining a forecasting model using `explain_forecast`
+
+`shapr` exports a specific function to explain forecasts created by
+time series models, called `explain_forecast`. The main difference
+compared to `explain` is that the data is supplied as a set of time series,
+and indices denoting different points in time select the train and explain
+parts of the data. See `?explain_forecast` for more information.
+
+```{r}
+
+# Simulate time series data with AR(1)-structure.
+set.seed(1)
+data_ts <- data.frame(Y = arima.sim(list(order=c(1,0,0), ar=.5), n=500))
+data_ts <- data.table::as.data.table(data_ts)
+
+# Creating an AR(2) predictive model.
+ar2_model <- ar(data_ts, order = 2)
+
+# Setting prediction zero as the mean of the data for each forecast point.
+p0_ar <- rep(mean(data_ts$Y), 3)
+
+# Explain two forecasts, starting at T = 499 and T 500.
+explanation_forecast <- explain_forecast(
+  model = ar2_model,
+  data = data_ts,
+  train_idx = 2:498,
+  explain_idx = 499:500,
+  lags = list(data=2),
+  horizon = 3,
+  approach = "empirical",
+  prediction_zero = p0_ar,
+  group_lags = FALSE
+)
+```
+
 <a id="advanced"></a>
 
 <br>
