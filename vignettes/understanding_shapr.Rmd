@@ -37,6 +37,8 @@ library(shapr)
 
 > [Advanced usage](#advanced)
 
+> [Scalability and efficency](#scalability)
+
 > [Comparison to Lundberg & Lee's implementation](#compare)
 
 <a id="intro"></a>
@@ -348,9 +350,9 @@ explanation <- explain(
 print(explanation$shapley_values)
 
 # Plot the resulting explanations for observations 1 and 6
-plot(explanation, plot_phi0 = FALSE, index_x_explain = c(1, 6))
+plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
+``` 
 
-```
 
 There are multiple plot options specified by the `plot_type` argument in `plot`. 
 The `waterfall` option shows the changes in the prediction score due to each features contribution (their Shapley values): 
@@ -363,38 +365,30 @@ The other two plot options, `"beeswarm"` and `"scatter"`, can be useful when you
 The `plot_type = "beeswarm"` summarises the distribution of the Shapley values along the x-axis across all features. Each point gives the Shapley value of a given instance, where the points are colored by the feature value of that instance:
 
 ```{r}
-x_explain <- data[, ..x_var]
-explanation <- explain(
+x_explain_many <- data[, ..x_var]
+explanation_plot <- explain(
   model = model,
-  x_explain = x_explain,
+  x_explain = x_explain_many,
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p0
 )
-plot(explanation, plot_type = "beeswarm")
+plot(explanation_plot, plot_type = "beeswarm")
 ```
 
 The `plot_type = "scatter"` plots the feature values on the x-axis and Shapley values on the y-axis, as well as
 (optionally) a background scatter_hist showing the distribution of the feature data:
 
 ```{r}
-plot(explanation, plot_type = "scatter", scatter_hist = TRUE)
+plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
 We can use mixed (i.e continuous, categorical, ordinal) data with ctree. Use ctree with mixed data in the following manner:
 
 
 ```{r}
-data("airquality")
-data <- data.table::as.data.table(airquality)
-data <- data[complete.cases(data), ]
 
-ind_x_explain <- 1:6
-x_train <- data[-ind_x_explain, ..x_var]
-y_train <- data[-ind_x_explain, get(y_var)]
-x_explain <- data[ind_x_explain, ..x_var]
-
-# convert to factors
+# convert the month variable to a factor
 data[, Month_factor := as.factor(Month)]
 
 data_train_cat <- data[-ind_x_explain, ]
@@ -412,7 +406,7 @@ lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " + "
 model_lm_cat <- lm(lm_formula,data_train_cat)
 
 p0 <- mean(y_train)
-explanation_cat <- explain(
+explanation_lm_cat <- explain(
     model = model_lm_cat,
     x_explain = x_explain_cat,
     x_train = x_train_cat,
@@ -422,7 +416,7 @@ explanation_cat <- explain(
 
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
-plot(explanation_cat, plot_phi0 = FALSE, index_x_explain = c(1, 6))
+plot(explanation_lm_cat, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
 We can specify parameters used to build the conditional inference trees
@@ -434,9 +428,9 @@ in the following manner. Default values are based on
 # We can specify parameters used to building trees by specifying mincriterion, 
 # minsplit, minbucket
 explanation_ctree <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
+  model = model_lm_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
   approach = "ctree",
   prediction_zero = p0,
   ctree.mincriterion = 0.80, 
@@ -449,43 +443,34 @@ explanation_ctree <- explain(
 # minbucket = 7
 ```
 
-If __all__ features are categorical, the categorical approach is used as follows:
+If __all__ features are categorical, one may use the categorical approach as follows:
 
 ```{r}
-data("airquality")
-data <- data.table::as.data.table(airquality)
-data <- data[complete.cases(data), ]
 
-ind_x_explain <- 1:6
-x_train <- data[-ind_x_explain, ..x_var]
-y_train <- data[-ind_x_explain, get(y_var)]
-x_explain <- data[ind_x_explain, ..x_var]
-
-# convert _all_ features to factors
+# For the sake of illustration, convert ALL features to factors
 data[, Solar.R_factor := as.factor(cut(Solar.R, 10))]
 data[, Wind_factor := as.factor(cut(Wind, 3))]
 data[, Temp_factor := as.factor(cut(Temp, 2))]
 data[, Month_factor := as.factor(Month)]
 
-data_train_cat <- data[-ind_x_explain, ]
-data_explain_cat <- data[ind_x_explain, ]
+data_train_all_cat <- data[-ind_x_explain,]
+data_explain_all_cat <- data[ind_x_explain,]
 
 
-x_var_cat <- c("Solar.R_factor", "Wind_factor", "Temp_factor", "Month_factor")
+x_var_all_cat <- c("Solar.R_factor", "Wind_factor", "Temp_factor", "Month_factor")
 
-x_train_cat <- data_train_cat[, ..x_var_cat]
-x_explain_cat <- data_explain_cat[, ..x_var_cat]
+x_train_all_cat <- data_train_all_cat[, ..x_var_all_cat]
+x_explain_all_cat <- data_explain_all_cat[, ..x_var_all_cat]
 
 # Fit an lm model here
-lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " + ")))
+lm_formula_all_cat <- as.formula(paste0(y_var, " ~ ", paste0(x_var_all_cat, collapse = " + ")))
 
-model_lm_cat <- lm(lm_formula,data_train_cat)
+model_lm_all_cat <- lm(lm_formula_all_cat,data_train_all_cat)
 
-p0 <- mean(y_train)
 explanation_cat_method <- explain(
-    model = model_lm_cat,
-    x_explain = x_explain_cat,
-    x_train = x_train_cat,
+    model = model_lm_all_cat,
+    x_explain = x_explain_all_cat,
+    x_train = x_train_all_cat,
     approach = "categorical",
     prediction_zero = p0
 )
@@ -578,11 +563,12 @@ mean of the response, but other values, like the mean prediction of a
 large test data set is also a possibility. If the empirical method is
 used, specific settings for that approach, like a vector of fixed
 $\sigma$ values can be specified through the argument
-`empirical.fixed_sigma_vec`. See `?explain` for more information. If
+`empirical.fixed_sigma`. See `?explain` for more information. If
 `approach = "gaussian"`, you may specify the mean vector and covariance
 matrix of the data generating distribution by the arguments
 `gaussian.mu` and `gaussian.cov_mat`. If not specified, they are
 estimated from the training data.
+
 
 <a id="advanced"></a>
 
@@ -633,7 +619,7 @@ explanation_combined <- explain(
 )
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
-plot(explanation_combined, plot_phi0 = FALSE, index_x_explain = c(1, 6))
+plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
 As a second example using `"ctree"` for the first 3 features and
@@ -661,7 +647,7 @@ groups of features is very easy using `shapr`:
 ```{r}
 # Define the feature groups
 group_list <- list(A = c("Temp", "Month"),
-              B = c("Wind", "Solar.R"))
+                   B = c("Wind", "Solar.R"))
 
 # Use the empirical approach
 explanation_group <- explain(
@@ -675,7 +661,7 @@ explanation_group <- explain(
 # Prints the group-wise explanations
 explanation_group
 # Plots the group-wise explanations
-plot(explanation_group, plot_phi0 = TRUE, index_x_explain = c(1, 6))
+plot(explanation_group, bar_plot_phi0 = TRUE, index_x_explain = c(1, 6))
 ```
 
 ## Explain custom models
@@ -729,11 +715,11 @@ same airquality data set as used above.
 ```{r,warning=TRUE, message=TRUE}
 library(gbm)
 
-form <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
+formula_gbm <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
 # Fitting a gbm model
 set.seed(825)
-model <- gbm::gbm(
-  form,
+model_gbm <- gbm::gbm(
+  formula_gbm,
   data = cbind(x_train,Ozone = y_train),
   distribution = "gaussian"
 )
@@ -769,7 +755,7 @@ MY_get_model_specs <- function(x){
 set.seed(123)
 p0 <- mean(y_train)
 explanation_custom <- explain(
-  model = model,
+  model = model_gbm,
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
@@ -792,7 +778,7 @@ MY_MINIMAL_predict_model <- function(x, newdata) {
 # Compute the Shapley values
 set.seed(123)
 explanation_custom_minimal <- explain(
-  model = model,
+  model = model_gbm,
   x_explain = x_explain,
   x_train = x_train,
   approach = "empirical",
@@ -802,6 +788,136 @@ explanation_custom_minimal <- explain(
 # Plot results
 plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 ```
+
+<a id="scalability"></a>
+
+<br>
+
+
+# Scalability and efficency
+
+## Batch computation
+
+The computational complexity of Shapley value based explanations grows fast in the number of features, 
+as the number of conditional expectations one needs to estimate in the Shapley formula grows exponentially.
+As outlined [above](#KSHAP), the estimating of each of these conditional expectations is also computationally expensive, 
+typically requiring estimation of a conditional probability distribution, followed by Monte Carlo integration.
+These computations are not only heavy for the CPU, they also require a lot of memory (RAM), which typically is
+a limited resource.
+By doing the most resource hungry computations (the computation of v(S)) in sequential batches with different
+feature subsets $S$, the memory usage can be significantly reduces.
+Such batching comes at the cost of an increase in computation time, which depends on the number of feature subsets
+ (`n_combinations`), the number of features, the estimation `approach` and so on. 
+When calling `shapr::explain()`, we allow the user to set the number of batches with the argument `n_batches`. 
+The default of this argument is `NULL`, which uses a (hopefully) reasonable trade-off between computation speed 
+and memory consumption which depends on `n_combinations` and `approach`.
+The memory/computation time trade-off is most apparent for models with more than say 6-7 features.
+Below we a basic example where `n_batches=10`:
+
+```{r}
+
+explanation_batch <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "empirical",
+    prediction_zero = p0,
+    n_batches = 10
+)
+
+```
+
+## Parallelized computation
+
+In addition to reducing the memory consumption, the introduction of the `n_batch` argument
+allows computation within each batch to be performed in parallel. 
+The parallelization in `shapr::explain()` is handled by the `future_apply` which builds on the 
+`future` environment. The `future` package works on all OS, allows the user to decide 
+the parallelization backend (mutliple R procesess or forking), works directly with hpc clusters,
+and also supports progress updates for the parallelized task (see below).
+
+Note that, since it takes some time to duplicate data into different processes/machines
+when running in parallel, it is not always preferrable to run `shapr::explain()` in parallel,
+at least not with many parallel sessions (hereby called __workers__).
+Parallelizatiob also increases the memory consumption proportionally, so you want
+to limit the number of workers for that reason too.
+In a future version of `shapr` we will provide experienced based automatic selection
+of the number of workers. 
+In the meanwhile, this is all lef to the user, and we advice that `n_batches` equals some positive integer multiplied 
+by the number of workers.
+Below is a basic example of a parallelization with two workers.
+
+```{r}
+
+library(future)
+future::plan(multisession,workers=2)
+
+explanation_par <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "empirical",
+    prediction_zero = p0,
+    n_batches = 10
+)
+
+future::plan(sequential) # To return to non-parallel computation
+
+```
+
+## Progress updates
+
+`shapr` provides progress updates of the computation of the Shapley values through the R-package `progressr`.
+This gives the user full control over the visual apperance of the progress updates, and also intergrates seemlessly 
+with the parallelization framework `future` used by `shapr` (see above).
+Note that the progress is updated as the batches are completed, meaning that if you have choosen `n_batches=1`, 
+you will not get intermediate updates, while if you set `n_batches=10` you will get updates on every 10% of the 
+computation.
+
+Progress updates are enabled for the current R-session by running the command `progressr::handlers(local=TRUE)`,
+before calling `shapr::explain()`. 
+To use progress updates for only a single call to `shapr::explain()`, one can wrap the call using 
+`progressr::with_progress` as follows:
+`progressr::with_progress({
+shapr::explain()
+})
+`
+The default appearence of the progress updates is a basic ASCII-based horizontal progress bar.
+Other variants can be chosen by passing different strings to `progressr::handlers()`,
+some of which require additional packages.
+If you are using Rstudio, the progress can be displayed directly in the gui with
+`progressr::handlers('rstudio')` (requires the `rstudioapi` package).
+If you are running Windows, you may use the pop-up gui progress bar
+`progressr::handlers('handler_winprogressbar')`.
+A wrapper for progressbar of the flexible `cli` package is also available
+`progressr::handlers('cli')` (requires the `cli` package).
+
+For a full list of all progression handlers and the customization options available with `progressr`, 
+see the `progressr` [vignette](https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html).
+A full code example of using `progressr` with `shapr` is shown below:
+
+
+```{r,eval = FALSE}
+> library(progressr) 
+> progressr::handlers(global=TRUE)
+> # If no progression handler is specified, the txtprogressbar is used
+> # Other progression handlers:
+> # progressr::handlers('rstudio') # requires the 'rstudioapi' package
+> # progressr::handlers('handler_winprogressbar') # Window only
+> # progressr::handlers('cli') # requires the 'cli' package
+> explanation <- explain(
++  model = model,
++  x_explain = x_explain,
++  x_train = x_train,
++  approach = "empirical",
++  prediction_zero = p0,
++  n_batches=10
++ )
+
+| [=================================>----------------------]  60% Estimating v(S)
+``` 
+
+
 
 <a id="compare"></a>
 

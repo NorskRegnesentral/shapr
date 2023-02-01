@@ -14,6 +14,8 @@
 #' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 #' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
+#' @param init_time POSIXct-object
+#' Output from `Sys.time()` called at the start of `explain()`. Used initialize the timing.
 #' @export
 setup <- function(x_train,
                   x_explain,
@@ -26,6 +28,8 @@ setup <- function(x_train,
                   seed,
                   keep_samp_for_vS,
                   feature_specs,
+                  timing,
+                  init_time,
                   is_python = FALSE, ...) {
   internal <- list()
 
@@ -38,6 +42,7 @@ setup <- function(x_train,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
+    timing = timing,
     is_python = is_python, ...
   )
 
@@ -52,34 +57,59 @@ setup <- function(x_train,
 
   internal <- get_extra_parameters(internal) # This includes both extra parameters and other objects
 
-  check_parameters(internal)
+
+  internal <- check_and_set_parameters(internal)
+
+
+  internal$timing <- list(init = init_time)
+  internal$timing$setup <- Sys.time()
 
   return(internal)
 }
 
 #' @keywords internal
-check_parameters <- function(internal){
+check_and_set_parameters <- function(internal){
 
   # Check groups
   feature_names <- internal$parameters$feature_names
   group <- internal$parameters$group
   n_combinations <- internal$parameters$n_combinations
+  n_features <- internal$parameters$n_features
+  n_groups <- internal$parameters$n_groups
+  is_groupwise <- internal$parameters$is_groupwise
+  exact <- internal$parameters$exact
+
 
   if (!is.null(group)){
     check_groups(feature_names,group)
   }
 
-
-  if (!is.null(n_combinations)) {
+  if (!exact) {
+    if(!is_groupwise){
+      internal$parameters$used_n_combinations <- min(2^n_features,n_combinations)
+    } else {
+      internal$parameters$used_n_combinations <- min(2^n_groups,n_combinations)
+    }
     check_n_combinations(internal)
+  } else {
+    if(!is_groupwise){
+      internal$parameters$used_n_combinations <- 2^n_features
+    } else {
+      internal$parameters$used_n_combinations <- 2^n_groups
+    }
   }
-
-  # Checking n_batches vs n_combinations etc
-  check_n_batches(internal)
 
   # Check approach
   check_approach(internal)
 
+  # Setting default value for n_batches (when NULL)
+  internal <- set_defaults(internal)
+
+  # Checking n_batches vs n_combinations etc
+  check_n_batches(internal)
+
+
+  return(internal)
 }
 
 #' @keywords internal
@@ -117,8 +147,8 @@ check_n_batches <- function(internal){
     actual_n_combinations <- ifelse(is.null(n_combinations),2^n_groups,n_combinations)
   }
 
-  if (n_batches > actual_n_combinations) {
-    stop(paste0("`n_batches` (",n_batches,") is greater than the number feature combinations/`n_combinations` (",
+  if (n_batches >= actual_n_combinations) {
+    stop(paste0("`n_batches` (",n_batches,") must be smaller than the number feature combinations/`n_combinations` (",
                 actual_n_combinations,")"))
   }
 }
@@ -274,11 +304,11 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, is_python, ...) {
+                           n_batches, seed, keep_samp_for_vS, timing, is_python, ...) {
 
   # Check input type for approach
 
-  # approach is checked later
+  # approach is checked more comprehensively later
 
   # prediction_zero
   if(!(is.numeric(prediction_zero) &&
@@ -309,14 +339,23 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     stop("`n_samples` must be a single positive integer.")
   }
   # n_batches
-  if(!(is.wholenumber(n_batches) &&
+  if(!is.null(n_batches) &&
+     !(is.wholenumber(n_batches) &&
        length(n_batches)==1 &&
        !is.na(n_batches) &&
        n_batches > 0)){
-    stop("`n_batches` must be a single positive integer.")
+    stop("`n_batches` must be NULL or a single positive integer.")
   }
+
+
   # seed is already set, so we know it works
   # keep_samp_for_vS
+  if(!(is.logical(timing) &&
+       length(timing)==1)){
+    stop("`timing` must be single logical.")
+  }
+
+    # keep_samp_for_vS
   if(!(is.logical(keep_samp_for_vS) &&
        length(keep_samp_for_vS)==1)){
     stop("`keep_samp_for_vS` must be single logical.")
@@ -333,6 +372,7 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
+    timing = timing,
     is_python = is_python
   )
 
@@ -502,6 +542,50 @@ check_approach <- function(internal) {
     )
   }
 }
+
+#' @keywords internal
+set_defaults <- function(internal) {
+  # Set defaults for certain arguments (based on other input)
+
+  approach <- internal$parameters$approach
+  used_n_combinations <- internal$parameters$used_n_combinations
+  n_batches <- internal$parameters$n_batches
+
+  # n_batches
+  if (is.null(n_batches)){
+    internal$parameters$n_batches <- get_default_n_batches(approach,used_n_combinations)
+  }
+
+  return(internal)
+
+}
+#' @keywords internal
+get_default_n_batches <- function(approach,n_combinations) {
+
+  used_approach <- names(sort(table(approach ),decreasing = T))[1] # Most frequent used approach (when there are more)
+
+  if(used_approach %in% c("ctree","gaussian","copula")){
+      suggestion <- ceiling(n_combinations/10)
+      this_min <- 10
+      this_max <- 1000
+      min_checked <- max(c(this_min,suggestion))
+      ret <- min(c(this_max,min_checked))
+    } else {
+      suggestion <- ceiling(n_combinations/100)
+      this_min <- 2
+      this_max <- 100
+      min_checked <- max(c(this_min,suggestion))
+      ret <- min(c(this_max,min_checked))
+    }
+  message(
+    paste0(
+      "Setting parameter 'n_batches' to ",ret," as a fair trade-off between memory consumption and computation time.\n",
+      "Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.\n"
+    )
+  )
+  return(ret)
+}
+
 
 #' Gets the implemented approaches
 #'

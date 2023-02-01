@@ -1,6 +1,6 @@
 options(digits = 5) # To avoid round off errors when printing output on different systems
 
-set.seed(1234)
+set.seed(12345)
 
 data <- data.table::as.data.table(airquality)
 data[, Month_factor := as.factor(Month)]
@@ -20,8 +20,8 @@ x_var_numeric <- c("Solar.R", "Wind", "Temp", "Month", "Day")
 x_var_mixed <- c("Solar.R", "Wind", "Temp", "Day", "Month_factor")
 x_var_categorical <- c("Month_factor", "Ozone_sub30_factor", "Solar.R_factor", "Wind_factor")
 
-data_train <- head(data_complete, -2)
-data_explain <- tail(data_complete, 2)
+data_train <- head(data_complete, -3)
+data_explain <- tail(data_complete, 3)
 
 x_train_numeric <- data_train[, ..x_var_numeric]
 x_train_mixed <- data_train[, ..x_var_mixed]

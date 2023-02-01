@@ -37,7 +37,7 @@ setup_approach(internal, ...)
   internal,
   empirical.type = "fixed_sigma",
   empirical.eta = 0.95,
-  empirical.fixed_sigma_vec = 0.1,
+  empirical.fixed_sigma = 0.1,
   empirical.n_samples_aicc = 1000,
   empirical.eval_max_aicc = 20,
   empirical.start_aicc = 0.1,
@@ -85,7 +85,7 @@ Determines minimum value that the sum of the left and right daughter nodes requi
 \item{ctree.minbucket}{Numeric scalar. (default = 7)
 Determines the minimum sum of weights in a terminal node required for a split}
 
-\item{ctree.sample}{Boolean.
+\item{ctree.sample}{Boolean. (default = TRUE)
 If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
 If FALSE and the number of observations in the leaf node is less than \code{n_samples},
 the method will take all observations in the leaf.
@@ -104,8 +104,8 @@ If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest wei
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
 
-\item{empirical.fixed_sigma_vec}{Numeric. (default = 0.1)
-Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
+\item{empirical.fixed_sigma}{Positive numeric scalar. (default = 0.1)
+Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
 Only used when \code{empirical.type = "fixed_sigma"}}
 
 \item{empirical.n_samples_aicc}{Positive integer. (default = 1000)

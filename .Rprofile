@@ -16,7 +16,7 @@ snapshot_review_man <- function(path, ...) {
       new <- readRDS(changed[i, "new"])
 
       cat(paste0("Difference for check ", changed[i, "name"], " in test ", changed[i, "test"], "\n"))
-      print(waldo::compare(old, new, ...))
+      print(waldo::compare(old, new,max_diffs = 50, ...))
       browser()
     }
   }
