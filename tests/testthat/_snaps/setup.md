@@ -4,7 +4,7 @@
       model_custom_lm_mixed <- model_lm_mixed
       class(model_custom_lm_mixed) <- "whatever"
       explain(model = model_custom_lm_mixed, x_train = x_train_mixed, x_explain = x_explain_mixed,
-        approach = "independence", prediction_zero = p0)
+        approach = "independence", prediction_zero = p0, n_batches = 1, timing = FALSE)
     Message <simpleMessage>
       Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
       Consistency checks between model and data is therefore disabled.
@@ -18,7 +18,7 @@
     Code
       explain(model = model_custom_lm_mixed, x_train = x_train_mixed, x_explain = x_explain_mixed,
         approach = "independence", prediction_zero = p0, predict_model = custom_predict_model,
-        get_model_specs = NA)
+        get_model_specs = NA, n_batches = 1, timing = FALSE)
     Message <simpleMessage>
       Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
       Consistency checks between model and data is therefore disabled.
@@ -37,7 +37,7 @@
       })
       explain(model = model_custom_lm_mixed, x_train = x_train_mixed, x_explain = x_explain_mixed,
         approach = "independence", prediction_zero = p0, predict_model = custom_predict_model,
-        get_model_specs = custom_get_model_specs_no_labels)
+        get_model_specs = custom_get_model_specs_no_labels, n_batches = 1, timing = FALSE)
     Message <simpleMessage>
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -56,7 +56,7 @@
       })
       explain(model = model_custom_lm_mixed, x_train = x_train_mixed, x_explain = x_explain_mixed,
         approach = "independence", prediction_zero = p0, predict_model = custom_predict_model,
-        get_model_specs = custom_get_model_specs_no_classes)
+        get_model_specs = custom_get_model_specs_no_classes, n_batches = 1, timing = FALSE)
     Message <simpleMessage>
       Note: Feature classes extracted from the model contains NA.
       Assuming feature classes from the data are correct.
@@ -76,7 +76,8 @@
       })
       explain(model = model_custom_lm_mixed, x_train = x_train_mixed, x_explain = x_explain_mixed,
         approach = "independence", prediction_zero = p0, predict_model = custom_predict_model,
-        get_model_specs = custom_get_model_specs_no_factor_levels)
+        get_model_specs = custom_get_model_specs_no_factor_levels, n_batches = 1,
+        timing = FALSE)
     Message <simpleMessage>
       Note: Feature factor levels extracted from the model contains NA.
       Assuming feature factor levels from the data are correct.
@@ -92,7 +93,7 @@
     Code
       x_train_wrong_format <- c(a = 1, b = 2)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_wrong_format,
-        approach = "independence", prediction_zero = p0)
+        approach = "independence", prediction_zero = p0, n_batches = 1, timing = FALSE)
     Error <simpleError>
       x_train should be a matrix or a data.frame/data.table.
 
@@ -101,7 +102,7 @@
     Code
       x_explain_wrong_format <- c(a = 1, b = 2)
       explain(model = model_lm_numeric, x_explain = x_explain_wrong_format, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0)
+        approach = "independence", prediction_zero = p0, n_batches = 1, timing = FALSE)
     Error <simpleError>
       x_explain should be a matrix or a data.frame/data.table.
 
@@ -111,7 +112,7 @@
       x_train_wrong_format <- c(a = 1, b = 2)
       x_explain_wrong_format <- c(a = 3, b = 4)
       explain(model = model_lm_numeric, x_explain = x_explain_wrong_format, x_train = x_train_wrong_format,
-        approach = "independence", prediction_zero = p0)
+        approach = "independence", prediction_zero = p0, n_batches = 1, timing = FALSE)
     Error <simpleError>
       x_train should be a matrix or a data.frame/data.table.
       x_explain should be a matrix or a data.frame/data.table.
@@ -122,7 +123,7 @@
       x_train_no_column_names <- as.data.frame(x_train_numeric)
       names(x_train_no_column_names) <- NULL
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_no_column_names,
-        approach = "independence", prediction_zero = p0)
+        approach = "independence", prediction_zero = p0, n_batches = 1, timing = FALSE)
     Error <simpleError>
       x_train misses column names.
 
@@ -132,7 +133,8 @@
       x_explain_no_column_names <- as.data.frame(x_explain_numeric)
       names(x_explain_no_column_names) <- NULL
       explain(model = model_lm_numeric, x_explain = x_explain_no_column_names,
-        x_train = x_train_numeric, approach = "independence", prediction_zero = p0)
+        x_train = x_train_numeric, approach = "independence", prediction_zero = p0,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       x_explain misses column names.
 
@@ -144,7 +146,7 @@
       names(x_explain_no_column_names) <- NULL
       explain(model = model_lm_numeric, x_explain = x_explain_no_column_names,
         x_train = x_train_no_column_names, approach = "independence",
-        prediction_zero = p0)
+        prediction_zero = p0, n_batches = 1, timing = FALSE)
     Error <simpleError>
       x_explain misses column names.
 
@@ -152,7 +154,7 @@
 
     Code
       explain(x_explain = x_explain_numeric, x_train = x_train_numeric, approach = "independence",
-        prediction_zero = p0)
+        prediction_zero = p0, n_batches = 1, timing = FALSE)
     Error <simpleError>
       argument "model" is missing, with no default
 
@@ -161,7 +163,8 @@
     Code
       approach_non_character <- 1
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = approach_non_character, prediction_zero = p0)
+        approach = approach_non_character, prediction_zero = p0, n_batches = 1,
+        timing = FALSE)
     Error <simpleError>
       `approach` must be one of the following: 
        categorical, copula, ctree, empirical, gaussian, independence, timeseries 
@@ -172,7 +175,8 @@
     Code
       approach_incorrect_length <- c("empirical", "gaussian")
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = approach_incorrect_length, prediction_zero = p0)
+        approach = approach_incorrect_length, prediction_zero = p0, n_batches = 1,
+        timing = FALSE)
     Error <simpleError>
       `approach` must be one of the following: 
        categorical, copula, ctree, empirical, gaussian, independence, timeseries 
@@ -183,7 +187,8 @@
     Code
       approach_incorrect_character <- "bla"
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = approach_incorrect_character, prediction_zero = p0)
+        approach = approach_incorrect_character, prediction_zero = p0, n_batches = 1,
+        timing = FALSE)
     Error <simpleError>
       `approach` must be one of the following: 
        categorical, copula, ctree, empirical, gaussian, independence, timeseries 
@@ -194,7 +199,8 @@
     Code
       p0_non_numeric_1 <- "bla"
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0_non_numeric_1)
+        approach = "independence", prediction_zero = p0_non_numeric_1, n_batches = 1,
+        timing = FALSE)
     Error <simpleError>
       `prediction_zero` must match the output size of the model (1).
 
@@ -203,7 +209,8 @@
     Code
       p0_non_numeric_2 <- NULL
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0_non_numeric_2)
+        approach = "independence", prediction_zero = p0_non_numeric_2, n_batches = 1,
+        timing = FALSE)
     Error <simpleError>
       `prediction_zero` must match the output size of the model (1).
 
@@ -212,7 +219,8 @@
     Code
       p0_too_long <- c(1, 2)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0_too_long)
+        approach = "independence", prediction_zero = p0_too_long, n_batches = 1,
+        timing = FALSE)
     Error <simpleError>
       `prediction_zero` must match the output size of the model (1).
 
@@ -221,7 +229,7 @@
     Code
       p0_is_NA <- as.numeric(NA)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0_is_NA)
+        approach = "independence", prediction_zero = p0_is_NA, n_batches = 1, timing = FALSE)
     Error <simpleError>
       `prediction_zero` must match the output size of the model (1).
 
@@ -230,7 +238,8 @@
     Code
       n_combinations_non_numeric_1 <- "bla"
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_non_numeric_1)
+        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_non_numeric_1,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
 
@@ -239,7 +248,8 @@
     Code
       n_combinations_non_numeric_2 <- TRUE
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_non_numeric_2)
+        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_non_numeric_2,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
 
@@ -248,7 +258,8 @@
     Code
       n_combinations_non_integer <- 10.5
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_non_integer)
+        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_non_integer,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
 
@@ -257,7 +268,8 @@
     Code
       n_combinations_too_long <- c(1, 2)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_too_long)
+        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_too_long,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
 
@@ -266,7 +278,8 @@
     Code
       n_combinations_is_NA <- as.numeric(NA)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_is_NA)
+        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_is_NA,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
 
@@ -275,7 +288,8 @@
     Code
       n_combinations_non_positive <- 0
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_non_positive)
+        approach = "independence", prediction_zero = p0, n_combinations = n_combinations_non_positive,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_combinations` must be NULL or a single positive integer.
 
@@ -284,7 +298,8 @@
     Code
       n_combinations = ncol(x_explain_numeric) - 1
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, approach = "gaussian", n_combinations = n_combinations)
+        prediction_zero = p0, approach = "gaussian", n_combinations = n_combinations,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_combinations` has to be greater than the number of features.
 
@@ -294,7 +309,8 @@
       groups = list(A = c("Solar.R", "Wind"), B = c("Temp", "Month"), C = "Day")
       n_combinations = length(groups) - 1
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        prediction_zero = p0, approach = "gaussian", group = groups, n_combinations = n_combinations)
+        prediction_zero = p0, approach = "gaussian", group = groups, n_combinations = n_combinations,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_combinations` has to be greater than the number of groups.
 
@@ -303,7 +319,8 @@
     Code
       group_non_list <- "bla"
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, group = group_non_list)
+        approach = "independence", prediction_zero = p0, group = group_non_list,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `group` must be NULL or a list
 
@@ -312,7 +329,8 @@
     Code
       group_with_non_characters <- list(A = 1, B = 2)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, group = group_with_non_characters)
+        approach = "independence", prediction_zero = p0, group = group_with_non_characters,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       All components of group should be a character.
 
@@ -322,7 +340,8 @@
       group_with_non_data_features <- list(A = c("Solar.R", "Wind",
         "not_a_data_feature"), B = c("Temp", "Month", "Day"))
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, group = group_with_non_data_features)
+        approach = "independence", prediction_zero = p0, group = group_with_non_data_features,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       The group feature(s) not_a_data_feature are not
       among the features in the data: Solar.R, Wind, Temp, Month, Day. Delete from group.
@@ -333,7 +352,8 @@
       group_with_missing_data_features <- list(A = c("Solar.R"), B = c("Temp",
         "Month", "Day"))
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, group = group_with_missing_data_features)
+        approach = "independence", prediction_zero = p0, group = group_with_missing_data_features,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       The data feature(s) Wind do not
       belong to one of the groups. Add to a group.
@@ -344,7 +364,8 @@
       group_with_duplicated_data_features <- list(A = c("Solar.R", "Solar.R", "Wind"),
       B = c("Temp", "Month", "Day"))
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, group = group_with_duplicated_data_features)
+        approach = "independence", prediction_zero = p0, group = group_with_duplicated_data_features,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       Feature(s) Solar.R are found in more than one group or multiple times per group.
       Make sure each feature is only represented in one group, and only once.
@@ -354,7 +375,8 @@
     Code
       n_samples_non_numeric_1 <- "bla"
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_samples = n_samples_non_numeric_1)
+        approach = "independence", prediction_zero = p0, n_samples = n_samples_non_numeric_1,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_samples` must be a single positive integer.
 
@@ -363,7 +385,8 @@
     Code
       n_samples_non_numeric_2 <- TRUE
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_samples = n_samples_non_numeric_2)
+        approach = "independence", prediction_zero = p0, n_samples = n_samples_non_numeric_2,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_samples` must be a single positive integer.
 
@@ -372,7 +395,8 @@
     Code
       n_samples_non_integer <- 10.5
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_samples = n_samples_non_integer)
+        approach = "independence", prediction_zero = p0, n_samples = n_samples_non_integer,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_samples` must be a single positive integer.
 
@@ -381,7 +405,8 @@
     Code
       n_samples_too_long <- c(1, 2)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_samples = n_samples_too_long)
+        approach = "independence", prediction_zero = p0, n_samples = n_samples_too_long,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_samples` must be a single positive integer.
 
@@ -390,7 +415,8 @@
     Code
       n_samples_is_NA <- as.numeric(NA)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_samples = n_samples_is_NA)
+        approach = "independence", prediction_zero = p0, n_samples = n_samples_is_NA,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_samples` must be a single positive integer.
 
@@ -399,7 +425,8 @@
     Code
       n_samples_non_positive <- 0
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_samples = n_samples_non_positive)
+        approach = "independence", prediction_zero = p0, n_samples = n_samples_non_positive,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `n_samples` must be a single positive integer.
 
@@ -408,54 +435,60 @@
     Code
       n_batches_non_numeric_1 <- "bla"
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_batches = n_batches_non_numeric_1)
+        approach = "independence", prediction_zero = p0, n_batches = n_batches_non_numeric_1,
+        timing = FALSE)
     Error <simpleError>
-      `n_batches` must be a single positive integer.
+      `n_batches` must be NULL or a single positive integer.
 
 ---
 
     Code
       n_batches_non_numeric_2 <- TRUE
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_batches = n_batches_non_numeric_2)
+        approach = "independence", prediction_zero = p0, n_batches = n_batches_non_numeric_2,
+        timing = FALSE)
     Error <simpleError>
-      `n_batches` must be a single positive integer.
+      `n_batches` must be NULL or a single positive integer.
 
 ---
 
     Code
       n_batches_non_integer <- 10.5
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_batches = n_batches_non_integer)
+        approach = "independence", prediction_zero = p0, n_batches = n_batches_non_integer,
+        timing = FALSE)
     Error <simpleError>
-      `n_batches` must be a single positive integer.
+      `n_batches` must be NULL or a single positive integer.
 
 ---
 
     Code
       n_batches_too_long <- c(1, 2)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_batches = n_batches_too_long)
+        approach = "independence", prediction_zero = p0, n_batches = n_batches_too_long,
+        timing = FALSE)
     Error <simpleError>
-      `n_batches` must be a single positive integer.
+      `n_batches` must be NULL or a single positive integer.
 
 ---
 
     Code
       n_batches_is_NA <- as.numeric(NA)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_batches = n_batches_is_NA)
+        approach = "independence", prediction_zero = p0, n_batches = n_batches_is_NA,
+        timing = FALSE)
     Error <simpleError>
-      `n_batches` must be a single positive integer.
+      `n_batches` must be NULL or a single positive integer.
 
 ---
 
     Code
       n_batches_non_positive <- 0
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, n_batches = n_batches_non_positive)
+        approach = "independence", prediction_zero = p0, n_batches = n_batches_non_positive,
+        timing = FALSE)
     Error <simpleError>
-      `n_batches` must be a single positive integer.
+      `n_batches` must be NULL or a single positive integer.
 
 ---
 
@@ -464,16 +497,27 @@
       n_batches_too_large <- 11
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         approach = "independence", prediction_zero = p0, n_combinations = n_combinations,
-        n_batches = n_batches_too_large)
+        n_batches = n_batches_too_large, timing = FALSE)
     Error <simpleError>
-      `n_batches` (11) is greater than the number feature combinations/`n_combinations` (10)
+      `n_batches` (11) must be smaller than the number feature combinations/`n_combinations` (10)
+
+---
+
+    Code
+      n_batches_too_large_2 <- 32
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        approach = "independence", prediction_zero = p0, n_batches = n_batches_too_large_2,
+        timing = FALSE)
+    Error <simpleError>
+      `n_batches` (32) must be smaller than the number feature combinations/`n_combinations` (32)
 
 # erroneous input: `seed`
 
     Code
       seed_not_integer_interpretable <- "bla"
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, seed = seed_not_integer_interpretable)
+        approach = "independence", prediction_zero = p0, seed = seed_not_integer_interpretable,
+        n_batches = 1, timing = FALSE)
     Warning <simpleWarning>
       NAs introduced by coercion
     Error <simpleError>
@@ -484,7 +528,8 @@
     Code
       keep_samp_for_vS_non_logical_1 <- "bla"
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_non_logical_1)
+        approach = "independence", prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_non_logical_1,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `keep_samp_for_vS` must be single logical.
 
@@ -493,7 +538,8 @@
     Code
       keep_samp_for_vS_non_logical_2 <- NULL
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_non_logical_2)
+        approach = "independence", prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_non_logical_2,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `keep_samp_for_vS` must be single logical.
 
@@ -502,7 +548,8 @@
     Code
       keep_samp_for_vS_too_long <- c(TRUE, FALSE)
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long)
+        approach = "independence", prediction_zero = p0, keep_samp_for_vS = keep_samp_for_vS_too_long,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `keep_samp_for_vS` must be single logical.
 
@@ -511,7 +558,8 @@
     Code
       predict_model_nonfunction <- "bla"
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, predict_model = predict_model_nonfunction)
+        approach = "independence", prediction_zero = p0, predict_model = predict_model_nonfunction,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `predict_model` must be NULL or a function.
 
@@ -522,7 +570,8 @@
         "bla"
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, predict_model = predict_model_non_numeric_output)
+        approach = "independence", prediction_zero = p0, predict_model = predict_model_non_numeric_output,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       The predict_model function of class `lm` does not return a numeric output of the desired length
       for single output models or a data.table of the correct
@@ -539,7 +588,8 @@
         rep(1, nrow(x) + 1)
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, predict_model = predict_model_incorrect_output_length)
+        approach = "independence", prediction_zero = p0, predict_model = predict_model_incorrect_output_length,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       The predict_model function of class `lm` does not return a numeric output of the desired length
       for single output models or a data.table of the correct
@@ -556,7 +606,8 @@
         rep(1, nrow(x))
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, predict_model = predict_model_invalid_argument)
+        approach = "independence", prediction_zero = p0, predict_model = predict_model_invalid_argument,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       The predict_model function of class `lm` is invalid.
       See the 'Advanced usage' section of the vignette:
@@ -572,7 +623,8 @@
         1 + "bla"
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, predict_model = predict_model_error)
+        approach = "independence", prediction_zero = p0, predict_model = predict_model_error,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       The predict_model function of class `lm` is invalid.
       See the 'Advanced usage' section of the vignette:
@@ -586,7 +638,8 @@
     Code
       get_model_specs_nonfunction <- "bla"
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_nonfunction)
+        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_nonfunction,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       `get_model_specs` must be NULL, NA or a function.
 
@@ -597,7 +650,8 @@
         "bla"
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_not_list)
+        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_not_list,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
       See the 'Advanced usage' section of the vignette:
@@ -611,7 +665,8 @@
         list(1, 2, 3, 4)
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_too_long)
+        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_too_long,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
       See the 'Advanced usage' section of the vignette:
@@ -625,7 +680,8 @@
         list(labels = 1, classes = 2, not_a_name = 3)
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_wrong_names)
+        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_wrong_names,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
       See the 'Advanced usage' section of the vignette:
@@ -639,7 +695,8 @@
         1 + "bla"
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_error)
+        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_error,
+        n_batches = 1, timing = FALSE)
     Error <simpleError>
       The get_model_specs function of class `lm` is invalid.
       See the 'Advanced usage' section of the vignette:
@@ -655,7 +712,8 @@
     Code
       non_factor_approach_1 <- "gaussian"
       explain(model = model_lm_mixed, x_explain = x_explain_mixed, x_train = x_explain_mixed,
-        approach = non_factor_approach_1, prediction_zero = p0)
+        approach = non_factor_approach_1, prediction_zero = p0, n_batches = 1,
+        timing = FALSE)
     Error <simpleError>
       The following feature(s) are factor(s): Month_factor.
       approach = 'gaussian' does not support factor features.
@@ -666,7 +724,8 @@
     Code
       non_factor_approach_2 <- "empirical"
       explain(model = model_lm_mixed, x_explain = x_explain_mixed, x_train = x_explain_mixed,
-        approach = non_factor_approach_2, prediction_zero = p0)
+        approach = non_factor_approach_2, prediction_zero = p0, n_batches = 1,
+        timing = FALSE)
     Error <simpleError>
       The following feature(s) are factor(s): Month_factor.
       approach = 'empirical' does not support factor features.
@@ -677,7 +736,8 @@
     Code
       non_factor_approach_3 <- "copula"
       explain(model = model_lm_mixed, x_explain = x_explain_mixed, x_train = x_explain_mixed,
-        approach = non_factor_approach_3, prediction_zero = p0)
+        approach = non_factor_approach_3, prediction_zero = p0, n_batches = 1,
+        timing = FALSE)
     Error <simpleError>
       The following feature(s) are factor(s): Month_factor.
       approach = 'copula' does not support factor features.

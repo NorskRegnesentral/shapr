@@ -14,6 +14,8 @@ setup_computation <- function(internal, model, predict_model) {
   # Setup for approach
   internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
+  internal$timing$setup_computation <- Sys.time()
+
   return(internal)
 }
 
@@ -55,11 +57,12 @@ shapley_setup <- function(internal) {
   #### Updating parameters ####
 
   # Updating parameters$exact as done in feature_combinations
-  if (!exact && n_combinations > (2^n_features - 2)) {
+  if (!exact && n_combinations > 2^n_features) {
     internal$parameters$exact <- TRUE
   }
 
   internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used.
+
   # This will be obsolete later
   internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
   # instead of storing it
@@ -120,7 +123,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
         "Due to computational complexity, we recommend setting n_combinations = 10 000\n",
         "if the number of features is larger than 13 for feature-wise Shapley values.\n",
         "Note that you can force the use of the exact method (i.e. n_combinations = NULL)\n",
-        "by setting n_combinations equal to 2^m where m is the number of features."
+        "by setting n_combinations equal to 2^m where m is the number of features.\n"
       )
     )
   }
@@ -130,7 +133,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     stop(
       paste0(
         "Currently we are not supporting cases where the number of features is greater than 30\n",
-        "for feature-wise Shapley values."
+        "for feature-wise Shapley values.\n"
       )
     )
   }
@@ -138,7 +141,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     stop(
       paste0(
         "For computational reasons, we are currently not supporting group-wise Shapley values \n",
-        "for more than 30 groups. Please reduce the number of groups."
+        "for more than 30 groups. Please reduce the number of groups.\n"
       )
     )
   }
@@ -146,27 +149,27 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   if (!exact) {
     if (m_group == 0) {
       # Switch to exact for feature-wise method
-      if (n_combinations > (2^m - 2)) {
-        n_combinations <- 2^m - 2
+      if (n_combinations > 2^m) {
+        n_combinations <- 2^m
         exact <- TRUE
         message(
           paste0(
-            "\nSuccess with message:\n",
+            "Success with message:\n",
             "n_combinations is larger than or equal to 2^m = ", 2^m, ". \n",
-            "Using exact instead."
+            "Using exact instead.\n"
           )
         )
       }
     } else {
       # Switch to exact for feature-wise method
-      if (n_combinations > (2^m_group - 2)) {
-        n_combinations <- 2^m_group - 2
+      if (n_combinations > (2^m_group)) {
+        n_combinations <- 2^m_group
         exact <- TRUE
         message(
           paste0(
-            "\nSuccess with message:\n",
+            "Success with message:\n",
             "n_combinations is larger than or equal to 2^group_num = ", 2^m_group, ". \n",
-            "Using exact instead."
+            "Using exact instead.\n"
           )
         )
       }

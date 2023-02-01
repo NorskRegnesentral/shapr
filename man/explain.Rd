@@ -13,11 +13,12 @@ explain(
   n_combinations = NULL,
   group = NULL,
   n_samples = 1000,
-  n_batches = 1,
+  n_batches = NULL,
   seed = 1,
   keep_samp_for_vS = FALSE,
   predict_model = NULL,
   get_model_specs = NULL,
+  timing = TRUE,
   ...
 )
 }
@@ -62,11 +63,12 @@ in each of the different groups.}
 Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
-\item{n_batches}{Positive integer.
+\item{n_batches}{Positive integer (or NULL).
 Specifies how many batches the total number of feature combinations should be split into when calculating the
 contribution function for each test observation.
-The default value is 1.
-Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
+which depends on \code{approach} and \code{n_combinations}.
+For models with many features, increasing the number of batches reduces the RAM allocation significantly.
 This typically comes with a small increase in computation time.}
 
 \item{seed}{Positive integer.
@@ -100,6 +102,9 @@ If \code{NULL} (the default) internal functions are used for natively supported 
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
 
+\item{timing}{Logical.
+Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
+
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
   \describe{
@@ -111,8 +116,8 @@ Represents the minimum proportion of the total empirical weight that data sample
 If e.g. \code{eta = .8} we will choose the \code{K} samples with the largest weight so that the sum of the weights
 accounts for 80\\% of the total weight.
 \code{eta} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).}
-    \item{\code{empirical.fixed_sigma_vec}}{Numeric. (default = 0.1)
-Represents the kernel bandwidth in the distance computation. TODO: What length should it have? 1 or what?
+    \item{\code{empirical.fixed_sigma}}{Positive numeric scalar. (default = 0.1)
+Represents the kernel bandwidth in the distance computation used when conditioning on all different combinations.
 Only used when \code{empirical.type = "fixed_sigma"}}
     \item{\code{empirical.n_samples_aicc}}{Positive integer. (default = 1000)
 Number of samples to consider in AICc optimization.
@@ -141,7 +146,7 @@ If it is a vector, this indicates which value to use when conditioning on variou
 Determines minimum value that the sum of the left and right daughter nodes required for a split.}
     \item{\code{ctree.minbucket}}{Numeric scalar. (default = 7)
 Determines the minimum sum of weights in a terminal node required for a split}
-    \item{\code{ctree.sample}}{Boolean.
+    \item{\code{ctree.sample}}{Boolean. (default = TRUE)
 If TRUE, then the method always samples \code{n_samples} observations from the leaf nodes (with replacement).
 If FALSE and the number of observations in the leaf node is less than \code{n_samples},
 the method will take all observations in the leaf.

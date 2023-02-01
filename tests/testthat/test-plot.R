@@ -4,7 +4,9 @@ explain_mixed <- explain(model = model_lm_mixed,
                          x_explain = x_explain_mixed,
                          x_train = x_train_mixed,
                          approach = "independence",
-                         prediction_zero = p0)
+                         prediction_zero = p0,
+                         n_batches = 1,
+                         timing = FALSE)
 
 test_that("checking default outputs", {
 
