@@ -2,6 +2,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from typing import Callable
+from datetime import datetime
 import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
 from rpy2.rinterface import NULL, NA
@@ -25,11 +26,12 @@ def explain(
     n_combinations: int | None = None,
     group: list | None = None,
     n_samples: int = 1e3,
-    n_batches: int = 1,
+    n_batches: int | None = None,
     seed: int | None = 1,
     keep_samp_for_vS: bool = False,
     predict_model: Callable = None,
     get_model_specs: Callable = None,
+    timing: bool = True,
   ):
     '''Explain the output of machine learning models with more accurately estimated Shapley values.
 
@@ -81,6 +83,7 @@ def explain(
       If `None` (the default) internal functions are used for natively supported model classes, and the checking is
       disabled for unsupported model classes.
       Can also be used to override the default function for natively supported model classes.
+    timing: Indicates whether timing of the different parts of the explain call shoudl be saved and return.
 
     Returns
     -------
@@ -91,6 +94,8 @@ def explain(
     dict
       A dictionary of additional information.
     '''
+
+    init_time = datetime.now() 
 
     base.set_seed(seed)
 
@@ -108,16 +113,28 @@ def explain(
         seed = seed,
         keep_samp_for_vS = keep_samp_for_vS,
         feature_specs = rfeature_specs,
+        timing = timing,
         is_python=True,
     )
+
+    timing = {
+      "init_time": init_time,
+      "setup": datetime.now()
+      }
 
     predict_model = get_predict_model(
       x_test = x_train.head(2),
       predict_model = predict_model,
       model = model,
     )
+
+    timing["test_prediction"] = datetime.now()
+
     rinternal = shapr.setup_computation(rinternal, NULL, NULL)
     rvS_list = compute_vS(rinternal, model, predict_model)
+    timing["compute_vS"] = datetime.now()
+
+
     routput = shapr.finalize_explanation(
         vS_list = rvS_list,
         internal = rinternal,

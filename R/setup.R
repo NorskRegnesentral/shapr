@@ -14,7 +14,6 @@
 #' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 #' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
-#' @param init_time POSIXct-object
 #' Output from `Sys.time()` called at the start of `explain()`. Used initialize the timing.
 #' @export
 setup <- function(x_train,
@@ -29,7 +28,6 @@ setup <- function(x_train,
                   keep_samp_for_vS,
                   feature_specs,
                   timing,
-                  init_time,
                   is_python = FALSE, ...) {
   internal <- list()
 
@@ -59,10 +57,6 @@ setup <- function(x_train,
 
 
   internal <- check_and_set_parameters(internal)
-
-
-  internal$timing <- list(init = init_time)
-  internal$timing$setup <- Sys.time()
 
   return(internal)
 }
