@@ -126,14 +126,14 @@ compute_preds <- function(dt, feature_names, predict_model, model, pred_cols, ty
   # Predictions
 
   if (type == "forecast") {
-    dt[id_combination != 1, (pred_cols) := predict_model(
+    dt[, (pred_cols) := predict_model(
       x = model,
       newdata = .SD[, 1:n_endo],
       newreg = .SD[, -(1:n_endo)],
       horizon = horizon
     ), .SDcols = feature_names]
   } else {
-    dt[id_combination != 1, (pred_cols) := predict_model(model, newdata = .SD), .SDcols = feature_names]
+    dt[, (pred_cols) := predict_model(model, newdata = .SD), .SDcols = feature_names]
   }
 
   return(dt)
