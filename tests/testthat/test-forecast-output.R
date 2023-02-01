@@ -9,7 +9,9 @@ test_that("forecast_output_ar_numeric", {
                  horizon = 3,
                  approach = "empirical",
                  prediction_zero = p0_ar,
-                 group_lags = FALSE
+                 group_lags = FALSE,
+                 n_batches = 1,
+                 timing = FALSE
       ),
       "forecast_output_ar_numeric"
     )
@@ -26,7 +28,9 @@ test_that("forecast_output_arima_numeric", {
                  horizon = 3,
                  approach = "empirical",
                  prediction_zero = p0_ar,
-                 group_lags = FALSE
+                 group_lags = FALSE,
+                 n_batches = 1,
+                 timing = FALSE
       ),
       "forecast_output_arima_numeric"
     )
@@ -43,7 +47,9 @@ test_that("forecast_output_forecast_ARIMA_group_numeric", {
                      horizon = 3,
                      approach = "empirical",
                      prediction_zero = p0_ar,
-                     group_lags = TRUE
+                     group_lags = TRUE,
+                     n_batches = 1,
+                     timing = FALSE
     ),
     "forecast_output_forecast_ARIMA_group_numeric"
   )

@@ -17,7 +17,7 @@ explain_forecast(
   n_combinations = NULL,
   group_lags = TRUE,
   n_samples = 1000,
-  n_batches = 1,
+  n_batches = NULL,
   seed = 1,
   keep_samp_for_vS = FALSE,
   predict_model = NULL,
