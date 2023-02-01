@@ -4,7 +4,27 @@ Python wrapper for the R package [shapr](https://github.com/NorskRegnesentral/sh
 
 ### Install
 
-In the folder containing `setup.py`, run
+The below instructions assume you already have R installed, and exposed to your python environment.
+Official instructions for installing R can be found her (https://cran.r-project.org/).
+R can also be installed with pip as follows:
+```
+pip install rbase
+```
+and conda:
+```
+conda install -c r r
+```
+
+#### Install R-package
+Install the `shapr` R-package by running the following terminal command from folder of this readme file (`.../shapr/python`):
+
+```
+Rscript install_r_packages.R
+```
+
+# Install python wrapper
+In the folder of this readme file (`.../shapr/python`), run
+
 ```
 pip install -e .
 ```
