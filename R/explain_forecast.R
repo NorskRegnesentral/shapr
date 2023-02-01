@@ -91,6 +91,7 @@ explain_forecast <- function(model,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
+                    timing = TRUE,
                     ...) { # ... is further arguments passed to specific approaches
   init_time <- Sys.time()
 

@@ -22,6 +22,7 @@ explain_forecast(
   keep_samp_for_vS = FALSE,
   predict_model = NULL,
   get_model_specs = NULL,
+  timing = TRUE,
   ...
 )
 }
@@ -123,6 +124,9 @@ The function takes \code{model} as argument and provides a list with 3 elements:
 If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
+
+\item{timing}{Logical.
+Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
 }
 \value{
 Object of class \code{c("shapr", "list")}. Contains the following items:

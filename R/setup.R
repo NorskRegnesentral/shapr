@@ -58,11 +58,11 @@ setup <- function(x_train,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    is_python = is_python,
     type = type,
     horizon = horizon,
     group_lags = group_lags,
     timing = timing,
+    is_python = is_python,
     ...
   )
 
@@ -342,7 +342,7 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, is_python, type, horizon, group_lags = NULL, ...) {
+                           n_batches, seed, keep_samp_for_vS, type, horizon, group_lags = NULL, timing, is_python, ...) {
 
   # Check input type for approach
 
