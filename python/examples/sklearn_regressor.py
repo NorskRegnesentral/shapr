@@ -1,6 +1,6 @@
 from sklearn.ensemble import RandomForestRegressor
 from shaprpy import explain
-from shaprpy.utils import load_california_housing
+from shaprpy.datasets import load_california_housing
 
 dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
 
@@ -17,4 +17,3 @@ df_shapley, pred_explain, internal = explain(
     prediction_zero = dfy_train.mean().item(),
 )
 print(df_shapley)
-type(df_shapley)

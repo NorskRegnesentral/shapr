@@ -1,6 +1,6 @@
 import xgboost as xgb
 from shaprpy import explain
-from shaprpy.utils import load_california_housing
+from shaprpy.datasets import load_california_housing
 
 dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
 

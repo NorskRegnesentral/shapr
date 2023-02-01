@@ -1,6 +1,6 @@
 from sklearn.ensemble import RandomForestClassifier
 from shaprpy import explain
-from shaprpy.utils import load_binary_iris
+from shaprpy.datasets import load_binary_iris
 
 dfx_train, dfx_test, dfy_train, dfy_test = load_binary_iris()
 
