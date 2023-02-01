@@ -17,9 +17,6 @@ setup(
   seed,
   keep_samp_for_vS,
   feature_specs,
-  timing,
-  init_time,
-  is_python = FALSE,
   type = "normal",
   horizon = NULL,
   data = NULL,
@@ -28,6 +25,9 @@ setup(
   explain_idx = NULL,
   lags = NULL,
   group_lags = NULL,
+  timing,
+  init_time,
+  is_python = FALSE,
   ...
 )
 }
@@ -92,6 +92,42 @@ Contains the 3 elements:
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }}
 
+\item{type}{Character.
+Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
+correspondingly the type of explanation that should be generated.}
+
+\item{horizon}{Numeric.
+The forecast horizon to explain. Passed to the \code{predict_model} function.}
+
+\item{data}{Matrix or data.frame/data.table.
+Contains the endogenous variables used to estimate the (conditional) distributions
+needed to properly estimate the conditional expectations in the Shapley formula
+including the observations to be explained.}
+
+\item{reg}{Matrix or data.frame/data.table.
+Contains the exogenous variables used to estimate the (conditional) distributions
+needed to properly estimate the conditional expectations in the Shapley formula
+including the observations to be explained.
+As exogenous variables are used contemporaneusly when producing a forecast,
+this item should contain nrow(data) + horizon rows.}
+
+\item{train_idx}{Numeric vector
+The row indices in data and reg denoting points in time to use when estimating
+the Shapley values.}
+
+\item{explain_idx}{Numeric vector
+The row indices in data and reg denoting points in time to explain.}
+
+\item{lags}{List.
+The first item should be named \code{data} and contain a Numeric vector which denotes
+the number of lags that should be used for each variable in \code{data} when making a forecast.
+If \code{reg != NULL}, a second Numeric vector named \code{reg} should also be present, denoting
+the number of lags that should be used for each variable in \code{reg} when making a forecast.}
+
+\item{group_lags}{Logical.
+If \code{TRUE} all lags of each variable are grouped together and explained as a group.
+If \code{FALSE} all lags of each variable are explained individually.}
+
 \item{timing}{Logical.
 Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
 
@@ -102,26 +138,7 @@ Output from \code{Sys.time()} called at the start of \code{explain()}. Used init
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
 
-\item{type}{Character.
-Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
-correspondingly the type of explanation that should be generated.}
-
-\item{horizon}{TODO: Write}
-
-\item{data}{TODO: Write}
-
-\item{reg}{TODO: Write}
-
-\item{train_idx}{TODO: Write}
-
-\item{explain_idx}{TODO: Write}
-
-\item{lags}{TODO: Write}
-
-\item{group_lags}{TODO: Write}
-
-\item{...}{TODO: Write
-TODO: Write documentation.}
+\item{...}{Further arguments passed to \code{approach}-specific functions.}
 }
 \description{
 check_setup

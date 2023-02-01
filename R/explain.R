@@ -283,7 +283,8 @@ explain <- function(model,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
     timing = timing,
-    init_time = init_time,...
+    init_time = init_time,
+    ...
   )
 
   # Gets predict_model (if not passed to explain)
@@ -291,7 +292,6 @@ explain <- function(model,
     predict_model = predict_model,
     model = model
   )
-  internal$timing$test_prediction <- Sys.time() # Recording the prediction time as well
 
   # Checks that predict_model gives correct format
   test_predict_model(
@@ -300,6 +300,9 @@ explain <- function(model,
     model = model,
     internal = internal
   )
+
+  internal$timing$test_prediction <- Sys.time() # Recording the prediction time as well
+
 
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
@@ -313,7 +316,7 @@ explain <- function(model,
   # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model)
 
-  internal$timing$compute_vS <- Sys.time() # Recording the prediction time as well
+  internal$timing$compute_vS <- Sys.time() # Recording the time of compute_vS (+setup_computation)
 
 
   # Compute Shapley values based on conditional expectations (v(S))

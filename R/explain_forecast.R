@@ -92,6 +92,7 @@ explain_forecast <- function(model,
                     predict_model = NULL,
                     get_model_specs = NULL,
                     ...) { # ... is further arguments passed to specific approaches
+  init_time <- Sys.time()
 
   set.seed(seed)
 
@@ -121,6 +122,8 @@ explain_forecast <- function(model,
     explain_idx = explain_idx,
     lags = lags,
     group_lags = group_lags,
+    timing = timing,
+    init_time = init_time,
     ...
   )
 
@@ -130,6 +133,7 @@ explain_forecast <- function(model,
     model = model
   )
 
+
   # Checks that predict_model gives correct format
   test_predict_model(
     x_test = head(internal$data$x_train, 2),
@@ -137,6 +141,9 @@ explain_forecast <- function(model,
     model = model,
     internal = internal
   )
+
+  internal$timing$test_prediction <- Sys.time() # Recording the prediction time as well
+
 
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
@@ -149,7 +156,7 @@ explain_forecast <- function(model,
   # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model, method = "regular")
 
-
+  internal$timing$compute_vS <- Sys.time() # Recording the time of compute_vS (+setup_computation)
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
