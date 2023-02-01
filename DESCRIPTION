@@ -51,6 +51,7 @@ Suggests:
     partykit,
     waldo,
     progressr,
+    future,
     ggbeeswarm,
     vdiffr,
     forecast

@@ -38,6 +38,13 @@
 #'
 #' @inheritParams explain
 #' @inherit explain return author references
+#' @inheritDotParams setup_approach.empirical
+#' @inheritDotParams setup_approach.independence
+#' @inheritDotParams setup_approach.gaussian
+#' @inheritDotParams setup_approach.copula
+#' @inheritDotParams setup_approach.ctree
+#' @inheritDotParams setup_approach.categorical
+#' @inheritDotParams setup_approach.timeseries
 #'
 #' @details This function explains a forecast of length `horizon`. The argument `train_idx`
 #' is analogous to x_train in `explain()`, however, it just contains the time indices of where
