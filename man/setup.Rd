@@ -16,6 +16,8 @@ setup(
   seed,
   keep_samp_for_vS,
   feature_specs,
+  timing,
+  init_time,
   is_python = FALSE,
   ...
 )
@@ -55,11 +57,12 @@ in each of the different groups.}
 Indicating the maximum number of samples to use in the
 Monte Carlo integration for every conditional expectation. See also details.}
 
-\item{n_batches}{Positive integer.
+\item{n_batches}{Positive integer (or NULL).
 Specifies how many batches the total number of feature combinations should be split into when calculating the
 contribution function for each test observation.
-The default value is 1.
-Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
+which depends on \code{approach} and \code{n_combinations}.
+For models with many features, increasing the number of batches reduces the RAM allocation significantly.
 This typically comes with a small increase in computation time.}
 
 \item{seed}{Positive integer.
@@ -77,6 +80,12 @@ Contains the 3 elements:
 \item{classes}{Character vector with the classes of each features.}
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }}
+
+\item{timing}{Logical.
+Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
+
+\item{init_time}{POSIXct-object
+Output from \code{Sys.time()} called at the start of \code{explain()}. Used initialize the timing.}
 
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow

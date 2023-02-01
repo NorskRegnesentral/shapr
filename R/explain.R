@@ -43,11 +43,12 @@
 #' Indicating the maximum number of samples to use in the
 #' Monte Carlo integration for every conditional expectation. See also details.
 #'
-#' @param n_batches Positive integer.
+#' @param n_batches Positive integer (or NULL).
 #' Specifies how many batches the total number of feature combinations should be split into when calculating the
 #' contribution function for each test observation.
-#' The default value is 1.
-#' Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+#' The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
+#' which depends on `approach` and `n_combinations`.
+#' For models with many features, increasing the number of batches reduces the RAM allocation significantly.
 #' This typically comes with a small increase in computation time.
 #'
 #' @param seed Positive integer.
@@ -80,6 +81,9 @@
 #' If `NULL` (the default) internal functions are used for natively supported model classes, and the checking is
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
+#'
+#' @param timing Logical.
+#' Whether the timing of the different parts of the `explain()` should saved in the model object.
 #'
 #' @inheritDotParams setup_approach.empirical
 #' @inheritDotParams setup_approach.independence
@@ -247,12 +251,15 @@ explain <- function(model,
                     n_combinations = NULL,
                     group = NULL,
                     n_samples = 1e3,
-                    n_batches = 1,
+                    n_batches = NULL,
                     seed = 1,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
+                    timing = TRUE,
                     ...) { # ... is further arguments passed to specific approaches
+
+  init_time <- Sys.time()
 
   set.seed(seed)
 
@@ -274,7 +281,9 @@ explain <- function(model,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    feature_specs = feature_specs, ...
+    feature_specs = feature_specs,
+    timing = timing,
+    init_time = init_time,...
   )
 
   # Gets predict_model (if not passed to explain)
@@ -284,17 +293,23 @@ explain <- function(model,
     predict_model = predict_model,
     model = model
   )
+  internal$timing$test_prediction <- Sys.time() # Recording the prediction time as well
+
 
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
   # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
   internal <- setup_computation(internal, model, predict_model)
 
+
   # Compute the v(S):
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model)
+
+  internal$timing$compute_vS <- Sys.time() # Recording the prediction time as well
+
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output

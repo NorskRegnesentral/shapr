@@ -11,7 +11,7 @@
 #' @param ctree.minbucket Numeric scalar. (default = 7)
 #' Determines the minimum sum of weights in a terminal node required for a split
 #'
-#' @param ctree.sample Boolean.
+#' @param ctree.sample Boolean. (default = TRUE)
 #' If TRUE, then the method always samples `n_samples` observations from the leaf nodes (with replacement).
 #' If FALSE and the number of observations in the leaf node is less than `n_samples`,
 #' the method will take all observations in the leaf.

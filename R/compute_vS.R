@@ -38,7 +38,12 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
 }
 
 future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
-  p <- progressr::progressor(sum(lengths(S_batch)))
+  if (requireNamespace("progressr", quietly = TRUE)) {
+    p <- progressr::progressor(sum(lengths(S_batch)))
+  } else {
+   p <- NULL
+  }
+
   ret <- future.apply::future_lapply(
     X = S_batch,
     FUN = batch_compute_vS,
@@ -65,6 +70,7 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
     model
   )
   dt_vS <- compute_MCint(dt)
+
   if (!is.null(p)) {
     p(
       amount = length(S),
@@ -93,8 +99,12 @@ batch_prepare_vS <- function(S, internal) {
     # TODO: Need to handle the need for model for the AIC-versions here (skip for Python)
     dt <- prepare_data(internal, index_features = S)
   } else {
-    S <- S[S != max_id_combination]
-    dt <- prepare_data(internal, index_features = S)
+    if(length(S)>1){
+      S <- S[S != max_id_combination]
+      dt <- prepare_data(internal, index_features = S)
+    } else {
+      dt <- NULL # Special case for when the batch only include the largest id
+    }
     dt_max <- data.table(x_explain, id_combination = max_id_combination, w = 1, id = seq_len(n_explain))
     dt <- rbind(dt, dt_max)
     setkey(dt, id, id_combination)
