@@ -61,6 +61,25 @@ setup <- function(x_train,
   return(internal)
 }
 
+#' @export
+setup2 <- function(x_train,
+                  x_explain,
+                  approach,
+                  prediction_zero,
+                  n_combinations,
+                  group,
+                  n_samples,
+                  n_batches,
+                  seed,
+                  keep_samp_for_vS,
+                  feature_specs,
+                  timing,
+                  is_python = FALSE, ...) {
+
+  return(1)
+}
+
+
 #' @keywords internal
 check_and_set_parameters <- function(internal){
 

@@ -17,7 +17,6 @@ setup(
   keep_samp_for_vS,
   feature_specs,
   timing,
-  init_time,
   is_python = FALSE,
   ...
 )
@@ -84,12 +83,10 @@ Contains the 3 elements:
 \item{timing}{Logical.
 Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
 
-\item{init_time}{POSIXct-object
-Output from \code{Sys.time()} called at the start of \code{explain()}. Used initialize the timing.}
-
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
-running the AICc-versions of the empirical as that requires data based optimization.}
+running the AICc-versions of the empirical as that requires data based optimization.
+Output from \code{Sys.time()} called at the start of \code{explain()}. Used initialize the timing.}
 
 \item{...}{Further arguments passed to \code{approach}-specific functions.}
 }

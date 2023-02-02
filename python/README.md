@@ -32,23 +32,27 @@ pip install -e .
 ### Demo
 
 ```python
-import numpy as np
-from shaprpy import explain
 from sklearn.ensemble import RandomForestRegressor
+from shaprpy import explain
+from shaprpy.datasets import load_california_housing
 
-## Fit model on data X, y
+dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
+
+## Fit model
 model = RandomForestRegressor()
-model.fit(X, y)
+model.fit(dfx_train, dfy_train.values.flatten())
 
-## Explain predictions on X_test
+## Shapr
 df_shapley, pred_explain, internal = explain(
     model = model,
-    x_train = X,
-    x_explain = X_test,
+    x_train = dfx_train,
+    x_explain = dfx_test,
     approach = 'empirical',
-    prediction_zero = np.mean(y),
+    prediction_zero = dfy_train.mean().item(),
 )
+print(df_shapley)
 ```
+
 
 This works since `shaprpy` knows how to deal with models from `sklearn` and `xgboost`. 
 For other models, one can provide a custom `predict_model` function (and optionally a custom `get_model_specs`) to `shaprpy.explain`.
