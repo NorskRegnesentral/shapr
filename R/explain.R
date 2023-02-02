@@ -319,6 +319,9 @@ explain <- function(model,
     internal = internal
   )
 
+  internal$timing$shapley_computation <- Sys.time()
+
+  output <- compute_time(output)
 
   return(output)
 }

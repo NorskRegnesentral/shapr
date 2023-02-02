@@ -140,6 +140,8 @@ def explain(
         internal = rinternal,
     )
 
+    print(timing)
+
     df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values')))
     pred_explain = r2py(routput.rx2('pred_explain'))
     internal = recurse_r_tree(routput.rx2('internal'))
