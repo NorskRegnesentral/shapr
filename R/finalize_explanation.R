@@ -131,5 +131,9 @@ compute_shapley_new <- function(internal, dt_vS) {
   dt_kshap <- data.table::as.data.table(kshap)
   colnames(dt_kshap) <- c("none", shap_names)
 
+  if (internal$parameters$type == "forecast") {
+    rownames(dt_kshap) <- internal$parameters$output_labels
+  }
+
   return(dt_kshap)
 }
