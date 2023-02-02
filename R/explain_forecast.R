@@ -4,30 +4,30 @@
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.
 #'
 #' @inheritParams explain
-#' @param data Matrix or data.frame/data.table.
+#' @param y Matrix or data.frame/data.table.
 #' Contains the endogenous variables used to estimate the (conditional) distributions
 #' needed to properly estimate the conditional expectations in the Shapley formula
 #' including the observations to be explained.
 #'
-#' @param reg Matrix or data.frame/data.table.
+#' @param xreg Matrix or data.frame/data.table.
 #' Contains the exogenous variables used to estimate the (conditional) distributions
 #' needed to properly estimate the conditional expectations in the Shapley formula
 #' including the observations to be explained.
 #' As exogenous variables are used contemporaneusly when producing a forecast,
-#' this item should contain nrow(data) + horizon rows.
+#' this item should contain nrow(y) + horizon rows.
 #'
 #' @param train_idx Numeric vector
 #' The row indices in data and reg denoting points in time to use when estimating
 #' the Shapley values.
 #'
-#' @param explain_idx  Numeric vector
+#' @param explain_idx Numeric vector
 #' The row indices in data and reg denoting points in time to explain.
 #'
-#' @param lags List.
-#' The first item should be named `data` and contain a Numeric vector which denotes
-#' the number of lags that should be used for each variable in `data` when making a forecast.
-#' If `reg != NULL`, a second Numeric vector named `reg` should also be present, denoting
-#' the number of lags that should be used for each variable in `reg` when making a forecast.
+#' @param explain_y_lags Numeric vector.
+#' Denotes the number of lags that should be used for each variable in `y` when making a forecast.
+#'
+#' @param explain_xreg_lags Numeric vector.
+#' If `xreg != NULL`, denotes the number of lags that should be used for each variable in `xreg` when making a forecast.
 #'
 #' @param horizon Numeric.
 #' The forecast horizon to explain. Passed to the `predict_model` function.
@@ -52,9 +52,9 @@
 #' defines the time index (indices) which will precede a forecast to be explained.
 #'
 #' As any autoregressive forecast model will require a set of lags to make a forecast at an
-#' arbitrary point in time, `lags` define how many lags are required to "refit" the model at
-#' a given time index. This allows the different approaches to work in the same way they do for
-#' time-invariant models.
+#' arbitrary point in time, `explain_y_lags` and `explain_xreg_lags` define how many lags
+#' are required to "refit" the model at any given time index. This allows the different
+#' approaches to work in the same way they do for time-invariant models.
 #'
 #' @examples
 #'
@@ -70,10 +70,10 @@
 #'
 #' # Empirical approach, explaining forecasts starting at T = 152 and T = 153.
 #' explain_forecast(model = model_ar_temp,
-#'   data = data[, "Temp"],
+#'   y = data[, "Temp"],
 #'   train_idx = 2:151,
 #'   explain_idx = 152:153,
-#'   lags = list(data=2),
+#'   explain_y_lags = 2,
 #'   horizon = 3,
 #'   approach = "empirical",
 #'   prediction_zero = p0_ar,
@@ -82,24 +82,25 @@
 #'
 #' @export
 explain_forecast <- function(model,
-                    data,
-                    reg = NULL,
-                    train_idx,
-                    explain_idx,
-                    lags,
-                    horizon,
-                    approach,
-                    prediction_zero,
-                    n_combinations = NULL,
-                    group_lags = TRUE,
-                    n_samples = 1e3,
-                    n_batches = NULL,
-                    seed = 1,
-                    keep_samp_for_vS = FALSE,
-                    predict_model = NULL,
-                    get_model_specs = NULL,
-                    timing = TRUE,
-                    ...) { # ... is further arguments passed to specific approaches
+                             y,
+                             xreg = NULL,
+                             train_idx,
+                             explain_idx,
+                             explain_y_lags,
+                             explain_xreg_lags = explain_y_lags,
+                             horizon,
+                             approach,
+                             prediction_zero,
+                             n_combinations = NULL,
+                             group_lags = TRUE,
+                             n_samples = 1e3,
+                             n_batches = NULL,
+                             seed = 1,
+                             keep_samp_for_vS = FALSE,
+                             predict_model = NULL,
+                             get_model_specs = NULL,
+                             timing = TRUE,
+                             ...) { # ... is further arguments passed to specific approaches
   init_time <- Sys.time()
 
   set.seed(seed)
@@ -124,11 +125,12 @@ explain_forecast <- function(model,
     feature_specs = feature_specs,
     type = "forecast",
     horizon = horizon,
-    data = data,
-    reg = reg,
+    y = y,
+    xreg = xreg,
     train_idx = train_idx,
     explain_idx = explain_idx,
-    lags = lags,
+    explain_y_lags = explain_y_lags,
+    explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
     timing = timing,
     init_time = init_time,
@@ -179,8 +181,8 @@ explain_forecast <- function(model,
 
 #' Set up data for explain_forecast
 #'
-#' @param data A matrix containing the endogenous variables for the model. One variable per column, one observation per row.
-#' @param reg A matrix containing exogenous regressors for the model. One variable per column, one observation per row. Should have nrow(data) + horizon rows.
+#' @param y A matrix containing the endogenous variables for the model. One variable per column, one observation per row.
+#' @param xreg A matrix containing exogenous regressors for the model. One variable per column, one observation per row. Should have nrow(data) + horizon rows.
 #' @param train_idx The observations indices in data to use as training examples.
 #' @param explain_idx The observations indices in data to explain.
 #' @param lags A list containing two numeric vectors, data and reg, denoting the lag order for each variable used in the model.
@@ -190,40 +192,40 @@ explain_forecast <- function(model,
 #' - The data.frames x_train and x_explain which holds the lagged data examples.
 #' - A numeric, n_endo denoting how many columns are endogenous in x_train and x_explain.
 #' - A list, group with groupings of each variable to explain per variable and not per variable and lag.
-get_data_forecast <- function (data, reg, train_idx, explain_idx, lags, horizon) {
-  if (ncol(data) != length(lags$data)) {
+get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon) {
+  if (ncol(y) != length(explain_y_lags)) {
     stop("Each data column must have a lag order set in lags$data.")
   }
-  data <- as.matrix(data)
+  y <- as.matrix(y)
 
-  if (!is.null(reg)) {
-    if (ncol(reg) != length(lags$reg)) {
+  if (!is.null(xreg)) {
+    if (ncol(xreg) != length(explain_xreg_lags)) {
       stop("Each reg column must have a lag order set in lags$reg.")
     }
 
-    if (nrow(reg) < nrow(data) + horizon) {
+    if (nrow(xreg) < nrow(y) + horizon) {
       stop("The exogenous data must have at least as many observations as the data + the forecast horizon.")
     }
-    reg <- as.matrix(reg)
+    xreg <- as.matrix(xreg)
   } else {
-    reg <- matrix(NA, nrow(data) + horizon, 0)
+    xreg <- matrix(NA, nrow(y) + horizon, 0)
   }
 
 
-  max_lag <- max(c(lags$data, lags$reg))
+  max_lag <- max(c(explain_y_lags, explain_xreg_lags))
 
   if (any(c(train_idx, explain_idx) < max_lag) ||
-      any(c(train_idx, explain_idx) > nrow(data))) {
+      any(c(train_idx, explain_idx) > nrow(y))) {
     stop(paste0("The train and explain indices must fit in the lagged data. The lagged data begins at index "),
-         max_lag, " and ends at index ", nrow(data), ".")
+         max_lag, " and ends at index ", nrow(y), ".")
   }
 
   # Create a matrix and groups of all lagged data.
-  data_reg <- as.matrix(cbind(data, reg[seq_len(nrow(data)), , drop = FALSE]))
-  data_lag <- lag_data(data_reg, c(lags$data, lags$reg))
+  data_reg <- as.matrix(cbind(y, xreg[seq_len(nrow(y)), , drop = FALSE]))
+  data_lag <- lag_data(data_reg, c(explain_y_lags, explain_xreg_lags))
 
   # Create a matrix and groups of the forecasted values of the exogenous data.
-  reg_fcast <- reg_forecast_setup(reg[seq.int(to = nrow(reg), from = max_lag), , drop = FALSE], horizon, data_lag$group)
+  reg_fcast <- reg_forecast_setup(xreg[seq.int(to = nrow(xreg), from = max_lag), , drop = FALSE], horizon, data_lag$group)
 
   # Select the train and explain sets from the data and exogenous forecast values.
   train_idx <- train_idx - max_lag

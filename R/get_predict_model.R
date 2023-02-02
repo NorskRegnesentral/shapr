@@ -46,8 +46,8 @@ test_predict_model <- function (x_test, predict_model, model, internal) {
   if (!is.null(internal$parameters$type) && internal$parameters$type == "forecast") {
     tmp <- tryCatch(predict_model(
       x = model,
-      newdata = x_test[, 1:internal$data$n_endo],
-      newreg = x_test[, -(1:internal$data$n_endo)],
+      newdata = x_test[, 1:internal$data$n_endo, drop = FALSE],
+      newreg = x_test[, -(1:internal$data$n_endo), drop = FALSE],
       horizon = internal$parameters$horizon
     ), error = errorfun)
   } else {

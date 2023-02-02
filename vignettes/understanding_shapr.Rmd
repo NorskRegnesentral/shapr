@@ -592,15 +592,15 @@ p0_ar <- rep(mean(data_ts$Y), 3)
 
 # Explain two forecasts, starting at T = 499 and T 500.
 explanation_forecast <- explain_forecast(
-  model = ar2_model,
-  data = data_ts,
-  train_idx = 2:498,
-  explain_idx = 499:500,
-  lags = list(data=2),
-  horizon = 3,
-  approach = "empirical",
-  prediction_zero = p0_ar,
-  group_lags = FALSE
+        model = ar2_model,
+        y = data_ts,
+        train_idx = 2:498,
+        explain_idx = 499:500,
+        explain_y_lags = 2,
+        horizon = 3,
+        approach = "empirical",
+        prediction_zero = p0_ar,
+        group_lags = FALSE
 )
 ```
 

@@ -35,11 +35,12 @@ setup <- function(x_train,
                   feature_specs,
                   type = "normal",
                   horizon = NULL,
-                  data = NULL,
-                  reg = NULL,
+                  y = NULL,
+                  xreg = NULL,
                   train_idx = NULL,
                   explain_idx = NULL,
-                  lags = NULL,
+                  explain_y_lags = NULL,
+                  explain_xreg_lags = NULL,
                   group_lags = NULL,
                   timing,
                   init_time,
@@ -69,11 +70,12 @@ setup <- function(x_train,
   # Sets up and organizes data
   if(type=="forecast"){
     internal$data <- get_data_forecast(
-      data,
-      reg,
+      y,
+      xreg,
       train_idx,
       explain_idx,
-      lags,
+      explain_y_lags,
+      explain_xreg_lags,
       horizon
     )
 
