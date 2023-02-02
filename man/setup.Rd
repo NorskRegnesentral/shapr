@@ -100,12 +100,12 @@ correspondingly the type of explanation that should be generated.}
 \item{horizon}{Numeric.
 The forecast horizon to explain. Passed to the \code{predict_model} function.}
 
-\item{y}{Matrix or data.frame/data.table.
+\item{y}{Matrix, data.frame/data.table or a numeric vector.
 Contains the endogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.}
 
-\item{xreg}{Matrix or data.frame/data.table.
+\item{xreg}{Matrix, data.frame/data.table or a numeric vector.
 Contains the exogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.

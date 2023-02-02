@@ -4,12 +4,12 @@
 #' `model` by using the method specified in `approach` to estimate the conditional expectation.
 #'
 #' @inheritParams explain
-#' @param y Matrix or data.frame/data.table.
+#' @param y Matrix, data.frame/data.table or a numeric vector.
 #' Contains the endogenous variables used to estimate the (conditional) distributions
 #' needed to properly estimate the conditional expectations in the Shapley formula
 #' including the observations to be explained.
 #'
-#' @param xreg Matrix or data.frame/data.table.
+#' @param xreg Matrix, data.frame/data.table or a numeric vector.
 #' Contains the exogenous variables used to estimate the (conditional) distributions
 #' needed to properly estimate the conditional expectations in the Shapley formula
 #' including the observations to be explained.
@@ -181,7 +181,7 @@ explain_forecast <- function(model,
 
 #' Set up data for explain_forecast
 #'
-#' @param y A matrix containing the endogenous variables for the model. One variable per column, one observation per row.
+#' @param y A matrix or numeric vector containing the endogenous variables for the model. One variable per column, one observation per row.
 #' @param xreg A matrix containing exogenous regressors for the model. One variable per column, one observation per row. Should have nrow(data) + horizon rows.
 #' @param train_idx The observations indices in data to use as training examples.
 #' @param explain_idx The observations indices in data to explain.
@@ -193,12 +193,21 @@ explain_forecast <- function(model,
 #' - A numeric, n_endo denoting how many columns are endogenous in x_train and x_explain.
 #' - A list, group with groupings of each variable to explain per variable and not per variable and lag.
 get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon) {
+  if (is.null(dim(y))) {
+    y <- as.matrix(y)
+    colnames(y) <- "Y1"
+  }
+
   if (ncol(y) != length(explain_y_lags)) {
     stop("Each data column must have a lag order set in lags$data.")
   }
   y <- as.matrix(y)
 
   if (!is.null(xreg)) {
+    if (is.null(dim(xreg))) {
+      xreg <- as.matrix(xreg)
+      colnames(xreg) <- "X1"
+    }
     if (ncol(xreg) != length(explain_xreg_lags)) {
       stop("Each reg column must have a lag order set in lags$reg.")
     }

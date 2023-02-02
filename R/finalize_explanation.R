@@ -107,6 +107,10 @@ get_p <- function(dt_vS, internal) {
   max_id_combination <- internal$parameters$n_combinations
   p <- unlist(dt_vS[id_combination == max_id_combination, ][, id_combination := NULL])
 
+  if (internal$parameters$type == "forecast") {
+    names(p) <- internal$parameters$output_labels
+  }
+
   return(p)
 }
 

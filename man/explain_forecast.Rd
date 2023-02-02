@@ -34,12 +34,12 @@ for a table of which models \code{explain} supports natively. Unsupported models
 can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
 see details for more information.}
 
-\item{y}{Matrix or data.frame/data.table.
+\item{y}{Matrix, data.frame/data.table or a numeric vector.
 Contains the endogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.}
 
-\item{xreg}{Matrix or data.frame/data.table.
+\item{xreg}{Matrix, data.frame/data.table or a numeric vector.
 Contains the exogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.

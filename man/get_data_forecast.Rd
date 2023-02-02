@@ -15,7 +15,7 @@ get_data_forecast(
 )
 }
 \arguments{
-\item{y}{A matrix containing the endogenous variables for the model. One variable per column, one observation per row.}
+\item{y}{A matrix or numeric vector containing the endogenous variables for the model. One variable per column, one observation per row.}
 
 \item{xreg}{A matrix containing exogenous regressors for the model. One variable per column, one observation per row. Should have nrow(data) + horizon rows.}
 
