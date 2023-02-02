@@ -4,20 +4,28 @@
 \alias{get_data_forecast}
 \title{Set up data for explain_forecast}
 \usage{
-get_data_forecast(data, reg, train_idx, explain_idx, lags, horizon)
+get_data_forecast(
+  y,
+  xreg,
+  train_idx,
+  explain_idx,
+  explain_y_lags,
+  explain_xreg_lags,
+  horizon
+)
 }
 \arguments{
-\item{data}{A matrix containing the endogenous variables for the model. One variable per column, one observation per row.}
+\item{y}{A matrix containing the endogenous variables for the model. One variable per column, one observation per row.}
 
-\item{reg}{A matrix containing exogenous regressors for the model. One variable per column, one observation per row. Should have nrow(data) + horizon rows.}
+\item{xreg}{A matrix containing exogenous regressors for the model. One variable per column, one observation per row. Should have nrow(data) + horizon rows.}
 
 \item{train_idx}{The observations indices in data to use as training examples.}
 
 \item{explain_idx}{The observations indices in data to explain.}
 
-\item{lags}{A list containing two numeric vectors, data and reg, denoting the lag order for each variable used in the model.}
-
 \item{horizon}{The forecast horizon to explain.}
+
+\item{lags}{A list containing two numeric vectors, data and reg, denoting the lag order for each variable used in the model.}
 }
 \value{
 A list containing

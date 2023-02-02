@@ -6,11 +6,12 @@
 \usage{
 explain_forecast(
   model,
-  data,
-  reg = NULL,
+  y,
+  xreg = NULL,
   train_idx,
   explain_idx,
-  lags,
+  explain_y_lags,
+  explain_xreg_lags = explain_y_lags,
   horizon,
   approach,
   prediction_zero,
@@ -33,17 +34,17 @@ for a table of which models \code{explain} supports natively. Unsupported models
 can still be explained by passing \code{predict_model} and (optionally) \code{get_model_specs},
 see details for more information.}
 
-\item{data}{Matrix or data.frame/data.table.
+\item{y}{Matrix or data.frame/data.table.
 Contains the endogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.}
 
-\item{reg}{Matrix or data.frame/data.table.
+\item{xreg}{Matrix or data.frame/data.table.
 Contains the exogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.
 As exogenous variables are used contemporaneusly when producing a forecast,
-this item should contain nrow(data) + horizon rows.}
+this item should contain nrow(y) + horizon rows.}
 
 \item{train_idx}{Numeric vector
 The row indices in data and reg denoting points in time to use when estimating
@@ -52,11 +53,11 @@ the Shapley values.}
 \item{explain_idx}{Numeric vector
 The row indices in data and reg denoting points in time to explain.}
 
-\item{lags}{List.
-The first item should be named \code{data} and contain a Numeric vector which denotes
-the number of lags that should be used for each variable in \code{data} when making a forecast.
-If \code{reg != NULL}, a second Numeric vector named \code{reg} should also be present, denoting
-the number of lags that should be used for each variable in \code{reg} when making a forecast.}
+\item{explain_y_lags}{Numeric vector.
+Denotes the number of lags that should be used for each variable in \code{y} when making a forecast.}
+
+\item{explain_xreg_lags}{Numeric vector.
+If \code{xreg != NULL}, denotes the number of lags that should be used for each variable in \code{xreg} when making a forecast.}
 
 \item{horizon}{Numeric.
 The forecast horizon to explain. Passed to the \code{predict_model} function.}
@@ -234,9 +235,9 @@ in the data the forecast should start for each training sample. In the same way 
 defines the time index (indices) which will precede a forecast to be explained.
 
 As any autoregressive forecast model will require a set of lags to make a forecast at an
-arbitrary point in time, \code{lags} define how many lags are required to "refit" the model at
-a given time index. This allows the different approaches to work in the same way they do for
-time-invariant models.
+arbitrary point in time, \code{explain_y_lags} and \code{explain_xreg_lags} define how many lags
+are required to "refit" the model at any given time index. This allows the different
+approaches to work in the same way they do for time-invariant models.
 }
 \examples{
 
@@ -252,10 +253,10 @@ p0_ar <- rep(mean(data$Temp), 3)
 
 # Empirical approach, explaining forecasts starting at T = 152 and T = 153.
 explain_forecast(model = model_ar_temp,
-  data = data[, "Temp"],
+  y = data[, "Temp"],
   train_idx = 2:151,
   explain_idx = 152:153,
-  lags = list(data=2),
+  explain_y_lags = 2,
   horizon = 3,
   approach = "empirical",
   prediction_zero = p0_ar,

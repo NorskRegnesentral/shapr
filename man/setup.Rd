@@ -19,11 +19,12 @@ setup(
   feature_specs,
   type = "normal",
   horizon = NULL,
-  data = NULL,
-  reg = NULL,
+  y = NULL,
+  xreg = NULL,
   train_idx = NULL,
   explain_idx = NULL,
-  lags = NULL,
+  explain_y_lags = NULL,
+  explain_xreg_lags = NULL,
   group_lags = NULL,
   timing,
   init_time,
@@ -99,17 +100,17 @@ correspondingly the type of explanation that should be generated.}
 \item{horizon}{Numeric.
 The forecast horizon to explain. Passed to the \code{predict_model} function.}
 
-\item{data}{Matrix or data.frame/data.table.
+\item{y}{Matrix or data.frame/data.table.
 Contains the endogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.}
 
-\item{reg}{Matrix or data.frame/data.table.
+\item{xreg}{Matrix or data.frame/data.table.
 Contains the exogenous variables used to estimate the (conditional) distributions
 needed to properly estimate the conditional expectations in the Shapley formula
 including the observations to be explained.
 As exogenous variables are used contemporaneusly when producing a forecast,
-this item should contain nrow(data) + horizon rows.}
+this item should contain nrow(y) + horizon rows.}
 
 \item{train_idx}{Numeric vector
 The row indices in data and reg denoting points in time to use when estimating
@@ -118,11 +119,11 @@ the Shapley values.}
 \item{explain_idx}{Numeric vector
 The row indices in data and reg denoting points in time to explain.}
 
-\item{lags}{List.
-The first item should be named \code{data} and contain a Numeric vector which denotes
-the number of lags that should be used for each variable in \code{data} when making a forecast.
-If \code{reg != NULL}, a second Numeric vector named \code{reg} should also be present, denoting
-the number of lags that should be used for each variable in \code{reg} when making a forecast.}
+\item{explain_y_lags}{Numeric vector.
+Denotes the number of lags that should be used for each variable in \code{y} when making a forecast.}
+
+\item{explain_xreg_lags}{Numeric vector.
+If \code{xreg != NULL}, denotes the number of lags that should be used for each variable in \code{xreg} when making a forecast.}
 
 \item{group_lags}{Logical.
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
