@@ -234,11 +234,11 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
   data_lag <- lag_data(data_reg, c(explain_y_lags, explain_xreg_lags))
 
   # Create a matrix and groups of the forecasted values of the exogenous data.
-  reg_fcast <- reg_forecast_setup(xreg[seq.int(to = nrow(xreg), from = max_lag), , drop = FALSE], horizon, data_lag$group)
+  reg_fcast <- reg_forecast_setup(xreg[seq.int(to = nrow(y) + horizon, from = max_lag + 1), , drop = FALSE], horizon, data_lag$group)
 
   # Select the train and explain sets from the data and exogenous forecast values.
-  train_idx <- train_idx - max_lag
-  explain_idx <- explain_idx - max_lag
+  train_idx <- train_idx - max_lag + 1
+  explain_idx <- explain_idx - max_lag + 1
   return(list(
     group = reg_fcast$group,
     n_endo = ncol(data_lag$lagged),
@@ -262,7 +262,7 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
 #' - A matrix, lagged with the lagged data.
 #' - A list, group, with groupings of the lagged data per variable.
 lag_data <- function (x, lags) {
-  lagged_obs <- nrow(x) - max(lags)
+  lagged_obs <- nrow(x) - max(lags) + 1
   lagged <- matrix(NA, lagged_obs, 0)
   group <- list()
   names <- character()
