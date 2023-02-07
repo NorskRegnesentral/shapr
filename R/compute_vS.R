@@ -8,7 +8,7 @@
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
 #' @export
-compute_vS <- function(internal, model, predict_model, method = "dads") {
+compute_vS <- function(internal, model, predict_model, method = "future") {
   S_batch <- internal$objects$S_batch
 
   if (method == "future") {
