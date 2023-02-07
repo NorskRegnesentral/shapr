@@ -8,7 +8,7 @@
 #' Indicates whether the lappy method (default) or loop method should be used.
 #'
 #' @export
-compute_vS <- function(internal, model, predict_model, method = "future") {
+compute_vS <- function(internal, model, predict_model, method = "dads") {
   S_batch <- internal$objects$S_batch
 
   if (method == "future") {
@@ -145,6 +145,9 @@ compute_MCint <- function(dt, pred_cols) {
   dt_res <- dt[, lapply(.SD, function (x) sum(((x) * w) / sum(w))), .(id, id_combination), .SDcols = pred_cols]
   data.table::setkeyv(dt_res, c("id", "id_combination"))
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = pred_cols)
+  if(length(pred_cols)==1){
+    names(dt_mat)[-1] <- paste0(pred_cols,"_",names(dt_mat)[-1])
+  }
   # dt_mat[, id_combination := NULL]
 
   dt_mat

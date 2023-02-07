@@ -11,6 +11,11 @@ setup_computation <- function(internal, model, predict_model) {
   # setup the Shapley framework
   internal <- shapley_setup(internal)
 
+  if(internal$parameters$type == "forecast"){
+    internal <- id_combinations_mapper(internal)
+  }
+
+
   # Setup for approach
   internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
@@ -19,7 +24,48 @@ setup_computation <- function(internal, model, predict_model) {
   return(internal)
 }
 
+#' Adds extra helper objects to `internal` to correctly map `id_combinations` for different forecast horizons
+#' in [shapr::explain_forecast()]
+#'
+#' @inheritParams default_doc
+#' @inherit default_doc
+#' @keywords internal
+id_combinations_mapper <- function(internal){
 
+  S <- internal$objects$S
+  horizon <- internal$parameters$horizon
+  feature_names <- internal$parameters$feature_names
+
+  col_del_list <- list()
+  col_del_list[[1]] <- numeric()
+  if(horizon>1){
+    k <- 2
+    for(i in rev(seq_len(horizon)[-1])){
+      col_del_list[[k]] <- c(unlist(col_del_list[[k-1]]),grep(paste0(".F",i),feature_names))
+      k <- k + 1
+    }
+  }
+
+
+  S_dt <- as.data.table(S)
+  S_dt[,id_combination:=.I]
+  id_combination_mapper_list <- list()
+  if(horizon>1){
+    for(i in seq_len(horizon-1)){
+      del_cols <- paste0("V",rev(col_del_list)[[i]])
+      S_dt[,tmp:=rowSums(.SD),.SDcols=del_cols]
+      id_combination_mapper_list[[i]] <- S_dt[tmp==0,.(new_id_combination = seq_len(.N),id_combination)]
+    }
+  }
+  id_combination_mapper_list[[horizon]] <- S_dt[,.(new_id_combination = id_combination,id_combination)]
+  id_combination_mapper_dt <- rbindlist(id_combination_mapper_list,idcol="horizon")
+
+  cols_per_horizon <- lapply(rev(col_del_list),function(x) if(length(x)>0) feature_names[-x] else feature_names )
+
+  internal$objects$id_combination_mapper_dt <- id_combination_mapper_dt
+  internal$objects$cols_per_horizon <- cols_per_horizon
+  return(internal)
+}
 
 #' @keywords internal
 shapley_setup <- function(internal) {
