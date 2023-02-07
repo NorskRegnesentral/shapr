@@ -79,7 +79,8 @@ setup <- function(x_train,
       horizon
     )
 
-    internal$parameters$output_labels <- paste0(rep(explain_idx, horizon), "_Horizon_", rep(seq_len(horizon), each = length(explain_idx)))
+    internal$parameters$output_labels <- cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
+    colnames(internal$parameters$output_labels) <- c("explain_idx", "horizon")
 
     # TODO: Consider handling this parameter update somewhere else (like in get_extra_parameters?)
     if (group_lags) {
