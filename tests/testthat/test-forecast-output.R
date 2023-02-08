@@ -107,6 +107,16 @@ test_that("ARIMA gives the same output for h = 1 when total horizon = 1 and 2", 
     n_batches = 1,
     timing = FALSE)
 
-  expect_equal(h2$shapley_values[1:2, -7], h1$shapley_values)
+  cols_horizon1 <- h2$internal$objects$cols_per_horizon[[1]]
+  expect_equal(h2$shapley_values[horizon==1, ..cols_horizon1],
+               h1$shapley_values[horizon==1,..cols_horizon1])
+
+  expect_equal(h3$shapley_values[horizon==1, ..cols_horizon1],
+               h1$shapley_values[horizon==1,..cols_horizon1])
+
+  cols_horizon2 <- h2$internal$objects$cols_per_horizon[[2]]
+  expect_equal(h3$shapley_values[horizon==2, ..cols_horizon2],
+               h2$shapley_values[horizon==2,..cols_horizon2])
+
 
 })

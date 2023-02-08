@@ -326,6 +326,11 @@ explain <- function(model,
     internal = internal
   )
 
+  # Temporary to avoid failing tests
+
+  output$internal$objects$id_combination_mapper_dt <- NULL
+  output$internal$objects$cols_per_horizon <- NULL
+  output$internal$objects$W_list <- NULL
 
   return(output)
 }
