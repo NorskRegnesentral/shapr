@@ -62,8 +62,41 @@ id_combinations_mapper <- function(internal){
 
   cols_per_horizon <- lapply(rev(col_del_list),function(x) if(length(x)>0) feature_names[-x] else feature_names )
 
+  ##### Needs to re-compute the W-matrix as well.
+
+  # TODO: This code snippet is temporary and only works for non-grouped features and the exact method!
+  exact <- internal$parameters$exact
+  n_features <- internal$parameters$n_features
+  n_combinations <- internal$parameters$n_combinations
+  is_groupwise <- internal$parameters$is_groupwise
+
+  group_num <- internal$objects$group_num
+
+  W_list <- list()
+  for(i in seq_len(horizon)){
+    # Get all combinations ----------------
+    Xtmp <- feature_combinations(
+      m = length(cols_per_horizon[[i]]),
+      exact = exact,
+      n_combinations = n_combinations,
+      weight_zero_m = 10^6,
+      group_num = group_num
+    )
+
+    # Get weighted matrix ----------------
+    W_list[[i]] <- weight_matrix(
+      X = Xtmp,
+      normalize_W_weights = TRUE,
+      is_groupwise = is_groupwise
+    )
+
+  }
+
+
   internal$objects$id_combination_mapper_dt <- id_combination_mapper_dt
   internal$objects$cols_per_horizon <- cols_per_horizon
+  internal$objects$W_list <- W_list
+
   return(internal)
 }
 
