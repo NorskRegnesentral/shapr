@@ -590,6 +590,9 @@ ar2_model <- ar(data_ts, order = 2)
 # Setting prediction zero as the mean of the data for each forecast point.
 p0_ar <- rep(mean(data_ts$Y), 3)
 
+# We set....
+explain_idx <- 499:500
+
 # Explain two forecasts, starting at T = 499 and T 500.
 explanation_forecast <- explain_forecast(
         model = ar2_model,

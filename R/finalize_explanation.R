@@ -108,7 +108,7 @@ get_p <- function(dt_vS, internal) {
   p <- unlist(dt_vS[id_combination == max_id_combination, ][, id_combination := NULL])
 
   if (internal$parameters$type == "forecast") {
-    names(p) <- internal$parameters$output_labels
+    names(p) <- apply(internal$parameters$output_labels, 1, function (x) paste0("explain_idx_", x[1], "_horizon_", x[2]))
   }
 
   return(p)
@@ -161,7 +161,7 @@ compute_shapley_new <- function(internal, dt_vS) {
   }
 
   if (internal$parameters$type == "forecast") {
-    rownames(dt_kshap) <- internal$parameters$output_labels
+    dt_kshap <- cbind(internal$parameters$output_labels, dt_kshap)
   }
 
   return(dt_kshap)
