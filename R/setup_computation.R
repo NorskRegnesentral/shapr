@@ -120,10 +120,10 @@ shapley_setup <- function(internal) {
       X_horizon[,shapley_weight:=NULL]
 
       # If all weights are present, use the exact shapley weights, otherwise, re-sample from relevant part of X to get sampling weights
-      #if(X_horizon[,.N]==2^n_features_horizon){
-      #  X_horizon[, shapley_weight := shapley_weights(m = max(n_features), N = N, n_components = n_features, weight_zero_m)]
-#
- #     } else {
+      if(X_horizon[,.N]==2^n_features_horizon){
+        X_horizon[, shapley_weight := shapley_weights(m = max(n_features), N = N, n_components = n_features, weight_zero_m)]
+
+      } else {
 
         # Get the sampling weights for each number of feature combinations
         n_features_horizon_seq <- seq(n_features_horizon - 1)
@@ -162,7 +162,7 @@ shapley_setup <- function(internal) {
         # X_horizon[c(1,.N),shapley_weight:=weight_zero_m]
         # X_horizon <- X_horizon[!is.na(shapley_weight)]
 
-    #  }
+      }
 
       X_list[[i]] <- X_horizon
       # Get weighted matrix ----------------
