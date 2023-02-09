@@ -21,99 +21,6 @@ setup_computation <- function(internal, model, predict_model) {
   return(internal)
 }
 
-#' @keywords internal
-get_cols_per_horizon <- function(horizon,feature_names){
-  col_del_list <- list()
-  col_del_list[[1]] <- numeric()
-  if(horizon>1){
-    k <- 2
-    for(i in rev(seq_len(horizon)[-1])){
-      col_del_list[[k]] <- c(unlist(col_del_list[[k-1]]),grep(paste0(".F",i),feature_names))
-      k <- k + 1
-    }
-  }
-
-  cols_per_horizon <- lapply(rev(col_del_list),function(x) if(length(x)>0) feature_names[-x] else feature_names )
-
-  return(cols_per_horizon)
-}
-
-#' Adds extra helper objects to `internal` to correctly map `id_combinations` for different forecast horizons
-#' in [shapr::explain_forecast()]
-#'
-#' @inheritParams default_doc
-#' @inherit default_doc
-#' @keywords internal
-id_combinations_mapper <- function(internal){
-
-  S <- internal$objects$S
-  horizon <- internal$parameters$horizon
-  feature_names <- internal$parameters$feature_names
-  X <- internal$objects$X
-
-
-
-
-  S_dt <- as.data.table(S)
-  S_dt[,id_combination:=.I]
-  id_combination_mapper_list <- list()
-  if(horizon>1){
-    for(i in seq_len(horizon-1)){
-      del_cols <- paste0("V",rev(col_del_list)[[i]])
-      S_dt[,tmp:=rowSums(.SD),.SDcols=del_cols]
-      id_combination_mapper_list[[i]] <- S_dt[tmp==0,.(new_id_combination = seq_len(.N),id_combination)]
-    }
-  }
-  id_combination_mapper_list[[horizon]] <- S_dt[,.(new_id_combination = id_combination,id_combination)]
-  id_combination_mapper_dt <- rbindlist(id_combination_mapper_list,idcol="horizon")
-
-  cols_per_horizon <- lapply(rev(col_del_list),function(x) if(length(x)>0) feature_names[-x] else feature_names )
-
-  ##### Needs to re-compute the W-matrix as well.
-
-  # TODO: This code snippet is temporary and only works for non-grouped features and the exact method!
-  exact <- internal$parameters$exact
-  n_features <- internal$parameters$n_features
-  n_combinations <- internal$parameters$n_combinations
-  is_groupwise <- internal$parameters$is_groupwise
-
-  group_num <- internal$objects$group_num
-
-  W_list <- list()
-  for(i in seq_len(horizon)){
-    these_X_rows <- id_combination_mapper_dt[horizon==i,id_combination]
-    Xtmp <- X[these_X_rows,]
-    features0 <- which(internal$parameters$feature_names %in% cols_per_horizon[[i]])
-    Xtmp0 <- Xtmp[1]
-    Xtmp0[,features:=features0]
-    Xtmp0[,n_features:=length(features0)]
-    Xtmp0[,id_combination:=0]
-    Xtmp <- rbind(Xtmp,Xtmp0)
-    # Get all combinations ----------------
-#     Xtmp <- feature_combinations(
-#       m = length(cols_per_horizon[[i]]),
-#       exact = exact,
-#       n_combinations = n_combinations,
-#       weight_zero_m = 10^6,
-#       group_num = group_num
-#     )
-
-    # Get weighted matrix ----------------
-    W_list[[i]] <- weight_matrix(
-      X = Xtmp,
-      normalize_W_weights = TRUE,
-      is_groupwise = is_groupwise
-    )
-
-  }
-
-
-  internal$objects$id_combination_mapper_dt <- id_combination_mapper_dt
-  internal$objects$cols_per_horizon <- cols_per_horizon
-  internal$objects$W_list <- W_list
-
-  return(internal)
-}
 
 #' @keywords internal
 shapley_setup <- function(internal) {
@@ -213,34 +120,49 @@ shapley_setup <- function(internal) {
       X_horizon[,shapley_weight:=NULL]
 
       # If all weights are present, use the exact shapley weights, otherwise, re-sample from relevant part of X to get sampling weights
-      if(X_horizon[,.N]==2^n_features_horizon){
-        X_horizon[, shapley_weight := shapley_weights(m = max(n_features), N = N, n_components = n_features, weight_zero_m)]
+      #if(X_horizon[,.N]==2^n_features_horizon){
+      #  X_horizon[, shapley_weight := shapley_weights(m = max(n_features), N = N, n_components = n_features, weight_zero_m)]
+#
+ #     } else {
 
-      } else {
-
-        # Get the sampling weights per combination (not per number of combination)
+        # Get the sampling weights for each number of feature combinations
         n_features_horizon_seq <- seq(n_features_horizon - 1)
         n <- sapply(n_features_horizon_seq, choose, n = n_features_horizon)
-        w <- shapley_weights(m = n_features_horizon, N = n, n_features_horizon_seq) # No multiplication by n here.
+        w <- shapley_weights(m = n_features_horizon, N = n, n_features_horizon_seq)*n
         p <- w / sum(w)
 
         p_dt <- data.table(p=p,n_features=n_features_horizon_seq)
 
         X_horizon <- merge(X_horizon,p_dt,by="n_features",all.x=T)
 
-        samps <- sample(
-          x = X_horizon[-c(1,.N),id_combination],
-          size = n_combinations - 2, # Sample -2 as we add zero and m samples below
-          replace = TRUE,
-          prob = X_horizon[-c(1,.N),p]
-        )
-        samps_dt <- as.data.table(table(samps))
-        names(samps_dt) <- c("id_combination","shapley_weight")
-        samps_dt[,id_combination:=as.integer(id_combination)]
-        X_horizon <- merge(X_horizon,samps_dt,by="id_combination",all.x=T)
+        X_horizon[,shapley_weight:=p/.N,by=n_features]
         X_horizon[c(1,.N),shapley_weight:=weight_zero_m]
 
-      }
+        # OLD version
+        # # Get the sampling weights per combination (not per number of combination)
+        # n_features_horizon_seq <- seq(n_features_horizon - 1)
+        # n <- sapply(n_features_horizon_seq, choose, n = n_features_horizon)
+        # w <- shapley_weights(m = n_features_horizon, N = n, n_features_horizon_seq) # No multiplication by n here.
+        # p <- w / sum(w)
+        #
+        # p_dt <- data.table(p=p,n_features=n_features_horizon_seq)
+        #
+        # X_horizon <- merge(X_horizon,p_dt,by="n_features",all.x=T)
+        #
+        # samps <- sample(
+        #   x = X_horizon[-c(1,.N),id_combination],
+        #   size = n_combinations - 2, # Sample -2 as we add zero and m samples below
+        #   replace = TRUE,
+        #   prob = X_horizon[-c(1,.N),p]
+        # )
+        # samps_dt <- as.data.table(table(samps))
+        # names(samps_dt) <- c("id_combination","shapley_weight")
+        # samps_dt[,id_combination:=as.integer(id_combination)]
+        # X_horizon <- merge(X_horizon,samps_dt,by="id_combination",all.x=T)
+        # X_horizon[c(1,.N),shapley_weight:=weight_zero_m]
+        # X_horizon <- X_horizon[!is.na(shapley_weight)]
+
+    #  }
 
       X_list[[i]] <- X_horizon
       # Get weighted matrix ----------------

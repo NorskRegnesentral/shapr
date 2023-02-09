@@ -14,7 +14,7 @@ h3test <- explain_forecast(model = model_arima_temp,
                                 n_batches = 1,
                                 timing = FALSE,
                                 seed = i,
-                                n_combinations = 10^7
+                                n_combinations = 300
 )
 
 h2test <- explain_forecast(model = model_arima_temp,
@@ -75,7 +75,7 @@ h3test$internal$objects$X_list[[1]][-c(1,.N),]
 
 ncomb <- 50
 
-reps <- 100
+reps <- 10
 
 set.seed(123)
 h3full <- explain_forecast(model = model_arima_temp,
