@@ -199,15 +199,50 @@ shapley_setup <- function(internal) {
 
     # Creating separate W matrices for every horizon
     W_list <- list()
+    X_list <- list()
     weight_zero_m <- X[.N,shapley_weight]
     for(i in seq_len(horizon)){
 
       # Separeting the relevant part of the X table, and re-computing the shapley_weights
+
+      n_features_horizon <- length(cols_per_horizon[[i]])
+
       these_X_rows <- id_combination_mapper_dt[horizon==i,id_combination]
       X_horizon <- X[these_X_rows,]
-      X_horizon[,N:=choose(n=max(n_features),k = n_features)]
-      X_horizon[, shapley_weight := shapley_weights(m = max(n_features), N = N, n_components = n_features, weight_zero_m)]
+      X_horizon[,N:=choose(n=n_features_horizon,k = n_features)]
+      X_horizon[,shapley_weight:=NULL]
 
+      # If all weights are present, use the exact shapley weights, otherwise, re-sample from relevant part of X to get sampling weights
+      if(X_horizon[,.N]==2^n_features_horizon){
+        X_horizon[, shapley_weight := shapley_weights(m = max(n_features), N = N, n_components = n_features, weight_zero_m)]
+
+      } else {
+
+        # Get the sampling weights per combination (not per number of combination)
+        n_features_horizon_seq <- seq(n_features_horizon - 1)
+        n <- sapply(n_features_horizon_seq, choose, n = n_features_horizon)
+        w <- shapley_weights(m = n_features_horizon, N = n, n_features_horizon_seq) # No multiplication by n here.
+        p <- w / sum(w)
+
+        p_dt <- data.table(p=p,n_features=n_features_horizon_seq)
+
+        X_horizon <- merge(X_horizon,p_dt,by="n_features",all.x=T)
+
+        samps <- sample(
+          x = X_horizon[-c(1,.N),id_combination],
+          size = n_combinations - 2, # Sample -2 as we add zero and m samples below
+          replace = TRUE,
+          prob = X_horizon[-c(1,.N),p]
+        )
+        samps_dt <- as.data.table(table(samps))
+        names(samps_dt) <- c("id_combination","shapley_weight")
+        samps_dt[,id_combination:=as.integer(id_combination)]
+        X_horizon <- merge(X_horizon,samps_dt,by="id_combination",all.x=T)
+        X_horizon[c(1,.N),shapley_weight:=weight_zero_m]
+
+      }
+
+      X_list[[i]] <- X_horizon
       # Get weighted matrix ----------------
       W_list[[i]] <- weight_matrix(
         X = X_horizon,
@@ -221,6 +256,7 @@ shapley_setup <- function(internal) {
     internal$objects$id_combination_mapper_dt <- id_combination_mapper_dt
     internal$objects$cols_per_horizon <- cols_per_horizon
     internal$objects$W_list <- W_list
+    internal$objects$X_list <- X_list
 
 
   } else {
@@ -342,8 +378,8 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     if (m_group == 0) {
       # Switch to exact for feature-wise method
       if (n_combinations > 2^m) {
-        n_combinations <- 2^m
-        exact <- TRUE
+        #n_combinations <- 2^m
+        #exact <- TRUE
         message(
           paste0(
             "Success with message:\n",
@@ -412,7 +448,7 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 }
 
 #' @keywords internal
-feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
+feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6,unique_sampling = FALSE) {
 
   # Find weights for given number of features ----------
   n_features <- seq(m - 1)
@@ -423,20 +459,32 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   feature_sample_all <- list()
   unique_samples <- 0
 
-  while (unique_samples < n_combinations - 2) {
 
-    # Sample number of chosen features ----------
-    n_features_sample <- sample(
-      x = n_features,
-      size = n_combinations - unique_samples - 2, # Sample -2 as we add zero and m samples below
-      replace = TRUE,
-      prob = p
+  if (unique_sampling){
+    while (unique_samples < n_combinations - 2) {
+
+      # Sample number of chosen features ----------
+      n_features_sample <- sample(
+        x = n_features,
+        size = n_combinations - unique_samples - 2, # Sample -2 as we add zero and m samples below
+        replace = TRUE,
+        prob = p
       )
 
-    # Sample specific set of features -------
-    feature_sample <- sample_features_cpp(m, n_features_sample)
-    feature_sample_all <- c(feature_sample_all, feature_sample)
-    unique_samples <- length(unique(feature_sample_all))
+      # Sample specific set of features -------
+      feature_sample <- sample_features_cpp(m, n_features_sample)
+      feature_sample_all <- c(feature_sample_all, feature_sample)
+      unique_samples <- length(unique(feature_sample_all))
+    }
+  } else {
+    n_features_sample <- sample(
+      x = n_features,
+      size = n_combinations - 2, # Sample -2 as we add zero and m samples below
+      replace = TRUE,
+      prob = p
+    )
+    feature_sample_all <- sample_features_cpp(m, n_features_sample)
+
   }
 
   # Add zero and m features

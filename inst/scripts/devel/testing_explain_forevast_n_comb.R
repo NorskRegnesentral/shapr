@@ -14,7 +14,7 @@ h3test <- explain_forecast(model = model_arima_temp,
                                 n_batches = 1,
                                 timing = FALSE,
                                 seed = i,
-                                n_combinations = 1000000
+                                n_combinations = 10^7
 )
 
 h2test <- explain_forecast(model = model_arima_temp,
@@ -31,7 +31,7 @@ h2test <- explain_forecast(model = model_arima_temp,
                            n_batches = 1,
                            timing = FALSE,
                            seed = i,
-                           n_combinations = 1000000
+                           n_combinations = 10^7
 )
 
 h1test <- explain_forecast(model = model_arima_temp,
@@ -48,8 +48,29 @@ h1test <- explain_forecast(model = model_arima_temp,
                            n_batches = 1,
                            timing = FALSE,
                            seed = i,
-                           n_combinations = 1000000
+                           n_combinations = 10^7
 )
+
+w <- h3test$internal$objects$X_list[[1]][["shapley_weight"]]
+
+w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
+h3test$internal$objects$X_list[[1]][,shapley_weight_norm := w]
+
+
+w <- h1test$internal$objects$X_list[[1]][["shapley_weight"]]
+
+w[-c(1, length(w))] <- w[-c(1, length(w))] / sum(w[-c(1, length(w))])
+h1test$internal$objects$X_list[[1]][,shapley_weight_norm := w]
+
+
+w2 <- h1full$internal$objects$X_list[[1]][["shapley_weight"]]
+
+w2[-c(1, length(w2))] <- w2[-c(1, length(w2))] / sum(w2[-c(1, length(w2))])
+h1full$internal$objects$X_list[[1]][,shapley_weight_norm := w2]
+
+h1test$internal$objects$X_list[[1]][-c(1,.N),]
+h1full$internal$objects$X_list[[1]][-c(1,.N),]
+h3test$internal$objects$X_list[[1]][-c(1,.N),]
 
 
 ncomb <- 50
@@ -71,6 +92,23 @@ h3full <- explain_forecast(model = model_arima_temp,
                        n_batches = 1,
                        timing = FALSE,
                        seed = 1)
+
+set.seed(123)
+h1full <- explain_forecast(model = model_arima_temp,
+                           y = data[1:150, "Temp"],
+                           xreg = data[, "Wind"],
+                           train_idx = 2:148,
+                           explain_idx = 149:150,
+                           explain_y_lags = 2,
+                           explain_xreg_lags = 2,
+                           horizon = 1,
+                           approach = "empirical",
+                           prediction_zero = p0_ar[1],
+                           group_lags = FALSE,
+                           n_batches = 1,
+                           timing = FALSE,
+                           seed = 1)
+
 
 
 h1list <- h2list <- h3list <- list()
