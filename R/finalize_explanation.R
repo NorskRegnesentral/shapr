@@ -141,9 +141,6 @@ compute_shapley_new <- function(internal, dt_vS) {
 
     kshap_list <- list()
     for(i in seq_len(horizon)){
-      #these_W_rows <- c(1,1+which(feature_names %in% cols_per_horizon[[i]]))
-      #these_W_cols <- id_combination_mapper_dt[horizon==i,id_combination]
-      #W0 <- W[these_W_rows,these_W_cols]
       W0 <- W_list[[i]]
 
       dt_vS0 <- merge(dt_vS,id_combination_mapper_dt[horizon==i],by="id_combination",all.y = T)
