@@ -577,6 +577,28 @@ compared to `explain` is that the data is supplied as a set of time series,
 and indices denoting different points in time select the train and explain
 parts of the data. See `?explain_forecast` for more information.
 
+To demonstrate how to use the function 500 observations are generated, which
+follow an AR(1) structure, i.e. y_t = 0.5 y_{t-1} + \varepsilon_t. To this
+data an arima model of order (2, 0, 0) is fitted.
+
+In the example, two separate forecasts, each three steps ahead are explained.
+To set the starting points of the two forecasts, `explain_idx` is set to 499:500.
+This means that one forecast of t = 500:502 and t = 501:503 will be explained.
+In other words, explain_idx tells `shapr` at which points in time data was
+available up until, when making the forecast to explain.
+
+In the same way, `train_idx` denotes the points in time which the different
+features of the model can be replaced by. Note that if a model requires two
+lags, the smalles value of `train_idx` must also be 2, because at time t = 1
+there was only a single observation available.
+
+Since the data is stationary, the mean of the data is used as prediction zero,
+this can however be chosen differently depending on the data and application.
+
+For a multivariate model such as a VAR, it may be of more interest to explain
+the impact of each variable, rather than each lag of each variable. This can be
+done by setting `group_lags = TRUE`.
+
 ```{r}
 
 # Simulate time series data with AR(1)-structure.
@@ -584,18 +606,17 @@ set.seed(1)
 data_ts <- data.frame(Y = arima.sim(list(order=c(1,0,0), ar=.5), n=500))
 data_ts <- data.table::as.data.table(data_ts)
 
-# Creating an AR(2) predictive model.
-ar2_model <- ar(data_ts, order = 2)
+# Fit an ARIMA(2, 0, 0) model.
+arima_model <- arima(data_ts, order = c(2, 0, 0))
 
-# Setting prediction zero as the mean of the data for each forecast point.
+# Set prediction zero as the mean of the data for each forecast point.
 p0_ar <- rep(mean(data_ts$Y), 3)
 
-# We set....
+# Explain forecasts from points t = 499 and t = 500.
 explain_idx <- 499:500
 
-# Explain two forecasts, starting at T = 499 and T 500.
 explanation_forecast <- explain_forecast(
-        model = ar2_model,
+        model = arima_model,
         y = data_ts,
         train_idx = 2:498,
         explain_idx = 499:500,
