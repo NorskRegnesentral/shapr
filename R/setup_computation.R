@@ -21,6 +21,116 @@ setup_computation <- function(internal, model, predict_model) {
   return(internal)
 }
 
+#' @keywords internal
+shapley_setup_forecast <- function(internal) {
+  exact <- internal$parameters$exact
+  n_features0 <- internal$parameters$n_features
+  n_combinations <- internal$parameters$n_combinations
+  is_groupwise <- internal$parameters$is_groupwise
+  group_num <- internal$objects$group_num
+  horizon <- internal$parameters$horizon
+  feature_names <- internal$parameters$feature_names
+
+  X_list <- W_list <- S_list <- list()
+
+  # Find columns/features to be included in each of the different horizons
+  col_del_list <- list()
+  col_del_list[[1]] <- numeric()
+  if(horizon>1){
+    k <- 2
+    for(i in rev(seq_len(horizon)[-1])){
+      col_del_list[[k]] <- c(unlist(col_del_list[[k-1]]),grep(paste0(".F",i),feature_names))
+      k <- k + 1
+    }
+  }
+
+  cols_per_horizon <- lapply(rev(col_del_list),function(x) if(length(x)>0) feature_names[-x] else feature_names )
+
+  horizon_features <- lapply(cols_per_horizon,function(x) which(internal$parameters$feature_names %in% x))
+
+  # Apply feature_combination, weigth_matrix and feature_matrix_cpp to each of the different horizons
+  for(i in seq_along(horizon_features)){
+    this_featcomb <- horizon_features[[i]]
+    n_this_featcomb <- length(this_featcomb)
+
+    this_group_num <- lapply(group_num,function(x) x[x%in%this_featcomb])
+
+    X_list[[i]] <- feature_combinations(
+      m = n_this_featcomb,
+      exact = exact,
+      n_combinations = n_combinations,
+      weight_zero_m = 10^6,
+      group_num = this_group_num
+    )
+
+    W_list[[i]] <- weight_matrix(
+      X = X_list[[i]],
+      normalize_W_weights = TRUE,
+      is_groupwise = is_groupwise
+    )
+
+    S_list[[i]] <- feature_matrix_cpp(
+      features = X_list[[i]][["features"]],
+      m = n_this_featcomb
+    )
+  }
+
+  # Merge the feature combination data.table to single one to use for computing conditional expectations later on
+  X <- rbindlist(X_list,idcol = "horizon")
+  X[,N:=NA]
+  X[,shapley_weight:=NA]
+  setorderv(X,c("n_features","horizon"),order=c(1,-1))
+  X[,horizon_id_combination:=id_combination]
+  X[,id_combination:=0]
+  X[!duplicated(features),id_combination:=.I]
+  X[,tmp_features:=as.character(features)]
+  X[,id_combination:=max(id_combination),by=tmp_features]
+  X[,tmp_features:=NULL]
+
+  # Extracts a data.table allowing mapping from X to X_list/W_list to be used in the compute_shapley function
+  id_combination_mapper_dt <- X[,.(horizon,horizon_id_combination,id_combination)]
+
+  X[,horizon:=NULL]
+  X[,horizon_id_combination:=NULL]
+  setorder(X,n_features)
+  X <- X[!duplicated(id_combination)]
+
+  W <- NULL # Included for consistency. Necessary weights are in W_list instead
+
+  ## Get feature matrix ---------
+  S <- feature_matrix_cpp(
+    features = X[["features"]],
+    m = n_features0
+  )
+
+
+  #### Updating parameters ####
+
+  # Updating parameters$exact as done in feature_combinations
+  if (!exact && n_combinations > 2^n_features0) {
+    internal$parameters$exact <- TRUE # Note that this is exact only if all horizons use the exact method.
+  }
+
+  internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used.
+
+  # This will be obsolete later
+  internal$parameters$group_num <- NULL # TODO: Checking whether I could just do this processing where needed
+  # instead of storing it
+
+  internal$objects$X <- X
+  internal$objects$W <- W
+  internal$objects$S <- S
+  internal$objects$S_batch <- create_S_batch_new(internal)
+
+  internal$objects$id_combination_mapper_dt <- id_combination_mapper_dt
+  internal$objects$cols_per_horizon <- cols_per_horizon
+  internal$objects$W_list <- W_list
+  internal$objects$X_list <- X_list
+
+
+  return(internal)
+}
+
 
 #' @keywords internal
 shapley_setup <- function(internal) {
@@ -31,113 +141,26 @@ shapley_setup <- function(internal) {
 
   group_num <- internal$objects$group_num
 
-  X <- internal$objects$X
+  X <- feature_combinations(
+    m = n_features0,
+    exact = exact,
+    n_combinations = n_combinations,
+    weight_zero_m = 10^6,
+    group_num = group_num
+  )
 
-  # Get all combinations ----------------
+  # Get weighted matrix ----------------
+  W <- weight_matrix(
+    X = X,
+    normalize_W_weights = TRUE,
+    is_groupwise = is_groupwise
+  )
 
-  #TODO: Need to handle grouping later (correcting group_num accordingly)
-  # TODO: Check that things works with horizon = 1
-  if(internal$parameters$type == "forecast"){
-    horizon <- internal$parameters$horizon
-    feature_names <- internal$parameters$feature_names
-    X_list <- W_list <- S_list <- list()
-
-    col_del_list <- list()
-    col_del_list[[1]] <- numeric()
-    if(horizon>1){
-      k <- 2
-      for(i in rev(seq_len(horizon)[-1])){
-        col_del_list[[k]] <- c(unlist(col_del_list[[k-1]]),grep(paste0(".F",i),feature_names))
-        k <- k + 1
-      }
-    }
-
-    cols_per_horizon <- lapply(rev(col_del_list),function(x) if(length(x)>0) feature_names[-x] else feature_names )
-
-    horizon_features <- lapply(cols_per_horizon,function(x) which(internal$parameters$feature_names %in% x))
-
-    for(i in seq_along(horizon_features)){
-      this_featcomb <- horizon_features[[i]]
-      n_this_featcomb <- length(this_featcomb)
-
-      this_group_num <- lapply(group_num,function(x) x[x%in%this_featcomb])
-
-      X_list[[i]] <- feature_combinations(
-        m = n_this_featcomb,
-        exact = exact,
-        n_combinations = n_combinations,
-        weight_zero_m = 10^6,
-        group_num = this_group_num
-      )
-
-      W_list[[i]] <- weight_matrix(
-        X = X_list[[i]],
-        normalize_W_weights = TRUE,
-        is_groupwise = is_groupwise
-      )
-
-      S_list[[i]] <- feature_matrix_cpp(
-        features = X_list[[i]][["features"]],
-        m = n_this_featcomb
-      )
-    }
-
-
-    X <- rbindlist(X_list,idcol = "horizon")
-    X[,N:=NA]
-    X[,shapley_weight:=NA]
-    setorderv(X,c("n_features","horizon"),order=c(1,-1))
-    X[,horizon_id_combination:=id_combination]
-    X[,id_combination:=0]
-    X[!duplicated(features),id_combination:=.I]
-    X[,tmp_features:=as.character(features)]
-    X[,id_combination:=max(id_combination),by=tmp_features]
-    X[,tmp_features:=NULL]
-    id_combination_mapper_dt <- X[,.(horizon,horizon_id_combination,id_combination)]
-
-    X[,horizon:=NULL]
-    X[,horizon_id_combination:=NULL]
-    setorder(X,n_features)
-    X <- X[!duplicated(id_combination)]
-
-    W <- NULL
-
-    ## Get feature matrix ---------
-    S <- feature_matrix_cpp(
-      features = X[["features"]],
-      m = n_features0
-    )
-
-    internal$objects$id_combination_mapper_dt <- id_combination_mapper_dt
-    internal$objects$cols_per_horizon <- cols_per_horizon
-    internal$objects$W_list <- W_list
-    internal$objects$X_list <- X_list
-
-
-  } else {
-
-    X <- feature_combinations(
-      m = n_features0,
-      exact = exact,
-      n_combinations = n_combinations,
-      weight_zero_m = 10^6,
-      group_num = group_num
-    )
-
-    # Get weighted matrix ----------------
-    W <- weight_matrix(
-      X = X,
-      normalize_W_weights = TRUE,
-      is_groupwise = is_groupwise
-    )
-
-    ## Get feature matrix ---------
-    S <- feature_matrix_cpp(
-      features = X[["features"]],
-      m = n_features0
-    )
-
-  }
+  ## Get feature matrix ---------
+  S <- feature_matrix_cpp(
+    features = X[["features"]],
+    m = n_features0
+  )
 
   #### Updating parameters ####
 

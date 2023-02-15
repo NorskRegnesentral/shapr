@@ -155,17 +155,14 @@ compute_shapley_new <- function(internal, dt_vS) {
       } else {
         names(kshap_list[[i]]) <- c("none",shap_names)
       }
-
     }
-    dt_kshap <- rbindlist(kshap_list,fill=TRUE)
+
+    dt_kshap <- cbind(internal$parameters$output_labels,rbindlist(kshap_list,fill=TRUE))
+
   } else {
     kshap <- t(W %*% as.matrix(dt_vS[, -"id_combination"]))
     dt_kshap <- data.table::as.data.table(kshap)
     colnames(dt_kshap) <- c("none", shap_names)
-  }
-
-  if (internal$parameters$type == "forecast") {
-    dt_kshap <- cbind(internal$parameters$output_labels, dt_kshap)
   }
 
   return(dt_kshap)
