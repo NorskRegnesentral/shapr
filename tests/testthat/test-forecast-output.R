@@ -72,7 +72,7 @@ test_that("ARIMA gives the same output for h = 1 when total horizon = 1 and 2", 
                          prediction_zero = p0_ar[1:3],
                          group_lags = FALSE,
                          n_batches = 1,
-                         timing = FALSE
+                         timing = FALSE,n_combinations=50
   )
 
 
@@ -89,8 +89,8 @@ test_that("ARIMA gives the same output for h = 1 when total horizon = 1 and 2", 
     prediction_zero = p0_ar[1:2],
     group_lags = FALSE,
     n_batches = 1,
-    timing = FALSE
-    )
+    timing = FALSE,n_combinations=50
+  )
 
   set.seed(123)
   h1 <- explain_forecast(model = model_arima_temp,
@@ -105,7 +105,8 @@ test_that("ARIMA gives the same output for h = 1 when total horizon = 1 and 2", 
     prediction_zero = p0_ar[1],
     group_lags = FALSE,
     n_batches = 1,
-    timing = FALSE)
+    timing = FALSE,n_combinations=50
+  )
 
   cols_horizon1 <- h2$internal$objects$cols_per_horizon[[1]]
   expect_equal(h2$shapley_values[horizon==1, ..cols_horizon1],
