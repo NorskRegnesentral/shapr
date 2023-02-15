@@ -149,7 +149,13 @@ compute_shapley_new <- function(internal, dt_vS) {
 
       kshap0 <- t(W0 %*% as.matrix(dt_vS0[,..these_vS0_cols]))
       kshap_list[[i]] <- data.table::as.data.table(kshap0)
-      names(kshap_list[[i]]) <- c("none",cols_per_horizon[[i]])
+
+      if(!is_groupwise){
+        names(kshap_list[[i]]) <- c("none",cols_per_horizon[[i]])
+      } else {
+        names(kshap_list[[i]]) <- c("none",shap_names)
+      }
+
     }
     dt_kshap <- rbindlist(kshap_list,fill=TRUE)
   } else {

@@ -54,18 +54,20 @@ shapley_setup <- function(internal) {
 
     cols_per_horizon <- lapply(rev(col_del_list),function(x) if(length(x)>0) feature_names[-x] else feature_names )
 
-    features0 <- lapply(cols_per_horizon,function(x) which(internal$parameters$feature_names %in% x))
+    horizon_features <- lapply(cols_per_horizon,function(x) which(internal$parameters$feature_names %in% x))
 
-    for(i in seq_along(features0)){
-      this_featcomb <- features0[[i]]
+    for(i in seq_along(horizon_features)){
+      this_featcomb <- horizon_features[[i]]
       n_this_featcomb <- length(this_featcomb)
+
+      this_group_num <- lapply(group_num,function(x) x[x%in%this_featcomb])
 
       X_list[[i]] <- feature_combinations(
         m = n_this_featcomb,
         exact = exact,
         n_combinations = n_combinations,
         weight_zero_m = 10^6,
-        group_num = group_num
+        group_num = this_group_num
       )
 
       W_list[[i]] <- weight_matrix(
@@ -88,7 +90,9 @@ shapley_setup <- function(internal) {
     X[,horizon_id_combination:=id_combination]
     X[,id_combination:=0]
     X[!duplicated(features),id_combination:=.I]
-    X[,id_combination:=max(id_combination),by=as.character(features)]
+    X[,tmp_features:=as.character(features)]
+    X[,id_combination:=max(id_combination),by=tmp_features]
+    X[,tmp_features:=NULL]
     id_combination_mapper_dt <- X[,.(horizon,horizon_id_combination,id_combination)]
 
     X[,horizon:=NULL]
