@@ -23,9 +23,13 @@ get_data_forecast(
 
 \item{explain_idx}{The observations indices in data to explain.}
 
-\item{horizon}{The forecast horizon to explain.}
+\item{explain_y_lags}{Numeric vector
+Indicates the number of lags of y to include in the explanation.}
 
-\item{lags}{A list containing two numeric vectors, data and reg, denoting the lag order for each variable used in the model.}
+\item{explain_xreg_lags}{Numeric vector
+Indicates the number of lags of xreg to include in the explanation.}
+
+\item{horizon}{The forecast horizon to explain.}
 }
 \value{
 A list containing

@@ -82,7 +82,7 @@ shapley_setup_forecast <- function(internal) {
   X <- rbindlist(X_list,idcol = "horizon")
   X[,N:=NA]
   X[,shapley_weight:=NA]
-  setorderv(X,c("n_features","horizon"),order=c(1,-1))
+  data.table::setorderv(X,c("n_features","horizon"),order=c(1,-1))
   X[,horizon_id_combination:=id_combination]
   X[,id_combination:=0]
   X[!duplicated(features),id_combination:=.I]
@@ -95,7 +95,7 @@ shapley_setup_forecast <- function(internal) {
 
   X[,horizon:=NULL]
   X[,horizon_id_combination:=NULL]
-  setorder(X,n_features)
+  data.table::setorder(X,n_features)
   X <- X[!duplicated(id_combination)]
 
   W <- NULL # Included for consistency. Necessary weights are in W_list instead

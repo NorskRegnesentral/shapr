@@ -144,10 +144,10 @@ compute_shapley_new <- function(internal, dt_vS) {
       W0 <- W_list[[i]]
 
       dt_vS0 <- merge(dt_vS,id_combination_mapper_dt[horizon==i],by="id_combination",all.y = T)
-      setorder(dt_vS0,horizon_id_combination)
+      data.table::setorder(dt_vS0,horizon_id_combination)
       these_vS0_cols <- grep(paste0("p_hat",i),names(dt_vS0))
 
-      kshap0 <- t(W0 %*% as.matrix(dt_vS0[,..these_vS0_cols]))
+      kshap0 <- t(W0 %*% as.matrix(dt_vS0[, these_vS0_cols, with = FALSE]))
       kshap_list[[i]] <- data.table::as.data.table(kshap0)
 
       if(!is_groupwise){

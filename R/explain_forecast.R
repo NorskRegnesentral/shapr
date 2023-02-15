@@ -185,7 +185,10 @@ explain_forecast <- function(model,
 #' @param xreg A matrix containing exogenous regressors for the model. One variable per column, one observation per row. Should have nrow(data) + horizon rows.
 #' @param train_idx The observations indices in data to use as training examples.
 #' @param explain_idx The observations indices in data to explain.
-#' @param lags A list containing two numeric vectors, data and reg, denoting the lag order for each variable used in the model.
+#' @param explain_y_lags Numeric vector
+#' Indicates the number of lags of y to include in the explanation.
+#' @param explain_xreg_lags Numeric vector
+#' Indicates the number of lags of xreg to include in the explanation.
 #' @param horizon The forecast horizon to explain.
 #'
 #' @return A list containing
