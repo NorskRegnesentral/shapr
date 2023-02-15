@@ -7,11 +7,14 @@
 #' @export
 setup_computation <- function(internal, model, predict_model) {
   # model and predict_model are only needed for type AICc of approach empirical, otherwise ignored
+  type <- internal$parameters$type
 
   # setup the Shapley framework
-  internal <- shapley_setup(internal)
-
-
+  if(type=="forecast"){
+    internal <- shapley_setup_forecast(internal)
+  } else {
+    internal <- shapley_setup(internal)
+  }
 
   # Setup for approach
   internal <- setup_approach(internal, model = model, predict_model = predict_model)
