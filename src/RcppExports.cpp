@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // hat_matrix_cpp
 arma::mat hat_matrix_cpp(arma::mat X, arma::mat mcov, bool S_scale_dist, double h);
 RcppExport SEXP _shapr_hat_matrix_cpp(SEXP XSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP, SEXP hSEXP) {

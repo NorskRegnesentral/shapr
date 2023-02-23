@@ -1,4 +1,9 @@
 
+# shapr 0.2.1
+
+* Patch to fix warning from development version of data.table due to the use of nomatch argument in merge()
+
+
 # shapr 0.2.0
 
 * Minor CRAN release

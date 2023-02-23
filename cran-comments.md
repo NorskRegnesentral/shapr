@@ -1,9 +1,8 @@
 
-# Minor release, shapr 0.2.0
+# Patch release, shapr 0.2.1
 
-* Adds the ctree approach from new paper
-* Simplified supported for custom models
-* Adds comprehensive check suite for feature consistency
+* fix warning from development version of data.table due to the use of nomatch argument in merge()
+
 
 ## Test environments
 
