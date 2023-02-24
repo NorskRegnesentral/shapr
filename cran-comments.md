@@ -6,12 +6,16 @@
 
 ## Test environments
 
-* GitHub Actions (windows-latest): R 4.0
-* GitHub Actions (ubuntu-16.04): R 4.0, 3.6, 3.5
-* GitHub Actions (macOS-latest): R-release, 4.0
-* win-builder (x86_64-w64-mingw32): R 4.0, 3.6, R-devel
-* local Ubuntu 18.04: R 3.6
-* local Windows 10: R 4.0
+### With data.table from github master is installed, data.table::update_dev_pkg()
+
+* local Ubuntu 20.04: R 4.1
+* local Windows 10: R 4.2
+
+### With cran version of data.table:
+
+* GitHub Actions (ubuntu-16.04), R-version: devel, release, oldrel-1, oldrel-2
+* GitHub Actions (windows-latest), R-version: release
+* GitHub Actions (macOS-latest), R-version: release
 * R-hub (windows-x86_64-devel): R-devel
 * R-hub (macos-highsierra-release-cran): R-release
 
@@ -20,7 +24,7 @@
 
 ## R CMD check results
 
-There were no ERRORs or WARNINGs.
+There were no ERRORs, WARNINGs or NOTES
 
 There was 2 NOTES 
 

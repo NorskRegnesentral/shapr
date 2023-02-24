@@ -1,6 +1,6 @@
 context("test-shapley.R")
 
-RNGversion(vstr = "3.5.0")
+#RNGversion(vstr = "3.5.0")
 
 test_that("Basic test functions in shapley.R", {
 
