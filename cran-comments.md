@@ -24,16 +24,9 @@
 
 There were no ERRORs, WARNINGs or NOTES
 
-There was 6 NOTES 
+There was 5 NOTES 
 
-### NOTE 1 (all R-devel instances):
-
-* checking C++ specification ... NOTE
-  Specified C++11: please drop specification unless essential
-
-> I believe this is something specific to R-devel. Nothing was changed in the C++ code, and seems like a common note these days.
-
-### NOTE 2 (on GitHub action, ubuntu-latest):
+### NOTE 1 (on GitHub action, ubuntu-latest):
 
 * checking installed package size ... NOTE
   installed size is  5.1Mb
@@ -42,7 +35,7 @@ There was 6 NOTES
 
 > Nothing has changed since the last submission.
 
-### NOTE 3 (on R-hub (Fedora Linux)):
+### NOTE 2 (on R-hub (Fedora Linux)):
 
 * checking HTML version of manual ... NOTE
 Skipping checking HTML validation: no command 'tidy' found
@@ -50,7 +43,7 @@ Skipping checking math rendering: package 'V8' unavailable
 
 > Missing packages on R-hubs Fedora Linux platform.
 
-### NOTE 4 (on R-hub (Fedora Linux)):
+### NOTE 3 (on R-hub (Fedora Linux)):
 
 * checking examples ... [11s/50s] NOTE
 Examples with CPU (user + system) or elapsed time > 5s
@@ -60,7 +53,7 @@ create_ctree 2.160  0.103  11.701
 
 > Nothing has changed since the last submission. Probably slow CPU speed due to heavy load on R-hub.
 
-### NOTE 5 (on R-hub (Fedora Linux)):
+### NOTE 4 (on R-hub (Fedora Linux)):
 
 *Found the following (possibly) invalid URLs:
   URL: https://opensource.org/license/mit/
@@ -70,7 +63,7 @@ create_ctree 2.160  0.103  11.701
 
 > I believe this is a false positive. Running 'urlchecker::url_check()' locally shows all URLs are correct.
 
-### NOTE 6 (on R-hub (Windows Server 2022)):
+### NOTE 5 (on R-hub (Windows Server 2022)):
 
 * checking for detritus in the temp directory ... NOTE
 Found the following files/directories:
