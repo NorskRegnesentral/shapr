@@ -1,7 +1,8 @@
 
 # shapr 0.2.1
 
-* Patch to fix warning from development version of data.table due to the use of nomatch argument in merge()
+* Patch to fix warning from development version of data.table due to the use of nomatch argument in merge(),
+as requested from [data.table developers](https://github.com/NorskRegnesentral/shapr/issues/322).
 
 
 # shapr 0.2.0

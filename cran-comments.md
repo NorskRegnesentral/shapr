@@ -6,57 +6,78 @@
 
 ## Test environments
 
-### With data.table from github master is installed, data.table::update_dev_pkg()
+### With data.table from github master installed, data.table::update_dev_pkg()
 
 * local Ubuntu 20.04: R 4.1
 * local Windows 10: R 4.2
 
 ### With cran version of data.table:
 
-* GitHub Actions (ubuntu-16.04), R-version: devel, release, oldrel-1, oldrel-2
+* GitHub Actions (ubuntu-latest), R-version: devel, release, oldrel-1, oldrel-2
 * GitHub Actions (windows-latest), R-version: release
 * GitHub Actions (macOS-latest), R-version: release
-* R-hub (windows-x86_64-devel): R-devel
-* R-hub (macos-highsierra-release-cran): R-release
-
-* local Ubuntu 18.04: R 3.6 (without packages in Suggests): 
-```devtools::check(vignettes = FALSE, env_vars=c(`_R_CHECK_DEPENDS_ONLY_` = "true"))```
+* win-builder, R-version: devel, release
+* R-hub (Fedora Linux): R-version: devel
+* R-hub (Windows server 2022): R-version: devel
 
 ## R CMD check results
 
 There were no ERRORs, WARNINGs or NOTES
 
-There was 2 NOTES 
+There was 6 NOTES 
 
-*NOTE 1 (on local Windows 10: R 4.0):
+### NOTE 1 (all R-devel instances):
 
-  Note: information on .o files for i386 is not available
-  Note: information on .o files for x64 is not available
-  File 'C:/Users/jullum/Dropbox/Local_work/Git/shapr.Rcheck/shapr/libs/i386/shapr.dll':
-    Found '_exit', possibly from '_exit' (C)
-    Found 'abort', possibly from 'abort' (C), 'runtime' (Fortran)
-    Found 'exit', possibly from 'exit' (C), 'stop' (Fortran)
-    Found 'printf', possibly from 'printf' (C)
-  File 'C:/Users/jullum/Dropbox/Local_work/Git/shapr.Rcheck/shapr/libs/x64/shapr.dll':
-    Found '_exit', possibly from '_exit' (C)
-    Found 'abort', possibly from 'abort' (C), 'runtime' (Fortran)
-    Found 'exit', possibly from 'exit' (C), 'stop' (Fortran)
-    Found 'printf', possibly from 'printf' (C)
-  
-  Compiled code should not call entry points which might terminate R nor
-  write to stdout/stderr instead of to the console, nor use Fortran I/O
-  nor system RNGs. The detected symbols are linked into the code but
-  might come from libraries and not actually be called.
-  
-  See 'Writing portable packages' in the 'Writing R Extensions' manual.
+* checking C++ specification ... NOTE
+  Specified C++11: please drop specification unless essential
 
-> I believe this is a false-positive ref https://stackoverflow.com/questions/64402688/information-on-o-files-for-x64-is-not-available-note-on-r-package-checks-using
+> I believe this is something specific to R-devel. Nothing was changed in the C++ code, and seems like a common note these days.
 
-*NOTE 2 (on all winbuilder + R-hub servers)
+### NOTE 2 (on GitHub action, ubuntu-latest):
 
-Days since last update: 6
+* checking installed package size ... NOTE
+  installed size is  5.1Mb
+  sub-directories of 1Mb or more:
+    libs   4.1Mb
 
-> The previous release was a basic patch after the package was taken off CRAN. This is a proper release with new features.
+> Nothing has changed since the last submission.
+
+### NOTE 3 (on R-hub (Fedora Linux)):
+
+* checking HTML version of manual ... NOTE
+Skipping checking HTML validation: no command 'tidy' found
+Skipping checking math rendering: package 'V8' unavailable
+
+> Missing packages on R-hubs Fedora Linux platform.
+
+### NOTE 4 (on R-hub (Fedora Linux)):
+
+* checking examples ... [11s/50s] NOTE
+Examples with CPU (user + system) or elapsed time > 5s
+              user system elapsed
+explain      3.339  0.100  15.364
+create_ctree 2.160  0.103  11.701
+
+> Nothing has changed since the last submission. Probably slow CPU speed due to heavy load on R-hub.
+
+### NOTE 5 (on R-hub (Fedora Linux)):
+
+*Found the following (possibly) invalid URLs:
+  URL: https://opensource.org/license/mit/
+    From: README.md
+    Status: 403
+    Message: Forbidden
+
+> I believe this is a false positive. Running 'urlchecker::url_check()' locally shows all URLs are correct.
+
+### NOTE 6 (on R-hub (Windows Server 2022)):
+
+* checking for detritus in the temp directory ... NOTE
+Found the following files/directories:
+  'lastMiKTeXException'
+
+> As noted in [R-hub issue #503](https://github.com/r-hub/rhub/issues/503), this could be due to a bug/crash in MiKTeX and can likely be ignored.
 
 ## Downstream dependencies
-There are currently no downstream dependencies for this package.
+There is 1 downstream dependency (PPtreeregViz) of shapr
+I have also run R CMD check on that and it passed with errors, warnings or notes.
