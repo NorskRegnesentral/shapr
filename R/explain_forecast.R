@@ -243,6 +243,8 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
   train_idx <- train_idx - max_lag + 1
   explain_idx <- explain_idx - max_lag + 1
   return(list(
+    y = y,
+    xreg = xreg,
     group = reg_fcast$group,
     n_endo = ncol(data_lag$lagged),
     x_train = cbind(
