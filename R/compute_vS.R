@@ -65,19 +65,28 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
   horizon <- internal$parameters$horizon
   n_endo <- internal$data$n_endo
   output_size <- internal$parameters$output_size
+  explain_idx <- internal$parameters$explain_idx
+  explain_lags <- internal$parameters$explain_lags
+  y <- internal$data$y
+  xreg <- internal$data$xreg
 
   dt <- batch_prepare_vS(S = S, internal = internal) # Make it optional to store and return the dt_list
 
   pred_cols <- paste0("p_hat", seq_len(output_size))
 
-  compute_preds(dt, # Updating dt by reference
+  compute_preds(
+    dt, # Updating dt by reference
     feature_names = feature_names,
     predict_model = predict_model,
     model = model,
     pred_cols = pred_cols,
     type = type,
     horizon = horizon,
-    n_endo = n_endo
+    n_endo = n_endo,
+    explain_idx = explain_idx,
+    explain_lags = explain_lags,
+    y = y,
+    xreg = xreg
   )
   dt_vS <- compute_MCint(dt, pred_cols)
   if (!is.null(p)) {
@@ -122,15 +131,33 @@ batch_prepare_vS <- function(S, internal) {
 }
 
 #' @keywords internal
-compute_preds <- function(dt, feature_names, predict_model, model, pred_cols, type, horizon = NULL, n_endo = NULL) {
+compute_preds <- function(
+  dt,
+  feature_names,
+  predict_model,
+  model,
+  pred_cols,
+  type,
+  horizon = NULL,
+  n_endo = NULL,
+  explain_idx = NULL,
+  explain_lags = NULL,
+  y = NULL,
+  xreg = NULL
+) {
   # Predictions
 
   if (type == "forecast") {
+
     dt[, (pred_cols) := predict_model(
       x = model,
       newdata = .SD[, 1:n_endo],
       newreg = .SD[, -(1:n_endo)],
-      horizon = horizon
+      horizon = horizon,
+      explain_idx = explain_idx[id],
+      explain_lags = explain_lags,
+      y = y,
+      xreg = xreg
     ), .SDcols = feature_names]
   } else {
     dt[, (pred_cols) := predict_model(model, newdata = .SD), .SDcols = feature_names]

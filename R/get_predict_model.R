@@ -48,7 +48,11 @@ test_predict_model <- function (x_test, predict_model, model, internal) {
       x = model,
       newdata = x_test[, 1:internal$data$n_endo, drop = FALSE],
       newreg = x_test[, -(1:internal$data$n_endo), drop = FALSE],
-      horizon = internal$parameters$horizon
+      horizon = internal$parameters$horizon,
+      explain_idx = internal$parameters$explain_idx,
+      y = internal$data$y,
+      xreg = internal$data$xreg,
+      explain_lags = internal$parameters$explain_lags,
     ), error = errorfun)
   } else {
     tmp <- tryCatch(predict_model(model, x_test), error = errorfun)

@@ -1,22 +1,31 @@
 #' @rdname predict_model
 #' @export
-predict_model.Arima <- function(x, newdata, newreg, horizon, ...) {
+predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explain_lags, y, xreg, ...) {
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The stats package is required for predicting stats models")
   }
 
-  n_endo <- max(x$arma[1], x$arma[6] + x$arma[7] * x$arma[5] + 1)
   prediction <- matrix(NA, nrow(newdata), horizon)
 
+  exp_idx <- -1
   for (i in seq_len(nrow(newdata))) {
-    endo <- as.numeric(newdata[i, 1:n_endo])
-    exo <- matrix(as.numeric(newdata[i, -(1:n_endo)]), n_endo)
+    if (explain_idx[i] != exp_idx) {
+      exp_idx <- explain_idx[i]
+      y_hist <- y[seq_len(exp_idx)]
+      xreg_hist <- xreg[seq_len(exp_idx)]
+    }
 
-    if (ncol(exo) == 0) {
-      x <- forecast::Arima(y = endo, model = x)
+    y_new <- as.numeric(newdata[i, 1:explain_lags$y])
+    y_hist[seq.int(length.out = length(y_new), to = length(y_hist))] <- rev(y_new)
+
+    if (explain_lags$y == ncol(newdata)) {
+      x <- forecast::Arima(y = y_hist, model = x)
       prediction[i, ] <- predict(x, h = horizon)$pred
     } else {
-      x <- forecast::Arima(y = endo, xreg = exo, model = x)
+      xreg_new <- as.numeric(newdata[i, -(1:explain_lags$y)])
+      xreg_hist[seq.int(length.out = length(xreg_new), to = length(xreg_hist))] <- rev(xreg_new)
+
+      x <- forecast::Arima(y = y_hist, xreg = xreg_hist, model = x)
       xreg <- matrix(as.numeric(newreg[i, ]), horizon)
       prediction[i, ] <- predict(x, newxreg=xreg, h = horizon)$pred
     }

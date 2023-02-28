@@ -81,6 +81,8 @@ setup <- function(x_train,
 
     internal$parameters$output_labels <- cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
     colnames(internal$parameters$output_labels) <- c("explain_idx", "horizon")
+    internal$parameters$explain_idx <- explain_idx
+    internal$parameters$explain_lags <- list(y = explain_y_lags, xreg = explain_xreg_lags)
 
     # TODO: Consider handling this parameter update somewhere else (like in get_extra_parameters?)
     if (group_lags) {
