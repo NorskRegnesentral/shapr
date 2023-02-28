@@ -19,3 +19,4 @@ inst/compare_lundberg\.xgb\.obj
 ^pkgdown$
 [.]Rout$
 [.]out$
+^CRAN-SUBMISSION$
