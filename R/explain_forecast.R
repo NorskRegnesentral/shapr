@@ -215,12 +215,12 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
       stop("Each reg column must have a lag order set in lags$reg.")
     }
 
-    if (nrow(xreg) < nrow(y) + horizon) {
+    if (nrow(xreg) < max(c(train_idx, explain_idx)) + horizon) {
       stop("The exogenous data must have at least as many observations as the data + the forecast horizon.")
     }
     xreg <- as.matrix(xreg)
   } else {
-    xreg <- matrix(NA, nrow(y) + horizon, 0)
+    xreg <- matrix(NA, max(c(train_idx, explain_idx)) + horizon, 0)
   }
 
 
@@ -237,7 +237,7 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
   data_lag <- lag_data(data_reg, c(explain_y_lags, explain_xreg_lags))
 
   # Create a matrix and groups of the forecasted values of the exogenous data.
-  reg_fcast <- reg_forecast_setup(xreg[seq.int(to = nrow(y) + horizon, from = max_lag + 1), , drop = FALSE], horizon, data_lag$group)
+  reg_fcast <- reg_forecast_setup(xreg[seq.int(to = max(c(train_idx, explain_idx)) + horizon, from = max_lag + 1), , drop = FALSE], horizon, data_lag$group)
 
   # Select the train and explain sets from the data and exogenous forecast values.
   train_idx <- train_idx - max_lag + 1
