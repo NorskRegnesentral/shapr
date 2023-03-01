@@ -15,12 +15,13 @@ plot(y)
 dat <- data.table(y=y,xreg1=unlist(data[,2]),xreg2=unlist(data[,3]))
 
 model_arima_temp <- arima(dat$y, c(2,1,0), xreg=dat[,2:3])
+#model_arima_temp <- arima(dat$y, c(2,1,0), xreg=dat[,2])
 
 
 set.seed(123)
 exp <- explain_forecast(model = model_arima_temp,
                        y = dat$y,
-                       xreg = dat[, 2:3],
+                       xreg = dat[, 2:3],#dat[, 2:3],
                        train_idx = 10:50,
                        explain_idx = 71:72,
                        explain_y_lags = 1,
