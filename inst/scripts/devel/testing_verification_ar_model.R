@@ -15,7 +15,6 @@ plot(y)
 dat <- data.table(y=y,xreg1=unlist(data[,2]),xreg2=unlist(data[,3]))
 
 model_arima_temp <- arima(dat$y, c(2,1,0), xreg=dat[,2:3])
-#model_arima_temp <- arima(dat$y, c(2,1,0), xreg=dat[,2])
 
 
 set.seed(123)
@@ -24,11 +23,11 @@ exp <- explain_forecast(model = model_arima_temp,
                        xreg = dat[, 2:3],#dat[, 2:3],
                        train_idx = 10:50,
                        explain_idx = 71:72,
-                       explain_y_lags = 1,
-                       explain_xreg_lags = c(1,1),
-                       horizon = 1,
+                       explain_y_lags = 3,
+                       explain_xreg_lags = c(2,3),
+                       horizon = 2,
                        approach = "empirical",
-                       prediction_zero = c(0),
+                       prediction_zero = c(0,0),
                        group_lags = FALSE,
                        n_batches = 1,
                        timing = FALSE,
