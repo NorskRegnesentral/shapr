@@ -27,7 +27,7 @@ predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explai
 
       x <- forecast::Arima(y = y_hist, xreg = xreg_hist, model = x)
       xreg_pred <- matrix(as.numeric(newreg[i, ]), horizon)
-      prediction[i, ] <- predict(xreg_pred, newxreg=xreg_pred, h = horizon)$pred
+      prediction[i, ] <- predict(x, newxreg=xreg_pred, h = horizon)$pred
     }
   }
 
