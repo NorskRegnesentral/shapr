@@ -21,7 +21,17 @@ predict_model(x, newdata, ...)
 
 \method{predict_model}{ar}(x, newdata, newreg, horizon, ...)
 
-\method{predict_model}{Arima}(x, newdata, newreg, horizon, ...)
+\method{predict_model}{Arima}(
+  x,
+  newdata,
+  newreg,
+  horizon,
+  explain_idx,
+  explain_lags,
+  y,
+  xreg,
+  ...
+)
 
 \method{predict_model}{forecast_ARIMA}(x, newdata, newreg, horizon, ...)
 
