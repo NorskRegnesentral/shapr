@@ -248,12 +248,12 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
     group = reg_fcast$group,
     n_endo = ncol(data_lag$lagged),
     x_train = cbind(
-      as.data.frame(data_lag$lagged[train_idx, , drop = FALSE]),
-      as.data.frame(reg_fcast$fcast[train_idx, , drop = FALSE])
+      data.table::as.data.table(data_lag$lagged[train_idx, , drop = FALSE]),
+      data.table::as.data.table(reg_fcast$fcast[train_idx, , drop = FALSE])
     ),
     x_explain = cbind(
-      as.data.frame(data_lag$lagged[explain_idx, , drop = FALSE]),
-      as.data.frame(reg_fcast$fcast[explain_idx, , drop = FALSE])
+      data.table::as.data.table(data_lag$lagged[explain_idx, , drop = FALSE]),
+      data.table::as.data.table(reg_fcast$fcast[explain_idx, , drop = FALSE])
     )
   ))
 }
