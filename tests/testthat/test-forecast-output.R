@@ -37,6 +37,24 @@ test_that("forecast_output_arima_numeric", {
     )
 })
 
+test_that("forecast_output_arima_numeric_no_xreg", {
+    expect_snapshot_rds(
+      explain_forecast(model = model_arima_temp_noxreg,
+                       y = data[1:150, "Temp"],
+                       train_idx = 2:148,
+                       explain_idx = 149:150,
+                       explain_y_lags = 2,
+                       horizon = 3,
+                       approach = "empirical",
+                       prediction_zero = p0_ar,
+                       group_lags = FALSE,
+                       n_batches = 1,
+                       timing = FALSE
+      ),
+      "forecast_output_arima_numeric"
+    )
+})
+
 test_that("forecast_output_forecast_ARIMA_group_numeric", {
   expect_snapshot_rds(
     explain_forecast(model = model_forecast_ARIMA_temp,

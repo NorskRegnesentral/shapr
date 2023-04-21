@@ -17,13 +17,13 @@ predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explai
     if (explain_idx[i] != exp_idx) {
       exp_idx <- explain_idx[i]
       y_hist <- y[seq_len(exp_idx)]
-      xreg_hist <- xreg[seq_len(exp_idx),,drop=FALSE]
+      xreg_hist <- xreg[seq_len(exp_idx), , drop=FALSE]
     }
 
     y_new <- as.numeric(newdata[i, newdata_y_cols])
     y_hist[seq.int(length.out = length(y_new), to = length(y_hist))] <- rev(y_new)
 
-    if (explain_lags$y == ncol(newdata)) {
+    if (ncol(xreg) == 0) {
       x <- forecast::Arima(y = y_hist, model = x)
       prediction[i, ] <- predict(x, h = horizon)$pred
     } else {
