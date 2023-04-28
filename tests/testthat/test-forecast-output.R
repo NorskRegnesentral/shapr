@@ -51,7 +51,7 @@ test_that("forecast_output_arima_numeric_no_xreg", {
                        n_batches = 1,
                        timing = FALSE
       ),
-      "forecast_output_arima_numeric"
+      "forecast_output_arima_numeric_no_xreg"
     )
 })
 
