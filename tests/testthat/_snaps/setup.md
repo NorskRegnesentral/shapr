@@ -202,7 +202,7 @@
         approach = "independence", prediction_zero = p0_non_numeric_1, n_batches = 1,
         timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must match the output size of the model (1).
+      `prediction_zero` (bla) must be numeric and match the output size of the model (1).
 
 ---
 
@@ -212,7 +212,7 @@
         approach = "independence", prediction_zero = p0_non_numeric_2, n_batches = 1,
         timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must match the output size of the model (1).
+      `prediction_zero` () must be numeric and match the output size of the model (1).
 
 ---
 
@@ -222,7 +222,7 @@
         approach = "independence", prediction_zero = p0_too_long, n_batches = 1,
         timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must match the output size of the model (1).
+      `prediction_zero` (1,2) must be numeric and match the output size of the model (1).
 
 ---
 
@@ -231,7 +231,7 @@
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         approach = "independence", prediction_zero = p0_is_NA, n_batches = 1, timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must match the output size of the model (1).
+      `prediction_zero` (NA) must be numeric and match the output size of the model (1).
 
 # erroneous input: `n_combinations`
 

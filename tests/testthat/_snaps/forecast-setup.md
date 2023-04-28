@@ -24,7 +24,7 @@
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
       n_batches = 1)
     Error <simpleError>
-      Each data column must have a lag order set in lags$data.
+      y should be a matrix or data.frame/data.table with a single column, or a numeric vector.
 
 ---
 
@@ -35,7 +35,9 @@
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
       n_batches = 1)
     Error <simpleError>
-      Each reg column must have a lag order set in lags$reg.
+      `xreg` has 2 columns (Temp,Wind).
+      `explain_xreg_lags` has length 1.
+      These two should match.
 
 ---
 
@@ -47,7 +49,7 @@
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
       n_batches = 1)
     Error <simpleError>
-      attempt to select less than one element in get1index
+      `xreg` misses column names.
 
 # erroneous input: `model`
 
@@ -67,7 +69,7 @@
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_wrong_length,
       n_batches = 1)
     Error <simpleError>
-      `prediction_zero` must match the output size of the model (3).
+      `prediction_zero` (77.8823529411765,77.8823529411765) must be numeric and match the output size of the model (3).
 
 # erroneous input: `n_combinations`
 
@@ -86,7 +88,8 @@
       Consistency checks between model and data is therefore disabled.
       
     Error <simpleError>
-      `n_combinations` has to be greater than the number of features.
+      `n_combinations` (6) has to be greater than the number of components to decompose the forecast onto:
+      `horizon` (3) + `explain_y_lags` (2) + sum(`explain_xreg_lags`) (2).
 
 ---
 
@@ -105,5 +108,6 @@
       Consistency checks between model and data is therefore disabled.
       
     Error <simpleError>
-      `n_combinations` has to be greater than the number of groups.
+      `n_combinations` (2) has to be greater than the number of components to decompose the forecast onto:
+      ncol(`xreg`) (1) + 1
 
