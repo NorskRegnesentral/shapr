@@ -216,7 +216,7 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
     colnames(y) <- "Y" # Currently we only allow a single endogenous variable.
   } else {
     y <- as.matrix(y)
-  }
+    }
 
   if (!is.null(xreg)) {
     xreg <- as.matrix(xreg)
