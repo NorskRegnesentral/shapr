@@ -61,6 +61,10 @@ setup <- function(x_train,
     keep_samp_for_vS = keep_samp_for_vS,
     type = type,
     horizon = horizon,
+    train_idx = train_idx,
+    explain_idx = explain_idx,
+    explain_y_lags = explain_y_lags,
+    explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
     timing = timing,
     is_python = is_python,
@@ -165,13 +169,39 @@ check_n_combinations <- function(internal) {
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
 
-  if (!is_groupwise) {
-    if (n_combinations <= n_features) {
-      stop("`n_combinations` has to be greater than the number of features.")
+  type <- internal$parameters$type
+
+  if(type=="forecast"){
+
+    horizon <- internal$parameters$horizon
+    explain_y_lags <- internal$parameters$explain_lags$y
+    explain_xreg_lags <- internal$parameters$explain_lags$xreg
+    xreg <- internal$data$xreg
+
+    if (!is_groupwise) {
+      if (n_combinations <= n_features) {
+        stop(paste0("`n_combinations` (",n_combinations,") has to be greater than the number of components to decompose the forecast onto:\n",
+             "`horizon` (",horizon,") + `explain_y_lags` (",explain_y_lags,") + sum(`explain_xreg_lags`) (",sum(explain_xreg_lags),").\n"
+             )
+        )
+      }
+    } else {
+      if (n_combinations <= n_groups) {
+        stop(paste0("`n_combinations` (",n_combinations,") has to be greater than the number of components to decompose the forecast onto:\n",
+                    "ncol(`xreg`) (",ncol(`xreg`),") + 1"
+        )
+        )
+      }
     }
   } else {
-    if (n_combinations <= n_groups) {
-      stop("`n_combinations` has to be greater than the number of groups.")
+    if (!is_groupwise) {
+      if (n_combinations <= n_features) {
+        stop("`n_combinations` has to be greater than the number of features.")
+      }
+    } else {
+      if (n_combinations <= n_groups) {
+        stop("`n_combinations` has to be greater than the number of groups.")
+      }
     }
   }
 }
@@ -349,7 +379,8 @@ get_extra_parameters <- function(internal){
 
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, type, horizon, group_lags = NULL, timing, is_python, ...) {
+                           n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
+                           explain_xreg_lags, group_lags = NULL, timing, is_python, ...) {
 
   # Check input type for approach
 
@@ -359,7 +390,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   if (!all((is.numeric(prediction_zero)) &&
       length(prediction_zero) == output_size &&
       all(!is.na(prediction_zero)))) {
-    stop(paste0("`prediction_zero` must match the output size of the model (",output_size,")."))
+    stop(paste0("`prediction_zero` (",paste0(prediction_zero,collapse=","),") must be numeric and match the output size of the model (",output_size,")."))
   }
   # n_combinations
   if (!is.null(n_combinations) &&
@@ -412,13 +443,32 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     stop("`type` must be either `normal` or `forecast`.")
   }
 
-  # horizon (only used for type "forecast")
-  if (type == "forecast" && horizon != output_size) {
-    stop(paste0("`horizon` must match the output size of the model (",output_size,")."))
-  }
+  # parameters only used for type "forecast"
+  if (type == "forecast"){
+    if(horizon != output_size) {
+      stop(paste0("`horizon` must match the output size of the model (",output_size,")."))
+    }
 
-  if(type == "forecast" && !(is.logical(group_lags) && length(group_lags)==1)){
-    stop("`group_lags` must be a single logical.")
+    if(!(all(is.wholenumber(train_idx) && train_idx>0 && is.finite(train_idx)))){
+      stop("`train_idx` must be a vector of positive finite integers.")
+    }
+
+    if(!(all(is.wholenumber(explain_idx) && explain_idx>0 && is.finite(explain_idx)))){
+      stop("`explain_idx` must be a vector of positive finite integers.")
+    }
+
+    if(!(length(explain_y_lags) && is.wholenumber(explain_y_lags) && explain_y_lags>0 && is.finite(explain_y_lags))){
+      stop("`explain_y_lags` must be single positive finite integer.")
+    }
+
+    if(!(all(is.wholenumber(explain_xreg_lags) && explain_xreg_lags>0 && is.finite(explain_xreg_lags)))){
+      stop("`explain_xreg_lags` must be a vector of positive finite integers.")
+    }
+
+    if(!(is.logical(group_lags) && length(group_lags)==1)){
+      stop("`group_lags` must be a single logical.")
+    }
+
   }
 
 
