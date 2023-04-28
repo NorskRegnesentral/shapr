@@ -211,8 +211,13 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
     stop(stop_message)
   }
 
-  y <- as.matrix(y)
-  colnames(y) <- "Y" # Currently we only allow a single endogenous variable.
+  if(is.vector(y)){
+    y <- as.matrix(y)
+    colnames(y) <- "Y" # Currently we only allow a single endogenous variable.
+  } else {
+    y <- as.matrix(y)
+  }
+
   if (!is.null(xreg)) {
     xreg <- as.matrix(xreg)
     # Check column names

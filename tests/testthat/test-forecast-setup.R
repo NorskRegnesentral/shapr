@@ -34,7 +34,7 @@ test_that("erroneous input: `x_train/x_explain`", {
 
   expect_snapshot({
     # not vector or one-column data.table/matrix
-    y_wrong_format <- data[, c("Temp","Wind")]# TODO: Change error message
+    y_wrong_format <- data[, c("Temp","Wind")]
 
     explain_forecast(model = model_arima_temp,
                      y = y_wrong_format,
@@ -52,7 +52,7 @@ test_that("erroneous input: `x_train/x_explain`", {
 
   expect_snapshot({
     # not correct dimension
-    xreg_wrong_format <- data[, c("Temp","Wind")] # TODO: Change error message
+    xreg_wrong_format <- data[, c("Temp","Wind")]
 
     explain_forecast(model = model_arima_temp,
                      y = data[1:150, "Temp"],
@@ -70,7 +70,7 @@ test_that("erroneous input: `x_train/x_explain`", {
 
   expect_snapshot({
     # missing column names x_train
-    xreg_no_column_names <- data[, "Wind"] # TODO: Change error message
+    xreg_no_column_names <- data[, "Wind"]
     names(xreg_no_column_names) <- NULL
 
     explain_forecast(model = model_arima_temp,
@@ -144,7 +144,7 @@ test_that("erroneous input: `n_combinations`", {
     explain_y_lags = 2
     explain_xreg_lags = 2
 
-    n_combinations = horizon+explain_y_lags+explain_xreg_lags-1 # TODO: Change error message to be more informative
+    n_combinations = horizon+explain_y_lags+explain_xreg_lags-1
 
     explain_forecast(model = model_arima_temp,
                      y = data[1:150, "Temp"],
@@ -169,7 +169,7 @@ test_that("erroneous input: `n_combinations`", {
     explain_y_lags = 2
     explain_xreg_lags = 2
 
-    n_combinations = 1+1 # TODO: Change error message to be more informative
+    n_combinations = 1+1
 
     explain_forecast(model = model_arima_temp,
                      y = data[1:150, "Temp"],
@@ -195,6 +195,6 @@ test_that("erroneous input: `n_combinations`", {
 # train_idx (incorrect type, incompatible indexes)
 # explain_idx (incorrect type, incompatible indexes)
 # explain_y_lags (negative number, non-integer value) Should we allow zero? YES
-# explain_y_lags (negative number, non-integer value) Should we allow zero? YES
+# explain_x_lags (negative number, non-integer value) Should we allow zero? YES
 # horizon (negative number, non-integer value) Should we allow zero? YES
 
