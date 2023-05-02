@@ -222,7 +222,7 @@
         approach = "independence", prediction_zero = p0_too_long, n_batches = 1,
         timing = FALSE)
     Error <simpleError>
-      `prediction_zero` (1,2) must be numeric and match the output size of the model (1).
+      `prediction_zero` (1, 2) must be numeric and match the output size of the model (1).
 
 ---
 

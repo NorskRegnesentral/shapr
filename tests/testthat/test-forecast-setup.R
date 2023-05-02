@@ -190,11 +190,289 @@ test_that("erroneous input: `n_combinations`", {
 })
 
 
-#### TODO: Add checks for the following input parameters here:
+test_that("erroneous input: `train_idx`", {
+  set.seed(123)
 
-# train_idx (incorrect type, incompatible indexes)
-# explain_idx (incorrect type, incompatible indexes)
-# explain_y_lags (negative number, non-integer value) Should we allow zero? YES
-# explain_x_lags (negative number, non-integer value) Should we allow zero? YES
-# horizon (negative number, non-integer value) Should we allow zero? YES
+  expect_snapshot({
+    # train_idx too short length
+    train_idx_too_short = 2
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = train_idx_too_short,
+                     explain_idx = 149:150,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = 2,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+
+  expect_snapshot({
+    # train_idx not containing integers
+    train_idx_not_integer = c(3:5)+0.1
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = train_idx_not_integer,
+                     explain_idx = 149:150,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = 2,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+  expect_snapshot({
+    # train_idx being out of range
+    train_idx_out_of_range = 1:5
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = train_idx_out_of_range,
+                     explain_idx = 149:150,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = 2,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+})
+
+test_that("erroneous input: `explain_idx`", {
+  set.seed(123)
+
+  expect_snapshot({
+    # explain_idx not containing integers
+    explain_idx_not_integer = c(3:5)+0.1
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = explain_idx_not_integer,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = 2,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+  expect_snapshot({
+    # explain_idx being out of range
+    explain_idx_out_of_range = 1:5
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = explain_idx_out_of_range,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = 2,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+})
+
+test_that("erroneous input: `explain_y_lags`", {
+  set.seed(123)
+
+  expect_snapshot({
+    # explain_y_lags not positive
+    explain_y_lags_negative = -1
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = explain_y_lags_negative,
+                     explain_xreg_lags = 2,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+  expect_snapshot({
+    # explain_y_lags not integer valued
+    explain_y_lags_not_integer = 2.1
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = explain_y_lags_not_integer,
+                     explain_xreg_lags = 2,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+  expect_snapshot({
+    # explain_y_lags more than single integer
+    explain_y_lags_more_than_one = c(1,2)
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = explain_y_lags_more_than_one,
+                     explain_xreg_lags = 2,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+
+})
+
+
+test_that("erroneous input: `explain_x_lags`", {
+  set.seed(123)
+
+  expect_snapshot({
+    # explain_xreg_lags not positive
+    explain_xreg_lags_negative = -2
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = explain_xreg_lags_negative,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+  expect_snapshot({
+    # explain_xreg_lags not integer valued
+    explain_xreg_lags_not_integer = 2.1
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = explain_xreg_lags_not_integer,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+  expect_snapshot({
+    # explain_x_lags wrong length
+    explain_x_lags_incompatible_length = c(1,2) # only 1 xreg variable defined
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = explain_x_lags_wrong_length,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+
+})
+
+test_that("erroneous input: `horizon`", {
+  set.seed(123)
+
+  expect_snapshot({
+    # horizon not positive
+   horizon_negative = -2
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = 2,
+                     horizon = horizon_negative,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+  expect_snapshot({
+    # horizon not integer valued
+    horizon_not_integer = 2.1
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = 2,
+                     horizon = horizon_not_integer,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+  expect_snapshot({
+    # horizon wrong length
+    horizon_too_long = c(1,2)  # We currently only supprt single horizon lengths # Should be expanded
+
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = 2,
+                     explain_xreg_lags = 2,
+                     horizon = horizon_too_long,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
+
+})
+
+
+
+#### TODO: Add checks for the following input parameters here:
 
