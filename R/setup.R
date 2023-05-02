@@ -386,50 +386,6 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
 
   # approach is checked more comprehensively later
 
-  # type
-  if (!(type %in% c("normal", "forecast"))) {
-    stop("`type` must be either `normal` or `forecast`.\n")
-  }
-
-  # parameters only used for type "forecast"
-  if (type == "forecast"){
-    if(!(is.wholenumber(horizon) && all(horizon>0))) {
-      stop("`horizon` must be a vector (or scalar) of positive integers.\n")
-    }
-
-    if(any(horizon != output_size)) {
-      stop(paste0("`horizon` must match the output size of the model (",paste0(output_size,collapse=", "),").\n"))
-    }
-
-    if(!(length(train_idx) >1 && is.wholenumber(train_idx) && all(train_idx>0) && all(is.finite(train_idx)))){
-      stop("`train_idx` must be a vector of positive finite integers and length > 1.\n")
-    }
-
-    if(!(is.wholenumber(explain_idx) && all(explain_idx>0) && all(is.finite(explain_idx)))){
-      stop("`explain_idx` must be a vector of positive finite integers.\n")
-    }
-
-    if(!(length(explain_y_lags)==1  && is.wholenumber(explain_y_lags) && all(explain_y_lags>0) && all(is.finite(explain_y_lags)))){
-      stop("`explain_y_lags` must be single positive finite integer.\n")
-    }
-
-    if(!(is.wholenumber(explain_xreg_lags) && all(explain_xreg_lags>0) && all(is.finite(explain_xreg_lags)))){
-      stop("`explain_xreg_lags` must be a vector of positive finite integers.\n")
-    }
-
-    if(!(is.logical(group_lags) && length(group_lags)==1)){
-      stop("`group_lags` must be a single logical.\n")
-    }
-
-  }
-
-
-  # prediction_zero
-  if (!all((is.numeric(prediction_zero)) &&
-      length(prediction_zero) == output_size &&
-      all(!is.na(prediction_zero)))) {
-    stop(paste0("`prediction_zero` (",paste0(prediction_zero,collapse=", "),") must be numeric and match the output size of the model (",paste0(output_size,collapse=", "),")."))
-  }
   # n_combinations
   if (!is.null(n_combinations) &&
      !(is.wholenumber(n_combinations) &&
@@ -473,6 +429,52 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   if(!(is.logical(keep_samp_for_vS) &&
        length(keep_samp_for_vS)==1)){
     stop("`keep_samp_for_vS` must be single logical.")
+  }
+
+  # type
+  if (!(type %in% c("normal", "forecast"))) {
+    stop("`type` must be either `normal` or `forecast`.\n")
+  }
+
+  # parameters only used for type "forecast"
+  if (type == "forecast"){
+    if(!(is.wholenumber(horizon) && all(horizon>0))) {
+      stop("`horizon` must be a vector (or scalar) of positive integers.\n")
+    }
+
+    if(any(horizon != output_size)) {
+      stop(paste0("`horizon` must match the output size of the model (",paste0(output_size,collapse=", "),").\n"))
+    }
+
+    if(!(length(train_idx) >1 && is.wholenumber(train_idx) && all(train_idx>0) && all(is.finite(train_idx)))){
+      stop("`train_idx` must be a vector of positive finite integers and length > 1.\n")
+    }
+
+    if(!(is.wholenumber(explain_idx) && all(explain_idx>0) && all(is.finite(explain_idx)))){
+      stop("`explain_idx` must be a vector of positive finite integers.\n")
+    }
+
+    if(!(length(explain_y_lags)==1  && is.wholenumber(explain_y_lags) && all(explain_y_lags>=0) && all(is.finite(explain_y_lags)))){
+      stop("`explain_y_lags` must be single positive finite integer.\n")
+    }
+
+    if(!(is.wholenumber(explain_xreg_lags) && all(explain_xreg_lags>=0) && all(is.finite(explain_xreg_lags)))){
+      stop("`explain_xreg_lags` must be a vector of positive finite integers.\n")
+    }
+
+    if(!(is.logical(group_lags) && length(group_lags)==1)){
+      stop("`group_lags` must be a single logical.\n")
+    }
+
+  }
+
+  #### Tests combining more than one parameter ####
+
+  # prediction_zero vs output_size
+  if (!all((is.numeric(prediction_zero)) &&
+           length(prediction_zero) == output_size &&
+           all(!is.na(prediction_zero)))) {
+    stop(paste0("`prediction_zero` (",paste0(prediction_zero,collapse=", "),") must be numeric and match the output size of the model (",paste0(output_size,collapse=", "),")."))
   }
 
 

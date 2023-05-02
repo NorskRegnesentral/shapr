@@ -349,6 +349,22 @@ test_that("erroneous input: `explain_y_lags`", {
   error = T)
 
 
+  expect_snapshot({
+    # explain_y_lags is zero for model without xreg
+    explain_y_lags_zero = 0
+
+    explain_forecast(model = model_arima_temp_noxreg,
+                     y = data[1:150, "Temp"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = 0,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     n_batches = 1)
+  },
+  error = T)
+
 })
 
 
@@ -473,6 +489,4 @@ test_that("erroneous input: `horizon`", {
 })
 
 
-
-#### TODO: Add checks for the following input parameters here:
 

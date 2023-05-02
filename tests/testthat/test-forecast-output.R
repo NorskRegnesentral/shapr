@@ -200,3 +200,25 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
 
 })
 
+
+test_that("forecast_output_arima_numeric_no_lags", {
+  expect_snapshot_rds(
+    explain_forecast(model = model_arima_temp,
+                     y = data[1:150, "Temp"],
+                     xreg = data[, "Wind"],
+                     train_idx = 2:148,
+                     explain_idx = 149:150,
+                     explain_y_lags = 0,
+                     explain_xreg_lags = 0,
+                     horizon = 3,
+                     approach = "independence",
+                     prediction_zero = p0_ar,
+                     group_lags = FALSE,
+                     n_batches = 1,
+                     timing = FALSE
+    ),
+    "forecast_output_arima_numeric_no_lags"
+  )
+})
+
+
