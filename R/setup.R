@@ -449,19 +449,19 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
       stop(paste0("`horizon` must match the output size of the model (",output_size,")."))
     }
 
-    if(!(all(is.wholenumber(train_idx) && train_idx>0 && is.finite(train_idx)))){
+    if(!(is.wholenumber(train_idx) && all(train_idx>0) && all(is.finite(train_idx)))){
       stop("`train_idx` must be a vector of positive finite integers.")
     }
 
-    if(!(all(is.wholenumber(explain_idx) && explain_idx>0 && is.finite(explain_idx)))){
+    if(!(is.wholenumber(explain_idx) && all(explain_idx>0) && all(is.finite(explain_idx)))){
       stop("`explain_idx` must be a vector of positive finite integers.")
     }
 
-    if(!(length(explain_y_lags) && is.wholenumber(explain_y_lags) && explain_y_lags>0 && is.finite(explain_y_lags))){
+    if(!(length(explain_y_lags) && is.wholenumber(explain_y_lags) && all(explain_y_lags>0) && all(is.finite(explain_y_lags)))){
       stop("`explain_y_lags` must be single positive finite integer.")
     }
 
-    if(!(all(is.wholenumber(explain_xreg_lags) && explain_xreg_lags>0 && is.finite(explain_xreg_lags)))){
+    if(!(is.wholenumber(explain_xreg_lags) && all(explain_xreg_lags>0) && all(is.finite(explain_xreg_lags)))){
       stop("`explain_xreg_lags` must be a vector of positive finite integers.")
     }
 

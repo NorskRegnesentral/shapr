@@ -617,7 +617,7 @@ explain_idx <- 499:500
 
 explanation_forecast <- explain_forecast(
         model = arima_model,
-        y = as.matrix(data_ts),
+        y = data_ts,
         train_idx = 2:498,
         explain_idx = 499:500,
         explain_y_lags = 2,
