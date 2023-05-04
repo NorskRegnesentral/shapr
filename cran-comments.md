@@ -1,59 +1,49 @@
 
-# Patch release, shapr 0.2.1
+# Patch release, shapr 0.2.2
 
-* fix warning from development version of data.table due to the use of nomatch argument in merge()
+* Patch to fix failing CRAN-tests on R-devel due to changed behavior of `attach()`: Fixed by changing how we simluate adding a function to .GlobalEnv in the failing test. Actual package not affected.
 
 
 ## Test environments
 
 ### With data.table from github master installed, data.table::update_dev_pkg()
 
-* local Ubuntu 20.04: R 4.1
-* local Windows 10: R 4.2
+* local Windows 10: R-devel (4.4.0)
 
 ### With cran version of data.table:
 
 * GitHub Actions (ubuntu-latest), R-version: devel, release, oldrel-1, oldrel-2
 * GitHub Actions (windows-latest), R-version: release
 * GitHub Actions (macOS-latest), R-version: release
-* win-builder, R-version: devel, release
+* win-builder, R-version: devel, release 
+* R-hub (Ubuntu Linux): R-version: release
 * R-hub (Fedora Linux): R-version: devel
+* R-hub (Debian Linux): R-version: devel
 * R-hub (Windows server 2022): R-version: devel
 
 ## R CMD check results
 
-There were no ERRORs, WARNINGs or NOTES
+There were no ERRORs or WARNINGs
 
-There was 5 NOTES 
+There were 1 NOTE
 
 ### NOTE 1 (on GitHub action, ubuntu-latest):
 
 * checking installed package size ... NOTE
-  installed size is  5.1Mb
+  installed size is  5.0Mb
   sub-directories of 1Mb or more:
-    libs   4.1Mb
+    libs   4.0Mb
 
 > Nothing has changed since the last submission.
 
-### NOTE 2 (on R-hub (Fedora Linux)):
+### NOTE 2 (on R-hub (Windows Server 2022)):
 
 * checking HTML version of manual ... NOTE
-Skipping checking HTML validation: no command 'tidy' found
 Skipping checking math rendering: package 'V8' unavailable
 
-> Missing packages on R-hubs Fedora Linux platform.
+> Missing packages on R-hubs Windows Server 2022 platform.
 
-### NOTE 3 (on R-hub (Fedora Linux)):
-
-* checking examples ... [11s/50s] NOTE
-Examples with CPU (user + system) or elapsed time > 5s
-              user system elapsed
-explain      3.339  0.100  15.364
-create_ctree 2.160  0.103  11.701
-
-> Nothing has changed since the last submission. Probably slow CPU speed due to heavy load on R-hub.
-
-### NOTE 4 (on R-hub (Fedora Linux)):
+### NOTE 4 (on R-hub (Windows Server 2022)):
 
 *Found the following (possibly) invalid URLs:
   URL: https://opensource.org/license/mit/
@@ -73,4 +63,4 @@ Found the following files/directories:
 
 ## Downstream dependencies
 There is 1 downstream dependency (PPtreeregViz) of shapr
-I have also run R CMD check on that and it passed with errors, warnings or notes.
+I have also run R CMD check on that and it passed without errors, warnings or notes.
