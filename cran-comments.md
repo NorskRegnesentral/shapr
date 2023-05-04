@@ -16,9 +16,7 @@
 * GitHub Actions (windows-latest), R-version: release
 * GitHub Actions (macOS-latest), R-version: release
 * win-builder, R-version: devel, release 
-* R-hub (Ubuntu Linux): R-version: release
 * R-hub (Fedora Linux): R-version: devel
-* R-hub (Debian Linux): R-version: devel
 * R-hub (Windows server 2022): R-version: devel
 
 ## R CMD check results
@@ -36,14 +34,15 @@ There were 1 NOTE
 
 > Nothing has changed since the last submission.
 
-### NOTE 2 (on R-hub (Windows Server 2022)):
+### NOTE 2 (on R-hub (Fedora Linux)):
 
 * checking HTML version of manual ... NOTE
+Skipping checking HTML validation: no command 'tidy' found
 Skipping checking math rendering: package 'V8' unavailable
 
 > Missing packages on R-hubs Windows Server 2022 platform.
 
-### NOTE 4 (on R-hub (Windows Server 2022)):
+### NOTE 4 (on R-hub (Fedora Linux, Windows Server 2022)):
 
 *Found the following (possibly) invalid URLs:
   URL: https://opensource.org/license/mit/
