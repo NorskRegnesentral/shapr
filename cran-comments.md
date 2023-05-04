@@ -2,7 +2,7 @@
 # Patch release, shapr 0.2.2
 
 * Patch to fix failing CRAN-tests on R-devel due to changed behavior of `attach()`: Fixed by changing how we simluate adding a function to .GlobalEnv in the failing test. Actual package not affected.
-
+* Exports also get_model_specs.default as per the following NOTE from initial CRAN submission 'Apparent methods for exported generics not registered: get_model_specs.default'
 
 ## Test environments
 
@@ -23,7 +23,7 @@
 
 There were no ERRORs or WARNINGs
 
-There were 1 NOTE
+There were 5 NOTES
 
 ### NOTE 1 (on GitHub action, ubuntu-latest):
 

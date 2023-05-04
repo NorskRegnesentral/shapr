@@ -347,6 +347,7 @@ get_model_specs <- function(x) {
 }
 
 #' @rdname get_model_specs
+#' @export
 get_model_specs.default <- function(x) {
 
   # For custom models where there is no
