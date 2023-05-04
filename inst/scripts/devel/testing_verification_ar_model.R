@@ -1,3 +1,4 @@
+library(data.table)
 options(digits = 5) # To avoid round off errors when printing output on different systems
 set.seed(123)
 
@@ -23,8 +24,8 @@ exp <- explain_forecast(model = model_arima_temp,
                        xreg = dat[, 2:3],#dat[, 2:3],
                        train_idx = 10:50,
                        explain_idx = 71:72,
-                       explain_y_lags = 3,
-                       explain_xreg_lags = c(2,3),
+                       explain_y_lags = 0,
+                       explain_xreg_lags = c(0,0),
                        horizon = 2,
                        approach = "empirical",
                        prediction_zero = c(0,0),
