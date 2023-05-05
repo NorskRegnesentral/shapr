@@ -1,59 +1,65 @@
 
-# Minor release, shapr 0.2.0
+# Patch release, shapr 0.2.2
 
-* Adds the ctree approach from new paper
-* Simplified supported for custom models
-* Adds comprehensive check suite for feature consistency
+* Patch to fix failing CRAN-tests on R-devel due to changed behavior of `attach()`: Fixed by changing how we simluate adding a function to .GlobalEnv in the failing test. Actual package not affected.
+* Exports also get_model_specs.default as per the following NOTE from initial CRAN submission 'Apparent methods for exported generics not registered: get_model_specs.default'
 
 ## Test environments
 
-* GitHub Actions (windows-latest): R 4.0
-* GitHub Actions (ubuntu-16.04): R 4.0, 3.6, 3.5
-* GitHub Actions (macOS-latest): R-release, 4.0
-* win-builder (x86_64-w64-mingw32): R 4.0, 3.6, R-devel
-* local Ubuntu 18.04: R 3.6
-* local Windows 10: R 4.0
-* R-hub (windows-x86_64-devel): R-devel
-* R-hub (macos-highsierra-release-cran): R-release
+### With data.table from github master installed, data.table::update_dev_pkg()
 
-* local Ubuntu 18.04: R 3.6 (without packages in Suggests): 
-```devtools::check(vignettes = FALSE, env_vars=c(`_R_CHECK_DEPENDS_ONLY_` = "true"))```
+* local Windows 10: R-devel (4.4.0)
+
+### With cran version of data.table:
+
+* GitHub Actions (ubuntu-latest), R-version: devel, release, oldrel-1, oldrel-2
+* GitHub Actions (windows-latest), R-version: release
+* GitHub Actions (macOS-latest), R-version: release
+* win-builder, R-version: devel, release 
+* R-hub (Fedora Linux): R-version: devel
+* R-hub (Windows server 2022): R-version: devel
 
 ## R CMD check results
 
-There were no ERRORs or WARNINGs.
+There were no ERRORs or WARNINGs
 
-There was 2 NOTES 
+There were 5 NOTES
 
-*NOTE 1 (on local Windows 10: R 4.0):
+### NOTE 1 (on GitHub action, ubuntu-latest):
 
-  Note: information on .o files for i386 is not available
-  Note: information on .o files for x64 is not available
-  File 'C:/Users/jullum/Dropbox/Local_work/Git/shapr.Rcheck/shapr/libs/i386/shapr.dll':
-    Found '_exit', possibly from '_exit' (C)
-    Found 'abort', possibly from 'abort' (C), 'runtime' (Fortran)
-    Found 'exit', possibly from 'exit' (C), 'stop' (Fortran)
-    Found 'printf', possibly from 'printf' (C)
-  File 'C:/Users/jullum/Dropbox/Local_work/Git/shapr.Rcheck/shapr/libs/x64/shapr.dll':
-    Found '_exit', possibly from '_exit' (C)
-    Found 'abort', possibly from 'abort' (C), 'runtime' (Fortran)
-    Found 'exit', possibly from 'exit' (C), 'stop' (Fortran)
-    Found 'printf', possibly from 'printf' (C)
-  
-  Compiled code should not call entry points which might terminate R nor
-  write to stdout/stderr instead of to the console, nor use Fortran I/O
-  nor system RNGs. The detected symbols are linked into the code but
-  might come from libraries and not actually be called.
-  
-  See 'Writing portable packages' in the 'Writing R Extensions' manual.
+* checking installed package size ... NOTE
+  installed size is  5.0Mb
+  sub-directories of 1Mb or more:
+    libs   4.0Mb
 
-> I believe this is a false-positive ref https://stackoverflow.com/questions/64402688/information-on-o-files-for-x64-is-not-available-note-on-r-package-checks-using
+> Nothing has changed since the last submission.
 
-*NOTE 2 (on all winbuilder + R-hub servers)
+### NOTE 2 (on R-hub (Fedora Linux)):
 
-Days since last update: 6
+* checking HTML version of manual ... NOTE
+Skipping checking HTML validation: no command 'tidy' found
+Skipping checking math rendering: package 'V8' unavailable
 
-> The previous release was a basic patch after the package was taken off CRAN. This is a proper release with new features.
+> Missing packages on R-hubs Windows Server 2022 platform.
+
+### NOTE 4 (on R-hub (Fedora Linux, Windows Server 2022)):
+
+*Found the following (possibly) invalid URLs:
+  URL: https://opensource.org/license/mit/
+    From: README.md
+    Status: 403
+    Message: Forbidden
+
+> I believe this is a false positive. Running 'urlchecker::url_check()' locally shows all URLs are correct.
+
+### NOTE 5 (on R-hub (Windows Server 2022)):
+
+* checking for detritus in the temp directory ... NOTE
+Found the following files/directories:
+  'lastMiKTeXException'
+
+> As noted in [R-hub issue #503](https://github.com/r-hub/rhub/issues/503), this could be due to a bug/crash in MiKTeX and can likely be ignored.
 
 ## Downstream dependencies
-There are currently no downstream dependencies for this package.
+There is 1 downstream dependency (PPtreeregViz) of shapr
+I have also run R CMD check on that and it passed without errors, warnings or notes.

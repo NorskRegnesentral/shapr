@@ -1,4 +1,14 @@
 
+# shapr 0.2.2
+
+* Patch to fix failing CRAN-tests on R-devel due to changed behavior of `attach()`: Fixed by changing how we simluate adding a function to .GlobalEnv in the failing test. Actual package not affected.
+
+# shapr 0.2.1
+
+* Patch to fix warning from development version of data.table due to the use of nomatch argument in merge(),
+as requested from [data.table developers](https://github.com/NorskRegnesentral/shapr/issues/322).
+
+
 # shapr 0.2.0
 
 * Minor CRAN release
