@@ -144,7 +144,7 @@ test_that("erroneous input: `n_combinations`", {
     explain_y_lags = 2
     explain_xreg_lags = 2
 
-    n_combinations = horizon+explain_y_lags+explain_xreg_lags-1
+    n_combinations = horizon + explain_y_lags + explain_xreg_lags - 1
 
     explain_forecast(model = model_arima_temp,
                      y = data[1:150, "Temp"],
@@ -197,4 +197,28 @@ test_that("erroneous input: `n_combinations`", {
 # explain_y_lags (negative number, non-integer value) Should we allow zero? YES
 # explain_x_lags (negative number, non-integer value) Should we allow zero? YES
 # horizon (negative number, non-integer value) Should we allow zero? YES
+
+
+test_that("Forecast data setup produces expected results", {
+  mock_y <- matrix(1:100, 100, dimnames = list(NULL, "Y1"))
+  mock_xreg <- matrix(101:205, 105, dimnames = list(NULL, "X1"))
+
+  formatted_data <- get_data_forecast(
+    mock_y,
+    mock_xreg,
+    train_idx = 2:99,
+    explain_idx = 100,
+    explain_y_lags = 2,
+    explain_xreg_lags = 2,
+    horizon = 5
+  )
+
+  # Y1 lag 1, Y2 lag 2, X1 lag 1, X1 lag 2, X1 f1, f2, ... f5.
+  x_explain <- c(100, 99, 200, 199, 201, 202, 203, 204, 205)
+  expect_equal(x_explain, as.numeric(formatted_data$x_explain))
+
+  # The data is just linearly increasing, idx 99 should be idx 100 - 1 at each value.
+  expect_equal(x_explain - 1, as.numeric(formatted_data$x_train[98, ]))
+})
+
 
