@@ -489,8 +489,6 @@ test_that("erroneous input: `horizon`", {
 })
 
 
-
-
 test_that("Forecast data setup produces expected results", {
   mock_y <- matrix(1:100, 100, dimnames = list(NULL, "Y1"))
   mock_xreg <- matrix(101:205, 105, dimnames = list(NULL, "X1"))

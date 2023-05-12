@@ -200,8 +200,9 @@ test_that("ARIMA gives the same output with different horizons with grouping", {
 
 })
 
-
 test_that("forecast_output_arima_numeric_no_lags", {
+
+  # TODO: Need to check out this output. It gives lots of warnings, which indicates something might be wrong.
   expect_snapshot_rds(
     explain_forecast(model = model_arima_temp,
                      y = data[1:150, "Temp"],
@@ -220,5 +221,6 @@ test_that("forecast_output_arima_numeric_no_lags", {
     "forecast_output_arima_numeric_no_lags"
   )
 })
+
 
 
