@@ -577,7 +577,7 @@ compared to `explain` is that the data is supplied as a set of time series,
 and indices denoting different points in time select the train and explain
 parts of the data. See `?explain_forecast` for more information.
 
-To demonstrate how to use the function 500 observations are generated, which
+To demonstrate how to use the function, 500 observations are generated which
 follow an AR(1) structure, i.e. y_t = 0.5 y_{t-1} + \varepsilon_t. To this
 data an arima model of order (2, 0, 0) is fitted.
 
@@ -589,7 +589,7 @@ available up until, when making the forecast to explain.
 
 In the same way, `train_idx` denotes the points in time which the different
 features of the model can be replaced by. Note that if a model requires two
-lags, the smalles value of `train_idx` must also be 2, because at time t = 1
+lags, the smallest value of `train_idx` must also be 2, because at time t = 1
 there was only a single observation available.
 
 Since the data is stationary, the mean of the data is used as prediction zero,
@@ -627,6 +627,58 @@ explanation_forecast <- explain_forecast(
         group_lags = FALSE
 )
 ```
+
+
+To give a more hands on example, say that we have an AR(2) model which describes the change over time of the variable
+`Temp` in the dataset `airquality`. It seems reasonable to assume that the temperature today should affect the
+temperature tomorrow. To a lesser extent, we may also suggest that the temperature today should also have an impact on
+that of the day after tomorrow.
+
+We start by building our AR(2) model, naming it `model_ar_temp`. This model is then used to make a forecast of the
+temperature of the day that comes after the last day in the data, this forecast starts from index 153.
+```{r}
+data <- data.table::as.data.table(airquality)
+
+model_ar_temp <- ar(data$Temp, order = 2)
+
+predict(model_ar_temp, n.ahead = 2)$pred
+```
+To explain the forecasted value as a function of the two autoregressive terms in the model, we use `explain_forecast`.
+First, we pass the model and the data as `model` and `y`. Then, we let `shapr` know which time indices to use as
+training data through the argument `train_idx`. We use `2:152`, meaning that we skip the first index, as it is not
+possible to make a forecast with an AR(2) model with only one observation. Letting the training indices go up until 152
+means that every point in time except the first and last will be used as training data.
+
+The last index, 153 is passed as the argument `explain_idx`, which means that we want to explain a forecast made from
+time point 153 in the data. Next, we set `explain_y_lags` to 2, requesting an explanation of autoregressive lag 1 and 2.
+The argument `horizon` is set to 2 in order to explain a forecast of length 2.
+
+The argument `prediction_zero` is set to the mean of the time series, and is repeated two times. Each value of
+`prediction_zero` is the baseline for each forecast horizon. In our example, we assume that given no effect from the two
+lags, the temperature would just be the average during the observed period. Finally, we opt to not group the lags by
+setting `group_lags` to `FALSE`. This means that lag 1 and 2 will be explained separately. Grouping lags may be more
+interesting to do in a model with multiple variables, as it is then possible to explain each variable separately.
+```{r}
+explanation <- explain_forecast(
+        model = model_ar_temp,
+        y = data[, "Temp"],
+        train_idx = 2:152,
+        explain_idx = 153,
+        explain_y_lags = 2,
+        horizon = 2,
+        approach = "empirical",
+        prediction_zero = rep(mean(data$Temp), 2),
+        group_lags = FALSE,
+        n_batches = 1,
+        timing = FALSE
+)
+
+print(explanation$shapley_values)
+```
+The results are presented per value of `explain_idx` and forecast horizon. We can see that the mean temperature was
+around 77.9 degrees. At horizon 1, the first lag in the model caused it to be 6.6 degrees lower, and the second lag had
+just a minor effect. At horizon 2, the first lag has a slightly smaller negative impact, and the second lag has a
+slightly larger impact.
 
 <a id="advanced"></a>
 
