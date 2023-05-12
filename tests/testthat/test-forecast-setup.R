@@ -417,7 +417,7 @@ test_that("erroneous input: `explain_x_lags`", {
                      train_idx = 2:148,
                      explain_idx = 149:150,
                      explain_y_lags = 2,
-                     explain_xreg_lags = explain_x_lags_wrong_length,
+                     explain_xreg_lags = explain_x_lags_incompatible_length,
                      horizon = 3,
                      approach = "independence",
                      prediction_zero = p0_ar,

@@ -201,6 +201,16 @@
     Error <simpleError>
       `explain_y_lags` must be single positive finite integer.
 
+---
+
+    Code
+      explain_y_lags_zero = 0
+      explain_forecast(model = model_arima_temp_noxreg, y = data[1:150, "Temp"],
+      train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 0, horizon = 3,
+      approach = "independence", prediction_zero = p0_ar, n_batches = 1)
+    Error <simpleError>
+      `explain_y_lags=0` is not allowed for models without exogeneous variables
+
 # erroneous input: `explain_x_lags`
 
     Code
@@ -229,7 +239,7 @@
       explain_x_lags_incompatible_length = c(1, 2)
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 2,
-      explain_xreg_lags = explain_x_lags_wrong_length, horizon = 3, approach = "independence",
+      explain_xreg_lags = explain_x_lags_incompatible_length, horizon = 3, approach = "independence",
       prediction_zero = p0_ar, n_batches = 1)
     Error <simpleError>
       `xreg` has 1 columns (Wind).
