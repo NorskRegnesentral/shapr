@@ -258,7 +258,7 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
   # Create a matrix and groups of the forecasted values of the exogenous data.
   reg_fcast <- reg_forecast_setup(xreg[seq.int(to = max(c(train_idx, explain_idx)) + horizon, from = max_lag + 1), , drop = FALSE], horizon, data_lag$group)
 
-  if(ncol(reg_fcast$fcast)==0){
+  if(ncol(data_lag$lagged)==0 && ncol(reg_fcast$fcast)==0){
     stop("`explain_y_lags=0` is not allowed for models without exogeneous variables")
   }
 
