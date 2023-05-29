@@ -437,7 +437,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   }
 
   # parameters only used for type "forecast"
-  if (type == "forecast"){
+  if (type == "forecast") {
     if(!(is.wholenumber(horizon) && all(horizon>0))) {
       stop("`horizon` must be a vector (or scalar) of positive integers.\n")
     }
@@ -446,7 +446,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
       stop(paste0("`horizon` must match the output size of the model (",paste0(output_size,collapse=", "),").\n"))
     }
 
-    if(!(length(train_idx) >1 && is.wholenumber(train_idx) && all(train_idx>0) && all(is.finite(train_idx)))){
+    if(!(length(train_idx) > 1 && is.wholenumber(train_idx) && all(train_idx > 0) && all(is.finite(train_idx)))){
       stop("`train_idx` must be a vector of positive finite integers and length > 1.\n")
     }
 

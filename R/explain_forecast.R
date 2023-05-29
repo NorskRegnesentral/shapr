@@ -18,7 +18,8 @@
 #'
 #' @param train_idx Numeric vector
 #' The row indices in data and reg denoting points in time to use when estimating
-#' the Shapley values.
+#' the Shapley values. This argument can be omitted, which means that all indices
+#' not selected to be explained will be used.
 #'
 #' @param explain_idx Numeric vector
 #' The row indices in data and reg denoting points in time to explain.
@@ -84,7 +85,7 @@
 explain_forecast <- function(model,
                              y,
                              xreg = NULL,
-                             train_idx,
+                             train_idx = NULL,
                              explain_idx,
                              explain_y_lags,
                              explain_xreg_lags = explain_y_lags,
@@ -107,6 +108,11 @@ explain_forecast <- function(model,
 
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
+
+  # Set up default values for train_idx if it is not explicitly set by the user.
+  if (is.null(train_idx)) {
+    train_idx <- seq.int(from = max(c(explain_y_lags, explain_xreg_lags)), to = nrow(y))[-explain_idx]
+  }
 
 
   # Sets up and organizes input parameters
