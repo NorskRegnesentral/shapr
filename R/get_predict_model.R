@@ -49,7 +49,7 @@ test_predict_model <- function (x_test, predict_model, model, internal) {
       newdata = x_test[, 1:internal$data$n_endo, drop = FALSE],
       newreg = x_test[, -(1:internal$data$n_endo), drop = FALSE],
       horizon = internal$parameters$horizon,
-      explain_idx = internal$parameters$explain_idx,
+      explain_idx = rep(internal$parameters$explain_idx[1], 2),
       y = internal$data$y,
       xreg = internal$data$xreg,
       explain_lags = internal$parameters$explain_lags,

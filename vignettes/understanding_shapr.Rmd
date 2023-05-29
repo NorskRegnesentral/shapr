@@ -578,18 +578,18 @@ and indices denoting different points in time select the train and explain
 parts of the data. See `?explain_forecast` for more information.
 
 To demonstrate how to use the function, 500 observations are generated which
-follow an AR(1) structure, i.e. y_t = 0.5 y_{t-1} + \varepsilon_t. To this
+follow an AR(1) structure, i.e. $y_t = 0.5 y_{t-1} + \varepsilon_t$. To this
 data an arima model of order (2, 0, 0) is fitted.
 
 In the example, two separate forecasts, each three steps ahead are explained.
-To set the starting points of the two forecasts, `explain_idx` is set to 499:500.
-This means that one forecast of t = 500:502 and t = 501:503 will be explained.
+To set the starting points of the two forecasts, `explain_idx` is set to `499:500`.
+This means that one forecast of $t = 500:502$ and $t = 501:503$ will be explained.
 In other words, explain_idx tells `shapr` at which points in time data was
 available up until, when making the forecast to explain.
 
 In the same way, `train_idx` denotes the points in time which the different
 features of the model can be replaced by. Note that if a model requires two
-lags, the smallest value of `train_idx` must also be 2, because at time t = 1
+lags, the smallest value of `train_idx` must also be 2, because at time $t = 1$
 there was only a single observation available.
 
 Since the data is stationary, the mean of the data is used as prediction zero,
@@ -679,6 +679,48 @@ The results are presented per value of `explain_idx` and forecast horizon. We ca
 around 77.9 degrees. At horizon 1, the first lag in the model caused it to be 6.6 degrees lower, and the second lag had
 just a minor effect. At horizon 2, the first lag has a slightly smaller negative impact, and the second lag has a
 slightly larger impact.
+
+It is also possible to explain a forecasting model which uses exogenous regressors. The previous example is expanded to
+use an ARIMA(2,0,0) model with `Wind` as an exogenous regressor. The exogenous regressor must be available for the
+predicted time points, why the model is just fit on the 151 first observations, leaving two observations of `Wind` to be
+used as exogenous values during the prediction phase.
+```{r}
+data <- data.table::as.data.table(airquality)
+
+data_fit <- data[seq_len(151), ]
+
+model_arimax_temp <- arima(data_fit$Temp, order = c(2, 0, 0), xreg = data_fit$Wind)
+
+newxreg <- data[-seq_len(151), "Wind", drop = FALSE]
+
+predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
+```
+The `shapr`package can then explain not only the two autoregressive lags, but also the single lag of the exogenous regressor.
+In order to do so, the `Wind` variable is passed as the argument `xreg`, and `explain_xreg_lags` is set to 1.
+Notice how only the first 151 observations are used for `y` and all 153 are used for `xreg`. This makes it possible for
+Shapr to not only explain the effect of the first lag of the exogenous variable, but also the contemporary effect during
+the forecasting period.
+```{r}
+explanation <- explain_forecast(
+        model = model_ar_temp,
+        y = data_fit[, "Temp"],
+        xreg = data[, "Wind"],
+        train_idx = 2:150,
+        explain_idx = 151,
+        explain_y_lags = 2,
+        explain_xreg_lags = 1,
+        horizon = 2,
+        approach = "empirical",
+        prediction_zero = rep(mean(data_fit$Temp), 2),
+        group_lags = FALSE,
+        n_batches = 1,
+        timing = FALSE
+)
+
+print(explanation$shapley_values)
+```
+
+
 
 <a id="advanced"></a>
 
