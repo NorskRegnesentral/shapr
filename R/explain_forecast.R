@@ -206,23 +206,30 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
   # Check data object type
   stop_message <- ""
   if (!is.vector(y) &&
-      !(is.matrix(y) && ncol(y)==1) &&
-      !(is.data.frame(y) && ncol(y)==1)) {
-    stop_message <- paste0(stop_message,"y should be a matrix or data.frame/data.table with a single column, or a numeric vector.\n")
+      !(is.matrix(y) && ncol(y) >= 1) &&
+      !(is.data.frame(y) && ncol(y) >= 1)) {
+    stop_message <- paste0(stop_message,"y should be a matrix or data.frame/data.table with one or more columns, or a numeric vector.\n")
   }
   if (!is.null(xreg) && !is.matrix(xreg) && !is.data.frame(xreg)) {
     stop_message <- paste0(stop_message,"xreg should be a matrix or a data.frame/data.table.\n")
   }
-  if(stop_message!=""){
+  if (stop_message != ""){
     stop(stop_message)
   }
 
-  if(is.vector(y)){
+  if (is.vector(y)) {
     y <- as.matrix(y)
     colnames(y) <- "Y" # Currently we only allow a single endogenous variable.
   } else {
     y <- as.matrix(y)
-    }
+  }
+  if (ncol(y) != length(explain_y_lags)) {
+    stop(
+      paste0("`y` has ", ncol(y), " columns (", paste0(colnames(y),collapse = ","), ").\n",
+             "`explain_y_lags` has length ", length(explain_y_lags), ".\n",
+             "These two should match.\n")
+    )
+  }
 
   if (!is.null(xreg)) {
     xreg <- as.matrix(xreg)
@@ -233,29 +240,25 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
 
     if (ncol(xreg) != length(explain_xreg_lags)) {
       stop(
-        paste0("`xreg` has ",ncol(xreg)," columns (",paste0(colnames(xreg),collapse = ","),").\n",
-               "`explain_xreg_lags` has length ",length(explain_xreg_lags),".\n",
+        paste0("`xreg` has ", ncol(xreg), " columns (", paste0(colnames(xreg),collapse = ","), ").\n",
+               "`explain_xreg_lags` has length ", length(explain_xreg_lags), ".\n",
                "These two should match.\n")
       )
     }
     if (nrow(xreg) < max(c(train_idx, explain_idx)) + horizon) {
       stop("`xreg` must have at least as many observations as the data + the forecast horizon.")
     }
-
-
-  }else {
+  } else {
     xreg <- matrix(NA, max(c(train_idx, explain_idx)) + horizon, 0)
   }
-
 
   max_lag <- max(c(explain_y_lags, explain_xreg_lags))
 
   if (any(c(train_idx, explain_idx) < max_lag) ||
       any(c(train_idx, explain_idx) > nrow(y))) {
     stop(paste0("The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data.\n",
-    "The lagged data begins at index ",max_lag, " and ends at index ", nrow(y), ".\n"))
+    "The lagged data begins at index ", max_lag, " and ends at index ", nrow(y), ".\n"))
   }
-
 
   # Create a matrix and groups of all lagged data.
   data_reg <- as.matrix(cbind(y, xreg[seq_len(nrow(y)), , drop = FALSE]))

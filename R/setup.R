@@ -454,8 +454,8 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
       stop("`explain_idx` must be a vector of positive finite integers.\n")
     }
 
-    if(!(length(explain_y_lags)==1  && is.wholenumber(explain_y_lags) && all(explain_y_lags>=0) && all(is.finite(explain_y_lags)))){
-      stop("`explain_y_lags` must be single positive finite integer.\n")
+    if(!(is.wholenumber(explain_y_lags) && all(explain_y_lags>=0) && all(is.finite(explain_y_lags)))){
+      stop("`explain_y_lags` must be a vector of positive finite integers.\n")
     }
 
     if(!(is.wholenumber(explain_xreg_lags) && all(explain_xreg_lags>=0) && all(is.finite(explain_xreg_lags)))){
