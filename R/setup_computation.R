@@ -34,7 +34,7 @@ shapley_setup_forecast <- function(internal) {
   horizon <- internal$parameters$horizon
   feature_names <- internal$parameters$feature_names
 
-  X_list <- W_list <- S_list <- list()
+  X_list <- W_list <- list()
 
   # Find columns/features to be included in each of the different horizons
   col_del_list <- list()
@@ -70,11 +70,6 @@ shapley_setup_forecast <- function(internal) {
       X = X_list[[i]],
       normalize_W_weights = TRUE,
       is_groupwise = is_groupwise
-    )
-
-    S_list[[i]] <- feature_matrix_cpp(
-      features = X_list[[i]][["features"]],
-      m = n_this_featcomb
     )
   }
 
