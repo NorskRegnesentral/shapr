@@ -8,7 +8,7 @@ explain_forecast(
   model,
   y,
   xreg = NULL,
-  train_idx,
+  train_idx = NULL,
   explain_idx,
   explain_y_lags,
   explain_xreg_lags = explain_y_lags,
@@ -17,6 +17,7 @@ explain_forecast(
   prediction_zero,
   n_combinations = NULL,
   group_lags = TRUE,
+  group = NULL,
   n_samples = 1000,
   n_batches = NULL,
   seed = 1,
@@ -47,8 +48,9 @@ As exogenous variables are used contemporaneusly when producing a forecast,
 this item should contain nrow(y) + horizon rows.}
 
 \item{train_idx}{Numeric vector
-The row indices in data and reg denoting points in time to use when estimating
-the Shapley values.}
+The row indices in data and reg denoting points in time to use when estimating the conditional expectations in
+the Shapley value formula.
+If \code{train_idx = NULL} (default) all indices not selected to be explained will be used.}
 
 \item{explain_idx}{Numeric vector
 The row indices in data and reg denoting points in time to explain.}
@@ -82,6 +84,12 @@ The maximum number of combinations equals \code{2^m}, where \code{m} is the numb
 \item{group_lags}{Logical.
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
 If \code{FALSE} all lags of each variable are explained individually.}
+
+\item{group}{List.
+If \code{NULL} regular feature wise Shapley values are computed.
+If provided, group wise Shapley values are computed. \code{group} then has length equal to
+the number of groups. The list element contains character vectors with the features included
+in each of the different groups.}
 
 \item{n_samples}{Positive integer.
 Indicating the maximum number of samples to use in the

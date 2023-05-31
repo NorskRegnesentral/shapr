@@ -17,9 +17,9 @@
 #' this item should contain nrow(y) + horizon rows.
 #'
 #' @param train_idx Numeric vector
-#' The row indices in data and reg denoting points in time to use when estimating
-#' the Shapley values. This argument can be omitted, which means that all indices
-#' not selected to be explained will be used.
+#' The row indices in data and reg denoting points in time to use when estimating the conditional expectations in
+#' the Shapley value formula.
+#' If `train_idx = NULL` (default) all indices not selected to be explained will be used.
 #'
 #' @param explain_idx Numeric vector
 #' The row indices in data and reg denoting points in time to explain.

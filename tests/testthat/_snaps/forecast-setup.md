@@ -24,7 +24,9 @@
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
       n_batches = 1)
     Error <simpleError>
-      y should be a matrix or data.frame/data.table with a single column, or a numeric vector.
+      `y` has 2 columns (Temp,Wind).
+      `explain_y_lags` has length 1.
+      These two should match.
 
 ---
 
@@ -177,7 +179,7 @@
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
       n_batches = 1)
     Error <simpleError>
-      `explain_y_lags` must be single positive finite integer.
+      `explain_y_lags` must be a vector of positive finite integers.
 
 ---
 
@@ -188,7 +190,7 @@
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
       n_batches = 1)
     Error <simpleError>
-      `explain_y_lags` must be single positive finite integer.
+      `explain_y_lags` must be a vector of positive finite integers.
 
 ---
 
@@ -199,7 +201,9 @@
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
       n_batches = 1)
     Error <simpleError>
-      `explain_y_lags` must be single positive finite integer.
+      `y` has 1 columns (Temp).
+      `explain_y_lags` has length 2.
+      These two should match.
 
 ---
 

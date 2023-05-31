@@ -113,8 +113,9 @@ As exogenous variables are used contemporaneusly when producing a forecast,
 this item should contain nrow(y) + horizon rows.}
 
 \item{train_idx}{Numeric vector
-The row indices in data and reg denoting points in time to use when estimating
-the Shapley values.}
+The row indices in data and reg denoting points in time to use when estimating the conditional expectations in
+the Shapley value formula.
+If \code{train_idx = NULL} (default) all indices not selected to be explained will be used.}
 
 \item{explain_idx}{Numeric vector
 The row indices in data and reg denoting points in time to explain.}
