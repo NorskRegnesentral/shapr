@@ -370,6 +370,17 @@
       Feature(s) Solar.R are found in more than one group or multiple times per group.
       Make sure each feature is only represented in one group, and only once.
 
+---
+
+    Code
+      single_group <- list(A = c("Solar.R", "Wind", "Temp", "Month", "Day"))
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        approach = "independence", prediction_zero = p0, group = single_group,
+        n_batches = 1, timing = FALSE)
+    Error <simpleError>
+      You have specified only a single group named A, containing the features: Solar.R, Wind, Temp, Month, Day.
+       The predictions must be decomposed in at least two groups to be meaningful.
+
 # erroneous input: `n_samples`
 
     Code
