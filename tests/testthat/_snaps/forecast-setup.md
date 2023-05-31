@@ -272,14 +272,3 @@
     Error <simpleError>
       `horizon` must be a vector (or scalar) of positive integers.
 
----
-
-    Code
-      horizon_too_long = c(1, 2)
-      explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
-        "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 2,
-      explain_xreg_lags = 2, horizon = horizon_too_long, approach = "independence",
-      prediction_zero = p0_ar, n_batches = 1)
-    Error <simpleError>
-      `prediction_zero` (77.8823529411765, 77.8823529411765, 77.8823529411765) must be numeric and match the output size of the model (1, 2).
-
