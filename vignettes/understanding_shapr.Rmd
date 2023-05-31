@@ -636,28 +636,7 @@ explanation_forecast <- explain_forecast(
 explanation_forecast
 ```
 
-For a multivariate model such as a VAR (Vector AutoRegressive model), it may be of more interesting to explain
-the impact of each variable, rather than each lag of each variable. This can be
-done by setting `group_lags = TRUE`, as shown below.
-
-```{r}
-
-explanation_forecast_grouped <- explain_forecast(
-        model = arima_model,
-        y = data_ts,
-        train_idx = 2:498,
-        explain_idx = 499:500,
-        explain_y_lags = 2,
-        horizon = 3,
-        approach = "empirical",
-        prediction_zero = p0_ar,
-        n_batches = 1,
-        group_lags = TRUE
-)
-
-print(explanation_forecast_grouped)
-```
-
+Note that for a multivariate model such as a VAR (Vector AutoRegressive model), or for models also including several exogenous variables, it may be of more informative to explain the impact of each variable, rather than each lag of each variable. This can be done by setting `group_lags = TRUE`. This does not make sense for this model, however, as that would result in decomposing the forecast into a single group.
 
 We now give a more hands on example of how to use the `explain_forecast` function.
 Say that we have an AR(2) model which describes the change over time of the variable

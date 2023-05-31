@@ -642,6 +642,17 @@ check_groups <- function(feature_names, group) {
       )
     )
   }
+
+  # Check that there are at least two groups
+  if (length(group)==1) {
+    stop(
+      paste0("You have specified only a single group named ",names(group),", containing the features: ",
+             paste0(group_features, collapse=", "), ".\n ",
+             "The predictions must be decomposed in at least two groups to be meaningful.")
+    )
+  }
+
+
 }
 
 #' @keywords internal
