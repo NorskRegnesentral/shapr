@@ -571,31 +571,38 @@ estimated from the training data.
 
 ## Explaining a forecasting model using `explain_forecast`
 
-`shapr` exports a specific function to explain forecasts created by
-time series models, called `explain_forecast`. The main difference
-compared to `explain` is that the data is supplied as a set of time series,
-and indices denoting different points in time select the train and explain
-parts of the data. See `?explain_forecast` for more information.
+`shapr` provides a specific function, `explain_forecast`, to explain forecasts from time series models, 
+at one or more steps into the future.
+The main difference
+compared to `explain` is that the data is supplied as (set of) time series,
+in addition to index arguments (`train_idx` and `explain_idx`) specifying which time points that represents the
+train and explain parts of the data.
+See `?explain_forecast` for more information.
 
 To demonstrate how to use the function, 500 observations are generated which
 follow an AR(1) structure, i.e. $y_t = 0.5 y_{t-1} + \varepsilon_t$. To this
-data an arima model of order (2, 0, 0) is fitted.
+data an arima model of order (2, 0, 0) is fitted, and we therefore would like to explain the forecasts in terms
+of the two previous lags of the time series. This is is specified through the argument 
+`explain_y_lags = 2`. 
+Note that some models may also put restrictions on the amount of data required to make a forecast. 
+The AR(2) model we used there, for instance, requires two previous time point to make a forecast.
 
-In the example, two separate forecasts, each three steps ahead are explained.
+In the example, two separate forecasts, each three steps ahead, are explained.
 To set the starting points of the two forecasts, `explain_idx` is set to `499:500`.
-This means that one forecast of $t = 500:502$ and $t = 501:503$ will be explained.
-In other words, explain_idx tells `shapr` at which points in time data was
+This means that one forecast of $t = (500, 501, 502)$ and another of $t = (501, 502, 503)$, will be explained.
+In other words, `explain_idx` tells `shapr` at which points in time data was
 available up until, when making the forecast to explain.
 
-In the same way, `train_idx` denotes the points in time which the different
-features of the model can be replaced by. Note that if a model requires two
-lags, the smallest value of `train_idx` must also be 2, because at time $t = 1$
+In the same way, `train_idx` denotes the points in time used to estimate the conditional expectations used to
+explain the different forecasts. 
+Note that since we want to explain the forecasts in terms of the two previous lags (`explain_y_lags = 2`), 
+the smallest value of `train_idx` must also be 2, because at time $t = 1$
 there was only a single observation available.
 
-Since the data is stationary, the mean of the data is used as prediction zero,
-this can however be chosen differently depending on the data and application.
+Since the data is stationary, the mean of the data is used as value of `prediction_zero` (i.e. $\phi_0$).
+This can however be chosen differently depending on the data and application.
 
-For a multivariate model such as a VAR, it may be of more interest to explain
+For a multivariate model such as a VAR (Vector AutoRegressive model), it may be of more interesting to explain
 the impact of each variable, rather than each lag of each variable. This can be
 done by setting `group_lags = TRUE`.
 
@@ -626,10 +633,34 @@ explanation_forecast <- explain_forecast(
         prediction_zero = p0_ar,
         group_lags = FALSE
 )
+explanation_forecast
+```
+
+For a multivariate model such as a VAR (Vector AutoRegressive model), it may be of more interesting to explain
+the impact of each variable, rather than each lag of each variable. This can be
+done by setting `group_lags = TRUE`, as shown below.
+
+```{r}
+
+explanation_forecast_grouped <- explain_forecast(
+        model = arima_model,
+        y = data_ts,
+        train_idx = 2:498,
+        explain_idx = 499:500,
+        explain_y_lags = 2,
+        horizon = 3,
+        approach = "empirical",
+        prediction_zero = p0_ar,
+        n_batches = 1,
+        group_lags = TRUE
+)
+
+print(explanation_forecast_grouped)
 ```
 
 
-To give a more hands on example, say that we have an AR(2) model which describes the change over time of the variable
+We now give a more hands on example of how to use the `explain_forecast` function.
+Say that we have an AR(2) model which describes the change over time of the variable
 `Temp` in the dataset `airquality`. It seems reasonable to assume that the temperature today should affect the
 temperature tomorrow. To a lesser extent, we may also suggest that the temperature today should also have an impact on
 that of the day after tomorrow.
@@ -643,14 +674,16 @@ model_ar_temp <- ar(data$Temp, order = 2)
 
 predict(model_ar_temp, n.ahead = 2)$pred
 ```
-To explain the forecasted value as a function of the two autoregressive terms in the model, we use `explain_forecast`.
-First, we pass the model and the data as `model` and `y`. Then, we let `shapr` know which time indices to use as
-training data through the argument `train_idx`. We use `2:152`, meaning that we skip the first index, as it is not
-possible to make a forecast with an AR(2) model with only one observation. Letting the training indices go up until 152
-means that every point in time except the first and last will be used as training data.
+First, we pass the model and the data as `model` and `y`. 
+Since we have an AR(2) model, we want to explain the forecasts in terms of the two previous lags, whihc we specify 
+with `explain_y_lags = 2`. 
+Then, we let `shapr` know which time indices to use as training data through the argument `train_idx`. 
+We use `2:152`, meaning that we skip the first index, as we want to explain the two previous lags. 
+Letting the training indices go up until 152 means that every point in time except the first and last 
+will be used as training data.
 
 The last index, 153 is passed as the argument `explain_idx`, which means that we want to explain a forecast made from
-time point 153 in the data. Next, we set `explain_y_lags` to 2, requesting an explanation of autoregressive lag 1 and 2.
+time point 153 in the data. 
 The argument `horizon` is set to 2 in order to explain a forecast of length 2.
 
 The argument `prediction_zero` is set to the mean of the time series, and is repeated two times. Each value of
@@ -673,7 +706,7 @@ explanation <- explain_forecast(
         timing = FALSE
 )
 
-print(explanation$shapley_values)
+print(explanation)
 ```
 The results are presented per value of `explain_idx` and forecast horizon. We can see that the mean temperature was
 around 77.9 degrees. At horizon 1, the first lag in the model caused it to be 6.6 degrees lower, and the second lag had
@@ -681,8 +714,8 @@ just a minor effect. At horizon 2, the first lag has a slightly smaller negative
 slightly larger impact.
 
 It is also possible to explain a forecasting model which uses exogenous regressors. The previous example is expanded to
-use an ARIMA(2,0,0) model with `Wind` as an exogenous regressor. The exogenous regressor must be available for the
-predicted time points, why the model is just fit on the 151 first observations, leaving two observations of `Wind` to be
+use an ARIMA(2,0,0) model with `Wind` as an exogenous regressor. Since the exogenous regressor must be available for the
+predicted time points, the model is just fit on the 151 first observations, leaving two observations of `Wind` to be
 used as exogenous values during the prediction phase.
 ```{r}
 data <- data.table::as.data.table(airquality)
@@ -695,10 +728,10 @@ newxreg <- data[-seq_len(151), "Wind", drop = FALSE]
 
 predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
 ```
-The `shapr`package can then explain not only the two autoregressive lags, but also the single lag of the exogenous regressor.
+The `shapr` package can then explain not only the two autoregressive lags, but also the single lag of the exogenous regressor.
 In order to do so, the `Wind` variable is passed as the argument `xreg`, and `explain_xreg_lags` is set to 1.
 Notice how only the first 151 observations are used for `y` and all 153 are used for `xreg`. This makes it possible for
-Shapr to not only explain the effect of the first lag of the exogenous variable, but also the contemporary effect during
+`shapr` to not only explain the effect of the first lag of the exogenous variable, but also the contemporary effect during
 the forecasting period.
 ```{r}
 explanation <- explain_forecast(
