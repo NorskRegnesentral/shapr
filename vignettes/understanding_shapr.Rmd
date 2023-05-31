@@ -73,9 +73,9 @@ documentation and see examples with `?function_name`.
 
 | Function Name | Description                                                              |
 |:------------------|:---------------------------------------------|
-| `explain`     | Computes kernel SHAP values for test data.                               |
-| `plot.shapr`  | Plots the individual prediction explanations. Uses facet_wrap of ggplot and package ggbeeswarm. |
-
+| `explain`             | Computes kernel SHAP values for test data.                               |
+| `explain_forecast`    | Analogous to `explain`, but for explaining forecasts from time series models. |
+| `plot.shapr`          | Plots the individual prediction explanations. Uses the `ggplot` and `ggbeeswarm` package. |
 : Main functions in the `shapr` package.
 
 <a id="KSHAP"></a>
