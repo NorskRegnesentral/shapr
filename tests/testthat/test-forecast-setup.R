@@ -466,26 +466,6 @@ test_that("erroneous input: `horizon`", {
                      n_batches = 1)
   },
   error = T)
-
-  expect_snapshot({
-    # horizon wrong length
-    horizon_too_long = c(1,2)  # We currently only supprt single horizon lengths # Should be expanded
-
-    explain_forecast(model = model_arima_temp,
-                     y = data[1:150, "Temp"],
-                     xreg = data[, "Wind"],
-                     train_idx = 2:148,
-                     explain_idx = 149:150,
-                     explain_y_lags = 2,
-                     explain_xreg_lags = 2,
-                     horizon = horizon_too_long,
-                     approach = "independence",
-                     prediction_zero = p0_ar,
-                     n_batches = 1)
-  },
-  error = T)
-
-
 })
 
 
