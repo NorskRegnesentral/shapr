@@ -12,9 +12,11 @@ status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.s
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License:
-MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit/)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
+
+# NOTE: This package is undergoing severe restructuring. A new version (with breaking changes) will be available on GitHub soon.
 
 The most common machine learning task is to train a model which is able
 to predict an unknown outcome (response variable) based on a set of
@@ -40,7 +42,7 @@ consequently wrong interpretations of the predictions. Aas, Jullum, and
 Løland (2021) extends and improves the Kernel SHAP method of Lundberg
 and Lee (2017) to account for the dependence between the features,
 resulting in significantly more accurate approximations to the Shapley
-values. [See the paper for details](https://arxiv.org/abs/1903.10464).
+values. [See the paper for details](https://www.sciencedirect.com/science/article/pii/S0004370221000539).
 
 This package implements the methodology of Aas, Jullum, and Løland
 (2021).
