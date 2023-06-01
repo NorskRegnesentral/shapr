@@ -41,8 +41,6 @@ lm_formula_categorical <- as.formula(paste0(y_var_numeric, " ~ ", paste0(x_var_c
 model_lm_numeric <- lm(lm_formula_numeric, data = data_complete)
 model_lm_categorical <- lm(lm_formula_categorical, data = data_complete)
 model_lm_numeric_col_order <- lm(lm_formula_numeric, data = rev(data_complete))
-
-data_complete[, ncol(data_complete):1]
 model_lm_mixed <- lm(lm_formula_mixed, data = data_complete)
 model_lm_interaction <- lm(lm_formula_interaction, data = data_complete)
 

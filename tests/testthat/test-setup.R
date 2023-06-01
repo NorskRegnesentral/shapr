@@ -1382,8 +1382,8 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 
   explain.new_data_feature_order <- explain(
     model = model_lm_numeric,
-    x_explain = x_explain_numeric[, rev(seq_len(ncol(x_explain_numeric)))],
-    x_train = x_train_numeric[, rev(seq_len(ncol(x_train_numeric)))],
+    x_explain = rev(x_explain_numeric),
+    x_train = rev(x_train_numeric),
     approach = "empirical",
     prediction_zero = p0,
     n_batches = 1,
