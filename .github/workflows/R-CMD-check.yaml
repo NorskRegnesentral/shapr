@@ -5,15 +5,17 @@
 
 # 1. Runs on branches cranversion and devel as well
 # 2. Runs on oldrel-2 as well
+# 3. R CMD check is performed WITHOUT the default as-cran flag. This allows snapshots to run without setting
+#    as-cran=TRUE in every single call to expect_snapshot
 
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 
 on:
   push:
-    branches: [main, master, cranversion, devel_cranversion, devel]
+    branches: [main, master, cranversion, devel]
   pull_request:
-    branches: [main, master, cranversion, devel_cranversion, devel]
+    branches: [main, master, cranversion, devel]
 
 name: R-CMD-check
 
@@ -33,14 +35,6 @@ jobs:
           - {os: ubuntu-latest,   r: 'release'}
           - {os: ubuntu-latest,   r: 'oldrel-1'}
           - {os: ubuntu-latest,   r: 'oldrel-2'}
-
-          - {os: windows-latest, r: 'release'}
-
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
-          - {os: ubuntu-latest,   r: 'oldrel-2'}
-#          - {os: ubuntu-latest,   r: 'oldrel-3'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -64,4 +58,5 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
         with:
+          args: 'c("--no-manual")' # I.e. exclude the as-cran comment here
           upload-snapshots: true
