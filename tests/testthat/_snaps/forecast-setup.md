@@ -76,10 +76,10 @@
 # erroneous input: `n_combinations`
 
     Code
-      horizon = 3
-      explain_y_lags = 2
-      explain_xreg_lags = 2
-      n_combinations = horizon + explain_y_lags + explain_xreg_lags - 1
+      horizon <- 3
+      explain_y_lags <- 2
+      explain_xreg_lags <- 2
+      n_combinations <- horizon + explain_y_lags + explain_xreg_lags - 1
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = explain_y_lags,
       explain_xreg_lags = explain_xreg_lags, horizon = horizon, approach = "independence",
@@ -90,16 +90,16 @@
       Consistency checks between model and data is therefore disabled.
       
     Error <simpleError>
-      `n_combinations` (6) has to be greater than the number of components to decompose the forecast onto:
+      `n_combinations` (6) has to be greater than the number of components to decompose  the forecast onto:
       `horizon` (3) + `explain_y_lags` (2) + sum(`explain_xreg_lags`) (2).
 
 ---
 
     Code
-      horizon = 3
-      explain_y_lags = 2
-      explain_xreg_lags = 2
-      n_combinations = 1 + 1
+      horizon <- 3
+      explain_y_lags <- 2
+      explain_xreg_lags <- 2
+      n_combinations <- 1 + 1
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = explain_y_lags,
       explain_xreg_lags = explain_xreg_lags, horizon = horizon, approach = "independence",
@@ -116,7 +116,7 @@
 # erroneous input: `train_idx`
 
     Code
-      train_idx_too_short = 2
+      train_idx_too_short <- 2
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = train_idx_too_short, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
@@ -127,7 +127,7 @@
 ---
 
     Code
-      train_idx_not_integer = c(3:5) + 0.1
+      train_idx_not_integer <- c(3:5) + 0.1
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = train_idx_not_integer, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
@@ -138,7 +138,7 @@
 ---
 
     Code
-      train_idx_out_of_range = 1:5
+      train_idx_out_of_range <- 1:5
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = train_idx_out_of_range, explain_idx = 149:150,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
@@ -150,7 +150,7 @@
 # erroneous input: `explain_idx`
 
     Code
-      explain_idx_not_integer = c(3:5) + 0.1
+      explain_idx_not_integer <- c(3:5) + 0.1
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = explain_idx_not_integer,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
@@ -161,7 +161,7 @@
 ---
 
     Code
-      explain_idx_out_of_range = 1:5
+      explain_idx_out_of_range <- 1:5
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = explain_idx_out_of_range,
       explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
@@ -173,7 +173,7 @@
 # erroneous input: `explain_y_lags`
 
     Code
-      explain_y_lags_negative = -1
+      explain_y_lags_negative <- -1
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = explain_y_lags_negative,
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
@@ -184,7 +184,7 @@
 ---
 
     Code
-      explain_y_lags_not_integer = 2.1
+      explain_y_lags_not_integer <- 2.1
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = explain_y_lags_not_integer,
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
@@ -195,7 +195,7 @@
 ---
 
     Code
-      explain_y_lags_more_than_one = c(1, 2)
+      explain_y_lags_more_than_one <- c(1, 2)
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = explain_y_lags_more_than_one,
       explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
@@ -208,7 +208,7 @@
 ---
 
     Code
-      explain_y_lags_zero = 0
+      explain_y_lags_zero <- 0
       explain_forecast(model = model_arima_temp_noxreg, y = data[1:150, "Temp"],
       train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 0, horizon = 3,
       approach = "independence", prediction_zero = p0_ar, n_batches = 1)
@@ -218,7 +218,7 @@
 # erroneous input: `explain_x_lags`
 
     Code
-      explain_xreg_lags_negative = -2
+      explain_xreg_lags_negative <- -2
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 2,
       explain_xreg_lags = explain_xreg_lags_negative, horizon = 3, approach = "independence",
@@ -229,7 +229,7 @@
 ---
 
     Code
-      explain_xreg_lags_not_integer = 2.1
+      explain_xreg_lags_not_integer <- 2.1
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 2,
       explain_xreg_lags = explain_xreg_lags_not_integer, horizon = 3, approach = "independence",
@@ -240,10 +240,10 @@
 ---
 
     Code
-      explain_x_lags_incompatible_length = c(1, 2)
+      explain_x_lags_wrong_length <- c(1, 2)
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 2,
-      explain_xreg_lags = explain_x_lags_incompatible_length, horizon = 3, approach = "independence",
+      explain_xreg_lags = explain_x_lags_wrong_length, horizon = 3, approach = "independence",
       prediction_zero = p0_ar, n_batches = 1)
     Error <simpleError>
       `xreg` has 1 columns (Wind).
@@ -253,7 +253,7 @@
 # erroneous input: `horizon`
 
     Code
-      horizon_negative = -2
+      horizon_negative <- -2
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 2,
       explain_xreg_lags = 2, horizon = horizon_negative, approach = "independence",
@@ -264,7 +264,7 @@
 ---
 
     Code
-      horizon_not_integer = 2.1
+      horizon_not_integer <- 2.1
       explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
         "Wind"], train_idx = 2:148, explain_idx = 149:150, explain_y_lags = 2,
       explain_xreg_lags = 2, horizon = horizon_not_integer, approach = "independence",
