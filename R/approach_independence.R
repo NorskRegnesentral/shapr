@@ -47,7 +47,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   x_train0_mat <- as.matrix(x_train0)
   x_explain0_mat <- as.matrix(x_explain0)
 
-  index_s <- rep(seq(nrow(S0)), each = min(n_samples, n_train))
+  index_s <- rep(seq_len(nrow(S0)), each = min(n_samples, n_train))
   w <- 1 / n_samples # Yes, not n_samples0
 
   n_col <- n_explain
@@ -57,7 +57,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
     x_explain00_mat <- x_explain0_mat[i, , drop = FALSE]
 
     # sampling index_xtrain
-    index_xtrain <- c(replicate(nrow(S0), sample(x = seq(n_train), size = min(n_samples, n_train), replace = F)))
+    index_xtrain <- c(replicate(nrow(S0), sample(x = seq(n_train), size = min(n_samples, n_train), replace = FALSE)))
 
     # Generate data used for prediction
     dt_p <- observation_impute_cpp(

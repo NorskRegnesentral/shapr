@@ -145,7 +145,7 @@ compute_shapley_new <- function(internal, dt_vS) {
     for (i in seq_len(horizon)) {
       W0 <- W_list[[i]]
 
-      dt_vS0 <- merge(dt_vS, id_combination_mapper_dt[horizon == i], by = "id_combination", all.y = T)
+      dt_vS0 <- merge(dt_vS, id_combination_mapper_dt[horizon == i], by = "id_combination", all.y = TRUE)
       data.table::setorder(dt_vS0, horizon_id_combination)
       these_vS0_cols <- grep(paste0("p_hat", i), names(dt_vS0))
 

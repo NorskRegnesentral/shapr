@@ -87,11 +87,12 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
       Sbar_segments <- data.frame(Sbar_starts, Sbar_ends, cond_1, cond_2, len_Sbar_segment)
 
-      tmp[[j]] <- matrix(rep(x_explain_i, nrow(x_train)), nrow = nrow(x_train), byrow = T)
+      tmp[[j]] <- matrix(rep(x_explain_i, nrow(x_train)), nrow = nrow(x_train), byrow = TRUE)
 
-      w_vec <- exp(-0.5 * rowSums((matrix(rep(x_explain_i[S[j, ] == 0, drop = F], nrow(x_train)), nrow = nrow(x_train), byrow = T) -
-        x_train[, S[j, ] == 0, drop = F])^2)
-      / timeseries.fixed_sigma_vec^2)
+      w_vec <- exp(-0.5 * rowSums(
+        (matrix(rep(x_explain_i[S[j, ] == 0, drop = FALSE], nrow(x_train)), nrow = nrow(x_train), byrow = TRUE) -
+        x_train[, S[j, ] == 0, drop = FALSE])^2)
+        / timeseries.fixed_sigma_vec^2)
 
       for (k in seq_len(nrow(Sbar_segments))) {
         impute_these <- seq(Sbar_segments$Sbar_starts[k], Sbar_segments$Sbar_ends[k])
@@ -112,7 +113,7 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
         lin_mod_train <- a_train + b_train %o% (0:(Sbar_segments$len_Sbar_segment[k] - 1))
 
         to_impute <- (x_train[, impute_these] - lin_mod_train) + matrix(rep(lin_mod_explain, nrow(x_train)),
-          nrow = nrow(x_train), byrow = T
+          nrow = nrow(x_train), byrow = TRUE
         )
         # If the bounds are not null, we floor/ceiling the new time series values
         if (!is.null(timeseries.lower_bound)) {

@@ -972,7 +972,7 @@ MY_get_model_specs <- function(x) {
   m <- length(feature_specs$labels)
   feature_specs$classes <- attr(x$Terms, "dataClasses")[-1]
   feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
-  feature_specs$factor_levels[feature_specs$classes == "factor"] <- NA # the model object doesn't contain factor levels info
+  feature_specs$factor_levels[feature_specs$classes == "factor"] <- NA # model object doesn't contain factor levels info
   return(feature_specs)
 }
 

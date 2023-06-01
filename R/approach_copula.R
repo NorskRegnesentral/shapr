@@ -117,7 +117,7 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_explain_gaus
   if (length(index_given) %in% c(0, m)) {
     ret <- matrix(x_explain, ncol = m, nrow = 1)
   } else {
-    dependent_ind <- (1:length(mu))[-index_given]
+    dependent_ind <- (seq_len(length(mu)))[-index_given]
 
     tmp <- condMVNorm::condMVN(
       mean = mu,
@@ -130,7 +130,7 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_explain_gaus
     ret0_z <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
 
     ret0_x <- apply(
-      X = rbind(ret0_z, x_train[, dependent_ind, drop = F]),
+      X = rbind(ret0_z, x_train[, dependent_ind, drop = FALSE]),
       MARGIN = 2,
       FUN = inv_gaussian_transform,
       n_z = n_samples

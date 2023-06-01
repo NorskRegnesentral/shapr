@@ -81,7 +81,8 @@ setup <- function(x_train,
       horizon
     )
 
-    internal$parameters$output_labels <- cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
+    internal$parameters$output_labels <- cbind(rep(explain_idx, horizon),
+                                               rep(seq_len(horizon), each = length(explain_idx)))
     colnames(internal$parameters$output_labels) <- c("explain_idx", "horizon")
     internal$parameters$explain_idx <- explain_idx
     internal$parameters$explain_lags <- list(y = explain_y_lags, xreg = explain_xreg_lags)
@@ -175,14 +176,17 @@ check_n_combinations <- function(internal) {
     if (!is_groupwise) {
       if (n_combinations <= n_features) {
         stop(paste0(
-          "`n_combinations` (", n_combinations, ") has to be greater than the number of components to decompose the forecast onto:\n",
-          "`horizon` (", horizon, ") + `explain_y_lags` (", explain_y_lags, ") + sum(`explain_xreg_lags`) (", sum(explain_xreg_lags), ").\n"
+          "`n_combinations` (", n_combinations, ") has to be greater than the number of components to decompose ",
+          " the forecast onto:\n",
+          "`horizon` (", horizon, ") + `explain_y_lags` (", explain_y_lags, ") ",
+          "+ sum(`explain_xreg_lags`) (", sum(explain_xreg_lags), ").\n"
         ))
       }
     } else {
       if (n_combinations <= n_groups) {
         stop(paste0(
-          "`n_combinations` (", n_combinations, ") has to be greater than the number of components to decompose the forecast onto:\n",
+          "`n_combinations` (", n_combinations, ") has to be greater than the number of components to decompose ",
+          "the forecast onto:\n",
           "ncol(`xreg`) (", ncol(`xreg`), ") + 1"
         ))
       }
@@ -269,7 +273,7 @@ check_data <- function(internal) {
 
     model_feature_specs$classes <- x_train_feature_specs$classes
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
-  } else if (factors_exists & NA_factor_levels) {
+  } else if (factors_exists && NA_factor_levels) {
     message(
       "Note: Feature factor levels extracted from the model contains NA.\n",
       "Assuming feature factor levels from the data are correct.\n"
@@ -310,7 +314,8 @@ compare_vecs <- function(vec1, vec2, vec_type, name1, name2) {
 compare_feature_specs <- function(spec1, spec2, name1 = "model", name2 = "x_train", sort_labels = FALSE) {
   if (sort_labels) {
     compare_vecs(sort(spec1$labels), sort(spec2$labels), "names", name1, name2)
-    compare_vecs(spec1$classes[sort(names(spec1$classes))], spec2$classes[sort(names(spec2$classes))], "classes", name1, name2)
+    compare_vecs(spec1$classes[sort(names(spec1$classes))],
+                 spec2$classes[sort(names(spec2$classes))], "classes", name1, name2)
   } else {
     compare_vecs(spec1$labels, spec2$labels, "names", name1, name2)
     compare_vecs(spec1$classes, spec2$classes, "classes", name1, name2)
@@ -464,7 +469,11 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   if (!all((is.numeric(prediction_zero)) &&
     all(length(prediction_zero) == output_size) &&
     all(!is.na(prediction_zero)))) {
-    stop(paste0("`prediction_zero` (", paste0(prediction_zero, collapse = ", "), ") must be numeric and match the output size of the model (", paste0(output_size, collapse = ", "), ")."))
+    stop(paste0(
+      "`prediction_zero` (", paste0(prediction_zero, collapse = ", "),
+      ") must be numeric and match the output size of the model (",
+      paste0(output_size, collapse = ", "), ").")
+      )
   }
 
 
@@ -652,7 +661,7 @@ check_approach <- function(internal) {
   supported_approaches <- get_supported_approaches()
 
   if (!(is.character(approach) &&
-    (length(approach) == 1 | length(approach) == n_features) &&
+    (length(approach) == 1 || length(approach) == n_features) &&
     all(is.element(approach, supported_approaches)))
   ) {
     stop(
@@ -681,7 +690,7 @@ set_defaults <- function(internal) {
 }
 #' @keywords internal
 get_default_n_batches <- function(approach, n_combinations) {
-  used_approach <- names(sort(table(approach), decreasing = T))[1] # Most frequent used approach (when there are more)
+  used_approach <- names(sort(table(approach), decreasing = TRUE))[1] # Most frequent used approach (when more present)
 
   if (used_approach %in% c("ctree", "gaussian", "copula")) {
     suggestion <- ceiling(n_combinations / 10)
@@ -698,7 +707,8 @@ get_default_n_batches <- function(approach, n_combinations) {
   }
   message(
     paste0(
-      "Setting parameter 'n_batches' to ", ret, " as a fair trade-off between memory consumption and computation time.\n",
+      "Setting parameter 'n_batches' to ", ret, " as a fair trade-off between memory consumption and ",
+      "computation time.\n",
       "Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.\n"
     )
   )

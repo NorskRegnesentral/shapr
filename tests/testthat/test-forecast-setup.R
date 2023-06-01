@@ -22,7 +22,7 @@ test_that("error with custom model without providing predict_model", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -49,7 +49,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -71,7 +71,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -94,7 +94,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -117,7 +117,7 @@ test_that("erroneous input: `model`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -144,7 +144,7 @@ test_that("erroneous input: `prediction_zero`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -176,7 +176,7 @@ test_that("erroneous input: `n_combinations`", {
         group_lags = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
 
@@ -205,7 +205,7 @@ test_that("erroneous input: `n_combinations`", {
         group_lags = TRUE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -232,7 +232,7 @@ test_that("erroneous input: `train_idx`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
 
@@ -255,7 +255,7 @@ test_that("erroneous input: `train_idx`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -277,7 +277,7 @@ test_that("erroneous input: `train_idx`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -303,7 +303,7 @@ test_that("erroneous input: `explain_idx`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -325,7 +325,7 @@ test_that("erroneous input: `explain_idx`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -351,7 +351,7 @@ test_that("erroneous input: `explain_y_lags`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -373,7 +373,7 @@ test_that("erroneous input: `explain_y_lags`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -395,7 +395,7 @@ test_that("erroneous input: `explain_y_lags`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
 
@@ -416,7 +416,7 @@ test_that("erroneous input: `explain_y_lags`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -443,7 +443,7 @@ test_that("erroneous input: `explain_x_lags`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -465,13 +465,13 @@ test_that("erroneous input: `explain_x_lags`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
     {
       # explain_x_lags wrong length
-      explain_x_lags_incompatible_length <- c(1, 2) # only 1 xreg variable defined
+      explain_x_lags_wrong_length <- c(1, 2) # only 1 xreg variable defined
 
       explain_forecast(
         model = model_arima_temp,
@@ -480,14 +480,14 @@ test_that("erroneous input: `explain_x_lags`", {
         train_idx = 2:148,
         explain_idx = 149:150,
         explain_y_lags = 2,
-        explain_xreg_lags = explain_x_lags_incompatible_length,
+        explain_xreg_lags = explain_x_lags_wrong_length,
         horizon = 3,
         approach = "independence",
         prediction_zero = p0_ar,
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -513,7 +513,7 @@ test_that("erroneous input: `horizon`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -535,7 +535,7 @@ test_that("erroneous input: `horizon`", {
         n_batches = 1
       )
     },
-    error = T
+    error = TRUE
   )
 })
 

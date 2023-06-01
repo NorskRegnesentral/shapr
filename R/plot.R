@@ -195,12 +195,12 @@ plot.shapr <- function(x,
   # Converting and melting Xtest
   if (!is_groupwise) {
     desc_mat <- format(x$internal$data$x_explain, digits = digits)
-    for (i in 1:ncol(desc_mat)) {
+    for (i in seq_len(ncol(desc_mat))) {
       desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
     }
   } else {
     desc_mat <- format(x$shapley_values[, -1], digits = digits)
-    for (i in 1:ncol(desc_mat)) {
+    for (i in seq_len(ncol(desc_mat))) {
       desc_mat[, i] <- paste0(shap_names[i])
     }
   }
@@ -218,7 +218,7 @@ plot.shapr <- function(x,
   # Adding header for each individual plot
   dt_plot[, header := paste0("id: ", id, ", pred = ", format(pred, digits = digits + 1))]
 
-  if (plot_type == "scatter" | plot_type == "beeswarm") {
+  if (plot_type == "scatter" || plot_type == "beeswarm") {
     # Add feature values to data table
     dt_feature_vals <- data.table::copy(x$internal$data$x_explain)
     dt_feature_vals <- as.data.table(cbind(none = NA, dt_feature_vals))
@@ -275,7 +275,7 @@ plot.shapr <- function(x,
         desc_labels
       )
     }
-    if (!bar_plot_phi0 | plot_type == "waterfall") { # if none is not to be included in plot
+    if (!bar_plot_phi0 || plot_type == "waterfall") { # if none is not to be included in plot
       dt_plot <- dt_plot[variable != "none"]
     } else {
       desc_labels <- c(desc_labels, "None")
@@ -675,7 +675,7 @@ make_waterfall_plot <- function(dt_plot,
   }
 
   # waterfall plotting helpers
-  if (bar_plot_order == "largest_first" | bar_plot_order == "original") {
+  if (bar_plot_order == "largest_first" || bar_plot_order == "original") {
     dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
       ifelse(expected < pred, ifelse(end > start, end, start),
         ifelse(end < start, end, start)
@@ -697,7 +697,7 @@ make_waterfall_plot <- function(dt_plot,
   ), by = id]
   text_color <- dt_plot[variable != "none", text_color]
 
-  if (bar_plot_order == "largest_first" | bar_plot_order == "original") {
+  if (bar_plot_order == "largest_first" || bar_plot_order == "original") {
     dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
       ifelse(expected > pred, 1, 0), 0.5
     ), by = id]

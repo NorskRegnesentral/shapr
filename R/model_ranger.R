@@ -55,7 +55,7 @@ model_checker.ranger <- function(x) {
     )
   }
 
-  if (x$treetype == "Probability estimation" & length(x$forest$levels) > 2) {
+  if (x$treetype == "Probability estimation" && length(x$forest$levels) > 2) {
     stop(
       paste0(
         "\n",

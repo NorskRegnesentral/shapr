@@ -138,7 +138,7 @@ create_ctree <- function(given_ind,
                          minsplit,
                          minbucket,
                          use_partykit = "on_error") {
-  dependent_ind <- (1:dim(x_train)[2])[-given_ind]
+  dependent_ind <- seq_len(ncol(x_train))[-given_ind]
 
   if (length(given_ind) %in% c(0, ncol(x_train))) {
     datact <- list()
@@ -146,9 +146,9 @@ create_ctree <- function(given_ind,
     y <- x_train[, dependent_ind, with = FALSE]
     x <- x_train[, given_ind, with = FALSE]
     df <- data.table::data.table(cbind(y, x))
-    colnames(df) <- c(paste0("Y", 1:ncol(y)), paste0("V", given_ind))
+    colnames(df) <- c(paste0("Y", seq_len(ncol(y))), paste0("V", given_ind))
 
-    ynam <- paste0("Y", 1:ncol(y))
+    ynam <- paste0("Y", seq_len(ncol(y)))
     fmla <- as.formula(paste(paste(ynam, collapse = "+"), "~ ."))
 
     # Run party:ctree if that works. If that fails, run partykit instead
@@ -261,7 +261,7 @@ sample_ctree <- function(tree,
       pred.nodes <- party::where(object = datact, newdata = xp)
     }
 
-    rowno <- 1:nrow(x_train)
+    rowno <- seq_len(nrow(x_train))
 
     use_all_obs <- !sample & (length(rowno[fit.nodes == pred.nodes]) <= n_samples)
 

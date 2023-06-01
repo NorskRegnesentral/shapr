@@ -10,7 +10,7 @@ data[, Solar.R_factor := as.factor(cut(Solar.R, 10))]
 data[, Wind_factor := as.factor(round(Wind))]
 
 data_complete <- data[complete.cases(airquality), ]
-data_complete <- data_complete[sample(1:.N)] # Sh
+data_complete <- data_complete[sample(seq_len(.N))] # Sh
 
 y_var_numeric <- "Ozone"
 y_var_binary <- "Ozone_sub30"
@@ -34,12 +34,15 @@ x_explain_categorical <- data_explain[, ..x_var_categorical]
 lm_formula_numeric <- as.formula(paste0(y_var_numeric, " ~ ", paste0(x_var_numeric, collapse = " + ")))
 lm_formula_mixed <- as.formula(paste0(y_var_numeric, " ~ ", paste0(x_var_mixed, collapse = " + ")))
 lm_formula_interaction <- Ozone ~ Solar.R * Wind
-# lm_formula_numeric_col_order <- as.formula(paste0(y_var_numeric, " ~ ", paste0(sort(x_var_numeric), collapse = " + ")))
+# lm_formula_numeric_col_order <- as.formula(paste0(y_var_numeric, " ~ ",
+#                                                   paste0(sort(x_var_numeric), collapse = " + ")))
 lm_formula_categorical <- as.formula(paste0(y_var_numeric, " ~ ", paste0(x_var_categorical, collapse = " + ")))
 
 model_lm_numeric <- lm(lm_formula_numeric, data = data_complete)
 model_lm_categorical <- lm(lm_formula_categorical, data = data_complete)
-model_lm_numeric_col_order <- lm(lm_formula_numeric, data = data_complete[, ncol(data_complete):1])
+model_lm_numeric_col_order <- lm(lm_formula_numeric, data = rev(data_complete))
+
+data_complete[, ncol(data_complete):1]
 model_lm_mixed <- lm(lm_formula_mixed, data = data_complete)
 model_lm_interaction <- lm(lm_formula_interaction, data = data_complete)
 

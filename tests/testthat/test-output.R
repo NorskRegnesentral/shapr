@@ -414,7 +414,7 @@ test_that("output_custom_xgboost_mixed_dummy_ctree", {
           n_batches = 1,
           timing = FALSE
         )
-        #      custom$internal$objects$predict_model <- "Deleted on purpose" # To avoid issues with package updates of xgboost
+        #      custom$internal$objects$predict_model <- "Del on purpose" # Avoids issues with xgboost package updates
         custom
       },
       "output_custom_xgboost_mixed_dummy_ctree"

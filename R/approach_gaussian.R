@@ -136,7 +136,7 @@ sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_explain) {
     return(data.table::as.data.table(x_explain))
   }
 
-  dependent_ind <- (1:length(mu))[-index_given]
+  dependent_ind <- seq_along(mu)[-index_given]
   x_explain_gaussian <- x_explain[index_given]
   tmp <- condMVNorm::condMVN(
     mean = mu,
