@@ -20,3 +20,4 @@ inst/compare_lundberg\.xgb\.obj
 [.]Rout$
 [.]out$
 ^CRAN-SUBMISSION$
+^.Rprofile

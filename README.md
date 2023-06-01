@@ -16,6 +16,8 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
+# NOTE: This package is undergoing severe restructuring. A new version (with breaking changes) will be available on GitHub soon.
+
 The most common machine learning task is to train a model which is able
 to predict an unknown outcome (response variable) based on a set of
 known input variables/features. When using such models for real life
@@ -37,13 +39,13 @@ TreeSHAP (Lundberg, Erion, and Lee (2018)), assume that the features are
 independent when approximating the Shapley values for prediction
 explanation. This may lead to very inaccurate Shapley values, and
 consequently wrong interpretations of the predictions. Aas, Jullum, and
-Løland (2019) extends and improves the Kernel SHAP method of Lundberg
+Løland (2021) extends and improves the Kernel SHAP method of Lundberg
 and Lee (2017) to account for the dependence between the features,
 resulting in significantly more accurate approximations to the Shapley
-values. [See the paper for details](https://arxiv.org/abs/1903.10464).
+values. [See the paper for details](https://www.sciencedirect.com/science/article/pii/S0004370221000539).
 
 This package implements the methodology of Aas, Jullum, and Løland
-(2019).
+(2021).
 
 The following methodology/features are currently implemented:
 
@@ -51,19 +53,19 @@ The following methodology/features are currently implemented:
     the following functions `stats::glm`, `stats::lm`,`ranger::ranger`,
     `xgboost::xgboost`/`xgboost::xgb.train` and `mgcv::gam`.
 -   Accounting for feature dependence assuming the features are Gaussian
-    (Aas, Jullum, and Løland (2019)).
+    (Aas, Jullum, and Løland (2021)).
 -   Accounting for feature dependence with a Gaussian copula (Gaussian
     dependence structure, any marginal) (Aas, Jullum, and Løland
-    (2019)).
+    (2021)).
 -   Accounting for feature dependence using the Mahalanobis distance
     based empirical (conditional) distribution approach of Aas, Jullum,
-    and Løland (2019).
+    and Løland (2021).
 -   Accounting for feature dependence using conditional inference trees
     (Redelmeier, Jullum, and Aas (2020)).
 -   Combining any of the four methods.
 -   Optional use of the AICc criterion of Hurvich, Simonoff, and
     Tsai (1998) when optimizing the bandwidth parameter in the empirical
-    (conditional) approach of Aas, Jullum, and Løland (2019).
+    (conditional) approach of Aas, Jullum, and Løland (2021).
 -   Functionality for visualizing the explanations.
 -   Support for models not supported natively.
 
@@ -151,7 +153,6 @@ cor(x_train)
 #> rm    -0.6108040  1.0000000  0.1999130 -0.3870571
 #> dis   -0.4928126  0.1999130  1.0000000 -0.7060903
 #> indus  0.5986263 -0.3870571 -0.7060903  1.0000000
-
 # Fitting a basic xgboost model to the training data
 model <- xgboost(
   data = x_train,
@@ -162,8 +163,9 @@ model <- xgboost(
 
 # Prepare the data for explanation
 explainer <- shapr(x_train, model)
+#> 
+#> Success with message:
 #> The specified model provides feature classes that are NA. The classes of data are taken as the truth.
-
 # Specifying the phi_0, i.e. the expected prediction without any features
 p <- mean(y_train)
 
@@ -213,9 +215,9 @@ By contributing to this project, you agree to abide by its terms.
 
 <div id="ref-aas2019explaining" class="csl-entry">
 
-Aas, Kjersti, Martin Jullum, and Anders Løland. 2019. “Explaining
+Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining
 Individual Predictions When Features Are Dependent: More Accurate
-Approximations to Shapley Values.” *arXiv Preprint arXiv:1903.10464*.
+Approximations to Shapley Values.” *Artificial Intelligence* 298.
 
 </div>
 

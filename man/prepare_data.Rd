@@ -2,6 +2,7 @@
 % Please edit documentation in R/observations.R
 \name{prepare_data}
 \alias{prepare_data}
+\alias{prepare_data.independence}
 \alias{prepare_data.empirical}
 \alias{prepare_data.gaussian}
 \alias{prepare_data.copula}
@@ -10,23 +11,16 @@
 \usage{
 prepare_data(x, ...)
 
-\method{prepare_data}{empirical}(x, seed = 1, n_samples = 1000, index_features = NULL, ...)
+\method{prepare_data}{independence}(x, index_features = NULL, ...)
 
-\method{prepare_data}{gaussian}(x, seed = 1, n_samples = 1000, index_features = NULL, ...)
+\method{prepare_data}{empirical}(x, index_features = NULL, ...)
 
-\method{prepare_data}{copula}(
-  x,
-  x_test_gaussian = 1,
-  seed = 1,
-  n_samples = 1000,
-  index_features = NULL,
-  ...
-)
+\method{prepare_data}{gaussian}(x, index_features = NULL, ...)
+
+\method{prepare_data}{copula}(x, index_features = NULL, ...)
 
 \method{prepare_data}{ctree}(
   x,
-  seed = 1,
-  n_samples = 1000,
   index_features = NULL,
   mc_cores = 1,
   mc_cores_create_ctree = mc_cores,
@@ -39,16 +33,8 @@ prepare_data(x, ...)
 
 \item{...}{Currently not used.}
 
-\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
-
-\item{n_samples}{Integer. The number of obs to sample from the leaf if \code{sample} = TRUE or if \code{sample}
-= FALSE but \code{n_samples} is less than the number of obs in the leaf.}
-
 \item{index_features}{List. Default is NULL but if either various methods are being used or various mincriterion are
 used for different numbers of conditioned features, this will be a list with the features to pass.}
-
-\item{x_test_gaussian}{Matrix. Test data quantile-transformed to standard Gaussian variables. Only applicable if
-\code{approach = "empirical"}.}
 
 \item{mc_cores}{Integer. Only for class \code{ctree} currently. The number of cores to use in paralellization of the
 tree building (\code{create_ctree}) and tree sampling (\code{sample_ctree}). Defaults to 1. Note: Uses
@@ -60,6 +46,11 @@ parallel::mclapply which relies on forking, i.e. uses only 1 core on Windows sys
 \item{mc_cores_sample_ctree}{Integer. Same as \code{mc_cores}, but specific for the tree building prediction
 function.
 Defaults to \code{mc_cores}.}
+
+\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
+}
+\value{
+A `data.table` containing simulated data passed to \code{\link{prediction}}.
 }
 \description{
 Generate data used for predictions

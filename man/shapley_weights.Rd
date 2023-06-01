@@ -4,19 +4,19 @@
 \alias{shapley_weights}
 \title{Calculate Shapley weight}
 \usage{
-shapley_weights(m, N, n_features, weight_zero_m = 10^6)
+shapley_weights(m, N, n_components, weight_zero_m = 10^6)
 }
 \arguments{
-\item{m}{Positive integer. Total number of features.}
+\item{m}{Positive integer. Total number of features/feature groups.}
 
-\item{N}{Positive integer. The number of unique combinations when sampling \code{n_features} features,
-without replacement, from a sample space consisting of \code{m} different features.}
+\item{N}{Positive integer. The number of unique combinations when sampling \code{n_components} features/feature
+groups, without replacement, from a sample space consisting of \code{m} different features/feature groups.}
 
-\item{n_features}{Positive integer. Represents the number of features you want to sample from a feature
-space consisting of \code{m} unique features. Note that \code{ 0 < = n_features <= m}.}
+\item{n_components}{Positive integer. Represents the number of features/feature groups you want to sample from
+a feature space consisting of \code{m} unique features/feature groups. Note that \code{ 0 < = n_components <= m}.}
 
 \item{weight_zero_m}{Positive integer. Represents the Shapley weight for two special
-cases, i.e. the case where you have either \code{0} or \code{m} features.}
+cases, i.e. the case where you have either \code{0} or \code{m} features/feature groups.}
 }
 \value{
 Numeric

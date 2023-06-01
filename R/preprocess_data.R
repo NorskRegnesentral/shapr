@@ -88,6 +88,8 @@ preprocess_data <- function(x, feature_list) {
   )
   update_data(x_dt, updater) # Updates x_dt by reference
 
+
+
   ret <- list(
     x_dt = x_dt,
     updated_feature_list = updater
@@ -154,6 +156,7 @@ check_features <- function(f_list_1, f_list_2,
   }
   if (NULL_1 & use_1_as_truth) {
     message(paste0(
+      "\nSuccess with message:\n",
       "The specified ", name_1, " provides NULL feature labels. ",
       "The labels of ", name_2, " are taken as the truth."
     ))
@@ -168,6 +171,7 @@ check_features <- function(f_list_1, f_list_2,
   }
   if ((NA_1 & use_1_as_truth)) {
     message(paste0(
+      "\nSuccess with message:\n",
       "The specified ", name_1, " provides feature labels that are NA. ",
       "The labels of ", name_2, " are taken as the truth."
     ))
@@ -243,6 +247,7 @@ check_features <- function(f_list_1, f_list_2,
   #### Checking classes ####
   if (any(is.na(f_list_1$classes)) & use_1_as_truth) { # Only relevant when f_list_1 is a model
     message(paste0(
+      "\nSuccess with message:\n",
       "The specified ", name_1, " provides feature classes that are NA. ",
       "The classes of ", name_2, " are taken as the truth."
     ))
@@ -270,6 +275,7 @@ check_features <- function(f_list_1, f_list_2,
     is_NULL <- any(is.null(relevant_factor_levels))
     if ((is_NA | is_NULL) & use_1_as_truth) {
       message(paste0(
+        "\nSuccess with message:\n",
         "The specified ", name_1, " provides factor feature levels that are NULL or NA. ",
         "The factor levels of ", name_2, " are taken as the truth."
       ))
@@ -328,9 +334,9 @@ update_data <- function(data, updater) {
   # Reorder and delete unused columns
   cnms_remove <- setdiff(colnames(data), new_labels)
   if (length(cnms_remove) > 0) {
-    message(
-      paste0(
-        "The columns(s) ",
+    message(paste0(
+      "\nSuccess with message:\n",
+      "The columns(s) ",
         paste0(cnms_remove, collapse = ", "),
         " is not used by the model and thus removed from the data."
       )
@@ -346,6 +352,7 @@ update_data <- function(data, updater) {
     if (any(!identical_levels)) {
       changed_levels <- which(!identical_levels)
       message(paste0(
+        "\nSuccess with message:\n",
         "Levels are reordered for the factor feature(s) ",
         paste0(new_labels[changed_levels], collapse = ", "), "."
       ))
@@ -360,4 +367,37 @@ update_data <- function(data, updater) {
   }
 
   return(NULL)
+}
+
+#' Process (check and update names) the group list
+#'
+#' @inheritParams shapr
+#' @param feature_labels Vector of characters. Contains the feature labels used by the model
+#'
+#' @details This function takes care of all preprocessing and checking of the provided data in \code{x} against
+#' the feature_list which is typically the output from \code{\link[shapr:get_model_specs]{get_model_specs}}
+#'
+#' @return List with two named elements: \code{group}: The input, but with group names if non-existing,
+#' \code{group_num} a corresponding group list with names replaced by feature number
+#'
+#' @author Martin Jullum
+#'
+#' @keywords internal
+process_groups <- function(group, feature_labels) {
+  check_groups(feature_labels, group)
+
+  # Make group names if not existing
+  if (is.null(names(group))) {
+    message(
+      "\nSuccess with message:\n
+      Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc.")
+    names(group) <- paste0("group", seq_along(group))
+  }
+
+  # Make group list with numeric feature indicators
+  group_num <- lapply(group, FUN = function(x) {
+    match(x, feature_labels)
+  })
+
+  return(list(group = group, group_num = group_num))
 }

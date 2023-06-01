@@ -28,9 +28,16 @@ test_that("Test functions in explanation.R", {
 
     # Prepare the data for explanation. Path needs to be relative to testthat directory in the package
     explainer <- readRDS(file = "test_objects/shapley_explainer_obj.rds")
+    p0 <- mean(y_train)
+
+    # Test way to insert test data (shapr<v0.2.1 threw error for line 2-4 below on R>=4.0)
+    expect_silent(explain(x_test, explainer, approach = "gaussian", prediction_zero = p0))
+    expect_silent(explain(head(x_test), explainer, approach = "gaussian", prediction_zero = p0))
+    expect_silent(explain(x_test[, 1:4], explainer, approach = "gaussian", prediction_zero = p0))
+    expect_silent(explain(x_test[1:2, ], explainer, approach = "gaussian", prediction_zero = p0))
+
 
     # Creating list with lots of different explainer objects
-    p0 <- mean(y_train)
     ex_list <- list()
 
     # Ex 1: Explain predictions (gaussian)
@@ -40,7 +47,7 @@ test_that("Test functions in explanation.R", {
     ex_list[[2]] <- explain(x_test, explainer, approach = "copula", prediction_zero = p0)
 
     # Ex 3: Explain predictions (empirical, independence):
-    ex_list[[3]] <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0, type = "independence")
+    ex_list[[3]] <- explain(x_test, explainer, approach = "independence", prediction_zero = p0)
 
     # Ex 4: Explain predictions (empirical, fixed sigma)
     ex_list[[4]] <- explain(x_test, explainer, approach = "empirical", prediction_zero = p0, type = "fixed_sigma")
@@ -95,6 +102,7 @@ test_that("Test functions in explanation.R", {
     # Ex 18: Explain combined II - all empirical
     approach <- c(rep("empirical", 4))
     ex_list[[18]] <- explain(x_test, explainer, approach = approach, prediction_zero = p0)
+
 
     if (requireNamespace("party", quietly = TRUE)) {
 
@@ -295,13 +303,13 @@ test_that("Test functions in explanation.R", {
       # Checking that all explain objects produce the same as before
       expect_known_value(ex_list,
         file = "test_objects/explanation_explain_obj_list.rds",
-        update = F
+        update = FALSE
       )
     } else {
       # Tests using only the first 17 elements of explanation_explain_obj_list.rds
       expect_known_value(ex_list,
         file = "test_objects/explanation_explain_obj_list_no_ctree.rds",
-        update = F
+        update = FALSE
       )
     }
 
@@ -309,7 +317,7 @@ test_that("Test functions in explanation.R", {
     ### Additional test to test that only the produced shapley values are the same as before
     fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_obj_list_fixed.rds")
     for (i in 1:length(ex_list)) {
-      expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+        expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
     }
 
 
@@ -326,6 +334,23 @@ test_that("Test functions in explanation.R", {
     expect_error(
       explain(x_test, explainer, approach = rep("gaussian", ncol(x_test) + 1), prediction_zero = p0)
     )
+
+    # Check that the same results are obtained if you pass the covariance matrix or whether it is computed internally
+    # Gaussian approach
+    explained_gaus_cov <- explain(x_test, explainer, approach = "gaussian",
+                                  prediction_zero = p0, cov_mat = cov(explainer$x_train))
+    explained_gaus_no_cov <- explain(x_test, explainer, approach = "gaussian",
+                                     prediction_zero = p0)
+
+    # Empirical approach
+    explained_emp_cov <- explain(x_test, explainer, approach = "empirical",
+                                 prediction_zero = p0, cov_mat = cov(explainer$x_train))
+    explained_emp_no_cov <- explain(x_test, explainer, approach = "empirical",
+                                    prediction_zero = p0)
+
+    expect_equal(explained_gaus_cov, explained_gaus_no_cov)
+    expect_equal(explained_emp_cov, explained_emp_no_cov)
+
   }
 })
 
@@ -529,4 +554,163 @@ test_that("Testing data input to explain in explanation.R", {
       )
     }
   }
+})
+
+
+test_that("Testing that differnet data ordering gives same explanations", {
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    y_var <- "medv"
+
+    # Training data
+    x_train <- as.matrix(tail(Boston[, x_var], -6))
+    y_train <- tail(Boston[, y_var], -6)
+    xy_train_full_df <- tail(Boston, -6)
+
+    # Test data
+    x_test <- as.matrix(head(Boston[, x_var], 6))
+
+    formula <- as.formula(paste0("medv ~ ", paste0(x_var, collapse = "+")))
+    p0 <- mean(y_train)
+
+    model <- lm(formula = formula, data = xy_train_full_df)
+
+    explainer_1 <- shapr(x_train[, 1:4], model = model)
+    explainer_2 <- shapr(x_train[, 4:1], model = model)
+
+    explained_1_1 <- explain(x = x_test[, 1:4], explainer = explainer_1, approach = "empirical", prediction_zero = p0)
+    explained_1_2 <- explain(x = x_test[, 4:1], explainer = explainer_1, approach = "empirical", prediction_zero = p0)
+    explained_2_1 <- explain(x = x_test[, 1:4], explainer = explainer_2, approach = "empirical", prediction_zero = p0)
+    explained_2_2 <- explain(x = x_test[, 4:1], explainer = explainer_2, approach = "empirical", prediction_zero = p0)
+
+    expect_identical(explained_1_1, explained_1_2)
+    expect_identical(explained_1_1, explained_2_1)
+    expect_identical(explained_1_1, explained_2_2)
+  }
+})
+
+
+test_that("Test functions related to groups in explanation.R", {
+
+  # Load data -----------
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    y_var <- "medv"
+
+    y_train <- tail(Boston[, y_var], 50)
+    x_test <- as.matrix(head(Boston[, x_var], 2))
+
+    # Prepare the data for explanation. Path needs to be relative to testthat directory in the package
+    explainer0 <- readRDS(file = "test_objects/shapley_explainer_obj.rds")
+    explainer1 <- readRDS(file = "test_objects/shapley_explainer_group1_obj.rds")
+    explainer2 <- readRDS(file = "test_objects/shapley_explainer_group2_obj.rds")
+
+    # Creating list with lots of different explainer objects
+    p0 <- mean(y_train)
+
+    ex_list <- list()
+
+    # Ex 1: Explain predictions (gaussian)
+    ex_list[[1]] <- explain(x_test, explainer1, approach = "gaussian", prediction_zero = p0)
+
+    # Ex 2: Explain predictions (empirical)
+    ex_list[[2]] <- explain(x_test, explainer1, approach = "empirical", prediction_zero = p0)
+
+    # Ex 3: Explain predictions (copula)
+    ex_list[[3]] <- explain(x_test, explainer1, approach = "copula", prediction_zero = p0)
+
+    # Ex 4: Explain predictions (gaussian, empirical)
+    ex_list[[4]] <- explain(x_test, explainer1, approach = c(
+      "gaussian", "empirical", "gaussian",
+      "empirical"
+    ), prediction_zero = p0)
+
+    # Ex 5: Explain predictions (copula)
+    ex_list[[5]] <- explain(x_test, explainer2, approach = "gaussian", prediction_zero = p0)
+
+    # Checking that all explain objects produce the same as before
+    expect_known_value(ex_list, file = "test_objects/explanation_explain_group_obj_list.rds")
+
+    ### Additional test that only the produced shapley values are the same as before
+    fixed_explain_obj_list <- readRDS("test_objects/explanation_explain_group_obj_list.rds")
+    for (i in 1:length(ex_list)) {
+      expect_equal(ex_list[[i]]$dt, fixed_explain_obj_list[[i]]$dt)
+    }
+
+    # Here we check if not grouping (explanation0) and grouping with one feature per group (explanation2)
+    # gives the same answer
+    explanation0 <- explain(x_test, explainer0, approach = "empirical", prediction_zero = p0)
+    explanation2 <- explain(x_test, explainer2, approach = "empirical", prediction_zero = p0)
+    names(explanation2$dt)[-1] <- unlist(explainer2$group)
+    expect_equal(explanation0$dt, explanation2$dt)
+  }
+})
+
+
+test_that("test functions related to running explain in batch", {
+
+  explainer <- list()
+
+  n_comb <- 20
+  n_batches <- 1
+  explainer$S <- matrix(1, nrow = n_comb, ncol = 5)
+  S_batch <- create_S_batch(explainer, n_batches = n_batches)
+  n_batches <- 1
+  expect_length(S_batch, n_batches)
+
+  n_batches <- 5
+  S_batch <- create_S_batch(explainer, n_batches = n_batches)
+  expect_length(S_batch, 5)
+  expect_equal(unlist(S_batch, use.names = FALSE), 1:n_comb)
+
+
+  S_batch <- create_S_batch(explainer, n_batches = n_batches, index_S = 1:10)
+  expect_equal(unlist(S_batch, use.names = FALSE), 1:10)
+
+})
+
+
+test_that("prepare_and_predict", {
+
+  if (requireNamespace("MASS", quietly = TRUE)) {
+
+    data("Boston", package = "MASS")
+    x_var <- c("lstat", "rm", "dis", "indus")
+    y_var <- "medv"
+
+    y_train <- tail(Boston[, y_var], 50)
+    x_test <- as.matrix(head(Boston[, x_var], 2))
+
+    # Prepare the data for explanation. Path needs to be relative to testthat directory in the package
+    explainer <- readRDS(file = "test_objects/shapley_explainer_obj.rds")
+
+    p0 <- mean(y_train)
+    explainer$x_test <- as.matrix(preprocess_data(x_test, explainer$feature_list)$x_dt)
+    explainer$approach <- "independence"
+    explainer$n_samples <- 100
+
+    res <- prepare_and_predict(explainer, n_batches = 1, p0)
+
+    expect_true(is.list(res))
+    expect_s3_class(res, "shapr")
+    expect_equal(names(res), c("dt", "model", "p", "x_test", "is_groupwise"))
+
+
+    # return the contribution matrix
+    res <- prepare_and_predict(explainer, n_batches = 1, p0, only_return_contrib_dt = TRUE)
+    expect_s3_class(res, "data.table")
+
+  }
+})
+
+test_that("errors with non valid n_batches", {
+
+  explainer <- list()
+  explainer$S <- matrix(1, nrow = 10, ncol = 2)
+  x_test <- data.table()
+  expect_error(explain(x_test, explainer, n_batches = 0))
+  expect_error(explain(x_test, explainer, n_batches = 11))
+
 })

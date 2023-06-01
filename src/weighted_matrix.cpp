@@ -3,13 +3,13 @@ using namespace Rcpp;
 
 //' Calculate weight matrix
 //'
-//' @param features List. Each of the elements equals an integer
-//' vector representing a valid combination of features.
-//' @param m Integer. Number of features
+//' @param subsets List. Each of the elements equals an integer
+//' vector representing a valid combination of features/feature groups.
+//' @param m Integer. Number of features/feature groups
 //' @param n Integer. Number of combinations
 //' @param w Numeric vector of length \code{n}, i.e. \code{w[i]} equals
-//' the Shapley weight of feature combination \code{i}, represented by
-//' \code{features[[i]]}.
+//' the Shapley weight of feature/feature group combination \code{i}, represented by
+//' \code{subsets[[i]]}.
 //'
 //' @export
 //' @keywords internal
@@ -17,13 +17,13 @@ using namespace Rcpp;
 //' @return Matrix of dimension n x m + 1
 //' @author Nikolai Sellereite
 // [[Rcpp::export]]
-arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
+arma::mat weight_matrix_cpp(List subsets, int m, int n, NumericVector w){
 
     // Note that Z is a n x (m + 1) matrix, where m is the number
-    // of unique features. All elements in the first column are equal to 1.
-    // For j > 0, Z(i, j) = 1 if and only if feature j is present in
-    // the ith combination of features. In example, if Z(i, j) = 1 we know that
-    // j is present in features[i].
+    // of unique subsets. All elements in the first column are equal to 1.
+    // For j > 0, Z(i, j) = 1 if and only if feature/feature group j is present in
+    // the ith combination of subsets. In example, if Z(i, j) = 1 we know that
+    // j is present in subsets[i].
 
     // Note that w represents the diagonal in W, where W is a diagoanl
     // n x n matrix.
@@ -40,8 +40,8 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
     // i.e. section 3.2.
 
     // Define objects
-    int n_features;
-    IntegerVector feature_vec;
+    int n_elements;
+    IntegerVector subset_vec;
     arma::mat Z(n, m + 1, arma::fill::zeros), X(n, m + 1, arma::fill::zeros);
     arma::mat R(m + 1, n, arma::fill::zeros);
 
@@ -51,12 +51,12 @@ arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w){
         // Set all elements in the first column equal to 1
         Z(i, 0) = 1;
 
-        // Extract features combinations
-        feature_vec = features[i];
-        n_features = feature_vec.length();
-        if (n_features > 0) {
-            for (int j = 0; j < n_features; j++)
-                Z(i, feature_vec[j]) = 1;
+        // Extract subsets
+        subset_vec = subsets[i];
+        n_elements = subset_vec.length();
+        if (n_elements > 0) {
+            for (int j = 0; j < n_elements; j++)
+                Z(i, subset_vec[j]) = 1;
         }
     }
 

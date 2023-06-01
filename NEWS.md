@@ -1,3 +1,10 @@
+# shapr 0.2.0.9000
+
+* Development version
+* Added support for groupSHAP, including check of appropriate groups, examples and tests
+* Various modifications to input of internal functions to reflect that Shapley values may be
+  computed both feature-wise and group-wise
+* Fixed bug when passing non-named data to shapr() or explain() (e.g. ```shapr(data[,1:5],model...)```
 
 # shapr 0.2.2
 

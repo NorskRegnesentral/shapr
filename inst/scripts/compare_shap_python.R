@@ -4,11 +4,14 @@ library(shapr)
 library(data.table)
 
 # Python settings
+# Using the virtual environment here "../../Python/.venv/bin/python", as set by
+#Sys.setenv(RETICULATE_PYTHON = "../../Python/.venv/bin/python") in the .Rprofile
 library(reticulate)
-#virtualenv_create("py3_6-virtualenv", python = "/usr/bin/python3.6") # Creating virtual environment with Python 3.6
-use_virtualenv("py3_6-virtualenv")
-#py_install("xgboost",envname = "py3_6-virtualenv")
-#py_install("shap",envname = "py3_6-virtualenv")
+
+# Install some packages
+#py_install("xgboost")
+#py_install("shap")
+#py_install("pandas")
 
 data("Boston")
 
@@ -20,7 +23,7 @@ y_train <- tail(Boston[, y_var], -6)
 x_test <- as.matrix(head(Boston[, x_var], 6))
 
 # Creating a larger test data set (600 observations) for more realistic function time calls.
-# Modifying x_test to repeat the 6 test observations 50 times
+# Modifying x_test to repeat the 6 test observations 100 times
 x_test = rep(1,100) %x% x_test
 colnames(x_test) <- colnames(x_train)
 
@@ -40,7 +43,7 @@ time_R_prepare <- proc.time()
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-explanation_independence <- explain(x_test, explainer, approach = "empirical", type = "independence", prediction_zero = p0)
+explanation_independence <- explain(x_test, explainer, approach = "independence", prediction_zero = p0)
 
 time_R_indep0 <- proc.time()
 

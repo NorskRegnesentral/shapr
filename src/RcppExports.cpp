@@ -123,16 +123,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // weight_matrix_cpp
-arma::mat weight_matrix_cpp(List features, int m, int n, NumericVector w);
-RcppExport SEXP _shapr_weight_matrix_cpp(SEXP featuresSEXP, SEXP mSEXP, SEXP nSEXP, SEXP wSEXP) {
+arma::mat weight_matrix_cpp(List subsets, int m, int n, NumericVector w);
+RcppExport SEXP _shapr_weight_matrix_cpp(SEXP subsetsSEXP, SEXP mSEXP, SEXP nSEXP, SEXP wSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type features(featuresSEXP);
+    Rcpp::traits::input_parameter< List >::type subsets(subsetsSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(weight_matrix_cpp(features, m, n, w));
+    rcpp_result_gen = Rcpp::wrap(weight_matrix_cpp(subsets, m, n, w));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -7,27 +7,43 @@
 #' See \code{\link{shapr}}.
 #'
 #' @param approach Character vector of length \code{1} or \code{n_features}.
-#' \code{n_features} equals the total number of features in the model. All elements should
-#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, or \code{"ctree"}. See details for more
-#' information.
+#' \code{n_features} equals the total number of features in the model. All elements should,
+#' either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, or \code{"independence"}.
+#' See details for more information.
+#'
+#' @param n_samples Positive integer. Indicating the maximum number of samples to use in the
+#' Monte Carlo integration for every conditional expectation. See also details.
 #'
 #' @param prediction_zero Numeric. The prediction value for unseen data, typically equal to the mean of
 #' the response.
 #'
-#' @param ... Additional arguments passed to \code{\link{prepare_data}}
+#' @param n_batches Positive integer.
+#' Specifies how many batches the total number of feature combinations should be split into when calculating the
+#' contribution function for each test observation.
+#' The default value is 1.
+#' Increasing the number of batches may significantly reduce the RAM allocation for models with many features.
+#' This typically comes with a small increase in computation time.
 #'
-#' @details The most important thing to notice is that \code{shapr} has implemented four different
+#' @param ... Additional arguments passed to \code{\link{prepare_and_predict}}
+#'
+#' @details The most important thing to notice is that \code{shapr} has implemented five different
 #' approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-#' \code{"gaussian"}, \code{"copula"} and \code{"ctree"}.
-#'
+#' \code{"gaussian"}, \code{"copula"}, \code{"ctree"} and \code{"independence"}.
 #' In addition, the user also has the option of combining the four approaches.
-#' E.g. if you're in a situation where you have trained a model the consists of 10 features,
+#' E.g., if you're in a situation where you have trained a model that consists of 10 features,
 #' and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
 #' the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
 #' if you condition on more than 5 features this can be done by simply passing
 #' \code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
-#' \code{"approach[i]" = "gaussian"} it means that you'd like to use the \code{"gaussian"} approach
+#' \code{"approach[i]" = "gaussian"} means that you'd like to use the \code{"gaussian"} approach
 #' when conditioning on \code{i} features.
+#'
+#' For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
+#' from the leaf node (see an exception related to the \code{sample} argument).
+#' For \code{approach="empirical"}, \code{n_samples} is  the \eqn{K} parameter in equations (14-15) of
+#' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+#' \code{w_threshold} argument.
+#'
 #'
 #' @return Object of class \code{c("shapr", "list")}. Contains the following items:
 #' \describe{
@@ -61,6 +77,10 @@
 #' @export
 #'
 #' @author Camilla Lingjaerde, Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier
+#'
+#'@references
+#'   Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual predictions when features are dependent:
+#'   More accurate approximations to Shapley values. Artificial Intelligence, 298, 103502.
 #'
 #' @examples
 #' if (requireNamespace("MASS", quietly = TRUE)) {
@@ -118,8 +138,21 @@
 #'   if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'     plot(explain1)
 #'   }
+#'
+#'   # Group-wise explanations
+#'   group <- list(A = c("lstat", "rm"), B = c("dis", "indus"))
+#'   explainer_group <- shapr(x_train, model, group = group)
+#'   explain_groups <- explain(
+#'     x_test,
+#'     explainer_group,
+#'     approach = "empirical",
+#'     prediction_zero = p,
+#'     n_samples = 1e2
+#'   )
+#'   print(explain_groups$dt)
 #' }
-explain <- function(x, explainer, approach, prediction_zero, ...) {
+explain <- function(x, explainer, approach, prediction_zero,
+                    n_samples = 1e3, n_batches = 1, ...) {
   extras <- list(...)
 
   # Check input for x
@@ -127,33 +160,53 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
     stop("x should be a matrix or a data.frame/data.table.")
   }
 
+  if (n_batches < 1 || n_batches > nrow(explainer$S)) {
+    stop("`n_batches` is smaller than 1 or greater than the number of rows in explainer$S.")
+  }
   # Check input for approach
   if (!(is.vector(approach) &&
     is.atomic(approach) &&
     (length(approach) == 1 | length(approach) == length(explainer$feature_list$labels)) &&
-    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree"))))
+    all(is.element(approach, c("empirical", "gaussian", "copula", "ctree", "independence"))))
   ) {
     stop(
       paste(
         "It seems that you passed a non-valid value for approach.",
-        "It should be either 'empirical', 'gaussian', 'copula', 'ctree' or",
+        "It should be either 'empirical', 'gaussian', 'copula', 'ctree', 'independence' or",
         "a vector of length=ncol(x) with only the above characters."
       )
     )
   }
 
-
-
+  this_class <- ""
   if (length(approach) > 1) {
-    class(x) <- "combined"
+    class(this_class) <- "combined"
   } else if (length(extras$mincriterion) > 1) {
-    class(x) <- "ctree_comb_mincrit"
+    class(this_class) <- "ctree_comb_mincrit"
   } else {
-    class(x) <- approach
+    class(this_class) <- approach
   }
 
-  UseMethod("explain", x)
+  UseMethod("explain", this_class)
 }
+
+#' @param seed Positive integer. If \code{NULL} the seed will be inherited from the calling environment.
+#' @rdname explain
+#' @export
+explain.independence <- function(x, explainer, approach, prediction_zero,
+                                 n_samples = 1e3, n_batches = 1, seed = 1, ...) {
+
+
+  if (!is.null(seed)) set.seed(seed)
+
+  # Add arguments to explainer object
+  explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$approach <- approach
+  explainer$n_samples <- n_samples
+
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, ...)
+}
+
 
 #' @param type Character. Should be equal to either \code{"independence"},
 #' \code{"fixed_sigma"}, \code{"AICc_each_k"} or \code{"AICc_full"}.
@@ -174,15 +227,25 @@ explain <- function(x, explainer, approach, prediction_zero, ...) {
 #' is only applicable when \code{approach = "empirical"}, and \code{type} is either equal to
 #' \code{"AICc_each_k"} or \code{"AICc_full"}
 #'
-#' @param w_threshold Positive integer between 0 and 1.
+#' @param w_threshold Numeric vector of length 1, with \code{0 < w_threshold <= 1} representing the minimum proportion
+#' of the total empirical weight that data samples should use. If e.g. \code{w_threshold = .8} we will choose the
+#' \code{K} samples with the largest weight so that the sum of the weights accounts for 80\% of the total weight.
+#' \code{w_threshold} is the \eqn{\eta} parameter in equation (15) of Aas et al (2021).
+#' @param cov_mat Numeric matrix. (Optional) Containing the covariance matrix of the data
+#' generating distribution. \code{NULL} means it is estimated from the data if needed
+#' (in the empirical approach).
 #'
 #' @rdname explain
 #'
 #' @export
 explain.empirical <- function(x, explainer, approach, prediction_zero,
-                              type = "fixed_sigma", fixed_sigma_vec = 0.1,
+                              n_samples = 1e3, n_batches = 1, seed = 1,
+                              w_threshold = 0.95, type = "fixed_sigma", fixed_sigma_vec = 0.1,
                               n_samples_aicc = 1000, eval_max_aicc = 20,
-                              start_aicc = 0.1, w_threshold = 0.95, ...) {
+                              start_aicc = 0.1,
+                              cov_mat = NULL, ...) {
+
+  if (!is.null(seed)) set.seed(seed)
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
@@ -193,15 +256,28 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
   explainer$eval_max_aicc <- eval_max_aicc
   explainer$start_aicc <- start_aicc
   explainer$w_threshold <- w_threshold
+  explainer$n_samples <- n_samples
 
-  # Generate data
-  dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
+  if (type == "independence") {
+    warning(paste0(
+      "Using type = 'independence' for approach = 'empirical' is deprecated.\n",
+      "Please use approach = 'independence' instead in the call to explain()."
+    ))
   }
 
-  # Predict
-  r <- prediction(dt, prediction_zero, explainer)
+  # If cov_mat is not provided directly, use sample covariance of training data
+  if (is.null(cov_mat)) {
+    cov_mat <- stats::cov(explainer$x_train)
+  }
+  # Make sure that covariance matrix is positive-definite
+  eigen_values <- eigen(cov_mat)$values
+  if (any(eigen_values <= 1e-06)) {
+    explainer$cov_mat <- as.matrix(Matrix::nearPD(cov_mat)$mat)
+  } else {
+    explainer$cov_mat <- cov_mat
+  }
+
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, ...)
 
   return(r)
 }
@@ -217,12 +293,17 @@ explain.empirical <- function(x, explainer, approach, prediction_zero,
 #' @rdname explain
 #'
 #' @export
-explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL, cov_mat = NULL, ...) {
+explain.gaussian <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
+                             n_batches = 1, seed = 1,
+                             mu = NULL, cov_mat = NULL, ...) {
 
+  if (!is.null(seed)) set.seed(seed)
 
   # Add arguments to explainer object
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
+  explainer$n_samples <- n_samples
+
 
   # If mu is not provided directly, use mean of training data
   if (is.null(mu)) {
@@ -244,25 +325,26 @@ explain.gaussian <- function(x, explainer, approach, prediction_zero, mu = NULL,
     explainer$cov_mat <- cov_mat
   }
 
-  # Generate data
-  dt <- prepare_data(explainer, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
-
-  # Predict
-  r <- prediction(dt, prediction_zero, explainer)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, ...)
 
   return(r)
 }
 
+
+
+
+
 #' @rdname explain
 #' @export
-explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
+explain.copula <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
+                           n_batches = 1, seed = 1, ...) {
+
+  if (!is.null(seed)) set.seed(seed)
 
   # Setup
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
   explainer$approach <- approach
+  explainer$n_samples <- n_samples
 
   # Prepare transformed data
   x_train <- apply(
@@ -289,14 +371,10 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
   } else {
     explainer$cov_mat <- cov_mat
   }
-  # Generate data
-  dt <- prepare_data(explainer, x_test_gaussian = x_test_gaussian, ...)
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
 
-  # Predict
-  r <- prediction(dt, prediction_zero, explainer)
+  explainer$x_test_gaussian <- x_test_gaussian
+
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, ...)
 
   return(r)
 }
@@ -322,9 +400,13 @@ explain.copula <- function(x, explainer, approach, prediction_zero, ...) {
 #' @name explain
 #'
 #' @export
-explain.ctree <- function(x, explainer, approach, prediction_zero,
+explain.ctree <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
+                          n_batches = 1, seed = 1,
                           mincriterion = 0.95, minsplit = 20,
                           minbucket = 7, sample = TRUE, ...) {
+
+  if (!is.null(seed)) set.seed(seed)
+
   # Checks input argument
   if (!is.matrix(x) & !is.data.frame(x)) {
     stop("x should be a matrix or a dataframe.")
@@ -337,16 +419,9 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
   explainer$minsplit <- minsplit
   explainer$minbucket <- minbucket
   explainer$sample <- sample
+  explainer$n_samples <- n_samples
 
-  # Generate data
-  dt <- prepare_data(explainer, ...)
-
-  if (!is.null(explainer$return)) {
-    return(dt)
-  }
-
-  # Predict
-  r <- prediction(dt, prediction_zero, explainer)
+  r <- prepare_and_predict(explainer, n_batches, prediction_zero, ...)
 
   return(r)
 }
@@ -355,22 +430,46 @@ explain.ctree <- function(x, explainer, approach, prediction_zero,
 #' @name explain
 #'
 #' @export
-explain.combined <- function(x, explainer, approach, prediction_zero,
-                             mu = NULL, cov_mat = NULL, ...) {
+explain.combined <- function(x, explainer, approach, prediction_zero, n_samples = 1e3,
+                             n_batches = 1, seed = 1, mu = NULL, cov_mat = NULL, ...) {
+
+  # for R CMD check
+  row_id <- NULL
+  if (!is.null(seed)) set.seed(seed)
+
   # Get indices of combinations
   l <- get_list_approaches(explainer$X$n_features, approach)
   explainer$return <- TRUE
   explainer$x_test <- as.matrix(preprocess_data(x, explainer$feature_list)$x_dt)
+  explainer$n_samples <- n_samples
 
   dt_l <- list()
+  # Compute shapley values for all methods
   for (i in seq_along(l)) {
-    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero, index_features = l[[i]], ...)
+    dt_l[[i]] <- explain(x, explainer, approach = names(l)[i], prediction_zero,
+                         index_S = l[[i]], n_batches = n_batches,
+                         only_return_contrib_dt = TRUE, seed = NULL, ...)
   }
-  dt <- data.table::rbindlist(dt_l, use.names = TRUE)
 
-  r <- prediction(dt, prediction_zero, explainer)
+  dt_mat <- unique(rbindlist(dt_l))
+  data.table::setkey(dt_mat, row_id)
+  dt_mat[, row_id := NULL]
 
-  return(r)
+  dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
+
+  # Find which element containing non-na p
+  p <- attr(dt_l[[which(sapply(dt_l, function(x) all(!is.na(attr(x, "p")))))]], "p")
+
+
+  res <- list(dt = dt_kshap,
+              model = explainer$model,
+              p = p,
+              x_test = explainer$x_test,
+              is_groupwise = explainer$is_groupwise)
+
+  attr(res, "class") <- c("shapr", "list")
+
+  return(res)
 }
 
 #' Helper function used in \code{\link{explain.combined}}
@@ -390,6 +489,12 @@ explain.combined <- function(x, explainer, approach, prediction_zero,
 get_list_approaches <- function(n_features, approach) {
   l <- list()
   approach[length(approach)] <- approach[length(approach) - 1]
+
+  x <- which(approach == "independence")
+  if (length(x) > 0) {
+    if (approach[1] == "independence") x <- c(0, x)
+    l$independence <- which(n_features %in% x)
+  }
 
   x <- which(approach == "empirical")
   if (length(x) > 0) {
@@ -423,7 +528,16 @@ get_list_approaches <- function(n_features, approach) {
 #'
 #' @export
 explain.ctree_comb_mincrit <- function(x, explainer, approach,
-                                       prediction_zero, mincriterion, ...) {
+                                       prediction_zero, n_samples, n_batches = 1
+                                       , seed = 1, mincriterion, ...) {
+
+  # For R CMD check
+  row_id <- NULL
+
+  if (length(explainer$feature_list$labels) != length(mincriterion)) {
+    stop("The length of mincriterion has to be equal to 1 or the number of features.")
+  }
+  if (!is.null(seed)) set.seed(seed)
 
   # Get indices of combinations
   l <- get_list_ctree_mincrit(explainer$X$n_features, mincriterion)
@@ -433,15 +547,32 @@ explain.ctree_comb_mincrit <- function(x, explainer, approach,
   dt_l <- list()
   for (i in seq_along(l)) {
     dt_l[[i]] <- explain(x, explainer, approach, prediction_zero,
-      index_features = l[[i]],
-      mincriterion = as.numeric(names(l[i])), ...
+      index_S = l[[i]],
+      mincriterion = as.numeric(names(l[i])),
+      only_return_contrib_dt = TRUE,
+      seed = NULL,
+      ...
     )
   }
 
-  dt <- data.table::rbindlist(dt_l, use.names = TRUE)
+  dt_mat <- unique(rbindlist(dt_l))
+  data.table::setkey(dt_mat, row_id)
+  dt_mat[, row_id := NULL]
+  dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
 
-  r <- prediction(dt, prediction_zero, explainer)
-  return(r)
+  # Find which element containing non-na p
+  p <- attr(dt_l[[which(sapply(dt_l, function(x) all(!is.na(attr(x, "p")))))]], "p")
+
+  res <- list(dt = dt_kshap,
+              model = explainer$model,
+              p = p,
+              x_test = explainer$x_test,
+              is_groupwise = explainer$is_groupwise)
+
+  attr(res, "class") <- c("shapr", "list")
+
+  return(res)
+
 }
 
 #' @keywords internal
@@ -455,4 +586,119 @@ get_list_ctree_mincrit <- function(n_features, mincriterion) {
     l[[nn]] <- which(n_features %in% x)
   }
   return(l)
+}
+
+
+
+#' Compute Shapley values in batches
+#'
+#' Create a list of indexes used to compute Shapley values in batches.
+#'
+#' @param explainer The binary matrix \code{S} returned from \code{\link{shapr}}.
+#' @param n_batches Numeric value specifying how many batches \code{S} should be split into.
+#' @param index_S Numeric vector specifying which rows of \code{S} that should be considered.
+#' @return A list of length \code{n_batches}.
+#'
+#' @details If \code{index_S} is not \code{NULL} then the number of batches is scaled such that the
+#' total number of batches is equal \code{n_batches} and not within the rows specified by\code{index_S}.
+#'
+#' @keywords internal
+create_S_batch <- function(explainer, n_batches, index_S = NULL) {
+
+  no_samples <- nrow(explainer$S)
+
+  if (n_batches == 1) {
+    if (!is.null(index_S)) {
+      return(list(index_S))
+    } else {
+      return(list(1:nrow(explainer$S)))
+    }
+  }
+
+  if (!is.null(index_S)) {
+    # Rescale the number of batches to the percentage of observations used
+    n_batches <- max(1, floor(length(index_S) / nrow(explainer$S) * n_batches))
+    if (n_batches == 1) return(list(unique(index_S)))
+    x0 <- index_S
+  } else {
+    x0 <- 1:no_samples
+  }
+  S_groups <- split(x0, cut(x0, n_batches, labels = FALSE))
+
+
+  return(S_groups)
+}
+
+#' Calculate Shapley values
+#'
+#' Sample covariate values, predict and calculate Shapley values. The sampling and prediction can be done in batches
+#' if \code{n_batches} is greater than 1.
+#'
+#'
+#' @inheritParams explain
+#' @param ... Arguments passed to \code{\link{prepare_data}} with exception of \code{only_return_contrib_dt},
+#' which is only passed to explain. If \code{TRUE} the
+#' \code{data.table} from \code{\link{prediction}} is returned, else an object of class \code{shapr}.
+#' Each column (except for \code{row_id}) correspond to the vector \code{v_D} in Equation 7 in the reference.
+#' The Shapley values can be calculated by \code{t(explainer$W \%*\% dt_contrib[, -"row_id"]))}
+#' @return A list. See \code{\link{explain}} for more information.
+#' @export
+#' @keywords internal
+prepare_and_predict <- function(explainer, n_batches, prediction_zero, ...) {
+
+  # For R CMD check
+  row_id <- NULL
+
+  index_S <- list(...)$index_S
+  only_return_contrib_dt <- list(...)$only_return_contrib_dt
+  if(is.null(only_return_contrib_dt)) only_return_contrib_dt <- FALSE
+
+  S_batch <- create_S_batch(explainer, n_batches, index_S)
+  pred_batch <- list()
+  r_batch <- list()
+  p <- NA
+
+  for (batch in seq_along(S_batch)) {
+
+    dt <- prepare_data(explainer, index_features = S_batch[[batch]], ...)
+    r_batch[[batch]] <- prediction(dt, prediction_zero, explainer)
+    r_batch[[batch]]$dt_mat[, row_id := S_batch[[batch]]]
+
+    if (!is.null(r_batch[[batch]]$p)) p <- r_batch[[batch]]$p
+
+    if (length(S_batch) > 1) {
+      cat("Batch no", batch, "of", length(S_batch), "completed.\n")
+    }
+
+  }
+
+  dt_mat <- rbindlist(lapply(r_batch, "[[", "dt_mat"))
+
+  if (only_return_contrib_dt) {
+    attr(dt_mat, "p") <- p
+    return(dt_mat)
+  }
+
+  dt_mat <- unique(dt_mat)
+  data.table::setkey(dt_mat, row_id)
+  dt_mat[, row_id := NULL]
+
+  dt_kshap <- compute_shapley(explainer, as.matrix(dt_mat))
+
+  res <- list(dt = dt_kshap,
+              model = explainer$model,
+              p = p,
+              x_test = explainer$x_test,
+              is_groupwise = explainer$is_groupwise)
+
+  attr(res, "class") <- c("shapr", "list")
+
+  return(res)
+
+}
+
+
+#' @export
+print.shapr <- function(x, ...) {
+  print(x$dt)
 }

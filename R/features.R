@@ -8,6 +8,8 @@
 #' value for \code{n_combinations}.
 #' @param weight_zero_m Numeric. The value to use as a replacement for infinite combination
 #' weights when doing numerical operations.
+#' @param group_num List. Contains vector of integers indicating the feature numbers for the
+#' different groups.
 #'
 #' @return A data.table that contains the following columns:
 #' \describe{
@@ -33,48 +35,98 @@
 #'
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
-feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6) {
+feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL) {
+
+
+  m_group <- length(group_num) # The number of groups
 
   # Force user to use a natural number for n_combinations if m > 13
-  if (m > 13 & is.null(n_combinations)) {
+  if (m > 13 & is.null(n_combinations) & m_group == 0) {
     stop(
       paste0(
         "Due to computational complexity, we recommend setting n_combinations = 10 000\n",
-        "if the number of features is larger than 13. Note that you can force the use of the exact\n",
-        "method (i.e. n_combinations = NULL) by setting n_combinations equal to 2^m,\n",
-        "where m is the number of features."
+        "if the number of features is larger than 13 for feature-wise Shapley values.\n",
+        "Note that you can force the use of the exact method (i.e. n_combinations = NULL)\n",
+        "by setting n_combinations equal to 2^m where m is the number of features."
       )
     )
   }
 
   # Not supported for m > 30
-  if (m > 30) {
-    stop("Currently we are not supporting cases where the number of features is greater than 30.")
-  }
-
-  if (!exact && n_combinations > (2^m - 2)) {
-    n_combinations <- 2^m - 2
-    exact <- TRUE
-    message(
+  if (m > 30 & m_group == 0) {
+    stop(
       paste0(
-        "\nn_combinations is larger than or equal to 2^m = ", 2^m, ". \n",
-        "Using exact instead."
+        "Currently we are not supporting cases where the number of features is greater than 30\n",
+        "for feature-wise Shapley values."
+      )
+    )
+  }
+  if (m_group > 30) {
+    stop(
+      paste0(
+        "For computational reasons, we are currently not supporting group-wise Shapley values \n",
+        "for more than 30 groups. Please reduce the number of groups."
       )
     )
   }
 
-  if (exact) {
-    dt <- feature_exact(m, weight_zero_m)
-  } else {
-    dt <- feature_not_exact(m, n_combinations, weight_zero_m)
-    stopifnot(
-      data.table::is.data.table(dt),
-      !is.null(dt[["p"]])
-    )
-    p <- NULL # due to NSE notes in R CMD check
-    dt[, p := NULL]
+  if (!exact) {
+    if (m_group == 0) {
+      # Switch to exact for feature-wise method
+      if (n_combinations > (2^m - 2)) {
+        n_combinations <- 2^m - 2
+        exact <- TRUE
+        message(
+          paste0(
+            "\nSuccess with message:\n",
+            "n_combinations is larger than or equal to 2^m = ", 2^m, ". \n",
+            "Using exact instead."
+          )
+        )
+      }
+    } else {
+      # Switch to exact for feature-wise method
+      if (n_combinations > (2^m_group - 2)) {
+        n_combinations <- 2^m_group - 2
+        exact <- TRUE
+        message(
+          paste0(
+            "\nSuccess with message:\n",
+            "n_combinations is larger than or equal to 2^group_num = ", 2^m_group, ". \n",
+            "Using exact instead."
+          )
+        )
+      }
+    }
   }
 
+  if (m_group == 0) {
+    # Here if feature-wise Shapley values
+    if (exact) {
+      dt <- feature_exact(m, weight_zero_m)
+    } else {
+      dt <- feature_not_exact(m, n_combinations, weight_zero_m)
+      stopifnot(
+        data.table::is.data.table(dt),
+        !is.null(dt[["p"]])
+      )
+      p <- NULL # due to NSE notes in R CMD check
+      dt[, p := NULL]
+    }
+  } else {
+    # Here if group-wise Shapley values
+    if (exact) {
+      dt <- feature_group(group_num, weight_zero_m)
+    } else {
+      dt <- feature_group_not_exact(group_num, n_combinations, weight_zero_m)
+      stopifnot(
+        data.table::is.data.table(dt),
+        !is.null(dt[["p"]])
+      )
+      p <- NULL # due to NSE notes in R CMD check
+      dt[, p := NULL]
+    }
+  }
   return(dt)
 }
 
@@ -87,10 +139,104 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
   dt[, features := unlist(combinations, recursive = FALSE)]
   dt[, n_features := length(features[[1]]), id_combination]
   dt[, N := .N, n_features]
-  dt[, shapley_weight := shapley_weights(m = m, N = N, n_features, weight_zero_m)]
+  dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_features, weight_zero_m)]
 
   return(dt)
 }
+
+#' @keywords internal
+group_fun <- function(x, group_num) {
+  if (length(x) != 0) {
+    unlist(group_num[x])
+  } else {
+    integer(0)
+  }
+}
+
+#' Analogue to feature_exact, but for groups instead.
+#'
+#' @inheritParams shapley_weights
+#' @param group_num List. Contains vector of integers indicating the feature numbers for the
+#' different groups.
+#'
+#' @return data.table with all feature group combinations, shapley weights etc.
+#'
+#' @keywords internal
+feature_group <- function(group_num, weight_zero_m = 10^6) {
+
+  # due to NSE notes in R CMD check
+  features <- id_combination <- n_features <- shapley_weight <- N <- groups <- n_groups <- NULL
+
+  m <- length(group_num)
+  dt <- data.table::data.table(id_combination = seq(2^m))
+  combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
+
+  dt[, groups := unlist(combinations, recursive = FALSE)]
+  dt[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
+  dt[, n_groups := length(groups[[1]]), id_combination]
+  dt[, n_features := length(features[[1]]), id_combination]
+  dt[, N := .N, n_groups]
+  dt[, shapley_weight := shapley_weights(m = m, N = N, n_components = n_groups, weight_zero_m)]
+
+  return(dt)
+}
+
+#' Check that the group parameter has the right form and content
+#'
+#' @inheritParams shapr
+#' @param feature_labels Vector of characters. Contains the feature labels used by the model
+#'
+#' @return Error or NULL
+#'
+#' @keywords internal
+check_groups <- function(feature_labels, group) {
+  if (!is.list(group)) {
+    stop("group must be a list")
+  }
+
+  group_features <- unlist(group)
+
+  # Checking that the group_features are characters
+  if (!all(is.character(group_features))) {
+    stop("All components of group should be a character.")
+  }
+
+  # Check that all features in group are in feature labels or used by model
+  if (!all(group_features %in% feature_labels)) {
+    missing_group_feature <- group_features[!(group_features %in% feature_labels)]
+    stop(
+      paste0(
+        "The group feature(s) ", paste0(missing_group_feature, collapse = ", "), " are not\n",
+        "among the features specified by the model/data. Delete from group."
+      )
+    )
+  }
+
+  # Check that all feature used by model are in group
+  if (!all(feature_labels %in% group_features)) {
+    missing_features <- feature_labels[!(feature_labels %in% group_features)]
+    stop(
+      paste0(
+        "The model/data feature(s) ", paste0(missing_features, collapse = ", "), " do not\n",
+        "belong to one of the groups. Add to a group."
+      )
+    )
+  }
+
+  # Check uniqueness of group_features
+  if (length(group_features) != length(unique(group_features))) {
+    dups <- group_features[duplicated(group_features)]
+    stop(
+      paste0(
+        "Feature(s) ", paste0(dups, collapse = ", "), " are found in more than one group or ",
+        "multiple times per group.\n",
+        "Make sure each feature is only represented in one group, and only once."
+      )
+    )
+  }
+  return(NULL)
+}
+
 
 #' @keywords internal
 feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
@@ -140,7 +286,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   # Add shapley weight and number of combinations
   X[c(1, .N), shapley_weight := weight_zero_m]
   X[, N := 1]
-  ind <- X[, .I[between(n_features, 1, m - 1)]]
+  ind <- X[, .I[data.table::between(n_features, 1, m - 1)]]
   X[ind, p := p[n_features]]
   X[ind, N := n[n_features]]
 
@@ -153,6 +299,86 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
 
   return(X)
 }
+
+#' Analogue to feature_not_exact, but for groups instead.
+#'
+#' @inheritParams shapley_weights
+#' @inheritParams shapr
+#' @inheritParams feature_group
+#'
+#' @return data.table with all feature group combinations, shapley weights etc.
+#'
+#' @keywords internal
+feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero_m = 10^6) {
+  # due to NSE notes in R CMD check
+  features <- id_combination <- n_features <- shapley_weight <- N <- groups <- n_groups <- NULL
+
+  # Find weights for given number of features ----------
+  m <- length(group_num)
+  n_groups <- seq(m - 1)
+  n <- sapply(n_groups, choose, n = m)
+  w <- shapley_weights(m = m, N = n, n_groups) * n
+  p <- w / sum(w)
+
+  # Sample number of chosen features ----------
+  X <- data.table::data.table(
+    n_groups = c(
+      0,
+      sample(
+        x = n_groups,
+        size = n_combinations,
+        replace = TRUE,
+        prob = p
+      ),
+      m
+    )
+  )
+  X[, n_groups := as.integer(n_groups)]
+
+  # Sample specific set of features -------
+  data.table::setkeyv(X, "n_groups")
+  group_sample <- sample_features_cpp(m, X[["n_groups"]])
+
+  # Get number of occurences and duplicated rows-------
+  is_duplicate <- NULL # due to NSE notes in R CMD check
+  r <- helper_feature(m, group_sample)
+  X[, is_duplicate := r[["is_duplicate"]]]
+
+  # When we sample combinations the Shapley weight is equal
+  # to the frequency of the given combination
+  X[, shapley_weight := r[["sample_frequence"]]]
+
+  # Populate table and remove duplicated rows -------
+  X[, groups := group_sample]
+  if (any(X[["is_duplicate"]])) {
+    X <- X[is_duplicate == FALSE]
+  }
+  X[, is_duplicate := NULL]
+
+  # Add shapley weight and number of combinations
+  X[c(1, .N), shapley_weight := weight_zero_m]
+  X[, N := 1]
+  ind <- X[, .I[data.table::between(n_groups, 1, m - 1)]]
+  X[ind, p := p[n_groups]]
+  X[ind, N := n[n_groups]]
+
+  # Adding feature info
+  X[, features := lapply(groups, FUN = group_fun, group_num = group_num)]
+  X[, n_features := length(features[[1]]), id_combination]
+
+
+  # Set column order and key table
+  data.table::setkeyv(X, "n_groups")
+  X[, id_combination := .I]
+  X[, N := as.integer(N)]
+  nms <- c("id_combination", "groups", "features", "n_groups", "n_features", "N", "shapley_weight", "p")
+  data.table::setcolorder(X, nms)
+
+  return(X)
+}
+
+
+
 
 #' @keywords internal
 helper_feature <- function(m, feature_sample) {
