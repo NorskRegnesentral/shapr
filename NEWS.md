@@ -1,4 +1,4 @@
-# shapr 0.2.0.9000
+# shapr 0.2.3 (GitHub only)
 
 * Development version
 * Added support for groupSHAP, including check of appropriate groups, examples and tests
