@@ -19,6 +19,8 @@
 #'
 #' @importFrom stats contrasts
 #'
+#' @importFrom stats embed
+#'
 #' @importFrom Rcpp sourceCpp
 #'
 #' @keywords internal

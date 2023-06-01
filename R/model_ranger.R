@@ -1,6 +1,6 @@
 #' @rdname predict_model
 #' @export
-predict_model.ranger <- function(x, newdata) {
+predict_model.ranger <- function(x, newdata, ...) {
   if (!requireNamespace("ranger", quietly = TRUE)) {
     stop("The ranger package is required for predicting ranger models")
   }

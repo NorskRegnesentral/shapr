@@ -13,6 +13,9 @@
 #' The prediction function used when `model` is not natively supported.
 #' See the documentation of [explain()] for details.
 #'
+#' @param output_size TODO: Document
+#' @param extra TODO: Document
+#'
 #' @param ... Further arguments passed to `approach`-specific functions.
 #'
 #' @return List `internal`

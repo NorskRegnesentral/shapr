@@ -13,6 +13,7 @@
 #'
 #' @param x Model object for the model to be explained.
 #' @param newdata A data.frame/data.table with the features to predict from.
+#' @param ... `newreg` and `horizon` parameters used in models passed to `[explain_forecast()]`
 #'
 #' @details The following models are currently supported:
 #' \itemize{
@@ -52,13 +53,13 @@
 #'
 #' # Predicting for a model with a standardized format
 #' predict_model(x = model, newdata = x_explain)
-predict_model <- function(x, newdata) {
+predict_model <- function(x, newdata, ...) {
   UseMethod("predict_model", x)
 }
 
 #' @rdname predict_model
 #' @export
-predict_model.default <- function(x, newdata) {
+predict_model.default <- function(x, newdata, ...) {
   str_error <- paste(
     "It seems that you passed a non-valid model object.",
     "See more information about which models that are supported",

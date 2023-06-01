@@ -544,6 +544,21 @@ test_that("erroneous input: `group`", {
   },
   error = T)
 
+  expect_snapshot({
+    # a single group only
+    single_group <- list(A=c("Solar.R","Wind","Temp", "Month", "Day"))
+    explain(model = model_lm_numeric,
+            x_explain = x_explain_numeric,
+            x_train = x_train_numeric,
+            approach = "independence",
+            prediction_zero = p0,
+            group = single_group,
+            n_batches = 1,
+            timing = FALSE)
+  },
+  error = T)
+
+
 
 })
 

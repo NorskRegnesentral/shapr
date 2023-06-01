@@ -2,7 +2,11 @@
 
 #' check_setup
 #' @inheritParams explain
+#' @inheritParams explain_forecast
 #' @inheritParams default_doc
+#' @param type Character.
+#' Either "normal" or "forecast" corresponding to function `setup()` is called from,
+#' correspondingly the type of explanation that should be generated.
 #'
 #' @param feature_specs List. The output from [get_model_specs()] or [get_data_specs()].
 #' Contains the 3 elements:
@@ -21,6 +25,7 @@ setup <- function(x_train,
                   x_explain,
                   approach,
                   prediction_zero,
+                  output_size = 1,
                   n_combinations,
                   group,
                   n_samples,
@@ -28,28 +33,72 @@ setup <- function(x_train,
                   seed,
                   keep_samp_for_vS,
                   feature_specs,
+                  type = "normal",
+                  horizon = NULL,
+                  y = NULL,
+                  xreg = NULL,
+                  train_idx = NULL,
+                  explain_idx = NULL,
+                  explain_y_lags = NULL,
+                  explain_xreg_lags = NULL,
+                  group_lags = NULL,
                   timing,
                   init_time,
-                  is_python = FALSE, ...) {
+                  is_python = FALSE,
+                  ...) {
   internal <- list()
+
 
   internal$parameters <- get_parameters(
     approach = approach,
     prediction_zero = prediction_zero,
+    output_size = output_size,
     n_combinations = n_combinations,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
+    type = type,
+    horizon = horizon,
+    train_idx = train_idx,
+    explain_idx = explain_idx,
+    explain_y_lags = explain_y_lags,
+    explain_xreg_lags = explain_xreg_lags,
+    group_lags = group_lags,
     timing = timing,
-    is_python = is_python, ...
+    is_python = is_python,
+    ...
   )
 
-  internal$data <- get_data(
-    x_train,
-    x_explain
+  # Sets up and organizes data
+  if(type=="forecast"){
+    internal$data <- get_data_forecast(
+      y,
+      xreg,
+      train_idx,
+      explain_idx,
+      explain_y_lags,
+      explain_xreg_lags,
+      horizon
     )
+
+    internal$parameters$output_labels <- cbind(rep(explain_idx, horizon), rep(seq_len(horizon), each = length(explain_idx)))
+    colnames(internal$parameters$output_labels) <- c("explain_idx", "horizon")
+    internal$parameters$explain_idx <- explain_idx
+    internal$parameters$explain_lags <- list(y = explain_y_lags, xreg = explain_xreg_lags)
+
+    # TODO: Consider handling this parameter update somewhere else (like in get_extra_parameters?)
+    if (group_lags) {
+      internal$parameters$group <- internal$data$group
+    }
+
+  } else {
+    internal$data <- get_data(
+      x_train,
+      x_explain
+    )
+  }
 
   internal$objects <- list(feature_specs=feature_specs)
 
@@ -120,13 +169,39 @@ check_n_combinations <- function(internal) {
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
 
-  if (!is_groupwise) {
-    if (n_combinations <= n_features) {
-      stop("`n_combinations` has to be greater than the number of features.")
+  type <- internal$parameters$type
+
+  if(type=="forecast"){
+
+    horizon <- internal$parameters$horizon
+    explain_y_lags <- internal$parameters$explain_lags$y
+    explain_xreg_lags <- internal$parameters$explain_lags$xreg
+    xreg <- internal$data$xreg
+
+    if (!is_groupwise) {
+      if (n_combinations <= n_features) {
+        stop(paste0("`n_combinations` (",n_combinations,") has to be greater than the number of components to decompose the forecast onto:\n",
+             "`horizon` (",horizon,") + `explain_y_lags` (",explain_y_lags,") + sum(`explain_xreg_lags`) (",sum(explain_xreg_lags),").\n"
+             )
+        )
+      }
+    } else {
+      if (n_combinations <= n_groups) {
+        stop(paste0("`n_combinations` (",n_combinations,") has to be greater than the number of components to decompose the forecast onto:\n",
+                    "ncol(`xreg`) (",ncol(`xreg`),") + 1"
+        )
+        )
+      }
     }
   } else {
-    if (n_combinations <= n_groups) {
-      stop("`n_combinations` has to be greater than the number of groups.")
+    if (!is_groupwise) {
+      if (n_combinations <= n_features) {
+        stop("`n_combinations` has to be greater than the number of features.")
+      }
+    } else {
+      if (n_combinations <= n_groups) {
+        stop("`n_combinations` has to be greater than the number of groups.")
+      }
     }
   }
 }
@@ -267,10 +342,10 @@ get_extra_parameters <- function(internal){
   internal$parameters$n_train <- nrow(internal$data$x_train)
 
   # Names of features (already checked to be OK)
-  internal$parameters$feature_names = names(internal$data$x_explain)
+  internal$parameters$feature_names <- names(internal$data$x_explain)
 
   # Update feature_specss (in case model based spec included NAs)
-  internal$objects$feature_specs = get_data_specs(internal$data$x_explain)
+  internal$objects$feature_specs <- get_data_specs(internal$data$x_explain)
 
   internal$parameters$is_groupwise <- !is.null(internal$parameters$group)
 
@@ -303,21 +378,16 @@ get_extra_parameters <- function(internal){
 }
 
 #' @keywords internal
-get_parameters <- function(approach, prediction_zero, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, timing, is_python, ...) {
+get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
+                           n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
+                           explain_xreg_lags, group_lags = NULL, timing, is_python, ...) {
 
   # Check input type for approach
 
   # approach is checked more comprehensively later
 
-  # prediction_zero
-  if(!(is.numeric(prediction_zero) &&
-       length(prediction_zero)==1 &&
-       !is.na(prediction_zero))){
-    stop("`prediction_zero` must be a single numeric.")
-  }
   # n_combinations
-  if(!is.null(n_combinations) &&
+  if (!is.null(n_combinations) &&
      !(is.wholenumber(n_combinations) &&
        length(n_combinations)==1 &&
        !is.na(n_combinations) &&
@@ -361,6 +431,54 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     stop("`keep_samp_for_vS` must be single logical.")
   }
 
+  # type
+  if (!(type %in% c("normal", "forecast"))) {
+    stop("`type` must be either `normal` or `forecast`.\n")
+  }
+
+  # parameters only used for type "forecast"
+  if (type == "forecast") {
+    if(!(is.wholenumber(horizon) && all(horizon>0))) {
+      stop("`horizon` must be a vector (or scalar) of positive integers.\n")
+    }
+
+    if(any(horizon != output_size)) {
+      stop(paste0("`horizon` must match the output size of the model (",paste0(output_size,collapse=", "),").\n"))
+    }
+
+    if(!(length(train_idx) > 1 && is.wholenumber(train_idx) && all(train_idx > 0) && all(is.finite(train_idx)))){
+      stop("`train_idx` must be a vector of positive finite integers and length > 1.\n")
+    }
+
+    if(!(is.wholenumber(explain_idx) && all(explain_idx>0) && all(is.finite(explain_idx)))){
+      stop("`explain_idx` must be a vector of positive finite integers.\n")
+    }
+
+    if(!(is.wholenumber(explain_y_lags) && all(explain_y_lags>=0) && all(is.finite(explain_y_lags)))){
+      stop("`explain_y_lags` must be a vector of positive finite integers.\n")
+    }
+
+    if(!(is.wholenumber(explain_xreg_lags) && all(explain_xreg_lags>=0) && all(is.finite(explain_xreg_lags)))){
+      stop("`explain_xreg_lags` must be a vector of positive finite integers.\n")
+    }
+
+    if(!(is.logical(group_lags) && length(group_lags)==1)){
+      stop("`group_lags` must be a single logical.\n")
+    }
+
+  }
+
+  #### Tests combining more than one parameter ####
+
+  # prediction_zero vs output_size
+  if (!all((is.numeric(prediction_zero)) &&
+           all(length(prediction_zero) == output_size) &&
+           all(!is.na(prediction_zero)))) {
+    stop(paste0("`prediction_zero` (",paste0(prediction_zero,collapse=", "),") must be numeric and match the output size of the model (",paste0(output_size,collapse=", "),")."))
+  }
+
+
+
 
   # Getting basic input parameters
   parameters <- list(
@@ -372,8 +490,12 @@ get_parameters <- function(approach, prediction_zero, n_combinations, group, n_s
     n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
-    timing = timing,
-    is_python = is_python
+    is_python = is_python,
+    output_size = output_size,
+    type = type,
+    horizon = horizon,
+    group_lags = group_lags,
+    timing = timing
   )
 
   # Getting additional parameters from ...
@@ -520,6 +642,17 @@ check_groups <- function(feature_names, group) {
       )
     )
   }
+
+  # Check that there are at least two groups
+  if (length(group)==1) {
+    stop(
+      paste0("You have specified only a single group named ",names(group),", containing the features: ",
+             paste0(group_features, collapse=", "), ".\n ",
+             "The predictions must be decomposed in at least two groups to be meaningful.")
+    )
+  }
+
+
 }
 
 #' @keywords internal

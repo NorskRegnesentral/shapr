@@ -202,7 +202,7 @@
         approach = "independence", prediction_zero = p0_non_numeric_1, n_batches = 1,
         timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` (bla) must be numeric and match the output size of the model (1).
 
 ---
 
@@ -212,7 +212,7 @@
         approach = "independence", prediction_zero = p0_non_numeric_2, n_batches = 1,
         timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` () must be numeric and match the output size of the model (1).
 
 ---
 
@@ -222,7 +222,7 @@
         approach = "independence", prediction_zero = p0_too_long, n_batches = 1,
         timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` (1, 2) must be numeric and match the output size of the model (1).
 
 ---
 
@@ -231,7 +231,7 @@
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         approach = "independence", prediction_zero = p0_is_NA, n_batches = 1, timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` (NA) must be numeric and match the output size of the model (1).
 
 # erroneous input: `n_combinations`
 
@@ -369,6 +369,17 @@
     Error <simpleError>
       Feature(s) Solar.R are found in more than one group or multiple times per group.
       Make sure each feature is only represented in one group, and only once.
+
+---
+
+    Code
+      single_group <- list(A = c("Solar.R", "Wind", "Temp", "Month", "Day"))
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        approach = "independence", prediction_zero = p0, group = single_group,
+        n_batches = 1, timing = FALSE)
+    Error <simpleError>
+      You have specified only a single group named A, containing the features: Solar.R, Wind, Temp, Month, Day.
+       The predictions must be decomposed in at least two groups to be meaningful.
 
 # erroneous input: `n_samples`
 
@@ -573,7 +584,9 @@
         approach = "independence", prediction_zero = p0, predict_model = predict_model_non_numeric_output,
         n_batches = 1, timing = FALSE)
     Error <simpleError>
-      The predict_model function of class `lm` does not return a numeric output of the desired length.
+      The predict_model function of class `lm` does not return a numeric output of the desired length
+      for single output models or a data.table of the correct
+      dimensions for a multiple output model.
       See the 'Advanced usage' section of the vignette:
       vignette('understanding_shapr', package = 'shapr')
       
@@ -589,7 +602,9 @@
         approach = "independence", prediction_zero = p0, predict_model = predict_model_incorrect_output_length,
         n_batches = 1, timing = FALSE)
     Error <simpleError>
-      The predict_model function of class `lm` does not return a numeric output of the desired length.
+      The predict_model function of class `lm` does not return a numeric output of the desired length
+      for single output models or a data.table of the correct
+      dimensions for a multiple output model.
       See the 'Advanced usage' section of the vignette:
       vignette('understanding_shapr', package = 'shapr')
       

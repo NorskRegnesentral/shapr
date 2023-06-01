@@ -69,7 +69,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 
   # Appending the zero-prediction to the list
   dt_vS0 <- as.data.table(rbind(c(1, rep(prediction_zero, n_explain))))
-  names(dt_vS0) <- c("id_combination", seq_len(n_explain))
+  names(dt_vS0) <- names(vS_list[[1]])
 
   # Extracting/merging the data tables from the batch running
   # TODO: Need a memory and speed optimized way to transform the output form dt_vS_list to two different lists,
@@ -107,6 +107,10 @@ get_p <- function(dt_vS, internal) {
   max_id_combination <- internal$parameters$n_combinations
   p <- unlist(dt_vS[id_combination == max_id_combination, ][, id_combination := NULL])
 
+  if (internal$parameters$type == "forecast") {
+    names(p) <- apply(internal$parameters$output_labels, 1, function (x) paste0("explain_idx_", x[1], "_horizon_", x[2]))
+  }
+
   return(p)
 }
 
@@ -118,18 +122,48 @@ get_p <- function(dt_vS, internal) {
 #' @keywords internal
 compute_shapley_new <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
-  labels <- internal$parameters$feature_names
+  feature_names <- internal$parameters$feature_names
   W <- internal$objects$W
+  type <- internal$parameters$type
 
   if (!is_groupwise) {
-    shap_names <- labels
+    shap_names <- feature_names
   } else {
     shap_names <- names(internal$parameters$group) # TODO: Add group_names (and feature_names) to internal earlier
   }
 
-  kshap <- t(W %*% as.matrix(dt_vS[, -"id_combination"]))
-  dt_kshap <- data.table::as.data.table(kshap)
-  colnames(dt_kshap) <- c("none", shap_names)
+  # If multiple horizons with explain_forecast are used, we only distribute value to those used at each horizon
+  if(type=="forecast"){
+    id_combination_mapper_dt <- internal$objects$id_combination_mapper_dt
+    horizon <- internal$parameters$horizon
+    cols_per_horizon <- internal$objects$cols_per_horizon
+    W_list <- internal$objects$W_list
+
+    kshap_list <- list()
+    for(i in seq_len(horizon)){
+      W0 <- W_list[[i]]
+
+      dt_vS0 <- merge(dt_vS,id_combination_mapper_dt[horizon==i],by="id_combination",all.y = T)
+      data.table::setorder(dt_vS0,horizon_id_combination)
+      these_vS0_cols <- grep(paste0("p_hat",i),names(dt_vS0))
+
+      kshap0 <- t(W0 %*% as.matrix(dt_vS0[, these_vS0_cols, with = FALSE]))
+      kshap_list[[i]] <- data.table::as.data.table(kshap0)
+
+      if(!is_groupwise){
+        names(kshap_list[[i]]) <- c("none",cols_per_horizon[[i]])
+      } else {
+        names(kshap_list[[i]]) <- c("none",shap_names)
+      }
+    }
+
+    dt_kshap <- cbind(internal$parameters$output_labels,rbindlist(kshap_list,fill=TRUE))
+
+  } else {
+    kshap <- t(W %*% as.matrix(dt_vS[, -"id_combination"]))
+    dt_kshap <- data.table::as.data.table(kshap)
+    colnames(dt_kshap) <- c("none", shap_names)
+  }
 
   return(dt_kshap)
 }

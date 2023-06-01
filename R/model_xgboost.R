@@ -1,6 +1,6 @@
 #' @rdname predict_model
 #' @export
-predict_model.xgb.Booster <- function(x, newdata) {
+predict_model.xgb.Booster <- function(x, newdata, ...) {
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The xgboost package is required for predicting xgboost models")
   }
