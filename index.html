@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -88,6 +88,7 @@
 <div class="page-header"><h1 id="shapr-">shapr <img src="reference/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"><a class="anchor" aria-label="anchor" href="#shapr-"></a>
 </h1></div>
 <!-- badges: start -->
+
 </div>
 <div class="section level1">
 <h1 id="note-this-package-is-undergoing-severe-restructuring-a-new-version-with-breaking-changes-will-be-available-on-github-soon">NOTE: This package is undergoing severe restructuring. A new version (with breaking changes) will be available on GitHub soon.<a class="anchor" aria-label="anchor" href="#note-this-package-is-undergoing-severe-restructuring-a-new-version-with-breaking-changes-will-be-available-on-github-soon"></a>
@@ -193,12 +194,14 @@ Current methodological restrictions:
 <span><span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">dt</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      none     lstat         rm       dis      indus</span></span>
+<span><span class="co">#&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;     &lt;num&gt;      &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644</span></span>
 <span><span class="co">#&gt; 2: 22.446 0.1671901 -0.7088401 0.9689005  0.3786871</span></span>
 <span><span class="co">#&gt; 3: 22.446 5.9888022  5.5450858 0.5660134 -1.4304351</span></span>
 <span><span class="co">#&gt; 4: 22.446 8.2142204  0.7507572 0.1893366  1.8298304</span></span>
 <span><span class="co">#&gt; 5: 22.446 0.5059898  5.6875103 0.8432238  2.2471150</span></span>
 <span><span class="co">#&gt; 6: 22.446 1.9929673 -3.6001958 0.8601984  3.1510531</span></span>
+<span></span>
 <span><span class="co"># Finally we plot the resulting explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-basic_example-1.png" width="100%"></p>
@@ -213,13 +216,27 @@ Current methodological restrictions:
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-aas2019explaining" class="csl-entry"><p>Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298.</p></div>
-<div id="ref-hurvich1998smoothing" class="csl-entry"><p>Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998. “Smoothing Parameter Selection in Nonparametric Regression Using an Improved Akaike Information Criterion.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 60 (2): 271–93.</p></div>
-<div id="ref-lundberg2018consistent" class="csl-entry"><p>Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent Individualized Feature Attribution for Tree Ensembles.” <em>arXiv Preprint arXiv:1802.03888</em>.</p></div>
-<div id="ref-lundberg2017unified" class="csl-entry"><p>Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.</p></div>
-<div id="ref-lime_api" class="csl-entry"><p>Pedersen, Thomas Lin, and Michaël Benesty. 2019. <em>Lime: Local Interpretable Model-Agnostic Explanations</em>. <a href="https://CRAN.R-project.org/package=lime" class="external-link uri">https://CRAN.R-project.org/package=lime</a>.</p></div>
-<div id="ref-redelmeier2020explaining" class="csl-entry"><p>Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predictive Models with Mixed Features Using Shapley Values and Conditional Inference Trees.” In <em>International Cross-Domain Conference for Machine Learning and Knowledge Extraction</em>, 117–37. Springer.</p></div>
-<div id="ref-vstrumbelj2014explaining" class="csl-entry"><p>Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models and Individual Predictions with Feature Contributions.” <em>Knowledge and Information Systems</em> 41 (3): 647–65.</p></div>
+<div id="ref-aas2019explaining" class="csl-entry">
+Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. “Explaining Individual Predictions When Features Are Dependent: More Accurate Approximations to Shapley Values.” <em>Artificial Intelligence</em> 298.
+</div>
+<div id="ref-hurvich1998smoothing" class="csl-entry">
+Hurvich, Clifford M, Jeffrey S Simonoff, and Chih-Ling Tsai. 1998. “Smoothing Parameter Selection in Nonparametric Regression Using an Improved Akaike Information Criterion.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 60 (2): 271–93.
+</div>
+<div id="ref-lundberg2018consistent" class="csl-entry">
+Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent Individualized Feature Attribution for Tree Ensembles.” <em>arXiv Preprint arXiv:1802.03888</em>.
+</div>
+<div id="ref-lundberg2017unified" class="csl-entry">
+Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to Interpreting Model Predictions.” In <em>Advances in Neural Information Processing Systems</em>, 4765–74.
+</div>
+<div id="ref-lime_api" class="csl-entry">
+Pedersen, Thomas Lin, and Michaël Benesty. 2019. <em>Lime: Local Interpretable Model-Agnostic Explanations</em>. <a href="https://CRAN.R-project.org/package=lime" class="external-link uri">https://CRAN.R-project.org/package=lime</a>.
+</div>
+<div id="ref-redelmeier2020explaining" class="csl-entry">
+Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining Predictive Models with Mixed Features Using Shapley Values and Conditional Inference Trees.” In <em>International Cross-Domain Conference for Machine Learning and Knowledge Extraction</em>, 117–37. Springer.
+</div>
+<div id="ref-vstrumbelj2014explaining" class="csl-entry">
+Štrumbelj, Erik, and Igor Kononenko. 2014. “Explaining Prediction Models and Individual Predictions with Feature Contributions.” <em>Knowledge and Information Systems</em> 41 (3): 647–65.
+</div>
 </div>
 </div>
 </div>
@@ -277,7 +294,7 @@ Current methodological restrictions:
 <li><a href="https://cran.r-project.org/package=shapr" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/shapr" alt="CRAN_Downloads_Badge"></a></li>
 <li><a href="https://github.com/NorskRegnesentral/shapr/actions?query=workflow%3AR-CMD-check" class="external-link"><img src="https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
+<li><a href="https://opensource.org/license/mit/" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 <li><a href="https://doi.org/10.21105/joss.02027" class="external-link"><img src="https://joss.theoj.org/papers/10.21105/joss.02027/status.svg" alt="DOI"></a></li>
 </ul>
 </div>
@@ -293,7 +310,7 @@ Current methodological restrictions:
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -66,6 +66,14 @@
 </li>
 </ul></div>
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.2" id="shapr-022">shapr 0.2.2<small>2023-05-04</small><a class="anchor" aria-label="anchor" href="#shapr-022"></a></h2>
+<ul><li>Patch to fix failing CRAN-tests on R-devel due to changed behavior of <code><a href="https://rdrr.io/r/base/attach.html" class="external-link">attach()</a></code>: Fixed by changing how we simluate adding a function to .GlobalEnv in the failing test. Actual package not affected.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.1" id="shapr-021">shapr 0.2.1<small>2023-02-27</small><a class="anchor" aria-label="anchor" href="#shapr-021"></a></h2>
+<ul><li>Patch to fix warning from development version of data.table due to the use of nomatch argument in merge(), as requested from <a href="https://github.com/NorskRegnesentral/shapr/issues/322" class="external-link">data.table developers</a>.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.0" id="shapr-020">shapr 0.2.0<small>2021-01-28</small><a class="anchor" aria-label="anchor" href="#shapr-020"></a></h2>
 <ul><li>Minor CRAN release</li>
 <li>Added the new dependence modeling approach “ctree” which handles categorical features in addition to numerical ones. For more information see our paper <a href="https://doi.org/10.1007/978-3-030-57321-8_7" class="external-link uri">https://doi.org/10.1007/978-3-030-57321-8_7</a>
@@ -79,7 +87,8 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.4" id="shapr-014">shapr 0.1.4<small>2021-01-21</small><a class="anchor" aria-label="anchor" href="#shapr-014"></a></h2>
-<ul><li>Patch to fulfill CRAN policy of using packages under Suggests conditionally (in tests and examples)</li></ul></div>
+<ul><li>Patch to fulfill CRAN policy of using packages under Suggests conditionally (in tests and examples)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.3" id="shapr-013">shapr 0.1.3<small>2020-09-03</small><a class="anchor" aria-label="anchor" href="#shapr-013"></a></h2>
 <ul><li>Fix installation error on Solaris</li>
@@ -119,7 +128,8 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.0.9000" id="shapr-0009000">shapr 0.0.0.9000<a class="anchor" aria-label="anchor" href="#shapr-0009000"></a></h2>
-<ul><li>First version of the package. Currently under development.</li></ul></div>
+<ul><li>First version of the package. Currently under development.</li>
+</ul></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -134,7 +144,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
