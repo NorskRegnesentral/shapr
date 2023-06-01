@@ -70,7 +70,8 @@
 #' p0_ar <- rep(mean(data$Temp), 3)
 #'
 #' # Empirical approach, explaining forecasts starting at T = 152 and T = 153.
-#' explain_forecast(model = model_ar_temp,
+#' explain_forecast(
+#'   model = model_ar_temp,
 #'   y = data[, "Temp"],
 #'   train_idx = 2:151,
 #'   explain_idx = 152:153,
@@ -202,19 +203,18 @@ explain_forecast <- function(model,
 #' - The data.frames x_train and x_explain which holds the lagged data examples.
 #' - A numeric, n_endo denoting how many columns are endogenous in x_train and x_explain.
 #' - A list, group with groupings of each variable to explain per variable and not per variable and lag.
-get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon) {
-
+get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon) {
   # Check data object type
   stop_message <- ""
   if (!is.vector(y) &&
-      !(is.matrix(y) && ncol(y) >= 1) &&
-      !(is.data.frame(y) && ncol(y) >= 1)) {
-    stop_message <- paste0(stop_message,"y should be a matrix or data.frame/data.table with one or more columns, or a numeric vector.\n")
+    !(is.matrix(y) && ncol(y) >= 1) &&
+    !(is.data.frame(y) && ncol(y) >= 1)) {
+    stop_message <- paste0(stop_message, "y should be a matrix or data.frame/data.table with one or more columns, or a numeric vector.\n")
   }
   if (!is.null(xreg) && !is.matrix(xreg) && !is.data.frame(xreg)) {
-    stop_message <- paste0(stop_message,"xreg should be a matrix or a data.frame/data.table.\n")
+    stop_message <- paste0(stop_message, "xreg should be a matrix or a data.frame/data.table.\n")
   }
-  if (stop_message != ""){
+  if (stop_message != "") {
     stop(stop_message)
   }
 
@@ -226,9 +226,11 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
   }
   if (ncol(y) != length(explain_y_lags)) {
     stop(
-      paste0("`y` has ", ncol(y), " columns (", paste0(colnames(y),collapse = ","), ").\n",
-             "`explain_y_lags` has length ", length(explain_y_lags), ".\n",
-             "These two should match.\n")
+      paste0(
+        "`y` has ", ncol(y), " columns (", paste0(colnames(y), collapse = ","), ").\n",
+        "`explain_y_lags` has length ", length(explain_y_lags), ".\n",
+        "These two should match.\n"
+      )
     )
   }
 
@@ -241,9 +243,11 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
 
     if (ncol(xreg) != length(explain_xreg_lags)) {
       stop(
-        paste0("`xreg` has ", ncol(xreg), " columns (", paste0(colnames(xreg),collapse = ","), ").\n",
-               "`explain_xreg_lags` has length ", length(explain_xreg_lags), ".\n",
-               "These two should match.\n")
+        paste0(
+          "`xreg` has ", ncol(xreg), " columns (", paste0(colnames(xreg), collapse = ","), ").\n",
+          "`explain_xreg_lags` has length ", length(explain_xreg_lags), ".\n",
+          "These two should match.\n"
+        )
       )
     }
     if (nrow(xreg) < max(c(train_idx, explain_idx)) + horizon) {
@@ -256,9 +260,11 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
   max_lag <- max(c(explain_y_lags, explain_xreg_lags))
 
   if (any(c(train_idx, explain_idx) < max_lag) ||
-      any(c(train_idx, explain_idx) > nrow(y))) {
-    stop(paste0("The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data.\n",
-    "The lagged data begins at index ", max_lag, " and ends at index ", nrow(y), ".\n"))
+    any(c(train_idx, explain_idx) > nrow(y))) {
+    stop(paste0(
+      "The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data.\n",
+      "The lagged data begins at index ", max_lag, " and ends at index ", nrow(y), ".\n"
+    ))
   }
 
   # Create a matrix and groups of all lagged data.
@@ -268,7 +274,7 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
   # Create a matrix and groups of the forecasted values of the exogenous data.
   reg_fcast <- reg_forecast_setup(xreg[seq.int(to = max(c(train_idx, explain_idx)) + horizon, from = max_lag + 1), , drop = FALSE], horizon, data_lag$group)
 
-  if(ncol(data_lag$lagged)==0 && ncol(reg_fcast$fcast)==0){
+  if (ncol(data_lag$lagged) == 0 && ncol(reg_fcast$fcast) == 0) {
     stop("`explain_y_lags=0` is not allowed for models without exogeneous variables")
   }
 
@@ -299,7 +305,7 @@ get_data_forecast <- function (y, xreg, train_idx, explain_idx, explain_y_lags, 
 #' @return A list with two items
 #' - A matrix, lagged with the lagged data.
 #' - A list, group, with groupings of the lagged data per variable.
-lag_data <- function (x, lags) {
+lag_data <- function(x, lags) {
   lagged_obs <- nrow(x) - max(lags) + 1
   lagged <- matrix(NA, lagged_obs, 0)
   group <- list()
@@ -316,7 +322,7 @@ lag_data <- function (x, lags) {
     }
   }
   colnames(lagged) <- names
-  return(list(lagged=lagged, group=group))
+  return(list(lagged = lagged, group = group))
 }
 
 #' Set up exogenous regressors for explanation in a forecast model.
@@ -328,7 +334,7 @@ lag_data <- function (x, lags) {
 #' @return A list containing
 #' - fcast A matrix containing the exogenous observations needed for each observation.
 #' - group The list group with the exogenous groups appended.
-reg_forecast_setup <- function (x, horizon, group) {
+reg_forecast_setup <- function(x, horizon, group) {
   fcast <- matrix(NA, nrow(x) - horizon + 1, 0)
   names <- character()
   for (i in seq_len(ncol(x))) {
@@ -342,5 +348,5 @@ reg_forecast_setup <- function (x, horizon, group) {
     group[[colnames(x)[i]]] <- c(group[[colnames(x)[i]]], names_i)
   }
   colnames(fcast) <- names
-  return(list(fcast=fcast, group=group))
+  return(list(fcast = fcast, group = group))
 }

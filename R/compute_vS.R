@@ -1,4 +1,3 @@
-
 #' Computes `v(S)` for all features subsets `S`.
 #'
 #' @inheritParams default_doc
@@ -19,7 +18,6 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
       predict_model = predict_model
     )
   } else {
-
     # Doing the same as above without future without progressbar or paralellization
     ret <- list()
     for (i in seq_along(S_batch)) {
@@ -41,7 +39,7 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
   if (requireNamespace("progressr", quietly = TRUE)) {
     p <- progressr::progressor(sum(lengths(S_batch)))
   } else {
-   p <- NULL
+    p <- NULL
   }
 
   ret <- future.apply::future_lapply(
@@ -105,7 +103,6 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
 
 #' @keywords internal
 batch_prepare_vS <- function(S, internal) {
-
   max_id_combination <- internal$parameters$n_combinations
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
@@ -117,7 +114,7 @@ batch_prepare_vS <- function(S, internal) {
     # TODO: Need to handle the need for model for the AIC-versions here (skip for Python)
     dt <- prepare_data(internal, index_features = S)
   } else {
-    if(length(S)>1){
+    if (length(S) > 1) {
       S <- S[S != max_id_combination]
       dt <- prepare_data(internal, index_features = S)
     } else {
@@ -132,23 +129,21 @@ batch_prepare_vS <- function(S, internal) {
 
 #' @keywords internal
 compute_preds <- function(
-  dt,
-  feature_names,
-  predict_model,
-  model,
-  pred_cols,
-  type,
-  horizon = NULL,
-  n_endo = NULL,
-  explain_idx = NULL,
-  explain_lags = NULL,
-  y = NULL,
-  xreg = NULL
-) {
+    dt,
+    feature_names,
+    predict_model,
+    model,
+    pred_cols,
+    type,
+    horizon = NULL,
+    n_endo = NULL,
+    explain_idx = NULL,
+    explain_lags = NULL,
+    y = NULL,
+    xreg = NULL) {
   # Predictions
 
   if (type == "forecast") {
-
     dt[, (pred_cols) := predict_model(
       x = model,
       newdata = .SD[, 1:n_endo],
@@ -167,13 +162,12 @@ compute_preds <- function(
 }
 
 compute_MCint <- function(dt, pred_cols) {
-
   # Calculate contributions
-  dt_res <- dt[, lapply(.SD, function (x) sum(((x) * w) / sum(w))), .(id, id_combination), .SDcols = pred_cols]
+  dt_res <- dt[, lapply(.SD, function(x) sum(((x) * w) / sum(w))), .(id, id_combination), .SDcols = pred_cols]
   data.table::setkeyv(dt_res, c("id", "id_combination"))
   dt_mat <- data.table::dcast(dt_res, id_combination ~ id, value.var = pred_cols)
-  if(length(pred_cols)==1){
-    names(dt_mat)[-1] <- paste0(pred_cols,"_",names(dt_mat)[-1])
+  if (length(pred_cols) == 1) {
+    names(dt_mat)[-1] <- paste0(pred_cols, "_", names(dt_mat)[-1])
   }
   # dt_mat[, id_combination := NULL]
 

@@ -10,7 +10,6 @@ setup_approach.independence <- function(internal, ...) {
 #' @rdname prepare_data
 #' @export
 prepare_data.independence <- function(internal, index_features = NULL, ...) {
-
   x_train0 <- copy(internal$data$x_train)
   x_explain0 <- copy(internal$data$x_explain)
 
@@ -28,7 +27,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
 
   non_numeric_features <- feature_specs$labels[feature_specs$classes != "numeric"]
 
-  level_list <- lapply(x_train0[,.SD,.SDcols = non_numeric_features],FUN = levels)
+  level_list <- lapply(x_train0[, .SD, .SDcols = non_numeric_features], FUN = levels)
 
   S0 <- S[index_features, , drop = FALSE]
 
@@ -83,9 +82,9 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
 
   if (length(non_numeric_features) > 0) {
-    for(this in non_numeric_features){
-      this_levels=level_list[[this]]
-      dt[,(this):=as.factor(get(this))]
+    for (this in non_numeric_features) {
+      this_levels <- level_list[[this]]
+      dt[, (this) := as.factor(get(this))]
       levels(dt[[this]]) <- this_levels
     }
   }

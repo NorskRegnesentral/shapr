@@ -50,4 +50,3 @@ model_checker.xgb.Booster <- function(x) {
   }
   return(NULL)
 }
-

@@ -14,8 +14,6 @@
 setup_approach.gaussian <- function(internal,
                                     gaussian.mu = NULL,
                                     gaussian.cov_mat = NULL, ...) {
-
-
   parameters <- internal$parameters
   x_train <- internal$data$x_train
   feature_specs <- internal$objects$feature_specs
@@ -23,12 +21,14 @@ setup_approach.gaussian <- function(internal,
   # TO DO: gaussian.mu should probably be extracted from internal$parameters$gaussian.mu...
 
   # Checking if factor features are present
-  if(any(feature_specs$classes=="factor")){
-    factor_features <- names(which(feature_specs$classes=="factor"))
+  if (any(feature_specs$classes == "factor")) {
+    factor_features <- names(which(feature_specs$classes == "factor"))
     factor_approaches <- get_factor_approaches()
-    stop(paste0("The following feature(s) are factor(s): ",factor_features,".\n",
-                "approach = 'gaussian' does not support factor features.\n",
-                "Please change approach to one of ",paste0(factor_approaches,collapse=", "),"."))
+    stop(paste0(
+      "The following feature(s) are factor(s): ", factor_features, ".\n",
+      "approach = 'gaussian' does not support factor features.\n",
+      "Please change approach to one of ", paste0(factor_approaches, collapse = ", "), "."
+    ))
   }
 
   # If gaussian.mu is not provided directly, use mean of training data
@@ -53,7 +53,6 @@ setup_approach.gaussian <- function(internal,
 #' @rdname prepare_data
 #' @export
 prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
-
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
@@ -128,7 +127,6 @@ get_mu_vec <- function(x_train) {
 #'
 #' @author Martin Jullum
 sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_explain) {
-
   # Check input
   stopifnot(is.matrix(x_explain))
 
