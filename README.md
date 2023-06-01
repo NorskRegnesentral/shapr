@@ -16,7 +16,7 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
-# NOTE: This package is undergoing severe restructuring. A new version (with breaking changes) will be available on GitHub soon.
+### NOTE: This package has recently (June 2023, as of version 0.3.0) been severely restructured, introducing a new syntax for explaining models, and thereby introducing a range of breaking changes. The CRAN version of `shapr` is still on version 0.2.2, using the older syntax. See the [NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md) for details.
 
 The most common machine learning task is to train a model which is able
 to predict an unknown outcome (response variable) based on a set of
@@ -42,7 +42,7 @@ consequently wrong interpretations of the predictions. Aas, Jullum, and
 Løland (2021) extends and improves the Kernel SHAP method of Lundberg
 and Lee (2017) to account for the dependence between the features,
 resulting in significantly more accurate approximations to the Shapley
-values. [See the paper for details](https://www.sciencedirect.com/science/article/pii/S0004370221000539).
+values. [See the paper for details](https://arxiv.org/abs/1903.10464).
 
 This package implements the methodology of Aas, Jullum, and Løland
 (2021).
@@ -137,15 +137,16 @@ library(xgboost)
 library(shapr)
 
 data("airquality")
-airquality <- airquality[complete.cases(airquality), ]
+data <- data.table::as.data.table(airquality)
+data <- data[complete.cases(data), ]
 
 x_var <- c("Solar.R", "Wind", "Temp", "Month")
 y_var <- "Ozone"
 
-ind_x_test <- 1:6
-x_train <- as.matrix(airquality[-ind_x_test, x_var])
-y_train <- airquality[-ind_x_test, y_var]
-x_test <- as.matrix(airquality[ind_x_test, x_var])
+ind_x_explain <- 1:6
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
 
 # Looking at the dependence between the features
 cor(x_train)
@@ -157,30 +158,31 @@ cor(x_train)
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost(
-  data = x_train,
+  data = as.matrix(x_train),
   label = y_train,
   nround = 20,
   verbose = FALSE
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-p <- mean(y_train)
+p0 <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(
-  x_train,
-  x_test,
   model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "empirical",
-  prediction_zero = p
+  prediction_zero = p0
 )
-#> 
-#> Success with message:
-#> The specified model provides feature classes that are NA. The classes of data are taken as the truth.
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
 # Printing the Shapley values for the test data.
-# For more information about the interpretation of the values in the table, see ?shapr::explain.  
+# For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$shapley_values)
 #>        none    Solar.R      Wind      Temp      Month
 #> 1: 43.08571 13.2117337  4.785645 -25.57222  -5.599230

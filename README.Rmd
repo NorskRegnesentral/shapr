@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
-# NOTE: This package is undergoing severe restructuring. A new version (with breaking changes) will be available on GitHub soon.
+### NOTE: This package has recently (June 2023, as of version 0.3.0) been severely restructured, introducing a new syntax for explaining models, and thereby introducing a range of breaking changes. The CRAN version of `shapr` is still on version 0.2.2, using the older syntax. See the [NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md) for details.
 
 The most common machine learning task is to train a model which is able to predict an unknown outcome (response variable) based on a set of known input variables/features.
 When using such models for real life applications, it is often crucial to understand why a certain set of features lead to exactly that prediction.
