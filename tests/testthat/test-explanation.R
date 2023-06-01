@@ -1,7 +1,7 @@
 context("test-explanation.R")
 
 # For using same Random numer generator as CircelCI (R version 3.5.x)
-RNGversion(vstr = "3.5.0")
+suppressWarnings(RNGversion(vstr = "3.5.0"))
 
 test_that("Test get_list_approaches", {
   m <- 4

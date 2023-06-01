@@ -12,7 +12,7 @@ status](https://github.com/NorskRegnesentral/shapr/workflows/R-CMD-check/badge.s
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License:
-MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit/)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
@@ -182,12 +182,14 @@ explanation <- explain(
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$dt)
 #>      none     lstat         rm       dis      indus
+#>     <num>     <num>      <num>     <num>      <num>
 #> 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644
 #> 2: 22.446 0.1671901 -0.7088401 0.9689005  0.3786871
 #> 3: 22.446 5.9888022  5.5450858 0.5660134 -1.4304351
 #> 4: 22.446 8.2142204  0.7507572 0.1893366  1.8298304
 #> 5: 22.446 0.5059898  5.6875103 0.8432238  2.2471150
 #> 6: 22.446 1.9929673 -3.6001958 0.8601984  3.1510531
+
 # Finally we plot the resulting explanations
 plot(explanation)
 ```
