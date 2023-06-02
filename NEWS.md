@@ -1,5 +1,4 @@
 # shapr (development version)
-# shapr 0.2.3 (GitHub only)
 
 * Complete restructuring motivated by introducing Python wrapper  (`shaprpyr`, [#325](https://github.com/NorskRegnesentral/shapr/pull/325)) for explaining predictions from Python models (from Python) utilizing almost all functionality of `shapr`. The restructuring splits the explanation tasks into smaller pieces, allowing the Python wrapper to move back and forth between Python and R, to do the prediction in Python, and almost everything else in R. This simplifies maintenance of `shaprpy` significantly. 
 * As part of the restructuring, we also did a number of design changes, resulting in a series of breaking changes described below.
