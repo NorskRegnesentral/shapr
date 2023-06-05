@@ -31,3 +31,6 @@ docs/*
 doc
 Meta
 docs
+/doc/
+/Meta/
+.idea

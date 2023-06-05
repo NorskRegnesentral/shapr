@@ -1,0 +1,35 @@
+#' @rdname predict_model
+#' @export
+predict_model.glm <- function(x, newdata, ...) {
+  if (!requireNamespace("stats", quietly = TRUE)) {
+    stop("The stats package is required for predicting stats models")
+  }
+
+  if (x$family[[1]] == "binomial") {
+    predict(x, as.data.frame(newdata), type = "response")
+  } else {
+    predict(x, as.data.frame(newdata))
+  }
+}
+
+#' @rdname get_model_specs
+#' @export
+get_model_specs.glm <- function(x) {
+  model_checker(x) # Checking if the model is supported
+
+  feature_specs <- list()
+  feature_specs$labels <- all.vars(formula(x))[-1]
+  m <- length(feature_specs$labels)
+
+  feature_specs$classes <- attr(x$terms, "dataClasses")[-1]
+  feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
+  feature_specs$factor_levels[names(x$xlevels)] <- x$xlevels
+
+  return(feature_specs)
+}
+
+#' @rdname model_checker
+#' @export
+model_checker.glm <- function(x) {
+  NULL
+}

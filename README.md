@@ -16,7 +16,21 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
-# NOTE: This package is undergoing severe restructuring. A new version (with breaking changes) will be available on GitHub soon.
+### Breaking change (June 2023)
+
+The development verison of shapr (master branch on GitHub from June
+2023) has been severely restructured, introducing a new syntax for
+explaining models, and thereby introducing a range of breaking changes.
+This essentially amounts to using a single function (`explain()`)
+instead of two functions (`shapr()` and `explain()`). The CRAN version
+of `shapr` (v0.2.2) still uses the old syntax. See the
+[NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md)
+for details. The examples below uses the new syntax.
+[Here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md)
+is a version of this README with the syntax of the CRAN version
+(v0.2.2).
+
+## Introduction
 
 The most common machine learning task is to train a model which is able
 to predict an unknown outcome (response variable) based on a set of
@@ -42,7 +56,7 @@ consequently wrong interpretations of the predictions. Aas, Jullum, and
 Løland (2021) extends and improves the Kernel SHAP method of Lundberg
 and Lee (2017) to account for the dependence between the features,
 resulting in significantly more accurate approximations to the Shapley
-values. [See the paper for details](https://www.sciencedirect.com/science/article/pii/S0004370221000539).
+values. [See the paper for details](https://arxiv.org/abs/1903.10464).
 
 This package implements the methodology of Aas, Jullum, and Løland
 (2021).
@@ -52,17 +66,32 @@ The following methodology/features are currently implemented:
 -   Native support of explanation of predictions from models fitted with
     the following functions `stats::glm`, `stats::lm`,`ranger::ranger`,
     `xgboost::xgboost`/`xgboost::xgb.train` and `mgcv::gam`.
--   Accounting for feature dependence assuming the features are Gaussian
-    (Aas, Jullum, and Løland (2021)).
--   Accounting for feature dependence with a Gaussian copula (Gaussian
-    dependence structure, any marginal) (Aas, Jullum, and Løland
-    (2021)).
--   Accounting for feature dependence using the Mahalanobis distance
-    based empirical (conditional) distribution approach of Aas, Jullum,
-    and Løland (2021).
--   Accounting for feature dependence using conditional inference trees
-    (Redelmeier, Jullum, and Aas (2020)).
--   Combining any of the four methods.
+-   Accounting for feature dependence
+    -   assuming the features are Gaussian (`approach = 'gaussian'`,
+        Aas, Jullum, and Løland (2021))
+    -   with a Gaussian copula (`approach = 'copula'`, Aas, Jullum, and
+        Løland (2021))
+    -   using the Mahalanobis distance based empirical (conditional)
+        distribution approach (`approach = 'empirical'`, Aas, Jullum,
+        and Løland (2021))
+    -   using conditional inference trees (`approach = 'ctree'`,
+        Redelmeier, Jullum, and Aas (2020)).
+    -   using the endpoint match method for time series
+        (`approach = 'timeseries'`, Jullum, Redelmeier, and Aas (2021))
+    -   using the joint distribution approach for models with purely
+        cateogrical data (`approach = 'categorical'`, Redelmeier,
+        Jullum, and Aas (2020))
+    -   assuming all features are independent
+        (`approach = 'independence'`, mainly for benchmarking)
+-   Combining any of the above methods.
+-   Explain *forecasts* from time series models at different horizons
+    with `explain_forecast()`
+-   Batch computation to reduce memory consumption significantly
+-   Parallelized computation using the
+    [future](https://future.futureverse.org/) framework.
+-   Progress bar showing computation progress, using the
+    [`progressr`](https://progressr.futureverse.org/) package. Must be
+    activated by the user.
 -   Optional use of the AICc criterion of Hurvich, Simonoff, and
     Tsai (1998) when optimizing the bandwidth parameter in the empirical
     (conditional) approach of Aas, Jullum, and Løland (2021).
@@ -75,32 +104,43 @@ Current methodological restrictions:
 - The features must follow a continuous distribution
 - Discrete features typically work just fine in practice although the theory breaks down
 - Ordered/unordered categorical features are not supported
--->
 
 Future releases will include:
 
--   Support for parallelization over explanations, Monte Carlo sampling
-    and features subsets for non-parallelizable prediction functions.
 -   Computational improvement of the AICc optimization approach,
 -   Adaptive selection of method to account for the feature dependence.
+-->
 
-Note that both the features and the prediction must be numeric. The
-approach is constructed for continuous features. Discrete features may
-also work just fine with the empirical (conditional) distribution
-approach. Unlike SHAP and TreeSHAP, we decompose probability predictions
-directly to ease the interpretability, i.e. not via log odds
-transformations. The application programming interface (API) of `shapr`
-is inspired by Pedersen and Benesty (2019).
+Note the prediction outcome must be numeric. All approaches except
+`approach = 'categorical'` works for numeric features, but unless the
+models are very gaussian-like, we recommend `approach = 'ctree'` or
+`approach = 'empirical'`, especially if there are discretely distributed
+features. When the models contains both numeric and categorical
+features, we recommend `approach = 'ctree'`. For models with a smaller
+number of categorical features (without many levels) and a decent
+training set, we recommend `approach = 'categorical'`. For (binary)
+classification based on time series models, we suggest using
+`approach = 'timeseries'`. To explain forecasts of time series models
+(at different horizons), we recommend using `explain_forecast()` instead
+of `explain()`. The former has a more suitable input syntax for
+explaining those kinds of forecasts. See the
+[vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html)
+for details and further examples.
+
+Unlike SHAP and TreeSHAP, we decompose probability predictions directly
+to ease the interpretability, i.e. not via log odds transformations.
 
 ## Installation
 
-To install the current stable release from CRAN, use
+To install the current stable release from CRAN (note, using the old
+explanation syntax), use
 
 ``` r
 install.packages("shapr")
 ```
 
-To install the current development version, use
+To install the current development version (with the new explanation
+syntax), use
 
 ``` r
 remotes::install_github("NorskRegnesentral/shapr")
@@ -129,72 +169,78 @@ You can always check out the latest version of the vignette
 which takes a set of numeric features and produces a numeric outcome.
 
 The following example shows how a simple `xgboost` model is trained
-using the *Boston Housing Data*, and how `shapr` explains the individual
+using the *airquality* dataset, and how `shapr` explains the individual
 predictions.
 
 ``` r
 library(xgboost)
 library(shapr)
 
-data("Boston", package = "MASS")
+data("airquality")
+data <- data.table::as.data.table(airquality)
+data <- data[complete.cases(data), ]
 
-x_var <- c("lstat", "rm", "dis", "indus")
-y_var <- "medv"
+x_var <- c("Solar.R", "Wind", "Temp", "Month")
+y_var <- "Ozone"
 
-ind_x_test <- 1:6
-x_train <- as.matrix(Boston[-ind_x_test, x_var])
-y_train <- Boston[-ind_x_test, y_var]
-x_test <- as.matrix(Boston[ind_x_test, x_var])
+ind_x_explain <- 1:6
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
 
 # Looking at the dependence between the features
 cor(x_train)
-#>            lstat         rm        dis      indus
-#> lstat  1.0000000 -0.6108040 -0.4928126  0.5986263
-#> rm    -0.6108040  1.0000000  0.1999130 -0.3870571
-#> dis   -0.4928126  0.1999130  1.0000000 -0.7060903
-#> indus  0.5986263 -0.3870571 -0.7060903  1.0000000
+#>            Solar.R       Wind       Temp      Month
+#> Solar.R  1.0000000 -0.1243826  0.3333554 -0.0710397
+#> Wind    -0.1243826  1.0000000 -0.5152133 -0.2013740
+#> Temp     0.3333554 -0.5152133  1.0000000  0.3400084
+#> Month   -0.0710397 -0.2013740  0.3400084  1.0000000
+
 # Fitting a basic xgboost model to the training data
 model <- xgboost(
-  data = x_train,
+  data = as.matrix(x_train),
   label = y_train,
   nround = 20,
   verbose = FALSE
 )
 
-# Prepare the data for explanation
-explainer <- shapr(x_train, model)
-#> 
-#> Success with message:
-#> The specified model provides feature classes that are NA. The classes of data are taken as the truth.
 # Specifying the phi_0, i.e. the expected prediction without any features
-p <- mean(y_train)
+p0 <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
 explanation <- explain(
-  x_test,
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
   approach = "empirical",
-  explainer = explainer,
-  prediction_zero = p
+  prediction_zero = p0
 )
+#> Note: Feature classes extracted from the model contains NA.
+#> Assuming feature classes from the data are correct.
+#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
+#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation$dt)
-#>      none     lstat         rm       dis      indus
-#>     <num>     <num>      <num>     <num>      <num>
-#> 1: 22.446 5.2632030 -1.2526613 0.2920444  4.5528644
-#> 2: 22.446 0.1671901 -0.7088401 0.9689005  0.3786871
-#> 3: 22.446 5.9888022  5.5450858 0.5660134 -1.4304351
-#> 4: 22.446 8.2142204  0.7507572 0.1893366  1.8298304
-#> 5: 22.446 0.5059898  5.6875103 0.8432238  2.2471150
-#> 6: 22.446 1.9929673 -3.6001958 0.8601984  3.1510531
+print(explanation$shapley_values)
+#>        none    Solar.R      Wind      Temp      Month
+#> 1: 43.08571 13.2117337  4.785645 -25.57222  -5.599230
+#> 2: 43.08571 -9.9727747  5.830694 -11.03873  -7.829954
+#> 3: 43.08571 -2.2916185 -7.053393 -10.15035  -4.452481
+#> 4: 43.08571  3.3254595 -3.240879 -10.22492  -6.663488
+#> 5: 43.08571  4.3039571 -2.627764 -14.15166 -12.266855
+#> 6: 43.08571  0.4786417 -5.248686 -12.55344  -6.645738
 
 # Finally we plot the resulting explanations
 plot(explanation)
 ```
 
 <img src="man/figures/README-basic_example-1.png" width="100%" />
+
+See the
+[vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html)
+for further examples.
 
 ## Contribution
 
@@ -230,6 +276,15 @@ Statistical Society: Series B (Statistical Methodology)* 60 (2): 271–93.
 
 </div>
 
+<div id="ref-jullum2021efficient" class="csl-entry">
+
+Jullum, Martin, Annabelle Redelmeier, and Kjersti Aas. 2021. “Efficient
+and Simple Prediction Explanations with groupShapley: A Practical
+Perspective.” In *Proceedings of the 2nd Italian Workshop on Explainable
+Artificial Intelligence*, 28–43. CEUR Workshop Proceedings.
+
+</div>
+
 <div id="ref-lundberg2018consistent" class="csl-entry">
 
 Lundberg, Scott M, Gabriel G Erion, and Su-In Lee. 2018. “Consistent
@@ -243,14 +298,6 @@ arXiv:1802.03888*.
 Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to
 Interpreting Model Predictions.” In *Advances in Neural Information
 Processing Systems*, 4765–74.
-
-</div>
-
-<div id="ref-lime_api" class="csl-entry">
-
-Pedersen, Thomas Lin, and Michaël Benesty. 2019. *Lime: Local
-Interpretable Model-Agnostic Explanations*.
-<https://CRAN.R-project.org/package=lime>.
 
 </div>
 

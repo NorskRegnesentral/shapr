@@ -1,49 +1,131 @@
-context("test-plot.R")
+set.seed(123) #
 
-test_that("Test plot.shapr", {
-  if (requireNamespace("ggplot2", quietly = TRUE)) {
+explain_mixed <- explain(
+  model = model_lm_mixed,
+  x_explain = x_explain_mixed,
+  x_train = x_train_mixed,
+  approach = "independence",
+  prediction_zero = p0,
+  n_batches = 1,
+  timing = FALSE
+)
 
-    # Example -----------
-    x <- matrix(c(
-      4.98, 9.14, 4.03, 2.94, 5.33,
-      6.575, 6.421, 7.185, 6.998, 7.147,
-      4.0900, 4.9671, 4.9671, 6.0622, 6.0622,
-      2.31, 7.07, 7.07, 2.18, 2.18
-    ),
-    ncol = 4
-    )
+test_that("checking default outputs", {
+  skip_if_not_installed("vdiffr")
 
-    colnames(x) <- c("lstat", "rm", "dis", "indus")
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_default",
+    fig = plot(explain_mixed)
+  )
 
-    explanation <- list()
-    explanation$p <- c(31.30145, 23.25194, 33.11547, 33.43015, 31.72984)
-    explanation$dt <- data.table::data.table(
-      "none" = rep(22.00, 5),
-      "lstat" = c(5.2632, 0.1672, 5.9888, 8.2142, 0.5060),
-      "rm" = c(-1.2527, -0.7088, 5.5451, 0.7508, 5.6875),
-      "dis" = c(0.2920, 0.9689, 0.5660, 0.1893, 0.8432),
-      "indus" = c(4.5529, 0.3787, -1.4304, 1.8298, 2.2471)
-    )
-    explanation$x_test <- x
-    explanation$is_groupwise <- FALSE
-    attr(explanation, "class") <- c("shapr", "list")
+  vdiffr::expect_doppelganger(
+    title = "waterfall_plot_default",
+    fig = plot(explain_mixed, plot_type = "waterfall")
+  )
 
+  vdiffr::expect_doppelganger(
+    title = "scatter_plot_default",
+    fig = plot(explain_mixed, plot_type = "scatter")
+  )
 
-    # Test -----------
-    p <- plot(explanation, plot_phi0 = FALSE)
+  vdiffr::expect_doppelganger(
+    title = "beeswarm_plot_default",
+    fig = plot(explain_mixed, plot_type = "beeswarm")
+  )
+})
 
-    expect_equal(colnames(x), unique(as.character(p$data$variable)))
-    expect_equal(explanation$p, unique(p$data$pred))
-    expect_equal(sort(as.vector(as.matrix(explanation$dt[, -c("none")]))), sort(p$data$phi))
+test_that("bar_plot_new_arguments", {
+  skip_if_not_installed("vdiffr")
 
-    p <- plot(explanation, plot_phi0 = TRUE)
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_digits_5",
+    fig = plot(explain_mixed, digits = 5)
+  )
 
-    expect_equal(colnames(explanation$dt), unique(as.character(p$data$variable)))
-    expect_equal(explanation$p, unique(p$data$pred))
-    expect_equal(sort(as.vector(as.matrix(explanation$dt))), sort(p$data$phi))
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_no_phi0",
+    fig = plot(explain_mixed, bar_plot_phi0 = FALSE)
+  )
 
-    p <- plot(explanation, plot_phi0 = TRUE, top_k_features = 2)
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_index_x_explain_1",
+    fig = plot(explain_mixed, index_x_explain = 1)
+  )
 
-    expect_equal(2, max(p$data$rank))
-  }
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_top_3_features",
+    fig = plot(explain_mixed, top_k_features = 3)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_new_colors",
+    fig = plot(explain_mixed, col = c("red", "black"))
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_order_original",
+    fig = plot(explain_mixed, bar_plot_order = "original")
+  )
+})
+
+test_that("waterfall_plot_new_arguments", {
+  skip_if_not_installed("vdiffr")
+
+  vdiffr::expect_doppelganger(
+    title = "waterfall_plot_digits_5",
+    fig = plot(explain_mixed, plot_type = "waterfall", digits = 5)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "waterfall_plot_index_x_explain_1",
+    fig = plot(explain_mixed, plot_type = "waterfall", index_x_explain = 1)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "waterfall_plot_top_3_features",
+    fig = plot(explain_mixed, plot_type = "waterfall", top_k_features = 3)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "waterfall_plot_new_colors",
+    fig = plot(explain_mixed, plot_type = "waterfall", col = c("red", "black"))
+  )
+})
+
+test_that("scatter_plot_new_arguments", {
+  skip_if_not_installed("vdiffr")
+
+  vdiffr::expect_doppelganger(
+    title = "scatter_plot_index_x_explain_1_2",
+    fig = plot(explain_mixed, plot_type = "scatter", index_x_explain = c(1, 2))
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "scatter_plot_new_color",
+    fig = plot(explain_mixed, plot_type = "scatter", col = "black")
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "scatter_plot_one_feature",
+    fig = plot(explain_mixed, plot_type = "scatter", scatter_features = "Temp")
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "scatter_plot_no_hist",
+    fig = plot(explain_mixed, plot_type = "scatter", scatter_hist = FALSE)
+  )
+})
+
+test_that("beeswarm_plot_new_arguments", {
+  skip_if_not_installed("vdiffr")
+
+  vdiffr::expect_doppelganger(
+    title = "beeswarm_plot_new_colors",
+    fig = plot(explain_mixed, plot_type = "beeswarm", col = c("red", "black"))
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "beeswarm_plot_index_x_explain_1_2",
+    fig = plot(explain_mixed, plot_type = "beeswarm", index_x_explain = c(1, 2))
+  )
 })
