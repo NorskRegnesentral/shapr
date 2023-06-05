@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9000</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Sample conditional variables using the Gaussian copula approach</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/sampling.R" class="external-link"><code>R/sampling.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_copula.R" class="external-link"><code>R/approach_copula.R</code></a></small>
     <div class="hidden name"><code>sample_copula.Rd</code></div>
     </div>
 
@@ -69,9 +69,9 @@
 <span>  <span class="va">mu</span>,</span>
 <span>  <span class="va">cov_mat</span>,</span>
 <span>  <span class="va">m</span>,</span>
-<span>  <span class="va">x_test_gaussian</span>,</span>
+<span>  <span class="va">x_explain_gaussian</span>,</span>
 <span>  <span class="va">x_train</span>,</span>
-<span>  <span class="va">x_test</span></span>
+<span>  <span class="va">x_explain</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -86,12 +86,13 @@
 <dd><p>Positive integer. The total number of features.</p></dd>
 
 
-<dt>x_test_gaussian</dt>
-<dd><p>Numeric matrix. Contains the observation whose predictions ought to be explained (test data),
+<dt>x_explain_gaussian</dt>
+<dd><p>Numeric matrix. Contains the observation whose predictions ought
+to be explained (test data),
 after quantile-transforming them to standard Gaussian variables.</p></dd>
 
 
-<dt>x_test</dt>
+<dt>x_explain</dt>
 <dd><p>Numeric matrix. Contains the features of the observation whose
 predictions ought to be explained (test data).</p></dd>
 
@@ -115,7 +116,7 @@ predictions ought to be explained (test data).</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

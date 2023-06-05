@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9000</span>
       </span>
     </div>
 
@@ -58,6 +58,46 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="development version" id="shapr-development-version">shapr (development version)<a class="anchor" aria-label="anchor" href="#shapr-development-version"></a></h2>
+<ul><li>Complete restructuring motivated by introducing a Python wrapper (<code>shaprpyr</code>, <a href="https://github.com/NorskRegnesentral/shapr/pull/325" class="external-link">#325</a>) for explaining predictions from Python models (from Python) utilizing almost all functionality of <code>shapr</code> (not merged to master yet). The restructuring splits the explanation tasks into smaller pieces, allowing the Python wrapper to move back and forth between Python and R, doing the prediction in Python, and almost everything else in R. This simplifies maintenance of <code>shaprpy</code> significantly.</li>
+<li>As part of the restructuring, we also did a number of design changes, resulting in a series of breaking changes described below.</li>
+</ul><div class="section level4">
+<h4 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h4>
+<ul><li>Moved from explaining predictions using <em>two</em> functions (<code><a href="../reference/shapr-package.html">shapr()</a></code> for initial setup + <code><a href="../reference/explain.html">explain()</a></code> for explanation for specific observations), to a <em>single</em> function call (also named <code><a href="../reference/explain.html">explain()</a></code>). The data used for training and to be explained have gotten explicit names (<code>x_train</code> and <code>x_explain</code>). The order of the input arguments has also been slightly changed (<code>model</code> is now the first argument).</li>
+<li>Prediction and checking functions for custom models are now passed directly as arguments to <code><a href="../reference/explain.html">explain()</a></code> instead of being defined as functions of a specific class in the global env.</li>
+<li>The previously exported function <code>make_dummies</code> used to explain <code>xgboost</code> models with categorical data, is removed to simplify the code base. This is rather handled with a custom prediction model.</li>
+<li>The function <code>explain.ctree_comb_mincrit</code>, which allowed combining models with <code>approch=ctree</code> with different <code>mincrit</code> parameters, has been removed to simplify the code base. It may return in a completely general manner in later version of <code>shapr</code>.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h4>
+<ul><li>Introduce batch computation of conditional expectations (<a href="https://github.com/NorskRegnesentral/shapr/issues/244" class="external-link">#244</a>). This essentially compute <span class="math inline"><em>v</em>(<em>S</em>)</span> for a portion of the <span class="math inline"><em>S</em></span>-subsets at a time, to reduce the amount of data needed to be held in memory. The user can control the number of batches herself, but we set a reasonable value by default (<a href="https://github.com/NorskRegnesentral/shapr/pull/327" class="external-link">#327</a>). This allows models with large number of features to be explained with a significantly lower RAM consumption (at the cost of a slight increase in the computation time)</li>
+<li>Parallelization over batches (<a href="https://github.com/NorskRegnesentral/shapr/issues/38" class="external-link">#38</a>) using the <a href="https://future.futureverse.org/" class="external-link">future</a> framework.</li>
+<li>Progress bar (<a href="https://github.com/NorskRegnesentral/shapr/pull/293" class="external-link">#293</a>) using the <a href="https://progressr.futureverse.org/" class="external-link"><code>progressr</code></a> package. Must be activated by the user with <code>progressr::handlers(global = TRUE)</code> or wrapping the call to <code><a href="../reference/explain.html">explain()</a></code> around <code>progressr::with_progress({})</code>
+</li>
+<li>Added <code>approach = 'categorical'</code> (<a href="https://github.com/NorskRegnesentral/shapr/issues/256" class="external-link">#256</a>, <a href="https://github.com/NorskRegnesentral/shapr/pull/307" class="external-link">#307</a>) used to explain models with solely categorical features by directly using/estimating the joint distribution of all feature combinations.</li>
+<li>Added <code>approch='timeseries'</code> (<a href="https://github.com/NorskRegnesentral/shapr/pull/314" class="external-link">#314</a>) for explaining classifications based on time series data/models with the method described in Sec 4.3 of the <a href="https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf" class="external-link">groupShapley paper</a>.</li>
+<li>Implemented unique sampling of Shapley value subsets (<a href="https://github.com/NorskRegnesentral/shapr/issues/227" class="external-link">#227</a>)</li>
+<li>Added new function <code>explain_forecast</code> to explain forecasts from time series models, at various prediction horizons (<a href="https://github.com/NorskRegnesentral/shapr/pull/328" class="external-link">#328</a>). Uses a different set of input argument which is more appropriate for these models.</li>
+<li>Re-implementation of <code>approach = 'independence'</code> method providing significantly faster computation (no longer as a special case of the <code>empirical</code> method). Also allow the method to be used on models with categorical data (<a href="https://github.com/NorskRegnesentral/shapr/pull/315" class="external-link">#315</a>).</li>
+<li>Added ‘beeswarm’ and ‘waterfall’ plots + new coloring scheme for all plots. See the <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#ex">vignette</a> for examples.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="under-the-hood-development-version">Under the hood<a class="anchor" aria-label="anchor" href="#under-the-hood-development-version"></a></h4>
+<ul><li>The test base have been completely rewritten (<a href="https://github.com/NorskRegnesentral/shapr/issues/249" class="external-link">#249</a>). Now heavily utilizing <a href="https://testthat.r-lib.org/articles/snapshotting.html" class="external-link">snapshots</a> on a large set of benchmark calls to <code>explain</code>, also using <a href="https://vdiffr.r-lib.org/" class="external-link">vdiffr</a> for plot tests. Test functions are only written for exported core functions. Internal functions are only tested through the exported ones.</li>
+<li>Update GitHub actions (<a href="https://github.com/NorskRegnesentral/shapr/pull/335" class="external-link">#335</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-development-version">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-development-version"></a></h3>
+<ul><li>The vignette/readme/tests now uses the <code><a href="https://rdrr.io/r/datasets/airquality.html" class="external-link">datasets::airquality</a></code> dataset. This avoids including a new package just for the dataset (<a href="https://github.com/NorskRegnesentral/shapr/issues/248" class="external-link">#248</a>).</li>
+<li>Allows lm/glm/gam models with interactions (<a href="https://github.com/NorskRegnesentral/shapr/pull/303" class="external-link">#303</a>). Previously, this was not possible with the prediction functions defined internally due to a bug.</li>
+<li>Sampling of group subsets implemented also for grouping, not only features.</li>
+</ul><div class="section level4">
+<h4 id="documentation-improvements-development-version">Documentation improvements<a class="anchor" aria-label="anchor" href="#documentation-improvements-development-version"></a></h4>
+<ul><li>The <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html">vignette</a> has been updated to reflect the new framework for explaining predictions, and all the new package features/functionality.</li>
+</ul></div>
+</div>
+</div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.3" id="shapr-023-github-only">shapr 0.2.3 (GitHub only)<a class="anchor" aria-label="anchor" href="#shapr-023-github-only"></a></h2>
 <ul><li>Development version</li>
 <li>Added support for groupSHAP, including check of appropriate groups, examples and tests</li>
@@ -81,7 +121,7 @@
 <li>Added support to explain models which take as input categorical features for model classes like xgboost which originally takes only numeric input. On the user side, an additional call to the new <em>make_dummies</em> function is required. See the vignette for details.</li>
 <li>Slight change in the user procedure for explaining predictions from custom models. This now requires only a single function <em>predict_model</em>.</li>
 <li>Introduced a thorough system for extracting and checking the feature information in the model and the data passed to <em>shapr</em> and <em>explain</em>. The features in the data are checked for consistency with what can be extracted from the model object. If the model object is missing some of the necessary information, the info from the data is used instead. The system checks feature labels, classes, and any factor levels.</li>
-<li>Due to the previous point, the <em>feature_labels</em> option previously used for custom models is removed.</li>
+<li>Due to the previous point, the <em>feature_names</em> option previously used for custom models is removed.</li>
 <li>Added a manual testing script for custom model (currently cannot be handled by testthat due to environment issues).</li>
 <li>A few under-the-hood changes for checking in the <em>shapr</em> function.</li>
 </ul></div>
@@ -140,7 +180,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

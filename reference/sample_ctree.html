@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9000</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Sample ctree variables from a given conditional inference tree</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/sampling.R" class="external-link"><code>R/sampling.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_ctree.R" class="external-link"><code>R/approach_ctree.R</code></a></small>
     <div class="hidden name"><code>sample_ctree.Rd</code></div>
     </div>
 
@@ -63,7 +63,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sample_ctree</span><span class="op">(</span><span class="va">tree</span>, <span class="va">n_samples</span>, <span class="va">x_test</span>, <span class="va">x_train</span>, <span class="va">p</span>, <span class="va">sample</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sample_ctree</span><span class="op">(</span><span class="va">tree</span>, <span class="va">n_samples</span>, <span class="va">x_explain</span>, <span class="va">x_train</span>, <span class="va">n_features</span>, <span class="va">sample</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -77,16 +77,16 @@ Also contains given_ind, the features to condition upon.</p></dd>
 <dd><p>Numeric. Indicates how many samples to use for MCMC.</p></dd>
 
 
-<dt>x_test</dt>
+<dt>x_explain</dt>
 <dd><p>Matrix, data.frame or data.table with the features of the observation whose
-predictions ought to be explained (test data). Dimension <code>1xp</code> or <code>px1</code>.</p></dd>
+predictions ought to be explained (test data). Dimension <code>1\timesp</code> or <code>p\times1</code>.</p></dd>
 
 
 <dt>x_train</dt>
 <dd><p>Matrix, data.frame or data.table with training data.</p></dd>
 
 
-<dt>p</dt>
+<dt>n_features</dt>
 <dd><p>Positive integer. The number of features.</p></dd>
 
 
@@ -107,141 +107,6 @@ less than n_samples.</p></dd>
     <p>Annabelle Redelmeier</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"party"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></span>
-<span class="r-in"><span>  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">40</span></span></span>
-<span class="r-in"><span>  <span class="va">n_samples</span> <span class="op">&lt;-</span> <span class="fl">50</span></span></span>
-<span class="r-in"><span>  <span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">m</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">cov_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span> <span class="op">*</span> <span class="va">m</span><span class="op">)</span>, <span class="va">n</span>, <span class="va">m</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">mu</span>, <span class="va">cov_mat</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">x_test</span> <span class="op">&lt;-</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">mu</span>, <span class="va">cov_mat</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">x_test_dt</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">x_test</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">given_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">dependent_ind</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="va">given_ind</span><span class="op">]</span></span></span>
-<span class="r-in"><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x_train</span><span class="op">[</span>, <span class="va">given_ind</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></span>
-<span class="r-in"><span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x_train</span><span class="op">[</span>, <span class="va">dependent_ind</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></span>
-<span class="r-in"><span>  <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">y</span>, <span class="va">x</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"V"</span>, <span class="va">given_ind</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">ynam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">fmla</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">ynam</span>, collapse <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span>, <span class="st">"~ ."</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">datact</span> <span class="op">&lt;-</span> <span class="fu">party</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/party/man/ctree.html" class="external-link">ctree</a></span><span class="op">(</span><span class="va">fmla</span>, data <span class="op">=</span> <span class="va">df</span>, controls <span class="op">=</span> <span class="fu">party</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/party/man/ctree_control.html" class="external-link">ctree_control</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    minbucket <span class="op">=</span> <span class="fl">7</span>,</span></span>
-<span class="r-in"><span>    mincriterion <span class="op">=</span> <span class="fl">0.95</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">datact</span>, given_ind <span class="op">=</span> <span class="va">given_ind</span>, dependent_ind <span class="op">=</span> <span class="va">dependent_ind</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">shapr</span><span class="fu">:::</span><span class="fu">sample_ctree</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    tree <span class="op">=</span> <span class="va">tree</span>, n_samples <span class="op">=</span> <span class="va">n_samples</span>, x_test <span class="op">=</span> <span class="va">x_test_dt</span>, x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
-<span class="r-in"><span>    p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x_test</span><span class="op">)</span>, sample <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             V1           V2         V3        V4          V5          V6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:  0.5318019  2.566985356  1.4622643 0.9579884 -0.01487250  1.89966684</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: -0.6753265 -0.006084004  0.3919006 0.9579884  2.86918351  1.00103451</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: -1.9842188 -1.184952561  1.7083584 0.9579884  1.78333408  0.51034367</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  1.7240279  1.692814638 -0.1218454 0.9579884  2.16614656 -0.04644525</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: -0.2822999  1.671308872 -0.1488490 0.9579884  0.48609593  2.61681085</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:  0.2110467 -0.109578148 -0.6594373 0.9579884  2.26318268  0.87796212</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  0.8819050  1.293741779  1.6465323 0.9579884  0.01075943  2.26670312</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:  1.6007318  2.848824676  0.4060111 0.9579884 -0.56852696  0.77234937</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: -0.1408801  1.403236567  2.0735028 0.9579884  0.09757056  2.04294474</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:  1.9282250  2.368336916 -0.8623474 0.9579884  1.51239676  2.13225054</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:  3.0337297  0.846083253  0.1804255 0.9579884 -0.19794671 -1.22759989</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:  0.8220553 -0.204361688  0.4903171 0.9579884  2.49291305  0.83968665</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:  0.5926165  0.527648132  0.7006535 0.9579884  0.86916937  1.31474460</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:  3.0337297  0.846083253  0.1804255 0.9579884 -0.19794671 -1.22759989</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:  2.1738558  2.434909510  1.3530631 0.9579884  1.83924488  2.79757684</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:  1.1096676  0.943049603  0.5116621 0.9579884  0.57359803  0.59251442</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:  1.9282250  2.368336916 -0.8623474 0.9579884  1.51239676  2.13225054</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:  1.1193928  2.601723315  0.2262768 0.9579884  1.07115712 -0.71776702</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:  0.8874391  1.022233931  0.8958387 0.9579884  1.56877981  0.79693864</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:  1.1193928  2.601723315  0.2262768 0.9579884  1.07115712 -0.71776702</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:  1.0080789  1.587664814  1.5163513 0.9579884  1.32909125  1.04219594</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22: -1.9842188 -1.184952561  1.7083584 0.9579884  1.78333408  0.51034367</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:  0.7832831  1.717663703  0.4505747 0.9579884  0.48987205 -0.40334074</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:  1.6007318  2.848824676  0.4060111 0.9579884 -0.56852696  0.77234937</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: -0.8620888 -0.529703197  0.6969587 0.9579884  0.26405572  0.22038670</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: -0.2822999  1.671308872 -0.1488490 0.9579884  0.48609593  2.61681085</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: -0.5898974  1.858487852  1.4917106 0.9579884  0.96437093  2.61931103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28:  0.6382765  1.351887986  1.1714350 0.9579884 -0.14051040  2.93074678</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29:  1.7240279  1.692814638 -0.1218454 0.9579884  2.16614656 -0.04644525</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30:  1.7240279  1.692814638 -0.1218454 0.9579884  2.16614656 -0.04644525</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31:  3.0337297  0.846083253  0.1804255 0.9579884 -0.19794671 -1.22759989</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32:  1.2497974  1.447496126  1.4151783 0.9579884  0.31507838 -1.71024026</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33:  1.7557340  1.882381653  1.0647390 0.9579884 -0.36810177  0.38640779</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34:  2.5349542  3.466574547  0.8616325 0.9579884 -1.02973213  2.57842835</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35:  2.0825333 -0.361695421 -0.4992902 0.9579884  2.16855195  0.76439770</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:  1.1096676  0.943049603  0.5116621 0.9579884  0.57359803  0.59251442</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37: -0.5898974  1.858487852  1.4917106 0.9579884  0.96437093  2.61931103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:  1.4683589  0.627522228  1.3341940 0.9579884  1.64545663  1.92825113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:  1.0080789  1.587664814  1.5163513 0.9579884  1.32909125  1.04219594</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:  2.0825333 -0.361695421 -0.4992902 0.9579884  2.16855195  0.76439770</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:  1.7557340  1.882381653  1.0647390 0.9579884 -0.36810177  0.38640779</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42: -0.8620888 -0.529703197  0.6969587 0.9579884  0.26405572  0.22038670</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43:  1.1309652  1.102918341  0.5525010 0.9579884  0.43172165  0.14200660</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44:  1.0080789  1.587664814  1.5163513 0.9579884  1.32909125  1.04219594</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45:  0.8819050  1.293741779  1.6465323 0.9579884  0.01075943  2.26670312</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46: -1.9842188 -1.184952561  1.7083584 0.9579884  1.78333408  0.51034367</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47:  2.5349542  3.466574547  0.8616325 0.9579884 -1.02973213  2.57842835</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48:  0.6382765  1.351887986  1.1714350 0.9579884 -0.14051040  2.93074678</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49:  2.5349542  3.466574547  0.8616325 0.9579884 -1.02973213  2.57842835</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50:  0.8220553 -0.204361688  0.4903171 0.9579884  2.49291305  0.83968665</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             V1           V2         V3        V4          V5          V6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           V7          V8          V9          V10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 1.404042  2.09852537  1.21070033  1.448713741</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 1.404042 -0.24018270  2.18841582 -0.081032169</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 1.404042 -1.08361448  2.46703199 -2.146649631</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 1.404042  1.01507326 -0.39720128  0.827752458</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 1.404042  1.86726113  1.89190583  1.001560802</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 1.404042  0.80893194  1.42759234  1.411807833</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 1.404042  2.17292231  1.79025550  0.410034918</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 1.404042  2.13472930  1.85936105  0.694472259</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 1.404042  0.58315305  2.43962828  0.887494936</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 1.404042  0.50533299  1.13138297  2.102415999</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 1.404042  1.54902910  1.53572191  0.980232875</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 1.404042  2.08695407  0.79776331  1.838787162</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 1.404042  1.07547916  1.24726747  2.602663796</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 1.404042  1.54902910  1.53572191  0.980232875</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: 1.404042  2.42184148  2.11615133 -1.398609286</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16: 1.404042  0.83812580  0.58524414  1.451563525</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: 1.404042  0.50533299  1.13138297  2.102415999</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 1.404042  1.58452987  1.24067311  1.353839967</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 1.404042 -0.30197895  1.16574613  0.691567636</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 1.404042  1.58452987  1.24067311  1.353839967</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 1.404042 -0.03895497  0.23725481  3.734943583</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22: 1.404042 -1.08361448  2.46703199 -2.146649631</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23: 1.404042  1.03479391  1.44544799  0.007798773</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24: 1.404042  2.13472930  1.85936105  0.694472259</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 1.404042  0.70268807  2.33097646  1.003209127</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 1.404042  1.86726113  1.89190583  1.001560802</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 1.404042  1.35238124  2.02378861 -0.683973297</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 1.404042  1.58899936  2.88815547  1.155341436</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29: 1.404042  1.01507326 -0.39720128  0.827752458</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30: 1.404042  1.01507326 -0.39720128  0.827752458</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31: 1.404042  1.54902910  1.53572191  0.980232875</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 1.404042 -0.02261701  2.26562204  2.461995070</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 1.404042  0.72445327  0.09948112  2.199359327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 1.404042  2.05476876  1.65713861  0.086251539</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 1.404042  0.98694474 -1.86060831  2.396405736</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36: 1.404042  0.83812580  0.58524414  1.451563525</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37: 1.404042  1.35238124  2.02378861 -0.683973297</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38: 1.404042  2.70937920 -0.26380695  0.601677581</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 1.404042 -0.03895497  0.23725481  3.734943583</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 1.404042  0.98694474 -1.86060831  2.396405736</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41: 1.404042  0.72445327  0.09948112  2.199359327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42: 1.404042  0.70268807  2.33097646  1.003209127</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43: 1.404042  2.02568376  0.96788859  0.329282571</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44: 1.404042 -0.03895497  0.23725481  3.734943583</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45: 1.404042  2.17292231  1.79025550  0.410034918</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46: 1.404042 -1.08361448  2.46703199 -2.146649631</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47: 1.404042  2.05476876  1.65713861  0.086251539</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48: 1.404042  1.58899936  2.88815547  1.155341436</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49: 1.404042  2.05476876  1.65713861  0.086251539</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50: 1.404042  2.08695407  0.79776331  1.838787162</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           V7          V8          V9          V10</span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -250,7 +115,7 @@ less than n_samples.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

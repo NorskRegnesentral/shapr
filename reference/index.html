@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9000</span>
       </span>
     </div>
 
@@ -61,25 +61,69 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="compute_vS.html">compute_vS()</a></code> </p>
+        </td>
+        <td><p>Computes <code>v(S)</code> for all features subsets <code>S</code>.</p></td>
+      </tr><tr><td>
           <p><code><a href="explain.html">explain()</a></code> </p>
         </td>
         <td><p>Explain the output of machine learning models with more accurately estimated Shapley values</p></td>
+      </tr><tr><td>
+          <p><code><a href="explain_forecast.html">explain_forecast()</a></code> </p>
+        </td>
+        <td><p>Explain a forecast from a time series model using Shapley values.</p></td>
       </tr><tr><td>
           <p><code><a href="feature_combinations.html">feature_combinations()</a></code> </p>
         </td>
         <td><p>Define feature combinations, and fetch additional information about each unique combination</p></td>
       </tr><tr><td>
-          <p><code><a href="make_dummies.html">make_dummies()</a></code> </p>
+          <p><code><a href="finalize_explanation.html">finalize_explanation()</a></code> </p>
         </td>
-        <td><p>Initiate the making of dummy variables</p></td>
+        <td><p>Computes the Shapley values given <code>v(S)</code></p></td>
+      </tr><tr><td>
+          <p><code><a href="get_cov_mat.html">get_cov_mat()</a></code> </p>
+        </td>
+        <td><p>get_cov_mat</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_data_forecast.html">get_data_forecast()</a></code> </p>
+        </td>
+        <td><p>Set up data for explain_forecast</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_mu_vec.html">get_mu_vec()</a></code> </p>
+        </td>
+        <td><p>get_mu_vec</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_supported_approaches.html">get_supported_approaches()</a></code> </p>
+        </td>
+        <td><p>Gets the implemented approaches</p></td>
+      </tr><tr><td>
+          <p><code><a href="lag_data.html">lag_data()</a></code> </p>
+        </td>
+        <td><p>Lag a matrix of variables a specific number of lags for each variables.</p></td>
       </tr><tr><td>
           <p><code><a href="plot.shapr.html">plot(<i>&lt;shapr&gt;</i>)</a></code> </p>
         </td>
         <td><p>Plot of the Shapley value explanations</p></td>
       </tr><tr><td>
-          <p><code><a href="shapr.html">shapr()</a></code> </p>
+          <p><code><a href="process_factor_data.html">process_factor_data()</a></code> </p>
         </td>
-        <td><p>Create an explainer object with Shapley weights for test data.</p></td>
+        <td><p>Treat factors as numeric values</p></td>
+      </tr><tr><td>
+          <p><code><a href="reg_forecast_setup.html">reg_forecast_setup()</a></code> </p>
+        </td>
+        <td><p>Set up exogenous regressors for explanation in a forecast model.</p></td>
+      </tr><tr><td>
+          <p><code><a href="setup.html">setup()</a></code> </p>
+        </td>
+        <td><p>check_setup</p></td>
+      </tr><tr><td>
+          <p><code><a href="setup_approach.html">setup_approach()</a></code> </p>
+        </td>
+        <td><p>Set up the framework chosen approach</p></td>
+      </tr><tr><td>
+          <p><code><a href="setup_computation.html">setup_computation()</a></code> </p>
+        </td>
+        <td><p>Sets up everything for the Shapley values computation in <code><a href="../reference/explain.html">explain()</a></code></p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -89,7 +133,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

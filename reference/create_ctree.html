@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9000</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Make all conditional inference trees</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/sampling.R" class="external-link"><code>R/sampling.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/approach_ctree.R" class="external-link"><code>R/approach_ctree.R</code></a></small>
     <div class="hidden name"><code>create_ctree.Rd</code></div>
     </div>
 
@@ -79,23 +79,21 @@
 <dd><p>Numeric value. Indicates which features are conditioned on.</p></dd>
 
 
-<dt>x_train</dt>
-<dd><p>Numeric vector. Indicates the specific values of features for individual i.</p></dd>
-
-
 <dt>mincriterion</dt>
-<dd><p>Numeric value or vector equal to 1 - alpha where alpha is the nominal level of the conditional
-independence tests.
-Can also be a vector equal to the length of the number of features indicating which mincriterion to use
-when conditioning on various numbers of features.</p></dd>
+<dd><p>Numeric scalar or vector. (default = 0.95)
+Either a scalar or vector of length equal to the number of features in the model.
+Value is equal to 1 - \(\alpha\) where \(\alpha\) is the nominal level of the conditional independence tests.
+If it is a vector, this indicates which value to use when conditioning on various numbers of features.</p></dd>
 
 
 <dt>minsplit</dt>
-<dd><p>Numeric value. Equal to the value that the sum of the left and right daughter nodes need to exceed.</p></dd>
+<dd><p>Numeric scalar. (default = 20)
+Determines minimum value that the sum of the left and right daughter nodes required for a split.</p></dd>
 
 
 <dt>minbucket</dt>
-<dd><p>Numeric value. Equal to the minimum sum of weights in a terminal node.</p></dd>
+<dd><p>Numeric scalar. (default = 7)
+Determines the minimum sum of weights in a terminal node required for a split</p></dd>
 
 
 <dt>use_partykit</dt>
@@ -118,44 +116,6 @@ created whenever <code><a href="https://rdrr.io/pkg/partykit/man/ctree.html" cla
     <p>Annabelle Redelmeier, Martin Jullum</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MASS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"party"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></span>
-<span class="r-in"><span>  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">40</span></span></span>
-<span class="r-in"><span>  <span class="va">n_samples</span> <span class="op">&lt;-</span> <span class="fl">50</span></span></span>
-<span class="r-in"><span>  <span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">m</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">cov_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span> <span class="op">*</span> <span class="va">m</span><span class="op">)</span>, <span class="va">n</span>, <span class="va">m</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">x_train</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">mu</span>, <span class="va">cov_mat</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">given_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">7</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">mincriterion</span> <span class="op">&lt;-</span> <span class="fl">0.95</span></span></span>
-<span class="r-in"><span>  <span class="va">minsplit</span> <span class="op">&lt;-</span> <span class="fl">20</span></span></span>
-<span class="r-in"><span>  <span class="va">minbucket</span> <span class="op">&lt;-</span> <span class="fl">7</span></span></span>
-<span class="r-in"><span>  <span class="va">sample</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>  <span class="fu">create_ctree</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    given_ind <span class="op">=</span> <span class="va">given_ind</span>, x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
-<span class="r-in"><span>    mincriterion <span class="op">=</span> <span class="va">mincriterion</span>, minsplit <span class="op">=</span> <span class="va">minsplit</span>,</span></span>
-<span class="r-in"><span>    minbucket <span class="op">=</span> <span class="va">minbucket</span>, use_partykit <span class="op">=</span> <span class="st">"on_error"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $tree</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Conditional inference tree with 1 terminal nodes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Responses: Y1, Y2, Y3, Y4, Y5, Y6, Y7, Y8 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inputs:  V4, V7 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of observations:  40 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1)*  weights = 40 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $given_ind</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4 7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $dependent_ind</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  1  2  3  5  6  8  9 10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -164,7 +124,7 @@ created whenever <code><a href="https://rdrr.io/pkg/partykit/man/ctree.html" cla
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">

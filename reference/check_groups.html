@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9000</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Check that the group parameter has the right form and content</h1>
-    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/features.R" class="external-link"><code>R/features.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/R/setup.R" class="external-link"><code>R/setup.R</code></a></small>
     <div class="hidden name"><code>check_groups.Rd</code></div>
     </div>
 
@@ -63,20 +63,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_groups</span><span class="op">(</span><span class="va">feature_labels</span>, <span class="va">group</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_groups</span><span class="op">(</span><span class="va">feature_names</span>, <span class="va">group</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>feature_labels</dt>
+    <dl><dt>feature_names</dt>
 <dd><p>Vector of characters. Contains the feature labels used by the model</p></dd>
-
-
-<dt>group</dt>
-<dd><p>List. If <code>NULL</code> regular feature wise Shapley values are computed.
-If provided, group wise Shapley values are computed. <code>group</code> then has length equal to
-the number of groups. The list element contains character vectors with the features included
-in each of the different groups.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -94,7 +87,7 @@ in each of the different groups.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Norsk Regnesentral.</p>
+  <p></p><p>Developed by Nikolai Sellereite, Martin Jullum, Annabelle Redelmeier, Jon Lachmann, Norsk Regnesentral.</p>
 </div>
 
 <div class="pkgdown">
