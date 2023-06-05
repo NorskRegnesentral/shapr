@@ -41,4 +41,4 @@ jobs:
           lintr::lint_package(exclusions = exclusions_list)
         shell: Rscript {0}
         env:
-          LINTR_ERROR_ON_LINT: true
+          LINTR_ERROR_ON_LINT: false

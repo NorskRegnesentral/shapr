@@ -9,6 +9,8 @@
 #'
 #' @importFrom stats as.formula
 #'
+#' @importFrom stats formula
+#'
 #' @importFrom stats model.matrix
 #'
 #' @importFrom stats model.frame
@@ -17,9 +19,14 @@
 #'
 #' @importFrom stats contrasts
 #'
+#' @importFrom stats embed
+#'
 #' @importFrom Rcpp sourceCpp
 #'
 #' @keywords internal
 #'
 #' @useDynLib shapr, .registration = TRUE
 NULL
+
+#' @keywords internal
+"_PACKAGE"

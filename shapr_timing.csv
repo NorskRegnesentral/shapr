@@ -1,0 +1,2 @@
+p,n_train,n_test,n_batches,n_cores,approach,min_time,mean_time,median_time,max_time,sys_time_start,sys_time_end,reps,max_n,max_p,rho,sigma,mu_const,beta0,sigma_eps
+4,100,2,6,2,gaussian,0.55644755,0.7457012925,0.7457012925,0.934955035,2022-01-21 11:32:11,2022-01-21 11:32:14,2,1e+05,10,0.3,1,0,1,1
