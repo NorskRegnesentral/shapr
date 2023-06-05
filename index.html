@@ -102,6 +102,7 @@
 <p>The following methodology/features are currently implemented:</p>
 <ul>
 <li>Native support of explanation of predictions from models fitted with the following functions <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">stats::glm</a></code>, <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">stats::lm</a></code>,<code><a href="https://rdrr.io/pkg/ranger/man/ranger.html" class="external-link">ranger::ranger</a></code>, <code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgboost</a></code>/<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgb.train</a></code> and <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code>.</li>
+<li>Support for explaining essentially any <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models">custom model</a> with a scalar numeric output.</li>
 <li>Accounting for feature dependence
 <ul>
 <li>assuming the features are Gaussian (<code>approach = 'gaussian'</code>, Aas, Jullum, and Løland (2021))</li>
@@ -113,13 +114,19 @@
 <li>assuming all features are independent (<code>approach = 'independence'</code>, mainly for benchmarking)</li>
 </ul>
 </li>
-<li>Combining any of the above methods.</li>
-<li>Explain <em>forecasts</em> from time series models at different horizons with <code><a href="reference/explain_forecast.html">explain_forecast()</a></code>
+<li>
+<a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#combined-approach">Combining</a> any of the above methods.</li>
+<li>
+<a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explaining-a-forecasting-model-using-explain_forecast">Explain <em>forecasts</em></a> from time series models at different horizons with <code><a href="reference/explain_forecast.html">explain_forecast()</a></code>
 </li>
-<li>Batch computation to reduce memory consumption significantly</li>
-<li>Parallelized computation using the <a href="https://future.futureverse.org/" class="external-link">future</a> framework.</li>
-<li>Progress bar showing computation progress, using the <a href="https://progressr.futureverse.org/" class="external-link"><code>progressr</code></a> package. Must be activated by the user.</li>
+<li>
+<a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#batch-computation">Batch computation</a> to reduce memory consumption significantly</li>
+<li>
+<a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#parallelized-computation">Parallelized computation</a> using the <a href="https://future.futureverse.org/" class="external-link">future</a> framework.</li>
+<li>
+<a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#progress-updates">Progress bar</a> showing computation progress, using the <a href="https://progressr.futureverse.org/" class="external-link"><code>progressr</code></a> package. Must be activated by the user.</li>
 <li>Optional use of the AICc criterion of Hurvich, Simonoff, and Tsai (1998) when optimizing the bandwidth parameter in the empirical (conditional) approach of Aas, Jullum, and Løland (2021).</li>
+<li>Explain predictions in terms of [feature groups](<a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-groups-of-features" class="uri">https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-groups-of-features</a>.</li>
 <li>Functionality for visualizing the explanations.</li>
 <li>Support for models not supported natively.</li>
 </ul>
@@ -145,13 +152,13 @@ Future releases will include:
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"shapr"</span><span class="op">)</span></span></code></pre></div>
 <p>To install the current development version (with the new explanation syntax), use</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span><span class="op">)</span></span></code></pre></div>
 <p>If you would like to install all packages of the models we currently support, use</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>If you would also like to build and view the vignette locally, use</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"understanding_shapr"</span>, <span class="st">"shapr"</span><span class="op">)</span></span></code></pre></div>
 <p>You can always check out the latest version of the vignette <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html">here</a>.</p>
 </div>
