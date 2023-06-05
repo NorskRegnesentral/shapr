@@ -66,6 +66,7 @@ The following methodology/features are currently implemented:
 -   Native support of explanation of predictions from models fitted with
     the following functions `stats::glm`, `stats::lm`,`ranger::ranger`,
     `xgboost::xgboost`/`xgboost::xgb.train` and `mgcv::gam`.
+-   Support for explaining essentially any [custom model](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models) with a scalar numeric output.
 -   Accounting for feature dependence
     -   assuming the features are Gaussian (`approach = 'gaussian'`,
         Aas, Jullum, and Løland (2021))
@@ -83,18 +84,19 @@ The following methodology/features are currently implemented:
         Jullum, and Aas (2020))
     -   assuming all features are independent
         (`approach = 'independence'`, mainly for benchmarking)
--   Combining any of the above methods.
--   Explain *forecasts* from time series models at different horizons
+-   [Combining](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#combined-approach) any of the above methods.
+-   [Explain *forecasts*](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explaining-a-forecasting-model-using-explain_forecast) from time series models at different horizons
     with `explain_forecast()`
--   Batch computation to reduce memory consumption significantly
--   Parallelized computation using the
+-   [Batch computation](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#batch-computation) to reduce memory consumption significantly
+-   [Parallelized computation](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#parallelized-computation) using the
     [future](https://future.futureverse.org/) framework.
--   Progress bar showing computation progress, using the
+-   [Progress bar](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#progress-updates) showing computation progress, using the
     [`progressr`](https://progressr.futureverse.org/) package. Must be
     activated by the user.
 -   Optional use of the AICc criterion of Hurvich, Simonoff, and
     Tsai (1998) when optimizing the bandwidth parameter in the empirical
     (conditional) approach of Aas, Jullum, and Løland (2021).
+-   Explain predictions in terms of [feature groups](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-groups-of-features.
 -   Functionality for visualizing the explanations.
 -   Support for models not supported natively.
 
