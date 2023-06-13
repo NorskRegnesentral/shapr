@@ -19,6 +19,13 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 The prediction function used when \code{model} is not natively supported.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
 
+<<<<<<< HEAD
+=======
+\item{output_size}{TODO: Document}
+
+\item{extra}{TODO: Document}
+
+>>>>>>> master
 \item{...}{Further arguments passed to \code{approach}-specific functions.}
 }
 \value{

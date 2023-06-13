@@ -24,6 +24,10 @@ Authors:
 \itemize{
   \item Nikolai Sellereite \email{nikolaisellereite@gmail.com} (\href{https://orcid.org/0000-0002-4671-0337}{ORCID})
   \item Annabelle Redelmeier \email{Annabelle.Redelmeier@nr.no}
+<<<<<<< HEAD
+=======
+  \item Jon Lachmann \email{Jon@lachmann.nu}
+>>>>>>> master
 }
 
 Other contributors:

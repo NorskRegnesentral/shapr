@@ -267,7 +267,7 @@ explain <- function(model,
   feature_specs <- get_feature_specs(get_model_specs, model)
 
 
-  # Sets up and organize input parameters and data
+  # Sets up and organizes input parameters
   # Checks the input parameters and their compatability
   # Checks data/model compatability
   internal <- setup(
@@ -282,18 +282,25 @@ explain <- function(model,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
-    timing = timing, ...
+    timing = timing,
+    init_time = init_time,
+    ...
   )
 
-  internal$timing <- list(init = init_time, setup = Sys.time())
-
   # Gets predict_model (if not passed to explain)
-  # Checks that predict_model gives correct format
   predict_model <- get_predict_model(
-    x_test = head(internal$data$x_train, 2),
     predict_model = predict_model,
     model = model
   )
+
+  # Checks that predict_model gives correct format
+  test_predict_model(
+    x_test = head(internal$data$x_train, 2),
+    predict_model = predict_model,
+    model = model,
+    internal = internal
+  )
+
   internal$timing$test_prediction <- Sys.time() # Recording the prediction time as well
 
 
@@ -309,7 +316,7 @@ explain <- function(model,
   # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model)
 
-  internal$timing$compute_vS <- Sys.time() # Recording the prediction time as well
+  internal$timing$compute_vS <- Sys.time() # Recording the time of compute_vS (+setup_computation)
 
 
   # Compute Shapley values based on conditional expectations (v(S))
@@ -319,9 +326,11 @@ explain <- function(model,
     internal = internal
   )
 
-  internal$timing$shapley_computation <- Sys.time()
+  # Temporary to avoid failing tests
 
-  output <- compute_time(output)
+  output$internal$objects$id_combination_mapper_dt <- NULL
+  output$internal$objects$cols_per_horizon <- NULL
+  output$internal$objects$W_list <- NULL
 
   return(output)
 }

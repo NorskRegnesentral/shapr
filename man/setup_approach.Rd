@@ -17,7 +17,11 @@ setup_approach(internal, ...)
 
 \method{setup_approach}{categorical}(
   internal,
+<<<<<<< HEAD
   categorical.joint_probability_dt = NULL,
+=======
+  categorical.joint_prob_dt = NULL,
+>>>>>>> master
   categorical.epsilon = 0.001,
   ...
 )
@@ -63,7 +67,11 @@ setup_approach(internal, ...)
 
 \item{...}{\code{approach}-specific arguments. See below.}
 
+<<<<<<< HEAD
 \item{categorical.joint_probability_dt}{Data.table. (Optional)
+=======
+\item{categorical.joint_prob_dt}{Data.table. (Optional)
+>>>>>>> master
 Containing the joint probability distribution for each combination of feature
 values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
@@ -95,7 +103,12 @@ This means that there will always be sampling in the leaf unless
 \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
 
 \item{empirical.type}{Character. (default = \code{"fixed_sigma"})
+<<<<<<< HEAD
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}. TODO: Describe better what the methods do here.}
+=======
+Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
+TODO: Describe better what the methods do here.}
+>>>>>>> master
 
 \item{empirical.eta}{Numeric. (default = 0.95)
 Needs to be \verb{0 < eta <= 1}.

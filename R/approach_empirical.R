@@ -1,7 +1,8 @@
 #' @rdname setup_approach
 #'
 #' @param empirical.type Character. (default = `"fixed_sigma"`)
-#' Should be equal to either `"independence"`,`"fixed_sigma"`, `"AICc_each_k"` `"AICc_full"`. TODO: Describe better what the methods do here.
+#' Should be equal to either `"independence"`,`"fixed_sigma"`, `"AICc_each_k"` `"AICc_full"`.
+#' TODO: Describe better what the methods do here.
 #'
 #' @param empirical.eta Numeric. (default = 0.95)
 #' Needs to be `0 < eta <= 1`.
@@ -44,9 +45,11 @@ setup_approach.empirical <- function(internal,
                                      empirical.start_aicc = 0.1,
                                      empirical.cov_mat = NULL,
                                      model = NULL,
-                                     predict_model = NULL, ...) { # TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
+                                     predict_model = NULL, ...) {
+  # TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
 
-  defaults <- mget(c("empirical.eta", "empirical.type", "empirical.fixed_sigma", "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"))
+  defaults <- mget(c("empirical.eta", "empirical.type", "empirical.fixed_sigma",
+                     "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"))
 
   internal <- insert_defaults(internal, defaults)
 
@@ -72,9 +75,10 @@ setup_approach.empirical <- function(internal,
     ))
   }
 
-  if (internal$parameters$empirical.type %in% c("AICc_each_k", "AICc_full") & internal$parameters$is_python == TRUE) {
+  if (internal$parameters$empirical.type %in% c("AICc_each_k", "AICc_full") && internal$parameters$is_python == TRUE) {
     stop(paste0(
-      "empirical.type = ", internal$parameters$empirical.type, " for approach = 'empirical' is not available in Python.\n",
+      "empirical.type = ", internal$parameters$empirical.type,
+      " for approach = 'empirical' is not available in Python.\n",
     ))
   }
 
@@ -147,7 +151,7 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 
 
   # Increased efficiency for simplest and most common use case
-  if (kernel_metric == "gaussian" & empirical.type == "fixed_sigma" & length(empirical.fixed_sigma) == 1) {
+  if (kernel_metric == "gaussian" && empirical.type == "fixed_sigma" && length(empirical.fixed_sigma) == 1) {
     W_kernel_full <- exp(-0.5 * D / empirical.fixed_sigma^2)
     dt_l <- list()
 
@@ -253,7 +257,7 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = 
 
   # Find weights for all combinations and training data
   dt <- data.table::as.data.table(W_kernel)
-  nms_vec <- seq(ncol(dt))
+  nms_vec <- seq_len(ncol(dt))
   names(nms_vec) <- colnames(dt)
   dt[, index_x_train := .I]
   dt_melt <- data.table::melt(
@@ -436,7 +440,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
         j <- j + 1
       }
       # Combining the X's for doing prediction
-      X.pred <- rbindlist(X.pred.list, use.names = T)
+      X.pred <- rbindlist(X.pred.list, use.names = TRUE)
       X.nms <- labels
       setcolorder(X.pred, X.nms)
       # Doing prediction jointly (for speed), and then splitting them back into the y_list
@@ -449,9 +453,9 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
         objective = aicc_full_cpp,
         X_list = X_list,
         mcov_list = mcov_list,
-        S_scale_dist = T,
+        S_scale_dist = TRUE,
         y_list = y_list,
-        negative = F,
+        negative = FALSE,
         lower = 0,
         control = list(
           eval.max = empirical.eval_max_aicc
@@ -460,7 +464,7 @@ compute_AICc_each_k <- function(internal, model, predict_model, index_features) 
       h_optim_mat[these_cond, loop] <- nlm.obj$par
     }
   }
-  return(h_optim_mat[index_features, , drop = F])
+  return(h_optim_mat[index_features, , drop = FALSE])
 }
 
 
@@ -516,7 +520,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
       these_test <- this.optimsamp$samp_test
 
       these_train <- seq_len(n_train)
-      these_test <- sample(x = these_test, size = n_train, replace = T)
+      these_test <- sample(x = these_test, size = n_train, replace = TRUE)
 
       X_list <- list(as.matrix(subset(x_train, select = S.cols)[these_train, ]))
       mcov_list <- list(stats::cov(X_list[[1]]))
@@ -541,9 +545,9 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
         objective = aicc_full_cpp,
         X_list = X_list,
         mcov_list = mcov_list,
-        S_scale_dist = T,
+        S_scale_dist = TRUE,
         y_list = y_list,
-        negative = F,
+        negative = FALSE,
         lower = 0,
         control = list(
           eval.max = empirical.eval_max_aicc
@@ -554,7 +558,7 @@ compute_AICc_full <- function(internal, model, predict_model, index_features) {
       h_optim_mat[i, loop] <- nlm.obj$par
     }
   }
-  return(h_optim_mat[index_features, , drop = F])
+  return(h_optim_mat[index_features, , drop = FALSE])
 }
 
 #' @keywords internal
@@ -579,7 +583,7 @@ distance_matrix <- function(x_train, x_explain = NULL, list_features, mcov) {
 
   # Normalize distance rows to ensure numerical stability in later operations
   colmin <- apply(X = D, MARGIN = c(2, 3), FUN = min)
-  for (i in 1:dim(D)[3]) {
+  for (i in seq_len(dim(D)[3])) {
     D[, , i] <- t(t(D[, , i]) - colmin[, i])
   }
 

@@ -1,6 +1,6 @@
 #' @rdname setup_approach
 #'
-#' @param categorical.joint_probability_dt Data.table. (Optional)
+#' @param categorical.joint_prob_dt Data.table. (Optional)
 #' Containing the joint probability distribution for each combination of feature
 #' values.
 #' `NULL` means it is estimated from the `x_train` and `x_explain`.
@@ -15,13 +15,13 @@
 #'
 #' @export
 setup_approach.categorical <- function(internal,
-                                       categorical.joint_probability_dt = NULL,
+                                       categorical.joint_prob_dt = NULL,
                                        categorical.epsilon = 0.001,
                                        ...) {
-  defaults <- mget(c("categorical.joint_probability_dt", "categorical.epsilon"))
+  defaults <- mget(c("categorical.joint_prob_dt", "categorical.epsilon"))
   internal <- insert_defaults(internal, defaults)
 
-  joint_probability_dt <- internal$parameters$categorical.joint_probability_dt
+  joint_probability_dt <- internal$parameters$categorical.joint_prob_dt
   epsilon <- internal$parameters$epsilon
 
   feature_names <- internal$parameters$feature_names
@@ -79,7 +79,7 @@ setup_approach.categorical <- function(internal,
     joint_probability_dt <- joint_probability_dt[, id_all := .I]
   }
 
-  internal$parameters$categorical.joint_probability_dt <- joint_probability_dt
+  internal$parameters$categorical.joint_prob_dt <- joint_probability_dt
 
   return(internal)
 }
@@ -94,7 +94,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
-  joint_probability_dt <- internal$parameters$categorical.joint_probability_dt
+  joint_probability_dt <- internal$parameters$categorical.joint_prob_dt
 
   X <- internal$objects$X
   S <- internal$objects$S
@@ -118,7 +118,7 @@ prepare_data.categorical <- function(internal, index_features = NULL, ...) {
 
   S_dt <- data.table::data.table(S)
   S_dt[S_dt == 0] <- NA
-  S_dt[, id_combination := 1:nrow(S_dt)]
+  S_dt[, id_combination := seq_len(nrow(S_dt))]
 
   data.table::setnames(S_dt, c(feature_conditioned, "id_combination"))
 

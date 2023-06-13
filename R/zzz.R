@@ -76,7 +76,9 @@
       "randomorder",
       "batch",
       "type",
-      "feature_value_factor"
+      "feature_value_factor",
+      "horizon_id_combination",
+      "tmp_features"
     )
   )
   invisible()

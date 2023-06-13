@@ -19,7 +19,7 @@ test_that("error with custom model without providing predict_model", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -53,7 +53,7 @@ test_that("messages with missing detail in get_model_specs", {
 
   expect_snapshot({
     # Custom model where get_model_specs gives NA-labels
-    custom_get_model_specs_no_labels <- function(x) {
+    custom_get_model_specs_no_lab <- function(x) {
       feature_specs <- list(labels = NA, classes = NA, factor_levels = NA)
     }
 
@@ -64,7 +64,7 @@ test_that("messages with missing detail in get_model_specs", {
       approach = "independence",
       prediction_zero = p0,
       predict_model = custom_predict_model,
-      get_model_specs = custom_get_model_specs_no_labels,
+      get_model_specs = custom_get_model_specs_no_lab,
       n_batches = 1,
       timing = FALSE
     )
@@ -73,7 +73,7 @@ test_that("messages with missing detail in get_model_specs", {
 
   expect_snapshot({
     # Custom model where get_model_specs gives NA-classes
-    custom_get_model_specs_no_classes <- function(x) {
+    custom_gms_no_classes <- function(x) {
       feature_specs <- list(labels = labels(x$terms), classes = NA, factor_levels = NA)
     }
 
@@ -84,7 +84,7 @@ test_that("messages with missing detail in get_model_specs", {
       approach = "independence",
       prediction_zero = p0,
       predict_model = custom_predict_model,
-      get_model_specs = custom_get_model_specs_no_classes,
+      get_model_specs = custom_gms_no_classes,
       n_batches = 1,
       timing = FALSE
     )
@@ -93,7 +93,7 @@ test_that("messages with missing detail in get_model_specs", {
 
   expect_snapshot({
     # Custom model where get_model_specs gives NA-factor levels
-    custom_get_model_specs_no_factor_levels <- function(x) {
+    custom_gms_no_factor_levels <- function(x) {
       feature_specs <- list(
         labels = labels(x$terms),
         classes = attr(x$terms, "dataClasses")[-1],
@@ -108,7 +108,7 @@ test_that("messages with missing detail in get_model_specs", {
       approach = "independence",
       prediction_zero = p0,
       predict_model = custom_predict_model,
-      get_model_specs = custom_get_model_specs_no_factor_levels,
+      get_model_specs = custom_gms_no_factor_levels,
       n_batches = 1,
       timing = FALSE
     )
@@ -133,7 +133,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -151,7 +151,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -170,7 +170,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
 
@@ -190,7 +190,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -209,7 +209,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -229,7 +229,7 @@ test_that("erroneous input: `x_train/x_explain`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -248,7 +248,7 @@ test_that("erroneous input: `model`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -270,7 +270,7 @@ test_that("erroneous input: `approach`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -288,7 +288,7 @@ test_that("erroneous input: `approach`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -306,7 +306,7 @@ test_that("erroneous input: `approach`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -328,7 +328,7 @@ test_that("erroneous input: `prediction_zero`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -346,7 +346,7 @@ test_that("erroneous input: `prediction_zero`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
 
@@ -365,7 +365,7 @@ test_that("erroneous input: `prediction_zero`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -383,7 +383,7 @@ test_that("erroneous input: `prediction_zero`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -406,7 +406,7 @@ test_that("erroneous input: `n_combinations`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -425,7 +425,7 @@ test_that("erroneous input: `n_combinations`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
 
@@ -445,7 +445,7 @@ test_that("erroneous input: `n_combinations`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
 
@@ -466,7 +466,7 @@ test_that("erroneous input: `n_combinations`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -485,7 +485,7 @@ test_that("erroneous input: `n_combinations`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -504,7 +504,7 @@ test_that("erroneous input: `n_combinations`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -523,7 +523,7 @@ test_that("erroneous input: `n_combinations`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
 
@@ -550,7 +550,7 @@ test_that("erroneous input: `n_combinations`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -573,7 +573,7 @@ test_that("erroneous input: `group`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -592,7 +592,7 @@ test_that("erroneous input: `group`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -613,13 +613,13 @@ test_that("erroneous input: `group`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
     {
       # missing feature in group
-      group_with_missing_data_features <- list(
+      group_missing_data_features <- list(
         A = c("Solar.R"),
         B = c("Temp", "Month", "Day")
       )
@@ -629,18 +629,18 @@ test_that("erroneous input: `group`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        group = group_with_missing_data_features,
+        group = group_missing_data_features,
         n_batches = 1,
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
     {
       # missing feature in group
-      group_with_duplicated_data_features <- list(
+      group_dup_data_features <- list(
         A = c("Solar.R", "Solar.R", "Wind"),
         B = c("Temp", "Month", "Day")
       )
@@ -650,12 +650,30 @@ test_that("erroneous input: `group`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        group = group_with_duplicated_data_features,
+        group = group_dup_data_features,
         n_batches = 1,
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
+  )
+
+  expect_snapshot(
+    {
+      # a single group only
+      single_group <- list(A = c("Solar.R", "Wind", "Temp", "Month", "Day"))
+      explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "independence",
+        prediction_zero = p0,
+        group = single_group,
+        n_batches = 1,
+        timing = FALSE
+      )
+    },
+    error = TRUE
   )
 })
 
@@ -678,7 +696,7 @@ test_that("erroneous input: `n_samples`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -697,7 +715,7 @@ test_that("erroneous input: `n_samples`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -715,7 +733,7 @@ test_that("erroneous input: `n_samples`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # length > 1
@@ -733,7 +751,7 @@ test_that("erroneous input: `n_samples`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # NA-numeric
@@ -751,7 +769,7 @@ test_that("erroneous input: `n_samples`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # Non-positive
@@ -769,7 +787,7 @@ test_that("erroneous input: `n_samples`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -790,7 +808,7 @@ test_that("erroneous input: `n_batches`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # non-numeric 2
@@ -807,7 +825,7 @@ test_that("erroneous input: `n_batches`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # non-integer
@@ -824,7 +842,7 @@ test_that("erroneous input: `n_batches`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # length > 1
@@ -841,7 +859,7 @@ test_that("erroneous input: `n_batches`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # NA-numeric
@@ -858,7 +876,7 @@ test_that("erroneous input: `n_batches`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # Non-positive
@@ -875,7 +893,7 @@ test_that("erroneous input: `n_batches`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # Larger than number of n_combinations
@@ -894,7 +912,7 @@ test_that("erroneous input: `n_batches`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # Larger than number of n_combinations without specification
@@ -911,7 +929,7 @@ test_that("erroneous input: `n_batches`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -933,7 +951,7 @@ test_that("erroneous input: `seed`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -955,7 +973,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   # non-logical 2
@@ -973,7 +991,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
 
@@ -992,7 +1010,7 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -1015,13 +1033,13 @@ test_that("erroneous input: `predict_model`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
     {
       # non-numeric output
-      predict_model_non_numeric_output <- function(model, x) {
+      predict_model_non_num_output <- function(model, x) {
         "bla"
       }
 
@@ -1031,18 +1049,18 @@ test_that("erroneous input: `predict_model`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        predict_model = predict_model_non_numeric_output,
+        predict_model = predict_model_non_num_output,
         n_batches = 1,
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
     {
       # incorrect output length
-      predict_model_incorrect_output_length <- function(model, x) {
+      predict_model_wrong_output_len <- function(model, x) {
         rep(1, nrow(x) + 1)
       }
 
@@ -1052,12 +1070,12 @@ test_that("erroneous input: `predict_model`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        predict_model = predict_model_incorrect_output_length,
+        predict_model = predict_model_wrong_output_len,
         n_batches = 1,
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -1078,7 +1096,7 @@ test_that("erroneous input: `predict_model`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -1099,7 +1117,7 @@ test_that("erroneous input: `predict_model`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -1122,14 +1140,14 @@ test_that("erroneous input: `get_model_specs`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
 
   expect_snapshot(
     {
       # wrong output (not list)
-      get_model_specs_output_not_list <- function(x) {
+      get_ms_output_not_list <- function(x) {
         "bla"
       }
 
@@ -1139,18 +1157,18 @@ test_that("erroneous input: `get_model_specs`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        get_model_specs = get_model_specs_output_not_list,
+        get_model_specs = get_ms_output_not_list,
         n_batches = 1,
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
     {
       # wrong output (wrong length)
-      get_model_specs_output_too_long <- function(x) {
+      get_ms_output_too_long <- function(x) {
         list(1, 2, 3, 4)
       }
 
@@ -1160,18 +1178,18 @@ test_that("erroneous input: `get_model_specs`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        get_model_specs = get_model_specs_output_too_long,
+        get_model_specs = get_ms_output_too_long,
         n_batches = 1,
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
     {
       # wrong output (wrong length)
-      get_model_specs_output_wrong_names <- function(x) {
+      get_ms_output_wrong_names <- function(x) {
         list(
           labels = 1,
           classes = 2,
@@ -1185,12 +1203,12 @@ test_that("erroneous input: `get_model_specs`", {
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        get_model_specs = get_model_specs_output_wrong_names,
+        get_model_specs = get_ms_output_wrong_names,
         n_batches = 1,
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -1211,7 +1229,7 @@ test_that("erroneous input: `get_model_specs`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -1232,7 +1250,7 @@ test_that("incompatible input: `data/approach`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -1249,7 +1267,7 @@ test_that("incompatible input: `data/approach`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 
   expect_snapshot(
@@ -1266,7 +1284,7 @@ test_that("incompatible input: `data/approach`", {
         timing = FALSE
       )
     },
-    error = T
+    error = TRUE
   )
 })
 
@@ -1364,15 +1382,15 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
 
   explain.new_data_feature_order <- explain(
     model = model_lm_numeric,
-    x_explain = x_explain_numeric[, ncol(x_explain_numeric):1],
-    x_train = x_train_numeric[, ncol(x_train_numeric):1],
+    x_explain = rev(x_explain_numeric),
+    x_train = rev(x_train_numeric),
     approach = "empirical",
     prediction_zero = p0,
     n_batches = 1,
     timing = FALSE
   )
 
-  explain.new_model_feature_order <- explain(
+  explain.new_model_feat_order <- explain(
     model = model_lm_numeric_col_order,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1393,7 +1411,7 @@ test_that("data feature ordering is output_lm_numeric_column_order", {
   )
 
   # Same Shapley values in same order
-  expect_equal(explain.original, explain.new_model_feature_order)
+  expect_equal(explain.original, explain.new_model_feat_order)
 })
 
 test_that("parallelization gives same output for any approach", {

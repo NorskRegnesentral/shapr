@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7,
   fig.height = 3,
-  warning = FALSE, 
+  warning = FALSE,
   message = FALSE
 )
 ```
@@ -71,10 +71,11 @@ approximations to the true Shapley values. See the
 Here is an overview of the main functions. You can read their
 documentation and see examples with `?function_name`.
 
-| Function Name | Description                                                              |
-|:------------------|:---------------------------------------------|
-| `explain`     | Computes kernel SHAP values for test data.                               |
-| `plot.shapr`  | Plots the individual prediction explanations. Uses facet_wrap of ggplot and package ggbeeswarm. |
+| Function Name      | Description                                                                               |
+|:---------------------|:-------------------------------------------------|
+| `explain`          | Computes kernel SHAP values for test data.                                                |
+| `explain_forecast` | Analogous to `explain`, but for explaining forecasts from time series models.             |
+| `plot.shapr`       | Plots the individual prediction explanations. Uses the `ggplot` and `ggbeeswarm` package. |
 
 : Main functions in the `shapr` package.
 
@@ -279,14 +280,26 @@ the conditional expectations as in Kernel SHAP. See
 The conditional inference trees are fit using the *party* and *partykit*
 packages (@partykit_package).
 
-
 ## Categorical Approach
 
-When the features are all categorical, we can estimate the conditional expectations using basic statistical formulas. 
-For example, if we have three features, $x_1, x_2, x_3$ with three levels each (indicated as 1, 2, 3), and we are provided with a table of counts indicating how many times each combination of feature values occurs, we can estimate the marginal and conditional probabilities as follows. 
-Marginal probabilities are estimated by dividing the number of times a given feature (or features) takes on a certain value in the data set with the total number of observations in the data set. 
-Condititional probabilities (for example, $P(X_1 = 1 | X_2 = 1)$) are estimated by first subsetting the data set to reflect the conditioning (i.e., extracting all rows where $X_2 = 1$), and then dividing the number of times the feature on the left hand side of $|$ takes the given value in this subset by the total number of observations in this subset. 
-Once the marginal and conditional probabilities are estimated for all combinations of feature values, each conditional expectation can be calculated. For example, the expected value of $X_1$ given $X_2 = 1$ and $X_3 = 2$ is
+When the features are all categorical, we can estimate the conditional
+expectations using basic statistical formulas. For example, if we have
+three features, $x_1, x_2, x_3$ with three levels each (indicated as 1,
+2, 3), and we are provided with a table of counts indicating how many
+times each combination of feature values occurs, we can estimate the
+marginal and conditional probabilities as follows. Marginal
+probabilities are estimated by dividing the number of times a given
+feature (or features) takes on a certain value in the data set with the
+total number of observations in the data set. Condititional
+probabilities (for example, $P(X_1 = 1 | X_2 = 1)$) are estimated by
+first subsetting the data set to reflect the conditioning (i.e.,
+extracting all rows where $X_2 = 1$), and then dividing the number of
+times the feature on the left hand side of $|$ takes the given value in
+this subset by the total number of observations in this subset. Once the
+marginal and conditional probabilities are estimated for all
+combinations of feature values, each conditional expectation can be
+calculated. For example, the expected value of $X_1$ given $X_2 = 1$ and
+$X_3 = 2$ is
 $$E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1, X_3=2) = \sum_{x} x \frac{P(X_1 = x, X_2 = 1, X_3 = 2)}{P(X_2=1, X_3=2)}.$$.
 
 <a id="ex"></a>
@@ -306,7 +319,8 @@ the individual predictions. Note that the empirical conditional
 distribution approach is the default (i.e. `approach = "empirical"`).
 The Gaussian, Gaussian copula, ctree or independence approaches can be
 used instead by setting the argument `approach` to either `"gaussian"`,
-`"copula"`, `"ctree"`, `"categorical"` or `"independence"` in the code below.
+`"copula"`, `"ctree"`, `"categorical"` or `"independence"` in the code
+below.
 
 ```{r, warning=FALSE}
 library(xgboost)
@@ -346,13 +360,16 @@ explanation <- explain(
 )
 
 # Printing the Shapley values for the test data.
-# For more information about the interpretation of the values in the table, see ?shapr::explain.  
+# For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$shapley_values)
 
 # Plot the resulting explanations for observations 1 and 6
 plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
-``` 
+```
 
+There are multiple plot options specified by the `plot_type` argument in
+`plot`. The `waterfall` option shows the changes in the prediction score
+due to each features contribution (their Shapley values):
 
 There are multiple plot options specified by the `plot_type` argument in `plot`. 
 The `waterfall` option shows the changes in the prediction score due to each features contribution (their Shapley values): 
@@ -361,8 +378,14 @@ The `waterfall` option shows the changes in the prediction score due to each fea
 plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
 ```
 
-The other two plot options, `"beeswarm"` and `"scatter"`, can be useful when you have many observations that you want to explain. For the purpose of illustration, we explain the whole `airquality` dataset (including the training data) for these plot types. 
-The `plot_type = "beeswarm"` summarises the distribution of the Shapley values along the x-axis across all features. Each point gives the Shapley value of a given instance, where the points are colored by the feature value of that instance:
+The other two plot options, `"beeswarm"` and `"scatter"`, can be useful
+when you have many observations that you want to explain. For the
+purpose of illustration, we explain the whole `airquality` dataset
+(including the training data) for these plot types. The
+`plot_type = "beeswarm"` summarises the distribution of the Shapley
+values along the x-axis across all features. Each point gives the
+Shapley value of a given instance, where the points are colored by the
+feature value of that instance:
 
 ```{r}
 x_explain_many <- data[, ..x_var]
@@ -376,18 +399,18 @@ explanation_plot <- explain(
 plot(explanation_plot, plot_type = "beeswarm")
 ```
 
-The `plot_type = "scatter"` plots the feature values on the x-axis and Shapley values on the y-axis, as well as
-(optionally) a background scatter_hist showing the distribution of the feature data:
+The `plot_type = "scatter"` plots the feature values on the x-axis and
+Shapley values on the y-axis, as well as (optionally) a background
+scatter_hist showing the distribution of the feature data:
 
 ```{r}
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
-We can use mixed (i.e continuous, categorical, ordinal) data with ctree. Use ctree with mixed data in the following manner:
-
+We can use mixed (i.e continuous, categorical, ordinal) data with ctree.
+Use ctree with mixed data in the following manner:
 
 ```{r}
-
 # convert the month variable to a factor
 data[, Month_factor := as.factor(Month)]
 
@@ -403,15 +426,15 @@ x_explain_cat <- data_explain_cat[, ..x_var_cat]
 # (work around in example below)
 lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " + ")))
 
-model_lm_cat <- lm(lm_formula,data_train_cat)
+model_lm_cat <- lm(lm_formula, data_train_cat)
 
 p0 <- mean(y_train)
 explanation_lm_cat <- explain(
-    model = model_lm_cat,
-    x_explain = x_explain_cat,
-    x_train = x_train_cat,
-    approach = "ctree",
-    prediction_zero = p0
+  model = model_lm_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  approach = "ctree",
+  prediction_zero = p0
 )
 
 # Plot the resulting explanations for observations 1 and 6, excluding
@@ -425,7 +448,7 @@ in the following manner. Default values are based on
 
 ```{r}
 # Use the conditional inference tree approach
-# We can specify parameters used to building trees by specifying mincriterion, 
+# We can specify parameters used to building trees by specifying mincriterion,
 # minsplit, minbucket
 explanation_ctree <- explain(
   model = model_lm_cat,
@@ -433,7 +456,7 @@ explanation_ctree <- explain(
   x_train = x_train_cat,
   approach = "ctree",
   prediction_zero = p0,
-  ctree.mincriterion = 0.80, 
+  ctree.mincriterion = 0.80,
   ctree.minsplit = 20,
   ctree.minbucket = 20
 )
@@ -443,18 +466,18 @@ explanation_ctree <- explain(
 # minbucket = 7
 ```
 
-If __all__ features are categorical, one may use the categorical approach as follows:
+If **all** features are categorical, one may use the categorical
+approach as follows:
 
 ```{r}
-
 # For the sake of illustration, convert ALL features to factors
 data[, Solar.R_factor := as.factor(cut(Solar.R, 10))]
 data[, Wind_factor := as.factor(cut(Wind, 3))]
 data[, Temp_factor := as.factor(cut(Temp, 2))]
 data[, Month_factor := as.factor(Month)]
 
-data_train_all_cat <- data[-ind_x_explain,]
-data_explain_all_cat <- data[ind_x_explain,]
+data_train_all_cat <- data[-ind_x_explain, ]
+data_explain_all_cat <- data[ind_x_explain, ]
 
 
 x_var_all_cat <- c("Solar.R_factor", "Wind_factor", "Temp_factor", "Month_factor")
@@ -465,70 +488,75 @@ x_explain_all_cat <- data_explain_all_cat[, ..x_var_all_cat]
 # Fit an lm model here
 lm_formula_all_cat <- as.formula(paste0(y_var, " ~ ", paste0(x_var_all_cat, collapse = " + ")))
 
-model_lm_all_cat <- lm(lm_formula_all_cat,data_train_all_cat)
+model_lm_all_cat <- lm(lm_formula_all_cat, data_train_all_cat)
 
 explanation_cat_method <- explain(
-    model = model_lm_all_cat,
-    x_explain = x_explain_all_cat,
-    x_train = x_train_all_cat,
-    approach = "categorical",
-    prediction_zero = p0
+  model = model_lm_all_cat,
+  x_explain = x_explain_all_cat,
+  x_train = x_train_all_cat,
+  approach = "categorical",
+  prediction_zero = p0
 )
 ```
 
-Shapley values can be used to explain any predictive model. 
-For predictive models taking time series as input, `approach='timeseries'` can be used. 
-In such models, joint behavior of consecutive time points is often more important for the outcome than the single time points. 
-Therefore, it makes sense to derive Shapley value segments of the time series instead of for each single time point.
-In `shapr` this can be achieved through the `group` attribute. 
-Other optional parameters of `approach='timeseries'` are `timeseries.fixed_sigma_vec` and `timeseries.bounds` (a vector indicating upper and lower bounds of the time series if necessary).  
+Shapley values can be used to explain any predictive model. For
+predictive models taking time series as input, `approach='timeseries'`
+can be used. In such models, joint behavior of consecutive time points
+is often more important for the outcome than the single time points.
+Therefore, it makes sense to derive Shapley value segments of the time
+series instead of for each single time point. In `shapr` this can be
+achieved through the `group` attribute. Other optional parameters of
+`approach='timeseries'` are `timeseries.fixed_sigma_vec` and
+`timeseries.bounds` (a vector indicating upper and lower bounds of the
+time series if necessary).
 
 ```{r}
-
 # Simulate time series data with AR(1)-structure
 set.seed(1)
-data_ts = data.frame(matrix(NA, ncol = 41, nrow = 4))
-for(n in 1:100){
+data_ts <- data.frame(matrix(NA, ncol = 41, nrow = 4))
+for (n in 1:100) {
   set.seed(n)
   e <- rnorm(42, mean = 0, sd = 1)
 
   m_1 <- 0
-  for(i in 2:length(e)){
+  for (i in 2:length(e)) {
     m_1[i] <- 1 + 0.8 * m_1[i - 1] + e[i]
   }
-  data_ts[n, ] = m_1[-1]
+  data_ts[n, ] <- m_1[-1]
 }
 data_ts <- data.table::as.data.table(data_ts)
 
-x_var_ts <- paste0("X",1:40)
+x_var_ts <- paste0("X", 1:40)
 y_var_ts <- "X41"
-  
+
 ind_x_explain <- 1:6
-data_ts_train <- data_ts[-ind_x_explain] 
+data_ts_train <- data_ts[-ind_x_explain]
 
 # Creating a predictive model (for illustration just predicting the next point in the time series with a linear model)
-lm_ts_formula = as.formula(X41 ~ .)
-model_lm_ts = lm(lm_ts_formula, data_ts_train)
+lm_ts_formula <- as.formula(X41 ~ .)
+model_lm_ts <- lm(lm_ts_formula, data_ts_train)
 
-x_explain_ts = data_ts[ind_x_explain, ..x_var_ts]
-x_train_ts = data_ts[-ind_x_explain, ..x_var_ts]
+x_explain_ts <- data_ts[ind_x_explain, ..x_var_ts]
+x_train_ts <- data_ts[-ind_x_explain, ..x_var_ts]
 
 # Spitting the time series into 4 segments
-group_ts <- list(S1 = paste0("X", 1:10),
-                 S2 = paste0("X", 11:20),
-                 S3 = paste0("X", 21:30),
-                 S4 = paste0("X", 31:40))
+group_ts <- list(
+  S1 = paste0("X", 1:10),
+  S2 = paste0("X", 11:20),
+  S3 = paste0("X", 21:30),
+  S4 = paste0("X", 31:40)
+)
 
 
 p0_ts <- mean(unlist(data_ts_train[, ..y_var_ts]))
 
 explanation_timeseries <- explain(
-    model = model_lm_ts,
-    x_explain = x_explain_ts,
-    x_train = x_train_ts,
-    approach = "timeseries",
-    prediction_zero = p0_ts,
-    group = group_ts
+  model = model_lm_ts,
+  x_explain = x_explain_ts,
+  x_train = x_train_ts,
+  approach = "timeseries",
+  prediction_zero = p0_ts,
+  group = group_ts
 )
 ```
 
@@ -537,18 +565,19 @@ explanation_timeseries <- explain(
 When using `explain`, the default behavior is to use all feature
 combinations in the Shapley formula. Kernel SHAP's sampling based
 approach may be used by specifying `n_combinations`, which is the number
-of unique feature combinations to sample. If not specified, the exact method is
-used. The computation time grows approximately exponentially with the
-number of features. The training data and the model whose predictions we
-wish to explain must be provided through the arguments `x_train` and `model`.
-The data whose predicted values we wish to explain must be given by the argument 
-`x_explain`. Note that both `x_train` and `x_explain` must be a `data.frame` or a `matrix`, 
-and all elements must be finite numerical values. Currently we do not support missing values.
-The default approach when computing the Shapley 
-values is the empirical approach (i.e. `approach = "empirical"`). If you'd like to use a
-different approach you'll need to set `approach` equal to either
-`copula` or `gaussian`, or a vector of them, with length equal to the
-number of features. If a vector, a combined approach is used, and
+of unique feature combinations to sample. If not specified, the exact
+method is used. The computation time grows approximately exponentially
+with the number of features. The training data and the model whose
+predictions we wish to explain must be provided through the arguments
+`x_train` and `model`. The data whose predicted values we wish to
+explain must be given by the argument `x_explain`. Note that both
+`x_train` and `x_explain` must be a `data.frame` or a `matrix`, and all
+elements must be finite numerical values. Currently we do not support
+missing values. The default approach when computing the Shapley values
+is the empirical approach (i.e. `approach = "empirical"`). If you'd like
+to use a different approach you'll need to set `approach` equal to
+either `copula` or `gaussian`, or a vector of them, with length equal to
+the number of features. If a vector, a combined approach is used, and
 element `i` indicates the approach to use when conditioning on `i`
 variables. For more details see [Combined approach](#combined) below.
 
@@ -569,6 +598,203 @@ matrix of the data generating distribution by the arguments
 `gaussian.mu` and `gaussian.cov_mat`. If not specified, they are
 estimated from the training data.
 
+## Explaining a forecasting model using `explain_forecast`
+
+`shapr` provides a specific function, `explain_forecast`, to explain
+forecasts from time series models, at one or more steps into the future.
+The main difference compared to `explain` is that the data is supplied
+as (set of) time series, in addition to index arguments (`train_idx` and
+`explain_idx`) specifying which time points that represents the train
+and explain parts of the data. See `?explain_forecast` for more
+information.
+
+To demonstrate how to use the function, 500 observations are generated
+which follow an AR(1) structure, i.e.
+$y_t = 0.5 y_{t-1} + \varepsilon_t$. To this data an arima model of
+order (2, 0, 0) is fitted, and we therefore would like to explain the
+forecasts in terms of the two previous lags of the time series. This is
+is specified through the argument `explain_y_lags = 2`. Note that some
+models may also put restrictions on the amount of data required to make
+a forecast. The AR(2) model we used there, for instance, requires two
+previous time point to make a forecast.
+
+In the example, two separate forecasts, each three steps ahead, are
+explained. To set the starting points of the two forecasts,
+`explain_idx` is set to `499:500`. This means that one forecast of
+$t = (500, 501, 502)$ and another of $t = (501, 502, 503)$, will be
+explained. In other words, `explain_idx` tells `shapr` at which points
+in time data was available up until, when making the forecast to
+explain.
+
+In the same way, `train_idx` denotes the points in time used to estimate
+the conditional expectations used to explain the different forecasts.
+Note that since we want to explain the forecasts in terms of the two
+previous lags (`explain_y_lags = 2`), the smallest value of `train_idx`
+must also be 2, because at time $t = 1$ there was only a single
+observation available.
+
+Since the data is stationary, the mean of the data is used as value of
+`prediction_zero` (i.e. $\phi_0$). This can however be chosen
+differently depending on the data and application.
+
+For a multivariate model such as a VAR (Vector AutoRegressive model), it
+may be of more interesting to explain the impact of each variable,
+rather than each lag of each variable. This can be done by setting
+`group_lags = TRUE`.
+
+```{r}
+# Simulate time series data with AR(1)-structure.
+set.seed(1)
+data_ts <- data.frame(Y = arima.sim(list(order = c(1, 0, 0), ar = .5), n = 500))
+data_ts <- data.table::as.data.table(data_ts)
+
+# Fit an ARIMA(2, 0, 0) model.
+arima_model <- arima(data_ts, order = c(2, 0, 0))
+
+# Set prediction zero as the mean of the data for each forecast point.
+p0_ar <- rep(mean(data_ts$Y), 3)
+
+# Explain forecasts from points t = 499 and t = 500.
+explain_idx <- 499:500
+
+explanation_forecast <- explain_forecast(
+  model = arima_model,
+  y = data_ts,
+  train_idx = 2:498,
+  explain_idx = 499:500,
+  explain_y_lags = 2,
+  horizon = 3,
+  approach = "empirical",
+  prediction_zero = p0_ar,
+  group_lags = FALSE
+)
+explanation_forecast
+```
+
+Note that for a multivariate model such as a VAR (Vector AutoRegressive
+model), or for models also including several exogenous variables, it may
+be of more informative to explain the impact of each variable, rather
+than each lag of each variable. This can be done by setting
+`group_lags = TRUE`. This does not make sense for this model, however,
+as that would result in decomposing the forecast into a single group.
+
+We now give a more hands on example of how to use the `explain_forecast`
+function. Say that we have an AR(2) model which describes the change
+over time of the variable `Temp` in the dataset `airquality`. It seems
+reasonable to assume that the temperature today should affect the
+temperature tomorrow. To a lesser extent, we may also suggest that the
+temperature today should also have an impact on that of the day after
+tomorrow.
+
+We start by building our AR(2) model, naming it `model_ar_temp`. This
+model is then used to make a forecast of the temperature of the day that
+comes after the last day in the data, this forecast starts from index
+153.
+
+```{r}
+data <- data.table::as.data.table(airquality)
+
+model_ar_temp <- ar(data$Temp, order = 2)
+
+predict(model_ar_temp, n.ahead = 2)$pred
+```
+
+First, we pass the model and the data as `model` and `y`. Since we have
+an AR(2) model, we want to explain the forecasts in terms of the two
+previous lags, whihc we specify with `explain_y_lags = 2`. Then, we let
+`shapr` know which time indices to use as training data through the
+argument `train_idx`. We use `2:152`, meaning that we skip the first
+index, as we want to explain the two previous lags. Letting the training
+indices go up until 152 means that every point in time except the first
+and last will be used as training data.
+
+The last index, 153 is passed as the argument `explain_idx`, which means
+that we want to explain a forecast made from time point 153 in the data.
+The argument `horizon` is set to 2 in order to explain a forecast of
+length 2.
+
+The argument `prediction_zero` is set to the mean of the time series,
+and is repeated two times. Each value of `prediction_zero` is the
+baseline for each forecast horizon. In our example, we assume that given
+no effect from the two lags, the temperature would just be the average
+during the observed period. Finally, we opt to not group the lags by
+setting `group_lags` to `FALSE`. This means that lag 1 and 2 will be
+explained separately. Grouping lags may be more interesting to do in a
+model with multiple variables, as it is then possible to explain each
+variable separately.
+
+```{r}
+explanation <- explain_forecast(
+  model = model_ar_temp,
+  y = data[, "Temp"],
+  train_idx = 2:152,
+  explain_idx = 153,
+  explain_y_lags = 2,
+  horizon = 2,
+  approach = "empirical",
+  prediction_zero = rep(mean(data$Temp), 2),
+  group_lags = FALSE,
+  n_batches = 1,
+  timing = FALSE
+)
+
+print(explanation)
+```
+
+The results are presented per value of `explain_idx` and forecast
+horizon. We can see that the mean temperature was around 77.9 degrees.
+At horizon 1, the first lag in the model caused it to be 6.6 degrees
+lower, and the second lag had just a minor effect. At horizon 2, the
+first lag has a slightly smaller negative impact, and the second lag has
+a slightly larger impact.
+
+It is also possible to explain a forecasting model which uses exogenous
+regressors. The previous example is expanded to use an ARIMA(2,0,0)
+model with `Wind` as an exogenous regressor. Since the exogenous
+regressor must be available for the predicted time points, the model is
+just fit on the 151 first observations, leaving two observations of
+`Wind` to be used as exogenous values during the prediction phase.
+
+```{r}
+data <- data.table::as.data.table(airquality)
+
+data_fit <- data[seq_len(151), ]
+
+model_arimax_temp <- arima(data_fit$Temp, order = c(2, 0, 0), xreg = data_fit$Wind)
+
+newxreg <- data[-seq_len(151), "Wind", drop = FALSE]
+
+predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
+```
+
+The `shapr` package can then explain not only the two autoregressive
+lags, but also the single lag of the exogenous regressor. In order to do
+so, the `Wind` variable is passed as the argument `xreg`, and
+`explain_xreg_lags` is set to 1. Notice how only the first 151
+observations are used for `y` and all 153 are used for `xreg`. This
+makes it possible for `shapr` to not only explain the effect of the
+first lag of the exogenous variable, but also the contemporary effect
+during the forecasting period.
+
+```{r}
+explanation <- explain_forecast(
+  model = model_ar_temp,
+  y = data_fit[, "Temp"],
+  xreg = data[, "Wind"],
+  train_idx = 2:150,
+  explain_idx = 151,
+  explain_y_lags = 2,
+  explain_xreg_lags = 1,
+  horizon = 2,
+  approach = "empirical",
+  prediction_zero = rep(mean(data_fit$Temp), 2),
+  group_lags = FALSE,
+  n_batches = 1,
+  timing = FALSE
+)
+
+print(explanation$shapley_values)
+```
 
 <a id="advanced"></a>
 
@@ -584,10 +810,11 @@ In addition to letting the user select one of the five aforementioned
 approaches for estimating the conditional distribution of the data (i.e.
 `approach` equals either [`"gaussian"`](#gaussian),
 [`"copula"`](#copula), [`"empirical"`](#empirical) or
-[`"ctree"`](#ctree) or [`"categorical"`](#categorical)), the package allows the user to combine the given
-approaches. To simplify the usage, the flexibility is restricted such
-that the same approach is used when conditioning on the same number of
-features. This is also in line @aas2019explaining [, Section 3.4].
+[`"ctree"`](#ctree) or [`"categorical"`](#categorical)), the package
+allows the user to combine the given approaches. To simplify the usage,
+the flexibility is restricted such that the same approach is used when
+conditioning on the same number of features. This is also in line
+@aas2019explaining [, Section 3.4].
 
 This can be done by setting `approach` equal to a character vector,
 where the length of the vector is equal to the number of features in the
@@ -646,8 +873,10 @@ groups of features is very easy using `shapr`:
 
 ```{r}
 # Define the feature groups
-group_list <- list(A = c("Temp", "Month"),
-                   B = c("Wind", "Solar.R"))
+group_list <- list(
+  A = c("Temp", "Month"),
+  B = c("Wind", "Solar.R")
+)
 
 # Use the empirical approach
 explanation_group <- explain(
@@ -720,34 +949,33 @@ formula_gbm <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
 set.seed(825)
 model_gbm <- gbm::gbm(
   formula_gbm,
-  data = cbind(x_train,Ozone = y_train),
+  data = cbind(x_train, Ozone = y_train),
   distribution = "gaussian"
 )
 
 #### Full feature versions of the three required model functions ####
 MY_predict_model <- function(x, newdata) {
-  
-  if (!requireNamespace('gbm', quietly = TRUE)) {
-    stop('The gbm package is required for predicting train models')
+  if (!requireNamespace("gbm", quietly = TRUE)) {
+    stop("The gbm package is required for predicting train models")
   }
   model_type <- ifelse(
-    x$distribution$name %in% c("bernoulli","adaboost"),
+    x$distribution$name %in% c("bernoulli", "adaboost"),
     "classification",
     "regression"
   )
   if (model_type == "classification") {
-    predict(x, as.data.frame(newdata), type = "response",n.trees = x$n.trees)
+    predict(x, as.data.frame(newdata), type = "response", n.trees = x$n.trees)
   } else {
-    predict(x, as.data.frame(newdata),n.trees = x$n.trees)
+    predict(x, as.data.frame(newdata), n.trees = x$n.trees)
   }
 }
-MY_get_model_specs <- function(x){
-  feature_specs = list()
+MY_get_model_specs <- function(x) {
+  feature_specs <- list()
   feature_specs$labels <- labels(x$Terms)
   m <- length(feature_specs$labels)
-  feature_specs$classes <- attr(x$Terms,"dataClasses")[-1]
+  feature_specs$classes <- attr(x$Terms, "dataClasses")[-1]
   feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
-  feature_specs$factor_levels[feature_specs$classes=="factor"] <- NA # the model object doesn't contain factor levels info
+  feature_specs$factor_levels[feature_specs$classes == "factor"] <- NA # model object doesn't contain factor levels info
   return(feature_specs)
 }
 
@@ -761,18 +989,19 @@ explanation_custom <- explain(
   approach = "empirical",
   prediction_zero = p0,
   predict_model = MY_predict_model,
-  get_model_specs = MY_get_model_specs)
+  get_model_specs = MY_get_model_specs
+)
 
 # Plot results
 plot(explanation_custom, index_x_explain = c(1, 6))
 
 
-#### Minimal version of the three required model functions ####      
-# Note: Working only for this exact version of the model class 
-# Avoiding to define get_model_specs skips all feature         
-# consistency checking between your data and model             
+#### Minimal version of the three required model functions ####
+# Note: Working only for this exact version of the model class
+# Avoiding to define get_model_specs skips all feature
+# consistency checking between your data and model
 MY_MINIMAL_predict_model <- function(x, newdata) {
-    predict(x, as.data.frame(newdata),n.trees = x$n.trees)
+  predict(x, as.data.frame(newdata), n.trees = x$n.trees)
 }
 
 # Compute the Shapley values
@@ -783,7 +1012,8 @@ explanation_custom_minimal <- explain(
   x_train = x_train,
   approach = "empirical",
   prediction_zero = p0,
-  predict_model = MY_MINIMAL_predict_model)
+  predict_model = MY_MINIMAL_predict_model
+)
 
 # Plot results
 plot(explanation_custom_minimal, index_x_explain = c(1, 6))
@@ -793,131 +1023,133 @@ plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 
 <br>
 
-
 # Scalability and efficency
 
 ## Batch computation
 
-The computational complexity of Shapley value based explanations grows fast in the number of features, 
-as the number of conditional expectations one needs to estimate in the Shapley formula grows exponentially.
-As outlined [above](#KSHAP), the estimating of each of these conditional expectations is also computationally expensive, 
-typically requiring estimation of a conditional probability distribution, followed by Monte Carlo integration.
-These computations are not only heavy for the CPU, they also require a lot of memory (RAM), which typically is
-a limited resource.
-By doing the most resource hungry computations (the computation of v(S)) in sequential batches with different
-feature subsets $S$, the memory usage can be significantly reduces.
-Such batching comes at the cost of an increase in computation time, which depends on the number of feature subsets
- (`n_combinations`), the number of features, the estimation `approach` and so on. 
-When calling `shapr::explain()`, we allow the user to set the number of batches with the argument `n_batches`. 
-The default of this argument is `NULL`, which uses a (hopefully) reasonable trade-off between computation speed 
-and memory consumption which depends on `n_combinations` and `approach`.
-The memory/computation time trade-off is most apparent for models with more than say 6-7 features.
-Below we a basic example where `n_batches=10`:
+The computational complexity of Shapley value based explanations grows
+fast in the number of features, as the number of conditional
+expectations one needs to estimate in the Shapley formula grows
+exponentially. As outlined [above](#KSHAP), the estimating of each of
+these conditional expectations is also computationally expensive,
+typically requiring estimation of a conditional probability
+distribution, followed by Monte Carlo integration. These computations
+are not only heavy for the CPU, they also require a lot of memory (RAM),
+which typically is a limited resource. By doing the most resource hungry
+computations (the computation of v(S)) in sequential batches with
+different feature subsets $S$, the memory usage can be significantly
+reduces. Such batching comes at the cost of an increase in computation
+time, which depends on the number of feature subsets (`n_combinations`),
+the number of features, the estimation `approach` and so on. When
+calling `shapr::explain()`, we allow the user to set the number of
+batches with the argument `n_batches`. The default of this argument is
+`NULL`, which uses a (hopefully) reasonable trade-off between
+computation speed and memory consumption which depends on
+`n_combinations` and `approach`. The memory/computation time trade-off
+is most apparent for models with more than say 6-7 features. Below we a
+basic example where `n_batches=10`:
 
 ```{r}
-
 explanation_batch <- explain(
-    model = model,
-    x_explain = x_explain,
-    x_train = x_train,
-    approach = "empirical",
-    prediction_zero = p0,
-    n_batches = 10
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  prediction_zero = p0,
+  n_batches = 10
 )
-
 ```
 
 ## Parallelized computation
 
-In addition to reducing the memory consumption, the introduction of the `n_batch` argument
-allows computation within each batch to be performed in parallel. 
-The parallelization in `shapr::explain()` is handled by the `future_apply` which builds on the 
-`future` environment. The `future` package works on all OS, allows the user to decide 
-the parallelization backend (mutliple R procesess or forking), works directly with hpc clusters,
-and also supports progress updates for the parallelized task (see below).
+In addition to reducing the memory consumption, the introduction of the
+`n_batch` argument allows computation within each batch to be performed in parallel. 
+The parallelization in `shapr::explain()` is handled by the
+`future_apply` which builds on the `future` environment. The `future`
+package works on all OS, allows the user to decide the parallelization
+backend (mutliple R procesess or forking), works directly with hpc
+clusters, and also supports progress updates for the parallelized task
+(see below).
 
-Note that, since it takes some time to duplicate data into different processes/machines
-when running in parallel, it is not always preferrable to run `shapr::explain()` in parallel,
-at least not with many parallel sessions (hereby called __workers__).
-Parallelizatiob also increases the memory consumption proportionally, so you want
-to limit the number of workers for that reason too.
-In a future version of `shapr` we will provide experienced based automatic selection
-of the number of workers. 
-In the meanwhile, this is all lef to the user, and we advice that `n_batches` equals some positive integer multiplied 
-by the number of workers.
-Below is a basic example of a parallelization with two workers.
+Note that, since it takes some time to duplicate data into different
+processes/machines when running in parallel, it is not always
+preferrable to run `shapr::explain()` in parallel, at least not with
+many parallel sessions (hereby called **workers**). Parallelizatiob also
+increases the memory consumption proportionally, so you want to limit
+the number of workers for that reason too. In a future version of
+`shapr` we will provide experienced based automatic selection of the
+number of workers. In the meanwhile, this is all lef to the user, and we
+advice that `n_batches` equals some positive integer multiplied by the
+number of workers. Below is a basic example of a parallelization with
+two workers.
 
 ```{r}
-
 library(future)
-future::plan(multisession,workers=2)
+future::plan(multisession, workers = 2)
 
 explanation_par <- explain(
-    model = model,
-    x_explain = x_explain,
-    x_train = x_train,
-    approach = "empirical",
-    prediction_zero = p0,
-    n_batches = 10
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  prediction_zero = p0,
+  n_batches = 10
 )
 
 future::plan(sequential) # To return to non-parallel computation
-
 ```
 
 ## Progress updates
 
-`shapr` provides progress updates of the computation of the Shapley values through the R-package `progressr`.
-This gives the user full control over the visual apperance of the progress updates, and also intergrates seemlessly 
-with the parallelization framework `future` used by `shapr` (see above).
-Note that the progress is updated as the batches are completed, meaning that if you have choosen `n_batches=1`, 
-you will not get intermediate updates, while if you set `n_batches=10` you will get updates on every 10% of the 
-computation.
+`shapr` provides progress updates of the computation of the Shapley
+values through the R-package `progressr`. This gives the user full
+control over the visual apperance of the progress updates, and also
+intergrates seemlessly with the parallelization framework `future` used
+by `shapr` (see above). Note that the progress is updated as the batches
+are completed, meaning that if you have choosen `n_batches=1`, you will
+not get intermediate updates, while if you set `n_batches=10` you will
+get updates on every 10% of the computation.
 
-Progress updates are enabled for the current R-session by running the command `progressr::handlers(local=TRUE)`,
-before calling `shapr::explain()`. 
-To use progress updates for only a single call to `shapr::explain()`, one can wrap the call using 
+Progress updates are enabled for the current R-session by running the
+command `progressr::handlers(local=TRUE)`, before calling
+`shapr::explain()`. To use progress updates for only a single call to
+`shapr::explain()`, one can wrap the call using
 `progressr::with_progress` as follows:
-`progressr::with_progress({
-shapr::explain()
-})
-`
-The default appearence of the progress updates is a basic ASCII-based horizontal progress bar.
-Other variants can be chosen by passing different strings to `progressr::handlers()`,
-some of which require additional packages.
-If you are using Rstudio, the progress can be displayed directly in the gui with
-`progressr::handlers('rstudio')` (requires the `rstudioapi` package).
-If you are running Windows, you may use the pop-up gui progress bar
-`progressr::handlers('handler_winprogressbar')`.
-A wrapper for progressbar of the flexible `cli` package is also available
+`progressr::with_progress({ shapr::explain() })` The default appearence
+of the progress updates is a basic ASCII-based horizontal progress bar.
+Other variants can be chosen by passing different strings to
+`progressr::handlers()`, some of which require additional packages. If
+you are using Rstudio, the progress can be displayed directly in the gui
+with `progressr::handlers('rstudio')` (requires the `rstudioapi`
+package). If you are running Windows, you may use the pop-up gui
+progress bar `progressr::handlers('handler_winprogressbar')`. A wrapper
+for progressbar of the flexible `cli` package is also available
 `progressr::handlers('cli')` (requires the `cli` package).
 
-For a full list of all progression handlers and the customization options available with `progressr`, 
-see the `progressr` [vignette](https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html).
+For a full list of all progression handlers and the customization
+options available with `progressr`, see the `progressr`
+[vignette](https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html).
 A full code example of using `progressr` with `shapr` is shown below:
 
-
 ```{r,eval = FALSE}
-> library(progressr) 
-> progressr::handlers(global=TRUE)
-> # If no progression handler is specified, the txtprogressbar is used
-> # Other progression handlers:
-> # progressr::handlers('rstudio') # requires the 'rstudioapi' package
-> # progressr::handlers('handler_winprogressbar') # Window only
-> # progressr::handlers('cli') # requires the 'cli' package
-> explanation <- explain(
-+  model = model,
-+  x_explain = x_explain,
-+  x_train = x_train,
-+  approach = "empirical",
-+  prediction_zero = p0,
-+  n_batches=10
-+ )
+library(progressr)
+progressr::handlers(global = TRUE)
+# If no progression handler is specified, the txtprogressbar is used
+# Other progression handlers:
+# progressr::handlers('rstudio') # requires the 'rstudioapi' package
+# progressr::handlers('handler_winprogressbar') # Window only
+# progressr::handlers('cli') # requires the 'cli' package
+explanation <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  prediction_zero = p0,
+  n_batches = 10
+)
 
-| [=================================>----------------------]  60% Estimating v(S)
-``` 
-
-
+#| [=================================>----------------------]  60% Estimating v(S)
+```
 
 <a id="compare"></a>
 

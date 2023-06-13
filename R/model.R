@@ -13,6 +13,7 @@
 #'
 #' @param x Model object for the model to be explained.
 #' @param newdata A data.frame/data.table with the features to predict from.
+#' @param ... `newreg` and `horizon` parameters used in models passed to `[explain_forecast()]`
 #'
 #' @details The following models are currently supported:
 #' \itemize{
@@ -52,13 +53,13 @@
 #'
 #' # Predicting for a model with a standardized format
 #' predict_model(x = model, newdata = x_explain)
-predict_model <- function(x, newdata) {
+predict_model <- function(x, newdata, ...) {
   UseMethod("predict_model", x)
 }
 
 #' @rdname predict_model
 #' @export
-predict_model.default <- function(x, newdata) {
+predict_model.default <- function(x, newdata, ...) {
   str_error <- paste(
     "It seems that you passed a non-valid model object.",
     "See more information about which models that are supported",
@@ -155,18 +156,18 @@ get_model_specs.default <- function(x) {
 #'
 #' @keywords internal
 get_supported_models <- function() {
-  DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs), "info"), keep.rownames = T)
+  DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs), "info"), keep.rownames = TRUE)
 
   DT_get_model_specs[, rn := substring(as.character(rn), first = 17)]
   DT_get_model_specs[, get_model_specs := 1]
   DT_get_model_specs[, c("visible", "from", "generic", "isS4") := NULL]
 
-  DT_predict_model <- data.table::as.data.table(attr(methods(predict_model), "info"), keep.rownames = T)
+  DT_predict_model <- data.table::as.data.table(attr(methods(predict_model), "info"), keep.rownames = TRUE)
   DT_predict_model[, rn := substring(as.character(rn), first = 15)]
   DT_predict_model[, predict_model := 1]
   DT_predict_model[, c("visible", "from", "generic", "isS4") := NULL]
 
-  DT <- merge(DT_get_model_specs, DT_predict_model, by = "rn", all = T, allow.cartesian = T, nomatch = 0)
+  DT <- merge(DT_get_model_specs, DT_predict_model, by = "rn", all = TRUE, allow.cartesian = TRUE, nomatch = 0)
   DT[, (colnames(DT)[-1]) := lapply(.SD, data.table::nafill, fill = 0), .SDcols = colnames(DT)[-1]]
   DT[, (colnames(DT)[2:3]) := lapply(.SD, as.logical), .SDcols = colnames(DT)[2:3]]
   data.table::setnames(DT, "rn", "model_class")

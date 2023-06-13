@@ -9,6 +9,10 @@ setup(
   x_explain,
   approach,
   prediction_zero,
+<<<<<<< HEAD
+=======
+  output_size = 1,
+>>>>>>> master
   n_combinations,
   group,
   n_samples,
@@ -16,7 +20,21 @@ setup(
   seed,
   keep_samp_for_vS,
   feature_specs,
+<<<<<<< HEAD
   timing,
+=======
+  type = "normal",
+  horizon = NULL,
+  y = NULL,
+  xreg = NULL,
+  train_idx = NULL,
+  explain_idx = NULL,
+  explain_y_lags = NULL,
+  explain_xreg_lags = NULL,
+  group_lags = NULL,
+  timing,
+  init_time,
+>>>>>>> master
   is_python = FALSE,
   ...
 )
@@ -40,6 +58,11 @@ features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
 such as the mean of the predictions in the training data are also reasonable.}
 
+<<<<<<< HEAD
+=======
+\item{output_size}{TODO: Document}
+
+>>>>>>> master
 \item{n_combinations}{Integer.
 If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.
 If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
@@ -80,6 +103,7 @@ Contains the 3 elements:
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }}
 
+<<<<<<< HEAD
 \item{timing}{Logical.
 Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
 
@@ -87,6 +111,54 @@ Whether the timing of the different parts of the \code{explain()} should saved i
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.
 Output from \code{Sys.time()} called at the start of \code{explain()}. Used initialize the timing.}
+=======
+\item{type}{Character.
+Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
+correspondingly the type of explanation that should be generated.}
+
+\item{horizon}{Numeric.
+The forecast horizon to explain. Passed to the \code{predict_model} function.}
+
+\item{y}{Matrix, data.frame/data.table or a numeric vector.
+Contains the endogenous variables used to estimate the (conditional) distributions
+needed to properly estimate the conditional expectations in the Shapley formula
+including the observations to be explained.}
+
+\item{xreg}{Matrix, data.frame/data.table or a numeric vector.
+Contains the exogenous variables used to estimate the (conditional) distributions
+needed to properly estimate the conditional expectations in the Shapley formula
+including the observations to be explained.
+As exogenous variables are used contemporaneusly when producing a forecast,
+this item should contain nrow(y) + horizon rows.}
+
+\item{train_idx}{Numeric vector
+The row indices in data and reg denoting points in time to use when estimating the conditional expectations in
+the Shapley value formula.
+If \code{train_idx = NULL} (default) all indices not selected to be explained will be used.}
+
+\item{explain_idx}{Numeric vector
+The row indices in data and reg denoting points in time to explain.}
+
+\item{explain_y_lags}{Numeric vector.
+Denotes the number of lags that should be used for each variable in \code{y} when making a forecast.}
+
+\item{explain_xreg_lags}{Numeric vector.
+If \code{xreg != NULL}, denotes the number of lags that should be used for each variable in \code{xreg} when making a forecast.}
+
+\item{group_lags}{Logical.
+If \code{TRUE} all lags of each variable are grouped together and explained as a group.
+If \code{FALSE} all lags of each variable are explained individually.}
+
+\item{timing}{Logical.
+Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
+
+\item{init_time}{POSIXct-object
+Output from \code{Sys.time()} called at the start of \code{explain()}. Used initialize the timing.}
+
+\item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
+never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
+running the AICc-versions of the empirical as that requires data based optimization.}
+>>>>>>> master
 
 \item{...}{Further arguments passed to \code{approach}-specific functions.}
 }

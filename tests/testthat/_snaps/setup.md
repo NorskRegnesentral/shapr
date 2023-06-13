@@ -32,12 +32,12 @@
 ---
 
     Code
-      custom_get_model_specs_no_labels <- (function(x) {
+      custom_get_model_specs_no_lab <- (function(x) {
         feature_specs <- list(labels = NA, classes = NA, factor_levels = NA)
       })
       explain(model = model_custom_lm_mixed, x_train = x_train_mixed, x_explain = x_explain_mixed,
         approach = "independence", prediction_zero = p0, predict_model = custom_predict_model,
-        get_model_specs = custom_get_model_specs_no_labels, n_batches = 1, timing = FALSE)
+        get_model_specs = custom_get_model_specs_no_lab, n_batches = 1, timing = FALSE)
     Message <simpleMessage>
       Note: Feature names extracted from the model contains NA.
       Consistency checks between model and data is therefore disabled.
@@ -51,12 +51,12 @@
 ---
 
     Code
-      custom_get_model_specs_no_classes <- (function(x) {
+      custom_gms_no_classes <- (function(x) {
         feature_specs <- list(labels = labels(x$terms), classes = NA, factor_levels = NA)
       })
       explain(model = model_custom_lm_mixed, x_train = x_train_mixed, x_explain = x_explain_mixed,
         approach = "independence", prediction_zero = p0, predict_model = custom_predict_model,
-        get_model_specs = custom_get_model_specs_no_classes, n_batches = 1, timing = FALSE)
+        get_model_specs = custom_gms_no_classes, n_batches = 1, timing = FALSE)
     Message <simpleMessage>
       Note: Feature classes extracted from the model contains NA.
       Assuming feature classes from the data are correct.
@@ -70,14 +70,13 @@
 ---
 
     Code
-      custom_get_model_specs_no_factor_levels <- (function(x) {
+      custom_gms_no_factor_levels <- (function(x) {
         feature_specs <- list(labels = labels(x$terms), classes = attr(x$terms,
         "dataClasses")[-1], factor_levels = NA)
       })
       explain(model = model_custom_lm_mixed, x_train = x_train_mixed, x_explain = x_explain_mixed,
         approach = "independence", prediction_zero = p0, predict_model = custom_predict_model,
-        get_model_specs = custom_get_model_specs_no_factor_levels, n_batches = 1,
-        timing = FALSE)
+        get_model_specs = custom_gms_no_factor_levels, n_batches = 1, timing = FALSE)
     Message <simpleMessage>
       Note: Feature factor levels extracted from the model contains NA.
       Assuming feature factor levels from the data are correct.
@@ -202,7 +201,7 @@
         approach = "independence", prediction_zero = p0_non_numeric_1, n_batches = 1,
         timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` (bla) must be numeric and match the output size of the model (1).
 
 ---
 
@@ -212,7 +211,7 @@
         approach = "independence", prediction_zero = p0_non_numeric_2, n_batches = 1,
         timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` () must be numeric and match the output size of the model (1).
 
 ---
 
@@ -222,7 +221,7 @@
         approach = "independence", prediction_zero = p0_too_long, n_batches = 1,
         timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` (1, 2) must be numeric and match the output size of the model (1).
 
 ---
 
@@ -231,7 +230,7 @@
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         approach = "independence", prediction_zero = p0_is_NA, n_batches = 1, timing = FALSE)
     Error <simpleError>
-      `prediction_zero` must be a single numeric.
+      `prediction_zero` (NA) must be numeric and match the output size of the model (1).
 
 # erroneous input: `n_combinations`
 
@@ -296,7 +295,7 @@
 ---
 
     Code
-      n_combinations = ncol(x_explain_numeric) - 1
+      n_combinations <- ncol(x_explain_numeric) - 1
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         prediction_zero = p0, approach = "gaussian", n_combinations = n_combinations,
         n_batches = 1, timing = FALSE)
@@ -306,8 +305,8 @@
 ---
 
     Code
-      groups = list(A = c("Solar.R", "Wind"), B = c("Temp", "Month"), C = "Day")
-      n_combinations = length(groups) - 1
+      groups <- list(A = c("Solar.R", "Wind"), B = c("Temp", "Month"), C = "Day")
+      n_combinations <- length(groups) - 1
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
         prediction_zero = p0, approach = "gaussian", group = groups, n_combinations = n_combinations,
         n_batches = 1, timing = FALSE)
@@ -349,10 +348,10 @@
 ---
 
     Code
-      group_with_missing_data_features <- list(A = c("Solar.R"), B = c("Temp",
-        "Month", "Day"))
+      group_missing_data_features <- list(A = c("Solar.R"), B = c("Temp", "Month",
+        "Day"))
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, group = group_with_missing_data_features,
+        approach = "independence", prediction_zero = p0, group = group_missing_data_features,
         n_batches = 1, timing = FALSE)
     Error <simpleError>
       The data feature(s) Wind do not
@@ -361,14 +360,25 @@
 ---
 
     Code
-      group_with_duplicated_data_features <- list(A = c("Solar.R", "Solar.R", "Wind"),
-      B = c("Temp", "Month", "Day"))
+      group_dup_data_features <- list(A = c("Solar.R", "Solar.R", "Wind"), B = c(
+        "Temp", "Month", "Day"))
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, group = group_with_duplicated_data_features,
+        approach = "independence", prediction_zero = p0, group = group_dup_data_features,
         n_batches = 1, timing = FALSE)
     Error <simpleError>
       Feature(s) Solar.R are found in more than one group or multiple times per group.
       Make sure each feature is only represented in one group, and only once.
+
+---
+
+    Code
+      single_group <- list(A = c("Solar.R", "Wind", "Temp", "Month", "Day"))
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        approach = "independence", prediction_zero = p0, group = single_group,
+        n_batches = 1, timing = FALSE)
+    Error <simpleError>
+      You have specified only a single group named A, containing the features: Solar.R, Wind, Temp, Month, Day.
+       The predictions must be decomposed in at least two groups to be meaningful.
 
 # erroneous input: `n_samples`
 
@@ -566,14 +576,16 @@
 ---
 
     Code
-      predict_model_non_numeric_output <- (function(model, x) {
+      predict_model_non_num_output <- (function(model, x) {
         "bla"
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, predict_model = predict_model_non_numeric_output,
+        approach = "independence", prediction_zero = p0, predict_model = predict_model_non_num_output,
         n_batches = 1, timing = FALSE)
     Error <simpleError>
-      The predict_model function of class `lm` does not return a numeric output of the desired length.
+      The predict_model function of class `lm` does not return a numeric output of the desired length
+      for single output models or a data.table of the correct
+      dimensions for a multiple output model.
       See the 'Advanced usage' section of the vignette:
       vignette('understanding_shapr', package = 'shapr')
       
@@ -582,14 +594,16 @@
 ---
 
     Code
-      predict_model_incorrect_output_length <- (function(model, x) {
+      predict_model_wrong_output_len <- (function(model, x) {
         rep(1, nrow(x) + 1)
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, predict_model = predict_model_incorrect_output_length,
+        approach = "independence", prediction_zero = p0, predict_model = predict_model_wrong_output_len,
         n_batches = 1, timing = FALSE)
     Error <simpleError>
-      The predict_model function of class `lm` does not return a numeric output of the desired length.
+      The predict_model function of class `lm` does not return a numeric output of the desired length
+      for single output models or a data.table of the correct
+      dimensions for a multiple output model.
       See the 'Advanced usage' section of the vignette:
       vignette('understanding_shapr', package = 'shapr')
       
@@ -642,11 +656,11 @@
 ---
 
     Code
-      get_model_specs_output_not_list <- (function(x) {
+      get_ms_output_not_list <- (function(x) {
         "bla"
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_not_list,
+        approach = "independence", prediction_zero = p0, get_model_specs = get_ms_output_not_list,
         n_batches = 1, timing = FALSE)
     Error <simpleError>
       The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
@@ -657,11 +671,11 @@
 ---
 
     Code
-      get_model_specs_output_too_long <- (function(x) {
+      get_ms_output_too_long <- (function(x) {
         list(1, 2, 3, 4)
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_too_long,
+        approach = "independence", prediction_zero = p0, get_model_specs = get_ms_output_too_long,
         n_batches = 1, timing = FALSE)
     Error <simpleError>
       The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".
@@ -672,11 +686,11 @@
 ---
 
     Code
-      get_model_specs_output_wrong_names <- (function(x) {
+      get_ms_output_wrong_names <- (function(x) {
         list(labels = 1, classes = 2, not_a_name = 3)
       })
       explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
-        approach = "independence", prediction_zero = p0, get_model_specs = get_model_specs_output_wrong_names,
+        approach = "independence", prediction_zero = p0, get_model_specs = get_ms_output_wrong_names,
         n_batches = 1, timing = FALSE)
     Error <simpleError>
       The `get_model_specs` function of class `lm` does not return a list of length 3 with elements "labels","classes","factor_levels".

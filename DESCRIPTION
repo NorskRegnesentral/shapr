@@ -1,5 +1,5 @@
 Package: shapr
-Version: 0.2.0.9002
+Version: 0.2.3.9000
 Title: Prediction Explanation with Dependence-Aware Shapley Values
 Description: Complex machine learning models are often hard to interpret. However, in 
   many situations it is crucial to understand and explain why a model made a specific 
@@ -12,6 +12,7 @@ Authors@R: c(
     person("Nikolai", "Sellereite", email = "nikolaisellereite@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-4671-0337")),
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = c("cre", "aut"), comment = c(ORCID = "0000-0003-3908-5155")),
     person("Annabelle", "Redelmeier", email = "Annabelle.Redelmeier@nr.no", role = "aut"),
+    person("Jon", "Lachmann", email = "Jon@lachmann.nu", role = "aut"),
     person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
     person("Jens Christian", "Wahl", email = "Jens.Christian.Wahl@nr.no", role = "ctb"), 
     person("Camilla", "Lingjærde", role = "ctb"),
@@ -25,8 +26,7 @@ LazyData: true
 ByteCompile: true
 Language: en-US
 RoxygenNote: 7.2.3
-Depends: 
-    R (>= 3.5.0)
+Depends: R (>= 3.5.0)
 Imports: 
     stats,
     data.table,
@@ -43,16 +43,16 @@ Suggests:
     knitr,
     rmarkdown,
     roxygen2,
-    MASS,
     ggplot2,
-    caret,
     gbm,
     party,
     partykit,
     waldo,
     progressr,
+    future,
     ggbeeswarm,
-    vdiffr
+    vdiffr,
+    forecast
 LinkingTo: 
     RcppArmadillo,
     Rcpp

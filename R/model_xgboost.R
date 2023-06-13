@@ -1,6 +1,6 @@
 #' @rdname predict_model
 #' @export
-predict_model.xgb.Booster <- function(x, newdata) {
+predict_model.xgb.Booster <- function(x, newdata, ...) {
   if (!requireNamespace("stats", quietly = TRUE)) {
     stop("The xgboost package is required for predicting xgboost models")
   }
@@ -27,7 +27,7 @@ get_model_specs.xgb.Booster <- function(x) {
 #' @export
 model_checker.xgb.Booster <- function(x) {
   if (!is.null(x$params$objective) &&
-    (x$params$objective == "multi:softmax" | x$params$objective == "multi:softprob")
+    (x$params$objective == "multi:softmax" || x$params$objective == "multi:softprob")
   ) {
     stop(
       paste0(

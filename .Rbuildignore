@@ -17,5 +17,8 @@ inst/compare_lundberg\.xgb\.obj
 ^Meta$
 ^_pkgdown\.yml$
 ^pkgdown$
+[.]Rout$
+[.]out$
+^CRAN-SUBMISSION$
 ^.Rprofile
 ^python$

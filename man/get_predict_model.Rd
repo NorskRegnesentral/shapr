@@ -2,9 +2,15 @@
 % Please edit documentation in R/get_predict_model.R
 \name{get_predict_model}
 \alias{get_predict_model}
+<<<<<<< HEAD
 \title{Model testing function}
 \usage{
 get_predict_model(x_test, predict_model, model)
+=======
+\title{Get predict_model function}
+\usage{
+get_predict_model(predict_model, model)
+>>>>>>> master
 }
 \arguments{
 \item{predict_model}{Function.
@@ -16,6 +22,10 @@ The model object that ought to be explained.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
 }
 \description{
+<<<<<<< HEAD
 Model testing function
+=======
+Get predict_model function
+>>>>>>> master
 }
 \keyword{internal}
