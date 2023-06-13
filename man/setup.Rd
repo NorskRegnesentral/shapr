@@ -9,10 +9,7 @@ setup(
   x_explain,
   approach,
   prediction_zero,
-<<<<<<< HEAD
-=======
   output_size = 1,
->>>>>>> master
   n_combinations,
   group,
   n_samples,
@@ -20,9 +17,6 @@ setup(
   seed,
   keep_samp_for_vS,
   feature_specs,
-<<<<<<< HEAD
-  timing,
-=======
   type = "normal",
   horizon = NULL,
   y = NULL,
@@ -34,7 +28,6 @@ setup(
   group_lags = NULL,
   timing,
   init_time,
->>>>>>> master
   is_python = FALSE,
   ...
 )
@@ -58,11 +51,8 @@ features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
 such as the mean of the predictions in the training data are also reasonable.}
 
-<<<<<<< HEAD
-=======
 \item{output_size}{TODO: Document}
 
->>>>>>> master
 \item{n_combinations}{Integer.
 If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.
 If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
@@ -103,15 +93,6 @@ Contains the 3 elements:
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }}
 
-<<<<<<< HEAD
-\item{timing}{Logical.
-Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
-
-\item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
-never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
-running the AICc-versions of the empirical as that requires data based optimization.
-Output from \code{Sys.time()} called at the start of \code{explain()}. Used initialize the timing.}
-=======
 \item{type}{Character.
 Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
 correspondingly the type of explanation that should be generated.}
@@ -158,7 +139,6 @@ Output from \code{Sys.time()} called at the start of \code{explain()}. Used init
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
->>>>>>> master
 
 \item{...}{Further arguments passed to \code{approach}-specific functions.}
 }

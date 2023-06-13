@@ -109,12 +109,8 @@ Whether the timing of the different parts of the \code{explain()} should saved i
   Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
   \describe{
     \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
-<<<<<<< HEAD
-Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}. TODO: Describe better what the methods do here.}
-=======
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
 TODO: Describe better what the methods do here.}
->>>>>>> master
     \item{\code{empirical.eta}}{Numeric. (default = 0.95)
 Needs to be \verb{0 < eta <= 1}.
 Represents the minimum proportion of the total empirical weight that data samples should use.
@@ -159,11 +155,7 @@ If FALSE and the number of observations in the leaf node is more than \code{n_sa
 the method will sample \code{n_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
-<<<<<<< HEAD
-    \item{\code{categorical.joint_probability_dt}}{Data.table. (Optional)
-=======
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
->>>>>>> master
 Containing the joint probability distribution for each combination of feature
 values.
 \code{NULL} means it is estimated from the \code{x_train} and \code{x_explain}.}
