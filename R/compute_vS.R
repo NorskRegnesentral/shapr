@@ -1,4 +1,3 @@
-
 #' Computes `v(S)` for all features subsets `S`.
 #'
 #' @inheritParams default_doc
@@ -19,7 +18,6 @@ compute_vS <- function(internal, model, predict_model, method = "future") {
       predict_model = predict_model
     )
   } else {
-
     # Doing the same as above without future without progressbar or paralellization
     ret <- list()
     for (i in seq_along(S_batch)) {
@@ -41,7 +39,7 @@ future_compute_vS_batch <- function(S_batch, internal, model, predict_model) {
   if (requireNamespace("progressr", quietly = TRUE)) {
     p <- progressr::progressor(sum(lengths(S_batch)))
   } else {
-   p <- NULL
+    p <- NULL
   }
 
   ret <- future.apply::future_lapply(
@@ -87,7 +85,6 @@ batch_compute_vS <- function(S, internal, model, predict_model, p = NULL) {
 
 #' @keywords internal
 batch_prepare_vS <- function(S, internal) {
-
   max_id_combination <- internal$parameters$n_combinations
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
@@ -99,7 +96,7 @@ batch_prepare_vS <- function(S, internal) {
     # TODO: Need to handle the need for model for the AIC-versions here (skip for Python)
     dt <- prepare_data(internal, index_features = S)
   } else {
-    if(length(S)>1){
+    if (length(S) > 1) {
       S <- S[S != max_id_combination]
       dt <- prepare_data(internal, index_features = S)
     } else {
@@ -114,7 +111,6 @@ batch_prepare_vS <- function(S, internal) {
 
 #' @keywords internal
 compute_preds <- function(dt, feature_names, predict_model, model) {
-
   # Predictions
   dt[id_combination != 1, p_hat := predict_model(model, newdata = .SD), .SDcols = feature_names]
 
@@ -122,7 +118,6 @@ compute_preds <- function(dt, feature_names, predict_model, model) {
 }
 
 compute_MCint <- function(dt) {
-
   # Calculate contributions
   dt_res <- dt[, .(k = sum((p_hat * w) / sum(w))), .(id, id_combination)]
   data.table::setkeyv(dt_res, c("id", "id_combination"))

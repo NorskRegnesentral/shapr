@@ -146,7 +146,6 @@ get_model_specs <- function(x) {
 
 #' @rdname get_model_specs
 get_model_specs.default <- function(x) {
-
   # For custom models where there is no information
   return(list(labels = NA, classes = NA, factor_levels = NA))
 }
@@ -156,7 +155,6 @@ get_model_specs.default <- function(x) {
 #'
 #' @keywords internal
 get_supported_models <- function() {
-
   DT_get_model_specs <- data.table::as.data.table(attr(methods(get_model_specs), "info"), keep.rownames = T)
 
   DT_get_model_specs[, rn := substring(as.character(rn), first = 17)]

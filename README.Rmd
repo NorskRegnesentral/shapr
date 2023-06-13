@@ -7,13 +7,12 @@ bibliography: ./inst/REFERENCES.bib
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    fig.path = "man/figures/README-",
-    out.width = "100%",
-    tidy = "styler"
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  tidy = "styler"
 )
-
 ```
 
 # shapr <img src="man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
@@ -144,7 +143,7 @@ explanation <- explain(
 )
 
 # Printing the Shapley values for the test data.
-# For more information about the interpretation of the values in the table, see ?shapr::explain.  
+# For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$shapley_values)
 
 # Finally we plot the resulting explanations

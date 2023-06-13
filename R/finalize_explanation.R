@@ -32,7 +32,7 @@ finalize_explanation <- function(vS_list, internal) {
     shapley_values = dt_shapley,
     internal = internal,
     pred_explain = p
-    )
+  )
   attr(output, "class") <- c("shapr", "list")
 
   return(output)

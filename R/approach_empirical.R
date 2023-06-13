@@ -44,7 +44,7 @@ setup_approach.empirical <- function(internal,
                                      empirical.start_aicc = 0.1,
                                      empirical.cov_mat = NULL,
                                      model = NULL,
-                                     predict_model = NULL, ...){ #TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
+                                     predict_model = NULL, ...) { # TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
 
   defaults <- mget(c("empirical.eta", "empirical.type", "empirical.fixed_sigma", "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"))
 
@@ -52,13 +52,15 @@ setup_approach.empirical <- function(internal,
 
   # Checking if factor features are present
   feature_specs <- internal$objects$feature_specs
-  if(any(feature_specs$classes=="factor")){
-    factor_features <- names(which(feature_specs$classes=="factor"))
+  if (any(feature_specs$classes == "factor")) {
+    factor_features <- names(which(feature_specs$classes == "factor"))
     factor_approaches <- get_factor_approaches()
     stop(
-      paste0("The following feature(s) are factor(s): ",factor_features,".\n",
-             "approach = 'empirical' does not support factor features.\n",
-             "Please change approach to one of ",paste0(factor_approaches,collapse=", "),".")
+      paste0(
+        "The following feature(s) are factor(s): ", factor_features, ".\n",
+        "approach = 'empirical' does not support factor features.\n",
+        "Please change approach to one of ", paste0(factor_approaches, collapse = ", "), "."
+      )
     )
   }
 
@@ -76,9 +78,9 @@ setup_approach.empirical <- function(internal,
     ))
   }
 
-  if(!(length(internal$parameters$empirical.fixed_sigma)==1 &&
-     is.numeric(internal$parameters$empirical.fixed_sigma) &&
-     internal$parameters$empirical.fixed_sigma>0)){
+  if (!(length(internal$parameters$empirical.fixed_sigma) == 1 &&
+    is.numeric(internal$parameters$empirical.fixed_sigma) &&
+    internal$parameters$empirical.fixed_sigma > 0)) {
     stop(
       "empirical.fixed_sigma must be a positive numeric of length 1.\n"
     )
@@ -92,8 +94,10 @@ setup_approach.empirical <- function(internal,
     internal$parameters$empirical.cov_mat <- get_cov_mat(x_train)
   }
 
-  internal$tmp <- list(model = model,
-                       predict_model = predict_model)
+  internal$tmp <- list(
+    model = model,
+    predict_model = predict_model
+  )
 
   return(internal)
 }
@@ -102,7 +106,6 @@ setup_approach.empirical <- function(internal,
 #' @rdname prepare_data
 #' @export
 prepare_data.empirical <- function(internal, index_features = NULL, ...) {
-
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
@@ -144,13 +147,11 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 
 
   # Increased efficiency for simplest and most common use case
-  if(kernel_metric == "gaussian" & empirical.type =="fixed_sigma" & length(empirical.fixed_sigma)==1){
-
-    W_kernel_full <- exp(-0.5*D/empirical.fixed_sigma^2)
+  if (kernel_metric == "gaussian" & empirical.type == "fixed_sigma" & length(empirical.fixed_sigma) == 1) {
+    W_kernel_full <- exp(-0.5 * D / empirical.fixed_sigma^2)
     dt_l <- list()
 
     for (i in seq(n_col)) {
-
       ## Get imputed data
       dt_l[[i]] <- observation_impute(
         W_kernel = as.matrix(W_kernel_full[, i, ]),
@@ -163,11 +164,8 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 
       dt_l[[i]][, id := i]
       if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
-
     }
-
   } else {
-
     h_optim_mat <- matrix(NA, ncol = n_col, nrow = no_empirical)
 
 
@@ -246,7 +244,6 @@ prepare_data.empirical <- function(internal, index_features = NULL, ...) {
 #'
 #' @author Nikolai Sellereite
 observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = .7, n_samples = 1e3) {
-
   # Check input
   stopifnot(is.matrix(W_kernel) & is.matrix(S))
   stopifnot(nrow(W_kernel) == nrow(x_train))
@@ -318,7 +315,6 @@ observation_impute <- function(W_kernel, S, x_train, x_explain, empirical.eta = 
 #' @author Martin Jullum
 sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) {
   if (!joint_sampling) {
-
     # Sample training data
     samp_train <- sample(
       x = ntrain,
@@ -355,7 +351,6 @@ sample_combinations <- function(ntrain, ntest, nsamples, joint_sampling = TRUE) 
 
 #' @keywords internal
 compute_AICc_each_k <- function(internal, model, predict_model, index_features) {
-
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
   n_train <- internal$parameters$n_train

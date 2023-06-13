@@ -285,7 +285,7 @@ explain <- function(model,
     timing = timing, ...
   )
 
-  internal$timing <- list(init = init_time,setup = Sys.time())
+  internal$timing <- list(init = init_time, setup = Sys.time())
 
   # Gets predict_model (if not passed to explain)
   # Checks that predict_model gives correct format

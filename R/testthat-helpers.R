@@ -1,4 +1,3 @@
-
 helper_rds <- function(code, name = "tmp.rds") {
   path <- file.path(tempdir(), name)
   testthat::expect_snapshot_output({
@@ -25,7 +24,7 @@ expect_snapshot_rds <- function(code, name = "tmp") {
   testthat::announce_snapshot_file(path = path)
 
 
-  #testthat::expect_snapshot_output(out) # Test the printed output
+  # testthat::expect_snapshot_output(out) # Test the printed output
   testthat::expect_snapshot((out <- code)) # Test output + warnings/messages
 
   saveRDS(out, file = path)

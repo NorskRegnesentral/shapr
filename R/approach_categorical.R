@@ -18,7 +18,6 @@ setup_approach.categorical <- function(internal,
                                        categorical.joint_probability_dt = NULL,
                                        categorical.epsilon = 0.001,
                                        ...) {
-
   defaults <- mget(c("categorical.joint_probability_dt", "categorical.epsilon"))
   internal <- insert_defaults(internal, defaults)
 
@@ -52,7 +51,6 @@ setup_approach.categorical <- function(internal,
 
     joint_probability_dt <- joint_prob_dt0[, N := NULL][, id_all := .I]
   } else {
-
     for (i in colnames(x_explain)) {
       is_error <- !(i %in% names(joint_probability_dt))
 
@@ -65,7 +63,6 @@ setup_approach.categorical <- function(internal,
       if (is_error > 0) {
         stop(paste0(i, " in x_explain has factor levels than in joint_probability_dt."))
       }
-
     }
 
     is_error <- !("joint_prob" %in% names(joint_probability_dt)) |
@@ -94,7 +91,6 @@ setup_approach.categorical <- function(internal,
 #' @export
 #' @keywords internal
 prepare_data.categorical <- function(internal, index_features = NULL, ...) {
-
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 

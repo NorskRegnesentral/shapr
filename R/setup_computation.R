@@ -1,4 +1,3 @@
-
 #' Sets up everything for the Shapley values computation in [shapr::explain()]
 #'
 #' @inheritParams default_doc
@@ -208,7 +207,6 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
 
 #' @keywords internal
 feature_exact <- function(m, weight_zero_m = 10^6) {
-
   dt <- data.table::data.table(id_combination = seq(2^m))
   combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
   dt[, features := unlist(combinations, recursive = FALSE)]
@@ -221,7 +219,6 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 
 #' @keywords internal
 feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
-
   # Find weights for given number of features ----------
   n_features <- seq(m - 1)
   n <- sapply(n_features, choose, n = m)
@@ -232,14 +229,13 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   unique_samples <- 0
 
   while (unique_samples < n_combinations - 2) {
-
     # Sample number of chosen features ----------
     n_features_sample <- sample(
       x = n_features,
       size = n_combinations - unique_samples - 2, # Sample -2 as we add zero and m samples below
       replace = TRUE,
       prob = p
-      )
+    )
 
     # Sample specific set of features -------
     feature_sample <- sample_features_cpp(m, n_features_sample)
@@ -248,7 +244,7 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   }
 
   # Add zero and m features
-  feature_sample_all = c(list(integer(0)), feature_sample_all, list(c(1:m)))
+  feature_sample_all <- c(list(integer(0)), feature_sample_all, list(c(1:m)))
   X <- data.table(n_features = sapply(feature_sample_all, length))
   X[, n_features := as.integer(n_features)]
 
@@ -273,9 +269,11 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6) {
   X[, features_tmp := sapply(features, paste, collapse = " ")]
 
   # Aggregate weights by how many samples of a combination we observe
-  X <- X[, .(n_features = data.table::first(n_features),
-            shapley_weight = sum(shapley_weight),
-            features = features[1]), features_tmp]
+  X <- X[, .(
+    n_features = data.table::first(n_features),
+    shapley_weight = sum(shapley_weight),
+    features = features[1]
+  ), features_tmp]
 
   X[, features_tmp := NULL]
   data.table::setorder(X, n_features)
@@ -320,7 +318,6 @@ shapley_weights <- function(m, N, n_components, weight_zero_m = 10^6) {
 
 #' @keywords internal
 helper_feature <- function(m, feature_sample) {
-
   x <- feature_matrix_cpp(feature_sample, m)
   dt <- data.table::data.table(x)
   cnms <- paste0("V", seq(m))
@@ -343,7 +340,6 @@ helper_feature <- function(m, feature_sample) {
 #'
 #' @keywords internal
 feature_group <- function(group_num, weight_zero_m = 10^6) {
-
   m <- length(group_num)
   dt <- data.table::data.table(id_combination = seq(2^m))
   combinations <- lapply(0:m, utils::combn, x = m, simplify = FALSE)
@@ -379,7 +375,6 @@ group_fun <- function(x, group_num) {
 #'
 #' @keywords internal
 feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero_m = 10^6) {
-
   # Find weights for given number of features ----------
   m <- length(group_num)
   n_groups <- seq(m - 1)
@@ -392,7 +387,6 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
   unique_samples <- 0
 
   while (unique_samples < n_combinations - 2) {
-
     # Sample number of chosen features ----------
     n_features_sample <- sample(
       x = n_groups,
@@ -408,7 +402,7 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
   }
 
   # Add zero and m features
-  feature_sample_all = c(list(integer(0)), feature_sample_all, list(c(1:m)))
+  feature_sample_all <- c(list(integer(0)), feature_sample_all, list(c(1:m)))
   X <- data.table(n_groups = sapply(feature_sample_all, length))
   X[, n_groups := as.integer(n_groups)]
 
@@ -433,9 +427,11 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
   X[, groups_tmp := sapply(groups, paste, collapse = " ")]
 
   # Aggregate weights by how many samples of a combination we have
-  X <- X[, .(n_groups = data.table::first(n_groups),
-             shapley_weight = sum(shapley_weight),
-             groups = groups[1]), groups_tmp]
+  X <- X[, .(
+    n_groups = data.table::first(n_groups),
+    shapley_weight = sum(shapley_weight),
+    groups = groups[1]
+  ), groups_tmp]
 
   X[, groups_tmp := NULL]
   data.table::setorder(X, n_groups)
@@ -475,7 +471,6 @@ feature_group_not_exact <- function(group_num, n_combinations = 200, weight_zero
 #'
 #' @author Nikolai Sellereite, Martin Jullum
 weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
-
   # Fetch weights
   w <- X[["shapley_weight"]]
 
@@ -504,7 +499,6 @@ weight_matrix <- function(X, normalize_W_weights = TRUE, is_groupwise = FALSE) {
 
 #' @keywords internal
 create_S_batch_new <- function(internal, seed = NULL) {
-
   n_features0 <- internal$parameters$n_features
   approach0 <- internal$parameters$approach
   n_combinations <- internal$parameters$n_combinations

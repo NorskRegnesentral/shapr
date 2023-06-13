@@ -82,14 +82,14 @@
 #' data_explain <- tail(airquality, 50)
 #'
 #' x_train <- data_train[, x_var]
-#' x_explain <- data_explain[,x_var]
+#' x_explain <- data_explain[, x_var]
 #'
 #' # Fit a linear model
 #' lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
 #' model <- lm(lm_formula, data = data_train)
 #'
 #' # Explain predictions
-#' p <- mean(data_train[,y_var])
+#' p <- mean(data_train[, y_var])
 #'
 #' # Empirical approach
 #' x <- explain(
@@ -152,10 +152,9 @@
 #' )
 #'
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#' plot(x, plot_type = "scatter")
-#' plot(x, plot_type = "beeswarm")
+#'   plot(x, plot_type = "scatter")
+#'   plot(x, plot_type = "beeswarm")
 #' }
-#'
 #'
 #' @author Martin Jullum, Vilde Ung
 plot.shapr <- function(x,
@@ -188,7 +187,7 @@ plot.shapr <- function(x,
 
   # melting Kshap
   shap_names <- colnames(x$shapley_values)[-1]
-  dt_shap <- round(data.table::copy(x$shapley_values),digits = digits)
+  dt_shap <- round(data.table::copy(x$shapley_values), digits = digits)
   dt_shap[, id := .I]
   dt_shap_long <- data.table::melt(dt_shap, id.vars = "id", value.name = "phi")
   dt_shap_long[, sign := factor(sign(phi), levels = c(1, -1), labels = c("Increases", "Decreases"))]
@@ -292,13 +291,11 @@ plot.shapr <- function(x,
   return(gg)
 }
 
-get_num_breaks <- function(dt_plot,feature_name){
+get_num_breaks <- function(dt_plot, feature_name) {
+  n_feat_vals <- length(dt_plot[variable == feature_name, unique(feature_value)]) # number of unique points to plot
+  type <- dt_plot[variable == feature_name, type][1]
 
-  n_feat_vals <- length(dt_plot[variable==feature_name,unique(feature_value)]) # number of unique points to plot
-  type <- dt_plot[variable==feature_name,type][1]
-
-  if(type == "numeric"){
-
+  if (type == "numeric") {
     if (n_feat_vals > 500) {
       num_breaks <- 50
     } else if (n_feat_vals > 200) {
@@ -317,26 +314,24 @@ get_num_breaks <- function(dt_plot,feature_name){
 
 
 compute_scatter_hist_values <- function(dt_plot, scatter_features) {
-
   dt_scatter_hist_list <- list()
   for (feature_name in scatter_features) {
-
-    num_breaks = get_num_breaks(dt_plot, feature_name)
+    num_breaks <- get_num_breaks(dt_plot, feature_name)
 
     x <- dt_plot[variable == feature_name, feature_value]
 
     if (min(x) == max(x)) {
       scatter_hist_object <- hist(x, breaks = 1, plot = FALSE)
       # scatter_hist_object$breaks = c(x[1] - .Machine$double.eps*10^10, x[1] + .Machine$double.eps*10^10)
-      scatter_hist_object$breaks = c(x[1] - 0.01, x[1] + 0.01)
+      scatter_hist_object$breaks <- c(x[1] - 0.01, x[1] + 0.01)
     } else {
-      step <- (max(x)-min(x))/(num_breaks-1)
-      scatter_hist_object <- hist(x, breaks = seq(min(x)-step/2, max(x)+step/2, by=step), plot = FALSE)
+      step <- (max(x) - min(x)) / (num_breaks - 1)
+      scatter_hist_object <- hist(x, breaks = seq(min(x) - step / 2, max(x) + step / 2, by = step), plot = FALSE)
     }
 
     y_max <- max(dt_plot[variable == feature_name, phi])
     y_min <- min(dt_plot[variable == feature_name, phi])
-    y_tot <- ifelse(y_max == y_min,0.1,y_max - y_min) # what if these happen to be the same...?
+    y_tot <- ifelse(y_max == y_min, 0.1, y_max - y_min) # what if these happen to be the same...?
 
     count_tot <- sum(scatter_hist_object$count)
     count_scale <- y_tot / count_tot
@@ -362,7 +357,6 @@ compute_scatter_hist_values <- function(dt_plot, scatter_features) {
 }
 
 make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, factor_cols) {
-
   if (is.null(col)) {
     col <- "#619CFF"
   } else if (length(col) != 1) {
@@ -394,17 +388,17 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 
   # compute bin values for scatter_hist
 
-    dt_scatter_hist <- compute_scatter_hist_values(dt_plot, scatter_features)
+  dt_scatter_hist <- compute_scatter_hist_values(dt_plot, scatter_features)
 
-    # Plot numeric features
-    gg <- gg + ggplot2::geom_rect(
-      data = dt_scatter_hist,
-      ggplot2::aes(
-        xmin = x_start, xmax = x_end,
-        ymin = y_start, ymax = y_end
-      ), fill = ifelse(scatter_hist,"grey85",NA), # NA if no scatter_hist==FALSE
-      color=ifelse(scatter_hist,"grey80",NA)      # NA if no scatter_hist==FALSE
-    )
+  # Plot numeric features
+  gg <- gg + ggplot2::geom_rect(
+    data = dt_scatter_hist,
+    ggplot2::aes(
+      xmin = x_start, xmax = x_end,
+      ymin = y_start, ymax = y_end
+    ), fill = ifelse(scatter_hist, "grey85", NA), # NA if no scatter_hist==FALSE
+    color = ifelse(scatter_hist, "grey80", NA) # NA if no scatter_hist==FALSE
+  )
 
   gg <- gg + ggplot2::geom_point(ggplot2::aes(x = feature_value, y = phi), colour = col) +
     ggplot2::theme_classic(base_family = "sans") +
@@ -420,17 +414,17 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
     )
 
   # Function used by ggplot to map numerical values to the original factor values
-  custom_label_func <- function(breaks){
-    breaks = round(breaks, 3)
-    labels = as.character(breaks)
+  custom_label_func <- function(breaks) {
+    breaks <- round(breaks, 3)
+    labels <- as.character(breaks)
 
     factor_breaks <- which(breaks > max_feature_value)
-    replace_these_breaks = which(breaks %in% lookup$breaks)
+    replace_these_breaks <- which(breaks %in% lookup$breaks)
 
-    if (length(replace_these_breaks) > 0){
+    if (length(replace_these_breaks) > 0) {
       labels[replace_these_breaks] <- lookup$labels[match(labels[replace_these_breaks], lookup$breaks)]
     }
-    if (!identical(factor_breaks, replace_these_breaks)){
+    if (!identical(factor_breaks, replace_these_breaks)) {
       hide_these_breaks <- factor_breaks[!(factor_breaks %in% replace_these_breaks)]
       labels[hide_these_breaks] <- ""
     }
@@ -444,7 +438,6 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
 }
 
 order_for_plot <- function(dt_plot, N_features, bar_plot_order, top_k_features) {
-
   if (bar_plot_order == "largest_first") {
     dt_plot[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
   } else if (bar_plot_order == "smallest_first") {
@@ -484,7 +477,6 @@ order_for_plot <- function(dt_plot, N_features, bar_plot_order, top_k_features) 
   dt_plot[variable == "none", rank_waterfall := 0]
 
   return(dt_plot)
-
 }
 
 
@@ -497,7 +489,6 @@ order_for_plot <- function(dt_plot, N_features, bar_plot_order, top_k_features) 
 #' @return A list of a lookup table with each factor and level and its numeric value, a data.table
 #' very similar to the input data, but now with numeric values for factors, and the maximum feature value.
 process_factor_data <- function(dt, factor_cols) {
-
   dt_plot_numeric <- dt[!variable %in% factor_cols]
   dt_plot_numeric[, feature_value := as.numeric(feature_value)]
   dt_plot_numeric[, type := "numeric"]
@@ -516,12 +507,10 @@ process_factor_data <- function(dt, factor_cols) {
   dt_plot_numeric <- rbind(dt_plot_numeric, dt_plot_factor[, mget(names(dt_plot_numeric))])
 
   return(list(lookup = lookup, dt_plot = dt_plot_numeric, max_feature_value = max_feature_value))
-
 }
 
 
 make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols) {
-
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
     stop("geom_beeswarm is not installed. Please run install.packages('ggbeeswarm')")
   }
@@ -610,7 +599,6 @@ make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols) {
 }
 
 make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels) {
-
   if (is.null(col)) {
     col <- c("#00BA38", "#F8766D")
   }
@@ -660,12 +648,13 @@ make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels) {
       fill = "",
       title = "Shapley value prediction explanation"
     ) +
-    ggplot2::geom_text(ggplot2::aes(
-      label = phi_significant,
-      x = unique_label, y = y_text_bar,
-      vjust = 0.5, hjust = hjust_text_bar
-    ),
-    size = 2.5, family = "sans", col = text_color_bar
+    ggplot2::geom_text(
+      ggplot2::aes(
+        label = phi_significant,
+        x = unique_label, y = y_text_bar,
+        vjust = 0.5, hjust = hjust_text_bar
+      ),
+      size = 2.5, family = "sans", col = text_color_bar
     )
 
   return(gg)
@@ -678,7 +667,6 @@ make_waterfall_plot <- function(dt_plot,
                                 bar_plot_order,
                                 breaks,
                                 desc_labels) {
-
   if (is.null(col)) {
     col <- c("#00BA38", "#F8766D")
   }
@@ -757,18 +745,20 @@ make_waterfall_plot <- function(dt_plot,
       x = -Inf, xend = 1.3, y = expected, yend = expected,
       linetype = "dotted", col = "grey30", linewidth = 0.25
     ) +
-    ggplot2::geom_text(ggplot2::aes(
-      label = phi_significant,
-      x = rank_waterfall, y = y_text,
-      vjust = 0.5, hjust = hjust_text
-    ),
-    size = 2.5, family = "sans", col = text_color
+    ggplot2::geom_text(
+      ggplot2::aes(
+        label = phi_significant,
+        x = rank_waterfall, y = y_text,
+        vjust = 0.5, hjust = hjust_text
+      ),
+      size = 2.5, family = "sans", col = text_color
     ) +
-    ggplot2::geom_segment(ggplot2::aes(
-      x = rank_waterfall + 0.45, xend = rank_waterfall + 0.45,
-      y = start, yend = end, color = sign
-    ),
-    arrow = ggplot2::arrow(length = ggplot2::unit(0.03, "npc")), show.legend = FALSE
+    ggplot2::geom_segment(
+      ggplot2::aes(
+        x = rank_waterfall + 0.45, xend = rank_waterfall + 0.45,
+        y = start, yend = end, color = sign
+      ),
+      arrow = ggplot2::arrow(length = ggplot2::unit(0.03, "npc")), show.legend = FALSE
     ) +
     ggplot2::scale_color_manual(values = col) +
     ggplot2::geom_text(
