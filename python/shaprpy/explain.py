@@ -95,7 +95,9 @@ def explain(
       A dictionary of additional information.
     '''
 
-    init_time = datetime.now() 
+    timing_list = {
+      "init_time": datetime.now()
+    }
 
     base.set_seed(seed)
 
@@ -117,10 +119,7 @@ def explain(
         is_python=True,
     )
 
-    timing = {
-      "init_time": init_time,
-      "setup": datetime.now()
-      }
+    timing_list["setup"] = datetime.now()
 
     predict_model = get_predict_model(
       x_test = x_train.head(2),
@@ -128,11 +127,12 @@ def explain(
       model = model,
     )
 
-    timing["test_prediction"] = datetime.now()
+    timing_list["test_prediction"] = datetime.now()
 
     rinternal = shapr.setup_computation(rinternal, NULL, NULL)
     rvS_list = compute_vS(rinternal, model, predict_model)
-    timing["compute_vS"] = datetime.now()
+    
+    timing_list["compute_vS"] = datetime.now()
 
 
     routput = shapr.finalize_explanation(
@@ -140,7 +140,10 @@ def explain(
         internal = rinternal,
     )
 
-    print(timing)
+    timing_list["shapley_computation"] = datetime.now()
+
+
+    print(timing_list)
 
     df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values')))
     pred_explain = r2py(routput.rx2('pred_explain'))
