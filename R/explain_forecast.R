@@ -163,7 +163,7 @@ explain_forecast <- function(model,
     internal = internal
   )
 
-  internal$timing$test_prediction <- Sys.time()
+  timing_list$test_prediction <- Sys.time()
 
 
   # Sets up the Shapley (sampling) framework and prepares the

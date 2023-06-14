@@ -321,7 +321,7 @@ explain <- function(model,
   # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model)
 
-  timing_list$compute_vS <- Sys.time() # Recording the time of compute_vS (+setup_computation)
+  timing_list$compute_vS <- Sys.time()
 
 
   # Compute Shapley values based on conditional expectations (v(S))
