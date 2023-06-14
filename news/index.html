@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9100</span>
       </span>
     </div>
 
@@ -59,7 +59,8 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="development version" id="shapr-development-version">shapr (development version)<a class="anchor" aria-label="anchor" href="#shapr-development-version"></a></h2>
-<ul><li>Complete restructuring motivated by introducing a Python wrapper (<code>shaprpyr</code>, <a href="https://github.com/NorskRegnesentral/shapr/pull/325" class="external-link">#325</a>) for explaining predictions from Python models (from Python) utilizing almost all functionality of <code>shapr</code> (not merged to master yet). The restructuring splits the explanation tasks into smaller pieces, allowing the Python wrapper to move back and forth between Python and R, doing the prediction in Python, and almost everything else in R. This simplifies maintenance of <code>shaprpy</code> significantly.</li>
+<ul><li>Release a Python wrapper (<code>shaprpyr</code>, <a href="https://github.com/NorskRegnesentral/shapr/pull/325" class="external-link">#325</a>) for explaining predictions from Python models (from Python) utilizing almost all functionality of <code>shapr</code>. The wrapper moves back and forth back and forth between Python and R, doing the prediction in Python, and almost everything else in R. This simplifies maintenance of <code>shaprpy</code> significantly. The wrapper is available <a href="https://github.com/NorskRegnesentral/shapr/tree/master/python" class="external-link">here</a>.</li>
+<li>Complete restructuring motivated by introducing the Python wrapper. The restructuring splits the explanation tasks into smaller pieces, which was necessary to allow the Python wrapper to move back and forth between R and Python.</li>
 <li>As part of the restructuring, we also did a number of design changes, resulting in a series of breaking changes described below.</li>
 </ul><div class="section level4">
 <h4 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h4>
@@ -80,6 +81,7 @@
 <li>Added new function <code>explain_forecast</code> to explain forecasts from time series models, at various prediction horizons (<a href="https://github.com/NorskRegnesentral/shapr/pull/328" class="external-link">#328</a>). Uses a different set of input argument which is more appropriate for these models.</li>
 <li>Re-implementation of <code>approach = 'independence'</code> method providing significantly faster computation (no longer as a special case of the <code>empirical</code> method). Also allow the method to be used on models with categorical data (<a href="https://github.com/NorskRegnesentral/shapr/pull/315" class="external-link">#315</a>).</li>
 <li>Added ‘beeswarm’ and ‘waterfall’ plots + new coloring scheme for all plots. See the <a href="https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#ex">vignette</a> for examples.</li>
+<li>Added timing of the various parts of the explanation process.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="under-the-hood-development-version">Under the hood<a class="anchor" aria-label="anchor" href="#under-the-hood-development-version"></a></h4>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9100</span>
       </span>
     </div>
 
@@ -86,7 +86,6 @@
 <span>  explain_xreg_lags <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group_lags <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">timing</span>,</span>
-<span>  <span class="va">init_time</span>,</span>
 <span>  is_python <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -241,11 +240,6 @@ If <code>FALSE</code> all lags of each variable are explained individually.</p><
 <dt>timing</dt>
 <dd><p>Logical.
 Whether the timing of the different parts of the <code><a href="explain.html">explain()</a></code> should saved in the model object.</p></dd>
-
-
-<dt>init_time</dt>
-<dd><p>POSIXct-object
-Output from <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time()</a></code> called at the start of <code><a href="explain.html">explain()</a></code>. Used initialize the timing.</p></dd>
 
 
 <dt>is_python</dt>

@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shapr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3.9100</span>
       </span>
     </div>
 
@@ -461,6 +461,10 @@ or <code>"independence"</code> in the code below.</p>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
+<p>There are multiple plot options specified by the
+<code>plot_type</code> argument in <code>plot</code>. The
+<code>waterfall</code> option shows the changes in the prediction score
+due to each features contribution (their Shapley values):</p>
 <p>There are multiple plot options specified by the
 <code>plot_type</code> argument in <code>plot</code>. The
 <code>waterfall</code> option shows the changes in the prediction score
