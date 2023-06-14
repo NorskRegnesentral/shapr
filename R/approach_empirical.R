@@ -48,8 +48,10 @@ setup_approach.empirical <- function(internal,
                                      predict_model = NULL, ...) {
   # TODO: Can I avoid passing model and predict_model (using ...) as they clutter the help file
 
-  defaults <- mget(c("empirical.eta", "empirical.type", "empirical.fixed_sigma",
-                     "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"))
+  defaults <- mget(c(
+    "empirical.eta", "empirical.type", "empirical.fixed_sigma",
+    "empirical.n_samples_aicc", "empirical.eval_max_aicc", "empirical.start_aicc"
+  ))
 
   internal <- insert_defaults(internal, defaults)
 

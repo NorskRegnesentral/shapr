@@ -259,7 +259,9 @@ explain <- function(model,
                     timing = TRUE,
                     ...) { # ... is further arguments passed to specific approaches
 
-  init_time <- Sys.time()
+  timing_list <- list(
+    init_time = Sys.time()
+  )
 
   set.seed(seed)
 
@@ -283,9 +285,10 @@ explain <- function(model,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
     timing = timing,
-    init_time = init_time,
     ...
   )
+
+  timing_list$setup <- Sys.time()
 
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(
@@ -301,13 +304,15 @@ explain <- function(model,
     internal = internal
   )
 
-  internal$timing$test_prediction <- Sys.time() # Recording the prediction time as well
+  timing_list$test_prediction <- Sys.time()
 
 
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
   # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
   internal <- setup_computation(internal, model, predict_model)
+
+  timing_list$setup_computation <- Sys.time()
 
 
   # Compute the v(S):
@@ -316,7 +321,7 @@ explain <- function(model,
   # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model)
 
-  internal$timing$compute_vS <- Sys.time() # Recording the time of compute_vS (+setup_computation)
+  timing_list$compute_vS <- Sys.time()
 
 
   # Compute Shapley values based on conditional expectations (v(S))
@@ -325,6 +330,12 @@ explain <- function(model,
     vS_list = vS_list,
     internal = internal
   )
+
+  timing_list$shapley_computation <- Sys.time()
+
+  if (timing == TRUE) {
+    output$timing <- compute_time(timing_list)
+  }
 
   # Temporary to avoid failing tests
 

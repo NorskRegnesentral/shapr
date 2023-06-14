@@ -18,7 +18,6 @@ setup_computation <- function(internal, model, predict_model) {
   # Setup for approach
   internal <- setup_approach(internal, model = model, predict_model = predict_model)
 
-  internal$timing$setup_computation <- Sys.time()
 
   return(internal)
 }

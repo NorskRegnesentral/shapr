@@ -21,3 +21,4 @@ inst/compare_lundberg\.xgb\.obj
 [.]out$
 ^CRAN-SUBMISSION$
 ^.Rprofile
+^python$

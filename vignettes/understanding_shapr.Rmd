@@ -371,6 +371,9 @@ There are multiple plot options specified by the `plot_type` argument in
 `plot`. The `waterfall` option shows the changes in the prediction score
 due to each features contribution (their Shapley values):
 
+There are multiple plot options specified by the `plot_type` argument in `plot`. 
+The `waterfall` option shows the changes in the prediction score due to each features contribution (their Shapley values): 
+
 ```{r}
 plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
 ```

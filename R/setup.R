@@ -16,8 +16,6 @@
 #' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 #' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
-#' @param init_time POSIXct-object
-#' Output from `Sys.time()` called at the start of `explain()`. Used initialize the timing.
 #' @export
 setup <- function(x_train,
                   x_explain,
@@ -41,7 +39,6 @@ setup <- function(x_train,
                   explain_xreg_lags = NULL,
                   group_lags = NULL,
                   timing,
-                  init_time,
                   is_python = FALSE,
                   ...) {
   internal <- list()
@@ -81,8 +78,10 @@ setup <- function(x_train,
       horizon
     )
 
-    internal$parameters$output_labels <- cbind(rep(explain_idx, horizon),
-                                               rep(seq_len(horizon), each = length(explain_idx)))
+    internal$parameters$output_labels <- cbind(
+      rep(explain_idx, horizon),
+      rep(seq_len(horizon), each = length(explain_idx))
+    )
     colnames(internal$parameters$output_labels) <- c("explain_idx", "horizon")
     internal$parameters$explain_idx <- explain_idx
     internal$parameters$explain_lags <- list(y = explain_y_lags, xreg = explain_xreg_lags)
@@ -106,10 +105,6 @@ setup <- function(x_train,
 
 
   internal <- check_and_set_parameters(internal)
-
-
-  internal$timing <- list(init = init_time)
-  internal$timing$setup <- Sys.time()
 
   return(internal)
 }
@@ -314,8 +309,10 @@ compare_vecs <- function(vec1, vec2, vec_type, name1, name2) {
 compare_feature_specs <- function(spec1, spec2, name1 = "model", name2 = "x_train", sort_labels = FALSE) {
   if (sort_labels) {
     compare_vecs(sort(spec1$labels), sort(spec2$labels), "names", name1, name2)
-    compare_vecs(spec1$classes[sort(names(spec1$classes))],
-                 spec2$classes[sort(names(spec2$classes))], "classes", name1, name2)
+    compare_vecs(
+      spec1$classes[sort(names(spec1$classes))],
+      spec2$classes[sort(names(spec2$classes))], "classes", name1, name2
+    )
   } else {
     compare_vecs(spec1$labels, spec2$labels, "names", name1, name2)
     compare_vecs(spec1$classes, spec2$classes, "classes", name1, name2)
@@ -472,8 +469,8 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     stop(paste0(
       "`prediction_zero` (", paste0(prediction_zero, collapse = ", "),
       ") must be numeric and match the output size of the model (",
-      paste0(output_size, collapse = ", "), ").")
-      )
+      paste0(output_size, collapse = ", "), ")."
+    ))
   }
 
 

@@ -104,7 +104,9 @@ explain_forecast <- function(model,
                              get_model_specs = NULL,
                              timing = TRUE,
                              ...) { # ... is further arguments passed to specific approaches
-  init_time <- Sys.time()
+  timing_list <- list(
+    init_time = Sys.time()
+  )
 
   set.seed(seed)
 
@@ -141,9 +143,10 @@ explain_forecast <- function(model,
     group_lags = group_lags,
     group = group,
     timing = timing,
-    init_time = init_time,
     ...
   )
+
+  timing_list$setup <- Sys.time()
 
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(
@@ -160,7 +163,7 @@ explain_forecast <- function(model,
     internal = internal
   )
 
-  internal$timing$test_prediction <- Sys.time() # Recording the prediction time as well
+  timing_list$test_prediction <- Sys.time()
 
 
   # Sets up the Shapley (sampling) framework and prepares the
@@ -168,13 +171,16 @@ explain_forecast <- function(model,
   # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
   internal <- setup_computation(internal, model, predict_model)
 
+  timing_list$setup_computation <- Sys.time()
+
+
   # Compute the v(S):
   # Get the samples for the conditional distributions with the specified approach
   # Predict with these samples
   # Perform MC integration on these to estimate the conditional expectation (v(S))
   vS_list <- compute_vS(internal, model, predict_model, method = "regular")
 
-  internal$timing$compute_vS <- Sys.time() # Recording the time of compute_vS (+setup_computation)
+  timing_list$compute_vS <- Sys.time()
 
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
@@ -182,6 +188,10 @@ explain_forecast <- function(model,
     vS_list = vS_list,
     internal = internal
   )
+
+  if (timing == TRUE) {
+    output$timing <- compute_time(timing_list)
+  }
 
 
   return(output)
@@ -211,9 +221,11 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
   if (!is.vector(y) &&
     !(is.matrix(y) && ncol(y) >= 1) &&
     !(is.data.frame(y) && ncol(y) >= 1)) {
-    stop_message <- paste0(stop_message,
-                           "y should be a matrix or data.frame/data.table with one or more columns, ",
-                           "or a numeric vector.\n")
+    stop_message <- paste0(
+      stop_message,
+      "y should be a matrix or data.frame/data.table with one or more columns, ",
+      "or a numeric vector.\n"
+    )
   }
   if (!is.null(xreg) && !is.matrix(xreg) && !is.data.frame(xreg)) {
     stop_message <- paste0(stop_message, "xreg should be a matrix or a data.frame/data.table.\n")
@@ -276,8 +288,9 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
   data_lag <- lag_data(data_reg, c(explain_y_lags, explain_xreg_lags))
 
   # Create a matrix and groups of the forecasted values of the exogenous data.
-  reg_fcast <- reg_forecast_setup(xreg[seq.int(to = max(c(train_idx, explain_idx)) + horizon, from = max_lag + 1),
-                                       , drop = FALSE], horizon, data_lag$group)
+  reg_fcast <- reg_forecast_setup(xreg[seq.int(to = max(c(train_idx, explain_idx)) + horizon, from = max_lag + 1), ,
+    drop = FALSE
+  ], horizon, data_lag$group)
 
   if (ncol(data_lag$lagged) == 0 && ncol(reg_fcast$fcast) == 0) {
     stop("`explain_y_lags=0` is not allowed for models without exogeneous variables")
