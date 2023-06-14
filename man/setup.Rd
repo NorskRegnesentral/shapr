@@ -27,7 +27,6 @@ setup(
   explain_xreg_lags = NULL,
   group_lags = NULL,
   timing,
-  init_time,
   is_python = FALSE,
   ...
 )
@@ -132,9 +131,6 @@ If \code{FALSE} all lags of each variable are explained individually.}
 
 \item{timing}{Logical.
 Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
-
-\item{init_time}{POSIXct-object
-Output from \code{Sys.time()} called at the start of \code{explain()}. Used initialize the timing.}
 
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow

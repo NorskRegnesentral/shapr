@@ -161,7 +161,7 @@ compute_preds <- function(
   return(dt)
 }
 
-compute_MCint <- function(dt, pred_cols) {
+compute_MCint <- function(dt, pred_cols = "p_hat") {
   # Calculate contributions
   dt_res <- dt[, lapply(.SD, function(x) sum(((x) * w) / sum(w))), .(id, id_combination), .SDcols = pred_cols]
   data.table::setkeyv(dt_res, c("id", "id_combination"))

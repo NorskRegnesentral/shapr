@@ -17,12 +17,12 @@ finalize_explanation <- function(vS_list, internal) {
   # Extract the predictions we are explaining
   p <- get_p(processed_vS_list$dt_vS, internal)
 
-  internal$timing$postprocessing <- Sys.time()
+  #internal$timing$postprocessing <- Sys.time()
 
   # Compute the Shapley values
   dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
 
-  internal$timing$shapley_computation <- Sys.time()
+  #internal$timing$shapley_computation <- Sys.time()
 
 
   # Clearnig out the tmp list with model and predict_model (only added for AICc-types of empirical approach)
@@ -30,31 +30,12 @@ finalize_explanation <- function(vS_list, internal) {
 
   internal$output <- processed_vS_list
 
-  if (internal$parameters$timing) {
-    timing_secs <- mapply(
-      FUN = difftime,
-      internal$timing[-1],
-      internal$timing[-length(internal$timing)],
-      units = "secs"
-    )
-
-    timing_list <- list(
-      init_time = internal$timing$init,
-      total_time_secs = sum(timing_secs),
-      timing_secs = timing_secs
-    )
-  } else {
-    timing_list <- NULL
-  }
-
-  internal$timing <- NULL
 
   output <- list(
     shapley_values = dt_shapley,
     internal = internal,
-    pred_explain = p,
-    timing = timing_list
-  )
+    pred_explain = p
+    )
   attr(output, "class") <- c("shapr", "list")
 
   return(output)

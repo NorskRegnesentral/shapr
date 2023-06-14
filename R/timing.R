@@ -1,22 +1,18 @@
-compute_time <- function(output) {
-  if (output$internal$parameters$timing) {
-    timing_secs <- mapply(
-      FUN = difftime,
-      output$internal$timing[-1],
-      output$internal$timing[-length(internal$timing)],
-      units = "secs"
-    )
+compute_time <- function(timing_list) {
 
-    timing_list <- list(
-      init_time = output$internal$timing$init,
-      total_time_secs = sum(timing_secs),
-      timing_secs = timing_secs
-    )
-  } else {
-    timing_list <- NULL
-  }
+  timing_secs <- mapply(
+    FUN = difftime,
+    timing_list[-1],
+    timing_list[-length(timing_list)],
+    units = "secs"
+  )
 
-  output$internal$timing <- NULL
+  timing_output <- list(
+    init_time = timing_list$init,
+    total_time_secs = sum(timing_secs),
+    timing_secs = timing_secs
+  )
 
-  output$internal$timing <- timing_list
+  return(timing_output)
 }
+
