@@ -4,8 +4,8 @@ Python wrapper for the R package [shapr](https://github.com/NorskRegnesentral/sh
 
 ### Install
 
-The below instructions assume you already have R installed, and exposed to your python environment.
-Official instructions for installing R can be found her (https://cran.r-project.org/).
+The below instructions assume you already have `pip` and `R` installed and exposed to the python environment where you want to run `shaprpy`. 
+Official instructions for installing `pip` can be found [here](https://pip.pypa.io/en/stable/installation/), and for `R` [here](https://cran.r-project.org/).
 R can also be installed with pip as follows:
 ```
 pip install rbase
@@ -16,7 +16,8 @@ conda install -c r r
 ```
 
 #### Install R-package
-Install the `shapr` R-package by running the following terminal command from folder of this readme file (`.../shapr/python`):
+The `shaprpy` Python wrapper requires the development version of the `shapr` R-package (from the master branch on GitHub).
+Install it by running the following terminal command from the folder of this readme file (`.../shapr/python`):
 
 ```
 Rscript install_r_packages.R
@@ -43,7 +44,7 @@ model = RandomForestRegressor()
 model.fit(dfx_train, dfy_train.values.flatten())
 
 ## Shapr
-df_shapley, pred_explain, internal = explain(
+df_shapley, pred_explain, internal, timing = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
@@ -53,8 +54,7 @@ df_shapley, pred_explain, internal = explain(
 print(df_shapley)
 ```
 
-
-This works since `shaprpy` knows how to deal with models from `sklearn` and `xgboost`. 
+`shaprpy` knows how to explain predictions from models from `sklearn` and `xgboost`. 
 For other models, one can provide a custom `predict_model` function (and optionally a custom `get_model_specs`) to `shaprpy.explain`.
 
 See `/examples` for runnable examples, including an example of a custom PyTorch model.
