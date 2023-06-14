@@ -1,6 +1,7 @@
 # shapr (development version)
 
-* Complete restructuring motivated by introducing a Python wrapper  (`shaprpyr`, [#325](https://github.com/NorskRegnesentral/shapr/pull/325)) for explaining predictions from Python models (from Python) utilizing almost all functionality of `shapr` (not merged to master yet). The restructuring splits the explanation tasks into smaller pieces, allowing the Python wrapper to move back and forth between Python and R, doing the prediction in Python, and almost everything else in R. This simplifies maintenance of `shaprpy` significantly. 
+* Release a Python wrapper (`shaprpyr`, [#325](https://github.com/NorskRegnesentral/shapr/pull/325)) for explaining predictions from Python models (from Python) utilizing almost all functionality of `shapr`. The wrapper moves back and forth back and forth between Python and R, doing the prediction in Python, and almost everything else in R. This simplifies maintenance of `shaprpy` significantly. The wrapper is available [here](https://github.com/NorskRegnesentral/shapr/tree/master/python).
+* Complete restructuring motivated by introducing the Python wrapper. The restructuring splits the explanation tasks into smaller pieces, which was necessary to allow the Python wrapper to move back and forth between R and Python.
 * As part of the restructuring, we also did a number of design changes, resulting in a series of breaking changes described below.
 
 ### Breaking changes
@@ -26,6 +27,7 @@ Uses a different set of input argument which is more appropriate for these model
 * Re-implementation of `approach = 'independence'` method providing significantly faster computation (no longer as a special case of the `empirical` method). 
 Also allow the method to be used on models with categorical data  ([#315](https://github.com/NorskRegnesentral/shapr/pull/315)).
 * Added 'beeswarm' and 'waterfall' plots + new coloring scheme for all plots. See the [vignette](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#ex) for examples.
+* Added timing of the various parts of the explanation process. 
 
 ### Under the hood
 

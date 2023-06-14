@@ -16,19 +16,32 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02027/status.svg)](https://doi.org/10.21105/joss.02027)
 <!-- badges: end -->
 
+## Brief NEWS
+
 ### Breaking change (June 2023)
 
-The development verison of shapr (master branch on GitHub from June
-2023) has been severely restructured, introducing a new syntax for
-explaining models, and thereby introducing a range of breaking changes.
-This essentially amounts to using a single function (`explain()`)
-instead of two functions (`shapr()` and `explain()`). The CRAN version
-of `shapr` (v0.2.2) still uses the old syntax. See the
+As of version 0.2.3.9000, the development version of shapr (master
+branch on GitHub from June 2023) has been severely restructured,
+introducing a new syntax for explaining models, and thereby introducing
+a range of breaking changes. This essentially amounts to using a single
+function (`explain()`) instead of two functions (`shapr()` and
+`explain()`). The CRAN version of `shapr` (v0.2.2) still uses the old
+syntax. See the
 [NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md)
 for details. The examples below uses the new syntax.
 [Here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/README.md)
 is a version of this README with the syntax of the CRAN version
 (v0.2.2).
+
+### Python wrapper
+
+As of version 0.2.3.9100 (master branch on GitHub from June 2023), we
+provide a Python wrapper (`shaprpy`) which allows explaining python
+models with the methodology implemented in `shapr`, directly from
+Python. The wrapper is available
+[here](https://github.com/NorskRegnesentral/shapr/tree/master/python).
+See also details in the
+[NEWS](https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md).
 
 ## Introduction
 
@@ -66,7 +79,6 @@ The following methodology/features are currently implemented:
 -   Native support of explanation of predictions from models fitted with
     the following functions `stats::glm`, `stats::lm`,`ranger::ranger`,
     `xgboost::xgboost`/`xgboost::xgb.train` and `mgcv::gam`.
--   Support for explaining essentially any [custom model](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-custom-models) with a scalar numeric output.
 -   Accounting for feature dependence
     -   assuming the features are Gaussian (`approach = 'gaussian'`,
         Aas, Jullum, and Løland (2021))
@@ -84,20 +96,19 @@ The following methodology/features are currently implemented:
         Jullum, and Aas (2020))
     -   assuming all features are independent
         (`approach = 'independence'`, mainly for benchmarking)
--   [Combining](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#combined-approach) any of the above methods.
--   [Explain *forecasts*](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explaining-a-forecasting-model-using-explain_forecast) from time series models at different horizons
-    with `explain_forecast()`
--   [Batch computation](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#batch-computation) to reduce memory consumption significantly
--   [Parallelized computation](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#parallelized-computation) using the
-    [future](https://future.futureverse.org/) framework.
--   [Progress bar](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#progress-updates) showing computation progress, using the
+-   Combining any of the above methods.
+-   Explain *forecasts* from time series models at different horizons
+    with `explain_forecast()` (R only)
+-   Batch computation to reduce memory consumption significantly
+-   Parallelized computation using the
+    [future](https://future.futureverse.org/) framework. (R only)
+-   Progress bar showing computation progress, using the
     [`progressr`](https://progressr.futureverse.org/) package. Must be
     activated by the user.
 -   Optional use of the AICc criterion of Hurvich, Simonoff, and
     Tsai (1998) when optimizing the bandwidth parameter in the empirical
     (conditional) approach of Aas, Jullum, and Løland (2021).
--   Explain predictions in terms of [feature groups](https://norskregnesentral.github.io/shapr/articles/understanding_shapr.html#explain-groups-of-features.
--   Functionality for visualizing the explanations.
+-   Functionality for visualizing the explanations. (R only)
 -   Support for models not supported natively.
 
 <!--
