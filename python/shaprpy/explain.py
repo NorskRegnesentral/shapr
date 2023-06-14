@@ -2,7 +2,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from typing import Callable
-from datetime import datetime
+from datetime import datetime, timedelta
 import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
 from rpy2.rinterface import NULL, NA
@@ -11,6 +11,10 @@ data_table = importr('data.table')
 shapr = importr('shapr')
 utils = importr('utils')
 base = importr('base')
+
+
+
+
 
 
 def maybe_null(val):
@@ -142,13 +146,15 @@ def explain(
 
     timing_list["shapley_computation"] = datetime.now()
 
-
-    print(timing_list)
+    if timing==True:
+      timing = compute_time(timing_list)
+    else:
+      timing = None
 
     df_shapley = r2py(base.as_data_frame(routput.rx2('shapley_values')))
     pred_explain = r2py(routput.rx2('pred_explain'))
     internal = recurse_r_tree(routput.rx2('internal'))
-    return df_shapley, pred_explain, internal
+    return df_shapley, pred_explain, internal, timing
 
 
 def compute_vS(rinternal, model, predict_model):
@@ -301,3 +307,18 @@ def prebuilt_predict_model(model):
     pass
 
   return None
+
+
+def compute_time(timing_list):
+
+  timing_secs = {
+      f'{key}': (timing_list[key] - timing_list[prev_key]).total_seconds()
+      for key, prev_key in zip(list(timing_list.keys())[1:], list(timing_list.keys())[:-1])
+  }
+  timing_output = {
+      'init_time': timing_list['init_time'].strftime("%Y-%m-%d %H:%M:%S"),
+      'total_time_secs': sum(timing_secs.values()),
+      'timing_secs': timing_secs
+  }
+
+  return timing_output

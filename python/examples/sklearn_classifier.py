@@ -9,7 +9,7 @@ model = RandomForestClassifier()
 model.fit(dfx_train, dfy_train.values.flatten())
 
 ## Shapr
-df_shapley, pred_explain, internal = explain(
+df_shapley, pred_explain, internal, timing = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,

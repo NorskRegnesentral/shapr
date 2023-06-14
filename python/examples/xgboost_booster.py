@@ -9,7 +9,7 @@ dtrain = xgb.DMatrix(data=dfx_train, label=dfy_train)
 model = xgb.train(params={}, num_boost_round=20, dtrain=dtrain)
 
 ## Shapr
-df_shapley, pred_explain, internal = explain(
+df_shapley, pred_explain, internal, timing = explain(
     model = model,
     x_train = dfx_train,
     x_explain = dfx_test,
