@@ -1,9 +1,5 @@
 compute_time <- function(timing_list) {
 
-  timing_list <- list(init = Sys.time(),
-                      middle = Sys.time()+1,
-                      end = Sys.time()+2)
-
   timing_secs <- mapply(
     FUN = difftime,
     timing_list[-1],
@@ -19,4 +15,3 @@ compute_time <- function(timing_list) {
 
   return(timing_output)
 }
-

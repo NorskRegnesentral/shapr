@@ -333,7 +333,7 @@ explain <- function(model,
 
   timing_list$shapley_computation <- Sys.time()
 
-  if(timing == TRUE){
+  if (timing == TRUE) {
     output$timing <- compute_time(timing_list)
   }
 

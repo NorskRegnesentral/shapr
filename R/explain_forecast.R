@@ -189,7 +189,7 @@ explain_forecast <- function(model,
     internal = internal
   )
 
-  if(timing == TRUE){
+  if (timing == TRUE) {
     output$timing <- compute_time(timing_list)
   }
 
@@ -221,9 +221,11 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
   if (!is.vector(y) &&
     !(is.matrix(y) && ncol(y) >= 1) &&
     !(is.data.frame(y) && ncol(y) >= 1)) {
-    stop_message <- paste0(stop_message,
-                           "y should be a matrix or data.frame/data.table with one or more columns, ",
-                           "or a numeric vector.\n")
+    stop_message <- paste0(
+      stop_message,
+      "y should be a matrix or data.frame/data.table with one or more columns, ",
+      "or a numeric vector.\n"
+    )
   }
   if (!is.null(xreg) && !is.matrix(xreg) && !is.data.frame(xreg)) {
     stop_message <- paste0(stop_message, "xreg should be a matrix or a data.frame/data.table.\n")
@@ -286,8 +288,9 @@ get_data_forecast <- function(y, xreg, train_idx, explain_idx, explain_y_lags, e
   data_lag <- lag_data(data_reg, c(explain_y_lags, explain_xreg_lags))
 
   # Create a matrix and groups of the forecasted values of the exogenous data.
-  reg_fcast <- reg_forecast_setup(xreg[seq.int(to = max(c(train_idx, explain_idx)) + horizon, from = max_lag + 1),
-                                       , drop = FALSE], horizon, data_lag$group)
+  reg_fcast <- reg_forecast_setup(xreg[seq.int(to = max(c(train_idx, explain_idx)) + horizon, from = max_lag + 1), ,
+    drop = FALSE
+  ], horizon, data_lag$group)
 
   if (ncol(data_lag$lagged) == 0 && ncol(reg_fcast$fcast) == 0) {
     stop("`explain_y_lags=0` is not allowed for models without exogeneous variables")

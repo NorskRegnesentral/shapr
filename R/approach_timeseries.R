@@ -91,8 +91,9 @@ prepare_data.timeseries <- function(internal, index_features = NULL, ...) {
 
       w_vec <- exp(-0.5 * rowSums(
         (matrix(rep(x_explain_i[S[j, ] == 0, drop = FALSE], nrow(x_train)), nrow = nrow(x_train), byrow = TRUE) -
-        x_train[, S[j, ] == 0, drop = FALSE])^2)
-        / timeseries.fixed_sigma_vec^2)
+          x_train[, S[j, ] == 0, drop = FALSE])^2
+      )
+      / timeseries.fixed_sigma_vec^2)
 
       for (k in seq_len(nrow(Sbar_segments))) {
         impute_these <- seq(Sbar_segments$Sbar_starts[k], Sbar_segments$Sbar_ends[k])
