@@ -306,6 +306,16 @@ def prebuilt_predict_model(model):
   except:
     pass
 
+  try:
+    from keras.models import Model
+    if isinstance(model, Model):
+      def predict_fn(m,x):
+        pred = m.predict(x)
+        return pred.reshape(pred.shape[0],)
+      return predict_fn
+  except:
+    pass
+
   return None
 
 
