@@ -79,7 +79,8 @@ def explain(
       and a pandas.DataFrame to compute predictions for. The function must give the prediction as a numpy.Array.
       `None` (the default) uses functions specified internally.
       Can also be used to override the default function for natively supported model classes.
-    get_model_specs: An optional function for checking model/data consistency when `model` is not natively supported.
+    get_model_specs: An optional function for checking model/data consistency when `model` is not natively supported. 
+      This method has yet to be implemented for keras models.
       The function takes `model` as argument and provides a `dict with 3 elements:
       - labels: list[str] with the names of each feature.
       - classes: list[str] with the classes of each features.
