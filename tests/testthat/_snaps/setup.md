@@ -166,7 +166,7 @@
         timing = FALSE)
     Error <simpleError>
       `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries 
+       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 ---
@@ -178,7 +178,7 @@
         timing = FALSE)
     Error <simpleError>
       `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries 
+       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 ---
@@ -190,7 +190,7 @@
         timing = FALSE)
     Error <simpleError>
       `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries 
+       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
        or a vector of length equal to the number of features ( 5 ) with only the above strings.
 
 # erroneous input: `prediction_zero`
