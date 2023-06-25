@@ -3,13 +3,13 @@
 # source("~/PhD/Paper2/VAEAC_in_R.R")
 
 #  Load Required Libraries ==============================================================================================================================================================================================
-{
-  library(torch)
-  library(progress)
-  library(data.table)
-  library(ggplot2)
-  library(GGally)
-}
+#{
+#  library(torch)
+#  library(progress)
+#  library(data.table)
+#  library(ggplot2)
+#  library(GGally)
+#}
 
 #' @rdname setup_approach
 #'
@@ -992,7 +992,7 @@ exp_transform_all_continuous_features_function = function(data, one_hot_max_size
 #' network. Note that a dataset object is an R6 instance (https://r6.r-lib.org/articles/Introduction.html)
 #' which is classical object-oriented programming, with self reference. I.e, 'VAEAC_sample_data' is  a class of type 'dataset'.
 #'
-#' @example
+#' @examples
 #' p = 5
 #' N = 14
 #' batch_size = 10
@@ -1008,7 +1008,7 @@ exp_transform_all_continuous_features_function = function(data, one_hot_max_size
 #' VAEAC_iterator$.next() # batch1
 #' VAEAC_iterator$.next() # batch2
 #' VAEAC_iterator$.next() # Empty
-VAEAC_dataset = dataset(
+VAEAC_dataset = torch::dataset(
   #' @field A dataset must specify a 'name' for the object
   name = "VAEAC_dataset",
   #' @description Create a new VAEAC_dataset object.
@@ -1113,7 +1113,7 @@ paired_sampler = torch::sampler(
 #' otherwise it returns their concatenation. If the tensor with specified \code{id}
 #' is not in storage when the layer with \textit{output = TRUE} is called, it would cause an exception.
 #'
-#' @example
+#' @examples
 #' net1 = nn_sequential(
 #'   MemoryLayer('#1'),
 #'   MemoryLayer('#0.1'),
@@ -1129,7 +1129,7 @@ paired_sampler = torch::sampler(
 #'  )
 #'  b = net1(a)
 #'  d = net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
-MemoryLayer = nn_module(
+MemoryLayer = torch::nn_module(
   classname = "MemoryLayer",
   shared_env = new.env(),
 
@@ -1208,7 +1208,7 @@ MemoryLayer = nn_module(
 #' @description Skip-connection over the sequence of layers in the constructor. The module passes
 #' input data sequentially through these layers and then adds original data to the result.
 #' @param ... network modules such as nn_linear, activation_function(), and memory layers. See \code{get_imputation_networks}.
-SkipConnection = nn_module(
+SkipConnection = torch::nn_module(
   classname = "SkipConnection",
   initialize = function(...) {
     self$inner_net = nn_sequential(...)
@@ -1471,7 +1471,7 @@ kl_normal_normal = function(p, q) {
 # mean for Gaussians and the most probable class for categorical features.
 # Otherwise the fair sampling procedure from Gaussian and categorical
 # distributions is performed.
-GaussianCategoricalSampler = nn_module(
+GaussianCategoricalSampler = torch::nn_module(
   classname = "GaussianCategoricalSampler",
   initialize = function(one_hot_max_sizes,
                         sample_most_probable = FALSE,
@@ -1571,7 +1571,7 @@ GaussianCategoricalSampler = nn_module(
 #
 # The distribution parameters format, min_sigma and min_prob are described
 # in docs for GaussianCategoricalLoss.
-GaussianCategoricalSamplerMostLikely = nn_module(
+GaussianCategoricalSamplerMostLikely = torch::nn_module(
   classname = "GaussianCategoricalSamplerMostLikely",
   initialize = function(one_hot_max_sizes,
                         min_sigma = 1e-4,
@@ -1652,7 +1652,7 @@ GaussianCategoricalSamplerMostLikely = nn_module(
 #
 # The distribution parameters format, min_sigma and min_prob are described
 # in docs for GaussianCategoricalLoss.
-GaussianCategoricalSamplerRandom = nn_module(
+GaussianCategoricalSamplerRandom = torch::nn_module(
   classname = "GaussianCategoricalSamplerRandom",
   initialize = function(one_hot_max_sizes,
                         min_sigma = 1e-4,
@@ -1738,7 +1738,7 @@ GaussianCategoricalSamplerRandom = nn_module(
 #
 # The distribution parameters format, min_sigma and min_prob are described
 # in docs for GaussianCategoricalLoss.
-GaussianCategoricalParameters = nn_module(
+GaussianCategoricalParameters = torch::nn_module(
   classname = "GaussianCategoricalParameters",
   initialize = function(one_hot_max_sizes,
                         min_sigma = 1e-4,
@@ -1836,7 +1836,7 @@ GaussianCategoricalParameters = nn_module(
 # which are represented by NaNs.
 #
 # This layer works with 2D inputs only.
-GaussianCategoricalLoss = nn_module(
+GaussianCategoricalLoss = torch::nn_module(
   classname = "GaussianCategoricalLoss",
   initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4){
     self$one_hot_max_sizes = one_hot_max_sizes
@@ -1977,7 +1977,7 @@ GaussianCategoricalLoss = nn_module(
 # indices of columns which isnan masks are to be appended
 # to the result tensor. This option is necessary for proposal
 # network to distinguish whether value is to be reconstructed or not.
-CategoricalToOneHotLayer = nn_module(
+CategoricalToOneHotLayer = torch::nn_module(
   classname = "CategoricalToOneHotLayer",
   initialize = function(one_hot_max_sizes, add_nans_map_for_columns=NULL) {
     # Here one_hot_max_sizes includes zeros at the end of the list
@@ -2106,8 +2106,9 @@ CategoricalToOneHotLayer = nn_module(
 
 # Mask Generators ========================================================================================================================================================================================================
 ## MCAR_mask_generator -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-MCAR_mask_generator = nn_module(
-  #' @example
+MCAR_mask_generator = torch::nn_module(
+  #' MCAR_mask_generator
+  #' @examples
   #' mask_gen = MCAR_mask_generator(0.5)
   #' mask_gen(torch_randn(c(5, 3)))
   name = "MCAR_mask_generator",
@@ -2160,7 +2161,7 @@ MCAR_mask_generator = nn_module(
   #' @return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   #' observed feature value will be masked. '0' means that the entry is NOT masked,
   #' i.e., the feature value will be observed/given/available.
-  #' @example  MCAR_mask_generator_function(torch_rand(c(5, 3)))
+  #' @examples  MCAR_mask_generator_function(torch_rand(c(5, 3)))
   MCAR_mask_generator_function = function(batch,
                                           prob = 0.5,
                                           seed = NULL,
@@ -2205,8 +2206,9 @@ MCAR_mask_generator = nn_module(
 
 
 ## Specified_probability_mask_generator --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Specified_probability_mask_generator = nn_module(
-  #' @example
+Specified_probability_mask_generator = torch::nn_module(
+  #' Specified_probability_mask_generator
+  #' @examples
   #' probs = c(1, 8, 6, 3, 2)
   #' mask_gen = Specified_probability_mask_generator(probs)
   #' masks = mask_gen(torch_randn(c(10000, length(probs))-1))
@@ -2264,7 +2266,7 @@ Specified_probability_mask_generator = nn_module(
   #' @return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   #' observed feature value will be masked. '0' means that the entry is NOT masked,
   #' i.e., the feature value will be observed/given/available.
-  #' @example  Specified_probability_mask_generator_function(torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
+  #' @examples  Specified_probability_mask_generator_function(torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
   Specified_probability_mask_generator_function = function(batch,
                                                            masking_probs,
                                                            seed = NULL,
@@ -2325,9 +2327,10 @@ Specified_probability_mask_generator = nn_module(
 )
 
 ## Specified_masks_mask_generator ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Specified_masks_mask_generator = nn_module(
+Specified_masks_mask_generator = torch::nn_module(
+  #' Specified_probability_mask_generator
   #' @description Used for Shapley value estimation when only a subset of coalitions are used to compute the Shapley values.
-  #' @example
+  #' @examples
   #' masks = torch_tensor(matrix(c(0,0,1,0, 1,0,1,0, 1,1,1,1), nrow = 3, ncol = 4, byrow = TRUE))
   #' masks_probs = c(3, 1, 6)
   #' mask_gen = Specified_masks_mask_generator(masks = masks, masks_probs = masks_probs)
@@ -2469,7 +2472,7 @@ VAEAC = torch::nn_module(
   #' @param use_skip_connections_between_masked_encoder_and_decoder Boolean. If we are to apply concatenate skip connections between the layers in the masked encoder and decoder.
   #' @param use_batch_normalization Boolean. If we are to use batch normalization after the activation function. Note that if \code{use_skip_connections} is TRUE, then the normalization is
   #' done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).
-  #' @param paired_sampling
+  #' @param paired_sampling TODO
   #' @param mask_generator_name String specifying the type of mask generator to use. Need to be one of "MCAR_mask_generator", "Specified_probability_mask_generator", and "Specified_masks_mask_generator".
   #' @param masking_ratio Scalar. The probability for an entry in the generated mask to be 1 (masked). Not used if \code{mask_generator_only_these_coalitions} is given.
   #' @param mask_generator_only_these_coalitions Matrix containing the different coalitions to learn. Must be given if \code{mask_generator_name} = "Specified_masks_mask_generator".
@@ -2799,8 +2802,6 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     self$num_trainable_params = num_trainable_params
   },
 
-  #' Empty Forward Function
-  #'
   #' @description Forward functions are required in nn_modules, but is it not needed in the way we have implemented VAEAC.
   #'
   #' @param ... Anything, as the function does not use it.
@@ -4914,7 +4915,7 @@ VAEAC_impute_values = function(instances_to_impute,
 #' @description Function that computes the MSE's proposed in Frye and Covert.
 #' So it does not need the true Shapley values.
 #'
-#' # @param explainer object returned from the shapr() function in the shapr package.
+#' @param explainer object returned from the shapr() function in the shapr package.
 #' @param explanation object returned from explain() function in the shapr package.
 #'  Note that the 'prediction' function must have been updated to the version in this file.
 #'  I.e., that explanation keeps the simulated data.
@@ -4923,10 +4924,8 @@ VAEAC_impute_values = function(instances_to_impute,
 #' @param return_p_hat_avg Boolean. If we are to return the average prediction.
 #' @param return_coalition Boolean. If we are to return the results for the different coalitions.
 #'
-#' @return
 #' @export
 #'
-#' @examples
 evaluate_approach = function(explanation,
                              return_individual = TRUE,
                              return_df = FALSE,
