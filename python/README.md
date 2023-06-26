@@ -2,6 +2,8 @@
 
 Python wrapper for the R package [shapr](https://github.com/NorskRegnesentral/shapr).
 
+NOTE: This wrapper is in an EXPERIMENTAL state. Bugs and breaking changes are not unlikely to occur.
+
 ### Install
 
 The below instructions assume you already have `pip` and `R` installed and exposed to the python environment where you want to run `shaprpy`. 
