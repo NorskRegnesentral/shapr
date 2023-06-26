@@ -16,8 +16,8 @@ MemoryLayer(id, output = FALSE, add = FALSE, verbose = FALSE)
 \item{verbose}{Boolean variable indicating if we want to give printouts to the user.}
 }
 \description{
-The layer is used to make skip-connections inside nn_sequential network
-or between several nn_sequential networks without unnecessary code complication.
+The layer is used to make skip-connections inside torch::nn_sequential network
+or between several torch::nn_sequential networks without unnecessary code complication.
 
 Create a new MemoryLayer object.
 }
@@ -32,16 +32,16 @@ otherwise it returns their concatenation. If the tensor with specified \code{id}
 is not in storage when the layer with \textit{output = TRUE} is called, it would cause an exception.
 }
 \examples{
-net1 = nn_sequential(
+net1 = torch::nn_sequential(
   MemoryLayer('#1'),
   MemoryLayer('#0.1'),
-  nn_linear(512, 256),
-  nn_leaky_relu(),
+  torch::nn_linear(512, 256),
+  torch::nn_leaky_relu(),
   MemoryLayer('#0.1', output=TRUE, add=FALSE), # here add cannot be TRUE because the dimensions mismatch
-  nn_linear(768, 256), # the dimension after the concatenation with skip-connection is 512 + 256 = 768
+  torch::nn_linear(768, 256), # the dimension after the concatenation with skip-connection is 512 + 256 = 768
  )
- net2 = nn_equential(
-   nn_linear(512, 512),
+ net2 = torch::nn_equential(
+   torch::nn_linear(512, 512),
    MemoryLayer('#1', output=TRUE, add=TRUE),
    ...
  )

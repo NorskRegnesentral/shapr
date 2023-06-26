@@ -9,7 +9,7 @@ VAEAC(
   width = 32,
   depth = 3,
   latent_dim = 8,
-  activation_function = nn_relu,
+  activation_function = torch::nn_relu,
   use_skip_connections = FALSE,
   use_skip_connections_between_masked_encoder_and_decoder = FALSE,
   use_batch_normalization = FALSE,
@@ -33,7 +33,7 @@ The sizes for the continuous features can either be '0' or '1'.}
 
 \item{latent_dim}{Integer. The number of dimensions in the latent space.}
 
-\item{activation_function}{An nn_module representing an activation function. E.g., nn_relu, nn_leaky_relu, nn_selu, nn_sigmoid.}
+\item{activation_function}{An torch::nn_module representing an activation function. E.g., torch::nn_relu, torch::nn_leaky_relu, torch::nn_selu, torch::nn_sigmoid.}
 
 \item{use_skip_connections}{Boolean. If we are to use skip connections in each layer. If true, then we add the input to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.}
 
@@ -81,7 +81,7 @@ mask generator, batch size, and scale factor for the stability of the variationa
 \description{
 Class that represents a VAEAC model. Create the Neural Networks and Training Utilities used in VAEAC.
 
-Forward functions are required in nn_modules, but is it not needed in the way we have implemented VAEAC.
+Forward functions are required in torch::nn_modules, but is it not needed in the way we have implemented VAEAC.
 
 Clones the batch and applies the mask to set masked entries to 0 to create the observed batch.
 

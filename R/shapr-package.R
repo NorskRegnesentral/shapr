@@ -1,5 +1,5 @@
 #' @importFrom data.table data.table fread fwrite setnames := year month
-#' uniqueN setkey as.data.table copy between is.data.table setcolorder rbindlist
+#' uniqueN setkey as.data.table copy between is.data.table setcolorder rbindlist melt
 #'
 #' @importFrom graphics plot hist rect
 #'

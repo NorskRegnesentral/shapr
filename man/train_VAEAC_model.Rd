@@ -21,7 +21,7 @@ train_VAEAC_model(
   lr = 0.001,
   batch_size = 64,
   running_avg_num_values = 5,
-  activation_function = nn_relu,
+  activation_function = torch::nn_relu,
   use_skip_connections = TRUE,
   use_skip_connections_between_masked_encoder_and_decoder = TRUE,
   use_batch_normalization = FALSE,
@@ -71,7 +71,7 @@ train_VAEAC_model(
 
 \item{running_avg_num_values}{Integer. How many of the previous values to include when we compute the running means.}
 
-\item{activation_function}{An nn_module representing an activation function. E.g., nn_relu, nn_leaky_relu, nn_selu, nn_sigmoid.}
+\item{activation_function}{An torch::nn_module representing an activation function. E.g., torch::nn_relu, torch::nn_leaky_relu, torch::nn_selu, torch::nn_sigmoid.}
 
 \item{use_skip_connections}{Boolean. If we are to use skip connections in each layer. If true, then we add the input to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.}
 

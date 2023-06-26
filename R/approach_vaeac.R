@@ -28,7 +28,7 @@
 #' @param vaeac.lr Numeric. The learning rate used in the ADAM optimizer.
 #' @param vaeac.batch_size Integer. The number of samples to include in each batch.
 #' @param vaeac.running_avg_num_values Integer. How many of the previous values to include when we compute the running means.
-#' @param vaeac.activation_function An nn_module representing an activation function. E.g., nn_relu, nn_leaky_relu, nn_selu, nn_sigmoid.
+#' @param vaeac.activation_function An torch::nn_module representing an activation function. E.g., torch::nn_relu, torch::nn_leaky_relu, torch::nn_selu, torch::nn_sigmoid.
 #' @param vaeac.use_skip_connections Boolean. If we are to use skip connections in each layer. If true, then we add the input to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.
 #' @param vaeac.use_skip_connections_between_masked_encoder_and_decoder Boolean. If we are to apply concatenate skip connections between the layers in the masked encoder and decoder.
 #' @param vaeac.use_batch_normalization Boolean. If we are to use batch normalization after the activation function. Note that if \code{use_skip_connections} is TRUE, then the normalization is
@@ -69,7 +69,7 @@ setup_approach.vaeac = function(internal, # add default values for vaeac here.
                                 vaeac.lr = 0.001,
                                 vaeac.batch_size = 64,
                                 vaeac.running_avg_num_values = 5,
-                                vaeac.activation_function = nn_relu,
+                                vaeac.activation_function = torch::nn_relu,
                                 vaeac.use_skip_connections = TRUE,
                                 vaeac.use_skip_connections_between_masked_encoder_and_decoder = TRUE,
                                 vaeac.use_batch_normalization = FALSE,
@@ -254,7 +254,7 @@ setup_approach.vaeac = function(internal, # add default values for vaeac here.
       }
 
       # Read in the VAEAC model from the disk
-      VAEAC_model = torch_load(parameters$vaeac.pretrained_VAEAC_model)
+      VAEAC_model = torch::torch_load(parameters$vaeac.pretrained_VAEAC_model)
 
       # Some very small check that we have read in a vaeac model
       if (is.null(VAEAC_model$model_state_dict)) {
@@ -422,7 +422,7 @@ prepare_data.vaeac = function(internal, index_features = NULL, ...) {
   }
 
   # Load the VAEAC model from provided disk location.
-  checkpoint = torch_load(VAEAC_list$path)
+  checkpoint = torch::torch_load(VAEAC_list$path)
 
   # Preprocess the data. This function turns factor names into numerics 1,2,...,K,
   # as VAEAC only accepts numerics, and keep track of the maping of names.
@@ -498,14 +498,14 @@ prepare_data.vaeac = function(internal, index_features = NULL, ...) {
   dataset = VAEAC_dataset(x_explain_extended_normalized, checkpoint$one_hot_max_sizes)
 
   # Create a data loader that load/iterate over the data set in chronological order.
-  dataloader = dataloader(dataset, batch_size = batch_size, shuffle = FALSE)
+  dataloader = torch::dataloader(dataset, batch_size = batch_size, shuffle = FALSE)
 
   # Create an auxiliary list of lists to store the imputed values combined with the original values. The the structure is
   # [[i'th imputation]][[b'th batch]], where the entries are tensors of dimension batch_size x n_features.
   results = lapply(seq(n_samples), function(k) list())
 
   # Create a progress bar
-  pb = progress_bar$new(format = "(:spin) [:bar] :percent [Imputing | time: :elapsedfull | ETR: :eta | Batch: :batch_index | Imputation: :imputation_index]",
+  pb = progress::progress_bar$new(format = "(:spin) [:bar] :percent [Imputing | time: :elapsedfull | ETR: :eta | Batch: :batch_index | Imputation: :imputation_index]",
                         total = dataloader$.length()*n_samples,
                         complete = "=",   # Completion bar character
                         incomplete = "-", # Incomplete bar character
@@ -543,10 +543,10 @@ prepare_data.vaeac = function(internal, index_features = NULL, ...) {
     }
 
     # Compute the imputation mask, i.e., which entries we are to impute.
-    mask_extended = torch_isnan(batch_extended)$to(dtype = torch_float())
+    mask_extended = torch::torch_isnan(batch_extended)$to(dtype = torch::torch_float())
 
     # Do not need to keep track of the gradients, as we are not fitting the model.
-    with_no_grad({
+    torch::with_no_grad({
       # Compute the distributions parameters for the generative models inferred by
       # the masked encoder and decoder together. This will be a tensor of shape
       # [batch_size, n_samples, num_generative_parameters].
@@ -561,7 +561,7 @@ prepare_data.vaeac = function(internal, index_features = NULL, ...) {
     })
 
     # Make a deep copy of the batch with missing values set to zero.
-    batch_mask = torch_isnan(batch)
+    batch_mask = torch::torch_isnan(batch)
     batch_zeroed_nans = batch$clone()$detach()
     batch_zeroed_nans[batch_mask] = 0
 
@@ -580,7 +580,7 @@ prepare_data.vaeac = function(internal, index_features = NULL, ...) {
 
       # Need only the imputed values for the missing data entries.
       # Zero out the imputations done for known feature values.
-      sample[torch_logical_not(batch_mask)] = 0
+      sample[torch::torch_logical_not(batch_mask)] = 0
 
       # Combine the imputations with the original data to fill in the missing values.
       # Sample is a tensor of shape [batch_size, n_features]
@@ -604,12 +604,12 @@ prepare_data.vaeac = function(internal, index_features = NULL, ...) {
     # Concatenate the batches for the i'th imputation to create a tensor of shape
     # [n_explain_extended, n_features] and then add a new singelton dimension
     # as the second dimension to get the shape [n_explain_extended, 1, n_features].
-    results[[i]] = torch_cat(results[[i]])$unsqueeze(2)
+    results[[i]] = torch::torch_cat(results[[i]])$unsqueeze(2)
   }
 
   # Concatenate the list of tensor of shape [n_explain_extended, 1, n_features] at the
   # second dimension to form a [n_explain_extended, n_samples, n_features] tensor.
-  result = torch_cat(results, 2)
+  result = torch::torch_cat(results, 2)
 
   # Undo the normalization ([data - mu]/sigma) to get back to the original
   # distribution by multiplying the results by sigma and adding the mean.
@@ -661,8 +661,8 @@ prepare_data.vaeac = function(internal, index_features = NULL, ...) {
 compute_normalization = function(data,
                                  one_hot_max_sizes) {
   # Create vectors of zeros that will store the means and sd for each feature.
-  norm_vector_mean = torch_zeros(length(one_hot_max_sizes))
-  norm_vector_std = torch_ones(length(one_hot_max_sizes))
+  norm_vector_mean = torch::torch_zeros(length(one_hot_max_sizes))
+  norm_vector_std = torch::torch_ones(length(one_hot_max_sizes))
 
   # Iterate over the features
   for (variable_j in seq(length(one_hot_max_sizes))) {
@@ -987,7 +987,7 @@ exp_transform_all_continuous_features_function = function(data, one_hot_max_size
 ## VAEAC_dataset ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #' Dataset used to load data into the VAEAC model
 #'
-#' @details Must create a data set object that represent a map from keys to data samples. It is used by the dataloader()
+#' @details Must create a data set object that represent a map from keys to data samples. It is used by the torch::dataloader()
 #' to load data which should be used to extract the batches for all epochs in the training phase of the neural
 #' network. Note that a dataset object is an R6 instance (https://r6.r-lib.org/articles/Introduction.html)
 #' which is classical object-oriented programming, with self reference. I.e, 'VAEAC_sample_data' is  a class of type 'dataset'.
@@ -1000,7 +1000,7 @@ exp_transform_all_continuous_features_function = function(data, one_hot_max_size
 #' VAEAC_ds = VAEAC_dataset(torch_tensor(matrix(rnorm(p*N), ncol = p), dtype = torch_float()), one_hot_max_sizes)
 #' VAEAC_ds
 #'
-#' VAEAC_dl = dataloader(VAEAC_ds, batch_size = batch_size, shuffle = TRUE, drop_last = FALSE)
+#' VAEAC_dl = torch::dataloader(VAEAC_ds, batch_size = batch_size, shuffle = TRUE, drop_last = FALSE)
 #' VAEAC_dl$.length()
 #' VAEAC_dl$.iter()
 #'
@@ -1043,7 +1043,7 @@ VAEAC_dataset = torch::dataset(
 ## Paired Sampler  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # A sampler object that allows for paired sampling by always including
 # each observation twice. See more on https://rdrr.io/cran/torch/src/R/utils-data-sampler.R.
-# Samplers can be used with dataloader() when creating batches from a torch dataset(), see `?dataloader` and `?sampler`.
+# Samplers can be used with torch::dataloader() when creating batches from a torch dataset(), see `?dataloader` and `?sampler`.
 # Have not used batch iterators that might increase the speed.
 # Example how to use it combined with mask generators with paired sampling activated
 # batch_size = 4
@@ -1054,7 +1054,7 @@ VAEAC_dataset = torch::dataset(
 # data = torch_tensor(matrix(rep(seq(num_observations), each = num_featuers), ncol = num_featuers, byrow = TRUE))
 # data
 # dataset = VAEAC_dataset(data, rep(1, num_featuers))
-# dataload = dataloader(dataset,
+# dataload = torch::dataloader(dataset,
 #                       batch_size = batch_size,
 #                       sampler = paired_sampler(dataset,
 #                                                shuffle = shuffle))
@@ -1063,7 +1063,7 @@ VAEAC_dataset = torch::dataset(
 # coro::loop(for (batch in dataload) {
 #   mask = mask_generator(batch)
 #   obs = mask * batch
-#   print(torch_cat(c(batch, mask, obs), -1))
+#   print(torch::torch_cat(c(batch, mask, obs), -1))
 # })
 paired_sampler = torch::sampler(
   classname = "paired_sampler",
@@ -1101,8 +1101,8 @@ paired_sampler = torch::sampler(
 ##  MemoryLayer ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #' A torch::nn_module representing a Memory Layer
 #'
-#' @description The layer is used to make skip-connections inside nn_sequential network
-#' or between several nn_sequential networks without unnecessary code complication.
+#' @description The layer is used to make skip-connections inside torch::nn_sequential network
+#' or between several torch::nn_sequential networks without unnecessary code complication.
 #'
 #' @details If \code{output = FALSE}, this layer stores its input in a static list
 #' \code{storage} with the key \code{id} and then passes the input to the next layer.
@@ -1114,16 +1114,16 @@ paired_sampler = torch::sampler(
 #' is not in storage when the layer with \textit{output = TRUE} is called, it would cause an exception.
 #'
 #' @examples
-#' net1 = nn_sequential(
+#' net1 = torch::nn_sequential(
 #'   MemoryLayer('#1'),
 #'   MemoryLayer('#0.1'),
-#'   nn_linear(512, 256),
-#'   nn_leaky_relu(),
+#'   torch::nn_linear(512, 256),
+#'   torch::nn_leaky_relu(),
 #'   MemoryLayer('#0.1', output=TRUE, add=FALSE), # here add cannot be TRUE because the dimensions mismatch
-#'   nn_linear(768, 256), # the dimension after the concatenation with skip-connection is 512 + 256 = 768
+#'   torch::nn_linear(768, 256), # the dimension after the concatenation with skip-connection is 512 + 256 = 768
 #'  )
-#'  net2 = nn_equential(
-#'    nn_linear(512, 512),
+#'  net2 = torch::nn_equential(
+#'    torch::nn_linear(512, 512),
 #'    MemoryLayer('#1', output=TRUE, add=TRUE),
 #'    ...
 #'  )
@@ -1185,7 +1185,7 @@ MemoryLayer = torch::nn_module(
         if (self$verbose) cat(sprintf("Concatenates the tensors.\n"))
 
         # Concatenate the columns of the tensors.
-        data = torch_cat(c(input, stored), -1)
+        data = torch::torch_cat(c(input, stored), -1)
       } else {
         # We are to add the tensors.
 
@@ -1207,11 +1207,11 @@ MemoryLayer = torch::nn_module(
 #'
 #' @description Skip-connection over the sequence of layers in the constructor. The module passes
 #' input data sequentially through these layers and then adds original data to the result.
-#' @param ... network modules such as nn_linear, activation_function(), and memory layers. See \code{get_imputation_networks}.
+#' @param ... network modules such as torch::nn_linear, activation_function(), and memory layers. See \code{get_imputation_networks}.
 SkipConnection = torch::nn_module(
   classname = "SkipConnection",
   initialize = function(...) {
-    self$inner_net = nn_sequential(...)
+    self$inner_net = torch::nn_sequential(...)
   },
   forward = function(input) {
     return(input + self$inner_net(input))
@@ -1258,7 +1258,7 @@ extend_batch = function(batch,
     }
 
     # Concatenate the original batch with the extra_batch in a rowbind manner.
-    batch = torch_cat(c(batch, extra_batch), 1)
+    batch = torch::torch_cat(c(batch, extra_batch), 1)
   }
 
   # The batch is now of the correct dimension/height
@@ -1347,7 +1347,7 @@ get_validation_iwae = function(val_dataloader,
 
 
   # return the average iwae over all instances in the validation set.
-  return(avg_iwae$to(dtype = torch_float()))
+  return(avg_iwae$to(dtype = torch::torch_float()))
 }
 
 # Probability Utility Functions ==========================================================================================================================================================================================
@@ -1383,11 +1383,11 @@ normal_parse_params = function(params,
 
   # Get the second half which are transformed sigmas
   sigma_params = params[, (d%/%2 + 1):d]
-  sigma = nnf_softplus(sigma_params)  # ln(1 + exp(sigma_params))
+  sigma = torch::nnf_softplus(sigma_params)  # ln(1 + exp(sigma_params))
   sigma = sigma$clamp(min = min_sigma)  # Make sure that sigma >= min_sigma
 
   # Create the normal dist. Multivariate, but with independent dimensions. Correlation = 0. So just Normal
-  distr = distr_normal(loc = mu, scale = sigma)
+  distr = torch::distr_normal(loc = mu, scale = sigma)
 
   # Return the distribution
   return(distr)
@@ -1419,21 +1419,21 @@ normal_parse_params = function(params,
 #' @export
 categorical_parse_params_column = function(params, min_prob = 0, max_prob = 1) {
   # Send the parameters through the softmax to get normalized probabilities
-  params = nnf_softmax(params, dim = -1)
+  params = torch::nnf_softmax(params, dim = -1)
 
   # Ensure that the probabilities are between the minimum and maximum allowed probabilities
-  params = torch_clamp(params, min = min_prob, max = max_prob)
+  params = torch::torch_clamp(params, min = min_prob, max = max_prob)
 
   # Make sure that parms sum to 1 after the clamping.
-  params = params / torch_sum(params, dim = -1, keepdim = TRUE)
+  params = params / torch::torch_sum(params, dim = -1, keepdim = TRUE)
 
   # Then create a categorical distribution which will have len(params)
   # number of categories and the probability for each of them is given in params.
-  distr = distr_categorical(probs = params)
+  distr = torch::distr_categorical(probs = params)
 
   # # Could have directly used that 'dist_categorical' supports logits. But then
   # # we would not be able to clamp the probabilities. This version is 30% faster.
-  # distr = distr_categorical(logits = params)
+  # distr = torch::distr_categorical(logits = params)
 
   # Return the distribution
   return(distr)
@@ -1544,10 +1544,10 @@ GaussianCategoricalSampler = torch::nn_module(
         # class from the distribution based on each class' probabilities.
         if (self$sample_most_probable) {
           # By doing [, NULL], we add an extra dimension such that the tensor is a column vector.
-          col_sample = torch_max(distr$probs, -1)[[2]][, NULL]$to(dtype = torch_float())
+          col_sample = torch::torch_max(distr$probs, -1)[[2]][, NULL]$to(dtype = torch::torch_float())
         } else {
           # Here we can use $sample() as it respects manual set seeds.
-          col_sample = distr$sample()[, NULL]$to(dtype = torch_float())
+          col_sample = distr$sample()[, NULL]$to(dtype = torch::torch_float())
         }
       }
 
@@ -1557,7 +1557,7 @@ GaussianCategoricalSampler = torch::nn_module(
     }
 
     # Create a matrix by column binding the vectors in the list
-    return(torch_cat(sample, -1))
+    return(torch::torch_cat(sample, -1))
   }
 )
 
@@ -1629,7 +1629,7 @@ GaussianCategoricalSamplerMostLikely = torch::nn_module(
 
         # Return the class with highest probability
         # By doing [, NULL], we add an extra dimension such that the tensor is a column vector.
-        col_sample = torch_max(distr$probs, -1)[[2]][, NULL]$to(dtype = torch_float())
+        col_sample = torch::torch_max(distr$probs, -1)[[2]][, NULL]$to(dtype = torch::torch_float())
       }
 
       # Add the vector of sampled values for the i´th
@@ -1638,7 +1638,7 @@ GaussianCategoricalSamplerMostLikely = torch::nn_module(
     }
 
     # Create a matrix by column binding the vectors in the list
-    return(torch_cat(sample, -1))
+    return(torch::torch_cat(sample, -1))
   }
 )
 
@@ -1713,7 +1713,7 @@ GaussianCategoricalSamplerRandom = torch::nn_module(
         # Sample a class from the distribution based on each class' probabilities.
         # By doing [, NULL], we add an extra dimension such that the tensor is a column vector.
         # Here we can use $sample() as it respects manual set seeds.
-        col_sample = distr$sample()[, NULL]$to(dtype = torch_float())
+        col_sample = distr$sample()[, NULL]$to(dtype = torch::torch_float())
       }
 
       # Add the vector of sampled values for the i´th
@@ -1722,7 +1722,7 @@ GaussianCategoricalSamplerRandom = torch::nn_module(
     }
 
     # Create a matrix by column binding the vectors in the list
-    return(torch_cat(sample, -1))
+    return(torch::torch_cat(sample, -1))
   }
 )
 
@@ -1780,7 +1780,7 @@ GaussianCategoricalParameters = torch::nn_module(
         distr = normal_parse_params(params, self$min_sigma)
 
         # Combine the current parameters
-        current_parameters = torch_cat(c(distr$mean, distr$scale), -1)
+        current_parameters = torch::torch_cat(c(distr$mean, distr$scale), -1)
 
       } else {
         # Categorical distribution
@@ -1803,7 +1803,7 @@ GaussianCategoricalParameters = torch::nn_module(
     }
 
     # Create a torch_tensor by column binding the tensors in the list
-    return(torch_cat(parameters, -1))
+    return(torch::torch_cat(parameters, -1))
   }
 )
 
@@ -1887,7 +1887,7 @@ GaussianCategoricalLoss = torch::nn_module(
         gt_col_nansafe = groundtruth_col$clone()$detach()
 
         # If groundtruth don't have any nans then this line does not change anything
-        nan_mask = torch_isnan(groundtruth_col)
+        nan_mask = torch::torch_isnan(groundtruth_col)
         gt_col_nansafe[nan_mask] = 0
         # Everything that was nan is now 0.
 
@@ -1901,7 +1901,7 @@ GaussianCategoricalLoss = torch::nn_module(
         # So we remove the masking of the missing values
         # So those ones in mask_col which are there due
         # to missing values are now turned in to zeros.
-        mask_col = mask_col * (torch_logical_not(nan_mask))$to(dtype = torch_float())
+        mask_col = mask_col * (torch::torch_logical_not(nan_mask))$to(dtype = torch::torch_float())
 
         # Get the log-likelihood, but only of the masked values
         # i.e., the ones hat are masked by the masking filter MCARGenerator
@@ -1934,7 +1934,7 @@ GaussianCategoricalLoss = torch::nn_module(
         gt_col_nansafe = groundtruth_col$clone()$detach()
 
         # If groundtruth don't have any nans then this line does not change anything
-        nan_mask = torch_isnan(groundtruth_col)
+        nan_mask = torch::torch_isnan(groundtruth_col)
         gt_col_nansafe[nan_mask] = 0
 
         # compute the mask of the values
@@ -1942,7 +1942,7 @@ GaussianCategoricalLoss = torch::nn_module(
         # So we remove the masking of the missing values
         # So those ones in mask_col which are there due
         # to missing values are now turned in to zeros.
-        mask_col = mask_col * (torch_logical_not(nan_mask))$to(dtype = torch_float())
+        mask_col = mask_col * (torch::torch_logical_not(nan_mask))$to(dtype = torch::torch_float())
         col_log_prob = distr$log_prob(gt_col_nansafe$squeeze())[, NULL] * mask_col
         #col_log_prob = distr$log_prob(gt_col_nansafe) * mask_col
       }
@@ -1959,7 +1959,7 @@ GaussianCategoricalLoss = torch::nn_module(
     # concatenate the list so we get a tensor of dim batch x features
     # Then we sum along the the rows. i.e., for each observation in the
     # batch. So a tensor of length batch size.
-    return(torch_cat(log_prob, 2)$sum(-1))
+    return(torch::torch_cat(log_prob, 2)$sum(-1))
   }
 )
 
@@ -1993,8 +1993,8 @@ CategoricalToOneHotLayer = torch::nn_module(
     self$add_nans_map_for_columns = add_nans_map_for_columns
   },
   forward = function(input) {
-    # input = torch_cat(c(batch, mask), -1)
-    # Input is torch_cat(c(batch, mask), -1), so a matrix of
+    # input = torch::torch_cat(c(batch, mask), -1)
+    # Input is torch::torch_cat(c(batch, mask), -1), so a matrix of
     # dimension batch_size x 2*sum(one_hot_max_sizes)
     # At least for continuous data where one_hot_max_sizes
     # only consists of ones.
@@ -2028,7 +2028,7 @@ CategoricalToOneHotLayer = torch::nn_module(
         out_col = input[,i:i] #maybe add '$clone()$detach()'?
 
         # check if any of the values are nan, i.e., missing
-        nan_mask = torch_isnan(out_col)
+        nan_mask = torch::torch_isnan(out_col)
 
         # set all the missing values to 0.
         # THIS CHANGES THE INPUT VARIABLE.
@@ -2043,7 +2043,7 @@ CategoricalToOneHotLayer = torch::nn_module(
         cat_idx = input[, i:i]#$clone()$detach()
 
         # Check if any of the categories are nan / missing
-        nan_mask = torch_isnan(cat_idx)
+        nan_mask = torch::torch_isnan(cat_idx)
 
         # THIS DOES NOT WORK BECAUSE, WHEN WE APPLY A MASK WE SET UNOBSERVED CATEGORICAL
         # FEATEURS TO CLASS 0. (AS WE MULITPLY WITH 0), BUT THEN NNF_ONE_HOT DOES NOT WORK
@@ -2057,10 +2057,10 @@ CategoricalToOneHotLayer = torch::nn_module(
         #   cat_idx[nan_mask] = 1
         #
         #   # Generate the one hot encoding
-        #   out_col = nnf_one_hot(cat_idx$to(dtype = torch_long()), size)$to(dtype = torch_bool())$squeeze()
+        #   out_col = nnf_one_hot(cat_idx$to(dtype = torch::torch_long()), size)$to(dtype = torch::torch_bool())$squeeze()
         #
         #   # Overwrite the entries which we said belonged to category one, but was actually missing.
-        #   out_col[torch_repeat_interleave(nan_mask, as.integer(size), dim = -1)] = 0
+        #   out_col[torch::torch_repeat_interleave(nan_mask, as.integer(size), dim = -1)] = 0
         # }
         # or we can use the default R. THIS IS A BIT SLOWER. LOOK MORE INTO IT!
         {
@@ -2071,14 +2071,14 @@ CategoricalToOneHotLayer = torch::nn_module(
           # encoding of the ith feature of the jth instance.
           out_col = matrix(0, nrow = n, ncol = size)
           out_col[cbind(seq(n), as.matrix(cat_idx))] = 1
-          out_col = torch_tensor(out_col, device = input$device)
+          out_col = torch::torch_tensor(out_col, device = input$device)
         }
       }
 
       # append this feature column to the result
       # out_col is n x size =
       # batch_size x num_categories_for_this_feature
-      out_cols = torch_cat(c(out_cols, out_col), dim = -1)
+      out_cols = torch::torch_cat(c(out_cols, out_col), dim = -1)
 
       # if necessary, append isnan mask of this feature to the result
       # which we always do for the proposal network.
@@ -2086,7 +2086,7 @@ CategoricalToOneHotLayer = torch::nn_module(
       # so for i = 1, ..., num_features.
       if (i %in% self$add_nans_map_for_columns) {
         # so we add the columns of nan_mask
-        out_cols = torch_cat(c(out_cols, nan_mask$to(dtype = torch_float())), dim = -1)
+        out_cols = torch::torch_cat(c(out_cols, nan_mask$to(dtype = torch::torch_float())), dim = -1)
       }
     }
 
@@ -2110,12 +2110,12 @@ MCAR_mask_generator = torch::nn_module(
   #' MCAR_mask_generator
   #' @examples
   #' mask_gen = MCAR_mask_generator(0.5)
-  #' mask_gen(torch_randn(c(5, 3)))
+  #' mask_gen(torch::torch_randn(c(5, 3)))
   name = "MCAR_mask_generator",
 
   #' @description Initialize a missing completely at random mask generator.
   #' @param masking_ratio The probability for an entry in the generated mask to be 1 (masked).
-  #' @param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
+  #' @param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
   #' If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
   #' the first half and second half of the rows are duplicates of each other. That is,
   #' batch = [row1, row1, row2, row2, row3, row3, ...].
@@ -2161,7 +2161,7 @@ MCAR_mask_generator = torch::nn_module(
   #' @return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   #' observed feature value will be masked. '0' means that the entry is NOT masked,
   #' i.e., the feature value will be observed/given/available.
-  #' @examples  MCAR_mask_generator_function(torch_rand(c(5, 3)))
+  #' @examples  MCAR_mask_generator_function(torch::torch_rand(c(5, 3)))
   MCAR_mask_generator_function = function(batch,
                                           prob = 0.5,
                                           seed = NULL,
@@ -2176,18 +2176,18 @@ MCAR_mask_generator = torch::nn_module(
     if (paired_sampling) size = size / 2
 
     # Check for missing values in the batch
-    nan_mask = batch$isnan()$to(torch_float())
+    nan_mask = batch$isnan()$to(torch::torch_float())
 
     # # Torch version, but marginally slower than r version when batch_size <= 128 and num_features <= 50
-    # mask = torch_bernoulli(torch_full_like(batch, prob))
+    # mask = torch::torch_bernoulli(torch::torch_full_like(batch, prob))
 
     # Create the Bernoulli mask where an element is masked (1) with probability 'prob'.
-    mask = torch_tensor(matrix(sample(c(0, 1),
+    mask = torch::torch_tensor(matrix(sample(c(0, 1),
                                       size = size,
                                       replace = TRUE,
                                       prob = c(prob, 1-prob)),
                                ncol = ncol(batch)),
-                        dtype = torch_float())
+                        dtype = torch::torch_float())
 
     # If paired sampling, then concatenate the inverse mask.
     if (paired_sampling) {
@@ -2195,7 +2195,7 @@ MCAR_mask_generator = torch::nn_module(
       new_order = c(matrix(seq(nrow(batch)), nrow = 2, byrow = T))
 
       # Concatenate the inverse mask and reorder.
-      mask = torch_cat(c(mask, !mask), 1L)[new_order,]
+      mask = torch::torch_cat(c(mask, !mask), 1L)[new_order,]
     }
 
     # Final mask all entries that is either missing or artificially masked
@@ -2211,7 +2211,7 @@ Specified_probability_mask_generator = torch::nn_module(
   #' @examples
   #' probs = c(1, 8, 6, 3, 2)
   #' mask_gen = Specified_probability_mask_generator(probs)
-  #' masks = mask_gen(torch_randn(c(10000, length(probs))-1))
+  #' masks = mask_gen(torch::torch_randn(c(10000, length(probs))-1))
   #' empirical_prob = table(as.array(masks$sum(2)))
   #' empirical_prob / sum(empirical_prob)
   #' probs / sum(probs)
@@ -2266,7 +2266,7 @@ Specified_probability_mask_generator = torch::nn_module(
   #' @return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   #' observed feature value will be masked. '0' means that the entry is NOT masked,
   #' i.e., the feature value will be observed/given/available.
-  #' @examples  Specified_probability_mask_generator_function(torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
+  #' @examples  Specified_probability_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
   Specified_probability_mask_generator_function = function(batch,
                                                            masking_probs,
                                                            seed = NULL,
@@ -2286,7 +2286,7 @@ Specified_probability_mask_generator = torch::nn_module(
     }
 
     # Check for missing values in the batch
-    nan_mask = batch$isnan()$to(torch_float())
+    nan_mask = batch$isnan()$to(torch::torch_float())
 
     # Get the number of features
     n_features = ncol(batch)
@@ -2304,7 +2304,7 @@ Specified_probability_mask_generator = torch::nn_module(
                                  prob = masking_probs)
 
     # Crate the mask matrix
-    mask = torch_zeros_like(batch)
+    mask = torch::torch_zeros_like(batch)
     for (i in seq(size)) {
       if (num_masked_each_row[i] != 0) {
         mask[i, sample(n_features, size = num_masked_each_row[i], replace = FALSE)] = 1
@@ -2317,7 +2317,7 @@ Specified_probability_mask_generator = torch::nn_module(
       new_order = c(matrix(seq(nrow(batch)), nrow = 2, byrow = T))
 
       # Concatenate the inverse mask and reorder.
-      mask = torch_cat(c(mask, !mask), 1L)[new_order,]
+      mask = torch::torch_cat(c(mask, !mask), 1L)[new_order,]
     }
 
     # Final mask masks all entries that is either missing or artificially masked
@@ -2331,10 +2331,10 @@ Specified_masks_mask_generator = torch::nn_module(
   #' Specified_probability_mask_generator
   #' @description Used for Shapley value estimation when only a subset of coalitions are used to compute the Shapley values.
   #' @examples
-  #' masks = torch_tensor(matrix(c(0,0,1,0, 1,0,1,0, 1,1,1,1), nrow = 3, ncol = 4, byrow = TRUE))
+  #' masks = torch::torch_tensor(matrix(c(0,0,1,0, 1,0,1,0, 1,1,1,1), nrow = 3, ncol = 4, byrow = TRUE))
   #' masks_probs = c(3, 1, 6)
   #' mask_gen = Specified_masks_mask_generator(masks = masks, masks_probs = masks_probs)
-  #' empirical_prob = table(as.array(mask_gen(torch_randn(c(10000, ncol(masks))))$sum(-1)))
+  #' empirical_prob = table(as.array(mask_gen(torch::torch_randn(c(10000, ncol(masks))))$sum(-1)))
   #' empirical_prob / sum(empirical_prob)
   #' masks_probs / sum(masks_probs)
   name = "Specified_masks_mask_generator",
@@ -2414,7 +2414,7 @@ Specified_masks_mask_generator = torch::nn_module(
     if (!is.null(seed)) set.seed(seed)
 
     # Check for missing values in the batch
-    nan_mask = batch$isnan()$to(torch_float())
+    nan_mask = batch$isnan()$to(torch::torch_float())
 
     # Get the number of masks to choose from
     n_masks = nrow(masks)
@@ -2431,7 +2431,7 @@ Specified_masks_mask_generator = torch::nn_module(
                                    size = size,
                                    replace = TRUE,
                                    prob = masks_probs)
-    mask = torch_tensor(masks[mask_rows_indices, ], dtype = torch_float())
+    mask = torch::torch_tensor(masks[mask_rows_indices, ], dtype = torch::torch_float())
 
     # If paired sampling, then concatenate the inverse mask.
     if (paired_sampling) {
@@ -2439,7 +2439,7 @@ Specified_masks_mask_generator = torch::nn_module(
       new_order = c(matrix(seq(nrow(batch)), nrow = 2, byrow = T))
 
       # Concatenate the inverse mask and reorder.
-      mask = torch_cat(c(mask, !mask), 1L)[new_order,]
+      mask = torch::torch_cat(c(mask, !mask), 1L)[new_order,]
     }
 
     # Final mask masks all entries that is either missing or artificially masked
@@ -2467,7 +2467,7 @@ VAEAC = torch::nn_module(
   #' @param width Integer. The number of neurons in each hidden layer in the neural networks of the masked encoder, full encoder, and decoder.
   #' @param depth Integer. The number of hidden layers in the neural networks of the masked encoder, full encoder, and decoder.
   #' @param latent_dim Integer. The number of dimensions in the latent space.
-  #' @param activation_function An nn_module representing an activation function. E.g., nn_relu, nn_leaky_relu, nn_selu, nn_sigmoid.
+  #' @param activation_function An torch::nn_module representing an activation function. E.g., torch::nn_relu, torch::nn_leaky_relu, torch::nn_selu, torch::nn_sigmoid.
   #' @param use_skip_connections Boolean. If we are to use skip connections in each layer. If true, then we add the input to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.
   #' @param use_skip_connections_between_masked_encoder_and_decoder Boolean. If we are to apply concatenate skip connections between the layers in the masked encoder and decoder.
   #' @param use_batch_normalization Boolean. If we are to use batch normalization after the activation function. Note that if \code{use_skip_connections} is TRUE, then the normalization is
@@ -2490,7 +2490,7 @@ VAEAC = torch::nn_module(
                         width = 32,
                         depth = 3,
                         latent_dim = 8,
-                        activation_function = nn_relu,
+                        activation_function = torch::nn_relu,
                         use_skip_connections = FALSE,
                         use_skip_connections_between_masked_encoder_and_decoder = FALSE,
                         use_batch_normalization = FALSE,
@@ -2573,21 +2573,21 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     }
 
     ##### Full Encoder
-    full_encoder_network = nn_sequential()
+    full_encoder_network = torch::nn_sequential()
 
     # Full Encoder: Input layer
     full_encoder_network$add_module(
       module = CategoricalToOneHotLayer(c(one_hot_max_sizes, rep(0, num_features)), seq(num_features)),
       name = "input_layer_cat_to_one_hot")
     full_encoder_network$add_module(
-      module = nn_linear(in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) + num_features*2, out_features = width),
+      module = torch::nn_linear(in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) + num_features*2, out_features = width),
       name = "input_layer_linear")
     full_encoder_network$add_module(
       module = activation_function(),
       name = "input_layer_layer_activation")
     if (use_batch_normalization) {
       full_encoder_network$add_module(
-        module = nn_batch_norm1d(num_features = width),
+        module = torch::nn_batch_norm1d(num_features = width),
         name = "input_layer_layer_batch_norm")
     }
 
@@ -2597,22 +2597,22 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
         # Add identity skip connection. Such that the input is added to the output of the linear layer and activation function: output = X + activation(WX + b).
         full_encoder_network$add_module(
           module = SkipConnection(
-            nn_linear(width, width),
+            torch::nn_linear(width, width),
             activation_function(),
-            if (use_batch_normalization) nn_batch_norm1d(num_features = width)),
+            if (use_batch_normalization) torch::nn_batch_norm1d(num_features = width)),
           name = paste0("hidden_layer_", i, "_skip_connection_with_linear_and_activation", name_extra_batch_normalize)
         )
       } else {
         # Do not use skip connections and do not add the input to the output.
         full_encoder_network$add_module(
-          module = nn_linear(width, width),
+          module = torch::nn_linear(width, width),
           name = paste0("hidden_layer_", i, "_linear"))
         full_encoder_network$add_module(
           module = activation_function(),
           name = paste0("hidden_layer_", i, "_activation"))
         if (use_batch_normalization ) {
           full_encoder_network$add_module(
-            module = nn_batch_norm1d(num_features = width),
+            module = torch::nn_batch_norm1d(num_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm"))
         }
       }
@@ -2620,11 +2620,11 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
 
     # Full Encoder: Go to latent space
     full_encoder_network$add_module(
-      module = nn_linear(width, latent_dim * 2),
+      module = torch::nn_linear(width, latent_dim * 2),
       name = "latent_space_layer_linear")
 
     ##### Masked Encoder
-    masked_encoder_network = nn_sequential()
+    masked_encoder_network = torch::nn_sequential()
 
     # Masked Encoder: Input layer
     masked_encoder_network$add_module(
@@ -2636,14 +2636,14 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
         name = "input_layer_memory")
     }
     masked_encoder_network$add_module(
-      module = nn_linear(in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) + num_features, out_features = width),
+      module = torch::nn_linear(in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) + num_features, out_features = width),
       name = "input_layer_linear")
     masked_encoder_network$add_module(
       module = activation_function(),
       name = "input_layer_activation")
     if (use_batch_normalization) {
       masked_encoder_network$add_module(
-        module = nn_batch_norm1d(num_features = width),
+        module = torch::nn_batch_norm1d(num_features = width),
         name = "input_layer_batch_norm")
     }
 
@@ -2655,12 +2655,12 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
         masked_encoder_network$add_module(
           module = SkipConnection(
             if(use_skip_connections_between_masked_encoder_and_decoder) MemoryLayer(paste0("#", i)),
-            nn_linear(width, width),
+            torch::nn_linear(width, width),
             activation_function()),
           name = paste0("hidden_layer_", i, "_skip_connection_with_linear_and_activation", name_extra_memory_layer))
         if (use_batch_normalization) {
           masked_encoder_network$add_module(
-            module = nn_batch_norm1d(num_features = width),
+            module = torch::nn_batch_norm1d(num_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm"))
         }
       } else {
@@ -2671,14 +2671,14 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
             name = paste0("hidden_layer_", i, "_memory"))
         }
         masked_encoder_network$add_module(
-          module = nn_linear(width, width),
+          module = torch::nn_linear(width, width),
           name = paste0("hidden_layer_", i, "_linear"))
         masked_encoder_network$add_module(
           module = activation_function(),
           name = paste0("hidden_layer_", i, "_activation"))
         if (use_batch_normalization) {
           masked_encoder_network$add_module(
-            module = nn_batch_norm1d(num_features = width),
+            module = torch::nn_batch_norm1d(num_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm"))
         }
       }
@@ -2691,22 +2691,22 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
         name = "latent_space_layer_memory")
     }
     masked_encoder_network$add_module(
-      module = nn_linear(width, 2*latent_dim),
+      module = torch::nn_linear(width, 2*latent_dim),
       name = "latent_space_layer_linear")
 
     ##### Decoder
-    decoder_network = nn_sequential()
+    decoder_network = torch::nn_sequential()
 
     # Decoder: Go from latent space
     decoder_network$add_module(
-      module = nn_linear(latent_dim, width),
+      module = torch::nn_linear(latent_dim, width),
       name = "latent_space_layer_linear")
     decoder_network$add_module(
       module =  activation_function(),
       name = "latent_space_layer_activation")
     if (use_batch_normalization) {
       decoder_network$add_module(
-        module = nn_batch_norm1d(num_features = width),
+        module = torch::nn_batch_norm1d(num_features = width),
         name = "latent_space_layer_batch_norm")
     }
 
@@ -2733,15 +2733,15 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
         # Note that we add the memory layers in the opposite direction from how they were created. So, we get a classical U-net with latent
         # space at the bottom and a connection between the layers on the same height of the U-shape.
         decoder_network$add_module(
-          module = nn_sequential(
+          module = torch::nn_sequential(
             SkipConnection(
               if (use_skip_connections_between_masked_encoder_and_decoder) MemoryLayer(paste0("#", depth-i+2), TRUE),
-              nn_linear(width_decoder, width),
+              torch::nn_linear(width_decoder, width),
               activation_function())),
           name = paste0("hidden_layer_", i, "_skip_connection_with_linear_and_activation", name_extra_memory_layer))
         if (use_batch_normalization) {
           decoder_network$add_module(
-            module = nn_batch_norm1d(num_features = width),
+            module = torch::nn_batch_norm1d(num_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm"))
         }
       } else {
@@ -2752,14 +2752,14 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
             name = paste0("hidden_layer_", i, "_memory"))
         }
         decoder_network$add_module(
-          module = nn_linear(width_decoder, width),
+          module = torch::nn_linear(width_decoder, width),
           name = paste0("hidden_layer_", i, "_linear"))
         decoder_network$add_module(
           module = activation_function(),
           name = paste0("hidden_layer_", i, "_activation"))
         if (use_batch_normalization) {
           decoder_network$add_module(
-            module = nn_batch_norm1d(num_features = width),
+            module = torch::nn_batch_norm1d(num_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm"))
         }
       }
@@ -2779,7 +2779,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     # The output dimension is 2 for the continuous features and K_i for categorical feature X_i,
     # where K_i is the number of classes the i'th categorical feature can take on.
     decoder_network$add_module(
-      module = nn_linear(in_features = width + extra_params_from_skip_connection_from_masked_encoder,
+      module = torch::nn_linear(in_features = width + extra_params_from_skip_connection_from_masked_encoder,
                          out_features = sum(apply(rbind(one_hot_max_sizes, rep(2, num_features)), 2, max))),
       name = "output_layer_linear")
 
@@ -2802,7 +2802,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     self$num_trainable_params = num_trainable_params
   },
 
-  #' @description Forward functions are required in nn_modules, but is it not needed in the way we have implemented VAEAC.
+  #' @description Forward functions are required in torch::nn_modules, but is it not needed in the way we have implemented VAEAC.
   #'
   #' @param ... Anything, as the function does not use it.
   forward = function(...) {
@@ -2850,7 +2850,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
       # In the training phase where we need to use both masked and full encoder.
 
       # Column bind the batch and the mask to create the full information sent to the full encoder.
-      full_info = torch_cat(c(batch, mask), dim = 2)
+      full_info = torch::torch_cat(c(batch, mask), dim = 2)
 
       # Send the full_information through the full encoder. It needs the full information to know if a
       # value is missing or just masked. The output tensor is of shape batch_size x (2 x latent_dim)
@@ -2865,7 +2865,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     }
 
     # Column bind the batch and the mask to create the observed information sent to the masked encoder.
-    observed_info = torch_cat(c(observed, mask), dim = -1)
+    observed_info = torch::torch_cat(c(observed, mask), dim = -1)
 
     # Compute the latent normal dist parameters (mu, sigma) for the masked
     # encoder by sending the observed values and the mask to the masked encoder.
@@ -3033,7 +3033,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     }
 
     # Convert from list of tensors to a single tensor using colum bind
-    estimates = torch_cat(estimates, -1)
+    estimates = torch::torch_cat(estimates, -1)
 
     # Use the stabilizing trick logsumexp.
     # We have worked on log-scale above, hence plus and minus and not multiplication and division,
@@ -3041,7 +3041,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     # We take the exp of the values to get back to original scale, then sum it and convert back to
     # log scale. Note that we add -log(K) instead of dividing each term by K.
     # Take the log sum exp along the rows (validation samples) then subtract log(K).
-    return(torch_logsumexp(estimates, -1) - log(K))
+    return(torch::torch_logsumexp(estimates, -1) - log(K))
   },
 
   #' Generate the Parameters of the Generative Distributions
@@ -3083,7 +3083,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     }
 
     # Concatenate the list to a 3d-tensor. 2nd dimensions is the imputations.
-    return(torch_cat(samples_params, 2))
+    return(torch::torch_cat(samples_params, 2))
   }
 )
 
@@ -3112,7 +3112,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
 #' @param lr Numeric. The learning rate used in the ADAM optimizer.
 #' @param batch_size Integer. The number of samples to include in each batch.
 #' @param running_avg_num_values Integer. How many of the previous values to include when we compute the running means.
-#' @param activation_function An nn_module representing an activation function. E.g., nn_relu, nn_leaky_relu, nn_selu, nn_sigmoid.
+#' @param activation_function An torch::nn_module representing an activation function. E.g., torch::nn_relu, torch::nn_leaky_relu, torch::nn_selu, torch::nn_sigmoid.
 #' @param use_skip_connections Boolean. If we are to use skip connections in each layer. If true, then we add the input to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.
 #' @param use_skip_connections_between_masked_encoder_and_decoder Boolean. If we are to apply concatenate skip connections between the layers in the masked encoder and decoder.
 #' @param use_batch_normalization Boolean. If we are to use batch normalization after the activation function. Note that if \code{use_skip_connections} is TRUE, then the normalization is
@@ -3156,7 +3156,7 @@ train_VAEAC_model = function(training_data,
                              lr = 0.001,
                              batch_size = 64,
                              running_avg_num_values = 5,
-                             activation_function = nn_relu,
+                             activation_function = torch::nn_relu,
                              use_skip_connections = TRUE,
                              use_skip_connections_between_masked_encoder_and_decoder = TRUE,
                              use_batch_normalization = FALSE,
@@ -3309,7 +3309,7 @@ train_VAEAC_model = function(training_data,
   p = ncol(training_data)
 
   # Convert X to tensor
-  data_torch = torch_tensor(as.matrix(training_data))
+  data_torch = torch::torch_tensor(as.matrix(training_data))
 
   # Compute the mean and std for each continuous feature in the data
   # The categorical features will have mean zero and std 1.
@@ -3318,7 +3318,7 @@ train_VAEAC_model = function(training_data,
   norm_std  = mean_and_sd$norm_vector_std
 
   # Make sure that the standard deviation is not too low, in that case clip it.
-  norm_std = norm_std$max(other = torch_tensor(1e-9))
+  norm_std = norm_std$max(other = torch::torch_tensor(1e-9))
 
   # normalize the data to have mean = 0 and std = 1.
   data = (data_torch - norm_mean) / norm_std
@@ -3364,17 +3364,17 @@ train_VAEAC_model = function(training_data,
   # See more parameters here '?dataloader', but these are the most important.
   if (paired_sampling) {
     # Use paired sampling
-    train_dataloader = dataloader(train_dataset,
+    train_dataloader = torch::dataloader(train_dataset,
                                   batch_size = batch_size,
                                   sampler = paired_sampler(train_dataset, shuffle = TRUE))
-    val_dataloader = dataloader(val_dataset,
+    val_dataloader = torch::dataloader(val_dataset,
                                 batch_size = batch_size,
                                 sampler = paired_sampler(val_dataset, shuffle = FALSE))
 
   } else {
     # Usual approach
-    train_dataloader = dataloader(train_dataset, batch_size = batch_size, shuffle = TRUE)
-    val_dataloader = dataloader(val_dataset, batch_size = batch_size, shuffle = FALSE)
+    train_dataloader = torch::dataloader(train_dataset, batch_size = batch_size, shuffle = TRUE)
+    val_dataloader = torch::dataloader(val_dataset, batch_size = batch_size, shuffle = FALSE)
   }
 
 
@@ -3519,7 +3519,7 @@ train_VAEAC_model = function(training_data,
     mask_generator = model$mask_generator
 
     # Create the ADAM optimizer
-    optimizer = optim_adam(params = model$parameters,
+    optimizer = torch::optim_adam(params = model$parameters,
                            lr = lr,
                            betas = c(0.9, 0.999),
                            eps = 1e-08,
@@ -3535,7 +3535,7 @@ train_VAEAC_model = function(training_data,
 
     # "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta || Epoch: :epoch || VLB: :vlb || IWAE: :iwae || IWAE Runnning: :iwae_running]"
     # Create a progress bar
-    pb = progress_bar$new(format = "(:spin) [:bar] :percent [VAEAC: #:initialization | time: :elapsedfull | ETR: :eta | Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]",
+    pb = progress::progress_bar$new(format = "(:spin) [:bar] :percent [VAEAC: #:initialization | time: :elapsedfull | ETR: :eta | Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]",
                           total = epochs_initiation_phase,
                           complete = "=",        # Completion bar character
                           incomplete = "-",      # Incomplete bar character
@@ -3584,7 +3584,7 @@ train_VAEAC_model = function(training_data,
         optimizer$step()
 
         # Update running variational lower bound average
-        avg_vlb = avg_vlb + (vlb$to(dtype = torch_float())$clone()$detach() - avg_vlb) / batch_index
+        avg_vlb = avg_vlb + (vlb$to(dtype = torch::torch_float())$clone()$detach() - avg_vlb) / batch_index
 
         # Update the batch index.
         batch_index = batch_index + 1
@@ -3600,12 +3600,12 @@ train_VAEAC_model = function(training_data,
                                      verbose)
 
       # Add the current validation_iwae and train_vlb to the lists.
-      validation_iwae = torch_cat(c(validation_iwae, val_iwae), -1)
-      train_vlb = torch_cat(c(train_vlb, avg_vlb), -1)
+      validation_iwae = torch::torch_cat(c(validation_iwae, val_iwae), -1)
+      train_vlb = torch::torch_cat(c(train_vlb, avg_vlb), -1)
 
       # Compute the running validation IWAE
       val_iwae_running = validation_iwae[(-min(length(validation_iwae), running_avg_num_values) + length(validation_iwae) + 1) : (-1 + length(validation_iwae) + 1), drop = FALSE]$mean()$view(1)
-      validation_iwae_running_avg = torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
+      validation_iwae_running_avg = torch::torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
 
       # Updates the current state of the progress bar
       pb$tick(tokens = list(initialization = initialization,
@@ -3654,7 +3654,7 @@ train_VAEAC_model = function(training_data,
   if (use_cuda) model = model.cuda()
 
   # Create a progress bar. TODO: Maybe include width, depth, latent_dim, lr, if doing hyperparemeter tuning.
-  pb = progress_bar$new(format = "(:spin) [:bar] :percent [time: :elapsedfull | ETR: :eta | Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]",
+  pb = progress::progress_bar$new(format = "(:spin) [:bar] :percent [time: :elapsedfull | ETR: :eta | Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]",
                         total = (epochs - epochs_initiation_phase), # * train_dataloader$.length(),
                         complete = "=",   # Completion bar character
                         incomplete = "-", # Incomplete bar character
@@ -3665,7 +3665,7 @@ train_VAEAC_model = function(training_data,
   # Continue training the best VAEAC model
   for (epoch in seq(epochs_initiation_phase+1, epochs)) {
     # Set iterator to be the data loader which loads the training data.
-    iterator = dataloader
+    iterator = torch::dataloader
 
     # Set average variational lower bound to 0 for this epoch
     avg_vlb = 0
@@ -3708,7 +3708,7 @@ train_VAEAC_model = function(training_data,
       # Update running variational lower bound average
       # a + (new - a)/(i+1) = {(i+1)a + new - a}/(i+1) = { a(i) + new}/(i+1) = a *i/(i+1) + new/(i+1)
       # recursive average formula/update.
-      avg_vlb = avg_vlb + (vlb$to(dtype = torch_float())$clone()$detach() - avg_vlb) / batch_index
+      avg_vlb = avg_vlb + (vlb$to(dtype = torch::torch_float())$clone()$detach() - avg_vlb) / batch_index
 
       # Update the batch index.
       batch_index = batch_index + 1
@@ -3727,9 +3727,9 @@ train_VAEAC_model = function(training_data,
     val_iwae_running = validation_iwae[(-min(length(validation_iwae), running_avg_num_values) + length(validation_iwae) + 1) : (-1 + length(validation_iwae) + 1), drop = FALSE]$mean()$view(1)
 
     # Add the current validation_iwae and train_vlb to the lists.
-    validation_iwae = torch_cat(c(validation_iwae, val_iwae), -1)
-    train_vlb = torch_cat(c(train_vlb, avg_vlb), -1)
-    validation_iwae_running_avg = torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
+    validation_iwae = torch::torch_cat(c(validation_iwae, val_iwae), -1)
+    train_vlb = torch::torch_cat(c(train_vlb, avg_vlb), -1)
+    validation_iwae_running_avg = torch::torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
 
     # Save if current VAEAC model has the lowest validation IWAE error
     if ((max(validation_iwae) <= val_iwae)$item()) {
@@ -3751,7 +3751,7 @@ train_VAEAC_model = function(training_data,
       # Combine the file name with the folder path to form the final save file name.
       filename_best = file.path(folder_to_save_model, filename_best)
       class(best_state) = c(class(best_state), "R_VAEAC", "vaeac")
-      torch_save(best_state, filename_best)
+      torch::torch_save(best_state, filename_best)
     }
 
     # Save if current VAEAC model has the lowest validation IWAE error
@@ -3774,7 +3774,7 @@ train_VAEAC_model = function(training_data,
       # Combine the file name with the folder path to form the final save file name.
       filename_best_running = file.path(folder_to_save_model, filename_best_running)
       class(best_state_running) = c(class(best_state_running), "R_VAEAC", "vaeac")
-      torch_save(best_state_running, filename_best_running)
+      torch::torch_save(best_state_running, filename_best_running)
     }
 
     # If we are to save and we are in an n'th epoch, then we save the model.
@@ -3798,7 +3798,7 @@ train_VAEAC_model = function(training_data,
         # Combine the file name with the folder path to form the final save file name.
         filename_nth = file.path(folder_to_save_model, filename_nth)
         class(nth_state) = c(class(nth_state), "R_VAEAC", "vaeac")
-        torch_save(nth_state, filename_nth)
+        torch::torch_save(nth_state, filename_nth)
 
         # Add file name to list over file names.
         tmp_list = list(filename_nth)
@@ -3833,7 +3833,7 @@ train_VAEAC_model = function(training_data,
   # Combine the file name with the folder path to form the final save file name.
   filename_last = file.path(folder_to_save_model, filename_last)
   class(last_state) = c(class(last_state), "R_VAEAC", "vaeac")
-  torch_save(last_state, filename_last)
+  torch::torch_save(last_state, filename_last)
 
   # Printout to the user
   if (verbose) {
@@ -3906,7 +3906,7 @@ continue_train_VAEAC_model_shapr = function(explanation,
     VAEAC_model = explanation$internal$parameters$VAEAC
 
     # Load the VAEAC model from provided disk location.
-    checkpoint = torch_load(VAEAC_model$models$last)
+    checkpoint = torch::torch_load(VAEAC_model$models$last)
 
     # Check that we have access to training data
     if (is.null(checkpoint$normalized_data) & is.null(training_data)) {
@@ -3965,7 +3965,7 @@ continue_train_VAEAC_model_shapr = function(explanation,
     if (p != checkpoint$p) stop(sprintf("The dimensions of current training data do not match the original dimension: %d != %d", p, checkpoint$p))
 
     # Convert X to tensor
-    data_torch = torch_tensor(as.matrix(training_data))
+    data_torch = torch::torch_tensor(as.matrix(training_data))
 
     # Compute the mean and std for each continuous feature in the data
     # The categorical features will have mean zero and std 1.
@@ -3974,7 +3974,7 @@ continue_train_VAEAC_model_shapr = function(explanation,
     norm_std  = mean_and_sd$norm_vector_std
 
     # Make sure that the standard deviation is not too low, in that case clip it.
-    norm_std = norm_std$max(other = torch_tensor(1e-9))
+    norm_std = norm_std$max(other = torch::torch_tensor(1e-9))
 
     # normalize the data to have mean = 0 and std = 1.
     data = (data_torch - norm_mean) / norm_std
@@ -4021,17 +4021,17 @@ continue_train_VAEAC_model_shapr = function(explanation,
     # See more parameters here '?dataloader', but these are the most important.
     if (paired_sampling) {
       # Use paired sampling
-      train_dataloader = dataloader(train_dataset,
+      train_dataloader = torch::dataloader(train_dataset,
                                     batch_size = batch_size,
                                     sampler = paired_sampler(train_dataset, shuffle = TRUE))
-      val_dataloader = dataloader(val_dataset,
+      val_dataloader = torch::dataloader(val_dataset,
                                   batch_size = batch_size,
                                   sampler = paired_sampler(val_dataset, shuffle = FALSE))
 
     } else {
       # Usual approach
-      train_dataloader = dataloader(train_dataset, batch_size = batch_size, shuffle = TRUE)
-      val_dataloader = dataloader(val_dataset, batch_size = batch_size, shuffle = FALSE)
+      train_dataloader = torch::dataloader(train_dataset, batch_size = batch_size, shuffle = TRUE)
+      val_dataloader = torch::dataloader(val_dataset, batch_size = batch_size, shuffle = FALSE)
     }
 
     ##### List that stores needed information for save and load the model
@@ -4098,7 +4098,7 @@ continue_train_VAEAC_model_shapr = function(explanation,
     mask_generator = model$mask_generator
 
     # Create the ADAM optimizer
-    optimizer = optim_adam(params = model$parameters,
+    optimizer = torch::optim_adam(params = model$parameters,
                            lr = checkpoint$lr,
                            betas = c(0.9, 0.999),
                            eps = 1e-08,
@@ -4131,12 +4131,12 @@ continue_train_VAEAC_model_shapr = function(explanation,
 
     # Load the best states from the vaeac model
     filename_best = VAEAC_model$models$best
-    best_state = torch_load(filename_best)
+    best_state = torch::torch_load(filename_best)
     filename_best_running = VAEAC_model$models$best_running
-    best_state_running = torch_load(filename_best_running )
+    best_state_running = torch::torch_load(filename_best_running )
 
     # Create a progress bar.
-    pb = progress_bar$new(format = "(:spin) [:bar] :percent [time: :elapsedfull | ETR: :eta | Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]",
+    pb = progress::progress_bar$new(format = "(:spin) [:bar] :percent [time: :elapsedfull | ETR: :eta | Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]",
                           total = epochs_new, # * train_dataloader$.length(),
                           complete = "=",     # Completion bar character
                           incomplete = "-",   # Incomplete bar character
@@ -4147,7 +4147,7 @@ continue_train_VAEAC_model_shapr = function(explanation,
     # Continue training the best VAEAC model
     for (epoch in seq(epochs_old+1, epochs_total)) {
       # Set iterator to be the data loader which loads the training data.
-      iterator = dataloader
+      iterator = torch::dataloader
 
       # Set average variational lower bound to 0 for this epoch
       avg_vlb = 0
@@ -4190,7 +4190,7 @@ continue_train_VAEAC_model_shapr = function(explanation,
         # Update running variational lower bound average
         # a + (new - a)/(i+1) = {(i+1)a + new - a}/(i+1) = { a(i) + new}/(i+1) = a *i/(i+1) + new/(i+1)
         # recursive average formula/update.
-        avg_vlb = avg_vlb + (vlb$to(dtype = torch_float())$clone()$detach() - avg_vlb) / batch_index
+        avg_vlb = avg_vlb + (vlb$to(dtype = torch::torch_float())$clone()$detach() - avg_vlb) / batch_index
 
         # Update the batch index.
         batch_index = batch_index + 1
@@ -4209,9 +4209,9 @@ continue_train_VAEAC_model_shapr = function(explanation,
       val_iwae_running = validation_iwae[(-min(length(validation_iwae), running_avg_num_values) + length(validation_iwae) + 1) : (-1 + length(validation_iwae) + 1), drop = FALSE]$mean()$view(1)
 
       # Add the current validation_iwae and train_vlb to the lists.
-      validation_iwae = torch_cat(c(validation_iwae, val_iwae), -1)
-      train_vlb = torch_cat(c(train_vlb, avg_vlb), -1)
-      validation_iwae_running_avg = torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
+      validation_iwae = torch::torch_cat(c(validation_iwae, val_iwae), -1)
+      train_vlb = torch::torch_cat(c(train_vlb, avg_vlb), -1)
+      validation_iwae_running_avg = torch::torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
 
       # Save if current VAEAC model has the lowest validation IWAE error
       if ((max(validation_iwae) <= val_iwae)$item()) {
@@ -4233,7 +4233,7 @@ continue_train_VAEAC_model_shapr = function(explanation,
         # Combine the file name with the folder path to form the final save file name.
         filename_best = file.path(folder_to_save_model, filename_best)
         class(best_state) = c(class(best_state), "R_VAEAC", "vaeac")
-        torch_save(best_state, filename_best)
+        torch::torch_save(best_state, filename_best)
       }
 
       # Save if current VAEAC model has the lowest validation IWAE error
@@ -4256,7 +4256,7 @@ continue_train_VAEAC_model_shapr = function(explanation,
         # Combine the file name with the folder path to form the final save file name.
         filename_best_running = file.path(folder_to_save_model, filename_best_running)
         class(best_state_running) = c(class(best_state_running), "R_VAEAC", "vaeac")
-        torch_save(best_state_running, filename_best_running)
+        torch::torch_save(best_state_running, filename_best_running)
       }
 
       # If we are to save and we are in an n'th epoch, then we save the model.
@@ -4280,7 +4280,7 @@ continue_train_VAEAC_model_shapr = function(explanation,
           # Combine the file name with the folder path to form the final save file name.
           filename_nth = file.path(folder_to_save_model, filename_nth)
           class(nth_state) = c(class(nth_state), "R_VAEAC", "vaeac")
-          torch_save(nth_state, filename_nth)
+          torch::torch_save(nth_state, filename_nth)
 
           # Add file name to list over file names.
           tmp_list = list(filename_nth)
@@ -4315,7 +4315,7 @@ continue_train_VAEAC_model_shapr = function(explanation,
     # Combine the file name with the folder path to form the final save file name.
     filename_last = file.path(folder_to_save_model, filename_last)
     class(last_state) = c(class(last_state), "R_VAEAC", "vaeac")
-    torch_save(last_state, filename_last)
+    torch::torch_save(last_state, filename_last)
 
     # Printout to the user
     if (verbose) {
@@ -4387,7 +4387,7 @@ VAEAC_training_vlb_and_validation_iwae_shapr = function(explanation,
   VAEAC_model_path = explanation$internal$parameters$VAEAC$models$last
 
   # Load the VAEAC model at the provided path.
-  checkpoint = torch_load(path = VAEAC_model_path)
+  checkpoint = torch::torch_load(path = VAEAC_model_path)
 
   # Create an empty return list
   temp_list = list()
@@ -4425,12 +4425,12 @@ VAEAC_training_vlb_and_validation_iwae_shapr = function(explanation,
     temp_data = temp_data[Epoch >= plot_from_nth_epoch,]
 
     # Create the figure
-    fig = ggplot(temp_data, aes(x = Epoch, y = Value, group = Type)) +
-      geom_line(aes(color = Type)) +
-      geom_point(aes(color = Type)) +
-      scale_color_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
-      theme(legend.position = "right") +
-      lims(x = c(0, temp_list$epoch))
+    fig = ggplot2::ggplot(temp_data, ggplot2::aes(x = Epoch, y = Value, group = Type)) +
+      ggplot2::geom_line(ggplot2::aes(color = Type)) +
+      ggplot2::geom_point(ggplot2::aes(color = Type)) +
+      ggplot2::scale_color_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
+      ggplot2::theme(legend.position = "right") +
+      ggplot2::lims(x = c(0, temp_list$epoch))
 
     # Check if we are to plot the figure
     if (plot_figure) print(fig)
@@ -4541,7 +4541,7 @@ The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in 
   num_samples = ifelse(is.null(true_data), 500, nrow(true_data))
 
   # Some small checks
-  VAEAC_model = torch_load(VAEAC_model_path)
+  VAEAC_model = torch::torch_load(VAEAC_model_path)
   if (!is.null(true_data)) {
     if (ncol(true_data) != VAEAC_model$p) {
       stop(sprintf("Different number of columns in the VAEAC model and 'true data': %d != %d.\n", checkpoint$p, ncol(true_data)))
@@ -4588,25 +4588,25 @@ The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in 
   # strsplit(basename(filename), "\\.pt")[[1]][1]
 
   # Create the ggparis figure.
-  figure = ggpairs(combined_data,
+  figure = GGally::ggpairs(combined_data,
                    columns = seq(VAEAC_model$p),
-                   mapping = aes(color = type),
-                   diag = list(continuous = wrap(diag_cont, alpha = 0.5),
-                               discrete = wrap(diag_cat, alpha = 1.0)),
-                   upper = list(combo = wrap(upper_mix, alpha = 1.0),
-                                discrete = wrap(upper_cat, alpha = 1.0),
-                                continuous = wrap(upper_cont, method = cor_method, size = 3.65)),
-                   lower = list(continuous = wrap(lower_cont, alpha = 0.25),
-                                discrete = wrap(lower_cat, alpha = 1.0),
-                                combo = wrap(lower_mix, alpha = 1)),
+                   mapping = ggplot2::aes(color = type),
+                   diag = list(continuous = GGally::wrap(diag_cont, alpha = 0.5),
+                               discrete = GGally::wrap(diag_cat, alpha = 1.0)),
+                   upper = list(combo = GGally::wrap(upper_mix, alpha = 1.0),
+                                discrete = GGally::wrap(upper_cat, alpha = 1.0),
+                                continuous = GGally::wrap(upper_cont, method = cor_method, size = 3.65)),
+                   lower = list(continuous = GGally::wrap(lower_cont, alpha = 0.25),
+                                discrete = GGally::wrap(lower_cat, alpha = 1.0),
+                                combo = GGally::wrap(lower_mix, alpha = 1)),
                    title = figure_title,
                    proportions = rep(1, VAEAC_model$p)) +
     # theme(plot.title = element_text(size=22),
     #       text = element_text(size = 16),
     #       strip.text = element_text(size = 13)) +
-    scale_color_manual(values = c("#E69F00", "#999999", "#56B4E9")) +
-    scale_fill_manual(values = c("#E69F00", "#999999",  "#56B4E9")) +
-    theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5))
+    ggplot2::scale_color_manual(values = c("#E69F00", "#999999", "#56B4E9")) +
+    ggplot2::scale_fill_manual(values = c("#E69F00", "#999999",  "#56B4E9")) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = -90, hjust = 0, vjust = 0.5))
 
   # If we are to show the figure.
   if (show_figures) {
@@ -4616,7 +4616,7 @@ The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in 
   # If we are to save the figure.
   if (save_figures) {
     figure_save_name = file.path(folder_to_save_models, paste("ggpairs_", figure_title, ".png", sep = ""))
-    suppressMessages(ggsave(figure_save_name, plot = figure, ...))
+    suppressMessages(ggplot2::ggsave(figure_save_name, plot = figure, ...))
   }
 
   # If we are to return the figure.
@@ -4678,7 +4678,7 @@ VAEAC_impute_values = function(instances_to_impute,
   # if (verbose) cat(sprintf("Loading VAEAC model.\n"))
 
   # Load the VAEAC model from provided disk location.
-  checkpoint = torch_load(path_VAEAC_model)
+  checkpoint = torch::torch_load(path_VAEAC_model)
 
   # REMOVED:
   # Preprocess the data. This function turns factor names into numerics 1,2,...,K,
@@ -4753,7 +4753,7 @@ VAEAC_impute_values = function(instances_to_impute,
   dataset = VAEAC_dataset(data_nan, one_hot_max_sizes)
 
   # Create a data loader that load/iterate over the data set in chronological order.
-  dataloader = dataloader(dataset, batch_size = batch_size)
+  dataloader = torch::dataloader(dataset, batch_size = batch_size)
 
   # Create an auxiliary list of lists to store the imputed values combined with the original values. The the structure is
   # [[i'th imputation]][[b'th batch]], where the entries are tensors of dimension batch_size x num_features.
@@ -4763,7 +4763,7 @@ VAEAC_impute_values = function(instances_to_impute,
   # if (verbose) cat(sprintf("Ready to start imputing the instances.\n"))
 
   # Create a progress bar
-  pb = progress_bar$new(format = "(:spin) [:bar] :percent [Imputing | time: :elapsedfull | ETR: :eta | Batch: :batch_index | Imputation: :imputation_index]",
+  pb = progress::progress_bar$new(format = "(:spin) [:bar] :percent [Imputing | time: :elapsedfull | ETR: :eta | Batch: :batch_index | Imputation: :imputation_index]",
                         total = dataloader$.length()*num_imputations,
                         complete = "=",   # Completion bar character
                         incomplete = "-", # Incomplete bar character
@@ -4798,10 +4798,10 @@ VAEAC_impute_values = function(instances_to_impute,
     }
 
     # Compute the imputation mask, i.e., which entries we are to impute.
-    mask_extended = torch_isnan(batch_extended)$to(dtype = torch_float())
+    mask_extended = torch::torch_isnan(batch_extended)$to(dtype = torch::torch_float())
 
     # Do not need to keep track of the gradients, as we are not fitting the model.
-    with_no_grad({
+    torch::with_no_grad({
       # Compute the distributions parameters for the generative models inferred by
       # the masked encoder and decoder together. This will be a tensor of shape
       # [batch_size, num_imputations, num_generative_parameters].
@@ -4816,7 +4816,7 @@ VAEAC_impute_values = function(instances_to_impute,
     })
 
     # Make a deep copy of the batch with missing values set to zero.
-    mask = torch_isnan(batch)
+    mask = torch::torch_isnan(batch)
     batch_zeroed_nans = batch$clone()$detach()
     batch_zeroed_nans[mask] = 0
 
@@ -4835,7 +4835,7 @@ VAEAC_impute_values = function(instances_to_impute,
 
       # Need only the imputed values for the missing data entries.
       # Zero out the imputations done for known feature values.
-      sample[torch_logical_not(mask)] = 0
+      sample[torch::torch_logical_not(mask)] = 0
 
       # Combine the imputations with the original data to fill in the missing values.
       # Sample is a tensor of shape [batch_size, num_features]
@@ -4862,12 +4862,12 @@ VAEAC_impute_values = function(instances_to_impute,
     # Concatenate the batches for the i'th imputation to create a tensor of shape
     # [num_instances_to_impute, num_features] and then add a new singelton dimension
     # as the second dimension to get the shape [num_instances_to_impute, 1, num_features].
-    results[[i]] = torch_cat(results[[i]])$unsqueeze(2)
+    results[[i]] = torch::torch_cat(results[[i]])$unsqueeze(2)
   }
 
   # Concatenate the list of tensor of shape [num_instances_to_impute, 1, num_features] at the
   # second dimension to form a [num_instances_to_impute, num_imputations, num_features] tensor.
-  result = torch_cat(results, 2)
+  result = torch::torch_cat(results, 2)
 
   # Undo the normalization ([data - mu]/sigma) to get back to the original
   # distribution by multiplying the results by sigma and adding the mean.

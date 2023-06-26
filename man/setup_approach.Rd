@@ -77,7 +77,7 @@ setup_approach(internal, ...)
   vaeac.lr = 0.001,
   vaeac.batch_size = 64,
   vaeac.running_avg_num_values = 5,
-  vaeac.activation_function = nn_relu,
+  vaeac.activation_function = torch::nn_relu,
   vaeac.use_skip_connections = TRUE,
   vaeac.use_skip_connections_between_masked_encoder_and_decoder = TRUE,
   vaeac.use_batch_normalization = FALSE,
@@ -215,7 +215,7 @@ This is useful if the underlying time series are scaled between 0 and 1, for exa
 
 \item{vaeac.running_avg_num_values}{Integer. How many of the previous values to include when we compute the running means.}
 
-\item{vaeac.activation_function}{An nn_module representing an activation function. E.g., nn_relu, nn_leaky_relu, nn_selu, nn_sigmoid.}
+\item{vaeac.activation_function}{An torch::nn_module representing an activation function. E.g., torch::nn_relu, torch::nn_leaky_relu, torch::nn_selu, torch::nn_sigmoid.}
 
 \item{vaeac.use_skip_connections}{Boolean. If we are to use skip connections in each layer. If true, then we add the input to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.}
 

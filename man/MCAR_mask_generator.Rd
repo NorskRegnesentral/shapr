@@ -46,6 +46,6 @@ The mask will always mask missing values.
 }
 \examples{
 mask_gen = MCAR_mask_generator(0.5)
-mask_gen(torch_randn(c(5, 3)))
- MCAR_mask_generator_function(torch_rand(c(5, 3)))
+mask_gen(torch::torch_randn(c(5, 3)))
+ MCAR_mask_generator_function(torch::torch_rand(c(5, 3)))
 }

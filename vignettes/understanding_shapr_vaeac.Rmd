@@ -24,9 +24,9 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, include=FALSE, warning=FALSE}
-#library(shapr)
-setwd("~/PhD/Paper3/Shapr_Lars_paper3/R")
-pkgload::load_all()
+library(shapr)
+#setwd("~/PhD/Paper3/Shapr_Lars_paper3/R")
+#pkgload::load_all()
 ```
 
 > [VAEAC](#VAEAC)
@@ -288,7 +288,7 @@ We can also just provide a path to the stored weights and biases.
   ggpairs_plot_imputed_and_true_data_shapr(explanation = explanation,
                                            which_vaeac_model = "best",
                                            true_data = x_train)
-  ggpairs(x_train) # Bimodal data for solar.R.
+  GGally::ggpairs(x_train) # Bimodal data for solar.R.
 
   # Use extra trained VAEAC model to compute Shapley values again.
   explanation_extra_trained_VAEAC_model <- explain(

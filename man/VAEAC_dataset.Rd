@@ -20,7 +20,7 @@ How to fetch a data sample for a given key/index.
 Return the size of the dataset
 }
 \details{
-Must create a data set object that represent a map from keys to data samples. It is used by the dataloader()
+Must create a data set object that represent a map from keys to data samples. It is used by the torch::dataloader()
 to load data which should be used to extract the batches for all epochs in the training phase of the neural
 network. Note that a dataset object is an R6 instance (https://r6.r-lib.org/articles/Introduction.html)
 which is classical object-oriented programming, with self reference. I.e, 'VAEAC_sample_data' is  a class of type 'dataset'.
@@ -39,7 +39,7 @@ one_hot_max_sizes = rep(1, p)
 VAEAC_ds = VAEAC_dataset(torch_tensor(matrix(rnorm(p*N), ncol = p), dtype = torch_float()), one_hot_max_sizes)
 VAEAC_ds
 
-VAEAC_dl = dataloader(VAEAC_ds, batch_size = batch_size, shuffle = TRUE, drop_last = FALSE)
+VAEAC_dl = torch::dataloader(VAEAC_ds, batch_size = batch_size, shuffle = TRUE, drop_last = FALSE)
 VAEAC_dl$.length()
 VAEAC_dl$.iter()
 

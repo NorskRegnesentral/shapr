@@ -7,7 +7,7 @@
 SkipConnection(...)
 }
 \arguments{
-\item{...}{network modules such as nn_linear, activation_function(), and memory layers. See \code{get_imputation_networks}.}
+\item{...}{network modules such as torch::nn_linear, activation_function(), and memory layers. See \code{get_imputation_networks}.}
 }
 \description{
 Skip-connection over the sequence of layers in the constructor. The module passes

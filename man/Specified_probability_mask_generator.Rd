@@ -48,9 +48,9 @@ VAEAC's performance by focusing more on these situations during training.
 \examples{
 probs = c(1, 8, 6, 3, 2)
 mask_gen = Specified_probability_mask_generator(probs)
-masks = mask_gen(torch_randn(c(10000, length(probs))-1))
+masks = mask_gen(torch::torch_randn(c(10000, length(probs))-1))
 empirical_prob = table(as.array(masks$sum(2)))
 empirical_prob / sum(empirical_prob)
 probs / sum(probs)
- Specified_probability_mask_generator_function(torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
+ Specified_probability_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
 }
