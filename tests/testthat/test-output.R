@@ -496,3 +496,24 @@ test_that("output_lm_numeric_empirical_progress", {
     "output_lm_numeric_empirical_progress"
   )
 })
+
+
+# Just checking that internal$output$dt_samp_for_vS  keep_samp_for_vS
+test_that("output_lm_numeric_independence_keep_samp_for_vS", {
+  expect_snapshot_rds(
+    (out <- explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "independence",
+      prediction_zero = p0,
+      n_batches = 1,
+      timing = FALSE,
+      keep_samp_for_vS = T
+    )),
+    "output_lm_numeric_independence_keep_samp_for_vS"
+  )
+
+  expect_false(is.null(out$internal$output$dt_samp_for_vS))
+})
+

@@ -52,7 +52,6 @@ postprocess_vS_list <- function(vS_list, internal) {
 
   # Appending the zero-prediction to the list
   dt_vS0 <- as.data.table(rbind(c(1, rep(prediction_zero, n_explain))))
-  names(dt_vS0) <- names(vS_list[[1]])
 
   # Extracting/merging the data tables from the batch running
   # TODO: Need a memory and speed optimized way to transform the output form dt_vS_list to two different lists,
@@ -61,6 +60,8 @@ postprocess_vS_list <- function(vS_list, internal) {
   # then there is only one copy, but there are two if keep_samp_for_vS=TRUE. This might be OK since the
   # latter is used rarely
   if (keep_samp_for_vS) {
+    names(dt_vS0) <- names(vS_list[[1]][[1]])
+
     vS_list[[length(vS_list) + 1]] <- list(dt_vS0, NULL)
 
     dt_vS <- rbindlist(lapply(vS_list, `[[`, 1))
@@ -68,6 +69,8 @@ postprocess_vS_list <- function(vS_list, internal) {
     dt_samp_for_vS <- rbindlist(lapply(vS_list, `[[`, 2))
     data.table::setorder(dt_samp_for_vS, id_combination)
   } else {
+    names(dt_vS0) <- names(vS_list[[1]])
+
     vS_list[[length(vS_list) + 1]] <- dt_vS0
 
     dt_vS <- rbindlist(vS_list)
