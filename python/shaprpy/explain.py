@@ -45,7 +45,7 @@ def explain(
     Parameters
     ----------
     model: The model whose predictions we want to explain. 
-      `shaprpy` natively supports `sklearn` and `xgboost` models.
+      `shaprpy` natively supports `sklearn`, `xgboost` and `keras` models.
       Unsupported models can still be explained by passing `predict_model` and (optionally) `get_model_specs`.
     x_explain: Contains the the features, whose predictions ought to be explained.
     x_train: Contains the data used to estimate the (conditional) distributions for the features
@@ -79,7 +79,8 @@ def explain(
       and a pandas.DataFrame to compute predictions for. The function must give the prediction as a numpy.Array.
       `None` (the default) uses functions specified internally.
       Can also be used to override the default function for natively supported model classes.
-    get_model_specs: An optional function for checking model/data consistency when `model` is not natively supported.
+    get_model_specs: An optional function for checking model/data consistency when `model` is not natively supported. 
+      This method has yet to be implemented for keras models.
       The function takes `model` as argument and provides a `dict with 3 elements:
       - labels: list[str] with the names of each feature.
       - classes: list[str] with the classes of each features.
@@ -303,6 +304,17 @@ def prebuilt_predict_model(model):
     import xgboost as xgb
     if isinstance(model, xgb.core.Booster):
       return lambda m, x: m.predict(xgb.DMatrix(x))
+  except:
+    pass
+  
+  # Look for keras
+  try:
+    from keras.models import Model
+    if isinstance(model, Model):
+      def predict_fn(m,x):
+        pred = m.predict(x)
+        return pred.reshape(pred.shape[0],)
+      return predict_fn
   except:
     pass
 
