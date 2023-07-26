@@ -69,7 +69,7 @@ arma::mat weight_matrix_cpp(List subsets, int m, int n, NumericVector w){
         }
     }
 
-    R = inv(X.t() * Z) * X.t();
+    R = solve(X.t() * Z, X.t());
 
     return R;
 }

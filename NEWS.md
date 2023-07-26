@@ -35,6 +35,7 @@ Also allow the method to be used on models with categorical data  ([#315](https:
 Now heavily utilizing [snapshots](https://testthat.r-lib.org/articles/snapshotting.html) on a large set of benchmark calls to `explain`, also using [vdiffr](https://vdiffr.r-lib.org/) for plot tests. 
 Test functions are only written for exported core functions. Internal functions are only tested through the exported ones. 
 * Update GitHub actions ([#335](https://github.com/NorskRegnesentral/shapr/pull/335)).
+* Avoid unnecessary computation of inverse for weight matrix ([#280](https://github.com/NorskRegnesentral/shapr/issues/280))
 
 
 ## Minor improvements and bug fixes
