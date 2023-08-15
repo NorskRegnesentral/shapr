@@ -1547,7 +1547,7 @@ test_that("different n_batches gives same/different shapley values for different
 
 test_that("gaussian approach use the user provided parameters", {
   # approach "gaussian" with default parameter estimation, i.e., sample mean and covariance
-  explain.gaussian_sample_mean_and_covariance <- explain(
+  e.gaussian_samp_mean_cov <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1558,22 +1558,22 @@ test_that("gaussian approach use the user provided parameters", {
 
   # Expect that gaussian.mu is the sample mean when no values are provided
   expect_equal(
-    explain.gaussian_sample_mean_and_covariance$internal$parameters$gaussian.mu,
+    e.gaussian_samp_mean_cov$internal$parameters$gaussian.mu,
     colMeans(unname(x_train_numeric))
   )
 
   # Expect that gaussian.cov_mat is the sample covariance when no values are provided
   expect_equal(
-    explain.gaussian_sample_mean_and_covariance$internal$parameters$gaussian.cov_mat,
+    e.gaussian_samp_mean_cov$internal$parameters$gaussian.cov_mat,
     cov(x_train_numeric)
   )
 
   # Provide parameter values for the Gaussian approach
-  gaussian.provided_mu = seq(ncol(x_train_numeric)) # 1,2,3,4,5
-  gaussian.provided_cov_mat = diag(ncol(x_train_numeric))
+  gaussian.provided_mu <- seq_len(ncol(x_train_numeric)) # 1,2,3,4,5
+  gaussian.provided_cov_mat <- diag(ncol(x_train_numeric))
 
   # approach "gaussian" with provided parameters
-  explain.gaussian_provided_mean_and_covariance <- explain(
+  e.gaussian_provided_mean_cov <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1586,13 +1586,13 @@ test_that("gaussian approach use the user provided parameters", {
 
   # Expect that the gaussian.mu parameter is the same as the provided gaussian.provided_mu
   expect_equal(
-    explain.gaussian_provided_mean_and_covariance$internal$parameters$gaussian.mu,
+    e.gaussian_provided_mean_cov$internal$parameters$gaussian.mu,
     gaussian.provided_mu
   )
 
   # Expect that gaussian.cov_mat is the same as the provided gaussian.provided_cov_mat
   expect_equal(
-    explain.gaussian_provided_mean_and_covariance$internal$parameters$gaussian.cov_mat,
+    e.gaussian_provided_mean_cov$internal$parameters$gaussian.cov_mat,
     gaussian.provided_cov_mat
   )
 })

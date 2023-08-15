@@ -509,11 +509,10 @@ test_that("output_lm_numeric_independence_keep_samp_for_vS", {
       prediction_zero = p0,
       n_batches = 1,
       timing = FALSE,
-      keep_samp_for_vS = T
+      keep_samp_for_vS = TRUE
     )),
     "output_lm_numeric_independence_keep_samp_for_vS"
   )
 
   expect_false(is.null(out$internal$output$dt_samp_for_vS))
 })
-
