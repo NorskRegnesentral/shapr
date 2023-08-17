@@ -14,11 +14,13 @@
 setup_approach.gaussian <- function(internal,
                                     gaussian.mu = NULL,
                                     gaussian.cov_mat = NULL, ...) {
-  parameters <- internal$parameters
+
+  # For consistency
+  defaults <- mget(c("gaussian.mu", "gaussian.cov_mat"))
+  internal <- insert_defaults(internal, defaults)
+
   x_train <- internal$data$x_train
   feature_specs <- internal$objects$feature_specs
-
-  # TO DO: gaussian.mu should probably be extracted from internal$parameters$gaussian.mu...
 
   # Checking if factor features are present
   if (any(feature_specs$classes == "factor")) {
@@ -31,21 +33,15 @@ setup_approach.gaussian <- function(internal,
     ))
   }
 
-  # If gaussian.mu is not provided directly, use mean of training data
-  if (is.null(gaussian.mu)) {
-    parameters$gaussian.mu <- get_mu_vec(x_train)
-  } else {
-    parameters$gaussian.mu <- gaussian.mu
+  # If gaussian.mu is not provided directly in internal list, use mean of training data
+  if (is.null(internal$parameters$gaussian.mu)) {
+    internal$parameters$gaussian.mu <- get_mu_vec(x_train)
   }
 
-  # If gaussian.cov_mat is not provided directly, use sample covariance of training data
-  if (is.null(gaussian.cov_mat)) {
-    parameters$gaussian.cov_mat <- get_cov_mat(x_train)
-  } else {
-    parameters$gaussian.cov_mat <- gaussian.cov_mat
+  # If gaussian.cov_mat is not provided directly in internal list, use sample covariance of training data
+  if (is.null(internal$parameters$gaussian.cov_mat)) {
+    internal$parameters$gaussian.cov_mat <- get_cov_mat(x_train)
   }
-
-  internal$parameters <- parameters
 
   return(internal)
 }

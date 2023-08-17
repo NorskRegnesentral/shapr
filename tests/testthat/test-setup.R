@@ -1544,3 +1544,55 @@ test_that("different n_batches gives same/different shapley values for different
     explain.ctree_n_batches_10$shapley_values
   ))
 })
+
+test_that("gaussian approach use the user provided parameters", {
+  # approach "gaussian" with default parameter estimation, i.e., sample mean and covariance
+  e.gaussian_samp_mean_cov <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "gaussian",
+    prediction_zero = p0,
+    timing = FALSE
+  )
+
+  # Expect that gaussian.mu is the sample mean when no values are provided
+  expect_equal(
+    e.gaussian_samp_mean_cov$internal$parameters$gaussian.mu,
+    colMeans(unname(x_train_numeric))
+  )
+
+  # Expect that gaussian.cov_mat is the sample covariance when no values are provided
+  expect_equal(
+    e.gaussian_samp_mean_cov$internal$parameters$gaussian.cov_mat,
+    cov(x_train_numeric)
+  )
+
+  # Provide parameter values for the Gaussian approach
+  gaussian.provided_mu <- seq_len(ncol(x_train_numeric)) # 1,2,3,4,5
+  gaussian.provided_cov_mat <- diag(ncol(x_train_numeric))
+
+  # approach "gaussian" with provided parameters
+  e.gaussian_provided_mean_cov <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "gaussian",
+    prediction_zero = p0,
+    timing = FALSE,
+    gaussian.mu = gaussian.provided_mu,
+    gaussian.cov_mat = gaussian.provided_cov_mat
+  )
+
+  # Expect that the gaussian.mu parameter is the same as the provided gaussian.provided_mu
+  expect_equal(
+    e.gaussian_provided_mean_cov$internal$parameters$gaussian.mu,
+    gaussian.provided_mu
+  )
+
+  # Expect that gaussian.cov_mat is the same as the provided gaussian.provided_cov_mat
+  expect_equal(
+    e.gaussian_provided_mean_cov$internal$parameters$gaussian.cov_mat,
+    gaussian.provided_cov_mat
+  )
+})
