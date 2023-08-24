@@ -120,7 +120,13 @@ batch_prepare_vS <- function(S, internal) {
     } else {
       dt <- NULL # Special case for when the batch only include the largest id
     }
-    dt_max <- data.table(x_explain, id_combination = max_id_combination, w = 1, id = seq_len(n_explain))
+    # Remove comment in the end.
+    # Lars: Fixed incorrect order that only made an effect for a batch containing only the max_id_combination,
+    # as then dt is NULL, so when we rbind dt with dt_max we kept the order of columns from dt_max.
+    # Otherwise, when dt is NOT NULL, then the order would be the same as in dt.
+    # So beforehand we ended up rbindin id_combination and a feature, and all features where shifted
+    # one column to the left. Date 15-09-23.
+    dt_max <- data.table(id_combination = max_id_combination, x_explain, w = 1, id = seq_len(n_explain))
     dt <- rbind(dt, dt_max)
     setkey(dt, id, id_combination)
   }

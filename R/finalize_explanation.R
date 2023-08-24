@@ -66,7 +66,22 @@ postprocess_vS_list <- function(vS_list, internal) {
 
     dt_vS <- rbindlist(lapply(vS_list, `[[`, 1))
 
-    dt_samp_for_vS <- rbindlist(lapply(vS_list, `[[`, 2))
+    # Delete these comments in the end
+    # Message 1:
+    # Lars added use.names=TRUE as the order of the columns are different if a batch consists
+    # only of the S = [1,1,...,1], i.e., the grand coalition. Without use.names=TRUE, the function
+    # rbind binds the columns of different data/feature together.
+    # One could potentially also solve this bug by determine why the column order is different in
+    # the first place. Date 15-09-23.
+    # Message 2:
+    # The origin of the bug was in `batch_prepare_vS` function and I have now fixed it, so the
+    # column order is of the correct order. Thus, could remove use.names=TRUE, but it might
+    # be good to have it there. The rbind.data.table function has sets it to TRUE by default,
+    # as described in news for v1.12.2.
+    # https://cran.r-project.org/web/packages/data.table/news/news.html
+    # Date 15-09-23.
+    dt_samp_for_vS <- rbindlist(lapply(vS_list, `[[`, 2), use.names=TRUE)
+
     data.table::setorder(dt_samp_for_vS, id_combination)
   } else {
     names(dt_vS0) <- names(vS_list[[1]])
