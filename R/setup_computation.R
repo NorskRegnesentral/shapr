@@ -103,7 +103,7 @@ shapley_setup_forecast <- function(internal) {
   #### Updating parameters ####
 
   # Updating parameters$exact as done in feature_combinations
-  if (!exact && n_combinations > 2^n_features0) {
+  if (!exact && n_combinations >= 2^n_features0) {
     internal$parameters$exact <- TRUE # Note that this is exact only if all horizons use the exact method.
   }
 
@@ -161,7 +161,7 @@ shapley_setup <- function(internal) {
   #### Updating parameters ####
 
   # Updating parameters$exact as done in feature_combinations
-  if (!exact && n_combinations > 2^n_features0) {
+  if (!exact && n_combinations >= 2^n_features0) {
     internal$parameters$exact <- TRUE
   }
 
@@ -253,7 +253,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   if (!exact) {
     if (m_group == 0) {
       # Switch to exact for feature-wise method
-      if (n_combinations > 2^m) {
+      if (n_combinations >= 2^m) {
         n_combinations <- 2^m
         exact <- TRUE
         message(
@@ -266,7 +266,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       }
     } else {
       # Switch to exact for feature-wise method
-      if (n_combinations > (2^m_group)) {
+      if (n_combinations >= (2^m_group)) {
         n_combinations <- 2^m_group
         exact <- TRUE
         message(
