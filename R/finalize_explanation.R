@@ -80,7 +80,7 @@ postprocess_vS_list <- function(vS_list, internal) {
     # as described in news for v1.12.2.
     # https://cran.r-project.org/web/packages/data.table/news/news.html
     # Date 15-09-23.
-    dt_samp_for_vS <- rbindlist(lapply(vS_list, `[[`, 2), use.names=TRUE)
+    dt_samp_for_vS <- rbindlist(lapply(vS_list, `[[`, 2), use.names = TRUE)
 
     data.table::setorder(dt_samp_for_vS, id_combination)
   } else {
