@@ -693,15 +693,13 @@ get_default_n_batches <- function(approach, n_combinations) {
     suggestion <- ceiling(n_combinations / 10)
     this_min <- 10
     this_max <- 1000
-    min_checked <- max(c(this_min, suggestion))
-    ret <- min(c(this_max, min_checked))
   } else {
     suggestion <- ceiling(n_combinations / 100)
     this_min <- 2
     this_max <- 100
-    min_checked <- max(c(this_min, suggestion))
-    ret <- min(c(this_max, min_checked))
   }
+  min_checked <- max(c(this_min, suggestion))
+  ret <- min(c(this_max, min_checked, n_combinations - 1))
   message(
     paste0(
       "Setting parameter 'n_batches' to ", ret, " as a fair trade-off between memory consumption and ",
