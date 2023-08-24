@@ -217,7 +217,7 @@ check_n_batches <- function(internal) {
 
   if (n_batches >= actual_n_combinations) {
     stop(paste0(
-      "`n_batches` (", n_batches, ") must be smaller than the number feature combinations/`n_combinations` (",
+      "`n_batches` (", n_batches, ") must be smaller than the number of feature combinations/`n_combinations` (",
       actual_n_combinations, ")"
     ))
   }
