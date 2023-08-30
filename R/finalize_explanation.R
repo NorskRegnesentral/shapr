@@ -204,7 +204,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 compute_MSEv_evaluation_criterion = function(internal,
                                              processed_vS_list,
                                              p = shapr:::get_p(processed_vS_list$dt_vS, internal),
-                                             exclude_empty_and_grand_coalition = FALSE,
+                                             exclude_empty_and_grand_coalition = TRUE,
                                              return_as_dt = TRUE) {
 
   # Get the number of unique coalitions, where two of them are the empty and full set.
@@ -256,7 +256,7 @@ compute_MSEv_evaluation_criterion = function(internal,
                  "MSEv_evaluation_criterion" = MSEv_evaluation_criterion_for_each_explicand)
     MSEv_evaluation_criterion_for_each_coalition =
       data.table("id_combination" = id_combination_numbers,
-                 "features" = internal$objects$X$features,
+                 "features" = internal$objects$X$features[id_combination_numbers],
                  "MSEv_evaluation_criterion" = MSEv_evaluation_criterion_for_each_coalition,
                  "MSEv_evaluation_criterion_sd" = MSEv_evaluation_criterion_for_each_coalition_sd)
 
