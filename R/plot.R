@@ -957,12 +957,16 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #'   # The function will set default names
 #'   plots_unnamed = make_MSEv_evaluation_criterion_plots(explanation_list_unnamed)
+#'   plots_unnamed$bar_plot_MSEv
 #'
 #'   # The function use the provided names
 #'   plots_named = make_MSEv_evaluation_criterion_plots(explanation_list_named)
 #'
 #'   # See the types of plots produced
 #'   names(plots_named)
+#'
+#'   # Look at the plots
+#'   plots_named
 #'
 #'   # Can change many parameters to alter the plots.
 #'   # Both design-wise, but also only plot certain coalitions and/or explicands
@@ -983,7 +987,9 @@ make_waterfall_plot <- function(dt_plot,
 #'     line_width = 1,
 #'     add_error_bars = FALSE,
 #'     rotate_feature_names_45_degrees = TRUE,
-#'     flip_coordinates = TRUE
+#'     flip_coordinates = TRUE,
+#'     legend_position = "bottom",
+#'     legend_nrow = 2
 #'   )
 #'
 #'   # Look at some of the individual plots
@@ -1098,7 +1104,6 @@ make_MSEv_evaluation_criterion_plots = function(explanation_list,
   # Convert to factors
   MSEv_eval_crit$Method = factor(MSEv_eval_crit$Method, levels = names(explanation_list))
 
-
   # Create a data.table with the MSEv evaluation criterion values for the different methods for each explicand .
   MSEv_eval_crit_for_each_explicand = rbindlist(
     lapply(explanation_list,
@@ -1126,7 +1131,7 @@ make_MSEv_evaluation_criterion_plots = function(explanation_list,
   if (!is.null(index_combinations)) MSEv_eval_crit_for_each_coalition = MSEv_eval_crit_for_each_coalition[id_combination %in% index_combinations]
 
   # If user has not specified if the names are to be rotated due to overlapping text
-  if (is.null(rotate_feature_names_45_degrees)) {
+  if (is.null(rotate_feature_names_45_degrees) & !flip_coordinates) {
     # Rotate if the longest name is longer than 12 characters
     rotate_feature_names_45_degrees = ifelse(max(nchar(names(explanation_list))) > 12, TRUE, FALSE)
   }
@@ -1144,15 +1149,14 @@ make_MSEv_evaluation_criterion_plots = function(explanation_list,
       color = bar_text_color,
       position = ggplot2::position_dodge(0.9),
       size = bar_text_size) +
-    ggplot2::labs(x = "Method",
-                  y = bquote(MSE[v]),
-                  title = bquote(MSE[v]*" criterion averaged over both the "*.(n_combinations)*" coalitions and "*.(n_explain)*" explicands")) +
+    ggplot2::labs(x = "Method", y = bquote(MSE[v])) +
+    {if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v]*" criterion averaged over both the "*.(n_combinations)*" coalitions and "*.(n_explain)*" explicands"))} +
+    {if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))} +
     {if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction)} +
     {if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction)} +
     {if (!is.null(ggplot_theme)) ggplot_theme} +
     {if (rotate_feature_names_45_degrees) ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, vjust = 1, hjust=1))} +
     {if (flip_coordinates) ggplot2::coord_flip()} +
-    ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size)) +
     {if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)} +
     {if (!is.null(legend_ncol)) ggplot2::guides(fill = ggplot2::guide_legend(ncol = legend_ncol))} +
     {if (!is.null(legend_nrow)) ggplot2::guides(fill = ggplot2::guide_legend(nrow = legend_nrow))}
@@ -1167,17 +1171,18 @@ make_MSEv_evaluation_criterion_plots = function(explanation_list,
     # Make a source object of the data
     MSEv_for_each_explicand_source =
       ggplot2::ggplot(MSEv_eval_crit_for_each_explicand, ggplot2::aes(x = id, y = MSEv_evaluation_criterion)) +
-      ggplot2::labs(x = "Explicand index",
-                    y = bquote(MSE[v]),
-                    title = bquote(MSE[v]*" criterion averaged only over the "*.(n_combinations)*" coalitions for each explicand")) +
+      ggplot2::labs(x = "Explicand index", y = bquote(MSE[v])) +
+      {if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v]*" criterion averaged over both the "*.(n_combinations)*" coalitions and "*.(n_explain)*" explicands"))} +
+      {if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))} +
       {if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction)} +
       {if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction)} +
       {if (!is.null(ggplot_theme)) ggplot_theme} +
       {if (flip_coordinates) ggplot2::coord_flip()} +
-      ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size)) +
       {if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)} +
       {if (!is.null(legend_ncol)) ggplot2::guides(fill = ggplot2::guide_legend(ncol = legend_ncol))} +
-      {if (!is.null(legend_nrow)) ggplot2::guides(fill = ggplot2::guide_legend(nrow = legend_nrow))}
+      {if (!is.null(legend_ncol)) ggplot2::guides(col = ggplot2::guide_legend(ncol = legend_ncol))} +
+      {if (!is.null(legend_nrow)) ggplot2::guides(fill = ggplot2::guide_legend(nrow = legend_nrow))} +
+      {if (!is.null(legend_nrow)) ggplot2::guides(col = ggplot2::guide_legend(nrow = legend_nrow))}
 
     # Use the source object to create a bar plot
     MSEv_for_each_explicand_bar_plot =
@@ -1197,25 +1202,24 @@ make_MSEv_evaluation_criterion_plots = function(explanation_list,
       MSEv_for_each_explicand_source +
       ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Method)) +
       ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(group=Method, col = Method))
-    MSEv_for_each_explicand_line_point_plot
-
 
 
     ### Make plots of the MSEv evaluation criterion values for the different methods for each coalition averaged over the explicands
     # Make a source object of the data
     MSEv_for_each_coalition_source =
       ggplot2::ggplot(MSEv_eval_crit_for_each_coalition, ggplot2::aes(x = id_combination, y = MSEv_evaluation_criterion)) +
-      ggplot2::labs(x = "Coalition index",
-                    y = bquote(MSE[v]),
-                    title = bquote(MSE[v]*" criterion averaged only over the "*.(n_explain)*" explicands for each coalition")) +
+      ggplot2::labs(x = "Coalition index", y = bquote(MSE[v])) +
+      {if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v]*" criterion averaged over both the "*.(n_combinations)*" coalitions and "*.(n_explain)*" explicands"))} +
+      {if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))} +
       {if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction)} +
       {if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction)} +
       {if (!is.null(ggplot_theme)) ggplot_theme} +
       {if (flip_coordinates) ggplot2::coord_flip()} +
-      ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size)) +
       {if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)} +
       {if (!is.null(legend_ncol)) ggplot2::guides(fill = ggplot2::guide_legend(ncol = legend_ncol))} +
-      {if (!is.null(legend_nrow)) ggplot2::guides(fill = ggplot2::guide_legend(nrow = legend_nrow))}
+      {if (!is.null(legend_ncol)) ggplot2::guides(col = ggplot2::guide_legend(ncol = legend_ncol))} +
+      {if (!is.null(legend_nrow)) ggplot2::guides(fill = ggplot2::guide_legend(nrow = legend_nrow))} +
+      {if (!is.null(legend_nrow)) ggplot2::guides(col = ggplot2::guide_legend(nrow = legend_nrow))}
 
     # Use the source object to create a bar plot
     MSEv_for_each_coalition_bar_plot =
@@ -1248,7 +1252,6 @@ make_MSEv_evaluation_criterion_plots = function(explanation_list,
                      col = Method),
         width = 0.2,
         position = ggplot2::position_dodge(0.25))}
-
 
     # Add the figures to the return list
     return_list = c(list(
