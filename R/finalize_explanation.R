@@ -198,8 +198,73 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' MAE between the estimated and true Shapley values in a simulation study. Note that explicands
 #' refer to the observations whose predictions we are to explain.
 #'
-#' @author Lars Henry Berge Olsen
+#' @examples
+#' library(xgboost)
+#' library(data.table)
+#' seed(1)
 #'
+#' data("airquality")
+#' data <- data.table::as.data.table(airquality)
+#' data <- data[complete.cases(data), ]
+#'
+#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#' y_var <- "Ozone"
+#'
+#' ind_x_explain <- 1:6
+#' x_train <- data[-ind_x_explain, ..x_var]
+#' y_train <- data[-ind_x_explain, get(y_var)]
+#' x_explain <- data[ind_x_explain, ..x_var]
+#'
+#' # Fitting a basic xgboost model to the training data
+#' model <- xgboost::xgboost(
+#'   data = as.matrix(x_train),
+#'   label = y_train,
+#'   nround = 20,
+#'   verbose = FALSE
+#' )
+#'
+#' # Specifying the phi_0, i.e. the expected prediction without any features
+#' p0 <- mean(y_train)
+#'
+#' # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
+#' # the gaussian (conditional) approach
+#' explanation <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = "gaussian",
+#'   prediction_zero = p0,
+#'   seed = 1
+#' )
+#'
+#' # The `compute_MSEv_evaluation_criterion` function is intended to be only called internally in
+#' # the `shapr` package, but the user can still use it outside of the package.
+#' # Exclude the empty and grand coalitions from the computations and return the result as a data.table
+#' compute_MSEv_evaluation_criterion(internal = explanation$internal,
+#'                                   processed_vS_list = explanation$internal$output,
+#'                                   exclude_empty_and_grand_coalition = TRUE,
+#'                                   return_as_dt = TRUE)
+#'
+#' # Include the empty and grand coalitions from the computations and return the result as a data.table
+#' compute_MSEv_evaluation_criterion(internal = explanation$internal,
+#'                                   processed_vS_list = explanation$internal$output,
+#'                                   exclude_empty_and_grand_coalition = FALSE,
+#'                                   return_as_dt = TRUE)
+#'
+#' # Exclude the empty and grand coalitions from the computations and return the result as a list
+#' compute_MSEv_evaluation_criterion(internal = explanation$internal,
+#'                                   processed_vS_list = explanation$internal$output,
+#'                                   exclude_empty_and_grand_coalition = TRUE,
+#'                                   return_as_dt = FALSE)
+#'
+#' # Include the empty and grand coalitions from the computations and return the result as a list
+#' compute_MSEv_evaluation_criterion(internal = explanation$internal,
+#'                                   processed_vS_list = explanation$internal$output,
+#'                                   exclude_empty_and_grand_coalition = FALSE,
+#'                                   return_as_dt = FALSE)
+#'
+#'
+#' @author Lars Henry Berge Olsen
 #' @keywords internal
 compute_MSEv_evaluation_criterion = function(internal,
                                              processed_vS_list,
