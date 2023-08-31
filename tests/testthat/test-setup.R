@@ -1596,3 +1596,28 @@ test_that("gaussian approach use the user provided parameters", {
     gaussian.provided_cov_mat
   )
 })
+
+test_that("Shapr sets a valid default value for `n_batches`", {
+  # Shapr sets the default number of batches to be 10 for this dataset and the
+  # "ctree", "gaussian", and "copula" approaches. Thus, setting `n_combinations`
+  # to any value lower of equal to 10 causes the error.
+  any_number_equal_or_below_10 = 8
+
+  # Before the bugfix, shapr:::check_n_batches() throws the error:
+  # Error in check_n_batches(internal) :
+  #   `n_batches` (10) must be smaller than the number feature combinations/`n_combinations` (8)
+  # Bug only occures for "ctree", "gaussian", and "copula" as they are treated different in
+  # `get_default_n_batches()`, I am not certain why. Ask Martin about the logic behind that.
+  expect_no_error(
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      n_samples = 2, # Low value for fast computations
+      approach = "gaussian",
+      prediction_zero = p0,
+      n_combinations = any_number_equal_or_below_10
+    )
+  )
+})
+
