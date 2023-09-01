@@ -10,6 +10,28 @@ explain_mixed <- explain(
   timing = FALSE
 )
 
+explain_ctree <- explain(
+  model = model_lm_mixed,
+  x_explain = x_explain_mixed,
+  x_train = x_train_mixed,
+  approach = "ctree",
+  prediction_zero = p0,
+  n_batches = 1,
+  timing = FALSE
+)
+
+explain_combined <- explain(
+  model = model_lm_mixed,
+  x_explain = x_explain_mixed,
+  x_train = x_train_mixed,
+  approach = c("independence", "ctree", "independence", "ctree", "independence"),
+  prediction_zero = p0,
+  n_batches = 3,
+  timing = FALSE
+)
+
+
+
 test_that("checking default outputs", {
   skip_if_not_installed("vdiffr")
 
@@ -128,4 +150,21 @@ test_that("beeswarm_plot_new_arguments", {
     title = "beeswarm_plot_index_x_explain_1_2",
     fig = plot(explain_mixed, plot_type = "beeswarm", index_x_explain = c(1, 2))
   )
+})
+
+
+test_that("MSEv evaluation criterion plots", {
+  skip_if_not_installed("vdiffr")
+
+  # TODO:
+  # LARS ADD TEST HERE
+  # vdiffr::expect_doppelganger(
+  #   title = "beeswarm_plot_new_colors",
+  #   fig = plot(explain_mixed, plot_type = "beeswarm", col = c("blue", "black"))
+  # )
+  #
+  # vdiffr::expect_doppelganger(
+  #   title = "beeswarm_plot_index_x_explain_1_2",
+  #   fig = plot(explain_mixed, plot_type = "beeswarm", index_x_explain = c(1, 2))
+  # )
 })
