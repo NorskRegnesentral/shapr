@@ -833,15 +833,15 @@ make_waterfall_plot <- function(dt_plot,
 #' @param point_size Positive numeric. The size of the points. Set `point_size = 0` to remove points.
 #' @param point_shape Integer or string. Specify the shape of the points.
 #' For a complete list of all possible shapes, see \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}.
-#' @param add_error_bars Boolean. If `TRUE`, the function adds error bars (± 1sd) to the MSEv
+#' @param add_error_bars_for_coalitions Boolean. If `TRUE`, the function adds error bars (± 1sd) to the MSEv
 #' for the coalitions averaged over the explicands. It does not makes sense to add it for the other
 #' plots as the scale of the MSEv for the explicands averaged over the coalitions is different for each
 #' coalition. The mileage of this argument may vary due to potentially overlapping error bars.
 #' @param flip_coordinates Boolean. Flip Cartesian coordinates so that horizontal becomes vertical, and vertical, horizontal.
 #' This is primarily useful for converting geoms and statistics which display y conditional on x, to x conditional on y.
-#' See [ggplot2::coord_flip()].
-#' @param rotate_feature_names_45_degrees Boolean. If the names are to be rotated 45 degrees to make them easier to read.
-#' Does this automatically for long names if `rotate_feature_names_45_degrees` is not set to `FALSE`.
+#' See [ggplot2::coord_flip()]. If `TRUE`, then the function makes horizontal bars instead of vertical bars.
+#' @param reverse_coordinates Boolean. Default to be the same as `flip_coordinates`. If `TRUE`, then reverse the order of the methods.
+#' @param geom_col_width Numeric. Bar width. By default, set to 90% of the [ggplot2::resolution()] of the data.
 #' @param legend_position String or numeric vector `c(x,y)`. The allowed string values for the
 #' argument `legend_position` are: `left`,`top`, `right`, `bottom`. Note that, the argument
 #' `legend_position` can be also a numeric vector `c(x,y)`. In this case it is possible to position
@@ -850,8 +850,13 @@ make_waterfall_plot <- function(dt_plot,
 #' and `c(1,1)` corresponds to the "top right" position.
 #' @param legend_ncol Integer. The number of columns in the legend.
 #' @param legend_nrow Integer. The number of rows in the legend.
+#' @param return_figures Boolean. If the figures are to be returned as a list.
+#' @param axis_labels_n_dodge Integer. The number of rows that should be used to render the labels.
+#' This is useful for displaying labels that would otherwise overlap.
+#' @param axis_labels_rotate_angle Numeric. The angle of the axis label.
+#' Where 0 means horizontal, 45 means tilted, and 90 means vertical.
 #'
-#' @return List of 5 [ggplot2::ggplot()] objects: three bar plots and two line plots.
+#' @return List of 5 [ggplot2::ggplot()] objects: three bar plots and two line plots. Only if `return_figures = TRUE`.
 #' @export
 #'
 #' @examples
@@ -962,51 +967,167 @@ make_waterfall_plot <- function(dt_plot,
 #'   "Gaus. 1e1" = explanation_gaussian_1e1,
 #'   "Gaus. 1e2" = explanation_gaussian_1e2,
 #'   "Ctree" = explanation_ctree,
-#'   "Combined approaches" = explanation_combined
+#'   "Combined" = explanation_combined
 #' )
 #'
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#' # The function will set default names for the objects in `explanation_list`
+#' # when not provided, but these are long and will give warning to the user.
+#' # The order of the methods are the same as the order in the `explanation_list`.
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+#'                                      plot_overall_MSEv = TRUE,
+#'                                      only_overall_MSEv = TRUE,
+#'                                      return_figures = FALSE)
 #'
-#'   # The function will set default names
-#'   plots_unnamed = make_MSEv_evaluation_criterion_plots(explanation_list_unnamed)
-#'   plots_unnamed$bar_plot_MSEv
+#' # We can fix this by either setting the `axis_labels_rotate_angle` or `axis_labels_n_dodge`
+#' # to get nonoverlapping horizontal axis labels.
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+#'                                      plot_overall_MSEv = TRUE,
+#'                                      only_overall_MSEv = TRUE,
+#'                                      return_figures = FALSE,
+#'                                      axis_labels_rotate_angl = -90)
 #'
-#'   # The function use the provided names
-#'   plots_named = make_MSEv_evaluation_criterion_plots(explanation_list_named)
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+#'                                      plot_overall_MSEv = TRUE,
+#'                                      only_overall_MSEv = TRUE,
+#'                                      return_figures = FALSE,
+#'                                      axis_labels_n_dodge = 2)
 #'
-#'   # See the types of plots produced
-#'   names(plots_named)
+#' # Another solution is to provide short names for the objects in the `explanation_list`.
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = TRUE,
+#'                                      only_overall_MSEv = TRUE,
+#'                                      return_figures = FALSE)
 #'
-#'   # Look at the plots
-#'   plots_named
+#' # We can change many of the parameters to change the design of the figure
+#' # We can, e.g., flip the bars to rather have horizontal bars
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = TRUE,
+#'                                      only_overall_MSEv = TRUE,
+#'                                      return_figures = FALSE,
+#'                                      flip_coordinates = TRUE)
 #'
-#'   # Can change many parameters to alter the plots.
-#'   # Both design-wise, but also only plot certain coalitions and/or explicands
-#'   plots_named_v2 = make_MSEv_evaluation_criterion_plots(
-#'     explanation_list_named,
-#'     index_combinations = c(1:3, 10, 15),
-#'     index_explicands = c(1, 3:4, 6),
-#'     ggplot_theme = ggplot2::theme_minimal(),
-#'     brewer_palette = NULL,
-#'     brewer_direction = -1,
-#'     title_text_size = 0,
-#'     bar_text_color = "black",
-#'     bar_text_size = 3,
-#'     bar_text_n_decimals = 0,
-#'     point_size = 5,
-#'     point_shape = "square",
-#'     line_type = "dashed",
-#'     line_width = 1,
-#'     add_error_bars = FALSE,
-#'     rotate_feature_names_45_degrees = TRUE,
-#'     flip_coordinates = TRUE,
-#'     legend_position = "bottom",
-#'     legend_nrow = 2
-#'   )
+#' # We can make annotate the height of the bars
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = TRUE,
+#'                                      only_overall_MSEv = TRUE,
+#'                                      return_figures = FALSE,
+#'                                      flip_coordinates = TRUE,
+#'                                      bar_text_color = "black",
+#'                                      bar_text_size = 5,
+#'                                      bar_text_n_decimals = 2)
 #'
-#'   # Look at some of the individual plots
-#'   plots_named_v2$bar_plot_MSEv_for_each_coalition
-#'   plots_named_v2$line_point_plot_MSEv_for_each_explicand
+#' # Note that reasonable values should be specified by the user to make readable plots.
+#' # Here we illustrate what happens when we set the size too big and include too many decimals.
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = TRUE,
+#'                                      only_overall_MSEv = TRUE,
+#'                                      return_figures = FALSE,
+#'                                      flip_coordinates = FALSE,
+#'                                      bar_text_color = "black",
+#'                                      bar_text_size = 10,
+#'                                      bar_text_n_decimals = 8)
+#'
+#' # We can also change the theme of the figure, change the palette, and its order.
+#' # Note that setting `brewer_palette = NULL`, yields ggplot's default color scheme.
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = TRUE,
+#'                                      only_overall_MSEv = TRUE,
+#'                                      return_figures = FALSE,
+#'                                      flip_coordinates = TRUE,
+#'                                      bar_text_color = "black",
+#'                                      bar_text_size = 5,
+#'                                      bar_text_n_decimals = 2,
+#'                                      ggplot_theme = ggplot2::theme_minimal(),
+#'                                      brewer_palette = "Set1",
+#'                                      brewer_direction = -1)
+#'
+#' # We can change the position of the legend, its number of columns (and rows), and remove title
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = TRUE,
+#'                                      only_overall_MSEv = TRUE,
+#'                                      return_figures = FALSE,
+#'                                      legend_position = "bottom",
+#'                                      legend_ncol = 3,
+#'                                      legend_nrow = 2,
+#'                                      title_text_size = 0)
+#'
+#' # We can return the figure as list
+#' figure = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                               plot_overall_MSEv = FALSE,
+#'                                               only_overall_MSEv = TRUE,
+#'                                               return_figures = TRUE)
+#' figure
+#'
+#' # In addition to only make the overall MSEv figure, where we average over both the coalitions and
+#' # explicands, we can also make figures where we only average over one of them.
+#' figures = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                                plot_overall_MSEv = FALSE,
+#'                                                only_overall_MSEv = FALSE,
+#'                                                return_figures = TRUE)
+#' # We see that we make five plots
+#' # Plots 1-2 and 3-4 illustrates the same, but as line/point plots and as bar plots.
+#' # The plots that end with `MSEv_for_each_explicand` has only averaged over the coalitions,
+#' # while the plots that end with `MSEv_for_each_coalition` has only averaged over the explicands.
+#' # Here an explicand refers to the observations in `x_explain` which we want to explain.
+#' # Finally, `bar_plot_MSEv` is the plot we have looked at above.
+#' names(figures)
+#'
+#' # Look at the MSEv for each explicand and then coalition
+#' figures$bar_plot_MSEv_for_each_explicand
+#' figures$bar_plot_MSEv_for_each_coalition
+#'
+#' # We can focus on certain explicands by using the `index_explicands` parameter
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = FALSE,
+#'                                      only_overall_MSEv = FALSE,
+#'                                      return_figures = TRUE,
+#'                                      index_explicands = c(1, 3:4, 6),
+#'                                      geom_col_width = 0.75)$bar_plot_MSEv_for_each_explicand
+#'
+#' # Or certain coalitions by using the `index_combinations` parameter
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = FALSE,
+#'                                      only_overall_MSEv = FALSE,
+#'                                      return_figures = TRUE,
+#'                                      index_combinations = c(1:3, 10, 15),
+#'                                      geom_col_width = 0.75)$bar_plot_MSEv_for_each_coalition
+#'
+#' # Can also here flip the bars and add other stuff
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = FALSE,
+#'                                      only_overall_MSEv = FALSE,
+#'                                      return_figures = TRUE,
+#'                                      index_explicands = c(1, 3:4, 6),
+#'                                      geom_col_width = 0.75,
+#'                                      flip_coordinates = TRUE,
+#'                                      bar_text_size = 4,
+#'                                      ggplot_theme = ggplot2::theme_minimal(),
+#'                                      brewer_palette = "Blues")$bar_plot_MSEv_for_each_explicand
+#'
+#' # The function also produce line/point plots for the same quantities as the bar plots
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = FALSE,
+#'                                      only_overall_MSEv = FALSE,
+#'                                      return_figures = TRUE)$line_point_plot_MSEv_for_each_explicand
+#'
+#' # We can remove the lines to only get points and change their size and shape
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = FALSE,
+#'                                      only_overall_MSEv = FALSE,
+#'                                      return_figures = TRUE,
+#'                                      line_type = "blank",
+#'                                      point_size = 2,
+#'                                      point_shape = "square")$line_point_plot_MSEv_for_each_explicand
+#'
+#' # Or we can remove the points, and change the design of the lines
+#' make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+#'                                      plot_overall_MSEv = FALSE,
+#'                                      only_overall_MSEv = FALSE,
+#'                                      return_figures = TRUE,
+#'                                      point_size = 0,
+#'                                      line_width = 1,
+#'                                      line_type = "solid")$line_point_plot_MSEv_for_each_explicand
 #' }
 #'
 #' @author Lars Henry Berge Olsen
@@ -1017,6 +1138,8 @@ make_MSEv_evaluation_criterion_plots = function(explanation_list,
                                                 plot_overall_MSEv = FALSE,
                                                 return_figures = TRUE,
                                                 ggplot_theme = NULL,
+                                                axis_labels_n_dodge = NULL,
+                                                axis_labels_rotate_angle = NULL,
                                                 brewer_palette = "Paired",
                                                 brewer_direction = 1,
                                                 title_text_size = 12,
@@ -1027,9 +1150,10 @@ make_MSEv_evaluation_criterion_plots = function(explanation_list,
                                                 line_width = 0.4,
                                                 point_size = 3,
                                                 point_shape = "circle",
-                                                add_error_bars = FALSE,
-                                                rotate_feature_names_45_degrees = NULL,
+                                                add_error_bars_for_coalitions = FALSE,
                                                 flip_coordinates = FALSE,
+                                                reverse_coordinates = flip_coordinates,
+                                                geom_col_width = NULL,
                                                 legend_position = NULL,
                                                 legend_ncol = NULL,
                                                 legend_nrow = NULL) {
@@ -1075,9 +1199,11 @@ Default to the approach names (with integer suffix for duplicates) for the expla
       paste(names(entries_missing_MSEv_evaluation_criterion)[entries_missing_MSEv_evaluation_criterion], collapse = ", ")
 
     if (sum(entries_missing_MSEv_evaluation_criterion) == 1) {
-      stop(sprintf("The object %s in `explanation_list` is missing the `MSEv_evaluation_criterion` list.", methods_without_MSEv_eval_crit_string))
+      stop(sprintf("The object %s in `explanation_list` is missing the `MSEv_evaluation_criterion` list.",
+                   methods_without_MSEv_eval_crit_string))
     } else {
-      stop(sprintf("The objects %s in `explanation_list` are missing the `MSEv_evaluation_criterion` list.", methods_without_MSEv_eval_crit_string))
+      stop(sprintf("The objects %s in `explanation_list` are missing the `MSEv_evaluation_criterion` list.",
+                   methods_without_MSEv_eval_crit_string))
     }
   }
 
@@ -1100,6 +1226,9 @@ Default to the approach names (with integer suffix for duplicates) for the expla
                    methods_with_different_coalitions_string, names(explanation_list)[1]))
     }
   }
+
+  # Set geom_col_width to its default value. Same as in ggplot2.
+  if (is.null(geom_col_width)) geom_col_width = 0.9
 
   # Get the number of coalitions and explicands
   n_explain = explanation_list[[1]]$internal$parameters$n_explain
@@ -1124,7 +1253,8 @@ Default to the approach names (with integer suffix for duplicates) for the expla
 
   # Convert to factors
   MSEv_eval_crit_for_each_explicand$id = factor(MSEv_eval_crit_for_each_explicand$id)
-  MSEv_eval_crit_for_each_explicand$Method = factor(MSEv_eval_crit_for_each_explicand$Method, levels = names(explanation_list))
+  MSEv_eval_crit_for_each_explicand$Method = factor(MSEv_eval_crit_for_each_explicand$Method,
+                                                    levels = names(explanation_list))
 
   # Only keep the desired explicands
   if (!is.null(index_explicands)) MSEv_eval_crit_for_each_explicand = MSEv_eval_crit_for_each_explicand[id %in% index_explicands]
@@ -1137,38 +1267,82 @@ Default to the approach names (with integer suffix for duplicates) for the expla
 
   # Convert to factors
   MSEv_eval_crit_for_each_coalition$id_combination = factor(MSEv_eval_crit_for_each_coalition$id_combination)
-  MSEv_eval_crit_for_each_coalition$Method = factor(MSEv_eval_crit_for_each_coalition$Method, levels = names(explanation_list))
+  MSEv_eval_crit_for_each_coalition$Method = factor(MSEv_eval_crit_for_each_coalition$Method,
+                                                    levels = names(explanation_list))
 
   # Only keep the desired coalitions
-  if (!is.null(index_combinations)) MSEv_eval_crit_for_each_coalition = MSEv_eval_crit_for_each_coalition[id_combination %in% index_combinations]
-
-  # If user has not specified if the names are to be rotated due to overlapping text
-  if (is.null(rotate_feature_names_45_degrees) & !flip_coordinates) {
-    # Rotate if the longest name is longer than 12 characters
-    rotate_feature_names_45_degrees = ifelse(max(nchar(names(explanation_list))) > 12, TRUE, FALSE)
+  if (!is.null(index_combinations)) {
+    MSEv_eval_crit_for_each_coalition =
+      MSEv_eval_crit_for_each_coalition[id_combination %in% index_combinations]
   }
+
+  # If flip coordinates, then we need to change the order of the levels such that the order
+  # of the bars in the figure match the order in the legend.
+  if (flip_coordinates) {
+    MSEv_eval_crit_for_each_coalition$Method = factor(MSEv_eval_crit_for_each_coalition$Method,
+                                            levels = rev(levels(MSEv_eval_crit_for_each_coalition$Method)))
+    MSEv_eval_crit_for_each_explicand$Method = factor(MSEv_eval_crit_for_each_explicand$Method,
+                                                      levels = rev(levels(MSEv_eval_crit_for_each_explicand$Method)))
+
+    # Flip the order of the color scheme to be correct
+    brewer_direction_for_only_MSEv = brewer_direction # This is not needed to flip
+    brewer_direction = ifelse(brewer_direction == 1, -1, 1)
+    breaks = rev(levels(MSEv_eval_crit_for_each_coalition$Method))
+  } else {
+    brewer_direction_for_only_MSEv = brewer_direction
+    breaks = levels(MSEv_eval_crit_for_each_coalition$Method)
+  }
+
+  # User has provided neither `axis_labels_n_dodge` nor `axis_labels_rotate_angle`
+  if (is.null(axis_labels_rotate_angle) & is.null(axis_labels_n_dodge)) {
+    # Set default values
+    axis_labels_rotate_angle = 0
+    axis_labels_n_dodge = 1
+
+    # Get the length of the longest method name
+    length_of_longest_method = max(nchar(names(explanation_list)))
+
+    # If it is long, then we alter the default values set above and give message to user
+    if (length_of_longest_method > 12 & !flip_coordinates) {
+      message("Long method names: consider specifying either `axis_labels_rotate_angle` or
+`axis_labels_n_dodge` to fix any potentially overlapping method names.
+The function sets `axis_labels_rotate_angle = 45` internally.")
+
+      # Set it to rotate 45 degrees
+      axis_labels_rotate_angle = 45
+    }
+  }
+
+  # User has specified `axis_labels_n_dodge` so set `axis_labels_rotate_angle` to default value
+  if (is.null(axis_labels_rotate_angle)) axis_labels_rotate_angle = 0
+
+  # User has specified `axis_labels_rotate_angle` so set `axis_labels_n_dodge` to default value
+  if (is.null(axis_labels_n_dodge)) axis_labels_n_dodge = 1
 
   # Making plots --------------------------------------------------------------------------------
   ### Make plots of the MSEv evaluation criterion values for the different methods averaged over both the coalitions and explicands.
   # Make the bar_plot
   bar_plot_MSEv =
     ggplot2::ggplot(MSEv_eval_crit, ggplot2::aes(x = Method, y = MSEv_evaluation_criterion, fill = Method)) +
-    ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge()) +
+    ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge()) +
     ggplot2::geom_text(
-      ggplot2::aes(label = sprintf(eval(paste("%", sprintf("%d", bar_text_n_decimals), ".f", sep = "")), round(MSEv_evaluation_criterion, bar_text_n_decimals))),
-      vjust = ifelse(flip_coordinates, 0.45, 1.6),
-      hjust = ifelse(flip_coordinates, 1.2, 0),
+      ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""), round(MSEv_evaluation_criterion, bar_text_n_decimals))),
+      vjust = ifelse(flip_coordinates, NA, 1.75),
+      hjust = ifelse(flip_coordinates, 1.15, NA),
       color = bar_text_color,
-      position = ggplot2::position_dodge(0.9),
+      position = ggplot2::position_dodge(geom_col_width),
       size = bar_text_size) +
     ggplot2::labs(x = "Method", y = bquote(MSE[v])) +
+    ggplot2::guides(x = ggplot2::guide_axis(n.dodge = axis_labels_n_dodge, angle = axis_labels_rotate_angle)) +
     {if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v]*" criterion averaged over both the "*.(n_combinations)*" coalitions and "*.(n_explain)*" explicands"))} +
     {if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))} +
-    {if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction)} +
-    {if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction)} +
+    {if (is.null(brewer_palette)) ggplot2::scale_fill_discrete(breaks = breaks)} +
+    {if (is.null(brewer_palette)) ggplot2::scale_color_discrete(breaks = breaks)} +
+    {if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction_for_only_MSEv, breaks = breaks)} +
+    {if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction_for_only_MSEv, breaks = breaks)} +
     {if (!is.null(ggplot_theme)) ggplot_theme} +
-    {if (rotate_feature_names_45_degrees) ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, vjust = 1, hjust=1))} +
     {if (flip_coordinates) ggplot2::coord_flip()} +
+    {if (reverse_coordinates) ggplot2::scale_x_discrete(limits = rev)} +
     {if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)} +
     {if (!is.null(legend_ncol)) ggplot2::guides(fill = ggplot2::guide_legend(ncol = legend_ncol))} +
     {if (!is.null(legend_nrow)) ggplot2::guides(fill = ggplot2::guide_legend(nrow = legend_nrow))}
@@ -1186,10 +1360,13 @@ Default to the approach names (with integer suffix for duplicates) for the expla
       ggplot2::labs(x = "Explicand index", y = bquote(MSE[v])) +
       {if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v]*" criterion averaged over both the "*.(n_combinations)*" coalitions and "*.(n_explain)*" explicands"))} +
       {if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))} +
-      {if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction)} +
-      {if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction)} +
+      {if (is.null(brewer_palette)) ggplot2::scale_fill_discrete(breaks = breaks)} +
+      {if (is.null(brewer_palette)) ggplot2::scale_color_discrete(breaks = breaks)} +
+      {if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction, breaks = breaks)} +
+      {if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction, breaks = breaks)} +
       {if (!is.null(ggplot_theme)) ggplot_theme} +
       {if (flip_coordinates) ggplot2::coord_flip()} +
+      {if (reverse_coordinates) ggplot2::scale_x_discrete(limits = rev)} +
       {if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)} +
       {if (!is.null(legend_ncol)) ggplot2::guides(fill = ggplot2::guide_legend(ncol = legend_ncol))} +
       {if (!is.null(legend_ncol)) ggplot2::guides(col = ggplot2::guide_legend(ncol = legend_ncol))} +
@@ -1199,20 +1376,20 @@ Default to the approach names (with integer suffix for duplicates) for the expla
     # Use the source object to create a bar plot
     MSEv_for_each_explicand_bar_plot =
       MSEv_for_each_explicand_source +
-      ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(), ggplot2::aes(fill = Method)) +
+      ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge(), ggplot2::aes(fill = Method)) +
       ggplot2::geom_text(
-        ggplot2::aes(label = sprintf(eval(paste("%", sprintf("%d", bar_text_n_decimals), ".f", sep = "")), round(MSEv_evaluation_criterion, bar_text_n_decimals)),
+        ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""), round(MSEv_evaluation_criterion, bar_text_n_decimals)),
                      group = Method),
-        vjust = ifelse(flip_coordinates, 0.45, 1.6),
-        hjust = ifelse(flip_coordinates, 1.2, 0),
+        vjust = ifelse(flip_coordinates, NA, 1.75),
+        hjust = ifelse(flip_coordinates, 1.15, NA),
         color = bar_text_color,
-        position = ggplot2::position_dodge(0.9),
+        position = ggplot2::position_dodge(geom_col_width),
         size = bar_text_size)
 
     # Use the source object to create a line and/or point plot
     MSEv_for_each_explicand_line_point_plot =
       MSEv_for_each_explicand_source +
-      ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Method)) +
+      {if (point_size > 0) ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Method))} +
       ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(group=Method, col = Method))
 
 
@@ -1223,10 +1400,13 @@ Default to the approach names (with integer suffix for duplicates) for the expla
       ggplot2::labs(x = "Coalition index", y = bquote(MSE[v])) +
       {if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v]*" criterion averaged over both the "*.(n_combinations)*" coalitions and "*.(n_explain)*" explicands"))} +
       {if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))} +
-      {if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction)} +
-      {if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction)} +
+      {if (is.null(brewer_palette)) ggplot2::scale_fill_discrete(breaks = breaks)} +
+      {if (is.null(brewer_palette)) ggplot2::scale_color_discrete(breaks = breaks)} +
+      {if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction, breaks = breaks)} +
+      {if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction, breaks = breaks)} +
       {if (!is.null(ggplot_theme)) ggplot_theme} +
       {if (flip_coordinates) ggplot2::coord_flip()} +
+      {if (reverse_coordinates) ggplot2::scale_x_discrete(limits = rev)} +
       {if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)} +
       {if (!is.null(legend_ncol)) ggplot2::guides(fill = ggplot2::guide_legend(ncol = legend_ncol))} +
       {if (!is.null(legend_ncol)) ggplot2::guides(col = ggplot2::guide_legend(ncol = legend_ncol))} +
@@ -1236,16 +1416,16 @@ Default to the approach names (with integer suffix for duplicates) for the expla
     # Use the source object to create a bar plot
     MSEv_for_each_coalition_bar_plot =
       MSEv_for_each_coalition_source +
-      ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(), ggplot2::aes(fill = Method)) +
+      ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge(), ggplot2::aes(fill = Method)) +
       ggplot2::geom_text(
-        ggplot2::aes(label = sprintf(eval(paste("%", sprintf("%d", bar_text_n_decimals), ".f", sep = "")), round(MSEv_evaluation_criterion, bar_text_n_decimals)),
+        ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""), round(MSEv_evaluation_criterion, bar_text_n_decimals)),
                      group = Method),
-        vjust = ifelse(flip_coordinates, 0.45, 1.6),
-        hjust = ifelse(flip_coordinates, 1.2, 0),
+        vjust = ifelse(flip_coordinates, NA, 1.75),
+        hjust = ifelse(flip_coordinates, 1.15, NA),
         color = bar_text_color,
-        position = ggplot2::position_dodge(0.9),
+        position = ggplot2::position_dodge(geom_col_width),
         size = bar_text_size) +
-      {if (add_error_bars) ggplot2::geom_errorbar(
+      {if (add_error_bars_for_coalitions) ggplot2::geom_errorbar(
         ggplot2::aes(ymin = MSEv_evaluation_criterion - MSEv_evaluation_criterion_sd,
                      ymax = MSEv_evaluation_criterion + MSEv_evaluation_criterion_sd,
                      group = Method),
@@ -1255,9 +1435,9 @@ Default to the approach names (with integer suffix for duplicates) for the expla
     # Use the source object to create a line and/or point plot
     MSEv_for_each_coalition_line_point_plot =
       MSEv_for_each_coalition_source +
-      ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Method)) +
+      {if (point_size > 0) ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Method))} +
       ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(group=Method, col = Method)) +
-      {if (add_error_bars) ggplot2::geom_errorbar(
+      {if (add_error_bars_for_coalitions) ggplot2::geom_errorbar(
         ggplot2::aes(ymin = MSEv_evaluation_criterion - MSEv_evaluation_criterion_sd,
                      ymax = MSEv_evaluation_criterion + MSEv_evaluation_criterion_sd,
                      group = Method,
