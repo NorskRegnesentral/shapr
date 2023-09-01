@@ -925,6 +925,16 @@ make_waterfall_plot <- function(dt_plot,
 #'   n_samples = 1e2
 #' )
 #'
+#' # ctree approach
+#' explanation_ctree = explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = "ctree",
+#'   prediction_zero = prediction_zero,
+#'   n_samples = 1e2
+#' )
+#'
 #' # Combined approach
 #' explanation_combined = explain(
 #' model = model,
@@ -933,7 +943,7 @@ make_waterfall_plot <- function(dt_plot,
 #'  approach = c("gaussian", "ctree", "empirical", "empirical"),
 #'  prediction_zero = prediction_zero,
 #'  n_samples = 1e2
-#')
+#' )
 #'
 #' # Create a list of explanations without names
 #' explanation_list_unnamed = list(
@@ -941,6 +951,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   explanation_empirical,
 #'   explanation_gaussian_1e1,
 #'   explanation_gaussian_1e2,
+#'   explanation_ctree,
 #'   explanation_combined
 #' )
 #'
@@ -950,6 +961,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   "Emp." = explanation_empirical,
 #'   "Gaus. 1e1" = explanation_gaussian_1e1,
 #'   "Gaus. 1e2" = explanation_gaussian_1e2,
+#'   "Ctree" = explanation_ctree,
 #'   "Combined approaches" = explanation_combined
 #' )
 #'
@@ -1049,8 +1061,8 @@ make_MSEv_evaluation_criterion_plots = function(explanation_list,
     names(explanation_list) = names
 
     # Give a message to the user
-    warning(paste0("User provided an `explanation_list` without named explanation objects.\n",
-                   "Default to the approach names (with integer suffix for duplicates) for the explanation objects.\n"))
+    message("User provided an `explanation_list` without named explanation objects.
+Default to the approach names (with integer suffix for duplicates) for the explanation objects.\n")
   }
 
   # Check if some of the objects in explanation_list are missing the MSEv_evaluation_criterion.
