@@ -66,7 +66,8 @@ postprocess_vS_list <- function(vS_list, internal) {
 
     dt_vS <- rbindlist(lapply(vS_list, `[[`, 1))
 
-    dt_samp_for_vS <- rbindlist(lapply(vS_list, `[[`, 2))
+    dt_samp_for_vS <- rbindlist(lapply(vS_list, `[[`, 2), use.names = TRUE)
+
     data.table::setorder(dt_samp_for_vS, id_combination)
   } else {
     names(dt_vS0) <- names(vS_list[[1]])
