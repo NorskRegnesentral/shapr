@@ -172,7 +172,7 @@
 <polyline points='89.30,255.20 89.30,39.43 ' style='stroke-width: 1.07; stroke-linecap: butt;' />
 <text x='84.37' y='212.59' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='61.64px' lengthAdjust='spacingAndGlyphs'>2 other features</text>
 <text x='84.37' y='171.09' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='66.30px' lengthAdjust='spacingAndGlyphs'>Month_factor = 9</text>
-<text x='84.37' y='129.60' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='44.76px' lengthAdjust='spacingAndGlyphs'>Wind =  7.4</text>
+<text x='84.37' y='129.60' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='42.31px' lengthAdjust='spacingAndGlyphs'>Wind = 7.4</text>
 <text x='84.37' y='88.11' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='42.32px' lengthAdjust='spacingAndGlyphs'>Temp = 87</text>
 <polyline points='86.56,209.56 89.30,209.56 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='86.56,168.06 89.30,168.06 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
