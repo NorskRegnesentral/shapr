@@ -22,8 +22,6 @@ test_that("bug with column name ordering in edge case is fixed", {
   expect_true(
     is.integer(
       e.one_subset_per_batch$internal$output$dt_samp_for_vS$id_combination[1]
-      )
     )
-
-
+  )
 })
