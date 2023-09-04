@@ -1621,3 +1621,35 @@ test_that("Shapr sets a valid default value for `n_batches`", {
   )
 })
 
+
+test_that("Error with less batches than unique used approaches", {
+  # Expect to get the following error:
+  # `n_batches` (3) must be larger than the number of unique approaches in `approach` (4). Note that
+  # the last approach in `approach` is not includeded as it is not used to do any computations as
+  # described in the vignette.
+  expect_error(
+    object = explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+      prediction_zero = p0,
+      n_batches = 3,
+      timing = FALSE,
+      seed = 1))
+
+  # Except that shapr sets a valid `n_batches` and get no errors
+  expect_no_error(
+    object = explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+      prediction_zero = p0,
+      n_batches = NULL,
+      timing = FALSE,
+      seed = 1))
+})
+
+
+

@@ -226,7 +226,7 @@ check_n_batches <- function(internal) {
   if (n_batches < n_unique_approaches) {
     stop(paste0(
       "`n_batches` (", n_batches, ") must be larger than the number of unique approaches in `approach` (",
-      actual_n_combinations, "). Note that the last approach in `approach` is not includeded as it is not used ",
+      n_unique_approaches, "). Note that the last approach in `approach` is not included as it is not used ",
       "to do any computations as described in the vignette."
     ))
   }
@@ -382,7 +382,7 @@ get_extra_parameters <- function(internal) {
     internal$parameters$n_approaches = length(internal$parameters$approach)
     # Remove the last approach as `explain` forces the user to specify the last approach
     # even if it is not used as all variables are conditioned on and no estimation is needed.
-    internal$parameters$n_unique_approaches = unique(internal$parameters$approach[-n_approaches])
+    internal$parameters$n_unique_approaches = length(unique(internal$parameters$approach[-internal$parameters$n_approaches]))
   } else {
     internal$parameters$n_approaches = 1
     internal$parameters$n_unique_approaches = 1
