@@ -1808,7 +1808,3 @@ test_that("counting the number of unique approaches", {
   expect_equal(explanation_combined_5$internal$parameters$n_approaches, 5)
   expect_equal(explanation_combined_5$internal$parameters$n_unique_approaches, 2)
 })
-
-
-
-
