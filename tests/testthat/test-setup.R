@@ -1650,6 +1650,56 @@ test_that("Error with to low `n_batches` compared to the number of unique approa
       seed = 1))
 })
 
+test_that("the used number of batches mathces the provided `n_batches` for combined approaches", {
+  explanation_1 = explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "ctree", "ctree", "ctree" ,"ctree"),
+    prediction_zero = p0,
+    n_batches = 2,
+    n_samples = 10,
+    timing = FALSE,
+    seed = 1)
+
+  # Check that the used number of batches corresponds with the provided `n_batches`
+  expect_equal(explanation_1$internal$parameters$n_batches,
+               length(explanation_1$internal$objects$S_batch))
+
+  explanation_2 = explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "ctree", "ctree", "ctree" ,"ctree"),
+    prediction_zero = p0,
+    n_batches = 15,
+    n_samples = 10,
+    timing = FALSE,
+    seed = 1)
+
+  # Check that the used number of batches corresponds with the provided `n_batches`
+  expect_equal(explanation_2$internal$parameters$n_batches,
+               length(explanation_2$internal$objects$S_batch))
+
+  # Check for the default value for `n_batch`
+  explanation_3 = explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "ctree", "ctree", "ctree" ,"ctree"),
+    prediction_zero = p0,
+    n_batches = NULL,
+    n_samples = 10,
+    timing = FALSE,
+    seed = 1)
+
+  # Check that the used number of batches corresponds with the `n_batches`
+  expect_equal(explanation_3$internal$parameters$n_batches,
+               length(explanation_3$internal$objects$S_batch))
+})
+
+
+
 test_that("setting the seed for combined approaches works", {
   # Check that setting the seed works for a combination of approaches
   # Here `n_batches` is set to `4`, so one batch for each method,
