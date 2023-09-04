@@ -208,6 +208,7 @@ check_n_batches <- function(internal) {
   n_combinations <- internal$parameters$n_combinations
   is_groupwise <- internal$parameters$is_groupwise
   n_groups <- internal$parameters$n_groups
+  n_unique_approaches <- internal$parameters$n_unique_approaches
 
   if (!is_groupwise) {
     actual_n_combinations <- ifelse(is.null(n_combinations), 2^n_features, n_combinations)
@@ -219,6 +220,14 @@ check_n_batches <- function(internal) {
     stop(paste0(
       "`n_batches` (", n_batches, ") must be smaller than the number of feature combinations/`n_combinations` (",
       actual_n_combinations, ")"
+    ))
+  }
+
+  if (n_batches < n_unique_approaches) {
+    stop(paste0(
+      "`n_batches` (", n_batches, ") must be larger than the number of unique approaches in `approach` (",
+      actual_n_combinations, "). Note that the last approach in `approach` is not includeded as it is not used ",
+      "to do any computations as described in the vignette."
     ))
   }
 }
