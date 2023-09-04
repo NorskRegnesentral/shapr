@@ -695,18 +695,20 @@ set_defaults <- function(internal) {
   # Set defaults for certain arguments (based on other input)
 
   approach <- internal$parameters$approach
+  n_unique_approaches <- internal$parameters$n_unique_approaches
   used_n_combinations <- internal$parameters$used_n_combinations
   n_batches <- internal$parameters$n_batches
 
   # n_batches
   if (is.null(n_batches)) {
-    internal$parameters$n_batches <- get_default_n_batches(approach, used_n_combinations)
+    internal$parameters$n_batches <- get_default_n_batches(approach, n_unique_approaches, used_n_combinations)
   }
 
   return(internal)
 }
+
 #' @keywords internal
-get_default_n_batches <- function(approach, n_combinations) {
+get_default_n_batches <- function(approach, n_unique_approaches, n_combinations) {
   used_approach <- names(sort(table(approach), decreasing = TRUE))[1] # Most frequent used approach (when more present)
 
   if (used_approach %in% c("ctree", "gaussian", "copula")) {
@@ -718,7 +720,7 @@ get_default_n_batches <- function(approach, n_combinations) {
     this_min <- 2
     this_max <- 100
   }
-  min_checked <- max(c(this_min, suggestion))
+  min_checked <- max(c(this_min, suggestion, n_unique_approaches))
   ret <- min(c(this_max, min_checked, n_combinations - 1))
   message(
     paste0(
