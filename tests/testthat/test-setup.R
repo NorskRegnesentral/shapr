@@ -1601,7 +1601,7 @@ test_that("Shapr sets a valid default value for `n_batches`", {
   # Shapr sets the default number of batches to be 10 for this dataset and the
   # "ctree", "gaussian", and "copula" approaches. Thus, setting `n_combinations`
   # to any value lower of equal to 10 causes the error.
-  any_number_equal_or_below_10 = 8
+  any_number_equal_or_below_10 <- 8
 
   # Before the bugfix, shapr:::check_n_batches() throws the error:
   # Error in check_n_batches(internal) :
@@ -1651,11 +1651,11 @@ test_that("Error with to low `n_batches` compared to the number of unique approa
 })
 
 test_that("the used number of batches mathces the provided `n_batches` for combined approaches", {
-  explanation_1 = explain(
+  explanation_1 <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "ctree", "ctree", "ctree" ,"ctree"),
+    approach = c("independence", "ctree", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = 2,
     timing = FALSE,
@@ -1665,11 +1665,11 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
   expect_equal(explanation_1$internal$parameters$n_batches,
                length(explanation_1$internal$objects$S_batch))
 
-  explanation_2 = explain(
+  explanation_2 <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "ctree", "ctree", "ctree" ,"ctree"),
+    approach = c("independence", "ctree", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = 15,
     timing = FALSE,
@@ -1680,11 +1680,11 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
                length(explanation_2$internal$objects$S_batch))
 
   # Check for the default value for `n_batch`
-  explanation_3 = explain(
+  explanation_3 <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "ctree", "ctree", "ctree" ,"ctree"),
+    approach = c("independence", "ctree", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = NULL,
     timing = FALSE,
@@ -1701,7 +1701,7 @@ test_that("setting the seed for combined approaches works", {
   # Check that setting the seed works for a combination of approaches
   # Here `n_batches` is set to `4`, so one batch for each method,
   # i.e., no randomness.
-  explanation_combined_1 = explain(
+  explanation_combined_1 <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1710,7 +1710,7 @@ test_that("setting the seed for combined approaches works", {
     timing = FALSE,
     seed = 1)
 
-  explanation_combined_2 = explain(
+  explanation_combined_2 <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1724,7 +1724,7 @@ test_that("setting the seed for combined approaches works", {
 
   # Here `n_batches` is set to `10`, so NOT one batch for each method,
   # i.e., randomness in assigning the batches.
-  explanation_combined_3 = explain(
+  explanation_combined_3 <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1733,7 +1733,7 @@ test_that("setting the seed for combined approaches works", {
     timing = FALSE,
     seed = 1)
 
-  explanation_combined_4 = explain(
+  explanation_combined_4 <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
@@ -1745,3 +1745,70 @@ test_that("setting the seed for combined approaches works", {
   # Check that they are equal
   expect_equal(explanation_combined_3, explanation_combined_4)
 })
+
+
+test_that("counting the number of unique approaches", {
+  # Test several combinations of combined approaches and check that the number of
+  # counted unique approaches is correct.
+  # Recall that the last approach is not counted in `n_unique_approaches` as
+  # we do not use it as we then condition on all features.
+  explanation_combined_1 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+  expect_equal(explanation_combined_1$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_1$internal$parameters$n_unique_approaches, 4)
+
+  explanation_combined_2 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("empirical"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+  expect_equal(explanation_combined_2$internal$parameters$n_approaches, 1)
+  expect_equal(explanation_combined_2$internal$parameters$n_unique_approaches, 1)
+
+  explanation_combined_3 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("gaussian", "gaussian", "gaussian", "gaussian", "gaussian"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+  expect_equal(explanation_combined_3$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_3$internal$parameters$n_unique_approaches, 1)
+
+  explanation_combined_4 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "independence", "empirical", "empirical"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+  expect_equal(explanation_combined_4$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_4$internal$parameters$n_unique_approaches, 2)
+
+  # Check that the last one is not counted
+  explanation_combined_5 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "independence", "empirical", "gaussian"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+  expect_equal(explanation_combined_5$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_5$internal$parameters$n_unique_approaches, 2)
+})
+
+
+
+
