@@ -1675,8 +1675,8 @@ test_that("setting the seed for combined approaches works", {
   # Check that they are equal
   expect_equal(explanation_combined_1, explanation_combined_2)
 
-  # Here `n_batches` is set to `10`, so one batch for each method,
-  # i.e., no randomness.
+  # Here `n_batches` is set to `10`, so NOT one batch for each method,
+  # i.e., randomness in assigning the batches.
   explanation_combined_3 = explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
