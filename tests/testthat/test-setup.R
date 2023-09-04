@@ -1621,11 +1621,10 @@ test_that("Shapr sets a valid default value for `n_batches`", {
   )
 })
 
-
-test_that("Error with less batches than unique used approaches", {
+test_that("Error with to low `n_batches` compared to the number of unique approaches", {
   # Expect to get the following error:
   # `n_batches` (3) must be larger than the number of unique approaches in `approach` (4). Note that
-  # the last approach in `approach` is not includeded as it is not used to do any computations as
+  # the last approach in `approach` is not included as it is not used to do any computations as
   # described in the vignette.
   expect_error(
     object = explain(
@@ -1651,5 +1650,51 @@ test_that("Error with less batches than unique used approaches", {
       seed = 1))
 })
 
+test_that("setting the seed for combined approaches works", {
+  # Check that setting the seed works for a combination of approaches
+  # Here `n_batches` is set to `4`, so one batch for each method,
+  # i.e., no randomness.
+  explanation_combined_1 = explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
 
+  explanation_combined_2 = explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
 
+  # Check that they are equal
+  expect_equal(explanation_combined_1, explanation_combined_2)
+
+  # Here `n_batches` is set to `10`, so one batch for each method,
+  # i.e., no randomness.
+  explanation_combined_3 = explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "gaussian", "copula", "ctree"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+
+  explanation_combined_4 = explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "gaussian", "copula", "ctree"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+
+  # Check that they are equal
+  expect_equal(explanation_combined_3, explanation_combined_4)
+})
