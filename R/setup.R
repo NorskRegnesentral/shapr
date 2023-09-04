@@ -368,6 +368,17 @@ get_extra_parameters <- function(internal) {
     internal$parameters$n_groups <- NULL
   }
 
+  # Get the number of unique approaches
+  if (length(internal$parameters$approach) > 1) {
+    internal$parameters$n_approaches = length(internal$parameters$approach)
+    # Remove the last approach as `explain` forces the user to specify the last approach
+    # even if it is not used as all variables are conditioned on and no estimation is needed.
+    internal$parameters$n_unique_approaches = unique(internal$parameters$approach[-n_approaches])
+  } else {
+    internal$parameters$n_approaches = 1
+    internal$parameters$n_unique_approaches = 1
+  }
+
   return(internal)
 }
 
