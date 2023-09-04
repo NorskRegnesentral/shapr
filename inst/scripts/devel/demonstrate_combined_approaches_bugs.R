@@ -4,6 +4,7 @@
 
 # First we see that setting `n_batches` lower than the number of unique approaches
 # produce some inconsistencies in shapr.
+# After the bugfix, we force the user to choose a valid value for `n_batches`.
 explanation_1 = explain(
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
@@ -52,6 +53,8 @@ explanation_2$internal$parameters$n_batches
 # But shapr has actually used 3
 length(explanation_2$internal$objects$S_batch)
 
+# These are equal after the bugfix
+
 
 # Same type of bug but in the opposite direction
 explanation_3 = explain(
@@ -70,6 +73,7 @@ explanation_3$internal$parameters$n_batches
 # It says shapr is using 14 batches
 length(explanation_3$internal$objects$S_batch)
 
+# These are equal after the bugfix
 
 
 
@@ -130,4 +134,6 @@ explanation_combined_4 = explain(
 all.equal(explanation_combined_3, explanation_combined_4)
 explanation_combined_3$internal$objects$X
 explanation_combined_4$internal$objects$X
+
+# These are equal after the bugfix
 
