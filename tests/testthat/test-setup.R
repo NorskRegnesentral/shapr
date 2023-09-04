@@ -1658,7 +1658,6 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     approach = c("independence", "ctree", "ctree", "ctree" ,"ctree"),
     prediction_zero = p0,
     n_batches = 2,
-    n_samples = 10,
     timing = FALSE,
     seed = 1)
 
@@ -1673,7 +1672,6 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     approach = c("independence", "ctree", "ctree", "ctree" ,"ctree"),
     prediction_zero = p0,
     n_batches = 15,
-    n_samples = 10,
     timing = FALSE,
     seed = 1)
 
@@ -1689,7 +1687,6 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     approach = c("independence", "ctree", "ctree", "ctree" ,"ctree"),
     prediction_zero = p0,
     n_batches = NULL,
-    n_samples = 10,
     timing = FALSE,
     seed = 1)
 
