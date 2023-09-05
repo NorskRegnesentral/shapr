@@ -80,12 +80,8 @@ prepare_data <- function(internal, index_features = NULL, ...) {
 
   # Check if the user provided one or several approaches.
   if (length(approach) > 1) {
-    # Figure out which approach we should use for the provided `index_features` (i.e., coalition indices).
-    # We can use that the function `create_S_batch_new()` in setup_computation.R, which creates
-    # the batches of coalitions, always ensures that the index_features (i.e., the coalitions) in
-    # each batch of them are using the same approach. Meaning that we can figure out which approach
-    # the first value in `index_features` is connected to, and then use that approach to generate
-    # the Monte Carlo samples data.
+    # Picks the relevant approach from the internal$objects$X table which list the unique approach of the batch
+    # matches by index_features
     class(this_class) <- internal$objects$X[id_combination == index_features[1], approach]
   } else {
     # Only one approach for all coalitions sizes
