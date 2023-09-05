@@ -1,3 +1,9 @@
+# 01.09.23: Moved from ubuntu-latest to ubuntu-20.04 to avoid actions being cancelled
+# This is potentially due to CPU quota being exceeded as suggested
+# here: https://github.com/actions/runner-images/issues/6680 and
+# here: https://github.com/actions/runner-images/discussions/7188)
+
+
 name: Remove old artifacts
 
 on:
@@ -7,7 +13,7 @@ on:
 
 jobs:
   remove-old-artifacts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 10
 
     steps:

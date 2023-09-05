@@ -14,7 +14,6 @@
 setup_approach.gaussian <- function(internal,
                                     gaussian.mu = NULL,
                                     gaussian.cov_mat = NULL, ...) {
-
   # For consistency
   defaults <- mget(c("gaussian.mu", "gaussian.cov_mat"))
   internal <- insert_defaults(internal, defaults)

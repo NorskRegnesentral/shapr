@@ -1,5 +1,4 @@
 compute_time <- function(timing_list) {
-
   timing_secs <- mapply(
     FUN = difftime,
     timing_list[-1],

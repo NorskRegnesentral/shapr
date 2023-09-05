@@ -172,7 +172,7 @@
 <text x='640.04' y='266.19' text-anchor='middle' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='9.79px' lengthAdjust='spacingAndGlyphs'>30</text>
 <text x='689.88' y='266.19' text-anchor='middle' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='9.79px' lengthAdjust='spacingAndGlyphs'>40</text>
 <polyline points='440.26,255.20 440.26,39.43 ' style='stroke-width: 1.07; stroke-linecap: butt;' />
-<text x='435.33' y='237.35' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='33.03px' lengthAdjust='spacingAndGlyphs'>Day =  9</text>
+<text x='435.33' y='237.35' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='30.58px' lengthAdjust='spacingAndGlyphs'>Day = 9</text>
 <text x='435.33' y='202.55' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='54.06px' lengthAdjust='spacingAndGlyphs'>Solar.R = 230</text>
 <text x='435.33' y='167.75' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='47.21px' lengthAdjust='spacingAndGlyphs'>Wind = 10.9</text>
 <text x='435.33' y='132.95' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='42.32px' lengthAdjust='spacingAndGlyphs'>Temp = 75</text>
@@ -185,10 +185,10 @@
 <polyline points='437.52,95.12 440.26,95.12 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='437.52,60.31 440.26,60.31 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='89.30,255.20 89.30,39.43 ' style='stroke-width: 1.07; stroke-linecap: butt;' />
-<text x='84.37' y='237.35' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='33.03px' lengthAdjust='spacingAndGlyphs'>Day =  5</text>
-<text x='84.37' y='202.55' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='51.61px' lengthAdjust='spacingAndGlyphs'>Solar.R =  95</text>
+<text x='84.37' y='237.35' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='30.58px' lengthAdjust='spacingAndGlyphs'>Day = 5</text>
+<text x='84.37' y='202.55' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='49.17px' lengthAdjust='spacingAndGlyphs'>Solar.R = 95</text>
 <text x='84.37' y='167.75' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='66.30px' lengthAdjust='spacingAndGlyphs'>Month_factor = 9</text>
-<text x='84.37' y='132.95' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='44.76px' lengthAdjust='spacingAndGlyphs'>Wind =  7.4</text>
+<text x='84.37' y='132.95' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='42.31px' lengthAdjust='spacingAndGlyphs'>Wind = 7.4</text>
 <text x='84.37' y='98.14' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='42.32px' lengthAdjust='spacingAndGlyphs'>Temp = 87</text>
 <text x='84.37' y='63.34' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='21.04px' lengthAdjust='spacingAndGlyphs'>None</text>
 <polyline points='86.56,234.32 89.30,234.32 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
