@@ -194,12 +194,12 @@ plot.shapr <- function(x,
 
   # Converting and melting Xtest
   if (!is_groupwise) {
-    desc_mat <- format(x$internal$data$x_explain, digits = digits)
+    desc_mat <- trimws(format(x$internal$data$x_explain, digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
       desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
     }
   } else {
-    desc_mat <- format(x$shapley_values[, -1], digits = digits)
+    desc_mat <- trimws(format(x$shapley_values[, -1], digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
       desc_mat[, i] <- paste0(shap_names[i])
     }

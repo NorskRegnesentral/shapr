@@ -1345,6 +1345,93 @@ test_that("Error with too low `n_combinations`", {
   )
 })
 
+test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights", {
+  # Check that the `explain()` function enters the exact mode when n_combinations
+  # is larger than or equal to 2^m.
+
+  # Create three explainer object: one with exact mode, one with
+  # `n_combinations` = 2^m, and one with `n_combinations` > 2^m
+  # No message as n_combination = NULL sets exact mode
+  expect_no_message(
+    object = {
+      explanation_exact <- explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        prediction_zero = p0,
+        n_samples = 2, # Low value for fast computations
+        n_batches = 1, # Not related to the bug
+        seed = 123,
+        n_combinations = NULL,
+        timing = FALSE
+      )
+    }
+  )
+
+  # We should get a message saying that we are using the exact mode.
+  # The `regexp` format match the one written in `feature_combinations()`.
+  expect_message(
+    object = {
+      explanation_equal <- explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        prediction_zero = p0,
+        n_samples = 2, # Low value for fast computations
+        n_batches = 1, # Not related to the bug
+        seed = 123,
+        n_combinations = 2^ncol(x_explain_numeric),
+        timing = FALSE
+      )
+    },
+    regexp = "Success with message:\nn_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead."
+  )
+
+  # We should get a message saying that we are using the exact mode.
+  # The `regexp` format match the one written in `feature_combinations()`.
+  expect_message(
+    object = {
+      explanation_larger <- explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        prediction_zero = p0,
+        n_samples = 2, # Low value for fast computations
+        n_batches = 1, # Not related to the bug
+        seed = 123,
+        n_combinations = 2^ncol(x_explain_numeric) + 1,
+        timing = FALSE
+      )
+    },
+    regexp = "Success with message:\nn_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead."
+  )
+
+  # Test that returned objects are identical (including all using the exact option and having the same Shapley weights)
+  expect_equal(
+    explanation_exact,
+    explanation_equal
+  )
+  expect_equal(
+    explanation_exact,
+    explanation_larger
+  )
+
+  # Explicitly check that exact mode is set and that n_combinations equals 2^ncol(x_explain_numeric) (32)
+  # Since all 3 explanation objects are equal (per the above test) it suffices to do this for explanation_exact
+  expect_true(
+    explanation_exact$internal$parameters$exact
+  )
+  expect_equal(
+    explanation_exact$internal$parameters$n_combinations,
+    2^ncol(x_explain_numeric)
+  )
+
+
+})
+
 test_that("Correct dimension of S when sampling combinations with groups", {
   n_combinations <- 5
 

@@ -75,10 +75,10 @@
 <text x='507.18' y='516.90' text-anchor='middle' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='9.79px' lengthAdjust='spacingAndGlyphs'>45</text>
 <text x='618.61' y='516.90' text-anchor='middle' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='9.79px' lengthAdjust='spacingAndGlyphs'>50</text>
 <polyline points='89.30,505.91 89.30,39.43 ' style='stroke-width: 1.07; stroke-linecap: butt;' />
-<text x='84.37' y='426.84' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='33.03px' lengthAdjust='spacingAndGlyphs'>Day =  5</text>
-<text x='84.37' y='352.21' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='51.61px' lengthAdjust='spacingAndGlyphs'>Solar.R =  95</text>
+<text x='84.37' y='426.84' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='30.58px' lengthAdjust='spacingAndGlyphs'>Day = 5</text>
+<text x='84.37' y='352.21' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='49.17px' lengthAdjust='spacingAndGlyphs'>Solar.R = 95</text>
 <text x='84.37' y='277.57' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='66.30px' lengthAdjust='spacingAndGlyphs'>Month_factor = 9</text>
-<text x='84.37' y='202.93' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='44.76px' lengthAdjust='spacingAndGlyphs'>Wind =  7.4</text>
+<text x='84.37' y='202.93' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='42.31px' lengthAdjust='spacingAndGlyphs'>Wind = 7.4</text>
 <text x='84.37' y='128.29' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='42.32px' lengthAdjust='spacingAndGlyphs'>Temp = 87</text>
 <polyline points='86.56,423.81 89.30,423.81 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='86.56,349.18 89.30,349.18 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
