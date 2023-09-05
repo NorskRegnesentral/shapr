@@ -1353,7 +1353,7 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
   # `n_combinations` = 2^m, and one with `n_combinations` > 2^m
   expect_no_message(
     object = {
-      explanation_exact = explain(
+      explanation_exact <- explain(
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1371,7 +1371,7 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
   # The `regexp` format match the one written in `feature_combinations()`.
   expect_message(
     object = {
-      explanation_equal = explain(
+      explanation_equal <- explain(
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1380,15 +1380,17 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
         n_samples = 2, # Low value for fast computations
         n_batches = 1, # Not related to the bug
         seed = 123,
-        n_combinations = 2^ncol(x_explain_numeric))
+        n_combinations = 2^ncol(x_explain_numeric)
+      )
     },
-    regexp = "Success with message:\nn_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead.")
+    regexp = "Success with message:\nn_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead."
+  )
 
   # We should get a message saying that we are using the exact mode.
   # The `regexp` format match the one written in `feature_combinations()`.
   expect_message(
     object = {
-      explanation_larger = explain(
+      explanation_larger <- explain(
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
@@ -1397,9 +1399,11 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
         n_samples = 2, # Low value for fast computations
         n_batches = 1, # Not related to the bug
         seed = 123,
-        n_combinations = 2^ncol(x_explain_numeric) + 1)
+        n_combinations = 2^ncol(x_explain_numeric) + 1
+      )
     },
-    regexp = "Success with message:\nn_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead.")
+    regexp = "Success with message:\nn_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead."
+  )
 
   # REMOVE THIS AFTER DISCUSSING WITH MARTIN.
   # Note that the tests below are technically redundant if the test above have passed.
@@ -1426,22 +1430,34 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
   # Hear what Martin has to say.
 
   # Test that they have the same number of combinations
-  expect_equal(explanation_exact$internal$parameters$n_combinations,
-               explanation_equal$internal$parameters$n_combinations)
-  expect_equal(explanation_exact$internal$parameters$n_combinations,
-               explanation_larger$internal$parameters$n_combinations)
+  expect_equal(
+    explanation_exact$internal$parameters$n_combinations,
+    explanation_equal$internal$parameters$n_combinations
+  )
+  expect_equal(
+    explanation_exact$internal$parameters$n_combinations,
+    explanation_larger$internal$parameters$n_combinations
+  )
 
   # Test that all of them use the exact mode
-  expect_equal(explanation_exact$internal$parameters$exact,
-               explanation_equal$internal$parameters$exact)
-  expect_equal(explanation_exact$internal$parameters$exact,
-               explanation_larger$internal$parameters$exact)
+  expect_equal(
+    explanation_exact$internal$parameters$exact,
+    explanation_equal$internal$parameters$exact
+  )
+  expect_equal(
+    explanation_exact$internal$parameters$exact,
+    explanation_larger$internal$parameters$exact
+  )
 
   # Test that they have the same Shapley kernel weights
-  expect_equal(explanation_exact$internal$objects$X$shapley_weight,
-               explanation_equal$internal$objects$X$shapley_weight)
-  expect_equal(explanation_exact$internal$objects$X$shapley_weight,
-               explanation_larger$internal$objects$X$shapley_weight)
+  expect_equal(
+    explanation_exact$internal$objects$X$shapley_weight,
+    explanation_equal$internal$objects$X$shapley_weight
+  )
+  expect_equal(
+    explanation_exact$internal$objects$X$shapley_weight,
+    explanation_larger$internal$objects$X$shapley_weight
+  )
 })
 
 test_that("Correct dimension of S when sampling combinations with groups", {
@@ -1695,4 +1711,3 @@ test_that("gaussian approach use the user provided parameters", {
     gaussian.provided_cov_mat
   )
 })
-
