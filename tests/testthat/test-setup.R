@@ -1586,7 +1586,6 @@ test_that("different n_batches gives same/different shapley values for different
     timing = FALSE
   )
 
-
   # Difference in the objects (n_batches and related)
   expect_false(identical(
     explain.empirical_n_batches_5,
@@ -1597,7 +1596,6 @@ test_that("different n_batches gives same/different shapley values for different
     explain.empirical_n_batches_5$shapley_values,
     explain.empirical_n_batches_10$shapley_values
   )
-
 
   # approach "ctree" is seed dependent
   explain.ctree_n_batches_5 <- explain(
@@ -1782,8 +1780,6 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
                length(explanation_3$internal$objects$S_batch))
 })
 
-
-
 test_that("setting the seed for combined approaches works", {
   # Check that setting the seed works for a combination of approaches
   # Here `n_batches` is set to `4`, so one batch for each method,
@@ -1832,7 +1828,6 @@ test_that("setting the seed for combined approaches works", {
   # Check that they are equal
   expect_equal(explanation_combined_3, explanation_combined_4)
 })
-
 
 test_that("counting the number of unique approaches", {
   # Test several combinations of combined approaches and check that the number of
