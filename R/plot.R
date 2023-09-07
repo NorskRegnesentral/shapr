@@ -843,7 +843,7 @@ make_waterfall_plot <- function(dt_plot,
 #' @param reverse_coordinates Boolean. Default to be the same as `flip_coordinates`. If `TRUE`, then reverse the order of the methods.
 #' @param geom_col_width Numeric. Bar width. By default, set to 90% of the [ggplot2::resolution()] of the data.
 #' @param legend_position String or numeric vector `c(x,y)`. The allowed string values for the
-#' argument `legend_position` are: `left`,`top`, `right`, `bottom`. Note that, the argument
+#' argument `legend_position` are: `left`,`top`, `right`, `bottom`, and `none`. Note that, the argument
 #' `legend_position` can be also a numeric vector `c(x,y)`. In this case it is possible to position
 #' the legend inside the plotting area. `x` and `y` are the coordinates of the legend box.
 #' Their values should be between `0` and `1`, where `c(0,0)` corresponds to the "bottom left"
