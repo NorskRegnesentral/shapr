@@ -10,27 +10,45 @@ explain_mixed <- explain(
   timing = FALSE
 )
 
-explain_ctree <- explain(
-  model = model_lm_mixed,
-  x_explain = x_explain_mixed,
-  x_train = x_train_mixed,
+explain_numeric_empirical <- explain(
+  model = model_lm_numeric,
+  x_explain = x_explain_numeric,
+  x_train = x_train_numeric,
+  approach = "empirical",
+  prediction_zero = p0,
+  n_batches = 1,
+  timing = FALSE
+)
+
+explain_numeric_gaussian <- explain(
+  model = model_lm_numeric,
+  x_explain = x_explain_numeric,
+  x_train = x_train_numeric,
+  approach = "gaussian",
+  prediction_zero = p0,
+  n_batches = 1,
+  timing = FALSE
+)
+
+explain_numeric_ctree <- explain(
+  model = model_lm_numeric,
+  x_explain = x_explain_numeric,
+  x_train = x_train_numeric,
   approach = "ctree",
   prediction_zero = p0,
   n_batches = 1,
   timing = FALSE
 )
 
-explain_combined <- explain(
-  model = model_lm_mixed,
-  x_explain = x_explain_mixed,
-  x_train = x_train_mixed,
-  approach = c("independence", "ctree", "independence", "ctree", "independence"),
+explain_numeric_combined <- explain(
+  model = model_lm_numeric,
+  x_explain = x_explain_numeric,
+  x_train = x_train_numeric,
+  approach = c("empirical", "ctree", "gaussian", "ctree", "empirical"),
   prediction_zero = p0,
-  n_batches = 3,
+  n_batches = NULL,
   timing = FALSE
 )
-
-
 
 test_that("checking default outputs", {
   skip_if_not_installed("vdiffr")
@@ -153,18 +171,213 @@ test_that("beeswarm_plot_new_arguments", {
 })
 
 
-test_that("MSEv evaluation criterion plots", {
+test_that("MSEv evaluation criterion unnamed plots", {
   skip_if_not_installed("vdiffr")
 
-  # TODO:
-  # LARS ADD TEST HERE
-  # vdiffr::expect_doppelganger(
-  #   title = "beeswarm_plot_new_colors",
-  #   fig = plot(explain_mixed, plot_type = "beeswarm", col = c("blue", "black"))
-  # )
-  #
-  # vdiffr::expect_doppelganger(
-  #   title = "beeswarm_plot_index_x_explain_1_2",
-  #   fig = plot(explain_mixed, plot_type = "beeswarm", index_x_explain = c(1, 2))
-  # )
+  # Create a list of explanations without names
+  explanation_list_unnamed <- list(
+    explain_numeric_empirical,
+    explain_numeric_gaussian,
+    explain_numeric_ctree,
+    explain_numeric_combined
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "default version",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+                                               plot_overall_MSEv = TRUE,
+                                               only_overall_MSEv = TRUE,
+                                               return_figures = FALSE)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "rotate axis labels version",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+                                               plot_overall_MSEv = TRUE,
+                                               only_overall_MSEv = TRUE,
+                                               return_figures = FALSE,
+                                               axis_labels_rotate_angl = 90)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "dodge axis labels version",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+                                               plot_overall_MSEv = TRUE,
+                                               only_overall_MSEv = TRUE,
+                                               return_figures = FALSE,
+                                               axis_labels_n_dodge = 4)
+  )
+
+})
+
+test_that("MSEv evaluation criterion named plots", {
+  skip_if_not_installed("vdiffr")
+
+  # Create a list of explanations with names
+  explanation_list_named <- list(
+    "Emp." = explain_numeric_empirical,
+    "Gaus" = explain_numeric_gaussian,
+    "Ctree" = explain_numeric_ctree,
+    "Comb." = explain_numeric_combined
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "using the provided names",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = TRUE,
+                                               only_overall_MSEv = TRUE,
+                                               return_figures = FALSE)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "flip bars, add text, change colors, legend_bottom",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = TRUE,
+                                               only_overall_MSEv = TRUE,
+                                               return_figures = FALSE,
+                                               flip_coordinates = TRUE,
+                                               bar_text_color = "black",
+                                               bar_text_size = 5,
+                                               bar_text_n_decimals = 2,
+                                               brewer_palette = "Set1",
+                                               ggplot_theme = ggplot2::theme_minimal(),
+                                               legend_position = "bottom",
+                                               legend_ncol = 2)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "default colors, no legend, more decimals, white text",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = TRUE,
+                                               only_overall_MSEv = TRUE,
+                                               return_figures = FALSE,
+                                               flip_coordinates = TRUE,
+                                               bar_text_color = "white",
+                                               bar_text_size = 5,
+                                               bar_text_n_decimals = 4,
+                                               brewer_palette = NULL,
+                                               ggplot_theme = ggplot2::theme_minimal(),
+                                               legend_position = "none")
+  )
+
+
+  vdiffr::expect_doppelganger(
+    title = "default colors, no legend, more decimals, white text, no title",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = TRUE,
+                                               only_overall_MSEv = TRUE,
+                                               return_figures = FALSE,
+                                               flip_coordinates = TRUE,
+                                               bar_text_color = "white",
+                                               bar_text_size = 5,
+                                               bar_text_n_decimals = 4,
+                                               brewer_palette = NULL,
+                                               ggplot_theme = ggplot2::theme_minimal(),
+                                               legend_position = "none",
+                                               title_text_size = 0)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "MSEv for all explicands",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = FALSE,
+                                               only_overall_MSEv = FALSE,
+                                               return_figures = TRUE,
+                                               geom_col_width = 0.75)$bar_plot_MSEv_for_each_explicand
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "MSEv for specified explicands",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = FALSE,
+                                               only_overall_MSEv = FALSE,
+                                               return_figures = TRUE,
+                                               index_explicands = c(1, 3),
+                                               geom_col_width = 0.75)$bar_plot_MSEv_for_each_explicand
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "MSEv for all coalitions",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = FALSE,
+                                               only_overall_MSEv = FALSE,
+                                               return_figures = TRUE,
+                                               geom_col_width = 0.75)$bar_plot_MSEv_for_each_coalition
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "MSEv for specified coalitions",
+    fig =  make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                                plot_overall_MSEv = FALSE,
+                                                only_overall_MSEv = FALSE,
+                                                return_figures = TRUE,
+                                                index_combinations = c(1:2, 10, 15),
+                                                geom_col_width = 0.75)$bar_plot_MSEv_for_each_coalition
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "MSEv for specified coalitions, flipped bars, bar text, changed theme and colors",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = FALSE,
+                                               only_overall_MSEv = FALSE,
+                                               return_figures = TRUE,
+                                               flip_coordinates = TRUE,
+                                               index_combinations = c(1:2, 10, 15),
+                                               bar_text_size = 4,
+                                               brewer_palette = "Blues",
+                                               ggplot_theme = ggplot2::theme_minimal(),
+                                               geom_col_width = 0.75)$bar_plot_MSEv_for_each_coalition
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "line/point plot default explicands",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = FALSE,
+                                               only_overall_MSEv = FALSE,
+                                               return_figures = TRUE)$line_point_plot_MSEv_for_each_explicand
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "line/point plot default coalitions",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = FALSE,
+                                               only_overall_MSEv = FALSE,
+                                               return_figures = TRUE)$line_point_plot_MSEv_for_each_coalition
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "square points, no line, no title, explicands",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = FALSE,
+                                               only_overall_MSEv = FALSE,
+                                               return_figures = TRUE,
+                                               title_text_size = 0,
+                                               line_type = "blank",
+                                               point_size = 2,
+                                               point_shape = "square")$line_point_plot_MSEv_for_each_explicand
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "change lines, no points, explicands",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = FALSE,
+                                               only_overall_MSEv = FALSE,
+                                               return_figures = TRUE,
+                                               point_size = 0,
+                                               line_width = 1,
+                                               line_type = "solid")$line_point_plot_MSEv_for_each_explicand
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "change lines, no points, coalitions",
+    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+                                               plot_overall_MSEv = FALSE,
+                                               only_overall_MSEv = FALSE,
+                                               return_figures = TRUE,
+                                               point_size = 0,
+                                               line_width = 1,
+                                               legend_position = "bottom",
+                                               legend_nrow = 1,
+                                               line_type = "solid")$line_point_plot_MSEv_for_each_coalition
+  )
 })
