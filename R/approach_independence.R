@@ -137,7 +137,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
       # go from 1 to the number of levels/categories (i.e., the max integer). We need to
       # specify this in case not all the levels are presents in `dt` which can happen for rare
       # levels. We set the `labels` for each of the `levels` to be the original categories
-      dt[, (this) := factor(get(this), levels = seq(length(this_levels)), labels = this_levels)]
+      dt[, (this) := factor(get(this), levels = seq_along(this_levels), labels = this_levels)]
     }
   }
 
