@@ -103,7 +103,7 @@ shapley_setup_forecast <- function(internal) {
   #### Updating parameters ####
 
   # Updating parameters$exact as done in feature_combinations
-  if (!exact && n_combinations > 2^n_features0) {
+  if (!exact && n_combinations >= 2^n_features0) {
     internal$parameters$exact <- TRUE # Note that this is exact only if all horizons use the exact method.
   }
 
@@ -161,7 +161,7 @@ shapley_setup <- function(internal) {
   #### Updating parameters ####
 
   # Updating parameters$exact as done in feature_combinations
-  if (!exact && n_combinations > 2^n_features0) {
+  if (!exact && n_combinations >= 2^n_features0) {
     internal$parameters$exact <- TRUE
   }
 
@@ -253,7 +253,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
   if (!exact) {
     if (m_group == 0) {
       # Switch to exact for feature-wise method
-      if (n_combinations > 2^m) {
+      if (n_combinations >= 2^m) {
         n_combinations <- 2^m
         exact <- TRUE
         message(
@@ -266,7 +266,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
       }
     } else {
       # Switch to exact for feature-wise method
-      if (n_combinations > (2^m_group)) {
+      if (n_combinations >= (2^m_group)) {
         n_combinations <- 2^m_group
         exact <- TRUE
         message(
@@ -622,6 +622,7 @@ create_S_batch_new <- function(internal, seed = NULL) {
 
   X <- internal$objects$X
 
+  if (!is.null(seed)) set.seed(seed)
 
   if (length(approach0) > 1) {
     X[!(n_features %in% c(0, n_features0)), approach := approach0[n_features]]
@@ -632,6 +633,57 @@ create_S_batch_new <- function(internal, seed = NULL) {
         pmax(1, round(.N / (n_combinations - 2) * n_batches)),
       n_S_per_approach = .N
     ), by = approach]
+
+    # DELETE THIS COMMENT:
+    # The fix below is simple, but I feel like it is double work as one first does lines 631-635,
+    # and then later changes the output from said lines. A better idea would likely be to look at the logic
+    # in said lines.
+    # We can now use the additional (new) parameter
+    # `n_unique_approaches = internal$parameters$n_unique_approaches`.
+    # So instead of doing
+    # `pmax(1, round(.N / (n_combinations - 2) * n_batches))`
+    # one could maybe do something like
+    # `round(.N / (n_combinations - 2) * (n_batches - n_unique_approaches)) + 1`.
+    # Here we subtract `n_unique_approaches` as we know that at least `n_unique_approaches` of the
+    # `n_batches` have been looked to a specific approach, so we only want to divide the remaining
+    # batches among the approaches. We add 1 as each method needs to have 1 batch, and these
+    # corresponds to the `n_unique_approaches` batches we subtracted before.
+    # But this is will break too.
+    # Consider same example as in `demonstrate_combined_appraoches_bugs.R`.
+    # There `n_combinations = 32`, `n_unique_approaches = 2`, and `.N = c(5, 25)`.
+    # If we let `n_batches = 5`, then my proposal breaks, as
+    # round(.N / (n_combinations - 2) * (n_batches - n_unique_approaches)) + 1
+    # gives c(1,3) which sums to 4 < 5.
+    # This is because before we round we have c(0.5, 2.5) which are both rounded down
+    # So my conclusion is that it might be the easiest to do what is done above,
+    # or use my proposed approach and add batches until the correct amount has been reached.
+    # Discuss with Martin.
+    # Furthermore, we can both end up in situations with too few and too many coalitions,
+    # so have to check for both.
+    # Consider the same situation where one has `n_batches = 15`, and `n_combinations = 32`, then
+    # round(c(5, 25) / (n_combinations - 2) * n_batches)
+    # will yield c(2,12), whose sum is larger less `n_batches`
+
+    # Ensures that the number of batches corresponds to `n_batches`
+    if (sum(batch_count_dt$n_batches_per_approach) != n_batches) {
+      # Ensure that the number of batches is not larger than `n_batches`.
+      # Remove one batch from the approach with the most batches.
+      while (sum(batch_count_dt$n_batches_per_approach) > n_batches) {
+        approach_to_subtract_batch <- which.max(batch_count_dt$n_batches_per_approach)
+        batch_count_dt$n_batches_per_approach[approach_to_subtract_batch] <-
+          batch_count_dt$n_batches_per_approach[approach_to_subtract_batch] - 1
+      }
+
+      # Ensure that the number of batches is not lower than `n_batches`.
+      # Add one batch to the approach with most coalitions per batch
+      while (sum(batch_count_dt$n_batches_per_approach) < n_batches) {
+        approach_to_add_batch <- which.max(batch_count_dt$n_S_per_approach /
+                                            batch_count_dt$n_batches_per_approach)
+        batch_count_dt$n_batches_per_approach[approach_to_add_batch] <-
+          batch_count_dt$n_batches_per_approach[approach_to_add_batch] + 1
+      }
+    }
+
     batch_count_dt[, n_leftover_first_batch := n_S_per_approach %% n_batches_per_approach]
     data.table::setorder(batch_count_dt, -n_leftover_first_batch)
 
@@ -640,7 +692,6 @@ create_S_batch_new <- function(internal, seed = NULL) {
 
     # Randomize order before ordering spreading the batches on the different approaches as evenly as possible
     # with respect to shapley_weight
-    set.seed(seed)
     X[, randomorder := sample(.N)]
     data.table::setorder(X, randomorder) # To avoid smaller id_combinations always proceeding large ones
     data.table::setorder(X, shapley_weight)

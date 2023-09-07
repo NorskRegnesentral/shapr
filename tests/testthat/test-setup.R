@@ -1345,6 +1345,93 @@ test_that("Error with too low `n_combinations`", {
   )
 })
 
+test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights", {
+  # Check that the `explain()` function enters the exact mode when n_combinations
+  # is larger than or equal to 2^m.
+
+  # Create three explainer object: one with exact mode, one with
+  # `n_combinations` = 2^m, and one with `n_combinations` > 2^m
+  # No message as n_combination = NULL sets exact mode
+  expect_no_message(
+    object = {
+      explanation_exact <- explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        prediction_zero = p0,
+        n_samples = 2, # Low value for fast computations
+        n_batches = 1, # Not related to the bug
+        seed = 123,
+        n_combinations = NULL,
+        timing = FALSE
+      )
+    }
+  )
+
+  # We should get a message saying that we are using the exact mode.
+  # The `regexp` format match the one written in `feature_combinations()`.
+  expect_message(
+    object = {
+      explanation_equal <- explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        prediction_zero = p0,
+        n_samples = 2, # Low value for fast computations
+        n_batches = 1, # Not related to the bug
+        seed = 123,
+        n_combinations = 2^ncol(x_explain_numeric),
+        timing = FALSE
+      )
+    },
+    regexp = "Success with message:\nn_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead."
+  )
+
+  # We should get a message saying that we are using the exact mode.
+  # The `regexp` format match the one written in `feature_combinations()`.
+  expect_message(
+    object = {
+      explanation_larger <- explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        prediction_zero = p0,
+        n_samples = 2, # Low value for fast computations
+        n_batches = 1, # Not related to the bug
+        seed = 123,
+        n_combinations = 2^ncol(x_explain_numeric) + 1,
+        timing = FALSE
+      )
+    },
+    regexp = "Success with message:\nn_combinations is larger than or equal to 2\\^m = 32. \nUsing exact instead."
+  )
+
+  # Test that returned objects are identical (including all using the exact option and having the same Shapley weights)
+  expect_equal(
+    explanation_exact,
+    explanation_equal
+  )
+  expect_equal(
+    explanation_exact,
+    explanation_larger
+  )
+
+  # Explicitly check that exact mode is set and that n_combinations equals 2^ncol(x_explain_numeric) (32)
+  # Since all 3 explanation objects are equal (per the above test) it suffices to do this for explanation_exact
+  expect_true(
+    explanation_exact$internal$parameters$exact
+  )
+  expect_equal(
+    explanation_exact$internal$parameters$n_combinations,
+    2^ncol(x_explain_numeric)
+  )
+
+
+})
+
 test_that("Correct dimension of S when sampling combinations with groups", {
   n_combinations <- 5
 
@@ -1499,7 +1586,6 @@ test_that("different n_batches gives same/different shapley values for different
     timing = FALSE
   )
 
-
   # Difference in the objects (n_batches and related)
   expect_false(identical(
     explain.empirical_n_batches_5,
@@ -1510,7 +1596,6 @@ test_that("different n_batches gives same/different shapley values for different
     explain.empirical_n_batches_5$shapley_values,
     explain.empirical_n_batches_10$shapley_values
   )
-
 
   # approach "ctree" is seed dependent
   explain.ctree_n_batches_5 <- explain(
@@ -1595,4 +1680,213 @@ test_that("gaussian approach use the user provided parameters", {
     e.gaussian_provided_mean_cov$internal$parameters$gaussian.cov_mat,
     gaussian.provided_cov_mat
   )
+})
+
+test_that("Shapr sets a valid default value for `n_batches`", {
+  # Shapr sets the default number of batches to be 10 for this dataset and the
+  # "ctree", "gaussian", and "copula" approaches. Thus, setting `n_combinations`
+  # to any value lower of equal to 10 causes the error.
+  any_number_equal_or_below_10 <- 8
+
+  # Before the bugfix, shapr:::check_n_batches() throws the error:
+  # Error in check_n_batches(internal) :
+  #   `n_batches` (10) must be smaller than the number feature combinations/`n_combinations` (8)
+  # Bug only occures for "ctree", "gaussian", and "copula" as they are treated different in
+  # `get_default_n_batches()`, I am not certain why. Ask Martin about the logic behind that.
+  expect_no_error(
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      n_samples = 2, # Low value for fast computations
+      approach = "gaussian",
+      prediction_zero = p0,
+      n_combinations = any_number_equal_or_below_10
+    )
+  )
+})
+
+test_that("Error with to low `n_batches` compared to the number of unique approaches", {
+  # Expect to get the following error:
+  # `n_batches` (3) must be larger than the number of unique approaches in `approach` (4). Note that
+  # the last approach in `approach` is not included as it is not used to do any computations as
+  # described in the vignette.
+  expect_error(
+    object = explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+      prediction_zero = p0,
+      n_batches = 3,
+      timing = FALSE,
+      seed = 1))
+
+  # Except that shapr sets a valid `n_batches` and get no errors
+  expect_no_error(
+    object = explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+      prediction_zero = p0,
+      n_batches = NULL,
+      timing = FALSE,
+      seed = 1))
+})
+
+test_that("the used number of batches mathces the provided `n_batches` for combined approaches", {
+  explanation_1 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "ctree", "ctree", "ctree", "ctree"),
+    prediction_zero = p0,
+    n_batches = 2,
+    timing = FALSE,
+    seed = 1)
+
+  # Check that the used number of batches corresponds with the provided `n_batches`
+  expect_equal(explanation_1$internal$parameters$n_batches,
+               length(explanation_1$internal$objects$S_batch))
+
+  explanation_2 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "ctree", "ctree", "ctree", "ctree"),
+    prediction_zero = p0,
+    n_batches = 15,
+    timing = FALSE,
+    seed = 1)
+
+  # Check that the used number of batches corresponds with the provided `n_batches`
+  expect_equal(explanation_2$internal$parameters$n_batches,
+               length(explanation_2$internal$objects$S_batch))
+
+  # Check for the default value for `n_batch`
+  explanation_3 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "ctree", "ctree", "ctree", "ctree"),
+    prediction_zero = p0,
+    n_batches = NULL,
+    timing = FALSE,
+    seed = 1)
+
+  # Check that the used number of batches corresponds with the `n_batches`
+  expect_equal(explanation_3$internal$parameters$n_batches,
+               length(explanation_3$internal$objects$S_batch))
+})
+
+test_that("setting the seed for combined approaches works", {
+  # Check that setting the seed works for a combination of approaches
+  # Here `n_batches` is set to `4`, so one batch for each method,
+  # i.e., no randomness.
+  explanation_combined_1 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+
+  explanation_combined_2 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+
+  # Check that they are equal
+  expect_equal(explanation_combined_1, explanation_combined_2)
+
+  # Here `n_batches` is set to `10`, so NOT one batch for each method,
+  # i.e., randomness in assigning the batches.
+  explanation_combined_3 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "gaussian", "copula", "ctree"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+
+  explanation_combined_4 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "gaussian", "copula", "ctree"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+
+  # Check that they are equal
+  expect_equal(explanation_combined_3, explanation_combined_4)
+})
+
+test_that("counting the number of unique approaches", {
+  # Test several combinations of combined approaches and check that the number of
+  # counted unique approaches is correct.
+  # Recall that the last approach is not counted in `n_unique_approaches` as
+  # we do not use it as we then condition on all features.
+  explanation_combined_1 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+  expect_equal(explanation_combined_1$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_1$internal$parameters$n_unique_approaches, 4)
+
+  explanation_combined_2 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("empirical"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+  expect_equal(explanation_combined_2$internal$parameters$n_approaches, 1)
+  expect_equal(explanation_combined_2$internal$parameters$n_unique_approaches, 1)
+
+  explanation_combined_3 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("gaussian", "gaussian", "gaussian", "gaussian", "gaussian"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+  expect_equal(explanation_combined_3$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_3$internal$parameters$n_unique_approaches, 1)
+
+  explanation_combined_4 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "independence", "empirical", "empirical"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+  expect_equal(explanation_combined_4$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_4$internal$parameters$n_unique_approaches, 2)
+
+  # Check that the last one is not counted
+  explanation_combined_5 <- explain(
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = c("independence", "empirical", "independence", "empirical", "gaussian"),
+    prediction_zero = p0,
+    timing = FALSE,
+    seed = 1)
+  expect_equal(explanation_combined_5$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_5$internal$parameters$n_unique_approaches, 2)
 })

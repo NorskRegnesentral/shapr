@@ -1,6 +1,11 @@
 #' Set up the framework chosen approach
 #'
-#' The different choices of `approach` takes different (optional) parameters, which are forwarded from [explain()].
+#' The different choices of `approach` takes different (optional) parameters,
+#' which are forwarded from [explain()].
+#'
+#' @param internal List. Holds all parameters, data, functions and computed
+#' objects used within [explain()].
+#' The list contains one or more of the elements `parameters`, `data`, `objects`, `output`.
 #'
 #' @param ... `approach`-specific arguments. See below.
 #'
@@ -36,24 +41,54 @@ setup_approach.combined <- function(internal, ...) {
   return(internal)
 }
 
-#' Generate data used for predictions
+#' Generate data used for predictions and Monte Carlo integration
 #'
-#' @param x Explainer object. See [explain()] for more information.
+#' @note
+#' There is currently a warning when calling `roxygen2::roxygenise()`.
+#' Warning message:
+#' inheritParams failed in topic "prepare_data", "prepare_data.categorical", "prepare_data.copula",
+#' "prepare_data.ctree", "prepare_data.empirical", "prepare_data.gaussian",
+#' "prepare_data.independence", "prepare_data.timeseries", and "prepare_data.vaeac".
+#' ✖ All parameters are already documented; none remain to be inherited.
 #'
-#' @param seed Positive integer. If `NULL` the seed will be inherited from the calling environment.
+#' This occurred after Lars updated the code as he now documents all parameters here. This was not
+#' the case before, as the roxygen had not been updated. Can solve this by removing, e.g.,
+#' `param ... Currently not used.` below, or remove rdname from the subfunctions and rather
+#  use inherateparams.
 #'
-#' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
-#' `NULL` means all combinations. Only used internally.
+#'
+#' @param internal List. Holds all parameters, data, functions and computed objects used
+#' within \code{\link[=explain]{explain()}}. The list contains one or more of the elements
+#' `parameters`, `data`, `objects`, `output`.
+#' @param index_features Positive integer vector. Specifies the indices of combinations to
+#' apply to the present method. `NULL` means all combinations. Only used internally.
 #'
 #' @param ... Currently not used.
 #'
-#' @return A data.table containing simulated data passed to prediction().
+#' @return A data.table containing simulated data used to estimate
+#' the contribution function by Monte Carlo integration.
 #'
 #' @export
 #' @keywords internal
-prepare_data <- function(internal, ...) {
+prepare_data <- function(internal, index_features = NULL, ...) {
+
+  # Extract the used approach(es)
+  approach <- internal$parameters$approach
+
+  # Auxiliary object such that we can use the `UseMethod` function
   this_class <- ""
-  class(this_class) <- internal$parameters$approach
+
+  # Check if the user provided one or several approaches.
+  if (length(approach) > 1) {
+    # Picks the relevant approach from the internal$objects$X table which list the unique approach of the batch
+    # matches by index_features
+    class(this_class) <- internal$objects$X[id_combination == index_features[1], approach]
+  } else {
+    # Only one approach for all coalitions sizes
+    class(this_class) <- approach
+  }
+
+  # Use the `prepare_data` function for the correct approach
   UseMethod("prepare_data", this_class)
 }
 

@@ -66,10 +66,10 @@
 <text x='544.73' y='516.90' text-anchor='middle' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='9.79px' lengthAdjust='spacingAndGlyphs'>30</text>
 <text x='658.34' y='516.90' text-anchor='middle' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='9.79px' lengthAdjust='spacingAndGlyphs'>40</text>
 <polyline points='89.30,505.91 89.30,39.43 ' style='stroke-width: 1.07; stroke-linecap: butt;' />
-<text x='84.37' y='463.80' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='33.03px' lengthAdjust='spacingAndGlyphs'>Day =  5</text>
-<text x='84.37' y='388.56' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='51.61px' lengthAdjust='spacingAndGlyphs'>Solar.R =  95</text>
+<text x='84.37' y='463.80' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='30.58px' lengthAdjust='spacingAndGlyphs'>Day = 5</text>
+<text x='84.37' y='388.56' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='49.17px' lengthAdjust='spacingAndGlyphs'>Solar.R = 95</text>
 <text x='84.37' y='313.32' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='66.30px' lengthAdjust='spacingAndGlyphs'>Month_factor = 9</text>
-<text x='84.37' y='238.08' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='44.76px' lengthAdjust='spacingAndGlyphs'>Wind =  7.4</text>
+<text x='84.37' y='238.08' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='42.31px' lengthAdjust='spacingAndGlyphs'>Wind = 7.4</text>
 <text x='84.37' y='162.84' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='42.32px' lengthAdjust='spacingAndGlyphs'>Temp = 87</text>
 <text x='84.37' y='87.61' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='21.04px' lengthAdjust='spacingAndGlyphs'>None</text>
 <polyline points='86.56,460.77 89.30,460.77 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
