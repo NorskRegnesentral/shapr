@@ -369,7 +369,7 @@ test_that("MSEv evaluation criterion named plots", {
   )
 
   vdiffr::expect_doppelganger(
-    title = "change lines, no points, coalitions",
+    title = "change lines and colors, no points, coalitions",
     fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
@@ -378,6 +378,9 @@ test_that("MSEv evaluation criterion named plots", {
                                                line_width = 1,
                                                legend_position = "bottom",
                                                legend_nrow = 1,
+                                               brewer_palette = "Set3",
+                                               brewer_direction = -1,
+                                               ggplot_theme = ggplot2::theme_minimal(),
                                                line_type = "solid")$line_point_plot_MSEv_for_each_coalition
   )
 })
