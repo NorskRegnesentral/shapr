@@ -828,7 +828,8 @@ make_waterfall_plot <- function(dt_plot,
 #' @param line_type Legal values are the strings "blank", "solid", "dashed", "dotted", "dotdash", "longdash",
 #' and "twodash". Alternatively, the numbers 0 to 6 can be used (0 for "blank", 1 for "solid", ...).
 #' Moreover, one can also use strings that define the line type with up to 8 hexadecimal digits
-#' (each digit specifying the length of interleaved lines and gaps), see \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}
+#' (each digit specifying the length of interleaved lines and gaps),
+#' see \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}
 #' and/or \url{http://sape.inf.usi.ch/quick-reference/ggplot2/linetype}.
 #' @param point_size Positive numeric. The size of the points. Set `point_size = 0` to remove points.
 #' @param point_shape Integer or string. Specify the shape of the points.
@@ -837,10 +838,11 @@ make_waterfall_plot <- function(dt_plot,
 #' for the coalitions averaged over the explicands. It does not makes sense to add it for the other
 #' plots as the scale of the MSEv for the explicands averaged over the coalitions is different for each
 #' coalition. The mileage of this argument may vary due to potentially overlapping error bars.
-#' @param flip_coordinates Boolean. Flip Cartesian coordinates so that horizontal becomes vertical, and vertical, horizontal.
+#' @param flip_coordinates Boolean. Flip Cartesian coordinates so that the methods are on the y-ais..
 #' This is primarily useful for converting geoms and statistics which display y conditional on x, to x conditional on y.
 #' See [ggplot2::coord_flip()]. If `TRUE`, then the function makes horizontal bars instead of vertical bars.
-#' @param reverse_coordinates Boolean. Default to be the same as `flip_coordinates`. If `TRUE`, then reverse the order of the methods.
+#' @param reverse_coordinates Boolean. Default to be the same as `flip_coordinates`.
+#' If `TRUE`, then reverse the order of the methods.
 #' @param geom_col_width Numeric. Bar width. By default, set to 90% of the [ggplot2::resolution()] of the data.
 #' @param legend_position String or numeric vector `c(x,y)`. The allowed string values for the
 #' argument `legend_position` are: `left`,`top`, `right`, `bottom`, and `none`. Note that, the argument
@@ -1209,7 +1211,8 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
 
     # Extract the names of the approaches used in the explanation objects in explanation_list
     # We paste in case an explanation object has used a combination of approaches.
-    names <- sapply(explanation_list, function(explanation) paste(explanation$internal$parameters$approach, collapse = "_"))
+    names <- sapply(explanation_list,
+                    function(explanation) paste(explanation$internal$parameters$approach, collapse = "_"))
 
     # Ensure that we have unique names
     names <- make.unique(names, sep = "_")
@@ -1228,18 +1231,19 @@ Default to the approach names (with integer suffix for duplicates) for the expla
     sapply(explanation_list, function(explanation) is.null(explanation$MSEv_evaluation_criterion))
   if (any(entries_missing_MSEv_evaluation_criterion)) {
     # Get the methods that are missing the MSEv_evaluation_criterion
-    methods_without_MSEv_eval_crit_string <-
-      paste(names(entries_missing_MSEv_evaluation_criterion)[entries_missing_MSEv_evaluation_criterion], collapse = ", ")
+    methods_without_MSEv_string <-
+      paste(names(entries_missing_MSEv_evaluation_criterion)[entries_missing_MSEv_evaluation_criterion],
+            collapse = ", ")
 
     if (sum(entries_missing_MSEv_evaluation_criterion) == 1) {
       stop(sprintf(
         "The object %s in `explanation_list` is missing the `MSEv_evaluation_criterion` list.",
-        methods_without_MSEv_eval_crit_string
+        methods_without_MSEv_string
       ))
     } else {
       stop(sprintf(
         "The objects %s in `explanation_list` are missing the `MSEv_evaluation_criterion` list.",
-        methods_without_MSEv_eval_crit_string
+        methods_without_MSEv_string
       ))
     }
   }
@@ -1309,7 +1313,9 @@ Default to the approach names (with integer suffix for duplicates) for the expla
   )
 
   # Only keep the desired explicands
-  if (!is.null(index_explicands)) MSEv_eval_crit_for_each_explicand <- MSEv_eval_crit_for_each_explicand[id %in% index_explicands]
+  if (!is.null(index_explicands)) {
+    MSEv_eval_crit_for_each_explicand <- MSEv_eval_crit_for_each_explicand[id %in% index_explicands]
+  }
 
   # Create a data.table with the MSEv evaluation criterion values for the different methods for each coalition.
   MSEv_eval_crit_for_each_coalition <- rbindlist(
@@ -1352,7 +1358,7 @@ Default to the approach names (with integer suffix for duplicates) for the expla
   }
 
   # User has provided neither `axis_labels_n_dodge` nor `axis_labels_rotate_angle`
-  if (is.null(axis_labels_rotate_angle) & is.null(axis_labels_n_dodge)) {
+  if (is.null(axis_labels_rotate_angle) && is.null(axis_labels_n_dodge)) {
     # Set default values
     axis_labels_rotate_angle <- 0
     axis_labels_n_dodge <- 1
@@ -1361,7 +1367,7 @@ Default to the approach names (with integer suffix for duplicates) for the expla
     length_of_longest_method <- max(nchar(names(explanation_list)))
 
     # If it is long, then we alter the default values set above and give message to user
-    if (length_of_longest_method > 12 & !flip_coordinates) {
+    if (length_of_longest_method > 12 && !flip_coordinates) {
       message("Long method names: consider specifying either `axis_labels_rotate_angle` or
 `axis_labels_n_dodge` to fix any potentially overlapping method names.
 The function sets `axis_labels_rotate_angle = 45` internally.")
@@ -1378,13 +1384,15 @@ The function sets `axis_labels_rotate_angle = 45` internally.")
   if (is.null(axis_labels_n_dodge)) axis_labels_n_dodge <- 1
 
   # Making plots --------------------------------------------------------------------------------
-  ### Make plots of the MSEv evaluation criterion values for the different methods averaged over both the coalitions and explicands.
+  ### Make plots of the MSEv evaluation criterion values for the different methods
+  # averaged over both the coalitions and explicands.
   # Make the bar_plot
   bar_plot_MSEv <-
     ggplot2::ggplot(MSEv_eval_crit, ggplot2::aes(x = Method, y = MSEv_evaluation_criterion, fill = Method)) +
     ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge()) +
     ggplot2::geom_text(
-      ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""), round(MSEv_evaluation_criterion, bar_text_n_decimals))),
+      ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+                                   round(MSEv_evaluation_criterion, bar_text_n_decimals))),
       vjust = ifelse(flip_coordinates, NA, 1.75),
       hjust = ifelse(flip_coordinates, 1.15, NA),
       color = bar_text_color,
@@ -1394,7 +1402,9 @@ The function sets `axis_labels_rotate_angle = 45` internally.")
     ggplot2::labs(x = "Method", y = bquote(MSE[v])) +
     ggplot2::guides(x = ggplot2::guide_axis(n.dodge = axis_labels_n_dodge, angle = axis_labels_rotate_angle)) +
     {
-      if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over both the " * .(n_combinations) * " coalitions and " * .(n_explain) * " explicands"))
+      if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over both the "
+                                                            * .(n_combinations) * " coalitions and "
+                                                            * .(n_explain) * " explicands"))
     } +
     {
       if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))
@@ -1406,10 +1416,14 @@ The function sets `axis_labels_rotate_angle = 45` internally.")
       if (is.null(brewer_palette)) ggplot2::scale_color_discrete(breaks = breaks)
     } +
     {
-      if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction_for_only_MSEv, breaks = breaks)
+      if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette,
+                                                               direction = brewer_direction_for_only_MSEv,
+                                                               breaks = breaks)
     } +
     {
-      if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction_for_only_MSEv, breaks = breaks)
+      if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette,
+                                                                direction = brewer_direction_for_only_MSEv,
+                                                                breaks = breaks)
     } +
     {
       if (!is.null(ggplot_theme)) ggplot_theme
@@ -1435,13 +1449,16 @@ The function sets `axis_labels_rotate_angle = 45` internally.")
 
   # Skip the rest if the user only wants the overall MSEv
   if (!only_overall_MSEv) {
-    ### Make plots of the MSEv evaluation criterion values for the different methods for each explicand averaged over the coalitions.
+    ### Make plots of the MSEv evaluation criterion values for the different
+    # methods for each explicand averaged over the coalitions.
     # Make a source object of the data
     MSEv_for_each_explicand_source <-
       ggplot2::ggplot(MSEv_eval_crit_for_each_explicand, ggplot2::aes(x = id, y = MSEv_evaluation_criterion)) +
       ggplot2::labs(x = "Explicand index", y = bquote(MSE[v])) +
       {
-        if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over both the " * .(n_combinations) * " coalitions and " * .(n_explain) * " explicands"))
+        if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over both the "
+                                                              * .(n_combinations) * " coalitions and "
+                                                              * .(n_explain) * " explicands"))
       } +
       {
         if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))
@@ -1453,10 +1470,14 @@ The function sets `axis_labels_rotate_angle = 45` internally.")
         if (is.null(brewer_palette)) ggplot2::scale_color_discrete(breaks = breaks)
       } +
       {
-        if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction, breaks = breaks)
+        if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette,
+                                                                 direction = brewer_direction,
+                                                                 breaks = breaks)
       } +
       {
-        if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction, breaks = breaks)
+        if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette,
+                                                                  direction = brewer_direction,
+                                                                  breaks = breaks)
       } +
       {
         if (!is.null(ggplot_theme)) ggplot_theme
@@ -1489,7 +1510,8 @@ The function sets `axis_labels_rotate_angle = 45` internally.")
       ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge(), ggplot2::aes(fill = Method)) +
       ggplot2::geom_text(
         ggplot2::aes(
-          label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""), round(MSEv_evaluation_criterion, bar_text_n_decimals)),
+          label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+                          round(MSEv_evaluation_criterion, bar_text_n_decimals)),
           group = Method
         ),
         vjust = ifelse(flip_coordinates, NA, 1.75),
@@ -1508,13 +1530,17 @@ The function sets `axis_labels_rotate_angle = 45` internally.")
       ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(group = Method, col = Method))
 
 
-    ### Make plots of the MSEv evaluation criterion values for the different methods for each coalition averaged over the explicands
+    ### Make plots of the MSEv evaluation criterion values for the different methods
+    # for each coalition averaged over the explicands
     # Make a source object of the data
     MSEv_for_each_coalition_source <-
-      ggplot2::ggplot(MSEv_eval_crit_for_each_coalition, ggplot2::aes(x = id_combination, y = MSEv_evaluation_criterion)) +
+      ggplot2::ggplot(MSEv_eval_crit_for_each_coalition, ggplot2::aes(x = id_combination,
+                                                                      y = MSEv_evaluation_criterion)) +
       ggplot2::labs(x = "Coalition index", y = bquote(MSE[v])) +
       {
-        if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over both the " * .(n_combinations) * " coalitions and " * .(n_explain) * " explicands"))
+        if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over both the "
+                                                              * .(n_combinations) * " coalitions and "
+                                                              * .(n_explain) * " explicands"))
       } +
       {
         if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))
@@ -1526,10 +1552,14 @@ The function sets `axis_labels_rotate_angle = 45` internally.")
         if (is.null(brewer_palette)) ggplot2::scale_color_discrete(breaks = breaks)
       } +
       {
-        if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette, direction = brewer_direction, breaks = breaks)
+        if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette,
+                                                                 direction = brewer_direction,
+                                                                 breaks = breaks)
       } +
       {
-        if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction, breaks = breaks)
+        if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette,
+                                                                  direction = brewer_direction,
+                                                                  breaks = breaks)
       } +
       {
         if (!is.null(ggplot_theme)) ggplot_theme
@@ -1562,7 +1592,8 @@ The function sets `axis_labels_rotate_angle = 45` internally.")
       ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge(), ggplot2::aes(fill = Method)) +
       ggplot2::geom_text(
         ggplot2::aes(
-          label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""), round(MSEv_evaluation_criterion, bar_text_n_decimals)),
+          label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+                          round(MSEv_evaluation_criterion, bar_text_n_decimals)),
           group = Method
         ),
         vjust = ifelse(flip_coordinates, NA, 1.75),
