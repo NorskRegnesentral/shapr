@@ -292,7 +292,7 @@ test_that("output_lm_mixed_comb", {
       x_train = x_train_mixed,
       approach = c("ctree", "independence", "ctree", "independence", "independence"),
       prediction_zero = p0,
-      n_batches = 1,
+      n_batches = NULL,
       timing = FALSE
     ),
     "output_lm_mixed_comb"
