@@ -216,7 +216,7 @@ test_that("MSEv evaluation criterion named plots", {
   # Create a list of explanations with names
   explanation_list_named <- list(
     "Emp." = explain_numeric_empirical,
-    "Gaus" = explain_numeric_gaussian,
+    "Gaus." = explain_numeric_gaussian,
     "Ctree" = explain_numeric_ctree,
     "Comb." = explain_numeric_combined
   )
@@ -353,7 +353,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                return_figures = TRUE,
                                                title_text_size = 0,
                                                line_type = "blank",
-                                               point_size = 2,
+                                               point_size = 4,
                                                point_shape = "square")$line_point_plot_MSEv_for_each_explicand
   )
 
@@ -378,7 +378,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                line_width = 1,
                                                legend_position = "bottom",
                                                legend_nrow = 1,
-                                               brewer_palette = "Set3",
+                                               brewer_palette = "Accent",
                                                brewer_direction = -1,
                                                ggplot_theme = ggplot2::theme_minimal(),
                                                line_type = "solid")$line_point_plot_MSEv_for_each_coalition
