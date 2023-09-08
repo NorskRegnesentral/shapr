@@ -46,7 +46,7 @@ explain_numeric_combined <- explain(
   x_train = x_train_numeric,
   approach = c("empirical", "ctree", "gaussian", "ctree", "empirical"),
   prediction_zero = p0,
-  n_batches = NULL,
+  n_batches = 10,
   timing = FALSE
 )
 
@@ -170,7 +170,6 @@ test_that("beeswarm_plot_new_arguments", {
   )
 })
 
-
 test_that("MSEv evaluation criterion unnamed plots", {
   skip_if_not_installed("vdiffr")
 
@@ -184,28 +183,28 @@ test_that("MSEv evaluation criterion unnamed plots", {
 
   vdiffr::expect_doppelganger(
     title = "default version",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
-                                               plot_overall_MSEv = TRUE,
+    fig = suppressMessages(make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+                                               plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
-                                               return_figures = FALSE)
+                                               return_figures = TRUE)$bar_plot_MSEv)
   )
 
   vdiffr::expect_doppelganger(
     title = "rotate axis labels version",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
-                                               plot_overall_MSEv = TRUE,
+    fig = suppressMessages(make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+                                               plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
-                                               return_figures = FALSE,
-                                               axis_labels_rotate_angl = 90)
+                                               return_figures = TRUE,
+                                               axis_labels_rotate_angl = 90)$bar_plot_MSEv)
   )
 
   vdiffr::expect_doppelganger(
     title = "dodge axis labels version",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
-                                               plot_overall_MSEv = TRUE,
+    fig = suppressMessages(make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+                                               plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
-                                               return_figures = FALSE,
-                                               axis_labels_n_dodge = 4)
+                                               return_figures = TRUE,
+                                               axis_labels_n_dodge = 4)$bar_plot_MSEv)
   )
 
 })
@@ -224,17 +223,17 @@ test_that("MSEv evaluation criterion named plots", {
   vdiffr::expect_doppelganger(
     title = "using the provided names",
     fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
-                                               plot_overall_MSEv = TRUE,
+                                               plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
-                                               return_figures = FALSE)
+                                               return_figures = TRUE)$bar_plot_MSEv
   )
 
   vdiffr::expect_doppelganger(
     title = "flip bars, add text, change colors, legend_bottom",
     fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
-                                               plot_overall_MSEv = TRUE,
+                                               plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
-                                               return_figures = FALSE,
+                                               return_figures = TRUE,
                                                flip_coordinates = TRUE,
                                                bar_text_color = "black",
                                                bar_text_size = 5,
@@ -242,31 +241,31 @@ test_that("MSEv evaluation criterion named plots", {
                                                brewer_palette = "Set1",
                                                ggplot_theme = ggplot2::theme_minimal(),
                                                legend_position = "bottom",
-                                               legend_ncol = 2)
+                                               legend_ncol = 2)$bar_plot_MSEv
   )
 
   vdiffr::expect_doppelganger(
     title = "default colors, no legend, more decimals, white text",
     fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
-                                               plot_overall_MSEv = TRUE,
+                                               plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
-                                               return_figures = FALSE,
+                                               return_figures = TRUE,
                                                flip_coordinates = TRUE,
                                                bar_text_color = "white",
                                                bar_text_size = 5,
                                                bar_text_n_decimals = 4,
                                                brewer_palette = NULL,
                                                ggplot_theme = ggplot2::theme_minimal(),
-                                               legend_position = "none")
+                                               legend_position = "none")$bar_plot_MSEv
   )
 
 
   vdiffr::expect_doppelganger(
     title = "default colors, no legend, more decimals, white text, no title",
     fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
-                                               plot_overall_MSEv = TRUE,
+                                               plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
-                                               return_figures = FALSE,
+                                               return_figures = TRUE,
                                                flip_coordinates = TRUE,
                                                bar_text_color = "white",
                                                bar_text_size = 5,
@@ -274,7 +273,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                brewer_palette = NULL,
                                                ggplot_theme = ggplot2::theme_minimal(),
                                                legend_position = "none",
-                                               title_text_size = 0)
+                                               title_text_size = 0)$bar_plot_MSEv
   )
 
   vdiffr::expect_doppelganger(
