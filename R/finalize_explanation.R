@@ -40,13 +40,14 @@ finalize_explanation <- function(vS_list, internal) {
   # TODO: check if it makes sense for output_size > 1.
   if (internal$parameters$output_size == 1) {
     # Compute the MSEv evaluation criterion
-    MSEv_evaluation_criterion = compute_MSEv_evaluation_criterion(
+    MSEv_evaluation_criterion <- compute_MSEv_evaluation_criterion(
       internal = internal,
       processed_vS_list = processed_vS_list,
       p = p,
       exclude_empty_and_grand_coalition = FALSE,
-      return_as_dt = TRUE)
-    output$MSEv_evaluation_criterion = MSEv_evaluation_criterion
+      return_as_dt = TRUE
+    )
+    output$MSEv_evaluation_criterion <- MSEv_evaluation_criterion
   }
 
   return(output)
@@ -170,20 +171,28 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' Mean Squared Error of the Contribution Function `v(S)`
 #'
 #' @param internal List with the different parameters, data and functions used internally in the [explain()] function.
-#' @param processed_vS_list List of the processed contribution function estimates. Output from the \code{shapr:::postprocess_vS_list()} function.
-#' @param p Numeric vector with the predicted responses for the observations which are to be explained. Output from the \code{shapr:::get_p()} function.
+#' @param processed_vS_list List of the processed contribution function estimates.
+#' Output from the \code{shapr:::postprocess_vS_list()} function.
+#' @param p Numeric vector with the predicted responses for the observations which are to be explained.
+#' Output from the \code{shapr:::get_p()} function.
 #' @param exclude_empty_and_grand_coalition Boolean. If `TRUE`, we exclude the empty and grand coalitions
 #' when computing the MSEv evaluation criterion. This is reasonable as they are identical for all methods, i.e.,
 #' their contribution function is independent of the used method as they are special cases not effected by
 #' the used method. If `TRUE`, we exclude the empty and grand coalitions.
-#' @param return_as_dt Boolean. If the computes MSEv evaluation criterion are to be returned as \code{\link[data.table]{data.table}}.
+#' @param return_as_dt Boolean. If the computed MSEv evaluation criterion is
+#' to be returned as \code{\link[data.table]{data.table}}.
 #'
 #' @return
 #' List containing:
 #' \describe{
-#'  \item{`MSEv_evaluation_criterion`}{Numeric scalar (or \code{\link[data.table]{data.table}} based on parameter `return_as_dt`) with the overall MSEv evaluation criterion averaged over both the coalitions and observations.}
-#'  \item{`MSEv_evaluation_criterion_for_each_explicand`}{Numeric vector (or \code{\link[data.table]{data.table}} based on parameter `return_as_dt`) with the mean squared error for each explicand, i.e., only averaged over the coalitions.}
-#'  \item{`MSEv_evaluation_criterion_for_each_coalition`}{Numeric vector (or \code{\link[data.table]{data.table}} based on parameter `return_as_dt`) with the mean squared error for each coalition, i.e., only averaged over the observations.}
+#'  \item{`MSEv_evaluation_criterion`}{Numeric scalar (or \code{\link[data.table]{data.table}} based on parameter
+#'  `return_as_dt`) with the overall MSEv evaluation criterion averaged over both the coalitions and observations.}
+#'  \item{`MSEv_evaluation_criterion_for_each_explicand`}{Numeric vector (or \code{\link[data.table]{data.table}}
+#'  based on parameter `return_as_dt`) with the mean squared error for each explicand,
+#'  i.e., only averaged over the coalitions.}
+#'  \item{`MSEv_evaluation_criterion_for_each_coalition`}{Numeric vector (or \code{\link[data.table]{data.table}}
+#'  based on parameter `return_as_dt`) with the mean squared error for each coalition,
+#'  i.e., only averaged over the observations.}
 #' }
 #'
 #' @description Function that computes the Mean Squared Error (MSEv) of the contribution function
@@ -241,100 +250,110 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' # The `compute_MSEv_evaluation_criterion` function is intended to be only called internally in
 #' # the `shapr` package, but the user can still use it outside of the package.
 #' # Exclude the empty and grand coalitions from the computations and return the result as a data.table
-#' compute_MSEv_evaluation_criterion(internal = explanation$internal,
-#'                                   processed_vS_list = explanation$internal$output,
-#'                                   exclude_empty_and_grand_coalition = TRUE,
-#'                                   return_as_dt = TRUE)
+#' compute_MSEv_evaluation_criterion(
+#'   internal = explanation$internal,
+#'   processed_vS_list = explanation$internal$output,
+#'   exclude_empty_and_grand_coalition = TRUE,
+#'   return_as_dt = TRUE
+#' )
 #'
 #' # Include the empty and grand coalitions from the computations and return the result as a data.table
-#' compute_MSEv_evaluation_criterion(internal = explanation$internal,
-#'                                   processed_vS_list = explanation$internal$output,
-#'                                   exclude_empty_and_grand_coalition = FALSE,
-#'                                   return_as_dt = TRUE)
+#' compute_MSEv_evaluation_criterion(
+#'   internal = explanation$internal,
+#'   processed_vS_list = explanation$internal$output,
+#'   exclude_empty_and_grand_coalition = FALSE,
+#'   return_as_dt = TRUE
+#' )
 #'
 #' # Exclude the empty and grand coalitions from the computations and return the result as a list
-#' compute_MSEv_evaluation_criterion(internal = explanation$internal,
-#'                                   processed_vS_list = explanation$internal$output,
-#'                                   exclude_empty_and_grand_coalition = TRUE,
-#'                                   return_as_dt = FALSE)
+#' compute_MSEv_evaluation_criterion(
+#'   internal = explanation$internal,
+#'   processed_vS_list = explanation$internal$output,
+#'   exclude_empty_and_grand_coalition = TRUE,
+#'   return_as_dt = FALSE
+#' )
 #'
 #' # Include the empty and grand coalitions from the computations and return the result as a list
-#' compute_MSEv_evaluation_criterion(internal = explanation$internal,
-#'                                   processed_vS_list = explanation$internal$output,
-#'                                   exclude_empty_and_grand_coalition = FALSE,
-#'                                   return_as_dt = FALSE)
-#'
+#' compute_MSEv_evaluation_criterion(
+#'   internal = explanation$internal,
+#'   processed_vS_list = explanation$internal$output,
+#'   exclude_empty_and_grand_coalition = FALSE,
+#'   return_as_dt = FALSE
+#' )
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-compute_MSEv_evaluation_criterion = function(internal,
-                                             processed_vS_list,
-                                             p = shapr:::get_p(processed_vS_list$dt_vS, internal),
-                                             exclude_empty_and_grand_coalition = TRUE,
-                                             return_as_dt = TRUE) {
-
+compute_MSEv_evaluation_criterion <- function(internal,
+                                              processed_vS_list,
+                                              p = shapr:::get_p(processed_vS_list$dt_vS, internal),
+                                              exclude_empty_and_grand_coalition = TRUE,
+                                              return_as_dt = TRUE) {
   # Get the number of unique coalitions, where two of them are the empty and full set.
   # This is 2^M if internal$parameters$exact is TRUE or some value below 2^M if sampled version.
-  n_combinations = internal$parameters$n_combinations
+  n_combinations <- internal$parameters$n_combinations
 
   # Get the number of observations to explain
-  n_explain = internal$parameters$n_explain
+  n_explain <- internal$parameters$n_explain
 
   # Get the imputed samples
-  dt_vS = processed_vS_list$dt_vS
+  dt_vS <- processed_vS_list$dt_vS
 
   # Check if we are to remove the empty and grand coalitions, which are
   # identical for all methods and thus is not effected by the used method.
   if (exclude_empty_and_grand_coalition) {
-    dt_vS = dt_vS[-c(1, n_combinations),]
+    dt_vS <- dt_vS[-c(1, n_combinations), ]
   }
 
   # Square the difference between the estimated contribution function
   # v(S) = E_{\hat{p}(X_sbar | X_s = x_s)} [f(X_sbar, x_s) | X_s = x_s)]
   # and the predicted response f(x).
-  dt_squared_difference = as.matrix(dt_vS[,!"id_combination"][,Map(`-`, p, .SD)]^2)
+  dt_squared_difference <- as.matrix(dt_vS[, !"id_combination"][, Map(`-`, p, .SD)]^2)
 
   # Compute the mean squared error for each observation, i.e., only averaged over the coalitions.
-  MSEv_evaluation_criterion_for_each_explicand = colMeans(dt_squared_difference)
-  names(MSEv_evaluation_criterion_for_each_explicand) = paste0("id_", seq(n_explain))
+  MSEv_evaluation_criterion_for_each_explicand <- colMeans(dt_squared_difference)
+  names(MSEv_evaluation_criterion_for_each_explicand) <- paste0("id_", seq(n_explain))
 
   # Compute the mean squared error for each coalition, i.e., only averaged over the explicands.
-  MSEv_evaluation_criterion_for_each_coalition = rowMeans(dt_squared_difference)
-  MSEv_evaluation_criterion_for_each_coalition_sd = apply(dt_squared_difference, 1, sd)
+  MSEv_evaluation_criterion_for_each_coalition <- rowMeans(dt_squared_difference)
+  MSEv_evaluation_criterion_for_each_coalition_sd <- apply(dt_squared_difference, 1, sd)
 
   # Set the names
   if (exclude_empty_and_grand_coalition) {
-    id_combination_numbers = seq(2, n_combinations-1)
+    id_combination_numbers <- seq(2, n_combinations - 1)
   } else {
-    id_combination_numbers = seq(1, n_combinations)
+    id_combination_numbers <- seq(1, n_combinations)
   }
-  names(MSEv_evaluation_criterion_for_each_coalition) = paste0("id_combination_", id_combination_numbers)
+  names(MSEv_evaluation_criterion_for_each_coalition) <- paste0("id_combination_", id_combination_numbers)
 
   # Compute the overall mean squared error averaged over both the coalitions and explicands.
-  MSEv_evaluation_criterion = mean(dt_squared_difference)
+  MSEv_evaluation_criterion <- mean(dt_squared_difference)
 
   # If we are to return the results as data.table, then we overwrite the previous results.
   if (return_as_dt) {
-    MSEv_evaluation_criterion =
+    MSEv_evaluation_criterion <-
       data.table("MSEv_evaluation_criterion" = MSEv_evaluation_criterion)
-    MSEv_evaluation_criterion_for_each_explicand =
-      data.table("id" = seq(n_explain),
-                 "MSEv_evaluation_criterion" = MSEv_evaluation_criterion_for_each_explicand)
-    MSEv_evaluation_criterion_for_each_coalition =
-      data.table("id_combination" = id_combination_numbers,
-                 "features" = internal$objects$X$features[id_combination_numbers],
-                 "MSEv_evaluation_criterion" = MSEv_evaluation_criterion_for_each_coalition,
-                 "MSEv_evaluation_criterion_sd" = MSEv_evaluation_criterion_for_each_coalition_sd)
+    MSEv_evaluation_criterion_for_each_explicand <-
+      data.table(
+        "id" = seq(n_explain),
+        "MSEv_evaluation_criterion" = MSEv_evaluation_criterion_for_each_explicand
+      )
+    MSEv_evaluation_criterion_for_each_coalition <-
+      data.table(
+        "id_combination" = id_combination_numbers,
+        "features" = internal$objects$X$features[id_combination_numbers],
+        "MSEv_evaluation_criterion" = MSEv_evaluation_criterion_for_each_coalition,
+        "MSEv_evaluation_criterion_sd" = MSEv_evaluation_criterion_for_each_coalition_sd
+      )
 
     # Create a list of the data tables to return
-    return_list = list(
+    return_list <- list(
       MSEv_evaluation_criterion = MSEv_evaluation_criterion,
       MSEv_evaluation_criterion_for_each_explicand = MSEv_evaluation_criterion_for_each_explicand,
       MSEv_evaluation_criterion_for_each_coalition = MSEv_evaluation_criterion_for_each_coalition
     )
   } else {
     # Create a list of the numeric vectors to return
-    return_list = list(
+    return_list <- list(
       MSEv_evaluation_criterion = MSEv_evaluation_criterion,
       MSEv_evaluation_criterion_for_each_explicand = MSEv_evaluation_criterion_for_each_explicand,
       MSEv_evaluation_criterion_for_each_coalition = MSEv_evaluation_criterion_for_each_coalition,
