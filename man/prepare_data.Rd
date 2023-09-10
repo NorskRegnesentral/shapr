@@ -11,9 +11,9 @@
 \alias{prepare_data.gaussian}
 \alias{prepare_data.independence}
 \alias{prepare_data.timeseries}
-\title{Generate data used for predictions}
+\title{Generate data used for predictions and Monte Carlo integration}
 \usage{
-prepare_data(internal, ...)
+prepare_data(internal, index_features = NULL, ...)
 
 \method{prepare_data}{categorical}(internal, index_features = NULL, ...)
 
@@ -30,23 +30,18 @@ prepare_data(internal, ...)
 \method{prepare_data}{timeseries}(internal, index_features = NULL, ...)
 }
 \arguments{
-\item{internal}{List.
-Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
-The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
+\item{internal}{Not used.}
+
+\item{index_features}{Positive integer vector. Specifies the indices of combinations to
+apply to the present method. \code{NULL} means all combinations. Only used internally.}
 
 \item{...}{Currently not used.}
-
-\item{index_features}{Positive integer vector. Specifies the indices of combinations to apply to the present method.
-\code{NULL} means all combinations. Only used internally.}
-
-\item{x}{Explainer object. See \code{\link[=explain]{explain()}} for more information.}
-
-\item{seed}{Positive integer. If \code{NULL} the seed will be inherited from the calling environment.}
 }
 \value{
-A data.table containing simulated data passed to prediction().
+A data.table containing simulated data used to estimate
+the contribution function by Monte Carlo integration.
 }
 \description{
-Generate data used for predictions
+Generate data used for predictions and Monte Carlo integration
 }
 \keyword{internal}
