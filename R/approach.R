@@ -49,7 +49,6 @@ setup_approach.combined <- function(internal, ...) {
 #' @export
 #' @keywords internal
 prepare_data <- function(internal, index_features = NULL, ...) {
-
   # Extract the used approach(es)
   approach <- internal$parameters$approach
 
