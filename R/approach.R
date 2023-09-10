@@ -3,10 +3,6 @@
 #' The different choices of `approach` takes different (optional) parameters,
 #' which are forwarded from [explain()].
 #'
-#' @param internal List. Holds all parameters, data, functions and computed
-#' objects used within [explain()].
-#' The list contains one or more of the elements `parameters`, `data`, `objects`, `output`.
-#'
 #' @param ... `approach`-specific arguments. See below.
 #'
 #' @inheritParams default_doc_explain
@@ -43,30 +39,12 @@ setup_approach.combined <- function(internal, ...) {
 
 #' Generate data used for predictions and Monte Carlo integration
 #'
-#' @note
-#' There is currently a warning when calling `roxygen2::roxygenise()`.
-#' Warning message:
-#' inheritParams failed in topic "prepare_data", "prepare_data.categorical", "prepare_data.copula",
-#' "prepare_data.ctree", "prepare_data.empirical", "prepare_data.gaussian",
-#' "prepare_data.independence", "prepare_data.timeseries", and "prepare_data.vaeac".
-#' ✖ All parameters are already documented; none remain to be inherited.
-#'
-#' This occurred after Lars updated the code as he now documents all parameters here. This was not
-#' the case before, as the roxygen had not been updated. Can solve this by removing, e.g.,
-#' `param ... Currently not used.` below, or remove rdname from the subfunctions and rather
-#  use inherateparams.
-#'
-#'
-#' @param internal List. Holds all parameters, data, functions and computed objects used
-#' within \code{\link[=explain]{explain()}}. The list contains one or more of the elements
-#' `parameters`, `data`, `objects`, `output`.
-#' @param index_features Positive integer vector. Specifies the indices of combinations to
-#' apply to the present method. `NULL` means all combinations. Only used internally.
-#'
 #' @param ... Currently not used.
 #'
 #' @return A data.table containing simulated data used to estimate
 #' the contribution function by Monte Carlo integration.
+#'
+#' @inheritParams default_doc_explain
 #'
 #' @export
 #' @keywords internal
