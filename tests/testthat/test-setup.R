@@ -1428,8 +1428,6 @@ test_that("Shapr with `n_combinations` >= 2^m uses exact Shapley kernel weights"
     explanation_exact$internal$parameters$n_combinations,
     2^ncol(x_explain_numeric)
   )
-
-
 })
 
 test_that("Correct dimension of S when sampling combinations with groups", {

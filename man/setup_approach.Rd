@@ -150,5 +150,6 @@ between these bounds.
 This is useful if the underlying time series are scaled between 0 and 1, for example.}
 }
 \description{
-The different choices of \code{approach} takes different (optional) parameters, which are forwarded from \code{\link[=explain]{explain()}}.
+The different choices of \code{approach} takes different (optional) parameters,
+which are forwarded from \code{\link[=explain]{explain()}}.
 }
