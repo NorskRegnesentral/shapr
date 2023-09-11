@@ -1,6 +1,7 @@
 #' Set up the framework chosen approach
 #'
-#' The different choices of `approach` takes different (optional) parameters, which are forwarded from [explain()].
+#' The different choices of `approach` takes different (optional) parameters,
+#' which are forwarded from [explain()].
 #'
 #' @param ... `approach`-specific arguments. See below.
 #'
@@ -36,24 +37,35 @@ setup_approach.combined <- function(internal, ...) {
   return(internal)
 }
 
-#' Generate data used for predictions
-#'
-#' @param x Explainer object. See [explain()] for more information.
-#'
-#' @param seed Positive integer. If `NULL` the seed will be inherited from the calling environment.
-#'
-#' @param index_features Positive integer vector. Specifies the indices of combinations to apply to the present method.
-#' `NULL` means all combinations. Only used internally.
+#' Generate data used for predictions and Monte Carlo integration
 #'
 #' @param ... Currently not used.
 #'
-#' @return A data.table containing simulated data passed to prediction().
+#' @return A data.table containing simulated data used to estimate
+#' the contribution function by Monte Carlo integration.
+#'
+#' @inheritParams default_doc_explain
 #'
 #' @export
 #' @keywords internal
-prepare_data <- function(internal, ...) {
+prepare_data <- function(internal, index_features = NULL, ...) {
+  # Extract the used approach(es)
+  approach <- internal$parameters$approach
+
+  # Auxiliary object such that we can use the `UseMethod` function
   this_class <- ""
-  class(this_class) <- internal$parameters$approach
+
+  # Check if the user provided one or several approaches.
+  if (length(approach) > 1) {
+    # Picks the relevant approach from the internal$objects$X table which list the unique approach of the batch
+    # matches by index_features
+    class(this_class) <- internal$objects$X[id_combination == index_features[1], approach]
+  } else {
+    # Only one approach for all coalitions sizes
+    class(this_class) <- approach
+  }
+
+  # Use the `prepare_data` function for the correct approach
   UseMethod("prepare_data", this_class)
 }
 
