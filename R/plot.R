@@ -1221,8 +1221,8 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
     names(explanation_list) <- names
 
     # Give a message to the user
-    message("User provided an `explanation_list` without named explanation objects.
-Default to the approach names (with integer suffix for duplicates) for the explanation objects.\n")
+    message(paste("User provided an `explanation_list` without named explanation objects.",
+                  "Default to the approach names (with integer suffix for duplicates) for the explanation objects.\n"))
   }
 
   # Check if some of the objects in explanation_list are missing the MSEv_evaluation_criterion.
@@ -1368,9 +1368,9 @@ Default to the approach names (with integer suffix for duplicates) for the expla
 
     # If it is long, then we alter the default values set above and give message to user
     if (length_of_longest_method > 12 && !flip_coordinates) {
-      message("Long method names: consider specifying either `axis_labels_rotate_angle` or
-`axis_labels_n_dodge` to fix any potentially overlapping method names.
-The function sets `axis_labels_rotate_angle = 45` internally.")
+      message(paste("Long method names: consider specifying either `axis_labels_rotate_angle` or",
+                    "`axis_labels_n_dodge` to fix any potentially overlapping method names.",
+                    "The function sets `axis_labels_rotate_angle = 45` internally."))
 
       # Set it to rotate 45 degrees
       axis_labels_rotate_angle <- 45
