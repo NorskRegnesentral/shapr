@@ -15,23 +15,31 @@ compute_MSEv_evaluation_criterion(
 \arguments{
 \item{internal}{List with the different parameters, data and functions used internally in the \code{\link[=explain]{explain()}} function.}
 
-\item{processed_vS_list}{List of the processed contribution function estimates. Output from the \code{shapr:::postprocess_vS_list()} function.}
+\item{processed_vS_list}{List of the processed contribution function estimates.
+Output from the \code{shapr:::postprocess_vS_list()} function.}
 
-\item{p}{Numeric vector with the predicted responses for the observations which are to be explained. Output from the \code{shapr:::get_p()} function.}
+\item{p}{Numeric vector with the predicted responses for the observations which are to be explained.
+Output from the \code{shapr:::get_p()} function.}
 
 \item{exclude_empty_and_grand_coalition}{Boolean. If \code{TRUE}, we exclude the empty and grand coalitions
 when computing the MSEv evaluation criterion. This is reasonable as they are identical for all methods, i.e.,
 their contribution function is independent of the used method as they are special cases not effected by
 the used method. If \code{TRUE}, we exclude the empty and grand coalitions.}
 
-\item{return_as_dt}{Boolean. If the computes MSEv evaluation criterion are to be returned as \code{\link[data.table]{data.table}}.}
+\item{return_as_dt}{Boolean. If the computed MSEv evaluation criterion is
+to be returned as \code{\link[data.table]{data.table}}.}
 }
 \value{
 List containing:
 \describe{
-\item{\code{MSEv_evaluation_criterion}}{Numeric scalar (or \code{\link[data.table]{data.table}} based on parameter \code{return_as_dt}) with the overall MSEv evaluation criterion averaged over both the coalitions and observations.}
-\item{\code{MSEv_evaluation_criterion_for_each_explicand}}{Numeric vector (or \code{\link[data.table]{data.table}} based on parameter \code{return_as_dt}) with the mean squared error for each explicand, i.e., only averaged over the coalitions.}
-\item{\code{MSEv_evaluation_criterion_for_each_coalition}}{Numeric vector (or \code{\link[data.table]{data.table}} based on parameter \code{return_as_dt}) with the mean squared error for each coalition, i.e., only averaged over the observations.}
+\item{\code{MSEv_evaluation_criterion}}{Numeric scalar (or \code{\link[data.table]{data.table}} based on parameter
+\code{return_as_dt}) with the overall MSEv evaluation criterion averaged over both the coalitions and observations.}
+\item{\code{MSEv_evaluation_criterion_for_each_explicand}}{Numeric vector (or \code{\link[data.table]{data.table}}
+based on parameter \code{return_as_dt}) with the mean squared error for each explicand,
+i.e., only averaged over the coalitions.}
+\item{\code{MSEv_evaluation_criterion_for_each_coalition}}{Numeric vector (or \code{\link[data.table]{data.table}}
+based on parameter \code{return_as_dt}) with the mean squared error for each coalition,
+i.e., only averaged over the observations.}
 }
 }
 \description{
@@ -90,29 +98,36 @@ explanation <- explain(
 # The `compute_MSEv_evaluation_criterion` function is intended to be only called internally in
 # the `shapr` package, but the user can still use it outside of the package.
 # Exclude the empty and grand coalitions from the computations and return the result as a data.table
-compute_MSEv_evaluation_criterion(internal = explanation$internal,
-                                  processed_vS_list = explanation$internal$output,
-                                  exclude_empty_and_grand_coalition = TRUE,
-                                  return_as_dt = TRUE)
+compute_MSEv_evaluation_criterion(
+  internal = explanation$internal,
+  processed_vS_list = explanation$internal$output,
+  exclude_empty_and_grand_coalition = TRUE,
+  return_as_dt = TRUE
+)
 
 # Include the empty and grand coalitions from the computations and return the result as a data.table
-compute_MSEv_evaluation_criterion(internal = explanation$internal,
-                                  processed_vS_list = explanation$internal$output,
-                                  exclude_empty_and_grand_coalition = FALSE,
-                                  return_as_dt = TRUE)
+compute_MSEv_evaluation_criterion(
+  internal = explanation$internal,
+  processed_vS_list = explanation$internal$output,
+  exclude_empty_and_grand_coalition = FALSE,
+  return_as_dt = TRUE
+)
 
 # Exclude the empty and grand coalitions from the computations and return the result as a list
-compute_MSEv_evaluation_criterion(internal = explanation$internal,
-                                  processed_vS_list = explanation$internal$output,
-                                  exclude_empty_and_grand_coalition = TRUE,
-                                  return_as_dt = FALSE)
+compute_MSEv_evaluation_criterion(
+  internal = explanation$internal,
+  processed_vS_list = explanation$internal$output,
+  exclude_empty_and_grand_coalition = TRUE,
+  return_as_dt = FALSE
+)
 
 # Include the empty and grand coalitions from the computations and return the result as a list
-compute_MSEv_evaluation_criterion(internal = explanation$internal,
-                                  processed_vS_list = explanation$internal$output,
-                                  exclude_empty_and_grand_coalition = FALSE,
-                                  return_as_dt = FALSE)
-
+compute_MSEv_evaluation_criterion(
+  internal = explanation$internal,
+  processed_vS_list = explanation$internal$output,
+  exclude_empty_and_grand_coalition = FALSE,
+  return_as_dt = FALSE
+)
 
 }
 \author{
