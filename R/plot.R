@@ -803,7 +803,7 @@ make_waterfall_plot <- function(dt_plot,
 #' the figures where we illustrate the MSEv evaluation criterion for each explicand and coalition
 #' by only averaging over the coalitions and explicands, respectively.
 #' @param plot_overall_MSEv Boolean. If `TRUE`, then plot the overall_MSEv figure before returning all figures.
-#' #' @param return_figures Boolean. If `TRUE`, then the function returns the figures in a list.
+#' @param return_figures Boolean. If `TRUE`, then the function returns the figures in a list.
 #' @param ggplot_theme A [ggplot2::theme()] object to customize the non-data components of the plots:
 #' i.e. titles, labels, fonts, background, gridlines, and legends. Themes can be used to give plots
 #' a consistent customized look. Use the themes available in \code{\link[ggplot2:theme_bw]{ggplot2::ggtheme()}}.
@@ -820,6 +820,11 @@ make_waterfall_plot <- function(dt_plot,
 #' @param brewer_direction Sets the order of colors in the scale. If 1, the default,
 #' colors are as output by \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}}.
 #' If -1, the order of colors is reversed.
+#' @param axis_labels_n_dodge Integer. The number of rows that
+#' should be used to render the labels. This is useful for displaying labels that would otherwise overlap.
+#' @param axis_labels_rotate_angle Numeric. The angle of the axis label, where 0 means horizontal, 45 means tilted,
+#' and 90 means vertical. Compared to setting the angle in[ggplot2::theme()] / [ggplot2::element_text()], this also
+#' uses some heuristics to automatically pick the `hjust` and `vjust` that you probably want.
 #' @param title_text_size Positive numeric. The size of the title. If `0`, then the text is removed.
 #' @param bar_text_color String. Color of the text in the bars. The text shows the exact height of the bars.
 #' @param bar_text_size Positive numeric. The size of the text in the bars. If `0`, then the text is removed.
@@ -852,11 +857,6 @@ make_waterfall_plot <- function(dt_plot,
 #' and `c(1,1)` corresponds to the "top right" position.
 #' @param legend_ncol Integer. The number of columns in the legend.
 #' @param legend_nrow Integer. The number of rows in the legend.
-#' @param return_figures Boolean. If the figures are to be returned as a list.
-#' @param axis_labels_n_dodge Integer. The number of rows that should be used to render the labels.
-#' This is useful for displaying labels that would otherwise overlap.
-#' @param axis_labels_rotate_angle Numeric. The angle of the axis label.
-#' Where 0 means horizontal, 45 means tilted, and 90 means vertical.
 #'
 #' @return List of 5 [ggplot2::ggplot()] objects: three bar plots and two line plots. Only if `return_figures = TRUE`.
 #' @export
@@ -1174,10 +1174,10 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
                                                  plot_overall_MSEv = FALSE,
                                                  return_figures = TRUE,
                                                  ggplot_theme = NULL,
-                                                 axis_labels_n_dodge = NULL,
-                                                 axis_labels_rotate_angle = NULL,
                                                  brewer_palette = "Paired",
                                                  brewer_direction = 1,
+                                                 axis_labels_n_dodge = NULL,
+                                                 axis_labels_rotate_angle = NULL,
                                                  title_text_size = 12,
                                                  bar_text_color = "black",
                                                  bar_text_size = 0,
@@ -1223,6 +1223,11 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
     # Give a message to the user
     message(paste("User provided an `explanation_list` without named explanation objects.",
                   "Default to the approach names (with integer suffix for duplicates) for the explanation objects.\n"))
+  }
+
+  # Check that the column names for the Shapley values are the same for all explanations in the `explanation_list`
+  if (length(unique(lapply(explanation_list, function(explanation) colnames(explanation$shapley_values)))) != 1) {
+    stop("The Shapley value feature names are not identical in all objects in the `explanation_list`.")
   }
 
   # Check if some of the objects in explanation_list are missing the MSEv_evaluation_criterion.
@@ -1309,7 +1314,7 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
   # Convert to factors
   MSEv_eval_crit_for_each_explicand$id <- factor(MSEv_eval_crit_for_each_explicand$id)
   MSEv_eval_crit_for_each_explicand$Method <- factor(MSEv_eval_crit_for_each_explicand$Method,
-    levels = names(explanation_list)
+                                                     levels = names(explanation_list)
   )
 
   # Only keep the desired explicands
@@ -1329,7 +1334,7 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
   # Convert to factors
   MSEv_eval_crit_for_each_coalition$id_combination <- factor(MSEv_eval_crit_for_each_coalition$id_combination)
   MSEv_eval_crit_for_each_coalition$Method <- factor(MSEv_eval_crit_for_each_coalition$Method,
-    levels = names(explanation_list)
+                                                     levels = names(explanation_list)
   )
 
   # Only keep the desired coalitions
@@ -1342,10 +1347,10 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
   # of the bars in the figure match the order in the legend.
   if (flip_coordinates) {
     MSEv_eval_crit_for_each_coalition$Method <- factor(MSEv_eval_crit_for_each_coalition$Method,
-      levels = rev(levels(MSEv_eval_crit_for_each_coalition$Method))
+                                                       levels = rev(levels(MSEv_eval_crit_for_each_coalition$Method))
     )
     MSEv_eval_crit_for_each_explicand$Method <- factor(MSEv_eval_crit_for_each_explicand$Method,
-      levels = rev(levels(MSEv_eval_crit_for_each_explicand$Method))
+                                                       levels = rev(levels(MSEv_eval_crit_for_each_explicand$Method))
     )
 
     # Flip the order of the color scheme to be correct
