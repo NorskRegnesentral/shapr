@@ -31,6 +31,10 @@ default_doc <- function() {
 #' Exported documentation helper function.
 #'
 #' @param internal Not used.
+#'
+#' @param index_features Positive integer vector. Specifies the indices of combinations to
+#' apply to the present method. `NULL` means all combinations. Only used internally.
+#'
 #' @keywords internal
 default_doc_explain <- function() {
   NULL

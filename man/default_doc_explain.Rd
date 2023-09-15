@@ -8,6 +8,9 @@ default_doc_explain()
 }
 \arguments{
 \item{internal}{Not used.}
+
+\item{index_features}{Positive integer vector. Specifies the indices of combinations to
+apply to the present method. \code{NULL} means all combinations. Only used internally.}
 }
 \description{
 Exported documentation helper function.

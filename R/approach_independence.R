@@ -11,7 +11,7 @@ setup_approach.independence <- function(internal, ...) {
 #' @export
 prepare_data.independence <- function(internal, index_features = NULL, ...) {
   # This function generates the MC samples for an observation Xs* by extracting all the feature values
-  # Xsbar' from another observation in the training data and splicing the two observations together
+  # Xsbar' from another observation in the training data and merging the two observations together
   # to form the final imputed MC sample used when estimating the contribution function in shapr.
 
   # Make copy of the data.tables of the data
@@ -27,9 +27,8 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   X <- internal$objects$X
   S <- internal$objects$S
 
-  # Check if user did not provided which feature combinations/coalitions to work on
   if (is.null(index_features)) {
-    # Use all feature combinations/coalitions
+    # Use all feature combinations/coalitions (only applies if a single approach is used)
     index_features <- X[, .I]
   }
 
@@ -43,12 +42,12 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   # Get the levels of the categorical features
   level_list <- lapply(x_train0[, .SD, .SDcols = non_numeric_features], FUN = levels)
 
-  # Check if we have any categorical features
+  # Check if we have any categorical features (to then apply a hack for the method to work)
   if (length(non_numeric_features) > 0) {
-    # We have categorical features and we convert them to to rather be integers starting
-    # from 1. I.e., a categorical features which three levels `small`, `medium`, `large`
+    # We have categorical features and we convert them to rather be integers starting
+    # from 1. I.e., a categorical feature which three levels `small`, `medium`, `large`
     # will be encoded as `1`, `2`, and `3`, respectively.
-    # Apply this encodining to the training data and explicands
+    # Apply this encoding to the training data and data to be explained
     x_train0[, (non_numeric_features) := lapply(.SD, function(x) {
       as.integer(x)
     }),
@@ -61,7 +60,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
     ]
   }
 
-  # We can now convert the data.tables to matrices as all entries are numeric.
+  # Convert the data.tables to matrices as all entries are numeric.
   x_train0_mat <- as.matrix(x_train0)
   x_explain0_mat <- as.matrix(x_explain0)
 
@@ -69,16 +68,7 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
   # We repeat each coalition index `min(n_samples, n_train)` times. We use `min`
   # as we cannot sample `n_samples` unique indices if `n_train` is less than `n_samples`.
   index_s <- rep(seq_len(nrow(S0)), each = min(n_samples, n_train))
-
-  # TODO: remove comment before merge with master
-  # MARTIN DECIDES WHAT TO DO HERE.
-  # Why is not w = 1 / min(n_samples, n_train)?
-  # But in the end it does not matter as the weights are identical
-  # for all MC samples when using the independence approach, so we do not need
-  # it. Because the weighted mean in the MC integration is just regular mean when the weights are the same.
-  # However, shapr needs to have a weight column. So we might as well just
-  # set it to 1.
-  w <- 1 / n_samples # Yes, not n_samples0 ??
+  w0 <- 1 / min(n_samples, n_train) # The inverse of the number of samples being used in practice
 
   # Creat a list to store the MC samples, where ith entry is associated with ith explicand
   dt_l <- list()
@@ -106,18 +96,8 @@ prepare_data.independence <- function(internal, index_features = NULL, ...) {
     dt_l[[i]] <- data.table::as.data.table(dt_p)
     data.table::setnames(dt_l[[i]], feature_specs$labels)
     dt_l[[i]][, id_combination := index_features[index_s]]
-    dt_l[[i]][, w := w] # IS THIS NECESSARY? See my comment above.
-    # TODO: remove before merge
-    # Could just use `dt_l[[i]][, w := 1]`. Verified that we get the same Shapley values
+    dt_l[[i]][, w := w0]
     dt_l[[i]][, id := i]
-
-    # TODO: remove comment if Martin agrees
-    # WHY DO YOU TEST HERE? (caps so that it was easier for you to spot)
-    # Because `index_features` will never be `NULL` (as we ensure that above), so we will always overwrite
-    # id_combination in the old code version. We can rather specify `id_combination` directly as done in
-    # the new version of the code
-    # dt_l[[i]][, id_combination := index_s]
-    # if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
 
   # Combine the list of data.tables together to a single data.table
