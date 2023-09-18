@@ -706,7 +706,7 @@ explanation_list_named <- list(
 We can then compare the different approaches by creating plots of the $\operatorname{MSE}_{v}$ evaluation criterion.
 
 ```{r}
-# The function will set default names
+# The function will set default names and give a message to the user
 plots_unnamed <- make_MSEv_evaluation_criterion_plots(explanation_list_unnamed)
 
 # The function use the provided names
@@ -714,12 +714,20 @@ plots_named <- make_MSEv_evaluation_criterion_plots(explanation_list_named)
 
 # See the types of plots produced
 names(plots_named)
+```
+The main plot if interest is the `bar_plot_MSEv`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for
+each method averaged over both the coalitions and explicands. However, we can also look at the other plots where
+we have only averaged over the explicands or the coalitions (both as bar and line plots).
 
-# Look at the main plot
+```{r}
+# The main plot of the overall MSEv averaged over both the coalitions and explicands
 plots_named$bar_plot_MSEv
 
-# We can also remove the legend which is not need for the main plot, but essential for the other plots
-make_MSEv_evaluation_criterion_plots(explanation_list_named, legend_position = "none")$bar_plot_MSEv
+# The MSEv averaged over only the coalitions
+plots_named$bar_plot_MSEv_for_each_explicand
+
+# The MSEv averaged over only the explicands
+plots_named$bar_plot_MSEv_for_each_coalition
 ```
 
 We can also change many parameters to alter the plots, both design-wise but also
@@ -730,7 +738,7 @@ where we have only averaged over the explicands and coalitions, respectively.
 ```{r}
 plots_named_v2 <- make_MSEv_evaluation_criterion_plots(
   explanation_list_named,
-  index_combinations = c(1:3, 11, 13),
+  index_combinations = c(1:3, 9, 11),
   index_explicands = c(1, 3:4, 6),
   ggplot_theme = ggplot2::theme_minimal(),
   brewer_palette = NULL,
@@ -744,7 +752,9 @@ plots_named_v2 <- make_MSEv_evaluation_criterion_plots(
   line_type = "dashed",
   line_width = 1,
   add_error_bars = FALSE,
-  flip_coordinates = TRUE
+  axis_labels_n_dodge = 2,
+  flip_coordinates = TRUE,
+  legend_position = "bottom"
 )
 
 # Look at some of the individual plots
