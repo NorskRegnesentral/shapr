@@ -213,7 +213,7 @@ test_that("output_lm_numeric_comb1", {
       x_train = x_train_numeric,
       approach = c("gaussian", "empirical", "ctree", "independence", "empirical"),
       prediction_zero = p0,
-      n_batches = 1,
+      n_batches = 10,
       timing = FALSE
     ),
     "output_lm_numeric_comb1"
@@ -228,7 +228,7 @@ test_that("output_lm_numeric_comb2", {
       x_train = x_train_numeric,
       approach = c("ctree", "copula", "independence", "copula", "empirical"),
       prediction_zero = p0,
-      n_batches = 1,
+      n_batches = 10,
       timing = FALSE
     ),
     "output_lm_numeric_comb2"
@@ -243,7 +243,7 @@ test_that("output_lm_numeric_comb3", {
       x_train = x_train_numeric,
       approach = c("independence", "empirical", "gaussian", "empirical", "gaussian"),
       prediction_zero = p0,
-      n_batches = 1,
+      n_batches = 10,
       timing = FALSE
     ),
     "output_lm_numeric_comb3"
@@ -292,7 +292,7 @@ test_that("output_lm_mixed_comb", {
       x_train = x_train_mixed,
       approach = c("ctree", "independence", "ctree", "independence", "independence"),
       prediction_zero = p0,
-      n_batches = 1,
+      n_batches = 10,
       timing = FALSE
     ),
     "output_lm_mixed_comb"
