@@ -509,7 +509,7 @@
         approach = "independence", prediction_zero = p0, n_combinations = n_combinations,
         n_batches = n_batches_too_large, timing = FALSE)
     Error <simpleError>
-      `n_batches` (11) must be smaller than the number feature combinations/`n_combinations` (10)
+      `n_batches` (11) must be smaller than the number of feature combinations/`n_combinations` (10)
 
 ---
 
@@ -519,7 +519,7 @@
         approach = "independence", prediction_zero = p0, n_batches = n_batches_too_large_2,
         timing = FALSE)
     Error <simpleError>
-      `n_batches` (32) must be smaller than the number feature combinations/`n_combinations` (32)
+      `n_batches` (32) must be smaller than the number of feature combinations/`n_combinations` (32)
 
 # erroneous input: `seed`
 
