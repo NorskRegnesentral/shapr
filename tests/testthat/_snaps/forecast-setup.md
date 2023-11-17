@@ -149,10 +149,10 @@
 
     Code
       train_idx_out_of_range <- 1:5
-      explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[, "Wind"],
-      train_idx = train_idx_out_of_range, explain_idx = 149:150, explain_y_lags = 2,
-      explain_xreg_lags = 2, horizon = 3, approach = "independence", prediction_zero = p0_ar,
-      n_batches = 1)
+      explain_forecast(model = model_arima_temp, y = data[1:150, "Temp"], xreg = data[,
+        "Wind"], train_idx = train_idx_out_of_range, explain_idx = 149:150,
+      explain_y_lags = 2, explain_xreg_lags = 2, horizon = 3, approach = "independence",
+      prediction_zero = p0_ar, n_batches = 1)
     Condition
       Error in `get_data_forecast()`:
       ! The train (`train_idx`) and explain (`explain_idx`) indices must fit in the lagged data.
