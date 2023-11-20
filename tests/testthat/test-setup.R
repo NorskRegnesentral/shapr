@@ -1706,9 +1706,7 @@ test_that("Shapr sets a valid default value for `n_batches`", {
 
 test_that("Error with to low `n_batches` compared to the number of unique approaches", {
   # Expect to get the following error:
-  # `n_batches` (3) must be larger than the number of unique approaches in `approach` (4). Note that
-  # the last approach in `approach` is not included as it is not used to do any computations as
-  # described in the vignette.
+  # `n_batches` (3) must be larger than the number of unique approaches in `approach` (4).
   expect_error(
     object = explain(
       model = model_lm_numeric,
