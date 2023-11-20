@@ -379,10 +379,7 @@ get_extra_parameters <- function(internal) {
   # Get the number of unique approaches
   if (length(internal$parameters$approach) > 1) {
     internal$parameters$n_approaches <- length(internal$parameters$approach)
-    # Remove the last approach as `explain` forces the user to specify the last approach
-    # even if it is not used as all variables are conditioned on and no estimation is needed.
-    internal$parameters$n_unique_approaches <-
-      length(unique(internal$parameters$approach[-internal$parameters$n_approaches]))
+    internal$parameters$n_unique_approaches <- length(unique(internal$parameters$approach))
   } else {
     internal$parameters$n_approaches <- 1
     internal$parameters$n_unique_approaches <- 1
@@ -684,7 +681,8 @@ check_approach <- function(internal) {
     stop(
       paste(
         "`approach` must be one of the following: \n", paste0(supported_approaches, collapse = ", "), "\n",
-        "or a vector of length one less than the number of features (", n_features - 1, "), with only the above strings."
+        "or a vector of length one less than the number of features (", n_features - 1, "),",
+        "with only the above strings."
       )
     )
   }
