@@ -677,7 +677,7 @@ explanation_combined <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  approach = c("gaussian", "ctree", "empirical", "empirical"),
+  approach = c("gaussian", "ctree", "empirical"),
   prediction_zero = p0,
   n_samples = 1e2,
   n_batches = 5
