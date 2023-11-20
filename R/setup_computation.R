@@ -639,14 +639,15 @@ create_S_batch_new <- function(internal, seed = NULL) {
       # Ensure that the number of batches is not larger than `n_batches`.
       # Remove one batch from the approach with the most batches.
       while (sum(batch_count_dt$n_batches_per_approach) > n_batches) {
-        batch_count_dt[which.max(n_batches_per_approach),n_batches_per_approach:=n_batches_per_approach-1]
+        batch_count_dt[which.max(n_batches_per_approach),
+                       n_batches_per_approach := n_batches_per_approach - 1]
       }
 
       # Ensure that the number of batches is not lower than `n_batches`.
       # Add one batch to the approach with most coalitions per batch
       while (sum(batch_count_dt$n_batches_per_approach) < n_batches) {
-        batch_count_dt[which.max(n_S_per_approach/n_batches_per_approach),
-                       n_batches_per_approach:=n_batches_per_approach+1]
+        batch_count_dt[which.max(n_S_per_approach / n_batches_per_approach),
+                       n_batches_per_approach := n_batches_per_approach + 1]
       }
     }
 
