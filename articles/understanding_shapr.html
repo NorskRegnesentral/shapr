@@ -905,49 +905,52 @@ during the forecasting period.</p>
 </h3>
 <p>In addition to letting the user select one of the five aforementioned
 approaches for estimating the conditional distribution of the data (i.e.
-<code>approach</code> equals either <a href="#gaussian"><code>"gaussian"</code></a>, <a href="#copula"><code>"copula"</code></a>, <a href="#empirical"><code>"empirical"</code></a> or <a href="#ctree"><code>"ctree"</code></a> or <a href="#categorical"><code>"categorical"</code></a>), the package allows
-the user to combine the given approaches. To simplify the usage, the
-flexibility is restricted such that the same approach is used when
-conditioning on the same number of features. This is also in line <span class="citation">Aas, Jullum, and Løland (2021, sec. 3.4)</span>.</p>
+<code>approach</code> equals either <a href="#gaussian"><code>"gaussian"</code></a>, <a href="#copula"><code>"copula"</code></a>, <a href="#empirical"><code>"empirical"</code></a>, <a href="#ctree"><code>"ctree"</code></a>, <a href="#categorical"><code>"categorical"</code></a>) or
+<code>"timeseries"</code>, the package allows the user to combine the
+given approaches. To simplify the usage, the flexibility is restricted
+such that the same approach is used when conditioning on the same number
+of features. This is also in line <span class="citation">Aas, Jullum,
+and Løland (2021, sec. 3.4)</span>.</p>
 <p>This can be done by setting <code>approach</code> equal to a
-character vector, where the length of the vector is equal to the number
-of features in the model. Consider a situation where you have trained a
-model that consists of 10 features, and you would like to use the
-<code>"empirical"</code> approach when you condition on 1-3 features,
-the <code>"copula"</code> approach when you condition on 4-5 features,
-and the <code>"gaussian"</code> approach when conditioning on 6 or more
-features. This can be applied by simply passing
-<code>approach = c(rep("empirical", 3), rep("copula", 2), rep("gaussian", 5))</code>,
+character vector, where the length of the vector is one less than the
+number of features in the model. Consider a situation where you have
+trained a model that consists of 10 features, and you would like to use
+the <code>"empirical"</code> approach when you condition on 1-3
+features, the <code>"copula"</code> approach when you condition on 4-5
+features, and the <code>"gaussian"</code> approach when conditioning on
+6 or more features. This can be applied by simply passing
+<code>approach = c(rep("empirical", 3), rep("copula", 2), rep("gaussian", 4))</code>,
 i.e. <code>approach[i]</code> determines which method to use when
-conditioning on <code>i</code> features.</p>
+conditioning on <code>i</code> features. Conditioning on all features
+needs no approach as that is given by the complete prediction itself,
+and should thus not be part of the vector.</p>
 <p>The code below exemplifies this approach for a case where there are
 four features, using <code>"empirical", "copula"</code> and
-<code>"gaussian"</code> when conditioning on respectively 1, 2 and 3-4
-features. Note that it does not matter what method that is specified
-when conditioning on all features, as that equals the actual prediction
-regardless of the specified approach.</p>
+<code>"gaussian"</code> when conditioning on respectively 1, 2 and 3
+features.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use the combined approach</span></span>
 <span><span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
-<span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"empirical"</span>, <span class="st">"copula"</span>, <span class="st">"gaussian"</span>, <span class="st">"gaussian"</span><span class="op">)</span>,</span>
+<span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"empirical"</span>, <span class="st">"copula"</span>, <span class="st">"gaussian"</span><span class="op">)</span>,</span>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span></span>
 <span><span class="co"># the no-covariate effect</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_combined</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="understanding_shapr_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
-<p>As a second example using <code>"ctree"</code> for the first 3
-features and <code>"empirical"</code> for the last:</p>
+<p>As a second example using <code>"ctree"</code> to conditin on 1 and 2
+features, and <code>"empirical"</code> when conditioning on 3
+features:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use the combined approach</span></span>
 <span><span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
 <span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
-<span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ctree"</span>, <span class="st">"ctree"</span>, <span class="st">"ctree"</span>, <span class="st">"empirical"</span><span class="op">)</span>,</span>
+<span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ctree"</span>, <span class="st">"ctree"</span>, <span class="st">"empirical"</span><span class="op">)</span>,</span>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -997,7 +1000,7 @@ predictions from models fitted with the following functions:</p>
 <ul>
 <li><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">stats::lm</a></code></li>
 <li><code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">stats::glm</a></code></li>
-<li><code><a href="https://rdrr.io/pkg/ranger/man/ranger.html" class="external-link">ranger::ranger</a></code></li>
+<li><code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger</a></code></li>
 <li><code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code></li>
 <li>
 <code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgboost</a></code>/<code><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost::xgb.train</a></code>

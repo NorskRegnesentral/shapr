@@ -132,9 +132,10 @@ E.g., if you're in a situation where you have trained a model that consists of 1
 and you'd like to use the <code>"gaussian"</code> approach when you condition on a single feature,
 the <code>"empirical"</code> approach if you condition on 2-5 features, and <code>"copula"</code> version
 if you condition on more than 5 features this can be done by simply passing
-<code>approach = c("gaussian", rep("empirical", 4), rep("copula", 5))</code>. If
+<code>approach = c("gaussian", rep("empirical", 4), rep("copula", 4))</code>. If
 <code>"approach[i]" = "gaussian"</code> means that you'd like to use the <code>"gaussian"</code> approach
-when conditioning on <code>i</code> features.</p>
+when conditioning on <code>i</code> features. Conditioning on all features needs no approach as that is given
+by the complete prediction itself, and should thus not be part of the vector.</p>
 <p>For <code>approach="ctree"</code>, <code>n_samples</code> corresponds to the number of samples
 from the leaf node (see an exception related to the <code>sample</code> argument).
 For <code>approach="empirical"</code>, <code>n_samples</code> is  the \(K\) parameter in equations (14-15) of
@@ -223,7 +224,7 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Combined approach</span></span></span>
-<span class="r-in"><span><span class="va">approach</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"empirical"</span>, <span class="st">"empirical"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">approach</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"gaussian"</span>, <span class="st">"empirical"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">explain5</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  model <span class="op">=</span> <span class="va">model</span>,</span></span>
 <span class="r-in"><span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span></span>
@@ -232,7 +233,7 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
 <span class="r-in"><span>  prediction_zero <span class="op">=</span> <span class="va">p</span>,</span></span>
 <span class="r-in"><span>  n_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting parameter 'n_batches' to 10 as a fair trade-off between memory consumption and computation time.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Print the Shapley values</span></span></span>
