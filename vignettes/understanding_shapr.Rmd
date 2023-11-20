@@ -689,7 +689,7 @@ explanation_list_unnamed <- list(
   explanation_empirical,
   explanation_gaussian_1e1,
   explanation_gaussian_1e2,
-  explanation_combined 
+  explanation_combined
 )
 
 # Create a list of explanations with names
@@ -698,7 +698,7 @@ explanation_list_named <- list(
   "Emp." = explanation_empirical,
   "Gaus. 1e1" = explanation_gaussian_1e1,
   "Gaus. 1e2" = explanation_gaussian_1e2,
-  "Combined" = explanation_combined 
+  "Combined" = explanation_combined
 )
 ```
 
