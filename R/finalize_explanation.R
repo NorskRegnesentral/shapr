@@ -40,14 +40,14 @@ finalize_explanation <- function(vS_list, internal) {
   # TODO: check if it makes sense for output_size > 1.
   if (internal$parameters$output_size == 1) {
     # Compute the MSEv evaluation criterion
-    MSEv_evaluation_criterion <- compute_MSEv_eval_crit(
+    MSEv_eval_crit <- compute_MSEv_eval_crit(
       internal = internal,
       processed_vS_list = processed_vS_list,
       p = p,
-      exclude_empty_and_grand_coalition = FALSE,
+      exclude_empty_grand_coalitions = FALSE,
       return_as_dt = TRUE
     )
-    output$MSEv_evaluation_criterion <- MSEv_evaluation_criterion
+    output$MSEv_eval_crit <- MSEv_eval_crit
   }
 
   return(output)
@@ -175,7 +175,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' Output from the \code{shapr:::postprocess_vS_list()} function.
 #' @param p Numeric vector with the predicted responses for the observations which are to be explained.
 #' Output from the \code{shapr:::get_p()} function.
-#' @param exclude_empty_and_grand_coalition Boolean. If `TRUE`, we exclude the empty and grand coalitions
+#' @param exclude_empty_grand_coalitions Boolean. If `TRUE`, we exclude the empty and grand coalitions
 #' when computing the MSEv evaluation criterion. This is reasonable as they are identical for all methods, i.e.,
 #' their contribution function is independent of the used method as they are special cases not effected by
 #' the used method. If `TRUE`, we exclude the empty and grand coalitions.
@@ -185,12 +185,12 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' @return
 #' List containing:
 #' \describe{
-#'  \item{`MSEv_evaluation_criterion`}{Numeric scalar (or \code{\link[data.table]{data.table}} based on parameter
+#'  \item{`MSEv_eval_crit`}{Numeric scalar (or \code{\link[data.table]{data.table}} based on parameter
 #'  `return_as_dt`) with the overall MSEv evaluation criterion averaged over both the coalitions and observations.}
-#'  \item{`MSEv_evaluation_criterion_for_each_explicand`}{Numeric vector (or \code{\link[data.table]{data.table}}
+#'  \item{`MSEv_eval_crit_explicand`}{Numeric vector (or \code{\link[data.table]{data.table}}
 #'  based on parameter `return_as_dt`) with the mean squared error for each explicand,
 #'  i.e., only averaged over the coalitions.}
-#'  \item{`MSEv_eval_crit_each_comb`}{Numeric vector (or \code{\link[data.table]{data.table}}
+#'  \item{`MSEv_eval_crit_comb`}{Numeric vector (or \code{\link[data.table]{data.table}}
 #'  based on parameter `return_as_dt`) with the mean squared error for each coalition,
 #'  i.e., only averaged over the observations.}
 #' }
@@ -253,7 +253,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' compute_MSEv_eval_crit(
 #'   internal = explanation$internal,
 #'   processed_vS_list = explanation$internal$output,
-#'   exclude_empty_and_grand_coalition = TRUE,
+#'   exclude_empty_grand_coalitions = TRUE,
 #'   return_as_dt = TRUE
 #' )
 #'
@@ -261,7 +261,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' compute_MSEv_eval_crit(
 #'   internal = explanation$internal,
 #'   processed_vS_list = explanation$internal$output,
-#'   exclude_empty_and_grand_coalition = FALSE,
+#'   exclude_empty_grand_coalitions = FALSE,
 #'   return_as_dt = TRUE
 #' )
 #'
@@ -269,7 +269,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' compute_MSEv_eval_crit(
 #'   internal = explanation$internal,
 #'   processed_vS_list = explanation$internal$output,
-#'   exclude_empty_and_grand_coalition = TRUE,
+#'   exclude_empty_grand_coalitions = TRUE,
 #'   return_as_dt = FALSE
 #' )
 #'
@@ -277,17 +277,17 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' compute_MSEv_eval_crit(
 #'   internal = explanation$internal,
 #'   processed_vS_list = explanation$internal$output,
-#'   exclude_empty_and_grand_coalition = FALSE,
+#'   exclude_empty_grand_coalitions = FALSE,
 #'   return_as_dt = FALSE
 #' )
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 compute_MSEv_eval_crit <- function(internal,
-                                              processed_vS_list,
-                                              p = shapr:::get_p(processed_vS_list$dt_vS, internal),
-                                              exclude_empty_and_grand_coalition = TRUE,
-                                              return_as_dt = TRUE) {
+                                   processed_vS_list,
+                                   p = shapr:::get_p(processed_vS_list$dt_vS, internal),
+                                   exclude_empty_grand_coalitions = TRUE,
+                                   return_as_dt = TRUE) {
   # Get the number of unique coalitions, where two of them are the empty and full set.
   # This is 2^M if internal$parameters$exact is TRUE or some value below 2^M if sampled version.
   n_combinations <- internal$parameters$n_combinations
@@ -300,64 +300,64 @@ compute_MSEv_eval_crit <- function(internal,
 
   # Check if we are to remove the empty and grand coalitions, which are
   # identical for all methods and thus is not effected by the used method.
-  if (exclude_empty_and_grand_coalition) {
+  if (exclude_empty_grand_coalitions) {
     dt_vS <- dt_vS[-c(1, n_combinations), ]
   }
 
   # Square the difference between the estimated contribution function
   # v(S) = E_{\hat{p}(X_sbar | X_s = x_s)} [f(X_sbar, x_s) | X_s = x_s)]
   # and the predicted response f(x).
-  dt_squared_difference <- as.matrix(dt_vS[, !"id_combination"][, Map(`-`, p, .SD)]^2)
+  dt_squared_diff <- as.matrix(dt_vS[, !"id_combination"][, Map(`-`, p, .SD)]^2)
 
   # Compute the mean squared error for each observation, i.e., only averaged over the coalitions.
-  MSEv_evaluation_criterion_for_each_explicand <- colMeans(dt_squared_difference)
-  names(MSEv_evaluation_criterion_for_each_explicand) <- paste0("id_", seq(n_explain))
+  MSEv_eval_crit_explicand <- colMeans(dt_squared_diff)
+  names(MSEv_eval_crit_explicand) <- paste0("id_", seq(n_explain))
 
   # Compute the mean squared error for each coalition, i.e., only averaged over the explicands.
-  MSEv_eval_crit_each_comb <- rowMeans(dt_squared_difference)
-  MSEv_eval_crit_each_comb_sd <- apply(dt_squared_difference, 1, sd)
+  MSEv_eval_crit_comb <- rowMeans(dt_squared_diff)
+  MSEv_eval_crit_comb_sd <- apply(dt_squared_diff, 1, sd)
 
   # Set the names
-  if (exclude_empty_and_grand_coalition) {
+  if (exclude_empty_grand_coalitions) {
     id_combination_numbers <- seq(2, n_combinations - 1)
   } else {
     id_combination_numbers <- seq(1, n_combinations)
   }
-  names(MSEv_eval_crit_each_comb) <- paste0("id_combination_", id_combination_numbers)
+  names(MSEv_eval_crit_comb) <- paste0("id_combination_", id_combination_numbers)
 
   # Compute the overall mean squared error averaged over both the coalitions and explicands.
-  MSEv_evaluation_criterion <- mean(dt_squared_difference)
+  MSEv_eval_crit <- mean(dt_squared_diff)
 
   # If we are to return the results as data.table, then we overwrite the previous results.
   if (return_as_dt) {
-    MSEv_evaluation_criterion <-
-      data.table("MSEv_evaluation_criterion" = MSEv_evaluation_criterion)
-    MSEv_evaluation_criterion_for_each_explicand <-
+    MSEv_eval_crit <-
+      data.table("MSEv_eval_crit" = MSEv_eval_crit)
+    MSEv_eval_crit_explicand <-
       data.table(
         "id" = seq(n_explain),
-        "MSEv_evaluation_criterion" = MSEv_evaluation_criterion_for_each_explicand
+        "MSEv_eval_crit" = MSEv_eval_crit_explicand
       )
-    MSEv_eval_crit_each_comb <-
+    MSEv_eval_crit_comb <-
       data.table(
         "id_combination" = id_combination_numbers,
         "features" = internal$objects$X$features[id_combination_numbers],
-        "MSEv_evaluation_criterion" = MSEv_eval_crit_each_comb,
-        "MSEv_evaluation_criterion_sd" = MSEv_eval_crit_each_comb_sd
+        "MSEv_eval_crit" = MSEv_eval_crit_comb,
+        "MSEv_eval_crit_sd" = MSEv_eval_crit_comb_sd
       )
 
     # Create a list of the data tables to return
     return_list <- list(
-      MSEv_evaluation_criterion = MSEv_evaluation_criterion,
-      MSEv_evaluation_criterion_for_each_explicand = MSEv_evaluation_criterion_for_each_explicand,
-      MSEv_eval_crit_each_comb = MSEv_eval_crit_each_comb
+      MSEv_eval_crit = MSEv_eval_crit,
+      MSEv_eval_crit_explicand = MSEv_eval_crit_explicand,
+      MSEv_eval_crit_comb = MSEv_eval_crit_comb
     )
   } else {
     # Create a list of the numeric vectors to return
     return_list <- list(
-      MSEv_evaluation_criterion = MSEv_evaluation_criterion,
-      MSEv_evaluation_criterion_for_each_explicand = MSEv_evaluation_criterion_for_each_explicand,
-      MSEv_eval_crit_each_comb = MSEv_eval_crit_each_comb,
-      MSEv_eval_crit_each_comb_sd = MSEv_eval_crit_each_comb_sd
+      MSEv_eval_crit = MSEv_eval_crit,
+      MSEv_eval_crit_explicand = MSEv_eval_crit_explicand,
+      MSEv_eval_crit_comb = MSEv_eval_crit_comb,
+      MSEv_eval_crit_comb_sd = MSEv_eval_crit_comb_sd
     )
   }
 

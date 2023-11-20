@@ -229,8 +229,8 @@ plot.shapr <- function(x,
     factor_features <- shap_names[factor_features]
 
     dt_feature_vals_long <- suppressWarnings(data.table::melt(dt_feature_vals,
-      id.vars = "id",
-      value.name = "feature_value"
+                                                              id.vars = "id",
+                                                              value.name = "feature_value"
     ))
     # this gives a warning because none-values are NA...
     dt_plot <- merge(dt_plot, dt_feature_vals_long, by = c("id", "variable"))
@@ -543,8 +543,8 @@ make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols) {
   # of obs. feature value.
   # The feature values are scaled wrt the training data
   dt_plot[feature_value <= max & feature_value >= min,
-    feature_value_scaled := (feature_value - min) / (max - min),
-    by = variable
+          feature_value_scaled := (feature_value - min) / (max - min),
+          by = variable
   ]
   dt_plot[feature_value > max, feature_value_scaled := 1]
   dt_plot[feature_value < min, feature_value_scaled := 0]
@@ -621,7 +621,7 @@ make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels) {
   dt_plot[positive == FALSE & y_text_bar == 0, y_text_bar := ifelse(phi < 0, phi, 0)]
 
   dt_plot[, text_color_bar := ifelse(abs(phi) > max(abs(phi)) / 8, "white", ifelse(sign == "Increases",
-    col[1], col[2]
+                                                                                   col[1], col[2]
   )), by = id]
   if (bar_plot_phi0) {
     text_color_bar <- dt_plot[, text_color_bar]
@@ -677,33 +677,33 @@ make_waterfall_plot <- function(dt_plot,
   # waterfall plotting helpers
   if (bar_plot_order == "largest_first" || bar_plot_order == "original") {
     dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-      ifelse(expected < pred, ifelse(end > start, end, start),
-        ifelse(end < start, end, start)
-      ),
-      start + (end - start) / 2
+                               ifelse(expected < pred, ifelse(end > start, end, start),
+                                      ifelse(end < start, end, start)
+                               ),
+                               start + (end - start) / 2
     ), by = id]
   } else if (bar_plot_order == "smallest_first") {
     dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-      ifelse(expected > pred, ifelse(end > start, end, start),
-        ifelse(end < start, end, start)
-      ),
-      start + (end - start) / 2
+                               ifelse(expected > pred, ifelse(end > start, end, start),
+                                      ifelse(end < start, end, start)
+                               ),
+                               start + (end - start) / 2
     ), by = id]
   }
 
   dt_plot[, text_color := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-    ifelse(sign == "Increases", col[1], col[2]),
-    "white"
+                                 ifelse(sign == "Increases", col[1], col[2]),
+                                 "white"
   ), by = id]
   text_color <- dt_plot[variable != "none", text_color]
 
   if (bar_plot_order == "largest_first" || bar_plot_order == "original") {
     dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-      ifelse(expected > pred, 1, 0), 0.5
+                                   ifelse(expected > pred, 1, 0), 0.5
     ), by = id]
   } else if (bar_plot_order == "smallest_first") {
     dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-      ifelse(expected > pred, 0, 1), 0.5
+                                   ifelse(expected > pred, 0, 1), 0.5
     ), by = id]
   }
 
@@ -726,11 +726,11 @@ make_waterfall_plot <- function(dt_plot,
     ggplot2::scale_fill_manual(values = col, drop = TRUE) +
     ggplot2::scale_x_discrete(breaks = breaks, labels = desc_labels) +
     ggplot2::geom_segment(ggplot2::aes(x = -Inf, xend = max(rank_waterfall) + 0.8, y = pred, yend = pred),
-      linetype = "dotted", col = "grey30", linewidth = 0.25
+                          linetype = "dotted", col = "grey30", linewidth = 0.25
     ) +
     ggplot2::coord_flip(clip = "off", xlim = c(0.5, ifelse(N_features + N_features * 0.11 < N_features + 0.5,
-      N_features + 0.5,
-      N_features + N_features * 0.11
+                                                           N_features + 0.5,
+                                                           N_features + N_features * 0.11
     ))) +
     ggplot2::labs(
       y = "Prediction",
@@ -739,7 +739,7 @@ make_waterfall_plot <- function(dt_plot,
       title = "Shapley value prediction explanation"
     ) +
     ggplot2::geom_rect(ggplot2::aes(xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
-      show.legend = NA
+                       show.legend = NA
     ) +
     ggplot2::geom_segment(
       x = -Inf, xend = 1.3, y = expected, yend = expected,
@@ -787,7 +787,7 @@ make_waterfall_plot <- function(dt_plot,
 #' Make plots to visualize and compare the MSEv evaluation criterion for a list of
 #' [shapr::explain()] objects applied to the same data and model. The function creates
 #' bar plots and line plots, potentially with points, to illustrate the overall MSEv evaluation
-#' criterion, but also for each explicand and coalition by only averaging over the coalitions
+#' criterion, but also for each explicand and combination by only averaging over the combinations
 #' and explicands, respectively.
 #'
 #' @param explanation_list A list of [shapr::explain()] objects applied to the same data and model.
@@ -796,12 +796,12 @@ make_waterfall_plot <- function(dt_plot,
 #' @param index_explicands Integer vector. Which of the explicands (test observations) to plot.
 #' E.g. if you have explained 10 observations using [shapr::explain()], you can generate a plot for the
 #' first 5 observations/explicands and the 10th by setting `index_x_explain = c(1:5, 10)`.
-#' @param index_combinations Integer vector. Which of the coalitions (combinations) to plot.
+#' @param index_combinations Integer vector. Which of the combinations (coalitions) to plot.
 #' E.g. if you used `n_combinations = 16` in [explain()], you can generate a plot for the
-#' first 5 coalitions and the 10th by setting `index_x_explain = c(1:5, 10)`.
+#' first 5 combinations and the 10th by setting `index_x_explain = c(1:5, 10)`.
 #' @param only_overall_MSEv Boolean. If `TRUE`, then creates only the overall_MSEv plot and skip
-#' the figures where we illustrate the MSEv evaluation criterion for each explicand and coalition
-#' by only averaging over the coalitions and explicands, respectively.
+#' the figures where we illustrate the MSEv evaluation criterion for each explicand and combination
+#' by only averaging over the combinations and explicands, respectively.
 #' @param plot_overall_MSEv Boolean. If `TRUE`, then plot the overall_MSEv figure before returning all figures.
 #' @param return_figures Boolean. If `TRUE`, then the function returns the figures in a list.
 #' @param ggplot_theme A [ggplot2::theme()] object to customize the non-data components of the plots:
@@ -839,10 +839,10 @@ make_waterfall_plot <- function(dt_plot,
 #' @param point_size Positive numeric. The size of the points. Set `point_size = 0` to remove points.
 #' @param point_shape Integer or string. Specify the shape of the points.
 #' For a complete list of all possible shapes, see \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}.
-#' @param add_error_bars_for_coalitions Boolean. If `TRUE`, the function adds error bars (± 1sd) to the MSEv
-#' for the coalitions averaged over the explicands. It does not makes sense to add it for the other
-#' plots as the scale of the MSEv for the explicands averaged over the coalitions is different for each
-#' coalition. The mileage of this argument may vary due to potentially overlapping error bars.
+#' @param add_error_bars_combination Boolean. If `TRUE`, the function adds error bars (± 1sd) to the MSEv
+#' for the combinations averaged over the explicands. It does not makes sense to add it for the other
+#' plots as the scale of the MSEv for the explicands averaged over the combinations is different for each
+#' combination. The mileage of this argument may vary due to potentially overlapping error bars.
 #' @param flip_coordinates Boolean. Flip Cartesian coordinates so that the methods are on the y-ais..
 #' This is primarily useful for converting geoms and statistics which display y conditional on x, to x conditional on y.
 #' See [ggplot2::coord_flip()]. If `TRUE`, then the function makes horizontal bars instead of vertical bars.
@@ -976,7 +976,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   # The function will set default names for the objects in `explanation_list`
 #'   # when not provided, but these are long and will give warning to the user.
 #'   # The order of the methods are the same as the order in the `explanation_list`.
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_unnamed,
 #'     plot_overall_MSEv = TRUE,
 #'     only_overall_MSEv = TRUE,
@@ -985,7 +985,7 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #'   # We can fix this by either setting the `axis_labels_rotate_angle` or `axis_labels_n_dodge`
 #'   # to get nonoverlapping horizontal axis labels.
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_unnamed,
 #'     plot_overall_MSEv = TRUE,
 #'     only_overall_MSEv = TRUE,
@@ -993,7 +993,7 @@ make_waterfall_plot <- function(dt_plot,
 #'     axis_labels_rotate_angl = -90
 #'   )
 #'
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_unnamed,
 #'     plot_overall_MSEv = TRUE,
 #'     only_overall_MSEv = TRUE,
@@ -1002,7 +1002,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   )
 #'
 #'   # Another solution is to provide short names for the objects in the `explanation_list`.
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = TRUE,
 #'     only_overall_MSEv = TRUE,
@@ -1011,7 +1011,7 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #'   # We can change many of the parameters to change the design of the figure
 #'   # We can, e.g., flip the bars to rather have horizontal bars
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = TRUE,
 #'     only_overall_MSEv = TRUE,
@@ -1020,7 +1020,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   )
 #'
 #'   # We can make annotate the height of the bars
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = TRUE,
 #'     only_overall_MSEv = TRUE,
@@ -1033,7 +1033,7 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #'   # Note that reasonable values should be specified by the user to make readable plots.
 #'   # Here we illustrate what happens when we set the size too big and include too many decimals.
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = TRUE,
 #'     only_overall_MSEv = TRUE,
@@ -1046,7 +1046,7 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #'   # We can also change the theme of the figure, change the palette, and its order.
 #'   # Note that setting `brewer_palette = NULL`, yields ggplot's default color scheme.
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = TRUE,
 #'     only_overall_MSEv = TRUE,
@@ -1061,7 +1061,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   )
 #'
 #'   # We can change the position of the legend, its number of columns (and rows), and remove title
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = TRUE,
 #'     only_overall_MSEv = TRUE,
@@ -1073,7 +1073,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   )
 #'
 #'   # We can return the figure as list
-#'   figure <- make_MSEv_evaluation_criterion_plots(
+#'   figure <- make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = FALSE,
 #'     only_overall_MSEv = TRUE,
@@ -1081,9 +1081,9 @@ make_waterfall_plot <- function(dt_plot,
 #'   )
 #'   figure
 #'
-#'   # In addition to only make the overall MSEv figure, where we average over both the coalitions and
+#'   # In addition to only make the overall MSEv figure, where we average over both the combinations and
 #'   # explicands, we can also make figures where we only average over one of them.
-#'   figures <- make_MSEv_evaluation_criterion_plots(
+#'   figures <- make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = FALSE,
 #'     only_overall_MSEv = FALSE,
@@ -1091,38 +1091,38 @@ make_waterfall_plot <- function(dt_plot,
 #'   )
 #'   # We see that we make five plots
 #'   # Plots 1-2 and 3-4 illustrates the same, but as line/point plots and as bar plots.
-#'   # The plots that end with `MSEv_for_each_explicand` has only averaged over the coalitions,
-#'   # while the plots that end with `MSEv_for_each_coalition` has only averaged over the explicands.
+#'   # The plots that end with `MSEv_explicand` has only averaged over the combinations,
+#'   # while the plots that end with `MSEv_combination` has only averaged over the explicands.
 #'   # Here an explicand refers to the observations in `x_explain` which we want to explain.
-#'   # Finally, `bar_plot_MSEv` is the plot we have looked at above.
+#'   # Finally, `MSEv_bar` is the plot we have looked at above.
 #'   names(figures)
 #'
-#'   # Look at the MSEv for each explicand and then coalition
-#'   figures$bar_plot_MSEv_for_each_explicand
-#'   figures$bar_plot_MSEv_for_each_coalition
+#'   # Look at the MSEv for each explicand and then combination
+#'   figures$MSEv_explicand_bar
+#'   figures$MSEv_combination_bar_plot
 #'
 #'   # We can focus on certain explicands by using the `index_explicands` parameter
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = FALSE,
 #'     only_overall_MSEv = FALSE,
 #'     return_figures = TRUE,
 #'     index_explicands = c(1, 3:4, 6),
 #'     geom_col_width = 0.75
-#'   )$bar_plot_MSEv_for_each_explicand
+#'   )$MSEv_explicand_bar
 #'
-#'   # Or certain coalitions by using the `index_combinations` parameter
-#'   make_MSEv_evaluation_criterion_plots(
+#'   # Or certain combinations by using the `index_combinations` parameter
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = FALSE,
 #'     only_overall_MSEv = FALSE,
 #'     return_figures = TRUE,
 #'     index_combinations = c(1:3, 10, 15),
 #'     geom_col_width = 0.75
-#'   )$bar_plot_MSEv_for_each_coalition
+#'   )$MSEv_combination_bar_plot
 #'
 #'   # Can also here flip the bars and add other stuff
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = FALSE,
 #'     only_overall_MSEv = FALSE,
@@ -1133,18 +1133,18 @@ make_waterfall_plot <- function(dt_plot,
 #'     bar_text_size = 4,
 #'     ggplot_theme = ggplot2::theme_minimal(),
 #'     brewer_palette = "Blues"
-#'   )$bar_plot_MSEv_for_each_explicand
+#'   )$MSEv_explicand_bar
 #'
 #'   # The function also produce line/point plots for the same quantities as the bar plots
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = FALSE,
 #'     only_overall_MSEv = FALSE,
 #'     return_figures = TRUE
-#'   )$line_point_plot_MSEv_for_each_explicand
+#'   )$MSEv_explicand_line_point
 #'
 #'   # We can remove the lines to only get points and change their size and shape
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = FALSE,
 #'     only_overall_MSEv = FALSE,
@@ -1152,10 +1152,10 @@ make_waterfall_plot <- function(dt_plot,
 #'     line_type = "blank",
 #'     point_size = 2,
 #'     point_shape = "square"
-#'   )$line_point_plot_MSEv_for_each_explicand
+#'   )$MSEv_explicand_line_point
 #'
 #'   # Or we can remove the points, and change the design of the lines
-#'   make_MSEv_evaluation_criterion_plots(
+#'   make_MSEv_eval_crit_plots(
 #'     explanation_list = explanation_list_named,
 #'     plot_overall_MSEv = FALSE,
 #'     only_overall_MSEv = FALSE,
@@ -1163,36 +1163,36 @@ make_waterfall_plot <- function(dt_plot,
 #'     point_size = 0,
 #'     line_width = 1,
 #'     line_type = "solid"
-#'   )$line_point_plot_MSEv_for_each_explicand
+#'   )$MSEv_explicand_line_point
 #' }
 #'
 #' @author Lars Henry Berge Olsen
-make_MSEv_evaluation_criterion_plots <- function(explanation_list,
-                                                 index_explicands = NULL,
-                                                 index_combinations = NULL,
-                                                 only_overall_MSEv = FALSE,
-                                                 plot_overall_MSEv = FALSE,
-                                                 return_figures = TRUE,
-                                                 ggplot_theme = NULL,
-                                                 brewer_palette = "Paired",
-                                                 brewer_direction = 1,
-                                                 axis_labels_n_dodge = NULL,
-                                                 axis_labels_rotate_angle = NULL,
-                                                 title_text_size = 12,
-                                                 bar_text_color = "black",
-                                                 bar_text_size = 0,
-                                                 bar_text_n_decimals = 0,
-                                                 line_type = "solid",
-                                                 line_width = 0.4,
-                                                 point_size = 3,
-                                                 point_shape = "circle",
-                                                 add_error_bars_for_coalitions = FALSE,
-                                                 flip_coordinates = FALSE,
-                                                 reverse_coordinates = flip_coordinates,
-                                                 geom_col_width = NULL,
-                                                 legend_position = NULL,
-                                                 legend_ncol = NULL,
-                                                 legend_nrow = NULL) {
+make_MSEv_eval_crit_plots <- function(explanation_list,
+                                      index_explicands = NULL,
+                                      index_combinations = NULL,
+                                      only_overall_MSEv = FALSE,
+                                      plot_overall_MSEv = FALSE,
+                                      return_figures = TRUE,
+                                      ggplot_theme = NULL,
+                                      brewer_palette = "Paired",
+                                      brewer_direction = 1,
+                                      axis_labels_n_dodge = NULL,
+                                      axis_labels_rotate_angle = NULL,
+                                      title_text_size = 12,
+                                      bar_text_color = "black",
+                                      bar_text_size = 0,
+                                      bar_text_n_decimals = 0,
+                                      line_type = "solid",
+                                      line_width = 0.4,
+                                      point_size = 3,
+                                      point_shape = "circle",
+                                      add_error_bars_combination = FALSE,
+                                      flip_coordinates = FALSE,
+                                      reverse_coordinates = flip_coordinates,
+                                      geom_col_width = NULL,
+                                      legend_position = NULL,
+                                      legend_ncol = NULL,
+                                      legend_nrow = NULL) {
   # Setup and checks ----------------------------------------------------------------------------
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -1230,53 +1230,53 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
     stop("The Shapley value feature names are not identical in all objects in the `explanation_list`.")
   }
 
-  # Check if some of the objects in explanation_list are missing the MSEv_evaluation_criterion.
+  # Check if some of the objects in explanation_list are missing the MSEv_eval_crit.
   # This is the case when, e.g., when the model has several outputs or `timeseries` (version at 16-08-23).
-  entries_missing_MSEv_evaluation_criterion <-
-    sapply(explanation_list, function(explanation) is.null(explanation$MSEv_evaluation_criterion))
-  if (any(entries_missing_MSEv_evaluation_criterion)) {
-    # Get the methods that are missing the MSEv_evaluation_criterion
+  entries_missing_MSEv_eval_crit <-
+    sapply(explanation_list, function(explanation) is.null(explanation$MSEv_eval_crit))
+  if (any(entries_missing_MSEv_eval_crit)) {
+    # Get the methods that are missing the MSEv_eval_crit
     methods_without_MSEv_string <-
-      paste(names(entries_missing_MSEv_evaluation_criterion)[entries_missing_MSEv_evaluation_criterion],
+      paste(names(entries_missing_MSEv_eval_crit)[entries_missing_MSEv_eval_crit],
             collapse = ", ")
 
-    if (sum(entries_missing_MSEv_evaluation_criterion) == 1) {
+    if (sum(entries_missing_MSEv_eval_crit) == 1) {
       stop(sprintf(
-        "The object %s in `explanation_list` is missing the `MSEv_evaluation_criterion` list.",
+        "The object %s in `explanation_list` is missing the `MSEv_eval_crit` list.",
         methods_without_MSEv_string
       ))
     } else {
       stop(sprintf(
-        "The objects %s in `explanation_list` are missing the `MSEv_evaluation_criterion` list.",
+        "The objects %s in `explanation_list` are missing the `MSEv_eval_crit` list.",
         methods_without_MSEv_string
       ))
     }
   }
 
-  # Check if some of the objects have sampled coalitions and if they are different.
-  # This is crucial as the plots show the index of the coalitions, and if the entries
-  # work with different coalitions, then this can lead to incorrect interpretations
-  entries_using_different_coalitions <-
+  # Check if some of the objects have sampled combinations and if they are different.
+  # This is crucial as the plots show the index of the combinations, and if the entries
+  # work with different combinations, then this can lead to incorrect interpretations
+  entries_using_diff_combs <-
     sapply(explanation_list, function(explanation) {
       !identical(
         explanation_list[[1]]$internal$objects$X$features,
         explanation$internal$objects$X$features
       )
     })
-  if (any(entries_using_different_coalitions)) {
-    # Get the methods that are missing the MSEv_evaluation_criterion
-    methods_with_different_coalitions_string <-
-      paste(names(entries_using_different_coalitions)[entries_using_different_coalitions], collapse = ", ")
+  if (any(entries_using_diff_combs)) {
+    # Get the methods that are missing the MSEv_eval_crit
+    methods_with_diff_comb_str <-
+      paste(names(entries_using_diff_combs)[entries_using_diff_combs], collapse = ", ")
 
-    if (sum(entries_using_different_coalitions) == 1) {
+    if (sum(entries_using_diff_combs) == 1) {
       stop(sprintf(
         "The object %s in `explanation_list` uses different coaltions than %s. Cannot compare them then.",
-        methods_with_different_coalitions_string, names(explanation_list)[1]
+        methods_with_diff_comb_str, names(explanation_list)[1]
       ))
     } else {
       stop(sprintf(
         "The objects %s in `explanation_list` use different coaltions than %s. Cannot compare them then.",
-        methods_with_different_coalitions_string, names(explanation_list)[1]
+        methods_with_diff_comb_str, names(explanation_list)[1]
       ))
     }
   }
@@ -1284,7 +1284,7 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
   # Set geom_col_width to its default value. Same as in ggplot2.
   if (is.null(geom_col_width)) geom_col_width <- 0.9
 
-  # Get the number of coalitions and explicands
+  # Get the number of combinations and explicands
   n_explain <- explanation_list[[1]]$internal$parameters$n_explain
   n_combinations <- explanation_list[[1]]$internal$parameters$n_combinations
 
@@ -1294,7 +1294,7 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
   MSEv_eval_crit <- rbindlist(
     lapply(
       explanation_list,
-      function(explanation) explanation$MSEv_evaluation_criterion$MSEv_evaluation_criterion
+      function(explanation) explanation$MSEv_eval_crit$MSEv_eval_crit
     ),
     use.names = TRUE, idcol = "Method"
   )
@@ -1303,63 +1303,63 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
   MSEv_eval_crit$Method <- factor(MSEv_eval_crit$Method, levels = names(explanation_list))
 
   # Create a data.table with the MSEv evaluation criterion values for the different methods for each explicand .
-  MSEv_eval_crit_for_each_explicand <- rbindlist(
+  MSEv_eval_crit_explicand <- rbindlist(
     lapply(
       explanation_list,
-      function(explanation) explanation$MSEv_evaluation_criterion$MSEv_evaluation_criterion_for_each_explicand
+      function(explanation) explanation$MSEv_eval_crit$MSEv_eval_crit_explicand
     ),
     use.names = TRUE, idcol = "Method"
   )
 
   # Convert to factors
-  MSEv_eval_crit_for_each_explicand$id <- factor(MSEv_eval_crit_for_each_explicand$id)
-  MSEv_eval_crit_for_each_explicand$Method <- factor(MSEv_eval_crit_for_each_explicand$Method,
-                                                     levels = names(explanation_list)
+  MSEv_eval_crit_explicand$id <- factor(MSEv_eval_crit_explicand$id)
+  MSEv_eval_crit_explicand$Method <- factor(MSEv_eval_crit_explicand$Method,
+                                            levels = names(explanation_list)
   )
 
   # Only keep the desired explicands
   if (!is.null(index_explicands)) {
-    MSEv_eval_crit_for_each_explicand <- MSEv_eval_crit_for_each_explicand[id %in% index_explicands]
+    MSEv_eval_crit_explicand <- MSEv_eval_crit_explicand[id %in% index_explicands]
   }
 
-  # Create a data.table with the MSEv evaluation criterion values for the different methods for each coalition.
-  MSEv_eval_crit_for_each_coalition <- rbindlist(
+  # Create a data.table with the MSEv evaluation criterion values for the different methods for each combination.
+  MSEv_eval_crit_comb <- rbindlist(
     lapply(
       explanation_list,
-      function(explanation) explanation$MSEv_evaluation_criterion$MSEv_evaluation_criterion_for_each_coalition
+      function(explanation) explanation$MSEv_eval_crit$MSEv_eval_crit_comb
     ),
     use.names = TRUE, idcol = "Method"
   )
 
   # Convert to factors
-  MSEv_eval_crit_for_each_coalition$id_combination <- factor(MSEv_eval_crit_for_each_coalition$id_combination)
-  MSEv_eval_crit_for_each_coalition$Method <- factor(MSEv_eval_crit_for_each_coalition$Method,
-                                                     levels = names(explanation_list)
+  MSEv_eval_crit_comb$id_combination <- factor(MSEv_eval_crit_comb$id_combination)
+  MSEv_eval_crit_comb$Method <- factor(MSEv_eval_crit_comb$Method,
+                                       levels = names(explanation_list)
   )
 
-  # Only keep the desired coalitions
+  # Only keep the desired combinations
   if (!is.null(index_combinations)) {
-    MSEv_eval_crit_for_each_coalition <-
-      MSEv_eval_crit_for_each_coalition[id_combination %in% index_combinations]
+    MSEv_eval_crit_comb <-
+      MSEv_eval_crit_comb[id_combination %in% index_combinations]
   }
 
   # If flip coordinates, then we need to change the order of the levels such that the order
   # of the bars in the figure match the order in the legend.
   if (flip_coordinates) {
-    MSEv_eval_crit_for_each_coalition$Method <- factor(MSEv_eval_crit_for_each_coalition$Method,
-                                                       levels = rev(levels(MSEv_eval_crit_for_each_coalition$Method))
+    MSEv_eval_crit_comb$Method <- factor(MSEv_eval_crit_comb$Method,
+                                         levels = rev(levels(MSEv_eval_crit_comb$Method))
     )
-    MSEv_eval_crit_for_each_explicand$Method <- factor(MSEv_eval_crit_for_each_explicand$Method,
-                                                       levels = rev(levels(MSEv_eval_crit_for_each_explicand$Method))
+    MSEv_eval_crit_explicand$Method <- factor(MSEv_eval_crit_explicand$Method,
+                                              levels = rev(levels(MSEv_eval_crit_explicand$Method))
     )
 
     # Flip the order of the color scheme to be correct
     brewer_direction_for_only_MSEv <- brewer_direction # This is not needed to flip
     brewer_direction <- ifelse(brewer_direction == 1, -1, 1)
-    breaks <- rev(levels(MSEv_eval_crit_for_each_coalition$Method))
+    breaks <- rev(levels(MSEv_eval_crit_comb$Method))
   } else {
     brewer_direction_for_only_MSEv <- brewer_direction
-    breaks <- levels(MSEv_eval_crit_for_each_coalition$Method)
+    breaks <- levels(MSEv_eval_crit_comb$Method)
   }
 
   # User has provided neither `axis_labels_n_dodge` nor `axis_labels_rotate_angle`
@@ -1390,14 +1390,14 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
 
   # Making plots --------------------------------------------------------------------------------
   ### Make plots of the MSEv evaluation criterion values for the different methods
-  # averaged over both the coalitions and explicands.
+  # averaged over both the combinations and explicands.
   # Make the bar_plot
-  bar_plot_MSEv <-
-    ggplot2::ggplot(MSEv_eval_crit, ggplot2::aes(x = Method, y = MSEv_evaluation_criterion, fill = Method)) +
+  MSEv_bar <-
+    ggplot2::ggplot(MSEv_eval_crit, ggplot2::aes(x = Method, y = MSEv_eval_crit, fill = Method)) +
     ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge()) +
     ggplot2::geom_text(
       ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-                                   round(MSEv_evaluation_criterion, bar_text_n_decimals))),
+                                   round(MSEv_eval_crit, bar_text_n_decimals))),
       vjust = ifelse(flip_coordinates, NA, 1.75),
       hjust = ifelse(flip_coordinates, 1.15, NA),
       color = bar_text_color,
@@ -1407,8 +1407,8 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
     ggplot2::labs(x = "Method", y = bquote(MSE[v])) +
     ggplot2::guides(x = ggplot2::guide_axis(n.dodge = axis_labels_n_dodge, angle = axis_labels_rotate_angle)) +
     {
-      if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over both the "
-                                                            * .(n_combinations) * " coalitions and "
+      if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over the "
+                                                            * .(n_combinations) * " combinations and "
                                                             * .(n_explain) * " explicands"))
     } +
     {
@@ -1450,20 +1450,19 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
     }
 
   # Create a return list to store the plots
-  return_list <- list("bar_plot_MSEv" = bar_plot_MSEv)
+  return_list <- list("MSEv_bar" = MSEv_bar)
 
   # Skip the rest if the user only wants the overall MSEv
   if (!only_overall_MSEv) {
     ### Make plots of the MSEv evaluation criterion values for the different
-    # methods for each explicand averaged over the coalitions.
+    # methods for each explicand averaged over the combinations.
     # Make a source object of the data
-    MSEv_for_each_explicand_source <-
-      ggplot2::ggplot(MSEv_eval_crit_for_each_explicand, ggplot2::aes(x = id, y = MSEv_evaluation_criterion)) +
+    MSEv_explicand_source <-
+      ggplot2::ggplot(MSEv_eval_crit_explicand, ggplot2::aes(x = id, y = MSEv_eval_crit)) +
       ggplot2::labs(x = "Explicand index", y = bquote(MSE[v])) +
       {
-        if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over both the "
-                                                              * .(n_combinations) * " coalitions and "
-                                                              * .(n_explain) * " explicands"))
+        if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over the "
+                                                              * .(n_combinations) * " combinations for each explicand"))
       } +
       {
         if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))
@@ -1510,13 +1509,13 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
       }
 
     # Use the source object to create a bar plot
-    MSEv_for_each_explicand_bar_plot <-
-      MSEv_for_each_explicand_source +
+    MSEv_explicand_bar <-
+      MSEv_explicand_source +
       ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge(), ggplot2::aes(fill = Method)) +
       ggplot2::geom_text(
         ggplot2::aes(
           label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-                          round(MSEv_evaluation_criterion, bar_text_n_decimals)),
+                          round(MSEv_eval_crit, bar_text_n_decimals)),
           group = Method
         ),
         vjust = ifelse(flip_coordinates, NA, 1.75),
@@ -1527,8 +1526,8 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
       )
 
     # Use the source object to create a line and/or point plot
-    MSEv_for_each_explicand_line_point_plot <-
-      MSEv_for_each_explicand_source +
+    MSEv_explicand_line_point <-
+      MSEv_explicand_source +
       {
         if (point_size > 0) ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Method))
       } +
@@ -1536,16 +1535,15 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
 
 
     ### Make plots of the MSEv evaluation criterion values for the different methods
-    # for each coalition averaged over the explicands
+    # for each combination averaged over the explicands
     # Make a source object of the data
-    MSEv_for_each_coalition_source <-
-      ggplot2::ggplot(MSEv_eval_crit_for_each_coalition, ggplot2::aes(x = id_combination,
-                                                                      y = MSEv_evaluation_criterion)) +
-      ggplot2::labs(x = "Coalition index", y = bquote(MSE[v])) +
+    MSEv_combination_source <-
+      ggplot2::ggplot(MSEv_eval_crit_comb, ggplot2::aes(x = id_combination,
+                                                        y = MSEv_eval_crit)) +
+      ggplot2::labs(x = "Combination index", y = bquote(MSE[v])) +
       {
-        if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over both the "
-                                                              * .(n_combinations) * " coalitions and "
-                                                              * .(n_explain) * " explicands"))
+        if (title_text_size > 0) ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over the "
+                                                              * .(n_explain) * " explicands for each combination"))
       } +
       {
         if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))
@@ -1592,13 +1590,13 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
       }
 
     # Use the source object to create a bar plot
-    MSEv_for_each_coalition_bar_plot <-
-      MSEv_for_each_coalition_source +
+    MSEv_combination_bar_plot <-
+      MSEv_combination_source +
       ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge(), ggplot2::aes(fill = Method)) +
       ggplot2::geom_text(
         ggplot2::aes(
           label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-                          round(MSEv_evaluation_criterion, bar_text_n_decimals)),
+                          round(MSEv_eval_crit, bar_text_n_decimals)),
           group = Method
         ),
         vjust = ifelse(flip_coordinates, NA, 1.75),
@@ -1607,11 +1605,11 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
         position = ggplot2::position_dodge(geom_col_width),
         size = bar_text_size
       ) + {
-        if (add_error_bars_for_coalitions) {
+        if (add_error_bars_combination) {
           ggplot2::geom_errorbar(
             ggplot2::aes(
-              ymin = MSEv_evaluation_criterion - MSEv_evaluation_criterion_sd,
-              ymax = MSEv_evaluation_criterion + MSEv_evaluation_criterion_sd,
+              ymin = MSEv_eval_crit - MSEv_eval_crit_sd,
+              ymax = MSEv_eval_crit + MSEv_eval_crit_sd,
               group = Method
             ),
             width = 0.2,
@@ -1621,17 +1619,17 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
       }
 
     # Use the source object to create a line and/or point plot
-    MSEv_for_each_coalition_line_point_plot <-
-      MSEv_for_each_coalition_source +
+    MSEv_combination_line_point <-
+      MSEv_combination_source +
       {
         if (point_size > 0) ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Method))
       } +
       ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(group = Method, col = Method)) + {
-        if (add_error_bars_for_coalitions) {
+        if (add_error_bars_combination) {
           ggplot2::geom_errorbar(
             ggplot2::aes(
-              ymin = MSEv_evaluation_criterion - MSEv_evaluation_criterion_sd,
-              ymax = MSEv_evaluation_criterion + MSEv_evaluation_criterion_sd,
+              ymin = MSEv_eval_crit - MSEv_eval_crit_sd,
+              ymax = MSEv_eval_crit + MSEv_eval_crit_sd,
               group = Method,
               col = Method
             ),
@@ -1644,10 +1642,10 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
     # Add the figures to the return list
     return_list <- c(
       list(
-        "line_point_plot_MSEv_for_each_explicand" = MSEv_for_each_explicand_line_point_plot,
-        "line_point_plot_MSEv_for_each_coalition" = MSEv_for_each_coalition_line_point_plot,
-        "bar_plot_MSEv_for_each_explicand" = MSEv_for_each_explicand_bar_plot,
-        "bar_plot_MSEv_for_each_coalition" = MSEv_for_each_coalition_bar_plot
+        "MSEv_explicand_line_point" = MSEv_explicand_line_point,
+        "MSEv_combination_line_point" = MSEv_combination_line_point,
+        "MSEv_explicand_bar" = MSEv_explicand_bar,
+        "MSEv_combination_bar_plot" = MSEv_combination_bar_plot
       ),
       return_list
     )
@@ -1655,7 +1653,7 @@ make_MSEv_evaluation_criterion_plots <- function(explanation_list,
 
   # Combine and return plots --------------------------------------------------------------------
   # Plot the main plot
-  if (plot_overall_MSEv) plot(bar_plot_MSEv)
+  if (plot_overall_MSEv) plot(MSEv_bar)
 
   # Return the plots
   if (return_figures) {
