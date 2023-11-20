@@ -1323,31 +1323,31 @@ make_MSEv_eval_crit_plots <- function(explanation_list,
   }
 
   # Create a data.table with the MSEv evaluation criterion values for the different methods for each combination.
-  MSEv_eval_crit_comb <- rbindlist(
+  MSEv_eval_crit_combination <- rbindlist(
     lapply(
       explanation_list,
-      function(explanation) explanation$MSEv_eval_crit$MSEv_eval_crit_comb
+      function(explanation) explanation$MSEv_eval_crit$MSEv_eval_crit_combination
     ),
     use.names = TRUE, idcol = "Method"
   )
 
   # Convert to factors
-  MSEv_eval_crit_comb$id_combination <- factor(MSEv_eval_crit_comb$id_combination)
-  MSEv_eval_crit_comb$Method <- factor(MSEv_eval_crit_comb$Method,
+  MSEv_eval_crit_combination$id_combination <- factor(MSEv_eval_crit_combination$id_combination)
+  MSEv_eval_crit_combination$Method <- factor(MSEv_eval_crit_combination$Method,
                                        levels = names(explanation_list)
   )
 
   # Only keep the desired combinations
   if (!is.null(index_combinations)) {
-    MSEv_eval_crit_comb <-
-      MSEv_eval_crit_comb[id_combination %in% index_combinations]
+    MSEv_eval_crit_combination <-
+      MSEv_eval_crit_combination[id_combination %in% index_combinations]
   }
 
   # If flip coordinates, then we need to change the order of the levels such that the order
   # of the bars in the figure match the order in the legend.
   if (flip_coordinates) {
-    MSEv_eval_crit_comb$Method <- factor(MSEv_eval_crit_comb$Method,
-                                         levels = rev(levels(MSEv_eval_crit_comb$Method))
+    MSEv_eval_crit_combination$Method <- factor(MSEv_eval_crit_combination$Method,
+                                         levels = rev(levels(MSEv_eval_crit_combination$Method))
     )
     MSEv_eval_crit_explicand$Method <- factor(MSEv_eval_crit_explicand$Method,
                                               levels = rev(levels(MSEv_eval_crit_explicand$Method))
@@ -1356,10 +1356,10 @@ make_MSEv_eval_crit_plots <- function(explanation_list,
     # Flip the order of the color scheme to be correct
     brewer_direction_for_only_MSEv <- brewer_direction # This is not needed to flip
     brewer_direction <- ifelse(brewer_direction == 1, -1, 1)
-    breaks <- rev(levels(MSEv_eval_crit_comb$Method))
+    breaks <- rev(levels(MSEv_eval_crit_combination$Method))
   } else {
     brewer_direction_for_only_MSEv <- brewer_direction
-    breaks <- levels(MSEv_eval_crit_comb$Method)
+    breaks <- levels(MSEv_eval_crit_combination$Method)
   }
 
   # User has provided neither `axis_labels_n_dodge` nor `axis_labels_rotate_angle`
@@ -1538,7 +1538,7 @@ make_MSEv_eval_crit_plots <- function(explanation_list,
     # for each combination averaged over the explicands
     # Make a source object of the data
     MSEv_combination_source <-
-      ggplot2::ggplot(MSEv_eval_crit_comb, ggplot2::aes(x = id_combination,
+      ggplot2::ggplot(MSEv_eval_crit_combination, ggplot2::aes(x = id_combination,
                                                         y = MSEv_eval_crit)) +
       ggplot2::labs(x = "Combination index", y = bquote(MSE[v])) +
       {

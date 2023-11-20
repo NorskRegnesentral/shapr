@@ -190,7 +190,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #'  \item{`MSEv_eval_crit_explicand`}{Numeric vector (or \code{\link[data.table]{data.table}}
 #'  based on parameter `return_as_dt`) with the mean squared error for each explicand,
 #'  i.e., only averaged over the coalitions.}
-#'  \item{`MSEv_eval_crit_comb`}{Numeric vector (or \code{\link[data.table]{data.table}}
+#'  \item{`MSEv_eval_crit_combination`}{Numeric vector (or \code{\link[data.table]{data.table}}
 #'  based on parameter `return_as_dt`) with the mean squared error for each coalition,
 #'  i.e., only averaged over the observations.}
 #' }
@@ -314,8 +314,8 @@ compute_MSEv_eval_crit <- function(internal,
   names(MSEv_eval_crit_explicand) <- paste0("id_", seq(n_explain))
 
   # Compute the mean squared error for each coalition, i.e., only averaged over the explicands.
-  MSEv_eval_crit_comb <- rowMeans(dt_squared_diff)
-  MSEv_eval_crit_comb_sd <- apply(dt_squared_diff, 1, sd)
+  MSEv_eval_crit_combination <- rowMeans(dt_squared_diff)
+  MSEv_eval_crit_combination_sd <- apply(dt_squared_diff, 1, sd)
 
   # Set the names
   if (exclude_empty_grand_coalitions) {
@@ -323,7 +323,7 @@ compute_MSEv_eval_crit <- function(internal,
   } else {
     id_combination_numbers <- seq(1, n_combinations)
   }
-  names(MSEv_eval_crit_comb) <- paste0("id_combination_", id_combination_numbers)
+  names(MSEv_eval_crit_combination) <- paste0("id_combination_", id_combination_numbers)
 
   # Compute the overall mean squared error averaged over both the coalitions and explicands.
   MSEv_eval_crit <- mean(dt_squared_diff)
@@ -337,27 +337,27 @@ compute_MSEv_eval_crit <- function(internal,
         "id" = seq(n_explain),
         "MSEv_eval_crit" = MSEv_eval_crit_explicand
       )
-    MSEv_eval_crit_comb <-
+    MSEv_eval_crit_combination <-
       data.table(
         "id_combination" = id_combination_numbers,
         "features" = internal$objects$X$features[id_combination_numbers],
-        "MSEv_eval_crit" = MSEv_eval_crit_comb,
-        "MSEv_eval_crit_sd" = MSEv_eval_crit_comb_sd
+        "MSEv_eval_crit" = MSEv_eval_crit_combination,
+        "MSEv_eval_crit_sd" = MSEv_eval_crit_combination_sd
       )
 
     # Create a list of the data tables to return
     return_list <- list(
       MSEv_eval_crit = MSEv_eval_crit,
       MSEv_eval_crit_explicand = MSEv_eval_crit_explicand,
-      MSEv_eval_crit_comb = MSEv_eval_crit_comb
+      MSEv_eval_crit_combination = MSEv_eval_crit_combination
     )
   } else {
     # Create a list of the numeric vectors to return
     return_list <- list(
       MSEv_eval_crit = MSEv_eval_crit,
       MSEv_eval_crit_explicand = MSEv_eval_crit_explicand,
-      MSEv_eval_crit_comb = MSEv_eval_crit_comb,
-      MSEv_eval_crit_comb_sd = MSEv_eval_crit_comb_sd
+      MSEv_eval_crit_combination = MSEv_eval_crit_combination,
+      MSEv_eval_crit_combination_sd = MSEv_eval_crit_combination_sd
     )
   }
 
