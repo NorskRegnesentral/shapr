@@ -40,7 +40,7 @@ finalize_explanation <- function(vS_list, internal) {
   # TODO: check if it makes sense for output_size > 1.
   if (internal$parameters$output_size == 1) {
     # Compute the MSEv evaluation criterion
-    MSEv_evaluation_criterion <- compute_MSEv_evaluation_criterion(
+    MSEv_evaluation_criterion <- compute_MSEv_eval_crit(
       internal = internal,
       processed_vS_list = processed_vS_list,
       p = p,
@@ -247,10 +247,10 @@ compute_shapley_new <- function(internal, dt_vS) {
 #'   seed = 1
 #' )
 #'
-#' # The `compute_MSEv_evaluation_criterion` function is intended to be only called internally in
+#' # The `compute_MSEv_eval_crit` function is intended to be only called internally in
 #' # the `shapr` package, but the user can still use it outside of the package.
 #' # Exclude the empty and grand coalitions from the computations and return the result as a data.table
-#' compute_MSEv_evaluation_criterion(
+#' compute_MSEv_eval_crit(
 #'   internal = explanation$internal,
 #'   processed_vS_list = explanation$internal$output,
 #'   exclude_empty_and_grand_coalition = TRUE,
@@ -258,7 +258,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' )
 #'
 #' # Include the empty and grand coalitions from the computations and return the result as a data.table
-#' compute_MSEv_evaluation_criterion(
+#' compute_MSEv_eval_crit(
 #'   internal = explanation$internal,
 #'   processed_vS_list = explanation$internal$output,
 #'   exclude_empty_and_grand_coalition = FALSE,
@@ -266,7 +266,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' )
 #'
 #' # Exclude the empty and grand coalitions from the computations and return the result as a list
-#' compute_MSEv_evaluation_criterion(
+#' compute_MSEv_eval_crit(
 #'   internal = explanation$internal,
 #'   processed_vS_list = explanation$internal$output,
 #'   exclude_empty_and_grand_coalition = TRUE,
@@ -274,7 +274,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' )
 #'
 #' # Include the empty and grand coalitions from the computations and return the result as a list
-#' compute_MSEv_evaluation_criterion(
+#' compute_MSEv_eval_crit(
 #'   internal = explanation$internal,
 #'   processed_vS_list = explanation$internal$output,
 #'   exclude_empty_and_grand_coalition = FALSE,
@@ -283,7 +283,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-compute_MSEv_evaluation_criterion <- function(internal,
+compute_MSEv_eval_crit <- function(internal,
                                               processed_vS_list,
                                               p = shapr:::get_p(processed_vS_list$dt_vS, internal),
                                               exclude_empty_and_grand_coalition = TRUE,
