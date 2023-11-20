@@ -190,7 +190,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #'  \item{`MSEv_evaluation_criterion_for_each_explicand`}{Numeric vector (or \code{\link[data.table]{data.table}}
 #'  based on parameter `return_as_dt`) with the mean squared error for each explicand,
 #'  i.e., only averaged over the coalitions.}
-#'  \item{`MSEv_evaluation_criterion_for_each_coalition`}{Numeric vector (or \code{\link[data.table]{data.table}}
+#'  \item{`MSEv_eval_crit_each_comb`}{Numeric vector (or \code{\link[data.table]{data.table}}
 #'  based on parameter `return_as_dt`) with the mean squared error for each coalition,
 #'  i.e., only averaged over the observations.}
 #' }
@@ -314,8 +314,8 @@ compute_MSEv_eval_crit <- function(internal,
   names(MSEv_evaluation_criterion_for_each_explicand) <- paste0("id_", seq(n_explain))
 
   # Compute the mean squared error for each coalition, i.e., only averaged over the explicands.
-  MSEv_evaluation_criterion_for_each_coalition <- rowMeans(dt_squared_difference)
-  MSEv_evaluation_criterion_for_each_coalition_sd <- apply(dt_squared_difference, 1, sd)
+  MSEv_eval_crit_each_comb <- rowMeans(dt_squared_difference)
+  MSEv_eval_crit_each_comb_sd <- apply(dt_squared_difference, 1, sd)
 
   # Set the names
   if (exclude_empty_and_grand_coalition) {
@@ -323,7 +323,7 @@ compute_MSEv_eval_crit <- function(internal,
   } else {
     id_combination_numbers <- seq(1, n_combinations)
   }
-  names(MSEv_evaluation_criterion_for_each_coalition) <- paste0("id_combination_", id_combination_numbers)
+  names(MSEv_eval_crit_each_comb) <- paste0("id_combination_", id_combination_numbers)
 
   # Compute the overall mean squared error averaged over both the coalitions and explicands.
   MSEv_evaluation_criterion <- mean(dt_squared_difference)
@@ -337,27 +337,27 @@ compute_MSEv_eval_crit <- function(internal,
         "id" = seq(n_explain),
         "MSEv_evaluation_criterion" = MSEv_evaluation_criterion_for_each_explicand
       )
-    MSEv_evaluation_criterion_for_each_coalition <-
+    MSEv_eval_crit_each_comb <-
       data.table(
         "id_combination" = id_combination_numbers,
         "features" = internal$objects$X$features[id_combination_numbers],
-        "MSEv_evaluation_criterion" = MSEv_evaluation_criterion_for_each_coalition,
-        "MSEv_evaluation_criterion_sd" = MSEv_evaluation_criterion_for_each_coalition_sd
+        "MSEv_evaluation_criterion" = MSEv_eval_crit_each_comb,
+        "MSEv_evaluation_criterion_sd" = MSEv_eval_crit_each_comb_sd
       )
 
     # Create a list of the data tables to return
     return_list <- list(
       MSEv_evaluation_criterion = MSEv_evaluation_criterion,
       MSEv_evaluation_criterion_for_each_explicand = MSEv_evaluation_criterion_for_each_explicand,
-      MSEv_evaluation_criterion_for_each_coalition = MSEv_evaluation_criterion_for_each_coalition
+      MSEv_eval_crit_each_comb = MSEv_eval_crit_each_comb
     )
   } else {
     # Create a list of the numeric vectors to return
     return_list <- list(
       MSEv_evaluation_criterion = MSEv_evaluation_criterion,
       MSEv_evaluation_criterion_for_each_explicand = MSEv_evaluation_criterion_for_each_explicand,
-      MSEv_evaluation_criterion_for_each_coalition = MSEv_evaluation_criterion_for_each_coalition,
-      MSEv_evaluation_criterion_for_each_coalition_sd = MSEv_evaluation_criterion_for_each_coalition_sd
+      MSEv_eval_crit_each_comb = MSEv_eval_crit_each_comb,
+      MSEv_eval_crit_each_comb_sd = MSEv_eval_crit_each_comb_sd
     )
   }
 
