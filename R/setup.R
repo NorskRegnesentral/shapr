@@ -208,6 +208,7 @@ check_n_batches <- function(internal) {
   n_combinations <- internal$parameters$n_combinations
   is_groupwise <- internal$parameters$is_groupwise
   n_groups <- internal$parameters$n_groups
+  n_unique_approaches <- internal$parameters$n_unique_approaches
 
   if (!is_groupwise) {
     actual_n_combinations <- ifelse(is.null(n_combinations), 2^n_features, n_combinations)
@@ -217,8 +218,15 @@ check_n_batches <- function(internal) {
 
   if (n_batches >= actual_n_combinations) {
     stop(paste0(
-      "`n_batches` (", n_batches, ") must be smaller than the number feature combinations/`n_combinations` (",
+      "`n_batches` (", n_batches, ") must be smaller than the number of feature combinations/`n_combinations` (",
       actual_n_combinations, ")"
+    ))
+  }
+
+  if (n_batches < n_unique_approaches) {
+    stop(paste0(
+      "`n_batches` (", n_batches, ") must be larger than the number of unique approaches in `approach` (",
+      n_unique_approaches, ")."
     ))
   }
 }
@@ -367,6 +375,10 @@ get_extra_parameters <- function(internal) {
     internal$objects$group_num <- NULL
     internal$parameters$n_groups <- NULL
   }
+
+  # Get the number of unique approaches
+    internal$parameters$n_approaches <- length(internal$parameters$approach)
+    internal$parameters$n_unique_approaches <- length(unique(internal$parameters$approach))
 
   return(internal)
 }
@@ -658,13 +670,14 @@ check_approach <- function(internal) {
   supported_approaches <- get_supported_approaches()
 
   if (!(is.character(approach) &&
-    (length(approach) == 1 || length(approach) == n_features) &&
+    (length(approach) == 1 || length(approach) == n_features - 1) &&
     all(is.element(approach, supported_approaches)))
   ) {
     stop(
       paste(
         "`approach` must be one of the following: \n", paste0(supported_approaches, collapse = ", "), "\n",
-        "or a vector of length equal to the number of features (", n_features, ") with only the above strings."
+        "or a vector of length one less than the number of features (", n_features - 1, "),",
+        "with only the above strings."
       )
     )
   }
@@ -675,33 +688,33 @@ set_defaults <- function(internal) {
   # Set defaults for certain arguments (based on other input)
 
   approach <- internal$parameters$approach
+  n_unique_approaches <- internal$parameters$n_unique_approaches
   used_n_combinations <- internal$parameters$used_n_combinations
   n_batches <- internal$parameters$n_batches
 
   # n_batches
   if (is.null(n_batches)) {
-    internal$parameters$n_batches <- get_default_n_batches(approach, used_n_combinations)
+    internal$parameters$n_batches <- get_default_n_batches(approach, n_unique_approaches, used_n_combinations)
   }
 
   return(internal)
 }
+
 #' @keywords internal
-get_default_n_batches <- function(approach, n_combinations) {
+get_default_n_batches <- function(approach, n_unique_approaches, n_combinations) {
   used_approach <- names(sort(table(approach), decreasing = TRUE))[1] # Most frequent used approach (when more present)
 
   if (used_approach %in% c("ctree", "gaussian", "copula")) {
     suggestion <- ceiling(n_combinations / 10)
     this_min <- 10
     this_max <- 1000
-    min_checked <- max(c(this_min, suggestion))
-    ret <- min(c(this_max, min_checked))
   } else {
     suggestion <- ceiling(n_combinations / 100)
     this_min <- 2
     this_max <- 100
-    min_checked <- max(c(this_min, suggestion))
-    ret <- min(c(this_max, min_checked))
   }
+  min_checked <- max(c(this_min, suggestion, n_unique_approaches))
+  ret <- min(c(this_max, min_checked, n_combinations - 1))
   message(
     paste0(
       "Setting parameter 'n_batches' to ", ret, " as a fair trade-off between memory consumption and ",
