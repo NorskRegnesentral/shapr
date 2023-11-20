@@ -288,7 +288,7 @@ explain4 <- explain(
 )
 
 # Combined approach
-approach <- c("gaussian", "gaussian", "empirical", "empirical")
+approach <- c("gaussian", "gaussian", "empirical")
 explain5 <- explain(
   model = model,
   x_explain = x_explain,
