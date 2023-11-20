@@ -44,7 +44,7 @@ explain_numeric_combined <- explain(
   model = model_lm_numeric,
   x_explain = x_explain_numeric,
   x_train = x_train_numeric,
-  approach = c("empirical", "ctree", "gaussian", "ctree", "empirical"),
+  approach = c("empirical", "ctree", "gaussian", "ctree"),
   prediction_zero = p0,
   n_batches = 10,
   timing = FALSE
