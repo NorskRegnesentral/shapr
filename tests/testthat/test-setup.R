@@ -1706,15 +1706,13 @@ test_that("Shapr sets a valid default value for `n_batches`", {
 
 test_that("Error with to low `n_batches` compared to the number of unique approaches", {
   # Expect to get the following error:
-  # `n_batches` (3) must be larger than the number of unique approaches in `approach` (4). Note that
-  # the last approach in `approach` is not included as it is not used to do any computations as
-  # described in the vignette.
+  # `n_batches` (3) must be larger than the number of unique approaches in `approach` (4).
   expect_error(
     object = explain(
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
-      approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+      approach = c("independence", "empirical", "gaussian", "copula"),
       prediction_zero = p0,
       n_batches = 3,
       timing = FALSE,
@@ -1726,7 +1724,7 @@ test_that("Error with to low `n_batches` compared to the number of unique approa
       model = model_lm_numeric,
       x_explain = x_explain_numeric,
       x_train = x_train_numeric,
-      approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+      approach = c("independence", "empirical", "gaussian", "copula"),
       prediction_zero = p0,
       n_batches = NULL,
       timing = FALSE,
@@ -1738,7 +1736,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "ctree", "ctree", "ctree", "ctree"),
+    approach = c("independence", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = 2,
     timing = FALSE,
@@ -1752,7 +1750,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "ctree", "ctree", "ctree", "ctree"),
+    approach = c("independence", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = 15,
     timing = FALSE,
@@ -1767,7 +1765,7 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "ctree", "ctree", "ctree", "ctree"),
+    approach = c("independence", "ctree", "ctree", "ctree"),
     prediction_zero = p0,
     n_batches = NULL,
     timing = FALSE,
@@ -1786,7 +1784,7 @@ test_that("setting the seed for combined approaches works", {
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+    approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
     timing = FALSE,
     seed = 1)
@@ -1795,7 +1793,7 @@ test_that("setting the seed for combined approaches works", {
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+    approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
     timing = FALSE,
     seed = 1)
@@ -1809,7 +1807,7 @@ test_that("setting the seed for combined approaches works", {
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "empirical", "gaussian", "copula", "ctree"),
+    approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
     timing = FALSE,
     seed = 1)
@@ -1818,7 +1816,7 @@ test_that("setting the seed for combined approaches works", {
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "empirical", "gaussian", "copula", "ctree"),
+    approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
     timing = FALSE,
     seed = 1)
@@ -1836,11 +1834,11 @@ test_that("counting the number of unique approaches", {
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "empirical", "gaussian", "copula", "empirical"),
+    approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
     timing = FALSE,
     seed = 1)
-  expect_equal(explanation_combined_1$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_1$internal$parameters$n_approaches, 4)
   expect_equal(explanation_combined_1$internal$parameters$n_unique_approaches, 4)
 
   explanation_combined_2 <- explain(
@@ -1858,22 +1856,22 @@ test_that("counting the number of unique approaches", {
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("gaussian", "gaussian", "gaussian", "gaussian", "gaussian"),
+    approach = c("gaussian", "gaussian", "gaussian", "gaussian"),
     prediction_zero = p0,
     timing = FALSE,
     seed = 1)
-  expect_equal(explanation_combined_3$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_3$internal$parameters$n_approaches, 4)
   expect_equal(explanation_combined_3$internal$parameters$n_unique_approaches, 1)
 
   explanation_combined_4 <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "empirical", "independence", "empirical", "empirical"),
+    approach = c("independence", "empirical", "independence", "empirical"),
     prediction_zero = p0,
     timing = FALSE,
     seed = 1)
-  expect_equal(explanation_combined_4$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_4$internal$parameters$n_approaches, 4)
   expect_equal(explanation_combined_4$internal$parameters$n_unique_approaches, 2)
 
   # Check that the last one is not counted
@@ -1881,10 +1879,10 @@ test_that("counting the number of unique approaches", {
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
     x_train = x_train_numeric,
-    approach = c("independence", "empirical", "independence", "empirical", "gaussian"),
+    approach = c("independence", "empirical", "independence", "empirical"),
     prediction_zero = p0,
     timing = FALSE,
     seed = 1)
-  expect_equal(explanation_combined_5$internal$parameters$n_approaches, 5)
+  expect_equal(explanation_combined_5$internal$parameters$n_approaches, 4)
   expect_equal(explanation_combined_5$internal$parameters$n_unique_approaches, 2)
 })

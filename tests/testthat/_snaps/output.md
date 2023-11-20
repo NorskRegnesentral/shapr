@@ -32,10 +32,11 @@
 
     Code
       (out <- code)
-    Warning <simpleWarning>
+    Condition
+      Warning in `setup_approach.empirical()`:
       Using empirical.type = 'independence' for approach = 'empirical' is deprecated.
       Please use approach = 'independence' instead.
-    Message <simpleMessage>
+    Message
       
       Success with message:
       empirical.eta force set to 1 for empirical.type = 'independence'
@@ -208,7 +209,7 @@
 
     Code
       (out <- code)
-    Message <simpleMessage>
+    Message
       Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
       Consistency checks between model and data is therefore disabled.
       
@@ -222,7 +223,7 @@
 
     Code
       (out <- code)
-    Message <simpleMessage>
+    Message
       Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
       Consistency checks between model and data is therefore disabled.
       

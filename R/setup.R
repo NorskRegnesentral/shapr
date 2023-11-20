@@ -226,8 +226,7 @@ check_n_batches <- function(internal) {
   if (n_batches < n_unique_approaches) {
     stop(paste0(
       "`n_batches` (", n_batches, ") must be larger than the number of unique approaches in `approach` (",
-      n_unique_approaches, "). Note that the last approach in `approach` is not included as it is not used ",
-      "to do any computations as described in the vignette."
+      n_unique_approaches, ")."
     ))
   }
 }
@@ -378,16 +377,8 @@ get_extra_parameters <- function(internal) {
   }
 
   # Get the number of unique approaches
-  if (length(internal$parameters$approach) > 1) {
     internal$parameters$n_approaches <- length(internal$parameters$approach)
-    # Remove the last approach as `explain` forces the user to specify the last approach
-    # even if it is not used as all variables are conditioned on and no estimation is needed.
-    internal$parameters$n_unique_approaches <-
-      length(unique(internal$parameters$approach[-internal$parameters$n_approaches]))
-  } else {
-    internal$parameters$n_approaches <- 1
-    internal$parameters$n_unique_approaches <- 1
-  }
+    internal$parameters$n_unique_approaches <- length(unique(internal$parameters$approach))
 
   return(internal)
 }
@@ -679,13 +670,14 @@ check_approach <- function(internal) {
   supported_approaches <- get_supported_approaches()
 
   if (!(is.character(approach) &&
-    (length(approach) == 1 || length(approach) == n_features) &&
+    (length(approach) == 1 || length(approach) == n_features - 1) &&
     all(is.element(approach, supported_approaches)))
   ) {
     stop(
       paste(
         "`approach` must be one of the following: \n", paste0(supported_approaches, collapse = ", "), "\n",
-        "or a vector of length equal to the number of features (", n_features, ") with only the above strings."
+        "or a vector of length one less than the number of features (", n_features - 1, "),",
+        "with only the above strings."
       )
     )
   }
