@@ -226,8 +226,7 @@ check_n_batches <- function(internal) {
   if (n_batches < n_unique_approaches) {
     stop(paste0(
       "`n_batches` (", n_batches, ") must be larger than the number of unique approaches in `approach` (",
-      n_unique_approaches, "). Note that the last approach in `approach` is not included as it is not used ",
-      "to do any computations as described in the vignette."
+      n_unique_approaches, ")."
     ))
   }
 }
@@ -679,13 +678,13 @@ check_approach <- function(internal) {
   supported_approaches <- get_supported_approaches()
 
   if (!(is.character(approach) &&
-    (length(approach) == 1 || length(approach) == n_features) &&
+    (length(approach) == 1 || length(approach) == n_features - 1) &&
     all(is.element(approach, supported_approaches)))
   ) {
     stop(
       paste(
         "`approach` must be one of the following: \n", paste0(supported_approaches, collapse = ", "), "\n",
-        "or a vector of length equal to the number of features (", n_features, ") with only the above strings."
+        "or a vector of length one less than the number of features (", n_features - 1, "), with only the above strings."
       )
     )
   }
