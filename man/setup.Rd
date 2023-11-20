@@ -39,8 +39,8 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 \item{x_explain}{A matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.}
 
-\item{approach}{Character vector of length \code{1} or \code{n_features}.
-\code{n_features} equals the total number of features in the model. All elements should,
+\item{approach}{Character vector of length \code{1} or one less than the number of features.
+All elements should,
 either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 

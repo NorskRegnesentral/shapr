@@ -809,8 +809,8 @@ print(explanation$shapley_values)
 In addition to letting the user select one of the five aforementioned
 approaches for estimating the conditional distribution of the data (i.e.
 `approach` equals either [`"gaussian"`](#gaussian),
-[`"copula"`](#copula), [`"empirical"`](#empirical) or
-[`"ctree"`](#ctree) or [`"categorical"`](#categorical)), the package
+[`"copula"`](#copula), [`"empirical"`](#empirical),
+[`"ctree"`](#ctree), [`"categorical"`](#categorical)) or `"timeseries"`, the package
 allows the user to combine the given approaches. To simplify the usage,
 the flexibility is restricted such that the same approach is used when
 conditioning on the same number of features. This is also in line
@@ -827,7 +827,7 @@ passing
 `approach = c(rep("empirical", 3), rep("copula", 2), rep("gaussian", 4))`,
 i.e. `approach[i]` determines which method to use when conditioning on
 `i` features. Conditioning on all features needs no approach as that is given
-by the complete prediction itself.
+by the complete prediction itself, and should thus not be part of the vector.
 
 The code below exemplifies this approach for a case where there are four
 features, using `"empirical", "copula"` and `"gaussian"` when

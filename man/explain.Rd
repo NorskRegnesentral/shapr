@@ -36,8 +36,8 @@ Contains the the features, whose predictions ought to be explained.}
 Contains the data used to estimate the (conditional) distributions for the features
 needed to properly estimate the conditional expectations in the Shapley formula.}
 
-\item{approach}{Character vector of length \code{1} or \code{n_features}.
-\code{n_features} equals the total number of features in the model. All elements should,
+\item{approach}{Character vector of length \code{1} or one less than the number of features.
+All elements should,
 either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 
@@ -214,9 +214,10 @@ E.g., if you're in a situation where you have trained a model that consists of 1
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
 the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
 if you condition on more than 5 features this can be done by simply passing
-\code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
+\code{approach = c("gaussian", rep("empirical", 4), rep("copula", 4))}. If
 \code{"approach[i]" = "gaussian"} means that you'd like to use the \code{"gaussian"} approach
-when conditioning on \code{i} features.
+when conditioning on \code{i} features. Conditioning on all features needs no approach as that is given
+by the complete prediction itself, and should thus not be part of the vector.
 
 For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
 from the leaf node (see an exception related to the \code{sample} argument).
