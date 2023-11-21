@@ -8,7 +8,8 @@ compute_MSEv_eval_crit(
   internal,
   processed_vS_list,
   p = shapr:::get_p(processed_vS_list$dt_vS, internal),
-  exclude_empty_and_grand_coalition = TRUE,
+  exclude_empty_grand_coalitions = TRUE,
+  use_shapley_weights = FALSE,
   return_as_dt = TRUE
 )
 }
@@ -21,10 +22,13 @@ Output from the \code{shapr:::postprocess_vS_list()} function.}
 \item{p}{Numeric vector with the predicted responses for the observations which are to be explained.
 Output from the \code{shapr:::get_p()} function.}
 
-\item{exclude_empty_and_grand_coalition}{Boolean. If \code{TRUE}, we exclude the empty and grand coalitions
+\item{exclude_empty_grand_coalitions}{Boolean. If \code{TRUE}, we exclude the empty and grand coalitions
 when computing the MSEv evaluation criterion. This is reasonable as they are identical for all methods, i.e.,
 their contribution function is independent of the used method as they are special cases not effected by
 the used method. If \code{TRUE}, we exclude the empty and grand coalitions.}
+
+\item{use_shapley_weights}{Boolean. If \code{TRUE}, then we use the Shapley kernel weights to weight the
+different coalitions before taking the mean. If \code{FALSE}, we use regular mean with uniform weights.}
 
 \item{return_as_dt}{Boolean. If the computed MSEv evaluation criterion is
 to be returned as \code{\link[data.table]{data.table}}.}
@@ -37,7 +41,7 @@ List containing:
 \item{\code{MSEv_eval_crit_explicand}}{Numeric vector (or \code{\link[data.table]{data.table}}
 based on parameter \code{return_as_dt}) with the mean squared error for each explicand,
 i.e., only averaged over the coalitions.}
-\item{\code{MSEv_eval_crit_comb}}{Numeric vector (or \code{\link[data.table]{data.table}}
+\item{\code{MSEv_eval_crit_combination}}{Numeric vector (or \code{\link[data.table]{data.table}}
 based on parameter \code{return_as_dt}) with the mean squared error for each coalition,
 i.e., only averaged over the observations.}
 }
@@ -59,7 +63,7 @@ refer to the observations whose predictions we are to explain.
 \examples{
 library(xgboost)
 library(data.table)
-seed(1)
+set.seed(1)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -101,7 +105,7 @@ explanation <- explain(
 compute_MSEv_eval_crit(
   internal = explanation$internal,
   processed_vS_list = explanation$internal$output,
-  exclude_empty_and_grand_coalition = TRUE,
+  exclude_empty_grand_coalitions = TRUE,
   return_as_dt = TRUE
 )
 
@@ -109,7 +113,7 @@ compute_MSEv_eval_crit(
 compute_MSEv_eval_crit(
   internal = explanation$internal,
   processed_vS_list = explanation$internal$output,
-  exclude_empty_and_grand_coalition = FALSE,
+  exclude_empty_grand_coalitions = FALSE,
   return_as_dt = TRUE
 )
 
@@ -117,7 +121,7 @@ compute_MSEv_eval_crit(
 compute_MSEv_eval_crit(
   internal = explanation$internal,
   processed_vS_list = explanation$internal$output,
-  exclude_empty_and_grand_coalition = TRUE,
+  exclude_empty_grand_coalitions = TRUE,
   return_as_dt = FALSE
 )
 
@@ -125,7 +129,7 @@ compute_MSEv_eval_crit(
 compute_MSEv_eval_crit(
   internal = explanation$internal,
   processed_vS_list = explanation$internal$output,
-  exclude_empty_and_grand_coalition = FALSE,
+  exclude_empty_grand_coalitions = FALSE,
   return_as_dt = FALSE
 )
 

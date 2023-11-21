@@ -12,7 +12,7 @@ compute_shapley_new(internal, dt_vS)
 \item{explainer}{An \code{explain} object.}
 }
 \value{
-A \code{data.table} with shapley values for each test observation.
+A \code{data.table} with Shapley values for each test observation.
 }
 \description{
 Compute shapley values

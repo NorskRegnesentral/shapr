@@ -216,7 +216,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' @examples
 #' library(xgboost)
 #' library(data.table)
-#' seed(1)
+#' set.seed(1)
 #'
 #' data("airquality")
 #' data <- data.table::as.data.table(airquality)
