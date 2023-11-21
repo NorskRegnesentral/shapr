@@ -183,7 +183,7 @@ test_that("MSEv evaluation criterion unnamed plots", {
 
   vdiffr::expect_doppelganger(
     title = "default version",
-    fig = suppressMessages(make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+    fig = suppressMessages(make_MSEv_eval_crit_plots(explanation_list = explanation_list_unnamed,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
                                                return_figures = TRUE)$bar_plot_MSEv)
@@ -191,7 +191,7 @@ test_that("MSEv evaluation criterion unnamed plots", {
 
   vdiffr::expect_doppelganger(
     title = "rotate axis labels version",
-    fig = suppressMessages(make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+    fig = suppressMessages(make_MSEv_eval_crit_plots(explanation_list = explanation_list_unnamed,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
                                                return_figures = TRUE,
@@ -200,7 +200,7 @@ test_that("MSEv evaluation criterion unnamed plots", {
 
   vdiffr::expect_doppelganger(
     title = "dodge axis labels version",
-    fig = suppressMessages(make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_unnamed,
+    fig = suppressMessages(make_MSEv_eval_crit_plots(explanation_list = explanation_list_unnamed,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
                                                return_figures = TRUE,
@@ -222,7 +222,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "using the provided names",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
                                                return_figures = TRUE)$bar_plot_MSEv
@@ -230,7 +230,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "flip bars, add text, change colors, legend_bottom",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
                                                return_figures = TRUE,
@@ -246,7 +246,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "default colors, no legend, more decimals, white text",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
                                                return_figures = TRUE,
@@ -262,7 +262,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "default colors, no legend, more decimals, white text, no title",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
                                                return_figures = TRUE,
@@ -278,7 +278,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv for all explicands",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE,
@@ -287,7 +287,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv for specified explicands",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE,
@@ -297,7 +297,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv for all coalitions",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE,
@@ -306,7 +306,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv for specified coalitions",
-    fig =  make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig =  make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                 plot_overall_MSEv = FALSE,
                                                 only_overall_MSEv = FALSE,
                                                 return_figures = TRUE,
@@ -316,7 +316,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv for specified coalitions, flipped bars, bar text, changed theme and colors",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE,
@@ -330,7 +330,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "line/point plot default explicands",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE)$line_point_plot_MSEv_for_each_explicand
@@ -338,7 +338,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "line/point plot default coalitions",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE)$line_point_plot_MSEv_for_each_coalition
@@ -346,7 +346,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "square points, no line, no title, explicands",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE,
@@ -358,7 +358,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "change lines, no points, explicands",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE,
@@ -369,7 +369,7 @@ test_that("MSEv evaluation criterion named plots", {
 
   vdiffr::expect_doppelganger(
     title = "change lines and colors, no points, coalitions",
-    fig = make_MSEv_evaluation_criterion_plots(explanation_list = explanation_list_named,
+    fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE,
