@@ -39,15 +39,18 @@ finalize_explanation <- function(vS_list, internal) {
   # Compute the MSEv evaluation criterion if the output of the predictive model is a scalar.
   # TODO: check if it makes sense for output_size > 1.
   if (internal$parameters$output_size == 1) {
-    # Compute the MSEv evaluation criterion
-    MSEv_eval_crit <- compute_MSEv_eval_crit(
+    output$MSEv_eval_crit <- compute_MSEv_eval_crit(
       internal = internal,
       processed_vS_list = processed_vS_list,
       p = p,
-      exclude_empty_grand_coalitions = FALSE,
+      exclude_empty_grand_coalitions = ifelse(!is.null(internal$parameters$exclude_empty_grand_coalitions),
+                                              internal$parameters$exclude_empty_grand_coalitions,
+                                              FALSE),
+      use_shapley_weights = ifelse(!is.null(internal$parameters$use_shapley_weights),
+                                   internal$parameters$use_shapley_weights,
+                                   FALSE),
       return_as_dt = TRUE
     )
-    output$MSEv_eval_crit <- MSEv_eval_crit
   }
 
   return(output)
@@ -181,6 +184,8 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' the used method. If `TRUE`, we exclude the empty and grand coalitions.
 #' @param return_as_dt Boolean. If the computed MSEv evaluation criterion is
 #' to be returned as \code{\link[data.table]{data.table}}.
+#' @param use_shapley_weights Boolean. If `TRUE`, then we use the Shapley kernel weights to weight the
+#' different coalitions before taking the mean. If `FALSE`, we use regular mean with uniform weights.
 #'
 #' @return
 #' List containing:
@@ -287,46 +292,80 @@ compute_MSEv_eval_crit <- function(internal,
                                    processed_vS_list,
                                    p = shapr:::get_p(processed_vS_list$dt_vS, internal),
                                    exclude_empty_grand_coalitions = TRUE,
+                                   use_shapley_weights = FALSE,
                                    return_as_dt = TRUE) {
-  # Get the number of unique coalitions, where two of them are the empty and full set.
-  # This is 2^M if internal$parameters$exact is TRUE or some value below 2^M if sampled version.
-  n_combinations <- internal$parameters$n_combinations
 
   # Get the number of observations to explain
   n_explain <- internal$parameters$n_explain
 
-  # Get the imputed samples
-  dt_vS <- processed_vS_list$dt_vS
+  # Get the number of unique coalitions, where two of them are the empty and full set.
+  # This is 2^M if internal$parameters$exact is TRUE or some value below 2^M if sampled version.
+  n_combinations <- internal$parameters$n_combinations
 
-  # Check if we are to remove the empty and grand coalitions, which are
-  # identical for all methods and thus is not effected by the used method.
-  if (exclude_empty_grand_coalitions) {
-    dt_vS <- dt_vS[-c(1, n_combinations), ]
-  }
+  # Get the relevant combinations, i.e., if we are to remove the empty and grand coalitions,
+  # which are identical for all methods and thus is not effected by the used method.
+  id_combination_numbers <- if (exclude_empty_grand_coalitions) seq(2, n_combinations - 1) else seq(1, n_combinations)
 
-  # Square the difference between the estimated contribution function
-  # v(S) = E_{\hat{p}(X_sbar | X_s = x_s)} [f(X_sbar, x_s) | X_s = x_s)]
-  # and the predicted response f(x).
-  dt_squared_diff <- as.matrix(dt_vS[, !"id_combination"][, Map(`-`, p, .SD)]^2)
+  # Get the estimated contribution functions for the different coalitions and explicands
+  vS <- as.matrix(processed_vS_list$dt_vS[id_combination_numbers, -"id_combination"])
 
-  # Compute the mean squared error for each observation, i.e., only averaged over the coalitions.
-  MSEv_eval_crit_explicand <- colMeans(dt_squared_diff)
-  names(MSEv_eval_crit_explicand) <- paste0("id_", seq(n_explain))
+  # Square the difference between the predicted response f(x) and estimated contribution
+  # function v(S) = E_{\hat{p}(X_sbar | X_s = x_s)} [f(X_sbar, x_s) | X_s = x_s)].
+  dt_squared_diff_original <- sweep(vS, 2, p)^2
 
-  # Compute the mean squared error for each coalition, i.e., only averaged over the explicands.
-  MSEv_eval_crit_combination <- rowMeans(dt_squared_diff)
-  MSEv_eval_crit_combination_sd <- apply(dt_squared_diff, 1, sd)
+  # Check if we are doing weighted mean with the Shapley kernel weights as the weights or using uniform weights
+  if (use_shapley_weights) {
+    if (!exclude_empty_grand_coalitions) {
+      warning(paste0("We do not reccomend seting `exclude_empty_grand_coalitions = FALSE` when ",
+                     "`use_shapley_weights = TRUE`, as the weights of the empty and full coalitions ",
+                     "drastically outweights the other coalitions. This causes the MSEv criterion to be ",
+                     "more or less identical for all approaches."))
+    }
 
-  # Set the names
-  if (exclude_empty_grand_coalitions) {
-    id_combination_numbers <- seq(2, n_combinations - 1)
+    # We are using the weighted
+    averaging_weights = internal$objects$X$shapley_weight
+
+    # Extract the relevant weights
+    averaging_weights = averaging_weights[id_combination_numbers]
+
+    # Normalize the weights such that the sum to 1
+    averaging_weights = averaging_weights / sum(averaging_weights)
+
+    # Update `dt_squared_diff` matrix by scaling each column by the `averaging_weights`.
+    # Here, one column represents the v(s) estimates for one explicand.
+    dt_squared_diff = dt_squared_diff_original * averaging_weights
+
+    # Compute the mean squared error for each observation, i.e., only averaged over the coalitions.
+    # We take the sum as the weights sum to 1, so denominator is 1.
+    MSEv_eval_crit_explicand <- colSums(dt_squared_diff)
+
+    # Compute the mean squared error for each coalition, i.e., only averaged over the explicands.
+    # Note that here each row is now scaled with its corresponding Shapley kernel weight.
+    MSEv_eval_crit_combination <- rowMeans(dt_squared_diff)
+    MSEv_eval_crit_combination_sd <- apply(dt_squared_diff, 1, sd)
+
+    # Compute the overall weighted squared error averaged over both the coalitions and explicands.
+    MSEv_eval_crit <- mean(dt_squared_diff)
+
   } else {
-    id_combination_numbers <- seq(1, n_combinations)
-  }
-  names(MSEv_eval_crit_combination) <- paste0("id_combination_", id_combination_numbers)
+    # We are not using weighted mean
+    dt_squared_diff = dt_squared_diff_original
 
-  # Compute the overall mean squared error averaged over both the coalitions and explicands.
-  MSEv_eval_crit <- mean(dt_squared_diff)
+    # Compute the mean squared error for each observation, i.e., only averaged over the coalitions.
+    MSEv_eval_crit_explicand <- colMeans(dt_squared_diff)
+
+    # Compute the mean squared error for each coalition, i.e., only averaged over the explicands.
+    MSEv_eval_crit_combination <- rowMeans(dt_squared_diff)
+    MSEv_eval_crit_combination_sd <- apply(dt_squared_diff, 1, sd)
+
+    # Compute the overall mean squared error averaged over both the coalitions and explicands.
+    MSEv_eval_crit <- mean(dt_squared_diff)
+  }
+
+  # Set the names entires in the array
+  names(MSEv_eval_crit_explicand) <- paste0("id_", seq(n_explain))
+  names(MSEv_eval_crit_combination) <- paste0("id_combination_", id_combination_numbers)
+  names(MSEv_eval_crit_combination_sd) <- paste0("id_combination_", id_combination_numbers)
 
   # If we are to return the results as data.table, then we overwrite the previous results.
   if (return_as_dt) {
