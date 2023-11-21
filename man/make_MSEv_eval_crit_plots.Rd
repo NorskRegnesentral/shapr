@@ -24,7 +24,7 @@ make_MSEv_eval_crit_plots(
   line_width = 0.4,
   point_size = 3,
   point_shape = "circle",
-  add_error_bars_for_coalitions = FALSE,
+  add_error_bars_combination = FALSE,
   flip_coordinates = FALSE,
   reverse_coordinates = flip_coordinates,
   geom_col_width = NULL,
@@ -42,13 +42,13 @@ the approach names (with integer suffix for duplicates) for the explanation obje
 E.g. if you have explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the
 first 5 observations/explicands and the 10th by setting \code{index_x_explain = c(1:5, 10)}.}
 
-\item{index_combinations}{Integer vector. Which of the coalitions (combinations) to plot.
+\item{index_combinations}{Integer vector. Which of the combinations (coalitions) to plot.
 E.g. if you used \code{n_combinations = 16} in \code{\link[=explain]{explain()}}, you can generate a plot for the
-first 5 coalitions and the 10th by setting \code{index_x_explain = c(1:5, 10)}.}
+first 5 combinations and the 10th by setting \code{index_x_explain = c(1:5, 10)}.}
 
 \item{only_overall_MSEv}{Boolean. If \code{TRUE}, then creates only the overall_MSEv plot and skip
-the figures where we illustrate the MSEv evaluation criterion for each explicand and coalition
-by only averaging over the coalitions and explicands, respectively.}
+the figures where we illustrate the MSEv evaluation criterion for each explicand and combination
+by only averaging over the combinations and explicands, respectively.}
 
 \item{plot_overall_MSEv}{Boolean. If \code{TRUE}, then plot the overall_MSEv figure before returning all figures.}
 
@@ -102,10 +102,10 @@ and/or \url{http://sape.inf.usi.ch/quick-reference/ggplot2/linetype}.}
 \item{point_shape}{Integer or string. Specify the shape of the points.
 For a complete list of all possible shapes, see \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}.}
 
-\item{add_error_bars_for_coalitions}{Boolean. If \code{TRUE}, the function adds error bars (± 1sd) to the MSEv
-for the coalitions averaged over the explicands. It does not makes sense to add it for the other
-plots as the scale of the MSEv for the explicands averaged over the coalitions is different for each
-coalition. The mileage of this argument may vary due to potentially overlapping error bars.}
+\item{add_error_bars_combination}{Boolean. If \code{TRUE}, the function adds error bars (± 1sd) to the MSEv
+for the combinations averaged over the explicands. It does not makes sense to add it for the other
+plots as the scale of the MSEv for the explicands averaged over the combinations is different for each
+combination. The mileage of this argument may vary due to potentially overlapping error bars.}
 
 \item{flip_coordinates}{Boolean. Flip Cartesian coordinates so that the methods are on the y-ais..
 This is primarily useful for converting geoms and statistics which display y conditional on x, to x conditional on y.
@@ -134,7 +134,7 @@ List of 5 \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} objects: three bar plo
 Make plots to visualize and compare the MSEv evaluation criterion for a list of
 \code{\link[=explain]{explain()}} objects applied to the same data and model. The function creates
 bar plots and line plots, potentially with points, to illustrate the overall MSEv evaluation
-criterion, but also for each explicand and coalition by only averaging over the coalitions
+criterion, but also for each explicand and combination by only averaging over the combinations
 and explicands, respectively.
 }
 \examples{
@@ -357,7 +357,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   )
   figure
 
-  # In addition to only make the overall MSEv figure, where we average over both the coalitions and
+  # In addition to only make the overall MSEv figure, where we average over both the combinations and
   # explicands, we can also make figures where we only average over one of them.
   figures <- make_MSEv_eval_crit_plots(
     explanation_list = explanation_list_named,
@@ -367,15 +367,15 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   )
   # We see that we make five plots
   # Plots 1-2 and 3-4 illustrates the same, but as line/point plots and as bar plots.
-  # The plots that end with `MSEv_explicand` has only averaged over the coalitions,
-  # while the plots that end with `MSEv_coalition` has only averaged over the explicands.
+  # The plots that end with `MSEv_explicand` has only averaged over the combinations,
+  # while the plots that end with `MSEv_combination` has only averaged over the explicands.
   # Here an explicand refers to the observations in `x_explain` which we want to explain.
   # Finally, `MSEv_bar` is the plot we have looked at above.
   names(figures)
 
-  # Look at the MSEv for each explicand and then coalition
+  # Look at the MSEv for each explicand and then combination
   figures$MSEv_explicand_bar
-  figures$MSEv_combination_bar_plot
+  figures$MSEv_combination_bar
 
   # We can focus on certain explicands by using the `index_explicands` parameter
   make_MSEv_eval_crit_plots(
@@ -387,7 +387,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
     geom_col_width = 0.75
   )$MSEv_explicand_bar
 
-  # Or certain coalitions by using the `index_combinations` parameter
+  # Or certain combinations by using the `index_combinations` parameter
   make_MSEv_eval_crit_plots(
     explanation_list = explanation_list_named,
     plot_overall_MSEv = FALSE,
@@ -395,7 +395,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
     return_figures = TRUE,
     index_combinations = c(1:3, 10, 15),
     geom_col_width = 0.75
-  )$MSEv_combination_bar_plot
+  )$MSEv_combination_bar
 
   # Can also here flip the bars and add other stuff
   make_MSEv_eval_crit_plots(
