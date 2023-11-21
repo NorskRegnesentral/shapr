@@ -63,7 +63,7 @@ refer to the observations whose predictions we are to explain.
 \examples{
 library(xgboost)
 library(data.table)
-seed(1)
+set.seed(1)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -137,4 +137,3 @@ compute_MSEv_eval_crit(
 \author{
 Lars Henry Berge Olsen
 }
-\keyword{internal}

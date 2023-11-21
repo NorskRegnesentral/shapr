@@ -216,7 +216,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' @examples
 #' library(xgboost)
 #' library(data.table)
-#' seed(1)
+#' set.seed(1)
 #'
 #' data("airquality")
 #' data <- data.table::as.data.table(airquality)
@@ -287,7 +287,7 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' )
 #'
 #' @author Lars Henry Berge Olsen
-#' @keywords internal
+#' @export
 compute_MSEv_eval_crit <- function(internal,
                                    processed_vS_list,
                                    p = shapr:::get_p(processed_vS_list$dt_vS, internal),
