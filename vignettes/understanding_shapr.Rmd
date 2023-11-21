@@ -707,10 +707,10 @@ We can then compare the different approaches by creating plots of the $\operator
 
 ```{r}
 # The function will set default names and give a message to the user
-plots_unnamed <- make_MSEv_evaluation_criterion_plots(explanation_list_unnamed)
+plots_unnamed <- make_MSEv_eval_crit_plots(explanation_list_unnamed)
 
 # The function use the provided names
-plots_named <- make_MSEv_evaluation_criterion_plots(explanation_list_named)
+plots_named <- make_MSEv_eval_crit_plots(explanation_list_named)
 
 # See the types of plots produced
 names(plots_named)
@@ -736,7 +736,7 @@ $\operatorname{MSE}_{v}$ evaluation criterion for each coalition and explicand,
 where we have only averaged over the explicands and coalitions, respectively.
 
 ```{r}
-plots_named_v2 <- make_MSEv_evaluation_criterion_plots(
+plots_named_v2 <- make_MSEv_eval_crit_plots(
   explanation_list_named,
   index_combinations = c(1:3, 9, 11),
   index_explicands = c(1, 3:4, 6),
