@@ -707,10 +707,10 @@ We can then compare the different approaches by creating plots of the $\operator
 
 ```{r}
 # The function will set default names and give a message to the user
-plots_unnamed <- make_MSEv_evaluation_criterion_plots(explanation_list_unnamed)
+plots_unnamed <- make_MSEv_eval_crit_plots(explanation_list_unnamed)
 
 # The function use the provided names
-plots_named <- make_MSEv_evaluation_criterion_plots(explanation_list_named)
+plots_named <- make_MSEv_eval_crit_plots(explanation_list_named)
 
 # See the types of plots produced
 names(plots_named)
@@ -721,13 +721,13 @@ we have only averaged over the explicands or the coalitions (both as bar and lin
 
 ```{r}
 # The main plot of the overall MSEv averaged over both the coalitions and explicands
-plots_named$bar_plot_MSEv
+plots_named$MSEv_bar
 
 # The MSEv averaged over only the coalitions
-plots_named$bar_plot_MSEv_for_each_explicand
+plots_named$MSEv_explicand_bar
 
 # The MSEv averaged over only the explicands
-plots_named$bar_plot_MSEv_for_each_coalition
+plots_named$MSEv_combination_bar
 ```
 
 We can also change many parameters to alter the plots, both design-wise but also
@@ -736,7 +736,7 @@ $\operatorname{MSE}_{v}$ evaluation criterion for each coalition and explicand,
 where we have only averaged over the explicands and coalitions, respectively.
 
 ```{r}
-plots_named_v2 <- make_MSEv_evaluation_criterion_plots(
+plots_named_v2 <- make_MSEv_eval_crit_plots(
   explanation_list_named,
   index_combinations = c(1:3, 9, 11),
   index_explicands = c(1, 3:4, 6),
@@ -758,11 +758,11 @@ plots_named_v2 <- make_MSEv_evaluation_criterion_plots(
 )
 
 # Look at some of the individual plots
-plots_named_v2$bar_plot_MSEv_for_each_coalition
-plots_named_v2$line_point_plot_MSEv_for_each_explicand
+plots_named_v2$MSEv_combination_bar
+plots_named_v2$MSEv_explicand_line_point
 
 # Plot created without altering the plotting parameters
-plots_named$line_point_plot_MSEv_for_each_explicand
+plots_named$MSEv_explicand_line_point
 ```
 
 

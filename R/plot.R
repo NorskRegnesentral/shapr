@@ -1099,7 +1099,7 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #'   # Look at the MSEv for each explicand and then combination
 #'   figures$MSEv_explicand_bar
-#'   figures$MSEv_combination_bar_plot
+#'   figures$MSEv_combination_bar
 #'
 #'   # We can focus on certain explicands by using the `index_explicands` parameter
 #'   make_MSEv_eval_crit_plots(
@@ -1119,7 +1119,7 @@ make_waterfall_plot <- function(dt_plot,
 #'     return_figures = TRUE,
 #'     index_combinations = c(1:3, 10, 15),
 #'     geom_col_width = 0.75
-#'   )$MSEv_combination_bar_plot
+#'   )$MSEv_combination_bar
 #'
 #'   # Can also here flip the bars and add other stuff
 #'   make_MSEv_eval_crit_plots(
@@ -1590,7 +1590,7 @@ make_MSEv_eval_crit_plots <- function(explanation_list,
       }
 
     # Use the source object to create a bar plot
-    MSEv_combination_bar_plot <-
+    MSEv_combination_bar <-
       MSEv_combination_source +
       ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge(), ggplot2::aes(fill = Method)) +
       ggplot2::geom_text(
@@ -1645,7 +1645,7 @@ make_MSEv_eval_crit_plots <- function(explanation_list,
         "MSEv_explicand_line_point" = MSEv_explicand_line_point,
         "MSEv_combination_line_point" = MSEv_combination_line_point,
         "MSEv_explicand_bar" = MSEv_explicand_bar,
-        "MSEv_combination_bar_plot" = MSEv_combination_bar_plot
+        "MSEv_combination_bar" = MSEv_combination_bar
       ),
       return_list
     )
