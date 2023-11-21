@@ -865,6 +865,7 @@ make_waterfall_plot <- function(dt_plot,
 #' # Load necessary libraries
 #' library(xgboost)
 #' library(data.table)
+#' library(shapr)
 #'
 #' # Get the data
 #' data("airquality")
