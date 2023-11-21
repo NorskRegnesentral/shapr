@@ -948,7 +948,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   model = model,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
-#'   approach = c("gaussian", "ctree", "empirical", "empirical"),
+#'   approach = c("gaussian", "ctree", "empirical"),
 #'   prediction_zero = prediction_zero,
 #'   n_samples = 1e2
 #' )
