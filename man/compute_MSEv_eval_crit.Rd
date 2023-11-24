@@ -137,4 +137,3 @@ compute_MSEv_eval_crit(
 \author{
 Lars Henry Berge Olsen
 }
-\keyword{internal}

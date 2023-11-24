@@ -141,6 +141,7 @@ and explicands, respectively.
 # Load necessary libraries
 library(xgboost)
 library(data.table)
+library(shapr)
 
 # Get the data
 data("airquality")
@@ -223,7 +224,7 @@ explanation_combined <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  approach = c("gaussian", "ctree", "empirical", "empirical"),
+  approach = c("gaussian", "ctree", "empirical"),
   prediction_zero = prediction_zero,
   n_samples = 1e2
 )
@@ -375,7 +376,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
 
   # Look at the MSEv for each explicand and then combination
   figures$MSEv_explicand_bar
-  figures$MSEv_combination_bar_plot
+  figures$MSEv_combination_bar
 
   # We can focus on certain explicands by using the `index_explicands` parameter
   make_MSEv_eval_crit_plots(
@@ -395,7 +396,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
     return_figures = TRUE,
     index_combinations = c(1:3, 10, 15),
     geom_col_width = 0.75
-  )$MSEv_combination_bar_plot
+  )$MSEv_combination_bar
 
   # Can also here flip the bars and add other stuff
   make_MSEv_eval_crit_plots(

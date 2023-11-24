@@ -721,13 +721,13 @@ we have only averaged over the explicands or the coalitions (both as bar and lin
 
 ```{r}
 # The main plot of the overall MSEv averaged over both the coalitions and explicands
-plots_named$bar_plot_MSEv
+plots_named$MSEv_bar
 
 # The MSEv averaged over only the coalitions
-plots_named$bar_plot_MSEv_for_each_explicand
+plots_named$MSEv_explicand_bar
 
 # The MSEv averaged over only the explicands
-plots_named$bar_plot_MSEv_for_each_coalition
+plots_named$MSEv_combination_bar
 ```
 
 We can also change many parameters to alter the plots, both design-wise but also
@@ -758,11 +758,11 @@ plots_named_v2 <- make_MSEv_eval_crit_plots(
 )
 
 # Look at some of the individual plots
-plots_named_v2$bar_plot_MSEv_for_each_coalition
-plots_named_v2$line_point_plot_MSEv_for_each_explicand
+plots_named_v2$MSEv_combination_bar
+plots_named_v2$MSEv_explicand_line_point
 
 # Plot created without altering the plotting parameters
-plots_named$line_point_plot_MSEv_for_each_explicand
+plots_named$MSEv_explicand_line_point
 ```
 
 

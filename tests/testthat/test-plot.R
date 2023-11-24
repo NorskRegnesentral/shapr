@@ -186,7 +186,7 @@ test_that("MSEv evaluation criterion unnamed plots", {
     fig = suppressMessages(make_MSEv_eval_crit_plots(explanation_list = explanation_list_unnamed,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
-                                               return_figures = TRUE)$bar_plot_MSEv)
+                                               return_figures = TRUE)$MSEv_bar)
   )
 
   vdiffr::expect_doppelganger(
@@ -195,7 +195,7 @@ test_that("MSEv evaluation criterion unnamed plots", {
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
                                                return_figures = TRUE,
-                                               axis_labels_rotate_angl = 90)$bar_plot_MSEv)
+                                               axis_labels_rotate_angl = 90)$MSEv_bar)
   )
 
   vdiffr::expect_doppelganger(
@@ -204,7 +204,7 @@ test_that("MSEv evaluation criterion unnamed plots", {
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
                                                return_figures = TRUE,
-                                               axis_labels_n_dodge = 4)$bar_plot_MSEv)
+                                               axis_labels_n_dodge = 4)$MSEv_bar)
   )
 
 })
@@ -225,7 +225,7 @@ test_that("MSEv evaluation criterion named plots", {
     fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = TRUE,
-                                               return_figures = TRUE)$bar_plot_MSEv
+                                               return_figures = TRUE)$MSEv_bar
   )
 
   vdiffr::expect_doppelganger(
@@ -241,7 +241,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                brewer_palette = "Set1",
                                                ggplot_theme = ggplot2::theme_minimal(),
                                                legend_position = "bottom",
-                                               legend_ncol = 2)$bar_plot_MSEv
+                                               legend_ncol = 2)$MSEv_bar
   )
 
   vdiffr::expect_doppelganger(
@@ -256,7 +256,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                bar_text_n_decimals = 4,
                                                brewer_palette = NULL,
                                                ggplot_theme = ggplot2::theme_minimal(),
-                                               legend_position = "none")$bar_plot_MSEv
+                                               legend_position = "none")$MSEv_bar
   )
 
 
@@ -273,7 +273,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                brewer_palette = NULL,
                                                ggplot_theme = ggplot2::theme_minimal(),
                                                legend_position = "none",
-                                               title_text_size = 0)$bar_plot_MSEv
+                                               title_text_size = 0)$MSEv_bar
   )
 
   vdiffr::expect_doppelganger(
@@ -282,7 +282,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE,
-                                               geom_col_width = 0.75)$bar_plot_MSEv_for_each_explicand
+                                               geom_col_width = 0.75)$MSEv_explicand_bar
   )
 
   vdiffr::expect_doppelganger(
@@ -292,7 +292,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE,
                                                index_explicands = c(1, 3),
-                                               geom_col_width = 0.75)$bar_plot_MSEv_for_each_explicand
+                                               geom_col_width = 0.75)$MSEv_explicand_bar
   )
 
   vdiffr::expect_doppelganger(
@@ -301,7 +301,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
                                                return_figures = TRUE,
-                                               geom_col_width = 0.75)$bar_plot_MSEv_for_each_coalition
+                                               geom_col_width = 0.75)$MSEv_combination_bar
   )
 
   vdiffr::expect_doppelganger(
@@ -311,7 +311,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                 only_overall_MSEv = FALSE,
                                                 return_figures = TRUE,
                                                 index_combinations = c(1:2, 10, 15),
-                                                geom_col_width = 0.75)$bar_plot_MSEv_for_each_coalition
+                                                geom_col_width = 0.75)$MSEv_combination_bar
   )
 
   vdiffr::expect_doppelganger(
@@ -325,7 +325,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                bar_text_size = 4,
                                                brewer_palette = "Blues",
                                                ggplot_theme = ggplot2::theme_minimal(),
-                                               geom_col_width = 0.75)$bar_plot_MSEv_for_each_coalition
+                                               geom_col_width = 0.75)$MSEv_combination_bar
   )
 
   vdiffr::expect_doppelganger(
@@ -333,7 +333,7 @@ test_that("MSEv evaluation criterion named plots", {
     fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
-                                               return_figures = TRUE)$line_point_plot_MSEv_for_each_explicand
+                                               return_figures = TRUE)$MSEv_explicand_line_point
   )
 
   vdiffr::expect_doppelganger(
@@ -341,7 +341,7 @@ test_that("MSEv evaluation criterion named plots", {
     fig = make_MSEv_eval_crit_plots(explanation_list = explanation_list_named,
                                                plot_overall_MSEv = FALSE,
                                                only_overall_MSEv = FALSE,
-                                               return_figures = TRUE)$line_point_plot_MSEv_for_each_coalition
+                                               return_figures = TRUE)$MSEv_combination_line_point
   )
 
   vdiffr::expect_doppelganger(
@@ -353,7 +353,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                title_text_size = 0,
                                                line_type = "blank",
                                                point_size = 4,
-                                               point_shape = "square")$line_point_plot_MSEv_for_each_explicand
+                                               point_shape = "square")$MSEv_explicand_line_point
   )
 
   vdiffr::expect_doppelganger(
@@ -364,7 +364,7 @@ test_that("MSEv evaluation criterion named plots", {
                                                return_figures = TRUE,
                                                point_size = 0,
                                                line_width = 1,
-                                               line_type = "solid")$line_point_plot_MSEv_for_each_explicand
+                                               line_type = "solid")$MSEv_explicand_line_point
   )
 
   vdiffr::expect_doppelganger(
@@ -380,6 +380,6 @@ test_that("MSEv evaluation criterion named plots", {
                                                brewer_palette = "Accent",
                                                brewer_direction = -1,
                                                ggplot_theme = ggplot2::theme_minimal(),
-                                               line_type = "solid")$line_point_plot_MSEv_for_each_coalition
+                                               line_type = "solid")$MSEv_combination_line_point
   )
 })
