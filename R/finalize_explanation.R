@@ -8,6 +8,8 @@
 #' @export
 finalize_explanation <- function(vS_list, internal) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+  MSEv_skip_empty_full_comb = internal$parameters$MSEv_skip_empty_full_comb
+  MSEv_uniform_comb_weights = internal$parameters$MSEv_uniform_comb_weights
 
   processed_vS_list <- postprocess_vS_list(
     vS_list = vS_list,
@@ -39,18 +41,11 @@ finalize_explanation <- function(vS_list, internal) {
   # Compute the MSEv evaluation criterion if the output of the predictive model is a scalar.
   # TODO: check if it makes sense for output_size > 1.
   if (internal$parameters$output_size == 1) {
-    output$MSEv_eval_crit <- compute_MSEv_eval_crit(
+    output$MSEv <- compute_MSEv_eval_crit(
       internal = internal,
-      processed_vS_list = processed_vS_list,
-      p = p,
-      exclude_empty_grand_coalitions = ifelse(!is.null(internal$parameters$exclude_empty_grand_coalitions),
-                                              internal$parameters$exclude_empty_grand_coalitions,
-                                              FALSE),
-      use_shapley_weights = ifelse(!is.null(internal$parameters$use_shapley_weights),
-                                   internal$parameters$use_shapley_weights,
-                                   FALSE),
-      return_as_dt = TRUE
-    )
+      dt_vS = processed_vS_list$dt_vS,
+      MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
+      MSEv_uniform_comb_weights = MSEv_uniform_comb_weights)
   }
 
   return(output)
@@ -173,31 +168,22 @@ compute_shapley_new <- function(internal, dt_vS) {
 
 #' Mean Squared Error of the Contribution Function `v(S)`
 #'
-#' @param internal List with the different parameters, data and functions used internally in the [explain()] function.
-#' @param processed_vS_list List of the processed contribution function estimates.
-#' Output from the \code{shapr:::postprocess_vS_list()} function.
-#' @param p Numeric vector with the predicted responses for the observations which are to be explained.
-#' Output from the \code{shapr:::get_p()} function.
-#' @param exclude_empty_grand_coalitions Boolean. If `TRUE`, we exclude the empty and grand coalitions
-#' when computing the MSEv evaluation criterion. This is reasonable as they are identical for all methods, i.e.,
-#' their contribution function is independent of the used method as they are special cases not effected by
-#' the used method. If `TRUE`, we exclude the empty and grand coalitions.
-#' @param return_as_dt Boolean. If the computed MSEv evaluation criterion is
-#' to be returned as \code{\link[data.table]{data.table}}.
-#' @param use_shapley_weights Boolean. If `TRUE`, then we use the Shapley kernel weights to weight the
-#' different coalitions before taking the mean. If `FALSE`, we use regular mean with uniform weights.
+#' @inheritParams explain
+#' @inheritParams default_doc
+#' @param dt_vS Data.table of dimension `n_combinations` times `n_explain + 1` containing the contribution function
+#' estimates. The first column is assumed to be named `id_combination` and containing the ids of the combinations.
+#' The last row is assumed to be the full combination, i.e., it contains the predicted responses for the observations
+#' which are to be explained.
 #'
 #' @return
 #' List containing:
 #' \describe{
-#'  \item{`MSEv_eval_crit`}{Numeric scalar (or \code{\link[data.table]{data.table}} based on parameter
-#'  `return_as_dt`) with the overall MSEv evaluation criterion averaged over both the coalitions and observations.}
-#'  \item{`MSEv_eval_crit_explicand`}{Numeric vector (or \code{\link[data.table]{data.table}}
-#'  based on parameter `return_as_dt`) with the mean squared error for each explicand,
-#'  i.e., only averaged over the coalitions.}
-#'  \item{`MSEv_eval_crit_combination`}{Numeric vector (or \code{\link[data.table]{data.table}}
-#'  based on parameter `return_as_dt`) with the mean squared error for each coalition,
-#'  i.e., only averaged over the observations.}
+#'  \item{`MSEv`}{A \code{\link[data.table]{data.table}} with the overall MSEv evaluation criterion averaged
+#'  over both the combinations/coalitions and observations/explicands.}
+#'  \item{`MSEv_explicand`}{A \code{\link[data.table]{data.table}} with the mean squared error for each
+#'  explicand, i.e., only averaged over the combinations/coalitions.}
+#'  \item{`MSEv_combination`}{A \code{\link[data.table]{data.table}} with the mean squared error for each
+#'  coalition, i.e., only averaged over the explicands.}
 #' }
 #'
 #' @description Function that computes the Mean Squared Error (MSEv) of the contribution function
@@ -213,193 +199,75 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' MAE between the estimated and true Shapley values in a simulation study. Note that explicands
 #' refer to the observations whose predictions we are to explain.
 #'
-#' @examples
-#' library(xgboost)
-#' library(data.table)
-#' set.seed(1)
-#'
-#' data("airquality")
-#' data <- data.table::as.data.table(airquality)
-#' data <- data[complete.cases(data), ]
-#'
-#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
-#' y_var <- "Ozone"
-#'
-#' ind_x_explain <- 1:6
-#' x_train <- data[-ind_x_explain, ..x_var]
-#' y_train <- data[-ind_x_explain, get(y_var)]
-#' x_explain <- data[ind_x_explain, ..x_var]
-#'
-#' # Fitting a basic xgboost model to the training data
-#' model <- xgboost::xgboost(
-#'   data = as.matrix(x_train),
-#'   label = y_train,
-#'   nround = 20,
-#'   verbose = FALSE
-#' )
-#'
-#' # Specifying the phi_0, i.e. the expected prediction without any features
-#' p0 <- mean(y_train)
-#'
-#' # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-#' # the gaussian (conditional) approach
-#' explanation <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "gaussian",
-#'   prediction_zero = p0,
-#'   seed = 1
-#' )
-#'
-#' # The `compute_MSEv_eval_crit` function is intended to be only called internally in
-#' # the `shapr` package, but the user can still use it outside of the package.
-#' # Exclude the empty and grand coalitions from the computations and return the result as a data.table
-#' compute_MSEv_eval_crit(
-#'   internal = explanation$internal,
-#'   processed_vS_list = explanation$internal$output,
-#'   exclude_empty_grand_coalitions = TRUE,
-#'   return_as_dt = TRUE
-#' )
-#'
-#' # Include the empty and grand coalitions from the computations and return the result as a data.table
-#' compute_MSEv_eval_crit(
-#'   internal = explanation$internal,
-#'   processed_vS_list = explanation$internal$output,
-#'   exclude_empty_grand_coalitions = FALSE,
-#'   return_as_dt = TRUE
-#' )
-#'
-#' # Exclude the empty and grand coalitions from the computations and return the result as a list
-#' compute_MSEv_eval_crit(
-#'   internal = explanation$internal,
-#'   processed_vS_list = explanation$internal$output,
-#'   exclude_empty_grand_coalitions = TRUE,
-#'   return_as_dt = FALSE
-#' )
-#'
-#' # Include the empty and grand coalitions from the computations and return the result as a list
-#' compute_MSEv_eval_crit(
-#'   internal = explanation$internal,
-#'   processed_vS_list = explanation$internal$output,
-#'   exclude_empty_grand_coalitions = FALSE,
-#'   return_as_dt = FALSE
-#' )
-#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
-#' @export
 compute_MSEv_eval_crit <- function(internal,
-                                   processed_vS_list,
-                                   p = shapr:::get_p(processed_vS_list$dt_vS, internal),
-                                   exclude_empty_grand_coalitions = TRUE,
-                                   use_shapley_weights = FALSE,
-                                   return_as_dt = TRUE) {
+                                   dt_vS,
+                                   MSEv_skip_empty_full_comb,
+                                   MSEv_uniform_comb_weights) {
 
-  # Get the number of observations to explain
   n_explain <- internal$parameters$n_explain
-
-  # Get the number of unique coalitions, where two of them are the empty and full set.
-  # This is 2^M if internal$parameters$exact is TRUE or some value below 2^M if sampled version.
   n_combinations <- internal$parameters$n_combinations
+  id_combination_indices <- if (MSEv_skip_empty_full_comb) seq(2, n_combinations - 1) else seq(1, n_combinations)
+  features <- internal$objects$X$features[id_combination_indices]
 
-  # Get the relevant combinations, i.e., if we are to remove the empty and grand coalitions,
-  # which are identical for all methods and thus is not effected by the used method.
-  id_combination_numbers <- if (exclude_empty_grand_coalitions) seq(2, n_combinations - 1) else seq(1, n_combinations)
+  # Get the predicted responses f(x)
+  p = unlist(dt_vS[id_combination == n_combinations, -"id_combination"])
 
-  # Get the estimated contribution functions for the different coalitions and explicands
-  vS <- as.matrix(processed_vS_list$dt_vS[id_combination_numbers, -"id_combination"])
+  # Create contribution matrix
+  vS <- as.matrix(dt_vS[id_combination_indices, -"id_combination"])
 
-  # Square the difference between the predicted response f(x) and estimated contribution
-  # function v(S) = E_{\hat{p}(X_sbar | X_s = x_s)} [f(X_sbar, x_s) | X_s = x_s)].
+  # Square the difference between the v(S) and f(x)
   dt_squared_diff_original <- sweep(vS, 2, p)^2
 
-  # Check if we are doing weighted mean with the Shapley kernel weights as the weights or using uniform weights
-  if (use_shapley_weights) {
-    if (!exclude_empty_grand_coalitions) {
-      warning(paste0("We do not reccomend seting `exclude_empty_grand_coalitions = FALSE` when ",
-                     "`use_shapley_weights = TRUE`, as the weights of the empty and full coalitions ",
-                     "drastically outweights the other coalitions. This causes the MSEv criterion to be ",
-                     "more or less identical for all approaches."))
-    }
+  # Get the weights
+  averaging_weights <- if (MSEv_uniform_comb_weights) rep(1, n_combinations) else internal$objects$X$shapley_weight
+  averaging_weights <- averaging_weights[id_combination_indices]
+  averaging_weights_scaled <- averaging_weights / sum(averaging_weights)
 
-    # We are using the weighted
-    averaging_weights = internal$objects$X$shapley_weight
+  # Apply the `averaging_weights_scaled` to each column (i.e., each explicand)
+  dt_squared_diff <- dt_squared_diff_original * averaging_weights_scaled
 
-    # Extract the relevant weights
-    averaging_weights = averaging_weights[id_combination_numbers]
+  # Compute the mean squared error for each observation, i.e., only averaged over the coalitions.
+  # We take the sum as the weights sum to 1, so denominator is 1.
+  MSEv_explicand <- colSums(dt_squared_diff)
 
-    # Normalize the weights such that the sum to 1
-    averaging_weights = averaging_weights / sum(averaging_weights)
+  # The MSEv criterion for each coalition, i.e., only averaged over the explicands.
+  MSEv_combination <- rowMeans(dt_squared_diff_original)
+  MSEv_combination_sd <- apply(dt_squared_diff_original, 1, sd)
 
-    # Update `dt_squared_diff` matrix by scaling each column by the `averaging_weights`.
-    # Here, one column represents the v(s) estimates for one explicand.
-    dt_squared_diff = dt_squared_diff_original * averaging_weights
+  # The MSEv criterion averaged over both the coalitions and explicands.
+  MSEv <- mean(MSEv_explicand)
+  MSEv_sd <- sd(MSEv_explicand)
 
-    # Compute the mean squared error for each observation, i.e., only averaged over the coalitions.
-    # We take the sum as the weights sum to 1, so denominator is 1.
-    MSEv_eval_crit_explicand <- colSums(dt_squared_diff)
+  # # Sanity check DELETE THIS
+  # # For uniform weights this should be the same
+  # colSums(dt_squared_diff)
+  # colMeans(dt_squared_diff_original)
+  # # THREE FIRST ARE ALWAYS EQUAL
+  # # WHILE THE LAST TWO SHOUDL ONLY BE EQUAL FOR UNIFORM WEIGHTS
+  # sum(MSEv_combination*averaging_weights_scaled)
+  # mean(MSEv_explicand)
+  # sum(dt_squared_diff)/n_explain
+  # mean(dt_squared_diff_original)
+  # mean(MSEv_combination)
 
-    # Compute the mean squared error for each coalition, i.e., only averaged over the explicands.
-    # Note that here each row is now scaled with its corresponding Shapley kernel weight.
-    MSEv_eval_crit_combination <- rowMeans(dt_squared_diff)
-    MSEv_eval_crit_combination_sd <- apply(dt_squared_diff, 1, sd)
+  # Set the name entries in the arrays
+  names(MSEv_explicand) <- paste0("id_", seq(n_explain))
+  names(MSEv_combination) <- paste0("id_combination_", id_combination_indices)
+  names(MSEv_combination_sd) <- paste0("id_combination_", id_combination_indices)
 
-    # Compute the overall weighted squared error averaged over both the coalitions and explicands.
-    MSEv_eval_crit <- mean(dt_squared_diff)
+  # Convert the results to data.table
+  MSEv <- data.table("MSEv" = MSEv,
+                     "MSEv_sd" = MSEv_sd)
+  MSEv_explicand <- data.table("id" = seq(n_explain),
+                               "MSEv" = MSEv_explicand)
+  MSEv_combination <- data.table("id_combination" = id_combination_indices,
+                                 "features" = features,
+                                 "MSEv" = MSEv_combination,
+                                 "MSEv_sd" = MSEv_combination_sd)
 
-  } else {
-    # We are not using weighted mean
-    dt_squared_diff = dt_squared_diff_original
-
-    # Compute the mean squared error for each observation, i.e., only averaged over the coalitions.
-    MSEv_eval_crit_explicand <- colMeans(dt_squared_diff)
-
-    # Compute the mean squared error for each coalition, i.e., only averaged over the explicands.
-    MSEv_eval_crit_combination <- rowMeans(dt_squared_diff)
-    MSEv_eval_crit_combination_sd <- apply(dt_squared_diff, 1, sd)
-
-    # Compute the overall mean squared error averaged over both the coalitions and explicands.
-    MSEv_eval_crit <- mean(dt_squared_diff)
-  }
-
-  # Set the names entires in the array
-  names(MSEv_eval_crit_explicand) <- paste0("id_", seq(n_explain))
-  names(MSEv_eval_crit_combination) <- paste0("id_combination_", id_combination_numbers)
-  names(MSEv_eval_crit_combination_sd) <- paste0("id_combination_", id_combination_numbers)
-
-  # If we are to return the results as data.table, then we overwrite the previous results.
-  if (return_as_dt) {
-    MSEv_eval_crit <-
-      data.table("MSEv_eval_crit" = MSEv_eval_crit)
-    MSEv_eval_crit_explicand <-
-      data.table(
-        "id" = seq(n_explain),
-        "MSEv_eval_crit" = MSEv_eval_crit_explicand
-      )
-    MSEv_eval_crit_combination <-
-      data.table(
-        "id_combination" = id_combination_numbers,
-        "features" = internal$objects$X$features[id_combination_numbers],
-        "MSEv_eval_crit" = MSEv_eval_crit_combination,
-        "MSEv_eval_crit_sd" = MSEv_eval_crit_combination_sd
-      )
-
-    # Create a list of the data tables to return
-    return_list <- list(
-      MSEv_eval_crit = MSEv_eval_crit,
-      MSEv_eval_crit_explicand = MSEv_eval_crit_explicand,
-      MSEv_eval_crit_combination = MSEv_eval_crit_combination
-    )
-  } else {
-    # Create a list of the numeric vectors to return
-    return_list <- list(
-      MSEv_eval_crit = MSEv_eval_crit,
-      MSEv_eval_crit_explicand = MSEv_eval_crit_explicand,
-      MSEv_eval_crit_combination = MSEv_eval_crit_combination,
-      MSEv_eval_crit_combination_sd = MSEv_eval_crit_combination_sd
-    )
-  }
-
-  # Return the return list
-  return(return_list)
+  return(list(MSEv = MSEv,
+              MSEv_explicand = MSEv_explicand,
+              MSEv_combination = MSEv_combination))
 }
