@@ -1213,7 +1213,8 @@ make_MSEv_bar_plot = function(MSEv_dt,
 
   MSEv_bar <-
     ggplot2::ggplot(MSEv_dt, ggplot2::aes(x = Method, y = MSEv, fill = Method)) +
-    ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width)) +
+    ggplot2::geom_col(width = geom_col_width,
+                      position = ggplot2::position_dodge(geom_col_width)) +
     ggplot2::labs(x = "Method",
                   y = bquote(MSE[v]),
                   title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
@@ -1245,8 +1246,9 @@ make_MSEv_explicand_plots <- function(MSEv_explicand_dt,
 
   MSEv_explicand_bar <-
     MSEv_explicand_source +
-    ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width), ggplot2::aes(fill = Method))
-  MSEv_explicand_bar
+    ggplot2::geom_col(width = geom_col_width,
+                      position = ggplot2::position_dodge(geom_col_width),
+                      ggplot2::aes(fill = Method))
 
   MSEv_explicand_line_point <-
     MSEv_explicand_source +
@@ -1274,7 +1276,9 @@ make_MSEv_combination_plots = function(MSEv_combination_dt,
 
   MSEv_combination_bar <-
     MSEv_combination_source +
-    ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width), ggplot2::aes(fill = Method))
+    ggplot2::geom_col(width = geom_col_width,
+                      position = ggplot2::position_dodge(geom_col_width),
+                      ggplot2::aes(fill = Method))
 
   if (!is.null(N_sd_error_bars) && N_sd_error_bars > 0) {
     MSEv_combination_bar <-
