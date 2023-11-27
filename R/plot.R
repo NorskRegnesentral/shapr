@@ -949,9 +949,9 @@ make_waterfall_plot <- function(dt_plot,
 #'   MSEv_figure + ggplot2::theme(plot.title = ggplot2::element_text(size = 10))
 #'   MSEv_figure + ggplot2::labs(title = NULL)
 #'
-#'   # Change the theame and color scheme
+#'   # Change the theme and color scheme
 #'   MSEv_figure + ggplot2::theme_minimal() +
-#'     ggplot2::scale_fill_brewer(palette = "Set1")
+#'     ggplot2::scale_fill_brewer(palette = "Paired")
 #'
 #'   # Can add the height of the bars as text. Remove the error bars.
 #'   bar_text_n_decimals = 1
@@ -1032,7 +1032,7 @@ make_MSEv_eval_crit_plots <- function(explanation_list,
   # Name the elements in the explanation_list if no names have been provided
   if (is.null(names(explanation_list))) explanation_list = MSEv_name_explanation_list(explanation_list)
 
-  # Check for valid explanation_list
+  # Check that the explanation objects explain the same observations
   MSEv_check_explanation_list(explanation_list)
 
   # Get the number of observations and combinations
@@ -1047,90 +1047,48 @@ make_MSEv_eval_crit_plots <- function(explanation_list,
   MSEv_explicand_dt = MSEv_dt_list$MSEv_explicand
   MSEv_combination_dt = MSEv_dt_list$MSEv_combination
 
+  # Warnings related to the error bars
+  if (!is.null(N_sd_error_bars) && N_sd_error_bars > 0) {
+    if (n_explain < 30) {
+      message(sprintf("The error bars might be wide as the number of observations to explain is only %d.\n",
+                     n_explain))
+    }
+
+    methods_with_large_sd = MSEv_dt[MSEv_sd > MSEv, Method]
+    if (length(methods_with_large_sd) > 0) {
+      message(paste0("The method/methods '", paste(methods_with_large_sd, collapse = "', '"), "' has/have standard ",
+                     "deviation larger than the mean.\nCheck the `MSEv_explicand` plots for potential outliers.\n"))
+
+    }
+  }
+
   # Plot ------------------------------------------------------------------------------------------------------------
   # MSEv averaged over both the combinations and observations
-  MSEv_bar <-
-    ggplot2::ggplot(MSEv_dt, ggplot2::aes(x = Method, y = MSEv, fill = Method)) +
-    ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width)) +
-    ggplot2::labs(x = "Method",
-                  y = bquote(MSE[v]),
-                  title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
-                                   " combinations and " * .(n_explain) * " observations")) +
-    ggplot2::scale_fill_brewer(palette = "Paired")
-
-  if (N_sd_error_bars > 0) {
-    MSEv_bar <- MSEv_bar +
-      ggplot2::geom_errorbar(position = ggplot2::position_dodge(geom_col_width),
-                             width = 0.25,
-                             ggplot2::aes(ymin = MSEv - N_sd_error_bars*MSEv_sd,
-                                          ymax = MSEv + N_sd_error_bars*MSEv_sd,
-                                          group = Method))
-  }
+  MSEv_bar <- make_MSEv_bar_plot(MSEv_dt = MSEv_dt,
+                                 n_combinations = n_combinations,
+                                 n_explain = n_explain,
+                                 geom_col_width = geom_col_width,
+                                 N_sd_error_bars = N_sd_error_bars)
 
   if (make_MSEv_comb_and_explicand) {
     # MSEv averaged over only the combinations for each observation
-    MSEv_explicand_source <-
-      ggplot2::ggplot(MSEv_explicand_dt, ggplot2::aes(x = id, y = MSEv)) +
-      ggplot2::labs(x = "index_x_explain",
-                    y = bquote(MSE[v]),
-                    title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
-                                     " combinations for each observation")) +
-      ggplot2::scale_fill_brewer(palette = "Paired") +
-      ggplot2::scale_color_brewer(palette = "Paired")
-
-    MSEv_explicand_bar <-
-      MSEv_explicand_source +
-      ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width), ggplot2::aes(fill = Method))
-
-    MSEv_explicand_line_point <-
-      MSEv_explicand_source +
-      ggplot2::aes(x = as.numeric(id)) +
-      ggplot2::labs(x = "index_x_explain") +
-      ggplot2::geom_point(ggplot2::aes(col = Method)) +
-      ggplot2::geom_line(ggplot2::aes(group = Method, col = Method))
+    MSEv_explicand_plots <- make_MSEv_explicand_plots(MSEv_explicand_dt = MSEv_explicand_dt,
+                                                      n_combinations = n_combinations,
+                                                      geom_col_width = geom_col_width)
 
     # MSEv averaged over only the observations for each combinations
-    MSEv_combination_source <-
-      ggplot2::ggplot(MSEv_combination_dt, ggplot2::aes(x = id_combination, y = MSEv)) +
-      ggplot2::labs(x = "id_combination",
-                    y = bquote(MSE[v]),
-                    title = bquote(MSE[v] * " criterion averaged over the " * .(n_explain) *
-                                     " observations for each combination")) +
-      ggplot2::scale_fill_brewer(palette = "Paired") +
-      ggplot2::scale_color_brewer(palette = "Paired")
-
-    MSEv_combination_bar <-
-      MSEv_combination_source +
-      ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width), ggplot2::aes(fill = Method))
-
-    if (N_sd_error_bars > 0) {
-      MSEv_combination_bar <-
-        MSEv_combination_bar +
-        ggplot2::geom_errorbar(position = ggplot2::position_dodge(geom_col_width),
-                               width = 0.25,
-                               ggplot2::aes(ymin = MSEv - N_sd_error_bars*MSEv_sd,
-                                            ymax = MSEv + N_sd_error_bars*MSEv_sd,
-                                            group = Method))
-    }
-
-    MSEv_combination_line_point <-
-      MSEv_combination_source +
-      ggplot2::aes(x = as.numeric(id_combination)) +
-      ggplot2::labs(x = "id_combination") +
-      ggplot2::geom_point(ggplot2::aes(col = Method)) +
-      ggplot2::geom_line(ggplot2::aes(group = Method, col = Method))
+    MSEv_combination_plots <- make_MSEv_combination_plots(MSEv_combination_dt = MSEv_combination_dt,
+                                                          n_explain = n_explain,
+                                                          geom_col_width = geom_col_width,
+                                                          N_sd_error_bars = N_sd_error_bars)
   }
 
   # Return ----------------------------------------------------------------------------------------------------------
-  # Create return object based on if user want all the plots or only overall MSEv
+  # Create return object based on if user want all the plots or only the overall MSEv plot
   if (make_MSEv_comb_and_explicand) {
-    return_object <- list(
-      "MSEv_explicand_line_point" = MSEv_explicand_line_point,
-      "MSEv_combination_line_point" = MSEv_combination_line_point,
-      "MSEv_explicand_bar" = MSEv_explicand_bar,
-      "MSEv_combination_bar" = MSEv_combination_bar,
-      "MSEv_bar" = MSEv_bar
-    )
+    return_object <- c(MSEv_explicand_plots,
+                       MSEv_combination_plots,
+                       list(MSEv_bar = MSEv_bar))
   } else {
     return_object = MSEv_bar
   }
@@ -1244,4 +1202,97 @@ MSEv_extract_MSEv_values = function(explanation_list,
   }
 
   return(list(MSEv = MSEv, MSEv_explicand = MSEv_explicand, MSEv_combination = MSEv_combination))
+}
+
+#' @keywords internal
+make_MSEv_bar_plot = function(MSEv_dt,
+                              n_combinations,
+                              n_explain,
+                              geom_col_width = 0.9,
+                              N_sd_error_bars = 1) {
+
+  MSEv_bar <-
+    ggplot2::ggplot(MSEv_dt, ggplot2::aes(x = Method, y = MSEv, fill = Method)) +
+    ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width)) +
+    ggplot2::labs(x = "Method",
+                  y = bquote(MSE[v]),
+                  title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
+                                   " combinations and " * .(n_explain) * " observations"))
+
+  if (!is.null(N_sd_error_bars) && N_sd_error_bars > 0) {
+    MSEv_bar <- MSEv_bar +
+      ggplot2::geom_errorbar(position = ggplot2::position_dodge(geom_col_width),
+                             width = 0.25,
+                             ggplot2::aes(ymin = MSEv - N_sd_error_bars*MSEv_sd,
+                                          ymax = MSEv + N_sd_error_bars*MSEv_sd,
+                                          group = Method))
+  }
+
+  return(MSEv_bar)
+}
+
+#' @keywords internal
+make_MSEv_explicand_plots <- function(MSEv_explicand_dt,
+                                      n_combinations,
+                                      geom_col_width = 0.9) {
+
+  MSEv_explicand_source <-
+    ggplot2::ggplot(MSEv_explicand_dt, ggplot2::aes(x = id, y = MSEv)) +
+    ggplot2::labs(x = "index_x_explain",
+                  y = bquote(MSE[v] * " (explicand)"),
+                  title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
+                                   " combinations for each observation"))
+
+  MSEv_explicand_bar <-
+    MSEv_explicand_source +
+    ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width), ggplot2::aes(fill = Method))
+  MSEv_explicand_bar
+
+  MSEv_explicand_line_point <-
+    MSEv_explicand_source +
+    ggplot2::aes(x = as.numeric(id)) +
+    ggplot2::labs(x = "index_x_explain") +
+    ggplot2::geom_point(ggplot2::aes(col = Method)) +
+    ggplot2::geom_line(ggplot2::aes(group = Method, col = Method))
+
+  return(list(MSEv_explicand_bar = MSEv_explicand_bar,
+              MSEv_explicand_line_point = MSEv_explicand_line_point))
+}
+
+#' @keywords internal
+make_MSEv_combination_plots = function(MSEv_combination_dt,
+                                       n_explain,
+                                       geom_col_width = 0.9,
+                                       N_sd_error_bars = 1) {
+
+  MSEv_combination_source <-
+    ggplot2::ggplot(MSEv_combination_dt, ggplot2::aes(x = id_combination, y = MSEv)) +
+    ggplot2::labs(x = "id_combination",
+                  y = bquote(MSE[v] * " (combination)"),
+                  title = bquote(MSE[v] * " criterion averaged over the " * .(n_explain) *
+                                   " observations for each combination"))
+
+  MSEv_combination_bar <-
+    MSEv_combination_source +
+    ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width), ggplot2::aes(fill = Method))
+
+  if (!is.null(N_sd_error_bars) && N_sd_error_bars > 0) {
+    MSEv_combination_bar <-
+      MSEv_combination_bar +
+      ggplot2::geom_errorbar(position = ggplot2::position_dodge(geom_col_width),
+                             width = 0.25,
+                             ggplot2::aes(ymin = MSEv - N_sd_error_bars*MSEv_sd,
+                                          ymax = MSEv + N_sd_error_bars*MSEv_sd,
+                                          group = Method))
+  }
+
+  MSEv_combination_line_point <-
+    MSEv_combination_source +
+    ggplot2::aes(x = as.numeric(id_combination)) +
+    ggplot2::labs(x = "id_combination") +
+    ggplot2::geom_point(ggplot2::aes(col = Method)) +
+    ggplot2::geom_line(ggplot2::aes(group = Method, col = Method))
+
+  return(list(MSEv_combination_bar = MSEv_combination_bar,
+              MSEv_combination_line_point = MSEv_combination_line_point))
 }
