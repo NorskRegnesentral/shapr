@@ -1,6 +1,6 @@
 ---
 title: "`shapr`: Explaining individual machine learning predictions with Shapley values"
-author: "Camilla Lingjærde, Martin Jullum & Nikolai Sellereite"
+author: "Camilla Lingjærde, Martin Jullum, Lars Henry Berge Olsen & Nikolai Sellereite"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 vignette: >
