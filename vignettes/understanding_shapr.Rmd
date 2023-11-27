@@ -562,15 +562,6 @@ explanation_timeseries <- explain(
 
 
 ## MSEv evaluation criterion
-
-NOTE: Discuss with Martin if this function should part of the general `plot.shapr` function and
-that we should get plots of the MSEv evaluation criterion by setting `plot_type = "MSEv"`.
-I like that idea for the sake of consistency, however, then the `plot.shapr` function has to be
-rewritten a bit as I allow for list of explanations objects and do not need to do all the stuff
-as that function does related to Shapley values, since I am only doing contribution function stuff.
-Also. It does not seem that the vignette manages to include mathcal. Can also see that in the 
-vignette which is online on cran at the moment: "https://cran.r-project.org/web/packages/shapr/vignettes/understanding_shapr.html".
-
 We can use the $\operatorname{MSE}_{v}$ criterion proposed by @frye2020shapley,
 and later used by, e.g., @olsen2022using and @olsen2023comparative, to evaluate
 and rank the approaches/methods. The $\operatorname{MSE}_{v}$ is given by
@@ -606,6 +597,15 @@ term is a fixed (unknown) constant not influenced by the approach \texttt{q}. Th
 of $\operatorname{MSE}_{v}$ indicates that the estimated contribution function $\hat{v}_{\texttt{q}}$
 is closer to the true counterpart $v_{\texttt{true}}$ than a high value.
 
+We allow for some alterations when computing the $\operatorname{MSE}_{v}$ evaluation criterion.
+We can exclude the empty ($\mathcal{S} = \emptyset$) and full ($\mathcal{S} = \mathcal{M}$) coalitions from the 
+computations by setting `MSEv_skip_empty_full_comb = TRUE`. This does not influence the ranking of the methods
+as the methods are not used to compute the contribution function for the empty and full coalitions.
+Furthermore, when `MSEv_uniform_comb_weights = TRUE`, we weight the combinations/coalitions uniformly. 
+This is done above in the $\operatorname{MSE}_{v}$ equation when we divide by $N_\mathcal{S}$. However,
+if `MSEv_uniform_comb_weights = FALSE`, then we weight the combinations using the corresponding Shapley kernel
+weights (or the sampling frequencies when sampling of combinations is used). 
+The default is to include the empty and full combinations and to weight all combinations uniformly.
 
 ### Advantage:
 An advantage of the $\operatorname{MSE}_{v}$ criterion is that $v_\texttt{true}$ is not involved.
@@ -628,6 +628,10 @@ obtain a low $\operatorname{MAE}$ score, and vice versa.
 
 Start by explaining the predictions by using different methods and combining them into lists.
 ```{r}
+# These are the default values in `explain()`
+MSEv_skip_empty_full_comb = FALSE
+MSEv_uniform_comb_weights = TRUE
+
 # Independence approach
 explanation_independence <- explain(
   model = model,
@@ -636,7 +640,9 @@ explanation_independence <- explain(
   approach = "independence",
   prediction_zero = p0,
   n_samples = 1e2,
-  n_batches = 5
+  n_batches = 5,
+  MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
+  MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
 )
 
 # Empirical approach
@@ -647,7 +653,9 @@ explanation_empirical <- explain(
   approach = "empirical",
   prediction_zero = p0,
   n_samples = 1e2,
-  n_batches = 5
+  n_batches = 5,
+  MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
+  MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
 )
 
 # Gaussian 1e1 approach
@@ -658,7 +666,9 @@ explanation_gaussian_1e1 <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   n_samples = 1e1,
-  n_batches = 5
+  n_batches = 5,
+  MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
+  MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
 )
 
 # Gaussian 1e2 approach
@@ -669,7 +679,9 @@ explanation_gaussian_1e2 <- explain(
   approach = "gaussian",
   prediction_zero = p0,
   n_samples = 1e2,
-  n_batches = 5
+  n_batches = 5,
+  MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
+  MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
 )
 
 # Combined approach
@@ -677,19 +689,12 @@ explanation_combined <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  approach = c("gaussian", "ctree", "empirical"),
+  approach = c("gaussian", "empirical", "independence"),
   prediction_zero = p0,
   n_samples = 1e2,
-  n_batches = 5
-)
-
-# Create a list of explanations without names
-explanation_list_unnamed <- list(
-  explanation_independence,
-  explanation_empirical,
-  explanation_gaussian_1e1,
-  explanation_gaussian_1e2,
-  explanation_combined
+  n_batches = 5,
+  MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
+  MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
 )
 
 # Create a list of explanations with names
@@ -706,63 +711,65 @@ explanation_list_named <- list(
 We can then compare the different approaches by creating plots of the $\operatorname{MSE}_{v}$ evaluation criterion.
 
 ```{r}
-# The function will set default names and give a message to the user
-plots_unnamed <- make_MSEv_eval_crit_plots(explanation_list_unnamed)
+# Create the MSEv plots
+MSEv_plots <- make_MSEv_eval_crit_plots(explanation_list_named,
+                                        make_MSEv_comb_and_explicand = TRUE,
+                                        N_sd_error_bars = 0)
 
-# The function use the provided names
-plots_named <- make_MSEv_eval_crit_plots(explanation_list_named)
-
-# See the types of plots produced
-names(plots_named)
+# 5 plots are made
+names(MSEv_plots)
 ```
-The main plot if interest is the `bar_plot_MSEv`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for
-each method averaged over both the coalitions and explicands. However, we can also look at the other plots where
-we have only averaged over the explicands or the coalitions (both as bar and line plots).
+The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
+we have only averaged over the observations or the combinations (both as bar and line plots).
 
 ```{r}
-# The main plot of the overall MSEv averaged over both the coalitions and explicands
-plots_named$MSEv_bar
+# The main plot of the overall MSEv averaged over both the combinations and observations
+MSEv_plots$MSEv_bar
 
-# The MSEv averaged over only the coalitions
-plots_named$MSEv_explicand_bar
+# The MSEv averaged over only the combinations for each observation/explicand
+MSEv_plots$MSEv_explicand_bar
 
-# The MSEv averaged over only the explicands
-plots_named$MSEv_combination_bar
+# The MSEv averaged over only the explicands for each combinations
+MSEv_plots$MSEv_combination_bar
+
+# To see which coalition S each of the `id_combination` corresponds to,
+# i.e., which features that are conditions on.
+explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination",  "features")]
 ```
 
 We can also change many parameters to alter the plots, both design-wise but also
-to only plot certain coalitions and/or explicands. We can also look at the the
-$\operatorname{MSE}_{v}$ evaluation criterion for each coalition and explicand,
-where we have only averaged over the explicands and coalitions, respectively.
+to only plot certain combinations and/or test observations.
+See the documentation of the `make_MSEv_eval_crit_plots()` function for several examples.
 
+```{r, echo=FALSE, message=FALSE, results='hide'}
+bar_text_n_decimals <- 1
+MSEv_plot <- make_MSEv_eval_crit_plots(explanation_list_named, N_sd_error_bars = 1)
+MSEv_plot +
+  ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plot$data$Method))) +
+  ggplot2::coord_flip() +
+  ggplot2::scale_fill_brewer(palette = "Paired") + 
+  ggplot2::theme_minimal() + # This must be set before other theme calls
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 10),
+                 legend.position = "bottom") +
+  ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
+  ggplot2::geom_text(ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+                                                  round(MSEv, bar_text_n_decimals))),
+                     vjust = -0.35, # This number might need altering for diffent plots sizes
+                     hjust = 1.15, # This number might need altering for diffent plots sizes
+                     color = "black",
+                     position = ggplot2::position_dodge(0.9),
+                     size = 5)
+```
 ```{r}
-plots_named_v2 <- make_MSEv_eval_crit_plots(
-  explanation_list_named,
-  index_combinations = c(1:3, 9, 11),
-  index_explicands = c(1, 3:4, 6),
-  ggplot_theme = ggplot2::theme_minimal(),
-  brewer_palette = NULL,
-  brewer_direction = -1,
-  title_text_size = 14,
-  bar_text_color = "black",
-  bar_text_size = 3,
-  bar_text_n_decimals = 0,
-  point_size = 5,
-  point_shape = "square",
-  line_type = "dashed",
-  line_width = 1,
-  add_error_bars = FALSE,
-  axis_labels_n_dodge = 2,
-  flip_coordinates = TRUE,
-  legend_position = "bottom"
-)
-
-# Look at some of the individual plots
-plots_named_v2$MSEv_combination_bar
-plots_named_v2$MSEv_explicand_line_point
-
-# Plot created without altering the plotting parameters
-plots_named$MSEv_explicand_line_point
+# We can specify which test observations or combinations to plot
+make_MSEv_eval_crit_plots(explanation_list_named,
+                          make_MSEv_comb_and_explicand = TRUE,
+                          index_x_explain = c(1, 3:4, 6),
+                          N_sd_error_bars = 0)$MSEv_explicand_bar
+make_MSEv_eval_crit_plots(explanation_list_named,
+                          make_MSEv_comb_and_explicand = TRUE,
+                          id_combination = c(3, 4, 9, 13:15),
+                          N_sd_error_bars = 0)$MSEv_combination_bar
 ```
 
 
