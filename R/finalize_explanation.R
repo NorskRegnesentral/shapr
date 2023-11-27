@@ -209,9 +209,10 @@ compute_MSEv_eval_crit <- function(internal,
   n_explain <- internal$parameters$n_explain
   n_combinations <- internal$parameters$n_combinations
   id_combination_indices <- if (MSEv_skip_empty_full_comb) seq(2, n_combinations - 1) else seq(1, n_combinations)
+  n_combinations_used <- length(id_combination_indices)
   features <- internal$objects$X$features[id_combination_indices]
 
-  # Get the predicted responses f(x)
+  # Extract the predicted responses f(x)
   p = unlist(dt_vS[id_combination == n_combinations, -"id_combination"])
 
   # Create contribution matrix
@@ -233,24 +234,12 @@ compute_MSEv_eval_crit <- function(internal,
   MSEv_explicand <- colSums(dt_squared_diff)
 
   # The MSEv criterion for each coalition, i.e., only averaged over the explicands.
-  MSEv_combination <- rowMeans(dt_squared_diff_original)
-  MSEv_combination_sd <- apply(dt_squared_diff_original, 1, sd)
+  MSEv_combination <- rowMeans(dt_squared_diff * n_combinations_used)
+  MSEv_combination_sd <- apply(dt_squared_diff * n_combinations_used, 1, sd)
 
   # The MSEv criterion averaged over both the coalitions and explicands.
   MSEv <- mean(MSEv_explicand)
   MSEv_sd <- sd(MSEv_explicand)
-
-  # # Sanity check DELETE THIS
-  # # For uniform weights this should be the same
-  # colSums(dt_squared_diff)
-  # colMeans(dt_squared_diff_original)
-  # # THREE FIRST ARE ALWAYS EQUAL
-  # # WHILE THE LAST TWO SHOUDL ONLY BE EQUAL FOR UNIFORM WEIGHTS
-  # sum(MSEv_combination*averaging_weights_scaled)
-  # mean(MSEv_explicand)
-  # sum(dt_squared_diff)/n_explain
-  # mean(dt_squared_diff_original)
-  # mean(MSEv_combination)
 
   # Set the name entries in the arrays
   names(MSEv_explicand) <- paste0("id_", seq(n_explain))
