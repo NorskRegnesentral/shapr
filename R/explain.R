@@ -82,17 +82,10 @@
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
-#' @param MSEv_skip_empty_full_comb Logical. If `TRUE`, we exclude the empty and grand
-#' combinations/coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
-#' for all methods, i.e., their contribution function is independent of the used method as they are special cases not
-#' effected by the used method. If `FALSE` (default), we include the empty and grand combinations/coalitions.
-#'
 #' @param MSEv_uniform_comb_weights Logical. If `TRUE` (default), then the function weights the combinations
 #' uniformly when computing the MSEv criterion. If `FALSE`, then the function use the Shapley kernel weights to
 #' weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
-#' sampling frequency when not all combinations are considered. Furthermore, if `FALSE`, then we recommend setting
-#' `MSEv_skip_empty_full_comb = TRUE` as the large weights for the empty and grand combinations/coalitions will
-#' outweigh all other combinations and make the MSEv criterion uninformative.
+#' sampling frequency when not all combinations are considered.
 #'
 #' @param timing Logical.
 #' Whether the timing of the different parts of the `explain()` should saved in the model object.
@@ -271,7 +264,6 @@ explain <- function(model,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
-                    MSEv_skip_empty_full_comb = FALSE,
                     MSEv_uniform_comb_weights = TRUE,
                     timing = TRUE,
                     ...) { # ... is further arguments passed to specific approaches
@@ -301,7 +293,6 @@ explain <- function(model,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
-    MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
     ...

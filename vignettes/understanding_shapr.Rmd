@@ -565,18 +565,18 @@ explanation_timeseries <- explain(
 We can use the $\operatorname{MSE}_{v}$ criterion proposed by @frye2020shapley,
 and later used by, e.g., @olsen2022using and @olsen2023comparative, to evaluate
 and rank the approaches/methods. The $\operatorname{MSE}_{v}$ is given by
-
 ```{=tex}
 \begin{align}
     \label{eq:MSE_v}
     \operatorname{MSE}_{v} = \operatorname{MSE}_{v}(\text{method } \texttt{q}) 
     =
-     \frac{1}{N_\mathcal{S}} \sum_{\mathcal{S} \in \mathcal{P}(\mathcal{M})} \frac{1}{N_\text{test}}
+     \frac{1}{N_\mathcal{S}} \sum_{\mathcal{S} \in \mathcal{P}^*(\mathcal{M})} \frac{1}{N_\text{test}}
      \sum_{i=1}^{N_\text{test}} \left( f(\boldsymbol{x}^{[i]}) - {\hat{v}}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}^{[i]})\right)^2\!,
 \end{align}
 ```
-where $N_\mathcal{S} = |\mathcal{P}(\mathcal{M})| = 2^M$ and ${\hat{v}}_{\texttt{q}}$ is the
-estimated contribution function using method $\texttt{q}$. The motivation behind the
+where ${\hat{v}}_{\texttt{q}}$ is the estimated contribution function using method $\texttt{q}$ and $N_\mathcal{S} = |\mathcal{P}^*(\mathcal{M})| = 2^M-2$, i.e., we have removed the empty ($\mathcal{S} = \emptyset$) and the grand combinations ($\mathcal{S} = \mathcal{M}$) as they are method independent. Meaning that these two combinations do not influence the ranking of the methods as the methods are not used to compute the contribution function for them.
+
+The motivation behind the
 $\operatorname{MSE}_{v}$ criterion is that 
 $\mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (v_{\texttt{true}}(\mathcal{S},\boldsymbol{x}) - \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2$
 can be decomposed as
@@ -597,15 +597,11 @@ term is a fixed (unknown) constant not influenced by the approach \texttt{q}. Th
 of $\operatorname{MSE}_{v}$ indicates that the estimated contribution function $\hat{v}_{\texttt{q}}$
 is closer to the true counterpart $v_{\texttt{true}}$ than a high value.
 
-We allow for some alterations when computing the $\operatorname{MSE}_{v}$ evaluation criterion.
-We can exclude the empty ($\mathcal{S} = \emptyset$) and full ($\mathcal{S} = \mathcal{M}$) coalitions from the 
-computations by setting `MSEv_skip_empty_full_comb = TRUE`. This does not influence the ranking of the methods
-as the methods are not used to compute the contribution function for the empty and full coalitions.
-Furthermore, when `MSEv_uniform_comb_weights = TRUE`, we weight the combinations/coalitions uniformly. 
-This is done above in the $\operatorname{MSE}_{v}$ equation when we divide by $N_\mathcal{S}$. However,
-if `MSEv_uniform_comb_weights = FALSE`, then we weight the combinations using the corresponding Shapley kernel
-weights (or the sampling frequencies when sampling of combinations is used). 
-The default is to include the empty and full combinations and to weight all combinations uniformly.
+In `shapr`, we allow for weighting the combinations in the $\operatorname{MSE}_{v}$ evaluation criterion either
+uniformly or by using the corresponding Shapley kernel weights (or the sampling frequencies when sampling of
+combinations is used). 
+This is determined by the logical parameter `MSEv_uniform_comb_weights` in the `explain()` function, and the
+default is to do uniform weighting, that is, `MSEv_uniform_comb_weights = TRUE`.
 
 ### Advantage:
 An advantage of the $\operatorname{MSE}_{v}$ criterion is that $v_\texttt{true}$ is not involved.
@@ -620,7 +616,7 @@ is unknown. Second, the criterion evaluates the contribution functions and not t
 Note that @olsen2023comparative observed a relatively linear relationship between the 
 $\operatorname{MSE}_{v}$ criterion and the mean absolute error $(\operatorname{MAE})$ between the 
 true and estimated Shapley values in extensive simulation studies where the true Shapley values
-were known. That is, a method that achieves a low  $\operatorname{MSE}_{v}$ score also tends to
+were known. That is, a method that achieves a low $\operatorname{MSE}_{v}$ score also tends to
 obtain a low $\operatorname{MAE}$ score, and vice versa.
 
 
@@ -628,10 +624,6 @@ obtain a low $\operatorname{MAE}$ score, and vice versa.
 
 Start by explaining the predictions by using different methods and combining them into lists.
 ```{r}
-# These are the default values in `explain()`
-MSEv_skip_empty_full_comb = FALSE
-MSEv_uniform_comb_weights = TRUE
-
 # Independence approach
 explanation_independence <- explain(
   model = model,
@@ -641,8 +633,7 @@ explanation_independence <- explain(
   prediction_zero = p0,
   n_samples = 1e2,
   n_batches = 5,
-  MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
-  MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
+  MSEv_uniform_comb_weights = TRUE
 )
 
 # Empirical approach
@@ -654,8 +645,7 @@ explanation_empirical <- explain(
   prediction_zero = p0,
   n_samples = 1e2,
   n_batches = 5,
-  MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
-  MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
+  MSEv_uniform_comb_weights = TRUE
 )
 
 # Gaussian 1e1 approach
@@ -667,8 +657,7 @@ explanation_gaussian_1e1 <- explain(
   prediction_zero = p0,
   n_samples = 1e1,
   n_batches = 5,
-  MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
-  MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
+  MSEv_uniform_comb_weights = TRUE
 )
 
 # Gaussian 1e2 approach
@@ -680,8 +669,7 @@ explanation_gaussian_1e2 <- explain(
   prediction_zero = p0,
   n_samples = 1e2,
   n_batches = 5,
-  MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
-  MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
+  MSEv_uniform_comb_weights = TRUE
 )
 
 # Combined approach
@@ -693,8 +681,7 @@ explanation_combined <- explain(
   prediction_zero = p0,
   n_samples = 1e2,
   n_batches = 5,
-  MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
-  MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
+  MSEv_uniform_comb_weights = TRUE
 )
 
 # Create a list of explanations with names
@@ -737,9 +724,24 @@ MSEv_plots$MSEv_combination_bar
 explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination",  "features")]
 ```
 
-We can also change many parameters to alter the plots, both design-wise but also
-to only plot certain combinations and/or test observations.
-See the documentation of the `make_MSEv_eval_crit_plots()` function for several examples.
+We can specify the `index_x_explain` and `id_combination` parameters in `make_MSEv_eval_crit_plots()` to only plot 
+certain test observations and combinations, respectively.
+
+```{r}
+# We can specify which test observations or combinations to plot
+make_MSEv_eval_crit_plots(explanation_list_named,
+                          make_MSEv_comb_and_explicand = TRUE,
+                          index_x_explain = c(1, 3:4, 6),
+                          N_sd_error_bars = 0)$MSEv_explicand_bar
+make_MSEv_eval_crit_plots(explanation_list_named,
+                          make_MSEv_comb_and_explicand = TRUE,
+                          id_combination = c(3, 4, 9, 13:15),
+                          N_sd_error_bars = 0)$MSEv_combination_bar
+```
+
+
+We can also alter the plots design-wise as we do in the code below.
+See the documentation of the `make_MSEv_eval_crit_plots()` function for more examples.
 
 ```{r, echo=FALSE, message=FALSE, results='hide'}
 bar_text_n_decimals <- 1
@@ -754,24 +756,12 @@ MSEv_plot +
   ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
   ggplot2::geom_text(ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
                                                   round(MSEv, bar_text_n_decimals))),
-                     vjust = -0.35, # This number might need altering for diffent plots sizes
-                     hjust = 1.15, # This number might need altering for diffent plots sizes
+                     vjust = -0.35, # This number might need altering for different plots sizes
+                     hjust = 1.15, # This number might need altering for different plots sizes
                      color = "black",
                      position = ggplot2::position_dodge(0.9),
                      size = 5)
 ```
-```{r}
-# We can specify which test observations or combinations to plot
-make_MSEv_eval_crit_plots(explanation_list_named,
-                          make_MSEv_comb_and_explicand = TRUE,
-                          index_x_explain = c(1, 3:4, 6),
-                          N_sd_error_bars = 0)$MSEv_explicand_bar
-make_MSEv_eval_crit_plots(explanation_list_named,
-                          make_MSEv_comb_and_explicand = TRUE,
-                          id_combination = c(3, 4, 9, 13:15),
-                          N_sd_error_bars = 0)$MSEv_combination_bar
-```
-
 
 ## Main arguments in `explain`
 

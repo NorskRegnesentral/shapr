@@ -8,7 +8,6 @@
 #' @export
 finalize_explanation <- function(vS_list, internal) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
-  MSEv_skip_empty_full_comb = internal$parameters$MSEv_skip_empty_full_comb
   MSEv_uniform_comb_weights = internal$parameters$MSEv_uniform_comb_weights
 
   processed_vS_list <- postprocess_vS_list(
@@ -44,7 +43,6 @@ finalize_explanation <- function(vS_list, internal) {
     output$MSEv <- compute_MSEv_eval_crit(
       internal = internal,
       dt_vS = processed_vS_list$dt_vS,
-      MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
       MSEv_uniform_comb_weights = MSEv_uniform_comb_weights)
   }
 
@@ -164,8 +162,6 @@ compute_shapley_new <- function(internal, dt_vS) {
   return(dt_kshap)
 }
 
-
-
 #' Mean Squared Error of the Contribution Function `v(S)`
 #'
 #' @inheritParams explain
@@ -174,6 +170,12 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' estimates. The first column is assumed to be named `id_combination` and containing the ids of the combinations.
 #' The last row is assumed to be the full combination, i.e., it contains the predicted responses for the observations
 #' which are to be explained.
+#' @param MSEv_skip_empty_full_comb Logical. If `TRUE` (default), we exclude the empty and grand
+#' combinations/coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
+#' for all methods, i.e., their contribution function is independent of the used method as they are special cases not
+#' effected by the used method. If `FALSE`, we include the empty and grand combinations/coalitions. In this situation,
+#' we also recommend setting `MSEv_uniform_comb_weights = TRUE`, as otherwise the large weights for the empty and
+#' grand combinations/coalitions will outweigh all other combinations and make the MSEv criterion uninformative.
 #'
 #' @return
 #' List containing:
@@ -203,8 +205,8 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' @author Lars Henry Berge Olsen
 compute_MSEv_eval_crit <- function(internal,
                                    dt_vS,
-                                   MSEv_skip_empty_full_comb,
-                                   MSEv_uniform_comb_weights) {
+                                   MSEv_uniform_comb_weights,
+                                   MSEv_skip_empty_full_comb = TRUE) {
 
   n_explain <- internal$parameters$n_explain
   n_combinations <- internal$parameters$n_combinations

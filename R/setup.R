@@ -29,7 +29,6 @@ setup <- function(x_train,
                   seed,
                   keep_samp_for_vS,
                   feature_specs,
-                  MSEv_skip_empty_full_comb = FALSE,
                   MSEv_uniform_comb_weights = TRUE,
                   type = "normal",
                   horizon = NULL,
@@ -44,7 +43,6 @@ setup <- function(x_train,
                   is_python = FALSE,
                   ...) {
   internal <- list()
-
 
   internal$parameters <- get_parameters(
     approach = approach,
@@ -63,7 +61,6 @@ setup <- function(x_train,
     explain_y_lags = explain_y_lags,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
-    MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
     is_python = is_python,
@@ -390,8 +387,7 @@ get_extra_parameters <- function(internal) {
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
-                           explain_xreg_lags, group_lags = NULL, MSEv_skip_empty_full_comb, MSEv_uniform_comb_weights,
-                           timing, is_python, ...) {
+                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing, is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -426,7 +422,6 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
       n_batches > 0)) {
     stop("`n_batches` must be NULL or a single positive integer.")
   }
-
 
   # seed is already set, so we know it works
   # keep_samp_for_vS
@@ -477,19 +472,9 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     }
   }
 
-  # Parameters used for MSEv evaluation criterion
-  if (!(is.logical(MSEv_skip_empty_full_comb) && length(MSEv_skip_empty_full_comb) == 1)) {
-    stop("`MSEv_skip_empty_full_comb` must be single logical.")
-  }
-
+  # Parameter used in the MSEv evaluation criterion
   if (!(is.logical(MSEv_uniform_comb_weights) && length(MSEv_uniform_comb_weights) == 1)) {
     stop("`MSEv_uniform_comb_weights` must be single logical.")
-  }
-
-  if (isFALSE(MSEv_uniform_comb_weights) && isFALSE(MSEv_skip_empty_full_comb)) {
-    stop(paste0("`MSEv_skip_empty_full_comb` must be `TRUE` when `MSEv_uniform_comb_weights` is `FALSE`. Otherwise, ",
-                "the weights of the empty and grand combinations will drastically outweight the other coalitions, ",
-                "which causes the MSEv evaluation criterion to be identical for all approaches."))
   }
 
   #### Tests combining more than one parameter ####
@@ -519,7 +504,6 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     type = type,
     horizon = horizon,
     group_lags = group_lags,
-    MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing
   )

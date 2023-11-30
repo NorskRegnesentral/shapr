@@ -25,8 +25,7 @@ test_that("output_lm_numeric_independence_MSEv_Shapley_weights", {
       prediction_zero = p0,
       n_batches = 1,
       timing = FALSE,
-      MSEv_uniform_comb_weights = FALSE,
-      MSEv_skip_empty_full_comb = TRUE
+      MSEv_uniform_comb_weights = FALSE
     ),
     "output_lm_numeric_independence"
   )
