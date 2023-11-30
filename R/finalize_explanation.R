@@ -181,11 +181,15 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' List containing:
 #' \describe{
 #'  \item{`MSEv`}{A \code{\link[data.table]{data.table}} with the overall MSEv evaluation criterion averaged
-#'  over both the combinations/coalitions and observations/explicands.}
+#'  over both the combinations/coalitions and observations/explicands. The \code{\link[data.table]{data.table}}
+#'  also contains the standard deviation of the MSEv values for each explicand (only averaged over the combinations)
+#'  divided by the square root of the number of explicands.}
 #'  \item{`MSEv_explicand`}{A \code{\link[data.table]{data.table}} with the mean squared error for each
 #'  explicand, i.e., only averaged over the combinations/coalitions.}
 #'  \item{`MSEv_combination`}{A \code{\link[data.table]{data.table}} with the mean squared error for each
-#'  coalition, i.e., only averaged over the explicands.}
+#'  combination/coalition, i.e., only averaged over the explicands/observations.
+#'  The \code{\link[data.table]{data.table}} also contains the standard deviation of the MSEv values for
+#'  each combination divided by the square root of the number of explicands.}
 #' }
 #'
 #' @description Function that computes the Mean Squared Error (MSEv) of the contribution function
@@ -237,11 +241,11 @@ compute_MSEv_eval_crit <- function(internal,
 
   # The MSEv criterion for each coalition, i.e., only averaged over the explicands.
   MSEv_combination <- rowMeans(dt_squared_diff * n_combinations_used)
-  MSEv_combination_sd <- apply(dt_squared_diff * n_combinations_used, 1, sd)
+  MSEv_combination_sd <- apply(dt_squared_diff * n_combinations_used, 1, sd) / sqrt(n_explain)
 
   # The MSEv criterion averaged over both the coalitions and explicands.
   MSEv <- mean(MSEv_explicand)
-  MSEv_sd <- sd(MSEv_explicand)
+  MSEv_sd <- sd(MSEv_explicand) / sqrt(n_explain)
 
   # Set the name entries in the arrays
   names(MSEv_explicand) <- paste0("id_", seq(n_explain))
