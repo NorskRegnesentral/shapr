@@ -783,7 +783,7 @@ MSEv_plot <- make_MSEv_eval_crit_plots(explanation_list_named, level = 0.95)
 MSEv_plot +
   ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plot$data$Method))) +
   ggplot2::coord_flip() +
-  ggplot2::scale_fill_brewer(palette = "Paired") + 
+  ggplot2::scale_fill_brewer(palette = "Paired") +
   ggplot2::theme_minimal() + # This must be set before other theme calls
   ggplot2::theme(plot.title = ggplot2::element_text(size = 10),
                  legend.position = "bottom") +

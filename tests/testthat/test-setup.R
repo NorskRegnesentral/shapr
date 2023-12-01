@@ -1019,14 +1019,14 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
   # non-logical 1
   expect_snapshot(
     {
-      MSEv_uniform_comb_weights_non_logical_1 <- "bla"
+      MSEv_uniform_comb_weights_nl_1 <- "bla"
       explain(
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_non_logical_1,
+        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1,
         n_batches = 1,
         timing = FALSE
       )
@@ -1037,14 +1037,14 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
   # non-logical 2
   expect_snapshot(
     {
-      MSEv_uniform_comb_weights_non_logical_2 <- NULL
+      MSEv_uniform_comb_weights_nl_2 <- NULL
       explain(
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_non_logical_1,
+        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2,
         n_batches = 1,
         timing = FALSE
       )
@@ -1055,14 +1055,14 @@ test_that("erroneous input: `MSEv_uniform_comb_weights`", {
   # length > 1
   expect_snapshot(
     {
-      MSEv_uniform_comb_weights_too_long <- c(TRUE, FALSE)
+      MSEv_uniform_comb_weights_long <- c(TRUE, FALSE)
       explain(
         model = model_lm_numeric,
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         approach = "independence",
         prediction_zero = p0,
-        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_too_long,
+        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long,
         n_batches = 1,
         timing = FALSE
       )

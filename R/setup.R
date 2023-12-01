@@ -378,8 +378,8 @@ get_extra_parameters <- function(internal) {
   }
 
   # Get the number of unique approaches
-    internal$parameters$n_approaches <- length(internal$parameters$approach)
-    internal$parameters$n_unique_approaches <- length(unique(internal$parameters$approach))
+  internal$parameters$n_approaches <- length(internal$parameters$approach)
+  internal$parameters$n_unique_approaches <- length(unique(internal$parameters$approach))
 
   return(internal)
 }

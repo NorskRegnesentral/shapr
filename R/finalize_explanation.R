@@ -8,7 +8,7 @@
 #' @export
 finalize_explanation <- function(vS_list, internal) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
-  MSEv_uniform_comb_weights = internal$parameters$MSEv_uniform_comb_weights
+  MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
 
   processed_vS_list <- postprocess_vS_list(
     vS_list = vS_list,
@@ -43,7 +43,8 @@ finalize_explanation <- function(vS_list, internal) {
     output$MSEv <- compute_MSEv_eval_crit(
       internal = internal,
       dt_vS = processed_vS_list$dt_vS,
-      MSEv_uniform_comb_weights = MSEv_uniform_comb_weights)
+      MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
+    )
   }
 
   return(output)
@@ -211,7 +212,6 @@ compute_MSEv_eval_crit <- function(internal,
                                    dt_vS,
                                    MSEv_uniform_comb_weights,
                                    MSEv_skip_empty_full_comb = TRUE) {
-
   n_explain <- internal$parameters$n_explain
   n_combinations <- internal$parameters$n_combinations
   id_combination_indices <- if (MSEv_skip_empty_full_comb) seq(2, n_combinations - 1) else seq(1, n_combinations)
@@ -219,7 +219,7 @@ compute_MSEv_eval_crit <- function(internal,
   features <- internal$objects$X$features[id_combination_indices]
 
   # Extract the predicted responses f(x)
-  p = unlist(dt_vS[id_combination == n_combinations, -"id_combination"])
+  p <- unlist(dt_vS[id_combination == n_combinations, -"id_combination"])
 
   # Create contribution matrix
   vS <- as.matrix(dt_vS[id_combination_indices, -"id_combination"])
@@ -253,16 +253,24 @@ compute_MSEv_eval_crit <- function(internal,
   names(MSEv_combination_sd) <- paste0("id_combination_", id_combination_indices)
 
   # Convert the results to data.table
-  MSEv <- data.table("MSEv" = MSEv,
-                     "MSEv_sd" = MSEv_sd)
-  MSEv_explicand <- data.table("id" = seq(n_explain),
-                               "MSEv" = MSEv_explicand)
-  MSEv_combination <- data.table("id_combination" = id_combination_indices,
-                                 "features" = features,
-                                 "MSEv" = MSEv_combination,
-                                 "MSEv_sd" = MSEv_combination_sd)
+  MSEv <- data.table(
+    "MSEv" = MSEv,
+    "MSEv_sd" = MSEv_sd
+  )
+  MSEv_explicand <- data.table(
+    "id" = seq(n_explain),
+    "MSEv" = MSEv_explicand
+  )
+  MSEv_combination <- data.table(
+    "id_combination" = id_combination_indices,
+    "features" = features,
+    "MSEv" = MSEv_combination,
+    "MSEv_sd" = MSEv_combination_sd
+  )
 
-  return(list(MSEv = MSEv,
-              MSEv_explicand = MSEv_explicand,
-              MSEv_combination = MSEv_combination))
+  return(list(
+    MSEv = MSEv,
+    MSEv_explicand = MSEv_explicand,
+    MSEv_combination = MSEv_combination
+  ))
 }

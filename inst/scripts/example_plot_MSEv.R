@@ -115,7 +115,7 @@ explanation_list_named <- list(
 
 # Plots -----------------------------------------------------------------------------------------------------------
 # Create the default MSEv plot
-MSEv_figure = make_MSEv_eval_crit_plots(explanation_list_named)
+MSEv_figure <- make_MSEv_eval_crit_plots(explanation_list_named)
 MSEv_figure
 
 # For long method names, one can rotate them or put them on different lines (or both)
@@ -140,16 +140,20 @@ MSEv_figure + ggplot2::theme_minimal() +
   ggplot2::scale_fill_brewer(palette = "Paired")
 
 # Can add the height of the bars as text. Remove the error bars.
-bar_text_n_decimals = 1
-MSEv_figure_wo_CI = make_MSEv_eval_crit_plots(explanation_list_named, level = NULL)
+bar_text_n_decimals <- 1
+MSEv_figure_wo_CI <- make_MSEv_eval_crit_plots(explanation_list_named, level = NULL)
 MSEv_figure_wo_CI +
-  ggplot2::geom_text(ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-                                                  round(MSEv, bar_text_n_decimals))),
-                     vjust = 1.75,
-                     hjust = NA,
-                     color = "black",
-                     position = ggplot2::position_dodge(0.9),
-                     size = 5)
+  ggplot2::geom_text(
+    ggplot2::aes(label = sprintf(
+      paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+      round(MSEv, bar_text_n_decimals)
+    )),
+    vjust = 1.75,
+    hjust = NA,
+    color = "black",
+    position = ggplot2::position_dodge(0.9),
+    size = 5
+  )
 
 # Rotate the plot
 MSEv_figure +
@@ -162,16 +166,22 @@ MSEv_figure_wo_CI +
   ggplot2::coord_flip() +
   ggplot2::scale_fill_discrete() + #' Default ggplot2 palette
   ggplot2::theme_minimal() + #' This must be set before the other theme call
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 10),
-                 legend.position = "bottom") +
+  ggplot2::theme(
+    plot.title = ggplot2::element_text(size = 10),
+    legend.position = "bottom"
+  ) +
   ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
-  ggplot2::geom_text(ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-                                                  round(MSEv, bar_text_n_decimals))),
-                     vjust = NA, # These must be changed for different figure sizes
-                     hjust = 1.15, # These must be changed for different figure sizes
-                     color = "black",
-                     position = ggplot2::position_dodge(0.9),
-                     size = 5)
+  ggplot2::geom_text(
+    ggplot2::aes(label = sprintf(
+      paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+      round(MSEv, bar_text_n_decimals)
+    )),
+    vjust = NA, # These must be changed for different figure sizes
+    hjust = 1.15, # These must be changed for different figure sizes
+    color = "black",
+    position = ggplot2::position_dodge(0.9),
+    size = 5
+  )
 
 # or with the CI
 MSEv_figure +
@@ -179,23 +189,30 @@ MSEv_figure +
   ggplot2::coord_flip() +
   ggplot2::scale_fill_discrete() + #' Default ggplot2 palette
   ggplot2::theme_minimal() + #' This must be set before the other theme call
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 10),
-                 legend.position = "bottom") +
+  ggplot2::theme(
+    plot.title = ggplot2::element_text(size = 10),
+    legend.position = "bottom"
+  ) +
   ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
-  ggplot2::geom_text(ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-                                                  round(MSEv, bar_text_n_decimals))),
-                     vjust = -1, # These must be changed for different figure sizes
-                     hjust = 1.15, # These must be changed for different figure sizes
-                     color = "black",
-                     position = ggplot2::position_dodge(0.9),
-                     size = 5)
+  ggplot2::geom_text(
+    ggplot2::aes(label = sprintf(
+      paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+      round(MSEv, bar_text_n_decimals)
+    )),
+    vjust = -1, # These must be changed for different figure sizes
+    hjust = 1.15, # These must be changed for different figure sizes
+    color = "black",
+    position = ggplot2::position_dodge(0.9),
+    size = 5
+  )
 
 
 
 # Can also create plots where we look at the MSEv criterion averaged only over the combinations or observations.
 # Note that we can also alter the design of these plots as we did above.
-MSEv_figures = make_MSEv_eval_crit_plots(explanation_list_named,
-                                         make_MSEv_comb_and_explicand = TRUE)
+MSEv_figures <- make_MSEv_eval_crit_plots(explanation_list_named,
+  make_MSEv_comb_and_explicand = TRUE
+)
 MSEv_figures$MSEv_bar
 MSEv_figures$MSEv_combination_bar
 MSEv_figures$MSEv_explicand_bar
@@ -206,18 +223,21 @@ MSEv_figures$MSEv_explicand_line_point
 
 # We can specify which test observations or combinations to plot
 make_MSEv_eval_crit_plots(explanation_list_named,
-                          make_MSEv_comb_and_explicand = TRUE,
-                          index_x_explain = c(1, 3:4, 6))$MSEv_explicand_bar
+  make_MSEv_comb_and_explicand = TRUE,
+  index_x_explain = c(1, 3:4, 6)
+)$MSEv_explicand_bar
 make_MSEv_eval_crit_plots(explanation_list_named,
-                          make_MSEv_comb_and_explicand = TRUE,
-                          id_combination = c(3, 4, 9, 13:15))$MSEv_combination_bar
+  make_MSEv_comb_and_explicand = TRUE,
+  id_combination = c(3, 4, 9, 13:15)
+)$MSEv_combination_bar
 
 
 # To rotate the combination plot, we need to alter the order of the methods to get them in the same order as before
-MSEv_combination = make_MSEv_eval_crit_plots(explanation_list_named,
-                               make_MSEv_comb_and_explicand = TRUE,
-                               id_combination = c(3, 4, 9, 13:15))$MSEv_combination_bar
-MSEv_combination$data$Method = factor(MSEv_combination$data$Method, levels = rev(levels(MSEv_combination$data$Method)))
+MSEv_combination <- make_MSEv_eval_crit_plots(explanation_list_named,
+  make_MSEv_comb_and_explicand = TRUE,
+  id_combination = c(3, 4, 9, 13:15)
+)$MSEv_combination_bar
+MSEv_combination$data$Method <- factor(MSEv_combination$data$Method, levels = rev(levels(MSEv_combination$data$Method)))
 MSEv_combination +
   ggplot2::scale_x_discrete(limits = rev(unique(MSEv_combination$data$id_combination))) +
   ggplot2::scale_fill_discrete(breaks = rev(levels(MSEv_combination$data$Method)), direction = -1) +
@@ -225,33 +245,42 @@ MSEv_combination +
 
 
 # Rotate and with text, but without CI
-MSEv_combination_wo_CI = make_MSEv_eval_crit_plots(explanation_list_named,
-                                             make_MSEv_comb_and_explicand = TRUE,
-                                             id_combination = c(3, 4, 9, 13:15),
-                                             level = NULL)$MSEv_combination_bar
-MSEv_combination_wo_CI$data$Method = factor(MSEv_combination_wo_CI$data$Method,
-                                            levels = rev(levels(MSEv_combination_wo_CI$data$Method)))
+MSEv_combination_wo_CI <- make_MSEv_eval_crit_plots(explanation_list_named,
+  make_MSEv_comb_and_explicand = TRUE,
+  id_combination = c(3, 4, 9, 13:15),
+  level = NULL
+)$MSEv_combination_bar
+MSEv_combination_wo_CI$data$Method <- factor(MSEv_combination_wo_CI$data$Method,
+  levels = rev(levels(MSEv_combination_wo_CI$data$Method))
+)
 MSEv_combination_wo_CI +
   ggplot2::scale_x_discrete(limits = rev(unique(MSEv_combination_wo_CI$data$id_combination))) +
-  ggplot2::scale_fill_brewer(breaks = rev(levels(MSEv_combination_wo_CI$data$Method)),
-                             palette = "Paired",
-                             direction = -1) +
+  ggplot2::scale_fill_brewer(
+    breaks = rev(levels(MSEv_combination_wo_CI$data$Method)),
+    palette = "Paired",
+    direction = -1
+  ) +
   ggplot2::coord_flip() +
   ggplot2::theme_minimal() + #' This must be set before the other theme call
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 10),
-                 legend.position = "bottom") +
+  ggplot2::theme(
+    plot.title = ggplot2::element_text(size = 10),
+    legend.position = "bottom"
+  ) +
   ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
-  ggplot2::geom_text(ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-                                                  round(MSEv, bar_text_n_decimals)),
-                                  group = Method),
-                     hjust = 1.2,
-                     vjust = NA,
-                     color = "white",
-                     position = ggplot2::position_dodge(MSEv_combination_wo_CI$layers[[1]]$geom_params$width),
-                     size = 3)
-
-
-
+  ggplot2::geom_text(
+    ggplot2::aes(
+      label = sprintf(
+        paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+        round(MSEv, bar_text_n_decimals)
+      ),
+      group = Method
+    ),
+    hjust = 1.2,
+    vjust = NA,
+    color = "white",
+    position = ggplot2::position_dodge(MSEv_combination_wo_CI$layers[[1]]$geom_params$width),
+    size = 3
+  )
 
 # Check for same combinations ------------------------------------------------------------------------------------
 explanation_gaussian_seed_1 <- explain(
@@ -304,10 +333,12 @@ explanation_gaussian_seed_2$internal$objects$X$features
 explanation_gaussian_seed_3$internal$objects$X$features
 
 # Will give an error due to different combinations
-make_MSEv_eval_crit_plots(list("Seed1" = explanation_gaussian_seed_1,
-                               "Seed1_V2" = explanation_gaussian_seed_1_V2,
-                               "Seed2" = explanation_gaussian_seed_2,
-                               "Seed3" = explanation_gaussian_seed_3))
+make_MSEv_eval_crit_plots(list(
+  "Seed1" = explanation_gaussian_seed_1,
+  "Seed1_V2" = explanation_gaussian_seed_1_V2,
+  "Seed2" = explanation_gaussian_seed_2,
+  "Seed3" = explanation_gaussian_seed_3
+))
 
 
 
@@ -323,7 +354,7 @@ explanation_gaussian_all <- explain(
 
 explanation_gaussian_only_5 <- explain(
   model = model,
-  x_explain = x_explain[1:5,],
+  x_explain = x_explain[1:5, ],
   x_train = x_train,
   approach = "gaussian",
   prediction_zero = prediction_zero,
@@ -331,8 +362,10 @@ explanation_gaussian_only_5 <- explain(
 )
 
 # Will give an error due to different explicands
-make_MSEv_eval_crit_plots(list("All_explicands" = explanation_gaussian_all,
-                               "Five_explicands" = explanation_gaussian_only_5))
+make_MSEv_eval_crit_plots(list(
+  "All_explicands" = explanation_gaussian_all,
+  "Five_explicands" = explanation_gaussian_only_5
+))
 
 
 # Different feature names ----------------------------------------------------------------------------------------------
@@ -345,12 +378,14 @@ explanation_gaussian <- explain(
   n_samples = 10
 )
 
-explanation_gaussian_copy = copy(explanation_gaussian_all)
-colnames(explanation_gaussian_copy$shapley_values) = rev(colnames(explanation_gaussian_copy$shapley_values))
+explanation_gaussian_copy <- copy(explanation_gaussian_all)
+colnames(explanation_gaussian_copy$shapley_values) <- rev(colnames(explanation_gaussian_copy$shapley_values))
 
 # Will give an error due to different feature names
-make_MSEv_eval_crit_plots(list("Original" = explanation_gaussian,
-                               "Reversed_feature_names" = explanation_gaussian_copy))
+make_MSEv_eval_crit_plots(list(
+  "Original" = explanation_gaussian,
+  "Reversed_feature_names" = explanation_gaussian_copy
+))
 
 
 
@@ -364,11 +399,11 @@ explanation_gaussian <- explain(
   n_samples = 10
 )
 
-explanation_gaussian_copy = copy(explanation_gaussian_all)
-explanation_gaussian_copy$MSEv = NULL
+explanation_gaussian_copy <- copy(explanation_gaussian_all)
+explanation_gaussian_copy$MSEv <- NULL
 
 # Will give an error due to missing MSEv
-make_MSEv_eval_crit_plots(list("Original" = explanation_gaussian,
-                               "Missing_MSEv" = explanation_gaussian_copy))
-
-
+make_MSEv_eval_crit_plots(list(
+  "Original" = explanation_gaussian,
+  "Missing_MSEv" = explanation_gaussian_copy
+))
