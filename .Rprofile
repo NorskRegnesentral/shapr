@@ -7,7 +7,7 @@
 #' @param ... Additional arguments passed to [waldo::compare()]
 #' Gives the relative path to the test files to review
 #'
-snapshot_review_man <- function(path, tolerance = NULL,...) {
+snapshot_review_man <- function(path, tolerance = NULL, ...) {
   changed <- testthat:::snapshot_meta(path)
   these_rds <- (tools::file_ext(changed$name) == "rds")
   if (any(these_rds)) {

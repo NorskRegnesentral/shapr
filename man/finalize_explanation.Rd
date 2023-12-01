@@ -19,7 +19,8 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
 \item{shapley_values}{data.table with the estimated Shapley values}
 \item{internal}{List with the different parameters, data and functions used internally}
-\item{pred_explain}{Numeric vector with the predictions for the explained observations.}
+\item{pred_explain}{Numeric vector with the predictions for the explained observations}
+\item{MSEv}{List with the values of the MSEv evaluation criterion for the approach.}
 }
 
 \code{shapley_values} is a data.table where the number of rows equals
