@@ -806,8 +806,9 @@ make_waterfall_plot <- function(dt_plot,
 #' the MSEv scores are means over the observations/explicands, and that means are approximation normal. Since the
 #' standard deviations are estimated, we use the quantile t from the T distribution with N_explicands - 1 degrees of
 #' freedom corresponding to the provided level. Here, N_explicands is the number of observations/explicands.
-#' MSEv ± t*SD(MSEv)/sqrt(N_explicands). Note that `explain()` function already scales the standard deviation by
-#' sqrt(N_explicands).
+#' MSEv ± t*SD(MSEv)/sqrt(N_explicands). Note that the `explain()` function already scales the standard deviation by
+#' sqrt(N_explicands), thus, the CI are MSEv ± t*MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
+#' MSEv data.tables in the objects in the `explanation_list`.
 #' @param geom_col_width Numeric. Bar width. By default, set to 90% of the [ggplot2::resolution()] of the data.
 #' @param make_MSEv_comb_and_explicand Logical. If `FALSE` (default), then only the plot associated with the overall
 #' MSEv criterion is created (i.e., when averaging over both the combinations and observations). When `TRUE`,
