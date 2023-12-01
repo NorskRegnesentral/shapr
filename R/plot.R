@@ -930,11 +930,12 @@ make_waterfall_plot <- function(dt_plot,
 #'   # We can specify which observations or combinations to plot
 #'   make_MSEv_eval_crit_plots(explanation_list_named,
 #'                             make_MSEv_comb_and_explicand = TRUE,
-#'                             index_x_explain = c(1, 3:4, 6))$MSEv_explicand_bar
+#'                             index_x_explain = c(1, 3:4, 6),
+#'                             level = 0.95)$MSEv_explicand_bar
 #'   make_MSEv_eval_crit_plots(explanation_list_named,
 #'                             make_MSEv_comb_and_explicand = TRUE,
 #'                             id_combination = c(3, 4, 9, 13:15),
-#'                             N_sd_error_bars = 1)$MSEv_combination_bar
+#'                             level = 0.95)$MSEv_combination_bar
 #'
 #'   # We can alter the figures if other palette schemes or design is wanted
 #'   bar_text_n_decimals = 1

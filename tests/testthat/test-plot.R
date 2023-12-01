@@ -170,7 +170,7 @@ test_that("beeswarm_plot_new_arguments", {
   )
 })
 
-test_that("MSEv evaluation criterion named plots", {
+test_that("MSEv evaluation criterion plots", {
   skip_if_not_installed("vdiffr")
 
   # Create a list of explanations with names
@@ -181,11 +181,11 @@ test_that("MSEv evaluation criterion named plots", {
 
   MSEv_plots <- make_MSEv_eval_crit_plots(explanation_list_named,
                                           make_MSEv_comb_and_explicand = TRUE,
-                                          N_sd_error_bars = 1)
+                                          level = 0.95)
 
   MSEv_plots_specified_width <- make_MSEv_eval_crit_plots(explanation_list_named,
                                                           make_MSEv_comb_and_explicand = TRUE,
-                                                          N_sd_error_bars = 1,
+                                                          level = 0.95,
                                                           geom_col_width = 0.5)
 
   vdiffr::expect_doppelganger(
@@ -194,14 +194,21 @@ test_that("MSEv evaluation criterion named plots", {
   )
 
   vdiffr::expect_doppelganger(
-    title = "MSEv_bar without error bars",
+    title = "MSEv_bar 50% CI",
     fig = make_MSEv_eval_crit_plots(explanation_list_named,
                                     make_MSEv_comb_and_explicand = FALSE,
-                                    N_sd_error_bars = 0)
+                                    level = 0.50)
   )
 
   vdiffr::expect_doppelganger(
-    title = "MSEv_bar with error bars different width",
+    title = "MSEv_bar without CI",
+    fig = make_MSEv_eval_crit_plots(explanation_list_named,
+                                    make_MSEv_comb_and_explicand = FALSE,
+                                    level = NULL)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "MSEv_bar with CI different width",
     fig = MSEv_plots_specified_width$MSEv_bar
   )
 
@@ -240,7 +247,7 @@ test_that("MSEv evaluation criterion named plots", {
     fig = make_MSEv_eval_crit_plots(explanation_list_named,
                                     make_MSEv_comb_and_explicand = TRUE,
                                     index_x_explain = c(1, 3:4, 6),
-                                    N_sd_error_bars = 0)$MSEv_explicand_bar
+                                    level = 0.95)$MSEv_explicand_bar
   )
 
   vdiffr::expect_doppelganger(
@@ -248,6 +255,6 @@ test_that("MSEv evaluation criterion named plots", {
     fig = make_MSEv_eval_crit_plots(explanation_list_named,
                                     make_MSEv_comb_and_explicand = TRUE,
                                     id_combination = c(3, 4, 9, 13:15),
-                                    N_sd_error_bars = 0)$MSEv_combination_bar
+                                    level = 0.95)$MSEv_combination_bar
   )
 })
