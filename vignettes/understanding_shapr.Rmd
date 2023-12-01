@@ -570,8 +570,8 @@ and rank the approaches/methods. The $\operatorname{MSE}_{v}$ is given by
     \label{eq:MSE_v}
     \operatorname{MSE}_{v} = \operatorname{MSE}_{v}(\text{method } \texttt{q}) 
     =
-     \frac{1}{N_\mathcal{S}} \sum_{\mathcal{S} \in \mathcal{P}^*(\mathcal{M})} \frac{1}{N_\text{test}}
-     \sum_{i=1}^{N_\text{test}} \left( f(\boldsymbol{x}^{[i]}) - {\hat{v}}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}^{[i]})\right)^2\!,
+     \frac{1}{N_\mathcal{S}} \sum_{\mathcal{S} \in \mathcal{P}^*(\mathcal{M})} \frac{1}{N_\text{explain}}
+     \sum_{i=1}^{N_\text{explain}} \left( f(\boldsymbol{x}^{[i]}) - {\hat{v}}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}^{[i]})\right)^2\!,
 \end{align}
 ```
 where ${\hat{v}}_{\texttt{q}}$ is the estimated contribution function using method $\texttt{q}$ and $N_\mathcal{S} = |\mathcal{P}^*(\mathcal{M})| = 2^M-2$, i.e., we have removed the empty ($\mathcal{S} = \emptyset$) and the grand combinations ($\mathcal{S} = \mathcal{M}$) as they are method independent. Meaning that these two combinations do not influence the ranking of the methods as the methods are not used to compute the contribution function for them.
@@ -619,11 +619,45 @@ true and estimated Shapley values in extensive simulation studies where the true
 were known. That is, a method that achieves a low $\operatorname{MSE}_{v}$ score also tends to
 obtain a low $\operatorname{MAE}$ score, and vice versa.
 
+### Confidence intervals
+The $\operatorname{MSE}_{v}$ criterion can be written as
+$\operatorname{MSE}_{v} = \frac{1}{N_\text{explain}}\sum_{i=1}^{N_\text{explain}} \operatorname{MSE}_{v,\text{explain }i}$.
+We can therefore use the central limit theorem to compute an approximate
+confidence interval for the $\operatorname{MSE}_{v}$ criterion. We have that 
+$\operatorname{MSE}_{v} \pm t_{\alpha/2}\frac{\operatorname{SD}(\operatorname{MSE}_{v})}{\sqrt{N_\text{explain}}}$
+is a $(1-\alpha/2)\%$ approximate confidence interval for the evaluation criterion,
+where $t_{\alpha/2}$ is the $\alpha/2$ percentile of the $T_{N_\text{explain}-1}$ distribution.
+Note that $N_\text{explain}$ should be large (rule of thumb is at least $30$) for the
+central limit theorem to be valid. The quantities $\operatorname{MSE}_{v}$ and
+$\frac{\operatorname{SD}(\operatorname{MSE}_{v})}{\sqrt{N_\text{explain}}}$ are returned by
+the `explain()` function in the `MSEv` list of data tables. We can also compute similar
+approximate confidence interval for $\operatorname{MSE}_{v}$ criterion for each
+combination/coalition when only averaging over the observations. However, it does not
+make sense in the other direction, i.e., when only averaging over the combinations for
+each observation, as each combination is a different prediction tasks.
+
 
 ### MSEv examples
 
 Start by explaining the predictions by using different methods and combining them into lists.
 ```{r}
+# We use more explicands here for more stable confidence intervals
+ind_x_explain <- 1:25
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
+
+# Fitting a basic xgboost model to the training data
+model <- xgboost::xgboost(
+  data = as.matrix(x_train),
+  label = y_train,
+  nround = 20,
+  verbose = FALSE
+)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+p0 <- mean(y_train)
+
 # Independence approach
 explanation_independence <- explain(
   model = model,
@@ -757,7 +791,7 @@ MSEv_plot +
   ggplot2::geom_text(ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
                                                   round(MSEv, bar_text_n_decimals))),
                      vjust = -0.35, # This number might need altering for different plots sizes
-                     hjust = 1.15, # This number might need altering for different plots sizes
+                     hjust = 1.1, # This number might need altering for different plots sizes
                      color = "black",
                      position = ggplot2::position_dodge(0.9),
                      size = 5)
