@@ -419,7 +419,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     !is.null(n_combinations) &&
     n_combinations %% 2 == 1) {
     stop(sprintf(
-      "`n_combinations` (%d) must an even number for the the `combination_sampling_method` (%s) to work.",
+      "`n_combinations` (%d) must be an even number for the the `combination_sampling_method = '%s'` to work.",
       n_combinations, combination_sampling_method
     ))
   }
