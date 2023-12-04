@@ -358,14 +358,14 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6,
       # Divide by two due to paired sampling
       n_features_sample <- sample(
         x = n_features,
-        size = (n_combinations - unique_samples - 2)/2,
+        size = (n_combinations - unique_samples - 2) / 2,
         replace = TRUE,
         prob = p
       )
 
       # Sample specific set of features
       feature_sample <- sample_features_cpp(m, n_features_sample)
-      feature_sample_paired <- lapply(feature_sample, function(x, m) {seq(m)[-x]}, m = m)
+      feature_sample_paired <- lapply(feature_sample, function(x, m) seq(m)[-x], m = m)
       feature_sample_all <- c(feature_sample_all, feature_sample, feature_sample_paired)
       unique_samples <- length(unique(feature_sample_all))
     }
@@ -378,12 +378,14 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6,
     )
     feature_sample_all <- sample_features_cpp(m, n_features_sample)
   } else {
-    stop(sprintf("`shapr` does not recognise '%s' as a combination sampling method.",
-                 combination_sampling_method))
+    stop(sprintf(
+      "`shapr` does not recognise '%s' as a combination sampling method.",
+      combination_sampling_method
+    ))
   }
 
   # Sort them
-  feature_sample_all = feature_sample_all[order(as.integer(sapply(feature_sample_all, paste, collapse = "")))]
+  feature_sample_all <- feature_sample_all[order(as.integer(sapply(feature_sample_all, paste, collapse = "")))]
 
   # Add zero and m features
   feature_sample_all <- c(list(integer(0)), feature_sample_all, list(c(1:m)))
@@ -552,24 +554,26 @@ feature_group_not_exact <- function(group_num,
       # Divide by two due to paired sampling
       n_features_sample <- sample(
         x = n_groups,
-        size = (n_combinations - unique_samples - 2)/2,
+        size = (n_combinations - unique_samples - 2) / 2,
         replace = TRUE,
         prob = p
       )
 
       # Sample specific set of features
       feature_sample <- sample_features_cpp(m, n_features_sample)
-      feature_sample_paired <- lapply(feature_sample, function(x, m) {seq(m)[-x]}, m = m)
+      feature_sample_paired <- lapply(feature_sample, function(x, m) seq(m)[-x], m = m)
       feature_sample_all <- c(feature_sample_all, feature_sample, feature_sample_paired)
       unique_samples <- length(unique(feature_sample_all))
     }
   } else {
-    stop(sprintf("`shapr` does not recognise '%s' as a combination sampling method.",
-                 combination_sampling_method))
+    stop(sprintf(
+      "`shapr` does not recognise '%s' as a combination sampling method.",
+      combination_sampling_method
+    ))
   }
 
   # Sort them
-  feature_sample_all = feature_sample_all[order(as.integer(sapply(feature_sample_all, paste, collapse = "")))]
+  feature_sample_all <- feature_sample_all[order(as.integer(sapply(feature_sample_all, paste, collapse = "")))]
 
   # Add zero and m features
   feature_sample_all <- c(list(integer(0)), feature_sample_all, list(c(1:m)))
@@ -693,15 +697,19 @@ create_S_batch_new <- function(internal, seed = NULL) {
       # Ensure that the number of batches is not larger than `n_batches`.
       # Remove one batch from the approach with the most batches.
       while (sum(batch_count_dt$n_batches_per_approach) > n_batches) {
-        batch_count_dt[which.max(n_batches_per_approach),
-                       n_batches_per_approach := n_batches_per_approach - 1]
+        batch_count_dt[
+          which.max(n_batches_per_approach),
+          n_batches_per_approach := n_batches_per_approach - 1
+        ]
       }
 
       # Ensure that the number of batches is not lower than `n_batches`.
       # Add one batch to the approach with most coalitions per batch
       while (sum(batch_count_dt$n_batches_per_approach) < n_batches) {
-        batch_count_dt[which.max(n_S_per_approach / n_batches_per_approach),
-                       n_batches_per_approach := n_batches_per_approach + 1]
+        batch_count_dt[
+          which.max(n_S_per_approach / n_batches_per_approach),
+          n_batches_per_approach := n_batches_per_approach + 1
+        ]
       }
     }
 

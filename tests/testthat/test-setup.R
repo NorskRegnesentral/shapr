@@ -1389,7 +1389,7 @@ test_that("incompatible input: `data/approach`", {
 })
 
 test_that("Correct `combination_sampling_method`:", {
-  n_combinations = 10
+  n_combinations <- 10
   res <- explain(
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
@@ -1402,7 +1402,7 @@ test_that("Correct `combination_sampling_method`:", {
   )
   expect_equal(res$internal$parameters$combination_sampling_method, "unique")
 
-  res_all = explain(
+  res_all <- explain(
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_explain_mixed,
@@ -1428,8 +1428,8 @@ test_that("Correct `combination_sampling_method`:", {
 
   # Check that every coalition includes it compliment
   # This relies on the S matrix being sorted
-  expect_true(all(res_paired$internal$objects$S[1:(n_combinations/2),]
-                  + res_paired$internal$objects$S[n_combinations:(n_combinations/2 + 1),] == 1))
+  expect_true(all(res_paired$internal$objects$S[1:(n_combinations / 2), ]
+                  + res_paired$internal$objects$S[n_combinations:(n_combinations / 2 + 1), ] == 1))
 
 })
 

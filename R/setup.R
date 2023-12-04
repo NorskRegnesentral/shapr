@@ -377,8 +377,8 @@ get_extra_parameters <- function(internal) {
   }
 
   # Get the number of unique approaches
-    internal$parameters$n_approaches <- length(internal$parameters$approach)
-    internal$parameters$n_unique_approaches <- length(unique(internal$parameters$approach))
+  internal$parameters$n_approaches <- length(internal$parameters$approach)
+  internal$parameters$n_unique_approaches <- length(unique(internal$parameters$approach))
 
   return(internal)
 }
@@ -407,19 +407,21 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
 
   # combination_sampling_method
   if (!is.null(combination_sampling_method) &&
-      !(is.character(combination_sampling_method) &&
-        length(combination_sampling_method) == 1 &&
-        combination_sampling_method %in% c("unique", "unique-paired", "non-unique"))) {
+    !(is.character(combination_sampling_method) &&
+      length(combination_sampling_method) == 1 &&
+      combination_sampling_method %in% c("unique", "unique-paired", "non-unique"))) {
     stop("`combination_sampling_method` must be one of the following: 'unique', 'unique-paired', or 'non-unique'.")
   }
 
   # combination_sampling_method with paired sampling
   if (!is.null(combination_sampling_method) &&
-      grepl("paired", combination_sampling_method) &&
-      !is.null(n_combinations) &&
-      n_combinations %% 2 == 1) {
-    stop(sprintf("`n_combinations` (%d) must an even number for the the `combination_sampling_method` (%s) to work.",
-                 n_combinations, combination_sampling_method))
+    grepl("paired", combination_sampling_method) &&
+    !is.null(n_combinations) &&
+    n_combinations %% 2 == 1) {
+    stop(sprintf(
+      "`n_combinations` (%d) must an even number for the the `combination_sampling_method` (%s) to work.",
+      n_combinations, combination_sampling_method
+    ))
   }
 
   # group (checked more thoroughly later)
@@ -719,7 +721,7 @@ set_defaults <- function(internal) {
 
   # combination_sampling_method
   if (is.null(combination_sampling_method) && isFALSE(exact)) {
-    internal$parameters$combination_sampling_method = "unique"
+    internal$parameters$combination_sampling_method <- "unique"
   }
 
   return(internal)
