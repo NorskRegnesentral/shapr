@@ -35,7 +35,7 @@
 #'
 #' #' @param combination_sampling_method Character.
 #' The sampling method used to sample the combinations when `n_combinations` is specified, i.e., not `NULL`.
-#' It should either be `"unique"` (default), `"unique-paired"`, or `"non-unique".`
+#' It should either be `"unique"` (default), `"unique-paired"`, or `"non-unique"`.
 #' If `combination_sampling_method = "unique"`, then `shapr` samples combinations with replacements based on the
 #' Shapley kernel weights until `n_combinations` unique combinations are sampled.
 #' If `combination_sampling_method = "unique-paired"`, then `shapr` samples combinations with replacements based on the
