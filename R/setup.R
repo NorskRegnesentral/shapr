@@ -23,6 +23,7 @@ setup <- function(x_train,
                   prediction_zero,
                   output_size = 1,
                   n_combinations,
+                  combination_sampling_method,
                   group,
                   n_samples,
                   n_batches,
@@ -49,6 +50,7 @@ setup <- function(x_train,
     prediction_zero = prediction_zero,
     output_size = output_size,
     n_combinations = n_combinations,
+    combination_sampling_method = combination_sampling_method,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -120,7 +122,6 @@ check_and_set_parameters <- function(internal) {
   is_groupwise <- internal$parameters$is_groupwise
   exact <- internal$parameters$exact
 
-
   if (!is.null(group)) {
     check_groups(feature_names, group)
   }
@@ -148,7 +149,6 @@ check_and_set_parameters <- function(internal) {
 
   # Checking n_batches vs n_combinations etc
   check_n_batches(internal)
-
 
   return(internal)
 }
@@ -384,9 +384,9 @@ get_extra_parameters <- function(internal) {
 }
 
 #' @keywords internal
-get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
-                           n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
-                           explain_xreg_lags, group_lags = NULL, timing, is_python, ...) {
+get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, combination_sampling_method,
+                           group, n_samples, n_batches, seed, keep_samp_for_vS, type, horizon, train_idx,
+                           explain_idx, explain_y_lags, explain_xreg_lags, group_lags = NULL, timing, is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -398,6 +398,28 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
       !is.na(n_combinations) &&
       n_combinations > 0)) {
     stop("`n_combinations` must be NULL or a single positive integer.")
+  }
+
+  # combination_sampling_method without n_combinations
+  if (is.null(n_combinations) && !is.null(combination_sampling_method)) {
+    stop("Specifying `combination_sampling_method` will have no effect when `n_combinations = NULL` in explain(...).")
+  }
+
+  # combination_sampling_method
+  if (!is.null(combination_sampling_method) &&
+      !(is.character(combination_sampling_method) &&
+        length(combination_sampling_method) == 1 &&
+        combination_sampling_method %in% c("unique", "unique-paired", "non-unique"))) {
+    stop("`combination_sampling_method` must be one of the following: 'unique', 'unique-paired', or 'non-unique'.")
+  }
+
+  # combination_sampling_method with paired sampling
+  if (!is.null(combination_sampling_method) &&
+      grepl("paired", combination_sampling_method) &&
+      !is.null(n_combinations) &&
+      n_combinations %% 2 == 1) {
+    stop(sprintf("`n_combinations` (%d) must an even number for the the `combination_sampling_method` (%s) to work.",
+                 n_combinations, combination_sampling_method))
   }
 
   # group (checked more thoroughly later)
@@ -413,6 +435,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     n_samples > 0)) {
     stop("`n_samples` must be a single positive integer.")
   }
+
   # n_batches
   if (!is.null(n_batches) &&
     !(is.wholenumber(n_batches) &&
@@ -422,9 +445,8 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     stop("`n_batches` must be NULL or a single positive integer.")
   }
 
-
   # seed is already set, so we know it works
-  # keep_samp_for_vS
+  # timing
   if (!(is.logical(timing) &&
     length(timing) == 1)) {
     stop("`timing` must be single logical.")
@@ -473,7 +495,6 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   }
 
   #### Tests combining more than one parameter ####
-
   # prediction_zero vs output_size
   if (!all((is.numeric(prediction_zero)) &&
     all(length(prediction_zero) == output_size) &&
@@ -485,14 +506,12 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     ))
   }
 
-
-
-
   # Getting basic input parameters
   parameters <- list(
     approach = approach,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
+    combination_sampling_method = combination_sampling_method,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -508,7 +527,6 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
 
   # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
-
 
   # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
@@ -691,10 +709,17 @@ set_defaults <- function(internal) {
   n_unique_approaches <- internal$parameters$n_unique_approaches
   used_n_combinations <- internal$parameters$used_n_combinations
   n_batches <- internal$parameters$n_batches
+  combination_sampling_method <- internal$parameters$combination_sampling_method
+  exact <- internal$parameters$exact
 
   # n_batches
   if (is.null(n_batches)) {
     internal$parameters$n_batches <- get_default_n_batches(approach, n_unique_approaches, used_n_combinations)
+  }
+
+  # combination_sampling_method
+  if (is.null(combination_sampling_method) && isFALSE(exact)) {
+    internal$parameters$combination_sampling_method = "unique"
   }
 
   return(internal)

@@ -554,6 +554,106 @@ test_that("erroneous input: `n_combinations`", {
   )
 })
 
+test_that("erroneous input: `combination_sampling_method`", {
+  set.seed(123)
+
+  expect_snapshot(
+    {
+      # not specified n_combinations
+      combination_sampling_method <- "unique"
+
+      explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        prediction_zero = p0,
+        n_batches = 1,
+        combination_sampling_method = combination_sampling_method,
+        timing = FALSE
+      )
+    },
+    error = TRUE
+  )
+
+  expect_snapshot(
+    {
+      # not a character
+      combination_sampling_method <- 1
+
+      explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        prediction_zero = p0,
+        n_batches = 1,
+        n_combinations = 10,
+        combination_sampling_method = combination_sampling_method,
+        timing = FALSE
+      )
+    },
+    error = TRUE
+  )
+
+  expect_snapshot(
+    {
+      # incorrect length
+      combination_sampling_method <- c("unique", "unique-paired")
+
+      explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        prediction_zero = p0,
+        n_batches = 1,
+        n_combinations = 10,
+        combination_sampling_method = combination_sampling_method,
+        timing = FALSE
+      )
+    },
+    error = TRUE
+  )
+
+  expect_snapshot(
+    {
+      # incorrect character
+      combination_sampling_method <- "bla"
+
+      explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        prediction_zero = p0,
+        n_batches = 1,
+        n_combinations = 10,
+        combination_sampling_method = combination_sampling_method,
+        timing = FALSE
+      )
+    },
+    error = TRUE
+  )
+
+  expect_snapshot(
+    {
+      # Odd number of combinations for paired
+      combination_sampling_method <- "unique-paired"
+
+      explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        prediction_zero = p0,
+        n_batches = 1,
+        n_combinations = 11,
+        combination_sampling_method = combination_sampling_method,
+        timing = FALSE
+      )
+    },
+    error = TRUE
+  )
+})
+
 test_that("erroneous input: `group`", {
   set.seed(123)
 
@@ -1287,6 +1387,52 @@ test_that("incompatible input: `data/approach`", {
     error = TRUE
   )
 })
+
+test_that("Correct `combination_sampling_method`:", {
+  n_combinations = 10
+  res <- explain(
+    model = model_lm_mixed,
+    x_explain = x_explain_mixed,
+    x_train = x_explain_mixed,
+    prediction_zero = p0,
+    approach = "ctree",
+    n_combinations = n_combinations,
+    n_batches = 1,
+    timing = FALSE
+  )
+  expect_equal(res$internal$parameters$combination_sampling_method, "unique")
+
+  res_all = explain(
+    model = model_lm_mixed,
+    x_explain = x_explain_mixed,
+    x_train = x_explain_mixed,
+    prediction_zero = p0,
+    approach = "ctree",
+    n_batches = 1,
+    timing = FALSE
+  )
+  expect_null(res_all$internal$parameters$combination_sampling_method)
+
+  res_paired <- explain(
+    model = model_lm_mixed,
+    x_explain = x_explain_mixed,
+    x_train = x_explain_mixed,
+    prediction_zero = p0,
+    approach = "ctree",
+    n_combinations = n_combinations,
+    combination_sampling_method = "unique-paired",
+    n_batches = 1,
+    timing = FALSE
+  )
+  expect_equal(res_paired$internal$parameters$combination_sampling_method, "unique-paired")
+
+  # Check that every coalition includes it compliment
+  # This relies on the S matrix being sorted
+  expect_true(all(res_paired$internal$objects$S[1:(n_combinations/2),]
+                  + res_paired$internal$objects$S[n_combinations:(n_combinations/2 + 1),] == 1))
+
+})
+
 
 test_that("Correct dimension of S when sampling combinations", {
   n_combinations <- 10

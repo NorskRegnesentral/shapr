@@ -46,6 +46,41 @@ test_that("output_lm_numeric_empirical_n_combinations", {
   )
 })
 
+test_that("output_lm_numeric_empirical_n_combinations_unique_paired", {
+  expect_snapshot_rds(
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "empirical",
+      prediction_zero = p0,
+      n_combinations = 20,
+      combination_sampling_method = "unique-paired",
+      n_batches = 1,
+      timing = FALSE
+    ),
+    "output_lm_numeric_empirical_n_combinations_unique_paired"
+  )
+})
+
+test_that("output_lm_numeric_empirical_n_combinations_unique_paired", {
+  expect_snapshot_rds(
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "empirical",
+      prediction_zero = p0,
+      n_combinations = 6,
+      group = list(A = c("Solar.R", "Wind"), B = c("Temp"), C = c("Month", "Day")),
+      combination_sampling_method = "unique-paired",
+      n_batches = 1,
+      timing = FALSE
+    ),
+    "output_lm_numeric_empirical_n_combinations_unique_paired"
+  )
+})
+
 test_that("output_lm_numeric_empirical_independence", {
   set.seed(123)
   expect_snapshot_rds(

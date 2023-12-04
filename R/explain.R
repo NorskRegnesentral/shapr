@@ -33,6 +33,22 @@
 #' If `n_combinations = NULL`, the exact method is used and all combinations are considered.
 #' The maximum number of combinations equals `2^m`, where `m` is the number of features.
 #'
+#' #' @param combination_sampling_method Character.
+#' The sampling method used to sample the combinations when `n_combinations` is specified, i.e., not `NULL`.
+#' It should either be `"unique"` (default), `"unique-paired"`, or `"non-unique".`
+#' If `combination_sampling_method = "unique"`, then `shapr` samples combinations with replacements based on the
+#' Shapley kernel weights until `n_combinations` unique combinations are sampled.
+#' If `combination_sampling_method = "unique-paired"`, then `shapr` samples combinations with replacements based on the
+#' Shapley kernel weights until `n_combinations` unique combinations are sampled. This is done such that for each time
+#' combination S is sampled its compliment Sbar will also be sampled. I.e., a feature present in S will not be present
+#' in Sbar, and vice versa. To use `"unique-paired"`, `n_combinations` must be an even number.
+#' Paired sampling is also called antithetic sampling and can improve the stability and
+#' produce more accurate Shapley value explanations with a lower number of `n_combinations` than `unique`, especially,
+#' for correlated data.
+#' If `combination_sampling_method = "non-unique"`, then `shapr` samples `n_combinations` combinations based on the
+#' Shapley kernel weights with replacements. The number of unique combinations are then likely to be less than
+#' `n_combinations`.
+#'
 #' @param group List.
 #' If `NULL` regular feature wise Shapley values are computed.
 #' If provided, group wise Shapley values are computed. `group` then has length equal to
@@ -250,6 +266,7 @@ explain <- function(model,
                     approach,
                     prediction_zero,
                     n_combinations = NULL,
+                    combination_sampling_method = NULL,
                     group = NULL,
                     n_samples = 1e3,
                     n_batches = NULL,
@@ -279,6 +296,7 @@ explain <- function(model,
     approach = approach,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
+    combination_sampling_method = combination_sampling_method,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
