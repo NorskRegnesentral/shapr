@@ -799,7 +799,7 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
 ## Setup -----------------------------------------------------------------------------------------------------------
 
 n_samples <- 1000
-n_samples <- 25000
+# n_samples <- 25000
 n_train <- 1000
 n_test <- 500
 M <- 8
