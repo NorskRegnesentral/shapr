@@ -1,6 +1,6 @@
 # Libraries -------------------------------------------------------------------------------------------------------
+# library(shapr)
 library(data.table)
-library(shapr)
 library(rbenchmark)
 
 
