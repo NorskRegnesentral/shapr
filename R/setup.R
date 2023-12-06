@@ -20,9 +20,11 @@
 setup <- function(x_train,
                   x_explain,
                   approach,
+                  shap_approach,
                   prediction_zero,
                   output_size = 1,
                   n_combinations,
+                  n_permutations,
                   group,
                   n_samples,
                   n_batches,
@@ -46,9 +48,11 @@ setup <- function(x_train,
 
   internal$parameters <- get_parameters(
     approach = approach,
+    shap_approach = shap_approach,
     prediction_zero = prediction_zero,
     output_size = output_size,
     n_combinations = n_combinations,
+    n_permutations = n_permutations,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -372,12 +376,17 @@ get_extra_parameters <- function(internal) {
 }
 
 #' @keywords internal
-get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
+get_parameters <- function(approach, shap_approach, prediction_zero, output_size = 1, n_combinations, n_permutations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
                            explain_xreg_lags, group_lags = NULL, timing, is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
+
+  # Check if shap_approach is a character equal to either "kernel" or "permutation"
+  if (!is.character(shap_approach) || !(shap_approach %in% c("kernel", "permutation"))) {
+    stop("`shap_approach` must be a character equal to either 'kernel' or 'permutation'.")
+  }
 
   # n_combinations
   if (!is.null(n_combinations) &&
@@ -387,6 +396,16 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
       n_combinations > 0)) {
     stop("`n_combinations` must be NULL or a single positive integer.")
   }
+
+  # n_combinations
+  if (!is.null(n_permutations) &&
+      !(is.wholenumber(n_permutations) &&
+        length(n_permutations) == 1 &&
+        !is.na(n_permutations) &&
+        n_permutations > 0)) {
+    stop("`n_permutations` must be NULL or a single positive integer.")
+  }
+
 
   # group (checked more thoroughly later)
   if (!is.null(group) &&
@@ -479,8 +498,10 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   # Getting basic input parameters
   parameters <- list(
     approach = approach,
+    shap_approach = shap_approach,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
+    n_permutations = n_permutations,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -499,7 +520,12 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
 
 
   # Setting exact based on n_combinations (TRUE if NULL)
-  parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
+  if(shap_approach=="permutation"){
+    parameters$exact <- ifelse(is.null(parameters$n_permutations), TRUE, FALSE)
+    parameters$n_combinations <- 3*parameters$n_permutations # Temporary setting this parameter to avoid errors in the code
+  } else {
+    parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
+  }
 
   return(parameters)
 }

@@ -8,6 +8,7 @@
 #' @export
 finalize_explanation <- function(vS_list, internal) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
+  shap_approach <- internal$parameters$shap_approach
 
   processed_vS_list <- postprocess_vS_list(
     vS_list = vS_list,
@@ -20,7 +21,11 @@ finalize_explanation <- function(vS_list, internal) {
   # internal$timing$postprocessing <- Sys.time()
 
   # Compute the Shapley values
-  dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+  if(shap_approach == "permutation"){
+    dt_shapley <- compute_shapley_permutation(internal, processed_vS_list$dt_vS)
+  } else {
+    dt_shapley <- compute_shapley_new(internal, processed_vS_list$dt_vS)
+  }
 
   # internal$timing$shapley_computation <- Sys.time()
 
@@ -99,6 +104,49 @@ get_p <- function(dt_vS, internal) {
   }
 
   return(p)
+}
+
+compute_shapley_permutation <- function(internal,dt_vS){
+  feature_names <- internal$parameters$feature_names
+  X_perm <- internal$objects$X_perm
+  n_permutations <- internal$parameters$n_permutations
+  n_features <- internal$parameters$n_features
+  n_explain <- internal$parameters$n_explain
+  max_id_combination <- internal$parameters$n_combinations
+  S <- internal$objects$S
+  phi0 <- internal$parameters$prediction_zero
+
+
+  apply_cols <- names(dt_vS)[-1]
+
+  kshap <- matrix(0,ncol=n_explain,nrow=n_features)
+
+  for(i in seq(n_permutations)){
+    # Find id combinations that are permuted
+    these_id_combs <- c(1,X_perm[permute_id==i,id_combination],max_id_combination)
+
+    # Find the feature to map the contributions to
+    mapping_mat <- apply(S[these_id_combs,],FUN=diff,MARGIN=2)
+    contributes_to <- apply(mapping_mat,FUN=function(x) which(x==1),MARGIN=1)
+    reorder_vec <- order(contributes_to)
+
+    #### LOOK HERE: OK, something is off here, I think it might be the merging that is messing up the order
+    # I need the order to be such that the X_perm always have the smallest feature numbers first.
+
+    # Find the corresponding rows in dt_vS and get the contribution
+    these_vS <- dt_vS[id_combination %in% these_id_combs]
+    these_contribs <- these_vS[,lapply(.SD,diff),.SDcols=apply_cols]
+
+    reordered_contribs <- as.matrix(these_contribs[reorder_vec,])
+    kshap <- kshap + reordered_contribs
+  }
+  kshap <- kshap/n_permutations
+
+
+
+  dt_shapley <- data.table::data.table(cbind(none=phi0,t(kshap)))
+  names(dt_shapley)[-1] <- feature_names
+  return(dt_shapley)
 }
 
 #' Compute shapley values

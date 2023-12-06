@@ -133,10 +133,25 @@ shapley_setup <- function(internal) {
   exact <- internal$parameters$exact
   n_features0 <- internal$parameters$n_features
   n_combinations <- internal$parameters$n_combinations
+  n_permutations <- internal$parameters$n_permutations
   is_groupwise <- internal$parameters$is_groupwise
+  shap_approach <- internal$parameters$shap_approach
 
   group_num <- internal$objects$group_num
 
+  if(shap_approach == "permutation"){
+
+# TODO: Add grouping to the permutation approach later
+    X_list <- feature_combinations_perm(
+      m = n_features0,
+      exact = exact,
+      n_permutations = n_permutations
+    )
+  X <- X_list$X
+  internal$objects$X_perm <- X_list$X_perm
+  W <- NULL
+
+  } else {
   X <- feature_combinations(
     m = n_features0,
     exact = exact,
@@ -152,6 +167,13 @@ shapley_setup <- function(internal) {
     is_groupwise = is_groupwise
   )
 
+  # Updating parameters$exact as done in feature_combinations
+  if (!exact && n_combinations >= 2^n_features0) {
+    internal$parameters$exact <- TRUE
+  }
+  }
+
+
   ## Get feature matrix ---------
   S <- feature_matrix_cpp(
     features = X[["features"]],
@@ -159,12 +181,6 @@ shapley_setup <- function(internal) {
   )
 
   #### Updating parameters ####
-
-  # Updating parameters$exact as done in feature_combinations
-  if (!exact && n_combinations >= 2^n_features0) {
-    internal$parameters$exact <- TRUE
-  }
-
   internal$parameters$n_combinations <- nrow(S) # Updating this parameter in the end based on what is actually used.
 
   # This will be obsolete later
@@ -179,6 +195,147 @@ shapley_setup <- function(internal) {
 
   return(internal)
 }
+
+feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL) {
+
+  if (!exact) {
+      # Switch to exact for feature-wise method
+      if (n_permutations >= factorial(m)) {
+        n_combinations <- factorial(m)
+        exact <- TRUE
+        message(
+          paste0(
+            "Success with message:\n",
+            "n_permutations is larger than or equal to m! = ", factorial(m), ". \n",
+            "Using exact instead.\n"
+          )
+        )
+      }
+  }
+
+  if (exact) {
+    perm_dt <- feature_permute_exact(m)
+  } else {
+    perm_dt <- feature_permute_samp(m, n_permutations)
+  }
+
+  ret <- X_from_perm_dt(perm_dt)
+
+  ret$perm_dt = perm_dt
+
+  return(ret)
+}
+
+
+feature_permute_samp <- function(m, n_permutations) {
+  x <- seq(m)
+  perms <- vector("list", n_permutations)
+  perms[[1]] <- sample(x)
+
+  for (i in 2:n_permutations) {
+    perm <- sample(x)
+    while (any(sapply(perms[1:(i-1)], function(p) all(p == perm)))) {
+      perm <- sample(x)
+    }
+    perms[[i]] <- perm
+  }
+
+  # Create data.table with id_combination and features columns
+  dt <- data.table(
+    permute_id = seq(n_permutations),
+    perm = perms
+  )
+
+  return(dt)
+}
+
+feature_permute_exact <- function(m) {
+
+  # Generate all possible combinations
+  perms <- all_permutations(seq(m))
+
+  # Create data.table with id_combination and features columns
+  dt <- data.table(
+    permute_id = seq_along(perms),
+    perm = as.list(perms)
+  )
+
+  return(dt)
+}
+
+all_permutations <- function(x) {
+  if (length(x) <= 1) {
+    return(list(x))
+  } else {
+    perms <- list()
+    for (i in seq_along(x)) {
+      sub_perms <- all_permutations(x[-i])
+      for (j in seq_along(sub_perms)) {
+        perms[[length(perms) + 1]] <- c(x[i], sub_perms[[j]])
+      }
+    }
+    return(perms)
+  }
+}
+
+
+X_from_perm_dt <- function(perm_dt) {
+  m <- length(perm_dt[["perm"]][[1]])
+  tmp <- list()
+
+  for(i in 1:nrow(perm_dt)){
+    perm0 <- perm_dt[i, perm][[1]]
+    for (j in seq_len(m-1)){
+      tmp[[length(tmp) + 1]] <- sort(perm0[1:j])
+    }
+  }
+
+  feature_sample_all <- c(list(integer(0)), tmp, list(c(1:m)))
+  X_perm <- data.table(n_features = sapply(feature_sample_all, length))
+  X_perm[, n_features := as.integer(n_features)]
+
+  # Get number of occurences and duplicated rows-------
+  is_duplicate <- NULL # due to NSE notes in R CMD check
+  r <- shapr:::helper_feature(m, feature_sample_all)
+  X_perm[, is_duplicate := r[["is_duplicate"]]]
+  X_perm[, features := feature_sample_all]
+  X_perm[, permute_id := c(NA,rep(seq_len(nrow(perm_dt)),each = m-1),Inf)]
+  data.table::setkeyv(X_perm, c("n_features","permute_id"))
+  X_perm[!is.finite(permute_id), permute_id := NA]
+
+  # Temporary create a character string to merge back on below (cannot merge on lists)
+  X_perm[, features_tmp := sapply(features, paste, collapse = " ")]
+  X_perm[, rowid:=.I]
+
+  if (any(X_perm[["is_duplicate"]])) {
+    X <- X_perm[is_duplicate == FALSE]
+  } else {
+    X <- copy(X_perm)
+  }
+  X[,id_combination:=.I]
+  X[, is_duplicate := NULL]
+
+  # Merge back to get the id_combination mapping also in X_perm
+  X_perm <- merge(X_perm,X[,.(features_tmp,id_combination)],by="features_tmp",all.x=TRUE)
+  data.table::setorderv(X_perm, "rowid")
+  X_perm[, rowid:=NULL]
+  X[, rowid:=NULL]
+
+  X_perm[, features_tmp := NULL]
+  X[, features_tmp := NULL]
+
+  setcolorder(X,c("id_combination","permute_id", "features", "n_features"))
+
+
+  ret <- list(X=X[],X_perm=X_perm[])
+  return(ret)
+}
+
+
+
+
+
+
 
 #' Define feature combinations, and fetch additional information about each unique combination
 #'
@@ -619,6 +776,7 @@ create_S_batch_new <- function(internal, seed = NULL) {
   approach0 <- internal$parameters$approach
   n_combinations <- internal$parameters$n_combinations
   n_batches <- internal$parameters$n_batches
+  shap_approach <- internal$parameters$shap_approach
 
   X <- internal$objects$X
 
@@ -643,7 +801,9 @@ create_S_batch_new <- function(internal, seed = NULL) {
     set.seed(seed)
     X[, randomorder := sample(.N)]
     data.table::setorder(X, randomorder) # To avoid smaller id_combinations always proceeding large ones
-    data.table::setorder(X, shapley_weight)
+    if(shap_approach!="permutation") {
+      data.table::setorder(X, shapley_weight)
+    }
 
     batch_counter <- 0
     for (i in seq_along(approach_vec)) {
@@ -656,7 +816,9 @@ create_S_batch_new <- function(internal, seed = NULL) {
     # Spreading the batches
     X[, randomorder := sample(.N)]
     data.table::setorder(X, randomorder)
-    data.table::setorder(X, shapley_weight)
+    if(shap_approach!="permutation") {
+      data.table::setorder(X, shapley_weight)
+    }
     X[!(n_features %in% c(0, n_features0)), batch := ceiling(.I / .N * n_batches)]
   }
 
