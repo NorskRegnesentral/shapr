@@ -10,7 +10,7 @@ plot_MSEv_eval_crit(
   id_combination = NULL,
   CI_level = ifelse(length(explanation_list[[1]]$pred_explain) < 20, NULL, 0.95),
   geom_col_width = 0.9,
-  make_MSEv_comb_and_explicand = FALSE
+  plot_type = "overall"
 )
 }
 \arguments{
@@ -39,16 +39,19 @@ MSEv data.tables in the objects in the \code{explanation_list}.}
 
 \item{geom_col_width}{Numeric. Bar width. By default, set to 90\% of the \code{\link[ggplot2:resolution]{ggplot2::resolution()}} of the data.}
 
-\item{make_MSEv_comb_and_explicand}{Logical. If \code{FALSE} (default), then only the plot associated with the overall
-MSEv criterion is created (i.e., when averaging over both the combinations and observations). When \code{TRUE},
-the function also creates figures illustrating the MSEv evaluation criterion for each observation and combination
-by only averaging over the combinations and observations, respectively.}
+\item{plot_type}{Character vector. The possible options are "overall" (default), "comb", and "explicand".
+If \code{plot_type = "overall"}, then the plot (one bar plot) associated with the overall MSEv evaluation criterion
+for each method is created, i.e., when averaging over both the combinations/coalitions and observations/explicands.
+If \code{plot_type = "comb"}, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
+criterion for each combination/coalition are created, i.e., when we only average over the observations/explicands.
+If \code{plot_type = "explicand"}, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
+criterion for each observations/explicands are created, i.e., when we only average over the combinations/coalitions.
+If \code{plot_type} is a vector of one or several of "overall", "comb", and "explicand", then the associated plots are
+created.}
 }
 \value{
-A \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object of the MSEv criterion. If \code{make_MSEv_comb_and_explicand = TRUE},
-then a list of  5 \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} objects are returned (three bar plots and two line plots),
-where the additional fiugres are the MSEv criterion when only averaged over either the combinations
-or the test observations.
+Either a single \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object of the MSEv criterion when \code{plot_type = "overall"}, or a list
+of \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} objects based on the \code{plot_type} parameter.
 }
 \description{
 Make plots to visualize and compare the MSEv evaluation criterion for a list of
@@ -151,12 +154,12 @@ explanation_list_named <- list(
 if (requireNamespace("ggplot2", quietly = TRUE)) {
   # Create the default MSEv plot where we average over both the combinations and observations
   # with approximate 95\% confidence intervals
-  plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95)
+  plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95, plot_type = "overall")
 
   # Can also create plots of the MSEv criterion averaged only over the combinations or observations.
   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
     CI_level = 0.95,
-    make_MSEv_comb_and_explicand = TRUE
+    plot_type = c("overall", "comb", "explicand")
   )
   MSEv_figures$MSEv_bar
   MSEv_figures$MSEv_combination_bar
@@ -168,12 +171,12 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
 
   # We can specify which observations or combinations to plot
   plot_MSEv_eval_crit(explanation_list_named,
-    make_MSEv_comb_and_explicand = TRUE,
+    plot_type = "explicand",
     index_x_explain = c(1, 3:4, 6),
     CI_level = 0.95
   )$MSEv_explicand_bar
   plot_MSEv_eval_crit(explanation_list_named,
-    make_MSEv_comb_and_explicand = TRUE,
+    plot_type = "comb",
     id_combination = c(3, 4, 9, 13:15),
     CI_level = 0.95
   )$MSEv_combination_bar
