@@ -210,9 +210,9 @@ MSEv_figure +
 
 # Can also create plots where we look at the MSEv criterion averaged only over the combinations or observations.
 # Note that we can also alter the design of these plots as we did above.
-MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
-  make_MSEv_comb_and_explicand = TRUE
-)
+MSEv_figures <- plot_MSEv_eval_crit(
+  explanation_list_named,
+  plot_type = c("overall", "comb", "explicand"))
 MSEv_figures$MSEv_bar
 MSEv_figures$MSEv_combination_bar
 MSEv_figures$MSEv_explicand_bar
@@ -223,18 +223,19 @@ MSEv_figures$MSEv_explicand_line_point
 
 # We can specify which test observations or combinations to plot
 plot_MSEv_eval_crit(explanation_list_named,
-  make_MSEv_comb_and_explicand = TRUE,
+                    plot_type = "explicand",
   index_x_explain = c(1, 3:4, 6)
 )$MSEv_explicand_bar
 plot_MSEv_eval_crit(explanation_list_named,
-  make_MSEv_comb_and_explicand = TRUE,
+                    plot_type = "comb",
   id_combination = c(3, 4, 9, 13:15)
 )$MSEv_combination_bar
 
 
 # To rotate the combination plot, we need to alter the order of the methods to get them in the same order as before
-MSEv_combination <- plot_MSEv_eval_crit(explanation_list_named,
-  make_MSEv_comb_and_explicand = TRUE,
+MSEv_combination <- plot_MSEv_eval_crit(
+  explanation_list_named,
+  plot_type = "comb",
   id_combination = c(3, 4, 9, 13:15)
 )$MSEv_combination_bar
 MSEv_combination$data$Method <- factor(MSEv_combination$data$Method, levels = rev(levels(MSEv_combination$data$Method)))
@@ -245,8 +246,9 @@ MSEv_combination +
 
 
 # Rotate and with text, but without CI
-MSEv_combination_wo_CI <- plot_MSEv_eval_crit(explanation_list_named,
-  make_MSEv_comb_and_explicand = TRUE,
+MSEv_combination_wo_CI <- plot_MSEv_eval_crit(
+  explanation_list_named,
+  plot_type = "comb",
   id_combination = c(3, 4, 9, 13:15),
   CI_level = NULL
 )$MSEv_combination_bar

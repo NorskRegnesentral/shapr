@@ -181,14 +181,15 @@ test_that("MSEv evaluation criterion plots", {
     "Comb." = explain_numeric_combined
   )
 
-  MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
-    make_MSEv_comb_and_explicand = TRUE,
+  MSEv_plots <- plot_MSEv_eval_crit(
+    explanation_list_named,
+    plot_type = c("overall", "comb", "explicand"),
     CI_level = 0.95
   )
 
-  MSEv_plots_specified_width <- plot_MSEv_eval_crit(explanation_list_named,
-    make_MSEv_comb_and_explicand = TRUE,
-    CI_level = 0.95,
+  MSEv_plots_specified_width <- plot_MSEv_eval_crit(
+    explanation_list_named,
+    plot_type = c("overall", "comb", "explicand"),
     geom_col_width = 0.5
   )
 
@@ -199,16 +200,18 @@ test_that("MSEv evaluation criterion plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv_bar 50% CI",
-    fig = plot_MSEv_eval_crit(explanation_list_named,
-      make_MSEv_comb_and_explicand = FALSE,
+    fig = plot_MSEv_eval_crit(
+      explanation_list_named,
+      plot_type = "overall",
       CI_level = 0.50
     )
   )
 
   vdiffr::expect_doppelganger(
     title = "MSEv_bar without CI",
-    fig = plot_MSEv_eval_crit(explanation_list_named,
-      make_MSEv_comb_and_explicand = FALSE,
+    fig = plot_MSEv_eval_crit(
+      explanation_list_named,
+      plot_type = "overall",
       CI_level = NULL
     )
   )
@@ -250,17 +253,18 @@ test_that("MSEv evaluation criterion plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv_explicand for specified observations",
-    fig = plot_MSEv_eval_crit(explanation_list_named,
-      make_MSEv_comb_and_explicand = TRUE,
-      index_x_explain = c(1, 3:4, 6),
-      CI_level = 0.95
+    fig = plot_MSEv_eval_crit(
+      explanation_list_named,
+      plot_type = "explicand",
+      index_x_explain = c(1, 3:4, 6)
     )$MSEv_explicand_bar
   )
 
   vdiffr::expect_doppelganger(
     title = "MSEv_combinations for specified combinations",
-    fig = plot_MSEv_eval_crit(explanation_list_named,
-      make_MSEv_comb_and_explicand = TRUE,
+    fig = plot_MSEv_eval_crit(
+      explanation_list_named,
+      plot_type = "comb",
       id_combination = c(3, 4, 9, 13:15),
       CI_level = 0.95
     )$MSEv_combination_bar

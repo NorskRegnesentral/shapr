@@ -810,15 +810,18 @@ make_waterfall_plot <- function(dt_plot,
 #' sqrt(N_explicands), thus, the CI are MSEv ± t*MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
 #' MSEv data.tables in the objects in the `explanation_list`.
 #' @param geom_col_width Numeric. Bar width. By default, set to 90% of the [ggplot2::resolution()] of the data.
-#' @param make_MSEv_comb_and_explicand Logical. If `FALSE` (default), then only the plot associated with the overall
-#' MSEv criterion is created (i.e., when averaging over both the combinations and observations). When `TRUE`,
-#' the function also creates figures illustrating the MSEv evaluation criterion for each observation and combination
-#' by only averaging over the combinations and observations, respectively.
+#' @param plot_type Character vector. The possible options are "overall" (default), "comb", and "explicand".
+#' If `plot_type = "overall"`, then the plot (one bar plot) associated with the overall MSEv evaluation criterion
+#' for each method is created, i.e., when averaging over both the combinations/coalitions and observations/explicands.
+#' If `plot_type = "comb"`, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
+#' criterion for each combination/coalition are created, i.e., when we only average over the observations/explicands.
+#' If `plot_type = "explicand"`, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
+#' criterion for each observations/explicands are created, i.e., when we only average over the combinations/coalitions.
+#' If `plot_type` is a vector of one or several of "overall", "comb", and "explicand", then the associated plots are
+#' created.
 #'
-#' @return A [ggplot2::ggplot()] object of the MSEv criterion. If `make_MSEv_comb_and_explicand = TRUE`,
-#' then a list of  5 [ggplot2::ggplot()] objects are returned (three bar plots and two line plots),
-#' where the additional fiugres are the MSEv criterion when only averaged over either the combinations
-#' or the test observations.
+#' @return Either a single [ggplot2::ggplot()] object of the MSEv criterion when `plot_type = "overall"`, or a list
+#' of [ggplot2::ggplot()] objects based on the `plot_type` parameter.
 #'
 #' @export
 #' @examples
@@ -915,12 +918,12 @@ make_waterfall_plot <- function(dt_plot,
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   # Create the default MSEv plot where we average over both the combinations and observations
 #'   # with approximate 95% confidence intervals
-#'   plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95)
+#'   plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95, plot_type = "overall")
 #'
 #'   # Can also create plots of the MSEv criterion averaged only over the combinations or observations.
 #'   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
 #'     CI_level = 0.95,
-#'     make_MSEv_comb_and_explicand = TRUE
+#'     plot_type = c("overall", "comb", "explicand")
 #'   )
 #'   MSEv_figures$MSEv_bar
 #'   MSEv_figures$MSEv_combination_bar
@@ -932,12 +935,12 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #'   # We can specify which observations or combinations to plot
 #'   plot_MSEv_eval_crit(explanation_list_named,
-#'     make_MSEv_comb_and_explicand = TRUE,
+#'     plot_type = "explicand",
 #'     index_x_explain = c(1, 3:4, 6),
 #'     CI_level = 0.95
 #'   )$MSEv_explicand_bar
 #'   plot_MSEv_eval_crit(explanation_list_named,
-#'     make_MSEv_comb_and_explicand = TRUE,
+#'     plot_type = "comb",
 #'     id_combination = c(3, 4, 9, 13:15),
 #'     CI_level = 0.95
 #'   )$MSEv_combination_bar
@@ -969,14 +972,21 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #' @author Lars Henry Berge Olsen
 plot_MSEv_eval_crit <- function(explanation_list,
-                                      index_x_explain = NULL,
-                                      id_combination = NULL,
-                                      CI_level = ifelse(length(explanation_list[[1]]$pred_explain) < 20, NULL, 0.95),
-                                      geom_col_width = 0.9,
-                                      make_MSEv_comb_and_explicand = FALSE) {
+                                index_x_explain = NULL,
+                                id_combination = NULL,
+                                CI_level = ifelse(length(explanation_list[[1]]$pred_explain) < 20, NULL, 0.95),
+                                geom_col_width = 0.9,
+                                plot_type = "overall") {
   # Setup and checks ----------------------------------------------------------------------------
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+  }
+
+  # Check for valid plot type argument
+  unknown_plot_type = plot_type[!(plot_type %in% c("overall", "comb", "explicand"))]
+  if (length(unknown_plot_type) > 0) {
+    error(paste0("The `plot_type` must be one (or several) of 'overall', 'comb', 'explicand'. ",
+                   "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."))
   }
 
   # Ensure that even a single explanation object is in a list
@@ -996,7 +1006,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
   # Get the number of observations and combinations and the quantile of the T distribution
   n_explain <- explanation_list[[1]]$internal$parameters$n_explain
   n_combinations <- explanation_list[[1]]$internal$parameters$n_combinations
-  tfrac <- if (is.null(CI_level)) NULL else qt((1 - CI_level) / 2, n_explain - 1, lower.tail = FALSE)
+  tfrac <- ifelse(is.null(CI_level), NULL, qt((1 + CI_level) / 2, n_explain - 1))
 
   # Create data.tables of the MSEv values
   MSEv_dt_list <- MSEv_extract_MSEv_values(
@@ -1010,7 +1020,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
 
   # Warnings related to the approximate confidence intervals
   if (!is.null(CI_level)) {
-    if (n_explain < 30) {
+    if (n_explain < 20) {
       message(paste0(
         "The approximate ", CI_level * 100, "% confidence intervals might be wide as they are only based on ",
         n_explain, " observations."
@@ -1031,26 +1041,35 @@ plot_MSEv_eval_crit <- function(explanation_list,
   }
 
   # Plot ------------------------------------------------------------------------------------------------------------
-  # MSEv averaged over both the combinations and observations
-  MSEv_bar <- make_MSEv_bar_plot(
-    MSEv_dt = MSEv_dt,
-    n_combinations = n_combinations,
-    n_explain = n_explain,
-    geom_col_width = geom_col_width,
-    tfrac = tfrac
-  )
+  return_object = list()
 
-  if (make_MSEv_comb_and_explicand) {
+  if ("explicand" %in% plot_type) {
     # MSEv averaged over only the combinations for each observation
-    MSEv_explicand_plots <- make_MSEv_explicand_plots(
-      MSEv_explicand_dt = MSEv_explicand_dt,
-      n_combinations = n_combinations,
-      geom_col_width = geom_col_width
+    return_object <- c(return_object,
+                     make_MSEv_explicand_plots(
+                       MSEv_explicand_dt = MSEv_explicand_dt,
+                       n_combinations = n_combinations,
+                       geom_col_width = geom_col_width)
     )
+  }
 
+  if ("comb" %in% plot_type) {
     # MSEv averaged over only the observations for each combinations
-    MSEv_combination_plots <- make_MSEv_combination_plots(
-      MSEv_combination_dt = MSEv_combination_dt,
+    return_object <- c(return_object,
+                     make_MSEv_combination_plots(
+                       MSEv_combination_dt = MSEv_combination_dt,
+                       n_explain = n_explain,
+                       geom_col_width = geom_col_width,
+                       tfrac = tfrac
+                     )
+    )
+  }
+
+  if ("overall" %in% plot_type) {
+    # MSEv averaged over both the combinations and observations
+    return_object$MSEv_bar <- make_MSEv_bar_plot(
+      MSEv_dt = MSEv_dt,
+      n_combinations = n_combinations,
       n_explain = n_explain,
       geom_col_width = geom_col_width,
       tfrac = tfrac
@@ -1058,15 +1077,8 @@ plot_MSEv_eval_crit <- function(explanation_list,
   }
 
   # Return ----------------------------------------------------------------------------------------------------------
-  # Create return object based on if user want all the plots or only the overall MSEv plot
-  if (make_MSEv_comb_and_explicand) {
-    return_object <- c(
-      MSEv_explicand_plots,
-      MSEv_combination_plots,
-      list(MSEv_bar = MSEv_bar)
-    )
-  } else {
-    return_object <- MSEv_bar
+  if (length(plot_type) == 1 && plot_type == "comb") {
+    return_object = return_object$MSEv_bar
   }
 
   return(return_object)
@@ -1186,6 +1198,7 @@ make_MSEv_bar_plot <- function(MSEv_dt,
                                n_explain,
                                tfrac = NULL,
                                geom_col_width = 0.9) {
+
   MSEv_bar <-
     ggplot2::ggplot(MSEv_dt, ggplot2::aes(x = Method, y = MSEv, fill = Method)) +
     ggplot2::geom_col(
@@ -1196,11 +1209,16 @@ make_MSEv_bar_plot <- function(MSEv_dt,
       x = "Method",
       y = bquote(MSE[v]),
       title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
-        " combinations and " * .(n_explain) * " observations")
+        " combinations and " * .(n_explain) * " explicands")
     )
 
   if (!is.null(tfrac)) {
+    CI_level = 1 - 2 * (1 - pt(tfrac, n_explain-1))
+
     MSEv_bar <- MSEv_bar +
+      ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
+                                     " combinations and " * .(n_explain) * " explicands with " *
+                                     .(CI_level * 100) * "% CI")) +
       ggplot2::geom_errorbar(
         position = ggplot2::position_dodge(geom_col_width),
         width = 0.25,
@@ -1225,7 +1243,7 @@ make_MSEv_explicand_plots <- function(MSEv_explicand_dt,
       x = "index_x_explain",
       y = bquote(MSE[v] * " (explicand)"),
       title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
-        " combinations for each observation")
+        " combinations for each explicand")
     )
 
   MSEv_explicand_bar <-
@@ -1260,7 +1278,7 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
       x = "id_combination",
       y = bquote(MSE[v] * " (combination)"),
       title = bquote(MSE[v] * " criterion averaged over the " * .(n_explain) *
-        " observations for each combination")
+        " explicands for each combination")
     )
 
   MSEv_combination_bar <-
@@ -1272,8 +1290,12 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
     )
 
   if (!is.null(tfrac)) {
+    CI_level = 1 - 2 * (1 - pt(tfrac, n_explain-1))
+
     MSEv_combination_bar <-
       MSEv_combination_bar +
+      ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over the " * .(n_explain) *
+                         " explicands for each combination with " * .(CI_level * 100) * "% CI")) +
       ggplot2::geom_errorbar(
         position = ggplot2::position_dodge(geom_col_width),
         width = 0.25,
