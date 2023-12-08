@@ -78,7 +78,10 @@
       "type",
       "feature_value_factor",
       "horizon_id_combination",
-      "tmp_features"
+      "tmp_features",
+      "Method",
+      "MSEv",
+      "MSEv_sd"
     )
   )
   invisible()
