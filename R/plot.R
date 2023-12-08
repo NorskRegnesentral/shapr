@@ -799,7 +799,7 @@ make_waterfall_plot <- function(dt_plot,
 #' the approach names (with integer suffix for duplicates) for the explanation objects in `explanation_list`.
 #' @param id_combination Integer vector. Which of the combinations (coalitions) to plot.
 #' E.g. if you used `n_combinations = 16` in [explain()], you can generate a plot for the
-#' first 5 combinations and the 10th by setting `index_x_explain = c(1:5, 10)`.
+#' first 5 combinations and the 10th by setting `id_combination = c(1:5, 10)`.
 #' @param level Positive numeric between zero and one (default is `0.95`). The level of the approximate
 #' confidence intervals for the overall MSEv and the MSEv_combination. Setting `level = NULL` removes the
 #' confidence intervals. The confidence intervals are based on that
