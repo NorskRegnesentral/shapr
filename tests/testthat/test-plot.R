@@ -183,12 +183,12 @@ test_that("MSEv evaluation criterion plots", {
 
   MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
     make_MSEv_comb_and_explicand = TRUE,
-    level = 0.95
+    CI_level = 0.95
   )
 
   MSEv_plots_specified_width <- plot_MSEv_eval_crit(explanation_list_named,
     make_MSEv_comb_and_explicand = TRUE,
-    level = 0.95,
+    CI_level = 0.95,
     geom_col_width = 0.5
   )
 
@@ -201,7 +201,7 @@ test_that("MSEv evaluation criterion plots", {
     title = "MSEv_bar 50% CI",
     fig = plot_MSEv_eval_crit(explanation_list_named,
       make_MSEv_comb_and_explicand = FALSE,
-      level = 0.50
+      CI_level = 0.50
     )
   )
 
@@ -209,7 +209,7 @@ test_that("MSEv evaluation criterion plots", {
     title = "MSEv_bar without CI",
     fig = plot_MSEv_eval_crit(explanation_list_named,
       make_MSEv_comb_and_explicand = FALSE,
-      level = NULL
+      CI_level = NULL
     )
   )
 
@@ -253,7 +253,7 @@ test_that("MSEv evaluation criterion plots", {
     fig = plot_MSEv_eval_crit(explanation_list_named,
       make_MSEv_comb_and_explicand = TRUE,
       index_x_explain = c(1, 3:4, 6),
-      level = 0.95
+      CI_level = 0.95
     )$MSEv_explicand_bar
   )
 
@@ -262,7 +262,7 @@ test_that("MSEv evaluation criterion plots", {
     fig = plot_MSEv_eval_crit(explanation_list_named,
       make_MSEv_comb_and_explicand = TRUE,
       id_combination = c(3, 4, 9, 13:15),
-      level = 0.95
+      CI_level = 0.95
     )$MSEv_combination_bar
   )
 })

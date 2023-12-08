@@ -141,7 +141,7 @@ MSEv_figure + ggplot2::theme_minimal() +
 
 # Can add the height of the bars as text. Remove the error bars.
 bar_text_n_decimals <- 1
-MSEv_figure_wo_CI <- plot_MSEv_eval_crit(explanation_list_named, level = NULL)
+MSEv_figure_wo_CI <- plot_MSEv_eval_crit(explanation_list_named, CI_level = NULL)
 MSEv_figure_wo_CI +
   ggplot2::geom_text(
     ggplot2::aes(label = sprintf(
@@ -248,7 +248,7 @@ MSEv_combination +
 MSEv_combination_wo_CI <- plot_MSEv_eval_crit(explanation_list_named,
   make_MSEv_comb_and_explicand = TRUE,
   id_combination = c(3, 4, 9, 13:15),
-  level = NULL
+  CI_level = NULL
 )$MSEv_combination_bar
 MSEv_combination_wo_CI$data$Method <- factor(MSEv_combination_wo_CI$data$Method,
   levels = rev(levels(MSEv_combination_wo_CI$data$Method))

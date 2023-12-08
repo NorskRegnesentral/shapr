@@ -800,8 +800,8 @@ make_waterfall_plot <- function(dt_plot,
 #' @param id_combination Integer vector. Which of the combinations (coalitions) to plot.
 #' E.g. if you used `n_combinations = 16` in [explain()], you can generate a plot for the
 #' first 5 combinations and the 10th by setting `id_combination = c(1:5, 10)`.
-#' @param level Positive numeric between zero and one. Default is `0.95` if the number of observations to explain is
-#' larger than 20, otherwise `level = NULL`, which removes the confidence intervals. The level of the approximate
+#' @param CI_level Positive numeric between zero and one. Default is `0.95` if the number of observations to explain is
+#' larger than 20, otherwise `CI_level = NULL`, which removes the confidence intervals. The level of the approximate
 #' confidence intervals for the overall MSEv and the MSEv_combination. The confidence intervals are based on that
 #' the MSEv scores are means over the observations/explicands, and that means are approximation normal. Since the
 #' standard deviations are estimated, we use the quantile t from the T distribution with N_explicands - 1 degrees of
@@ -915,11 +915,11 @@ make_waterfall_plot <- function(dt_plot,
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   # Create the default MSEv plot where we average over both the combinations and observations
 #'   # with approximate 95% confidence intervals
-#'   plot_MSEv_eval_crit(explanation_list_named, level = 0.95)
+#'   plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95)
 #'
 #'   # Can also create plots of the MSEv criterion averaged only over the combinations or observations.
 #'   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
-#'     level = 0.95,
+#'     CI_level = 0.95,
 #'     make_MSEv_comb_and_explicand = TRUE
 #'   )
 #'   MSEv_figures$MSEv_bar
@@ -934,12 +934,12 @@ make_waterfall_plot <- function(dt_plot,
 #'   plot_MSEv_eval_crit(explanation_list_named,
 #'     make_MSEv_comb_and_explicand = TRUE,
 #'     index_x_explain = c(1, 3:4, 6),
-#'     level = 0.95
+#'     CI_level = 0.95
 #'   )$MSEv_explicand_bar
 #'   plot_MSEv_eval_crit(explanation_list_named,
 #'     make_MSEv_comb_and_explicand = TRUE,
 #'     id_combination = c(3, 4, 9, 13:15),
-#'     level = 0.95
+#'     CI_level = 0.95
 #'   )$MSEv_combination_bar
 #'
 #'   # We can alter the figures if other palette schemes or design is wanted
@@ -971,7 +971,7 @@ make_waterfall_plot <- function(dt_plot,
 plot_MSEv_eval_crit <- function(explanation_list,
                                       index_x_explain = NULL,
                                       id_combination = NULL,
-                                      level = ifelse(length(explanation_list[[1]]$pred_explain) < 20, NULL, 0.95),
+                                      CI_level = ifelse(length(explanation_list[[1]]$pred_explain) < 20, NULL, 0.95),
                                       geom_col_width = 0.9,
                                       make_MSEv_comb_and_explicand = FALSE) {
   # Setup and checks ----------------------------------------------------------------------------
@@ -985,9 +985,9 @@ plot_MSEv_eval_crit <- function(explanation_list,
   # Name the elements in the explanation_list if no names have been provided
   if (is.null(names(explanation_list))) explanation_list <- MSEv_name_explanation_list(explanation_list)
 
-  # Check valid level value
-  if (!is.null(level) && (level <= 0 || 1 <= level)) {
-    stop("the `level` parameter must be strictly between zero and one.")
+  # Check valid CI_level value
+  if (!is.null(CI_level) && (CI_level <= 0 || 1 <= CI_level)) {
+    stop("the `CI_level` parameter must be strictly between zero and one.")
   }
 
   # Check that the explanation objects explain the same observations
@@ -996,7 +996,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
   # Get the number of observations and combinations and the quantile of the T distribution
   n_explain <- explanation_list[[1]]$internal$parameters$n_explain
   n_combinations <- explanation_list[[1]]$internal$parameters$n_combinations
-  tfrac <- if (is.null(level)) NULL else qt((1 - level) / 2, n_explain - 1, lower.tail = FALSE)
+  tfrac <- if (is.null(CI_level)) NULL else qt((1 - CI_level) / 2, n_explain - 1, lower.tail = FALSE)
 
   # Create data.tables of the MSEv values
   MSEv_dt_list <- MSEv_extract_MSEv_values(
@@ -1009,10 +1009,10 @@ plot_MSEv_eval_crit <- function(explanation_list,
   MSEv_combination_dt <- MSEv_dt_list$MSEv_combination
 
   # Warnings related to the approximate confidence intervals
-  if (!is.null(level)) {
+  if (!is.null(CI_level)) {
     if (n_explain < 30) {
       message(paste0(
-        "The approximate ", level * 100, "% confidence intervals might be wide as they are only based on ",
+        "The approximate ", CI_level * 100, "% confidence intervals might be wide as they are only based on ",
         n_explain, " observations."
       ))
     }
@@ -1022,7 +1022,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
     if (length(methods_with_negative_CI) > 0) {
       message(paste0(
         "The method/methods '", paste(methods_with_negative_CI, collapse = "', '"), "' has/have ",
-        "approximate ", level * 100, "% confidence intervals with negative values, ",
+        "approximate ", CI_level * 100, "% confidence intervals with negative values, ",
         "which is not possible for the MSEv criterion.\n",
         "Check the `MSEv_explicand` plots for potential observational outliers ",
         "that causes the wide confidence intervals."
