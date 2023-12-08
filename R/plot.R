@@ -229,8 +229,8 @@ plot.shapr <- function(x,
     factor_features <- shap_names[factor_features]
 
     dt_feature_vals_long <- suppressWarnings(data.table::melt(dt_feature_vals,
-                                                              id.vars = "id",
-                                                              value.name = "feature_value"
+      id.vars = "id",
+      value.name = "feature_value"
     ))
     # this gives a warning because none-values are NA...
     dt_plot <- merge(dt_plot, dt_feature_vals_long, by = c("id", "variable"))
@@ -543,8 +543,8 @@ make_beeswarm_plot <- function(dt_plot, col, index_x_explain, x, factor_cols) {
   # of obs. feature value.
   # The feature values are scaled wrt the training data
   dt_plot[feature_value <= max & feature_value >= min,
-          feature_value_scaled := (feature_value - min) / (max - min),
-          by = variable
+    feature_value_scaled := (feature_value - min) / (max - min),
+    by = variable
   ]
   dt_plot[feature_value > max, feature_value_scaled := 1]
   dt_plot[feature_value < min, feature_value_scaled := 0]
@@ -621,7 +621,7 @@ make_bar_plot <- function(dt_plot, bar_plot_phi0, col, breaks, desc_labels) {
   dt_plot[positive == FALSE & y_text_bar == 0, y_text_bar := ifelse(phi < 0, phi, 0)]
 
   dt_plot[, text_color_bar := ifelse(abs(phi) > max(abs(phi)) / 8, "white", ifelse(sign == "Increases",
-                                                                                   col[1], col[2]
+    col[1], col[2]
   )), by = id]
   if (bar_plot_phi0) {
     text_color_bar <- dt_plot[, text_color_bar]
@@ -677,33 +677,33 @@ make_waterfall_plot <- function(dt_plot,
   # waterfall plotting helpers
   if (bar_plot_order == "largest_first" || bar_plot_order == "original") {
     dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-                               ifelse(expected < pred, ifelse(end > start, end, start),
-                                      ifelse(end < start, end, start)
-                               ),
-                               start + (end - start) / 2
+      ifelse(expected < pred, ifelse(end > start, end, start),
+        ifelse(end < start, end, start)
+      ),
+      start + (end - start) / 2
     ), by = id]
   } else if (bar_plot_order == "smallest_first") {
     dt_plot[, y_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-                               ifelse(expected > pred, ifelse(end > start, end, start),
-                                      ifelse(end < start, end, start)
-                               ),
-                               start + (end - start) / 2
+      ifelse(expected > pred, ifelse(end > start, end, start),
+        ifelse(end < start, end, start)
+      ),
+      start + (end - start) / 2
     ), by = id]
   }
 
   dt_plot[, text_color := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-                                 ifelse(sign == "Increases", col[1], col[2]),
-                                 "white"
+    ifelse(sign == "Increases", col[1], col[2]),
+    "white"
   ), by = id]
   text_color <- dt_plot[variable != "none", text_color]
 
   if (bar_plot_order == "largest_first" || bar_plot_order == "original") {
     dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-                                   ifelse(expected > pred, 1, 0), 0.5
+      ifelse(expected > pred, 1, 0), 0.5
     ), by = id]
   } else if (bar_plot_order == "smallest_first") {
     dt_plot[, hjust_text := ifelse(abs(phi) < abs(min(start, end) - max(start, end)) / 8,
-                                   ifelse(expected > pred, 0, 1), 0.5
+      ifelse(expected > pred, 0, 1), 0.5
     ), by = id]
   }
 
@@ -726,11 +726,11 @@ make_waterfall_plot <- function(dt_plot,
     ggplot2::scale_fill_manual(values = col, drop = TRUE) +
     ggplot2::scale_x_discrete(breaks = breaks, labels = desc_labels) +
     ggplot2::geom_segment(ggplot2::aes(x = -Inf, xend = max(rank_waterfall) + 0.8, y = pred, yend = pred),
-                          linetype = "dotted", col = "grey30", linewidth = 0.25
+      linetype = "dotted", col = "grey30", linewidth = 0.25
     ) +
     ggplot2::coord_flip(clip = "off", xlim = c(0.5, ifelse(N_features + N_features * 0.11 < N_features + 0.5,
-                                                           N_features + 0.5,
-                                                           N_features + N_features * 0.11
+      N_features + 0.5,
+      N_features + N_features * 0.11
     ))) +
     ggplot2::labs(
       y = "Prediction",
@@ -739,7 +739,7 @@ make_waterfall_plot <- function(dt_plot,
       title = "Shapley value prediction explanation"
     ) +
     ggplot2::geom_rect(ggplot2::aes(xmin = rank_waterfall - 0.3, xmax = rank_waterfall + 0.3, ymin = end, ymax = start),
-                       show.legend = NA
+      show.legend = NA
     ) +
     ggplot2::geom_segment(
       x = -Inf, xend = 1.3, y = expected, yend = expected,
@@ -800,14 +800,20 @@ make_waterfall_plot <- function(dt_plot,
 #' @param id_combination Integer vector. Which of the combinations (coalitions) to plot.
 #' E.g. if you used `n_combinations = 16` in [explain()], you can generate a plot for the
 #' first 5 combinations and the 10th by setting `index_x_explain = c(1:5, 10)`.
+#' @param level Positive numeric between zero and one (default is `0.95`). The level of the approximate
+#' confidence intervals for the overall MSEv and the MSEv_combination. Setting `level = NULL` removes the
+#' confidence intervals. The confidence intervals are based on that
+#' the MSEv scores are means over the observations/explicands, and that means are approximation normal. Since the
+#' standard deviations are estimated, we use the quantile t from the T distribution with N_explicands - 1 degrees of
+#' freedom corresponding to the provided level. Here, N_explicands is the number of observations/explicands.
+#' MSEv ± t*SD(MSEv)/sqrt(N_explicands). Note that the `explain()` function already scales the standard deviation by
+#' sqrt(N_explicands), thus, the CI are MSEv ± t*MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
+#' MSEv data.tables in the objects in the `explanation_list`.
 #' @param geom_col_width Numeric. Bar width. By default, set to 90% of the [ggplot2::resolution()] of the data.
-#' @param N_sd_error_bars Positive numeric (default is `1`). The number of standard deviation to scale error bars in
-#' the bar plots. That is, the error bars are MSEv ± N_sd_error_bars*MSEv_sd.
 #' @param make_MSEv_comb_and_explicand Logical. If `FALSE` (default), then only the plot associated with the overall
 #' MSEv criterion is created (i.e., when averaging over both the combinations and observations). When `TRUE`,
 #' the function also creates figures illustrating the MSEv evaluation criterion for each observation and combination
 #' by only averaging over the combinations and observations, respectively.
-#' @param ... Currently not used.
 #'
 #' @return A [ggplot2::ggplot()] object of the MSEv criterion. If `make_MSEv_comb_and_explicand = TRUE`,
 #' then a list of  5 [ggplot2::ggplot()] objects are returned (three bar plots and two line plots),
@@ -816,10 +822,10 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #' @export
 #' @examples
-#' # Load necessary libraries
-#' library(xgboost)
+#' # Load necessary librarieslibrary(xgboost)
 #' library(data.table)
 #' library(shapr)
+#' library(ggplot2)
 #'
 #' # Get the data
 #' data("airquality")
@@ -853,16 +859,6 @@ make_waterfall_plot <- function(dt_plot,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
 #'   approach = "independence",
-#'   prediction_zero = prediction_zero,
-#'   n_samples = 1e2
-#' )
-#'
-#' # Empirical approach
-#' explanation_empirical <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = "empirical",
 #'   prediction_zero = prediction_zero,
 #'   n_samples = 1e2
 #' )
@@ -902,25 +898,14 @@ make_waterfall_plot <- function(dt_plot,
 #'   model = model,
 #'   x_explain = x_explain,
 #'   x_train = x_train,
-#'   approach = c("gaussian", "independence", "empirical"),
+#'   approach = c("gaussian", "independence", "ctree"),
 #'   prediction_zero = prediction_zero,
 #'   n_samples = 1e2
-#' )
-#'
-#' # Create a list of explanations without names
-#' explanation_list_unnamed <- list(
-#'   explanation_independence,
-#'   explanation_empirical,
-#'   explanation_gaussian_1e1,
-#'   explanation_gaussian_1e2,
-#'   explanation_ctree,
-#'   explanation_combined
 #' )
 #'
 #' # Create a list of explanations with names
 #' explanation_list_named <- list(
 #'   "Ind." = explanation_independence,
-#'   "Emp." = explanation_empirical,
 #'   "Gaus. 1e1" = explanation_gaussian_1e1,
 #'   "Gaus. 1e2" = explanation_gaussian_1e2,
 #'   "Ctree" = explanation_ctree,
@@ -928,71 +913,15 @@ make_waterfall_plot <- function(dt_plot,
 #' )
 #'
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   # Create the default MSEv plot
-#'   MSEv_figure = make_MSEv_eval_crit_plots(explanation_list_named)
-#'   MSEv_figure
+#'   # Create the default MSEv plot where we average over both the combinations and observations
+#'   # with approximate 95% confidence intervals
+#'   make_MSEv_eval_crit_plots(explanation_list_named, level = 0.95)
 #'
-#'   # For long method names, one can rotate them or put them on different lines (or both)
-#'   MSEv_figure + ggplot2::guides(x = ggplot2::guide_axis(angle = 45))
-#'   MSEv_figure + ggplot2::guides(x = ggplot2::guide_axis(n.dodge = 2))
-#'
-#'   # The function sets default names based on the used approach when an unnamed list is provided
-#'   make_MSEv_eval_crit_plots(explanation_list_unnamed) + ggplot2::guides(x = ggplot2::guide_axis(angle = 45))
-#'
-#'   # Can move the legend around or simply remove it
-#'   MSEv_figure +
-#'     ggplot2::theme(legend.position = "bottom") +
-#'     ggplot2::guides(fill = ggplot2::guide_legend(nrow = 2, ncol = 3))
-#'   MSEv_figure + ggplot2::theme(legend.position = "none")
-#'
-#'   # Change the size of the title or simply remove it
-#'   MSEv_figure + ggplot2::theme(plot.title = ggplot2::element_text(size = 10))
-#'   MSEv_figure + ggplot2::labs(title = NULL)
-#'
-#'   # Change the theme and color scheme
-#'   MSEv_figure + ggplot2::theme_minimal() +
-#'     ggplot2::scale_fill_brewer(palette = "Paired")
-#'
-#'   # Can add the height of the bars as text. Remove the error bars.
-#'   bar_text_n_decimals = 1
-#'   MSEv_figure_wo_error_bars = make_MSEv_eval_crit_plots(explanation_list_named, N_sd_error_bars = 0)
-#'   MSEv_figure_wo_error_bars +
-#'     ggplot2::geom_text(ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-#'                                                     round(MSEv, bar_text_n_decimals))),
-#'                        vjust = 1.75,
-#'                        hjust = NA,
-#'                        color = "black",
-#'                        position = ggplot2::position_dodge(0.9),
-#'                        size = 5)
-#'
-#'   # Rotate the plot
-#'   MSEv_figure +
-#'     ggplot2::scale_x_discrete(limits = rev(levels(MSEv_figure$data$Method))) +
-#'     ggplot2::coord_flip()
-#'
-#'   # All of these can be combined
-#'   MSEv_figure_wo_error_bars +
-#'     ggplot2::scale_x_discrete(limits = rev(levels(MSEv_figure$data$Method))) +
-#'     ggplot2::coord_flip() +
-#'     ggplot2::scale_fill_discrete() + #' Default ggplot2 palette
-#'     ggplot2::theme_minimal() + #' This must be set before the other theme call
-#'     ggplot2::theme(plot.title = ggplot2::element_text(size = 10),
-#'                    legend.position = "bottom") +
-#'     ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
-#'     ggplot2::geom_text(ggplot2::aes(label = sprintf(paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
-#'                                                     round(MSEv, bar_text_n_decimals))),
-#'                        vjust = NA,
-#'                        hjust = 1.15,
-#'                        color = "black",
-#'                        position = ggplot2::position_dodge(0.9),
-#'                        size = 5)
-#'
-#'
-#'   # Can also create plots where we look at the MSEv criterion averaged only over the combinations or observations.
-#'   # Note that we can also alter the design of these plots as we did above.
-#'   MSEv_figures = make_MSEv_eval_crit_plots(explanation_list_named,
-#'                                            make_MSEv_comb_and_explicand = TRUE,
-#'                                            N_sd_error_bars = 0)
+#'   # Can also create plots of the MSEv criterion averaged only over the combinations or observations.
+#'   MSEv_figures <- make_MSEv_eval_crit_plots(explanation_list_named,
+#'     level = 0.95,
+#'     make_MSEv_comb_and_explicand = TRUE
+#'   )
 #'   MSEv_figures$MSEv_bar
 #'   MSEv_figures$MSEv_combination_bar
 #'   MSEv_figures$MSEv_explicand_bar
@@ -1001,26 +930,50 @@ make_waterfall_plot <- function(dt_plot,
 #'   MSEv_figures$MSEv_combination_line_point
 #'   MSEv_figures$MSEv_explicand_line_point
 #'
-#'   # We can specify which test observations or combinations to plot
+#'   # We can specify which observations or combinations to plot
 #'   make_MSEv_eval_crit_plots(explanation_list_named,
-#'                             make_MSEv_comb_and_explicand = TRUE,
-#'                             index_x_explain = c(1, 3:4, 6),
-#'                             N_sd_error_bars = 1)$MSEv_explicand_bar
+#'     make_MSEv_comb_and_explicand = TRUE,
+#'     index_x_explain = c(1, 3:4, 6),
+#'     level = 0.95
+#'   )$MSEv_explicand_bar
 #'   make_MSEv_eval_crit_plots(explanation_list_named,
-#'                             make_MSEv_comb_and_explicand = TRUE,
-#'                             id_combination = c(3, 4, 9, 13:15),
-#'                             N_sd_error_bars = 1)$MSEv_combination_bar
+#'     make_MSEv_comb_and_explicand = TRUE,
+#'     id_combination = c(3, 4, 9, 13:15),
+#'     level = 0.95
+#'   )$MSEv_combination_bar
+#'
+#'   # We can alter the figures if other palette schemes or design is wanted
+#'   bar_text_n_decimals <- 1
+#'   MSEv_figures$MSEv_bar +
+#'     ggplot2::scale_x_discrete(limits = rev(levels(MSEv_figures$MSEv_bar$data$Method))) +
+#'     ggplot2::coord_flip() +
+#'     ggplot2::scale_fill_discrete() + #' Default ggplot2 palette
+#'     ggplot2::theme_minimal() + #' This must be set before the other theme call
+#'     ggplot2::theme(
+#'       plot.title = ggplot2::element_text(size = 10),
+#'       legend.position = "bottom"
+#'     ) +
+#'     ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
+#'     ggplot2::geom_text(
+#'       ggplot2::aes(label = sprintf(
+#'         paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+#'         round(MSEv, bar_text_n_decimals)
+#'       )),
+#'       vjust = -1.1, # This value must be altered based on the plot dimension
+#'       hjust = 1.1, # This value must be altered based on the plot dimension
+#'       color = "black",
+#'       position = ggplot2::position_dodge(0.9),
+#'       size = 5
+#'     )
 #' }
 #'
 #' @author Lars Henry Berge Olsen
 make_MSEv_eval_crit_plots <- function(explanation_list,
                                       index_x_explain = NULL,
                                       id_combination = NULL,
+                                      level = 0.95,
                                       geom_col_width = 0.9,
-                                      N_sd_error_bars = 1,
-                                      make_MSEv_comb_and_explicand = FALSE,
-                                      ...) {
-
+                                      make_MSEv_comb_and_explicand = FALSE) {
   # Setup and checks ----------------------------------------------------------------------------
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -1030,93 +983,120 @@ make_MSEv_eval_crit_plots <- function(explanation_list,
   if ("shapr" %in% class(explanation_list)) explanation_list <- list(explanation_list)
 
   # Name the elements in the explanation_list if no names have been provided
-  if (is.null(names(explanation_list))) explanation_list = MSEv_name_explanation_list(explanation_list)
+  if (is.null(names(explanation_list))) explanation_list <- MSEv_name_explanation_list(explanation_list)
+
+  # Check valid level value
+  if (!is.null(level) && (level <= 0 || 1 <= level)) {
+    stop("the `level` parameter must be strictly between zero and one.")
+  }
 
   # Check that the explanation objects explain the same observations
   MSEv_check_explanation_list(explanation_list)
 
-  # Get the number of observations and combinations
+  # Get the number of observations and combinations and the quantile of the T distribution
   n_explain <- explanation_list[[1]]$internal$parameters$n_explain
   n_combinations <- explanation_list[[1]]$internal$parameters$n_combinations
+  tfrac <- if (is.null(level)) NULL else qt((1 - level) / 2, n_explain - 1, lower.tail = FALSE)
 
   # Create data.tables of the MSEv values
-  MSEv_dt_list = MSEv_extract_MSEv_values(explanation_list = explanation_list,
-                                          index_x_explain = index_x_explain,
-                                          id_combination = id_combination)
-  MSEv_dt = MSEv_dt_list$MSEv
-  MSEv_explicand_dt = MSEv_dt_list$MSEv_explicand
-  MSEv_combination_dt = MSEv_dt_list$MSEv_combination
+  MSEv_dt_list <- MSEv_extract_MSEv_values(
+    explanation_list = explanation_list,
+    index_x_explain = index_x_explain,
+    id_combination = id_combination
+  )
+  MSEv_dt <- MSEv_dt_list$MSEv
+  MSEv_explicand_dt <- MSEv_dt_list$MSEv_explicand
+  MSEv_combination_dt <- MSEv_dt_list$MSEv_combination
 
-  # Warnings related to the error bars
-  if (!is.null(N_sd_error_bars) && N_sd_error_bars > 0) {
+  # Warnings related to the approximate confidence intervals
+  if (!is.null(level)) {
     if (n_explain < 30) {
-      message(sprintf("The error bars might be wide as the number of observations to explain is only %d.\n",
-                     n_explain))
+      message(paste0(
+        "The approximate ", level * 100, "% confidence intervals might be wide as they are only based on ",
+        n_explain, " observations."
+      ))
     }
 
-    methods_with_large_sd = MSEv_dt[MSEv_sd > MSEv, Method]
-    if (length(methods_with_large_sd) > 0) {
-      message(paste0("The method/methods '", paste(methods_with_large_sd, collapse = "', '"), "' has/have standard ",
-                     "deviation larger than the mean.\nCheck the `MSEv_explicand` plots for potential outliers.\n"))
-
+    # Check for CI with negative values
+    methods_with_negative_CI <- MSEv_dt[MSEv_sd > abs(tfrac) * MSEv, Method]
+    if (length(methods_with_negative_CI) > 0) {
+      message(paste0(
+        "The method/methods '", paste(methods_with_negative_CI, collapse = "', '"), "' has/have ",
+        "approximate ", level * 100, "% confidence intervals with negative values, ",
+        "which is not possible for the MSEv criterion.\n",
+        "Check the `MSEv_explicand` plots for potential observational outliers ",
+        "that causes the wide confidence intervals."
+      ))
     }
   }
 
   # Plot ------------------------------------------------------------------------------------------------------------
   # MSEv averaged over both the combinations and observations
-  MSEv_bar <- make_MSEv_bar_plot(MSEv_dt = MSEv_dt,
-                                 n_combinations = n_combinations,
-                                 n_explain = n_explain,
-                                 geom_col_width = geom_col_width,
-                                 N_sd_error_bars = N_sd_error_bars)
+  MSEv_bar <- make_MSEv_bar_plot(
+    MSEv_dt = MSEv_dt,
+    n_combinations = n_combinations,
+    n_explain = n_explain,
+    geom_col_width = geom_col_width,
+    tfrac = tfrac
+  )
 
   if (make_MSEv_comb_and_explicand) {
     # MSEv averaged over only the combinations for each observation
-    MSEv_explicand_plots <- make_MSEv_explicand_plots(MSEv_explicand_dt = MSEv_explicand_dt,
-                                                      n_combinations = n_combinations,
-                                                      geom_col_width = geom_col_width)
+    MSEv_explicand_plots <- make_MSEv_explicand_plots(
+      MSEv_explicand_dt = MSEv_explicand_dt,
+      n_combinations = n_combinations,
+      geom_col_width = geom_col_width
+    )
 
     # MSEv averaged over only the observations for each combinations
-    MSEv_combination_plots <- make_MSEv_combination_plots(MSEv_combination_dt = MSEv_combination_dt,
-                                                          n_explain = n_explain,
-                                                          geom_col_width = geom_col_width,
-                                                          N_sd_error_bars = N_sd_error_bars)
+    MSEv_combination_plots <- make_MSEv_combination_plots(
+      MSEv_combination_dt = MSEv_combination_dt,
+      n_explain = n_explain,
+      geom_col_width = geom_col_width,
+      tfrac = tfrac
+    )
   }
 
   # Return ----------------------------------------------------------------------------------------------------------
   # Create return object based on if user want all the plots or only the overall MSEv plot
   if (make_MSEv_comb_and_explicand) {
-    return_object <- c(MSEv_explicand_plots,
-                       MSEv_combination_plots,
-                       list(MSEv_bar = MSEv_bar))
+    return_object <- c(
+      MSEv_explicand_plots,
+      MSEv_combination_plots,
+      list(MSEv_bar = MSEv_bar)
+    )
   } else {
-    return_object = MSEv_bar
+    return_object <- MSEv_bar
   }
 
   return(return_object)
 }
 
 #' @keywords internal
-MSEv_name_explanation_list = function(explanation_list) {
+MSEv_name_explanation_list <- function(explanation_list) {
   # Give names to the entries in the `explanation_list` based on their used approach.
 
   # Extract the approach names and paste in case of combined approaches.
-  names <- sapply(explanation_list,
-                  function(explanation) paste(explanation$internal$parameters$approach, collapse = "_"))
+  names <- sapply(
+    explanation_list,
+    function(explanation) paste(explanation$internal$parameters$approach, collapse = "_")
+  )
 
   # Add integer suffix for non-unique names
   names <- make.unique(names, sep = "_")
   names(explanation_list) <- names
 
-  message(paste0("User provided an `explanation_list` without named explanation objects.\n",
-                 "Use the approach names of the explanation objects as the names (with integer ",
-                 "suffix for duplicates).\n"))
+  message(paste0(
+    "User provided an `explanation_list` without named explanation objects.\n",
+    "Use the approach names of the explanation objects as the names (with integer ",
+    "suffix for duplicates).\n"
+  ))
 
   return(explanation_list)
 }
 
 #' @keywords internal
-MSEv_check_explanation_list = function(explanation_list) {
+MSEv_check_explanation_list <- function(explanation_list) {
   # Check that the explanation list is valid for plotting the MSEv evaluation criterion
 
   # All entries must be named
@@ -1128,76 +1108,72 @@ MSEv_check_explanation_list = function(explanation_list) {
   }
 
   # Check that all explanation objects use the same test observations
-  entries_using_diff_x_explain = sapply(explanation_list, function(explanation)
-  {!identical(explanation_list[[1]]$internal$data$x_explain, explanation$internal$data$x_explain)})
+  entries_using_diff_x_explain <- sapply(explanation_list, function(explanation) {
+    !identical(explanation_list[[1]]$internal$data$x_explain, explanation$internal$data$x_explain)
+  })
   if (any(entries_using_diff_x_explain)) {
     methods_with_diff_comb_str <-
-      paste(names(entries_using_diff_x_explain)[entries_using_diff_x_explain], collapse = ", ")
-    if (sum(entries_using_diff_x_explain) == 1) {
-      stop(sprintf(
-        "The object %s in `explanation_list` has a different `x_explain` than %s. Cannot compare them then.",
-        methods_with_diff_comb_str, names(explanation_list)[1]))
-    } else {
-      stop(sprintf(
-        "The objects %s in `explanation_list` have a different `x_explain` than %s. Cannot compare them then.",
-        methods_with_diff_comb_str, names(explanation_list)[1]))
-    }
+      paste(names(entries_using_diff_x_explain)[entries_using_diff_x_explain], collapse = "', '")
+    stop(paste0(
+      "The object/objects '", methods_with_diff_comb_str, "' in `explanation_list` has/have a different ",
+      "`x_explain` than '", names(explanation_list)[1], "'. Cannot compare them."
+    ))
   }
 
   # Check that no explanation object is missing the MSEv
   entries_missing_MSEv <- sapply(explanation_list, function(explanation) is.null(explanation$MSEv))
   if (any(entries_missing_MSEv)) {
-    methods_without_MSEv_string <- paste(names(entries_missing_MSEv)[entries_missing_MSEv], collapse = ", ")
-    if (sum(entries_missing_MSEv) == 1) {
-      stop(sprintf("The object %s in `explanation_list` is missing the `MSEv` list.", methods_without_MSEv_string))
-    } else {
-      stop(sprintf("The objects %s in `explanation_list` are missing the `MSEv` list.", methods_without_MSEv_string))
-    }
+    methods_without_MSEv_string <- paste(names(entries_missing_MSEv)[entries_missing_MSEv], collapse = "', '")
+    stop(sprintf(
+      "The object/objects '%s' in `explanation_list` is/are missing the `MSEv` list.",
+      methods_without_MSEv_string
+    ))
   }
 
   # Check that all explanation objects use the same combinations
-  entries_using_diff_combs <- sapply(explanation_list, function(explanation)
-  {!identical(explanation_list[[1]]$internal$objects$X$features, explanation$internal$objects$X$features)})
+  entries_using_diff_combs <- sapply(explanation_list, function(explanation) {
+    !identical(explanation_list[[1]]$internal$objects$X$features, explanation$internal$objects$X$features)
+  })
   if (any(entries_using_diff_combs)) {
-    methods_with_diff_comb_str <- paste(names(entries_using_diff_combs)[entries_using_diff_combs], collapse = ", ")
-    if (sum(entries_using_diff_combs) == 1) {
-      stop(sprintf("The object %s in `explanation_list` uses different coaltions than %s. Cannot compare them then.",
-                   methods_with_diff_comb_str, names(explanation_list)[1]))
-    } else {
-      stop(sprintf("The objects %s in `explanation_list` use different coaltions than %s. Cannot compare them then.",
-                   methods_with_diff_comb_str, names(explanation_list)[1]))
-    }
+    methods_with_diff_comb_str <- paste(names(entries_using_diff_combs)[entries_using_diff_combs], collapse = "', '")
+    stop(paste0(
+      "The object/objects '", methods_with_diff_comb_str, "' in `explanation_list` uses/use different ",
+      "coaltions than '", names(explanation_list)[1], "'. Cannot compare them."
+    ))
   }
 }
 
 #' @keywords internal
-MSEv_extract_MSEv_values = function(explanation_list,
-                                    index_x_explain = NULL,
-                                    id_combination = NULL) {
+MSEv_extract_MSEv_values <- function(explanation_list,
+                                     index_x_explain = NULL,
+                                     id_combination = NULL) {
   # Function that extract the MSEv values from the different explanations objects in ´explanation_list´,
   # put the values in data.tables, and keep only the desired observations and combinations.
 
   # The overall MSEv criterion
   MSEv <- rbindlist(lapply(explanation_list, function(explanation) explanation$MSEv$MSEv),
-                    use.names = TRUE, idcol = "Method")
+    use.names = TRUE, idcol = "Method"
+  )
   MSEv$Method <- factor(MSEv$Method, levels = names(explanation_list))
 
   # The MSEv evaluation criterion for each explicand.
   MSEv_explicand <- rbindlist(lapply(explanation_list, function(explanation) explanation$MSEv$MSEv_explicand),
-                              use.names = TRUE, idcol = "Method")
+    use.names = TRUE, idcol = "Method"
+  )
   MSEv_explicand$id <- factor(MSEv_explicand$id)
   MSEv_explicand$Method <- factor(MSEv_explicand$Method, levels = names(explanation_list))
 
   # The MSEv evaluation criterion for each combination.
   MSEv_combination <- rbindlist(lapply(explanation_list, function(explanation) explanation$MSEv$MSEv_combination),
-                                use.names = TRUE, idcol = "Method")
+    use.names = TRUE, idcol = "Method"
+  )
   MSEv_combination$id_combination <- factor(MSEv_combination$id_combination)
   MSEv_combination$Method <- factor(MSEv_combination$Method, levels = names(explanation_list))
 
   # Only keep the desired observations and combinations
   if (!is.null(index_x_explain)) MSEv_explicand <- MSEv_explicand[id %in% index_x_explain]
   if (!is.null(id_combination)) {
-    id_combination_aux = id_combination
+    id_combination_aux <- id_combination
     MSEv_combination <- MSEv_combination[id_combination %in% id_combination_aux]
   }
 
@@ -1205,27 +1181,35 @@ MSEv_extract_MSEv_values = function(explanation_list,
 }
 
 #' @keywords internal
-make_MSEv_bar_plot = function(MSEv_dt,
-                              n_combinations,
-                              n_explain,
-                              geom_col_width = 0.9,
-                              N_sd_error_bars = 1) {
-
+make_MSEv_bar_plot <- function(MSEv_dt,
+                               n_combinations,
+                               n_explain,
+                               tfrac = NULL,
+                               geom_col_width = 0.9) {
   MSEv_bar <-
     ggplot2::ggplot(MSEv_dt, ggplot2::aes(x = Method, y = MSEv, fill = Method)) +
-    ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width)) +
-    ggplot2::labs(x = "Method",
-                  y = bquote(MSE[v]),
-                  title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
-                                   " combinations and " * .(n_explain) * " observations"))
+    ggplot2::geom_col(
+      width = geom_col_width,
+      position = ggplot2::position_dodge(geom_col_width)
+    ) +
+    ggplot2::labs(
+      x = "Method",
+      y = bquote(MSE[v]),
+      title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
+        " combinations and " * .(n_explain) * " observations")
+    )
 
-  if (!is.null(N_sd_error_bars) && N_sd_error_bars > 0) {
+  if (!is.null(tfrac)) {
     MSEv_bar <- MSEv_bar +
-      ggplot2::geom_errorbar(position = ggplot2::position_dodge(geom_col_width),
-                             width = 0.25,
-                             ggplot2::aes(ymin = MSEv - N_sd_error_bars*MSEv_sd,
-                                          ymax = MSEv + N_sd_error_bars*MSEv_sd,
-                                          group = Method))
+      ggplot2::geom_errorbar(
+        position = ggplot2::position_dodge(geom_col_width),
+        width = 0.25,
+        ggplot2::aes(
+          ymin = MSEv - tfrac * MSEv_sd,
+          ymax = MSEv + tfrac * MSEv_sd,
+          group = Method
+        )
+      )
   }
 
   return(MSEv_bar)
@@ -1235,18 +1219,22 @@ make_MSEv_bar_plot = function(MSEv_dt,
 make_MSEv_explicand_plots <- function(MSEv_explicand_dt,
                                       n_combinations,
                                       geom_col_width = 0.9) {
-
   MSEv_explicand_source <-
     ggplot2::ggplot(MSEv_explicand_dt, ggplot2::aes(x = id, y = MSEv)) +
-    ggplot2::labs(x = "index_x_explain",
-                  y = bquote(MSE[v] * " (explicand)"),
-                  title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
-                                   " combinations for each observation"))
+    ggplot2::labs(
+      x = "index_x_explain",
+      y = bquote(MSE[v] * " (explicand)"),
+      title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
+        " combinations for each observation")
+    )
 
   MSEv_explicand_bar <-
     MSEv_explicand_source +
-    ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width), ggplot2::aes(fill = Method))
-  MSEv_explicand_bar
+    ggplot2::geom_col(
+      width = geom_col_width,
+      position = ggplot2::position_dodge(geom_col_width),
+      ggplot2::aes(fill = Method)
+    )
 
   MSEv_explicand_line_point <-
     MSEv_explicand_source +
@@ -1255,35 +1243,46 @@ make_MSEv_explicand_plots <- function(MSEv_explicand_dt,
     ggplot2::geom_point(ggplot2::aes(col = Method)) +
     ggplot2::geom_line(ggplot2::aes(group = Method, col = Method))
 
-  return(list(MSEv_explicand_bar = MSEv_explicand_bar,
-              MSEv_explicand_line_point = MSEv_explicand_line_point))
+  return(list(
+    MSEv_explicand_bar = MSEv_explicand_bar,
+    MSEv_explicand_line_point = MSEv_explicand_line_point
+  ))
 }
 
 #' @keywords internal
-make_MSEv_combination_plots = function(MSEv_combination_dt,
-                                       n_explain,
-                                       geom_col_width = 0.9,
-                                       N_sd_error_bars = 1) {
-
+make_MSEv_combination_plots <- function(MSEv_combination_dt,
+                                        n_explain,
+                                        tfrac = NULL,
+                                        geom_col_width = 0.9) {
   MSEv_combination_source <-
     ggplot2::ggplot(MSEv_combination_dt, ggplot2::aes(x = id_combination, y = MSEv)) +
-    ggplot2::labs(x = "id_combination",
-                  y = bquote(MSE[v] * " (combination)"),
-                  title = bquote(MSE[v] * " criterion averaged over the " * .(n_explain) *
-                                   " observations for each combination"))
+    ggplot2::labs(
+      x = "id_combination",
+      y = bquote(MSE[v] * " (combination)"),
+      title = bquote(MSE[v] * " criterion averaged over the " * .(n_explain) *
+        " observations for each combination")
+    )
 
   MSEv_combination_bar <-
     MSEv_combination_source +
-    ggplot2::geom_col(position = ggplot2::position_dodge(geom_col_width), ggplot2::aes(fill = Method))
+    ggplot2::geom_col(
+      width = geom_col_width,
+      position = ggplot2::position_dodge(geom_col_width),
+      ggplot2::aes(fill = Method)
+    )
 
-  if (!is.null(N_sd_error_bars) && N_sd_error_bars > 0) {
+  if (!is.null(tfrac)) {
     MSEv_combination_bar <-
       MSEv_combination_bar +
-      ggplot2::geom_errorbar(position = ggplot2::position_dodge(geom_col_width),
-                             width = 0.25,
-                             ggplot2::aes(ymin = MSEv - N_sd_error_bars*MSEv_sd,
-                                          ymax = MSEv + N_sd_error_bars*MSEv_sd,
-                                          group = Method))
+      ggplot2::geom_errorbar(
+        position = ggplot2::position_dodge(geom_col_width),
+        width = 0.25,
+        ggplot2::aes(
+          ymin = MSEv - tfrac * MSEv_sd,
+          ymax = MSEv + tfrac * MSEv_sd,
+          group = Method
+        )
+      )
   }
 
   MSEv_combination_line_point <-
@@ -1293,6 +1292,8 @@ make_MSEv_combination_plots = function(MSEv_combination_dt,
     ggplot2::geom_point(ggplot2::aes(col = Method)) +
     ggplot2::geom_line(ggplot2::aes(group = Method, col = Method))
 
-  return(list(MSEv_combination_bar = MSEv_combination_bar,
-              MSEv_combination_line_point = MSEv_combination_line_point))
+  return(list(
+    MSEv_combination_bar = MSEv_combination_bar,
+    MSEv_combination_line_point = MSEv_combination_line_point
+  ))
 }

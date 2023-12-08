@@ -6,149 +6,69 @@
 \usage{
 make_MSEv_eval_crit_plots(
   explanation_list,
-  index_explicands = NULL,
-  index_combinations = NULL,
-  only_overall_MSEv = FALSE,
-  plot_overall_MSEv = FALSE,
-  return_figures = TRUE,
-  ggplot_theme = NULL,
-  brewer_palette = "Paired",
-  brewer_direction = 1,
-  axis_labels_n_dodge = NULL,
-  axis_labels_rotate_angle = NULL,
-  title_text_size = 12,
-  bar_text_color = "black",
-  bar_text_size = 0,
-  bar_text_n_decimals = 0,
-  line_type = "solid",
-  line_width = 0.4,
-  point_size = 3,
-  point_shape = "circle",
-  add_error_bars_combination = FALSE,
-  flip_coordinates = FALSE,
-  reverse_coordinates = flip_coordinates,
-  geom_col_width = NULL,
-  legend_position = NULL,
-  legend_ncol = NULL,
-  legend_nrow = NULL
+  index_x_explain = NULL,
+  id_combination = NULL,
+  level = 0.95,
+  geom_col_width = 0.9,
+  make_MSEv_comb_and_explicand = FALSE
 )
 }
 \arguments{
 \item{explanation_list}{A list of \code{\link[=explain]{explain()}} objects applied to the same data and model.
-If the entries in the list is named, then the function use these names. Otherwise, it defaults to
+If the entries in the list are named, then the function use these names. Otherwise, they default to
 the approach names (with integer suffix for duplicates) for the explanation objects in \code{explanation_list}.}
 
-\item{index_explicands}{Integer vector. Which of the explicands (test observations) to plot.
-E.g. if you have explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the
-first 5 observations/explicands and the 10th by setting \code{index_x_explain = c(1:5, 10)}.}
+\item{index_x_explain}{Integer vector.
+Which of the test observations to plot. E.g. if you have
+explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the first 5
+observations by setting \code{index_x_explain = 1:5}.}
 
-\item{index_combinations}{Integer vector. Which of the combinations (coalitions) to plot.
+\item{id_combination}{Integer vector. Which of the combinations (coalitions) to plot.
 E.g. if you used \code{n_combinations = 16} in \code{\link[=explain]{explain()}}, you can generate a plot for the
 first 5 combinations and the 10th by setting \code{index_x_explain = c(1:5, 10)}.}
 
-\item{only_overall_MSEv}{Boolean. If \code{TRUE}, then creates only the overall_MSEv plot and skip
-the figures where we illustrate the MSEv evaluation criterion for each explicand and combination
-by only averaging over the combinations and explicands, respectively.}
-
-\item{plot_overall_MSEv}{Boolean. If \code{TRUE}, then plot the overall_MSEv figure before returning all figures.}
-
-\item{return_figures}{Boolean. If \code{TRUE}, then the function returns the figures in a list.}
-
-\item{ggplot_theme}{A \code{\link[ggplot2:theme]{ggplot2::theme()}} object to customize the non-data components of the plots:
-i.e. titles, labels, fonts, background, gridlines, and legends. Themes can be used to give plots
-a consistent customized look. Use the themes available in \code{\link[ggplot2:theme_bw]{ggplot2::ggtheme()}}.
-if you would like to use a complete theme such as \code{theme_bw()}, \code{theme_minimal()}, and more.}
-
-\item{brewer_palette}{String. Name of one of the color palettes from \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::RColorBrewer()}}.
-If \code{NULL}, then the function uses the default \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} color scheme.
-The following palettes are available for use with these scales:
-\describe{
-\item{Diverging}{BrBG, PiYG, PRGn, PuOr, RdBu, RdGy, RdYlBu, RdYlGn, Spectral}
-\item{Qualitative}{Accent, Dark2, Paired, Pastel1, Pastel2, Set1, Set2, Set3}
-\item{Sequential}{Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges,
-OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr, YlOrRd}
-}}
-
-\item{brewer_direction}{Sets the order of colors in the scale. If 1, the default,
-colors are as output by \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}}.
-If -1, the order of colors is reversed.}
-
-\item{axis_labels_n_dodge}{Integer. The number of rows that
-should be used to render the labels. This is useful for displaying labels that would otherwise overlap.}
-
-\item{axis_labels_rotate_angle}{Numeric. The angle of the axis label, where 0 means horizontal, 45 means tilted,
-and 90 means vertical. Compared to setting the angle in\code{\link[ggplot2:theme]{ggplot2::theme()}} / \code{\link[ggplot2:element]{ggplot2::element_text()}}, this also
-uses some heuristics to automatically pick the \code{hjust} and \code{vjust} that you probably want.}
-
-\item{title_text_size}{Positive numeric. The size of the title. If \code{0}, then the text is removed.}
-
-\item{bar_text_color}{String. Color of the text in the bars. The text shows the exact height of the bars.}
-
-\item{bar_text_size}{Positive numeric. The size of the text in the bars. If \code{0}, then the text is removed.}
-
-\item{bar_text_n_decimals}{Integer. The number of decimals to include in the text inside the bars.}
-
-\item{line_type}{Legal values are the strings "blank", "solid", "dashed", "dotted", "dotdash", "longdash",
-and "twodash". Alternatively, the numbers 0 to 6 can be used (0 for "blank", 1 for "solid", ...).
-Moreover, one can also use strings that define the line type with up to 8 hexadecimal digits
-(each digit specifying the length of interleaved lines and gaps),
-see \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}
-and/or \url{http://sape.inf.usi.ch/quick-reference/ggplot2/linetype}.}
-
-\item{line_width}{Positive numeric. Width of the lines, and 0 is the same as \code{line_type} = \code{blank}.}
-
-\item{point_size}{Positive numeric. The size of the points. Set \code{point_size = 0} to remove points.}
-
-\item{point_shape}{Integer or string. Specify the shape of the points.
-For a complete list of all possible shapes, see \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}.}
-
-\item{add_error_bars_combination}{Boolean. If \code{TRUE}, the function adds error bars (± 1sd) to the MSEv
-for the combinations averaged over the explicands. It does not makes sense to add it for the other
-plots as the scale of the MSEv for the explicands averaged over the combinations is different for each
-combination. The mileage of this argument may vary due to potentially overlapping error bars.}
-
-\item{flip_coordinates}{Boolean. Flip Cartesian coordinates so that the methods are on the y-ais..
-This is primarily useful for converting geoms and statistics which display y conditional on x, to x conditional on y.
-See \code{\link[ggplot2:coord_flip]{ggplot2::coord_flip()}}. If \code{TRUE}, then the function makes horizontal bars instead of vertical bars.}
-
-\item{reverse_coordinates}{Boolean. Default to be the same as \code{flip_coordinates}.
-If \code{TRUE}, then reverse the order of the methods.}
+\item{level}{Positive numeric between zero and one (default is \code{0.95}). The level of the approximate
+confidence intervals for the overall MSEv and the MSEv_combination. Setting \code{level = NULL} removes the
+confidence intervals. The confidence intervals are based on that
+the MSEv scores are means over the observations/explicands, and that means are approximation normal. Since the
+standard deviations are estimated, we use the quantile t from the T distribution with N_explicands - 1 degrees of
+freedom corresponding to the provided level. Here, N_explicands is the number of observations/explicands.
+MSEv ± t\emph{SD(MSEv)/sqrt(N_explicands). Note that the \code{explain()} function already scales the standard deviation by
+sqrt(N_explicands), thus, the CI are MSEv ± t}MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
+MSEv data.tables in the objects in the \code{explanation_list}.}
 
 \item{geom_col_width}{Numeric. Bar width. By default, set to 90\% of the \code{\link[ggplot2:resolution]{ggplot2::resolution()}} of the data.}
 
-\item{legend_position}{String or numeric vector \code{c(x,y)}. The allowed string values for the
-argument \code{legend_position} are: \code{left},\code{top}, \code{right}, \code{bottom}, and \code{none}. Note that, the argument
-\code{legend_position} can be also a numeric vector \code{c(x,y)}. In this case it is possible to position
-the legend inside the plotting area. \code{x} and \code{y} are the coordinates of the legend box.
-Their values should be between \code{0} and \code{1}, where \code{c(0,0)} corresponds to the "bottom left"
-and \code{c(1,1)} corresponds to the "top right" position.}
-
-\item{legend_ncol}{Integer. The number of columns in the legend.}
-
-\item{legend_nrow}{Integer. The number of rows in the legend.}
+\item{make_MSEv_comb_and_explicand}{Logical. If \code{FALSE} (default), then only the plot associated with the overall
+MSEv criterion is created (i.e., when averaging over both the combinations and observations). When \code{TRUE},
+the function also creates figures illustrating the MSEv evaluation criterion for each observation and combination
+by only averaging over the combinations and observations, respectively.}
 }
 \value{
-List of 5 \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} objects: three bar plots and two line plots. Only if \code{return_figures = TRUE}.
+A \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object of the MSEv criterion. If \code{make_MSEv_comb_and_explicand = TRUE},
+then a list of  5 \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} objects are returned (three bar plots and two line plots),
+where the additional fiugres are the MSEv criterion when only averaged over either the combinations
+or the test observations.
 }
 \description{
 Make plots to visualize and compare the MSEv evaluation criterion for a list of
 \code{\link[=explain]{explain()}} objects applied to the same data and model. The function creates
-bar plots and line plots, potentially with points, to illustrate the overall MSEv evaluation
-criterion, but also for each explicand and combination by only averaging over the combinations
-and explicands, respectively.
+bar plots and line plots with points to illustrate the overall MSEv evaluation
+criterion, but also for each observation/explicand and combination by only averaging over
+the combinations and observations/explicands, respectively.
 }
 \examples{
-# Load necessary libraries
-library(xgboost)
+# Load necessary librarieslibrary(xgboost)
 library(data.table)
 library(shapr)
+library(ggplot2)
 
 # Get the data
 data("airquality")
 data <- data.table::as.data.table(airquality)
 data <- data[complete.cases(data), ]
 
-# Define the features and the response
+#' Define the features and the response
 x_var <- c("Solar.R", "Wind", "Temp", "Month")
 y_var <- "Ozone"
 
@@ -175,16 +95,6 @@ explanation_independence <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "independence",
-  prediction_zero = prediction_zero,
-  n_samples = 1e2
-)
-
-# Empirical approach
-explanation_empirical <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "empirical",
   prediction_zero = prediction_zero,
   n_samples = 1e2
 )
@@ -224,25 +134,14 @@ explanation_combined <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  approach = c("gaussian", "ctree", "empirical"),
+  approach = c("gaussian", "independence", "ctree"),
   prediction_zero = prediction_zero,
   n_samples = 1e2
-)
-
-# Create a list of explanations without names
-explanation_list_unnamed <- list(
-  explanation_independence,
-  explanation_empirical,
-  explanation_gaussian_1e1,
-  explanation_gaussian_1e2,
-  explanation_ctree,
-  explanation_combined
 )
 
 # Create a list of explanations with names
 explanation_list_named <- list(
   "Ind." = explanation_independence,
-  "Emp." = explanation_empirical,
   "Gaus. 1e1" = explanation_gaussian_1e1,
   "Gaus. 1e2" = explanation_gaussian_1e2,
   "Ctree" = explanation_ctree,
@@ -250,197 +149,58 @@ explanation_list_named <- list(
 )
 
 if (requireNamespace("ggplot2", quietly = TRUE)) {
-  # The function will set default names for the objects in `explanation_list`
-  # when not provided, but these are long and will give warning to the user.
-  # The order of the methods are the same as the order in the `explanation_list`.
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_unnamed,
-    plot_overall_MSEv = TRUE,
-    only_overall_MSEv = TRUE,
-    return_figures = FALSE
+  # Create the default MSEv plot where we average over both the combinations and observations
+  # with approximate 95\% confidence intervals
+  make_MSEv_eval_crit_plots(explanation_list_named, level = 0.95)
+
+  # Can also create plots of the MSEv criterion averaged only over the combinations or observations.
+  MSEv_figures <- make_MSEv_eval_crit_plots(explanation_list_named,
+    level = 0.95,
+    make_MSEv_comb_and_explicand = TRUE
   )
+  MSEv_figures$MSEv_bar
+  MSEv_figures$MSEv_combination_bar
+  MSEv_figures$MSEv_explicand_bar
 
-  # We can fix this by either setting the `axis_labels_rotate_angle` or `axis_labels_n_dodge`
-  # to get nonoverlapping horizontal axis labels.
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_unnamed,
-    plot_overall_MSEv = TRUE,
-    only_overall_MSEv = TRUE,
-    return_figures = FALSE,
-    axis_labels_rotate_angl = -90
-  )
+  # When there are many combinations or observations, then it can be easier to look at line plots
+  MSEv_figures$MSEv_combination_line_point
+  MSEv_figures$MSEv_explicand_line_point
 
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_unnamed,
-    plot_overall_MSEv = TRUE,
-    only_overall_MSEv = TRUE,
-    return_figures = FALSE,
-    axis_labels_n_dodge = 2
-  )
-
-  # Another solution is to provide short names for the objects in the `explanation_list`.
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = TRUE,
-    only_overall_MSEv = TRUE,
-    return_figures = FALSE
-  )
-
-  # We can change many of the parameters to change the design of the figure
-  # We can, e.g., flip the bars to rather have horizontal bars
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = TRUE,
-    only_overall_MSEv = TRUE,
-    return_figures = FALSE,
-    flip_coordinates = TRUE
-  )
-
-  # We can make annotate the height of the bars
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = TRUE,
-    only_overall_MSEv = TRUE,
-    return_figures = FALSE,
-    flip_coordinates = TRUE,
-    bar_text_color = "black",
-    bar_text_size = 5,
-    bar_text_n_decimals = 2
-  )
-
-  # Note that reasonable values should be specified by the user to make readable plots.
-  # Here we illustrate what happens when we set the size too big and include too many decimals.
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = TRUE,
-    only_overall_MSEv = TRUE,
-    return_figures = FALSE,
-    flip_coordinates = FALSE,
-    bar_text_color = "black",
-    bar_text_size = 10,
-    bar_text_n_decimals = 8
-  )
-
-  # We can also change the theme of the figure, change the palette, and its order.
-  # Note that setting `brewer_palette = NULL`, yields ggplot's default color scheme.
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = TRUE,
-    only_overall_MSEv = TRUE,
-    return_figures = FALSE,
-    flip_coordinates = TRUE,
-    bar_text_color = "black",
-    bar_text_size = 5,
-    bar_text_n_decimals = 2,
-    ggplot_theme = ggplot2::theme_minimal(),
-    brewer_palette = "Set1",
-    brewer_direction = -1
-  )
-
-  # We can change the position of the legend, its number of columns (and rows), and remove title
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = TRUE,
-    only_overall_MSEv = TRUE,
-    return_figures = FALSE,
-    legend_position = "bottom",
-    legend_ncol = 3,
-    legend_nrow = 2,
-    title_text_size = 0
-  )
-
-  # We can return the figure as list
-  figure <- make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = FALSE,
-    only_overall_MSEv = TRUE,
-    return_figures = TRUE
-  )
-  figure
-
-  # In addition to only make the overall MSEv figure, where we average over both the combinations and
-  # explicands, we can also make figures where we only average over one of them.
-  figures <- make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = FALSE,
-    only_overall_MSEv = FALSE,
-    return_figures = TRUE
-  )
-  # We see that we make five plots
-  # Plots 1-2 and 3-4 illustrates the same, but as line/point plots and as bar plots.
-  # The plots that end with `MSEv_explicand` has only averaged over the combinations,
-  # while the plots that end with `MSEv_combination` has only averaged over the explicands.
-  # Here an explicand refers to the observations in `x_explain` which we want to explain.
-  # Finally, `MSEv_bar` is the plot we have looked at above.
-  names(figures)
-
-  # Look at the MSEv for each explicand and then combination
-  figures$MSEv_explicand_bar
-  figures$MSEv_combination_bar
-
-  # We can focus on certain explicands by using the `index_explicands` parameter
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = FALSE,
-    only_overall_MSEv = FALSE,
-    return_figures = TRUE,
-    index_explicands = c(1, 3:4, 6),
-    geom_col_width = 0.75
+  # We can specify which observations or combinations to plot
+  make_MSEv_eval_crit_plots(explanation_list_named,
+    make_MSEv_comb_and_explicand = TRUE,
+    index_x_explain = c(1, 3:4, 6),
+    level = 0.95
   )$MSEv_explicand_bar
-
-  # Or certain combinations by using the `index_combinations` parameter
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = FALSE,
-    only_overall_MSEv = FALSE,
-    return_figures = TRUE,
-    index_combinations = c(1:3, 10, 15),
-    geom_col_width = 0.75
+  make_MSEv_eval_crit_plots(explanation_list_named,
+    make_MSEv_comb_and_explicand = TRUE,
+    id_combination = c(3, 4, 9, 13:15),
+    level = 0.95
   )$MSEv_combination_bar
 
-  # Can also here flip the bars and add other stuff
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = FALSE,
-    only_overall_MSEv = FALSE,
-    return_figures = TRUE,
-    index_explicands = c(1, 3:4, 6),
-    geom_col_width = 0.75,
-    flip_coordinates = TRUE,
-    bar_text_size = 4,
-    ggplot_theme = ggplot2::theme_minimal(),
-    brewer_palette = "Blues"
-  )$MSEv_explicand_bar
-
-  # The function also produce line/point plots for the same quantities as the bar plots
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = FALSE,
-    only_overall_MSEv = FALSE,
-    return_figures = TRUE
-  )$MSEv_explicand_line_point
-
-  # We can remove the lines to only get points and change their size and shape
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = FALSE,
-    only_overall_MSEv = FALSE,
-    return_figures = TRUE,
-    line_type = "blank",
-    point_size = 2,
-    point_shape = "square"
-  )$MSEv_explicand_line_point
-
-  # Or we can remove the points, and change the design of the lines
-  make_MSEv_eval_crit_plots(
-    explanation_list = explanation_list_named,
-    plot_overall_MSEv = FALSE,
-    only_overall_MSEv = FALSE,
-    return_figures = TRUE,
-    point_size = 0,
-    line_width = 1,
-    line_type = "solid"
-  )$MSEv_explicand_line_point
+  # We can alter the figures if other palette schemes or design is wanted
+  bar_text_n_decimals <- 1
+  MSEv_figures$MSEv_bar +
+    ggplot2::scale_x_discrete(limits = rev(levels(MSEv_figures$MSEv_bar$data$Method))) +
+    ggplot2::coord_flip() +
+    ggplot2::scale_fill_discrete() + #' Default ggplot2 palette
+    ggplot2::theme_minimal() + #' This must be set before the other theme call
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(size = 10),
+      legend.position = "bottom"
+    ) +
+    ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1, ncol = 6)) +
+    ggplot2::geom_text(
+      ggplot2::aes(label = sprintf(
+        paste("\%.", sprintf("\%d", bar_text_n_decimals), "f", sep = ""),
+        round(MSEv, bar_text_n_decimals)
+      )),
+      vjust = -1.1, # This value must be altered based on the plot dimension
+      hjust = 1.1, # This value must be altered based on the plot dimension
+      color = "black",
+      position = ggplot2::position_dodge(0.9),
+      size = 5
+    )
 }
 
 }

@@ -8,8 +8,7 @@
 #' @export
 finalize_explanation <- function(vS_list, internal) {
   keep_samp_for_vS <- internal$parameters$keep_samp_for_vS
-  MSEv_skip_empty_full_comb = internal$parameters$MSEv_skip_empty_full_comb
-  MSEv_uniform_comb_weights = internal$parameters$MSEv_uniform_comb_weights
+  MSEv_uniform_comb_weights <- internal$parameters$MSEv_uniform_comb_weights
 
   processed_vS_list <- postprocess_vS_list(
     vS_list = vS_list,
@@ -44,8 +43,8 @@ finalize_explanation <- function(vS_list, internal) {
     output$MSEv <- compute_MSEv_eval_crit(
       internal = internal,
       dt_vS = processed_vS_list$dt_vS,
-      MSEv_skip_empty_full_comb = MSEv_skip_empty_full_comb,
-      MSEv_uniform_comb_weights = MSEv_uniform_comb_weights)
+      MSEv_uniform_comb_weights = MSEv_uniform_comb_weights
+    )
   }
 
   return(output)
@@ -164,8 +163,6 @@ compute_shapley_new <- function(internal, dt_vS) {
   return(dt_kshap)
 }
 
-
-
 #' Mean Squared Error of the Contribution Function `v(S)`
 #'
 #' @inheritParams explain
@@ -174,16 +171,26 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' estimates. The first column is assumed to be named `id_combination` and containing the ids of the combinations.
 #' The last row is assumed to be the full combination, i.e., it contains the predicted responses for the observations
 #' which are to be explained.
+#' @param MSEv_skip_empty_full_comb Logical. If `TRUE` (default), we exclude the empty and grand
+#' combinations/coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
+#' for all methods, i.e., their contribution function is independent of the used method as they are special cases not
+#' effected by the used method. If `FALSE`, we include the empty and grand combinations/coalitions. In this situation,
+#' we also recommend setting `MSEv_uniform_comb_weights = TRUE`, as otherwise the large weights for the empty and
+#' grand combinations/coalitions will outweigh all other combinations and make the MSEv criterion uninformative.
 #'
 #' @return
 #' List containing:
 #' \describe{
 #'  \item{`MSEv`}{A \code{\link[data.table]{data.table}} with the overall MSEv evaluation criterion averaged
-#'  over both the combinations/coalitions and observations/explicands.}
+#'  over both the combinations/coalitions and observations/explicands. The \code{\link[data.table]{data.table}}
+#'  also contains the standard deviation of the MSEv values for each explicand (only averaged over the combinations)
+#'  divided by the square root of the number of explicands.}
 #'  \item{`MSEv_explicand`}{A \code{\link[data.table]{data.table}} with the mean squared error for each
 #'  explicand, i.e., only averaged over the combinations/coalitions.}
 #'  \item{`MSEv_combination`}{A \code{\link[data.table]{data.table}} with the mean squared error for each
-#'  coalition, i.e., only averaged over the explicands.}
+#'  combination/coalition, i.e., only averaged over the explicands/observations.
+#'  The \code{\link[data.table]{data.table}} also contains the standard deviation of the MSEv values for
+#'  each combination divided by the square root of the number of explicands.}
 #' }
 #'
 #' @description Function that computes the Mean Squared Error (MSEv) of the contribution function
@@ -203,9 +210,8 @@ compute_shapley_new <- function(internal, dt_vS) {
 #' @author Lars Henry Berge Olsen
 compute_MSEv_eval_crit <- function(internal,
                                    dt_vS,
-                                   MSEv_skip_empty_full_comb,
-                                   MSEv_uniform_comb_weights) {
-
+                                   MSEv_uniform_comb_weights,
+                                   MSEv_skip_empty_full_comb = TRUE) {
   n_explain <- internal$parameters$n_explain
   n_combinations <- internal$parameters$n_combinations
   id_combination_indices <- if (MSEv_skip_empty_full_comb) seq(2, n_combinations - 1) else seq(1, n_combinations)
@@ -213,7 +219,7 @@ compute_MSEv_eval_crit <- function(internal,
   features <- internal$objects$X$features[id_combination_indices]
 
   # Extract the predicted responses f(x)
-  p = unlist(dt_vS[id_combination == n_combinations, -"id_combination"])
+  p <- unlist(dt_vS[id_combination == n_combinations, -"id_combination"])
 
   # Create contribution matrix
   vS <- as.matrix(dt_vS[id_combination_indices, -"id_combination"])
@@ -235,11 +241,11 @@ compute_MSEv_eval_crit <- function(internal,
 
   # The MSEv criterion for each coalition, i.e., only averaged over the explicands.
   MSEv_combination <- rowMeans(dt_squared_diff * n_combinations_used)
-  MSEv_combination_sd <- apply(dt_squared_diff * n_combinations_used, 1, sd)
+  MSEv_combination_sd <- apply(dt_squared_diff * n_combinations_used, 1, sd) / sqrt(n_explain)
 
   # The MSEv criterion averaged over both the coalitions and explicands.
   MSEv <- mean(MSEv_explicand)
-  MSEv_sd <- sd(MSEv_explicand)
+  MSEv_sd <- sd(MSEv_explicand) / sqrt(n_explain)
 
   # Set the name entries in the arrays
   names(MSEv_explicand) <- paste0("id_", seq(n_explain))
@@ -247,16 +253,24 @@ compute_MSEv_eval_crit <- function(internal,
   names(MSEv_combination_sd) <- paste0("id_combination_", id_combination_indices)
 
   # Convert the results to data.table
-  MSEv <- data.table("MSEv" = MSEv,
-                     "MSEv_sd" = MSEv_sd)
-  MSEv_explicand <- data.table("id" = seq(n_explain),
-                               "MSEv" = MSEv_explicand)
-  MSEv_combination <- data.table("id_combination" = id_combination_indices,
-                                 "features" = features,
-                                 "MSEv" = MSEv_combination,
-                                 "MSEv_sd" = MSEv_combination_sd)
+  MSEv <- data.table(
+    "MSEv" = MSEv,
+    "MSEv_sd" = MSEv_sd
+  )
+  MSEv_explicand <- data.table(
+    "id" = seq(n_explain),
+    "MSEv" = MSEv_explicand
+  )
+  MSEv_combination <- data.table(
+    "id_combination" = id_combination_indices,
+    "features" = features,
+    "MSEv" = MSEv_combination,
+    "MSEv_sd" = MSEv_combination_sd
+  )
 
-  return(list(MSEv = MSEv,
-              MSEv_explicand = MSEv_explicand,
-              MSEv_combination = MSEv_combination))
+  return(list(
+    MSEv = MSEv,
+    MSEv_explicand = MSEv_explicand,
+    MSEv_combination = MSEv_combination
+  ))
 }

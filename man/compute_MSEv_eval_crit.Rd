@@ -6,44 +6,46 @@
 \usage{
 compute_MSEv_eval_crit(
   internal,
-  processed_vS_list,
-  p = shapr:::get_p(processed_vS_list$dt_vS, internal),
-  exclude_empty_grand_coalitions = TRUE,
-  use_shapley_weights = FALSE,
-  return_as_dt = TRUE
+  dt_vS,
+  MSEv_uniform_comb_weights,
+  MSEv_skip_empty_full_comb = TRUE
 )
 }
 \arguments{
-\item{internal}{List with the different parameters, data and functions used internally in the \code{\link[=explain]{explain()}} function.}
+\item{internal}{List.
+Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
+The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{output}.}
 
-\item{processed_vS_list}{List of the processed contribution function estimates.
-Output from the \code{shapr:::postprocess_vS_list()} function.}
+\item{dt_vS}{Data.table of dimension \code{n_combinations} times \code{n_explain + 1} containing the contribution function
+estimates. The first column is assumed to be named \code{id_combination} and containing the ids of the combinations.
+The last row is assumed to be the full combination, i.e., it contains the predicted responses for the observations
+which are to be explained.}
 
-\item{p}{Numeric vector with the predicted responses for the observations which are to be explained.
-Output from the \code{shapr:::get_p()} function.}
+\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the combinations
+uniformly when computing the MSEv criterion. If \code{FALSE}, then the function use the Shapley kernel weights to
+weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
+sampling frequency when not all combinations are considered.}
 
-\item{exclude_empty_grand_coalitions}{Boolean. If \code{TRUE}, we exclude the empty and grand coalitions
-when computing the MSEv evaluation criterion. This is reasonable as they are identical for all methods, i.e.,
-their contribution function is independent of the used method as they are special cases not effected by
-the used method. If \code{TRUE}, we exclude the empty and grand coalitions.}
-
-\item{use_shapley_weights}{Boolean. If \code{TRUE}, then we use the Shapley kernel weights to weight the
-different coalitions before taking the mean. If \code{FALSE}, we use regular mean with uniform weights.}
-
-\item{return_as_dt}{Boolean. If the computed MSEv evaluation criterion is
-to be returned as \code{\link[data.table]{data.table}}.}
+\item{MSEv_skip_empty_full_comb}{Logical. If \code{TRUE} (default), we exclude the empty and grand
+combinations/coalitions when computing the MSEv evaluation criterion. This is reasonable as they are identical
+for all methods, i.e., their contribution function is independent of the used method as they are special cases not
+effected by the used method. If \code{FALSE}, we include the empty and grand combinations/coalitions. In this situation,
+we also recommend setting \code{MSEv_uniform_comb_weights = TRUE}, as otherwise the large weights for the empty and
+grand combinations/coalitions will outweigh all other combinations and make the MSEv criterion uninformative.}
 }
 \value{
 List containing:
 \describe{
-\item{\code{MSEv_eval_crit}}{Numeric scalar (or \code{\link[data.table]{data.table}} based on parameter
-\code{return_as_dt}) with the overall MSEv evaluation criterion averaged over both the coalitions and observations.}
-\item{\code{MSEv_eval_crit_explicand}}{Numeric vector (or \code{\link[data.table]{data.table}}
-based on parameter \code{return_as_dt}) with the mean squared error for each explicand,
-i.e., only averaged over the coalitions.}
-\item{\code{MSEv_eval_crit_combination}}{Numeric vector (or \code{\link[data.table]{data.table}}
-based on parameter \code{return_as_dt}) with the mean squared error for each coalition,
-i.e., only averaged over the observations.}
+\item{\code{MSEv}}{A \code{\link[data.table]{data.table}} with the overall MSEv evaluation criterion averaged
+over both the combinations/coalitions and observations/explicands. The \code{\link[data.table]{data.table}}
+also contains the standard deviation of the MSEv values for each explicand (only averaged over the combinations)
+divided by the square root of the number of explicands.}
+\item{\code{MSEv_explicand}}{A \code{\link[data.table]{data.table}} with the mean squared error for each
+explicand, i.e., only averaged over the combinations/coalitions.}
+\item{\code{MSEv_combination}}{A \code{\link[data.table]{data.table}} with the mean squared error for each
+combination/coalition, i.e., only averaged over the explicands/observations.
+The \code{\link[data.table]{data.table}} also contains the standard deviation of the MSEv values for
+each combination divided by the square root of the number of explicands.}
 }
 }
 \description{
@@ -60,80 +62,7 @@ illustrates in Figure 11 a fairly strong linear relationship between the MSEv cr
 MAE between the estimated and true Shapley values in a simulation study. Note that explicands
 refer to the observations whose predictions we are to explain.
 }
-\examples{
-library(xgboost)
-library(data.table)
-set.seed(1)
-
-data("airquality")
-data <- data.table::as.data.table(airquality)
-data <- data[complete.cases(data), ]
-
-x_var <- c("Solar.R", "Wind", "Temp", "Month")
-y_var <- "Ozone"
-
-ind_x_explain <- 1:6
-x_train <- data[-ind_x_explain, ..x_var]
-y_train <- data[-ind_x_explain, get(y_var)]
-x_explain <- data[ind_x_explain, ..x_var]
-
-# Fitting a basic xgboost model to the training data
-model <- xgboost::xgboost(
-  data = as.matrix(x_train),
-  label = y_train,
-  nround = 20,
-  verbose = FALSE
-)
-
-# Specifying the phi_0, i.e. the expected prediction without any features
-p0 <- mean(y_train)
-
-# Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
-# the gaussian (conditional) approach
-explanation <- explain(
-  model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "gaussian",
-  prediction_zero = p0,
-  seed = 1
-)
-
-# The `compute_MSEv_eval_crit` function is intended to be only called internally in
-# the `shapr` package, but the user can still use it outside of the package.
-# Exclude the empty and grand coalitions from the computations and return the result as a data.table
-compute_MSEv_eval_crit(
-  internal = explanation$internal,
-  processed_vS_list = explanation$internal$output,
-  exclude_empty_grand_coalitions = TRUE,
-  return_as_dt = TRUE
-)
-
-# Include the empty and grand coalitions from the computations and return the result as a data.table
-compute_MSEv_eval_crit(
-  internal = explanation$internal,
-  processed_vS_list = explanation$internal$output,
-  exclude_empty_grand_coalitions = FALSE,
-  return_as_dt = TRUE
-)
-
-# Exclude the empty and grand coalitions from the computations and return the result as a list
-compute_MSEv_eval_crit(
-  internal = explanation$internal,
-  processed_vS_list = explanation$internal$output,
-  exclude_empty_grand_coalitions = TRUE,
-  return_as_dt = FALSE
-)
-
-# Include the empty and grand coalitions from the computations and return the result as a list
-compute_MSEv_eval_crit(
-  internal = explanation$internal,
-  processed_vS_list = explanation$internal$output,
-  exclude_empty_grand_coalitions = FALSE,
-  return_as_dt = FALSE
-)
-
-}
 \author{
 Lars Henry Berge Olsen
 }
+\keyword{internal}
