@@ -800,9 +800,9 @@ make_waterfall_plot <- function(dt_plot,
 #' @param id_combination Integer vector. Which of the combinations (coalitions) to plot.
 #' E.g. if you used `n_combinations = 16` in [explain()], you can generate a plot for the
 #' first 5 combinations and the 10th by setting `id_combination = c(1:5, 10)`.
-#' @param level Positive numeric between zero and one (default is `0.95`). The level of the approximate
-#' confidence intervals for the overall MSEv and the MSEv_combination. Setting `level = NULL` removes the
-#' confidence intervals. The confidence intervals are based on that
+#' @param level Positive numeric between zero and one. Default is `0.95` if the number of observations to explain is
+#' larger than 20, otherwise `level = NULL`, which removes the confidence intervals. The level of the approximate
+#' confidence intervals for the overall MSEv and the MSEv_combination. The confidence intervals are based on that
 #' the MSEv scores are means over the observations/explicands, and that means are approximation normal. Since the
 #' standard deviations are estimated, we use the quantile t from the T distribution with N_explicands - 1 degrees of
 #' freedom corresponding to the provided level. Here, N_explicands is the number of observations/explicands.
@@ -971,7 +971,7 @@ make_waterfall_plot <- function(dt_plot,
 plot_MSEv_eval_crit <- function(explanation_list,
                                       index_x_explain = NULL,
                                       id_combination = NULL,
-                                      level = 0.95,
+                                      level = ifelse(length(explanation_list[[1]]$pred_explain) < 20, NULL, 0.95),
                                       geom_col_width = 0.9,
                                       make_MSEv_comb_and_explicand = FALSE) {
   # Setup and checks ----------------------------------------------------------------------------
