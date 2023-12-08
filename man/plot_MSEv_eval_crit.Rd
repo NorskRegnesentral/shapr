@@ -8,7 +8,7 @@ plot_MSEv_eval_crit(
   explanation_list,
   index_x_explain = NULL,
   id_combination = NULL,
-  level = 0.95,
+  CI_level = ifelse(length(explanation_list[[1]]$pred_explain) < 20, NULL, 0.95),
   geom_col_width = 0.9,
   make_MSEv_comb_and_explicand = FALSE
 )
@@ -27,9 +27,9 @@ observations by setting \code{index_x_explain = 1:5}.}
 E.g. if you used \code{n_combinations = 16} in \code{\link[=explain]{explain()}}, you can generate a plot for the
 first 5 combinations and the 10th by setting \code{id_combination = c(1:5, 10)}.}
 
-\item{level}{Positive numeric between zero and one (default is \code{0.95}). The level of the approximate
-confidence intervals for the overall MSEv and the MSEv_combination. Setting \code{level = NULL} removes the
-confidence intervals. The confidence intervals are based on that
+\item{CI_level}{Positive numeric between zero and one. Default is \code{0.95} if the number of observations to explain is
+larger than 20, otherwise \code{CI_level = NULL}, which removes the confidence intervals. The level of the approximate
+confidence intervals for the overall MSEv and the MSEv_combination. The confidence intervals are based on that
 the MSEv scores are means over the observations/explicands, and that means are approximation normal. Since the
 standard deviations are estimated, we use the quantile t from the T distribution with N_explicands - 1 degrees of
 freedom corresponding to the provided level. Here, N_explicands is the number of observations/explicands.
@@ -151,11 +151,11 @@ explanation_list_named <- list(
 if (requireNamespace("ggplot2", quietly = TRUE)) {
   # Create the default MSEv plot where we average over both the combinations and observations
   # with approximate 95\% confidence intervals
-  plot_MSEv_eval_crit(explanation_list_named, level = 0.95)
+  plot_MSEv_eval_crit(explanation_list_named, CI_level = 0.95)
 
   # Can also create plots of the MSEv criterion averaged only over the combinations or observations.
   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
-    level = 0.95,
+    CI_level = 0.95,
     make_MSEv_comb_and_explicand = TRUE
   )
   MSEv_figures$MSEv_bar
@@ -170,12 +170,12 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   plot_MSEv_eval_crit(explanation_list_named,
     make_MSEv_comb_and_explicand = TRUE,
     index_x_explain = c(1, 3:4, 6),
-    level = 0.95
+    CI_level = 0.95
   )$MSEv_explicand_bar
   plot_MSEv_eval_crit(explanation_list_named,
     make_MSEv_comb_and_explicand = TRUE,
     id_combination = c(3, 4, 9, 13:15),
-    level = 0.95
+    CI_level = 0.95
   )$MSEv_combination_bar
 
   # We can alter the figures if other palette schemes or design is wanted
