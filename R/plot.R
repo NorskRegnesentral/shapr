@@ -983,10 +983,12 @@ plot_MSEv_eval_crit <- function(explanation_list,
   }
 
   # Check for valid plot type argument
-  unknown_plot_type = plot_type[!(plot_type %in% c("overall", "comb", "explicand"))]
+  unknown_plot_type <- plot_type[!(plot_type %in% c("overall", "comb", "explicand"))]
   if (length(unknown_plot_type) > 0) {
-    error(paste0("The `plot_type` must be one (or several) of 'overall', 'comb', 'explicand'. ",
-                   "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."))
+    error(paste0(
+      "The `plot_type` must be one (or several) of 'overall', 'comb', 'explicand'. ",
+      "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
+    ))
   }
 
   # Ensure that even a single explanation object is in a list
@@ -1041,27 +1043,30 @@ plot_MSEv_eval_crit <- function(explanation_list,
   }
 
   # Plot ------------------------------------------------------------------------------------------------------------
-  return_object = list()
+  return_object <- list()
 
   if ("explicand" %in% plot_type) {
     # MSEv averaged over only the combinations for each observation
-    return_object <- c(return_object,
-                     make_MSEv_explicand_plots(
-                       MSEv_explicand_dt = MSEv_explicand_dt,
-                       n_combinations = n_combinations,
-                       geom_col_width = geom_col_width)
+    return_object <- c(
+      return_object,
+      make_MSEv_explicand_plots(
+        MSEv_explicand_dt = MSEv_explicand_dt,
+        n_combinations = n_combinations,
+        geom_col_width = geom_col_width
+      )
     )
   }
 
   if ("comb" %in% plot_type) {
     # MSEv averaged over only the observations for each combinations
-    return_object <- c(return_object,
-                     make_MSEv_combination_plots(
-                       MSEv_combination_dt = MSEv_combination_dt,
-                       n_explain = n_explain,
-                       geom_col_width = geom_col_width,
-                       tfrac = tfrac
-                     )
+    return_object <- c(
+      return_object,
+      make_MSEv_combination_plots(
+        MSEv_combination_dt = MSEv_combination_dt,
+        n_explain = n_explain,
+        geom_col_width = geom_col_width,
+        tfrac = tfrac
+      )
     )
   }
 
@@ -1078,7 +1083,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
 
   # Return ----------------------------------------------------------------------------------------------------------
   if (length(plot_type) == 1 && plot_type == "comb") {
-    return_object = return_object$MSEv_bar
+    return_object <- return_object$MSEv_bar
   }
 
   return(return_object)
@@ -1198,7 +1203,6 @@ make_MSEv_bar_plot <- function(MSEv_dt,
                                n_explain,
                                tfrac = NULL,
                                geom_col_width = 0.9) {
-
   MSEv_bar <-
     ggplot2::ggplot(MSEv_dt, ggplot2::aes(x = Method, y = MSEv, fill = Method)) +
     ggplot2::geom_col(
@@ -1213,12 +1217,12 @@ make_MSEv_bar_plot <- function(MSEv_dt,
     )
 
   if (!is.null(tfrac)) {
-    CI_level = 1 - 2 * (1 - pt(tfrac, n_explain-1))
+    CI_level <- 1 - 2 * (1 - pt(tfrac, n_explain - 1))
 
     MSEv_bar <- MSEv_bar +
       ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
-                                     " combinations and " * .(n_explain) * " explicands with " *
-                                     .(CI_level * 100) * "% CI")) +
+        " combinations and " * .(n_explain) * " explicands with " *
+        .(CI_level * 100) * "% CI")) +
       ggplot2::geom_errorbar(
         position = ggplot2::position_dodge(geom_col_width),
         width = 0.25,
@@ -1290,12 +1294,12 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
     )
 
   if (!is.null(tfrac)) {
-    CI_level = 1 - 2 * (1 - pt(tfrac, n_explain-1))
+    CI_level <- 1 - 2 * (1 - pt(tfrac, n_explain - 1))
 
     MSEv_combination_bar <-
       MSEv_combination_bar +
       ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over the " * .(n_explain) *
-                         " explicands for each combination with " * .(CI_level * 100) * "% CI")) +
+        " explicands for each combination with " * .(CI_level * 100) * "% CI")) +
       ggplot2::geom_errorbar(
         position = ggplot2::position_dodge(geom_col_width),
         width = 0.25,
