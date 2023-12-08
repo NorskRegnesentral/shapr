@@ -974,7 +974,7 @@ make_waterfall_plot <- function(dt_plot,
 plot_MSEv_eval_crit <- function(explanation_list,
                                 index_x_explain = NULL,
                                 id_combination = NULL,
-                                CI_level = ifelse(length(explanation_list[[1]]$pred_explain) < 20, NULL, 0.95),
+                                CI_level = if (length(explanation_list[[1]]$pred_explain) < 20) NULL else 0.95,
                                 geom_col_width = 0.9,
                                 plot_type = "overall") {
   # Setup and checks ----------------------------------------------------------------------------
@@ -1008,7 +1008,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
   # Get the number of observations and combinations and the quantile of the T distribution
   n_explain <- explanation_list[[1]]$internal$parameters$n_explain
   n_combinations <- explanation_list[[1]]$internal$parameters$n_combinations
-  tfrac <- ifelse(is.null(CI_level), NULL, qt((1 + CI_level) / 2, n_explain - 1))
+  tfrac <- if (is.null(CI_level)) NULL else qt((1 + CI_level) / 2, n_explain - 1)
 
   # Create data.tables of the MSEv values
   MSEv_dt_list <- MSEv_extract_MSEv_values(
