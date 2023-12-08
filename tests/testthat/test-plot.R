@@ -174,19 +174,23 @@ test_that("MSEv evaluation criterion plots", {
   skip_if_not_installed("vdiffr")
 
   # Create a list of explanations with names
-  explanation_list_named <- list("Emp." = explain_numeric_empirical,
-                                 "Gaus." = explain_numeric_gaussian,
-                                 "Ctree" = explain_numeric_ctree,
-                                 "Comb." = explain_numeric_combined)
+  explanation_list_named <- list(
+    "Emp." = explain_numeric_empirical,
+    "Gaus." = explain_numeric_gaussian,
+    "Ctree" = explain_numeric_ctree,
+    "Comb." = explain_numeric_combined
+  )
 
   MSEv_plots <- make_MSEv_eval_crit_plots(explanation_list_named,
-                                          make_MSEv_comb_and_explicand = TRUE,
-                                          level = 0.95)
+    make_MSEv_comb_and_explicand = TRUE,
+    level = 0.95
+  )
 
   MSEv_plots_specified_width <- make_MSEv_eval_crit_plots(explanation_list_named,
-                                                          make_MSEv_comb_and_explicand = TRUE,
-                                                          level = 0.95,
-                                                          geom_col_width = 0.5)
+    make_MSEv_comb_and_explicand = TRUE,
+    level = 0.95,
+    geom_col_width = 0.5
+  )
 
   vdiffr::expect_doppelganger(
     title = "MSEv_bar",
@@ -196,15 +200,17 @@ test_that("MSEv evaluation criterion plots", {
   vdiffr::expect_doppelganger(
     title = "MSEv_bar 50% CI",
     fig = make_MSEv_eval_crit_plots(explanation_list_named,
-                                    make_MSEv_comb_and_explicand = FALSE,
-                                    level = 0.50)
+      make_MSEv_comb_and_explicand = FALSE,
+      level = 0.50
+    )
   )
 
   vdiffr::expect_doppelganger(
     title = "MSEv_bar without CI",
     fig = make_MSEv_eval_crit_plots(explanation_list_named,
-                                    make_MSEv_comb_and_explicand = FALSE,
-                                    level = NULL)
+      make_MSEv_comb_and_explicand = FALSE,
+      level = NULL
+    )
   )
 
   vdiffr::expect_doppelganger(
@@ -245,16 +251,18 @@ test_that("MSEv evaluation criterion plots", {
   vdiffr::expect_doppelganger(
     title = "MSEv_explicand for specified observations",
     fig = make_MSEv_eval_crit_plots(explanation_list_named,
-                                    make_MSEv_comb_and_explicand = TRUE,
-                                    index_x_explain = c(1, 3:4, 6),
-                                    level = 0.95)$MSEv_explicand_bar
+      make_MSEv_comb_and_explicand = TRUE,
+      index_x_explain = c(1, 3:4, 6),
+      level = 0.95
+    )$MSEv_explicand_bar
   )
 
   vdiffr::expect_doppelganger(
     title = "MSEv_combinations for specified combinations",
     fig = make_MSEv_eval_crit_plots(explanation_list_named,
-                                    make_MSEv_comb_and_explicand = TRUE,
-                                    id_combination = c(3, 4, 9, 13:15),
-                                    level = 0.95)$MSEv_combination_bar
+      make_MSEv_comb_and_explicand = TRUE,
+      id_combination = c(3, 4, 9, 13:15),
+      level = 0.95
+    )$MSEv_combination_bar
   )
 })
