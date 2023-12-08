@@ -27,7 +27,7 @@ test_that("output_lm_numeric_independence_MSEv_Shapley_weights", {
       timing = FALSE,
       MSEv_uniform_comb_weights = FALSE
     ),
-    "output_lm_numeric_independence"
+    "output_lm_numeric_independence_MSEv_Shapley_weights"
   )
 })
 
