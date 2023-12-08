@@ -25,7 +25,7 @@ observations by setting \code{index_x_explain = 1:5}.}
 
 \item{id_combination}{Integer vector. Which of the combinations (coalitions) to plot.
 E.g. if you used \code{n_combinations = 16} in \code{\link[=explain]{explain()}}, you can generate a plot for the
-first 5 combinations and the 10th by setting \code{index_x_explain = c(1:5, 10)}.}
+first 5 combinations and the 10th by setting \code{id_combination = c(1:5, 10)}.}
 
 \item{level}{Positive numeric between zero and one (default is \code{0.95}). The level of the approximate
 confidence intervals for the overall MSEv and the MSEv_combination. Setting \code{level = NULL} removes the
