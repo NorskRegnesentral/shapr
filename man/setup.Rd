@@ -142,7 +142,7 @@ Whether the timing of the different parts of the \code{explain()} should saved i
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
 
-\item{...}{}
+\item{...}{Further arguments passed to specific approaches}
 }
 \description{
 check_setup

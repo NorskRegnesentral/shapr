@@ -89,7 +89,7 @@
 #'
 #' @param timing Logical.
 #' Whether the timing of the different parts of the `explain()` should saved in the model object.
-#' @param ...
+#' @param ... Further arguments passed to specific approaches
 #'
 #' @inheritDotParams setup_approach.empirical
 #' @inheritDotParams setup_approach.independence
