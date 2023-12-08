@@ -181,12 +181,12 @@ test_that("MSEv evaluation criterion plots", {
     "Comb." = explain_numeric_combined
   )
 
-  MSEv_plots <- make_MSEv_eval_crit_plots(explanation_list_named,
+  MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
     make_MSEv_comb_and_explicand = TRUE,
     level = 0.95
   )
 
-  MSEv_plots_specified_width <- make_MSEv_eval_crit_plots(explanation_list_named,
+  MSEv_plots_specified_width <- plot_MSEv_eval_crit(explanation_list_named,
     make_MSEv_comb_and_explicand = TRUE,
     level = 0.95,
     geom_col_width = 0.5
@@ -199,7 +199,7 @@ test_that("MSEv evaluation criterion plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv_bar 50% CI",
-    fig = make_MSEv_eval_crit_plots(explanation_list_named,
+    fig = plot_MSEv_eval_crit(explanation_list_named,
       make_MSEv_comb_and_explicand = FALSE,
       level = 0.50
     )
@@ -207,7 +207,7 @@ test_that("MSEv evaluation criterion plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv_bar without CI",
-    fig = make_MSEv_eval_crit_plots(explanation_list_named,
+    fig = plot_MSEv_eval_crit(explanation_list_named,
       make_MSEv_comb_and_explicand = FALSE,
       level = NULL
     )
@@ -250,7 +250,7 @@ test_that("MSEv evaluation criterion plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv_explicand for specified observations",
-    fig = make_MSEv_eval_crit_plots(explanation_list_named,
+    fig = plot_MSEv_eval_crit(explanation_list_named,
       make_MSEv_comb_and_explicand = TRUE,
       index_x_explain = c(1, 3:4, 6),
       level = 0.95
@@ -259,7 +259,7 @@ test_that("MSEv evaluation criterion plots", {
 
   vdiffr::expect_doppelganger(
     title = "MSEv_combinations for specified combinations",
-    fig = make_MSEv_eval_crit_plots(explanation_list_named,
+    fig = plot_MSEv_eval_crit(explanation_list_named,
       make_MSEv_comb_and_explicand = TRUE,
       id_combination = c(3, 4, 9, 13:15),
       level = 0.95

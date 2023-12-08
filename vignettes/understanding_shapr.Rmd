@@ -733,7 +733,7 @@ We can then compare the different approaches by creating plots of the $\operator
 
 ```{r}
 # Create the MSEv plots with approximate 95% confidence intervals
-MSEv_plots <- make_MSEv_eval_crit_plots(explanation_list_named,
+MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
   make_MSEv_comb_and_explicand = TRUE,
   level = 0.95
 )
@@ -759,17 +759,17 @@ MSEv_plots$MSEv_combination_bar
 explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination", "features")]
 ```
 
-We can specify the `index_x_explain` and `id_combination` parameters in `make_MSEv_eval_crit_plots()` to only plot 
+We can specify the `index_x_explain` and `id_combination` parameters in `plot_MSEv_eval_crit()` to only plot 
 certain test observations and combinations, respectively.
 
 ```{r}
 # We can specify which test observations or combinations to plot
-make_MSEv_eval_crit_plots(explanation_list_named,
+plot_MSEv_eval_crit(explanation_list_named,
   make_MSEv_comb_and_explicand = TRUE,
   index_x_explain = c(1, 3:4, 6),
   level = 0.95
 )$MSEv_explicand_bar
-make_MSEv_eval_crit_plots(explanation_list_named,
+plot_MSEv_eval_crit(explanation_list_named,
   make_MSEv_comb_and_explicand = TRUE,
   id_combination = c(3, 4, 9, 13:15),
   level = 0.95
@@ -778,11 +778,11 @@ make_MSEv_eval_crit_plots(explanation_list_named,
 
 
 We can also alter the plots design-wise as we do in the code below.
-See the documentation of the `make_MSEv_eval_crit_plots()` function for more examples.
+See the documentation of the `plot_MSEv_eval_crit()` function for more examples.
 
 ```{r, echo=FALSE, message=FALSE, results='hide'}
 bar_text_n_decimals <- 1
-MSEv_plot <- make_MSEv_eval_crit_plots(explanation_list_named, level = 0.95)
+MSEv_plot <- plot_MSEv_eval_crit(explanation_list_named, level = 0.95)
 MSEv_plot +
   ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plot$data$Method))) +
   ggplot2::coord_flip() +

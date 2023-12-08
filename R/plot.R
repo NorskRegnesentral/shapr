@@ -915,10 +915,10 @@ make_waterfall_plot <- function(dt_plot,
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   # Create the default MSEv plot where we average over both the combinations and observations
 #'   # with approximate 95% confidence intervals
-#'   make_MSEv_eval_crit_plots(explanation_list_named, level = 0.95)
+#'   plot_MSEv_eval_crit(explanation_list_named, level = 0.95)
 #'
 #'   # Can also create plots of the MSEv criterion averaged only over the combinations or observations.
-#'   MSEv_figures <- make_MSEv_eval_crit_plots(explanation_list_named,
+#'   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
 #'     level = 0.95,
 #'     make_MSEv_comb_and_explicand = TRUE
 #'   )
@@ -931,12 +931,12 @@ make_waterfall_plot <- function(dt_plot,
 #'   MSEv_figures$MSEv_explicand_line_point
 #'
 #'   # We can specify which observations or combinations to plot
-#'   make_MSEv_eval_crit_plots(explanation_list_named,
+#'   plot_MSEv_eval_crit(explanation_list_named,
 #'     make_MSEv_comb_and_explicand = TRUE,
 #'     index_x_explain = c(1, 3:4, 6),
 #'     level = 0.95
 #'   )$MSEv_explicand_bar
-#'   make_MSEv_eval_crit_plots(explanation_list_named,
+#'   plot_MSEv_eval_crit(explanation_list_named,
 #'     make_MSEv_comb_and_explicand = TRUE,
 #'     id_combination = c(3, 4, 9, 13:15),
 #'     level = 0.95
@@ -968,7 +968,7 @@ make_waterfall_plot <- function(dt_plot,
 #' }
 #'
 #' @author Lars Henry Berge Olsen
-make_MSEv_eval_crit_plots <- function(explanation_list,
+plot_MSEv_eval_crit <- function(explanation_list,
                                       index_x_explain = NULL,
                                       id_combination = NULL,
                                       level = 0.95,

@@ -115,7 +115,7 @@ explanation_list_named <- list(
 
 # Plots -----------------------------------------------------------------------------------------------------------
 # Create the default MSEv plot
-MSEv_figure <- make_MSEv_eval_crit_plots(explanation_list_named)
+MSEv_figure <- plot_MSEv_eval_crit(explanation_list_named)
 MSEv_figure
 
 # For long method names, one can rotate them or put them on different lines (or both)
@@ -123,7 +123,7 @@ MSEv_figure + ggplot2::guides(x = ggplot2::guide_axis(angle = 45))
 MSEv_figure + ggplot2::guides(x = ggplot2::guide_axis(n.dodge = 2))
 
 # The function sets default names based on the used approach when an unnamed list is provided
-make_MSEv_eval_crit_plots(explanation_list_unnamed) + ggplot2::guides(x = ggplot2::guide_axis(angle = 45))
+plot_MSEv_eval_crit(explanation_list_unnamed) + ggplot2::guides(x = ggplot2::guide_axis(angle = 45))
 
 # Can move the legend around or simply remove it
 MSEv_figure +
@@ -141,7 +141,7 @@ MSEv_figure + ggplot2::theme_minimal() +
 
 # Can add the height of the bars as text. Remove the error bars.
 bar_text_n_decimals <- 1
-MSEv_figure_wo_CI <- make_MSEv_eval_crit_plots(explanation_list_named, level = NULL)
+MSEv_figure_wo_CI <- plot_MSEv_eval_crit(explanation_list_named, level = NULL)
 MSEv_figure_wo_CI +
   ggplot2::geom_text(
     ggplot2::aes(label = sprintf(
@@ -210,7 +210,7 @@ MSEv_figure +
 
 # Can also create plots where we look at the MSEv criterion averaged only over the combinations or observations.
 # Note that we can also alter the design of these plots as we did above.
-MSEv_figures <- make_MSEv_eval_crit_plots(explanation_list_named,
+MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
   make_MSEv_comb_and_explicand = TRUE
 )
 MSEv_figures$MSEv_bar
@@ -222,18 +222,18 @@ MSEv_figures$MSEv_combination_line_point
 MSEv_figures$MSEv_explicand_line_point
 
 # We can specify which test observations or combinations to plot
-make_MSEv_eval_crit_plots(explanation_list_named,
+plot_MSEv_eval_crit(explanation_list_named,
   make_MSEv_comb_and_explicand = TRUE,
   index_x_explain = c(1, 3:4, 6)
 )$MSEv_explicand_bar
-make_MSEv_eval_crit_plots(explanation_list_named,
+plot_MSEv_eval_crit(explanation_list_named,
   make_MSEv_comb_and_explicand = TRUE,
   id_combination = c(3, 4, 9, 13:15)
 )$MSEv_combination_bar
 
 
 # To rotate the combination plot, we need to alter the order of the methods to get them in the same order as before
-MSEv_combination <- make_MSEv_eval_crit_plots(explanation_list_named,
+MSEv_combination <- plot_MSEv_eval_crit(explanation_list_named,
   make_MSEv_comb_and_explicand = TRUE,
   id_combination = c(3, 4, 9, 13:15)
 )$MSEv_combination_bar
@@ -245,7 +245,7 @@ MSEv_combination +
 
 
 # Rotate and with text, but without CI
-MSEv_combination_wo_CI <- make_MSEv_eval_crit_plots(explanation_list_named,
+MSEv_combination_wo_CI <- plot_MSEv_eval_crit(explanation_list_named,
   make_MSEv_comb_and_explicand = TRUE,
   id_combination = c(3, 4, 9, 13:15),
   level = NULL
@@ -333,7 +333,7 @@ explanation_gaussian_seed_2$internal$objects$X$features
 explanation_gaussian_seed_3$internal$objects$X$features
 
 # Will give an error due to different combinations
-make_MSEv_eval_crit_plots(list(
+plot_MSEv_eval_crit(list(
   "Seed1" = explanation_gaussian_seed_1,
   "Seed1_V2" = explanation_gaussian_seed_1_V2,
   "Seed2" = explanation_gaussian_seed_2,
@@ -362,7 +362,7 @@ explanation_gaussian_only_5 <- explain(
 )
 
 # Will give an error due to different explicands
-make_MSEv_eval_crit_plots(list(
+plot_MSEv_eval_crit(list(
   "All_explicands" = explanation_gaussian_all,
   "Five_explicands" = explanation_gaussian_only_5
 ))
@@ -382,7 +382,7 @@ explanation_gaussian_copy <- copy(explanation_gaussian_all)
 colnames(explanation_gaussian_copy$shapley_values) <- rev(colnames(explanation_gaussian_copy$shapley_values))
 
 # Will give an error due to different feature names
-make_MSEv_eval_crit_plots(list(
+plot_MSEv_eval_crit(list(
   "Original" = explanation_gaussian,
   "Reversed_feature_names" = explanation_gaussian_copy
 ))
@@ -403,7 +403,7 @@ explanation_gaussian_copy <- copy(explanation_gaussian_all)
 explanation_gaussian_copy$MSEv <- NULL
 
 # Will give an error due to missing MSEv
-make_MSEv_eval_crit_plots(list(
+plot_MSEv_eval_crit(list(
   "Original" = explanation_gaussian,
   "Missing_MSEv" = explanation_gaussian_copy
 ))
