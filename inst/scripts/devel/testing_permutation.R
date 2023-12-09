@@ -1,5 +1,5 @@
 library(xgboost)
-library(shapr)
+#library(shapr)
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -43,47 +43,66 @@ exp_full <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
-  approach = "gaussian",seed = 123,n_batches=1,
+  approach = "gaussian",seed = 123,n_batches=4,
   shap_approach = "kernel",
   n_combinations = NULL,
-  prediction_zero = p0
+  prediction_zero = p0,n_samples = 10000
 )
 
 exp_full$timing
 
 
-exp_list <- exp_kern_list <- list()
-mse_vec <- mse_kern_vec <- NULL
+exp_perm_list <- exp_perm_paired_list <- exp_kern_list <- list()
+mse_perm_mat <- mse_perm_paired_mat <- mse_kern_mat <- matrix(NA,ncol=5,nrow=length(n_permutations_vec))
 for (i in seq_along(n_permutations_vec)) {
-  exp_list[[i]] <- explain(
-    model = model,
-    x_explain = x_explain,
-    x_train = x_train,
-    approach = "gaussian",seed = 123,n_batches=1,
-    shap_approach = "permutation",
-    n_permutations = n_permutations_vec[i],
-    prediction_zero = p0
-  )
+  exp_perm_list[[i]] <- exp_perm_paired_list[[i]] <- exp_kern_list[[i]] <- list()
+  for (j in 1:5){
+    exp_perm_list[[i]][[j]] <- explain(
+      model = model,
+      x_explain = x_explain,
+      x_train = x_train,
+      approach = "gaussian",seed = 123+j,n_batches=1,
+      shap_approach = "permutation",
+      n_permutations = n_permutations_vec[i],
+      prediction_zero = p0
+    )
 
-  exp_kern_list[[i]] <- explain(
-    model = model,
-    x_explain = x_explain,
-    x_train = x_train,
-    approach = "gaussian",seed = 123,n_batches=1,
-    shap_approach = "kernel",
-    n_combinations = exp_list[[i]]$internal$parameters$n_combinations,
-    prediction_zero = p0
-  )
+    exp_perm_paired_list[[i]][[j]] <- explain(
+      model = model,
+      x_explain = x_explain,
+      x_train = x_train,
+      approach = "gaussian",seed = 123+j,n_batches=1,
+      shap_approach = "permutation",paired_shap_sampling = TRUE,
+      n_permutations = n_permutations_vec[i],
+      prediction_zero = p0
+    )
 
-  print(exp_list[[i]]$timing)
-  print(exp_kern_list[[i]]$timing)
 
-  mse_vec[i] <- mean(unlist((exp_list[[i]]$shapley_values[,..x_var]-exp_full$shapley_values[,..x_var])^2))
-  mse_kern_vec[i] <- mean(unlist((exp_kern_list[[i]]$shapley_values[,..x_var]-exp_full$shapley_values[,..x_var])^2))
+    exp_kern_list[[i]][[j]] <- explain(
+      model = model,
+      x_explain = x_explain,
+      x_train = x_train,
+      approach = "gaussian",seed = 123+j,n_batches=1,
+      shap_approach = "kernel",
+      n_combinations = exp_perm_list[[i]][[j]]$internal$parameters$n_combinations,
+      prediction_zero = p0
+    )
+
+#    print(exp_list[[i]]$timing)
+#    print(exp_kern_list[[i]]$timing)
+
+    mse_perm_mat[i,j] <- mean(unlist((exp_perm_list[[i]][[j]]$shapley_values[,..x_var]-exp_full$shapley_values[,..x_var])^2))
+    mse_perm_paired_mat[i,j] <- mean(unlist((exp_perm_paired_list[[i]][[j]]$shapley_values[,..x_var]-exp_full$shapley_values[,..x_var])^2))
+    mse_kern_mat[i,j] <- mean(unlist((exp_kern_list[[i]][[j]]$shapley_values[,..x_var]-exp_full$shapley_values[,..x_var])^2))
+
+    print(rowMeans(mse_perm_mat,na.rm = TRUE))
+    print(rowMeans(mse_perm_paired_mat,na.rm = TRUE))
+    print(rowMeans(mse_kern_mat,na.rm = TRUE))
+  }
 
 }
 
-mse_vec
+mse_perm_mat
 mse_kern_vec
 
 
@@ -95,6 +114,15 @@ explanation_perm <- explain(
   prediction_zero = p0,shap_approach = "permutation",n_permutations = 24
 )
 
+explanation_perm_paired <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",seed = 123,n_batches=1,
+  prediction_zero = p0,shap_approach = "permutation",paired_shap_sampling = TRUE,n_permutations = 24
+)
+
+
 explanation_kernel <- explain(
   model = model,
   x_explain = x_explain,
@@ -105,15 +133,21 @@ explanation_kernel <- explain(
 )
 
 explanation_perm$internal$objects$X
+explanation_perm_paired$internal$objects$X
 explanation_kernel$internal$objects$X
 
 explanation_perm$internal$output$dt_vS
+explanation_perm_paired$internal$output$dt_vS
 explanation_kernel$internal$output$dt_vS
 
 explanation_perm$shapley_values
+explanation_perm_paired$shapley_values
+
 explanation_kernel$shapley_values
 
 explanation_perm$timing
+explanation_perm_paired$timing
+
 explanation_kernel$timing
 
 #### Some TODO notes:

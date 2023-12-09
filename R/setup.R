@@ -21,6 +21,7 @@ setup <- function(x_train,
                   x_explain,
                   approach,
                   shap_approach,
+                  paired_shap_sampling,
                   prediction_zero,
                   output_size = 1,
                   n_combinations,
@@ -49,6 +50,7 @@ setup <- function(x_train,
   internal$parameters <- get_parameters(
     approach = approach,
     shap_approach = shap_approach,
+    paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
     output_size = output_size,
     n_combinations = n_combinations,
@@ -376,7 +378,7 @@ get_extra_parameters <- function(internal) {
 }
 
 #' @keywords internal
-get_parameters <- function(approach, shap_approach, prediction_zero, output_size = 1, n_combinations, n_permutations, group, n_samples,
+get_parameters <- function(approach, shap_approach,paired_shap_sampling, prediction_zero, output_size = 1, n_combinations, n_permutations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
                            explain_xreg_lags, group_lags = NULL, timing, is_python, ...) {
   # Check input type for approach
@@ -386,6 +388,10 @@ get_parameters <- function(approach, shap_approach, prediction_zero, output_size
   # Check if shap_approach is a character equal to either "kernel" or "permutation"
   if (!is.character(shap_approach) || !(shap_approach %in% c("kernel", "permutation"))) {
     stop("`shap_approach` must be a character equal to either 'kernel' or 'permutation'.")
+  }
+
+  if (!is.logical(paired_shap_sampling)) {
+    stop("`paired_shap_sampling` must be a logical.")
   }
 
   # n_combinations
@@ -499,6 +505,7 @@ get_parameters <- function(approach, shap_approach, prediction_zero, output_size
   parameters <- list(
     approach = approach,
     shap_approach = shap_approach,
+    paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
     n_permutations = n_permutations,
@@ -522,7 +529,7 @@ get_parameters <- function(approach, shap_approach, prediction_zero, output_size
   # Setting exact based on n_combinations (TRUE if NULL)
   if(shap_approach=="permutation"){
     parameters$exact <- ifelse(is.null(parameters$n_permutations), TRUE, FALSE)
-    parameters$n_combinations <- 3*parameters$n_permutations # Temporary setting this parameter to avoid errors in the code
+    parameters$n_combinations <- 3*parameters$n_permutations # TODO: Do this properly. (Temporary setting this parameter to avoid errors in the code)
   } else {
     parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
   }

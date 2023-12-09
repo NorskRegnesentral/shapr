@@ -136,6 +136,7 @@ shapley_setup <- function(internal) {
   n_permutations <- internal$parameters$n_permutations
   is_groupwise <- internal$parameters$is_groupwise
   shap_approach <- internal$parameters$shap_approach
+  paired_shap_sampling = internal$parameters$paired_shap_sampling
 
   group_num <- internal$objects$group_num
 
@@ -145,7 +146,8 @@ shapley_setup <- function(internal) {
     X_list <- feature_combinations_perm(
       m = n_features0,
       exact = exact,
-      n_permutations = n_permutations
+      n_permutations = n_permutations,
+      paired_shap_sampling = paired_shap_sampling
     )
   X <- X_list$X
   internal$objects$X_perm <- X_list$X_perm
@@ -196,7 +198,7 @@ shapley_setup <- function(internal) {
   return(internal)
 }
 
-feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL) {
+feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL,paired_shap_sampling=FALSE) {
 
   if (!exact) {
       # Switch to exact for feature-wise method
@@ -216,7 +218,7 @@ feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL) {
   if (exact) {
     perm_dt <- feature_permute_exact(m)
   } else {
-    perm_dt <- feature_permute_samp(m, n_permutations)
+    perm_dt <- feature_permute_samp(m, n_permutations,paired_shap_sampling)
   }
 
   ret <- X_from_perm_dt(perm_dt)
@@ -227,17 +229,27 @@ feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL) {
 }
 
 
-feature_permute_samp <- function(m, n_permutations) {
+feature_permute_samp <- function(m, n_permutations,paired_shap_sampling) {
   x <- seq(m)
-  perms <- vector("list", n_permutations)
+  perms <- perms_paired <- vector("list", n_permutations)
   perms[[1]] <- sample(x)
+  perms[[2]] <- rev(perms[[1]])
 
-  for (i in 2:n_permutations) {
+  if(paired_shap_sampling==TRUE){
+    for_seq <- seq(3,n_permutations,by=2)
+  } else {
+    for_seq <- seq(2,n_permutations,by=1)
+  }
+
+  for (i in for_seq) {
     perm <- sample(x)
-    while (any(sapply(perms[1:(i-1)], function(p) all(p == perm)))) {
-      perm <- sample(x)
+    while (any(sapply(perms[1:(i-1)], function(p) all(p == perm)))) { # not perfect as does not check the rev_perm, but OK for now
+      perm <- sample(x)    # repeat until we get a unique sample
     }
     perms[[i]] <- perm
+    if(paired_shap_sampling==TRUE){
+      perms[[i+1]] <- rev(perm)
+    }
   }
 
   # Create data.table with id_combination and features columns
