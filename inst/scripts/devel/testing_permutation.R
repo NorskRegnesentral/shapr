@@ -36,7 +36,7 @@ p0 <- mean(y_train)
 
 # Computing the actual Shapley values with kernelSHAP accounting for feature dependence using
 # the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
-n_permutations_vec <- c(4,8,16,32,64,128)
+n_permutations_vec <- c(4,8,16,32,64)
 
 
 exp_full <- explain(
@@ -51,12 +51,12 @@ exp_full <- explain(
 
 exp_full$timing
 
-
-exp_perm_list <- exp_perm_paired_list <- exp_kern_list <- list()
-mse_perm_mat <- mse_perm_paired_mat <- mse_kern_mat <- matrix(NA,ncol=5,nrow=length(n_permutations_vec))
+reps <- 10
+exp_perm_list <- exp_perm_paired_list <- exp_kern_list <- exp_kern_paired_list <- list()
+mse_perm_mat <- mse_perm_paired_mat <- mse_kern_mat <- mse_kern_paired_mat <- matrix(NA,ncol=reps,nrow=length(n_permutations_vec))
 for (i in seq_along(n_permutations_vec)) {
-  exp_perm_list[[i]] <- exp_perm_paired_list[[i]] <- exp_kern_list[[i]] <- list()
-  for (j in 1:5){
+  exp_perm_list[[i]] <- exp_perm_paired_list[[i]] <- exp_kern_list[[i]] <- exp_kern_paired_list[[i]] <- list()
+  for (j in 1:reps){
     exp_perm_list[[i]][[j]] <- explain(
       model = model,
       x_explain = x_explain,
@@ -88,22 +88,51 @@ for (i in seq_along(n_permutations_vec)) {
       prediction_zero = p0
     )
 
+    exp_kern_paired_list[[i]][[j]] <- explain(
+      model = model,
+      x_explain = x_explain,
+      x_train = x_train,
+      approach = "gaussian",seed = 123+j,n_batches=1,
+      shap_approach = "kernel",paired_shap_sampling = TRUE,
+      n_combinations = exp_perm_list[[i]][[j]]$internal$parameters$n_combinations,
+      prediction_zero = p0
+    )
+
+
 #    print(exp_list[[i]]$timing)
 #    print(exp_kern_list[[i]]$timing)
 
     mse_perm_mat[i,j] <- mean(unlist((exp_perm_list[[i]][[j]]$shapley_values[,..x_var]-exp_full$shapley_values[,..x_var])^2))
     mse_perm_paired_mat[i,j] <- mean(unlist((exp_perm_paired_list[[i]][[j]]$shapley_values[,..x_var]-exp_full$shapley_values[,..x_var])^2))
     mse_kern_mat[i,j] <- mean(unlist((exp_kern_list[[i]][[j]]$shapley_values[,..x_var]-exp_full$shapley_values[,..x_var])^2))
+    mse_kern_paired_mat[i,j] <- mean(unlist((exp_kern_paired_list[[i]][[j]]$shapley_values[,..x_var]-exp_full$shapley_values[,..x_var])^2))
 
     print(rowMeans(mse_perm_mat,na.rm = TRUE))
     print(rowMeans(mse_perm_paired_mat,na.rm = TRUE))
     print(rowMeans(mse_kern_mat,na.rm = TRUE))
+    print(rowMeans(mse_kern_paired_mat,na.rm = TRUE))
+
   }
 
 }
 
-mse_perm_mat
-mse_kern_vec
+print(rowMeans(mse_perm_mat,na.rm = TRUE))
+print(rowMeans(mse_perm_paired_mat,na.rm = TRUE))
+print(rowMeans(mse_kern_mat,na.rm = TRUE))
+print(rowMeans(mse_kern_paired_mat,na.rm = TRUE))
+#> print(rowMeans(mse_perm_mat,na.rm = TRUE))
+#[1] 3.83370 2.16886 1.03013 0.45260 0.21826
+#> print(rowMeans(mse_perm_paired_mat,na.rm = TRUE))
+#[1] 0.696851 0.327208 0.188237 0.094352 0.053114
+#> print(rowMeans(mse_kern_mat,na.rm = TRUE))
+#[1] 4.12236 2.08821 0.82681 0.36273 0.20536
+#> print(rowMeans(mse_kern_paired_mat,na.rm = TRUE))
+#[1] 0.622408 0.222473 0.088097 0.048416 0.024772
+
+# OK, so paired sampling improve significantly.
+# Permutation and kernel apporach seems to be about the same efficiency
+# A question might be whether the accuracy is the same accorss all features for the
+# kenrel approach, of whther the permutation apporach is better in this regard.
 
 
 explanation_perm <- explain(
@@ -132,28 +161,41 @@ explanation_kernel <- explain(
   prediction_zero = p0
 )
 
+explanation_kernel_paired <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",seed = 123,n_batches=1,paired_shap_sampling = TRUE,
+  n_combinations = explanation_perm$internal$parameters$n_combinations,
+  prediction_zero = p0
+)
+
+
 explanation_perm$internal$objects$X
 explanation_perm_paired$internal$objects$X
 explanation_kernel$internal$objects$X
+explanation_kernel_paired$internal$objects$X
+
 
 explanation_perm$internal$output$dt_vS
 explanation_perm_paired$internal$output$dt_vS
 explanation_kernel$internal$output$dt_vS
+explanation_kernel_paired$internal$output$dt_vS
 
 explanation_perm$shapley_values
 explanation_perm_paired$shapley_values
-
 explanation_kernel$shapley_values
+explanation_kernel_paired$shapley_values
+
 
 explanation_perm$timing
 explanation_perm_paired$timing
-
 explanation_kernel$timing
 
 #### Some TODO notes:
 
-# Implement antithetic sampling for both permutation and kernel method
-# run basic simulations to show improved convergence vs kernel method (based on same n_combinations)
+# double check the results with a better simulation study to show improved convergence
+# using permutation with paired sampling vs kernel method w/wo paired sampling (based on same n_combinations)
 # if the tests shows improved convergence, the setup and computation code needs increased efficiency
 
 

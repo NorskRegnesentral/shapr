@@ -159,7 +159,8 @@ shapley_setup <- function(internal) {
     exact = exact,
     n_combinations = n_combinations,
     weight_zero_m = 10^6,
-    group_num = group_num
+    group_num = group_num,
+    paired_shap_sampling = paired_shap_sampling
   )
 
   # Get weighted matrix ----------------
@@ -386,7 +387,7 @@ X_from_perm_dt <- function(perm_dt) {
 #'
 #' # Subsample of combinations
 #' x <- feature_combinations(exact = FALSE, m = 10, n_combinations = 1e2)
-feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL) {
+feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_zero_m = 10^6, group_num = NULL, paired_shap_sampling = FALSE) {
   m_group <- length(group_num) # The number of groups
 
   # Force user to use a natural number for n_combinations if m > 13
@@ -454,7 +455,7 @@ feature_combinations <- function(m, exact = TRUE, n_combinations = 200, weight_z
     if (exact) {
       dt <- feature_exact(m, weight_zero_m)
     } else {
-      dt <- feature_not_exact(m, n_combinations, weight_zero_m)
+      dt <- feature_not_exact(m, n_combinations, weight_zero_m,unique_sampling = TRUE,paired_shap_sampling = paired_shap_sampling)
       stopifnot(
         data.table::is.data.table(dt),
         !is.null(dt[["p"]])
@@ -492,7 +493,7 @@ feature_exact <- function(m, weight_zero_m = 10^6) {
 }
 
 #' @keywords internal
-feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, unique_sampling = TRUE) {
+feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, unique_sampling = TRUE,paired_shap_sampling = FALSE) {
   # Find weights for given number of features ----------
   n_features <- seq(m - 1)
   n <- sapply(n_features, choose, n = m)
@@ -505,17 +506,28 @@ feature_not_exact <- function(m, n_combinations = 200, weight_zero_m = 10^6, uni
 
   if (unique_sampling) {
     while (unique_samples < n_combinations - 2) {
+      if(paired_shap_sampling==TRUE){
+        n_samps <- ceiling((n_combinations - unique_samples - 2)/2)
+      } else {
+        n_samps <- n_combinations - unique_samples - 2
+      }
+
       # Sample number of chosen features ----------
       n_features_sample <- sample(
         x = n_features,
-        size = n_combinations - unique_samples - 2, # Sample -2 as we add zero and m samples below
+        size = n_samps, # Sample -2 as we add zero and m samples below
         replace = TRUE,
         prob = p
       )
 
       # Sample specific set of features -------
       feature_sample <- sample_features_cpp(m, n_features_sample)
-      feature_sample_all <- c(feature_sample_all, feature_sample)
+      if(paired_shap_sampling==TRUE){
+        feature_sample_paired <- lapply(feature_sample, function(x) seq(m)[-x])
+        feature_sample_all <- c(feature_sample_all, feature_sample,feature_sample_paired)
+      } else {
+        feature_sample_all <- c(feature_sample_all, feature_sample)
+      }
       unique_samples <- length(unique(feature_sample_all))
     }
   } else {
