@@ -8,7 +8,7 @@ plot_MSEv_eval_crit(
   explanation_list,
   index_x_explain = NULL,
   id_combination = NULL,
-  CI_level = ifelse(length(explanation_list[[1]]$pred_explain) < 20, NULL, 0.95),
+  CI_level = if (length(explanation_list[[1]]$pred_explain) < 20) NULL else 0.95,
   geom_col_width = 0.9,
   plot_type = "overall"
 )
