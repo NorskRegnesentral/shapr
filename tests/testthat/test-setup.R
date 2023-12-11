@@ -994,7 +994,6 @@ test_that("erroneous input: `keep_samp_for_vS`", {
     error = TRUE
   )
 
-
   # length > 1
   expect_snapshot(
     {
@@ -1006,6 +1005,64 @@ test_that("erroneous input: `keep_samp_for_vS`", {
         approach = "independence",
         prediction_zero = p0,
         keep_samp_for_vS = keep_samp_for_vS_too_long,
+        n_batches = 1,
+        timing = FALSE
+      )
+    },
+    error = TRUE
+  )
+})
+
+test_that("erroneous input: `MSEv_uniform_comb_weights`", {
+  set.seed(123)
+
+  # non-logical 1
+  expect_snapshot(
+    {
+      MSEv_uniform_comb_weights_nl_1 <- "bla"
+      explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "independence",
+        prediction_zero = p0,
+        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1,
+        n_batches = 1,
+        timing = FALSE
+      )
+    },
+    error = TRUE
+  )
+
+  # non-logical 2
+  expect_snapshot(
+    {
+      MSEv_uniform_comb_weights_nl_2 <- NULL
+      explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "independence",
+        prediction_zero = p0,
+        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2,
+        n_batches = 1,
+        timing = FALSE
+      )
+    },
+    error = TRUE
+  )
+
+  # length > 1
+  expect_snapshot(
+    {
+      MSEv_uniform_comb_weights_long <- c(TRUE, FALSE)
+      explain(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        approach = "independence",
+        prediction_zero = p0,
+        MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long,
         n_batches = 1,
         timing = FALSE
       )
@@ -1716,7 +1773,9 @@ test_that("Error with to low `n_batches` compared to the number of unique approa
       prediction_zero = p0,
       n_batches = 3,
       timing = FALSE,
-      seed = 1))
+      seed = 1
+    )
+  )
 
   # Except that shapr sets a valid `n_batches` and get no errors
   expect_no_error(
@@ -1728,7 +1787,9 @@ test_that("Error with to low `n_batches` compared to the number of unique approa
       prediction_zero = p0,
       n_batches = NULL,
       timing = FALSE,
-      seed = 1))
+      seed = 1
+    )
+  )
 })
 
 test_that("the used number of batches mathces the provided `n_batches` for combined approaches", {
@@ -1740,11 +1801,14 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     prediction_zero = p0,
     n_batches = 2,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
 
   # Check that the used number of batches corresponds with the provided `n_batches`
-  expect_equal(explanation_1$internal$parameters$n_batches,
-               length(explanation_1$internal$objects$S_batch))
+  expect_equal(
+    explanation_1$internal$parameters$n_batches,
+    length(explanation_1$internal$objects$S_batch)
+  )
 
   explanation_2 <- explain(
     model = model_lm_numeric,
@@ -1754,11 +1818,14 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     prediction_zero = p0,
     n_batches = 15,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
 
   # Check that the used number of batches corresponds with the provided `n_batches`
-  expect_equal(explanation_2$internal$parameters$n_batches,
-               length(explanation_2$internal$objects$S_batch))
+  expect_equal(
+    explanation_2$internal$parameters$n_batches,
+    length(explanation_2$internal$objects$S_batch)
+  )
 
   # Check for the default value for `n_batch`
   explanation_3 <- explain(
@@ -1769,11 +1836,14 @@ test_that("the used number of batches mathces the provided `n_batches` for combi
     prediction_zero = p0,
     n_batches = NULL,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
 
   # Check that the used number of batches corresponds with the `n_batches`
-  expect_equal(explanation_3$internal$parameters$n_batches,
-               length(explanation_3$internal$objects$S_batch))
+  expect_equal(
+    explanation_3$internal$parameters$n_batches,
+    length(explanation_3$internal$objects$S_batch)
+  )
 })
 
 test_that("setting the seed for combined approaches works", {
@@ -1787,7 +1857,8 @@ test_that("setting the seed for combined approaches works", {
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
 
   explanation_combined_2 <- explain(
     model = model_lm_numeric,
@@ -1796,7 +1867,8 @@ test_that("setting the seed for combined approaches works", {
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
 
   # Check that they are equal
   expect_equal(explanation_combined_1, explanation_combined_2)
@@ -1810,7 +1882,8 @@ test_that("setting the seed for combined approaches works", {
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
 
   explanation_combined_4 <- explain(
     model = model_lm_numeric,
@@ -1819,7 +1892,8 @@ test_that("setting the seed for combined approaches works", {
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
 
   # Check that they are equal
   expect_equal(explanation_combined_3, explanation_combined_4)
@@ -1837,7 +1911,8 @@ test_that("counting the number of unique approaches", {
     approach = c("independence", "empirical", "gaussian", "copula"),
     prediction_zero = p0,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
   expect_equal(explanation_combined_1$internal$parameters$n_approaches, 4)
   expect_equal(explanation_combined_1$internal$parameters$n_unique_approaches, 4)
 
@@ -1848,7 +1923,8 @@ test_that("counting the number of unique approaches", {
     approach = c("empirical"),
     prediction_zero = p0,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
   expect_equal(explanation_combined_2$internal$parameters$n_approaches, 1)
   expect_equal(explanation_combined_2$internal$parameters$n_unique_approaches, 1)
 
@@ -1859,7 +1935,8 @@ test_that("counting the number of unique approaches", {
     approach = c("gaussian", "gaussian", "gaussian", "gaussian"),
     prediction_zero = p0,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
   expect_equal(explanation_combined_3$internal$parameters$n_approaches, 4)
   expect_equal(explanation_combined_3$internal$parameters$n_unique_approaches, 1)
 
@@ -1870,7 +1947,8 @@ test_that("counting the number of unique approaches", {
     approach = c("independence", "empirical", "independence", "empirical"),
     prediction_zero = p0,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
   expect_equal(explanation_combined_4$internal$parameters$n_approaches, 4)
   expect_equal(explanation_combined_4$internal$parameters$n_unique_approaches, 2)
 
@@ -1882,7 +1960,8 @@ test_that("counting the number of unique approaches", {
     approach = c("independence", "empirical", "independence", "empirical"),
     prediction_zero = p0,
     timing = FALSE,
-    seed = 1)
+    seed = 1
+  )
   expect_equal(explanation_combined_5$internal$parameters$n_approaches, 4)
   expect_equal(explanation_combined_5$internal$parameters$n_unique_approaches, 2)
 })
