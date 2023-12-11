@@ -79,6 +79,7 @@ model by using the method specified in approach to estimate the conditional expe
 <span>  keep_samp_for_vS <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  predict_model <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  get_model_specs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  timing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -193,6 +194,13 @@ The function takes <code>model</code> as argument and provides a list with 3 ele
 </dl><p>If <code>NULL</code> (the default) internal functions are used for natively supported model classes, and the checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.</p></dd>
+
+
+<dt>MSEv_uniform_comb_weights</dt>
+<dd><p>Logical. If <code>TRUE</code> (default), then the function weights the combinations
+uniformly when computing the MSEv criterion. If <code>FALSE</code>, then the function use the Shapley kernel weights to
+weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
+sampling frequency when not all combinations are considered.</p></dd>
 
 
 <dt>timing</dt>
@@ -314,7 +322,10 @@ This is useful if the underlying time series are scaled between 0 and 1, for exa
 <dd><p>List with the different parameters, data and functions used internally</p></dd>
 
 <dt>pred_explain</dt>
-<dd><p>Numeric vector with the predictions for the explained observations.</p></dd>
+<dd><p>Numeric vector with the predictions for the explained observations</p></dd>
+
+<dt>MSEv</dt>
+<dd><p>List with the values of the MSEv evaluation criterion for the approach.</p></dd>
 
 
 </dl><p><code>shapley_values</code> is a data.table where the number of rows equals

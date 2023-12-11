@@ -76,6 +76,7 @@
 <span>  <span class="va">seed</span>,</span>
 <span>  <span class="va">keep_samp_for_vS</span>,</span>
 <span>  <span class="va">feature_specs</span>,</span>
+<span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"normal"</span>,</span>
 <span>  horizon <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -182,6 +183,13 @@ Contains the 3 elements:</p><dl><dt>labels</dt>
 </dl></dd>
 
 
+<dt>MSEv_uniform_comb_weights</dt>
+<dd><p>Logical. If <code>TRUE</code> (default), then the function weights the combinations
+uniformly when computing the MSEv criterion. If <code>FALSE</code>, then the function use the Shapley kernel weights to
+weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
+sampling frequency when not all combinations are considered.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>Character.
 Either "normal" or "forecast" corresponding to function <code>setup()</code> is called from,
@@ -249,7 +257,7 @@ running the AICc-versions of the empirical as that requires data based optimizat
 
 
 <dt>...</dt>
-<dd><p>Further arguments passed to <code>approach</code>-specific functions.</p></dd>
+<dd><p>Further arguments passed to specific approaches</p></dd>
 
 </dl></div>
 

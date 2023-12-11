@@ -82,7 +82,8 @@
 <code>shapr</code>: Explaining individual
 machine learning predictions with Shapley values</h1>
                         <h4 data-toc-skip class="author">Camilla
-Lingjærde, Martin Jullum &amp; Nikolai Sellereite</h4>
+Lingjærde, Martin Jullum, Lars Henry Berge Olsen &amp; Nikolai
+Sellereite</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/HEAD/vignettes/understanding_shapr.Rmd" class="external-link"><code>vignettes/understanding_shapr.Rmd</code></a></small>
@@ -415,7 +416,7 @@ or <code>"independence"</code> in the code below.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"airquality"</span><span class="op">)</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, <span class="op">]</span></span>
 <span></span>
 <span><span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Solar.R"</span>, <span class="st">"Wind"</span>, <span class="st">"Temp"</span>, <span class="st">"Month"</span><span class="op">)</span></span>
@@ -607,7 +608,7 @@ bounds of the time series if necessary).</p>
 <span>  <span class="op">}</span></span>
 <span>  <span class="va">data_ts</span><span class="op">[</span><span class="va">n</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="va">m_1</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="op">}</span></span>
-<span><span class="va">data_ts</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">data_ts</span><span class="op">)</span></span>
+<span><span class="va">data_ts</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">data_ts</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">x_var_ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">40</span><span class="op">)</span></span>
 <span><span class="va">y_var_ts</span> <span class="op">&lt;-</span> <span class="st">"X41"</span></span>
@@ -641,6 +642,307 @@ bounds of the time series if necessary).</p>
 <span>  prediction_zero <span class="op">=</span> <span class="va">p0_ts</span>,</span>
 <span>  group <span class="op">=</span> <span class="va">group_ts</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="msev-evaluation-criterion">MSEv evaluation criterion<a class="anchor" aria-label="anchor" href="#msev-evaluation-criterion"></a>
+</h3>
+<p>We can use the <span class="math inline">\(\operatorname{MSE}_{v}\)</span> criterion proposed
+by <span class="citation">Frye et al. (2021)</span>, and later used by,
+e.g., <span class="citation">Olsen et al. (2022)</span> and <span class="citation">Olsen et al. (2023)</span>, to evaluate and rank the
+approaches/methods. The <span class="math inline">\(\operatorname{MSE}_{v}\)</span> is given by</p>
+<span class="math display">\[\begin{align}
+    \label{eq:MSE_v}
+    \operatorname{MSE}_{v} = \operatorname{MSE}_{v}(\text{method }
+\texttt{q})
+    =
+     \frac{1}{N_\mathcal{S}} \sum_{\mathcal{S} \in
+\mathcal{P}^*(\mathcal{M})} \frac{1}{N_\text{explain}}
+     \sum_{i=1}^{N_\text{explain}} \left( f(\boldsymbol{x}^{[i]}) -
+{\hat{v}}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}^{[i]})\right)^2\!,
+\end{align}\]</span>
+<p>where <span class="math inline">\({\hat{v}}_{\texttt{q}}\)</span> is
+the estimated contribution function using method <span class="math inline">\(\texttt{q}\)</span> and <span class="math inline">\(N_\mathcal{S} = |\mathcal{P}^*(\mathcal{M})| =
+2^M-2\)</span>, i.e., we have removed the empty (<span class="math inline">\(\mathcal{S} = \emptyset\)</span>) and the grand
+combinations (<span class="math inline">\(\mathcal{S} =
+\mathcal{M}\)</span>) as they are method independent. Meaning that these
+two combinations do not influence the ranking of the methods as the
+methods are not used to compute the contribution function for them.</p>
+<p>The motivation behind the <span class="math inline">\(\operatorname{MSE}_{v}\)</span> criterion is that
+<span class="math inline">\(\mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}}
+(v_{\texttt{true}}(\mathcal{S},\boldsymbol{x}) -
+\hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2\)</span> can be
+decomposed as</p>
+<span class="math display">\[\begin{align}
+    \label{eq:expectation_decomposition}
+    \begin{split}
+    \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}}
+(v_{\texttt{true}}(\mathcal{S}, \boldsymbol{x})-
+\hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2
+    &amp;=
+    \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (f(\boldsymbol{x})
+- \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2 \\
+    &amp;\phantom{\,\,\,\,\,\,\,}-
+\mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}}
+(f(\boldsymbol{x})-v_{\texttt{true}}(\mathcal{S}, \boldsymbol{x}))^2,
+    \end{split}
+\end{align}\]</span>
+<p>see Appendix A in <span class="citation">Covert, Lundberg, and Lee
+(2020)</span>. The first term on the right-hand side of the equation
+above can be estimated by <span class="math inline">\(\operatorname{MSE}_{v}\)</span>, while the second
+term is a fixed (unknown) constant not influenced by the approach .
+Thus, a low value of <span class="math inline">\(\operatorname{MSE}_{v}\)</span> indicates that the
+estimated contribution function <span class="math inline">\(\hat{v}_{\texttt{q}}\)</span> is closer to the
+true counterpart <span class="math inline">\(v_{\texttt{true}}\)</span>
+than a high value.</p>
+<p>In <code>shapr</code>, we allow for weighting the combinations in the
+<span class="math inline">\(\operatorname{MSE}_{v}\)</span> evaluation
+criterion either uniformly or by using the corresponding Shapley kernel
+weights (or the sampling frequencies when sampling of combinations is
+used). This is determined by the logical parameter
+<code>MSEv_uniform_comb_weights</code> in the <code><a href="../reference/explain.html">explain()</a></code>
+function, and the default is to do uniform weighting, that is,
+<code>MSEv_uniform_comb_weights = TRUE</code>.</p>
+<div class="section level4">
+<h4 id="advantage">Advantage:<a class="anchor" aria-label="anchor" href="#advantage"></a>
+</h4>
+<p>An advantage of the <span class="math inline">\(\operatorname{MSE}_{v}\)</span> criterion is that
+<span class="math inline">\(v_\texttt{true}\)</span> is not involved.
+Thus, we can apply it as an evaluation criterion to real-world data sets
+where the true Shapley values are unknown.</p>
+</div>
+<div class="section level4">
+<h4 id="disadvantages">Disadvantages:<a class="anchor" aria-label="anchor" href="#disadvantages"></a>
+</h4>
+<p>First, we can only use the <span class="math inline">\(\operatorname{MSE}_{v}\)</span> criterion to rank
+the methods and not assess their closeness to the optimum since the
+minimum value of the <span class="math inline">\(\operatorname{MSE}_{v}\)</span> criterion is
+unknown. Second, the criterion evaluates the contribution functions and
+not the Shapley values.</p>
+<p>Note that <span class="citation">Olsen et al. (2023)</span> observed
+a relatively linear relationship between the <span class="math inline">\(\operatorname{MSE}_{v}\)</span> criterion and the
+mean absolute error <span class="math inline">\((\operatorname{MAE})\)</span> between the true and
+estimated Shapley values in extensive simulation studies where the true
+Shapley values were known. That is, a method that achieves a low <span class="math inline">\(\operatorname{MSE}_{v}\)</span> score also tends
+to obtain a low <span class="math inline">\(\operatorname{MAE}\)</span>
+score, and vice versa.</p>
+</div>
+<div class="section level4">
+<h4 id="confidence-intervals">Confidence intervals<a class="anchor" aria-label="anchor" href="#confidence-intervals"></a>
+</h4>
+<p>The <span class="math inline">\(\operatorname{MSE}_{v}\)</span>
+criterion can be written as <span class="math inline">\(\operatorname{MSE}_{v} =
+\frac{1}{N_\text{explain}}\sum_{i=1}^{N_\text{explain}}
+\operatorname{MSE}_{v,\text{explain }i}\)</span>. We can therefore use
+the central limit theorem to compute an approximate confidence interval
+for the <span class="math inline">\(\operatorname{MSE}_{v}\)</span>
+criterion. We have that <span class="math inline">\(\operatorname{MSE}_{v} \pm
+t_{\alpha/2}\frac{\operatorname{SD}(\operatorname{MSE}_{v})}{\sqrt{N_\text{explain}}}\)</span>
+is a <span class="math inline">\((1-\alpha/2)\%\)</span> approximate
+confidence interval for the evaluation criterion, where <span class="math inline">\(t_{\alpha/2}\)</span> is the <span class="math inline">\(\alpha/2\)</span> percentile of the <span class="math inline">\(T_{N_\text{explain}-1}\)</span> distribution. Note
+that <span class="math inline">\(N_\text{explain}\)</span> should be
+large (rule of thumb is at least <span class="math inline">\(30\)</span>) for the central limit theorem to be
+valid. The quantities <span class="math inline">\(\operatorname{MSE}_{v}\)</span> and <span class="math inline">\(\frac{\operatorname{SD}(\operatorname{MSE}_{v})}{\sqrt{N_\text{explain}}}\)</span>
+are returned by the <code><a href="../reference/explain.html">explain()</a></code> function in the
+<code>MSEv</code> list of data tables. We can also compute similar
+approximate confidence interval for <span class="math inline">\(\operatorname{MSE}_{v}\)</span> criterion for each
+combination/coalition when only averaging over the observations.
+However, it does not make sense in the other direction, i.e., when only
+averaging over the combinations for each observation, as each
+combination is a different prediction tasks.</p>
+</div>
+<div class="section level4">
+<h4 id="msev-examples">MSEv examples<a class="anchor" aria-label="anchor" href="#msev-examples"></a>
+</h4>
+<p>Start by explaining the predictions by using different methods and
+combining them into lists.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># We use more explicands here for more stable confidence intervals</span></span>
+<span><span class="va">ind_x_explain</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">25</span></span>
+<span><span class="va">x_train</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_explain</span>, <span class="va">..x_var</span><span class="op">]</span></span>
+<span><span class="va">y_train</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="op">-</span><span class="va">ind_x_explain</span>, <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="va">y_var</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">ind_x_explain</span>, <span class="va">..x_var</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Fitting a basic xgboost model to the training data</span></span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html" class="external-link">xgboost</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x_train</span><span class="op">)</span>,</span>
+<span>  label <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span>  nround <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Specifying the phi_0, i.e. the expected prediction without any features</span></span>
+<span><span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Independence approach</span></span>
+<span><span class="va">explanation_independence</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"independence"</span>,</span>
+<span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  n_samples <span class="op">=</span> <span class="fl">1e2</span>,</span>
+<span>  n_batches <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Empirical approach</span></span>
+<span><span class="va">explanation_empirical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
+<span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  n_samples <span class="op">=</span> <span class="fl">1e2</span>,</span>
+<span>  n_batches <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Gaussian 1e1 approach</span></span>
+<span><span class="va">explanation_gaussian_1e1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
+<span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  n_samples <span class="op">=</span> <span class="fl">1e1</span>,</span>
+<span>  n_batches <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Gaussian 1e2 approach</span></span>
+<span><span class="va">explanation_gaussian_1e2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
+<span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  n_samples <span class="op">=</span> <span class="fl">1e2</span>,</span>
+<span>  n_batches <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combined approach</span></span>
+<span><span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"empirical"</span>, <span class="st">"independence"</span><span class="op">)</span>,</span>
+<span>  prediction_zero <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  n_samples <span class="op">=</span> <span class="fl">1e2</span>,</span>
+<span>  n_batches <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  MSEv_uniform_comb_weights <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create a list of explanations with names</span></span>
+<span><span class="va">explanation_list_named</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Ind."</span> <span class="op">=</span> <span class="va">explanation_independence</span>,</span>
+<span>  <span class="st">"Emp."</span> <span class="op">=</span> <span class="va">explanation_empirical</span>,</span>
+<span>  <span class="st">"Gaus. 1e1"</span> <span class="op">=</span> <span class="va">explanation_gaussian_1e1</span>,</span>
+<span>  <span class="st">"Gaus. 1e2"</span> <span class="op">=</span> <span class="va">explanation_gaussian_1e2</span>,</span>
+<span>  <span class="st">"Combined"</span> <span class="op">=</span> <span class="va">explanation_combined</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>We can then compare the different approaches by creating plots of the
+<span class="math inline">\(\operatorname{MSE}_{v}\)</span> evaluation
+criterion.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create the MSEv plots with approximate 95% confidence intervals</span></span>
+<span><span class="va">MSEv_plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list_named</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"overall"</span>, <span class="st">"comb"</span>, <span class="st">"explicand"</span><span class="op">)</span>,</span>
+<span>  CI_level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 5 plots are made</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">MSEv_plots</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"  </span></span>
+<span><span class="co">#&gt; [3] "MSEv_combination_bar"        "MSEv_combination_line_point"</span></span>
+<span><span class="co">#&gt; [5] "MSEv_bar"</span></span></code></pre></div>
+<p>The main plot if interest is the <code>MSEv_bar</code>, which
+displays the <span class="math inline">\(\operatorname{MSE}_{v}\)</span>
+evaluation criterion for each method averaged over both the
+combinations/coalitions and test observations/explicands. However, we
+can also look at the other plots where we have only averaged over the
+observations or the combinations (both as bar and line plots).</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># The main plot of the overall MSEv averaged over both the combinations and observations</span></span>
+<span><span class="va">MSEv_plots</span><span class="op">$</span><span class="va">MSEv_bar</span></span></code></pre></div>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># The MSEv averaged over only the explicands for each combinations</span></span>
+<span><span class="va">MSEv_plots</span><span class="op">$</span><span class="va">MSEv_combination_bar</span></span></code></pre></div>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-12-2.png" width="672"></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># The MSEv averaged over only the combinations for each observation/explicand</span></span>
+<span><span class="va">MSEv_plots</span><span class="op">$</span><span class="va">MSEv_explicand_bar</span></span></code></pre></div>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-12-3.png" width="672"></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># To see which coalition S each of the `id_combination` corresponds to,</span></span>
+<span><span class="co"># i.e., which features that are conditions on.</span></span>
+<span><span class="va">explanation_list_named</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">MSEv</span><span class="op">$</span><span class="va">MSEv_combination</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id_combination"</span>, <span class="st">"features"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;     id_combination features</span></span>
+<span><span class="co">#&gt;  1:              2        1</span></span>
+<span><span class="co">#&gt;  2:              3        2</span></span>
+<span><span class="co">#&gt;  3:              4        3</span></span>
+<span><span class="co">#&gt;  4:              5        4</span></span>
+<span><span class="co">#&gt;  5:              6      1,2</span></span>
+<span><span class="co">#&gt;  6:              7      1,3</span></span>
+<span><span class="co">#&gt;  7:              8      1,4</span></span>
+<span><span class="co">#&gt;  8:              9      2,3</span></span>
+<span><span class="co">#&gt;  9:             10      2,4</span></span>
+<span><span class="co">#&gt; 10:             11      3,4</span></span>
+<span><span class="co">#&gt; 11:             12    1,2,3</span></span>
+<span><span class="co">#&gt; 12:             13    1,2,4</span></span>
+<span><span class="co">#&gt; 13:             14    1,3,4</span></span>
+<span><span class="co">#&gt; 14:             15    2,3,4</span></span></code></pre></div>
+<p>We can specify the <code>index_x_explain</code> and
+<code>id_combination</code> parameters in
+<code><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit()</a></code> to only plot certain test
+observations and combinations, respectively.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># We can specify which test observations or combinations to plot</span></span>
+<span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list_named</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"explicand"</span>,</span>
+<span>  index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span>,</span>
+<span>  CI_level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">MSEv_explicand_bar</span></span></code></pre></div>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list_named</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"comb"</span>,</span>
+<span>  id_combination <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">9</span>, <span class="fl">13</span><span class="op">:</span><span class="fl">15</span><span class="op">)</span>,</span>
+<span>  CI_level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">MSEv_combination_bar</span></span>
+<span><span class="co">#&gt; NULL</span></span></code></pre></div>
+<p>We can also alter the plots design-wise as we do in the code
+below.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bar_text_n_decimals</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span><span class="va">CI_level</span> <span class="op">&lt;-</span> <span class="fl">0.95</span></span>
+<span><span class="va">MSEv_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="va">explanation_list_named</span>, CI_level <span class="op">=</span> <span class="va">CI_level</span><span class="op">)</span><span class="op">$</span><span class="va">MSEv_bar</span></span>
+<span><span class="va">MSEv_plot</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">MSEv_plot</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">Method</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Paired"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="co"># This must be set before other theme calls</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"%."</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%d"</span>, <span class="va">bar_text_n_decimals</span><span class="op">)</span>, <span class="st">"f"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span>,</span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">MSEv</span>, <span class="va">bar_text_n_decimals</span><span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">)</span>,</span>
+<span>    vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.35</span>, <span class="co"># This number might need altering for different plots sizes</span></span>
+<span>    hjust <span class="op">=</span> <span class="fl">1.1</span>, <span class="co"># This number might need altering for different plots sizes</span></span>
+<span>    color <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>    position <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_dodge.html" class="external-link">position_dodge</a></span><span class="op">(</span><span class="fl">0.9</span><span class="op">)</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">4</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
+</div>
+</div>
 <div class="section level3">
 <h3 id="main-arguments-in-explain">Main arguments in <code>explain</code><a class="anchor" aria-label="anchor" href="#main-arguments-in-explain"></a>
 </h3>
@@ -726,11 +1028,11 @@ differently depending on the data and application.</p>
 it may be of more interesting to explain the impact of each variable,
 rather than each lag of each variable. This can be done by setting
 <code>group_lags = TRUE</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simulate time series data with AR(1)-structure.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">data_ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/arima.sim.html" class="external-link">arima.sim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, ar <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">500</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">data_ts</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">data_ts</span><span class="op">)</span></span>
+<span><span class="va">data_ts</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">data_ts</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fit an ARIMA(2, 0, 0) model.</span></span>
 <span><span class="va">arima_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/arima.html" class="external-link">arima</a></span><span class="op">(</span><span class="va">data_ts</span>, order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
@@ -778,8 +1080,8 @@ also have an impact on that of the day after tomorrow.</p>
 <code>model_ar_temp</code>. This model is then used to make a forecast
 of the temperature of the day that comes after the last day in the data,
 this forecast starts from index 153.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">model_ar_temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ar.html" class="external-link">ar</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Temp</span>, order <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -812,7 +1114,7 @@ to <code>FALSE</code>. This means that lag 1 and 2 will be explained
 separately. Grouping lags may be more interesting to do in a model with
 multiple variables, as it is then possible to explain each variable
 separately.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain_forecast.html">explain_forecast</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model_ar_temp</span>,</span>
 <span>  y <span class="op">=</span> <span class="va">data</span><span class="op">[</span>, <span class="st">"Temp"</span><span class="op">]</span>,</span>
@@ -844,8 +1146,8 @@ Since the exogenous regressor must be available for the predicted time
 points, the model is just fit on the 151 first observations, leaving two
 observations of <code>Wind</code> to be used as exogenous values during
 the prediction phase.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">data_fit</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">151</span><span class="op">)</span>, <span class="op">]</span></span>
 <span></span>
@@ -868,7 +1170,7 @@ argument <code>xreg</code>, and <code>explain_xreg_lags</code> is set to
 possible for <code>shapr</code> to not only explain the effect of the
 first lag of the exogenous variable, but also the contemporary effect
 during the forecasting period.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain_forecast.html">explain_forecast</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model_ar_temp</span>,</span>
 <span>  y <span class="op">=</span> <span class="va">data_fit</span><span class="op">[</span>, <span class="st">"Temp"</span><span class="op">]</span>,</span>
@@ -928,7 +1230,7 @@ and should thus not be part of the vector.</p>
 four features, using <code>"empirical", "copula"</code> and
 <code>"gaussian"</code> when conditioning on respectively 1, 2 and 3
 features.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use the combined approach</span></span>
 <span><span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -940,11 +1242,11 @@ features.</p>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span></span>
 <span><span class="co"># the no-covariate effect</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_combined</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-20-1.png" width="672"></p>
 <p>As a second example using <code>"ctree"</code> to conditin on 1 and 2
 features, and <code>"empirical"</code> when conditioning on 3
 features:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use the combined approach</span></span>
 <span><span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -963,7 +1265,7 @@ features instead of single features, see (<span class="citation">Jullum,
 Redelmeier, and Aas (2021)</span>) for intuition and real world
 examples. Explaining prediction in terms of groups of features is very
 easy using <code>shapr</code>:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the feature groups</span></span>
 <span><span class="va">group_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  A <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Temp"</span>, <span class="st">"Month"</span><span class="op">)</span>,</span>
@@ -981,16 +1283,36 @@ easy using <code>shapr</code>:</p>
 <span><span class="op">)</span></span>
 <span><span class="co"># Prints the group-wise explanations</span></span>
 <span><span class="va">explanation_group</span></span>
-<span><span class="co">#&gt;     none      A        B</span></span>
-<span><span class="co">#&gt; 1: 43.09 -29.25  16.0731</span></span>
-<span><span class="co">#&gt; 2: 43.09 -15.17  -7.8373</span></span>
-<span><span class="co">#&gt; 3: 43.09 -13.07 -10.8778</span></span>
-<span><span class="co">#&gt; 4: 43.09 -17.47   0.6653</span></span>
-<span><span class="co">#&gt; 5: 43.09 -28.27   3.5289</span></span>
-<span><span class="co">#&gt; 6: 43.09 -20.59  -3.3793</span></span>
+<span><span class="co">#&gt;      none       A        B</span></span>
+<span><span class="co">#&gt;  1: 47.27 -29.588  13.1628</span></span>
+<span><span class="co">#&gt;  2: 47.27 -11.834 -15.7011</span></span>
+<span><span class="co">#&gt;  3: 47.27 -15.976 -17.5729</span></span>
+<span><span class="co">#&gt;  4: 47.27 -25.067  -5.1374</span></span>
+<span><span class="co">#&gt;  5: 47.27 -35.848  20.2892</span></span>
+<span><span class="co">#&gt;  6: 47.27 -27.257  -8.4830</span></span>
+<span><span class="co">#&gt;  7: 47.27 -14.960 -21.3995</span></span>
+<span><span class="co">#&gt;  8: 47.27 -18.325   7.3791</span></span>
+<span><span class="co">#&gt;  9: 47.27 -23.012   9.6591</span></span>
+<span><span class="co">#&gt; 10: 47.27 -16.189  -5.6100</span></span>
+<span><span class="co">#&gt; 11: 47.27 -25.607 -10.1334</span></span>
+<span><span class="co">#&gt; 12: 47.27 -25.065  -5.1394</span></span>
+<span><span class="co">#&gt; 13: 47.27 -25.841  -0.7281</span></span>
+<span><span class="co">#&gt; 14: 47.27 -21.518 -13.3293</span></span>
+<span><span class="co">#&gt; 15: 47.27 -21.248  -1.3199</span></span>
+<span><span class="co">#&gt; 16: 47.27 -13.676 -16.9497</span></span>
+<span><span class="co">#&gt; 17: 47.27 -13.899 -14.8890</span></span>
+<span><span class="co">#&gt; 18: 47.27 -12.276  -8.2472</span></span>
+<span><span class="co">#&gt; 19: 47.27 -13.768 -13.5242</span></span>
+<span><span class="co">#&gt; 20: 47.27 -24.866 -10.8744</span></span>
+<span><span class="co">#&gt; 21: 47.27 -14.486 -22.7674</span></span>
+<span><span class="co">#&gt; 22: 47.27  -4.122 -14.2893</span></span>
+<span><span class="co">#&gt; 23: 47.27 -11.218  22.4682</span></span>
+<span><span class="co">#&gt; 24: 47.27 -33.002  14.2114</span></span>
+<span><span class="co">#&gt; 25: 47.27 -16.251  -8.6796</span></span>
+<span><span class="co">#&gt;      none       A        B</span></span>
 <span><span class="co"># Plots the group-wise explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_group</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">TRUE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-22-1.png" width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="explain-custom-models">Explain custom models<a class="anchor" aria-label="anchor" href="#explain-custom-models"></a>
@@ -1044,7 +1366,7 @@ these functions and a minimal version which skips the
 <code>get_model_specs</code> function. We do this for the
 <code>gbm</code> model class from the <code>gbm</code> package, fitted
 to the same airquality data set as used above.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gbm-developers/gbm" class="external-link">gbm</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loaded gbm 2.1.8.1</span></span>
 <span></span>
@@ -1100,8 +1422,8 @@ to the same airquality data set as used above.</p>
 <span></span>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_custom</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-23-1.png" width="672"></p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span></span>
 <span><span class="co">#### Minimal version of the three required model functions ####</span></span>
@@ -1129,7 +1451,7 @@ to the same airquality data set as used above.</p>
 <span></span>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_custom_minimal</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-18-2.png" width="672"></p>
+<p><img src="understanding_shapr_files/figure-html/unnamed-chunk-23-2.png" width="672"></p>
 <p><a id="scalability"></a></p>
 <p><br></p>
 </div>
@@ -1163,7 +1485,7 @@ on <code>n_combinations</code> and <code>approach</code>. The
 memory/computation time trade-off is most apparent for models with more
 than say 6-7 features. Below we a basic example where
 <code>n_batches=10</code>:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
@@ -1197,7 +1519,7 @@ In the meanwhile, this is all lef to the user, and we advice that
 <code>n_batches</code> equals some positive integer multiplied by the
 number of workers. Below is a basic example of a parallelization with
 two workers.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
 <span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -1246,7 +1568,7 @@ options available with <code>progressr</code>, see the
 <code>progressr</code> <a href="https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html" class="external-link">vignette</a>.
 A full code example of using <code>progressr</code> with
 <code>shapr</code> is shown below:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
 <span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span>global <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># If no progression handler is specified, the txtprogressbar is used</span></span>
@@ -1311,6 +1633,17 @@ Individual Predictions When Features Are Dependent: More Accurate
 Approximations to Shapley Values.”</span> <em><span>Artificial
 Intelligence</span></em> 298.
 </div>
+<div id="ref-covert2020understanding" class="csl-entry">
+Covert, Ian, Scott M Lundberg, and Su-In Lee. 2020. <span>“Understanding
+Global Feature Contributions with Additive Importance Measures.”</span>
+<em>Advances in Neural Information Processing Systems</em> 33: 17212–23.
+</div>
+<div id="ref-frye2020shapley" class="csl-entry">
+Frye, Christopher, Damien de Mijolla, Tom Begley, Laurence Cowton, Megan
+Stanley, and Ilya Feige. 2021. <span>“Shapley Explainability on the Data
+Manifold.”</span> In <em>International Conference on Learning
+Representations</em>.
+</div>
 <div id="ref-hothorn2006unbiased" class="csl-entry">
 Hothorn, Torsten, Kurt Hornik, and Achim Zeileis. 2006. <span>“Unbiased
 Recursive Partitioning: A Conditional Inference Framework.”</span>
@@ -1333,6 +1666,18 @@ Workshop Proceedings.
 Lundberg, Scott M, and Su-In Lee. 2017. <span>“A Unified Approach to
 Interpreting Model Predictions.”</span> In <em>Advances in Neural
 Information Processing Systems</em>, 4765–74.
+</div>
+<div id="ref-olsen2022using" class="csl-entry">
+Olsen, Lars Henry Berge, Ingrid Kristine Glad, Martin Jullum, and
+Kjersti Aas. 2022. <span>“Using Shapley Values and Variational
+Autoencoders to Explain Predictive Models with Dependent Mixed
+Features.”</span> <em>Journal of Machine Learning Research</em> 23
+(213): 1–51.
+</div>
+<div id="ref-olsen2023comparative" class="csl-entry">
+———. 2023. <span>“A Comparative Study of Methods for Estimating
+Conditional Shapley Values and When to Use Them.”</span> <em>arXiv
+Preprint arXiv:2305.09536</em>.
 </div>
 <div id="ref-redelmeier2020explaining" class="csl-entry">
 Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020.

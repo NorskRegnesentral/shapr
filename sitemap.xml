@@ -40,6 +40,9 @@
     <loc>https://norskregnesentral.github.io/shapr/reference/check_groups.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/compute_MSEv_eval_crit.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/compute_shapley_new.html</loc>
   </url>
   <url>
@@ -137,6 +140,9 @@
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/plot.shapr.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/plot_MSEv_eval_crit.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/predict_model.html</loc>
