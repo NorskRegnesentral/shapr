@@ -1212,16 +1212,16 @@ make_MSEv_bar_plot <- function(MSEv_dt,
     ggplot2::labs(
       x = "Method",
       y = bquote(MSE[v]),
-      title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
-        " combinations and " * .(n_explain) * " explicands")
+      title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_combinations) ~
+        "combinations and" ~ .(n_explain) ~ "explicands")
     )
 
   if (!is.null(tfrac)) {
     CI_level <- 1 - 2 * (1 - pt(tfrac, n_explain - 1))
 
     MSEv_bar <- MSEv_bar +
-      ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
-        " combinations and " * .(n_explain) * " explicands with " *
+      ggplot2::labs(title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_combinations) ~
+        "combinations and" ~ .(n_explain) ~ "explicands with" ~
         .(CI_level * 100) * "% CI")) +
       ggplot2::geom_errorbar(
         position = ggplot2::position_dodge(geom_col_width),
@@ -1245,9 +1245,9 @@ make_MSEv_explicand_plots <- function(MSEv_explicand_dt,
     ggplot2::ggplot(MSEv_explicand_dt, ggplot2::aes(x = id, y = MSEv)) +
     ggplot2::labs(
       x = "index_x_explain",
-      y = bquote(MSE[v] * " (explicand)"),
-      title = bquote(MSE[v] * " criterion averaged over the " * .(n_combinations) *
-        " combinations for each explicand")
+      y = bquote(MSE[v] ~ "(explicand)"),
+      title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_combinations) ~
+        "combinations for each explicand")
     )
 
   MSEv_explicand_bar <-
@@ -1280,9 +1280,9 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
     ggplot2::ggplot(MSEv_combination_dt, ggplot2::aes(x = id_combination, y = MSEv)) +
     ggplot2::labs(
       x = "id_combination",
-      y = bquote(MSE[v] * " (combination)"),
-      title = bquote(MSE[v] * " criterion averaged over the " * .(n_explain) *
-        " explicands for each combination")
+      y = bquote(MSE[v] ~ "(combination)"),
+      title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_explain) ~
+        "explicands for each combination")
     )
 
   MSEv_combination_bar <-
@@ -1298,8 +1298,8 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 
     MSEv_combination_bar <-
       MSEv_combination_bar +
-      ggplot2::labs(title = bquote(MSE[v] * " criterion averaged over the " * .(n_explain) *
-        " explicands for each combination with " * .(CI_level * 100) * "% CI")) +
+      ggplot2::labs(title = bquote(MSE[v] ~ "criterion averaged over the" ~ .(n_explain) ~
+        "explicands for each combination with" ~ .(CI_level * 100) * "% CI")) +
       ggplot2::geom_errorbar(
         position = ggplot2::position_dodge(geom_col_width),
         width = 0.25,
