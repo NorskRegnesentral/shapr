@@ -81,7 +81,8 @@
       "tmp_features",
       "Method",
       "MSEv",
-      "MSEv_sd"
+      "MSEv_sd",
+      "error"
     )
   )
   invisible()
