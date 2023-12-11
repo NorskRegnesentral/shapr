@@ -87,10 +87,18 @@
 <text x='50.84' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='8.81px' lengthAdjust='spacingAndGlyphs'>S</text>
 <text x='59.64' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='8.81px' lengthAdjust='spacingAndGlyphs'>E</text>
 <text x='68.45' y='17.49' style='font-size: 9.24px; font-family: sans;' textLength='4.62px' lengthAdjust='spacingAndGlyphs'>v</text>
-<text x='73.07' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='164.37px' lengthAdjust='spacingAndGlyphs'> criterion averaged over the </text>
-<text x='237.45' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='14.68px' lengthAdjust='spacingAndGlyphs'>32</text>
-<text x='252.13' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='110.82px' lengthAdjust='spacingAndGlyphs'> combinations and </text>
-<text x='362.95' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='7.34px' lengthAdjust='spacingAndGlyphs'>3</text>
-<text x='370.29' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='78.53px' lengthAdjust='spacingAndGlyphs'> observations</text>
+<text x='73.07' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='3.30px' lengthAdjust='spacingAndGlyphs'> </text>
+<text x='76.38' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='157.04px' lengthAdjust='spacingAndGlyphs'>criterion averaged over the</text>
+<text x='233.41' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='3.30px' lengthAdjust='spacingAndGlyphs'> </text>
+<text x='236.72' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='14.68px' lengthAdjust='spacingAndGlyphs'>32</text>
+<text x='251.40' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='3.30px' lengthAdjust='spacingAndGlyphs'> </text>
+<text x='254.70' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='103.48px' lengthAdjust='spacingAndGlyphs'>combinations and</text>
+<text x='358.19' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='3.30px' lengthAdjust='spacingAndGlyphs'> </text>
+<text x='361.49' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='7.34px' lengthAdjust='spacingAndGlyphs'>3</text>
+<text x='368.83' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='3.30px' lengthAdjust='spacingAndGlyphs'> </text>
+<text x='372.13' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='89.53px' lengthAdjust='spacingAndGlyphs'>explicands with</text>
+<text x='461.66' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='3.30px' lengthAdjust='spacingAndGlyphs'> </text>
+<text x='464.96' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='14.68px' lengthAdjust='spacingAndGlyphs'>95</text>
+<text x='479.65' y='15.05' style='font-size: 13.20px; font-family: sans;' textLength='28.61px' lengthAdjust='spacingAndGlyphs'>% CI</text>
 </g>
 </svg>
