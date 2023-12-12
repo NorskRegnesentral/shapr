@@ -748,6 +748,10 @@ prepare_data_gaussian_new_v5_rnorm <- function(internal, index_features, ...) {
         # Compute the conditional mean of Xsbar given Xs = Xs_star
         x_Sbar_mean <- mu_Sbar + cov_mat_SbarS_cov_mat_SS_inv %*% t(sweep(x_S_star, 2, mu_S, FUN = "-"))
 
+
+
+
+
         # Transform the samples to be from N(O, Sigma_Sbar|S)
         # Transpose her and untranspose later for faster matrix addition in `t(B + x_Sbar_mean[, idx_now])`
         # as it seems to be faster than using `sweep(B, 2, x_Sbar_mean[, idx_now], FUN = "+")` on the
@@ -774,6 +778,135 @@ prepare_data_gaussian_new_v5_rnorm <- function(internal, index_features, ...) {
     ),
     idcol = "id_combination"
   )
+
+  # Update the id_combination. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+
+  # Add uniform weights
+  dt[, w := 1 / n_samples]
+
+  # Remove:
+  # This is not needed when we assume that the empty and grand coalitions will never be present
+  # dt[id_combination %in% c(1, n_combinations), w := 1]
+
+  # Return the MC samples
+  return(dt)
+}
+
+prepare_data_gaussian_new_v5_rnorm_v2 <- function(internal, index_features, ...) {
+  # This function assumes that index_features will never include the empty and
+  # grand coalitions. This is valid 21/11/23 as `batch_prepare_vS()` removes the
+  # grand coalition before calling the `prepare_data()` function and the empty
+  # coalition is never included in the `internal$objects$S_batch` list.
+
+  # Extract objects that we are going to use
+  x_explain <- internal$data$x_explain
+  S <- internal$objects$S
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  feature_names <- internal$parameters$feature_names
+  n_combinations <- internal$parameters$n_combinations
+
+  # Extract the relevant coalitions specified in `index_features` from `S`.
+  # This will always be called as `index_features` is never NULL.
+  S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
+
+  # Allocate an empty matrix used in mvnfast:::rmvnCpp to store the generated MC samples.
+  #  B <- matrix(nrow = n_samples, ncol = n_features)
+  #  class(B) <- "numeric"
+
+  #  .Call("rmvnCpp",
+  #        n_ = n_samples,
+  #        mu_ = rep(0, n_features),
+  #        sigma_ = diag(n_features),
+  #        ncores_ = 1,
+  #        isChol_ = TRUE,
+  #        A_ = B,
+  #        PACKAGE = "mvnfast"
+  #  )
+
+  B <- matrix(rnorm(n_samples*n_features),nrow = n_samples, ncol = n_features)
+
+
+  #function(x_explain_mat, S, mu, cov_mat)
+
+    # Generate a data table containing all Monte Carlo samples for all test observations and coalitions
+    dt <- data.table::rbindlist(
+      # Iterate over the coalitions
+      lapply(
+        seq_len(nrow(S)),
+        function(S_ind) {
+          # This function generates the conditional samples Xsbar | Xs = Xs_star
+          # and combine those values with the unconditional values.
+          cat(sprintf("%d,", S_ind))
+
+          # Get boolean representations if the features are in the S and the Sbar sets
+          S_now <- as.logical(S[S_ind, ])
+          Sbar_now <- !as.logical(S[S_ind, ])
+
+          # Remove:
+          # Do not need to treat the empty and grand coalitions different as they will never be present
+          # if (sum(S_now) %in% c(0, n_features)) {
+          #   return(data.table::as.data.table(cbind("id" = seq(n_explain), x_explain)))
+          # }
+
+          # Extract the features we condition on
+          x_S_star <- x_explain_mat[, S_now, drop = FALSE]
+
+          # Extract the mean values for the features in the two sets
+          mu_S <- mu[S_now]
+          mu_Sbar <- mu[Sbar_now]
+
+          # Extract the relevant parts of the covariance matrix
+          cov_mat_SS <- cov_mat[S_now, S_now, drop = FALSE]
+          cov_mat_SSbar <- cov_mat[S_now, Sbar_now, drop = FALSE]
+          cov_mat_SbarS <- cov_mat[Sbar_now, S_now, drop = FALSE]
+          cov_mat_SbarSbar <- cov_mat[Sbar_now, Sbar_now, drop = FALSE]
+
+          # Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+          cov_mat_SbarS_cov_mat_SS_inv <- cov_mat_SbarS %*% solve(cov_mat_SS)
+          cond_cov_mat_Sbar_given_S <- cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv %*% cov_mat_SSbar
+
+          # Ensure that the conditional covariance matrix symmetric in the
+          # rare case where numerical instability made it unsymmetrical.
+          if (!isSymmetric(cond_cov_mat_Sbar_given_S)) {
+            cond_cov_mat_Sbar_given_S <- Matrix::symmpart(cond_cov_mat_Sbar_given_S)
+          }
+
+          # Compute the conditional mean of Xsbar given Xs = Xs_star
+          x_Sbar_mean <- mu_Sbar + cov_mat_SbarS_cov_mat_SS_inv %*% (t(x_S_star) - mu_S)
+
+
+          # Transform the samples to be from N(O, Sigma_Sbar|S)
+          # Transpose her and untranspose later for faster matrix addition in `t(B + x_Sbar_mean[, idx_now])`
+          # as it seems to be faster than using `sweep(B, 2, x_Sbar_mean[, idx_now], FUN = "+")` on the
+          # original B (i.e., not transposed B).
+          B_now <- t(B[, Sbar_now] %*% chol(cond_cov_mat_Sbar_given_S))
+
+          # Create a data.table containing the MC samples for all test observations for one coalition
+          data.table::rbindlist(
+
+            # Loop over the different test observations
+            lapply(seq(n_explain), function(idx_now) {
+              # Combine the generated values with the values we conditioned on
+              ret <- matrix(NA, ncol = n_features, nrow = n_samples)
+              ret[, S_now] <- rep(c(x_explain_mat[idx_now, S_now]), each = n_samples)
+              ret[, Sbar_now] <- t(B_now + x_Sbar_mean[, idx_now])
+
+              # Set names of the columns and convert to a data.table
+              colnames(ret) <- feature_names
+              as.data.table(ret)
+            }),
+            use.names = TRUE, idcol = "id", fill = TRUE
+          )
+        }
+      ),
+      idcol = "id_combination"
+    )
 
   # Update the id_combination. This will always be called as `index_features` is never NULL.
   if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
@@ -1068,6 +1201,12 @@ time_new_v5_rnorm <- system.time({
     index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
 res_new_v5_rnorm <- NULL
 
+time_new_v5_rnorm_v2 <- system.time({
+  res_new_v5_rnorm_v2 <- prepare_data_gaussian_new_v5_rnorm_v2(
+    internal = internal,
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+res_new_v5_rnorm_v2 <- NULL
+
 time_new_v6 <- system.time({
   res_new_v6 <- prepare_data_gaussian_new_v6(
     internal = internal,
@@ -1075,7 +1214,8 @@ time_new_v6 <- system.time({
 res_new_v6 <- NULL
 
 # Create a table of the times. Less is better
-times <- rbind(time_old, time_new_v1, time_new_v2, time_new_v3, time_new_v4, time_new_v5, time_new_v5_rnorm, time_new_v6)
+times <- rbind(time_old, time_new_v1, time_new_v2, time_new_v3, time_new_v4, time_new_v5,
+               time_new_v5_rnorm, time_new_v5_rnorm_v2, time_new_v6)
 times
 
 # Look at the relative time compared to the old method. Larger value is better.
