@@ -450,8 +450,8 @@ get_parameters <- function(approach, shap_approach,paired_shap_sampling, predict
   }
 
   # type
-  if (!(type %in% c("normal", "forecast"))) {
-    stop("`type` must be either `normal` or `forecast`.\n")
+  if (!(type %in% c("normal", "forecast","linear_gaussian"))) {
+    stop("`type` must be either `normal`, `forecast` or `linear_gaussian`.\n")
   }
 
   # parameters only used for type "forecast"

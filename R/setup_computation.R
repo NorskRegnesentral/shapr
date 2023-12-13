@@ -22,6 +22,17 @@ setup_computation <- function(internal, model, predict_model) {
   return(internal)
 }
 
+setup_computation_linear_gaussian <- function(internal){
+
+  # setup the Shapley framework
+  internal <- shapley_setup(internal)
+
+  # Setup for approach
+  internal <- setup_linear_gaussian(internal) # Not created yet
+
+
+}
+
 #' @keywords internal
 shapley_setup_forecast <- function(internal) {
   exact <- internal$parameters$exact

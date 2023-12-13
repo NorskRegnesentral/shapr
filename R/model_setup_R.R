@@ -66,3 +66,15 @@ get_feature_specs <- function(get_model_specs, model) {
 
   return(feature_specs)
 }
+
+
+
+get_linear_coeff <- function(model){
+  # Checks that model is of class 'lm'
+  if(class(model)[1] != "lm"){
+    stop("explain_linear only supports explaining models of class 'lm'")
+  }
+
+  # Extracts the coefficients from a linear model
+  return(model$coefficients)
+}
