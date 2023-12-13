@@ -26,6 +26,7 @@ test <-explain(model = model_lm_numeric,
                x_explain = x_explain_numeric,
                x_train = x_train_numeric,
                approach = "gaussian",
+               shap_approach = "permutation",
                prediction_zero = p0)
 
 test2 <-explain_linear(model = model_lm_numeric,

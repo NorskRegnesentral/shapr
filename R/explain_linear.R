@@ -11,6 +11,7 @@ explain_linear <- function(model,
                            x_train,
                            paired_shap_sampling = FALSE,
                            prediction_zero,
+                           n_combinations = NULL,
                            n_permutations = NULL,
                            group = NULL,
                            n_samples = 1e3,
@@ -34,7 +35,7 @@ explain_linear <- function(model,
 
   linear_model_coef <- get_linear_coeff(model)
 
-
+  null_object <- NULL
   # Sets up and organizes input parameters
   # Checks the input parameters and their compatability
   # Checks data/model compatability
@@ -46,7 +47,7 @@ explain_linear <- function(model,
     shap_approach = "permutation", # Always use the permute shap_approach
     paired_shap_sampling = paired_shap_sampling,
     prediction_zero = prediction_zero,
-    n_combinations = NULL, # We always set the n_permutations instead
+    n_combinations = n_combinations, # We always set the n_permutations instead
     n_permutations = n_permutations,
     group = group,
     n_samples = n_samples,

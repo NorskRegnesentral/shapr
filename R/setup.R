@@ -542,7 +542,7 @@ get_parameters <- function(approach, shap_approach,paired_shap_sampling, predict
   # Setting exact based on n_combinations (TRUE if NULL)
   if(shap_approach=="permutation"){
     parameters$exact <- ifelse(is.null(parameters$n_permutations), TRUE, FALSE)
-    parameters$n_combinations <- 3*parameters$n_permutations # TODO: Do this properly. (Temporary setting this parameter to avoid errors in the code)
+    #parameters$n_combinations <- 3*parameters$n_permutations # TODO: Do this properly. (Temporary setting this parameter to avoid errors in the code)
   } else {
     parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
   }
