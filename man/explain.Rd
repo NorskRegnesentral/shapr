@@ -18,6 +18,7 @@ explain(
   keep_samp_for_vS = FALSE,
   predict_model = NULL,
   get_model_specs = NULL,
+  MSEv_uniform_comb_weights = TRUE,
   timing = TRUE,
   ...
 )
@@ -36,8 +37,8 @@ Contains the the features, whose predictions ought to be explained.}
 Contains the data used to estimate the (conditional) distributions for the features
 needed to properly estimate the conditional expectations in the Shapley formula.}
 
-\item{approach}{Character vector of length \code{1} or \code{n_features}.
-\code{n_features} equals the total number of features in the model. All elements should,
+\item{approach}{Character vector of length \code{1} or one less than the number of features.
+All elements should,
 either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 
@@ -101,6 +102,11 @@ The function takes \code{model} as argument and provides a list with 3 elements:
 If \code{NULL} (the default) internal functions are used for natively supported model classes, and the checking is
 disabled for unsupported model classes.
 Can also be used to override the default function for natively supported model classes.}
+
+\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the combinations
+uniformly when computing the MSEv criterion. If \code{FALSE}, then the function use the Shapley kernel weights to
+weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
+sampling frequency when not all combinations are considered.}
 
 \item{timing}{Logical.
 Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
@@ -177,7 +183,8 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
 \item{shapley_values}{data.table with the estimated Shapley values}
 \item{internal}{List with the different parameters, data and functions used internally}
-\item{pred_explain}{Numeric vector with the predictions for the explained observations.}
+\item{pred_explain}{Numeric vector with the predictions for the explained observations}
+\item{MSEv}{List with the values of the MSEv evaluation criterion for the approach.}
 }
 
 \code{shapley_values} is a data.table where the number of rows equals
@@ -214,9 +221,10 @@ E.g., if you're in a situation where you have trained a model that consists of 1
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
 the \code{"empirical"} approach if you condition on 2-5 features, and \code{"copula"} version
 if you condition on more than 5 features this can be done by simply passing
-\code{approach = c("gaussian", rep("empirical", 4), rep("copula", 5))}. If
+\code{approach = c("gaussian", rep("empirical", 4), rep("copula", 4))}. If
 \code{"approach[i]" = "gaussian"} means that you'd like to use the \code{"gaussian"} approach
-when conditioning on \code{i} features.
+when conditioning on \code{i} features. Conditioning on all features needs no approach as that is given
+by the complete prediction itself, and should thus not be part of the vector.
 
 For \code{approach="ctree"}, \code{n_samples} corresponds to the number of samples
 from the leaf node (see an exception related to the \code{sample} argument).
@@ -287,7 +295,7 @@ explain4 <- explain(
 )
 
 # Combined approach
-approach <- c("gaussian", "gaussian", "empirical", "empirical")
+approach <- c("gaussian", "gaussian", "empirical")
 explain5 <- explain(
   model = model,
   x_explain = x_explain,

@@ -7,7 +7,7 @@
 #' @param ... Additional arguments passed to [waldo::compare()]
 #' Gives the relative path to the test files to review
 #'
-snapshot_review_man <- function(path, ...) {
+snapshot_review_man <- function(path, tolerance = NULL, ...) {
   changed <- testthat:::snapshot_meta(path)
   these_rds <- (tools::file_ext(changed$name) == "rds")
   if (any(these_rds)) {
@@ -16,7 +16,7 @@ snapshot_review_man <- function(path, ...) {
       new <- readRDS(changed[i, "new"])
 
       cat(paste0("Difference for check ", changed[i, "name"], " in test ", changed[i, "test"], "\n"))
-      print(waldo::compare(old, new, max_diffs = 50, ...))
+      print(waldo::compare(old, new, max_diffs = 50, tolerance = tolerance, ...))
       browser()
     }
   }

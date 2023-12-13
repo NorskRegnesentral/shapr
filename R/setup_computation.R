@@ -815,6 +815,7 @@ create_S_batch_new <- function(internal, seed = NULL) {
 
   X <- internal$objects$X
 
+  if (!is.null(seed)) set.seed(seed)
 
   if (length(approach0) > 1) {
     X[!(n_features %in% c(0, n_features0)), approach := approach0[n_features]]
@@ -825,6 +826,28 @@ create_S_batch_new <- function(internal, seed = NULL) {
         pmax(1, round(.N / (n_combinations - 2) * n_batches)),
       n_S_per_approach = .N
     ), by = approach]
+
+    # Ensures that the number of batches corresponds to `n_batches`
+    if (sum(batch_count_dt$n_batches_per_approach) != n_batches) {
+      # Ensure that the number of batches is not larger than `n_batches`.
+      # Remove one batch from the approach with the most batches.
+      while (sum(batch_count_dt$n_batches_per_approach) > n_batches) {
+        batch_count_dt[
+          which.max(n_batches_per_approach),
+          n_batches_per_approach := n_batches_per_approach - 1
+        ]
+      }
+
+      # Ensure that the number of batches is not lower than `n_batches`.
+      # Add one batch to the approach with most coalitions per batch
+      while (sum(batch_count_dt$n_batches_per_approach) < n_batches) {
+        batch_count_dt[
+          which.max(n_S_per_approach / n_batches_per_approach),
+          n_batches_per_approach := n_batches_per_approach + 1
+        ]
+      }
+    }
+
     batch_count_dt[, n_leftover_first_batch := n_S_per_approach %% n_batches_per_approach]
     data.table::setorder(batch_count_dt, -n_leftover_first_batch)
 
@@ -833,7 +856,6 @@ create_S_batch_new <- function(internal, seed = NULL) {
 
     # Randomize order before ordering spreading the batches on the different approaches as evenly as possible
     # with respect to shapley_weight
-    set.seed(seed)
     X[, randomorder := sample(.N)]
     data.table::setorder(X, randomorder) # To avoid smaller id_combinations always proceeding large ones
     if(shap_approach!="permutation") {

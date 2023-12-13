@@ -17,6 +17,7 @@ setup(
   seed,
   keep_samp_for_vS,
   feature_specs,
+  MSEv_uniform_comb_weights = TRUE,
   type = "normal",
   horizon = NULL,
   y = NULL,
@@ -39,8 +40,8 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 \item{x_explain}{A matrix or data.frame/data.table.
 Contains the the features, whose predictions ought to be explained.}
 
-\item{approach}{Character vector of length \code{1} or \code{n_features}.
-\code{n_features} equals the total number of features in the model. All elements should,
+\item{approach}{Character vector of length \code{1} or one less than the number of features.
+All elements should,
 either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 
@@ -92,6 +93,11 @@ Contains the 3 elements:
 \item{factor_levels}{Character vector with the levels for any categorical features.}
 }}
 
+\item{MSEv_uniform_comb_weights}{Logical. If \code{TRUE} (default), then the function weights the combinations
+uniformly when computing the MSEv criterion. If \code{FALSE}, then the function use the Shapley kernel weights to
+weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
+sampling frequency when not all combinations are considered.}
+
 \item{type}{Character.
 Either "normal" or "forecast" corresponding to function \code{setup()} is called from,
 correspondingly the type of explanation that should be generated.}
@@ -136,7 +142,7 @@ Whether the timing of the different parts of the \code{explain()} should saved i
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow
 running the AICc-versions of the empirical as that requires data based optimization.}
 
-\item{...}{Further arguments passed to \code{approach}-specific functions.}
+\item{...}{Further arguments passed to specific approaches}
 }
 \description{
 check_setup

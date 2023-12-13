@@ -16,8 +16,8 @@
 #' can still be explained by passing `predict_model` and (optionally) `get_model_specs`,
 #' see details for more information.
 #'
-#' @param approach Character vector of length `1` or `n_features`.
-#' `n_features` equals the total number of features in the model. All elements should,
+#' @param approach Character vector of length `1` or one less than the number of features.
+#' All elements should,
 #' either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"`, `"timeseries"`, or `"independence"`.
 #' See details for more information.
 #'
@@ -82,8 +82,14 @@
 #' disabled for unsupported model classes.
 #' Can also be used to override the default function for natively supported model classes.
 #'
+#' @param MSEv_uniform_comb_weights Logical. If `TRUE` (default), then the function weights the combinations
+#' uniformly when computing the MSEv criterion. If `FALSE`, then the function use the Shapley kernel weights to
+#' weight the combinations when computing the MSEv criterion. Note that the Shapley kernel weights are replaced by the
+#' sampling frequency when not all combinations are considered.
+#'
 #' @param timing Logical.
 #' Whether the timing of the different parts of the `explain()` should saved in the model object.
+#' @param ... Further arguments passed to specific approaches
 #'
 #' @inheritDotParams setup_approach.empirical
 #' @inheritDotParams setup_approach.independence
@@ -101,9 +107,10 @@
 #' and you'd like to use the `"gaussian"` approach when you condition on a single feature,
 #' the `"empirical"` approach if you condition on 2-5 features, and `"copula"` version
 #' if you condition on more than 5 features this can be done by simply passing
-#' `approach = c("gaussian", rep("empirical", 4), rep("copula", 5))`. If
+#' `approach = c("gaussian", rep("empirical", 4), rep("copula", 4))`. If
 #' `"approach[i]" = "gaussian"` means that you'd like to use the `"gaussian"` approach
-#' when conditioning on `i` features.
+#' when conditioning on `i` features. Conditioning on all features needs no approach as that is given
+#' by the complete prediction itself, and should thus not be part of the vector.
 #'
 #' For `approach="ctree"`, `n_samples` corresponds to the number of samples
 #' from the leaf node (see an exception related to the `sample` argument).
@@ -116,7 +123,8 @@
 #' \describe{
 #'   \item{shapley_values}{data.table with the estimated Shapley values}
 #'   \item{internal}{List with the different parameters, data and functions used internally}
-#'   \item{pred_explain}{Numeric vector with the predictions for the explained observations.}
+#'   \item{pred_explain}{Numeric vector with the predictions for the explained observations}
+#'   \item{MSEv}{List with the values of the MSEv evaluation criterion for the approach.}
 #' }
 #'
 #' `shapley_values` is a data.table where the number of rows equals
@@ -203,7 +211,7 @@
 #' )
 #'
 #' # Combined approach
-#' approach <- c("gaussian", "gaussian", "empirical", "empirical")
+#' approach <- c("gaussian", "gaussian", "empirical")
 #' explain5 <- explain(
 #'   model = model,
 #'   x_explain = x_explain,
@@ -259,6 +267,7 @@ explain <- function(model,
                     keep_samp_for_vS = FALSE,
                     predict_model = NULL,
                     get_model_specs = NULL,
+                    MSEv_uniform_comb_weights = TRUE,
                     timing = TRUE,
                     ...) { # ... is further arguments passed to specific approaches
 
@@ -290,6 +299,7 @@ explain <- function(model,
     seed = seed,
     keep_samp_for_vS = keep_samp_for_vS,
     feature_specs = feature_specs,
+    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
     ...
   )

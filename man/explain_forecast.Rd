@@ -64,8 +64,8 @@ If \code{xreg != NULL}, denotes the number of lags that should be used for each 
 \item{horizon}{Numeric.
 The forecast horizon to explain. Passed to the \code{predict_model} function.}
 
-\item{approach}{Character vector of length \code{1} or \code{n_features}.
-\code{n_features} equals the total number of features in the model. All elements should,
+\item{approach}{Character vector of length \code{1} or one less than the number of features.
+All elements should,
 either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 
@@ -209,7 +209,8 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
 \item{shapley_values}{data.table with the estimated Shapley values}
 \item{internal}{List with the different parameters, data and functions used internally}
-\item{pred_explain}{Numeric vector with the predictions for the explained observations.}
+\item{pred_explain}{Numeric vector with the predictions for the explained observations}
+\item{MSEv}{List with the values of the MSEv evaluation criterion for the approach.}
 }
 
 \code{shapley_values} is a data.table where the number of rows equals
