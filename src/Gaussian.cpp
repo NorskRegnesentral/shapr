@@ -75,7 +75,7 @@ Rcpp::List prepare_data_gaussian_cpp(arma::mat MC_samples_mat,
     x_Sbar_mean.each_col() += mu_Sbar;
 
     // Transform the samples to be from N(O, Sigma_Sbar|S)
-    arma::mat MC_samples_mat_now = trans(MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S));
+    arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
 
     // Loop over the different test observations and combine the generated values with the values we conditioned on
     for (int idx_now = 0; idx_now < n_explain; idx_now++) {
