@@ -953,10 +953,7 @@ prepare_data_gaussian_new_v5_rnorm_cpp <- function(internal, index_features, ...
       x_explain_mat = x_explain_mat,
       S = S,
       mu = mu,
-      cov_mat = cov_mat,
-      n_explain = n_explain,
-      n_features = n_features,
-      n_samples = n_samples)
+      cov_mat = cov_mat)
   }, gcFirst = FALSE)
 
   dt = as.data.table(do.call(rbind, result_list))
