@@ -956,6 +956,8 @@ prepare_data_gaussian_new_v5_rnorm_cpp <- function(internal, index_features, ...
       cov_mat = cov_mat)
   }, gcFirst = FALSE)
 
+  t(sapply(result_list, function(j) dim(j)))
+
   dt = as.data.table(do.call(rbind, result_list))
   setnames(dt, feature_names)
   dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]

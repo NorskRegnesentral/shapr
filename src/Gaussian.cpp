@@ -27,9 +27,9 @@ Rcpp::List prepare_data_gaussian_cpp(arma::mat MC_samples_mat,
                                      arma::mat S,
                                      arma::vec mu,
                                      arma::mat cov_mat) {
-  int n_explain = x_explain_mat.n_cols;
-  int n_features = MC_samples_mat.n_cols;
+  int n_explain = x_explain_mat.n_rows;
   int n_samples = MC_samples_mat.n_rows;
+  int n_features = MC_samples_mat.n_cols;
 
   // Create a list containing the MC samples for all coalitions and test observations
   Rcpp::List resultList;
