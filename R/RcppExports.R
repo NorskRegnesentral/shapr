@@ -80,6 +80,28 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
     .Call(`_shapr_aicc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
 }
 
+#' Generate Gaussian MC samples
+#'
+#' @param MC_samples_mat matrix. Matrix of dimension `n_samples` times `n_features` containing samples from the
+#' univariate standard normal.
+#' @param x_explain_mat matrix. Matrix of dimension `n_explain` times `n_features` containing the observations
+#' to explain.
+#' @param S matrix. Matrix of dimension `n_combinations` times `n_features` containing binary representations of
+#' the used coalitions.
+#' @param mu vector. Vector of length `n_features` containing the mean of each feature.
+#' @param cov_mat mat. Matrix of dimension `n_features` times `n_features` containing the pariwise covariance between
+#' all features.
+#'
+#' @export
+#' @keywords internal
+#'
+#' @return List of length `n_combinations`*`n_samples`, where each entry is a matrix of dimension `n_samples` times
+#' `n_features` containing the conditional MC samples for each coalition and explicand.
+#' @author Lars Henry Berge Olsen
+prepare_data_gaussian_cpp <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_gaussian_cpp`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
+}
+
 #' (Generalized) Mahalanobis distance
 #'
 #' Used to get the Euclidean distance as well by setting \code{mcov} = \code{diag(m)}.
