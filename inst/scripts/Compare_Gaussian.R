@@ -1113,96 +1113,99 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
 
 ## Setup -----------------------------------------------------------------------------------------------------------
 
-n_samples <- 1000
-# n_samples <- 25000
-n_train <- 1000
-n_test <- 100
-M <- 8
-rho <- 0.5
-betas <- c(0, rep(1, M))
+{
+  n_samples <- 1000
+  # n_samples <- 25000
+  n_train <- 1000
+  n_test <- 100
+  M <- 8
+  rho <- 0.5
+  betas <- c(0, rep(1, M))
 
-# We use the Gaussian approach
-approach <- "gaussian"
+  # We use the Gaussian approach
+  approach <- "gaussian"
 
-# Mean of the multivariate Gaussian distribution
-mu <- rep(0, times = M)
-mu <- seq(M)
+  # Mean of the multivariate Gaussian distribution
+  mu <- rep(0, times = M)
+  mu <- seq(M)
 
-# Create the covariance matrix
-sigma <- matrix(rho, ncol = M, nrow = M) # Old
-for (i in seq(1, M - 1)) {
-  for (j in seq(i + 1, M)) {
-    sigma[i, j] <- sigma[j, i] <- rho^abs(i - j)
+  # Create the covariance matrix
+  sigma <- matrix(rho, ncol = M, nrow = M) # Old
+  for (i in seq(1, M - 1)) {
+    for (j in seq(i + 1, M)) {
+      sigma[i, j] <- sigma[j, i] <- rho^abs(i - j)
+    }
   }
+  diag(sigma) <- 1
+
+  # Set seed for reproducibility
+  seed_setup <- 1996
+  set.seed(seed_setup)
+
+  # Make Gaussian data
+  data_train <- data.table(mvtnorm::rmvnorm(n = n_train, mean = mu, sigma = sigma))
+  data_test <- data.table(mvtnorm::rmvnorm(n = n_test, mean = mu, sigma = sigma))
+  colnames(data_train) <- paste("X", seq(M), sep = "")
+  colnames(data_test) <- paste("X", seq(M), sep = "")
+
+  # Make the response
+  response_train <- as.vector(cbind(1, as.matrix(data_train)) %*% betas)
+  response_test <- as.vector(cbind(1, as.matrix(data_test)) %*% betas)
+
+  # Put together the data
+  data_train_with_response <- copy(data_train)[, y := response_train]
+  data_test_with_response <- copy(data_test)[, y := response_test]
+
+  # Fit a LM model
+  predictive_model <- lm(y ~ ., data = data_train_with_response)
+
+  # Get the prediction zero, i.e., the phi0 Shapley value.
+  prediction_zero <- mean(response_train)
+
+  model <- predictive_model
+  x_explain <- data_test
+  x_train <- data_train
+  keep_samp_for_vS <- FALSE
+  predict_model <- NULL
+  get_model_specs <- NULL
+  timing <- TRUE
+  n_combinations <- NULL
+  group <- NULL
+  feature_specs <- get_feature_specs(get_model_specs, model)
+  n_batches <- 1
+  seed <- 1
+
+  internal <- setup(
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = approach,
+    prediction_zero = prediction_zero,
+    n_combinations = n_combinations,
+    group = group,
+    n_samples = n_samples,
+    n_batches = n_batches,
+    seed = seed,
+    feature_specs = feature_specs,
+    keep_samp_for_vS = keep_samp_for_vS,
+    predict_model = predict_model,
+    get_model_specs = get_model_specs,
+    timing = timing,
+    gaussian.mu = mu,
+    gaussian.cov_mat = sigma
+  )
+
+  # Gets predict_model (if not passed to explain)
+  predict_model <- get_predict_model(
+    predict_model = predict_model,
+    model = model
+  )
+
+  # Sets up the Shapley (sampling) framework and prepares the
+  # conditional expectation computation for the chosen approach
+  # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
+  internal <- setup_computation(internal, model, predict_model)
+
 }
-diag(sigma) <- 1
-
-# Set seed for reproducibility
-seed_setup <- 1996
-set.seed(seed_setup)
-
-# Make Gaussian data
-data_train <- data.table(mvtnorm::rmvnorm(n = n_train, mean = mu, sigma = sigma))
-data_test <- data.table(mvtnorm::rmvnorm(n = n_test, mean = mu, sigma = sigma))
-colnames(data_train) <- paste("X", seq(M), sep = "")
-colnames(data_test) <- paste("X", seq(M), sep = "")
-
-# Make the response
-response_train <- as.vector(cbind(1, as.matrix(data_train)) %*% betas)
-response_test <- as.vector(cbind(1, as.matrix(data_test)) %*% betas)
-
-# Put together the data
-data_train_with_response <- copy(data_train)[, y := response_train]
-data_test_with_response <- copy(data_test)[, y := response_test]
-
-# Fit a LM model
-predictive_model <- lm(y ~ ., data = data_train_with_response)
-
-# Get the prediction zero, i.e., the phi0 Shapley value.
-prediction_zero <- mean(response_train)
-
-model <- predictive_model
-x_explain <- data_test
-x_train <- data_train
-keep_samp_for_vS <- FALSE
-predict_model <- NULL
-get_model_specs <- NULL
-timing <- TRUE
-n_combinations <- NULL
-group <- NULL
-feature_specs <- get_feature_specs(get_model_specs, model)
-n_batches <- 1
-seed <- 1
-
-internal <- setup(
-  x_train = x_train,
-  x_explain = x_explain,
-  approach = approach,
-  prediction_zero = prediction_zero,
-  n_combinations = n_combinations,
-  group = group,
-  n_samples = n_samples,
-  n_batches = n_batches,
-  seed = seed,
-  feature_specs = feature_specs,
-  keep_samp_for_vS = keep_samp_for_vS,
-  predict_model = predict_model,
-  get_model_specs = get_model_specs,
-  timing = timing,
-  gaussian.mu = mu,
-  gaussian.cov_mat = sigma
-)
-
-# Gets predict_model (if not passed to explain)
-predict_model <- get_predict_model(
-  predict_model = predict_model,
-  model = model
-)
-
-# Sets up the Shapley (sampling) framework and prepares the
-# conditional expectation computation for the chosen approach
-# Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
-internal <- setup_computation(internal, model, predict_model)
 
 
 
@@ -1379,16 +1382,19 @@ one_coalition_time_new_v5 <- system.time({
     internal = internal,
     index_features = internal$objects$S_batch$`1`[look_at_coalition])})
 
+set.seed(123)
 one_coalition_time_new_v5_rnorm <- system.time({
   one_coalition_res_new_v5_rnorm <- prepare_data_gaussian_new_v5_rnorm(
     internal = internal,
     index_features = internal$objects$S_batch$`1`[look_at_coalition])})
 
+set.seed(123)
 one_coalition_time_new_v5_rnorm_v2 <- system.time({
   one_coalition_res_new_v5_rnorm_v2 <- prepare_data_gaussian_new_v5_rnorm_v2(
     internal = internal,
     index_features = internal$objects$S_batch$`1`[look_at_coalition])})
 
+set.seed(123)
 one_coalition_time_new_v5_rnorm_cpp <- system.time({
   one_coalition_res_new_v5_rnorm_cpp <- prepare_data_gaussian_new_v5_rnorm_cpp(
     internal = internal,

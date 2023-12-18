@@ -31,6 +31,9 @@ Rcpp::List prepare_data_gaussian_cpp(arma::mat MC_samples_mat,
   int n_samples = MC_samples_mat.n_rows;
   int n_features = MC_samples_mat.n_cols;
 
+  // Pre-allocate result matrix
+  arma::mat ret(n_samples, n_features);
+
   // Create a list containing the MC samples for all coalitions and test observations
   Rcpp::List resultList;
 
@@ -42,7 +45,7 @@ Rcpp::List prepare_data_gaussian_cpp(arma::mat MC_samples_mat,
 
     // Get current coalition S and the indices of the features in coalition S and mask Sbar
     arma::mat S_now = S.row(S_ind);
-    arma::uvec S_now_idx = arma::find(S_now > 0.5);
+    arma::uvec S_now_idx = arma::find(S_now > 0.5); // må finnes en bedre løsning her
     arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
 
     // Extract the features we condition on
@@ -62,23 +65,22 @@ Rcpp::List prepare_data_gaussian_cpp(arma::mat MC_samples_mat,
     arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
     arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
 
-    // Ensure that the conditional covariance matrix is symmetric and positive definite(?)
-    if (!cond_cov_mat_Sbar_given_S.is_sympd()) {
+    // Ensure that the conditional covariance matrix is symmetric
+    if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
       cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
     }
 
     // Compute the conditional mean of Xsbar given Xs = Xs_star
-    arma::mat x_Sbar_mean = (cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t()); // Can we speed it up by reducing the number of transposes?
+    arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t(); // Can we speed it up by reducing the number of transposes?
     x_Sbar_mean.each_col() += mu_Sbar;
 
     // Transform the samples to be from N(O, Sigma_Sbar|S)
     arma::mat MC_samples_mat_now = trans(MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S));
 
-    // Loop over the different test observations and Combine the generated values with the values we conditioned on
+    // Loop over the different test observations and combine the generated values with the values we conditioned on
     for (int idx_now = 0; idx_now < n_explain; idx_now++) {
-      arma::mat ret(n_samples, n_features, arma::fill::zeros);
-      ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1);
-      ret.cols(Sbar_now_idx) = trans(MC_samples_mat_now + repmat(x_Sbar_mean.col(idx_now), 1, n_samples));
+      ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1); // can using .fill() speed this up?
+      ret.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
       resultList.push_back(ret);
     }
   }
