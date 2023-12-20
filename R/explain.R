@@ -17,8 +17,8 @@
 #' see details for more information.
 #'
 #' @param approach Character vector of length `1` or one less than the number of features.
-#' All elements should,
-#' either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"categorical"`, `"timeseries"`, or `"independence"`.
+#' All elements should, either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
+#' `"categorical"`, `"timeseries"`, or `"independence"`.
 #' See details for more information.
 #'
 #' @param prediction_zero Numeric.
@@ -96,12 +96,13 @@
 #' @inheritDotParams setup_approach.gaussian
 #' @inheritDotParams setup_approach.copula
 #' @inheritDotParams setup_approach.ctree
+#' @inheritDotParams setup_approach.vaeac
 #' @inheritDotParams setup_approach.categorical
 #' @inheritDotParams setup_approach.timeseries
 #'
 #' @details The most important thing to notice is that `shapr` has implemented six different
 #' approaches for estimating the conditional distributions of the data, namely `"empirical"`,
-#' `"gaussian"`, `"copula"`, `"ctree"`, `"categorical"`, `"timeseries"`, and `"independence"`.
+#' `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
 #' In addition, the user also has the option of combining the different approaches.
 #' E.g., if you're in a situation where you have trained a model that consists of 10 features,
 #' and you'd like to use the `"gaussian"` approach when you condition on a single feature,
