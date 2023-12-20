@@ -160,6 +160,37 @@ test_that("output_lm_numeric_ctree", {
   )
 })
 
+test_that("output_lm_numeric_vaeac", {
+  # Note that I am not certain if this will run as the path for where the vaeac model is saved on
+  # disk is tempdir(), so it might change when we run this at separate times.
+  # There are two solutions I can think about.
+  # 1.
+  # We use explanation = explain(...), and then set explanation$internal$parameters$vaeac$models = NULL
+  # This removes the paths to where the vaeac models are stored on disk.
+  # 2.
+  # We can specify a folder within the shapr package to store the files. It is about 600KB of data.
+  # We then need to set `vaeac.folder_to_save_model = "path"`
+  expect_snapshot_rds(
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "vaeac",
+      prediction_zero = p0,
+      n_batches = 1,
+      timing = FALSE,
+      n_samples = 10,                         # Low value here to speed up the time
+      vaeac.epochs = 4,                       # Low value here to speed up the time
+      vaeac.num_different_vaeac_initiate = 2, # Low value here to speed up the time
+      vaeac.extra_parameters = list(
+        vaeac.epochs_initiation_phase = 2,    # Low value here to speed up the time
+        vaeac.model_description = "test" # Add this since otherwise it gets set to the time, which would break the test.
+      )
+    ),
+    "output_lm_numeric_vaeac"
+  )
+})
+
 test_that("output_lm_categorical_ctree", {
   expect_snapshot_rds(
     explain(
@@ -172,6 +203,37 @@ test_that("output_lm_categorical_ctree", {
       timing = FALSE
     ),
     "output_lm_categorical_ctree"
+  )
+})
+
+test_that("output_lm_categorical_vaeac", {
+  # Note that I am not certain if this will run as the path for where the vaeac model is saved on
+  # disk is tempdir(), so it might change when we run this at separate times.
+  # There are two solutions I can think about.
+  # 1.
+  # We use explanation = explain(...), and then set explanation$internal$parameters$vaeac$models = NULL
+  # This removes the paths to where the vaeac models are stored on disk.
+  # 2.
+  # We can specify a folder within the shapr package to store the files. It is about 600KB of data.
+  # We then need to set `vaeac.folder_to_save_model = "path"`
+  expect_snapshot_rds(
+    explain(
+      model = model_lm_categorical,
+      x_explain = x_explain_categorical,
+      x_train = x_train_categorical,
+      approach = "vaeac",
+      prediction_zero = p0,
+      n_batches = 1,
+      timing = FALSE,
+      n_samples = 10,                         # Low value here to speed up the time
+      vaeac.epochs = 4,                       # Low value here to speed up the time
+      vaeac.num_different_vaeac_initiate = 2, # Low value here to speed up the time
+      vaeac.extra_parameters = list(
+        vaeac.epochs_initiation_phase = 2,    # Low value here to speed up the time
+        vaeac.model_description = "test" # Add this since otherwise it gets set to the time, which would break the test.
+      )
+    ),
+    "output_lm_categorical_vaeac"
   )
 })
 
@@ -296,6 +358,37 @@ test_that("output_lm_mixed_ctree", {
       timing = FALSE
     ),
     "output_lm_mixed_ctree"
+  )
+})
+
+test_that("output_lm_mixed_vaeac", {
+  # Note that I am not certain if this will run as the path for where the vaeac model is saved on
+  # disk is tempdir(), so it might change when we run this at separate times.
+  # There are two solutions I can think about.
+  # 1.
+  # We use explanation = explain(...), and then set explanation$internal$parameters$vaeac$models = NULL
+  # This removes the paths to where the vaeac models are stored on disk.
+  # 2.
+  # We can specify a folder within the shapr package to store the files. It is about 600KB of data.
+  # We then need to set `vaeac.folder_to_save_model = "path"`
+  expect_snapshot_rds(
+    explain(
+      model = model_lm_mixed,
+      x_explain = x_explain_mixed,
+      x_train = x_train_mixed,
+      approach = "vaeac",
+      prediction_zero = p0,
+      n_batches = 1,
+      timing = FALSE,
+      n_samples = 10,                         # Low value here to speed up the time
+      vaeac.epochs = 4,                       # Low value here to speed up the time
+      vaeac.num_different_vaeac_initiate = 2, # Low value here to speed up the time
+      vaeac.extra_parameters = list(
+        vaeac.epochs_initiation_phase = 2,    # Low value here to speed up the time
+        vaeac.model_description = "test" # Add this since otherwise it gets set to the time, which would break the test.
+      )
+    ),
+    "output_lm_mixed_vaeac"
   )
 })
 
