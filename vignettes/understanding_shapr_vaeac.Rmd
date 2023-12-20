@@ -383,7 +383,7 @@ make_vaeac_training_evaluation_plots(list("Regular samp." = explanation_paired_s
                                           "Paired samp." = explanation_paired_sampling_TRUE))
 
 plot_MSEv_eval_crit(list("Regular samp." = explanation_paired_sampling_FALSE,
-                         "Paired samp." = explanation_paired_sampling_TRUE))$MSEv_bar
+                         "Paired samp." = explanation_paired_sampling_TRUE))
 ```
 
 By looking at the time, we see that the paired version takes longer time in the setup_computation
@@ -649,7 +649,7 @@ plot_SV_several_approaches(
 # be a lot of variability in the estimates.
 plot_MSEv_eval_crit(list("Few epochs" = explanation_litle_training,
        "More epochs" = explanation_train_more_vaeac_model,
-       "Even more epochs" = explanation_train_even_more_vaeac_model))$MSEv_bar
+       "Even more epochs" = explanation_train_even_more_vaeac_model))
 ```
 
 
@@ -724,7 +724,7 @@ And then compare them and show the Shapley values.
 # We can compare them
 plot_MSEv_eval_crit(
   list("Vaeac early stopping" = explanation_early_stopping,
-       "Vaeac early stopping more epochs" = explanation_early_stopping_train_more))$MSEv_bar
+       "Vaeac early stopping more epochs" = explanation_early_stopping_train_more))
 
 # We see that the Shapley values have changed
 plot_SV_several_approaches(
@@ -911,7 +911,7 @@ Can now compare the methods:
   # Can see that the extra training has decreased the MSE_Frye evaluation criterion
   plot_MSEv_eval_crit(list("Vaeac w.o. skip-con." = explanation_vaeac,
                                             "Vaeac w. skip-con." = explanation_vaeac_complex,
-                                            "Ctree" = explanation_ctree))$MSEv_bar
+                                            "Ctree" = explanation_ctree))
 
   
   # Can compare the Shapley values

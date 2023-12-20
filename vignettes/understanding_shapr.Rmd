@@ -828,7 +828,7 @@ We can also alter the plots design-wise as we do in the code below.
 
 ```{r}
 bar_text_n_decimals <- 1
-plot_MSEv_eval_crit(explanation_list_named)$MSEv_bar +
+plot_MSEv_eval_crit(explanation_list_named) +
   ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plot$data$Method))) +
   ggplot2::coord_flip() +
   ggplot2::scale_fill_brewer(palette = "Paired") +
@@ -1403,7 +1403,7 @@ Can also compare the $\operatorname{MSE}_{v}$ evaluation scores.
 ```{r}
 plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac,
                          "Vaeac early stopping" = explanation_vaeac_early_stopping),
-                    plot_type = c("overall"))$MSEv_bar
+                    plot_type = c("overall"))
 ```
 
 
