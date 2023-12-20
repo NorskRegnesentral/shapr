@@ -277,24 +277,24 @@ test_that("bar_plot_several_explanations", {
   explanation_list_unnamed = list(explain_mixed, explain_mixed_ctree)
   explanation_list_named = list("Ind." = explain_mixed, "Ctree" = explain_mixed_ctree)
 
-  make_bar_plot_several_explanation_objects(explanation_list_unnamed)
-  make_bar_plot_several_explanation_objects(explanation_list_named)
+  plot_SV_several_approaches(explanation_list_unnamed)
+  plot_SV_several_approaches(explanation_list_named)
 
   vdiffr::expect_doppelganger(
     title = "bar_plot_several_unnamed",
-    fig = make_bar_plot_several_explanation_objects(explanation_list_unnamed)
+    fig = plot_SV_several_approaches(explanation_list_unnamed)
   )
 
   vdiffr::expect_doppelganger(
     title = "bar_plot_several_named_and_facet_ncol_fixed_x",
-    fig = make_bar_plot_several_explanation_objects(explanation_list_named,
+    fig = plot_SV_several_approaches(explanation_list_named,
                                                     facet_ncol = 1,
                                                     facet_scales = "free_y")
   )
 
   vdiffr::expect_doppelganger(
     title = "bar_plot_several_named_index_explicands_vertical_labels_dodge_zero_line",
-    fig = make_bar_plot_several_explanation_objects(explanation_list_named,
+    fig = plot_SV_several_approaches(explanation_list_named,
                                                     axis_labels_n_dodge = 1,
                                                     facet_ncol = 1,
                                                     facet_scales = "free_x",
@@ -305,7 +305,7 @@ test_that("bar_plot_several_explanations", {
 
   vdiffr::expect_doppelganger(
     title = "bar_plot_several_named_theme_color_palette",
-    fig = make_bar_plot_several_explanation_objects(explanation_list_named,
+    fig = plot_SV_several_approaches(explanation_list_named,
                                                     facet_ncol = 1,
                                                     facet_scales = "free_y",
                                                     ggplot_theme = ggplot2::theme_minimal(),
@@ -314,7 +314,7 @@ test_that("bar_plot_several_explanations", {
 
   vdiffr::expect_doppelganger(
     title = "bar_plot_several_named_ggplot2_colors_and_phi0",
-    fig = make_bar_plot_several_explanation_objects(explanation_list_named,
+    fig = plot_SV_several_approaches(explanation_list_named,
                                                     facet_ncol = 1,
                                                     facet_scales = "free_y",
                                                     brewer_palette = NULL,
@@ -323,7 +323,7 @@ test_that("bar_plot_several_explanations", {
 
   vdiffr::expect_doppelganger(
     title = "bar_plot_several_named_only_some_features",
-    fig = make_bar_plot_several_explanation_objects(explanation_list_named,
+    fig = plot_SV_several_approaches(explanation_list_named,
                                                     facet_ncol = 1,
                                                     facet_scales = "free_y",
                                                     only_these_features = c("Month_factor", "Day", "Solar.R"))

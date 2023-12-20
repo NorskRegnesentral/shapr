@@ -282,7 +282,7 @@ explanation_batches_combinations = explain(
 
 # Gives different Shapley values, as samples are generated in different batches,
 # hence, setting the seed does not help.
-make_bar_plot_several_explanation_objects(
+plot_SV_several_approaches(
   list("Original" = explanation,
        "Other combi." = explanation_batches_combinations))
 
@@ -351,7 +351,7 @@ explanation_paired_sampling_TRUE = explain(
   n_samples = n_samples,
   n_batches = n_batches,
   seed = seed,
-  vaeac.epochs = 50,
+  vaeac.epochs = 100,
   vaeac.num_different_vaeac_initiate = 5,
   vaeac.extra_parameters = list(
     vaeac.verbose = FALSE,
@@ -368,7 +368,7 @@ explanation_paired_sampling_FALSE = explain(
   n_samples = n_samples,
   n_batches = n_batches,
   seed = seed,
-  vaeac.epochs = 50,
+  vaeac.epochs = 100,
   vaeac.num_different_vaeac_initiate = 5,
   vaeac.extra_parameters = list(
     vaeac.verbose = FALSE,
@@ -637,7 +637,7 @@ explanation_train_even_more_vaeac_model = explain(
   )
 
 # We see that the Shapley values have changed
-make_bar_plot_several_explanation_objects(
+plot_SV_several_approaches(
   explanation_list = list(
     "Few epochs" = explanation_litle_training,
     "More epochs" = explanation_train_more_vaeac_model,
@@ -727,7 +727,7 @@ plot_MSEv_eval_crit(
        "Vaeac early stopping more epochs" = explanation_early_stopping_train_more))$MSEv_bar
 
 # We see that the Shapley values have changed
-make_bar_plot_several_explanation_objects(
+plot_SV_several_approaches(
   explanation_list = list("Vaeac early stopping" = explanation_early_stopping,
                           "Vaeac early stopping more epochs" = explanation_early_stopping_train_more),
   legend_position = "bottom")
@@ -915,7 +915,7 @@ Can now compare the methods:
 
   
   # Can compare the Shapley values
-  make_bar_plot_several_explanation_objects(list("Vaeac w.o. skip-con." = explanation_vaeac,
+  plot_SV_several_approaches(list("Vaeac w.o. skip-con." = explanation_vaeac,
                                             "Vaeac w. skip-con." = explanation_vaeac_complex,
                                             "Ctree" = explanation_ctree),
                                             legend_position = "bottom")
