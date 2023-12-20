@@ -1600,6 +1600,10 @@ make_bar_plot_several_explanation_objects = function(explanation_list,
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   }
 
+  if (!requireNamespace("data.table", quietly = TRUE)) {
+    stop("data.table is not installed. Please run install.packages('data.table')")
+  }
+
   # Check if user only provided a single explanation and did not put it in a list
   if ("shapr" %in% class(explanation_list)) {
     # Put it in a list
@@ -1706,7 +1710,7 @@ make_bar_plot_several_explanation_objects = function(explanation_list,
   only_these_features_without_none = only_these_features[only_these_features != "none"]
 
   # Melt the data.table from a wide to long format
-  dt_Shapley_values_long = melt(dt_Shapley_values,
+  dt_Shapley_values_long = data.table::melt(dt_Shapley_values,
                                 id.vars = c(".id", ".pred", ".method"),
                                 variable.name = ".feature",
                                 value.name = ".phi")
