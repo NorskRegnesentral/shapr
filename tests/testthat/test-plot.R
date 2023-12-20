@@ -270,3 +270,63 @@ test_that("MSEv evaluation criterion plots", {
     )$MSEv_combination_bar
   )
 })
+
+test_that("bar_plot_several_explanations", {
+  skip_if_not_installed("vdiffr")
+
+  explanation_list_unnamed = list(explain_mixed, explain_mixed_ctree)
+  explanation_list_named = list("Ind." = explain_mixed, "Ctree" = explain_mixed_ctree)
+
+  make_bar_plot_several_explanation_objects(explanation_list_unnamed)
+  make_bar_plot_several_explanation_objects(explanation_list_named)
+
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_several_unnamed",
+    fig = make_bar_plot_several_explanation_objects(explanation_list_unnamed)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_several_named_and_facet_ncol_fixed_x",
+    fig = make_bar_plot_several_explanation_objects(explanation_list_named,
+                                                    facet_ncol = 1,
+                                                    facet_scales = "free_y")
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_several_named_index_explicands_vertical_labels_dodge_zero_line",
+    fig = make_bar_plot_several_explanation_objects(explanation_list_named,
+                                                    axis_labels_n_dodge = 1,
+                                                    facet_ncol = 1,
+                                                    facet_scales = "free_x",
+                                                    horizontal_bars = FALSE,
+                                                    index_explicands = c(1,3),
+                                                    add_zero_line = TRUE)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_several_named_theme_color_palette",
+    fig = make_bar_plot_several_explanation_objects(explanation_list_named,
+                                                    facet_ncol = 1,
+                                                    facet_scales = "free_y",
+                                                    ggplot_theme = ggplot2::theme_minimal(),
+                                                    brewer_palette = "Greens")
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_several_named_ggplot2_colors_and_phi0",
+    fig = make_bar_plot_several_explanation_objects(explanation_list_named,
+                                                    facet_ncol = 1,
+                                                    facet_scales = "free_y",
+                                                    brewer_palette = NULL,
+                                                    plot_phi0 = TRUE)
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "bar_plot_several_named_only_some_features",
+    fig = make_bar_plot_several_explanation_objects(explanation_list_named,
+                                                    facet_ncol = 1,
+                                                    facet_scales = "free_y",
+                                                    only_these_features = c("Month_factor", "Day", "Solar.R"))
+  )
+
+})
