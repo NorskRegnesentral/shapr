@@ -95,6 +95,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// prepare_data_gaussian_cpp_v2
+Rcpp::List prepare_data_gaussian_cpp_v2(arma::mat MC_samples_mat, arma::mat x_explain_mat, arma::mat S, arma::vec mu, arma::mat cov_mat);
+RcppExport SEXP _shapr_prepare_data_gaussian_cpp_v2(SEXP MC_samples_matSEXP, SEXP x_explain_matSEXP, SEXP SSEXP, SEXP muSEXP, SEXP cov_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type MC_samples_mat(MC_samples_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x_explain_mat(x_explain_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type S(SSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
+    rcpp_result_gen = Rcpp::wrap(prepare_data_gaussian_cpp_v2(MC_samples_mat, x_explain_mat, S, mu, cov_mat));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mahalanobis_distance_cpp
 arma::cube mahalanobis_distance_cpp(Rcpp::List featureList, arma::mat Xtrain_mat, arma::mat Xtest_mat, arma::mat mcov, bool S_scale_dist);
 RcppExport SEXP _shapr_mahalanobis_distance_cpp(SEXP featureListSEXP, SEXP Xtrain_matSEXP, SEXP Xtest_matSEXP, SEXP mcovSEXP, SEXP S_scale_distSEXP) {
@@ -171,6 +186,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_aicc_full_single_cpp", (DL_FUNC) &_shapr_aicc_full_single_cpp, 5},
     {"_shapr_aicc_full_cpp", (DL_FUNC) &_shapr_aicc_full_cpp, 6},
     {"_shapr_prepare_data_gaussian_cpp", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp, 5},
+    {"_shapr_prepare_data_gaussian_cpp_v2", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp_v2, 5},
     {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
     {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},

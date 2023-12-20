@@ -947,16 +947,65 @@ prepare_data_gaussian_new_v5_rnorm_cpp <- function(internal, index_features, ...
   MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
 
   # Call cpp
-  system.time({
-    result_list <- prepare_data_gaussian_cpp(
-      MC_samples_mat = MC_samples_mat,
-      x_explain_mat = x_explain_mat,
-      S = S,
-      mu = mu,
-      cov_mat = cov_mat)
-  }, gcFirst = FALSE)
+  result_list <- prepare_data_gaussian_cpp(
+    MC_samples_mat = MC_samples_mat,
+    x_explain_mat = x_explain_mat,
+    S = S,
+    mu = mu,
+    cov_mat = cov_mat)
 
-  t(sapply(result_list, function(j) dim(j)))
+  dt = as.data.table(do.call(rbind, result_list))
+  setnames(dt, feature_names)
+  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+
+  # Update the id_combination. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+
+  # Add uniform weights
+  dt[, w := 1 / n_samples]
+
+  # Remove:
+  # This is not needed when we assume that the empty and grand coalitions will never be present
+  # dt[id_combination %in% c(1, n_combinations), w := 1]
+
+  # Return the MC samples
+  return(dt)
+}
+
+prepare_data_gaussian_new_v5_rnorm_cpp_v2 <- function(internal, index_features, ...) {
+  # This function assumes that index_features will never include the empty and
+  # grand coalitions. This is valid 21/11/23 as `batch_prepare_vS()` removes the
+  # grand coalition before calling the `prepare_data()` function and the empty
+  # coalition is never included in the `internal$objects$S_batch` list.
+
+  # Extract objects that we are going to use
+  x_explain <- internal$data$x_explain
+  S <- internal$objects$S
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  feature_names <- internal$parameters$feature_names
+  n_combinations <- internal$parameters$n_combinations
+
+  # Extract the relevant coalitions specified in `index_features` from `S`.
+  # This will always be called as `index_features` is never NULL.
+  S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
+
+  # Generate the MC samples
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+  # Call cpp
+  result_list <- prepare_data_gaussian_cpp_v2(
+    MC_samples_mat = MC_samples_mat,
+    x_explain_mat = x_explain_mat,
+    S = S,
+    mu = mu,
+    cov_mat = cov_mat)
 
   dt = as.data.table(do.call(rbind, result_list))
   setnames(dt, feature_names)
@@ -1272,6 +1321,12 @@ time_new_v5_rnorm_cpp <- system.time({
     index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
 res_new_v5_rnorm_cpp <- NULL
 
+time_new_v5_rnorm_cpp_v2 <- system.time({
+  res_new_v5_rnorm_cpp_v2 <- prepare_data_gaussian_new_v5_rnorm_cpp_v2(
+    internal = internal,
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+res_new_v5_rnorm_cpp_v2 <- NULL
+
 time_new_v6 <- system.time({
   res_new_v6 <- prepare_data_gaussian_new_v6(
     internal = internal,
@@ -1280,7 +1335,8 @@ res_new_v6 <- NULL
 
 # Create a table of the times. Less is better
 times <- rbind(time_old, time_new_v1, time_new_v2, time_new_v3, time_new_v4, time_new_v5,
-               time_new_v5_rnorm, time_new_v5_rnorm_v2, time_new_v5_rnorm_cpp, time_new_v6)
+               time_new_v5_rnorm, time_new_v5_rnorm_v2, time_new_v5_rnorm_cpp,
+               time_new_v5_rnorm_cpp_v2, time_new_v6)
 times
 
 # Look at the relative time compared to the old method. Larger value is better.
@@ -1400,6 +1456,12 @@ one_coalition_time_new_v5_rnorm_cpp <- system.time({
     internal = internal,
     index_features = internal$objects$S_batch$`1`[look_at_coalition])})
 
+set.seed(123)
+one_coalition_time_new_v5_rnorm_cpp_v2 <- system.time({
+  one_coalition_res_new_v5_rnorm_cpp_v2 <- prepare_data_gaussian_new_v5_rnorm_cpp_v2(
+    internal = internal,
+    index_features = internal$objects$S_batch$`1`[look_at_coalition])})
+
 one_coalition_time_new_v6 <- system.time({
   one_coalition_res_new_v6 <- prepare_data_gaussian_new_v6(
     internal = internal,
@@ -1415,6 +1477,7 @@ rbind(one_coalition_time_old,
       one_coalition_time_new_v5_rnorm,
       one_coalition_time_new_v5_rnorm_v2,
       one_coalition_time_new_v5_rnorm_cpp,
+      one_coalition_time_new_v5_rnorm_cpp_v2,
       one_coalition_time_new_v6)
 
 internal$objects$S[internal$objects$S_batch$`1`[look_at_coalition], , drop = FALSE]
@@ -1428,6 +1491,7 @@ means_v5 <- one_coalition_res_new_v5[, lapply(.SD, mean), .SDcols = paste0("X", 
 means_v5_rnorm <- one_coalition_res_new_v5_rnorm[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
 means_v5_rnorm_v2 <- one_coalition_res_new_v5_rnorm_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
 means_v5_rnorm_cpp <- one_coalition_res_new_v5_rnorm_cpp[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
+means_v5_rnorm_cpp_v2 <- one_coalition_res_new_v5_rnorm_cpp_v2[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
 means_v6 <- one_coalition_res_new_v6[, lapply(.SD, mean), .SDcols = paste0("X", seq(M)), by = list(id_combination, id)]
 
 # They are all in the same ballpark, so the differences are due to sampling.
@@ -1443,6 +1507,7 @@ max(abs(means_old - means_v5))
 max(abs(means_old - means_v5_rnorm))
 max(abs(means_old - means_v5_rnorm_v2))
 max(abs(means_old - means_v5_rnorm_cpp))
+max(abs(means_old - means_v5_rnorm_cpp_v2))
 max(abs(means_old - means_v6))
 
 
