@@ -1,0 +1,929 @@
+---
+title: "The `vaeac` approach in `shapr`"
+author: "Lars Henry Berge Olsen"
+output: rmarkdown::html_vignette
+bibliography: ../inst/REFERENCES.bib
+vignette: >
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{The `vaeac` approach in `shapr`}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup, include=FALSE, warning=FALSE}
+library(shapr)
+```
+
+> [vaeac](#vaeac)
+
+> [Code](#Code)
+
+> [Future Updates](#FutureUpdates)
+
+<a id="intro"></a>
+
+# vaeac {#vaeac}
+
+An approach that supports mixed features is the Variational AutoEncoder
+with Arbitrary Conditioning (@olsen2022using), abbreviated to `vaeac`. 
+The `vaeac` is an extension of the regular variational autoencoder
+(@kingma2014autoencoding), but instead of giving a probabilistic representation
+of the distribution $p(\boldsymbol{x})$ it gives a probabilistic representation 
+of the conditional distribution
+$p(\boldsymbol{x}_{\bar{\mathcal{S}}} \mid \boldsymbol{x}_{\mathcal{S}})$,
+for all possible feature subsets $\mathcal{S}\subseteq\mathcal{M}$ simultaneously,
+where $\mathcal{M}$ is the set of all features. That is, only a single `vaeac` 
+model is needed to model all conditional distributions.
+
+The `vaeac` consists of three neural networks: a *full encoder*, a *masked encoder*,
+and a *decoder*. The encoders map the full and masked/conditional input representations,
+i.e., $\boldsymbol{x}$ and $\boldsymbol{x}_{\mathcal{S}}$, respectively,
+to latent probabilistic representations. Sampled instances from this latent probabilistic
+representations are sent to the decoder, which maps them back to the feature space
+and provides a samplable probabilistic representation for the unconditioned features 
+$\boldsymbol{x}_{\bar{\mathcal{S}}}$. The full encoder is only used during the
+training phase of the `vaeac` model to guide the training process of the masked encoder,
+as the former relies on the full input sample $\boldsymbol{x}$, which is not accessible 
+in the deployment phase (when we generate the Monte Carlo samples), as we only have access
+to $\boldsymbol{x}_{\mathcal{S}}$. The networks are trained by minimizing a variational
+lower bound, and see Section 3 in @olsen2022using for an in-depth introduction to the
+`vaeac` methodology. We use the `vaeac` model at the epoch which obtains the lowest
+validation IWAE score to generate the Monte Carlo samples used in the Shapley value computations.
+
+We fit the `vaeac` model using the *torch* package in $\textsf{R}$ (@torch). The main
+parameters are the the number of layers in the networks (`vaeac.depth`), the width of the layers 
+(`vaeac.width`), the number of dimensions in the latent space (`vaeac.latent_dim`),
+the activation function between the layers in the networks (`vaeac.activation_function`), 
+the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
+to remedy poorly initiated model parameter values (`vaeac.num_different_vaeac_initiate`), and
+the number of learning epochs (`vaeac.epochs`).
+
+There are additional extra parameters which can be set by including a named list in the call to
+the `explain()` function. For example, we can make the `vaeac` print out additional information
+and change the batch size to 32 by including
+`vaeac.extra_parameters = list(vaeac.verbose = TRUE, vaeac.batch_size = 32)`
+as a parameter in the call the `explain()` function. See `?shapr::setup_approach.vaeac()`
+for a description of the possible extra parameters to the `vaeac` approach.
+
+# Code Examples {#code}
+
+Here we go through how to use the `vaeac` approach.
+
+First we set up the model we want to explain.
+
+```{r setup2, cache = TRUE}
+library(xgboost)
+#library(shapr)
+# devtools::load_all(".")
+
+data("airquality")
+data = data.table::as.data.table(airquality)
+data = data[complete.cases(data), ]
+
+x_var = c("Solar.R", "Wind", "Temp", "Month")
+y_var = "Ozone"
+
+ind_x_explain = 1:6
+x_train = data[-ind_x_explain, ..x_var]
+y_train = data[-ind_x_explain, get(y_var)]
+x_explain = data[ind_x_explain, ..x_var]
+
+# Looking at the dependence between the features
+cor(x_train)
+
+# Fitting a basic xgboost model to the training data
+model = xgboost(
+  data = as.matrix(x_train),
+  label = y_train,
+  nround = 100,
+  verbose = FALSE
+)
+```
+
+
+Now we are going to explain predictions made by the model using the `vaeac` approach, but first we set some of the arguments:
+```{r vaeac parameters, cache = TRUE}
+# We want to use the vaeac approach
+approach = "vaeac"
+
+# We are not doing any grouping of the features in the first example
+group = NULL
+    
+# Specifying the phi_0, i.e. the expected prediction without any features
+prediction_zero = p0 = mean(y_train)
+    
+# Set the number of combinations to NULL as we want to use all coalitions in this small example
+n_combinations = NULL
+  
+# The number of Monte Carlo samples we are to generate when estimating v(S, x*) by MC integration
+n_samples = 25
+  
+# The number of batches we are to split the test observations/coalitions into
+n_batches = 1
+  
+# Set seed for reproducibility
+seed = 1
+
+# If we are to keep the generated Monte Carlo samples
+keep_samp_for_vS = FALSE
+
+# Set the number of training epochs in the vaeac approach
+vaeac.epochs = 6
+  
+# Set the how often the vaeac networks are to be saved to a temporary folder (or to a user specified folder)
+vaeac.save_vaeac_every_nth_epoch = 3
+  
+# To stabilize the initialization process of the vaeac approach, several networks are initialized and trained for some epochs, and then we continue to only train the best version.
+vaeac.num_different_vaeac_initiate = 2
+  
+# If we are to print the progress
+vaeac.verbose = TRUE
+```
+
+
+## First vaeac example
+
+Then we explain the model using the vaeac method.
+
+```{r first vaeac, cache = TRUE}
+explanation = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  group = group,
+  n_samples = n_samples,
+  n_batches = n_batches,
+  keep_samp_for_vS = keep_samp_for_vS,
+  seed = seed,
+  vaeac.epochs = vaeac.epochs,
+  vaeac.num_different_vaeac_initiate = vaeac.num_different_vaeac_initiate,
+  vaeac.extra_parameters = list(
+    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.verbose = vaeac.verbose)
+)
+```
+
+We can look at the Shapley values.
+
+```{r first vaeac plots, cache = TRUE}
+# Printing the Shapley values for the test data.
+# For more information about the interpretation of the values in the table, see ?shapr::explain.
+print(explanation$shapley_values)
+
+# Finally we plot the resulting explanations
+plot(explanation)
+```
+
+
+## Pre-trained vaeac
+If the user has a pre-trained vaeac model, the user can send that to the explain function and it will skip the training of a new vaeac model.
+
+In this example we extract the trained vaeac model from the previous example.
+
+```{r pretrained vaeac model, cache = TRUE}
+# Get the pre-trained vaeac model
+vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
+
+# send the pre-trained vaeac model
+explanation_pretrained_vaeac_model = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_batches = n_batches,
+  n_samples = n_samples,
+  keep_samp_for_vS = keep_samp_for_vS,
+  seed = seed,
+  vaeac.extra_parameters = list(
+    vaeac.verbose = vaeac.verbose,
+    vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_model)
+)
+
+# Check that they are equal
+all.equal(explanation$internal$output$dt_samp_for_vS,
+          explanation_pretrained_vaeac_model$internal$output$dt_samp_for_vS)
+```
+
+## Pre-trained vaeac model (path)
+We can also just provide a path to the stored weights and biases. 
+
+```{r pretrained vaeac path, cache = TRUE}
+# send the pre-trained vaeac path
+explanation_pretrained_vaeac_model_path = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_batches = n_batches,
+  n_samples = n_samples,
+  keep_samp_for_vS = keep_samp_for_vS,
+  seed = seed,
+  vaeac.extra_parameters = list(
+        vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac$models$best,
+        vaeac.verbose = vaeac.verbose)
+)
+
+# Check that they are equal to check that providing a pre-trained vaeac path works.
+all.equal(explanation$internal$output$dt_samp_for_vS,
+          explanation_pretrained_vaeac_model_path$internal$output$dt_samp_for_vS)
+```
+
+
+
+## Check n_combinations and more batches 
+
+The user can limit the Shapley value computations to only a subset of coalitions by setting the 
+`n_combinations` parameter to a value lower than $2^{n_\text{features}}$. To lower the memory 
+usage, the user can split the coalitions into several batches by setting `n_batches` to a desired
+number. In this example, we set `n_batches = 5` and `n_combinations = 10` which is less than
+the maximum of `16`. 
+
+Note that we do not need to train a new `vaeac` model as we can use the one above trained on
+all `16` coalitions as we are now only using a subset of them. This is not applicable the other
+way around.
+
+```{r check n_combinations and more batches, cache = TRUE}
+# send the pre-trained vaeac path
+explanation_batches_combinations = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = 10,
+  n_batches = 5,
+  n_samples = n_samples,
+  keep_samp_for_vS = keep_samp_for_vS,
+  seed = seed,
+  vaeac.extra_parameters = list(
+        vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac,
+        vaeac.verbose = vaeac.verbose)
+  )
+
+# Gives different Shapley values, as samples are generated in different batches,
+# hence, setting the seed does not help.
+make_bar_plot_several_explanation_objects(
+  list("Original" = explanation,
+       "Other combi." = explanation_batches_combinations))
+
+# Here we can see that the samples coalitions are in different batches and have different weights
+explanation_batches_combinations$internal$objects$X
+  
+# Can compare that to the situation where we have exact computations (i.e., include all coalitions)
+explanation$internal$objects$X
+```
+
+
+## Misplaced parameters
+
+We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach
+at the correct place in the call to the `explain()` function. That is, the main parameters are
+directly entered to the `explain()` function, while the extra parameters are included in a named
+list called `vaeac.extra_parameters`. See `?shapr::setup_approach.vaeac()`
+for a description of the possible extra parameters to the `vaeac` approach.
+However, the `vaeac` approach will try to correct for misplaced and duplicated parameters
+and give warnings to the user, as illustrated in the example below.
+
+```{r misplaced parameters, cache = TRUE}
+explanation_misplaced_parameters = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  group = group,
+  n_samples = n_samples,
+  n_batches = n_batches,
+  seed = seed,
+  vaeac.num_different_vaeac_initiate = vaeac.num_different_vaeac_initiate,
+  vaeac.epochs = 7, # Duplicate
+  vaeac.verbose = FALSE, # Should have been an extra parameter
+  vaeac.extra_parameters = list(
+    vaeac.epochs = 10, # Duplicate, will use this one.
+    vaeac.depth = 2,   # Should have been a separate parameter, will use this one
+    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch, # Correct place
+    what_is_this_parameter = 4   # Unknown parameter
+    )
+  )
+
+# Look at the used parameters that was misplaced
+explanation_misplaced_parameters$internal$parameters[c("vaeac.epochs", "vaeac.verbose", "vaeac.depth")]
+```
+
+
+## Paired sampling
+
+The `vaeac` approach use what is called paired sampling to improve the stability of the training procedure.
+That is, each training batch contains two versions of the same training observation, but where the first one is
+masked by \eqn{S} and the second one is masked by \eqn{\bar{S}}, the complement, see
+\href{https://arxiv.org/pdf/2107.07436.pdf}{Jethani et al. (2022)}. 
+The training time will in due to more complex implementation in comparison to random sampling.
+
+```{r paired sampling training, cache = TRUE}
+explanation_paired_sampling_TRUE = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_samples = n_samples,
+  n_batches = n_batches,
+  seed = seed,
+  vaeac.epochs = 50,
+  vaeac.num_different_vaeac_initiate = 5,
+  vaeac.extra_parameters = list(
+    vaeac.verbose = FALSE,
+    vaeac.paired_sampling = TRUE)
+  )
+
+explanation_paired_sampling_FALSE = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_samples = n_samples,
+  n_batches = n_batches,
+  seed = seed,
+  vaeac.epochs = 50,
+  vaeac.num_different_vaeac_initiate = 5,
+  vaeac.extra_parameters = list(
+    vaeac.verbose = FALSE,
+    vaeac.paired_sampling = FALSE)
+)
+```
+
+
+We can compare the results by looking at the training and validation errors and by the $\opertorname{MSE}_v$ evaluation criterion. 
+```{r paired sampling plotting, cache = TRUE}
+make_vaeac_training_evaluation_plots(list("Regular samp." = explanation_paired_sampling_FALSE,
+                                          "Paired samp." = explanation_paired_sampling_TRUE))
+
+plot_MSEv_eval_crit(list("Regular samp." = explanation_paired_sampling_FALSE,
+                         "Paired samp." = explanation_paired_sampling_TRUE))$MSEv_bar
+```
+
+By looking at the time, we see that the paired version takes longer time in the setup_computation
+phase, that is, in the training phase.
+```{r paired sampling timing}
+rbind("time_paired_sampling" = explanation_paired_sampling_TRUE$timing$timing_secs,
+      "time_regular_sampling" = explanation_paired_sampling_FALSE$timing$timing_secs)
+```
+
+
+
+## Progressr
+
+The `shapr` package provides progress updates of the computation of the Shapley
+values through the R-package `progressr`. The `vaeac`approach also supports this,
+but in addition it has its own verbose mode which is activated through `vaeac.verbose = TRUE`.
+It is possible to use either method or both at the same time.
+
+First we look at the printout if `vaeac.verbose = FALSE` (default).
+```{r progressr false verbose false, cache = TRUE}
+library(progressr)
+handlers("void") # To silence all progressr updates
+explanation_without_messages = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_samples = 100,
+  n_batches = 5,
+  seed = seed,
+  vaeac.epochs = 10,
+  vaeac.num_different_vaeac_initiate = 2,
+  vaeac.extra_parameters = list(
+    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.verbose = FALSE)
+)
+```
+Then we get no messages as wanted.
+
+
+Then we look at the printout if `vaeac.verbose = TRUE`, then we get the old type of printouts.
+```{r progressr false verbose true, cache = TRUE}
+handlers("void") # To silence all progressr updates
+explanation_with_messages = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_samples = 100,
+  n_batches = 5,
+  seed = seed,
+  vaeac.epochs = 10,
+  vaeac.num_different_vaeac_initiate = 2,
+  vaeac.extra_parameters = list(
+    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.verbose = TRUE)
+)
+all.equal(explanation_without_messages$shapley_values, explanation_with_messages$shapley_values)
+```
+
+
+
+Let us take a look at when we using `progressr`.
+```{r progressr true verbose false, cache = TRUE}
+progressr::handlers("cli")
+# If no progression handler is specified, the txtprogressbar is used
+# Other progression handlers:
+# progressr::handlers('rstudio') # requires the 'rstudioapi' package
+# progressr::handlers('handler_winprogressbar') # Window only
+# progressr::handlers('cli') # requires the 'cli' package
+# 
+# Another progressbar with sound
+# handlers(list(
+#   handler_pbcol(
+#       adjust = 1.0,
+#     complete = function(s) cli::bg_red(cli::col_black(s)),
+#   incomplete = function(s) cli::bg_cyan(cli::col_black(s))
+# ),
+#   handler_beepr(
+#     finish   = "wilhelm",
+#     interval = 2.0
+#   )
+# ))
+with_progress({
+explanation_with_progressr = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_samples = 100,
+  n_batches = 5,
+  seed = seed,
+  vaeac.epochs = 10,
+  vaeac.num_different_vaeac_initiate = 2,
+  vaeac.extra_parameters = list(
+    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.verbose = FALSE)
+)})
+all.equal(explanation_without_messages$shapley_values, explanation_with_progressr$shapley_values)
+```
+
+We can also use `progressr` together with the `progress` bars that are created 
+when `vaeac.verbose == TRUE`, but then we will only see the `progressr` get updates
+while the `progress` bars will just be printed. Note that there an be some minor visual 
+artifacts.
+```{r progressr true verbose true, cache = TRUE}
+handlers("progress")
+with_progress({
+explanation_with_progressr_and_verbose = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_samples = 100,
+  n_batches = 5,
+  seed = seed,
+  vaeac.epochs = 10,
+  vaeac.num_different_vaeac_initiate = 2,
+  vaeac.extra_parameters = list(
+    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.verbose = TRUE)
+)})
+all.equal(explanation_without_messages$shapley_values, explanation_with_progressr_and_verbose$shapley_values)
+```
+
+
+## Continue the training of the vaeac approach
+
+In the case the user has set a too low number of training epochs and sees that the network is still learning,
+then the user can continue to train the network from where it stopped. Thus, a good workflow can therefore
+be to call the `explain()` function with a `n_samples = 1` (to not waste to much time to generate MC samples), 
+then look at the training and evaluation plots of the `vaeac`. If not satisfied, then train more. If satisfied,
+then call the `explain()` function again but this time by using the extra parameter `vaeac.pretrained_vaeac_model`,
+as illustrated above. Note that we have set the number of `vaeac.epochs` to be very low in this example and we
+recommend to use many more epochs.
+
+
+```{r continue training, cache = TRUE}
+explanation_litle_training = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  group = group,
+  n_samples = 250,
+  n_batches = n_batches,
+  seed = seed,
+  vaeac.epochs = 3,
+  vaeac.num_different_vaeac_initiate = 2,
+  vaeac.extra_parameters = list(
+    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.verbose = vaeac.verbose)
+)
+
+# Can also see how well vaeac generates data from the full joint distribution
+vaeac_ggpairs_plot_imputed_and_true_data_shapr(explanation = explanation_litle_training,
+                                               which_vaeac_model = "best",
+                                               true_data = x_train)
+
+# Look at the training and validation errors. Not happy and want to train more.
+make_vaeac_training_evaluation_plots(explanation_litle_training)
+
+# Can look at the saved models, training/validation errors, and the training time
+explanation_litle_training$internal$parameters$vaeac$models
+explanation_litle_training$internal$parameters$vaeac$results
+explanation_litle_training$internal$parameters$vaeac$training_time
+
+# Make a copy of the explanation object which we are to train further.
+explanation_train_more = explanation_litle_training
+
+# Continue to train the vaeac model some more epochs
+explanation_train_more$internal$parameters$vaeac =
+  vaeac_continue_train_model(explanation = explanation_train_more,
+                             epochs_new = 5,
+                             training_data = x_train,
+                             verbose = TRUE)
+
+# Can see variables have been updated
+explanation_train_more$internal$parameters$vaeac$training_time
+explanation_train_more$internal$parameters$vaeac$models
+explanation_train_more$internal$parameters$vaeac$results
+
+# Look at the training and validation errors. Still not sure
+# Note that the lines are obviously overlapping
+make_vaeac_training_evaluation_plots(list("Original" = explanation_litle_training,
+                                          "More epochs" = explanation_train_more))
+
+# Use train more vaeac model to compute Shapley values again.
+explanation_train_more_vaeac_model = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_batches = n_batches,
+  n_samples = 250,
+  seed = seed,
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = explanation_train_more$internal$parameters$vaeac)
+  )
+
+# Train even more
+explanation_train_even_more = explanation_train_more
+
+# Continue to train the vaeac model some more epochs
+explanation_train_even_more$internal$parameters$vaeac =
+  vaeac_continue_train_model(explanation = explanation_train_even_more,
+                             epochs_new = 10,
+                             training_data = x_train,
+                             verbose = TRUE)
+
+# Variables have been updated once again
+explanation_train_even_more$internal$parameters$vaeac$training_time
+explanation_train_even_more$internal$parameters$vaeac$models
+explanation_train_even_more$internal$parameters$vaeac$results
+
+# Look at the training and validation errors.
+make_vaeac_training_evaluation_plots(list("Original" = explanation_litle_training,
+                                          "More epochs" = explanation_train_more,
+                                          "Even more epochs" = explanation_train_even_more))
+
+# Can also see how well vaeac generates data from the full joint distribution
+vaeac_ggpairs_plot_imputed_and_true_data_shapr(explanation = explanation_train_even_more,
+                                               which_vaeac_model = "best",
+                                               true_data = x_train)
+  
+# Use train even more vaeac model to compute Shapley values again.
+explanation_train_even_more_vaeac_model = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_batches = n_batches,
+  n_samples = 250,
+  seed = seed,
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = explanation_train_even_more$internal$parameters$vaeac)
+  )
+
+# We see that the Shapley values have changed
+make_bar_plot_several_explanation_objects(
+  explanation_list = list(
+    "Few epochs" = explanation_litle_training,
+    "More epochs" = explanation_train_more_vaeac_model,
+    "Even more epochs" = explanation_train_even_more_vaeac_model))
+
+# Can see that the extra training has decreased the MSE_Frye evaluation criterion.
+# We see that "More epochs" actually perform worst, while "Even more epochs" is the
+# overall winner. However, note that there is only six explicands, hence, there will
+# be a lot of variability in the estimates.
+plot_MSEv_eval_crit(list("Few epochs" = explanation_litle_training,
+       "More epochs" = explanation_train_more_vaeac_model,
+       "Even more epochs" = explanation_train_even_more_vaeac_model))$MSEv_bar
+```
+
+
+
+## Vaeac with early stopping
+```{r early stopping 1, cache = TRUE}
+explanation_early_stopping = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  group = group,
+  n_samples = 250,
+  n_batches = n_batches,
+  seed = seed,
+  vaeac.epochs = 1000, # Set it to a big number
+  vaeac.num_different_vaeac_initiate = 2,
+  vaeac.extra_parameters = list(
+    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.verbose = vaeac.verbose,
+    vaeac.epochs_early_stopping = 5)
+)
+
+# Look at the training and validation errors. We are quite happy with it.
+make_vaeac_training_evaluation_plots(list("Vaeac early stopping" = explanation_early_stopping))
+```
+
+However, we can train it further for a fixed amount of epochs if desired.
+```{r early stopping 2, cache = TRUE}
+# Make a copy of the explanation object which we are to train further.
+explanation_early_stopping_train_more = explanation_early_stopping
+
+# Continue to train the vaeac model some more epochs
+explanation_early_stopping_train_more$internal$parameters$vaeac =
+  vaeac_continue_train_model(explanation = explanation_early_stopping_train_more,
+                             epochs_new = 15,
+                             training_data = x_train,
+                             verbose = TRUE)
+
+explanation_early_stopping_train_more$internal$parameters$vaeac =
+  vaeac_continue_train_model(explanation = explanation_early_stopping_train_more,
+                             epochs_new = 10,
+                             training_data = x_train,
+                             verbose = TRUE)
+
+# Look at the training and validation errors. 
+make_vaeac_training_evaluation_plots(list("Vaeac early stopping" = explanation_early_stopping,
+                                          "Vaeac early stopping more epochs" = explanation_early_stopping_train_more))
+```
+
+Can then use the new one to create the Shapley value explanations.
+```{r early stopping 3, cache = TRUE}
+# Use extra trained vaeac model to compute Shapley values again.
+explanation_early_stopping_train_more = explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = approach,
+  prediction_zero = p0,
+  n_combinations = n_combinations,
+  n_batches = n_batches,
+  n_samples = 250,
+  seed = seed,
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = explanation_early_stopping_train_more$internal$parameters$vaeac)
+  )
+```
+And then compare them and show the Shapley values.
+```{r}
+# We can compare them
+plot_MSEv_eval_crit(
+  list("Vaeac early stopping" = explanation_early_stopping,
+       "Vaeac early stopping more epochs" = explanation_early_stopping_train_more))$MSEv_bar
+
+# We see that the Shapley values have changed
+make_bar_plot_several_explanation_objects(
+  explanation_list = list("Vaeac early stopping" = explanation_early_stopping,
+                          "Vaeac early stopping more epochs" = explanation_early_stopping_train_more),
+  legend_position = "bottom")
+```
+
+
+
+
+
+
+## Grouping of features
+```{r vaeac grouping of featurs, cache = TRUE}
+  group_list = list(A = c("Temp", "Month"), B = c("Wind", "Solar.R"))
+  approach = "vaeac"
+  n_combinations = NULL
+  n_batches = 2
+  explanation_group = explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "vaeac",
+    prediction_zero = p0,
+    group = group_list,
+    n_combinations = n_combinations,
+    n_batches = n_batches,
+    n_samples = n_samples,
+    keep_samp_for_vS = keep_samp_for_vS,
+    vaeac.epochs = 10,
+    vaeac.num_different_vaeac_initiate = 3,
+          vaeac.verbose = TRUE
+  )
+  #explanation_group$internal$objects
+
+  # Printing the Shapley values for the test data.
+  # For more information about the interpretation of the values in the table, see ?shapr::explain.
+  print(explanation_group$shapley_values)
+
+  # Finally we plot the resulting explanations
+  plot(explanation_group)
+
+  explanation_group$internal$objects$X
+```
+
+
+
+## Mixed Data
+Here we look at mixed data and compare with ctree approach.
+
+```{r ctree mixed data, cache = TRUE}
+library(ranger)
+  data("Boston", package = "MASS")
+  x_var = c("lstat", "rm", "dis", "indus")
+  y_var = "medv"
+
+  # Convert two features as factors
+  dt = Boston[, c(x_var, y_var)]
+  dt$rm = as.factor(round(dt$rm/3))
+  dt$dis = as.factor(round(dt$dis/4))
+
+  xy_train_cat = dt[-1:-6, ]
+  y_train_cat = dt[-1:-6, y_var]
+  x_train_cat = dt[-1:-6, x_var]
+  x_test_cat = dt[1:6, x_var]
+
+  # Fit a basic linear regression model to the training data
+  model = ranger(medv ~ lstat + rm + dis + indus, data = xy_train_cat)
+
+  # Specifying the phi_0, i.e. the expected prediction without any features
+  p0 = mean(y_train_cat)
+
+  approach = "ctree"
+  prediction_zero = p0
+  n_combinations = 6
+  n_combinations = NULL
+  group = NULL
+  n_samples = 250
+  n_batches = 1
+  seed = 1
+  keep_samp_for_vS = TRUE
+  predict_model = NULL
+  get_model_specs = NULL
+  is_python = FALSE
+
+  # Here we use the ctree approach
+  explanation_ctree = explain(
+    model = model,
+    x_explain = x_test_cat,
+    x_train = x_train_cat,
+    approach = "ctree",
+    prediction_zero = p0,
+    n_combinations = n_combinations,
+    n_batches = n_batches,
+    n_samples = n_samples,
+    keep_samp_for_vS = keep_samp_for_vS,
+    group = group,
+    ctree.minbucket = 10
+  )
+
+  # Printing the Shapley values for the test data.
+  # For more information about the interpretation of the values in the table, see ?shapr::explain.
+  print(explanation_ctree$shapley_values)
+
+  # Finally we plot the resulting explanations
+  plot(explanation_ctree, plot_phi0 = FALSE)
+```
+```{r vaeac mixed data, cache = TRUE}
+  # Then we use the vaeac approach
+  explanation_vaeac = explain(
+    model = model,
+    x_explain = x_test_cat,
+    x_train = x_train_cat,
+    approach = "vaeac",
+    prediction_zero = p0,
+    n_combinations = n_combinations,
+    n_batches = n_batches,
+    n_samples = n_samples,
+    keep_samp_for_vS = keep_samp_for_vS,
+    vaeac.epochs = 20,
+    vaeac.num_different_vaeac_initiate = 5,
+    vaeac.width = 10,
+    vaeac.depth = 2,
+    vaeac.latent_dim = 4,
+    vaeac.extra_parameters = list(
+      vaeac.use_skip_connections = FALSE,
+      vaeac.use_skip_connections_between_masked_encoder_and_decoder = FALSE,
+      vaeac.verbose = TRUE)
+  )
+
+  # We see that the networks are still learning
+  make_vaeac_training_evaluation_plots(list("Simple vaeac" = explanation_vaeac))
+
+  # Printing the Shapley values for the test data.
+  # For more information about the interpretation of the values in the table, see ?shapr::explain.
+  print(explanation_vaeac$shapley_values)
+
+  # Finally we plot the resulting explanations
+  plot(explanation_vaeac, plot_phi0 = FALSE)
+```
+
+Make a more complex vaeac model and train it for longer
+
+
+```{r complex vaeac, cache = TRUE}
+ # Here we fit a more complex vaeac method
+  explanation_vaeac_complex = explain(
+    model = model,
+    x_explain = x_test_cat,
+    x_train = x_train_cat,
+    approach = "vaeac",
+    prediction_zero = p0,
+    n_combinations = n_combinations,
+    n_samples = n_samples,
+    n_batches = n_batches,
+    keep_samp_for_vS = keep_samp_for_vS,
+    group = group,
+    vaeac.epochs = 100,
+    vaeac.num_different_vaeac_initiate = 4,
+    vaeac.width = 10,
+    vaeac.depth = 2,
+    vaeac.latent_dim = 4,
+    vaeac.extra_parameters = list(
+      vaeac.use_skip_connections = TRUE,
+      vaeac.use_skip_connections_between_masked_encoder_and_decoder = TRUE,
+      vaeac.verbose = TRUE)
+  )
+
+  make_vaeac_training_evaluation_plots(list("Vaeac w.o. skip-con." = explanation_vaeac,
+                                            "Vaeac w. skip-con." = explanation_vaeac_complex))
+
+  # Printing the Shapley values for the test data.
+  # For more information about the interpretation of the values in the table, see ?shapr::explain.
+  print(explanation_vaeac_complex$shapley_values)
+
+  # Finally we plot the resulting explanations
+  plot(explanation_vaeac_complex, plot_phi0 = FALSE)
+```
+
+Can now compare the methods:
+
+```{r compare for mixed data, cache = TRUE}
+  # Can see that the extra training has decreased the MSE_Frye evaluation criterion
+  plot_MSEv_eval_crit(list("Vaeac w.o. skip-con." = explanation_vaeac,
+                                            "Vaeac w. skip-con." = explanation_vaeac_complex,
+                                            "Ctree" = explanation_ctree))$MSEv_bar
+
+  
+  # Can compare the Shapley values
+  make_bar_plot_several_explanation_objects(list("Vaeac w.o. skip-con." = explanation_vaeac,
+                                            "Vaeac w. skip-con." = explanation_vaeac_complex,
+                                            "Ctree" = explanation_ctree),
+                                            legend_position = "bottom")
+```
+
+
+
+# Future Updates
+-   Add support for GPU in vaeac. I have not had access to GPU, so have only used CPU.
+
+
