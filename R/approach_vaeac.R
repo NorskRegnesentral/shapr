@@ -202,7 +202,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Check if user has provided named objects in vaeac.extra_parameters which are not in the default list.
   unknown_parameters <-
     names(internal$parameters$vaeac.extra_parameters)[!(names(internal$parameters$vaeac.extra_parameters)
-                                                        %in% names(vaeac.extra_parameters_default))]
+    %in% names(vaeac.extra_parameters_default))]
 
   # Divide the unknown parameters into whether they are main parameters or completely unknown.
   main_parameters_in_unknown_parameters <- unknown_parameters[unknown_parameters %in% main_parameters]
@@ -219,7 +219,8 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
       message(sprintf(
         "The extra parameters %s are not recognized by the `vaeac` approach.\n",
         paste(strsplit(paste(paste0("`", not_main_parameters_in_unknown_parameters, "`"),
-                             collapse = ", "), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and")
+          collapse = ", "
+        ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and")
       ))
     }
   }
@@ -231,22 +232,27 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     names(internal$parameters)[names(internal$parameters) %in% names(vaeac.extra_parameters_default)]
   if (length(misplaced_parameters) > 0) {
     if (length(misplaced_parameters) == 1) {
-      message(sprintf("The vaeac extra parameter `%s` should have been placed in the
+      message(sprintf(
+        "The vaeac extra parameter `%s` should have been placed in the
 `vaeac.extra_parameters` list in the call to the `explain()` function. This is fixed internally.\n",
-                      misplaced_parameters
+        misplaced_parameters
       ))
     } else {
-      message(sprintf("The vaeac extra parameters %s should have been placed in the
+      message(sprintf(
+        "The vaeac extra parameters %s should have been placed in the
 `vaeac.extra_parameters` list in the call to the `explain()` function. This is fixed internally.\n",
-                      paste(strsplit(paste(paste0("`", misplaced_parameters, "`"), collapse = ", "),
-                                     ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and")))
+        paste(strsplit(paste(paste0("`", misplaced_parameters, "`"), collapse = ", "),
+          ",(?=[^,]+$)",
+          perl = TRUE
+        )[[1]], collapse = " and")
+      ))
     }
   }
 
   # Check if user has provided the same parameter twice, both as a main and extra parameter
   provided_as_both_main_and_extra_parameter <-
     names(internal$parameters$vaeac.extra_parameters)[names(internal$parameters$vaeac.extra_parameters)
-                                                      %in% names(internal$parameters)]
+    %in% names(internal$parameters)]
 
   # Print a message to the user and tell them that we use those in `vaeac.extra_parameters`.
   if (length(provided_as_both_main_and_extra_parameter) > 0) {
@@ -255,14 +261,17 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
         "The parameter `%s` has been provided as both a separete parameter and in the
 `vaeac.extra_parameters` list in the call to the `explain()` function.
 The function proceeds using the value in `vaeac.extra_parameters`.\n",
-        provided_as_both_main_and_extra_parameter))
+        provided_as_both_main_and_extra_parameter
+      ))
     } else {
       message(sprintf(
         "The parameters %s have been provided as both separete parameters and in the
 `vaeac.extra_parameters` list in the call to the `explain()` function.
 The function proceeds using the values in `vaeac.extra_parameters`.\n",
         paste(strsplit(paste(paste0("`", provided_as_both_main_and_extra_parameter, "`"),
-                             collapse = ", "), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and")))
+          collapse = ", "
+        ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and")
+      ))
     }
   }
 
@@ -287,8 +296,8 @@ call to the `explain()` function. This is fixed internally.\n",
 be included in the `vaeac.extra_parameters` list, but rather as separate parameters in the
 call to the `explain()` function. This is fixed internally.\n",
         paste(strsplit(paste(paste0("`", main_parameters_in_unknown_parameters, "`"), collapse = ", "),
-                       ",(?=[^,]+$)",
-                       perl = TRUE
+          ",(?=[^,]+$)",
+          perl = TRUE
         )[[1]], collapse = " and")
       ))
     }
@@ -356,7 +365,7 @@ call to the `explain()` function. This is fixed internally.\n",
     # Normalize the weights/probabilities such that they sum to one.
     parameters$vaeac.mask_generator_only_these_coalitions_probabilities <-
       parameters$vaeac.mask_generator_only_these_coalitions_probabilities /
-      sum(parameters$vaeac.mask_generator_only_these_coalitions_probabilities)
+        sum(parameters$vaeac.mask_generator_only_these_coalitions_probabilities)
   } else {
     # All 2^M coalitions are to be estimated using a vaeac model with a MCAR(0.5) masking scheme.
     # I.e., the corresponding vaeac model will support arbitrary conditioning as every coalition
@@ -504,8 +513,10 @@ of the data used to train the provided vaeac model (%s).\n",
       }
 
       # Extract the training/validation results.
-      vaeac_model_results <- lapply(vaeac_model[c("train_vlb", "validation_iwae", "validation_iwae_running_avg")],
-                                    as.array)
+      vaeac_model_results <- lapply(
+        vaeac_model[c("train_vlb", "validation_iwae", "validation_iwae_running_avg")],
+        as.array
+      )
       vaeac_model_results
 
       # Save path to the vaeac approach to use to generate the MC samples.
@@ -795,22 +806,28 @@ vaeac_train_model <- function(training_data,
                               verbose = FALSE,
                               seed = NULL,
                               ...) {
-
   # Some checks. Not an exhaustive list of checks.
-  if (is.null(epochs_early_stopping)) epochs_early_stopping = epochs
-  if (epochs_early_stopping > epochs) message(sprintf(
-    "No early stopping as `epochs_early_stopping` (%d) is larger than `epochs` (%d).",
-    epochs_early_stopping, epochs))
+  if (is.null(epochs_early_stopping)) epochs_early_stopping <- epochs
+  if (epochs_early_stopping > epochs) {
+    message(sprintf(
+      "No early stopping as `epochs_early_stopping` (%d) is larger than `epochs` (%d).",
+      epochs_early_stopping, epochs
+    ))
+  }
 
   # Variable to store if early stopping was conducted
-  early_stopping_applied = NULL
+  early_stopping_applied <- NULL
 
   if (!is.numeric(num_different_vaeac_initiate)) {
-    stop(sprintf("The 'num_different_vaeac_initiate' parameter must be of type numeric, and not of type %s.\n",
-                 paste(class(num_different_vaeac_initiate), collapse = ", ")))
+    stop(sprintf(
+      "The 'num_different_vaeac_initiate' parameter must be of type numeric, and not of type %s.\n",
+      paste(class(num_different_vaeac_initiate), collapse = ", ")
+    ))
   } else if (num_different_vaeac_initiate < 1) {
-    message(sprintf("The 'num_different_vaeac_initiate' (%g) parameter must be a positive integer. We set it to 1.\n",
-                    num_different_vaeac_initiate))
+    message(sprintf(
+      "The 'num_different_vaeac_initiate' (%g) parameter must be a positive integer. We set it to 1.\n",
+      num_different_vaeac_initiate
+    ))
     num_different_vaeac_initiate <- 1
   }
 
@@ -869,8 +886,10 @@ vaeac_train_model <- function(training_data,
 
   # Check that we initiate at least one vaeac model in the
   if (num_different_vaeac_initiate < 1) {
-    stop(sprintf("The parameter 'num_different_vaeac_initiate' (%d) must be equal or larger than 1.",
-                 num_different_vaeac_initiate))
+    stop(sprintf(
+      "The parameter 'num_different_vaeac_initiate' (%d) must be equal or larger than 1.",
+      num_different_vaeac_initiate
+    ))
   }
 
   # Check if cuda/GPU is available on the current system
@@ -884,16 +903,22 @@ vaeac_train_model <- function(training_data,
 
   # Check for coinciding number of features in data and the number of features specified in one_hot_max_sizes.
   if (ncol(training_data) != length(one_hot_max_sizes)) {
-    stop(sprintf("The number of features in training_data must match the length of `one_hot_max_sizes`: %d != %s.\n",
-                 ncol(training_data),
-                 length(one_hot_max_sizes)))
+    stop(sprintf(
+      "The number of features in training_data must match the length of `one_hot_max_sizes`: %d != %s.\n",
+      ncol(training_data),
+      length(one_hot_max_sizes)
+    ))
   }
 
   # Check if
-  if (xor(!is.null(mask_generator_only_these_coalitions),
-          !is.null(mask_generator_only_these_coalitions_probabilities))) {
-    stop(paste0("User need to provided both 'mask_generator_only_these_coalitions' and ",
-                "'mask_generator_only_these_coalitions_probabilities' for specified masking to function."))
+  if (xor(
+    !is.null(mask_generator_only_these_coalitions),
+    !is.null(mask_generator_only_these_coalitions_probabilities)
+  )) {
+    stop(paste0(
+      "User need to provided both 'mask_generator_only_these_coalitions' and ",
+      "'mask_generator_only_these_coalitions_probabilities' for specified masking to function."
+    ))
   }
 
   ##### Figure out what kind of mask generator we are going to use.
@@ -902,8 +927,10 @@ vaeac_train_model <- function(training_data,
 
     # Check that the possible masks that are provided is given as a matrix
     if (!any(class(mask_generator_only_these_coalitions) == "matrix")) {
-      stop(sprintf("The 'mask_generator_only_these_coalitions' must be of class 'matrix', not %s.\n",
-                   paste(class(mask_generator_only_these_coalitions), collapse = ", ")))
+      stop(sprintf(
+        "The 'mask_generator_only_these_coalitions' must be of class 'matrix', not %s.\n",
+        paste(class(mask_generator_only_these_coalitions), collapse = ", ")
+      ))
     }
 
     # Check that the number of masks and corresponding number of probabilities match.
@@ -917,8 +944,10 @@ vaeac_train_model <- function(training_data,
     # We are given possible coalitions and corresponding probabilities.
     # Then we are using the Specified_masks_mask_generator.
     if (verbose) {
-      message(sprintf("Use 'Specified_masks_mask_generator' mask generator with '%d' different possible coalitions.\n",
-                      nrow(mask_generator_only_these_coalitions)))
+      message(sprintf(
+        "Use 'Specified_masks_mask_generator' mask generator with '%d' different possible coalitions.\n",
+        nrow(mask_generator_only_these_coalitions)
+      ))
     }
     mask_generator_name <- "Specified_masks_mask_generator"
   } else {
@@ -941,14 +970,17 @@ vaeac_train_model <- function(training_data,
       if (length(masking_ratio) == ncol(training_data)) {
         # We have an array of masking ratios. Then we are using the Specified_probability_mask_generator.
         if (verbose) {
-          message(sprintf("Use 'Specified_probability_mask_generator' mask generator with 'masking_ratios = {%s}'.\n",
-                          paste(masking_ratio, collapse = ", ")))
+          message(sprintf(
+            "Use 'Specified_probability_mask_generator' mask generator with 'masking_ratios = {%s}'.\n",
+            paste(masking_ratio, collapse = ", ")
+          ))
         }
         mask_generator_name <- "Specified_probability_mask_generator"
       } else {
         stop(sprintf(
           "'Masking_ratio' contains masking ratios for '%d' features, but there are '%d' features in 'training_data'.\n",
-          length(masking_ratio), ncol(training_data)))
+          length(masking_ratio), ncol(training_data)
+        ))
       }
     }
   }
@@ -1017,12 +1049,12 @@ vaeac_train_model <- function(training_data,
   if (paired_sampling) {
     # Use paired sampling
     train_dataloader <- torch::dataloader(train_dataset,
-                                          batch_size = batch_size,
-                                          sampler = paired_sampler(train_dataset, shuffle = TRUE)
+      batch_size = batch_size,
+      sampler = paired_sampler(train_dataset, shuffle = TRUE)
     )
     val_dataloader <- torch::dataloader(val_dataset,
-                                        batch_size = batch_size,
-                                        sampler = paired_sampler(val_dataset, shuffle = FALSE)
+      batch_size = batch_size,
+      sampler = paired_sampler(val_dataset, shuffle = FALSE)
     )
   } else {
     # Usual approach
@@ -1109,8 +1141,10 @@ epoch might require a lot of disk storage if data is large.\n",
 
     # Check that save_vaeac_every_nth_epoch is positive.
     if (save_vaeac_every_nth_epoch <= 0) {
-      stop(sprintf("The value 'save_vaeac_every_nth_epoch' must be strictly positive, not '%d'.\n",
-                   save_vaeac_every_nth_epoch))
+      stop(sprintf(
+        "The value 'save_vaeac_every_nth_epoch' must be strictly positive, not '%d'.\n",
+        save_vaeac_every_nth_epoch
+      ))
     }
 
     # Ensure a valid value for save_vaeac_every_nth_epoch.
@@ -1159,8 +1193,12 @@ epoch might require a lot of disk storage if data is large.\n",
     # Check if we are providing more output for easier debugging
     if (verbose) {
       # Print the number of trainable parameters to the user
-      if (initialization == 1) message(sprintf("The number of trainable parameters in the vaeac model is '%d'.",
-                                               model$num_trainable_params[1, 1]))
+      if (initialization == 1) {
+        message(sprintf(
+          "The number of trainable parameters in the vaeac model is '%d'.",
+          model$num_trainable_params[1, 1]
+        ))
+      }
 
       # Print which initialization vaeac the function is working on
       message(sprintf("\nInitializing vaeac number %d...", initialization))
@@ -1170,8 +1208,10 @@ epoch might require a lot of disk storage if data is large.\n",
       # the `progressr` library is used. Then this will just print out
       # the finished `progress::progress_bar`.
       pb <- progress::progress_bar$new(
-        format = paste("(:spin) [:bar] :percent [vaeac: #:initialization | time: :elapsedfull |",
-                       "ETR: :eta | Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]"),
+        format = paste(
+          "(:spin) [:bar] :percent [vaeac: #:initialization | time: :elapsedfull |",
+          "ETR: :eta | Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]"
+        ),
         total = epochs_initiation_phase,
         complete = "=", # Completion bar character
         incomplete = "-", # Incomplete bar character
@@ -1266,9 +1306,11 @@ epoch might require a lot of disk storage if data is large.\n",
       train_vlb <- torch::torch_cat(c(train_vlb, avg_vlb), -1)
 
       # Compute the running validation IWAE
-      val_iwae_running <- validation_iwae[(-min(length(validation_iwae), running_avg_num_values) +
-                                             length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
-                                          drop = FALSE]$mean()$view(1)
+      val_iwae_running <- validation_iwae[
+        (-min(length(validation_iwae), running_avg_num_values) +
+          length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
+        drop = FALSE
+      ]$mean()$view(1)
       validation_iwae_running_avg <- torch::torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
 
       # If printing debug messages
@@ -1333,8 +1375,10 @@ epoch might require a lot of disk storage if data is large.\n",
     # the finished `progress::progress_bar`.
     # Should maybe include width, depth, latent_dim, lr, if doing hyperparameter tuning.
     pb <- progress::progress_bar$new(
-      format = paste("(:spin) [:bar] :percent [time: :elapsedfull | ETR: :eta |",
-                     "Epoch: :epoch | Best epoch: :be | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]"),
+      format = paste(
+        "(:spin) [:bar] :percent [time: :elapsedfull | ETR: :eta |",
+        "Epoch: :epoch | Best epoch: :be | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]"
+      ),
       total = (epochs - epochs_initiation_phase),
       complete = "=", # Completion bar character
       incomplete = "-", # Incomplete bar character
@@ -1409,9 +1453,11 @@ epoch might require a lot of disk storage if data is large.\n",
     )
 
     # Compute the running validation IWAE.
-    val_iwae_running <- validation_iwae[(-min(length(validation_iwae), running_avg_num_values) +
-                                           length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
-                                        drop = FALSE]$mean()$view(1)
+    val_iwae_running <- validation_iwae[
+      (-min(length(validation_iwae), running_avg_num_values) +
+        length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
+      drop = FALSE
+    ]$mean()$view(1)
 
     # Add the current validation_iwae and train_vlb to the lists.
     validation_iwae <- torch::torch_cat(c(validation_iwae, val_iwae), -1)
@@ -1436,8 +1482,8 @@ epoch might require a lot of disk storage if data is large.\n",
       # Create the file name
       filename_best <-
         paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "p", p,
-              "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
-              sep = "_"
+          "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
+          sep = "_"
         )
 
       # Combine the file name with the folder path to form the final save file name.
@@ -1464,10 +1510,10 @@ epoch might require a lot of disk storage if data is large.\n",
       # Create the file name
       filename_best_running <-
         paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "p", p,
-              "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr,
-              "best_running.pt",
-              sep = "_"
-      )
+          "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr,
+          "best_running.pt",
+          sep = "_"
+        )
 
       # Combine the file name with the folder path to form the final save file name.
       filename_best_running <- file.path(folder_to_save_model, filename_best_running)
@@ -1493,9 +1539,9 @@ epoch might require a lot of disk storage if data is large.\n",
 
         # Create the file name
         filename_nth <- paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "_p_", p,
-                              "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
-                              "_epoch_", epoch, ".pt",
-                              sep = ""
+          "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
+          "_epoch_", epoch, ".pt",
+          sep = ""
         )
 
         # Combine the file name with the folder path to form the final save file name.
@@ -1529,8 +1575,10 @@ epoch might require a lot of disk storage if data is large.\n",
     if (epoch - best_state$epoch >= epochs_early_stopping) {
       if (verbose) {
         # Small printout to the user
-        message(sprintf("\n\nEarly stopping at epoch %d. No validation improvment has been made in %d epochs.",
-                    epoch, epochs_early_stopping))
+        message(sprintf(
+          "\n\nEarly stopping at epoch %d. No validation improvment has been made in %d epochs.",
+          epoch, epochs_early_stopping
+        ))
         # Terminate the progress bar
         pb$terminate()
       }
@@ -1538,7 +1586,7 @@ epoch might require a lot of disk storage if data is large.\n",
       progressr_bar(message = sprintf("Training vaeac (early stopping)"))
 
       # Add that we did early stopping
-      early_stopping_applied = TRUE
+      early_stopping_applied <- TRUE
 
       # Stop the training loop
       break
@@ -1546,12 +1594,12 @@ epoch might require a lot of disk storage if data is large.\n",
   } # Done with training
 
   # If it is still null, then early stopping was not applied
-  if (is.null(early_stopping_applied)) early_stopping_applied = FALSE
+  if (is.null(early_stopping_applied)) early_stopping_applied <- FALSE
 
   # Include if early stopping was conducted in the state list.
   state_list <- c(state_list, list("early_stopping_applied" = early_stopping_applied))
   # Update the number of used epochs.
-  state_list$epochs = epoch
+  state_list$epochs <- epoch
 
   # Save the model at the last epoch
   last_state <- c(
@@ -1569,8 +1617,8 @@ epoch might require a lot of disk storage if data is large.\n",
 
   # Create the file name
   filename_last <- paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "p", p,
-                         "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
-                         sep = "_"
+    "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
+    sep = "_"
   )
 
   # Combine the file name with the folder path to form the final save file name.
@@ -1658,8 +1706,10 @@ vaeac_continue_train_model <- function(explanation,
 
     # Check that we have access to training data
     if (is.null(checkpoint$normalized_data) & is.null(training_data)) {
-      stop(paste("The save file did not include data (set 'save_data' = TRUE in 'vaeac_train_model)",
-                 "and data was not provided to this function."))
+      stop(paste(
+        "The save file did not include data (set 'save_data' = TRUE in 'vaeac_train_model)",
+        "and data was not provided to this function."
+      ))
     }
 
     # We have two training datasets
@@ -1676,8 +1726,10 @@ vaeac_continue_train_model <- function(explanation,
     # as vaeac only accepts numerics, and keep track of the maping of names.
     # And optionally log-transform all continuous features. Usual for strictly positive
     # data set like Burr and Abalone, such that vaeac does not impute negative values.
-    preprocessed_data <- vaeac_preprocess_data(as.data.table(training_data),
-                                               checkpoint$transform_all_continuous_features)
+    preprocessed_data <- vaeac_preprocess_data(
+      as.data.table(training_data),
+      checkpoint$transform_all_continuous_features
+    )
 
     # Extract the training data where all the
     training_data <- preprocessed_data$data_preprocessed
@@ -1713,8 +1765,10 @@ vaeac_continue_train_model <- function(explanation,
 
     # Test for right number of features.
     if (p != checkpoint$p) {
-      stop(sprintf("The dimensions of current training data do not match the original dimension: %d != %d",
-                   p, checkpoint$p))
+      stop(sprintf(
+        "The dimensions of current training data do not match the original dimension: %d != %d",
+        p, checkpoint$p
+      ))
     }
 
     # Convert X to tensor
@@ -1776,12 +1830,12 @@ vaeac_continue_train_model <- function(explanation,
     if (paired_sampling) {
       # Use paired sampling
       train_dataloader <- torch::dataloader(train_dataset,
-                                            batch_size = batch_size,
-                                            sampler = paired_sampler(train_dataset, shuffle = TRUE)
+        batch_size = batch_size,
+        sampler = paired_sampler(train_dataset, shuffle = TRUE)
       )
       val_dataloader <- torch::dataloader(val_dataset,
-                                          batch_size = batch_size,
-                                          sampler = paired_sampler(val_dataset, shuffle = FALSE)
+        batch_size = batch_size,
+        sampler = paired_sampler(val_dataset, shuffle = FALSE)
       )
     } else {
       # Usual approach
@@ -1907,8 +1961,10 @@ epoch might require a lot of disk storage if data is large.\n",
       # the `progressr` library is used. Then this will just print out
       # the finished `progress::progress_bar`.
       pb <- progress::progress_bar$new(
-        format = paste("(:spin) [:bar] :percent [time: :elapsedfull | ETR: :eta |",
-                        "Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]"),
+        format = paste(
+          "(:spin) [:bar] :percent [time: :elapsedfull | ETR: :eta |",
+          "Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]"
+        ),
         total = epochs_new, #
         complete = "=", # Completion bar character
         incomplete = "-", # Incomplete bar character
@@ -1986,9 +2042,11 @@ epoch might require a lot of disk storage if data is large.\n",
       )
 
       # Compute the running validation IWAE.
-      val_iwae_running <- validation_iwae[(-min(length(validation_iwae), running_avg_num_values) +
-                                             length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
-                                          drop = FALSE]$mean()$view(1)
+      val_iwae_running <- validation_iwae[
+        (-min(length(validation_iwae), running_avg_num_values) +
+          length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
+        drop = FALSE
+      ]$mean()$view(1)
 
       # Add the current validation_iwae and train_vlb to the lists.
       validation_iwae <- torch::torch_cat(c(validation_iwae, val_iwae), -1)
@@ -2012,8 +2070,8 @@ epoch might require a lot of disk storage if data is large.\n",
 
         # Create the file name
         filename_best <- paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "p", p,
-                               "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
-                               sep = "_"
+          "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
+          sep = "_"
         )
 
         # Combine the file name with the folder path to form the final save file name.
@@ -2038,17 +2096,20 @@ epoch might require a lot of disk storage if data is large.\n",
         )
 
         # Create the file name
-        filename_best_running <- paste(gsub(pattern = " ",
-                                            replacement = "_",
-                                            x = tolower(model_description)),
-                                       "p", p,
-                                       "n", n,
-                                       "depth", depth,
-                                       "width", width,
-                                       "latent", latent_dim,
-                                       "lr", lr,
-                                       "best_running.pt",
-                                       sep = "_"
+        filename_best_running <- paste(
+          gsub(
+            pattern = " ",
+            replacement = "_",
+            x = tolower(model_description)
+          ),
+          "p", p,
+          "n", n,
+          "depth", depth,
+          "width", width,
+          "latent", latent_dim,
+          "lr", lr,
+          "best_running.pt",
+          sep = "_"
         )
 
         # Combine the file name with the folder path to form the final save file name.
@@ -2075,9 +2136,9 @@ epoch might require a lot of disk storage if data is large.\n",
 
           # Create the file name
           filename_nth <- paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "_p_", p,
-                                "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
-                                "_epoch_", epoch, ".pt",
-                                sep = ""
+            "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
+            "_epoch_", epoch, ".pt",
+            sep = ""
           )
 
           # Combine the file name with the folder path to form the final save file name.
@@ -2122,8 +2183,8 @@ epoch might require a lot of disk storage if data is large.\n",
 
     # Create the file name
     filename_last <- paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "p", p,
-                           "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
-                           sep = "_"
+      "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
+      sep = "_"
     )
 
     # Combine the file name with the folder path to form the final save file name.
@@ -2802,8 +2863,10 @@ make_vaeac_training_evaluation_plots <- function(explanation_list,
 
     # Extract the names of the approaches used in the explanation objects in explanation_list
     # We paste in case an explanation object has used a combination of approaches.
-    names <- sapply(explanation_list,
-                    function(explanation) paste(explanation$internal$parameters$approach, collapse = "_"))
+    names <- sapply(
+      explanation_list,
+      function(explanation) paste(explanation$internal$parameters$approach, collapse = "_")
+    )
 
     # Ensure that we have unique names
     names <- make.unique(names, sep = "_")
@@ -2859,20 +2922,31 @@ make_vaeac_training_evaluation_plots <- function(explanation_list,
   figure_facet_for_each_method <-
     ggplot2::ggplot(results_dt_tall_truncated, ggplot2::aes(x = Epoch, y = Value, col = Criterion)) +
     {
-      if (plot_geom_smooth || plot_geom_smooth_se) ggplot2::geom_smooth(method = "loess",
-                                                                        formula = y ~ x,
-                                                                        se = plot_geom_smooth_se)
+      if (plot_geom_smooth || plot_geom_smooth_se) {
+        ggplot2::geom_smooth(
+          method = "loess",
+          formula = y ~ x,
+          se = plot_geom_smooth_se
+        )
+      }
     } +
     ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Criterion)) +
-    ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(group = Criterion,
-                                                                                  col = Criterion)) +
+    ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(
+      group = Criterion,
+      col = Criterion
+    )) +
     ggplot2::facet_wrap(ggplot2::vars(Method),
-                        nrow = facet_wrap_nrow,
-                        ncol = facet_wrap_ncol,
-                        scales = facet_wrap_scales) +
+      nrow = facet_wrap_nrow,
+      ncol = facet_wrap_ncol,
+      scales = facet_wrap_scales
+    ) +
     {
-      if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette,
-                                                                direction = brewer_direction)
+      if (!is.null(brewer_palette)) {
+        ggplot2::scale_color_brewer(
+          palette = brewer_palette,
+          direction = brewer_direction
+        )
+      }
     } +
     {
       if (!is.null(ggplot_theme)) ggplot_theme
@@ -2894,16 +2968,21 @@ make_vaeac_training_evaluation_plots <- function(explanation_list,
   figure_facet_for_each_criterion <-
     ggplot2::ggplot(results_dt_tall_truncated, ggplot2::aes(x = Epoch, y = Value, col = Method)) +
     {
-      if (plot_geom_smooth || plot_geom_smooth_se) ggplot2::geom_smooth(method = "loess",
-                                                                        formula = y ~ x,
-                                                                        se = plot_geom_smooth_se)
+      if (plot_geom_smooth || plot_geom_smooth_se) {
+        ggplot2::geom_smooth(
+          method = "loess",
+          formula = y ~ x,
+          se = plot_geom_smooth_se
+        )
+      }
     } +
     ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Method)) +
     ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(group = Method, col = Method)) +
     ggplot2::facet_wrap(ggplot2::vars(Criterion),
-                        nrow = facet_wrap_nrow,
-                        ncol = facet_wrap_ncol,
-                        scales = facet_wrap_scales) +
+      nrow = facet_wrap_nrow,
+      ncol = facet_wrap_ncol,
+      scales = facet_wrap_scales
+    ) +
     {
       if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction)
     } +
@@ -3111,12 +3190,16 @@ vaeac_ggpairs_plot_imputed_and_true_data_shapr <-
            show_figures = FALSE,
            upper_cont = c("cor", "points", "smooth", "smooth_loess", "density", "blank"),
            upper_cat = c("count", "cross", "ratio", "facetbar", "blank"),
-           upper_mix = c("box", "box_no_facet", "dot", "dot_no_facet",
-                         "facethist", "facetdensity", "denstrip", "blank"),
+           upper_mix = c(
+             "box", "box_no_facet", "dot", "dot_no_facet",
+             "facethist", "facetdensity", "denstrip", "blank"
+           ),
            lower_cont = c("points", "smooth", "smooth_loess", "density", "cor", "blank"),
            lower_cat = c("facetbar", "ratio", "count", "cross", "blank"),
-           lower_mix = c("facetdensity", "box", "box_no_facet", "dot",
-                         "dot_no_facet", "facethist", "denstrip", "blank"),
+           lower_mix = c(
+             "facetdensity", "box", "box_no_facet", "dot",
+             "dot_no_facet", "facethist", "denstrip", "blank"
+           ),
            diag_cont = c("densityDiag", "barDiag", "blankDiag"),
            diag_cat = c("barDiag", "blankDiag"),
            cor_method = c("pearson", "kendall", "spearman"),
@@ -3163,8 +3246,10 @@ We set 'which_vaeac_model = best' and continue.\n",
     vaeac_model <- torch::torch_load(vaeac_model_path)
     if (!is.null(true_data)) {
       if (ncol(true_data) != vaeac_model$p) {
-        stop(sprintf("Different number of columns in the vaeac model and 'true data': %d != %d.\n",
-                     checkpoint$p, ncol(true_data)))
+        stop(sprintf(
+          "Different number of columns in the vaeac model and 'true data': %d != %d.\n",
+          checkpoint$p, ncol(true_data)
+        ))
       }
     }
 
@@ -3203,31 +3288,32 @@ We set 'which_vaeac_model = best' and continue.\n",
 
     # Add a variable indicating if the values are from the true distribution or if they have been sampled.
     combined_data$type <- factor(rep(c("True", "Imputed"),
-                                     times = c(ifelse(is.null(nrow(true_data)), 0, nrow(true_data)), num_samples)))
+      times = c(ifelse(is.null(nrow(true_data)), 0, nrow(true_data)), num_samples)
+    ))
 
     # Extract what to include as title in the figure.
     figure_title <- tools::file_path_sans_ext(basename(vaeac_model_path))
 
     # Create the ggparis figure.
     figure <- GGally::ggpairs(combined_data,
-                              columns = seq(vaeac_model$p),
-                              mapping = ggplot2::aes(color = type),
-                              diag = list(
-                                continuous = GGally::wrap(diag_cont, alpha = 0.5),
-                                discrete = GGally::wrap(diag_cat, alpha = 1.0)
-                              ),
-                              upper = list(
-                                combo = GGally::wrap(upper_mix, alpha = 1.0),
-                                discrete = GGally::wrap(upper_cat, alpha = 1.0),
-                                continuous = GGally::wrap(upper_cont, method = cor_method, size = 3.65)
-                              ),
-                              lower = list(
-                                continuous = GGally::wrap(lower_cont, alpha = 0.25),
-                                discrete = GGally::wrap(lower_cat, alpha = 1.0),
-                                combo = GGally::wrap(lower_mix, alpha = 1)
-                              ),
-                              title = figure_title,
-                              proportions = rep(1, vaeac_model$p)
+      columns = seq(vaeac_model$p),
+      mapping = ggplot2::aes(color = type),
+      diag = list(
+        continuous = GGally::wrap(diag_cont, alpha = 0.5),
+        discrete = GGally::wrap(diag_cat, alpha = 1.0)
+      ),
+      upper = list(
+        combo = GGally::wrap(upper_mix, alpha = 1.0),
+        discrete = GGally::wrap(upper_cat, alpha = 1.0),
+        continuous = GGally::wrap(upper_cont, method = cor_method, size = 3.65)
+      ),
+      lower = list(
+        continuous = GGally::wrap(lower_cont, alpha = 0.25),
+        discrete = GGally::wrap(lower_cat, alpha = 1.0),
+        combo = GGally::wrap(lower_mix, alpha = 1)
+      ),
+      title = figure_title,
+      proportions = rep(1, vaeac_model$p)
     ) +
       # theme(plot.title = element_text(size=22),
       #       text = element_text(size = 16),
