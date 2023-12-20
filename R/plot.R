@@ -1323,3 +1323,492 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
     MSEv_combination_line_point = MSEv_combination_line_point
   ))
 }
+
+#' Shapley value bar plots for several explanation objects
+#'
+#' @description
+#' Make plots to visualize and compare the estimated Shapley values for a list of
+#' [shapr::explain()] objects applied to the same data and model.
+#'
+#' @param explanation_list A list of [shapr::explain()] objects applied to the same data and model.
+#' If the entries in the list is named, then the function use these names. Otherwise, it defaults to
+#' the approach names (with integer suffix for duplicates) for the explanation objects in `explanation_list`.
+#' @param index_explicands Integer vector. Which of the explicands (test observations) to plot.
+#' E.g. if you have explained 10 observations using [shapr::explain()], you can generate a plot for the
+#' first 5 observations/explicands and the 10th by setting `index_x_explain = c(1:5, 10)`.
+#' @param only_these_features String vector. Containing the names of the features which
+#' are to be included in the bar plots.
+#' @param plot_phi0 Boolean. If we are to include the \eqn{\phi_0} in the bar plots or not.
+#' @param digits Integer. Number of significant digits to use in the feature description.
+#' @param add_zero_line Boolean. If we are to add a black line for a feature contribution of 0.
+#' @param ggplot_theme A [ggplot2::theme()] object to customize the non-data components of the plots:
+#' i.e. titles, labels, fonts, background, gridlines, and legends. Themes can be used to give plots
+#' a consistent customized look. Use the themes available in \code{\link[ggplot2:theme_bw]{ggplot2::ggtheme()}}.
+#' if you would like to use a complete theme such as `theme_bw()`, `theme_minimal()`, and more.
+#' @param brewer_palette String. Name of one of the color palettes from [RColorBrewer::RColorBrewer()].
+#'  If `NULL`, then the function uses the default [ggplot2::ggplot()] color scheme.
+#' The following palettes are available for use with these scales:
+#' \describe{
+#'    \item{Diverging}{BrBG, PiYG, PRGn, PuOr, RdBu, RdGy, RdYlBu, RdYlGn, Spectral}
+#'    \item{Qualitative}{Accent, Dark2, Paired, Pastel1, Pastel2, Set1, Set2, Set3}
+#'    \item{Sequential}{Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges,
+#'      OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr, YlOrRd}
+#' }
+#' @param brewer_direction Sets the order of colors in the scale. If 1, the default,
+#' colors are as output by \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}}.
+#' If -1, the order of colors is reversed.
+#' @param axis_labels_n_dodge Integer. The number of rows that
+#' should be used to render the labels. This is useful for displaying labels that would otherwise overlap.
+#' @param axis_labels_rotate_angle Numeric. The angle of the axis label, where 0 means horizontal, 45 means tilted,
+#' and 90 means vertical. Compared to setting the angle in[ggplot2::theme()] / [ggplot2::element_text()], this also
+#' uses some heuristics to automatically pick the `hjust` and `vjust` that you probably want.
+#' @param horizontal_bars Boolean. Flip Cartesian coordinates so that horizontal becomes vertical,
+#' and vertical, horizontal. This is primarily useful for converting geoms and statistics which display
+#' y conditional on x, to x conditional on y. See [ggplot2::coord_flip()].
+#' @param title_text_size Positive numeric. The size of the title. If `0`, then the text is removed.
+#' @param facet_scales Should scales be free ("`free`", the default), fixed ("`fixed`"), or free in one dimension
+#' ("`free_x`", "`free_y`")? The user has to change the latter manually depending on the value of `horizontal_bars`.
+#' @param facet_ncol  Integer. The number of columns in the facet grid. Default is `facet_ncol = 2`.
+#' @param geom_col_width Numeric. Bar width. By default, set to 85% of the [ggplot2::resolution()] of the data.
+#' @param legend_position String or numeric vector `c(x,y)`. The allowed string values for the
+#' argument `legend_position` are: `left`,`top`, `right`, `bottom`. Note that, the argument
+#' `legend_position` can be also a numeric vector `c(x,y)`. In this case it is possible to position
+#' the legend inside the plotting area. `x` and `y` are the coordinates of the legend box.
+#' Their values should be between `0` and `1`, where `c(0,0)` corresponds to the "bottom left"
+#' and `c(1,1)` corresponds to the "top right" position.
+#' @param legend_ncol Integer. The number of columns in the legend.
+#' @param legend_nrow Integer. The number of rows in the legend.
+#'
+#' @return A [ggplot2::ggplot()] object.
+#' @export
+#'
+#' @examples
+#' # Load necessary libraries
+#' library(xgboost)
+#' library(data.table)
+#'
+#' # Get the data
+#' data("airquality")
+#' data = data.table::as.data.table(airquality)
+#' data = data[complete.cases(data), ]
+#'
+#' # Define the features and the response
+#' x_var = c("Solar.R", "Wind", "Temp", "Month")
+#' y_var = "Ozone"
+#'
+#' # Split data into test and training data set
+#' ind_x_explain = 1:12
+#' x_train = data[-ind_x_explain, ..x_var]
+#' y_train = data[-ind_x_explain, get(y_var)]
+#' x_explain = data[ind_x_explain, ..x_var]
+#'
+#' # Fitting a basic xgboost model to the training data
+#' model = xgboost::xgboost(
+#'   data = as.matrix(x_train),
+#'   label = y_train,
+#'   nround = 20,
+#'   verbose = FALSE
+#' )
+#'
+#' # Specifying the phi_0, i.e. the expected prediction without any features
+#' prediction_zero = mean(y_train)
+#'
+#' # Independence approach
+#' explanation_independence = explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = "independence",
+#'   prediction_zero = prediction_zero,
+#'   n_samples = 1e2
+#' )
+#'
+#' # Empirical approach
+#' explanation_empirical = explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = "empirical",
+#'   prediction_zero = prediction_zero,
+#'   n_samples = 1e2
+#' )
+#'
+#' # Gaussian 1e1 approach
+#' explanation_gaussian_1e1 = explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = "gaussian",
+#'   prediction_zero = prediction_zero,
+#'   n_samples = 1e1
+#' )
+#'
+#' # Gaussian 1e2 approach
+#' explanation_gaussian_1e2 = explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = "gaussian",
+#'   prediction_zero = prediction_zero,
+#'   n_samples = 1e2
+#' )
+#'
+#' # Combined approach
+#' explanation_combined = explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = c("gaussian", "ctree", "empirical", "empirical"),
+#'   prediction_zero = prediction_zero,
+#'   n_samples = 1e2
+#' )
+#'
+#' # Create a list of explanations without names
+#' explanation_list_unnamed = list(
+#'   explanation_independence,
+#'   explanation_empirical,
+#'   explanation_gaussian_1e1,
+#'   explanation_gaussian_1e2,
+#'   explanation_combined
+#' )
+#'
+#' # Create a list of explanations with names
+#' explanation_list_named = list(
+#'   "Ind." = explanation_independence,
+#'   "Emp." = explanation_empirical,
+#'   "Gaus. 1e1" = explanation_gaussian_1e1,
+#'   "Gaus. 1e2" = explanation_gaussian_1e2,
+#'   "Combined" = explanation_combined
+#' )
+#'
+#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#'
+#'   # The function sets default names for unnamed lists.
+#'   make_bar_plot_several_explanation_objects(explanation_list_unnamed)
+#'
+#'   # The function uses the provided names.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named)
+#'
+#'   # We can change the number of columns in the grid of plots.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             facet_ncol = 3)
+#'
+#'   # We can specify which explicands to plot to get less chaotic plots.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10))
+#'
+#'   # We can make the bars vertical by setting `horizontal_bars = FALSE`.
+#'   # Will then get message about long label names on the x-axis and how to fix it.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             horizontal_bars = FALSE)
+#'
+#'   # We can change the order of the features by specifying the order using the `only_these_features` parameter.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             only_these_features = c("Temp", "Solar.R", "Month", "Wind"))
+#'
+#'   # We can also remove certain features if we are not interested in them or want to focus on, e.g., two features.
+#'   # The function will give a message to if the user specifies non-valid feature names.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             only_these_features = c("Temp", "Solar.R"))
+#'
+#'   # To more easily compare the magnitude of the Shapley values for different explicands we can fix the x-axis
+#'   # by specifying that only the scales on the y-axis are to be free.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             only_these_features = c("Temp", "Solar.R"),
+#'                                             facet_scales = "free_y")
+#'
+#'   # If we rather want vertical bars and fix the y-axis, then we specify that the scales are only free on the x-axis.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             only_these_features = c("Temp", "Solar.R"),
+#'                                             facet_scales = "free_x",
+#'                                             horizontal_bars = FALSE)
+#'
+#'   # By default the function does not plot the phi0, but we can change that by setting `plot_phi0 = TRUE`.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             only_these_features = c("Temp", "Solar.R"),
+#'                                             plot_phi0 = TRUE)
+#'
+#'   # Or we can include "none" in the `only_these_features` parameter. Note that phi0 will always be the first bars.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             only_these_features = c("Temp", "Solar.R", "none"))
+#'
+#'   # We can add a line at the Shapley value of zero and ensure non overlapping labels by setting `axis_labels_n_dodge`.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             add_zero_line = TRUE,
+#'                                             axis_labels_n_dodge = 2,
+#'                                             horizontal_bars = FALSE)
+#'
+#'   # We can move the legend to the bottom of the plot and specify that the method names should be on one row.
+#'   # Note that setting `legend_position` = "bottom" removes the legend.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             legend_position = "bottom",
+#'                                             legend_nrow = 1)
+#'
+#'   # We can increase the space between the features to make it easier to distinguish them from each other
+#'   # by lowering `geom_col_width`. Note that default is 0.85.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             legend_position = "bottom",
+#'                                             legend_nrow = 1,
+#'                                             geom_col_width = 0.6)
+#'
+#'   # We can remove the title, change the theme of the plot and the color palette.
+#'   # Note that `brewer_palette` = NULL yields ggplot2's default color palette.
+#'   make_bar_plot_several_explanation_objects(explanation_list_named,
+#'                                             index_explicands = c(1:2, 5, 10),
+#'                                             legend_position = "bottom",
+#'                                             legend_nrow = 1,
+#'                                             geom_col_width = 0.6,
+#'                                             ggplot_theme = ggplot2::theme_minimal(),
+#'                                             brewer_palette = "Greens",
+#'                                             title_text_size = 0)
+#' }
+#'
+#' @author Lars Henry Berge Olsen
+make_bar_plot_several_explanation_objects = function(explanation_list,
+                                                     index_explicands = NULL,
+                                                     only_these_features = NULL,
+                                                     plot_phi0 = FALSE,
+                                                     digits = 4,
+                                                     add_zero_line = FALSE,
+                                                     ggplot_theme = NULL,
+                                                     brewer_palette = "Paired",
+                                                     brewer_direction = 1,
+                                                     axis_labels_n_dodge = NULL,
+                                                     axis_labels_rotate_angle = NULL,
+                                                     horizontal_bars = TRUE,
+                                                     title_text_size = 12,
+                                                     facet_scales = "free",
+                                                     facet_ncol = 2,
+                                                     geom_col_width = 0.85,
+                                                     legend_position = NULL,
+                                                     legend_ncol = NULL,
+                                                     legend_nrow = NULL) {
+
+  # Setup and checks ----------------------------------------------------------------------------
+  # Check that ggplot2 is installed
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+  }
+
+  # Check if user only provided a single explanation and did not put it in a list
+  if ("shapr" %in% class(explanation_list)) {
+    # Put it in a list
+    explanation_list = list(explanation_list)
+  }
+
+  # Check if the entries in the list is named
+  if (is.null(names(explanation_list))) {
+    # The entries in explanation_list are lacking names
+
+    # Extract the names of the approaches used in the explanation objects in explanation_list
+    # We paste in case an explanation object has used a combination of approaches.
+    names = sapply(explanation_list,
+                   function(explanation) paste(explanation$internal$parameters$approach, collapse = "_"))
+
+    # Ensure that we have unique names
+    names = make.unique(names, sep = "_")
+
+    # Name the entries in explanation_list
+    names(explanation_list) = names
+
+    # Give a message to the user
+    message(paste("User provided an `explanation_list` without named explanation objects.",
+                  "Default to the approach names (with integer suffix for duplicates) for the explanation objects.\n"))
+  }
+
+  # Check that the column names for the Shapley values are the same for all explanations in the `explanation_list`
+  if (length(unique(lapply(explanation_list, function(explanation) colnames(explanation$shapley_values)))) != 1) {
+    stop("The Shapley value feature names are not identical in all objects in the `explanation_list`.")
+  }
+
+  # Get the common feature names for all explanation objects (including `none`) and one without `none`
+  feature_names_with_none = colnames(explanation_list[[1]]$shapley_values)
+  feature_names_without_none = feature_names_with_none[feature_names_with_none != "none"]
+
+  # Create data.tables of the Shapley values ----------------------------------------------------
+  # Extract the Shapley values and combine them into a single data table.
+  # We add an id column (`.id`) for the explicands and a column indicating the method (`.method`)
+  dt_Shapley_values = data.table::rbindlist(
+    lapply(explanation_list,
+           function(explanation) {
+             data.table::copy(explanation$shapley_values)[,c(".id", ".pred") := list(.I, explanation$pred_explain)]
+           }),
+    use.names = TRUE,
+    idcol = ".method")
+
+  # Convert to factors
+  dt_Shapley_values$.method = factor(dt_Shapley_values$.method,
+                                     levels = names(explanation_list),
+                                     ordered = TRUE)
+
+  # Set the keys and change the order of the columns
+  data.table::setkeyv(dt_Shapley_values, c(".id", ".method"))
+  data.table::setcolorder(dt_Shapley_values, c(".id", ".pred", ".method"))
+
+  # Only keep the desired explicands
+  if (!is.null(index_explicands)) dt_Shapley_values = dt_Shapley_values[.id %in% index_explicands,]
+
+  # Give a small warning to the user if they have not specified the `index_explicands` and too many explicands
+  if (is.null(index_explicands) && length(dt_Shapley_values[, unique(.id)]) > 12) {
+    message(paste("It might be too many explicands to plot together in a nice fashion! Try for instance",
+                  "setting `index_explicands = 1:10` to limit the number of explicands.\n"))
+  }
+
+  # Only keep the desired features/columns
+  if (!is.null(only_these_features)) {
+
+    # Check if user has provided a non-valid feature name, note that `none` is a valid feature name
+    only_these_features_in_feature_names = only_these_features[only_these_features %in% feature_names_with_none]
+    only_these_features_not_in_feature_names = only_these_features[!only_these_features %in% feature_names_with_none]
+
+    # Give the user a warning if the user provided non-valid feature names
+    if (length(only_these_features_not_in_feature_names) > 0) {
+      message(paste0("User provided non-valid feature names in `only_these_features` (",
+                     paste0("'", only_these_features_not_in_feature_names, "'", collapse = ", "),
+                     "). The function skips non-valid feature names."))
+    }
+
+    # Stop if we have no valid feature names.
+    if (length(only_these_features_in_feature_names[only_these_features_in_feature_names != "none"]) == 0) {
+      stop(paste0("The parameter `only_these_features` must contain at least one of: ",
+                  paste0("'", feature_names_without_none, "'", collapse = ", "),
+                  "."))
+    }
+
+    # If user has specified `plot_phi0 = TRUE`, then we ensure that it is included in our variable
+    if (plot_phi0) only_these_features_in_feature_names = unique(c("none", only_these_features_in_feature_names))
+
+    # Overwrite the `only_these_features` with `only_these_features_in_feature_names` to remove non-valid input
+    only_these_features = only_these_features_in_feature_names
+
+  } else {
+    # If user has specified `plot_phi0 = FALSE`, then we exclude the phi0/`none` from the feature names.
+    only_these_features = if (plot_phi0) feature_names_with_none else feature_names_without_none
+  }
+
+  # Ensure that .id and .method are included
+  only_these_columns = unique(c(".id", ".pred", ".method", only_these_features))
+
+  # Keep only the needed columns
+  dt_Shapley_values = dt_Shapley_values[,..only_these_columns]
+
+  # Create a variable storing the features to use excluding `none`
+  only_these_features_without_none = only_these_features[only_these_features != "none"]
+
+  # Melt the data.table from a wide to long format
+  dt_Shapley_values_long = melt(dt_Shapley_values,
+                                id.vars = c(".id", ".pred", ".method"),
+                                variable.name = ".feature",
+                                value.name = ".phi")
+  dt_Shapley_values_long$.feature = as.ordered(dt_Shapley_values_long$.feature)
+
+  # Converting and melting Xtest
+  desc_mat <- trimws(format(explanation_list[[1]]$internal$data$x_explain[,..only_these_features_without_none],
+                            digits = digits))
+  for (i in seq_len(ncol(desc_mat))) {
+    desc_mat[, i] = paste0(colnames(desc_mat)[i], " = ", desc_mat[, i])
+  }
+  # We add None here,
+  dt_desc = data.table::as.data.table(cbind(none = "None", desc_mat))
+  dt_desc_long = data.table::melt(dt_desc[, .id := .I],
+                                  id.vars = ".id",
+                                  variable.name = ".feature",
+                                  value.name = ".description")
+
+  # Make the description into an ordered factor such that the features in the
+  # bar plots follow the same order of features as in the training data.
+  levels = if (horizontal_bars) rev(unique(dt_desc_long$.description)) else unique(dt_desc_long$.description)
+  dt_desc_long$.description = factor(dt_desc_long$.description,
+                                     levels = levels,
+                                     ordered = TRUE)
+
+  # Data table for plotting
+  dt_Shapley_values_long = merge(dt_Shapley_values_long, dt_desc_long)
+
+  # Make the .id column into an ordered column
+  dt_Shapley_values_long$.id = factor(dt_Shapley_values_long$.id,
+                                      levels = unique(dt_Shapley_values_long$.id),
+                                      ordered = TRUE)
+
+  # Adding header for each individual plot
+  dt_Shapley_values_long[, .header := paste0("id: ", .id, ", pred = ", format(.pred, digits = digits))]
+  dt_Shapley_values_long$.header = factor(dt_Shapley_values_long$.header,
+                                          levels = unique(dt_Shapley_values_long$.header),
+                                          ordered = TRUE)
+
+  # If flip coordinates, then we need to change the order of the levels such that the order
+  # of the bars in the figure match the order in the legend.
+  if (horizontal_bars) {
+    dt_Shapley_values_long$.method = factor(dt_Shapley_values_long$.method,
+                                            levels = rev(levels(dt_Shapley_values_long$.method)),
+                                            ordered = TRUE)
+    breaks = rev(levels(dt_Shapley_values_long$.method))
+
+    # Flip the order of the color scheme to be correct
+    brewer_direction = ifelse(brewer_direction == 1, -1, 1)
+  } else {
+    breaks = levels(dt_Shapley_values_long$.method)
+  }
+
+  # User has provided neither `axis_labels_n_dodge` nor `axis_labels_rotate_angle`
+  if (is.null(axis_labels_rotate_angle) && is.null(axis_labels_n_dodge)) {
+    # Set default values
+    axis_labels_rotate_angle <- 0
+    axis_labels_n_dodge <- 1
+
+    # Get the length of the longest description
+    length_of_longest_description <- max(nchar(levels(dt_desc_long$.description)))
+
+    # If it is long, then we alter the default values set above and give message to user
+    if (length_of_longest_description > 12 && !horizontal_bars) {
+      message(paste("Long label names: consider specifying either `axis_labels_rotate_angle` or",
+                    "`axis_labels_n_dodge`, to fix any potentially overlapping axis labels.",
+                    "The function sets `axis_labels_rotate_angle = 45` internally.\n"))
+
+      # Set it to rotate 45 degrees
+      axis_labels_rotate_angle <- 45
+    }
+  }
+
+  # User has specified `axis_labels_n_dodge` so set `axis_labels_rotate_angle` to default value
+  if (is.null(axis_labels_rotate_angle)) axis_labels_rotate_angle <- 0
+
+  # User has specified `axis_labels_rotate_angle` so set `axis_labels_n_dodge` to default value
+  if (is.null(axis_labels_n_dodge)) axis_labels_n_dodge <- 1
+
+
+  # Making plots --------------------------------------------------------------------------------
+  figure =
+    ggplot2::ggplot(dt_Shapley_values_long, ggplot2::aes(x = .description, y = .phi)) +
+    {if (add_zero_line) ggplot2::geom_abline(intercept = 0, slope = 0)} +
+    ggplot2::geom_col(width = geom_col_width, position = ggplot2::position_dodge(), ggplot2::aes(fill = .method)) +
+    ggplot2::facet_wrap(~.header, scales = facet_scales, labeller = "label_value", ncol = facet_ncol) +
+    ggplot2::labs(x = "Feature and value",
+                  y = bquote("Feature contribution (Shapley value"~phi[j]*")"),
+                  fill = "Method") +
+    ggplot2::guides(x = ggplot2::guide_axis(n.dodge = axis_labels_n_dodge, angle = axis_labels_rotate_angle)) +
+    {if (title_text_size > 0) ggplot2::labs(title = "Shapley value prediction explanation")} +
+    {if (title_text_size > 0) ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))} +
+    {if (is.null(brewer_palette)) ggplot2::scale_fill_discrete(breaks = breaks)} +
+    {if (!is.null(brewer_palette)) ggplot2::scale_fill_brewer(palette = brewer_palette,
+                                                              direction = brewer_direction,
+                                                              breaks = breaks)} +
+    {if (!is.null(ggplot_theme)) ggplot_theme} +
+    {if (horizontal_bars) ggplot2::coord_flip()} +
+    {if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)} +
+    {if (!is.null(legend_ncol)) ggplot2::guides(fill = ggplot2::guide_legend(ncol = legend_ncol))} +
+    {if (!is.null(legend_nrow)) ggplot2::guides(fill = ggplot2::guide_legend(nrow = legend_nrow))}
+
+  # Return the figure
+  return(figure)
+}
