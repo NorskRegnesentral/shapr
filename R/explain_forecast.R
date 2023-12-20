@@ -44,6 +44,7 @@
 #' @inheritDotParams setup_approach.gaussian
 #' @inheritDotParams setup_approach.copula
 #' @inheritDotParams setup_approach.ctree
+#' @inheritDotParams setup_approach.vaeac
 #' @inheritDotParams setup_approach.categorical
 #' @inheritDotParams setup_approach.timeseries
 #'
