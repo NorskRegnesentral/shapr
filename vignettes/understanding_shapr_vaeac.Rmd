@@ -523,7 +523,7 @@ artifacts.
 ```{r progressr true verbose true, cache = TRUE}
 handlers("progress")
 with_progress({
-  expl_with_progressr_and_verbose <- explain(
+  expl_with_progressr_verbose <- explain(
     model = model,
     x_explain = x_explain,
     x_train = x_train,
@@ -541,7 +541,7 @@ with_progress({
     )
   )
 })
-all.equal(expl_without_messages$shapley_values, expl_with_progressr_and_verbose$shapley_values)
+all.equal(expl_without_messages$shapley_values, expl_with_progressr_verbose$shapley_values)
 ```
 
 

@@ -205,20 +205,20 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     %in% names(vaeac.extra_parameters_default))]
 
   # Divide the unknown parameters into whether they are main parameters or completely unknown.
-  main_parameters_in_unknown_parameters <- unknown_parameters[unknown_parameters %in% main_parameters]
-  not_main_parameters_in_unknown_parameters <- unknown_parameters[!unknown_parameters %in% main_parameters]
+  main_para_in_unknown_para <- unknown_parameters[unknown_parameters %in% main_parameters]
+  not_main_para_in_unknown_para <- unknown_parameters[!unknown_parameters %in% main_parameters]
 
   # For those parameters that are completely unknown, we give a message to the user.
-  if (length(not_main_parameters_in_unknown_parameters) > 0) {
-    if (length(not_main_parameters_in_unknown_parameters) == 1) {
+  if (length(not_main_para_in_unknown_para) > 0) {
+    if (length(not_main_para_in_unknown_para) == 1) {
       message(sprintf(
         "The extra parameter `%s` is not recognized by the `vaeac` approach.\n",
-        not_main_parameters_in_unknown_parameters
+        not_main_para_in_unknown_para
       ))
     } else {
       message(sprintf(
         "The extra parameters %s are not recognized by the `vaeac` approach.\n",
-        paste(strsplit(paste(paste0("`", not_main_parameters_in_unknown_parameters, "`"),
+        paste(strsplit(paste(paste0("`", not_main_para_in_unknown_para, "`"),
           collapse = ", "
         ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and")
       ))
@@ -276,26 +276,26 @@ The function proceeds using the values in `vaeac.extra_parameters`.\n",
   }
 
   # For does parameter that actually are main parameters, we include them and give a message
-  if (length(main_parameters_in_unknown_parameters) > 0) {
+  if (length(main_para_in_unknown_para) > 0) {
     # Insert the misplaced main parameters to the correct place.
     internal$parameters <- modifyList(
       internal$parameters,
-      internal$parameters$vaeac.extra_parameters[main_parameters_in_unknown_parameters]
+      internal$parameters$vaeac.extra_parameters[main_para_in_unknown_para]
     )
 
-    if (length(main_parameters_in_unknown_parameters) == 1) {
+    if (length(main_para_in_unknown_para) == 1) {
       message(sprintf(
         "The extra parameter `%s` is a main parameter to the `vaeac` approach and should not
 be included in the `vaeac.extra_parameters` list, but rather as a separate parameter in the
 call to the `explain()` function. This is fixed internally.\n",
-        main_parameters_in_unknown_parameters
+        main_para_in_unknown_para
       ))
     } else {
       message(sprintf(
         "The extra parameters %s are main parameters to the `vaeac` approach and should not
 be included in the `vaeac.extra_parameters` list, but rather as separate parameters in the
 call to the `explain()` function. This is fixed internally.\n",
-        paste(strsplit(paste(paste0("`", main_parameters_in_unknown_parameters, "`"), collapse = ", "),
+        paste(strsplit(paste(paste0("`", main_para_in_unknown_para, "`"), collapse = ", "),
           ",(?=[^,]+$)",
           perl = TRUE
         )[[1]], collapse = " and")
