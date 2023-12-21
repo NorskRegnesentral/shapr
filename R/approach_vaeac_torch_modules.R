@@ -1031,13 +1031,13 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
 #' # data$X2 <- factor(data$X2 >= 2) # Create a factor, larger than mean
 #' # one_hot_max_sizes <- c(1, 2, 1)
 #' # print(data)
-#' # data_unbounded <- log_transform_all_cont_features_function(data, one_hot_max_sizes)
+#' # data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
 #' # print(data_unbounded)
 #' # data <- as.data.table(data) # convert to data table. Same functions works then too
 #' # print(data)
-#' # data_unbounded <- log_transform_all_cont_features_function(data, one_hot_max_sizes)
+#' # data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
 #' # print(data_unbounded)
-log_transform_all_cont_features_function <- function(data, one_hot_max_sizes) {
+log_trans_cont_features_func <- function(data, one_hot_max_sizes) {
   # Check if data is data.table or matrix/data.frame.
   if (any(class(data) == "data.table")) {
     # Extract which columns that are continuous.
@@ -1092,19 +1092,19 @@ log_transform_all_cont_features_function <- function(data, one_hot_max_sizes) {
 #' # data$X2 <- factor(data$X2 >= 2) # Create a factor, larger than mean
 #' # one_hot_max_sizes <- c(1, 2, 1)
 #' # print(data)
-#' # data_unbounded <- log_transform_all_cont_features_function(data, one_hot_max_sizes)
+#' # data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
 #' # print(data_unbounded)
-#' # data_bounded <- exp_transform_all_cont_features_function(data_unbounded, one_hot_max_sizes)
+#' # data_bounded <- exp_trans_cont_features_func(data_unbounded, one_hot_max_sizes)
 #' # print(data_bounded)
 #' # all.equal(data, data_bounded)
 #' # data <- as.data.table(data) # convert to data table. Same functions works then too
 #' # print(data)
-#' # data_unbounded <- log_transform_all_cont_features_function(data, one_hot_max_sizes)
+#' # data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
 #' # print(data_unbounded)
-#' # data_bounded <- exp_transform_all_cont_features_function(data_unbounded, one_hot_max_sizes)
+#' # data_bounded <- exp_trans_cont_features_func(data_unbounded, one_hot_max_sizes)
 #' # print(data_bounded)
 #' # all.equal(data, data_bounded)
-exp_transform_all_cont_features_function <- function(data, one_hot_max_sizes) {
+exp_trans_cont_features_func <- function(data, one_hot_max_sizes) {
   # Check if data is data.table or matrix/data.frame.
   if (any(class(data) == "data.table")) {
     # Extract which columns that are continuous.
