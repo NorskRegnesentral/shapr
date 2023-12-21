@@ -174,7 +174,7 @@ explanation <- explain(
   keep_samp_for_vS = keep_samp_for_vS,
   seed = seed,
   vaeac.epochs = vaeac.epochs,
-  vaeac.num_vaeacs_initiate = 3,
+  vaeac.num_vaeacs_initiate = vaeac.num_vaeacs_initiate,
   vaeac.extra_parameters = list(
     vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
     vaeac.verbose = vaeac.verbose
