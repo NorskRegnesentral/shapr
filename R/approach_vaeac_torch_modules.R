@@ -480,21 +480,21 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     self$decoder_network <- decoder_network
 
     # Compute the number of trainable parameters in the different networks
-    num_trainable_params_full_encoder <- sum(sapply(full_encoder_network$parameters, function(p) prod(p$size())))
-    num_trainable_params_masked_encoder <- sum(sapply(masked_encoder_network$parameters, function(p) prod(p$size())))
-    num_trainable_params_decoder <- sum(sapply(decoder_network$parameters, function(p) prod(p$size())))
-    num_trainable_params_total <- num_trainable_params_full_encoder +
-      num_trainable_params_masked_encoder +
-      num_trainable_params_decoder
-    num_trainable_params <- rbind(
-      num_trainable_params_total,
-      num_trainable_params_full_encoder,
-      num_trainable_params_masked_encoder,
-      num_trainable_params_decoder
+    num_train_param_full_encoder <- sum(sapply(full_encoder_network$parameters, function(p) prod(p$size())))
+    num_train_param_masked_encoder <- sum(sapply(masked_encoder_network$parameters, function(p) prod(p$size())))
+    num_train_param_decoder <- sum(sapply(decoder_network$parameters, function(p) prod(p$size())))
+    num_train_param_total <- num_train_param_full_encoder +
+      num_train_param_masked_encoder +
+      num_train_param_decoder
+    num_train_param <- rbind(
+      num_train_param_total,
+      num_train_param_full_encoder,
+      num_train_param_masked_encoder,
+      num_train_param_decoder
     )
 
     # Save the number of parameters to the vaeac object
-    self$num_trainable_params <- num_trainable_params
+    self$num_train_param <- num_train_param
   },
 
   # @description Forward functions are required in torch::nn_modules,

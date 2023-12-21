@@ -1196,7 +1196,7 @@ epoch might require a lot of disk storage if data is large.\n",
       if (initialization == 1) {
         message(sprintf(
           "The number of trainable parameters in the vaeac model is '%d'.",
-          model$num_trainable_params[1, 1]
+          model$num_train_param[1, 1]
         ))
       }
 
@@ -1356,7 +1356,7 @@ epoch might require a lot of disk storage if data is large.\n",
   vlb_scale_factor <- best_vlb_scale_factor
 
   # Include the number of trainable parameters in the state list.
-  state_list <- c(state_list, list("num_trainable_parameters" = model$num_trainable_params))
+  state_list <- c(state_list, list("num_trainable_parameters" = model$num_train_param))
 
   # Send the model to the GPU, if we have access to it.
   if (use_cuda) model <- model.cuda()
