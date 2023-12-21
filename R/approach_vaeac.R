@@ -952,7 +952,7 @@ vaeac_train_model <- function(training_data,
     mask_generator_name <- "Specified_masks_mask_generator"
   } else {
     # We are NOT going to use 'Specified_masks_mask_generator'. Figure out if we are using
-    # 'MCAR_mask_generator' or 'Specified_probability_mask_generator' and check for valid input.
+    # 'MCAR_mask_generator' or 'Specified_prob_mask_generator' and check for valid input.
 
     # Check that masking_ratio is numeric.
     if (all(class(masking_ratio) != "numeric")) {
@@ -968,14 +968,14 @@ vaeac_train_model <- function(training_data,
     } else {
       # Check that we have received a masking ratio for each feature
       if (length(masking_ratio) == ncol(training_data)) {
-        # We have an array of masking ratios. Then we are using the Specified_probability_mask_generator.
+        # We have an array of masking ratios. Then we are using the Specified_prob_mask_generator.
         if (verbose) {
           message(sprintf(
-            "Use 'Specified_probability_mask_generator' mask generator with 'masking_ratios = {%s}'.\n",
+            "Use 'Specified_prob_mask_generator' mask generator with 'masking_ratios = {%s}'.\n",
             paste(masking_ratio, collapse = ", ")
           ))
         }
-        mask_generator_name <- "Specified_probability_mask_generator"
+        mask_generator_name <- "Specified_prob_mask_generator"
       } else {
         stop(paste0(
           "'Masking_ratio' contains masking ratios for ',", length(masking_ratio), "' features, ",

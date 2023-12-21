@@ -31,7 +31,7 @@
 #' @param paired_sampling Boolean. If we are doing paired sampling. I.e., if we are to include both coalition S
 #' and \eqn{\bar{S}} when we sample coalitions during training for each batch.
 #' @param mask_generator_name String specifying the type of mask generator to use. Need to be one of
-#' 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 'Specified_masks_mask_generator'.
+#' 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specified_masks_mask_generator'.
 #' @param masking_ratio Scalar. The probability for an entry in the generated mask to be 1 (masked).
 #' Not used if \code{mask_gen_these_coalitions} is given.
 #' @param mask_gen_these_coalitions Matrix containing the different coalitions to learn.
@@ -128,7 +128,7 @@ vaeac <- torch::nn_module(
                         use_batch_normalization = FALSE,
                         paired_sampling = FALSE,
                         mask_generator_name = c("MCAR_mask_generator",
-                                                "Specified_probability_mask_generator",
+                                                "Specified_prob_mask_generator",
                                                 "Specified_masks_mask_generator"),
                         masking_ratio = 0.5,
                         mask_gen_these_coalitions = NULL,
@@ -177,10 +177,10 @@ vaeac <- torch::nn_module(
 
       # Attach the masking ratio to the vaeac object.
       self$masking_ratio <- masking_ratio
-    } else if (mask_generator_name == "Specified_probability_mask_generator") {
-      # Create a Specified_probability_mask_generator and attach it to the vaeac object.
+    } else if (mask_generator_name == "Specified_prob_mask_generator") {
+      # Create a Specified_prob_mask_generator and attach it to the vaeac object.
       # Note that masking_ratio is an array here.
-      self$mask_generator <- Specified_probability_mask_generator(
+      self$mask_generator <- Specified_prob_mask_generator(
         masking_probs = masking_ratio,
         paired_sampling = paired_sampling
       )
@@ -207,7 +207,7 @@ must be provided when using 'Specified_masks_mask_generator'.\n")
     } else {
       # Print error to user.
       stop(sprintf("Maske geneartor '%s' is not supported.
-Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 'Specified_masks_mask_generator'.\n",
+Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specified_masks_mask_generator'.\n",
                    mask_generator))
     }
 
@@ -2535,9 +2535,9 @@ MCAR_mask_generator <- torch::nn_module(
 )
 
 
-## Specified_probability_mask_generator -------------------------------------------------------------------------------
+## Specified_prob_mask_generator -------------------------------------------------------------------------------
 
-#' A torch::nn_module Representing a Specified_probability_mask_generator
+#' A torch::nn_module Representing a Specified_prob_mask_generator
 #'
 #' @description A mask generator which masks the entries based on specified probabilities.
 #'
@@ -2550,7 +2550,7 @@ MCAR_mask_generator <- torch::nn_module(
 #' 'd' masked are uniformly sampled from the 'M' possible feature indices. The d'th entry
 #' of the probability of having d-1 masked values.
 #'
-#' Note that MCAR_mask_generator with p = 0.5 is the same as using \code{\link{Specified_probability_mask_generator}}
+#' Note that MCAR_mask_generator with p = 0.5 is the same as using \code{\link{Specified_prob_mask_generator}}
 #' with `masking_ratio` = choose(M, 0:M), where M is the number of features. This function was initially
 #' created to check if increasing the probability of having a masks with many masked features improved
 #' vaeac's performance by focusing more on these situations during training.
@@ -2564,17 +2564,17 @@ MCAR_mask_generator <- torch::nn_module(
 #'
 #' @examples
 #' # probs <- c(1, 8, 6, 3, 2)
-#' # mask_gen <- Specified_probability_mask_generator(probs)
+#' # mask_gen <- Specified_prob_mask_generator(probs)
 #' # masks <- mask_gen(torch::torch_randn(c(10000, length(probs)) - 1))
 #' # empirical_prob <- table(as.array(masks$sum(2)))
 #' # empirical_prob / sum(empirical_prob)
 #' # probs / sum(probs)
 #'
 #' @keywords internal
-Specified_probability_mask_generator <- torch::nn_module(
+Specified_prob_mask_generator <- torch::nn_module(
 
   # @field name Type of mask generator
-  name = "Specified_probability_mask_generator",
+  name = "Specified_prob_mask_generator",
 
   # @description Initialize a specified_probability mask generator.
   initialize = function(masking_probs,
@@ -2584,11 +2584,11 @@ Specified_probability_mask_generator <- torch::nn_module(
   },
 
   # @description Generates a specified probability mask by calling the
-  # self$Specified_probability_mask_generator_function.
+  # self$Specified_prob_mask_generator_function.
   # @param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the entries are
   # missing. If any are missing, then the returned mask will ensure that these missing entries are masked.
   forward = function(batch) {
-    self$Specified_probability_mask_generator_function(batch,
+    self$Specified_prob_mask_generator_function(batch,
       masking_prob = self$masking_probs,
       paired_sampling = self$paired_sampling
     )
@@ -2601,7 +2601,7 @@ Specified_probability_mask_generator <- torch::nn_module(
   # 'd' masked are uniformly sampled from the 'M' possible feature indices. The d'th entry
   # of the probability of having d-1 masked values.
   #
-  # @details Note that MCAR_mask_generator with p = 0.5 is the same as using Specified_probability_mask_generator
+  # @details Note that MCAR_mask_generator with p = 0.5 is the same as using Specified_prob_mask_generator
   # with masking_ratio = choose(M, 0:M), where M is the number of features. This function was initially
   # created to check if increasing the probability of having a masks with many masked features improved
   # vaeac's performance by focusing more on these situations during training.
@@ -2617,12 +2617,12 @@ Specified_probability_mask_generator <- torch::nn_module(
   # the first half and second half of the rows are duplicates of each other. That is,
   # batch = [row1, row1, row2, row2, row3, row3, ...].
   #
-  # @examples Specified_probability_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
+  # @examples Specified_prob_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
   #
   # @return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   # observed feature value will be masked. '0' means that the entry is NOT masked,
   # i.e., the feature value will be observed/given/available.
-  Specified_probability_mask_generator_function = function(batch,
+  Specified_prob_mask_generator_function = function(batch,
                                                            masking_probs,
                                                            seed = NULL,
                                                            paired_sampling = FALSE) {
