@@ -670,14 +670,14 @@ We set 'which_vaeac_model = best' and continue.\n",
   }
 
   # Impute the missing entries using the vaeac approach.
-  x_explain_with_MC_samples_as_dt <- vaeac_impute_missing_entries(
+  x_explain_with_MC_samples_dt <- vaeac_impute_missing_entries(
     x_explain_with_NaNs = x_explain_extended,
     path_vaeac_model = vaeac_list$path,
     n_samples = n_samples,
     use_cuda = vaeac_list$parameters$use_cuda,
     sample_random = sample_random,
     convert_to_2D = TRUE,
-    return_as_postprocessed_data_table = TRUE,
+    return_as_postprocessed_dt = TRUE,
     batch_size = batch_size,
     verbose = internal$parameters$vaeac.verbose,
     seed = internal$parameters$seed,
@@ -685,7 +685,7 @@ We set 'which_vaeac_model = best' and continue.\n",
   )
 
   # Return the generated conditional Monte Carlo samples
-  return(x_explain_with_MC_samples_as_dt)
+  return(x_explain_with_MC_samples_dt)
 }
 
 
@@ -2264,7 +2264,7 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 #' @param convert_to_2D Boolean. If the returned results should be of shape
 #' \[`nrow(x_explain_with_NaNs)`, `n_samples`, `n_features`\] or
 #' \[(`nrow(x_explain_with_NaNs)` \eqn{\times} `n_samples`), `n_features`\].
-#' @param return_as_postprocessed_data_table Boolean. If we are to postprocess the data, i.e.,
+#' @param return_as_postprocessed_dt Boolean. If we are to postprocess the data, i.e.,
 #' convert categorical features to factors with correct level names (and transform continuous features
 #' back to original scale). The returned object will then be a \code{\link[data.table]{data.table}}.
 #' @param batch_size Integer. The number of samples in each batch.
@@ -2277,7 +2277,7 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 #'
 #' @return A 2D or 3D array or 2D data.table where the missing values (`NaN`) in `x_explain_with_NaNs`
 #' have been imputed `n_samples` times. The dimension of the returned object depends on the
-#' boolean parameters `convert_to_2D` and `return_as_postprocessed_data_table`.
+#' boolean parameters `convert_to_2D` and `return_as_postprocessed_dt`.
 #'
 #' @export
 #' @author Lars Henry Berge Olsen
@@ -2287,16 +2287,16 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
                                          use_cuda = FALSE,
                                          sample_random = TRUE,
                                          convert_to_2D = TRUE,
-                                         return_as_postprocessed_data_table = TRUE,
+                                         return_as_postprocessed_dt = TRUE,
                                          batch_size = NULL,
                                          verbose = FALSE,
                                          seed = NULL,
                                          index_features = NULL) {
   # If we are to return a data table we need to convert to 2D.
-  if (return_as_postprocessed_data_table) {
+  if (return_as_postprocessed_dt) {
     if (isFALSE(convert_to_2D)) {
       message("Override `convert_to_2D = FALSE` to `convert_to_2D = TRUE`
-as user set `return_as_postprocessed_data_table = TRUE`.")
+as user set `return_as_postprocessed_dt = TRUE`.")
     }
     convert_to_2D <- TRUE
   }
@@ -2534,7 +2534,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
 
   # Check if we are to post process the data such that categorical features have
   # original level names and convert the result to a data table.
-  if (return_as_postprocessed_data_table) result <- vaeac_postprocess_data(result, checkpoint)
+  if (return_as_postprocessed_dt) result <- vaeac_postprocess_data(result, checkpoint)
 
   # If user provide `index_features`, then we add columns needed for shapr computations
   if (!is.null(index_features)) {
@@ -3276,7 +3276,7 @@ We set 'which_vaeac_model = best' and continue.\n",
       n_samples = 1,
       use_cuda = FALSE,
       convert_to_2D = TRUE,
-      return_as_postprocessed_data_table = TRUE,
+      return_as_postprocessed_dt = TRUE,
       batch_size = num_samples,
       verbose = FALSE
     )
