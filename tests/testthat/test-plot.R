@@ -50,6 +50,14 @@ explain_numeric_combined <- explain(
   timing = FALSE
 )
 
+# Create a list of explanations with names
+explanation_list_named <- list(
+  "Emp." = explain_numeric_empirical,
+  "Gaus." = explain_numeric_gaussian,
+  "Ctree" = explain_numeric_ctree,
+  "Comb." = explain_numeric_combined
+)
+
 test_that("checking default outputs", {
   skip_if_not_installed("vdiffr")
 
@@ -173,14 +181,6 @@ test_that("beeswarm_plot_new_arguments", {
 test_that("MSEv evaluation criterion plots", {
   skip_if_not_installed("vdiffr")
 
-  # Create a list of explanations with names
-  explanation_list_named <- list(
-    "Emp." = explain_numeric_empirical,
-    "Gaus." = explain_numeric_gaussian,
-    "Ctree" = explain_numeric_ctree,
-    "Comb." = explain_numeric_combined
-  )
-
   MSEv_plots <- plot_MSEv_eval_crit(
     explanation_list_named,
     plot_type = c("overall", "comb", "explicand"),
@@ -271,62 +271,46 @@ test_that("MSEv evaluation criterion plots", {
   )
 })
 
-test_that("bar_plot_several_explanations", {
+test_that("plot_SV_several_approaches_explanations", {
   skip_if_not_installed("vdiffr")
 
-  explanation_list_unnamed = list(explain_mixed, explain_mixed_ctree)
-  explanation_list_named = list("Ind." = explain_mixed, "Ctree" = explain_mixed_ctree)
-
-  plot_SV_several_approaches(explanation_list_unnamed)
-  plot_SV_several_approaches(explanation_list_named)
-
   vdiffr::expect_doppelganger(
-    title = "bar_plot_several_unnamed",
-    fig = plot_SV_several_approaches(explanation_list_unnamed)
+    title = "plot_SV_several_approaches_default",
+    fig = plot_SV_several_approaches(explanation_list_named)
   )
 
+
   vdiffr::expect_doppelganger(
-    title = "bar_plot_several_named_and_facet_ncol_fixed_x",
+    title = "plot_SV_several_approaches_phi0_zero_line_facet_ncol_free_y_horizontal",
     fig = plot_SV_several_approaches(explanation_list_named,
-                                                    facet_ncol = 1,
-                                                    facet_scales = "free_y")
+      plot_phi0 = TRUE,
+      add_zero_line = TRUE,
+      facet_ncol = 3,
+      facet_scales = "free_y",
+      horizontal_bars = TRUE
+    )
   )
 
   vdiffr::expect_doppelganger(
-    title = "bar_plot_several_named_index_explicands_vertical_labels_dodge_zero_line",
+    title = "plot_SV_several_approaches_index_explicands_vertical_labels_dodge_zero_line",
     fig = plot_SV_several_approaches(explanation_list_named,
-                                                    axis_labels_n_dodge = 1,
-                                                    facet_ncol = 1,
-                                                    facet_scales = "free_x",
-                                                    horizontal_bars = FALSE,
-                                                    index_explicands = c(1,3),
-                                                    add_zero_line = TRUE)
+      axis_labels_n_dodge = 1,
+      facet_ncol = 1,
+      facet_scales = "free_x",
+      horizontal_bars = FALSE,
+      index_explicands = c(1, 3),
+      add_zero_line = TRUE
+    )
   )
 
   vdiffr::expect_doppelganger(
-    title = "bar_plot_several_named_theme_color_palette",
+    title = "plot_SV_several_approaches_face_ncol_free_y_color_palette_only_these_features_phi0",
     fig = plot_SV_several_approaches(explanation_list_named,
-                                                    facet_ncol = 1,
-                                                    facet_scales = "free_y",
-                                                    ggplot_theme = ggplot2::theme_minimal(),
-                                                    brewer_palette = "Greens")
+      facet_ncol = 1,
+      facet_scales = "free_y",
+      brewer_palette = "Set1",
+      only_these_features = c("Month", "Day", "Solar.R"),
+      plot_phi0 = TRUE
+    )
   )
-
-  vdiffr::expect_doppelganger(
-    title = "bar_plot_several_named_ggplot2_colors_and_phi0",
-    fig = plot_SV_several_approaches(explanation_list_named,
-                                                    facet_ncol = 1,
-                                                    facet_scales = "free_y",
-                                                    brewer_palette = NULL,
-                                                    plot_phi0 = TRUE)
-  )
-
-  vdiffr::expect_doppelganger(
-    title = "bar_plot_several_named_only_some_features",
-    fig = plot_SV_several_approaches(explanation_list_named,
-                                                    facet_ncol = 1,
-                                                    facet_scales = "free_y",
-                                                    only_these_features = c("Month_factor", "Day", "Solar.R"))
-  )
-
 })
