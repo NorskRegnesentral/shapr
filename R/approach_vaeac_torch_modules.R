@@ -36,7 +36,7 @@
 #' Not used if \code{mask_generator_only_these_coalitions} is given.
 #' @param mask_generator_only_these_coalitions Matrix containing the different coalitions to learn.
 #' Must be given if \code{mask_generator_name} = 'Specified_masks_mask_generator'.
-#' @param mask_generator_only_these_coalitions_probabilities Numerics containing the probabilities
+#' @param mask_gen_these_coalitions_prob Numerics containing the probabilities
 #' for sampling each mask in \code{mask_generator_only_these_coalitions}.
 #' Array containing the probabilities for sampling the coalitions in \code{mask_generator_only_these_coalitions}.
 #' @param sigma_mu Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
@@ -132,7 +132,7 @@ vaeac <- torch::nn_module(
                                                 "Specified_masks_mask_generator"),
                         masking_ratio = 0.5,
                         mask_generator_only_these_coalitions = NULL,
-                        mask_generator_only_these_coalitions_probabilities = NULL,
+                        mask_gen_these_coalitions_prob = NULL,
                         sigma_mu = 1e4,
                         sigma_sigma = 1e-4) {
     # Check that a valid mask_generator was provided.
@@ -153,8 +153,7 @@ vaeac <- torch::nn_module(
     self$latent_dim <- latent_dim
     self$activation_function <- activation_function
     self$use_skip_connections <- use_skip_connections
-    self$skip_connection_masked_enc_dec <-
-      skip_connection_masked_enc_dec
+    self$skip_connection_masked_enc_dec <- skip_connection_masked_enc_dec
     self$use_batch_normalization <- use_batch_normalization
     self$sigma_mu <- sigma_mu
     self$sigma_sigma <- sigma_sigma
@@ -190,21 +189,21 @@ vaeac <- torch::nn_module(
       self$masking_probs <- masking_ratio
     } else if (mask_generator_name == "Specified_masks_mask_generator") {
       # Small check that they have been provided.
-      if (is.null(mask_generator_only_these_coalitions) | is.null(mask_generator_only_these_coalitions_probabilities)) {
-        stop("Both 'mask_generator_only_these_coalitions' and 'mask_generator_only_these_coalitions_probabilities'
+      if (is.null(mask_generator_only_these_coalitions) | is.null(mask_gen_these_coalitions_prob)) {
+        stop("Both 'mask_generator_only_these_coalitions' and 'mask_gen_these_coalitions_prob'
 must be provided when using 'Specified_masks_mask_generator'.\n")
       }
 
       # Create a Specified_masks_mask_generator and attach it to the vaeac object.
       self$mask_generator <- Specified_masks_mask_generator(
         masks = mask_generator_only_these_coalitions,
-        masks_probs = mask_generator_only_these_coalitions_probabilities,
+        masks_probs = mask_gen_these_coalitions_prob,
         paired_sampling = paired_sampling
       )
 
       # Save the possible masks and corresponding probabilities to the vaeac object.
       self$masks <- mask_generator_only_these_coalitions
-      self$masks_probs <- mask_generator_only_these_coalitions_probabilities
+      self$masks_probs <- mask_gen_these_coalitions_prob
     } else {
       # Print error to user.
       stop(sprintf("Maske geneartor '%s' is not supported.

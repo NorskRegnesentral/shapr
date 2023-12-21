@@ -97,7 +97,7 @@
 #'  \item{vaeac.mask_generator_only_these_coalitions}{Default is `NULL`. Matrix containing the
 #'   the only coalitions which the `vaeac` model will be trained on. Used when `n_combinations`
 #'   is less then \eqn{2^{n_\text{features}}} and for group Shapley.}
-#'  \item{vaeac.mask_generator_only_these_coalitions_probabilities}{Default is `NULL`. Numerical
+#'  \item{vaeac.mask_gen_these_coalitions_prob}{Default is `NULL`. Numerical
 #'   array containing the probabilities for sampling the coalitions in
 #'   `vaeac.extra_parameters$mask_generator_only_these_coalitions`.}
 #'  \item{vaeac.sigma_mu}{Default is `1e4`. Numeric representing a hyperparameter in the
@@ -179,7 +179,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     "vaeac.paired_sampling" = TRUE,
     "vaeac.masking_ratio" = 0.5,
     "vaeac.mask_generator_only_these_coalitions" = NULL,
-    "vaeac.mask_generator_only_these_coalitions_probabilities" = NULL,
+    "vaeac.mask_gen_these_coalitions_prob" = NULL,
     "vaeac.sigma_mu" = 1e4,
     "vaeac.sigma_sigma" = 1e-4,
     "vaeac.save_data" = FALSE,
@@ -359,19 +359,19 @@ call to the `explain()` function. This is fixed internally.\n",
       objects$S[objects$X[approach == "vaeac"]$id_combination, , drop = FALSE]
 
     # Extract the weights for the corresponding coalitions / masks.
-    parameters$vaeac.mask_generator_only_these_coalitions_probabilities <-
+    parameters$vaeac.mask_gen_these_coalitions_prob <-
       objects$X$shapley_weight[objects$X[approach == "vaeac"]$id_combination]
 
     # Normalize the weights/probabilities such that they sum to one.
-    parameters$vaeac.mask_generator_only_these_coalitions_probabilities <-
-      parameters$vaeac.mask_generator_only_these_coalitions_probabilities /
-        sum(parameters$vaeac.mask_generator_only_these_coalitions_probabilities)
+    parameters$vaeac.mask_gen_these_coalitions_prob <-
+      parameters$vaeac.mask_gen_these_coalitions_prob /
+        sum(parameters$vaeac.mask_gen_these_coalitions_prob)
   } else {
     # All 2^M coalitions are to be estimated using a vaeac model with a MCAR(0.5) masking scheme.
     # I.e., the corresponding vaeac model will support arbitrary conditioning as every coalition
     # will be trained with the same probability, also the empty and grand coalition.
     parameters$vaeac.mask_generator_only_these_coalitions <- NULL
-    parameters$vaeac.mask_generator_only_these_coalitions_probabilities <- NULL
+    parameters$vaeac.mask_gen_these_coalitions_prob <- NULL
   }
 
   # Check if user provided a pre-trained vaeac model, otherwise, we train one from scratch.
@@ -751,7 +751,7 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' Default masking scheme which ensures that vaeac can do arbitrary conditioning.
 #' This is overruled if \code{mask_generator_only_these_coalitions} is specified.
 #' @param mask_generator_only_these_coalitions Matrix containing the different coalitions to learn.
-#' @param mask_generator_only_these_coalitions_probabilities Numerics containing the probabilities for
+#' @param mask_gen_these_coalitions_prob Numerics containing the probabilities for
 #' sampling each mask in \code{mask_generator_only_these_coalitions}.
 #' Array containing the probabilities for sampling the coalitions in \code{mask_generator_only_these_coalitions}.
 #' @param sigma_mu Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
@@ -798,7 +798,7 @@ vaeac_train_model <- function(training_data,
                               paired_sampling = TRUE,
                               masking_ratio = 0.5,
                               mask_generator_only_these_coalitions = NULL,
-                              mask_generator_only_these_coalitions_probabilities = NULL,
+                              mask_gen_these_coalitions_prob = NULL,
                               sigma_mu = 1e4,
                               sigma_sigma = 1e-4,
                               save_data = FALSE,
@@ -913,16 +913,16 @@ vaeac_train_model <- function(training_data,
   # Check if
   if (xor(
     !is.null(mask_generator_only_these_coalitions),
-    !is.null(mask_generator_only_these_coalitions_probabilities)
+    !is.null(mask_gen_these_coalitions_prob)
   )) {
     stop(paste0(
       "User need to provided both 'mask_generator_only_these_coalitions' and ",
-      "'mask_generator_only_these_coalitions_probabilities' for specified masking to function."
+      "'mask_gen_these_coalitions_prob' for specified masking to function."
     ))
   }
 
   ##### Figure out what kind of mask generator we are going to use.
-  if (!is.null(mask_generator_only_these_coalitions) && !is.null(mask_generator_only_these_coalitions_probabilities)) {
+  if (!is.null(mask_generator_only_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
     # Both are provided and we want to use Specified_masks_mask_generator
 
     # Check that the possible masks that are provided is given as a matrix
@@ -934,10 +934,10 @@ vaeac_train_model <- function(training_data,
     }
 
     # Check that the number of masks and corresponding number of probabilities match.
-    if (nrow(mask_generator_only_these_coalitions) != length(mask_generator_only_these_coalitions_probabilities)) {
+    if (nrow(mask_generator_only_these_coalitions) != length(mask_gen_these_coalitions_prob)) {
       stop(sprintf(
         "The number of coalitions ('%d') does not match with the number of provided probabilites ('%d').\n",
-        nrow(mask_generator_only_these_coalitions), length(mask_generator_only_these_coalitions_probabilities)
+        nrow(mask_generator_only_these_coalitions), length(mask_gen_these_coalitions_prob)
       ))
     }
 
@@ -1082,7 +1082,7 @@ vaeac_train_model <- function(training_data,
     "mask_generator_name" = mask_generator_name,
     "masking_ratio" = masking_ratio,
     "mask_generator_only_these_coalitions" = mask_generator_only_these_coalitions,
-    "mask_generator_only_these_coalitions_probabilities" = mask_generator_only_these_coalitions_probabilities,
+    "mask_gen_these_coalitions_prob" = mask_gen_these_coalitions_prob,
     "validation_ratio" = validation_ratio,
     "validation_iwae_num_samples" = validation_iwae_num_samples,
     "num_different_vaeac_initiate" = num_different_vaeac_initiate,
@@ -1185,7 +1185,7 @@ epoch might require a lot of disk storage if data is large.\n",
       mask_generator_name = mask_generator_name,
       masking_ratio = masking_ratio,
       mask_generator_only_these_coalitions = mask_generator_only_these_coalitions,
-      mask_generator_only_these_coalitions_probabilities = mask_generator_only_these_coalitions_probabilities,
+      mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
       sigma_mu = sigma_mu,
       sigma_sigma = sigma_sigma
     )
@@ -1904,8 +1904,8 @@ epoch might require a lot of disk storage if data is large.\n",
       mask_generator_name = checkpoint$mask_generator_name,
       masking_ratio = checkpoint$masking_ratio,
       mask_generator_only_these_coalitions = checkpoint$mask_generator_only_these_coalitions,
-      mask_generator_only_these_coalitions_probabilities =
-        checkpoint$mask_generator_only_these_coalitions_probabilities,
+      mask_gen_these_coalitions_prob =
+        checkpoint$mask_gen_these_coalitions_prob,
       sigma_mu = checkpoint$sigma_mu,
       sigma_sigma = checkpoint$sigma_sigma
     )
@@ -2341,7 +2341,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
     mask_generator_name = checkpoint$mask_generator_name,
     masking_ratio = checkpoint$masking_ratio,
     mask_generator_only_these_coalitions = checkpoint$mask_generator_only_these_coalitions,
-    mask_generator_only_these_coalitions_probabilities = checkpoint$mask_generator_only_these_coalitions_probabilities,
+    mask_gen_these_coalitions_prob = checkpoint$mask_gen_these_coalitions_prob,
     sigma_mu = checkpoint$sigma_mu,
     sigma_sigma = checkpoint$sigma_sigma
   )
