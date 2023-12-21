@@ -93,13 +93,13 @@
 #'   stable, but slower due to more complex implementation.}
 #'  \item{vaeac.masking_ratio}{Default is `0.5`. Probability of masking a feature in the MCAR mask
 #'   generator. Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-#'   Is overruled if `vaeac.extra_parameters$mask_generator_only_these_coalitions` is specified.}
-#'  \item{vaeac.mask_generator_only_these_coalitions}{Default is `NULL`. Matrix containing the
+#'   Is overruled if `vaeac.extra_parameters$mask_gen_these_coalitions` is specified.}
+#'  \item{vaeac.mask_gen_these_coalitions}{Default is `NULL`. Matrix containing the
 #'   the only coalitions which the `vaeac` model will be trained on. Used when `n_combinations`
 #'   is less then \eqn{2^{n_\text{features}}} and for group Shapley.}
 #'  \item{vaeac.mask_gen_these_coalitions_prob}{Default is `NULL`. Numerical
 #'   array containing the probabilities for sampling the coalitions in
-#'   `vaeac.extra_parameters$mask_generator_only_these_coalitions`.}
+#'   `vaeac.extra_parameters$mask_gen_these_coalitions`.}
 #'  \item{vaeac.sigma_mu}{Default is `1e4`. Numeric representing a hyperparameter in the
 #'   normal-gamma prior used on the masked encoder, see Section 3.3.1 in
 #'   \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
@@ -178,7 +178,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     "vaeac.use_batch_normalization" = FALSE,
     "vaeac.paired_sampling" = TRUE,
     "vaeac.masking_ratio" = 0.5,
-    "vaeac.mask_generator_only_these_coalitions" = NULL,
+    "vaeac.mask_gen_these_coalitions" = NULL,
     "vaeac.mask_gen_these_coalitions_prob" = NULL,
     "vaeac.sigma_mu" = 1e4,
     "vaeac.sigma_sigma" = 1e-4,
@@ -355,7 +355,7 @@ call to the `explain()` function. This is fixed internally.\n",
 
     # Extract the the coalitions / masks which are estimated using vaeac,
     # and we use drop = FALSE to ensure that the output is a matrix.
-    parameters$vaeac.mask_generator_only_these_coalitions <-
+    parameters$vaeac.mask_gen_these_coalitions <-
       objects$S[objects$X[approach == "vaeac"]$id_combination, , drop = FALSE]
 
     # Extract the weights for the corresponding coalitions / masks.
@@ -370,7 +370,7 @@ call to the `explain()` function. This is fixed internally.\n",
     # All 2^M coalitions are to be estimated using a vaeac model with a MCAR(0.5) masking scheme.
     # I.e., the corresponding vaeac model will support arbitrary conditioning as every coalition
     # will be trained with the same probability, also the empty and grand coalition.
-    parameters$vaeac.mask_generator_only_these_coalitions <- NULL
+    parameters$vaeac.mask_gen_these_coalitions <- NULL
     parameters$vaeac.mask_gen_these_coalitions_prob <- NULL
   }
 
@@ -749,11 +749,11 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' stable, but slower due to more complex implementation.
 #' @param masking_ratio Probability of masking a feature in the MCAR mask generator.
 #' Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-#' This is overruled if \code{mask_generator_only_these_coalitions} is specified.
-#' @param mask_generator_only_these_coalitions Matrix containing the different coalitions to learn.
+#' This is overruled if \code{mask_gen_these_coalitions} is specified.
+#' @param mask_gen_these_coalitions Matrix containing the different coalitions to learn.
 #' @param mask_gen_these_coalitions_prob Numerics containing the probabilities for
-#' sampling each mask in \code{mask_generator_only_these_coalitions}.
-#' Array containing the probabilities for sampling the coalitions in \code{mask_generator_only_these_coalitions}.
+#' sampling each mask in \code{mask_gen_these_coalitions}.
+#' Array containing the probabilities for sampling the coalitions in \code{mask_gen_these_coalitions}.
 #' @param sigma_mu Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
 #' see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 #' @param sigma_sigma Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
@@ -797,7 +797,7 @@ vaeac_train_model <- function(training_data,
                               use_batch_normalization = FALSE,
                               paired_sampling = TRUE,
                               masking_ratio = 0.5,
-                              mask_generator_only_these_coalitions = NULL,
+                              mask_gen_these_coalitions = NULL,
                               mask_gen_these_coalitions_prob = NULL,
                               sigma_mu = 1e4,
                               sigma_sigma = 1e-4,
@@ -912,32 +912,32 @@ vaeac_train_model <- function(training_data,
 
   # Check if
   if (xor(
-    !is.null(mask_generator_only_these_coalitions),
+    !is.null(mask_gen_these_coalitions),
     !is.null(mask_gen_these_coalitions_prob)
   )) {
     stop(paste0(
-      "User need to provided both 'mask_generator_only_these_coalitions' and ",
+      "User need to provided both 'mask_gen_these_coalitions' and ",
       "'mask_gen_these_coalitions_prob' for specified masking to function."
     ))
   }
 
   ##### Figure out what kind of mask generator we are going to use.
-  if (!is.null(mask_generator_only_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
+  if (!is.null(mask_gen_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
     # Both are provided and we want to use Specified_masks_mask_generator
 
     # Check that the possible masks that are provided is given as a matrix
-    if (!any(class(mask_generator_only_these_coalitions) == "matrix")) {
+    if (!any(class(mask_gen_these_coalitions) == "matrix")) {
       stop(sprintf(
-        "The 'mask_generator_only_these_coalitions' must be of class 'matrix', not %s.\n",
-        paste(class(mask_generator_only_these_coalitions), collapse = ", ")
+        "The 'mask_gen_these_coalitions' must be of class 'matrix', not %s.\n",
+        paste(class(mask_gen_these_coalitions), collapse = ", ")
       ))
     }
 
     # Check that the number of masks and corresponding number of probabilities match.
-    if (nrow(mask_generator_only_these_coalitions) != length(mask_gen_these_coalitions_prob)) {
+    if (nrow(mask_gen_these_coalitions) != length(mask_gen_these_coalitions_prob)) {
       stop(sprintf(
         "The number of coalitions ('%d') does not match with the number of provided probabilites ('%d').\n",
-        nrow(mask_generator_only_these_coalitions), length(mask_gen_these_coalitions_prob)
+        nrow(mask_gen_these_coalitions), length(mask_gen_these_coalitions_prob)
       ))
     }
 
@@ -946,7 +946,7 @@ vaeac_train_model <- function(training_data,
     if (verbose) {
       message(sprintf(
         "Use 'Specified_masks_mask_generator' mask generator with '%d' different possible coalitions.\n",
-        nrow(mask_generator_only_these_coalitions)
+        nrow(mask_gen_these_coalitions)
       ))
     }
     mask_generator_name <- "Specified_masks_mask_generator"
@@ -1081,7 +1081,7 @@ vaeac_train_model <- function(training_data,
     "paired_sampling" = paired_sampling,
     "mask_generator_name" = mask_generator_name,
     "masking_ratio" = masking_ratio,
-    "mask_generator_only_these_coalitions" = mask_generator_only_these_coalitions,
+    "mask_gen_these_coalitions" = mask_gen_these_coalitions,
     "mask_gen_these_coalitions_prob" = mask_gen_these_coalitions_prob,
     "validation_ratio" = validation_ratio,
     "validation_iwae_num_samples" = validation_iwae_num_samples,
@@ -1184,7 +1184,7 @@ epoch might require a lot of disk storage if data is large.\n",
       paired_sampling = paired_sampling,
       mask_generator_name = mask_generator_name,
       masking_ratio = masking_ratio,
-      mask_generator_only_these_coalitions = mask_generator_only_these_coalitions,
+      mask_gen_these_coalitions = mask_gen_these_coalitions,
       mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
       sigma_mu = sigma_mu,
       sigma_sigma = sigma_sigma
@@ -1903,7 +1903,7 @@ epoch might require a lot of disk storage if data is large.\n",
       paired_sampling = checkpoint$paired_sampling,
       mask_generator_name = checkpoint$mask_generator_name,
       masking_ratio = checkpoint$masking_ratio,
-      mask_generator_only_these_coalitions = checkpoint$mask_generator_only_these_coalitions,
+      mask_gen_these_coalitions = checkpoint$mask_gen_these_coalitions,
       mask_gen_these_coalitions_prob =
         checkpoint$mask_gen_these_coalitions_prob,
       sigma_mu = checkpoint$sigma_mu,
@@ -2340,7 +2340,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
     use_batch_normalization = checkpoint$use_batch_normalization,
     mask_generator_name = checkpoint$mask_generator_name,
     masking_ratio = checkpoint$masking_ratio,
-    mask_generator_only_these_coalitions = checkpoint$mask_generator_only_these_coalitions,
+    mask_gen_these_coalitions = checkpoint$mask_gen_these_coalitions,
     mask_gen_these_coalitions_prob = checkpoint$mask_gen_these_coalitions_prob,
     sigma_mu = checkpoint$sigma_mu,
     sigma_sigma = checkpoint$sigma_sigma
