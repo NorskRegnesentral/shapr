@@ -41,8 +41,8 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 Contains the the features, whose predictions ought to be explained.}
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
-All elements should,
-either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
+All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
+\code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 
 \item{prediction_zero}{Numeric.

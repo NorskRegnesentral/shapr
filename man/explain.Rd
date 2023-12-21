@@ -38,8 +38,8 @@ Contains the data used to estimate the (conditional) distributions for the featu
 needed to properly estimate the conditional expectations in the Shapley formula.}
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
-All elements should,
-either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
+All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
+\code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 
 \item{prediction_zero}{Numeric.
@@ -112,7 +112,7 @@ sampling frequency when not all combinations are considered.}
 Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
+  Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
   \describe{
     \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
 Should be equal to either \code{"independence"},\code{"fixed_sigma"}, \code{"AICc_each_k"} \code{"AICc_full"}.
@@ -161,6 +161,23 @@ If FALSE and the number of observations in the leaf node is more than \code{n_sa
 the method will sample \code{n_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
+    \item{\code{vaeac.depth}}{Integer. The number of hidden layers in the neural networks of the masked
+encoder, full encoder, and decoder.}
+    \item{\code{vaeac.width}}{Integer. The number of neurons in each hidden layer in the neural networks
+of the masked encoder, full encoder, and decoder.}
+    \item{\code{vaeac.latent_dim}}{Integer. The number of dimensions in the latent space.}
+    \item{\code{vaeac.lr}}{Numeric. The learning rate used in the \code{\link[torch]{optim_adam}} optimizer.}
+    \item{\code{vaeac.activation_function}}{An \code{\link[torch]{nn_module}} representing an activation
+function such as, e.g., \code{\link[torch]{nn_relu}}, \code{\link[torch]{nn_leaky_relu}},
+\code{\link[torch]{nn_selu}}, and \code{\link[torch]{nn_sigmoid}}.}
+    \item{\code{vaeac.num_vaeacs_initiate}}{Integer. The number of different vaeac models to initiate
+in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
+epochs (default is \code{2}) and continue training that one.}
+    \item{\code{vaeac.epochs}}{Integer. The number of epochs to train the final vaeac model. This includes
+\code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
+    \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach. See
+section "The \code{vaeac} approach" in \code{\link[=setup_approach]{setup_approach()}} for description of possible additional
+parameters.}
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
 values.
@@ -215,7 +232,7 @@ Computes dependence-aware Shapley values for observations in \code{x_explain} fr
 \details{
 The most important thing to notice is that \code{shapr} has implemented six different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
+\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"vaeac"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
 In addition, the user also has the option of combining the different approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,
