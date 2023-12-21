@@ -1639,7 +1639,7 @@ normal_parse_params <- function(params,
 #' @return torch::distr_categorical distributions with the provided probabilities for each class.
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-categorical_parse_params_column <- function(params, min_prob = 0, max_prob = 1) {
+categorical_parse_params_col <- function(params, min_prob = 0, max_prob = 1) {
   # Send the parameters through the softmax to get normalized probabilities
   params <- torch::nnf_softmax(params, dim = -1)
 
@@ -1772,9 +1772,9 @@ GaussianCategoricalSampler <- torch::nn_module(
         cur_distr_col <- cur_distr_col + size
 
         # Generate the categorical distribution based on the logits, which are
-        # transformed and clamped in the 'categorical_parse_params_column' function.
+        # transformed and clamped in the 'categorical_parse_params_col' function.
         # distr is a "torch::distr_categorical" distribution.
-        distr <- categorical_parse_params_column(params, self$min_prob)
+        distr <- categorical_parse_params_col(params, self$min_prob)
 
         # If we are to return the class with highest probability or sample a
         # class from the distribution based on each class' probabilities.
@@ -1876,9 +1876,9 @@ GaussianCategoricalSamplerMostLikely <- torch::nn_module(
         cur_distr_col <- cur_distr_col + size
 
         # Generate the categorical distribution based on the logits, which are
-        # transformed and clamped in the 'categorical_parse_params_column' function.
+        # transformed and clamped in the 'categorical_parse_params_col' function.
         # distr is a "torch::distr_categorical" distribution.
-        distr <- categorical_parse_params_column(params, self$min_prob)
+        distr <- categorical_parse_params_col(params, self$min_prob)
 
         # Return the class with highest probability
         # By doing [, NULL], we add an extra dimension such that the tensor is a column vector.
@@ -1975,9 +1975,9 @@ GaussianCategoricalSamplerRandom <- torch::nn_module(
         cur_distr_col <- cur_distr_col + size
 
         # Generate the categorical distribution based on the logits, which are
-        # transformed and clamped in the 'categorical_parse_params_column' function.
+        # transformed and clamped in the 'categorical_parse_params_col' function.
         # distr is a "torch::distr_categorical" distribution.
-        distr <- categorical_parse_params_column(params, self$min_prob)
+        distr <- categorical_parse_params_col(params, self$min_prob)
 
         # Sample a class from the distribution based on each class' probabilities.
         # By doing [, NULL], we add an extra dimension such that the tensor is a column vector.
@@ -2079,9 +2079,9 @@ GaussianCategoricalParameters <- torch::nn_module(
         cur_distr_col <- cur_distr_col + size
 
         # Generate the categorical distribution based on the logits, which are
-        # transformed and clamped in the 'categorical_parse_params_column' function.
+        # transformed and clamped in the 'categorical_parse_params_col' function.
         # distr is a "torch::distr_categorical" distribution.
-        distr <- categorical_parse_params_column(params, self$min_prob)
+        distr <- categorical_parse_params_col(params, self$min_prob)
 
         # Extract the current probabailities for each classs
         current_parameters <- distr$probs
@@ -2210,7 +2210,7 @@ GaussianCategoricalLoss <- torch::nn_module(
         # Create a categorical distrbution based on the extracted parameters.
         # Returns a "torch::distr_categorical" distribution.
         # Ensure that the probabbility for each class is at least self$min_prob.
-        distr <- categorical_parse_params_column(params, self$min_prob)
+        distr <- categorical_parse_params_col(params, self$min_prob)
 
         # copy ground truth column, so that zeroing nans will not affect the original data
         gt_col_nansafe <- groundtruth_col$clone()$detach()
