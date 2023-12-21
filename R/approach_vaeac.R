@@ -2325,7 +2325,7 @@ as user set `return_as_postprocessed_dt = TRUE`.")
   # And optionally log-transform all continuous features. Useful for strictly positive
   # data set like Burr and Abalone, such that vaeac does not impute negative values.
   # Extract the pre-processed data by calling "$data_preprocessed".
-  x_explain_with_NaNs_preprocessed <-
+  x_explain_NaNs_preprocessed <-
     vaeac_preprocess_data(x_explain_with_NaNs, checkpoint$transform_all_cont_features)$data_preprocessed
 
   # Create a vaeac model
@@ -2379,12 +2379,12 @@ as user set `return_as_postprocessed_dt = TRUE`.")
   # I.e., we assume that the new data follow the same distribution as the training data.
   # If this is NOT the case, then vaeac will generate unreasonable imputations.
   # Note that mean is zero and sd is one for categorical data.
-  x_explain_with_NaNs_preprocessed_normalized <-
-    (x_explain_with_NaNs_preprocessed - checkpoint$norm_mean) / checkpoint$norm_std
+  x_explain_NaNs_preprocessed_normalized <-
+    (x_explain_NaNs_preprocessed - checkpoint$norm_mean) / checkpoint$norm_std
 
   # Create the data set object.
   dataset <- vaeac_dataset(
-    x_explain_with_NaNs_preprocessed_normalized,
+    x_explain_NaNs_preprocessed_normalized,
     checkpoint$one_hot_max_sizes
   )
 
@@ -2520,7 +2520,7 @@ as user set `return_as_postprocessed_dt = TRUE`.")
     dim = 2
   )
 
-  # Undo the normalization ([x_explain_with_NaNs_preprocessed - mu]/sigma) to get back to
+  # Undo the normalization ([x_explain_NaNs_preprocessed - mu]/sigma) to get back to
   # the original distribution by multiplying the results by sigma and adding the mean.
   result <- result * checkpoint$norm_std + checkpoint$norm_mean
 
