@@ -387,7 +387,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     width_decoder <- ifelse(skip_connection_masked_enc_dec, 2 * width, width)
 
     # Same for the input dimension to the last layer in decoder that yields the distribution params.
-    extra_params_from_skip_connection_from_masked_encoder <-
+    extra_params_skip_con_mask_enc <-
       ifelse(test = skip_connection_masked_enc_dec,
         yes = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) + num_features,
         no = 0
@@ -468,7 +468,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     # where K_i is the number of classes the i'th categorical feature can take on.
     decoder_network$add_module(
       module = torch::nn_linear(
-        in_features = width + extra_params_from_skip_connection_from_masked_encoder,
+        in_features = width + extra_params_skip_con_mask_enc,
         out_features = sum(apply(rbind(one_hot_max_sizes, rep(2, num_features)), 2, max))
       ),
       name = "output_layer_linear"
