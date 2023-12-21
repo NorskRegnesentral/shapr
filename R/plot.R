@@ -1625,17 +1625,32 @@ plot_SV_several_approaches <- function(explanation_list,
   # Name the elements in the explanation_list if no names have been provided
   if (is.null(names(explanation_list))) explanation_list <- MSEv_name_explanation_list(explanation_list)
 
-  # Check that the explanation objects explain the same observations
-  MSEv_check_explanation_list(explanation_list)
+  # All entries must be named
+  if (any(names(explanation_list) == "")) stop("All the entries in `explanation_list` must be named.")
 
   # Check that the column names for the Shapley values are the same for all explanations in the `explanation_list`
   if (length(unique(lapply(explanation_list, function(explanation) colnames(explanation$shapley_values)))) != 1) {
     stop("The Shapley value feature names are not identical in all objects in the `explanation_list`.")
   }
 
+  # Check that all explanation objects use the same test observations
+  entries_using_diff_x_explain <- sapply(explanation_list, function(explanation) {
+    !identical(explanation_list[[1]]$internal$data$x_explain, explanation$internal$data$x_explain)
+  })
+  if (any(entries_using_diff_x_explain)) {
+    methods_with_diff_comb_str <-
+      paste(names(entries_using_diff_x_explain)[entries_using_diff_x_explain], collapse = "', '")
+    stop(paste0(
+      "The object/objects '", methods_with_diff_comb_str, "' in `explanation_list` has/have a different ",
+      "`x_explain` than '", names(explanation_list)[1], "'. Cannot compare them."
+    ))
+  }
+
   # Update the index_explicands to be all explicands if not specified
   if (is.null(index_explicands)) index_explicands <- seq(explanation_list[[1]]$internal$parameters$n_explain)
 
+
+  # Creating data.tables --------------------------------------------------------------------------------------------
   # Update the `only_these_features` parameter vector based on `plot_phi0` or in case it is NULL
   only_these_features <- update_only_these_features(
     explanation_list = explanation_list,
