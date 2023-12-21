@@ -12,6 +12,7 @@ Description: Complex machine learning models are often hard to interpret. Howeve
 Authors@R: c(
     person("Nikolai", "Sellereite", email = "nikolaisellereite@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-4671-0337")),
     person("Martin", "Jullum", email = "Martin.Jullum@nr.no", role = c("cre", "aut"), comment = c(ORCID = "0000-0003-3908-5155")),
+    person("Lars Henry Berge", "Olsen", email = "lholsen@math.uio.no", role = "aut", comment = c(ORCID = "0009-0006-9360-6993")),
     person("Annabelle", "Redelmeier", email = "Annabelle.Redelmeier@nr.no", role = "aut"),
     person("Jon", "Lachmann", email = "Jon@lachmann.nu", role = "aut"),
     person("Anders", "Løland", email = "Anders.Loland@nr.no", role = "ctb"), 
@@ -53,7 +54,11 @@ Suggests:
     future,
     ggbeeswarm,
     vdiffr,
-    forecast
+    forecast,
+    torch,
+    GGally,
+    progress,
+    coro
 LinkingTo: 
     RcppArmadillo,
     Rcpp
