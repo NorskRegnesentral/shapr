@@ -250,25 +250,25 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   }
 
   # Check if user has provided the same parameter twice, both as a main and extra parameter
-  provided_as_both_main_and_extra_parameter <-
+  given_as_main_and_extra_para <-
     names(internal$parameters$vaeac.extra_parameters)[names(internal$parameters$vaeac.extra_parameters)
     %in% names(internal$parameters)]
 
   # Print a message to the user and tell them that we use those in `vaeac.extra_parameters`.
-  if (length(provided_as_both_main_and_extra_parameter) > 0) {
-    if (length(provided_as_both_main_and_extra_parameter) == 1) {
+  if (length(given_as_main_and_extra_para) > 0) {
+    if (length(given_as_main_and_extra_para) == 1) {
       message(sprintf(
         "The parameter `%s` has been provided as both a separete parameter and in the
 `vaeac.extra_parameters` list in the call to the `explain()` function.
 The function proceeds using the value in `vaeac.extra_parameters`.\n",
-        provided_as_both_main_and_extra_parameter
+        given_as_main_and_extra_para
       ))
     } else {
       message(sprintf(
         "The parameters %s have been provided as both separete parameters and in the
 `vaeac.extra_parameters` list in the call to the `explain()` function.
 The function proceeds using the values in `vaeac.extra_parameters`.\n",
-        paste(strsplit(paste(paste0("`", provided_as_both_main_and_extra_parameter, "`"),
+        paste(strsplit(paste(paste0("`", given_as_main_and_extra_para, "`"),
           collapse = ", "
         ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and")
       ))
@@ -2815,7 +2815,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
 #' )
 #'
 #' @author Lars Henry Berge Olsen
-make_vaeac_training_evaluation_plots <- function(explanation_list,
+plot_vaeac_training_evaluation <- function(explanation_list,
                                                  plot_from_nth_epoch = 1,
                                                  plot_every_nth_epoch = 1,
                                                  plot_figures = TRUE,

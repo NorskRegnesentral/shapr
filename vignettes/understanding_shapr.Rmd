@@ -1349,7 +1349,7 @@ explanation_vaeac <- explain(
 Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 10` is likely to few epochs as it still seems like the `vaeac` model is learning.
 ```{r}
 # Look at the training and validation errors.
-make_vaeac_training_evaluation_plots(list("Vaeac 3 epochs" = explanation_vaeac),
+plot_vaeac_training_evaluation(list("Vaeac 3 epochs" = explanation_vaeac),
   plot_figures = FALSE,
   return_figures = TRUE
 )$figure_facet_for_each_method
@@ -1393,7 +1393,7 @@ explanation_vaeac_early_stop <- explain(
 Can compare with the previous version and see that the results are more stable now.
 ```{r}
 # Look at the training and validation errors.
-make_vaeac_training_evaluation_plots(
+plot_vaeac_training_evaluation(
   list(
     "Vaeac 3 epochs" = explanation_vaeac,
     "Vaeac early stopping" = explanation_vaeac_early_stop

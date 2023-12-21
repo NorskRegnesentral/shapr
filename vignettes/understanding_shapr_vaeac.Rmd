@@ -394,7 +394,7 @@ expl_paired_sampling_FALSE <- explain(
 
 We can compare the results by looking at the training and validation errors and by the $\opertorname{MSE}_v$ evaluation criterion. 
 ```{r paired sampling plotting, cache = TRUE}
-make_vaeac_training_evaluation_plots(list(
+plot_vaeac_training_evaluation(list(
   "Regular samp." = expl_paired_sampling_FALSE,
   "Paired samp." = expl_paired_sampling_TRUE
 ))
@@ -584,7 +584,7 @@ vaeac_ggpairs_plot_imputed_and_true_data_shapr(
 )
 
 # Look at the training and validation errors. Not happy and want to train more.
-make_vaeac_training_evaluation_plots(expl_litle_training)
+plot_vaeac_training_evaluation(expl_litle_training)
 
 # Can look at the saved models, training/validation errors, and the training time
 expl_litle_training$internal$parameters$vaeac$models
@@ -610,7 +610,7 @@ expl_train_more$internal$parameters$vaeac$results
 
 # Look at the training and validation errors. Still not sure
 # Note that the lines are obviously overlapping
-make_vaeac_training_evaluation_plots(list(
+plot_vaeac_training_evaluation(list(
   "Original" = expl_litle_training,
   "More epochs" = expl_train_more
 ))
@@ -649,7 +649,7 @@ expl_train_even_more$internal$parameters$vaeac$models
 expl_train_even_more$internal$parameters$vaeac$results
 
 # Look at the training and validation errors.
-make_vaeac_training_evaluation_plots(list(
+plot_vaeac_training_evaluation(list(
   "Original" = expl_litle_training,
   "More epochs" = expl_train_more,
   "Even more epochs" = expl_train_even_more
@@ -723,7 +723,7 @@ expl_early_stopping <- explain(
 )
 
 # Look at the training and validation errors. We are quite happy with it.
-make_vaeac_training_evaluation_plots(list("Vaeac early stopping" = expl_early_stopping))
+plot_vaeac_training_evaluation(list("Vaeac early stopping" = expl_early_stopping))
 ```
 
 However, we can train it further for a fixed amount of epochs if desired.
@@ -749,7 +749,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
   )
 
 # Look at the training and validation errors.
-make_vaeac_training_evaluation_plots(list(
+plot_vaeac_training_evaluation(list(
   "Vaeac early stopping" = expl_early_stopping,
   "Vaeac early stopping more epochs" = expl_early_stopping_train_more
 ))
@@ -917,7 +917,7 @@ expl_vaeac <- explain(
 )
 
 # We see that the networks are still learning
-make_vaeac_training_evaluation_plots(list("Simple vaeac" = expl_vaeac))
+plot_vaeac_training_evaluation(list("Simple vaeac" = expl_vaeac))
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
@@ -955,7 +955,7 @@ expl_vaeac_complex <- explain(
   )
 )
 
-make_vaeac_training_evaluation_plots(list(
+plot_vaeac_training_evaluation(list(
   "Vaeac w.o. skip-con." = expl_vaeac,
   "Vaeac w. skip-con." = expl_vaeac_complex
 ))
