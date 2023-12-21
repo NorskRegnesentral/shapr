@@ -672,13 +672,11 @@ expl_train_even_more_vaeac <- explain(
 )
 
 # We see that the Shapley values have changed
-plot_SV_several_approaches(
-  expl_list = list(
-    "Few epochs" = expl_litle_training,
-    "More epochs" = expl_train_more_vaeac,
-    "Even more epochs" = expl_train_even_more_vaeac
-  )
-)
+plot_SV_several_approaches(list(
+  "Few epochs" = expl_litle_training,
+  "More epochs" = expl_train_more_vaeac,
+  "Even more epochs" = expl_train_even_more_vaeac
+))
 
 # Can see that the extra training has decreased the MSE_Frye evaluation criterion.
 # We see that "More epochs" actually perform worst, while "Even more epochs" is the
@@ -769,20 +767,16 @@ expl_early_stopping_train_more <- explain(
 And then compare them and show the Shapley values.
 ```{r}
 # We can compare them
-plot_MSEv_eval_crit(
-  list(
-    "Vaeac early stopping" = expl_early_stopping,
-    "Vaeac early stopping more epochs" = expl_early_stopping_train_more
-  )
-)
+plot_MSEv_eval_crit(list(
+  "Vaeac early stopping" = expl_early_stopping,
+  "Vaeac early stopping more epochs" = expl_early_stopping_train_more
+))
 
 # We see that the Shapley values have changed
-plot_SV_several_approaches(
-  expl_list = list(
-    "Vaeac early stopping" = expl_early_stopping,
-    "Vaeac early stopping more epochs" = expl_early_stopping_train_more
-  )
-)
+plot_SV_several_approaches(list(
+  "Vaeac early stopping" = expl_early_stopping,
+  "Vaeac early stopping more epochs" = expl_early_stopping_train_more
+))
 ```
 
 
