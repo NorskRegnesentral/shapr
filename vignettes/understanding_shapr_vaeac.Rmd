@@ -393,7 +393,7 @@ expl_paired_sampling_FALSE <- explain(
 
 We can compare the results by looking at the training and validation errors and by the $\opertorname{MSE}_v$ evaluation criterion. 
 ```{r paired sampling plotting, cache = TRUE}
-explanation_list = list("Regular samp." = expl_paired_sampling_FALSE, "Paired samp." = expl_paired_sampling_TRUE)
+explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE, "Paired samp." = expl_paired_sampling_TRUE)
 plot_vaeac_training_evaluation(explanation_list)
 plot_MSEv_eval_crit(explanation_list)
 ```

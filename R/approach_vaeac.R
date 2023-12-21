@@ -2990,7 +2990,8 @@ as user set `return_as_postprocessed_dt = TRUE`.")
 #'       scales = facet_wrap_scales
 #'     ) +
 #'     {
-#'       if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction)
+#'       if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette,
+#'        direction = brewer_direction)
 #'     } +
 #'     {
 #'       if (!is.null(ggplot_theme)) ggplot_theme
@@ -3225,13 +3226,13 @@ as user set `return_as_postprocessed_dt = TRUE`.")
 #'
 #' @author Lars Henry Berge Olsen
 #' @export
-plot_several_vaeacs_VLB_IWAE = function(explanation_list,
-                                        plot_from_nth_epoch = 1,
-                                        plot_every_nth_epoch = 1,
-                                        criteria = c("VLB", "IWAE"),
-                                        plot_type = c("method", "criterion"),
-                                        facet_wrap_scales = "fixed",
-                                        facet_wrap_ncol = NULL) {
+plot_several_vaeacs_VLB_IWAE <- function(explanation_list,
+                                         plot_from_nth_epoch = 1,
+                                         plot_every_nth_epoch = 1,
+                                         criteria = c("VLB", "IWAE"),
+                                         plot_type = c("method", "criterion"),
+                                         facet_wrap_scales = "fixed",
+                                         facet_wrap_ncol = NULL) {
   ## Checks
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -3258,17 +3259,19 @@ plot_several_vaeacs_VLB_IWAE = function(explanation_list,
 
   ## Create data.tables
   # Extract the VLB and IWAE
-  vaeac_VLB_IWAE_dt = extract_several_vaeac_VLB_IWAE(explanation_list)
+  vaeac_VLB_IWAE_dt <- extract_several_vaeac_VLB_IWAE(explanation_list)
 
   # Get the relevant criteria
-  keep_these_columns = c("Method", "Epoch", criteria)
-  vaeac_VLB_IWAE_dt = vaeac_VLB_IWAE_dt[,..keep_these_columns]
+  keep_these_columns <- c("Method", "Epoch", criteria)
+  vaeac_VLB_IWAE_dt <- vaeac_VLB_IWAE_dt[, ..keep_these_columns]
 
   # Check for valid `plot_from_nth_epoch`
-  max_epoch = max(vaeac_VLB_IWAE_dt$Epoch)
+  max_epoch <- max(vaeac_VLB_IWAE_dt$Epoch)
   if (plot_from_nth_epoch > max_epoch) {
-    stop(sprintf("`plot_from_nth_epoch` (%d) is larger than the number of epochs (%d)",
-                 plot_from_nth_epoch, max_epoch))
+    stop(sprintf(
+      "`plot_from_nth_epoch` (%d) is larger than the number of epochs (%d)",
+      plot_from_nth_epoch, max_epoch
+    ))
   }
 
   # Remove entries with too low epoch
@@ -3308,7 +3311,7 @@ plot_several_vaeacs_VLB_IWAE = function(explanation_list,
   }
 
   # If only made one figure, then we directly return that object and not a list
-  if (length(return_object) == 1) return_object = return_object[[1]]
+  if (length(return_object) == 1) return_object <- return_object[[1]]
 
   return(return_object)
 }
@@ -3326,7 +3329,7 @@ plot_several_vaeacs_VLB_IWAE = function(explanation_list,
 #' each vaeac model.
 #' @author Lars Henry Berge Olsen
 #' @export
-extract_several_vaeac_VLB_IWAE = function(explanation_list) {
+extract_several_vaeac_VLB_IWAE <- function(explanation_list) {
   # Check if user only provided a single explanation and did not put it in a list
   if ("shapr" %in% class(explanation_list)) explanation_list <- list(explanation_list)
 
