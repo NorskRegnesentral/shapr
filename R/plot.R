@@ -1473,17 +1473,8 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #'   n_samples = 1e2
 #' )
 #'
-#' # Create a list of explanations without names
-#' explanation_list_unnamed <- list(
-#'   explanation_independence,
-#'   explanation_empirical,
-#'   explanation_gaussian_1e1,
-#'   explanation_gaussian_1e2,
-#'   explanation_combined
-#' )
-#'
 #' # Create a list of explanations with names
-#' explanation_list_named <- list(
+#' explanation_list <- list(
 #'   "Ind." = explanation_independence,
 #'   "Emp." = explanation_empirical,
 #'   "Gaus. 1e1" = explanation_gaussian_1e1,
@@ -1492,123 +1483,58 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #' )
 #'
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   # The function sets default names for unnamed lists.
-#'   plot_SV_several_approaches(explanation_list_unnamed)
-#'
 #'   # The function uses the provided names.
-#'   plot_SV_several_approaches(explanation_list_named)
+#'   plot_SV_several_approaches(explanation_list)
 #'
-#'   # We can change the number of columns in the grid of plots.
-#'   plot_SV_several_approaches(explanation_list_named,
-#'     facet_ncol = 3
-#'   )
+#'   # We can change the number of columns in the grid of plots and add other visual alterations
+#'   plot_SV_several_approaches(explanation_list,
+#'     facet_ncol = 3,
+#'     facet_scales = "free_y",
+#'     add_zero_line = TRUE,
+#'     digits = 2,
+#'     brewer_palette = "Paired",
+#'     geom_col_width = 0.6
+#'   ) +
+#'     ggplot2::theme_minimal() +
+#'     ggplot2::theme(legend.position = "bottom", plot.title = ggplot2::element_text(size = 0))
 #'
-#'   # We can specify which explicands to plot to get less chaotic plots.
-#'   plot_SV_several_approaches(explanation_list_named,
-#'     index_explicands = c(1:2, 5, 10)
-#'   )
 #'
-#'   # We can make the bars vertical by setting `horizontal_bars = FALSE`.
-#'   # Will then get message about long label names on the x-axis and how to fix it.
-#'   plot_SV_several_approaches(explanation_list_named,
+#'   # We can specify which explicands to plot to get less chaotic plots and make the bars vertical
+#'   plot_SV_several_approaches(explanation_list,
 #'     index_explicands = c(1:2, 5, 10),
-#'     horizontal_bars = FALSE
+#'     horizontal_bars = FALSE,
+#'     axis_labels_rotate_angle = 45
 #'   )
 #'
 #'   # We can change the order of the features by specifying the order using the `only_these_features` parameter.
-#'   plot_SV_several_approaches(explanation_list_named,
+#'   plot_SV_several_approaches(explanation_list,
 #'     index_explicands = c(1:2, 5, 10),
 #'     only_these_features = c("Temp", "Solar.R", "Month", "Wind")
 #'   )
 #'
 #'   # We can also remove certain features if we are not interested in them or want to focus on, e.g., two features.
 #'   # The function will give a message to if the user specifies non-valid feature names.
-#'   plot_SV_several_approaches(explanation_list_named,
-#'     index_explicands = c(1:2, 5, 10),
-#'     only_these_features = c("Temp", "Solar.R")
-#'   )
-#'
-#'   # To more easily compare the magnitude of the Shapley values for different explicands we can fix the x-axis
-#'   # by specifying that only the scales on the y-axis are to be free.
-#'   plot_SV_several_approaches(explanation_list_named,
-#'     index_explicands = c(1:2, 5, 10),
-#'     only_these_features = c("Temp", "Solar.R"),
-#'     facet_scales = "free_y"
-#'   )
-#'
-#'   # If we rather want vertical bars and fix the y-axis, then we specify that the scales are only free on the x-axis.
-#'   plot_SV_several_approaches(explanation_list_named,
-#'     index_explicands = c(1:2, 5, 10),
-#'     only_these_features = c("Temp", "Solar.R"),
-#'     facet_scales = "free_x",
-#'     horizontal_bars = FALSE
-#'   )
-#'
-#'   # By default the function does not plot the phi0, but we can change that by setting `plot_phi0 = TRUE`.
-#'   plot_SV_several_approaches(explanation_list_named,
+#'   plot_SV_several_approaches(explanation_list,
 #'     index_explicands = c(1:2, 5, 10),
 #'     only_these_features = c("Temp", "Solar.R"),
 #'     plot_phi0 = TRUE
-#'   )
-#'
-#'   # Or we can include "none" in the `only_these_features` parameter. Note that phi0 will always be the first bars.
-#'   plot_SV_several_approaches(explanation_list_named,
-#'     index_explicands = c(1:2, 5, 10),
-#'     only_these_features = c("Temp", "Solar.R", "none")
-#'   )
-#'
-#'   # We can add a line at the Shapley value of zero and ensure non overlapping labels by setting `axis_labels_n_dodge`.
-#'   plot_SV_several_approaches(explanation_list_named,
-#'     index_explicands = c(1:2, 5, 10),
-#'     add_zero_line = TRUE,
-#'     axis_labels_n_dodge = 2,
-#'     horizontal_bars = FALSE
-#'   )
-#'
-#'   # We can move the legend to the bottom of the plot and specify that the method names should be on one row.
-#'   # Note that setting `legend_position` = "bottom" removes the legend.
-#'   plot_SV_several_approaches(explanation_list_named,
-#'     index_explicands = c(1:2, 5, 10),
-#'     legend_position = "bottom",
-#'     legend_nrow = 1
-#'   )
-#'
-#'   # We can increase the space between the features to make it easier to distinguish them from each other
-#'   # by lowering `geom_col_width`. Note that default is 0.85.
-#'   plot_SV_several_approaches(explanation_list_named,
-#'     index_explicands = c(1:2, 5, 10),
-#'     legend_position = "bottom",
-#'     legend_nrow = 1,
-#'     geom_col_width = 0.6
-#'   )
-#'
-#'   # We can remove the title, change the theme of the plot and the color palette.
-#'   # Note that `brewer_palette` = NULL yields ggplot2's default color palette.
-#'   plot_SV_several_approaches(explanation_list_named,
-#'     index_explicands = c(1:2, 5, 10),
-#'     legend_position = "bottom",
-#'     legend_nrow = 1,
-#'     geom_col_width = 0.6,
-#'     ggplot_theme = ggplot2::theme_minimal(),
-#'     brewer_palette = "Greens",
-#'     title_text_size = 0
 #'   )
 #' }
 #'
 #' @author Lars Henry Berge Olsen
 plot_SV_several_approaches <- function(explanation_list,
-                                                      index_explicands = NULL,
-                                                      only_these_features = NULL,
-                                                      plot_phi0 = FALSE,
-                                                      digits = 4,
-                                                      add_zero_line = FALSE,
-                                                      axis_labels_n_dodge = NULL,
-                                                      axis_labels_rotate_angle = NULL,
-                                                      horizontal_bars = TRUE,
-                                                      facet_scales = "free",
-                                                      facet_ncol = 2,
-                                                      geom_col_width = 0.85,
-                                                      brewer_palette = NULL) {
+                                       index_explicands = NULL,
+                                       only_these_features = NULL,
+                                       plot_phi0 = FALSE,
+                                       digits = 4,
+                                       add_zero_line = FALSE,
+                                       axis_labels_n_dodge = NULL,
+                                       axis_labels_rotate_angle = NULL,
+                                       horizontal_bars = TRUE,
+                                       facet_scales = "free",
+                                       facet_ncol = 2,
+                                       geom_col_width = 0.85,
+                                       brewer_palette = NULL) {
   # Setup and checks ----------------------------------------------------------------------------
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
