@@ -108,7 +108,7 @@
 #'   \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
 #'  \item{vaeac.save_data}{Default is `FALSE`. Boolean. If we are to save the data together with
 #'   the model. Useful if one are to continue to train the model later.}
-#'  \item{vaeac.transform_all_continuous_features}{Default is `FALSE`. Boolean. If we are to log
+#'  \item{vaeac.transform_all_cont_features}{Default is `FALSE`. Boolean. If we are to log
 #'  transform all continuous features before sending the data to `vaeac`. The `vaeac` model creates
 #'  unbounded MC samples values, so if the continuous features are strictly positive, as for Burr
 #'  distributed data and the Abalone data set, it can be advantageous to log-transform the data to
@@ -183,7 +183,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     "vaeac.sigma_mu" = 1e4,
     "vaeac.sigma_sigma" = 1e-4,
     "vaeac.save_data" = FALSE,
-    "vaeac.transform_all_continuous_features" = FALSE,
+    "vaeac.transform_all_cont_features" = FALSE,
     "vaeac.verbose" = FALSE,
     "vaeac.seed" = NULL,
     "vaeac.which_vaeac_model" = NULL
@@ -760,7 +760,7 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 #' @param save_data Boolean. If we are to save the data together with the model. Useful if one are to continue
 #' to train the model later.
-#' @param transform_all_continuous_features Boolean. If we are to log transform all continuous features before
+#' @param transform_all_cont_features Boolean. If we are to log transform all continuous features before
 #' sending the data to vaeac. vaeac creates unbounded values, so if the continuous features are strictly positive,
 #' as for Burr and Abalone data, it can be advantageous to log-transform the data to unbounded form before using vaeac.
 #' If `TRUE`, then \code{vaeac_postprocess_data} will take the exp of the results
@@ -802,7 +802,7 @@ vaeac_train_model <- function(training_data,
                               sigma_mu = 1e4,
                               sigma_sigma = 1e-4,
                               save_data = FALSE,
-                              transform_all_continuous_features = FALSE,
+                              transform_all_cont_features = FALSE,
                               verbose = FALSE,
                               seed = NULL,
                               ...) {
@@ -861,7 +861,7 @@ vaeac_train_model <- function(training_data,
   # as vaeac only accepts numerics, and keep track of the maping of names.
   # And optionally log-transform all continuous features. Usual for strictly positive
   # data set like Burr and Abalone, such that vaeac does not impute negative values.
-  preprocessed_data <- vaeac_preprocess_data(as.data.table(training_data), transform_all_continuous_features)
+  preprocessed_data <- vaeac_preprocess_data(as.data.table(training_data), transform_all_cont_features)
 
   # Extract the training data where all the
   training_data <- preprocessed_data$data_preprocessed
@@ -1111,7 +1111,7 @@ vaeac_train_model <- function(training_data,
     "cat_in_dataset" = preprocessed_data$cat_in_dataset,
     "map_new_to_original_names" = preprocessed_data$map_new_to_original_names,
     "map_original_to_new_names" = preprocessed_data$map_original_to_new_names,
-    "transform_all_continuous_features" = preprocessed_data$transform_all_continuous_features,
+    "transform_all_cont_features" = preprocessed_data$transform_all_cont_features,
     "save_data" = save_data,
     "verbose" = verbose,
     "seed" = seed
@@ -1729,7 +1729,7 @@ vaeac_continue_train_model <- function(explanation,
     # data set like Burr and Abalone, such that vaeac does not impute negative values.
     preprocessed_data <- vaeac_preprocess_data(
       as.data.table(training_data),
-      checkpoint$transform_all_continuous_features
+      checkpoint$transform_all_cont_features
     )
 
     # Extract the training data where all the
@@ -2326,7 +2326,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
   # data set like Burr and Abalone, such that vaeac does not impute negative values.
   # Extract the pre-processed data by calling "$data_preprocessed".
   x_explain_with_NaNs_preprocessed <-
-    vaeac_preprocess_data(x_explain_with_NaNs, checkpoint$transform_all_continuous_features)$data_preprocessed
+    vaeac_preprocess_data(x_explain_with_NaNs, checkpoint$transform_all_cont_features)$data_preprocessed
 
   # Create a vaeac model
   model <- vaeac(

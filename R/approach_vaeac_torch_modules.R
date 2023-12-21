@@ -850,7 +850,7 @@ compute_normalization <- function(data,
 #'
 #' @param data matrix/data.frame/data.table containing the training data. Only the features and
 #' not the response.
-#' @param transform_all_continuous_features Boolean. If we are to log transform all continuous
+#' @param transform_all_cont_features Boolean. If we are to log transform all continuous
 #' features before sending the data to vaeac. vaeac creates unbounded values, so if the continuous
 #' features are strictly positive, as for Burr and Abalone data, it can be advantageous to log-transform
 #' the data to unbounded form before using vaeac. If TRUE, then \code{vaeac_postprocess_data} will
@@ -861,7 +861,7 @@ compute_normalization <- function(data,
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_preprocess_data <- function(data, transform_all_continuous_features = FALSE) {
+vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE) {
   # Ensure that data is data.table object
   data <- data.table::copy(data.table::as.data.table(data))
 
@@ -929,7 +929,7 @@ vaeac_preprocess_data <- function(data, transform_all_continuous_features = FALS
   }
 
   # Check if we are to log transform all continuous features.
-  if (transform_all_continuous_features) {
+  if (transform_all_cont_features) {
     # This is not the best way. We only give an error when all features are known, i.e., during training.
     # During imputations we do not worry, as we are going to impute the NA values.
     if (!is.na(suppressWarnings(any(data[, ..col_cont_names] <= 0)))) {
@@ -944,7 +944,7 @@ vaeac_preprocess_data <- function(data, transform_all_continuous_features = FALS
   }
 
   # Add the numerical data table to the return_list object, and some other variables.
-  return_list$transform_all_continuous_features <- transform_all_continuous_features
+  return_list$transform_all_cont_features <- transform_all_cont_features
   return_list$data_preprocessed <- as.matrix(data)
   return_list$col_cat <- col_cat
   return_list$col_cat_names <- col_cat_names
@@ -999,7 +999,7 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
 
   # If we log transformed the continuous features in the pre-processing, we need to
   # undo the transformation by exp-transforming the features back to strictly positives.
-  if (vaeac_model_state_list$transform_all_continuous_features) {
+  if (vaeac_model_state_list$transform_all_cont_features) {
     # Exp-transform the continuous features.
     data_dt[, (col_cont_names) := lapply(.SD, exp), .SDcols = col_cont_names]
   }
@@ -1031,13 +1031,13 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
 #' # data$X2 <- factor(data$X2 >= 2) # Create a factor, larger than mean
 #' # one_hot_max_sizes <- c(1, 2, 1)
 #' # print(data)
-#' # data_unbounded <- log_transform_all_continuous_features_function(data, one_hot_max_sizes)
+#' # data_unbounded <- log_transform_all_cont_features_function(data, one_hot_max_sizes)
 #' # print(data_unbounded)
 #' # data <- as.data.table(data) # convert to data table. Same functions works then too
 #' # print(data)
-#' # data_unbounded <- log_transform_all_continuous_features_function(data, one_hot_max_sizes)
+#' # data_unbounded <- log_transform_all_cont_features_function(data, one_hot_max_sizes)
 #' # print(data_unbounded)
-log_transform_all_continuous_features_function <- function(data, one_hot_max_sizes) {
+log_transform_all_cont_features_function <- function(data, one_hot_max_sizes) {
   # Check if data is data.table or matrix/data.frame.
   if (any(class(data) == "data.table")) {
     # Extract which columns that are continuous.
@@ -1092,19 +1092,19 @@ log_transform_all_continuous_features_function <- function(data, one_hot_max_siz
 #' # data$X2 <- factor(data$X2 >= 2) # Create a factor, larger than mean
 #' # one_hot_max_sizes <- c(1, 2, 1)
 #' # print(data)
-#' # data_unbounded <- log_transform_all_continuous_features_function(data, one_hot_max_sizes)
+#' # data_unbounded <- log_transform_all_cont_features_function(data, one_hot_max_sizes)
 #' # print(data_unbounded)
-#' # data_bounded <- exp_transform_all_continuous_features_function(data_unbounded, one_hot_max_sizes)
+#' # data_bounded <- exp_transform_all_cont_features_function(data_unbounded, one_hot_max_sizes)
 #' # print(data_bounded)
 #' # all.equal(data, data_bounded)
 #' # data <- as.data.table(data) # convert to data table. Same functions works then too
 #' # print(data)
-#' # data_unbounded <- log_transform_all_continuous_features_function(data, one_hot_max_sizes)
+#' # data_unbounded <- log_transform_all_cont_features_function(data, one_hot_max_sizes)
 #' # print(data_unbounded)
-#' # data_bounded <- exp_transform_all_continuous_features_function(data_unbounded, one_hot_max_sizes)
+#' # data_bounded <- exp_transform_all_cont_features_function(data_unbounded, one_hot_max_sizes)
 #' # print(data_bounded)
 #' # all.equal(data, data_bounded)
-exp_transform_all_continuous_features_function <- function(data, one_hot_max_sizes) {
+exp_transform_all_cont_features_function <- function(data, one_hot_max_sizes) {
   # Check if data is data.table or matrix/data.frame.
   if (any(class(data) == "data.table")) {
     # Extract which columns that are continuous.
