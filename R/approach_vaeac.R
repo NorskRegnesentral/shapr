@@ -2593,7 +2593,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
 #' @param plot_figures Boolean. If `TRUE`, the plot the figure before the function potentially
 #' return the figures, depending on the value of `return_figures`.
 #' @param return_figures Boolean. If `TRUE`, then the function returns the figures in a list.
-#' @param return_training_validation_errors Boolean. If `TRUE`, then the training and validation errors are returned.
+#' @param return_train_validation_errors Boolean. If `TRUE`, then the training and validation errors are returned.
 #' @param plot_VLB Boolean. If `TRUE`, then the function includes the VLB in the figures.
 #' @param plot_IWAE Boolean. If `TRUE`, then the function includes the IWAE in the figures.
 #' @param plot_IWAE_running Boolean. If `TRUE`, then the function includes the IWAE_running in the figures.
@@ -2642,7 +2642,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
 #' @param legend_ncol Integer. The number of columns in the legend.
 #' @param legend_nrow Integer. The number of rows in the legend.
 #'
-#' @return Depending on `return_figures` and `return_training_validation_errors`, either a list of
+#' @return Depending on `return_figures` and `return_train_validation_errors`, either a list of
 #' figures, a list of figures and a data.table, a data.table, or nothing.
 #' @export
 #'
@@ -2796,7 +2796,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
 #' vaeac_training_vlb_and_validation_iwae_shapr(
 #'   explanation_list = explanation_list_named,
 #'   plot_figures = FALSE,
-#'   return_training_validation_errors = TRUE
+#'   return_train_validation_errors = TRUE
 #' )
 #'
 #' # If we want to return the figures
@@ -2811,7 +2811,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
 #'   explanation_list = explanation_list_named,
 #'   plot_figures = FALSE,
 #'   return_figures = TRUE,
-#'   return_training_validation_errors = TRUE
+#'   return_train_validation_errors = TRUE
 #' )
 #'
 #' @author Lars Henry Berge Olsen
@@ -2820,7 +2820,7 @@ plot_vaeac_training_evaluation <- function(explanation_list,
                                                  plot_every_nth_epoch = 1,
                                                  plot_figures = TRUE,
                                                  return_figures = FALSE,
-                                                 return_training_validation_errors = FALSE,
+                                                 return_train_validation_errors = FALSE,
                                                  plot_VLB = TRUE,
                                                  plot_IWAE = TRUE,
                                                  plot_IWAE_running = FALSE,
@@ -3010,7 +3010,7 @@ plot_vaeac_training_evaluation <- function(explanation_list,
 
   # Cleanup and return objects ------------------------------------------------------------------
   # Check if we are to return figures and/or the data.table with the results
-  if (return_figures || return_training_validation_errors) {
+  if (return_figures || return_train_validation_errors) {
     # Create empty list to store the results
     return_list <- list()
 
@@ -3021,7 +3021,7 @@ plot_vaeac_training_evaluation <- function(explanation_list,
     }
 
     # Check if we are to return the data.table with the training results
-    if (return_training_validation_errors) {
+    if (return_train_validation_errors) {
       if (length(return_list) == 0) {
         # We are no to return the figures, so directly return the data.table
         return_list <- results_dt
@@ -3046,7 +3046,7 @@ plot_vaeac_training_evaluation <- function(explanation_list,
 #' @param plot_figure Boolean. If `TRUE`, the plot the figure before the function potentially
 #' return the figures, depending on the value of `return_figure`.
 #' @param return_figure Boolean. If `TRUE`, then the function returns the figure.
-#' @param return_training_validation_errors Boolean. If `TRUE`, then the training and validation errors are returned.
+#' @param return_train_validation_errors Boolean. If `TRUE`, then the training and validation errors are returned.
 #'
 #' @return A list containing the training VLB and validation IWAE at each epoch, and the total number of epochs.
 #' @export
@@ -3055,7 +3055,7 @@ vaeac_training_vlb_and_validation_iwae_shapr <- function(explanation,
                                                          plot_figure = TRUE,
                                                          plot_from_nth_epoch = 1,
                                                          return_figure = FALSE,
-                                                         return_training_validation_errors = FALSE) {
+                                                         return_train_validation_errors = FALSE) {
   # Extract the checkpoint for the last trained vaeac model.
   vaeac_model_path <- explanation$internal$parameters$vaeac$models$last
 
@@ -3075,7 +3075,7 @@ vaeac_training_vlb_and_validation_iwae_shapr <- function(explanation,
   }
 
   # Check if we are to return the errors
-  if (return_training_validation_errors) {
+  if (return_train_validation_errors) {
     return_list <- temp_list
   }
 
@@ -3114,7 +3114,7 @@ vaeac_training_vlb_and_validation_iwae_shapr <- function(explanation,
 
     # Check id we are to return the figure
     if (return_figure) {
-      if (return_training_validation_errors) {
+      if (return_train_validation_errors) {
         # We add the figure to the return list
         return_list[["Figure"]] <- fig
       } else {
@@ -3125,7 +3125,7 @@ vaeac_training_vlb_and_validation_iwae_shapr <- function(explanation,
   }
 
   # Return the the results
-  if (return_figure || return_training_validation_errors) {
+  if (return_figure || return_train_validation_errors) {
     return(return_list)
   }
 }
