@@ -2379,12 +2379,12 @@ as user set `return_as_postprocessed_dt = TRUE`.")
   # I.e., we assume that the new data follow the same distribution as the training data.
   # If this is NOT the case, then vaeac will generate unreasonable imputations.
   # Note that mean is zero and sd is one for categorical data.
-  x_explain_NaNs_preprocessed_normalized <-
+  x_explain_NaNs_preproc_norm <-
     (x_explain_NaNs_preprocessed - checkpoint$norm_mean) / checkpoint$norm_std
 
   # Create the data set object.
   dataset <- vaeac_dataset(
-    x_explain_NaNs_preprocessed_normalized,
+    x_explain_NaNs_preproc_norm,
     checkpoint$one_hot_max_sizes
   )
 
