@@ -700,9 +700,9 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' The networks have shared `depth`, `width`, and `activation_function`. The encoders maps the `training_data`
 #' to a latent representation of dimension `latent_dim`, while the decoder maps the latent representations
 #' back to the feature space. See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}
-#' for more details. The function first initiates `num_different_vaeac_initiate` vaeac models with different randomly
+#' for more details. The function first initiates `num_vaeacs_initiate` vaeac models with different randomly
 #' initiated network parameter values to remedy poorly initiated values. After `epochs_initiation_phase` epochs, the
-#' `num_different_vaeac_initiate` vaeac models are compared and the function continues to only train the best performing
+#' `num_vaeacs_initiate` vaeac models are compared and the function continues to only train the best performing
 #' one for a total of `epochs` epochs. The networks are trained using the ADAM optimizer with the learning rate is `lr`.
 #'
 #' @param training_data A matrix or data.frame containing the data. Categorical data must have class names 1,2,...,K.
@@ -711,9 +711,9 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' @param folder_to_save_model String specifying a path to a folder where
 #' the function is to save the fitted vaeac model.
 #' @param use_cuda Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!
-#' @param num_different_vaeac_initiate Integer. The number of different vaeac models to initiate in the start.
+#' @param num_vaeacs_initiate Integer. The number of different vaeac models to initiate in the start.
 #' Pick the best performing one after \code{epochs_initiation_phase } and continue training that one.
-#' @param epochs_initiation_phase Integer. The number of epochs to run each of the \code{num_different_vaeac_initiate}
+#' @param epochs_initiation_phase Integer. The number of epochs to run each of the \code{num_vaeacs_initiate}
 #' vaeac models before only continuing training the best one.
 #' @param epochs Integer. The number of epochs to train the final vaeac model.
 #' This includes \code{epochs_initiation_phase}.
@@ -778,7 +778,7 @@ vaeac_train_model <- function(training_data,
                               model_description = NULL,
                               folder_to_save_model = NULL,
                               use_cuda = FALSE,
-                              num_different_vaeac_initiate = 10,
+                              num_vaeacs_initiate = 10,
                               epochs_initiation_phase = 2,
                               epochs = 200,
                               epochs_early_stopping = NULL,
@@ -818,17 +818,17 @@ vaeac_train_model <- function(training_data,
   # Variable to store if early stopping was conducted
   early_stopping_applied <- NULL
 
-  if (!is.numeric(num_different_vaeac_initiate)) {
+  if (!is.numeric(num_vaeacs_initiate)) {
     stop(sprintf(
-      "The 'num_different_vaeac_initiate' parameter must be of type numeric, and not of type %s.\n",
-      paste(class(num_different_vaeac_initiate), collapse = ", ")
+      "The 'num_vaeacs_initiate' parameter must be of type numeric, and not of type %s.\n",
+      paste(class(num_vaeacs_initiate), collapse = ", ")
     ))
-  } else if (num_different_vaeac_initiate < 1) {
+  } else if (num_vaeacs_initiate < 1) {
     message(sprintf(
-      "The 'num_different_vaeac_initiate' (%g) parameter must be a positive integer. We set it to 1.\n",
-      num_different_vaeac_initiate
+      "The 'num_vaeacs_initiate' (%g) parameter must be a positive integer. We set it to 1.\n",
+      num_vaeacs_initiate
     ))
-    num_different_vaeac_initiate <- 1
+    num_vaeacs_initiate <- 1
   }
 
   if (epochs_initiation_phase >= epochs) {
@@ -885,10 +885,10 @@ vaeac_train_model <- function(training_data,
   }
 
   # Check that we initiate at least one vaeac model in the
-  if (num_different_vaeac_initiate < 1) {
+  if (num_vaeacs_initiate < 1) {
     stop(sprintf(
-      "The parameter 'num_different_vaeac_initiate' (%d) must be equal or larger than 1.",
-      num_different_vaeac_initiate
+      "The parameter 'num_vaeacs_initiate' (%d) must be equal or larger than 1.",
+      num_vaeacs_initiate
     ))
   }
 
@@ -1085,7 +1085,7 @@ vaeac_train_model <- function(training_data,
     "mask_gen_these_coalitions_prob" = mask_gen_these_coalitions_prob,
     "validation_ratio" = validation_ratio,
     "validation_iwae_num_samples" = validation_iwae_num_samples,
-    "num_different_vaeac_initiate" = num_different_vaeac_initiate,
+    "num_vaeacs_initiate" = num_vaeacs_initiate,
     "epochs_initiation_phase" = epochs_initiation_phase,
     "width" = width,
     "depth" = depth,
@@ -1166,11 +1166,11 @@ epoch might require a lot of disk storage if data is large.\n",
   best_state_running <- NULL
 
   # Create a `progressr::progressor` to keep track of the overall training time of the vaeac approach
-  progressr_bar <- progressr::progressor(steps = epochs_initiation_phase * (num_different_vaeac_initiate - 1) + epochs)
+  progressr_bar <- progressr::progressor(steps = epochs_initiation_phase * (num_vaeacs_initiate - 1) + epochs)
 
   # Iterate over the initializations.
   initialization <- 1
-  for (initialization in seq(num_different_vaeac_initiate)) {
+  for (initialization in seq(num_vaeacs_initiate)) {
     # Initialize a new vaeac model
     model <- vaeac(
       one_hot_max_sizes = one_hot_max_sizes,
@@ -1326,7 +1326,7 @@ epoch might require a lot of disk storage if data is large.\n",
       }
 
       # Update the overall `progressr::progressor`.
-      progressr_bar(message = sprintf("Training vaeac (init. %d of %d) ", initialization, num_different_vaeac_initiate))
+      progressr_bar(message = sprintf("Training vaeac (init. %d of %d) ", initialization, num_vaeacs_initiate))
     } # Done with initial training of a single vaeac model
 
     # Save the current vaeac model, if it is the best initialized version so far.
@@ -1365,7 +1365,7 @@ epoch might require a lot of disk storage if data is large.\n",
   if (verbose) {
     # Small printout to the user stating which initiated vaeac model was the best.
     message(paste0(
-      "\nNumber of vaeac initiations: ", num_different_vaeac_initiate, ". Best: #", best_iteration, ". ",
+      "\nNumber of vaeac initiations: ", num_vaeacs_initiate, ". Best: #", best_iteration, ". ",
       "VLB = ", sprintf("%.3f", best_train_vlb[-1]), " after ", epochs_initiation_phase, " epochs.",
       "\nContinue with training the best initiation."
     ))

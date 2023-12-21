@@ -9,7 +9,7 @@ vaeac_train_model(
   model_description = NULL,
   folder_to_save_model = NULL,
   use_cuda = FALSE,
-  num_different_vaeac_initiate = 10,
+  num_vaeacs_initiate = 10,
   epochs_initiation_phase = 2,
   epochs = 200,
   epochs_early_stopping = NULL,
@@ -50,10 +50,10 @@ the function is to save the fitted vaeac model.}
 
 \item{use_cuda}{Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!}
 
-\item{num_different_vaeac_initiate}{Integer. The number of different vaeac models to initiate in the start.
+\item{num_vaeacs_initiate}{Integer. The number of different vaeac models to initiate in the start.
 Pick the best performing one after \code{epochs_initiation_phase } and continue training that one.}
 
-\item{epochs_initiation_phase}{Integer. The number of epochs to run each of the \code{num_different_vaeac_initiate}
+\item{epochs_initiation_phase}{Integer. The number of epochs to run each of the \code{num_vaeacs_initiate}
 vaeac models before only continuing training the best one.}
 
 \item{epochs}{Integer. The number of epochs to train the final vaeac model.
@@ -148,9 +148,9 @@ The vaeac model consists of three neural networks, i.e., a masked encoder, a ful
 The networks have shared \code{depth}, \code{width}, and \code{activation_function}. The encoders maps the \code{training_data}
 to a latent representation of dimension \code{latent_dim}, while the decoder maps the latent representations
 back to the feature space. See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}
-for more details. The function first initiates \code{num_different_vaeac_initiate} vaeac models with different randomly
+for more details. The function first initiates \code{num_vaeacs_initiate} vaeac models with different randomly
 initiated network parameter values to remedy poorly initiated values. After \code{epochs_initiation_phase} epochs, the
-\code{num_different_vaeac_initiate} vaeac models are compared and the function continues to only train the best performing
+\code{num_vaeacs_initiate} vaeac models are compared and the function continues to only train the best performing
 one for a total of \code{epochs} epochs. The networks are trained using the ADAM optimizer with the learning rate is \code{lr}.
 }
 \author{
