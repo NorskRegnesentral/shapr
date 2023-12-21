@@ -1335,7 +1335,7 @@ epoch might require a lot of disk storage if data is large.\n",
       best_iteration <- initialization
       best_model <- model
       best_validation_iwae <- validation_iwae
-      best_validation_iwae_running_avg <- validation_iwae_running_avg
+      best_validation_iwae_run_avg <- validation_iwae_running_avg
       best_train_vlb <- train_vlb
       best_optimizer <- optimizer
       best_batch_size <- batch_size
@@ -1348,7 +1348,7 @@ epoch might require a lot of disk storage if data is large.\n",
   # networks = best_networks
   model <- best_model
   validation_iwae <- best_validation_iwae
-  validation_iwae_running_avg <- best_validation_iwae_running_avg
+  validation_iwae_running_avg <- best_validation_iwae_run_avg
   train_vlb <- best_train_vlb
   optimizer <- best_optimizer
   batch_size <- best_batch_size
