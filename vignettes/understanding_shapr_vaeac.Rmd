@@ -391,18 +391,11 @@ expl_paired_sampling_FALSE <- explain(
 )
 ```
 
-
 We can compare the results by looking at the training and validation errors and by the $\opertorname{MSE}_v$ evaluation criterion. 
 ```{r paired sampling plotting, cache = TRUE}
-plot_vaeac_training_evaluation(list(
-  "Regular samp." = expl_paired_sampling_FALSE,
-  "Paired samp." = expl_paired_sampling_TRUE
-))
-
-plot_MSEv_eval_crit(list(
-  "Regular samp." = expl_paired_sampling_FALSE,
-  "Paired samp." = expl_paired_sampling_TRUE
-))
+explanation_list = list("Regular samp." = expl_paired_sampling_FALSE, "Paired samp." = expl_paired_sampling_TRUE)
+plot_vaeac_training_evaluation(explanation_list)
+plot_MSEv_eval_crit(explanation_list)
 ```
 
 By looking at the time, we see that the paired version takes longer time in the setup_computation
@@ -577,7 +570,7 @@ expl_litle_training <- explain(
 )
 
 # Can also see how well vaeac generates data from the full joint distribution
-vaeac_ggpairs_plot_imputed_and_true_data_shapr(
+plot_vaeac_imputed_ggpairs(
   explanation = expl_litle_training,
   which_vaeac_model = "best",
   true_data = x_train
@@ -656,7 +649,7 @@ plot_vaeac_training_evaluation(list(
 ))
 
 # Can also see how well vaeac generates data from the full joint distribution
-vaeac_ggpairs_plot_imputed_and_true_data_shapr(
+plot_vaeac_imputed_ggpairs(
   explanation = expl_train_even_more,
   which_vaeac_model = "best",
   true_data = x_train

@@ -2570,6 +2570,478 @@ as user set `return_as_postprocessed_dt = TRUE`.")
 
 # Plot functions ======================================================================================================
 
+#' #' Plot the training VLB and validation IWAE for `vaeac` models
+#' #'
+#' #' @description
+#' #' This function make figures ([ggplot2::ggplot()]) of the training VLB and the validation IWAE for a list
+#' #' of [explain()] objects with `approach = "vaeac"`. See [setup_approach()] for more
+#' #' information about the `vaeac` approach. Two figures are made, where in the first one each object in
+#' #' `explanation_list` gets its own facet, while in the second figure, we plot the criteria in each facet.
+#' #'
+#' #' @details
+#' #' See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} or the
+#' #' \href{https://borea17.github.io/paper_summaries/iwae/}{blog post} for a summary of the VLB and IWAE.
+#' #'
+#' #' @param explanation_list A list of [explain()] objects applied to the same data, model, and
+#' #' `vaeac` must be the used approach. If the entries in the list is named, then the function use
+#' #' these names. Otherwise, it defaults to the approach names (with integer suffix for duplicates)
+#' #' for the explanation objects in `explanation_list`.
+#' #' @param plot_from_nth_epoch Integer. If we are only plot the results form the nth epoch and so forth.
+#' #' The first epochs can be large in absolute value and make the rest of the plot difficult to interpret.
+#' #' @param plot_every_nth_epoch Integer. If we are only to plot every nth epoch. Usefully to illustrate
+#' #' the overall trend, as there can be a lot of fluctuation and oscillation in the values between each epoch.
+#' #' #' @param facet_wrap_scales String. Should the scales be fixed ("`fixed`", the default),
+#' #' free ("`free`"), or free in one dimension ("`free_x`", "`free_y`").
+#' #' @param facet_wrap_nrow Integer. Number of rows in the facet wrap.
+#' #' @param facet_wrap_ncol Integer. Number of columns in the facet wrap.
+#' #'
+#' #' @param plot_figures Boolean. If `TRUE`, the plot the figure before the function potentially
+#' #' return the figures, depending on the value of `return_figures`.
+#' #' @param return_figures Boolean. If `TRUE`, then the function returns the figures in a list.
+#' #' @param return_train_validation_errors Boolean. If `TRUE`, then the training and validation errors are returned.
+#' #' @param plot_VLB Boolean. If `TRUE`, then the function includes the VLB in the figures.
+#' #' @param plot_IWAE Boolean. If `TRUE`, then the function includes the IWAE in the figures.
+#' #' @param plot_IWAE_running Boolean. If `TRUE`, then the function includes the IWAE_running in the figures.
+#' #' @param ggplot_theme A [ggplot2::theme()] object to customize the non-data components of the plots:
+#' #' i.e. titles, labels, fonts, background, gridlines, and legends. Themes can be used to give plots
+#' #' a consistent customized look. Use the themes available in \code{\link[ggplot2:theme_bw]{ggplot2::ggtheme()}}.
+#' #' if you would like to use a complete theme such as `theme_bw()`, `theme_minimal()`, and more.
+#' #' @param brewer_palette String. Name of one of the color palettes from [RColorBrewer::RColorBrewer()].
+#' #'  If `NULL`, then the function uses the default [ggplot2::ggplot()] color scheme.
+#' #' The following palettes are available for use with these scales:
+#' #' \describe{
+#' #'    \item{Diverging}{BrBG, PiYG, PRGn, PuOr, RdBu, RdGy, RdYlBu, RdYlGn, Spectral}
+#' #'    \item{Qualitative}{Accent, Dark2, Paired, Pastel1, Pastel2, Set1, Set2, Set3}
+#' #'    \item{Sequential}{Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges,
+#' #'      OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr, YlOrRd}
+#' #' }
+#' #' @param brewer_direction Integer. Sets the order of colors in the scale. If 1, the default,
+#' #' colors are as output by \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}}.
+#' #' If -1, the order of colors is reversed.
+#' #' @param title_text_size Positive numeric. The size of the title. If `0`, then the text is removed.
+#' #' @param line_width Positive numeric. Width of the lines, and 0 is the same as `line_type` = `blank`.
+#' #' @param line_type Legal values are the strings "blank", "solid", "dashed", "dotted", "dotdash",
+#' #' "longdash", and "twodash".
+#' #' Alternatively, the numbers 0 to 6 can be used (0 for "blank", 1 for "solid", ...).
+#' #' Moreover, one can also use strings that define the line type with up to 8 hexadecimal digits
+#' #' (each digit specifying the length of interleaved lines and gaps), see
+#' #' \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}
+#' #' and/or \url{http://sape.inf.usi.ch/quick-reference/ggplot2/linetype}.
+#' #' @param point_size Positive numeric. The size of the points. Set `point_size = 0` to remove points.
+#' #' @param point_shape Integer or string. Specify the shape of the points.
+#' #' For a complete list of all possible shapes, see \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}.
+#' #' @param facet_wrap_scales String. Should the scales be fixed ("`fixed`", the default),
+#' #' free ("`free`"), or free in one dimension ("`free_x`", "`free_y`").
+#' #' @param facet_wrap_nrow Integer. Number of rows in the facet wrap.
+#' #' @param facet_wrap_ncol Integer. Number of columns in the facet wrap.
+#' #' @param plot_geom_smooth Boolean. If we are to include a [ggplot2::geom_smooth()] with
+#' #' `method = "loess"` in the figures..
+#' #' @param plot_geom_smooth_se Boolean. If we are to display 95% confidence interval around the smooth.
+#' #' If `TRUE`, the `plot_geom_smooth_se` overrides `plot_geom_smooth`.
+#' #' @param legend_position String or numeric vector `c(x,y)`. The allowed string values for the
+#' #' argument `legend_position` are: `left`,`top`, `right`, `bottom`. Note that, the argument
+#' #' `legend_position` can be also a numeric vector `c(x,y)`. In this case it is possible to position
+#' #' the legend inside the plotting area. `x` and `y` are the coordinates of the legend box.
+#' #' Their values should be between `0` and `1`, where `c(0,0)` corresponds to the "bottom left"
+#' #' and `c(1,1)` corresponds to the "top right" position.
+#' #' @param legend_ncol Integer. The number of columns in the legend.
+#' #' @param legend_nrow Integer. The number of rows in the legend.
+#' #'
+#' #' @return Depending on `return_figures` and `return_train_validation_errors`, either a list of
+#' #' figures, a list of figures and a data.table, a data.table, or nothing.
+#' #' @export
+#' #'
+#' #' @author Lars Henry Berge Olsen
+#' #'
+#' #' @examples
+#' #' library(xgboost)
+#' #' data("airquality")
+#' #' data <- data.table::as.data.table(airquality)
+#' #' data <- data[complete.cases(data), ]
+#' #'
+#' #' x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#' #' y_var <- "Ozone"
+#' #'
+#' #' ind_x_explain <- 1:6
+#' #' x_train <- data[-ind_x_explain, ..x_var]
+#' #' y_train <- data[-ind_x_explain, get(y_var)]
+#' #' x_explain <- data[ind_x_explain, ..x_var]
+#' #'
+#' #' # Fitting a basic xgboost model to the training data
+#' #' model <- xgboost(
+#' #'   data = as.matrix(x_train),
+#' #'   label = y_train,
+#' #'   nround = 100,
+#' #'   verbose = FALSE
+#' #' )
+#' #'
+#' #' # Specifying the phi_0, i.e. the expected prediction without any features
+#' #' p0 <- mean(y_train)
+#' #'
+#' #' # Train several different NN
+#' #' explanation_paired_sampling_TRUE <- explain(
+#' #'   model = model,
+#' #'   x_explain = x_explain,
+#' #'   x_train = x_train,
+#' #'   approach = approach,
+#' #'   prediction_zero = p0,
+#' #'   n_batches = 2,
+#' #'   n_samples = 1, #' As we are only interested in the training of the vaeac
+#' #'   vaeac.epochs = 25, #' Should be higher in applications.
+#' #'   vaeac.num_vaeacs_initiate = 5,
+#' #'   vaeac.extra_parameters = list(
+#' #'     vaeac.paired_sampling = TRUE,
+#' #'     vaeac.verbose = TRUE
+#' #'   )
+#' #' )
+#' #'
+#' #' explanation_paired_sampling_FALSE <- explain(
+#' #'   model = model,
+#' #'   x_explain = x_explain,
+#' #'   x_train = x_train,
+#' #'   approach = approach,
+#' #'   prediction_zero = p0,
+#' #'   n_batches = 2,
+#' #'   n_samples = 1, #' As we are only interested in the training of the vaeac
+#' #'   vaeac.epochs = 25, #' Should be higher in applications.
+#' #'   vaeac.num_vaeacs_initiate = 5,
+#' #'   vaeac.extra_parameters = list(
+#' #'     vaeac.paired_sampling = FALSE,
+#' #'     vaeac.verbose = TRUE
+#' #'   )
+#' #' )
+#' #'
+#' #' # Other networks have 4.76 times more parameters.
+#' #' explanation_paired_sampling_FALSE_small <- explain(
+#' #'   model = model,
+#' #'   x_explain = x_explain,
+#' #'   x_train = x_train,
+#' #'   approach = approach,
+#' #'   prediction_zero = p0,
+#' #'   n_batches = 2,
+#' #'   n_samples = 1, #' As we are only interested in the training of the vaeac
+#' #'   vaeac.epochs = 25, #' Should be higher in applications.
+#' #'   vaeac.width = 16, #' Default is 32
+#' #'   vaeac.depth = 2, #' Default is 3
+#' #'   vaeac.latent_dim = 4, #' Default is 8
+#' #'   vaeac.num_vaeacs_initiate = 5,
+#' #'   vaeac.extra_parameters = list(
+#' #'     vaeac.paired_sampling = FALSE,
+#' #'     vaeac.verbose = TRUE
+#' #'   )
+#' #' )
+#' #'
+#' #' explanation_paired_sampling_TRUE_small <- explain(
+#' #'   model = model,
+#' #'   x_explain = x_explain,
+#' #'   x_train = x_train,
+#' #'   approach = approach,
+#' #'   prediction_zero = p0,
+#' #'   n_batches = 2,
+#' #'   n_samples = 1, #' As we are only interested in the training of the vaeac
+#' #'   vaeac.epochs = 25, #' Should be higher in applications.
+#' #'   vaeac.width = 16, #' Default is 32
+#' #'   vaeac.depth = 2, #' Default is 3
+#' #'   vaeac.latent_dim = 4, #' Default is 8
+#' #'   vaeac.num_vaeacs_initiate = 5,
+#' #'   vaeac.extra_parameters = list(
+#' #'     vaeac.paired_sampling = TRUE,
+#' #'     vaeac.verbose = TRUE
+#' #'   )
+#' #' )
+#' #'
+#' #' # Collect the explanation objects in an unnamed list
+#' #' explanation_list_unnamed <- list(
+#' #'   explanation_paired_sampling_FALSE,
+#' #'   explanation_paired_sampling_FALSE_small,
+#' #'   explanation_paired_sampling_TRUE,
+#' #'   explanation_paired_sampling_TRUE_small
+#' #' )
+#' #'
+#' #' # Collect the explanation objects in an named list
+#' #' explanation_list_named <- list(
+#' #'   "Regular samp. & large NN" = explanation_paired_sampling_FALSE,
+#' #'   "Regular samp. & small NN" = explanation_paired_sampling_FALSE_small,
+#' #'   "Paired samp. & large NN" = explanation_paired_sampling_TRUE,
+#' #'   "Paired samp. & small NN" = explanation_paired_sampling_TRUE_small
+#' #' )
+#' #'
+#' #' # Call the function with the unnamed list, will create names
+#' #' vaeac_training_vlb_and_validation_iwae_shapr(explanation_list = explanation_list_unnamed)
+#' #'
+#' #' # Call the function with the named list, will use the provided names
+#' #' # See that the paired samplign often produce more stable results
+#' #' vaeac_training_vlb_and_validation_iwae_shapr(explanation_list = explanation_list_named)
+#' #'
+#' #' # Can alter the plot
+#' #' vaeac_training_vlb_and_validation_iwae_shapr(
+#' #'   explanation_list = explanation_list_named,
+#' #'   point_size = 0,
+#' #'   ggplot_theme = ggplot2::theme_minimal(),
+#' #'   brewer_palette = "Set1",
+#' #'   plot_from_nth_epoch = 5,
+#' #'   plot_every_nth_epoch = 3,
+#' #'   legend_position = "bottom",
+#' #'   legend_nrow = 2,
+#' #'   facet_wrap_scales = "free"
+#' #' )
+#' #'
+#' #' # If we want to get smooth versions
+#' #' vaeac_training_vlb_and_validation_iwae_shapr(
+#' #'   explanation_list = explanation_list_named,
+#' #'   point_size = 0,
+#' #'   line_type = "blank",
+#' #'   plot_from_nth_epoch = 1,
+#' #'   legend_position = "bottom",
+#' #'   plot_geom_smooth = TRUE,
+#' #'   plot_geom_smooth_se = TRUE
+#' #' )
+#' #'
+#' #' # If we just want to extract the training and validation errors
+#' #' vaeac_training_vlb_and_validation_iwae_shapr(
+#' #'   explanation_list = explanation_list_named,
+#' #'   plot_figures = FALSE,
+#' #'   return_train_validation_errors = TRUE
+#' #' )
+#' #'
+#' #' # If we want to return the figures
+#' #' figures <- vaeac_training_vlb_and_validation_iwae_shapr(
+#' #'   explanation_list = explanation_list_named,
+#' #'   plot_figures = FALSE,
+#' #'   return_figures = TRUE
+#' #' )
+#' #'
+#' #' # If we want to return the figures
+#' #' figures_and_errors <- vaeac_training_vlb_and_validation_iwae_shapr(
+#' #'   explanation_list = explanation_list_named,
+#' #'   plot_figures = FALSE,
+#' #'   return_figures = TRUE,
+#' #'   return_train_validation_errors = TRUE
+#' #' )
+#' #'
+#' #' @author Lars Henry Berge Olsen
+#' plot_vaeac_training_evaluation <- function(explanation_list,
+#'                                                  plot_from_nth_epoch = 1,
+#'                                                  plot_every_nth_epoch = 1,
+#'                                                  plot_figures = TRUE,
+#'                                                  return_figures = FALSE,
+#'                                                  return_train_validation_errors = FALSE,
+#'                                                  plot_VLB = TRUE,
+#'                                                  plot_IWAE = TRUE,
+#'                                                  plot_IWAE_running = FALSE,
+#'                                                  ggplot_theme = NULL,
+#'                                                  brewer_palette = "Paired",
+#'                                                  brewer_direction = 1,
+#'                                                  title_text_size = 12,
+#'                                                  line_type = "solid",
+#'                                                  line_width = 0.4,
+#'                                                  point_size = 1,
+#'                                                  point_shape = "circle",
+#'                                                  facet_wrap_scales = "fixed",
+#'                                                  facet_wrap_nrow = NULL,
+#'                                                  facet_wrap_ncol = NULL,
+#'                                                  plot_geom_smooth = FALSE,
+#'                                                  plot_geom_smooth_se = FALSE,
+#'                                                  legend_position = NULL,
+#'                                                  legend_nrow = NULL,
+#'                                                  legend_ncol = NULL) {
+#'   # Setup and checks ----------------------------------------------------------------------------
+#'   # Check that ggplot2 is installed
+#'   if (!requireNamespace("ggplot2", quietly = TRUE)) {
+#'     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+#'   }
+#'
+#'   # Check if user only provided a single explanation and did not put it in a list
+#'   if ("shapr" %in% class(explanation_list)) explanation_list <- list(explanation_list)
+#'
+#'   # Check that all explanation objects use the `vaeac` approach
+#'   explanation_approaches <- sapply(explanation_list, function(explanation) explanation$internal$parameters$approach)
+#'   if (any(explanation_approaches != "vaeac")) {
+#'     stop(sprintf(
+#'       "Explanation object number `%d` in the `explanation_list` does not use the `vaeac` approach.",
+#'       seq_along(explanation_approaches)[explanation_approaches != "vaeac"][1]
+#'     ))
+#'   }
+#'
+#'   # Check if the entries in the list is named
+#'   if (is.null(names(explanation_list))) {
+#'     # The entries in explanation_list are lacking names
+#'
+#'     # Extract the names of the approaches used in the explanation objects in explanation_list
+#'     # We paste in case an explanation object has used a combination of approaches.
+#'     names <- sapply(
+#'       explanation_list,
+#'       function(explanation) paste(explanation$internal$parameters$approach, collapse = "_")
+#'     )
+#'
+#'     # Ensure that we have unique names
+#'     names <- make.unique(names, sep = "_")
+#'
+#'     # Name the entries in explanation_list
+#'     names(explanation_list) <- names
+#'
+#'     # Give a message to the user
+#'     warning(paste0(
+#'       "User provided an `explanation_list` without named explanation objects.\n",
+#'       "Default to the approach names (with integer suffix for duplicates) for the explanation objects.\n"
+#'     ))
+#'   }
+#'
+#'   # Create datasets -----------------------------------------------------------------------------
+#'   results_dt <- data.table::rbindlist(
+#'     lapply(explanation_list, function(explanation) {
+#'       data.table::data.table(do.call(cbind, explanation$internal$parameters$vaeac$results))[, Epoch := .I]
+#'     }),
+#'     use.names = TRUE,
+#'     idcol = "Method"
+#'   )
+#'   names(results_dt)[2:4] <- c("VLB", "IWAE", "IWAE_running")
+#'   results_dt$Method <- factor(results_dt$Method, levels = names(explanation_list))
+#'   results_dt
+#'
+#'   # Set key and reorder the columns
+#'   data.table::setkeyv(results_dt, c("Method", "Epoch"))
+#'   data.table::setcolorder(results_dt, c("Method", "Epoch"))
+#'
+#'   # Go from wide to tall
+#'   results_dt_tall <- data.table::melt(
+#'     data = results_dt,
+#'     id.vars = c("Method", "Epoch"),
+#'     variable.name = "Criterion",
+#'     variable.factor = TRUE,
+#'     value.name = "Value"
+#'   )
+#'
+#'   # Remove rows based on that we only want to plot epochs from the nth epoch
+#'   results_dt_tall_truncated <- results_dt_tall[Epoch >= plot_from_nth_epoch]
+#'
+#'   # If we are only to plot every nth epoch
+#'   results_dt_tall_truncated <- results_dt_tall_truncated[Epoch %% plot_every_nth_epoch == 0]
+#'
+#'   # Remove some of the criterion if specified by the user
+#'   if (!plot_VLB) results_dt_tall_truncated <- results_dt_tall_truncated[Criterion != "VLB"]
+#'   if (!plot_IWAE) results_dt_tall_truncated <- results_dt_tall_truncated[Criterion != "IWAE"]
+#'   if (!plot_IWAE_running) results_dt_tall_truncated <- results_dt_tall_truncated[Criterion != "IWAE_running"]
+#'
+#'   # Make figures --------------------------------------------------------------------------------
+#'   # Make the figure where each explanation object has its own facet
+#'   figure_facet_each_method <-
+#'     ggplot2::ggplot(results_dt_tall_truncated, ggplot2::aes(x = Epoch, y = Value, col = Criterion)) +
+#'     {
+#'       if (plot_geom_smooth || plot_geom_smooth_se) {
+#'         ggplot2::geom_smooth(
+#'           method = "loess",
+#'           formula = y ~ x,
+#'           se = plot_geom_smooth_se
+#'         )
+#'       }
+#'     } +
+#'     ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Criterion)) +
+#'     ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(
+#'       group = Criterion,
+#'       col = Criterion
+#'     )) +
+#'     ggplot2::facet_wrap(ggplot2::vars(Method),
+#'       nrow = facet_wrap_nrow,
+#'       ncol = facet_wrap_ncol,
+#'       scales = facet_wrap_scales
+#'     ) +
+#'     {
+#'       if (!is.null(brewer_palette)) {
+#'         ggplot2::scale_color_brewer(
+#'           palette = brewer_palette,
+#'           direction = brewer_direction
+#'         )
+#'       }
+#'     } +
+#'     {
+#'       if (!is.null(ggplot_theme)) ggplot_theme
+#'     } +
+#'     {
+#'       if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)
+#'     } +
+#'     {
+#'       if (!is.null(legend_ncol)) ggplot2::guides(col = ggplot2::guide_legend(ncol = legend_ncol))
+#'     } +
+#'     {
+#'       if (!is.null(legend_nrow)) ggplot2::guides(col = ggplot2::guide_legend(nrow = legend_nrow))
+#'     } +
+#'     ggplot2::labs(title = "The evaluation criterions for different vaeac models") +
+#'     ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))
+#'
+#'
+#'   # Make the figure where each criterion has its own facet
+#'   figure_facet_each_criterion <-
+#'     ggplot2::ggplot(results_dt_tall_truncated, ggplot2::aes(x = Epoch, y = Value, col = Method)) +
+#'     {
+#'       if (plot_geom_smooth || plot_geom_smooth_se) {
+#'         ggplot2::geom_smooth(
+#'           method = "loess",
+#'           formula = y ~ x,
+#'           se = plot_geom_smooth_se
+#'         )
+#'       }
+#'     } +
+#'     ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Method)) +
+#'     ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(group = Method, col = Method)) +
+#'     ggplot2::facet_wrap(ggplot2::vars(Criterion),
+#'       nrow = facet_wrap_nrow,
+#'       ncol = facet_wrap_ncol,
+#'       scales = facet_wrap_scales
+#'     ) +
+#'     {
+#'       if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction)
+#'     } +
+#'     {
+#'       if (!is.null(ggplot_theme)) ggplot_theme
+#'     } +
+#'     {
+#'       if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)
+#'     } +
+#'     {
+#'       if (!is.null(legend_ncol)) ggplot2::guides(col = ggplot2::guide_legend(ncol = legend_ncol))
+#'     } +
+#'     {
+#'       if (!is.null(legend_nrow)) ggplot2::guides(col = ggplot2::guide_legend(nrow = legend_nrow))
+#'     } +
+#'     ggplot2::labs(title = "The evaluation criterions for different vaeac models") +
+#'     ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))
+#'
+#'   # Plot the figures if specified by the user
+#'   if (plot_figures) {
+#'     print(figure_facet_each_method)
+#'     print(figure_facet_each_criterion)
+#'   }
+#'
+#'   # Cleanup and return objects ------------------------------------------------------------------
+#'   # Check if we are to return figures and/or the data.table with the results
+#'   if (return_figures || return_train_validation_errors) {
+#'     # Create empty list to store the results
+#'     return_list <- list()
+#'
+#'     # Check if we are to return the figures
+#'     if (return_figures) {
+#'       return_list[["figure_facet_each_method"]] <- figure_facet_each_method
+#'       return_list[["figure_facet_each_criterion"]] <- figure_facet_each_criterion
+#'     }
+#'
+#'     # Check if we are to return the data.table with the training results
+#'     if (return_train_validation_errors) {
+#'       if (length(return_list) == 0) {
+#'         # We are no to return the figures, so directly return the data.table
+#'         return_list <- results_dt
+#'       } else {
+#'         # Add the data.table to the result list
+#'         return_list[["training_and_validation_errors"]] <- results_dt
+#'       }
+#'     }
+#'
+#'     # Return the return list
+#'     return(return_list)
+#'   }
+#' }
+
+
 #' Plot the training VLB and validation IWAE for `vaeac` models
 #'
 #' @description
@@ -2590,262 +3062,271 @@ as user set `return_as_postprocessed_dt = TRUE`.")
 #' The first epochs can be large in absolute value and make the rest of the plot difficult to interpret.
 #' @param plot_every_nth_epoch Integer. If we are only to plot every nth epoch. Usefully to illustrate
 #' the overall trend, as there can be a lot of fluctuation and oscillation in the values between each epoch.
-#' @param plot_figures Boolean. If `TRUE`, the plot the figure before the function potentially
-#' return the figures, depending on the value of `return_figures`.
-#' @param return_figures Boolean. If `TRUE`, then the function returns the figures in a list.
-#' @param return_train_validation_errors Boolean. If `TRUE`, then the training and validation errors are returned.
-#' @param plot_VLB Boolean. If `TRUE`, then the function includes the VLB in the figures.
-#' @param plot_IWAE Boolean. If `TRUE`, then the function includes the IWAE in the figures.
-#' @param plot_IWAE_running Boolean. If `TRUE`, then the function includes the IWAE_running in the figures.
-#' @param ggplot_theme A [ggplot2::theme()] object to customize the non-data components of the plots:
-#' i.e. titles, labels, fonts, background, gridlines, and legends. Themes can be used to give plots
-#' a consistent customized look. Use the themes available in \code{\link[ggplot2:theme_bw]{ggplot2::ggtheme()}}.
-#' if you would like to use a complete theme such as `theme_bw()`, `theme_minimal()`, and more.
-#' @param brewer_palette String. Name of one of the color palettes from [RColorBrewer::RColorBrewer()].
-#'  If `NULL`, then the function uses the default [ggplot2::ggplot()] color scheme.
-#' The following palettes are available for use with these scales:
-#' \describe{
-#'    \item{Diverging}{BrBG, PiYG, PRGn, PuOr, RdBu, RdGy, RdYlBu, RdYlGn, Spectral}
-#'    \item{Qualitative}{Accent, Dark2, Paired, Pastel1, Pastel2, Set1, Set2, Set3}
-#'    \item{Sequential}{Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges,
-#'      OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr, YlOrRd}
-#' }
-#' @param brewer_direction Integer. Sets the order of colors in the scale. If 1, the default,
-#' colors are as output by \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}}.
-#' If -1, the order of colors is reversed.
-#' @param title_text_size Positive numeric. The size of the title. If `0`, then the text is removed.
-#' @param line_width Positive numeric. Width of the lines, and 0 is the same as `line_type` = `blank`.
-#' @param line_type Legal values are the strings "blank", "solid", "dashed", "dotted", "dotdash",
-#' "longdash", and "twodash".
-#' Alternatively, the numbers 0 to 6 can be used (0 for "blank", 1 for "solid", ...).
-#' Moreover, one can also use strings that define the line type with up to 8 hexadecimal digits
-#' (each digit specifying the length of interleaved lines and gaps), see
-#' \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}
-#' and/or \url{http://sape.inf.usi.ch/quick-reference/ggplot2/linetype}.
-#' @param point_size Positive numeric. The size of the points. Set `point_size = 0` to remove points.
-#' @param point_shape Integer or string. Specify the shape of the points.
-#' For a complete list of all possible shapes, see \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html}.
 #' @param facet_wrap_scales String. Should the scales be fixed ("`fixed`", the default),
-#' free ("`free`"), or free in one dimension ("`free_x`", "`free_y`")?
-#' @param facet_wrap_nrow Integer. Number of rows in the facet wrap.
+#' free ("`free`"), or free in one dimension ("`free_x`", "`free_y`").
 #' @param facet_wrap_ncol Integer. Number of columns in the facet wrap.
-#' @param plot_geom_smooth Boolean. If we are to include a [ggplot2::geom_smooth()] with
-#' `method = "loess"` in the figures..
-#' @param plot_geom_smooth_se Boolean. If we are to display 95% confidence interval around the smooth.
-#' If `TRUE`, the `plot_geom_smooth_se` overrides `plot_geom_smooth`.
-#' @param legend_position String or numeric vector `c(x,y)`. The allowed string values for the
-#' argument `legend_position` are: `left`,`top`, `right`, `bottom`. Note that, the argument
-#' `legend_position` can be also a numeric vector `c(x,y)`. In this case it is possible to position
-#' the legend inside the plotting area. `x` and `y` are the coordinates of the legend box.
-#' Their values should be between `0` and `1`, where `c(0,0)` corresponds to the "bottom left"
-#' and `c(1,1)` corresponds to the "top right" position.
-#' @param legend_ncol Integer. The number of columns in the legend.
-#' @param legend_nrow Integer. The number of rows in the legend.
+#' @param criteria Character vector. The possible options are "VLB", "IWAE", "IWAE_running". Default is the first two.
+#' @param plot_type Character vector. The possible options are "method" and "criterion". Default is to plot both.
 #'
-#' @return Depending on `return_figures` and `return_train_validation_errors`, either a list of
-#' figures, a list of figures and a data.table, a data.table, or nothing.
-#' @export
-#'
-#' @author Lars Henry Berge Olsen
+#' @return Either a single [ggplot2::ggplot()] object or a list of [ggplot2::ggplot()] objects based on the
+#' `plot_type` parameter.
 #'
 #' @examples
-#' library(xgboost)
-#' data("airquality")
-#' data <- data.table::as.data.table(airquality)
-#' data <- data[complete.cases(data), ]
-#'
-#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
-#' y_var <- "Ozone"
-#'
-#' ind_x_explain <- 1:6
-#' x_train <- data[-ind_x_explain, ..x_var]
-#' y_train <- data[-ind_x_explain, get(y_var)]
-#' x_explain <- data[ind_x_explain, ..x_var]
-#'
-#' # Fitting a basic xgboost model to the training data
-#' model <- xgboost(
-#'   data = as.matrix(x_train),
-#'   label = y_train,
-#'   nround = 100,
-#'   verbose = FALSE
-#' )
-#'
-#' # Specifying the phi_0, i.e. the expected prediction without any features
-#' p0 <- mean(y_train)
-#'
-#' # Train several different NN
-#' explanation_paired_sampling_TRUE <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = approach,
-#'   prediction_zero = p0,
-#'   n_batches = 2,
-#'   n_samples = 1, #' As we are only interested in the training of the vaeac
-#'   vaeac.epochs = 25, #' Should be higher in applications.
-#'   vaeac.num_vaeacs_initiate = 5,
-#'   vaeac.extra_parameters = list(
-#'     vaeac.paired_sampling = TRUE,
-#'     vaeac.verbose = TRUE
-#'   )
-#' )
-#'
-#' explanation_paired_sampling_FALSE <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = approach,
-#'   prediction_zero = p0,
-#'   n_batches = 2,
-#'   n_samples = 1, #' As we are only interested in the training of the vaeac
-#'   vaeac.epochs = 25, #' Should be higher in applications.
-#'   vaeac.num_vaeacs_initiate = 5,
-#'   vaeac.extra_parameters = list(
-#'     vaeac.paired_sampling = FALSE,
-#'     vaeac.verbose = TRUE
-#'   )
-#' )
-#'
-#' # Other networks have 4.76 times more parameters.
-#' explanation_paired_sampling_FALSE_small <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = approach,
-#'   prediction_zero = p0,
-#'   n_batches = 2,
-#'   n_samples = 1, #' As we are only interested in the training of the vaeac
-#'   vaeac.epochs = 25, #' Should be higher in applications.
-#'   vaeac.width = 16, #' Default is 32
-#'   vaeac.depth = 2, #' Default is 3
-#'   vaeac.latent_dim = 4, #' Default is 8
-#'   vaeac.num_vaeacs_initiate = 5,
-#'   vaeac.extra_parameters = list(
-#'     vaeac.paired_sampling = FALSE,
-#'     vaeac.verbose = TRUE
-#'   )
-#' )
-#'
-#' explanation_paired_sampling_TRUE_small <- explain(
-#'   model = model,
-#'   x_explain = x_explain,
-#'   x_train = x_train,
-#'   approach = approach,
-#'   prediction_zero = p0,
-#'   n_batches = 2,
-#'   n_samples = 1, #' As we are only interested in the training of the vaeac
-#'   vaeac.epochs = 25, #' Should be higher in applications.
-#'   vaeac.width = 16, #' Default is 32
-#'   vaeac.depth = 2, #' Default is 3
-#'   vaeac.latent_dim = 4, #' Default is 8
-#'   vaeac.num_vaeacs_initiate = 5,
-#'   vaeac.extra_parameters = list(
-#'     vaeac.paired_sampling = TRUE,
-#'     vaeac.verbose = TRUE
-#'   )
-#' )
-#'
-#' # Collect the explanation objects in an unnamed list
-#' explanation_list_unnamed <- list(
-#'   explanation_paired_sampling_FALSE,
-#'   explanation_paired_sampling_FALSE_small,
-#'   explanation_paired_sampling_TRUE,
-#'   explanation_paired_sampling_TRUE_small
-#' )
-#'
-#' # Collect the explanation objects in an named list
-#' explanation_list_named <- list(
-#'   "Regular samp. & large NN" = explanation_paired_sampling_FALSE,
-#'   "Regular samp. & small NN" = explanation_paired_sampling_FALSE_small,
-#'   "Paired samp. & large NN" = explanation_paired_sampling_TRUE,
-#'   "Paired samp. & small NN" = explanation_paired_sampling_TRUE_small
-#' )
-#'
-#' # Call the function with the unnamed list, will create names
-#' vaeac_training_vlb_and_validation_iwae_shapr(explanation_list = explanation_list_unnamed)
-#'
-#' # Call the function with the named list, will use the provided names
-#' # See that the paired samplign often produce more stable results
-#' vaeac_training_vlb_and_validation_iwae_shapr(explanation_list = explanation_list_named)
-#'
-#' # Can alter the plot
-#' vaeac_training_vlb_and_validation_iwae_shapr(
-#'   explanation_list = explanation_list_named,
-#'   point_size = 0,
-#'   ggplot_theme = ggplot2::theme_minimal(),
-#'   brewer_palette = "Set1",
-#'   plot_from_nth_epoch = 5,
-#'   plot_every_nth_epoch = 3,
-#'   legend_position = "bottom",
-#'   legend_nrow = 2,
-#'   facet_wrap_scales = "free"
-#' )
-#'
-#' # If we want to get smooth versions
-#' vaeac_training_vlb_and_validation_iwae_shapr(
-#'   explanation_list = explanation_list_named,
-#'   point_size = 0,
-#'   line_type = "blank",
-#'   plot_from_nth_epoch = 1,
-#'   legend_position = "bottom",
-#'   plot_geom_smooth = TRUE,
-#'   plot_geom_smooth_se = TRUE
-#' )
-#'
-#' # If we just want to extract the training and validation errors
-#' vaeac_training_vlb_and_validation_iwae_shapr(
-#'   explanation_list = explanation_list_named,
-#'   plot_figures = FALSE,
-#'   return_train_validation_errors = TRUE
-#' )
-#'
-#' # If we want to return the figures
-#' figures <- vaeac_training_vlb_and_validation_iwae_shapr(
-#'   explanation_list = explanation_list_named,
-#'   plot_figures = FALSE,
-#'   return_figures = TRUE
-#' )
-#'
-#' # If we want to return the figures
-#' figures_and_errors <- vaeac_training_vlb_and_validation_iwae_shapr(
-#'   explanation_list = explanation_list_named,
-#'   plot_figures = FALSE,
-#'   return_figures = TRUE,
-#'   return_train_validation_errors = TRUE
-#' )
+#' # library(xgboost)
+#' # data("airquality")
+#' # data <- data.table::as.data.table(airquality)
+#' # data <- data[complete.cases(data), ]
+#' #
+#' # x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#' # y_var <- "Ozone"
+#' #
+#' # ind_x_explain <- 1:6
+#' # x_train <- data[-ind_x_explain, ..x_var]
+#' # y_train <- data[-ind_x_explain, get(y_var)]
+#' # x_explain <- data[ind_x_explain, ..x_var]
+#' #
+#' # # Fitting a basic xgboost model to the training data
+#' # model <- xgboost(
+#' #   data = as.matrix(x_train),
+#' #   label = y_train,
+#' #   nround = 100,
+#' #   verbose = FALSE
+#' # )
+#' #
+#' # # Specifying the phi_0, i.e. the expected prediction without any features
+#' # p0 <- mean(y_train)
+#' #
+#' # # Train several different NN
+#' # explanation_paired_sampling_TRUE <- explain(
+#' #   model = model,
+#' #   x_explain = x_explain,
+#' #   x_train = x_train,
+#' #   approach = approach,
+#' #   prediction_zero = p0,
+#' #   n_batches = 2,
+#' #   n_samples = 1, #' As we are only interested in the training of the vaeac
+#' #   vaeac.epochs = 25, #' Should be higher in applications.
+#' #   vaeac.num_vaeacs_initiate = 5,
+#' #   vaeac.extra_parameters = list(
+#' #     vaeac.paired_sampling = TRUE,
+#' #     vaeac.verbose = TRUE
+#' #   )
+#' # )
+#' #
+#' # explanation_paired_sampling_FALSE <- explain(
+#' #   model = model,
+#' #   x_explain = x_explain,
+#' #   x_train = x_train,
+#' #   approach = approach,
+#' #   prediction_zero = p0,
+#' #   n_batches = 2,
+#' #   n_samples = 1, #' As we are only interested in the training of the vaeac
+#' #   vaeac.epochs = 25, #' Should be higher in applications.
+#' #   vaeac.num_vaeacs_initiate = 5,
+#' #   vaeac.extra_parameters = list(
+#' #     vaeac.paired_sampling = FALSE,
+#' #     vaeac.verbose = TRUE
+#' #   )
+#' # )
+#' #
+#' # # Other networks have 4.76 times more parameters.
+#' # explanation_paired_sampling_FALSE_small <- explain(
+#' #   model = model,
+#' #   x_explain = x_explain,
+#' #   x_train = x_train,
+#' #   approach = approach,
+#' #   prediction_zero = p0,
+#' #   n_batches = 2,
+#' #   n_samples = 1, #' As we are only interested in the training of the vaeac
+#' #   vaeac.epochs = 25, #' Should be higher in applications.
+#' #   vaeac.width = 16, #' Default is 32
+#' #   vaeac.depth = 2, #' Default is 3
+#' #   vaeac.latent_dim = 4, #' Default is 8
+#' #   vaeac.num_vaeacs_initiate = 5,
+#' #   vaeac.extra_parameters = list(
+#' #     vaeac.paired_sampling = FALSE,
+#' #     vaeac.verbose = TRUE
+#' #   )
+#' # )
+#' #
+#' # explanation_paired_sampling_TRUE_small <- explain(
+#' #   model = model,
+#' #   x_explain = x_explain,
+#' #   x_train = x_train,
+#' #   approach = approach,
+#' #   prediction_zero = p0,
+#' #   n_batches = 2,
+#' #   n_samples = 1, #' As we are only interested in the training of the vaeac
+#' #   vaeac.epochs = 25, #' Should be higher in applications.
+#' #   vaeac.width = 16, #' Default is 32
+#' #   vaeac.depth = 2, #' Default is 3
+#' #   vaeac.latent_dim = 4, #' Default is 8
+#' #   vaeac.num_vaeacs_initiate = 5,
+#' #   vaeac.extra_parameters = list(
+#' #     vaeac.paired_sampling = TRUE,
+#' #     vaeac.verbose = TRUE
+#' #   )
+#' # )
+#' #
+#' # # Collect the explanation objects in an unnamed list
+#' # explanation_list_unnamed <- list(
+#' #   explanation_paired_sampling_FALSE,
+#' #   explanation_paired_sampling_FALSE_small,
+#' #   explanation_paired_sampling_TRUE,
+#' #   explanation_paired_sampling_TRUE_small
+#' # )
+#' #
+#' # # Collect the explanation objects in an named list
+#' # explanation_list_named <- list(
+#' #   "Regular samp. & large NN" = explanation_paired_sampling_FALSE,
+#' #   "Regular samp. & small NN" = explanation_paired_sampling_FALSE_small,
+#' #   "Paired samp. & large NN" = explanation_paired_sampling_TRUE,
+#' #   "Paired samp. & small NN" = explanation_paired_sampling_TRUE_small
+#' # )
+#' #
+#' # # Call the function with the unnamed list, will create names
+#' # plot_several_vaeacs_VLB_IWAE(explanation_list = explanation_list_unnamed)
+#' #
+#' # # Call the function with the named list, will use the provided names
+#' # # See that the paired samplign often produce more stable results
+#' # plot_several_vaeacs_VLB_IWAE(explanation_list = explanation_list_named)
+#' #
+#' # # The function also works if we have only one method, but then one should only look at the method plot
+#' # plot_several_vaeacs_VLB_IWAE(explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
+#' #                              plot_type = "method")
+#' #
+#' # # Can alter the plot
+#' # plot_several_vaeacs_VLB_IWAE(
+#' #   explanation_list = explanation_list_named,
+#' #   plot_from_nth_epoch = 5,
+#' #   plot_every_nth_epoch = 3,
+#' #   facet_wrap_scales = "free"
+#' # )
+#' #
+#' # # If we want only want the criterion version
+#' # tmp_fig_criterion = plot_several_vaeacs_VLB_IWAE(
+#' #   explanation_list = explanation_list_named,
+#' #   plot_type = "criterion")
+#' #
+#' # # We can add points
+#' # tmp_fig_criterion + ggplot2::geom_point(shape = "circle", size = 1, ggplot2::aes(col = Method))
+#' #
+#' # # If we rather want smooths with se bands
+#' # tmp_fig_criterion$layers[[1]] = NULL
+#' # tmp_fig_criterion + ggplot2::geom_smooth(method = "loess", formula = y ~ x, se = TRUE) +
+#' #   ggplot2::scale_color_brewer(palette = "Set1") +
+#' #   ggplot2::theme_minimal()
+#' #
+#' # # If we only want the VLB
+#' # plot_several_vaeacs_VLB_IWAE(
+#' #   explanation_list = explanation_list_named,
+#' #   criteria = "VLB",
+#' #   plot_type = "criterion")
 #'
 #' @author Lars Henry Berge Olsen
-plot_vaeac_training_evaluation <- function(explanation_list,
-                                                 plot_from_nth_epoch = 1,
-                                                 plot_every_nth_epoch = 1,
-                                                 plot_figures = TRUE,
-                                                 return_figures = FALSE,
-                                                 return_train_validation_errors = FALSE,
-                                                 plot_VLB = TRUE,
-                                                 plot_IWAE = TRUE,
-                                                 plot_IWAE_running = FALSE,
-                                                 ggplot_theme = NULL,
-                                                 brewer_palette = "Paired",
-                                                 brewer_direction = 1,
-                                                 title_text_size = 12,
-                                                 line_type = "solid",
-                                                 line_width = 0.4,
-                                                 point_size = 1,
-                                                 point_shape = "circle",
-                                                 facet_wrap_scales = "fixed",
-                                                 facet_wrap_nrow = NULL,
-                                                 facet_wrap_ncol = NULL,
-                                                 plot_geom_smooth = FALSE,
-                                                 plot_geom_smooth_se = FALSE,
-                                                 legend_position = NULL,
-                                                 legend_nrow = NULL,
-                                                 legend_ncol = NULL) {
-  # Setup and checks ----------------------------------------------------------------------------
+#' @export
+plot_several_vaeacs_VLB_IWAE = function(explanation_list,
+                                        plot_from_nth_epoch = 1,
+                                        plot_every_nth_epoch = 1,
+                                        criteria = c("VLB", "IWAE"),
+                                        plot_type = c("method", "criterion"),
+                                        facet_wrap_scales = "fixed",
+                                        facet_wrap_ncol = NULL) {
+  ## Checks
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   }
 
+  # Check for valid criteria argument
+  unknown_criteria <- criteria[!(criteria %in% c("VLB", "IWAE", "IWAE_running"))]
+  if (length(unknown_criteria) > 0) {
+    error(paste0(
+      "The `criteria` must be one (or several) of 'VLB', 'IWAE', and 'IWAE_running'. ",
+      "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
+    ))
+  }
+
+  # Check for valid plot type argument
+  unknown_plot_type <- plot_type[!(plot_type %in% c("method", "criterion"))]
+  if (length(unknown_plot_type) > 0) {
+    error(paste0(
+      "The `plot_type` must be one (or several) of 'method' and 'criterion'. ",
+      "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
+    ))
+  }
+
+  ## Create data.tables
+  # Extract the VLB and IWAE
+  vaeac_VLB_IWAE_dt = extract_several_vaeac_VLB_IWAE(explanation_list)
+
+  # Get the relevant criteria
+  keep_these_columns = c("Method", "Epoch", criteria)
+  vaeac_VLB_IWAE_dt = vaeac_VLB_IWAE_dt[,..keep_these_columns]
+
+  # Check for valid `plot_from_nth_epoch`
+  max_epoch = max(vaeac_VLB_IWAE_dt$Epoch)
+  if (plot_from_nth_epoch > max_epoch) {
+    stop(sprintf("`plot_from_nth_epoch` (%d) is larger than the number of epochs (%d)",
+                 plot_from_nth_epoch, max_epoch))
+  }
+
+  # Remove entries with too low epoch
+  vaeac_VLB_IWAE_dt <- vaeac_VLB_IWAE_dt[Epoch >= plot_from_nth_epoch, ]
+
+  # If we are only to plot every nth epoch
+  vaeac_VLB_IWAE_dt <- vaeac_VLB_IWAE_dt[Epoch %% plot_every_nth_epoch == 0]
+
+  # Convert it from wide to long
+  vaeac_VLB_IWAE_dt_long <- melt(
+    data = vaeac_VLB_IWAE_dt,
+    id.vars = c("Method", "Epoch"),
+    variable.name = "Criterion",
+    variable.factor = TRUE,
+    value.name = "Value"
+  )
+
+  ## Plot
+  return_object <- list()
+
+  # Make the figure where each explanation object has its own facet
+  if ("method" %in% plot_type) {
+    return_object$figure_each_method <-
+      ggplot2::ggplot(vaeac_VLB_IWAE_dt_long, ggplot2::aes(x = Epoch, y = Value, col = Criterion)) +
+      ggplot2::labs(title = "The evaluation criterions for different vaeac models") +
+      ggplot2::geom_line(ggplot2::aes(group = Criterion, col = Criterion)) +
+      ggplot2::facet_wrap(ggplot2::vars(Method), ncol = facet_wrap_ncol, scales = facet_wrap_scales)
+  }
+
+  # Make the figure where each criterion has its own facet
+  if ("criterion" %in% plot_type) {
+    return_object$figure_each_criterion <-
+      ggplot2::ggplot(vaeac_VLB_IWAE_dt_long, ggplot2::aes(x = Epoch, y = Value, col = Method)) +
+      ggplot2::labs(title = "The evaluation criterions for different vaeac models") +
+      ggplot2::geom_line(ggplot2::aes(group = Method, col = Method)) +
+      ggplot2::facet_wrap(ggplot2::vars(Criterion), ncol = facet_wrap_ncol, scales = facet_wrap_scales)
+  }
+
+  # If only made one figure, then we directly return that object and not a list
+  if (length(return_object) == 1) return_object = return_object[[1]]
+
+  return(return_object)
+}
+
+
+
+#' Extract the Training VLB and Validation IWAE from a list of explanations objects using the vaeac approach
+#'
+#' @param explanation_list A list of [explain()] objects applied to the same data, model, and
+#' `vaeac` must be the used approach. If the entries in the list is named, then the function use
+#' these names. Otherwise, it defaults to the approach names (with integer suffix for duplicates)
+#' for the explanation objects in `explanation_list`.
+#'
+#' @return A data.table containing the training VLB, validation IWAE, and running validation IWAE at each epoch for
+#' each vaeac model.
+#' @author Lars Henry Berge Olsen
+#' @export
+extract_several_vaeac_VLB_IWAE = function(explanation_list) {
   # Check if user only provided a single explanation and did not put it in a list
   if ("shapr" %in% class(explanation_list)) explanation_list <- list(explanation_list)
 
@@ -2858,277 +3339,204 @@ plot_vaeac_training_evaluation <- function(explanation_list,
     ))
   }
 
-  # Check if the entries in the list is named
-  if (is.null(names(explanation_list))) {
-    # The entries in explanation_list are lacking names
+  # Name the elements in the explanation_list if no names have been provided
+  if (is.null(names(explanation_list))) explanation_list <- MSEv_name_explanation_list(explanation_list)
 
-    # Extract the names of the approaches used in the explanation objects in explanation_list
-    # We paste in case an explanation object has used a combination of approaches.
-    names <- sapply(
-      explanation_list,
-      function(explanation) paste(explanation$internal$parameters$approach, collapse = "_")
-    )
-
-    # Ensure that we have unique names
-    names <- make.unique(names, sep = "_")
-
-    # Name the entries in explanation_list
-    names(explanation_list) <- names
-
-    # Give a message to the user
-    warning(paste0(
-      "User provided an `explanation_list` without named explanation objects.\n",
-      "Default to the approach names (with integer suffix for duplicates) for the explanation objects.\n"
-    ))
-  }
-
-  # Create datasets -----------------------------------------------------------------------------
-  results_dt <- data.table::rbindlist(
+  # Extract the evaluation criteria and put them into a data.table
+  vaeac_VLB_IWAE_dt <- data.table::rbindlist(
     lapply(explanation_list, function(explanation) {
       data.table::data.table(do.call(cbind, explanation$internal$parameters$vaeac$results))[, Epoch := .I]
     }),
     use.names = TRUE,
-    idcol = "Method"
+    idcol = "Method",
   )
-  names(results_dt)[2:4] <- c("VLB", "IWAE", "IWAE_running")
-  results_dt$Method <- factor(results_dt$Method, levels = names(explanation_list))
-  results_dt
+  names(vaeac_VLB_IWAE_dt)[2:4] <- c("VLB", "IWAE", "IWAE_running")
+  vaeac_VLB_IWAE_dt$Method <- factor(vaeac_VLB_IWAE_dt$Method, levels = names(explanation_list))
+  data.table::setkeyv(vaeac_VLB_IWAE_dt, c("Method", "Epoch"))
+  data.table::setcolorder(vaeac_VLB_IWAE_dt, c("Method", "Epoch"))
 
-  # Set key and reorder the columns
-  data.table::setkeyv(results_dt, c("Method", "Epoch"))
-  data.table::setcolorder(results_dt, c("Method", "Epoch"))
-
-  # Go from wide to tall
-  results_dt_tall <- data.table::melt(
-    data = results_dt,
-    id.vars = c("Method", "Epoch"),
-    variable.name = "Criterion",
-    variable.factor = TRUE,
-    value.name = "Value"
-  )
-
-  # Remove rows based on that we only want to plot epochs from the nth epoch
-  results_dt_tall_truncated <- results_dt_tall[Epoch >= plot_from_nth_epoch]
-
-  # If we are only to plot every nth epoch
-  results_dt_tall_truncated <- results_dt_tall_truncated[Epoch %% plot_every_nth_epoch == 0]
-
-  # Remove some of the criterion if specified by the user
-  if (!plot_VLB) results_dt_tall_truncated <- results_dt_tall_truncated[Criterion != "VLB"]
-  if (!plot_IWAE) results_dt_tall_truncated <- results_dt_tall_truncated[Criterion != "IWAE"]
-  if (!plot_IWAE_running) results_dt_tall_truncated <- results_dt_tall_truncated[Criterion != "IWAE_running"]
-
-  # Make figures --------------------------------------------------------------------------------
-  # Make the figure where each explanation object has its own facet
-  figure_facet_each_method <-
-    ggplot2::ggplot(results_dt_tall_truncated, ggplot2::aes(x = Epoch, y = Value, col = Criterion)) +
-    {
-      if (plot_geom_smooth || plot_geom_smooth_se) {
-        ggplot2::geom_smooth(
-          method = "loess",
-          formula = y ~ x,
-          se = plot_geom_smooth_se
-        )
-      }
-    } +
-    ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Criterion)) +
-    ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(
-      group = Criterion,
-      col = Criterion
-    )) +
-    ggplot2::facet_wrap(ggplot2::vars(Method),
-      nrow = facet_wrap_nrow,
-      ncol = facet_wrap_ncol,
-      scales = facet_wrap_scales
-    ) +
-    {
-      if (!is.null(brewer_palette)) {
-        ggplot2::scale_color_brewer(
-          palette = brewer_palette,
-          direction = brewer_direction
-        )
-      }
-    } +
-    {
-      if (!is.null(ggplot_theme)) ggplot_theme
-    } +
-    {
-      if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)
-    } +
-    {
-      if (!is.null(legend_ncol)) ggplot2::guides(col = ggplot2::guide_legend(ncol = legend_ncol))
-    } +
-    {
-      if (!is.null(legend_nrow)) ggplot2::guides(col = ggplot2::guide_legend(nrow = legend_nrow))
-    } +
-    ggplot2::labs(title = "The evaluation criterions for different vaeac models") +
-    ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))
-
-
-  # Make the figure where each criterion has its own facet
-  figure_facet_each_criterion <-
-    ggplot2::ggplot(results_dt_tall_truncated, ggplot2::aes(x = Epoch, y = Value, col = Method)) +
-    {
-      if (plot_geom_smooth || plot_geom_smooth_se) {
-        ggplot2::geom_smooth(
-          method = "loess",
-          formula = y ~ x,
-          se = plot_geom_smooth_se
-        )
-      }
-    } +
-    ggplot2::geom_point(shape = point_shape, size = point_size, ggplot2::aes(col = Method)) +
-    ggplot2::geom_line(linetype = line_type, linewidth = line_width, ggplot2::aes(group = Method, col = Method)) +
-    ggplot2::facet_wrap(ggplot2::vars(Criterion),
-      nrow = facet_wrap_nrow,
-      ncol = facet_wrap_ncol,
-      scales = facet_wrap_scales
-    ) +
-    {
-      if (!is.null(brewer_palette)) ggplot2::scale_color_brewer(palette = brewer_palette, direction = brewer_direction)
-    } +
-    {
-      if (!is.null(ggplot_theme)) ggplot_theme
-    } +
-    {
-      if (!is.null(legend_position)) ggplot2::theme(legend.position = legend_position)
-    } +
-    {
-      if (!is.null(legend_ncol)) ggplot2::guides(col = ggplot2::guide_legend(ncol = legend_ncol))
-    } +
-    {
-      if (!is.null(legend_nrow)) ggplot2::guides(col = ggplot2::guide_legend(nrow = legend_nrow))
-    } +
-    ggplot2::labs(title = "The evaluation criterions for different vaeac models") +
-    ggplot2::theme(plot.title = ggplot2::element_text(size = title_text_size))
-
-  # Plot the figures if specified by the user
-  if (plot_figures) {
-    print(figure_facet_each_method)
-    print(figure_facet_each_criterion)
-  }
-
-  # Cleanup and return objects ------------------------------------------------------------------
-  # Check if we are to return figures and/or the data.table with the results
-  if (return_figures || return_train_validation_errors) {
-    # Create empty list to store the results
-    return_list <- list()
-
-    # Check if we are to return the figures
-    if (return_figures) {
-      return_list[["figure_facet_each_method"]] <- figure_facet_each_method
-      return_list[["figure_facet_each_criterion"]] <- figure_facet_each_criterion
-    }
-
-    # Check if we are to return the data.table with the training results
-    if (return_train_validation_errors) {
-      if (length(return_list) == 0) {
-        # We are no to return the figures, so directly return the data.table
-        return_list <- results_dt
-      } else {
-        # Add the data.table to the result list
-        return_list[["training_and_validation_errors"]] <- results_dt
-      }
-    }
-
-    # Return the return list
-    return(return_list)
-  }
+  return(vaeac_VLB_IWAE_dt)
 }
 
 
-
-#' Extract the Training VLB and Validation IWAE from the Provided vaeac Model
+#' #' Extract the Training VLB and Validation IWAE from the provided vaeac model
+#' #'
+#' #' @param explanation List. The output list from the [explain()] function when used `approach = 'vaeac'`.
+#' #'
+#' #' @return A data.table containing the training VLB, validation IWAE, and running validation IWAE at each epoch.
+#' #' @author Lars Henry Berge Olsen
+#' #' @export
+#' extract_one_vaeac_VLB_IWAE = function(explanation) {
+#'   # Check for vaeac approach
+#'   if (explanation$internal$parameters$approach != "vaeac") {
+#'     stop(paste0("The explanation object must have used the 'vaeac' approach, not '",
+#'                explanation$internal$parameters$approach, "'."))
+#'   }
 #'
-#' @param explanation List. The output list from the [explain()] function.
-#' @param plot_from_nth_epoch Integer. From which epoch to plot from. First epoch can be large in
-#' absolute value and make the rest of the plot difficult to interpret.
-#' @param plot_figure Boolean. If `TRUE`, the plot the figure before the function potentially
-#' return the figures, depending on the value of `return_figure`.
-#' @param return_figure Boolean. If `TRUE`, then the function returns the figure.
-#' @param return_train_validation_errors Boolean. If `TRUE`, then the training and validation errors are returned.
+#'   # Extract the checkpoint for the last trained vaeac model.
+#'   vaeac_model_path <- explanation$internal$parameters$vaeac$models$last
+#'   if (is.null(vaeac_model_path)) stop("Cannot find the path")
+#'   checkpoint <- torch::torch_load(path = vaeac_model_path)
 #'
-#' @return A list containing the training VLB and validation IWAE at each epoch, and the total number of epochs.
-#' @export
-#' @author Lars Henry Berge Olsen
-vaeac_training_vlb_and_validation_iwae_shapr <- function(explanation,
-                                                         plot_figure = TRUE,
-                                                         plot_from_nth_epoch = 1,
-                                                         return_figure = FALSE,
-                                                         return_train_validation_errors = FALSE) {
-  # Extract the checkpoint for the last trained vaeac model.
-  vaeac_model_path <- explanation$internal$parameters$vaeac$models$last
+#'   # Only want to return epoch, training loss, and validation loss.
+#'   include_keys <- c("validation_iwae", "validation_iwae_running_avg", "train_vlb", "epoch")
+#'
+#'   # Extract the entries from the checkpoint and convert from torch tensors to R arrays.
+#'   vaeac_VLB_IWAE_list <- sapply(include_keys, function(key) as.array(checkpoint[[key]]), USE.NAMES = TRUE)
+#'
+#'   # Convert to data.table
+#'   vaeac_VLB_IWAE_dt <- data.table(
+#'     "Epoch" = seq(vaeac_VLB_IWAE_list$epoch),
+#'     "VLB" = vaeac_VLB_IWAE_list$train_vlb,
+#'     "IWAE" = vaeac_VLB_IWAE_list$validation_iwae,
+#'     "IWAE_running" = vaeac_VLB_IWAE_list$validation_iwae_running_avg
+#'   )
+#'
+#'   return(vaeac_VLB_IWAE_dt)
+#' }
 
-  # Load the vaeac model at the provided path.
-  checkpoint <- torch::torch_load(path = vaeac_model_path)
 
-  # Create an empty return list
-  temp_list <- list()
+#' #' Plot the Training VLB and Validation IWAE for the provided vaeac model
+#' #'
+#' #' @inheritParams extract_vaeac_VLB_IWAE
+#' #' @param plot_from_nth_epoch Integer. If we are only plot the results form the nth epoch and so forth.
+#' #' The first epochs can be large in absolute value and make the rest of the plot difficult to interpret.
+#' #' @param plot_every_nth_epoch Integer. If we are only to plot every nth epoch. Usefully to illustrate
+#' #' the overall trend, as there can be a lot of fluctuation and oscillation in the values between each epoch.
+#' #'
+#' #' @return A figure of the training VLB, validation IWAE, and running validation IWAE at each epoch.
+#' #' @author Lars Henry Berge Olsen
+#' #' @export
+#' plot_one_vaeac_VLB_IWAE = function(explanation, plot_from_nth_epoch = 1, plot_every_nth_epoch = 1) {
+#'   # Check that ggplot2 is installed
+#'   if (!requireNamespace("ggplot2", quietly = TRUE)) {
+#'     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+#'   }
+#'
+#'   # Extract the VLB and IWAE
+#'   vaeac_VLB_IWAE_dt <- extract_one_vaeac_VLB_IWAE(explanation = explanation)
+#'
+#'   # Check for valid `plot_from_nth_epoch`
+#'   max_epoch = nrow(vaeac_VLB_IWAE_dt)
+#'   if (plot_from_nth_epoch > max_epoch) {
+#'     stop(sprintf("`plot_from_nth_epoch` (%d) is larger than the number of epochs (%d)",
+#'          plot_from_nth_epoch, max_epoch))
+#'   }
+#'
+#'   # Convert it from wide to long
+#'   vaeac_VLB_IWAE_dt_long <- melt(
+#'     data = vaeac_VLB_IWAE_dt,
+#'     id.vars = "Epoch",
+#'     variable.name = "Criterion",
+#'     variable.factor = TRUE,
+#'     value.name = "Value"
+#'   )
+#'
+#'   # Remove entries with too low epoch
+#'   vaeac_VLB_IWAE_dt_long <- vaeac_VLB_IWAE_dt_long[Epoch >= plot_from_nth_epoch, ]
+#'
+#'   # If we are only to plot every nth epoch
+#'   vaeac_VLB_IWAE_dt_long <- vaeac_VLB_IWAE_dt_long[Epoch %% plot_every_nth_epoch == 0]
+#'
+#'   # Create the figure
+#'   ggplot2::ggplot(vaeac_VLB_IWAE_dt_long, ggplot2::aes(x = Epoch, y = Value, group = Criterion)) +
+#'     ggplot2::geom_line(ggplot2::aes(color = Criterion)) +
+#'     ggplot2::geom_point(ggplot2::aes(color = Criterion))
+#' }
 
-  # Only want to return epoch, training loss, and validation loss.
-  include_keys <- c("validation_iwae", "validation_iwae_running_avg", "train_vlb", "epoch")
 
-  # Iterate over the keys.
-  for (key in include_keys) {
-    # Extract the entries from the checkpoint and convert from torch tensors to R arrays.
-    temp_list[[key]] <- as.array(checkpoint[[key]])
-  }
 
-  # Check if we are to return the errors
-  if (return_train_validation_errors) {
-    return_list <- temp_list
-  }
-
-  # Check if we are to plot the training VLB and validation IWAE.
-  if (plot_figure || return_figure) {
-    # Combine the results into a data table.
-    temp_data <- data.table(
-      "VLB" = temp_list$train_vlb,
-      "IWAE" = temp_list$validation_iwae,
-      "IWAE_running" = temp_list$validation_iwae_running_avg,
-      "Epoch" = seq(temp_list$epoch)
-    )
-
-    # Convert it from wide to long
-    temp_data <- melt(
-      data = temp_data,
-      id.vars = "Epoch",
-      variable.name = "Type",
-      variable.factor = TRUE,
-      value.name = "Value"
-    )
-
-    # Remove entries with too low epoch
-    temp_data <- temp_data[Epoch >= plot_from_nth_epoch, ]
-
-    # Create the figure
-    fig <- ggplot2::ggplot(temp_data, ggplot2::aes(x = Epoch, y = Value, group = Type)) +
-      ggplot2::geom_line(ggplot2::aes(color = Type)) +
-      ggplot2::geom_point(ggplot2::aes(color = Type)) +
-      ggplot2::scale_color_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
-      ggplot2::theme(legend.position = "right") +
-      ggplot2::lims(x = c(0, temp_list$epoch))
-
-    # Check if we are to plot the figure
-    if (plot_figure) print(fig)
-
-    # Check id we are to return the figure
-    if (return_figure) {
-      if (return_train_validation_errors) {
-        # We add the figure to the return list
-        return_list[["Figure"]] <- fig
-      } else {
-        # We are only to return the figure, so we replace the list with only the figure
-        return_list <- fig
-      }
-    }
-  }
-
-  # Return the the results
-  if (return_figure || return_train_validation_errors) {
-    return(return_list)
-  }
-}
+#' #' Extract the Training VLB and Validation IWAE from the Provided vaeac Model
+#' #'
+#' #' @param explanation List. The output list from the [explain()] function.
+#' #' @param plot_from_nth_epoch Integer. From which epoch to plot from. First epoch can be large in
+#' #' absolute value and make the rest of the plot difficult to interpret.
+#' #' @param plot_figure Boolean. If `TRUE`, the plot the figure before the function potentially
+#' #' return the figures, depending on the value of `return_figure`.
+#' #' @param return_figure Boolean. If `TRUE`, then the function returns the figure.
+#' #' @param return_train_validation_errors Boolean. If `TRUE`, then the training and validation errors are returned.
+#' #'
+#' #' @return A list containing the training VLB and validation IWAE at each epoch, and the total number of epochs.
+#' #' @export
+#' #' @author Lars Henry Berge Olsen
+#' vaeac_training_vlb_and_validation_iwae_shapr <- function(explanation,
+#'                                                          plot_figure = TRUE,
+#'                                                          plot_from_nth_epoch = 1,
+#'                                                          return_figure = FALSE,
+#'                                                          return_train_validation_errors = FALSE) {
+#'   # Extract the checkpoint for the last trained vaeac model.
+#'   vaeac_model_path <- explanation$internal$parameters$vaeac$models$last
+#'
+#'   # Load the vaeac model at the provided path.
+#'   checkpoint <- torch::torch_load(path = vaeac_model_path)
+#'
+#'   # Create an empty return list
+#'
+#'
+#'   # Only want to return epoch, training loss, and validation loss.
+#'   include_keys <- c("validation_iwae", "validation_iwae_running_avg", "train_vlb", "epoch")
+#'
+#'   # Iterate over the keys.
+#'   for (key in include_keys) {
+#'     # Extract the entries from the checkpoint and convert from torch tensors to R arrays.
+#'     temp_list[[key]] <- as.array(checkpoint[[key]])
+#'   }
+#'
+#'   # Check if we are to return the errors
+#'   if (return_train_validation_errors) {
+#'     return_list <- temp_list
+#'   }
+#'
+#'   # Check if we are to plot the training VLB and validation IWAE.
+#'   if (plot_figure || return_figure) {
+#'     # Combine the results into a data table.
+#'     temp_data <- data.table(
+#'       "VLB" = temp_list$train_vlb,
+#'       "IWAE" = temp_list$validation_iwae,
+#'       "IWAE_running" = temp_list$validation_iwae_running_avg,
+#'       "Epoch" = seq(temp_list$epoch)
+#'     )
+#'
+#'     # Convert it from wide to long
+#'     temp_data <- melt(
+#'       data = temp_data,
+#'       id.vars = "Epoch",
+#'       variable.name = "Type",
+#'       variable.factor = TRUE,
+#'       value.name = "Value"
+#'     )
+#'
+#'     # Remove entries with too low epoch
+#'     temp_data <- temp_data[Epoch >= plot_from_nth_epoch, ]
+#'
+#'     # Create the figure
+#'     fig <- ggplot2::ggplot(temp_data, ggplot2::aes(x = Epoch, y = Value, group = Type)) +
+#'       ggplot2::geom_line(ggplot2::aes(color = Type)) +
+#'       ggplot2::geom_point(ggplot2::aes(color = Type)) +
+#'       ggplot2::scale_color_manual(values = c("#999999", "#E69F00", "#56B4E9")) +
+#'       ggplot2::theme(legend.position = "right") +
+#'       ggplot2::lims(x = c(0, temp_list$epoch))
+#'
+#'     # Check if we are to plot the figure
+#'     if (plot_figure) print(fig)
+#'
+#'     # Check id we are to return the figure
+#'     if (return_figure) {
+#'       if (return_train_validation_errors) {
+#'         # We add the figure to the return list
+#'         return_list[["Figure"]] <- fig
+#'       } else {
+#'         # We are only to return the figure, so we replace the list with only the figure
+#'         return_list <- fig
+#'       }
+#'     }
+#'   }
+#'
+#'   # Return the the results
+#'   if (return_figure || return_train_validation_errors) {
+#'     return(return_list)
+#'   }
+#' }
 
 
 #' Plot Pairwise Plots for Imputed and True Data
@@ -3182,7 +3590,7 @@ vaeac_training_vlb_and_validation_iwae_shapr <- function(explanation,
 #' @return A list containing the figures if `return_figures` = `TRUE`.
 #' @export
 #' @author Lars Henry Berge Olsen
-vaeac_ggpairs_plot_imputed_and_true_data_shapr <-
+plot_vaeac_imputed_ggpairs <-
   function(explanation,
            which_vaeac_model = "best",
            true_data = NULL,
