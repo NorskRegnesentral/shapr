@@ -145,7 +145,7 @@ keep_samp_for_vS <- FALSE
 vaeac.epochs <- 6
 
 # Set the how often the vaeac networks are to be saved to a temporary folder (or to a user specified folder)
-vaeac.save_vaeac_every_nth_epoch <- 3
+vaeac.save_every_nth_epoch <- 3
 
 # To stabilize the initialization process of the vaeac approach, several networks are initialized and trained
 # for some epochs, and then we continue to only train the best version.
@@ -176,7 +176,7 @@ explanation <- explain(
   vaeac.epochs = vaeac.epochs,
   vaeac.num_vaeacs_initiate = vaeac.num_vaeacs_initiate,
   vaeac.extra_parameters = list(
-    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
     vaeac.verbose = vaeac.verbose
   )
 )
@@ -204,7 +204,7 @@ In this example we extract the trained vaeac model from the previous example.
 vaeac.pretrained_vaeac_model <- explanation$internal$parameters$vaeac
 
 # send the pre-trained vaeac model
-explanation_pretrained_vaeac_model <- explain(
+expl_pretrained_vaeac <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -224,7 +224,7 @@ explanation_pretrained_vaeac_model <- explain(
 # Check that they are equal
 all.equal(
   explanation$internal$output$dt_samp_for_vS,
-  explanation_pretrained_vaeac_model$internal$output$dt_samp_for_vS
+  expl_pretrained_vaeac$internal$output$dt_samp_for_vS
 )
 ```
 
@@ -233,7 +233,7 @@ We can also just provide a path to the stored weights and biases.
 
 ```{r pretrained vaeac path, cache = TRUE}
 # send the pre-trained vaeac path
-explanation_pretrained_vaeac_model_path <- explain(
+expl_pretrained_vaeac_path <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -253,7 +253,7 @@ explanation_pretrained_vaeac_model_path <- explain(
 # Check that they are equal to check that providing a pre-trained vaeac path works.
 all.equal(
   explanation$internal$output$dt_samp_for_vS,
-  explanation_pretrained_vaeac_model_path$internal$output$dt_samp_for_vS
+  expl_pretrained_vaeac_path$internal$output$dt_samp_for_vS
 )
 ```
 
@@ -273,7 +273,7 @@ way around.
 
 ```{r check n_combinations and more batches, cache = TRUE}
 # send the pre-trained vaeac path
-explanation_batches_combinations <- explain(
+expl_batches_combinations <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -295,12 +295,12 @@ explanation_batches_combinations <- explain(
 plot_SV_several_approaches(
   list(
     "Original" = explanation,
-    "Other combi." = explanation_batches_combinations
+    "Other combi." = expl_batches_combinations
   )
 )
 
 # Here we can see that the samples coalitions are in different batches and have different weights
-explanation_batches_combinations$internal$objects$X
+expl_batches_combinations$internal$objects$X
 
 # Can compare that to the situation where we have exact computations (i.e., include all coalitions)
 explanation$internal$objects$X
@@ -318,7 +318,7 @@ However, the `vaeac` approach will try to correct for misplaced and duplicated p
 and give warnings to the user, as illustrated in the example below.
 
 ```{r misplaced parameters, cache = TRUE}
-explanation_misplaced_parameters <- explain(
+expl_misplaced_parameters <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -335,13 +335,13 @@ explanation_misplaced_parameters <- explain(
   vaeac.extra_parameters = list(
     vaeac.epochs = 10, # Duplicate, will use this one.
     vaeac.depth = 2, # Should have been a separate parameter, will use this one
-    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch, # Correct place
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch, # Correct place
     what_is_this_parameter = 4 # Unknown parameter
   )
 )
 
 # Look at the used parameters that was misplaced
-explanation_misplaced_parameters$internal$parameters[c("vaeac.epochs", "vaeac.verbose", "vaeac.depth")]
+expl_misplaced_parameters$internal$parameters[c("vaeac.epochs", "vaeac.verbose", "vaeac.depth")]
 ```
 
 
@@ -354,7 +354,7 @@ masked by \eqn{S} and the second one is masked by \eqn{\bar{S}}, the complement,
 The training time will in due to more complex implementation in comparison to random sampling.
 
 ```{r paired sampling training, cache = TRUE}
-explanation_paired_sampling_TRUE <- explain(
+expl_paired_sampling_TRUE <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -372,7 +372,7 @@ explanation_paired_sampling_TRUE <- explain(
   )
 )
 
-explanation_paired_sampling_FALSE <- explain(
+expl_paired_sampling_FALSE <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -395,13 +395,13 @@ explanation_paired_sampling_FALSE <- explain(
 We can compare the results by looking at the training and validation errors and by the $\opertorname{MSE}_v$ evaluation criterion. 
 ```{r paired sampling plotting, cache = TRUE}
 make_vaeac_training_evaluation_plots(list(
-  "Regular samp." = explanation_paired_sampling_FALSE,
-  "Paired samp." = explanation_paired_sampling_TRUE
+  "Regular samp." = expl_paired_sampling_FALSE,
+  "Paired samp." = expl_paired_sampling_TRUE
 ))
 
 plot_MSEv_eval_crit(list(
-  "Regular samp." = explanation_paired_sampling_FALSE,
-  "Paired samp." = explanation_paired_sampling_TRUE
+  "Regular samp." = expl_paired_sampling_FALSE,
+  "Paired samp." = expl_paired_sampling_TRUE
 ))
 ```
 
@@ -409,8 +409,8 @@ By looking at the time, we see that the paired version takes longer time in the 
 phase, that is, in the training phase.
 ```{r paired sampling timing}
 rbind(
-  "time_paired_sampling" = explanation_paired_sampling_TRUE$timing$timing_secs,
-  "time_regular_sampling" = explanation_paired_sampling_FALSE$timing$timing_secs
+  "time_paired_sampling" = expl_paired_sampling_TRUE$timing$timing_secs,
+  "time_regular_sampling" = expl_paired_sampling_FALSE$timing$timing_secs
 )
 ```
 
@@ -427,7 +427,7 @@ First we look at the printout if `vaeac.verbose = FALSE` (default).
 ```{r progressr false verbose false, cache = TRUE}
 library(progressr)
 handlers("void") # To silence all progressr updates
-explanation_without_messages <- explain(
+expl_without_messages <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -440,7 +440,7 @@ explanation_without_messages <- explain(
   vaeac.epochs = 10,
   vaeac.num_vaeacs_initiate = 2,
   vaeac.extra_parameters = list(
-    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
     vaeac.verbose = FALSE
   )
 )
@@ -451,7 +451,7 @@ Then we get no messages as wanted.
 Then we look at the printout if `vaeac.verbose = TRUE`, then we get the old type of printouts.
 ```{r progressr false verbose true, cache = TRUE}
 handlers("void") # To silence all progressr updates
-explanation_with_messages <- explain(
+expl_with_messages <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -464,11 +464,11 @@ explanation_with_messages <- explain(
   vaeac.epochs = 10,
   vaeac.num_vaeacs_initiate = 2,
   vaeac.extra_parameters = list(
-    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
     vaeac.verbose = TRUE
   )
 )
-all.equal(explanation_without_messages$shapley_values, explanation_with_messages$shapley_values)
+all.equal(expl_without_messages$shapley_values, expl_with_messages$shapley_values)
 ```
 
 
@@ -495,7 +495,7 @@ progressr::handlers("cli")
 #   )
 # ))
 with_progress({
-  explanation_with_progressr <- explain(
+  expl_with_progressr <- explain(
     model = model,
     x_explain = x_explain,
     x_train = x_train,
@@ -508,12 +508,12 @@ with_progress({
     vaeac.epochs = 10,
     vaeac.num_vaeacs_initiate = 2,
     vaeac.extra_parameters = list(
-      vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+      vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
       vaeac.verbose = FALSE
     )
   )
 })
-all.equal(explanation_without_messages$shapley_values, explanation_with_progressr$shapley_values)
+all.equal(expl_without_messages$shapley_values, expl_with_progressr$shapley_values)
 ```
 
 We can also use `progressr` together with the `progress` bars that are created 
@@ -523,7 +523,7 @@ artifacts.
 ```{r progressr true verbose true, cache = TRUE}
 handlers("progress")
 with_progress({
-  explanation_with_progressr_and_verbose <- explain(
+  expl_with_progressr_and_verbose <- explain(
     model = model,
     x_explain = x_explain,
     x_train = x_train,
@@ -536,12 +536,12 @@ with_progress({
     vaeac.epochs = 10,
     vaeac.num_vaeacs_initiate = 2,
     vaeac.extra_parameters = list(
-      vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+      vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
       vaeac.verbose = TRUE
     )
   )
 })
-all.equal(explanation_without_messages$shapley_values, explanation_with_progressr_and_verbose$shapley_values)
+all.equal(expl_without_messages$shapley_values, expl_with_progressr_and_verbose$shapley_values)
 ```
 
 
@@ -557,7 +557,7 @@ recommend to use many more epochs.
 
 
 ```{r continue training, cache = TRUE}
-explanation_litle_training <- explain(
+expl_litle_training <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -571,52 +571,52 @@ explanation_litle_training <- explain(
   vaeac.epochs = 3,
   vaeac.num_vaeacs_initiate = 2,
   vaeac.extra_parameters = list(
-    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
     vaeac.verbose = vaeac.verbose
   )
 )
 
 # Can also see how well vaeac generates data from the full joint distribution
 vaeac_ggpairs_plot_imputed_and_true_data_shapr(
-  explanation = explanation_litle_training,
+  explanation = expl_litle_training,
   which_vaeac_model = "best",
   true_data = x_train
 )
 
 # Look at the training and validation errors. Not happy and want to train more.
-make_vaeac_training_evaluation_plots(explanation_litle_training)
+make_vaeac_training_evaluation_plots(expl_litle_training)
 
 # Can look at the saved models, training/validation errors, and the training time
-explanation_litle_training$internal$parameters$vaeac$models
-explanation_litle_training$internal$parameters$vaeac$results
-explanation_litle_training$internal$parameters$vaeac$training_time
+expl_litle_training$internal$parameters$vaeac$models
+expl_litle_training$internal$parameters$vaeac$results
+expl_litle_training$internal$parameters$vaeac$training_time
 
 # Make a copy of the explanation object which we are to train further.
-explanation_train_more <- explanation_litle_training
+expl_train_more <- expl_litle_training
 
 # Continue to train the vaeac model some more epochs
-explanation_train_more$internal$parameters$vaeac <-
+expl_train_more$internal$parameters$vaeac <-
   vaeac_continue_train_model(
-    explanation = explanation_train_more,
+    explanation = expl_train_more,
     epochs_new = 5,
     training_data = x_train,
     verbose = TRUE
   )
 
 # Can see variables have been updated
-explanation_train_more$internal$parameters$vaeac$training_time
-explanation_train_more$internal$parameters$vaeac$models
-explanation_train_more$internal$parameters$vaeac$results
+expl_train_more$internal$parameters$vaeac$training_time
+expl_train_more$internal$parameters$vaeac$models
+expl_train_more$internal$parameters$vaeac$results
 
 # Look at the training and validation errors. Still not sure
 # Note that the lines are obviously overlapping
 make_vaeac_training_evaluation_plots(list(
-  "Original" = explanation_litle_training,
-  "More epochs" = explanation_train_more
+  "Original" = expl_litle_training,
+  "More epochs" = expl_train_more
 ))
 
 # Use train more vaeac model to compute Shapley values again.
-explanation_train_more_vaeac_model <- explain(
+expl_train_more_vaeac <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -627,43 +627,43 @@ explanation_train_more_vaeac_model <- explain(
   n_samples = 250,
   seed = seed,
   vaeac.extra_parameters = list(
-    vaeac.pretrained_vaeac_model = explanation_train_more$internal$parameters$vaeac
+    vaeac.pretrained_vaeac_model = expl_train_more$internal$parameters$vaeac
   )
 )
 
 # Train even more
-explanation_train_even_more <- explanation_train_more
+expl_train_even_more <- expl_train_more
 
 # Continue to train the vaeac model some more epochs
-explanation_train_even_more$internal$parameters$vaeac <-
+expl_train_even_more$internal$parameters$vaeac <-
   vaeac_continue_train_model(
-    explanation = explanation_train_even_more,
+    explanation = expl_train_even_more,
     epochs_new = 10,
     training_data = x_train,
     verbose = TRUE
   )
 
 # Variables have been updated once again
-explanation_train_even_more$internal$parameters$vaeac$training_time
-explanation_train_even_more$internal$parameters$vaeac$models
-explanation_train_even_more$internal$parameters$vaeac$results
+expl_train_even_more$internal$parameters$vaeac$training_time
+expl_train_even_more$internal$parameters$vaeac$models
+expl_train_even_more$internal$parameters$vaeac$results
 
 # Look at the training and validation errors.
 make_vaeac_training_evaluation_plots(list(
-  "Original" = explanation_litle_training,
-  "More epochs" = explanation_train_more,
-  "Even more epochs" = explanation_train_even_more
+  "Original" = expl_litle_training,
+  "More epochs" = expl_train_more,
+  "Even more epochs" = expl_train_even_more
 ))
 
 # Can also see how well vaeac generates data from the full joint distribution
 vaeac_ggpairs_plot_imputed_and_true_data_shapr(
-  explanation = explanation_train_even_more,
+  explanation = expl_train_even_more,
   which_vaeac_model = "best",
   true_data = x_train
 )
 
 # Use train even more vaeac model to compute Shapley values again.
-explanation_train_even_more_vaeac_model <- explain(
+expl_train_even_more_vaeac <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -674,16 +674,16 @@ explanation_train_even_more_vaeac_model <- explain(
   n_samples = 250,
   seed = seed,
   vaeac.extra_parameters = list(
-    vaeac.pretrained_vaeac_model = explanation_train_even_more$internal$parameters$vaeac
+    vaeac.pretrained_vaeac_model = expl_train_even_more$internal$parameters$vaeac
   )
 )
 
 # We see that the Shapley values have changed
 plot_SV_several_approaches(
-  explanation_list = list(
-    "Few epochs" = explanation_litle_training,
-    "More epochs" = explanation_train_more_vaeac_model,
-    "Even more epochs" = explanation_train_even_more_vaeac_model
+  expl_list = list(
+    "Few epochs" = expl_litle_training,
+    "More epochs" = expl_train_more_vaeac,
+    "Even more epochs" = expl_train_even_more_vaeac
   )
 )
 
@@ -692,9 +692,9 @@ plot_SV_several_approaches(
 # overall winner. However, note that there is only six explicands, hence, there will
 # be a lot of variability in the estimates.
 plot_MSEv_eval_crit(list(
-  "Few epochs" = explanation_litle_training,
-  "More epochs" = explanation_train_more_vaeac_model,
-  "Even more epochs" = explanation_train_even_more_vaeac_model
+  "Few epochs" = expl_litle_training,
+  "More epochs" = expl_train_more_vaeac,
+  "Even more epochs" = expl_train_even_more_vaeac
 ))
 ```
 
@@ -702,7 +702,7 @@ plot_MSEv_eval_crit(list(
 
 ## Vaeac with early stopping
 ```{r early stopping 1, cache = TRUE}
-explanation_early_stopping <- explain(
+expl_early_stopping <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -716,33 +716,33 @@ explanation_early_stopping <- explain(
   vaeac.epochs = 1000, # Set it to a big number
   vaeac.num_vaeacs_initiate = 2,
   vaeac.extra_parameters = list(
-    vaeac.save_vaeac_every_nth_epoch = vaeac.save_vaeac_every_nth_epoch,
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
     vaeac.verbose = vaeac.verbose,
     vaeac.epochs_early_stopping = 5
   )
 )
 
 # Look at the training and validation errors. We are quite happy with it.
-make_vaeac_training_evaluation_plots(list("Vaeac early stopping" = explanation_early_stopping))
+make_vaeac_training_evaluation_plots(list("Vaeac early stopping" = expl_early_stopping))
 ```
 
 However, we can train it further for a fixed amount of epochs if desired.
 ```{r early stopping 2, cache = TRUE}
 # Make a copy of the explanation object which we are to train further.
-explanation_early_stopping_train_more <- explanation_early_stopping
+expl_early_stopping_train_more <- expl_early_stopping
 
 # Continue to train the vaeac model some more epochs
-explanation_early_stopping_train_more$internal$parameters$vaeac <-
+expl_early_stopping_train_more$internal$parameters$vaeac <-
   vaeac_continue_train_model(
-    explanation = explanation_early_stopping_train_more,
+    explanation = expl_early_stopping_train_more,
     epochs_new = 15,
     training_data = x_train,
     verbose = TRUE
   )
 
-explanation_early_stopping_train_more$internal$parameters$vaeac <-
+expl_early_stopping_train_more$internal$parameters$vaeac <-
   vaeac_continue_train_model(
-    explanation = explanation_early_stopping_train_more,
+    explanation = expl_early_stopping_train_more,
     epochs_new = 10,
     training_data = x_train,
     verbose = TRUE
@@ -750,15 +750,15 @@ explanation_early_stopping_train_more$internal$parameters$vaeac <-
 
 # Look at the training and validation errors.
 make_vaeac_training_evaluation_plots(list(
-  "Vaeac early stopping" = explanation_early_stopping,
-  "Vaeac early stopping more epochs" = explanation_early_stopping_train_more
+  "Vaeac early stopping" = expl_early_stopping,
+  "Vaeac early stopping more epochs" = expl_early_stopping_train_more
 ))
 ```
 
 Can then use the new one to create the Shapley value explanations.
 ```{r early stopping 3, cache = TRUE}
 # Use extra trained vaeac model to compute Shapley values again.
-explanation_early_stopping_train_more <- explain(
+expl_early_stopping_train_more <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -769,7 +769,7 @@ explanation_early_stopping_train_more <- explain(
   n_samples = 250,
   seed = seed,
   vaeac.extra_parameters = list(
-    vaeac.pretrained_vaeac_model = explanation_early_stopping_train_more$internal$parameters$vaeac
+    vaeac.pretrained_vaeac_model = expl_early_stopping_train_more$internal$parameters$vaeac
   )
 )
 ```
@@ -778,16 +778,16 @@ And then compare them and show the Shapley values.
 # We can compare them
 plot_MSEv_eval_crit(
   list(
-    "Vaeac early stopping" = explanation_early_stopping,
-    "Vaeac early stopping more epochs" = explanation_early_stopping_train_more
+    "Vaeac early stopping" = expl_early_stopping,
+    "Vaeac early stopping more epochs" = expl_early_stopping_train_more
   )
 )
 
 # We see that the Shapley values have changed
 plot_SV_several_approaches(
-  explanation_list = list(
-    "Vaeac early stopping" = explanation_early_stopping,
-    "Vaeac early stopping more epochs" = explanation_early_stopping_train_more
+  expl_list = list(
+    "Vaeac early stopping" = expl_early_stopping,
+    "Vaeac early stopping more epochs" = expl_early_stopping_train_more
   )
 )
 ```
@@ -803,7 +803,7 @@ group_list <- list(A = c("Temp", "Month"), B = c("Wind", "Solar.R"))
 approach <- "vaeac"
 n_combinations <- NULL
 n_batches <- 2
-explanation_group <- explain(
+expl_group <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -818,16 +818,16 @@ explanation_group <- explain(
   vaeac.num_vaeacs_initiate = 3,
   vaeac.verbose = TRUE
 )
-# explanation_group$internal$objects
+# expl_group$internal$objects
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation_group$shapley_values)
+print(expl_group$shapley_values)
 
 # Finally we plot the resulting explanations
-plot(explanation_group)
+plot(expl_group)
 
-explanation_group$internal$objects$X
+expl_group$internal$objects$X
 ```
 
 
@@ -871,7 +871,7 @@ get_model_specs <- NULL
 is_python <- FALSE
 
 # Here we use the ctree approach
-explanation_ctree <- explain(
+expl_ctree <- explain(
   model = model,
   x_explain = x_test_cat,
   x_train = x_train_cat,
@@ -887,14 +887,14 @@ explanation_ctree <- explain(
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation_ctree$shapley_values)
+print(expl_ctree$shapley_values)
 
 # Finally we plot the resulting explanations
-plot(explanation_ctree, plot_phi0 = FALSE)
+plot(expl_ctree, plot_phi0 = FALSE)
 ```
 ```{r vaeac mixed data, cache = TRUE}
 # Then we use the vaeac approach
-explanation_vaeac <- explain(
+expl_vaeac <- explain(
   model = model,
   x_explain = x_test_cat,
   x_train = x_train_cat,
@@ -917,14 +917,14 @@ explanation_vaeac <- explain(
 )
 
 # We see that the networks are still learning
-make_vaeac_training_evaluation_plots(list("Simple vaeac" = explanation_vaeac))
+make_vaeac_training_evaluation_plots(list("Simple vaeac" = expl_vaeac))
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation_vaeac$shapley_values)
+print(expl_vaeac$shapley_values)
 
 # Finally we plot the resulting explanations
-plot(explanation_vaeac, plot_phi0 = FALSE)
+plot(expl_vaeac, plot_phi0 = FALSE)
 ```
 
 Make a more complex vaeac model and train it for longer
@@ -932,7 +932,7 @@ Make a more complex vaeac model and train it for longer
 
 ```{r complex vaeac, cache = TRUE}
 # Here we fit a more complex vaeac method
-explanation_vaeac_complex <- explain(
+expl_vaeac_complex <- explain(
   model = model,
   x_explain = x_test_cat,
   x_train = x_train_cat,
@@ -956,16 +956,16 @@ explanation_vaeac_complex <- explain(
 )
 
 make_vaeac_training_evaluation_plots(list(
-  "Vaeac w.o. skip-con." = explanation_vaeac,
-  "Vaeac w. skip-con." = explanation_vaeac_complex
+  "Vaeac w.o. skip-con." = expl_vaeac,
+  "Vaeac w. skip-con." = expl_vaeac_complex
 ))
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
-print(explanation_vaeac_complex$shapley_values)
+print(expl_vaeac_complex$shapley_values)
 
 # Finally we plot the resulting explanations
-plot(explanation_vaeac_complex, plot_phi0 = FALSE)
+plot(expl_vaeac_complex, plot_phi0 = FALSE)
 ```
 
 Can now compare the methods:
@@ -973,17 +973,17 @@ Can now compare the methods:
 ```{r compare for mixed data, cache = TRUE}
 # Can see that the extra training has decreased the MSE_Frye evaluation criterion
 plot_MSEv_eval_crit(list(
-  "Vaeac w.o. skip-con." = explanation_vaeac,
-  "Vaeac w. skip-con." = explanation_vaeac_complex,
-  "Ctree" = explanation_ctree
+  "Vaeac w.o. skip-con." = expl_vaeac,
+  "Vaeac w. skip-con." = expl_vaeac_complex,
+  "Ctree" = expl_ctree
 ))
 
 
 # Can compare the Shapley values
 plot_SV_several_approaches(list(
-  "Vaeac w.o. skip-con." = explanation_vaeac,
-  "Vaeac w. skip-con." = explanation_vaeac_complex,
-  "Ctree" = explanation_ctree
+  "Vaeac w.o. skip-con." = expl_vaeac,
+  "Vaeac w. skip-con." = expl_vaeac_complex,
+  "Ctree" = expl_ctree
 ))
 ```
 

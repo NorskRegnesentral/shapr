@@ -59,7 +59,7 @@
 #'  \item{vaeac.epochs_early_stopping}{Default is `NULL`. Integer. The training stops if there has
 #'   been no improvement in the validation IWAE for `vaeac.epochs_early_stopping` epochs. If the user wants
 #'  the training process to be solely based on this, then `vaeac.epochs` should be set to a large number.}
-#'  \item{vaeac.save_vaeac_every_nth_epoch}{Default is `NULL`. Integer. If we are to save the vaeac
+#'  \item{vaeac.save_every_nth_epoch}{Default is `NULL`. Integer. If we are to save the vaeac
 #'   model after every nth epoch.}
 #'  \item{vaeac.batch_size}{Default is `64`. Integer. The number of samples to include in each batch
 #'   during the training of the vaeac model.
@@ -129,7 +129,7 @@
 #'  (snapshots from different epochs) to use when generating the MC samples. The choices are `best`,
 #'  `best_running`, and `last`. Here, `best` reflects the epoch with the lowest IWAE score, and is
 #'  the default choice. Note that additional choices are available if
-#'  `vaeac.save_vaeac_every_nth_epoch` is provided. E.g., if `vaeac.save_vaeac_every_nth_epoch = 5`,
+#'  `vaeac.save_every_nth_epoch` is provided. E.g., if `vaeac.save_every_nth_epoch = 5`,
 #'  then `vaeac.which_vaeac_model` can also take the values `epoch_5`, `epoch_10`, `epoch_15`, and
 #'  so on.}
 #' }
@@ -167,7 +167,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     "vaeac.use_cuda" = FALSE,
     "vaeac.epochs_initiation_phase" = 2,
     "vaeac.epochs_early_stopping" = NULL,
-    "vaeac.save_vaeac_every_nth_epoch" = NULL,
+    "vaeac.save_every_nth_epoch" = NULL,
     "vaeac.validation_ratio" = 0.25,
     "vaeac.validation_iwae_num_samples" = 25,
     "vaeac.batch_size" = 64,
