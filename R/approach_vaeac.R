@@ -78,7 +78,7 @@
 #'  \item{use_skip_connections}{Default is `TRUE`. Boolean. If we are to use skip connections in
 #'   each layer. If true, then we add the input to the outcome of each hidden layer, so the output
 #'   becomes X + activation(WX + b). I.e., identity skip connection.}
-#'  \item{vaeac.use_skip_connections_between_masked_encoder_and_decoder}{Default is `TRUE`. Boolean.
+#'  \item{vaeac.skip_connection_masked_enc_dec}{Default is `TRUE`. Boolean.
 #'   If we are to apply concatenate skip connections between the layers in the masked encoder
 #'   and decoder.}
 #'  \item{vaeac.use_batch_normalization}{Default is `FALSE`. Boolean. If we are to use batch
@@ -174,7 +174,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     "vaeac.batch_size_sampling" = NULL,
     "vaeac.running_avg_num_values" = 5,
     "vaeac.use_skip_connections" = TRUE,
-    "vaeac.use_skip_connections_between_masked_encoder_and_decoder" = TRUE,
+    "vaeac.skip_connection_masked_enc_dec" = TRUE,
     "vaeac.use_batch_normalization" = FALSE,
     "vaeac.paired_sampling" = TRUE,
     "vaeac.masking_ratio" = 0.5,
@@ -737,7 +737,7 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' \code{\link[torch]{nn_sigmoid}}.
 #' @param use_skip_connections Boolean. If we are to use skip connections in each layer. If true, then we add the input
 #' to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.
-#' @param use_skip_connections_between_masked_encoder_and_decoder Boolean. If we are to apply concatenate skip
+#' @param skip_connection_masked_enc_dec Boolean. If we are to apply concatenate skip
 #' connections between the layers in the masked encoder and decoder.
 #' @param use_batch_normalization Boolean. If we are to use batch normalization after the activation function.
 #' Note that if \code{use_skip_connections} is TRUE, then the normalization is
@@ -793,7 +793,7 @@ vaeac_train_model <- function(training_data,
                               running_avg_num_values = 5,
                               activation_function = torch::nn_relu,
                               use_skip_connections = TRUE,
-                              use_skip_connections_between_masked_encoder_and_decoder = TRUE,
+                              skip_connection_masked_enc_dec = TRUE,
                               use_batch_normalization = FALSE,
                               paired_sampling = TRUE,
                               masking_ratio = 0.5,
@@ -1095,7 +1095,7 @@ vaeac_train_model <- function(training_data,
     "lr" = lr,
     "batch_size" = batch_size,
     "use_skip_connections" = use_skip_connections,
-    "use_skip_connections_between_masked_encoder_and_decoder" = use_skip_connections_between_masked_encoder_and_decoder,
+    "skip_connection_masked_enc_dec" = skip_connection_masked_enc_dec,
     "use_batch_normalization" = use_batch_normalization,
     "use_cuda" = use_cuda,
     "train_indices" = train_indices,
@@ -1179,7 +1179,7 @@ epoch might require a lot of disk storage if data is large.\n",
       latent_dim = latent_dim,
       activation_function = activation_function,
       use_skip_connections = use_skip_connections,
-      use_skip_connections_between_masked_encoder_and_decoder = use_skip_connections_between_masked_encoder_and_decoder,
+      skip_connection_masked_enc_dec = skip_connection_masked_enc_dec,
       use_batch_normalization = use_batch_normalization,
       paired_sampling = paired_sampling,
       mask_generator_name = mask_generator_name,
@@ -1897,8 +1897,8 @@ epoch might require a lot of disk storage if data is large.\n",
       latent_dim = checkpoint$latent_dim,
       activation_function = checkpoint$activation_function,
       use_skip_connections = checkpoint$use_skip_connections,
-      use_skip_connections_between_masked_encoder_and_decoder =
-        checkpoint$use_skip_connections_between_masked_encoder_and_decoder,
+      skip_connection_masked_enc_dec =
+        checkpoint$skip_connection_masked_enc_dec,
       use_batch_normalization = checkpoint$use_batch_normalization,
       paired_sampling = checkpoint$paired_sampling,
       mask_generator_name = checkpoint$mask_generator_name,
@@ -2335,8 +2335,8 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
     latent_dim = checkpoint$latent_dim,
     activation_function = checkpoint$activation_function,
     use_skip_connections = checkpoint$use_skip_connections,
-    use_skip_connections_between_masked_encoder_and_decoder =
-      checkpoint$use_skip_connections_between_masked_encoder_and_decoder,
+    skip_connection_masked_enc_dec =
+      checkpoint$skip_connection_masked_enc_dec,
     use_batch_normalization = checkpoint$use_batch_normalization,
     mask_generator_name = checkpoint$mask_generator_name,
     masking_ratio = checkpoint$masking_ratio,

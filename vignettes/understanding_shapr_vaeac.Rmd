@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, include=FALSE, warning=FALSE}
-library(shapr)
+#library(shapr)
 ```
 
 > [vaeac](#vaeac)
@@ -86,8 +86,9 @@ First we set up the model we want to explain.
 
 ```{r setup2, cache = TRUE}
 library(xgboost)
+library(data.table)
 #library(shapr)
-# devtools::load_all(".")
+#devtools::load_all(".")
 
 data("airquality")
 data = data.table::as.data.table(airquality)
@@ -729,8 +730,7 @@ plot_MSEv_eval_crit(
 # We see that the Shapley values have changed
 plot_SV_several_approaches(
   explanation_list = list("Vaeac early stopping" = explanation_early_stopping,
-                          "Vaeac early stopping more epochs" = explanation_early_stopping_train_more),
-  legend_position = "bottom")
+                          "Vaeac early stopping more epochs" = explanation_early_stopping_train_more))
 ```
 
 
@@ -852,7 +852,7 @@ library(ranger)
     vaeac.latent_dim = 4,
     vaeac.extra_parameters = list(
       vaeac.use_skip_connections = FALSE,
-      vaeac.use_skip_connections_between_masked_encoder_and_decoder = FALSE,
+      vaeac.skip_connection_masked_enc_dec = FALSE,
       vaeac.verbose = TRUE)
   )
 
@@ -890,7 +890,7 @@ Make a more complex vaeac model and train it for longer
     vaeac.latent_dim = 4,
     vaeac.extra_parameters = list(
       vaeac.use_skip_connections = TRUE,
-      vaeac.use_skip_connections_between_masked_encoder_and_decoder = TRUE,
+      vaeac.skip_connection_masked_enc_dec = TRUE,
       vaeac.verbose = TRUE)
   )
 
@@ -917,8 +917,7 @@ Can now compare the methods:
   # Can compare the Shapley values
   plot_SV_several_approaches(list("Vaeac w.o. skip-con." = explanation_vaeac,
                                             "Vaeac w. skip-con." = explanation_vaeac_complex,
-                                            "Ctree" = explanation_ctree),
-                                            legend_position = "bottom")
+                                            "Ctree" = explanation_ctree))
 ```
 
 

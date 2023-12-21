@@ -23,7 +23,7 @@
 #' \code{\link[torch]{nn_sigmoid}}.
 #' @param use_skip_connections Boolean. If we are to use skip connections in each layer. If true, then we add the input
 #' to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.
-#' @param use_skip_connections_between_masked_encoder_and_decoder Boolean. If we are to apply concatenate skip
+#' @param skip_connection_masked_enc_dec Boolean. If we are to apply concatenate skip
 #' connections between the layers in the masked encoder and decoder.
 #' @param use_batch_normalization Boolean. If we are to use batch normalization after the activation function.
 #' Note that if \code{use_skip_connections} is TRUE, then the normalization is
@@ -124,7 +124,7 @@ vaeac <- torch::nn_module(
                         latent_dim = 8,
                         activation_function = torch::nn_relu,
                         use_skip_connections = FALSE,
-                        use_skip_connections_between_masked_encoder_and_decoder = FALSE,
+                        skip_connection_masked_enc_dec = FALSE,
                         use_batch_normalization = FALSE,
                         paired_sampling = FALSE,
                         mask_generator_name = c("MCAR_mask_generator",
@@ -143,7 +143,7 @@ vaeac <- torch::nn_module(
 
     # Extra strings to add to names of layers depending on if we use memory layers and/or batch normalization.
     # If FALSE, they are just an empty string and do not effect the names.
-    name_extra_memory_layer <- ifelse(use_skip_connections_between_masked_encoder_and_decoder, "_and_memory", "")
+    name_extra_memory_layer <- ifelse(skip_connection_masked_enc_dec, "_and_memory", "")
     name_extra_batch_normalize <- ifelse(use_batch_normalization, "_and_batch_norm", "")
 
     # Save some of the initializing hyperparameters to the vaeac object. Others are saved later.
@@ -153,8 +153,8 @@ vaeac <- torch::nn_module(
     self$latent_dim <- latent_dim
     self$activation_function <- activation_function
     self$use_skip_connections <- use_skip_connections
-    self$use_skip_connections_between_masked_encoder_and_decoder <-
-      use_skip_connections_between_masked_encoder_and_decoder
+    self$skip_connection_masked_enc_dec <-
+      skip_connection_masked_enc_dec
     self$use_batch_normalization <- use_batch_normalization
     self$sigma_mu <- sigma_mu
     self$sigma_sigma <- sigma_sigma
@@ -283,7 +283,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
       module = CategoricalToOneHotLayer(c(one_hot_max_sizes, rep(0, num_features))),
       name = "input_layer_cat_to_one_hot"
     )
-    if (use_skip_connections_between_masked_encoder_and_decoder) {
+    if (skip_connection_masked_enc_dec) {
       masked_encoder_network$add_module(
         module = MemoryLayer("#input"),
         name = "input_layer_memory"
@@ -315,7 +315,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
         # concatenation from masked encoder to decoder.
         masked_encoder_network$add_module(
           module = SkipConnection(
-            if (use_skip_connections_between_masked_encoder_and_decoder) MemoryLayer(paste0("#", i)),
+            if (skip_connection_masked_enc_dec) MemoryLayer(paste0("#", i)),
             torch::nn_linear(width, width),
             activation_function()
           ),
@@ -329,7 +329,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
         }
       } else {
         # Do not use skip connections and do not add the input to the output.
-        if (use_skip_connections_between_masked_encoder_and_decoder) {
+        if (skip_connection_masked_enc_dec) {
           masked_encoder_network$add_module(
             module = MemoryLayer(paste0("#", i)),
             name = paste0("hidden_layer_", i, "_memory")
@@ -353,7 +353,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
     }
 
     # Masked Encoder: Go to latent space
-    if (use_skip_connections_between_masked_encoder_and_decoder) {
+    if (skip_connection_masked_enc_dec) {
       masked_encoder_network$add_module(
         module = MemoryLayer(paste0("#", depth + 1)),
         name = "latent_space_layer_memory"
@@ -385,18 +385,18 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
 
     # Get the width of the hidden layers in the decoder. Needs to be multiplied with two if
     # we use skip connections between masked encoder and decoder as we concatenate the tensors.
-    width_decoder <- ifelse(use_skip_connections_between_masked_encoder_and_decoder, 2 * width, width)
+    width_decoder <- ifelse(skip_connection_masked_enc_dec, 2 * width, width)
 
     # Same for the input dimension to the last layer in decoder that yields the distribution params.
     extra_params_from_skip_connection_from_masked_encoder <-
-      ifelse(test = use_skip_connections_between_masked_encoder_and_decoder,
+      ifelse(test = skip_connection_masked_enc_dec,
         yes = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) + num_features,
         no = 0
       )
 
     # Will need an extra hidden layer if we use skip connection from masked encoder to decoder
     # as we send the full input layer of the masked encoder to the last layer in the decoder.
-    depth_decoder <- ifelse(use_skip_connections_between_masked_encoder_and_decoder, depth + 1, depth)
+    depth_decoder <- ifelse(skip_connection_masked_enc_dec, depth + 1, depth)
 
     # Decoder: Hidden layers
     for (i in seq(depth_decoder)) {
@@ -413,7 +413,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
         decoder_network$add_module(
           module = torch::nn_sequential(
             SkipConnection(
-              if (use_skip_connections_between_masked_encoder_and_decoder) {
+              if (skip_connection_masked_enc_dec) {
                 MemoryLayer(paste0("#", depth - i + 2), TRUE)
               },
               torch::nn_linear(width_decoder, width),
@@ -430,7 +430,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
         }
       } else {
         # Do not use skip connections and do not add the input to the output.
-        if (use_skip_connections_between_masked_encoder_and_decoder) {
+        if (skip_connection_masked_enc_dec) {
           decoder_network$add_module(
             module = MemoryLayer(paste0("#", depth - i + 2), TRUE),
             name = paste0("hidden_layer_", i, "_memory")
@@ -455,7 +455,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_probability_mask_generator', and 
 
     # Decoder: Go the parameter space of the generative distributions
     # Concatenate the input to the first layer of the masked encoder to the last layer of the decoder network.
-    if (use_skip_connections_between_masked_encoder_and_decoder) {
+    if (skip_connection_masked_enc_dec) {
       decoder_network$add_module(
         module = MemoryLayer("#input", TRUE),
         name = "output_layer_memory"
