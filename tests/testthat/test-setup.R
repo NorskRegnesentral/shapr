@@ -1970,7 +1970,7 @@ test_that("counting the number of unique approaches", {
 
 test_that("vaeac_set_seed_works", {
   # Train two vaeac models with the same seed
-  explanation_vaeac_1 = explain(
+  explanation_vaeac_1 <- explain(
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -1986,7 +1986,7 @@ test_that("vaeac_set_seed_works", {
     )
   )
 
-  explanation_vaeac_2 = explain(
+  explanation_vaeac_2 <- explain(
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -2011,7 +2011,7 @@ test_that("vaeac_pretreained_vaeac_model_object", {
   # have trained it in a previous shapr::explainer object.
 
   # Train two vaeac models with the same seed
-  explanation_vaeac_1 = explain(
+  explanation_vaeac_1 <- explain(
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -2028,10 +2028,10 @@ test_that("vaeac_pretreained_vaeac_model_object", {
   )
 
   # Get the pretrained vaeac model
-  vaeac.pretrained_vaeac_model = explanation_vaeac_1$internal$parameters$vaeac
+  vaeac.pretrained_vaeac_model <- explanation_vaeac_1$internal$parameters$vaeac
 
   # send the pre-trained vaeac model to the explain function
-  explanation_pretrained_vaeac_model = explain(
+  explanation_pretrained_vaeac_model <- explain(
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -2054,7 +2054,7 @@ test_that("vaeac_pretreained_vaeac_model_path", {
   # have a path to a trained vaeac object.
 
   # Train two vaeac models with the same seed
-  explanation_vaeac_1 = explain(
+  explanation_vaeac_1 <- explain(
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -2070,11 +2070,11 @@ test_that("vaeac_pretreained_vaeac_model_path", {
     )
   )
 
-  # Get the pretrained vaeac model
-  vaeac.pretrained_vaeac_model_path = explanation_vaeac_1$internal$parameters$vaeac$models$best
+  # Get the pre-trained vaeac model
+  vaeac.pretrained_vaeac_model_path <- explanation_vaeac_1$internal$parameters$vaeac$models$best
 
   # send the pre-trained vaeac model to the explain function
-  explanation_pretrained_vaeac_model = explain(
+  explanation_pretrained_vaeac_model <- explain(
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -2091,24 +2091,3 @@ test_that("vaeac_pretreained_vaeac_model_path", {
   # Check for equal Shapley values
   expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac_model$shapley_values)
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1337,7 +1337,7 @@ explanation_vaeac <- explain(
   vaeac.width = 8,
   vaeac.depth = 2,
   vaeac.latent.dim = 4,
-  vaeac.epochs = 3, 
+  vaeac.epochs = 3,
   vaeac.num_different_vaeac_initiate = 2,
   vaeac.extra_parameters = list(
     vaeac.batch_size = 32,
@@ -1350,8 +1350,9 @@ Can look at the training and validation error for the trained `vaeac` model and 
 ```{r}
 # Look at the training and validation errors.
 make_vaeac_training_evaluation_plots(list("Vaeac 3 epochs" = explanation_vaeac),
-                                     plot_figures = FALSE,
-                                     return_figures = TRUE)$figure_facet_for_each_method
+  plot_figures = FALSE,
+  return_figures = TRUE
+)$figure_facet_for_each_method
 ```
 
 
@@ -1369,7 +1370,7 @@ is applied.
 
 
 ```{r}
-explanation_vaeac_early_stopping <- explain(
+explanation_vaeac_early_stop <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -1379,7 +1380,7 @@ explanation_vaeac_early_stopping <- explain(
   vaeac.width = 8,
   vaeac.depth = 2,
   vaeac.latent.dim = 4,
-  vaeac.epochs = 1000,  # Set it to a large number
+  vaeac.epochs = 1000, # Set it to a large number
   vaeac.num_different_vaeac_initiate = 2,
   vaeac.extra_parameters = list(
     vaeac.batch_size = 32,
@@ -1392,18 +1393,26 @@ explanation_vaeac_early_stopping <- explain(
 Can compare with the previous version and see that the results are more stable now.
 ```{r}
 # Look at the training and validation errors.
-make_vaeac_training_evaluation_plots(list("Vaeac 3 epochs" = explanation_vaeac,
-                                          "Vaeac early stopping" = explanation_vaeac_early_stopping),
-                                     plot_figures = FALSE,
-                                     return_figures = TRUE)$figure_facet_for_each_method
+make_vaeac_training_evaluation_plots(
+  list(
+    "Vaeac 3 epochs" = explanation_vaeac,
+    "Vaeac early stopping" = explanation_vaeac_early_stop
+  ),
+  plot_figures = FALSE,
+  return_figures = TRUE
+)$figure_facet_for_each_method
 ```
 
 Can also compare the $\operatorname{MSE}_{v}$ evaluation scores.
 
 ```{r}
-plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac,
-                         "Vaeac early stopping" = explanation_vaeac_early_stopping),
-                    plot_type = c("overall"))
+plot_MSEv_eval_crit(
+  list(
+    "Vaeac 3 epochs" = explanation_vaeac,
+    "Vaeac early stopping" = explanation_vaeac_early_stop
+  ),
+  plot_type = c("overall")
+)
 ```
 
 
