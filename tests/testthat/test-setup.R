@@ -1980,7 +1980,7 @@ test_that("vaeac_set_seed_works", {
     n_batches = 2,
     seed = 1,
     vaeac.epochs = 4,
-    vaeac.num_different_vaeac_initiate = 2,
+    vaeac.num_vaeacs_initiate = 2,
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     )
@@ -1996,7 +1996,7 @@ test_that("vaeac_set_seed_works", {
     n_batches = 2,
     seed = 1,
     vaeac.epochs = 4,
-    vaeac.num_different_vaeac_initiate = 2,
+    vaeac.num_vaeacs_initiate = 2,
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     )
@@ -2021,7 +2021,7 @@ test_that("vaeac_pretreained_vaeac_model_object", {
     n_batches = 2,
     seed = 1,
     vaeac.epochs = 4,
-    vaeac.num_different_vaeac_initiate = 2,
+    vaeac.num_vaeacs_initiate = 2,
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     )
@@ -2031,7 +2031,7 @@ test_that("vaeac_pretreained_vaeac_model_object", {
   vaeac.pretrained_vaeac_model <- explanation_vaeac_1$internal$parameters$vaeac
 
   # send the pre-trained vaeac model to the explain function
-  explanation_pretrained_vaeac_model <- explain(
+  explanation_pretrained_vaeac <- explain(
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -2046,7 +2046,7 @@ test_that("vaeac_pretreained_vaeac_model_object", {
   )
 
   # Check for equal Shapley values
-  expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac_model$shapley_values)
+  expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac$shapley_values)
 })
 
 test_that("vaeac_pretreained_vaeac_model_path", {
@@ -2064,17 +2064,17 @@ test_that("vaeac_pretreained_vaeac_model_path", {
     n_batches = 2,
     seed = 1,
     vaeac.epochs = 4,
-    vaeac.num_different_vaeac_initiate = 2,
+    vaeac.num_vaeacs_initiate = 2,
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     )
   )
 
   # Get the pre-trained vaeac model
-  vaeac.pretrained_vaeac_model_path <- explanation_vaeac_1$internal$parameters$vaeac$models$best
+  vaeac.pretrained_vaeac_path <- explanation_vaeac_1$internal$parameters$vaeac$models$best
 
   # send the pre-trained vaeac model to the explain function
-  explanation_pretrained_vaeac_model <- explain(
+  explanation_pretrained_vaeac <- explain(
     model = model_lm_mixed,
     x_explain = x_explain_mixed,
     x_train = x_train_mixed,
@@ -2084,10 +2084,10 @@ test_that("vaeac_pretreained_vaeac_model_path", {
     n_batches = 2,
     seed = 1,
     vaeac.extra_parameters = list(
-      vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_model_path
+      vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_path
     )
   )
 
   # Check for equal Shapley values
-  expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac_model$shapley_values)
+  expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac$shapley_values)
 })

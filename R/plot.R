@@ -1676,20 +1676,20 @@ update_only_these_features <- function(explanation_list,
   # Only keep the desired features/columns
   if (!is.null(only_these_features)) {
     # Check if user has provided a non-valid feature name, note that `none` is a valid feature name
-    only_these_features_in_feature_names <- only_these_features[only_these_features %in% feature_names_with_none]
-    only_these_features_not_in_feature_names <- only_these_features[!only_these_features %in% feature_names_with_none]
+    only_these_features_in_names <- only_these_features[only_these_features %in% feature_names_with_none]
+    only_these_features_not_names <- only_these_features[!only_these_features %in% feature_names_with_none]
 
     # Give the user a warning if the user provided non-valid feature names
-    if (length(only_these_features_not_in_feature_names) > 0) {
+    if (length(only_these_features_not_names) > 0) {
       message(paste0(
         "User provided non-valid feature names in `only_these_features` (",
-        paste0("'", only_these_features_not_in_feature_names, "'", collapse = ", "),
+        paste0("'", only_these_features_not_names, "'", collapse = ", "),
         "). The function skips non-valid feature names."
       ))
     }
 
     # Stop if we have no valid feature names.
-    if (length(only_these_features_in_feature_names[only_these_features_in_feature_names != "none"]) == 0) {
+    if (length(only_these_features_in_names[only_these_features_in_names != "none"]) == 0) {
       stop(paste0(
         "The parameter `only_these_features` must contain at least one of: ",
         paste0("'", feature_names_without_none, "'", collapse = ", "),
@@ -1698,10 +1698,10 @@ update_only_these_features <- function(explanation_list,
     }
 
     # If user has specified `plot_phi0 = TRUE`, then we ensure that it is included in our variable
-    if (plot_phi0) only_these_features_in_feature_names <- unique(c("none", only_these_features_in_feature_names))
+    if (plot_phi0) only_these_features_in_names <- unique(c("none", only_these_features_in_names))
 
-    # Overwrite the `only_these_features` with `only_these_features_in_feature_names` to remove non-valid input
-    only_these_features <- only_these_features_in_feature_names
+    # Overwrite the `only_these_features` with `only_these_features_in_names` to remove non-valid input
+    only_these_features <- only_these_features_in_names
   } else {
     # If user has specified `plot_phi0 = FALSE`, then we exclude the phi0/`none` from the feature names.
     only_these_features <- if (plot_phi0) feature_names_with_none else feature_names_without_none

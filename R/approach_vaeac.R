@@ -22,7 +22,7 @@
 #' @param vaeac.activation_function An \code{\link[torch]{nn_module}} representing an activation
 #'  function such as, e.g., \code{\link[torch]{nn_relu}}, \code{\link[torch]{nn_leaky_relu}},
 #'  \code{\link[torch]{nn_selu}}, and \code{\link[torch]{nn_sigmoid}}.
-#' @param vaeac.num_different_vaeac_initiate Integer. The number of different vaeac models to initiate
+#' @param vaeac.num_vaeacs_initiate Integer. The number of different vaeac models to initiate
 #'  in the start. Pick the best performing one after `vaeac.extra_parameters$epochs_initiation_phase`
 #'  epochs (default is `2`) and continue training that one.
 #' @param vaeac.epochs Integer. The number of epochs to train the final vaeac model. This includes
@@ -54,7 +54,7 @@
 #'  \item{vaeac.use_cuda}{Default is `FALSE`. Boolean. If we are to use cuda (GPU) if available.
 #'  NOTE: not supported in the current version of the `shapr` package.}
 #'  \item{vaeac.epochs_initiation_phase}{Default is `2`. Integer. The number of epochs to run each
-#'   of the `vaeac.num_different_vaeac_initiate` vaeac models before only continuing training the
+#'   of the `vaeac.num_vaeacs_initiate` vaeac models before only continuing training the
 #'   best one.}
 #'  \item{vaeac.epochs_early_stopping}{Default is `NULL`. Integer. The training stops if there has
 #'   been no improvement in the validation IWAE for `vaeac.epochs_early_stopping` epochs. If the user wants
@@ -144,7 +144,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
                                  vaeac.latent_dim = 8,
                                  vaeac.activation_function = torch::nn_relu,
                                  vaeac.lr = 0.001,
-                                 vaeac.num_different_vaeac_initiate = 10,
+                                 vaeac.num_vaeacs_initiate = 10,
                                  vaeac.epochs = 200,
                                  vaeac.extra_parameters = list(),
                                  ...) {
@@ -155,7 +155,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     "vaeac.latent_dim",
     "vaeac.activation_function",
     "vaeac.lr",
-    "vaeac.num_different_vaeac_initiate",
+    "vaeac.num_vaeacs_initiate",
     "vaeac.epochs"
   )
 
@@ -977,9 +977,9 @@ vaeac_train_model <- function(training_data,
         }
         mask_generator_name <- "Specified_probability_mask_generator"
       } else {
-        stop(sprintf(
-          "'Masking_ratio' contains masking ratios for '%d' features, but there are '%d' features in 'training_data'.\n",
-          length(masking_ratio), ncol(training_data)
+        stop(paste0(
+          "'Masking_ratio' contains masking ratios for ',", length(masking_ratio), "' features, ",
+          "but there are '", ncol(training_data), "' features in 'training_data'.\n"
         ))
       }
     }
@@ -1364,9 +1364,10 @@ epoch might require a lot of disk storage if data is large.\n",
   # Check if we are printing detailed debug information
   if (verbose) {
     # Small printout to the user stating which initiated vaeac model was the best.
-    message(sprintf(
-      "\nNumber of vaeac initiations: %d. Best: #%d. VLB: %.3f after %d epochs.\nContinue with training the best initiation.",
-      num_different_vaeac_initiate, best_iteration, best_train_vlb[-1], epochs_initiation_phase
+    message(paste0(
+      "\nNumber of vaeac initiations: ", num_different_vaeac_initiate, ". Best: #", best_iteration, ". ",
+      "VLB = ", sprintf("%.3f", best_train_vlb[-1]), " after ", epochs_initiation_phase, " epochs.",
+      "\nContinue with training the best initiation."
     ))
 
     # Create a progress bar for the remaining epochs for the final/used vaeac model.
@@ -2682,7 +2683,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
 #'   n_batches = 2,
 #'   n_samples = 1, #' As we are only interested in the training of the vaeac
 #'   vaeac.epochs = 25, #' Should be higher in applications.
-#'   vaeac.num_different_vaeac_initiate = 5,
+#'   vaeac.num_vaeacs_initiate = 5,
 #'   vaeac.extra_parameters = list(
 #'     vaeac.paired_sampling = TRUE,
 #'     vaeac.verbose = TRUE
@@ -2698,7 +2699,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
 #'   n_batches = 2,
 #'   n_samples = 1, #' As we are only interested in the training of the vaeac
 #'   vaeac.epochs = 25, #' Should be higher in applications.
-#'   vaeac.num_different_vaeac_initiate = 5,
+#'   vaeac.num_vaeacs_initiate = 5,
 #'   vaeac.extra_parameters = list(
 #'     vaeac.paired_sampling = FALSE,
 #'     vaeac.verbose = TRUE
@@ -2718,7 +2719,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
 #'   vaeac.width = 16, #' Default is 32
 #'   vaeac.depth = 2, #' Default is 3
 #'   vaeac.latent_dim = 4, #' Default is 8
-#'   vaeac.num_different_vaeac_initiate = 5,
+#'   vaeac.num_vaeacs_initiate = 5,
 #'   vaeac.extra_parameters = list(
 #'     vaeac.paired_sampling = FALSE,
 #'     vaeac.verbose = TRUE
@@ -2737,7 +2738,7 @@ as user set `return_as_postprocessed_data_table = TRUE`.")
 #'   vaeac.width = 16, #' Default is 32
 #'   vaeac.depth = 2, #' Default is 3
 #'   vaeac.latent_dim = 4, #' Default is 8
-#'   vaeac.num_different_vaeac_initiate = 5,
+#'   vaeac.num_vaeacs_initiate = 5,
 #'   vaeac.extra_parameters = list(
 #'     vaeac.paired_sampling = TRUE,
 #'     vaeac.verbose = TRUE
