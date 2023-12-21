@@ -161,7 +161,7 @@ vaeac <- torch::nn_module(
 
     # Save the how to compute the loss and how to sample from the vaeac model.
     self$reconstruction_log_prob <- GaussianCategoricalLoss(one_hot_max_sizes)
-    self$sampler_most_likely <- GaussianCategoricalSamplerMostLikely(one_hot_max_sizes)
+    self$sampler_most_likely <- GaussCatSamplerMostLikely(one_hot_max_sizes)
     self$sampler_random <- GaussianCategoricalSamplerRandom(one_hot_max_sizes)
     self$generative_parameters <- GaussianCategoricalParameters(one_hot_max_sizes)
     self$num_features <- num_features
@@ -1798,8 +1798,8 @@ GaussianCategoricalSampler <- torch::nn_module(
 )
 
 
-## GaussianCategoricalSamplerMostLikely -------------------------------------------------------------------------------
-#' A torch::nn_module Representing a GaussianCategoricalSamplerMostLikely
+## GaussCatSamplerMostLikely -------------------------------------------------------------------------------
+#' A torch::nn_module Representing a GaussCatSamplerMostLikely
 #'
 #' @description
 #' The GaussianCategoricalSamplerrMostLikely generates the most likely samples from
@@ -1814,16 +1814,16 @@ GaussianCategoricalSampler <- torch::nn_module(
 #' @param min_sigma For stability it might be desirable that the minimal sigma is not too close to zero.
 #' @param min_prob For stability it might be desirable that the minimal probability is not too close to zero.
 #'
-#' @return A `GaussianCategoricalSamplerMostLikely` object.
+#' @return A `GaussCatSamplerMostLikely` object.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-GaussianCategoricalSamplerMostLikely <- torch::nn_module(
+GaussCatSamplerMostLikely <- torch::nn_module(
 
   # @field classname Type of torch::nn_module
-  classname = "GaussianCategoricalSamplerMostLikely",
+  classname = "GaussCatSamplerMostLikely",
 
-  # @description Initialize a GaussianCategoricalSamplerMostLikely which generates the most likely
+  # @description Initialize a GaussCatSamplerMostLikely which generates the most likely
   # sample from the generative distribution defined by the output of the neural network.
   initialize = function(one_hot_max_sizes,
                         min_sigma = 1e-4,
