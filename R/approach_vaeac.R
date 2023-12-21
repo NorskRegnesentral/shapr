@@ -2920,7 +2920,7 @@ plot_vaeac_training_evaluation <- function(explanation_list,
 
   # Make figures --------------------------------------------------------------------------------
   # Make the figure where each explanation object has its own facet
-  figure_facet_for_each_method <-
+  figure_facet_each_method <-
     ggplot2::ggplot(results_dt_tall_truncated, ggplot2::aes(x = Epoch, y = Value, col = Criterion)) +
     {
       if (plot_geom_smooth || plot_geom_smooth_se) {
@@ -2966,7 +2966,7 @@ plot_vaeac_training_evaluation <- function(explanation_list,
 
 
   # Make the figure where each criterion has its own facet
-  figure_facet_for_each_criterion <-
+  figure_facet_each_criterion <-
     ggplot2::ggplot(results_dt_tall_truncated, ggplot2::aes(x = Epoch, y = Value, col = Method)) +
     {
       if (plot_geom_smooth || plot_geom_smooth_se) {
@@ -3004,8 +3004,8 @@ plot_vaeac_training_evaluation <- function(explanation_list,
 
   # Plot the figures if specified by the user
   if (plot_figures) {
-    print(figure_facet_for_each_method)
-    print(figure_facet_for_each_criterion)
+    print(figure_facet_each_method)
+    print(figure_facet_each_criterion)
   }
 
   # Cleanup and return objects ------------------------------------------------------------------
@@ -3016,8 +3016,8 @@ plot_vaeac_training_evaluation <- function(explanation_list,
 
     # Check if we are to return the figures
     if (return_figures) {
-      return_list[["figure_facet_for_each_method"]] <- figure_facet_for_each_method
-      return_list[["figure_facet_for_each_criterion"]] <- figure_facet_for_each_criterion
+      return_list[["figure_facet_each_method"]] <- figure_facet_each_method
+      return_list[["figure_facet_each_criterion"]] <- figure_facet_each_criterion
     }
 
     # Check if we are to return the data.table with the training results

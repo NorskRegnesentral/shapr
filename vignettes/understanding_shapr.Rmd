@@ -1352,7 +1352,7 @@ Can look at the training and validation error for the trained `vaeac` model and 
 plot_vaeac_training_evaluation(list("Vaeac 3 epochs" = explanation_vaeac),
   plot_figures = FALSE,
   return_figures = TRUE
-)$figure_facet_for_each_method
+)$figure_facet_each_method
 ```
 
 
@@ -1400,7 +1400,7 @@ plot_vaeac_training_evaluation(
   ),
   plot_figures = FALSE,
   return_figures = TRUE
-)$figure_facet_for_each_method
+)$figure_facet_each_method
 ```
 
 Can also compare the $\operatorname{MSE}_{v}$ evaluation scores.
