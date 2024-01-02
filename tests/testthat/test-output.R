@@ -184,7 +184,8 @@ test_that("output_lm_numeric_vaeac", {
       vaeac.num_vaeacs_initiate = 2, # Low value here to speed up the time
       vaeac.extra_parameters = list(
         vaeac.epochs_initiation_phase = 2,    # Low value here to speed up the time
-        vaeac.model_description = "test" # Add this since otherwise it gets set to the time, which would break the test.
+        vaeac.model_description = "test", # Add this since otherwise it gets set to the time, which would break the test.
+        vaeac.folder_to_save_model = "." # Save the model in the current folder to avoid a OS specific tempdir to be set randomly
       )
     ),
     "output_lm_numeric_vaeac"
@@ -230,7 +231,8 @@ test_that("output_lm_categorical_vaeac", {
       vaeac.num_vaeacs_initiate = 2, # Low value here to speed up the time
       vaeac.extra_parameters = list(
         vaeac.epochs_initiation_phase = 2,    # Low value here to speed up the time
-        vaeac.model_description = "test" # Add this since otherwise it gets set to the time, which would break the test.
+        vaeac.model_description = "test", # Add this since otherwise it gets set to the time, which would break the test.
+        vaeac.folder_to_save_model = "." # Save the model in the current folder to avoid a OS specific tempdir to be set randomly
       )
     ),
     "output_lm_categorical_vaeac"
@@ -385,7 +387,8 @@ test_that("output_lm_mixed_vaeac", {
       vaeac.num_vaeacs_initiate = 2, # Low value here to speed up the time
       vaeac.extra_parameters = list(
         vaeac.epochs_initiation_phase = 2,    # Low value here to speed up the time
-        vaeac.model_description = "test" # Add this since otherwise it gets set to the time, which would break the test.
+        vaeac.model_description = "test", # Add this since otherwise it gets set to the time, which would break the test.
+        vaeac.folder_to_save_model = "." # Save the model in the current folder to avoid a OS specific tempdir to be set randomly
       )
     ),
     "output_lm_mixed_vaeac"
