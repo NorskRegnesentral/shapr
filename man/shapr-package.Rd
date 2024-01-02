@@ -23,6 +23,7 @@ Useful links:
 Authors:
 \itemize{
   \item Nikolai Sellereite \email{nikolaisellereite@gmail.com} (\href{https://orcid.org/0000-0002-4671-0337}{ORCID})
+  \item Lars Henry Berge Olsen \email{lholsen@math.uio.no} (\href{https://orcid.org/0009-0006-9360-6993}{ORCID})
   \item Annabelle Redelmeier \email{Annabelle.Redelmeier@nr.no}
   \item Jon Lachmann \email{Jon@lachmann.nu}
 }
