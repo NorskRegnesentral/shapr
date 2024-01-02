@@ -1482,7 +1482,7 @@ epoch might require a lot of disk storage if data is large.\n",
 
       # Create the file name
       filename_best <-
-        paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "p", p,
+        paste(make.names(model_description), "p", p,
           "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
           sep = "_"
         )
@@ -1510,10 +1510,12 @@ epoch might require a lot of disk storage if data is large.\n",
 
       # Create the file name
       filename_best_running <-
-        paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "p", p,
-          "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr,
-          "best_running.pt",
-          sep = "_"
+        make.names(
+          paste(make.names(model_description), "p", p,
+                "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr,
+                "best_running.pt",
+                sep = "_"
+          )
         )
 
       # Combine the file name with the folder path to form the final save file name.
@@ -1539,7 +1541,7 @@ epoch might require a lot of disk storage if data is large.\n",
         )
 
         # Create the file name
-        filename_nth <- paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "_p_", p,
+        filename_nth <- paste(make.names(model_description), "_p_", p,
           "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
           "_epoch_", epoch, ".pt",
           sep = ""
@@ -1617,7 +1619,7 @@ epoch might require a lot of disk storage if data is large.\n",
   )
 
   # Create the file name
-  filename_last <- paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "p", p,
+  filename_last <- paste(make.names(model_description), "p", p,
     "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
     sep = "_"
   )
@@ -2070,7 +2072,7 @@ epoch might require a lot of disk storage if data is large.\n",
         )
 
         # Create the file name
-        filename_best <- paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "p", p,
+        filename_best <- paste(make.names(model_description), "p", p,
           "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
           sep = "_"
         )
@@ -2098,11 +2100,7 @@ epoch might require a lot of disk storage if data is large.\n",
 
         # Create the file name
         filename_best_running <- paste(
-          gsub(
-            pattern = " ",
-            replacement = "_",
-            x = tolower(model_description)
-          ),
+          make.names(model_description),
           "p", p,
           "n", n,
           "depth", depth,
@@ -2136,7 +2134,7 @@ epoch might require a lot of disk storage if data is large.\n",
           )
 
           # Create the file name
-          filename_nth <- paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "_p_", p,
+          filename_nth <- paste(make.names(model_description), "_p_", p,
             "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
             "_epoch_", epoch, ".pt",
             sep = ""
@@ -2183,7 +2181,7 @@ epoch might require a lot of disk storage if data is large.\n",
     )
 
     # Create the file name
-    filename_last <- paste(gsub(pattern = " ", replacement = "_", x = tolower(model_description)), "p", p,
+    filename_last <- paste(make.names(model_description), "p", p,
       "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
       sep = "_"
     )
