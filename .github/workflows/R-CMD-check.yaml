@@ -64,6 +64,10 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Install torch dependencies
+        run: torch::install_torch()
+        shell: Rscript {0}
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           args: 'c("--no-manual")' # I.e. exclude the as-cran comment here
