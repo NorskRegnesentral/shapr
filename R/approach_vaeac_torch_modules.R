@@ -1294,7 +1294,7 @@ paired_sampler <- torch::sampler(
 #' I.e., when memory layer is used in the decoder.
 #' If \code{add = TRUE}, it returns sum of the stored vector and an \code{input},
 #' otherwise it returns their concatenation. If the tensor with specified \code{id}
-#' is not in storage when the layer with \textit{output = TRUE} is called, it would cause an exception.
+#' is not in storage when the layer with \code{output = TRUE} is called, it would cause an exception.
 #'
 #' @param id A unique id to use as a key in the storage list.
 #' @param output Boolean variable indicating if the memory layer is to store input in storage or extract from storage.

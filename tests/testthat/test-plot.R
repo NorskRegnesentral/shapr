@@ -281,7 +281,7 @@ test_that("plot_SV_several_approaches_explanations", {
 
 
   vdiffr::expect_doppelganger(
-    title = "plot_SV_several_approaches_phi0_zero_line_facet_ncol_free_y_horizontal",
+    title = "plot_SV_several_div_input_1",
     fig = plot_SV_several_approaches(explanation_list_named,
       plot_phi0 = TRUE,
       add_zero_line = TRUE,
@@ -292,7 +292,7 @@ test_that("plot_SV_several_approaches_explanations", {
   )
 
   vdiffr::expect_doppelganger(
-    title = "plot_SV_several_approaches_index_explicands_vertical_labels_dodge_zero_line",
+    title = "plot_SV_several_div_input_2",
     fig = plot_SV_several_approaches(explanation_list_named,
       axis_labels_n_dodge = 1,
       facet_ncol = 1,
@@ -304,7 +304,7 @@ test_that("plot_SV_several_approaches_explanations", {
   )
 
   vdiffr::expect_doppelganger(
-    title = "plot_SV_several_approaches_face_ncol_free_y_color_palette_only_these_features_phi0",
+    title = "plot_SV_several_div_input_3",
     fig = plot_SV_several_approaches(explanation_list_named,
       facet_ncol = 1,
       facet_scales = "free_y",

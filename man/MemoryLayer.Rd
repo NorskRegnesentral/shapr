@@ -28,7 +28,7 @@ If \code{output = TRUE}, this layer takes stored tensor from the storage.
 I.e., when memory layer is used in the decoder.
 If \code{add = TRUE}, it returns sum of the stored vector and an \code{input},
 otherwise it returns their concatenation. If the tensor with specified \code{id}
-is not in storage when the layer with \textit{output = TRUE} is called, it would cause an exception.
+is not in storage when the layer with \code{output = TRUE} is called, it would cause an exception.
 }
 \examples{
 # net1 <- torch::nn_sequential(
