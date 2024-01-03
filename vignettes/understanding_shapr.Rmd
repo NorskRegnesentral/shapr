@@ -829,7 +829,7 @@ We can also alter the plots design-wise as we do in the code below.
 ```{r}
 bar_text_n_decimals <- 1
 plot_MSEv_eval_crit(explanation_list_named) +
-  ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plot$data$Method))) +
+  ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plots$MSEv_bar$data$Method))) +
   ggplot2::coord_flip() +
   ggplot2::scale_fill_brewer(palette = "Paired") +
   ggplot2::theme_minimal() + # This must be set before other theme calls
@@ -1347,7 +1347,7 @@ explanation_vaeac <- explain(
 ```
 
 Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 10` is likely to few epochs as it still seems like the `vaeac` model is learning.
-```{r}
+```{r,eval = FALSE}
 # Look at the training and validation errors.
 plot_vaeac_training_evaluation(list("Vaeac 3 epochs" = explanation_vaeac),
   plot_figures = FALSE,
@@ -1391,7 +1391,7 @@ explanation_vaeac_early_stop <- explain(
 ```
 
 Can compare with the previous version and see that the results are more stable now.
-```{r}
+```{r,eval = FALSE}
 # Look at the training and validation errors.
 plot_vaeac_training_evaluation(
   list(
