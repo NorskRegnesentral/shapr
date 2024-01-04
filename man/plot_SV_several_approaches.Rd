@@ -65,28 +65,6 @@ The following palettes are available for use with these scales:
 \item{Sequential}{Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges,
 OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr, YlOrRd}
 }}
-
-\item{ggplot_theme}{A \code{\link[ggplot2:theme]{ggplot2::theme()}} object to customize the non-data components of the plots:
-i.e. titles, labels, fonts, background, gridlines, and legends. Themes can be used to give plots
-a consistent customized look. Use the themes available in \code{\link[ggplot2:theme_bw]{ggplot2::ggtheme()}}.
-if you would like to use a complete theme such as \code{theme_bw()}, \code{theme_minimal()}, and more.}
-
-\item{brewer_direction}{Sets the order of colors in the scale. If 1, the default,
-colors are as output by \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}}.
-If -1, the order of colors is reversed.}
-
-\item{title_text_size}{Positive numeric. The size of the title. If \code{0}, then the text is removed.}
-
-\item{legend_position}{String or numeric vector \code{c(x,y)}. The allowed string values for the
-argument \code{legend_position} are: \code{left},\code{top}, \code{right}, \code{bottom}. Note that, the argument
-\code{legend_position} can be also a numeric vector \code{c(x,y)}. In this case it is possible to position
-the legend inside the plotting area. \code{x} and \code{y} are the coordinates of the legend box.
-Their values should be between \code{0} and \code{1}, where \code{c(0,0)} corresponds to the "bottom left"
-and \code{c(1,1)} corresponds to the "top right" position.}
-
-\item{legend_ncol}{Integer. The number of columns in the legend.}
-
-\item{legend_nrow}{Integer. The number of rows in the legend.}
 }
 \value{
 A \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object.

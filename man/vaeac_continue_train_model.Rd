@@ -25,8 +25,6 @@ then we try to load training data from the vaeac_model.}
 \item{save_data}{Boolean. If we are to save the training data.}
 
 \item{verbose}{Boolean. If we are to print out information to the user.}
-
-\item{vaeac_model}{The output revived from the 'vaeac_train_model' function.}
 }
 \value{
 A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.
