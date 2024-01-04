@@ -90,6 +90,639 @@ using namespace Rcpp;
 
 
 
+ // // [[Rcpp::export]]
+ // Rcpp::List prepare_data_gaussian_cpp_just_extracting(arma::mat MC_samples_mat,
+ //                                      arma::mat x_explain_mat,
+ //                                      arma::mat S,
+ //                                      arma::vec mu,
+ //                                      arma::mat cov_mat) {
+ //   int n_explain = x_explain_mat.n_rows;
+ //   int n_samples = MC_samples_mat.n_rows;
+ //   int n_features = MC_samples_mat.n_cols;
+ //
+ //   // Pre-allocate result matrix
+ //   arma::mat ret(n_samples, n_features);
+ //
+ //   // Create a list containing the MC samples for all coalitions and test observations
+ //   Rcpp::List resultList;
+ //
+ //   // Iterate over the coalitions
+ //   for (int S_ind = 0; S_ind < S.n_rows; S_ind++) {
+ //
+ //     // TODO: REMOVE IN FINAL VERSION Small printout
+ //     Rcpp::Rcout << S_ind + 1 << ",";
+ //
+ //     // Get current coalition S and the indices of the features in coalition S and mask Sbar
+ //     arma::mat S_now = S.row(S_ind);
+ //     arma::uvec S_now_idx = arma::find(S_now > 0.5); // må finnes en bedre løsning her
+ //     arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
+ //
+ //     // Extract the features we condition on
+ //     arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
+ //
+ //     // Extract the mean values for the features in the two sets
+ //     arma::vec mu_S = mu.elem(S_now_idx);
+ //     arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
+ //
+ //     // Extract the relevant parts of the covariance matrix
+ //     arma::mat cov_mat_SS = cov_mat.submat(S_now_idx, S_now_idx);
+ //     arma::mat cov_mat_SSbar = cov_mat.submat(S_now_idx, Sbar_now_idx);
+ //     arma::mat cov_mat_SbarS = cov_mat.submat(Sbar_now_idx, S_now_idx);
+ //     arma::mat cov_mat_SbarSbar = cov_mat.submat(Sbar_now_idx, Sbar_now_idx);
+ //
+ //     // // Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+ //     // arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
+ //     // arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
+ //     //
+ //     // // Ensure that the conditional covariance matrix is symmetric
+ //     // if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
+ //     //   cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
+ //     // }
+ //     //
+ //     // // Compute the conditional mean of Xsbar given Xs = Xs_star
+ //     // arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t(); // Can we speed it up by reducing the number of transposes?
+ //     // x_Sbar_mean.each_col() += mu_Sbar;
+ //     //
+ //     // // Transform the samples to be from N(O, Sigma_Sbar|S)
+ //     // arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
+ //     //
+ //     // // Loop over the different test observations and combine the generated values with the values we conditioned on
+ //     // for (int idx_now = 0; idx_now < n_explain; idx_now++) {
+ //     //   ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1); // can using .fill() speed this up?
+ //     //   ret.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+ //     //   resultList.push_back(ret);
+ //     // }
+ //   }
+ //
+ //   return resultList;
+ // }
+ //
+ //
+ // // [[Rcpp::export]]
+ // Rcpp::List prepare_data_gaussian_cpp_with_cond_mean_var(arma::mat MC_samples_mat,
+ //                                                      arma::mat x_explain_mat,
+ //                                                      arma::mat S,
+ //                                                      arma::vec mu,
+ //                                                      arma::mat cov_mat) {
+ //   int n_explain = x_explain_mat.n_rows;
+ //   int n_samples = MC_samples_mat.n_rows;
+ //   int n_features = MC_samples_mat.n_cols;
+ //
+ //   // Pre-allocate result matrix
+ //   arma::mat ret(n_samples, n_features);
+ //
+ //   // Create a list containing the MC samples for all coalitions and test observations
+ //   Rcpp::List resultList;
+ //
+ //   // Iterate over the coalitions
+ //   for (int S_ind = 0; S_ind < S.n_rows; S_ind++) {
+ //
+ //     // TODO: REMOVE IN FINAL VERSION Small printout
+ //     Rcpp::Rcout << S_ind + 1 << ",";
+ //
+ //     // Get current coalition S and the indices of the features in coalition S and mask Sbar
+ //     arma::mat S_now = S.row(S_ind);
+ //     arma::uvec S_now_idx = arma::find(S_now > 0.5); // må finnes en bedre løsning her
+ //     arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
+ //
+ //     // Extract the features we condition on
+ //     arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
+ //
+ //     // Extract the mean values for the features in the two sets
+ //     arma::vec mu_S = mu.elem(S_now_idx);
+ //     arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
+ //
+ //     // Extract the relevant parts of the covariance matrix
+ //     arma::mat cov_mat_SS = cov_mat.submat(S_now_idx, S_now_idx);
+ //     arma::mat cov_mat_SSbar = cov_mat.submat(S_now_idx, Sbar_now_idx);
+ //     arma::mat cov_mat_SbarS = cov_mat.submat(Sbar_now_idx, S_now_idx);
+ //     arma::mat cov_mat_SbarSbar = cov_mat.submat(Sbar_now_idx, Sbar_now_idx);
+ //
+ //     // Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+ //     arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
+ //     arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
+ //
+ //     // Ensure that the conditional covariance matrix is symmetric
+ //     if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
+ //       cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
+ //     }
+ //
+ //     // Compute the conditional mean of Xsbar given Xs = Xs_star
+ //     arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t(); // Can we speed it up by reducing the number of transposes?
+ //     x_Sbar_mean.each_col() += mu_Sbar;
+ //
+ //     // // Transform the samples to be from N(O, Sigma_Sbar|S)
+ //     // arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
+ //
+ //     // // Loop over the different test observations and combine the generated values with the values we conditioned on
+ //     // for (int idx_now = 0; idx_now < n_explain; idx_now++) {
+ //     //   ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1); // can using .fill() speed this up?
+ //     //   ret.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+ //     //   resultList.push_back(ret);
+ //     // }
+ //   }
+ //
+ //   return resultList;
+ // }
+ //
+ //
+ // // [[Rcpp::export]]
+ // Rcpp::List prepare_data_gaussian_cpp_with_chol(arma::mat MC_samples_mat,
+ //                                                         arma::mat x_explain_mat,
+ //                                                         arma::mat S,
+ //                                                         arma::vec mu,
+ //                                                         arma::mat cov_mat) {
+ //   int n_explain = x_explain_mat.n_rows;
+ //   int n_samples = MC_samples_mat.n_rows;
+ //   int n_features = MC_samples_mat.n_cols;
+ //
+ //   // Pre-allocate result matrix
+ //   arma::mat ret(n_samples, n_features);
+ //
+ //   // Create a list containing the MC samples for all coalitions and test observations
+ //   Rcpp::List resultList;
+ //
+ //   // Iterate over the coalitions
+ //   for (int S_ind = 0; S_ind < S.n_rows; S_ind++) {
+ //
+ //     // TODO: REMOVE IN FINAL VERSION Small printout
+ //     Rcpp::Rcout << S_ind + 1 << ",";
+ //
+ //     // Get current coalition S and the indices of the features in coalition S and mask Sbar
+ //     arma::mat S_now = S.row(S_ind);
+ //     arma::uvec S_now_idx = arma::find(S_now > 0.5); // må finnes en bedre løsning her
+ //     arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
+ //
+ //     // Extract the features we condition on
+ //     arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
+ //
+ //     // Extract the mean values for the features in the two sets
+ //     arma::vec mu_S = mu.elem(S_now_idx);
+ //     arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
+ //
+ //     // Extract the relevant parts of the covariance matrix
+ //     arma::mat cov_mat_SS = cov_mat.submat(S_now_idx, S_now_idx);
+ //     arma::mat cov_mat_SSbar = cov_mat.submat(S_now_idx, Sbar_now_idx);
+ //     arma::mat cov_mat_SbarS = cov_mat.submat(Sbar_now_idx, S_now_idx);
+ //     arma::mat cov_mat_SbarSbar = cov_mat.submat(Sbar_now_idx, Sbar_now_idx);
+ //
+ //     // Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+ //     arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
+ //     arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
+ //
+ //     // Ensure that the conditional covariance matrix is symmetric
+ //     if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
+ //       cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
+ //     }
+ //
+ //     // Compute the conditional mean of Xsbar given Xs = Xs_star
+ //     arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t(); // Can we speed it up by reducing the number of transposes?
+ //     x_Sbar_mean.each_col() += mu_Sbar;
+ //
+ //     // Transform the samples to be from N(O, Sigma_Sbar|S)
+ //     arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
+ //
+ //     // // Loop over the different test observations and combine the generated values with the values we conditioned on
+ //     // for (int idx_now = 0; idx_now < n_explain; idx_now++) {
+ //     //   ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1); // can using .fill() speed this up?
+ //     //   ret.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+ //     //   resultList.push_back(ret);
+ //     // }
+ //   }
+ //
+ //   return resultList;
+ // }
+ //
+ //
+ //
+ // // [[Rcpp::export]]
+ // Rcpp::List prepare_data_gaussian_cpp_without_adding_to_list(arma::mat MC_samples_mat,
+ //                                                arma::mat x_explain_mat,
+ //                                                arma::mat S,
+ //                                                arma::vec mu,
+ //                                                arma::mat cov_mat) {
+ //   int n_explain = x_explain_mat.n_rows;
+ //   int n_samples = MC_samples_mat.n_rows;
+ //   int n_features = MC_samples_mat.n_cols;
+ //
+ //   // Pre-allocate result matrix
+ //   arma::mat ret(n_samples, n_features);
+ //
+ //   // Create a list containing the MC samples for all coalitions and test observations
+ //   Rcpp::List resultList;
+ //
+ //   // Iterate over the coalitions
+ //   for (int S_ind = 0; S_ind < S.n_rows; S_ind++) {
+ //
+ //     // TODO: REMOVE IN FINAL VERSION Small printout
+ //     Rcpp::Rcout << S_ind + 1 << ",";
+ //
+ //     // Get current coalition S and the indices of the features in coalition S and mask Sbar
+ //     arma::mat S_now = S.row(S_ind);
+ //     arma::uvec S_now_idx = arma::find(S_now > 0.5); // må finnes en bedre løsning her
+ //     arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
+ //
+ //     // Extract the features we condition on
+ //     arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
+ //
+ //     // Extract the mean values for the features in the two sets
+ //     arma::vec mu_S = mu.elem(S_now_idx);
+ //     arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
+ //
+ //     // Extract the relevant parts of the covariance matrix
+ //     arma::mat cov_mat_SS = cov_mat.submat(S_now_idx, S_now_idx);
+ //     arma::mat cov_mat_SSbar = cov_mat.submat(S_now_idx, Sbar_now_idx);
+ //     arma::mat cov_mat_SbarS = cov_mat.submat(Sbar_now_idx, S_now_idx);
+ //     arma::mat cov_mat_SbarSbar = cov_mat.submat(Sbar_now_idx, Sbar_now_idx);
+ //
+ //     // Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+ //     arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
+ //     arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
+ //
+ //     // Ensure that the conditional covariance matrix is symmetric
+ //     if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
+ //       cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
+ //     }
+ //
+ //     // Compute the conditional mean of Xsbar given Xs = Xs_star
+ //     arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t(); // Can we speed it up by reducing the number of transposes?
+ //     x_Sbar_mean.each_col() += mu_Sbar;
+ //
+ //     // Transform the samples to be from N(O, Sigma_Sbar|S)
+ //     arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
+ //
+ //     // Loop over the different test observations and combine the generated values with the values we conditioned on
+ //     for (int idx_now = 0; idx_now < n_explain; idx_now++) {
+ //       ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1); // can using .fill() speed this up?
+ //       ret.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+ //       // resultList.push_back(ret);
+ //     }
+ //   }
+ //
+ //   return resultList;
+ // }
+ //
+ // // [[Rcpp::export]]
+ // Rcpp::List prepare_data_gaussian_cpp_fake_list(arma::mat MC_samples_mat,
+ //                                                             arma::mat x_explain_mat,
+ //                                                             arma::mat S,
+ //                                                             arma::vec mu,
+ //                                                             arma::mat cov_mat) {
+ //   int n_explain = x_explain_mat.n_rows;
+ //   int n_samples = MC_samples_mat.n_rows;
+ //   int n_features = MC_samples_mat.n_cols;
+ //
+ //   // Pre-allocate result matrix
+ //   arma::mat ret(n_samples, n_features);
+ //
+ //   // Create a list containing the MC samples for all coalitions and test observations
+ //   Rcpp::List resultList;
+ //   Rcpp::List resultList2;
+ //
+ //   // Iterate over the coalitions
+ //   for (int S_ind = 0; S_ind < S.n_rows; S_ind++) {
+ //
+ //     // TODO: REMOVE IN FINAL VERSION Small printout
+ //     Rcpp::Rcout << S_ind + 1 << ",";
+ //
+ //     // Get current coalition S and the indices of the features in coalition S and mask Sbar
+ //     arma::mat S_now = S.row(S_ind);
+ //     arma::uvec S_now_idx = arma::find(S_now > 0.5); // må finnes en bedre løsning her
+ //     arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
+ //
+ //     // Extract the features we condition on
+ //     arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
+ //
+ //     // Extract the mean values for the features in the two sets
+ //     arma::vec mu_S = mu.elem(S_now_idx);
+ //     arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
+ //
+ //     // Extract the relevant parts of the covariance matrix
+ //     arma::mat cov_mat_SS = cov_mat.submat(S_now_idx, S_now_idx);
+ //     arma::mat cov_mat_SSbar = cov_mat.submat(S_now_idx, Sbar_now_idx);
+ //     arma::mat cov_mat_SbarS = cov_mat.submat(Sbar_now_idx, S_now_idx);
+ //     arma::mat cov_mat_SbarSbar = cov_mat.submat(Sbar_now_idx, Sbar_now_idx);
+ //
+ //     // Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+ //     arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
+ //     arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
+ //
+ //     // Ensure that the conditional covariance matrix is symmetric
+ //     if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
+ //       cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
+ //     }
+ //
+ //     // Compute the conditional mean of Xsbar given Xs = Xs_star
+ //     arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t(); // Can we speed it up by reducing the number of transposes?
+ //     x_Sbar_mean.each_col() += mu_Sbar;
+ //
+ //     // Transform the samples to be from N(O, Sigma_Sbar|S)
+ //     arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
+ //
+ //     // Loop over the different test observations and combine the generated values with the values we conditioned on
+ //     for (int idx_now = 0; idx_now < n_explain; idx_now++) {
+ //       ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1); // can using .fill() speed this up?
+ //       ret.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+ //       resultList.push_back(ret);
+ //     }
+ //   }
+ //
+ //   return resultList2;
+ // }
+ //
+ // // Fungerer men treg
+ // // // [[Rcpp::export]]
+ // // arma::cube prepare_data_gaussian_cpp_fix(arma::mat MC_samples_mat,
+ // //                                      arma::mat x_explain_mat,
+ // //                                      arma::mat S,
+ // //                                      arma::vec mu,
+ // //                                      arma::mat cov_mat) {
+ // //   int n_explain = x_explain_mat.n_rows;
+ // //   int n_samples = MC_samples_mat.n_rows;
+ // //   int n_features = MC_samples_mat.n_cols;
+ // //
+ // //   // Pre-allocate result matrix
+ // //   arma::mat ret(n_samples, n_features);
+ // //   arma::cube result(n_samples, n_features, n_explain*n_samples);
+ // //
+ // //
+ // //   // Create a list containing the MC samples for all coalitions and test observations
+ // //   Rcpp::List resultList(n_explain * n_samples);
+ // //
+ // //   // Iterate over the coalitions
+ // //   for (int S_ind = 0; S_ind < S.n_rows; S_ind++) {
+ // //
+ // //     // TODO: REMOVE IN FINAL VERSION Small printout
+ // //     Rcpp::Rcout << S_ind + 1 << ",";
+ // //
+ // //     // Get current coalition S and the indices of the features in coalition S and mask Sbar
+ // //     arma::mat S_now = S.row(S_ind);
+ // //     arma::uvec S_now_idx = arma::find(S_now > 0.5); // må finnes en bedre løsning her
+ // //     arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
+ // //
+ // //     // Extract the features we condition on
+ // //     arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
+ // //
+ // //     // Extract the mean values for the features in the two sets
+ // //     arma::vec mu_S = mu.elem(S_now_idx);
+ // //     arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
+ // //
+ // //     // Extract the relevant parts of the covariance matrix
+ // //     arma::mat cov_mat_SS = cov_mat.submat(S_now_idx, S_now_idx);
+ // //     arma::mat cov_mat_SSbar = cov_mat.submat(S_now_idx, Sbar_now_idx);
+ // //     arma::mat cov_mat_SbarS = cov_mat.submat(Sbar_now_idx, S_now_idx);
+ // //     arma::mat cov_mat_SbarSbar = cov_mat.submat(Sbar_now_idx, Sbar_now_idx);
+ // //
+ // //     // Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+ // //     arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
+ // //     arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
+ // //
+ // //     // Ensure that the conditional covariance matrix is symmetric
+ // //     if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
+ // //       cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
+ // //     }
+ // //
+ // //     // Compute the conditional mean of Xsbar given Xs = Xs_star
+ // //     arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t(); // Can we speed it up by reducing the number of transposes?
+ // //     x_Sbar_mean.each_col() += mu_Sbar;
+ // //
+ // //     // Transform the samples to be from N(O, Sigma_Sbar|S)
+ // //     arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
+ // //
+ // //     // Loop over the different test observations and combine the generated values with the values we conditioned on
+ // //     for (int idx_now = 0; idx_now < n_explain; idx_now++) {
+ // //       ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1); // can using .fill() speed this up?
+ // //       ret.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+ // //       result.slice(S_ind*n_explain + idx_now) = ret;
+ // //     }
+ // //   }
+ // //
+ // //   return result;
+ // // }
+
+ // [[Rcpp::export]]
+ Rcpp::List prepare_data_gaussian_cpp_fix_list_of_lists_of_matrices(arma::mat MC_samples_mat,
+                                          arma::mat x_explain_mat,
+                                          arma::mat S,
+                                          arma::vec mu,
+                                          arma::mat cov_mat) {
+   int n_explain = x_explain_mat.n_rows;
+   int n_samples = MC_samples_mat.n_rows;
+   int n_features = MC_samples_mat.n_cols;
+
+   // Pre-allocate result matrix
+   arma::mat ret(n_samples, n_features);
+
+   // Create a list containing the MC samples for all coalitions and test observations
+   std::list<arma::mat> resultList;
+   // Rcpp::List resultList;
+
+   Rcpp::List listt(S.n_rows);
+
+   // Iterate over the coalitions
+   for (int S_ind = 0; S_ind < S.n_rows; S_ind++) {
+
+     Rcpp::List listt2(n_explain);
+
+     // TODO: REMOVE IN FINAL VERSION Small printout
+     Rcpp::Rcout << S_ind + 1 << ",";
+
+     // Get current coalition S and the indices of the features in coalition S and mask Sbar
+     arma::mat S_now = S.row(S_ind);
+     arma::uvec S_now_idx = arma::find(S_now > 0.5); // må finnes en bedre løsning her
+     arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
+
+     // Extract the features we condition on
+     arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
+
+     // Extract the mean values for the features in the two sets
+     arma::vec mu_S = mu.elem(S_now_idx);
+     arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
+
+     // Extract the relevant parts of the covariance matrix
+     arma::mat cov_mat_SS = cov_mat.submat(S_now_idx, S_now_idx);
+     arma::mat cov_mat_SSbar = cov_mat.submat(S_now_idx, Sbar_now_idx);
+     arma::mat cov_mat_SbarS = cov_mat.submat(Sbar_now_idx, S_now_idx);
+     arma::mat cov_mat_SbarSbar = cov_mat.submat(Sbar_now_idx, Sbar_now_idx);
+
+     // Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+     arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
+     arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
+
+     // Ensure that the conditional covariance matrix is symmetric
+     if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
+       cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
+     }
+
+     // Compute the conditional mean of Xsbar given Xs = Xs_star
+     arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t(); // Can we speed it up by reducing the number of transposes?
+     x_Sbar_mean.each_col() += mu_Sbar;
+
+     // Transform the samples to be from N(O, Sigma_Sbar|S)
+     arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
+
+     // Loop over the different test observations and combine the generated values with the values we conditioned on
+     for (int idx_now = 0; idx_now < n_explain; idx_now++) {
+       ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1); // can using .fill() speed this up?
+       ret.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+       //Rcpp::NumericMatrix matRcpp(ret.begin(), ret.n_rows, ret.n_cols);
+       //resultList.push_back(ret);
+       listt2[idx_now] = ret;
+     }
+     listt[S_ind] = listt2;
+   }
+
+
+
+   return listt;
+ }
+
+ // [[Rcpp::export]]
+std::list<arma::mat> prepare_data_gaussian_cpp_fix(arma::mat MC_samples_mat,
+                                                arma::mat x_explain_mat,
+                                                arma::mat S,
+                                                arma::vec mu,
+                                                arma::mat cov_mat) {
+   int n_explain = x_explain_mat.n_rows;
+   int n_samples = MC_samples_mat.n_rows;
+   int n_features = MC_samples_mat.n_cols;
+
+   // Pre-allocate result matrix
+   arma::mat ret(n_samples, n_features);
+
+   // Create a list containing the MC samples for all coalitions and test observations
+   std::list<arma::mat> resultList;
+   // Rcpp::List resultList;
+
+   // Iterate over the coalitions
+   for (int S_ind = 0; S_ind < S.n_rows; S_ind++) {
+
+     // TODO: REMOVE IN FINAL VERSION Small printout
+     Rcpp::Rcout << S_ind + 1 << ",";
+
+     // Get current coalition S and the indices of the features in coalition S and mask Sbar
+     arma::mat S_now = S.row(S_ind);
+     arma::uvec S_now_idx = arma::find(S_now > 0.5); // må finnes en bedre løsning her
+     arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
+
+     // Extract the features we condition on
+     arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
+
+     // Extract the mean values for the features in the two sets
+     arma::vec mu_S = mu.elem(S_now_idx);
+     arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
+
+     // Extract the relevant parts of the covariance matrix
+     arma::mat cov_mat_SS = cov_mat.submat(S_now_idx, S_now_idx);
+     arma::mat cov_mat_SSbar = cov_mat.submat(S_now_idx, Sbar_now_idx);
+     arma::mat cov_mat_SbarS = cov_mat.submat(Sbar_now_idx, S_now_idx);
+     arma::mat cov_mat_SbarSbar = cov_mat.submat(Sbar_now_idx, Sbar_now_idx);
+
+     // Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+     arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
+     arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
+
+     // Ensure that the conditional covariance matrix is symmetric
+     if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
+       cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
+     }
+
+     // Compute the conditional mean of Xsbar given Xs = Xs_star
+     arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t(); // Can we speed it up by reducing the number of transposes?
+     x_Sbar_mean.each_col() += mu_Sbar;
+
+     // Transform the samples to be from N(O, Sigma_Sbar|S)
+     arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
+
+     // Loop over the different test observations and combine the generated values with the values we conditioned on
+     for (int idx_now = 0; idx_now < n_explain; idx_now++) {
+       ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1); // can using .fill() speed this up?
+       ret.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+       //Rcpp::NumericMatrix matRcpp(ret.begin(), ret.n_rows, ret.n_cols);
+       resultList.push_back(ret);
+     }
+   }
+
+   return resultList;
+ }
+
+ // [[Rcpp::export]]
+arma::mat prepare_data_gaussian_cpp_fix_large_mat(arma::mat MC_samples_mat,
+                                                    arma::mat x_explain_mat,
+                                                    arma::mat S,
+                                                    arma::vec mu,
+                                                    arma::mat cov_mat) {
+   int n_explain = x_explain_mat.n_rows;
+   int n_samples = MC_samples_mat.n_rows;
+   int n_features = MC_samples_mat.n_cols;
+   int n_coalitions = S.n_rows;
+
+   // Pre-allocate result matrix
+   arma::mat ret(n_coalitions*n_explain*n_samples, n_features);
+
+   // Create a list containing the MC samples for all coalitions and test observations
+   std::list<arma::mat> resultList;
+   // Rcpp::List resultList;
+
+   // Iterate over the coalitions
+   for (int S_ind = 0; S_ind < n_coalitions; S_ind++) {
+
+     // TODO: REMOVE IN FINAL VERSION Small printout
+     Rcpp::Rcout << S_ind + 1 << ",";
+
+     // Get current coalition S and the indices of the features in coalition S and mask Sbar
+     arma::mat S_now = S.row(S_ind);
+     arma::uvec S_now_idx = arma::find(S_now > 0.5); // må finnes en bedre løsning her
+     arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
+
+     // Extract the features we condition on
+     arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
+
+     // Extract the mean values for the features in the two sets
+     arma::vec mu_S = mu.elem(S_now_idx);
+     arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
+
+     // Extract the relevant parts of the covariance matrix
+     arma::mat cov_mat_SS = cov_mat.submat(S_now_idx, S_now_idx);
+     arma::mat cov_mat_SSbar = cov_mat.submat(S_now_idx, Sbar_now_idx);
+     arma::mat cov_mat_SbarS = cov_mat.submat(Sbar_now_idx, S_now_idx);
+     arma::mat cov_mat_SbarSbar = cov_mat.submat(Sbar_now_idx, Sbar_now_idx);
+
+     // Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+     arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
+     arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
+
+     // Ensure that the conditional covariance matrix is symmetric
+     if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
+       cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
+     }
+
+     // Compute the conditional mean of Xsbar given Xs = Xs_star
+     arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t(); // Can we speed it up by reducing the number of transposes?
+     x_Sbar_mean.each_col() += mu_Sbar;
+
+     // Transform the samples to be from N(O, Sigma_Sbar|S)
+     arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
+
+     // Loop over the different test observations and combine the generated values with the values we conditioned on
+     for (int idx_now = 0; idx_now < n_explain; idx_now++) {
+       // ret.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1);
+       // ret.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+
+       // Maybe faster to create vector 0:(n_samples - 1) and then just add n_samples in each loop.
+       arma::uvec row_indices_now = arma::linspace<arma::uvec>(S_ind*n_explain*n_samples + idx_now*n_samples,
+                                              S_ind*n_explain*n_samples + idx_now*n_samples + n_samples - 1,
+                                              n_samples);
+
+       ret.submat(row_indices_now, S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1);
+       ret.submat(row_indices_now, Sbar_now_idx) =
+         MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);
+
+     }
+   }
+
+   return ret;
+ }
 
  //' Generate Gaussian MC samples
  //'

@@ -974,6 +974,377 @@ prepare_data_gaussian_new_v5_rnorm_cpp <- function(internal, index_features, ...
   return(dt)
 }
 
+prepare_data_gaussian_new_v5_rnorm_cpp_just_extracting <- function(internal, index_features, ...) {
+  # This function assumes that index_features will never include the empty and
+  # grand coalitions. This is valid 21/11/23 as `batch_prepare_vS()` removes the
+  # grand coalition before calling the `prepare_data()` function and the empty
+  # coalition is never included in the `internal$objects$S_batch` list.
+
+  # Extract objects that we are going to use
+  x_explain <- internal$data$x_explain
+  S <- internal$objects$S
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  feature_names <- internal$parameters$feature_names
+  n_combinations <- internal$parameters$n_combinations
+
+  # Extract the relevant coalitions specified in `index_features` from `S`.
+  # This will always be called as `index_features` is never NULL.
+  S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
+
+  # Generate the MC samples
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+  # Call cpp
+  result_list <- prepare_data_gaussian_cpp_just_extracting(
+      MC_samples_mat = MC_samples_mat,
+      x_explain_mat = x_explain_mat,
+      S = S,
+      mu = mu,
+      cov_mat = cov_mat)
+
+  # dt = as.data.table(do.call(rbind, result_list))
+  # setnames(dt, feature_names)
+  # dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  # dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+  # data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  #
+  # # Update the id_combination. This will always be called as `index_features` is never NULL.
+  # if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  #
+  # # Add uniform weights
+  # dt[, w := 1 / n_samples]
+  #
+  # # Remove:
+  # # This is not needed when we assume that the empty and grand coalitions will never be present
+  # # dt[id_combination %in% c(1, n_combinations), w := 1]
+  #
+  # # Return the MC samples
+  # return(dt)
+}
+
+prepare_data_gaussian_new_v5_rnorm_cpp_with_cond_mean_var <- function(internal, index_features, ...) {
+  # This function assumes that index_features will never include the empty and
+  # grand coalitions. This is valid 21/11/23 as `batch_prepare_vS()` removes the
+  # grand coalition before calling the `prepare_data()` function and the empty
+  # coalition is never included in the `internal$objects$S_batch` list.
+
+  # Extract objects that we are going to use
+  x_explain <- internal$data$x_explain
+  S <- internal$objects$S
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  feature_names <- internal$parameters$feature_names
+  n_combinations <- internal$parameters$n_combinations
+
+  # Extract the relevant coalitions specified in `index_features` from `S`.
+  # This will always be called as `index_features` is never NULL.
+  S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
+
+  # Generate the MC samples
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+  # Call cpp
+  result_list <- prepare_data_gaussian_cpp_with_cond_mean_var(
+      MC_samples_mat = MC_samples_mat,
+      x_explain_mat = x_explain_mat,
+      S = S,
+      mu = mu,
+      cov_mat = cov_mat)
+
+  # dt = as.data.table(do.call(rbind, result_list))
+  # setnames(dt, feature_names)
+  # dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  # dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+  # data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  #
+  # # Update the id_combination. This will always be called as `index_features` is never NULL.
+  # if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  #
+  # # Add uniform weights
+  # dt[, w := 1 / n_samples]
+  #
+  # # Remove:
+  # # This is not needed when we assume that the empty and grand coalitions will never be present
+  # # dt[id_combination %in% c(1, n_combinations), w := 1]
+  #
+  # # Return the MC samples
+  # return(dt)
+}
+
+prepare_data_gaussian_new_v5_rnorm_cpp_with_chol <- function(internal, index_features, ...) {
+  # This function assumes that index_features will never include the empty and
+  # grand coalitions. This is valid 21/11/23 as `batch_prepare_vS()` removes the
+  # grand coalition before calling the `prepare_data()` function and the empty
+  # coalition is never included in the `internal$objects$S_batch` list.
+
+  # Extract objects that we are going to use
+  x_explain <- internal$data$x_explain
+  S <- internal$objects$S
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  feature_names <- internal$parameters$feature_names
+  n_combinations <- internal$parameters$n_combinations
+
+  # Extract the relevant coalitions specified in `index_features` from `S`.
+  # This will always be called as `index_features` is never NULL.
+  S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
+
+  # Generate the MC samples
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+  # Call cpp
+  result_list <- prepare_data_gaussian_cpp_with_chol(
+      MC_samples_mat = MC_samples_mat,
+      x_explain_mat = x_explain_mat,
+      S = S,
+      mu = mu,
+      cov_mat = cov_mat)
+#
+#   dt = as.data.table(do.call(rbind, result_list))
+#   setnames(dt, feature_names)
+#   dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+#   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+#   data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+#
+#   # Update the id_combination. This will always be called as `index_features` is never NULL.
+#   if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+#
+#   # Add uniform weights
+#   dt[, w := 1 / n_samples]
+#
+#   # Remove:
+#   # This is not needed when we assume that the empty and grand coalitions will never be present
+#   # dt[id_combination %in% c(1, n_combinations), w := 1]
+#
+#   # Return the MC samples
+#   return(dt)
+}
+
+prepare_data_gaussian_new_v5_rnorm_cpp_without_adding_to_list <- function(internal, index_features, ...) {
+  # This function assumes that index_features will never include the empty and
+  # grand coalitions. This is valid 21/11/23 as `batch_prepare_vS()` removes the
+  # grand coalition before calling the `prepare_data()` function and the empty
+  # coalition is never included in the `internal$objects$S_batch` list.
+
+  # Extract objects that we are going to use
+  x_explain <- internal$data$x_explain
+  S <- internal$objects$S
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  feature_names <- internal$parameters$feature_names
+  n_combinations <- internal$parameters$n_combinations
+
+  # Extract the relevant coalitions specified in `index_features` from `S`.
+  # This will always be called as `index_features` is never NULL.
+  S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
+
+  # Generate the MC samples
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+  # Call cpp
+  result_list <- prepare_data_gaussian_cpp_without_adding_to_list(
+    MC_samples_mat = MC_samples_mat,
+    x_explain_mat = x_explain_mat,
+    S = S,
+    mu = mu,
+    cov_mat = cov_mat)
+  #
+  #   dt = as.data.table(do.call(rbind, result_list))
+  #   setnames(dt, feature_names)
+  #   dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  #   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+  #   data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  #
+  #   # Update the id_combination. This will always be called as `index_features` is never NULL.
+  #   if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  #
+  #   # Add uniform weights
+  #   dt[, w := 1 / n_samples]
+  #
+  #   # Remove:
+  #   # This is not needed when we assume that the empty and grand coalitions will never be present
+  #   # dt[id_combination %in% c(1, n_combinations), w := 1]
+  #
+  #   # Return the MC samples
+  #   return(dt)
+}
+
+prepare_data_gaussian_new_v5_rnorm_cpp_fake_list <- function(internal, index_features, ...) {
+  # This function assumes that index_features will never include the empty and
+  # grand coalitions. This is valid 21/11/23 as `batch_prepare_vS()` removes the
+  # grand coalition before calling the `prepare_data()` function and the empty
+  # coalition is never included in the `internal$objects$S_batch` list.
+
+  # Extract objects that we are going to use
+  x_explain <- internal$data$x_explain
+  S <- internal$objects$S
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  feature_names <- internal$parameters$feature_names
+  n_combinations <- internal$parameters$n_combinations
+
+  # Extract the relevant coalitions specified in `index_features` from `S`.
+  # This will always be called as `index_features` is never NULL.
+  S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
+
+  # Generate the MC samples
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+  # Call cpp
+  result_list <- prepare_data_gaussian_cpp_fake_list(
+    MC_samples_mat = MC_samples_mat,
+    x_explain_mat = x_explain_mat,
+    S = S,
+    mu = mu,
+    cov_mat = cov_mat)
+  #
+  #   dt = as.data.table(do.call(rbind, result_list))
+  #   setnames(dt, feature_names)
+  #   dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  #   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+  #   data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  #
+  #   # Update the id_combination. This will always be called as `index_features` is never NULL.
+  #   if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  #
+  #   # Add uniform weights
+  #   dt[, w := 1 / n_samples]
+  #
+  #   # Remove:
+  #   # This is not needed when we assume that the empty and grand coalitions will never be present
+  #   # dt[id_combination %in% c(1, n_combinations), w := 1]
+  #
+  #   # Return the MC samples
+  #   return(dt)
+}
+
+prepare_data_gaussian_new_v5_rnorm_cpp_fix <- function(internal, index_features, ...) {
+  # This function assumes that index_features will never include the empty and
+  # grand coalitions. This is valid 21/11/23 as `batch_prepare_vS()` removes the
+  # grand coalition before calling the `prepare_data()` function and the empty
+  # coalition is never included in the `internal$objects$S_batch` list.
+
+  # Extract objects that we are going to use
+  x_explain <- internal$data$x_explain
+  S <- internal$objects$S
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  feature_names <- internal$parameters$feature_names
+  n_combinations <- internal$parameters$n_combinations
+
+  # Extract the relevant coalitions specified in `index_features` from `S`.
+  # This will always be called as `index_features` is never NULL.
+  S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
+
+  # Generate the MC samples from N(0, 1)
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+  # Call cpp to create the data table with the MC samples for all explicands and coalitions
+  dt <- as.data.table(
+    prepare_data_gaussian_cpp_fix_large_mat(
+      MC_samples_mat = MC_samples_mat,
+      x_explain_mat = x_explain_mat,
+      S = S,
+      mu = mu,
+      cov_mat = cov_mat)
+  )
+  setnames(dt, feature_names)
+  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+
+  # Update the id_combination. This will always be called as `index_features` is never NULL.
+  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+
+  # Add uniform weights
+  dt[, w := 1 / n_samples]
+
+  # Remove:
+  # This is not needed when we assume that the empty and grand coalitions will never be present
+  # dt[id_combination %in% c(1, n_combinations), w := 1]
+
+  # Return the MC samples
+  return(dt)
+}
+
+prepare_data_gaussian_new_v5_rnorm_cpp_fix2 <- function(internal, index_features, ...) {
+  # This function assumes that index_features will never include the empty and
+  # grand coalitions. This is valid 21/11/23 as `batch_prepare_vS()` removes the
+  # grand coalition before calling the `prepare_data()` function and the empty
+  # coalition is never included in the `internal$objects$S_batch` list.
+
+  # Extract objects that we are going to use
+  x_explain <- internal$data$x_explain
+  S <- internal$objects$S
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  n_explain <- internal$parameters$n_explain
+  n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  feature_names <- internal$parameters$feature_names
+  n_combinations <- internal$parameters$n_combinations
+
+  # Extract the relevant coalitions specified in `index_features` from `S`.
+  # This will always be called as `index_features` is never NULL.
+  S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
+
+  # Generate the MC samples
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+  # Call cpp
+  result_list <- prepare_data_gaussian_cpp_fix(
+    MC_samples_mat = MC_samples_mat,
+    x_explain_mat = x_explain_mat,
+    S = S,
+    mu = mu,
+    cov_mat = cov_mat)
+
+    dt = as.data.table(do.call(rbind, result_list))
+    setnames(dt, feature_names)
+    dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+    dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+    data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+
+    # Update the id_combination. This will always be called as `index_features` is never NULL.
+    if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+
+    # Add uniform weights
+    dt[, w := 1 / n_samples]
+
+    # Remove:
+    # This is not needed when we assume that the empty and grand coalitions will never be present
+    # dt[id_combination %in% c(1, n_combinations), w := 1]
+
+    # Return the MC samples
+    return(dt)
+}
+
 prepare_data_gaussian_new_v5_rnorm_cpp_v2 <- function(internal, index_features, ...) {
   # This function assumes that index_features will never include the empty and
   # grand coalitions. This is valid 21/11/23 as `batch_prepare_vS()` removes the
@@ -1168,8 +1539,11 @@ prepare_data_gaussian_new_v6 <- function(internal, index_features, ...) {
   n_train <- 1000
   n_test <- 100
   M <- 8
+
   rho <- 0.5
   betas <- c(0, rep(1, M))
+
+
 
   # We use the Gaussian approach
   approach <- "gaussian"
@@ -1321,6 +1695,42 @@ time_new_v5_rnorm_cpp <- system.time({
     index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
 res_new_v5_rnorm_cpp <- NULL
 
+# time_new_v5_rnorm_cpp_just_extracting <- system.time({
+#   res_new_v5_rnorm_cpp_just_extracting <- prepare_data_gaussian_new_v5_rnorm_cpp_just_extracting(
+#     internal = internal,
+#     index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+# res_new_v5_rnorm_cpp_just_extracting <- NULL
+#
+# time_new_v5_rnorm_cpp_with_cond_mean_var <- system.time({
+#   res_new_v5_rnorm_cpp_with_cond_mean_var <- prepare_data_gaussian_new_v5_rnorm_cpp_with_cond_mean_var(
+#     internal = internal,
+#     index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+# res_new_v5_rnorm_cpp_with_cond_mean_var <- NULL
+#
+# time_new_v5_rnorm_cpp_with_chol <- system.time({
+#   res_new_v5_rnorm_cpp_with_chol <- prepare_data_gaussian_new_v5_rnorm_cpp_with_chol(
+#     internal = internal,
+#     index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+# res_new_v5_rnorm_cpp_with_chol <- NULL
+#
+# time_new_v5_rnorm_cpp_without_adding_to_list <- system.time({
+#   res_new_v5_rnorm_cpp_without_adding_to_list <- prepare_data_gaussian_new_v5_rnorm_cpp_without_adding_to_list(
+#     internal = internal,
+#     index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+# res_new_v5_rnorm_cpp_without_adding_to_list <- NULL
+#
+# time_new_v5_rnorm_cpp_fake_list <- system.time({
+#   res_new_v5_rnorm_cpp_fake_list <- prepare_data_gaussian_new_v5_rnorm_cpp_fake_list(
+#     internal = internal,
+#     index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+# res_new_v5_rnorm_cpp_fake_list <- NULL
+
+time_new_v5_rnorm_cpp_fix <- system.time({
+  res_new_v5_rnorm_cpp_fix <- prepare_data_gaussian_new_v5_rnorm_cpp_fix(
+    internal = internal,
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+res_new_v5_rnorm_cpp_fix <- NULL
+
 time_new_v5_rnorm_cpp_v2 <- system.time({
   res_new_v5_rnorm_cpp_v2 <- prepare_data_gaussian_new_v5_rnorm_cpp_v2(
     internal = internal,
@@ -1336,6 +1746,10 @@ res_new_v6 <- NULL
 # Create a table of the times. Less is better
 times <- rbind(time_old, time_new_v1, time_new_v2, time_new_v3, time_new_v4, time_new_v5,
                time_new_v5_rnorm, time_new_v5_rnorm_v2, time_new_v5_rnorm_cpp,
+               # time_new_v5_rnorm_cpp_just_extracting, time_new_v5_rnorm_cpp_with_cond_mean_var,
+               # time_new_v5_rnorm_cpp_with_chol,  time_new_v5_rnorm_cpp_without_adding_to_list,
+               # time_new_v5_rnorm_cpp_fake_list,
+               time_new_v5_rnorm_cpp_fix,
                time_new_v5_rnorm_cpp_v2, time_new_v6)
 times
 
@@ -1346,22 +1760,35 @@ rownames(times_relative) <- paste0(rownames(times), "_rel")
 times_relative
 
 # ALL COALITIONS (look_at_coalitions = seq(1, 2^M-2))
-#             user.self sys.self elapsed user.child sys.child
-# time_old      195.319   34.193  244.74      0.000     0.000
-# time_new_v1    69.243   31.176  114.28      0.000     0.000
-# time_new_v2    67.820   31.743  116.54      0.000     0.000
-# time_new_v3    61.005   33.955  110.45      0.000     0.000
-# time_new_v4    61.426   31.499  105.11      0.000     0.000
-# time_new_v5    59.670   33.061  106.08      0.000     0.000
-# time_new_v6    61.810   33.342  109.48      0.000     0.000
-#                 user.self sys.self elapsed user.child sys.child
-# time_old_rel       1.0000   1.0000  1.0000        NaN       NaN
-# time_new_v1_rel    2.8208   1.0968  2.1416        NaN       NaN
-# time_new_v2_rel    2.8800   1.0772  2.1000        NaN       NaN
-# time_new_v3_rel    3.2017   1.0070  2.2159        NaN       NaN
-# time_new_v4_rel    3.1797   1.0855  2.3284        NaN       NaN
-# time_new_v5_rel    3.2733   1.0342  2.3071        NaN       NaN
-# time_new_v6_rel    3.1600   1.0255  2.2354        NaN       NaN
+#                           user.self sys.self elapsed user.child sys.child
+# time_old                     38.773    5.301  45.087          0         0
+# time_new_v1                  13.056    3.227  16.489          0         0
+# time_new_v2                  12.760    3.188  16.159          0         0
+# time_new_v3                  11.536    3.891  15.677          0         0
+# time_new_v4                  11.293    3.681  15.150          0         0
+# time_new_v5                  11.249    3.580  15.029          0         0
+# time_new_v5_rnorm            11.719    3.871  15.960          0         0
+# time_new_v5_rnorm_v2         11.893    3.780  16.055          0         0
+# time_new_v5_rnorm_cpp        40.220    7.029  51.638          0         0
+# time_new_v5_rnorm_cpp_fix     5.464    1.682   7.247          0         0
+# time_new_v5_rnorm_cpp_v2     38.499    4.262  43.501          0         0
+# time_new_v6                  11.546    3.413  15.165          0         0
+#                               user.self sys.self elapsed user.child sys.child
+# time_old_rel                    1.00000  1.00000 1.00000        NaN       NaN
+# time_new_v1_rel                 2.96975  1.64270 2.73437        NaN       NaN
+# time_new_v2_rel                 3.03864  1.66280 2.79021        NaN       NaN
+# time_new_v3_rel                 3.36104  1.36237 2.87600        NaN       NaN
+# time_new_v4_rel                 3.43337  1.44010 2.97604        NaN       NaN
+# time_new_v5_rel                 3.44680  1.48073 3.00000        NaN       NaN
+# time_new_v5_rnorm_rel           3.30856  1.36941 2.82500        NaN       NaN
+# time_new_v5_rnorm_v2_rel        3.26015  1.40238 2.80828        NaN       NaN
+# time_new_v5_rnorm_cpp_rel       0.96402  0.75416 0.87314        NaN       NaN
+# time_new_v5_rnorm_cpp_fix_rel   7.09608  3.15161 6.22147        NaN       NaN
+# time_new_v5_rnorm_cpp_v2_rel    1.00712  1.24378 1.03646        NaN       NaN
+# time_new_v6_rel                 3.35813  1.55318 2.97310        NaN       NaN
+
+# -----------------------------------------------------------------------------------------------------------------
+
 
 
 # 26 coalitions (look_at_coalitions = seq(1, 2^M-2, 10))
