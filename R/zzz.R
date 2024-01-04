@@ -82,7 +82,19 @@
       "Method",
       "MSEv",
       "MSEv_sd",
-      "error"
+      "error",
+      ".header",
+      ".id",
+      ".pred",
+      ".only_these_features_wo_none",
+      ".only_these_columns",
+      "Epoch",
+      ".description",
+      ".phi",
+      ".method",
+      "Value",
+      "Criterion",
+      "checkpoint"
     )
   )
   invisible()
