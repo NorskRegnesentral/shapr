@@ -932,9 +932,9 @@ vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE) {
   if (transform_all_cont_features) {
     # This is not the best way. We only give an error when all features are known, i.e., during training.
     # During imputations we do not worry, as we are going to impute the NA values.
-    if (!is.na(suppressWarnings(any(data[, ..col_cont_names] <= 0)))) {
+    if (!is.na(suppressWarnings(any(data[, col_cont_names, with = FALSE] <= 0)))) {
       # Small check that all continues features are strictly positive
-      if (suppressWarnings(any(data[, ..col_cont_names] <= 0))) {
+      if (suppressWarnings(any(data[, col_cont_names, with = FALSE] <= 0))) {
         stop("The continuous features in data is not strictly positive. Cannot log-transform them.")
       }
     }

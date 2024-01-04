@@ -2789,7 +2789,7 @@ plot_several_vaeacs_VLB_IWAE <- function(explanation_list,
 
   # Get the relevant criteria
   keep_these_columns <- c("Method", "Epoch", criteria)
-  vaeac_VLB_IWAE_dt <- vaeac_VLB_IWAE_dt[, ..keep_these_columns]
+  vaeac_VLB_IWAE_dt <- vaeac_VLB_IWAE_dt[, keep_these_columns, with = FALSE]
 
   # Check for valid `plot_from_nth_epoch`
   max_epoch <- max(vaeac_VLB_IWAE_dt$Epoch)
@@ -2807,7 +2807,7 @@ plot_several_vaeacs_VLB_IWAE <- function(explanation_list,
   vaeac_VLB_IWAE_dt <- vaeac_VLB_IWAE_dt[Epoch %% plot_every_nth_epoch == 0]
 
   # Convert it from wide to long
-  vaeac_VLB_IWAE_dt_long <- melt(
+  vaeac_VLB_IWAE_dt_long <- data.table::melt(
     data = vaeac_VLB_IWAE_dt,
     id.vars = c("Method", "Epoch"),
     variable.name = "Criterion",
