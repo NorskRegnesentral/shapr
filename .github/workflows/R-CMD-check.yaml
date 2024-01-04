@@ -35,9 +35,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-20.04,   r: 'devel', http-user-agent: 'release'}
+# Temporary disable all but ubuntu release to reduce compute while debugging
+#          - {os: macOS-latest,   r: 'release'}
+#          - {os: windows-latest, r: 'release'}
+#          - {os: ubuntu-20.04,   r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-20.04,   r: 'release'}
 #          Temporary disable the below check plattforms as they fail due to a change in how R reports error from R<4.3 to R>=4.3,
 #          which gives a different output in the snapshots produced by testthat>=3.2.0
@@ -49,6 +50,9 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
+      - name: Set the value
+        run: echo "TORCH_INSTALL=1" >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-pandoc@v2
@@ -64,9 +68,10 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Install torch dependencies
-        run: torch::install_torch()
-        shell: Rscript {0}
+# Try to do this with the env variable TORCH_INSTALL instead to hopefully get setup-r-dependencies to cache the installation
+#      - name: Install torch dependencies
+#        run: torch::install_torch()
+#        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
