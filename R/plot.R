@@ -1351,10 +1351,6 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #' @param plot_phi0 Boolean. If we are to include the \eqn{\phi_0} in the bar plots or not.
 #' @param digits Integer. Number of significant digits to use in the feature description.
 #' @param add_zero_line Boolean. If we are to add a black line for a feature contribution of 0.
-#' @param ggplot_theme A [ggplot2::theme()] object to customize the non-data components of the plots:
-#' i.e. titles, labels, fonts, background, gridlines, and legends. Themes can be used to give plots
-#' a consistent customized look. Use the themes available in \code{\link[ggplot2:theme_bw]{ggplot2::ggtheme()}}.
-#' if you would like to use a complete theme such as `theme_bw()`, `theme_minimal()`, and more.
 #' @param brewer_palette String. Name of one of the color palettes from [RColorBrewer::RColorBrewer()].
 #'  If `NULL`, then the function uses the default [ggplot2::ggplot()] color scheme.
 #' The following palettes are available for use with these scales:
@@ -1364,9 +1360,6 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #'    \item{Sequential}{Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges,
 #'      OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr, YlOrRd}
 #' }
-#' @param brewer_direction Sets the order of colors in the scale. If 1, the default,
-#' colors are as output by \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}}.
-#' If -1, the order of colors is reversed.
 #' @param axis_labels_n_dodge Integer. The number of rows that
 #' should be used to render the labels. This is useful for displaying labels that would otherwise overlap.
 #' @param axis_labels_rotate_angle Numeric. The angle of the axis label, where 0 means horizontal, 45 means tilted,
@@ -1375,19 +1368,10 @@ make_MSEv_combination_plots <- function(MSEv_combination_dt,
 #' @param horizontal_bars Boolean. Flip Cartesian coordinates so that horizontal becomes vertical,
 #' and vertical, horizontal. This is primarily useful for converting geoms and statistics which display
 #' y conditional on x, to x conditional on y. See [ggplot2::coord_flip()].
-#' @param title_text_size Positive numeric. The size of the title. If `0`, then the text is removed.
 #' @param facet_scales Should scales be free ("`free`", the default), fixed ("`fixed`"), or free in one dimension
 #' ("`free_x`", "`free_y`")? The user has to change the latter manually depending on the value of `horizontal_bars`.
 #' @param facet_ncol  Integer. The number of columns in the facet grid. Default is `facet_ncol = 2`.
 #' @param geom_col_width Numeric. Bar width. By default, set to 85% of the [ggplot2::resolution()] of the data.
-#' @param legend_position String or numeric vector `c(x,y)`. The allowed string values for the
-#' argument `legend_position` are: `left`,`top`, `right`, `bottom`. Note that, the argument
-#' `legend_position` can be also a numeric vector `c(x,y)`. In this case it is possible to position
-#' the legend inside the plotting area. `x` and `y` are the coordinates of the legend box.
-#' Their values should be between `0` and `1`, where `c(0,0)` corresponds to the "bottom left"
-#' and `c(1,1)` corresponds to the "top right" position.
-#' @param legend_ncol Integer. The number of columns in the legend.
-#' @param legend_nrow Integer. The number of rows in the legend.
 #'
 #' @return A [ggplot2::ggplot()] object.
 #' @export
@@ -1751,7 +1735,7 @@ extract_Shapley_values_dt <- function(explanation_list,
 
   # Keep only the needed columns, and ensure that .id, .pred, and .method are included
   only_these_columns <- unique(c(".id", ".pred", ".method", only_these_features))
-  dt_Shapley_values <- dt_Shapley_values[, ..only_these_columns]
+  dt_Shapley_values <- dt_Shapley_values[, only_these_columns, with = FALSE]
 
   return(dt_Shapley_values)
 }
@@ -1806,7 +1790,7 @@ create_feature_descriptions_dt <- function(explanation_list,
                                            horizontal_bars,
                                            digits) {
   # Get the explicands
-  x_explain <- explanation_list[[1]]$internal$data$x_explain[index_explicands, ..only_these_features_wo_none]
+  x_explain <- explanation_list[[1]]$internal$data$x_explain[index_explicands, only_these_features_wo_none, with = FALSE]
 
   # Converting and melting the explicands
   desc_mat <- trimws(format(x_explain, digits = digits))

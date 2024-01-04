@@ -1681,7 +1681,6 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 #' on new data or on the same dataset as it was trained on before. If we are given a new dataset, then
 #' we assume that new dataset has the same distribution and one_hot_max_sizes as the original dataset.
 #'
-#' @param vaeac_model The output revived from the 'vaeac_train_model' function.
 #' @param epochs_new Integer. The number of extra epochs to conduct.
 #' @param lr_new Numeric. If we are to overwrite the old learning rate in the adam optimizer.
 #' @param training_data Matrix/data.frame containing new training data. If not present,
