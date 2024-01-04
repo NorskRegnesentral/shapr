@@ -80,12 +80,43 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
     .Call(`_shapr_aicc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
 }
 
+#' Generate Gaussian MC samples
+NULL
+
 prepare_data_gaussian_cpp <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
     .Call(`_shapr_prepare_data_gaussian_cpp`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
 }
 
+prepare_data_gaussian_cpp_with_wrap <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_gaussian_cpp_with_wrap`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
+}
+
 prepare_data_gaussian_cpp_v2 <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
     .Call(`_shapr_prepare_data_gaussian_cpp_v2`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
+}
+
+prepare_data_gaussian_cpp_fix_large_mat <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_gaussian_cpp_fix_large_mat`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
+}
+
+prepare_data_gaussian_cpp_fix_large_mat_v2 <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_gaussian_cpp_fix_large_mat_v2`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
+}
+
+prepare_data_gaussian_cpp_fix_cube <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_gaussian_cpp_fix_cube`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
+}
+
+prepare_data_gaussian_cpp_fix_cube_v2 <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_gaussian_cpp_fix_cube_v2`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
+}
+
+prepare_data_gaussian_cpp_fix_list_of_lists_of_matrices <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_gaussian_cpp_fix_list_of_lists_of_matrices`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
+}
+
+prepare_data_gaussian_cpp_fix_std_list <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_gaussian_cpp_fix_std_list`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
 }
 
 #' (Generalized) Mahalanobis distance
