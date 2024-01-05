@@ -49,20 +49,93 @@ setup_approach.copula <- function(internal, ...) {
   return(internal)
 }
 
+
+
+#' @inheritParams default_doc
+#' @rdname prepare_data
+#' @export
+#' @author Lars Henry Berge Olsen
+prepare_data.copula2 <- function(internal, index_features, ...) {
+
+  # Extract used variables
+  X <- internal$objects$X
+  x_train <- internal$data$x_train
+  x_train_mat <- as.matrix(internal$data$x_train)
+  x_explain <- internal$data$x_explain
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  n_explain <- internal$parameters$n_explain
+  n_samples <- internal$parameters$n_samples
+  n_samples = 1000000
+  n_features <- internal$parameters$n_features
+  n_combinations <- internal$parameters$n_combinations
+  n_combinations_now <- length(index_features)
+  copula.mu <- internal$parameters$copula.mu
+  copula.cov_mat <- internal$parameters$copula.cov_mat
+  copula.x_explain_gaussian_mat <- as.matrix(internal$data$copula.x_explain_gaussian) # CAN SKIP as.matrix as it is a matrix allready
+  feature_names <- internal$parameters$feature_names
+
+
+
+
+
+
+
+
+
+  S <- internal$objects$S[index_features, , drop = FALSE]
+
+
+  # Generate the MC samples from N(0, 1)
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+  # Use Cpp to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
+  # The object `dt` is here a 3D array of dimension (n_samples, n_explain*n_coalitions, n_features).
+  # INCLUDE THE TRANSFORMATION
+
+
+  dt <- prepare_data_copula_cpp(MC_samples_mat = MC_samples_mat,
+                                  x_explain_mat = x_explain_mat,
+                                  x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
+                                  x_train_mat = x_train_mat,
+                                  S = S,
+                                  mu = copula.mu,
+                                  cov_mat = copula.cov_mat)
+
+  # Reshape `dt` to a 2D array of dimension (n_samples*n_explain*n_coalitions, n_features).
+  dim(dt) = c(n_combinations_now*n_explain*n_samples, n_features)
+
+  # Convert to a data.table
+  dt = as.data.table(dt)
+  setnames(dt, feature_names)
+  dt[, "id_combination" := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+  dt[, "w" := 1 / n_samples]
+  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+  dt[, id_combination := index_features[id_combination]]
+  dt
+
+  dt[id_combination == 9 & id == 1,]
+
+  dt_agr = dt[, lapply(.SD, mean), by = list(id, id_combination)]
+  data.table::setorderv(dt_agr, c("id", "id_combination"))
+  dt_agr
+
+  return(dt)
+}
+
 #' @inheritParams default_doc
 #' @rdname prepare_data
 #' @export
 prepare_data.copula <- function(internal, index_features = NULL, ...) {
+  X <- internal$objects$X
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
-  copula.cov_mat <- internal$parameters$copula.cov_mat
   n_samples <- internal$parameters$n_samples
-  copula.mu <- internal$parameters$copula.mu
   n_features <- internal$parameters$n_features
-
+  copula.mu <- internal$parameters$copula.mu
+  copula.cov_mat <- internal$parameters$copula.cov_mat
   copula.x_explain_gaussian <- internal$data$copula.x_explain_gaussian
-  X <- internal$objects$X
 
 
   x_explain0 <- as.matrix(x_explain)
@@ -74,7 +147,9 @@ prepare_data.copula <- function(internal, index_features = NULL, ...) {
   }
 
 
+  n_samples = 1000000
   for (i in seq_len(n_explain)) {
+    print(i)
     l <- lapply(
       X = features,
       FUN = sample_copula,
@@ -86,6 +161,9 @@ prepare_data.copula <- function(internal, index_features = NULL, ...) {
       x_train = as.matrix(x_train),
       x_explain_gaussian = copula.x_explain_gaussian[i, , drop = FALSE]
     )
+    # x_explain_gaussian2 = x_explain_gaussian
+    # x_train2 = x_train
+    # x_explain2 = x_explain
 
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
@@ -93,7 +171,15 @@ prepare_data.copula <- function(internal, index_features = NULL, ...) {
     if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
   }
   dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
+  dt
+  dt9 = dt
+  dt9_agr = dt9[, lapply(.SD, mean), by = list(id, id_combination)]
+  dt9_agr - dt_agr
   return(dt)
+
+
+
+
 }
 
 #' Sample conditional variables using the Gaussian copula approach
@@ -119,6 +205,7 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_explain_gaus
   } else {
     dependent_ind <- (seq_len(length(mu)))[-index_given]
 
+    # Dette har jeg kode til
     tmp <- condMVNorm::condMVN(
       mean = mu,
       sigma = cov_mat,
@@ -127,15 +214,24 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_explain_gaus
       X.given = x_explain_gaussian[index_given]
     )
 
+    # Dette har jeg kode til. Bruker cholensky + simulert data fra før
     ret0_z <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
 
+    # Dette må jeg skrive selv
     ret0_x <- apply(
       X = rbind(ret0_z, x_train[, dependent_ind, drop = FALSE]),
       MARGIN = 2,
       FUN = inv_gaussian_transform,
-      n_z = n_samples
+      n_z = n_samples,
+      type = 5
     )
+    ret0_x_cpp = inv_gaussian_transform_cpp(z = ret0_z, x = x_train[, dependent_ind, drop = FALSE])
 
+    ret0_x_cpp = inv_gaussian_transform_cpp_armamat(rbind(ret0_z, x_train[, dependent_ind, drop = FALSE]), n_samples = n_samples)
+    colnames(ret0_x_cpp) = feature_names[dependent_ind]
+    all.equal(ret0_x, ret0_x_cpp)
+
+    # Dette har jeg kode til
     ret <- matrix(NA, ncol = m, nrow = n_samples)
     ret[, index_given] <- rep(x_explain[index_given], each = n_samples)
     ret[, dependent_ind] <- ret0_x
@@ -156,13 +252,13 @@ sample_copula <- function(index_given, n_samples, mu, cov_mat, m, x_explain_gaus
 #' @keywords internal
 #'
 #' @author Martin Jullum
-inv_gaussian_transform <- function(zx, n_z) {
+inv_gaussian_transform <- function(zx, n_z, type) {
   if (n_z >= length(zx)) stop("n_z should be less than length(zx)")
   ind <- 1:n_z
   z <- zx[ind]
   x <- zx[-ind]
   u <- stats::pnorm(z)
-  x_new <- stats::quantile(x, probs = u)
+  x_new <- stats::quantile(x, probs = u, type = type)
   return(as.double(x_new))
 }
 
