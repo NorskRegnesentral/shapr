@@ -148,6 +148,9 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
                                  vaeac.epochs = 200,
                                  vaeac.extra_parameters = list(),
                                  ...) {
+  # A function that sets up and calls the function builds the models used by the vaeac approach.
+
+
   # The names of the main parameters for the `vaeac` approach
   main_parameters <- c(
     "vaeac.depth",
@@ -563,37 +566,36 @@ of the data used to train the provided vaeac model (%s).\n",
 prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
   # A function that generates the Monte Carlo samples using the vaeac approach.
 
-  # Extract the observations to explain. This will always be a data.table
   x_explain <- internal$data$x_explain
-
-  # Extract the number of observations to explain
   n_explain <- internal$parameters$n_explain
-
-  # Extract the number of features
   n_features <- internal$parameters$n_features
-
-  # Extract the number of MC samples to generate
   n_samples <- internal$parameters$n_samples
+  seed <- internal$parameters$seed
+  S <- internal$objects$S
 
-  # Extract the trained vaeac model
-  vaeac_list <- internal$parameters$vaeac
+  vaeac_list <- internal$parameters$vaeac # the trained vaeac model
+  vaeac.which_vaeac_model <- internal$parameters$vaeac.which_vaeac_model
+  vaeac.batch_size_sampling <- internal$parameters$vaeac.batch_size_sampling
+  vaeac.sample_random <- internal$parameters$vaeac.sample_random
+  vaeac.verbose <- internal$parameters$vaeac.verbose
 
   # Figure out which of the stored vaeac checkpoints we are going to use.
-  if (is.null(internal$parameters$vaeac.which_vaeac_model)) {
+  if (is.null(vaeac.which_vaeac_model)) {
     which_vaeac_model <- "best"
   } else {
-    if (internal$parameters$vaeac.which_vaeac_model %in% names(vaeac_list$models)) {
+    if (vaeac.which_vaeac_model %in% names(vaeac_list$models)) {
       # User provided a string which matches one of the file names and we use it.
-      which_vaeac_model <- internal$parameters$vaeac.which_vaeac_model
+      which_vaeac_model <- vaeac.which_vaeac_model
     } else {
       # User provided a string which is not one of the file names. Overwrite it.
       which_vaeac_model <- "best"
       message(sprintf(
         "The provided string for 'which_vaeac_model' (%s) did not match any stored checkpoints (%s).\n
 We set 'which_vaeac_model = best' and continue.\n",
-        internal$parameters$vaeac.which_vaeac_model,
+        vaeac.which_vaeac_model,
         paste(names(vaeac_list$models), collapse = ", ")
       ))
+
     }
   }
 
@@ -609,7 +611,7 @@ We set 'which_vaeac_model = best' and continue.\n",
   current_batch_index <- internal$objects$X[id_combination == index_features[1]]$batch
 
   # Check if we are going to print out process to the user
-  if (isTRUE(internal$parameters$vaeac.verbose)) {
+  if (isTRUE(vaeac.verbose)) {
     message(sprintf(
       "Starting 'prepare_data.vaeac' for batch %d of %d.",
       current_batch_index, internal$parameters$n_batches
@@ -622,7 +624,7 @@ We set 'which_vaeac_model = best' and continue.\n",
   # If n_batches >= 2, then index_features is a subset of all possible indices.
   # The matrix internal$objects$S contains all (sampled) coalitions, always including the empty
   # and grand coalition. We extract the relevant coalitions we are to generate MC samples from.
-  mask <- internal$objects$S[index_features, , drop = FALSE]
+  mask <- S[index_features, , drop = FALSE]
 
   # Get the number of active coalitions.
   n_coaltions <- length(index_features)
@@ -644,13 +646,13 @@ We set 'which_vaeac_model = best' and continue.\n",
   x_explain_extended[is.na(mask_extended)] <- NaN
 
   # Extract/set the batch size. Larger batch sizes is often much faster provided sufficient memory.
-  if (is.null(internal$parameters$vaeac.batch_size_sampling)) {
+  if (is.null(vaeac.batch_size_sampling)) {
     # If user has not specified a desired size, then we do the whole batch in one go.
     # This is also indirectly controlled by n_batches in explain.
     batch_size <- n_explain_extended
   } else {
     # Use the user provided batch size
-    batch_size <- internal$parameters$vaeac.batch_size_sampling
+    batch_size <- vaeac.batch_size_sampling
 
     # Check/set valid batch size
     if (batch_size > n_explain_extended) batch_size <- n_explain_extended
@@ -661,7 +663,7 @@ We set 'which_vaeac_model = best' and continue.\n",
   # or if we are to sample the most likely values (mean for cont, class with highest prob for cat).
   # We will always use random unless user specify otherwise.
   sample_random <-
-    if (is.null(internal$parameters$vaeac.sample_random)) TRUE else internal$parameters$vaeac.sample_random
+    if (is.null(vaeac.sample_random)) TRUE else vaeac.sample_random
 
   # Check that `sample_random` is a boolean, otherwise we set it to true.
   if (!is.logical(sample_random)) {
@@ -679,8 +681,8 @@ We set 'which_vaeac_model = best' and continue.\n",
     convert_to_2D = TRUE,
     return_as_postprocessed_dt = TRUE,
     batch_size = batch_size,
-    verbose = internal$parameters$vaeac.verbose,
-    seed = internal$parameters$seed,
+    verbose = vaeac.verbose,
+    seed = seed,
     index_features = index_features
   )
 
