@@ -90,9 +90,9 @@
 #' \log p_{\theta, \psi}(x|y) \approx
 #' \log {\frac{1}{K} \sum_{i=1}^K [p_\theta(x|z_i, y) * p_\psi(z_i|y) / q_\phi(z_i|x,y)]} \newline
 #' =
-#' \log {\sum_{i=1}^K \exp(log[p_\theta(x|z_i, y) * p_\psi(z_i|y) / q_\phi(z_i|x,y)])} - \log(K) \newline
+#' \log {\sum_{i=1}^K \exp(\log[p_\theta(x|z_i, y) * p_\psi(z_i|y) / q_\phi(z_i|x,y)])} - \log(K) \newline
 #' =
-#' \log {\sum_{i=1}^K \exp(log[p_\theta(x|z_i, y)] + \log[p_\psi(z_i|y)] - \log[q_\phi(z_i|x,y)])} - \log(K) \newline
+#' \log {\sum_{i=1}^K \exp(\log[p_\theta(x|z_i, y)] + \log[p_\psi(z_i|y)] - \log[q_\phi(z_i|x,y)])} - \log(K) \newline
 #' =
 #' \operatorname{logsumexp}(\log[p_\theta(x|z_i, y)] + \log[p_\psi(z_i|y)] - \log[q_\phi(z_i|x,y)]) - \log(K) \newline
 #' =
@@ -114,10 +114,10 @@
 #' @keywords internal
 vaeac <- torch::nn_module(
 
-  # @field Name of the \code{\link[torch]{nn_module}} object
+  # Name of the torch::nn_module object
   classname = "vaeac",
 
-  # @description Initializing a vaeac model
+  # Initializing a vaeac model
   initialize = function(one_hot_max_sizes,
                         width = 32,
                         depth = 3,
@@ -497,10 +497,8 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
     self$num_train_param <- num_train_param
   },
 
-  # @description Forward functions are required in torch::nn_modules,
+  # Forward functions are required in torch::nn_modules,
   # but is it not needed in the way we have implemented vaeac.
-  #
-  # @param ... Anything, as the function does not use it.
   forward = function(...) {
     warning("NO FORWARD FUNCTION IMPLEMENTED FOR VAEAC.")
     return("NO FORWARD FUNCTION IMPLEMENTED FOR VAEAC.")
