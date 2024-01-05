@@ -1,16 +1,3 @@
-# Laste ned shapr fra github: remotes::install_github("NorskRegnesentral/shapr", ref = "devel")
-# pkgload::load_all()
-# source("~/PhD/Paper2/vaeac_in_R.R")
-
-#  Load Required Libraries ============================================================================================
-# {
-#  library(torch)
-#  library(progress)
-#  library(data.table)
-#  library(ggplot2)
-#  library(GGally)
-# }
-
 #' @rdname setup_approach
 #'
 #' @param vaeac.depth Integer. The number of hidden layers in the neural networks of the masked
