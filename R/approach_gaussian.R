@@ -45,6 +45,7 @@ setup_approach.gaussian <- function(internal,
   return(internal)
 }
 
+#' @inheritParams default_doc
 #' @rdname prepare_data
 #' @export
 #' @author Lars Henry Berge Olsen
