@@ -52,17 +52,17 @@ setup_approach.gaussian <- function(internal,
 prepare_data.gaussian <- function(internal, index_features, ...) {
 
   # Extract objects that we are going to use
-  x_explain <- internal$data$x_explain
-  S <- internal$objects$S
-  mu <- internal$parameters$gaussian.mu
-  cov_mat <- internal$parameters$gaussian.cov_mat
-  x_explain_mat <- as.matrix(internal$data$x_explain)
   n_explain <- internal$parameters$n_explain
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
-  feature_names <- internal$parameters$feature_names
   n_combinations <- internal$parameters$n_combinations
   n_combinations_now <- length(index_features)
+  S <- internal$objects$S
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
+  feature_names <- internal$parameters$feature_names
+  x_explain <- internal$data$x_explain
+  x_explain_mat <- as.matrix(internal$data$x_explain)
 
   # Update `S` with the relevant coalitions specified in `index_features`
   S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
