@@ -4,6 +4,53 @@
 library(data.table)
 
 
+
+# Other functions -------------------------------------------------------------------------------------------------
+#' Sample conditional Gaussian variables
+#'
+#' @inheritParams sample_copula
+#'
+#' @return data.table
+#'
+#' @keywords internal
+#'
+#' @author Martin Jullum
+sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_explain) {
+  # Check input
+  stopifnot(is.matrix(x_explain))
+
+  # Handles the unconditional and full conditional separtely when predicting
+  cnms <- colnames(x_explain)
+  if (length(index_given) %in% c(0, m)) {
+    return(data.table::as.data.table(x_explain))
+  }
+
+  dependent_ind <- seq_along(mu)[-index_given]
+  x_explain_gaussian <- x_explain[index_given]
+  tmp <- condMVNorm::condMVN(
+    mean = mu,
+    sigma = cov_mat,
+    dependent.ind = dependent_ind,
+    given.ind = index_given,
+    X.given = x_explain_gaussian
+  )
+
+  # Makes the conditional covariance matrix symmetric in the rare case where numerical instability made it unsymmetric
+  if (!isSymmetric(tmp[["condVar"]])) {
+    tmp[["condVar"]] <- Matrix::symmpart(tmp$condVar)
+  }
+
+  ret0 <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
+
+  ret <- matrix(NA, ncol = m, nrow = n_samples)
+  ret[, index_given] <- rep(x_explain_gaussian, each = n_samples)
+  ret[, dependent_ind] <- ret0
+
+  colnames(ret) <- cnms
+  return(as.data.table(ret))
+}
+
+
 # Cpp functions ---------------------------------------------------------------------------------------------------
 # #include <RcppArmadillo.h>
 # #include <iostream>
@@ -673,7 +720,7 @@ prepare_data_gaussian_old <- function(internal, index_features = NULL, ...) {
     cat(sprintf("%d,", i))
     l <- lapply(
       X = features,
-      FUN = shapr:::sample_gaussian,
+      FUN = sample_gaussian, #shapr:::sample_gaussian,
       n_samples = n_samples,
       mu = gaussian.mu,
       cov_mat = gaussian.cov_mat,
