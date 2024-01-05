@@ -51,21 +51,18 @@ setup_approach.gaussian <- function(internal,
 #' @author Lars Henry Berge Olsen
 prepare_data.gaussian <- function(internal, index_features, ...) {
 
-  # Extract objects that we are going to use
+  # Extract used variables
   n_explain <- internal$parameters$n_explain
   n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
   n_combinations <- internal$parameters$n_combinations
   n_combinations_now <- length(index_features)
-  S <- internal$objects$S
   mu <- internal$parameters$gaussian.mu
   cov_mat <- internal$parameters$gaussian.cov_mat
   feature_names <- internal$parameters$feature_names
   x_explain <- internal$data$x_explain
   x_explain_mat <- as.matrix(internal$data$x_explain)
-
-  # Update `S` with the relevant coalitions specified in `index_features`
-  S <- if (!is.null(index_features)) S[index_features, , drop = FALSE]
+  S <- internal$objects$S[index_features, , drop = FALSE]
 
   # Generate the MC samples from N(0, 1)
   MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
@@ -88,7 +85,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   dt[, "id" := rep(seq(n_explain), each = n_samples, times = nrow(S))]
   dt[, "w" := 1 / n_samples]
   data.table::setcolorder(dt, c("id_combination", "id", feature_names))
-  if (!is.null(index_features)) dt[, id_combination := index_features[id_combination]]
+  dt[, id_combination := index_features[id_combination]]
 
   return(dt)
 }
