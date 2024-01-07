@@ -248,7 +248,7 @@ time_old/time_new
 # Aggregate the MC sample values for each explicand and combination
 res_old = res_old[,w:=NULL]
 res_new = res_new[,w:=NULL]
-res_old_agr = res_old[,w:=NULL][, lapply(.SD, mean), by = c("id", "id_combination")]
+res_old_agr = res_old[, lapply(.SD, mean), by = c("id", "id_combination")]
 res_new_agr = res_new[, lapply(.SD, mean), by = c("id", "id_combination")]
 
 # Difference
