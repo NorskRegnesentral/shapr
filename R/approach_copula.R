@@ -166,7 +166,7 @@ prepare_data.copula_cpp_and_R <- function(internal, index_features, ...) {
 #' @author Lars Henry Berge Olsen
 inv_gaussian_transform_R <- function(z, x) {
   u <- stats::pnorm(z)
-  x_new = sapply(seq_len(ncol(u)), function (idx) quantile.type7(x[,idx], probs = u[,idx]))
+  x_new <- sapply(seq_len(ncol(u)), function(idx) quantile.type7(x[, idx], probs = u[, idx]))
   return(x_new)
 }
 
