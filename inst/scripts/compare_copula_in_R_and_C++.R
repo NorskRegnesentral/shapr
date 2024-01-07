@@ -89,7 +89,7 @@ sample_copula_old <- function(index_given, n_samples, mu, cov_mat, m, x_explain_
       MARGIN = 2,
       FUN = inv_gaussian_transform_old,
       n_z = n_samples,
-      type = 5
+      type = 7
     )
 
     ret <- matrix(NA, ncol = m, nrow = n_samples)
@@ -129,7 +129,7 @@ inv_gaussian_transform_old <- function(zx, n_z, type) {
 {
   n_samples <- 1000
   n_train <- 1000
-  n_test <- 6
+  n_test <- 20
   M <- 8
   rho <- 0.5
   betas <- c(0, rep(1, M))
@@ -217,45 +217,77 @@ inv_gaussian_transform_old <- function(zx, n_z, type) {
 }
 
 # Compare ---------------------------------------------------------------------------------------------------------
+set.seed(123)
 
 # Recall that old version iterate over the observations and then the coalitions.
 # While the new version iterate over the coalitions and then the observations.
 # The latter lets us reuse the computed conditional distributions for all observations.
 look_at_coalitions <- seq(1, 2^M - 2)
-look_at_coalitions <- seq(1, 2^M - 2, 10)
-#look_at_coalitions <- seq(1, 2^M - 2, 25)
+# look_at_coalitions <- seq(1, 2^M - 2, 10)
+# look_at_coalitions <- seq(1, 2^M - 2, 25)
 
 # The old R code
-time_old <- system.time({
-  res_old <- prepare_data.copula_old(
+time_only_R <- system.time({
+  res_only_R <- prepare_data.copula_old(
     internal = internal,
     index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+time_only_R
 
-# The new C++ code
-time_new <- system.time({
-  res_new <- prepare_data.copula(
+# The new C++ code with quantile from arma
+time_only_cpp <- system.time({
+  res_only_cpp <- prepare_data.copula(
     internal = internal,
     index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
-setorderv(res_new, c("id", "id_combination"))
+data.table::setorderv(res_only_cpp, c("id", "id_combination"))
+time_only_cpp
 
-# Time
-time_old
-time_new
+# The new C++ code with quantile from R
+time_cpp_and_R <- system.time({
+  res_cpp_and_R <- prepare_data.copula_cpp_and_R(
+    internal = internal,
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+data.table::setorderv(res_cpp_and_R, c("id", "id_combination"))
+time_cpp_and_R
+
+# Create a table of the times. Less is better
+times <- rbind(time_only_R,
+               time_only_cpp,
+               time_cpp_and_R)
+times
+
+# TIMES for all coalitions, n_samples <- 1000, n_train <- 1000, n_test <- 20, M <- 8
+#                user.self sys.self elapsed user.child sys.child
+# time_only_R       14.081    1.341  15.659      0.000     0.000
+# time_only_cpp    108.905    0.850 112.089      0.021     0.068
+# time_cpp_and_R     6.829    1.022   8.165      0.000     0.000
 
 # Relative speedup of new method
-time_old/time_new
+times_relative <- t(sapply(seq_len(nrow(times)), function(idx) times[1, ] / times[idx, ]))
+rownames(times_relative) <- paste0(rownames(times), "_rel")
+times_relative
+
+# RELATIVE TIMES for all coalitions, n_samples <- 1000, n_train <- 1000, n_test <- 20, M <- 8
+#                    user.self sys.self elapsed user.child sys.child
+# time_only_R_rel       1.0000   1.0000  1.0000        NaN       NaN
+# time_only_cpp_rel     0.1293   1.5776  0.1397          0         0
+# time_cpp_and_R_rel    2.0619   1.3121  1.9178        NaN       NaN
 
 # Aggregate the MC sample values for each explicand and combination
-res_old = res_old[,w:=NULL]
-res_new = res_new[,w:=NULL]
-res_old_agr = res_old[, lapply(.SD, mean), by = c("id", "id_combination")]
-res_new_agr = res_new[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_only_R = res_only_R[, w:= NULL]
+res_only_cpp = res_only_cpp[, w:= NULL]
+res_cpp_and_R = res_cpp_and_R[, w:= NULL]
+res_only_R_agr = res_only_R[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_only_cpp_agr = res_only_cpp[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_cpp_and_R_agr = res_cpp_and_R[, lapply(.SD, mean), by = c("id", "id_combination")]
 
 # Difference
-res_old_agr - res_new_agr
+res_only_R_agr - res_only_cpp_agr
+res_only_R_agr - res_cpp_and_R_agr
 
 # Max absolute difference
-max(abs(res_old_agr - res_new_agr))
+max(abs(res_only_R_agr - res_only_cpp_agr))
+max(abs(res_only_R_agr - res_cpp_and_R_agr))
 
 # Max absolute relative difference
-max(abs((res_old_agr - res_new_agr)/res_new_agr))
+max(abs(res_only_R_agr - res_only_cpp_agr)/res_only_cpp_agr)
+max(abs(res_only_R_agr - res_cpp_and_R_agr)/res_cpp_and_R_agr)
