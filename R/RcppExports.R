@@ -80,6 +80,9 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
     .Call(`_shapr_aicc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
 }
 
+#' Generate (Gaussian) Copula MC samples
+NULL
+
 #' Transforms new data to a standardized normal distribution
 #'
 #' @details The function uses `arma::quantile(...)` which corresponds to R's `stats::quantile(..., type = 5)`.
@@ -87,12 +90,16 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 #' @param z arma::mat. The data are the Gaussian Monte Carlos samples to transform.
 #' @param x arma::mat. The data with the original transformation. Used to conduct the transformation of `z`.
 #'
-#' @return arma::mat of same dimension as `z`
+#' @return arma::mat of the same dimension as `z`
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 inv_gaussian_transform_cpp <- function(z, x) {
     .Call(`_shapr_inv_gaussian_transform_cpp`, z, x)
+}
+
+prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_copula_cpp`, MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat)
 }
 
 #' Generate (Gaussian) Copula MC samples
@@ -121,8 +128,8 @@ inv_gaussian_transform_cpp <- function(z, x) {
 #' @export
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat) {
-    .Call(`_shapr_prepare_data_copula_cpp`, MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat)
+prepare_data_copula_cpp_and_R <- function(MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat) {
+    .Call(`_shapr_prepare_data_copula_cpp_and_R`, MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat)
 }
 
 #' Generate Gaussian MC samples

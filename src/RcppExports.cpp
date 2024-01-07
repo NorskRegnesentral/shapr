@@ -109,6 +109,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// prepare_data_copula_cpp_and_R
+arma::cube prepare_data_copula_cpp_and_R(arma::mat MC_samples_mat, arma::mat x_explain_mat, arma::mat x_explain_gaussian_mat, arma::mat x_train_mat, arma::mat S, arma::vec mu, arma::mat cov_mat);
+RcppExport SEXP _shapr_prepare_data_copula_cpp_and_R(SEXP MC_samples_matSEXP, SEXP x_explain_matSEXP, SEXP x_explain_gaussian_matSEXP, SEXP x_train_matSEXP, SEXP SSEXP, SEXP muSEXP, SEXP cov_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type MC_samples_mat(MC_samples_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x_explain_mat(x_explain_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x_explain_gaussian_mat(x_explain_gaussian_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x_train_mat(x_train_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type S(SSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
+    rcpp_result_gen = Rcpp::wrap(prepare_data_copula_cpp_and_R(MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat));
+    return rcpp_result_gen;
+END_RCPP
+}
 // prepare_data_gaussian_cpp
 arma::cube prepare_data_gaussian_cpp(arma::mat MC_samples_mat, arma::mat x_explain_mat, arma::mat S, arma::vec mu, arma::mat cov_mat);
 RcppExport SEXP _shapr_prepare_data_gaussian_cpp(SEXP MC_samples_matSEXP, SEXP x_explain_matSEXP, SEXP SSEXP, SEXP muSEXP, SEXP cov_matSEXP) {
@@ -201,6 +218,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_aicc_full_cpp", (DL_FUNC) &_shapr_aicc_full_cpp, 6},
     {"_shapr_inv_gaussian_transform_cpp", (DL_FUNC) &_shapr_inv_gaussian_transform_cpp, 2},
     {"_shapr_prepare_data_copula_cpp", (DL_FUNC) &_shapr_prepare_data_copula_cpp, 7},
+    {"_shapr_prepare_data_copula_cpp_and_R", (DL_FUNC) &_shapr_prepare_data_copula_cpp_and_R, 7},
     {"_shapr_prepare_data_gaussian_cpp", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp, 5},
     {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
     {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
