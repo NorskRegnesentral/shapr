@@ -80,7 +80,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   # Convert to a data.table and add extra identification columns
   dt <- data.table::as.data.table(dt)
   data.table::setnames(dt, feature_names)
-  dt[, id_combination := rep(seq(nrow(S)), each = n_samples * n_explain)]
+  dt[, id_combination := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
   dt[, id := rep(seq(n_explain), each = n_samples, times = nrow(S))]
   dt[, w := 1 / n_samples]
   dt[, id_combination := index_features[id_combination]]
