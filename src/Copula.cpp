@@ -34,10 +34,10 @@ arma::mat inv_gaussian_transform_cpp(arma::mat z, arma::mat x) {
 //' @param x_explain_gaussian_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the
 //' observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
 //' transformed to a standardized normal distribution.
-//'
 //' @param x_train_mat arma::mat. Matrix of dimension (`n_train`, `n_features`) containing the training observations.
 //' @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
-//' the used coalitions.
+//' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
+//' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
 //' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature after being transformed
 //' using the Gaussian transform, i.e., the samples have been transformed to a standardized normal distribution.
 //' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance

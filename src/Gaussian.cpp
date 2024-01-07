@@ -8,7 +8,8 @@ using namespace Rcpp;
 //' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
 //' to explain.
 //' @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
-//' the used coalitions.
+//' the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
+//' This is not a problem internally in shapr as the empty and grand coalitions treated differently.
 //' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature.
 //' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
 //' between all pairs of features.
