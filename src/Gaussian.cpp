@@ -3,21 +3,22 @@ using namespace Rcpp;
 
 //' Generate Gaussian MC samples
 //'
-//' @param MC_samples_mat matrix. Matrix of dimension `n_samples` times `n_features` containing samples from the
+//' @param MC_samples_mat arma::mat. Matrix of dimension `n_samples` times `n_features` containing samples from the
 //' univariate standard normal.
-//' @param x_explain_mat matrix. Matrix of dimension `n_explain` times `n_features` containing the observations
+//' @param x_explain_mat arma::mat. Matrix of dimension `n_explain` times `n_features` containing the observations
 //' to explain.
-//' @param S matrix. Matrix of dimension `n_combinations` times `n_features` containing binary representations of
+//' @param S arma::mat. Matrix of dimension `n_combinations` times `n_features` containing binary representations of
 //' the used coalitions.
-//' @param mu vector. Vector of length `n_features` containing the mean of each feature.
-//' @param cov_mat matrix. Matrix of dimension `n_features` times `n_features` containing the pairwise covariance
+//' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature.
+//' @param cov_mat arma::mat. Matrix of dimension `n_features` times `n_features` containing the pairwise covariance
 //' between all pairs of features.
+//'
+//' @return An arma::cube/3D array of dimension (`n_samples`, `n_explain` * `n_coalitions`, `n_features`), where
+//' the columns (_,j,_) are matrices of dimension (`n_samples`, `n_features`) containing the conditional Gaussian
+//' MC samples for each explicand and coalition.
 //'
 //' @export
 //' @keywords internal
-//'
-//' @return List of length `n_combinations`*`n_samples`, where each entry is a matrix of dimension `n_samples` times
-//' `n_features` containing the conditional MC samples for each coalition and explicand.
 //' @author Lars Henry Berge Olsen
 // [[Rcpp::export]]
 arma::cube prepare_data_gaussian_cpp(arma::mat MC_samples_mat,
