@@ -217,6 +217,8 @@ inv_gaussian_transform_old <- function(zx, n_z, type) {
 }
 
 # Compare ---------------------------------------------------------------------------------------------------------
+set.seed(321)
+set.seed(2024)
 set.seed(123)
 
 # Recall that old version iterate over the observations and then the coalitions.
@@ -230,14 +232,18 @@ look_at_coalitions <- seq(1, 2^M - 2)
 time_only_R <- system.time({
   res_only_R <- prepare_data.copula_old(
     internal = internal,
-    index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions]
+  )
+})
 time_only_R
 
 # The new C++ code with quantile from arma
 time_only_cpp <- system.time({
   res_only_cpp <- prepare_data.copula(
     internal = internal,
-    index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions]
+  )
+})
 data.table::setorderv(res_only_cpp, c("id", "id_combination"))
 time_only_cpp
 
@@ -245,21 +251,40 @@ time_only_cpp
 time_cpp_and_R <- system.time({
   res_cpp_and_R <- prepare_data.copula_cpp_and_R(
     internal = internal,
-    index_features = internal$objects$S_batch$`1`[look_at_coalitions])})
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions]
+  )
+})
 data.table::setorderv(res_cpp_and_R, c("id", "id_combination"))
 time_cpp_and_R
 
 # Create a table of the times. Less is better
-times <- rbind(time_only_R,
-               time_only_cpp,
-               time_cpp_and_R)
+times <- rbind(
+  time_only_R,
+  time_only_cpp,
+  time_cpp_and_R
+)
 times
 
 # TIMES for all coalitions, n_samples <- 1000, n_train <- 1000, n_test <- 20, M <- 8
 #                user.self sys.self elapsed user.child sys.child
-# time_only_R       14.081    1.341  15.659      0.000     0.000
-# time_only_cpp    108.905    0.850 112.089      0.021     0.068
-# time_cpp_and_R     6.829    1.022   8.165      0.000     0.000
+# time_only_R       64.263    2.130  68.793          0         0
+# time_only_cpp    112.403    1.018 117.429          0         0
+# time_cpp_and_R     7.020    1.370   8.854          0         0
+
+#                user.self sys.self elapsed user.child sys.child
+# time_only_R       67.230    1.822  70.997      9.807     0.431
+# time_only_cpp    113.848    1.056 118.330      0.000     0.000
+# time_cpp_and_R     7.444    1.512   9.065      0.000     0.000
+
+#                user.self sys.self elapsed user.child sys.child
+# time_only_R       81.699    3.180  90.926      0.000     0.000
+# time_only_cpp    115.815    1.547 122.401      0.021     0.068
+# time_cpp_and_R     7.976    1.750  10.539      1.491     0.403
+
+#                user.self sys.self elapsed user.child sys.child
+# time_only_R       63.600    2.009  67.670          0         0
+# time_only_cpp    113.768    1.032 118.364          0         0
+# time_cpp_and_R     6.824    1.260   8.188          0         0
 
 # Relative speedup of new method
 times_relative <- t(sapply(seq_len(nrow(times)), function(idx) times[1, ] / times[idx, ]))
@@ -268,17 +293,32 @@ times_relative
 
 # RELATIVE TIMES for all coalitions, n_samples <- 1000, n_train <- 1000, n_test <- 20, M <- 8
 #                    user.self sys.self elapsed user.child sys.child
-# time_only_R_rel       1.0000   1.0000  1.0000        NaN       NaN
-# time_only_cpp_rel     0.1293   1.5776  0.1397          0         0
-# time_cpp_and_R_rel    2.0619   1.3121  1.9178        NaN       NaN
+# time_only_R_rel      1.00000   1.0000 1.00000          1         1
+# time_only_cpp_rel    0.59052   1.7254 0.59999        Inf       Inf
+# time_cpp_and_R_rel   9.03143   1.2050 7.83199        Inf       Inf
+
+#                    user.self sys.self elapsed user.child sys.child
+# time_only_R_rel      1.00000   1.0000 1.00000        NaN       NaN
+# time_only_cpp_rel    0.70543   2.0556 0.74285          0         0
+# time_cpp_and_R_rel  10.24310   1.8171 8.62757          0         0
+
+#                    user.self sys.self elapsed user.child sys.child
+# time_only_R_rel      1.00000   1.0000 1.00000        NaN       NaN
+# time_only_cpp_rel    0.55903   1.9467 0.57171        NaN       NaN
+# time_cpp_and_R_rel   9.32005   1.5944 8.26453        NaN       NaN
+
+#                    user.self sys.self elapsed user.child sys.child
+# time_only_R_rel      1.00000   1.0000 1.00000        NaN       NaN
+# time_only_cpp_rel    0.57172   2.0923 0.58583        NaN       NaN
+# time_cpp_and_R_rel   9.15427   1.5547 7.76971        NaN       NaN
 
 # Aggregate the MC sample values for each explicand and combination
-res_only_R = res_only_R[, w:= NULL]
-res_only_cpp = res_only_cpp[, w:= NULL]
-res_cpp_and_R = res_cpp_and_R[, w:= NULL]
-res_only_R_agr = res_only_R[, lapply(.SD, mean), by = c("id", "id_combination")]
-res_only_cpp_agr = res_only_cpp[, lapply(.SD, mean), by = c("id", "id_combination")]
-res_cpp_and_R_agr = res_cpp_and_R[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_only_R <- res_only_R[, w := NULL]
+res_only_cpp <- res_only_cpp[, w := NULL]
+res_cpp_and_R <- res_cpp_and_R[, w := NULL]
+res_only_R_agr <- res_only_R[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_only_cpp_agr <- res_only_cpp[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_cpp_and_R_agr <- res_cpp_and_R[, lapply(.SD, mean), by = c("id", "id_combination")]
 
 # Difference
 res_only_R_agr - res_only_cpp_agr
@@ -289,5 +329,5 @@ max(abs(res_only_R_agr - res_only_cpp_agr))
 max(abs(res_only_R_agr - res_cpp_and_R_agr))
 
 # Max absolute relative difference
-max(abs(res_only_R_agr - res_only_cpp_agr)/res_only_cpp_agr)
-max(abs(res_only_R_agr - res_cpp_and_R_agr)/res_cpp_and_R_agr)
+max(abs(res_only_R_agr - res_only_cpp_agr) / res_only_cpp_agr)
+max(abs(res_only_R_agr - res_cpp_and_R_agr) / res_cpp_and_R_agr)
