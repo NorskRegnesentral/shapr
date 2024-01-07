@@ -1,6 +1,8 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
+// [[Rcpp::depends(RcppArmadillo)]]
+
 //' Generate Gaussian MC samples
 //'
 //' @param MC_samples_mat arma::mat. Matrix of dimension (`n_samples`, `n_features`) containing samples from the

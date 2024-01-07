@@ -6,6 +6,7 @@
 \alias{prepare_data}
 \alias{prepare_data.categorical}
 \alias{prepare_data.copula}
+\alias{prepare_data.copula_cpp_and_R}
 \alias{prepare_data.ctree}
 \alias{prepare_data.empirical}
 \alias{prepare_data.gaussian}
@@ -17,13 +18,15 @@ prepare_data(internal, index_features = NULL, ...)
 
 \method{prepare_data}{categorical}(internal, index_features = NULL, ...)
 
-\method{prepare_data}{copula}(internal, index_features = NULL, ...)
+\method{prepare_data}{copula}(internal, index_features, ...)
+
+\method{prepare_data}{copula_cpp_and_R}(internal, index_features, ...)
 
 \method{prepare_data}{ctree}(internal, index_features = NULL, ...)
 
 \method{prepare_data}{empirical}(internal, index_features = NULL, ...)
 
-\method{prepare_data}{gaussian}(internal, index_features = NULL, ...)
+\method{prepare_data}{gaussian}(internal, index_features, ...)
 
 \method{prepare_data}{independence}(internal, index_features = NULL, ...)
 
@@ -43,5 +46,8 @@ the contribution function by Monte Carlo integration.
 }
 \description{
 Generate data used for predictions and Monte Carlo integration
+}
+\author{
+Lars Henry Berge Olsen
 }
 \keyword{internal}
