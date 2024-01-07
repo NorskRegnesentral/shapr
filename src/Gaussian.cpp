@@ -3,14 +3,14 @@ using namespace Rcpp;
 
 //' Generate Gaussian MC samples
 //'
-//' @param MC_samples_mat arma::mat. Matrix of dimension `n_samples` times `n_features` containing samples from the
+//' @param MC_samples_mat arma::mat. Matrix of dimension (`n_samples`, `n_features`) containing samples from the
 //' univariate standard normal.
-//' @param x_explain_mat arma::mat. Matrix of dimension `n_explain` times `n_features` containing the observations
+//' @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
 //' to explain.
-//' @param S arma::mat. Matrix of dimension `n_combinations` times `n_features` containing binary representations of
+//' @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
 //' the used coalitions.
 //' @param mu arma::vec. Vector of length `n_features` containing the mean of each feature.
-//' @param cov_mat arma::mat. Matrix of dimension `n_features` times `n_features` containing the pairwise covariance
+//' @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
 //' between all pairs of features.
 //'
 //' @return An arma::cube/3D array of dimension (`n_samples`, `n_explain` * `n_coalitions`, `n_features`), where
@@ -47,7 +47,7 @@ arma::cube prepare_data_gaussian_cpp(arma::mat MC_samples_mat,
     // Extract the features we condition on
     arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
 
-    // Extract the mean values for the features in the two sets
+    // Extract the mean values of the features in the two sets
     arma::vec mu_S = mu.elem(S_now_idx);
     arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
 
@@ -70,10 +70,10 @@ arma::cube prepare_data_gaussian_cpp(arma::mat MC_samples_mat,
     arma::mat x_Sbar_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star.each_row() - mu_S.t()).t();
     x_Sbar_mean.each_col() += mu_Sbar;
 
-    // Transform the samples to be from N(O, Sigma_Sbar|S)
+    // Transform the samples to be from N(O, Sigma_{Sbar|S})
     arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
 
-    // Loop over the different test observations and combine the generated values with the values we conditioned on
+    // Loop over the different explicands and combine the generated values with the values we conditioned on
     for (int idx_now = 0; idx_now < n_explain; idx_now++) {
       aux_mat.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1);
       aux_mat.cols(Sbar_now_idx) = MC_samples_mat_now + repmat(trans(x_Sbar_mean.col(idx_now)), n_samples, 1);

@@ -65,7 +65,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
   MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
 
   # Use Cpp to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
-  # The object `dt` is a 3D array of dimension (n_samples, n_explain*n_coalitions, n_features).
+  # The object `dt` is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features).
   dt <- prepare_data_gaussian_cpp(
     MC_samples_mat = MC_samples_mat,
     x_explain_mat = x_explain_mat,
@@ -74,7 +74,7 @@ prepare_data.gaussian <- function(internal, index_features, ...) {
     cov_mat = cov_mat
   )
 
-  # Reshape `dt` to a 2D array of dimension (n_samples*n_explain*n_coalitions, n_features).
+  # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features).
   dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
 
   # Convert to a data.table and add extra identification columns
