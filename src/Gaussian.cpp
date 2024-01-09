@@ -24,11 +24,11 @@ using namespace Rcpp;
 //' @keywords internal
 //' @author Lars Henry Berge Olsen
 // [[Rcpp::export]]
-arma::cube prepare_data_gaussian_cpp(arma::mat MC_samples_mat,
-                                     arma::mat x_explain_mat,
-                                     arma::mat S,
-                                     arma::vec mu,
-                                     arma::mat cov_mat) {
+arma::cube prepare_data_gaussian_cpp(const arma::mat& MC_samples_mat,
+                                     const arma::mat& x_explain_mat,
+                                     const arma::mat& S,
+                                     const arma::vec& mu,
+                                     const arma::mat& cov_mat) {
 
   int n_explain = x_explain_mat.n_rows;
   int n_samples = MC_samples_mat.n_rows;
