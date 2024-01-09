@@ -6,7 +6,6 @@
 \alias{prepare_data}
 \alias{prepare_data.categorical}
 \alias{prepare_data.copula}
-\alias{prepare_data.copula_cpp_and_R}
 \alias{prepare_data.ctree}
 \alias{prepare_data.empirical}
 \alias{prepare_data.gaussian}
@@ -19,8 +18,6 @@ prepare_data(internal, index_features = NULL, ...)
 \method{prepare_data}{categorical}(internal, index_features = NULL, ...)
 
 \method{prepare_data}{copula}(internal, index_features, ...)
-
-\method{prepare_data}{copula_cpp_and_R}(internal, index_features, ...)
 
 \method{prepare_data}{ctree}(internal, index_features = NULL, ...)
 
