@@ -24,19 +24,17 @@ setup_approach.copula <- function(internal, ...) {
 
   # Prepare transformed data
   parameters$copula.mu <- rep(0, ncol(x_train_mat))
-  x_train_mat0 = gaussian_transform_cpp(as.matrix(x_train_mat))
+  x_train_mat0 = gaussian_transform_cpp(x_train_mat)
   colnames(x_train_mat0) = feature_names
   parameters$copula.cov_mat <- get_cov_mat(x_train_mat0)
 
   x_explain_gaussian = gaussian_transform_separate_cpp(x_explain_mat, x_train_mat)
   colnames(x_explain_gaussian) = feature_names
+  if (is.null(dim(x_explain_gaussian))) x_explain_gaussian <- t(as.matrix(x_explain_gaussian))
 
-  if (is.null(dim(x_explain_gaussian))) {
-    x_explain_gaussian <- t(as.matrix(x_explain_gaussian))
-  }
-  # TODO: Change to this a data.table for consistency (not speed/memory)
-  internal$data$copula.x_explain_gaussian <- x_explain_gaussian
+  # Add objects to internal list
   internal$parameters <- parameters
+  internal$data$copula.x_explain_gaussian <- as.data.table(x_explain_gaussian)
 
   return(internal)
 }
@@ -58,10 +56,6 @@ prepare_data.copula <- function(internal, index_features, ...) {
   copula.mu <- internal$parameters$copula.mu
   copula.cov_mat <- internal$parameters$copula.cov_mat
   copula.x_explain_gaussian_mat <- as.matrix(internal$data$copula.x_explain_gaussian)
-
-  # TODO: Note that `as.matrix` is not needed for `copula.x_explain_gaussian_mat` as it is already defined as a matrix
-  # in `setup_approach.copula`, however, it seems that Martin plans to make it into a data.table, thus, I include
-  # `as.matrix` as future safety. DISCUSS WITH MARTIN WHAT HIS PLANS ARE!
 
   # Generate the MC samples from N(0, 1)
   MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
