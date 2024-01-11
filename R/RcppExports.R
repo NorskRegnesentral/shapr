@@ -253,22 +253,6 @@ observation_impute_cpp <- function(index_xtrain, index_s, xtrain, xtest, S) {
     .Call(`_shapr_observation_impute_cpp`, index_xtrain, index_s, xtrain, xtest, S)
 }
 
-gaussian_transform_cpp_d <- function(x) {
-    .Call(`_shapr_gaussian_transform_cpp_d`, x)
-}
-
-gaussian_transform_cpp_arma <- function(x) {
-    .Call(`_shapr_gaussian_transform_cpp_arma`, x)
-}
-
-gaussian_transform_mat_cpp_arma <- function(x) {
-    .Call(`_shapr_gaussian_transform_mat_cpp_arma`, x)
-}
-
-gaussian_transform_mat_cpp_arma2 <- function(x) {
-    .Call(`_shapr_gaussian_transform_mat_cpp_arma2`, x)
-}
-
 #' Calculate weight matrix
 #'
 #' @param subsets List. Each of the elements equals an integer

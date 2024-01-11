@@ -629,7 +629,7 @@ arma::cube prepare_data_copula_cpp_and_R(arma::mat MC_samples_mat,
   timing <- TRUE
   n_combinations <- NULL
   group <- NULL
-  feature_specs <- get_feature_specs(get_model_specs, model)
+  feature_specs <- shapr:::get_feature_specs(get_model_specs, model)
   n_batches <- 1
   seed <- 1
 
@@ -651,7 +651,7 @@ arma::cube prepare_data_copula_cpp_and_R(arma::mat MC_samples_mat,
   )
 
   # Gets predict_model (if not passed to explain)
-  predict_model <- get_predict_model(
+  predict_model <- shapr:::get_predict_model(
     predict_model = predict_model,
     model = model
   )
@@ -659,8 +659,92 @@ arma::cube prepare_data_copula_cpp_and_R(arma::mat MC_samples_mat,
   # Sets up the Shapley (sampling) framework and prepares the
   # conditional expectation computation for the chosen approach
   # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
-  internal <- setup_computation(internal, model, predict_model)
+  internal <- shapr:::setup_computation(internal, model, predict_model)
 }
+
+
+# Compare shapr compile and rcpp compile --------------------------------------------------------------------------
+look_at_coalitions <- seq(1, 2^M - 2)
+index_features = internal$objects$S_batch$`1`[look_at_coalitions]
+S <- internal$objects$S[index_features, , drop = FALSE]
+feature_names <- internal$parameters$feature_names
+n_explain <- internal$parameters$n_explain
+n_samples <- internal$parameters$n_samples
+n_features <- internal$parameters$n_features
+n_combinations_now <- length(index_features)
+x_train_mat <- as.matrix(internal$data$x_train)
+x_explain_mat <- as.matrix(internal$data$x_explain)
+copula.mu <- internal$parameters$copula.mu
+copula.cov_mat <- internal$parameters$copula.cov_mat
+copula.x_explain_gaussian_mat <- as.matrix(internal$data$copula.x_explain_gaussian)
+
+# Generate the MC samples from N(0, 1)
+MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+# Use C++ to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}), for all coalitions and explicands,
+# and then transforming them back to the original scale using the inverse Gaussian transform in C++.
+# The object `dt` is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features).
+time_1 = system.time({dt_1 <- prepare_data_copula_cpp(
+  MC_samples_mat = MC_samples_mat,
+  x_explain_mat = x_explain_mat,
+  x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
+  x_train_mat = x_train_mat,
+  S = S,
+  mu = copula.mu,
+  cov_mat = copula.cov_mat
+)})
+time_1
+
+time_2 = system.time({dt_2 <- shapr:::prepare_data_copula_cpp(
+  MC_samples_mat = MC_samples_mat,
+  x_explain_mat = x_explain_mat,
+  x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
+  x_train_mat = x_train_mat,
+  S = S,
+  mu = copula.mu,
+  cov_mat = copula.cov_mat
+)})
+time_2
+
+time_2andhalf = system.time({dt_2andhalf <-
+  .Call(`_shapr_prepare_data_copula_cpp`,
+        MC_samples_mat = MC_samples_mat,
+        x_explain_mat = x_explain_mat,
+        x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
+        x_train_mat = x_train_mat,
+        S = S,
+        mu = copula.mu,
+        cov_mat = copula.cov_mat
+  )})
+time_2andhalf
+
+# Rcpp::compileAttributes(pkgdir = ".", verbose = TRUE)
+Rcpp::sourceCpp("src/Copula.cpp")
+time_3 = system.time({dt_3 <- prepare_data_copula_cpp(
+  MC_samples_mat = MC_samples_mat,
+  x_explain_mat = x_explain_mat,
+  x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
+  x_train_mat = x_train_mat,
+  S = S,
+  mu = copula.mu,
+  cov_mat = copula.cov_mat
+)})
+time_3
+
+time_4 = system.time({dt_4 <- shapr::prepare_data_copula_cpp(
+  MC_samples_mat = MC_samples_mat,
+  x_explain_mat = x_explain_mat,
+  x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
+  x_train_mat = x_train_mat,
+  S = S,
+  mu = copula.mu,
+  cov_mat = copula.cov_mat
+)})
+
+rbind(time_1, time_2, time_3, time_4)
+all.equal(dt_1, dt_2)
+all.equal(dt_2, dt_3)
+all.equal(dt_3, dt_4)
 
 # Compare prepare_data.copula ----------------------------------------------------------------------------------------
 set.seed(123)
@@ -769,13 +853,14 @@ max(abs(res_only_R_agr - res_cpp_and_R_agr) / res_cpp_and_R_agr)
 
 # Compare gaussian_transform --------------------------------------------------------------------------------------
 set.seed(123)
-x_temp_rows = 10000
-x_temp_cols = 10
+x_temp_rows = 100000
+x_temp_cols = 20
 x_temp = matrix(rnorm(x_temp_rows*x_temp_cols), x_temp_rows, x_temp_cols)
 
 # Compare for equal values
-gaussian_transform_R = apply(X = x_temp, MARGIN = 2, FUN = gaussian_transform_old)
-gaussian_transform_cpp = gaussian_transform_cpp(x_temp)
+system.time({gaussian_transform_R = apply(X = x_temp, MARGIN = 2, FUN = gaussian_transform_old)})
+system.time({gaussian_transform_cpp = gaussian_transform_cpp(x_temp)})
+system.time({gaussian_transform_cpp = shapr:::gaussian_transform_cpp(x_temp)})
 all.equal(gaussian_transform_R, gaussian_transform_cpp) # TRUE
 
 # Compare time (generate new data each time such that the result is not stored in the cache)
@@ -795,9 +880,9 @@ rbenchmark::benchmark(R = apply(X = matrix(rnorm(x_temp_rows*x_temp_cols), x_tem
 
 # Compare gaussian_transform_separate -------------------------------------------------------------------------
 set.seed(123)
-x_cols = 8
-x_train_rows = 1000
-x_explain_rows = 1000
+x_cols = 10
+x_train_rows = 50000
+x_explain_rows = 50000
 x_train_temp = matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)
 x_explain_temp = matrix(rnorm(x_explain_rows*x_cols), x_explain_rows, x_cols)
 x_explain_train_temp = rbind(x_explain_temp, x_train_temp)
@@ -807,6 +892,7 @@ system.time({r = apply(X = rbind(x_explain_temp, x_train_temp),
                         FUN = gaussian_transform_separate_old,
                         n_y = nrow(x_explain_temp))})
 system.time({cpp = gaussian_transform_separate_cpp(x_explain_temp, x_train_temp)})
+system.time({cpp_shapr = shapr:::gaussian_transform_separate_cpp(x_explain_temp, x_train_temp)})
 all.equal(r, cpp)
 
 # gc()
@@ -821,6 +907,8 @@ rbenchmark::benchmark(r = apply(X = rbind(x_explain_temp, x_train_temp),
 # 2  cpp          100   0.238    1.000     0.228    0.006          0         0
 # 1    r          100   0.502    2.109     0.432    0.058          0         0
 
+Sys.setenv("PKG_CXXFLAGS"="-O0")
+Rcpp::sourceCpp("src/Copula.cpp")
 rbenchmark::benchmark(r = apply(X = rbind(matrix(rnorm(x_explain_rows*x_cols), x_explain_rows, x_cols),
                                           matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
                                 MARGIN = 2,
@@ -830,7 +918,15 @@ rbenchmark::benchmark(r = apply(X = rbind(matrix(rnorm(x_explain_rows*x_cols), x
                                                                    x_explain_rows,
                                                                    x_cols),
                                       matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
+                      cpp_dir = gaussian_transform_separate_cpp2(matrix(rnorm(x_explain_rows*x_cols),
+                                                                   x_explain_rows,
+                                                                   x_cols),
+                                                            matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
                       cpp_shapr = shapr:::gaussian_transform_separate_cpp(matrix(rnorm(x_explain_rows*x_cols),
+                                                                   x_explain_rows,
+                                                                   x_cols),
+                                                            matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
+                      cpp_shapr_dir = shapr:::gaussian_transform_separate_cpp2(matrix(rnorm(x_explain_rows*x_cols),
                                                                    x_explain_rows,
                                                                    x_cols),
                                                             matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
@@ -841,6 +937,16 @@ rbenchmark::benchmark(r = apply(X = rbind(matrix(rnorm(x_explain_rows*x_cols), x
 #   test replications elapsed relative user.self sys.self user.child sys.child
 # 2  cpp          100   0.361    1.000     0.322    0.025          0         0
 # 1    r          100   0.553    1.532     0.496    0.047          0         0
+
+
+# x_cols = 5, x_train_rows = 10000, x_explain_rows = 10000
+#            test replications elapsed relative user.self sys.self user.child sys.child
+# 2           cpp          100   2.526    1.000     2.342    0.145          0         0
+# 3       cpp_dir          100   2.574    1.019     2.359    0.136          0         0
+# 4     cpp_shapr          100   5.314    2.104     4.955    0.173          0         0
+# 5 cpp_shapr_dir          100   5.274    2.088     5.020    0.169          0         0
+# 6          cpp2          100   5.448    2.157     5.112    0.169          0         0
+# 1             r          100   4.791    1.897     3.926    0.756          0         0
 
 # Call `Rcpp::sourceCpp("src/Copula.cpp")` and then run rbenchmark again and then cpp is much faster.
 # C++ code is faster when I recompile it? I don't understand.

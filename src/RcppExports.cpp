@@ -201,50 +201,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gaussian_transform_cpp_d
-Rcpp::NumericVector gaussian_transform_cpp_d(const Rcpp::NumericVector& x);
-RcppExport SEXP _shapr_gaussian_transform_cpp_d(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(gaussian_transform_cpp_d(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// gaussian_transform_cpp_arma
-Rcpp::NumericVector gaussian_transform_cpp_arma(const arma::vec& x);
-RcppExport SEXP _shapr_gaussian_transform_cpp_arma(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(gaussian_transform_cpp_arma(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// gaussian_transform_mat_cpp_arma
-Rcpp::NumericMatrix gaussian_transform_mat_cpp_arma(const arma::mat& x);
-RcppExport SEXP _shapr_gaussian_transform_mat_cpp_arma(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(gaussian_transform_mat_cpp_arma(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// gaussian_transform_mat_cpp_arma2
-Rcpp::NumericMatrix gaussian_transform_mat_cpp_arma2(const Rcpp::NumericMatrix& x);
-RcppExport SEXP _shapr_gaussian_transform_mat_cpp_arma2(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(gaussian_transform_mat_cpp_arma2(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // weight_matrix_cpp
 arma::mat weight_matrix_cpp(List subsets, int m, int n, NumericVector w);
 RcppExport SEXP _shapr_weight_matrix_cpp(SEXP subsetsSEXP, SEXP mSEXP, SEXP nSEXP, SEXP wSEXP) {
@@ -287,10 +243,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
     {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
     {"_shapr_observation_impute_cpp", (DL_FUNC) &_shapr_observation_impute_cpp, 5},
-    {"_shapr_gaussian_transform_cpp_d", (DL_FUNC) &_shapr_gaussian_transform_cpp_d, 1},
-    {"_shapr_gaussian_transform_cpp_arma", (DL_FUNC) &_shapr_gaussian_transform_cpp_arma, 1},
-    {"_shapr_gaussian_transform_mat_cpp_arma", (DL_FUNC) &_shapr_gaussian_transform_mat_cpp_arma, 1},
-    {"_shapr_gaussian_transform_mat_cpp_arma2", (DL_FUNC) &_shapr_gaussian_transform_mat_cpp_arma2, 1},
     {"_shapr_weight_matrix_cpp", (DL_FUNC) &_shapr_weight_matrix_cpp, 4},
     {"_shapr_feature_matrix_cpp", (DL_FUNC) &_shapr_feature_matrix_cpp, 2},
     {NULL, NULL, 0}
