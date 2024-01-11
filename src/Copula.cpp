@@ -227,26 +227,3 @@ Rcpp::NumericMatrix gaussian_transform_separate_cpp(const arma::mat& y, const ar
 
   return z_y;
 }
-
-// // [[Rcpp::export]]
-// Rcpp::NumericMatrix gaussian_transform_separate_cpp6(arma::mat y, arma::mat x) {
-//   int n_features = x.n_cols;
-//   int n_y_rows = y.n_rows;
-//   int n_x_rows = x.n_rows;
-//
-//   // Pre allocate the return matrix
-//   Rcpp::NumericMatrix z_y(n_y_rows, n_features);
-//
-//   // Compute the transformation for each feature at the time
-//   for (int idx_feature = 0; idx_feature < n_features; ++idx_feature) {
-//     arma::vec yx_now = arma::join_cols(y.col(idx_feature), x.col(idx_feature));
-//     arma::vec rank_now_1 = arma::conv_to<arma::vec>::from(arma::sort_index(arma::sort_index(yx_now))).head(n_y_rows);
-//     arma::vec rank_now_2 = arma::conv_to<arma::vec>::from(arma::sort_index(arma::sort_index(rank_now_1)));
-//     arma::vec tmp = rank_now_1 - rank_now_2 + 0.5;
-//     Rcpp::NumericVector u_y = Rcpp::wrap(tmp / (n_x_rows + 1));
-//     z_y(Rcpp::_, idx_feature) = Rcpp::qnorm(u_y);
-//   }
-//
-//   return z_y;
-// }
-
