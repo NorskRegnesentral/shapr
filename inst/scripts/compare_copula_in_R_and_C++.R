@@ -39,7 +39,7 @@ prepare_data.copula_old <- function(internal, index_features = NULL, ...) {
       m = n_features,
       x_explain = x_explain0[i, , drop = FALSE],
       x_train = as.matrix(x_train),
-      x_explain_gaussian = copula.x_explain_gaussian[i, , drop = FALSE]
+      x_explain_gaussian = as.matrix(copula.x_explain_gaussian)[i, , drop = FALSE]
     )
     dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
     dt_l[[i]][, w := 1 / n_samples]
@@ -314,8 +314,296 @@ quantile.type7 <- function(x, probs) {
 }
 
 
+
+# C++ with sourceRcpp ---------------------------------------------------------------------------------------------
+#' @inheritParams default_doc
+#' @rdname prepare_data
+#' @export
+#' @author Lars Henry Berge Olsen
+prepare_data.copula_sourceCpp <- function(internal, index_features, ...) {
+  # Extract used variables
+  S <- internal$objects$S[index_features, , drop = FALSE]
+  feature_names <- internal$parameters$feature_names
+  n_explain <- internal$parameters$n_explain
+  n_samples <- internal$parameters$n_samples
+  n_features <- internal$parameters$n_features
+  n_combinations_now <- length(index_features)
+  x_train_mat <- as.matrix(internal$data$x_train)
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  copula.mu <- internal$parameters$copula.mu
+  copula.cov_mat <- internal$parameters$copula.cov_mat
+  copula.x_explain_gaussian_mat <- as.matrix(internal$data$copula.x_explain_gaussian)
+
+  # Generate the MC samples from N(0, 1)
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+
+  # Use C++ to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}), for all coalitions and explicands,
+  # and then transforming them back to the original scale using the inverse Gaussian transform in C++.
+  # The object `dt` is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features).
+  dt <- prepare_data_copula_cpp_sourceCpp(
+    MC_samples_mat = MC_samples_mat,
+    x_explain_mat = x_explain_mat,
+    x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
+    x_train_mat = x_train_mat,
+    S = S,
+    mu = copula.mu,
+    cov_mat = copula.cov_mat
+  )
+
+  # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features).
+  dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
+
+  # Convert to a data.table and add extra identification columns
+  dt <- data.table::as.data.table(dt)
+  data.table::setnames(dt, feature_names)
+  dt[, id_combination := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
+  dt[, id := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+  dt[, w := 1 / n_samples]
+  dt[, id_combination := index_features[id_combination]]
+  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
+
+  return(dt)
+}
+
+Rcpp::sourceCpp(
+  code = '
+  #include <RcppArmadillo.h>
+using namespace Rcpp;
+
+// [[Rcpp::depends(RcppArmadillo)]]
+
+// Compute the quantiles using quantile type seven
+//
+// @details Using quantile type number seven from stats::quantile in R.
+//
+// @param x arma::vec. Numeric vector whose sample quantiles are wanted.
+// @param probs arma::vec. Numeric vector of probabilities with values between zero and one.
+//
+// @return A vector of length `length(probs)` with the quantiles is returned.
+//
+// @keywords internal
+// @author Lars Henry Berge Olsen
+// [[Rcpp::export]]
+  arma::vec quantile_type7_cpp_sourceCpp(const arma::vec& x, const arma::vec& probs) {
+    int n = x.n_elem;
+    int m = probs.n_elem;
+
+    // Initialize output quantile vector
+    arma::vec qs(m);
+
+    // Calculate indices
+    arma::vec index = 1 + (n - 1) * probs;
+    arma::vec lo = arma::floor(index);
+    arma::vec hi = arma::ceil(index);
+
+    // Sort the data
+    arma::vec sorted_x = arma::sort(x);
+
+    // Calculate quantiles using quantile type seven
+    for (int i = 0; i < m; ++i) {
+      qs(i) = sorted_x(lo(i) - 1);
+      if (index(i) > lo(i)) {
+        double h = index(i) - lo(i);
+        qs(i) = (1 - h) * qs(i) + h * sorted_x(hi(i) - 1);
+      }
+    }
+
+    return qs;
+  }
+
+// Transforms new data to a standardized normal distribution
+//
+// @details The function uses `arma::quantile(...)` which corresponds to Rs `stats::quantile(..., type = 5)`.
+//
+// @param z arma::mat. The data are the Gaussian Monte Carlos samples to transform.
+// @param x arma::mat. The data with the original transformation. Used to conduct the transformation of `z`.
+//
+// @return arma::mat of the same dimension as `z`
+//
+// @keywords internal
+// @author Lars Henry Berge Olsen
+// [[Rcpp::export]]
+  arma::mat inv_gaussian_transform_cpp_sourceCpp(const arma::mat& z, const arma::mat& x) {
+    int n_features = z.n_cols;
+    int n_samples = z.n_rows;
+    arma::mat z_new(n_samples, n_features);
+    arma::mat u = arma::normcdf(z);
+    for (int feature_idx = 0; feature_idx < n_features; feature_idx++) {
+      z_new.col(feature_idx) = quantile_type7_cpp_sourceCpp(x.col(feature_idx), u.col(feature_idx));
+    }
+    return z_new;
+  }
+
+// Generate (Gaussian) Copula MC samples
+//
+// @param MC_samples_mat arma::mat. Matrix of dimension (`n_samples`, `n_features`) containing samples from the
+// univariate standard normal.
+// @param x_explain_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the observations
+// to explain on the original scale.
+// @param x_explain_gaussian_mat arma::mat. Matrix of dimension (`n_explain`, `n_features`) containing the
+// observations to explain after being transformed using the Gaussian transform, i.e., the samples have been
+// transformed to a standardized normal distribution.
+// @param x_train_mat arma::mat. Matrix of dimension (`n_train`, `n_features`) containing the training observations.
+// @param S arma::mat. Matrix of dimension (`n_combinations`, `n_features`) containing binary representations of
+// the used coalitions. S cannot contain the empty or grand coalition, i.e., a row containing only zeros or ones.
+// This is not a problem internally in shapr as the empty and grand coalitions treated differently.
+// @param mu arma::vec. Vector of length `n_features` containing the mean of each feature after being transformed
+// using the Gaussian transform, i.e., the samples have been transformed to a standardized normal distribution.
+// @param cov_mat arma::mat. Matrix of dimension (`n_features`, `n_features`) containing the pairwise covariance
+// between all pairs of features after being transformed using the Gaussian transform, i.e., the samples have been
+// transformed to a standardized normal distribution.
+//
+// @return An arma::cube/3D array of dimension (`n_samples`, `n_explain` * `n_coalitions`, `n_features`), where
+// the columns (_,j,_) are matrices of dimension (`n_samples`, `n_features`) containing the conditional Gaussian
+// copula MC samples for each explicand and coalition on the original scale.
+//
+// @export
+// @keywords internal
+// @author Lars Henry Berge Olsen
+// [[Rcpp::export]]
+  arma::cube prepare_data_copula_cpp_sourceCpp(const arma::mat& MC_samples_mat,
+                                     const arma::mat& x_explain_mat,
+                                     const arma::mat& x_explain_gaussian_mat,
+                                     const arma::mat& x_train_mat,
+                                     const arma::mat& S,
+                                     const arma::vec& mu,
+                                     const arma::mat& cov_mat) {
+
+    int n_explain = x_explain_mat.n_rows;
+    int n_samples = MC_samples_mat.n_rows;
+    int n_features = MC_samples_mat.n_cols;
+    int n_coalitions = S.n_rows;
+
+    // Initialize auxiliary matrix and result cube
+    arma::mat aux_mat(n_samples, n_features);
+    arma::cube result_cube(n_samples, n_explain*n_coalitions, n_features);
+
+    // Iterate over the coalitions
+    for (int S_ind = 0; S_ind < n_coalitions; S_ind++) {
+
+      // Get current coalition S and the indices of the features in coalition S and mask Sbar
+      arma::mat S_now = S.row(S_ind);
+      arma::uvec S_now_idx = arma::find(S_now > 0.5);
+      arma::uvec Sbar_now_idx = arma::find(S_now < 0.5);
+
+      // Extract the features we condition on, both on the original scale and the Gaussian transformed values.
+      arma::mat x_S_star = x_explain_mat.cols(S_now_idx);
+      arma::mat x_S_star_gaussian = x_explain_gaussian_mat.cols(S_now_idx);
+
+      // Extract the mean values of the Gaussian transformed features in the two sets
+      arma::vec mu_S = mu.elem(S_now_idx);
+      arma::vec mu_Sbar = mu.elem(Sbar_now_idx);
+
+      // Extract the relevant parts of the Gaussian transformed covariance matrix
+      arma::mat cov_mat_SS = cov_mat.submat(S_now_idx, S_now_idx);
+      arma::mat cov_mat_SSbar = cov_mat.submat(S_now_idx, Sbar_now_idx);
+      arma::mat cov_mat_SbarS = cov_mat.submat(Sbar_now_idx, S_now_idx);
+      arma::mat cov_mat_SbarSbar = cov_mat.submat(Sbar_now_idx, Sbar_now_idx);
+
+      // Compute the covariance matrix multiplication factors/terms and the conditional covariance matrix
+      arma::mat cov_mat_SbarS_cov_mat_SS_inv = cov_mat_SbarS * inv(cov_mat_SS);
+      arma::mat cond_cov_mat_Sbar_given_S = cov_mat_SbarSbar - cov_mat_SbarS_cov_mat_SS_inv * cov_mat_SSbar;
+
+      // Ensure that the conditional covariance matrix is symmetric
+      if (!cond_cov_mat_Sbar_given_S.is_symmetric()) {
+        cond_cov_mat_Sbar_given_S = arma::symmatl(cond_cov_mat_Sbar_given_S);
+      }
+
+      // Compute the conditional mean of Xsbar given Xs = Xs_star_gaussian, i.e., of the Gaussian transformed features
+      arma::mat x_Sbar_gaussian_mean = cov_mat_SbarS_cov_mat_SS_inv * (x_S_star_gaussian.each_row() - mu_S.t()).t();
+      x_Sbar_gaussian_mean.each_col() += mu_Sbar;
+
+      // Transform the samples to be from N(O, Sigma_{Sbar|S})
+      arma::mat MC_samples_mat_now = MC_samples_mat.cols(Sbar_now_idx) * arma::chol(cond_cov_mat_Sbar_given_S);
+
+      // Loop over the different explicands and combine the generated values with the values we conditioned on
+      for (int idx_now = 0; idx_now < n_explain; idx_now++) {
+
+        // Transform the MC samples to be from N(mu_{Sbar|S}, Sigma_{Sbar|S}) for one coalition and one explicand
+        arma::mat MC_samples_mat_now_now =
+          MC_samples_mat_now + repmat(trans(x_Sbar_gaussian_mean.col(idx_now)), n_samples, 1);
+
+        // Transform the MC to the original scale using the inverse Gaussian transform
+        arma::mat MC_samples_mat_now_now_trans =
+          inv_gaussian_transform_cpp_sourceCpp(MC_samples_mat_now_now, x_train_mat.cols(Sbar_now_idx));
+
+        // Insert the generate Gaussian copula MC samples and the feature values we condition on into an auxiliary matrix
+        aux_mat.cols(Sbar_now_idx) = MC_samples_mat_now_now_trans;
+        aux_mat.cols(S_now_idx) = repmat(x_S_star.row(idx_now), n_samples, 1);
+
+        // Insert the auxiliary matrix into the result cube
+        result_cube.col(S_ind*n_explain + idx_now) = aux_mat;
+      }
+    }
+
+    return result_cube;
+  }
+
+// Transforms a sample to standardized normal distribution
+//
+// @param x Numeric matrix. The data which should be transformed to a standard normal distribution.
+//
+// @return Numeric matrix of dimension `dim(x)`
+//
+// @keywords internal
+// @author Lars Henry Berge Olsen
+// [[Rcpp::export]]
+Rcpp::NumericMatrix gaussian_transform_cpp_sourceCpp(const arma::mat& x) {
+  int n_obs = x.n_rows;
+  int n_features = x.n_cols;
+
+  // Pre allocate the return matrix
+  Rcpp::NumericMatrix x_trans(n_obs, n_features);
+
+  // Iterate over the columns, i.e., the features
+  for (int idx_feature = 0; idx_feature < n_features; ++idx_feature) {
+    // Compute the rank and transform to standardized normal distribution
+    arma::vec rank_now = arma::conv_to<arma::vec>::from(arma::sort_index(arma::sort_index(x.col(idx_feature))));
+    Rcpp::NumericVector u = Rcpp::wrap((rank_now + 1) / (n_obs + 1));
+    x_trans(Rcpp::_, idx_feature) = Rcpp::qnorm(u);
+  }
+
+  return x_trans;
+}
+
+// Transforms new data to standardized normal (column-wise) based on other data transformations
+//
+// @param y arma::mat. A numeric matrix containing the data that is to be transformed.
+// @param x arma::mat. A numeric matrix containing the data of the original transformation.
+//
+// @return An arma::mat matrix of the same dimension as `y` containing the back-transformed Gaussian data.
+//
+// @keywords internal
+// @author Lars Henry Berge Olsen, Martin Jullum
+// [[Rcpp::export]]
+Rcpp::NumericMatrix gaussian_transform_separate_cpp_sourceCpp(const arma::mat& y, const arma::mat& x) {
+  int n_features = x.n_cols;
+  int n_y_rows = y.n_rows;
+  int n_x_rows = x.n_rows;
+
+  // Pre allocate the return matrix
+  Rcpp::NumericMatrix z_y(n_y_rows, n_features);
+
+  // Compute the transformation for each feature at the time
+  for (int idx_feature = 0; idx_feature < n_features; ++idx_feature) {
+    arma::vec yx_now = arma::join_cols(y.col(idx_feature), x.col(idx_feature));
+    arma::vec rank_now_1 = arma::conv_to<arma::vec>::from(arma::sort_index(arma::sort_index(yx_now))).head(n_y_rows);
+    arma::vec rank_now_2 = arma::conv_to<arma::vec>::from(arma::sort_index(arma::sort_index(rank_now_1)));
+    arma::vec tmp = rank_now_1 - rank_now_2 + 0.5;
+    Rcpp::NumericVector u_y = Rcpp::wrap(tmp / (n_x_rows + 1));
+    z_y(Rcpp::_, idx_feature) = Rcpp::qnorm(u_y);
+  }
+
+  return z_y;
+}
+
+  '
+)
+
+
+
 # Old C++ code ----------------------------------------------------------------------------------------------------
-sourceCpp(
+Rcpp::sourceCpp(
   code = '
 // [[Rcpp::depends("RcppArmadillo")]]
 #include <RcppArmadillo.h>
@@ -706,7 +994,7 @@ time_2 = system.time({dt_2 <- shapr:::prepare_data_copula_cpp(
 )})
 time_2
 
-time_2andhalf = system.time({dt_2andhalf <-
+time_3 = system.time({dt_3 <-
   .Call(`_shapr_prepare_data_copula_cpp`,
         MC_samples_mat = MC_samples_mat,
         x_explain_mat = x_explain_mat,
@@ -716,22 +1004,21 @@ time_2andhalf = system.time({dt_2andhalf <-
         mu = copula.mu,
         cov_mat = copula.cov_mat
   )})
-time_2andhalf
-
-# Rcpp::compileAttributes(pkgdir = ".", verbose = TRUE)
-Rcpp::sourceCpp("src/Copula.cpp")
-time_3 = system.time({dt_3 <- prepare_data_copula_cpp(
-  MC_samples_mat = MC_samples_mat,
-  x_explain_mat = x_explain_mat,
-  x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
-  x_train_mat = x_train_mat,
-  S = S,
-  mu = copula.mu,
-  cov_mat = copula.cov_mat
-)})
 time_3
 
-time_4 = system.time({dt_4 <- shapr::prepare_data_copula_cpp(
+Rcpp::sourceCpp("src/Copula.cpp")
+time_4 = system.time({dt_4 <- prepare_data_copula_cpp(
+  MC_samples_mat = MC_samples_mat,
+  x_explain_mat = x_explain_mat,
+  x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
+  x_train_mat = x_train_mat,
+  S = S,
+  mu = copula.mu,
+  cov_mat = copula.cov_mat
+)})
+time_4
+
+time_5 = system.time({dt_5 <- shapr::prepare_data_copula_cpp(
   MC_samples_mat = MC_samples_mat,
   x_explain_mat = x_explain_mat,
   x_explain_gaussian_mat = copula.x_explain_gaussian_mat,
@@ -741,10 +1028,11 @@ time_4 = system.time({dt_4 <- shapr::prepare_data_copula_cpp(
   cov_mat = copula.cov_mat
 )})
 
-rbind(time_1, time_2, time_3, time_4)
+rbind(time_1, time_2, time_3, time_4, time_5)
 all.equal(dt_1, dt_2)
 all.equal(dt_2, dt_3)
 all.equal(dt_3, dt_4)
+all.equal(dt_4, dt_5)
 
 # Compare prepare_data.copula ----------------------------------------------------------------------------------------
 set.seed(123)
@@ -775,6 +1063,16 @@ time_only_cpp <- system.time({
 data.table::setorderv(res_only_cpp, c("id", "id_combination"))
 time_only_cpp
 
+# The C++ code with my own quantile function
+time_only_cpp_sourceCpp <- system.time({
+  res_only_cpp_sourceCpp <- prepare_data.copula_sourceCpp(
+    internal = internal,
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions]
+  )
+})
+data.table::setorderv(res_only_cpp_sourceCpp, c("id", "id_combination"))
+time_only_cpp_sourceCpp
+
 # The C++ code with quantile functions from arma
 time_only_cpp_arma <- system.time({
   res_only_cpp_arma <- prepare_data.copula_cpp_arma(
@@ -799,6 +1097,7 @@ time_cpp_and_R
 times <- rbind(
   time_only_R,
   time_only_cpp,
+  time_only_cpp_sourceCpp,
   time_only_cpp_arma,
   time_cpp_and_R
 )
@@ -806,12 +1105,12 @@ times
 
 # TIMES for all coalitions (254), n_samples <- 1000, n_train <- 1000, n_test <- 20, M <- 8
 
-#                    user.self sys.self elapsed user.child sys.child
-# time_only_R           67.050    2.587  72.357      0.011     0.018
-# time_only_cpp          4.588    0.406   5.218      0.000     0.000
-# time_only_cpp_arma    23.853    0.663  25.391      0.000     0.000
-# time_cpp_and_R         7.430    1.346   9.086      0.000     0.000
-
+#                         user.self sys.self elapsed user.child sys.child
+# time_only_R                65.266    2.142  70.896          0         0
+# time_only_cpp               4.622    0.393   5.212          0         0
+# time_only_cpp_sourceCpp     1.823    0.423   2.279          0         0
+# time_only_cpp_arma         23.874    0.604  27.801          0         0
+# time_cpp_and_R              6.826    1.493   8.683          0         0
 
 # Relative speedup of new method
 times_relative <- t(sapply(seq_len(nrow(times)), function(idx) times[1, ] / times[idx, ]))
@@ -819,63 +1118,69 @@ rownames(times_relative) <- paste0(rownames(times), "_rel")
 times_relative
 
 # RELATIVE TIMES for all coalitions, n_samples <- 1000, n_train <- 1000, n_test <- 20, M <- 8
-
-#                        user.self sys.self elapsed user.child sys.child
-# time_only_R_rel           1.0000   1.0000  1.0000          1         1
-# time_only_cpp_rel        14.6142   6.3719 13.8668        Inf       Inf
-# time_only_cpp_arma_rel    2.8110   3.9020  2.8497        Inf       Inf
-# time_cpp_and_R_rel        9.0242   1.9220  7.9636        Inf       Inf
+#                             user.self sys.self elapsed user.child sys.child
+# time_only_R_rel                1.0000   1.0000  1.0000        NaN       NaN
+# time_only_cpp_rel             14.1207   5.4504 13.6025        NaN       NaN
+# time_only_cpp_sourceCpp_rel   35.8014   5.0638 31.1084        NaN       NaN
+# time_only_cpp_arma_rel         2.7338   3.5464  2.5501        NaN       NaN
+# time_cpp_and_R_rel             9.5614   1.4347  8.1649        NaN       NaN
 
 # Aggregate the MC sample values for each explicand and combination
 res_only_R <- res_only_R[, w := NULL]
 res_only_cpp <- res_only_cpp[, w := NULL]
+res_only_cpp_sourceCpp <- res_only_cpp_sourceCpp[, w := NULL]
 res_only_cpp_arma <- res_only_cpp_arma[, w := NULL]
 res_cpp_and_R <- res_cpp_and_R[, w := NULL]
 res_only_R_agr <- res_only_R[, lapply(.SD, mean), by = c("id", "id_combination")]
 res_only_cpp_agr <- res_only_cpp[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_only_cpp_sourceCpp_agr <- res_only_cpp_sourceCpp[, lapply(.SD, mean), by = c("id", "id_combination")]
 res_only_cpp_arma_agr <- res_only_cpp_arma[, lapply(.SD, mean), by = c("id", "id_combination")]
 res_cpp_and_R_agr <- res_cpp_and_R[, lapply(.SD, mean), by = c("id", "id_combination")]
 
 # Difference
 res_only_R_agr - res_only_cpp_agr
+res_only_R_agr - res_only_cpp_sourceCpp_agr
 res_only_R_agr - res_only_cpp_arma_agr
 res_only_R_agr - res_cpp_and_R_agr
 
 # Max absolute difference
 max(abs(res_only_R_agr - res_only_cpp_agr))
+max(abs(res_only_R_agr - res_only_cpp_sourceCpp_agr))
 max(abs(res_only_R_agr - res_only_cpp_arma_agr))
 max(abs(res_only_R_agr - res_cpp_and_R_agr))
 
 # Max absolute relative difference
 max(abs(res_only_R_agr - res_only_cpp_agr) / res_only_cpp_agr)
+max(abs(res_only_R_agr - res_only_cpp_sourceCpp_agr) / res_only_cpp_sourceCpp_agr)
 max(abs(res_only_R_agr - res_only_cpp_arma_agr) / res_only_cpp_arma_agr)
 max(abs(res_only_R_agr - res_cpp_and_R_agr) / res_cpp_and_R_agr)
 
 # Compare gaussian_transform --------------------------------------------------------------------------------------
 set.seed(123)
-x_temp_rows = 100000
+x_temp_rows = 10000
 x_temp_cols = 20
 x_temp = matrix(rnorm(x_temp_rows*x_temp_cols), x_temp_rows, x_temp_cols)
 
 # Compare for equal values
-system.time({gaussian_transform_R = apply(X = x_temp, MARGIN = 2, FUN = gaussian_transform_old)})
-system.time({gaussian_transform_cpp = gaussian_transform_cpp(x_temp)})
-system.time({gaussian_transform_cpp = shapr:::gaussian_transform_cpp(x_temp)})
-all.equal(gaussian_transform_R, gaussian_transform_cpp) # TRUE
+system.time({gaussian_transform_R_res = apply(X = x_temp, MARGIN = 2, FUN = gaussian_transform_old)})
+system.time({gaussian_transform_cpp_res = gaussian_transform_cpp(x_temp)})
+system.time({gaussian_transform_cpp_sourceCpp_res = gaussian_transform_cpp_sourceCpp(x_temp)})
+all.equal(gaussian_transform_R_res, gaussian_transform_cpp_res) # TRUE
+all.equal(gaussian_transform_R_res, gaussian_transform_cpp_sourceCpp_res) # TRUE
 
 # Compare time (generate new data each time such that the result is not stored in the cache)
-set.seed(1234)
-gc()
-#Rcpp::sourceCpp("src/Copula.cpp") # C++ code is faster when I recompile it? I don't understand.
 rbenchmark::benchmark(R = apply(X = matrix(rnorm(x_temp_rows*x_temp_cols), x_temp_rows, x_temp_cols),
                                 MARGIN = 2,
                                 FUN = gaussian_transform_old),
                       cpp = gaussian_transform_cpp(matrix(rnorm(x_temp_rows*x_temp_cols), x_temp_rows, x_temp_cols)),
+                      cpp_sourceCpp = gaussian_transform_cpp_sourceCpp(matrix(rnorm(x_temp_rows*x_temp_cols),
+                                                                              x_temp_rows,
+                                                                              x_temp_cols)),
                       replications = 100)
-#   test replications elapsed relative user.self sys.self user.child sys.child
-# 2  cpp          100   1.933    1.000     1.764    0.149          0         0
-# 1    R          100   3.152    1.631     2.498    0.511          0         0
-
+#            test replications elapsed relative user.self sys.self user.child sys.child
+# 2           cpp          100   7.604    1.987     7.059    0.294          0         0
+# 3 cpp_sourceCpp          100   3.827    1.000     3.529    0.254          0         0
+# 1             R          100   6.183    1.616     4.899    0.738          0         0
 
 
 # Compare gaussian_transform_separate -------------------------------------------------------------------------
@@ -892,23 +1197,23 @@ system.time({r = apply(X = rbind(x_explain_temp, x_train_temp),
                         FUN = gaussian_transform_separate_old,
                         n_y = nrow(x_explain_temp))})
 system.time({cpp = gaussian_transform_separate_cpp(x_explain_temp, x_train_temp)})
-system.time({cpp_shapr = shapr:::gaussian_transform_separate_cpp(x_explain_temp, x_train_temp)})
+system.time({cpp_sourceCpp = gaussian_transform_separate_cpp_sourceCpp(x_explain_temp, x_train_temp)})
 all.equal(r, cpp)
+all.equal(r, cpp_sourceCpp)
 
-# gc()
 # Rcpp::sourceCpp("src/Copula.cpp") # C++ code is faster when I recompile it? I don't understand.
-
 rbenchmark::benchmark(r = apply(X = rbind(x_explain_temp, x_train_temp),
                                 MARGIN = 2,
                                 FUN = gaussian_transform_separate_old,
                                 n_y = nrow(x_explain_temp)),
-                      cpp = gaussian_transform_separate_cpp(x_explain_temp, x_train_temp))
-#   test replications elapsed relative user.self sys.self user.child sys.child
-# 2  cpp          100   0.238    1.000     0.228    0.006          0         0
-# 1    r          100   0.502    2.109     0.432    0.058          0         0
+                      cpp = gaussian_transform_separate_cpp(x_explain_temp, x_train_temp),
+                      cpp_sourceCpp = gaussian_transform_separate_cpp_sourceCpp(x_explain_temp, x_train_temp),
+                      replications = 20)
+#            test replications elapsed relative user.self sys.self user.child sys.child
+# 2           cpp           20  10.933    2.352    10.082    0.179          0         0
+# 3 cpp_sourceCpp           20   4.648    1.000     4.389    0.100          0         0
+# 1             r           20   9.787    2.106     8.409    0.797          0         0
 
-Sys.setenv("PKG_CXXFLAGS"="-O0")
-Rcpp::sourceCpp("src/Copula.cpp")
 rbenchmark::benchmark(r = apply(X = rbind(matrix(rnorm(x_explain_rows*x_cols), x_explain_rows, x_cols),
                                           matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
                                 MARGIN = 2,
@@ -918,36 +1223,129 @@ rbenchmark::benchmark(r = apply(X = rbind(matrix(rnorm(x_explain_rows*x_cols), x
                                                                    x_explain_rows,
                                                                    x_cols),
                                       matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
-                      cpp_dir = gaussian_transform_separate_cpp2(matrix(rnorm(x_explain_rows*x_cols),
-                                                                   x_explain_rows,
-                                                                   x_cols),
-                                                            matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
-                      cpp_shapr = shapr:::gaussian_transform_separate_cpp(matrix(rnorm(x_explain_rows*x_cols),
-                                                                   x_explain_rows,
-                                                                   x_cols),
-                                                            matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
-                      cpp_shapr_dir = shapr:::gaussian_transform_separate_cpp2(matrix(rnorm(x_explain_rows*x_cols),
-                                                                   x_explain_rows,
-                                                                   x_cols),
-                                                            matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
                       cpp2 = .Call(`_shapr_gaussian_transform_separate_cpp`,
                                    matrix(rnorm(x_explain_rows*x_cols), x_explain_rows, x_cols),
-                                   matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)))
+                                   matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
+                      cpp_cpp_sourceCpp = gaussian_transform_separate_cpp_sourceCpp(matrix(rnorm(x_explain_rows*x_cols),
+                                                                   x_explain_rows,
+                                                                   x_cols),
+                                                            matrix(rnorm(x_train_rows*x_cols), x_train_rows, x_cols)),
+                      replications = 20)
 
-#   test replications elapsed relative user.self sys.self user.child sys.child
-# 2  cpp          100   0.361    1.000     0.322    0.025          0         0
-# 1    r          100   0.553    1.532     0.496    0.047          0         0
+#                test replications elapsed relative user.self sys.self user.child sys.child
+# 2               cpp           20  12.634    2.202    11.275    0.352       0.00      0.00
+# 4 cpp_cpp_sourceCpp           20   5.737    1.000     5.287    0.182       0.00      0.00
+# 3              cpp2           20  11.566    2.016    10.890    0.246       0.01      0.01
+# 1                 r           20  11.937    2.081    10.232    1.027       0.00      0.00
 
 
-# x_cols = 5, x_train_rows = 10000, x_explain_rows = 10000
-#            test replications elapsed relative user.self sys.self user.child sys.child
-# 2           cpp          100   2.526    1.000     2.342    0.145          0         0
-# 3       cpp_dir          100   2.574    1.019     2.359    0.136          0         0
-# 4     cpp_shapr          100   5.314    2.104     4.955    0.173          0         0
-# 5 cpp_shapr_dir          100   5.274    2.088     5.020    0.169          0         0
-# 6          cpp2          100   5.448    2.157     5.112    0.169          0         0
-# 1             r          100   4.791    1.897     3.926    0.756          0         0
 
-# Call `Rcpp::sourceCpp("src/Copula.cpp")` and then run rbenchmark again and then cpp is much faster.
-# C++ code is faster when I recompile it? I don't understand.
-# Rcpp::sourceCpp("src/Copula.cpp")
+
+
+# Simple C examples compile issues time --------------------------------------------------------------------------------
+sourceCpp(
+  code = '
+#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::export]]
+Rcpp::NumericVector addVectors(const Rcpp::NumericVector& vec1, const Rcpp::NumericVector& vec2) {
+  // Check if the input vectors are of the same length
+  if (vec1.size() != vec2.size()) {
+    Rcpp::stop("Vectors must be of the same length.");
+  }
+
+  // Create a result vector of the same length as the input vectors
+  Rcpp::NumericVector result(vec1.size());
+
+  // Perform element-wise addition
+  for (int i = 0; i < vec1.size(); ++i) {
+    result[i] = vec1[i] + vec2[i];
+  }
+
+  return result;
+}
+
+// [[Rcpp::export]]
+Rcpp::NumericMatrix addMatrices(const Rcpp::NumericMatrix& mat1, const Rcpp::NumericMatrix& mat2) {
+  // Check if the input matrices have the same dimensions
+  if (mat1.nrow() != mat2.nrow() || mat1.ncol() != mat2.ncol()) {
+    Rcpp::stop("Matrices must have the same dimensions.");
+  }
+
+  // Create a result matrix of the same dimensions as the input matrices
+  Rcpp::NumericMatrix result(mat1.nrow(), mat1.ncol());
+
+  // Perform element-wise addition
+  for (int i = 0; i < mat1.nrow(); ++i) {
+    for (int j = 0; j < mat1.ncol(); ++j) {
+      result(i, j) = mat1(i, j) + mat2(i, j);
+    }
+  }
+
+  return result;
+}
+
+// [[Rcpp::export]]
+arma::mat addMatricesArmadillo(const arma::mat& mat1, const arma::mat& mat2) {
+  // Check if the input matrices have the same dimensions
+  if (mat1.n_rows != mat2.n_rows || mat1.n_cols != mat2.n_cols) {
+    Rcpp::stop("Matrices must have the same dimensions.");
+  }
+
+  // Perform element-wise addition using Armadillo
+  arma::mat result = mat1 + mat2;
+
+  return result;
+}')
+
+
+# !!!!!READ!!!!!
+# Copy the code above into `src/Copula.cpp` and then build the package with
+devtools::load_all(".")
+
+# Dimension of matrix
+n = 1000000
+m = 100
+
+# Make matrices
+mat1 = matrix(rnorm(n*m), n, m)
+mat2 = matrix(rnorm(n*m), n, m)
+
+# Time when using the compiled code using `devtools::load_all()`
+shapr_vec_time = system.time({shapr_vec_res = addVectors(mat1[,1], mat2[,1])})
+shapr_mat_rcpp_time = system.time({shapr_mat_rcpp_res <- addMatrices(mat1, mat2)})
+shapr_mat_arma_time = system.time({shapr_mat_arma_res <- addMatricesArmadillo(mat1, mat2)})
+
+# Then we compile with `Rcpp::compileAttributes()`
+Rcpp::compileAttributes(pkgdir = ".", verbose = TRUE)
+compileAttributes_vec_time = system.time({compileAttributes_vec_res = addVectors(mat1[,1], mat2[,1])})
+compileAttributes_mat_rcpp_time = system.time({compileAttributes_mat_rcpp_res <- addMatrices(mat1, mat2)})
+compileAttributes_mat_arma_time = system.time({compileAttributes_mat_arma_res <- addMatricesArmadillo(mat1, mat2)})
+
+# Then we compile with `Rcpp::sourceCpp()`
+# Here a shared library is built
+Rcpp::sourceCpp("src/Copula.cpp", verbose = TRUE)
+sourceCpp_vec_time = system.time({sourceCpp_vec_res = addVectors(mat1[,1], mat2[,1])})
+sourceCpp_mat_rcpp_time = system.time({sourceCpp_mat_rcpp_res <- addMatrices(mat1, mat2)})
+sourceCpp_mat_arma_time = system.time({sourceCpp_mat_arma_res <- addMatricesArmadillo(mat1, mat2)})
+
+# Look at the times. See a drastic decrease when using sourceCpp. Half on my mac
+rbind(shapr_vec_time,
+      compileAttributes_vec_time,
+      sourceCpp_vec_time)
+rbind(shapr_mat_rcpp_time,
+      compileAttributes_mat_rcpp_time,
+      sourceCpp_mat_rcpp_time)
+rbind(shapr_mat_arma_time,
+      compileAttributes_mat_arma_time,
+      sourceCpp_mat_arma_time)
+
+# All equal
+all.equal(shapr_vec_res, compileAttributes_vec_res)
+all.equal(shapr_vec_res, sourceCpp_vec_res)
+
+all.equal(shapr_mat_rcpp_res, compileAttributes_mat_rcpp_res)
+all.equal(shapr_mat_rcpp_res, sourceCpp_mat_rcpp_res)
+
+all.equal(shapr_mat_arma_res, compileAttributes_mat_arma_res)
+all.equal(shapr_mat_arma_res, sourceCpp_mat_arma_res)
