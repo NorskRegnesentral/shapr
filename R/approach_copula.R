@@ -24,12 +24,12 @@ setup_approach.copula <- function(internal, ...) {
 
   # Prepare transformed data
   parameters$copula.mu <- rep(0, ncol(x_train_mat))
-  x_train_mat0 = gaussian_transform_cpp(x_train_mat)
-  colnames(x_train_mat0) = feature_names
+  x_train_mat0 <- gaussian_transform_cpp(x_train_mat)
+  colnames(x_train_mat0) <- feature_names
   parameters$copula.cov_mat <- get_cov_mat(x_train_mat0)
 
-  x_explain_gaussian = gaussian_transform_separate_cpp(x_explain_mat, x_train_mat)
-  colnames(x_explain_gaussian) = feature_names
+  x_explain_gaussian <- gaussian_transform_separate_cpp(x_explain_mat, x_train_mat)
+  colnames(x_explain_gaussian) <- feature_names
   if (is.null(dim(x_explain_gaussian))) x_explain_gaussian <- t(as.matrix(x_explain_gaussian))
 
   # Add objects to internal list
