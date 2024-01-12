@@ -1355,7 +1355,7 @@ all.equal(shapr_mat_arma_res, sourceCpp_mat_arma_res)
 
 # Large n_samples equal results ----------------------------------------------------------------------------------------
 {
-  n_samples <- 100000
+  n_samples <- 1000000
   n_train <- 1000
   n_test <- 5
   M <- 4
@@ -1479,9 +1479,9 @@ time_only_cpp_sourceCpp
 
 # Look at the differences
 # Aggregate the MC sample values for each explicand and combination
-res_only_R <- res_only_R[, w := NULL]
-res_only_cpp <- res_only_cpp[, w := NULL]
-res_only_cpp_sourceCpp <- res_only_cpp_sourceCpp[, w := NULL]
+# res_only_R <- res_only_R[, w := NULL]
+# res_only_cpp <- res_only_cpp[, w := NULL]
+# res_only_cpp_sourceCpp <- res_only_cpp_sourceCpp[, w := NULL]
 res_only_R_agr <- res_only_R[, lapply(.SD, mean), by = c("id", "id_combination")]
 res_only_cpp_agr <- res_only_cpp[, lapply(.SD, mean), by = c("id", "id_combination")]
 res_only_cpp_sourceCpp_agr <- res_only_cpp_sourceCpp[, lapply(.SD, mean), by = c("id", "id_combination")]
@@ -1493,3 +1493,59 @@ res_only_R_agr - res_only_cpp_sourceCpp_agr
 # Max absolute difference
 max(abs(res_only_R_agr - res_only_cpp_agr))
 max(abs(res_only_R_agr - res_only_cpp_sourceCpp_agr))
+
+# Look at the difference in Shapley values
+temp_shapley_value_func = function(dt, internal, model, predict_model) {
+  compute_preds(
+    dt, # Updating dt by reference
+    feature_names = internal$parameters$feature_names,
+    predict_model = predict_model,
+    model = model,
+    pred_cols = paste0("p_hat", seq_len(internal$parameters$output_size)),
+    type = internal$parameters$type,
+    horizon = internal$parameters$horizon,
+    n_endo = internal$data$n_endo,
+    explain_idx = internal$parameters$explain_idx,
+    explain_lags = internal$parameters$explain_lags,
+    y = internal$data$y,
+    xreg = internal$data$xreg
+  )
+  dt_vS2 <- compute_MCint(dt, paste0("p_hat", seq_len(internal$parameters$output_size)))
+  dt_vS <- rbind(t(as.matrix(c(1, rep(prediction_zero, n_test)))), dt_vS2, t(as.matrix(c(2^M, response_test))),
+                 use.names = FALSE)
+  colnames(dt_vS) = colnames(dt_vS2)
+  compute_shapley_new(internal, dt_vS)
+}
+
+# Compute the Shapley values
+res_shapley_R = temp_shapley_value_func(data.table::copy(res_only_R), internal, model, predict_model)
+res_shapley_cpp = temp_shapley_value_func(data.table::copy(res_only_cpp), internal, model, predict_model)
+res_shapley_cpp_sourceCpp = temp_shapley_value_func(data.table::copy(res_only_cpp_sourceCpp),
+                                                    internal,
+                                                    model,
+                                                    predict_model)
+# Look at the difference
+abs(res_shapley_R - res_shapley_cpp)
+abs(res_shapley_R - res_shapley_cpp_sourceCpp)
+max(abs(res_shapley_R - res_shapley_cpp))
+max(abs(res_shapley_R - res_shapley_cpp_sourceCpp))
+
+# When   n_samples <- 1000000, n_train <- 1000, n_test <- 5, M <- 4
+# > abs(res_shapley_R - res_shapley_cpp)
+#          none         X1         X2         X3         X4
+# 1: 7.2140e-11 0.00056643 0.00109848 9.5478e-05 0.00043657
+# 2: 4.3903e-10 0.00179695 0.00163158 1.8549e-03 0.00202031
+# 3: 9.3072e-11 0.00142949 0.00087037 1.2457e-03 0.00180482
+# 4: 5.1367e-11 0.00079767 0.00099899 7.2505e-04 0.00052373
+# 5: 3.8260e-10 0.00032232 0.00046644 1.1651e-03 0.00102102
+# > abs(res_shapley_R - res_shapley_cpp_sourceCpp)
+#          none         X1         X2         X3         X4
+# 1: 3.1773e-10 0.00061369 0.00096567 0.00139486 0.00174684
+# 2: 2.1354e-10 0.00164283 0.00139693 0.00051290 0.00075879
+# 3: 1.2370e-10 0.00143125 0.00066145 0.00021455 0.00055524
+# 4: 2.0396e-10 0.00090834 0.00091129 0.00077478 0.00077773
+# 5: 1.3627e-10 0.00038308 0.00033615 0.00031426 0.00026733
+# > max(abs(res_shapley_R - res_shapley_cpp))
+# [1] 0.0020203
+# > max(abs(res_shapley_R - res_shapley_cpp_sourceCpp))
+# [1] 0.0017468
