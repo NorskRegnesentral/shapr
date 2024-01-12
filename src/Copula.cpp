@@ -44,8 +44,6 @@ arma::vec quantile_type7_cpp(const arma::vec& x, const arma::vec& probs) {
 
 //' Transforms new data to a standardized normal distribution
 //'
-//' @details The function uses `arma::quantile(...)` which corresponds to R's `stats::quantile(..., type = 5)`.
-//'
 //' @param z arma::mat. The data are the Gaussian Monte Carlos samples to transform.
 //' @param x arma::mat. The data with the original transformation. Used to conduct the transformation of `z`.
 //'
