@@ -24,12 +24,15 @@ setup_approach.copula <- function(internal, ...) {
 
   # Prepare transformed data
   parameters$copula.mu <- rep(0, ncol(x_train_mat))
-  x_train_mat0 <- gaussian_transform_cpp(x_train_mat)
-  colnames(x_train_mat0) <- feature_names
+  x_train_mat0 <- apply(X = x_train_mat, MARGIN = 2, FUN = gaussian_transform)
   parameters$copula.cov_mat <- get_cov_mat(x_train_mat0)
 
-  x_explain_gaussian <- gaussian_transform_separate_cpp(x_explain_mat, x_train_mat)
-  colnames(x_explain_gaussian) <- feature_names
+  x_explain_gaussian <- apply(
+    X = rbind(x_explain_mat, x_train_mat),
+    MARGIN = 2,
+    FUN = gaussian_transform_separate,
+    n_y = nrow(x_explain_mat)
+  )
   if (is.null(dim(x_explain_gaussian))) x_explain_gaussian <- t(as.matrix(x_explain_gaussian))
 
   # Add objects to internal list
@@ -86,4 +89,39 @@ prepare_data.copula <- function(internal, index_features, ...) {
   data.table::setcolorder(dt, c("id_combination", "id", feature_names))
 
   return(dt)
+}
+
+#' Transforms a sample to standardized normal distribution
+#'
+#' @param x Numeric vector.The data which should be transformed to a standard normal distribution.
+#'
+#' @return Numeric vector of length `length(x)`
+#'
+#' @keywords internal
+#' @author Martin Jullum
+gaussian_transform <- function(x) {
+  u <- rank(x) / (length(x) + 1)
+  z <- stats::qnorm(u)
+  return(z)
+}
+
+#' Transforms new data to standardized normal (dimension 1) based on other data transformations
+#'
+#' @param yx Numeric vector. The first `n_y` items is the data that is transformed, and last
+#' part is the data with the original transformation.
+#' @param n_y Positive integer. Number of elements of `yx` that belongs to the Gaussian data.
+#'
+#' @return Vector of back-transformed Gaussian data
+#'
+#' @keywords internal
+#' @author Martin Jullum
+gaussian_transform_separate <- function(yx, n_y) {
+  if (n_y >= length(yx)) stop("n_y should be less than length(yx)")
+  ind <- 1:n_y
+  x <- yx[-ind]
+  tmp <- rank(yx)[ind]
+  tmp <- tmp - rank(tmp) + 0.5
+  u_y <- tmp / (length(x) + 1)
+  z_y <- stats::qnorm(u_y)
+  return(z_y)
 }
