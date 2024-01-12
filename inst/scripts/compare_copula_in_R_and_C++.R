@@ -1349,3 +1349,147 @@ all.equal(shapr_mat_rcpp_res, sourceCpp_mat_rcpp_res)
 
 all.equal(shapr_mat_arma_res, compileAttributes_mat_arma_res)
 all.equal(shapr_mat_arma_res, sourceCpp_mat_arma_res)
+
+
+
+
+# Large n_samples equal results ----------------------------------------------------------------------------------------
+{
+  n_samples <- 100000
+  n_train <- 1000
+  n_test <- 5
+  M <- 4
+  rho <- 0.5
+  betas <- c(0, rep(1, M))
+
+  # We use the Gaussian copula approach
+  approach <- "copula"
+
+  # Mean of the multivariate Gaussian distribution
+  mu <- rep(0, times = M)
+  mu <- seq(M)
+
+  # Create the covariance matrix
+  sigma <- matrix(rho, ncol = M, nrow = M) # Old
+  for (i in seq(1, M - 1)) {
+    for (j in seq(i + 1, M)) {
+      sigma[i, j] <- sigma[j, i] <- rho^abs(i - j)
+    }
+  }
+  diag(sigma) <- 1
+
+  # Set seed for reproducibility
+  seed_setup <- 1996
+  set.seed(seed_setup)
+
+  # Make Gaussian data
+  data_train <- data.table(mvtnorm::rmvnorm(n = n_train, mean = mu, sigma = sigma))
+  data_test <- data.table(mvtnorm::rmvnorm(n = n_test, mean = mu, sigma = sigma))
+  colnames(data_train) <- paste("X", seq(M), sep = "")
+  colnames(data_test) <- paste("X", seq(M), sep = "")
+
+  # Make the response
+  response_train <- as.vector(cbind(1, as.matrix(data_train)) %*% betas)
+  response_test <- as.vector(cbind(1, as.matrix(data_test)) %*% betas)
+
+  # Put together the data
+  data_train_with_response <- copy(data_train)[, y := response_train]
+  data_test_with_response <- copy(data_test)[, y := response_test]
+
+  # Fit a LM model
+  predictive_model <- lm(y ~ ., data = data_train_with_response)
+
+  # Get the prediction zero, i.e., the phi0 Shapley value.
+  prediction_zero <- mean(response_train)
+
+  model <- predictive_model
+  x_explain <- data_test
+  x_train <- data_train
+  keep_samp_for_vS <- FALSE
+  predict_model <- NULL
+  get_model_specs <- NULL
+  timing <- TRUE
+  n_combinations <- NULL
+  group <- NULL
+  feature_specs <- shapr:::get_feature_specs(get_model_specs, model)
+  n_batches <- 1
+  seed <- 1
+
+  internal <- setup(
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = approach,
+    prediction_zero = prediction_zero,
+    n_combinations = n_combinations,
+    group = group,
+    n_samples = n_samples,
+    n_batches = n_batches,
+    seed = seed,
+    feature_specs = feature_specs,
+    keep_samp_for_vS = keep_samp_for_vS,
+    predict_model = predict_model,
+    get_model_specs = get_model_specs,
+    timing = timing
+  )
+
+  # Gets predict_model (if not passed to explain)
+  predict_model <- shapr:::get_predict_model(
+    predict_model = predict_model,
+    model = model
+  )
+
+  # Sets up the Shapley (sampling) framework and prepares the
+  # conditional expectation computation for the chosen approach
+  # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
+  internal <- shapr:::setup_computation(internal, model, predict_model)
+}
+
+look_at_coalitions <- seq(1, 2^M - 2)
+# look_at_coalitions <- seq(1, 2^M - 2, 10)
+# look_at_coalitions <- seq(1, 2^M - 2, 25)
+
+# The old R code
+time_only_R <- system.time({
+  res_only_R <- prepare_data.copula_old(
+    internal = internal,
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions]
+  )
+})
+time_only_R
+
+# The C++ code with my own quantile function
+time_only_cpp <- system.time({
+  res_only_cpp <- prepare_data.copula(
+    internal = internal,
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions]
+  )
+})
+data.table::setorderv(res_only_cpp, c("id", "id_combination"))
+time_only_cpp
+
+# The C++ code with my own quantile function
+time_only_cpp_sourceCpp <- system.time({
+  res_only_cpp_sourceCpp <- prepare_data.copula_sourceCpp(
+    internal = internal,
+    index_features = internal$objects$S_batch$`1`[look_at_coalitions]
+  )
+})
+data.table::setorderv(res_only_cpp_sourceCpp, c("id", "id_combination"))
+time_only_cpp_sourceCpp
+
+# Look at the differences
+# Aggregate the MC sample values for each explicand and combination
+res_only_R <- res_only_R[, w := NULL]
+res_only_cpp <- res_only_cpp[, w := NULL]
+res_only_cpp_sourceCpp <- res_only_cpp_sourceCpp[, w := NULL]
+res_only_R_agr <- res_only_R[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_only_cpp_agr <- res_only_cpp[, lapply(.SD, mean), by = c("id", "id_combination")]
+res_only_cpp_sourceCpp_agr <- res_only_cpp_sourceCpp[, lapply(.SD, mean), by = c("id", "id_combination")]
+
+# Difference
+res_only_R_agr - res_only_cpp_agr
+res_only_R_agr - res_only_cpp_sourceCpp_agr
+
+# Max absolute difference
+max(abs(res_only_R_agr - res_only_cpp_agr))
+max(abs(res_only_R_agr - res_only_cpp_sourceCpp_agr))
