@@ -97,8 +97,6 @@ quantile_type7_cpp <- function(x, probs) {
 
 #' Transforms new data to a standardized normal distribution
 #'
-#' @details The function uses `arma::quantile(...)` which corresponds to R's `stats::quantile(..., type = 5)`.
-#'
 #' @param z arma::mat. The data are the Gaussian Monte Carlos samples to transform.
 #' @param x arma::mat. The data with the original transformation. Used to conduct the transformation of `z`.
 #'
@@ -138,31 +136,6 @@ inv_gaussian_transform_cpp <- function(z, x) {
 #' @author Lars Henry Berge Olsen
 prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat) {
     .Call(`_shapr_prepare_data_copula_cpp`, MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat)
-}
-
-#' Transforms a sample to standardized normal distribution
-#'
-#' @param x Numeric matrix. The data which should be transformed to a standard normal distribution.
-#'
-#' @return Numeric matrix of dimension `dim(x)`
-#'
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-gaussian_transform_cpp <- function(x) {
-    .Call(`_shapr_gaussian_transform_cpp`, x)
-}
-
-#' Transforms new data to standardized normal (column-wise) based on other data transformations
-#'
-#' @param y arma::mat. A numeric matrix containing the data that is to be transformed.
-#' @param x arma::mat. A numeric matrix containing the data of the original transformation.
-#'
-#' @return An arma::mat matrix of the same dimension as `y` containing the back-transformed Gaussian data.
-#'
-#' @keywords internal
-#' @author Lars Henry Berge Olsen, Martin Jullum
-gaussian_transform_separate_cpp <- function(y, x) {
-    .Call(`_shapr_gaussian_transform_separate_cpp`, y, x)
 }
 
 #' Generate Gaussian MC samples

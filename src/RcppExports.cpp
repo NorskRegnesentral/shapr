@@ -121,29 +121,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gaussian_transform_cpp
-Rcpp::NumericMatrix gaussian_transform_cpp(const arma::mat& x);
-RcppExport SEXP _shapr_gaussian_transform_cpp(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(gaussian_transform_cpp(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// gaussian_transform_separate_cpp
-Rcpp::NumericMatrix gaussian_transform_separate_cpp(const arma::mat& y, const arma::mat& x);
-RcppExport SEXP _shapr_gaussian_transform_separate_cpp(SEXP ySEXP, SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(gaussian_transform_separate_cpp(y, x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // prepare_data_gaussian_cpp
 arma::cube prepare_data_gaussian_cpp(const arma::mat& MC_samples_mat, const arma::mat& x_explain_mat, const arma::mat& S, const arma::vec& mu, const arma::mat& cov_mat);
 RcppExport SEXP _shapr_prepare_data_gaussian_cpp(SEXP MC_samples_matSEXP, SEXP x_explain_matSEXP, SEXP SSEXP, SEXP muSEXP, SEXP cov_matSEXP) {
@@ -237,8 +214,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_shapr_quantile_type7_cpp", (DL_FUNC) &_shapr_quantile_type7_cpp, 2},
     {"_shapr_inv_gaussian_transform_cpp", (DL_FUNC) &_shapr_inv_gaussian_transform_cpp, 2},
     {"_shapr_prepare_data_copula_cpp", (DL_FUNC) &_shapr_prepare_data_copula_cpp, 7},
-    {"_shapr_gaussian_transform_cpp", (DL_FUNC) &_shapr_gaussian_transform_cpp, 1},
-    {"_shapr_gaussian_transform_separate_cpp", (DL_FUNC) &_shapr_gaussian_transform_separate_cpp, 2},
     {"_shapr_prepare_data_gaussian_cpp", (DL_FUNC) &_shapr_prepare_data_gaussian_cpp, 5},
     {"_shapr_mahalanobis_distance_cpp", (DL_FUNC) &_shapr_mahalanobis_distance_cpp, 5},
     {"_shapr_sample_features_cpp", (DL_FUNC) &_shapr_sample_features_cpp, 2},
