@@ -6,7 +6,6 @@ setup_approach.copula <- function(internal, ...) {
   parameters <- internal$parameters
   x_train_mat <- as.matrix(internal$data$x_train)
   x_explain_mat <- as.matrix(internal$data$x_explain)
-  feature_names <- internal$parameters$feature_names
 
   # Checking if factor features are present
   feature_specs <- internal$objects$feature_specs
