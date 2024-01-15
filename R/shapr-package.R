@@ -21,6 +21,8 @@
 #'
 #' @importFrom stats embed
 #'
+#' @importFrom stats rnorm
+#'
 #' @importFrom Rcpp sourceCpp
 #'
 #' @keywords internal
