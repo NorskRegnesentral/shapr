@@ -15,6 +15,22 @@ test_that("output_lm_numeric_independence", {
   )
 })
 
+test_that("output_lm_numeric_independence_MSEv_Shapley_weights", {
+  expect_snapshot_rds(
+    explain(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      approach = "independence",
+      prediction_zero = p0,
+      n_batches = 1,
+      timing = FALSE,
+      MSEv_uniform_comb_weights = FALSE
+    ),
+    "output_lm_numeric_independence_MSEv_Shapley_weights"
+  )
+})
+
 test_that("output_lm_numeric_empirical", {
   expect_snapshot_rds(
     explain(

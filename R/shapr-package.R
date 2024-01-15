@@ -21,6 +21,8 @@
 #'
 #' @importFrom stats embed
 #'
+#' @importFrom stats sd qt pt
+#'
 #' @importFrom stats rnorm
 #'
 #' @importFrom Rcpp sourceCpp

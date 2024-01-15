@@ -29,6 +29,7 @@ setup <- function(x_train,
                   seed,
                   keep_samp_for_vS,
                   feature_specs,
+                  MSEv_uniform_comb_weights = TRUE,
                   type = "normal",
                   horizon = NULL,
                   y = NULL,
@@ -42,7 +43,6 @@ setup <- function(x_train,
                   is_python = FALSE,
                   ...) {
   internal <- list()
-
 
   internal$parameters <- get_parameters(
     approach = approach,
@@ -61,6 +61,7 @@ setup <- function(x_train,
     explain_y_lags = explain_y_lags,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
+    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
     is_python = is_python,
     ...
@@ -386,7 +387,7 @@ get_extra_parameters <- function(internal) {
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
-                           explain_xreg_lags, group_lags = NULL, timing, is_python, ...) {
+                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing, is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -421,7 +422,6 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
       n_batches > 0)) {
     stop("`n_batches` must be NULL or a single positive integer.")
   }
-
 
   # seed is already set, so we know it works
   # keep_samp_for_vS
@@ -472,8 +472,12 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     }
   }
 
-  #### Tests combining more than one parameter ####
+  # Parameter used in the MSEv evaluation criterion
+  if (!(is.logical(MSEv_uniform_comb_weights) && length(MSEv_uniform_comb_weights) == 1)) {
+    stop("`MSEv_uniform_comb_weights` must be single logical.")
+  }
 
+  #### Tests combining more than one parameter ####
   # prediction_zero vs output_size
   if (!all((is.numeric(prediction_zero)) &&
     all(length(prediction_zero) == output_size) &&
@@ -484,9 +488,6 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
       paste0(output_size, collapse = ", "), ")."
     ))
   }
-
-
-
 
   # Getting basic input parameters
   parameters <- list(
@@ -503,12 +504,12 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     type = type,
     horizon = horizon,
     group_lags = group_lags,
+    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing
   )
 
   # Getting additional parameters from ...
   parameters <- append(parameters, list(...))
-
 
   # Setting exact based on n_combinations (TRUE if NULL)
   parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)

@@ -610,6 +610,39 @@
       Error in `get_parameters()`:
       ! `keep_samp_for_vS` must be single logical.
 
+# erroneous input: `MSEv_uniform_comb_weights`
+
+    Code
+      MSEv_uniform_comb_weights_nl_1 <- "bla"
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        approach = "independence", prediction_zero = p0, MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_1,
+        n_batches = 1, timing = FALSE)
+    Condition
+      Error in `get_parameters()`:
+      ! `MSEv_uniform_comb_weights` must be single logical.
+
+---
+
+    Code
+      MSEv_uniform_comb_weights_nl_2 <- NULL
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        approach = "independence", prediction_zero = p0, MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_nl_2,
+        n_batches = 1, timing = FALSE)
+    Condition
+      Error in `get_parameters()`:
+      ! `MSEv_uniform_comb_weights` must be single logical.
+
+---
+
+    Code
+      MSEv_uniform_comb_weights_long <- c(TRUE, FALSE)
+      explain(model = model_lm_numeric, x_explain = x_explain_numeric, x_train = x_train_numeric,
+        approach = "independence", prediction_zero = p0, MSEv_uniform_comb_weights = MSEv_uniform_comb_weights_long,
+        n_batches = 1, timing = FALSE)
+    Condition
+      Error in `get_parameters()`:
+      ! `MSEv_uniform_comb_weights` must be single logical.
+
 # erroneous input: `predict_model`
 
     Code

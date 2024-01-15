@@ -1,6 +1,6 @@
 ---
 title: "`shapr`: Explaining individual machine learning predictions with Shapley values"
-author: "Camilla Lingjærde, Martin Jullum & Nikolai Sellereite"
+author: "Camilla Lingjærde, Martin Jullum, Lars Henry Berge Olsen & Nikolai Sellereite"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 vignette: >
@@ -558,6 +558,251 @@ explanation_timeseries <- explain(
   prediction_zero = p0_ts,
   group = group_ts
 )
+```
+
+
+## MSEv evaluation criterion
+We can use the $\operatorname{MSE}_{v}$ criterion proposed by @frye2020shapley,
+and later used by, e.g., @olsen2022using and @olsen2023comparative, to evaluate
+and rank the approaches/methods. The $\operatorname{MSE}_{v}$ is given by
+```{=tex}
+\begin{align}
+    \label{eq:MSE_v}
+    \operatorname{MSE}_{v} = \operatorname{MSE}_{v}(\text{method } \texttt{q}) 
+    =
+     \frac{1}{N_\mathcal{S}} \sum_{\mathcal{S} \in \mathcal{P}^*(\mathcal{M})} \frac{1}{N_\text{explain}}
+     \sum_{i=1}^{N_\text{explain}} \left( f(\boldsymbol{x}^{[i]}) - {\hat{v}}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}^{[i]})\right)^2\!,
+\end{align}
+```
+where ${\hat{v}}_{\texttt{q}}$ is the estimated contribution function using method $\texttt{q}$ and $N_\mathcal{S} = |\mathcal{P}^*(\mathcal{M})| = 2^M-2$, i.e., we have removed the empty ($\mathcal{S} = \emptyset$) and the grand combinations ($\mathcal{S} = \mathcal{M}$) as they are method independent. Meaning that these two combinations do not influence the ranking of the methods as the methods are not used to compute the contribution function for them.
+
+The motivation behind the
+$\operatorname{MSE}_{v}$ criterion is that 
+$\mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (v_{\texttt{true}}(\mathcal{S},\boldsymbol{x}) - \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2$
+can be decomposed as
+```{=tex}
+\begin{align}
+    \label{eq:expectation_decomposition}
+    \begin{split}
+    \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (v_{\texttt{true}}(\mathcal{S}, \boldsymbol{x})- \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2 
+    &=
+    \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (f(\boldsymbol{x}) - \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2 \\
+    &\phantom{\,\,\,\,\,\,\,}- \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (f(\boldsymbol{x})-v_{\texttt{true}}(\mathcal{S}, \boldsymbol{x}))^2,
+    \end{split}
+\end{align}
+```
+see Appendix A in @covert2020understanding. The first term on the right-hand side of 
+the equation above can be estimated by $\operatorname{MSE}_{v}$, while the second
+term is a fixed (unknown) constant not influenced by the approach \texttt{q}. Thus, a low value
+of $\operatorname{MSE}_{v}$ indicates that the estimated contribution function $\hat{v}_{\texttt{q}}$
+is closer to the true counterpart $v_{\texttt{true}}$ than a high value.
+
+In `shapr`, we allow for weighting the combinations in the $\operatorname{MSE}_{v}$ evaluation criterion either
+uniformly or by using the corresponding Shapley kernel weights (or the sampling frequencies when sampling of
+combinations is used). 
+This is determined by the logical parameter `MSEv_uniform_comb_weights` in the `explain()` function, and the
+default is to do uniform weighting, that is, `MSEv_uniform_comb_weights = TRUE`.
+
+### Advantage:
+An advantage of the $\operatorname{MSE}_{v}$ criterion is that $v_\texttt{true}$ is not involved.
+Thus, we can apply it as an evaluation criterion to real-world data sets where the true
+Shapley values are unknown.
+
+### Disadvantages:
+First, we can only use the $\operatorname{MSE}_{v}$ criterion to rank the methods and not assess
+their closeness to the optimum since the minimum value of the $\operatorname{MSE}_{v}$ criterion
+is unknown. Second, the criterion evaluates the contribution functions and not the Shapley values.
+
+Note that @olsen2023comparative observed a relatively linear relationship between the 
+$\operatorname{MSE}_{v}$ criterion and the mean absolute error $(\operatorname{MAE})$ between the 
+true and estimated Shapley values in extensive simulation studies where the true Shapley values
+were known. That is, a method that achieves a low $\operatorname{MSE}_{v}$ score also tends to
+obtain a low $\operatorname{MAE}$ score, and vice versa.
+
+### Confidence intervals
+The $\operatorname{MSE}_{v}$ criterion can be written as
+$\operatorname{MSE}_{v} = \frac{1}{N_\text{explain}}\sum_{i=1}^{N_\text{explain}} \operatorname{MSE}_{v,\text{explain }i}$.
+We can therefore use the central limit theorem to compute an approximate
+confidence interval for the $\operatorname{MSE}_{v}$ criterion. We have that 
+$\operatorname{MSE}_{v} \pm t_{\alpha/2}\frac{\operatorname{SD}(\operatorname{MSE}_{v})}{\sqrt{N_\text{explain}}}$
+is a $(1-\alpha/2)\%$ approximate confidence interval for the evaluation criterion,
+where $t_{\alpha/2}$ is the $\alpha/2$ percentile of the $T_{N_\text{explain}-1}$ distribution.
+Note that $N_\text{explain}$ should be large (rule of thumb is at least $30$) for the
+central limit theorem to be valid. The quantities $\operatorname{MSE}_{v}$ and
+$\frac{\operatorname{SD}(\operatorname{MSE}_{v})}{\sqrt{N_\text{explain}}}$ are returned by
+the `explain()` function in the `MSEv` list of data tables. We can also compute similar
+approximate confidence interval for $\operatorname{MSE}_{v}$ criterion for each
+combination/coalition when only averaging over the observations. However, it does not
+make sense in the other direction, i.e., when only averaging over the combinations for
+each observation, as each combination is a different prediction tasks.
+
+
+### MSEv examples
+
+Start by explaining the predictions by using different methods and combining them into lists.
+```{r}
+# We use more explicands here for more stable confidence intervals
+ind_x_explain <- 1:25
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
+
+# Fitting a basic xgboost model to the training data
+model <- xgboost::xgboost(
+  data = as.matrix(x_train),
+  label = y_train,
+  nround = 20,
+  verbose = FALSE
+)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+p0 <- mean(y_train)
+
+# Independence approach
+explanation_independence <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "independence",
+  prediction_zero = p0,
+  n_samples = 1e2,
+  n_batches = 5,
+  MSEv_uniform_comb_weights = TRUE
+)
+
+# Empirical approach
+explanation_empirical <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  prediction_zero = p0,
+  n_samples = 1e2,
+  n_batches = 5,
+  MSEv_uniform_comb_weights = TRUE
+)
+
+# Gaussian 1e1 approach
+explanation_gaussian_1e1 <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  prediction_zero = p0,
+  n_samples = 1e1,
+  n_batches = 5,
+  MSEv_uniform_comb_weights = TRUE
+)
+
+# Gaussian 1e2 approach
+explanation_gaussian_1e2 <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  prediction_zero = p0,
+  n_samples = 1e2,
+  n_batches = 5,
+  MSEv_uniform_comb_weights = TRUE
+)
+
+# Combined approach
+explanation_combined <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = c("gaussian", "empirical", "independence"),
+  prediction_zero = p0,
+  n_samples = 1e2,
+  n_batches = 5,
+  MSEv_uniform_comb_weights = TRUE
+)
+
+# Create a list of explanations with names
+explanation_list_named <- list(
+  "Ind." = explanation_independence,
+  "Emp." = explanation_empirical,
+  "Gaus. 1e1" = explanation_gaussian_1e1,
+  "Gaus. 1e2" = explanation_gaussian_1e2,
+  "Combined" = explanation_combined
+)
+```
+
+
+We can then compare the different approaches by creating plots of the $\operatorname{MSE}_{v}$ evaluation criterion.
+
+```{r}
+# Create the MSEv plots with approximate 95% confidence intervals
+MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
+  plot_type = c("overall", "comb", "explicand"),
+  CI_level = 0.95
+)
+
+# 5 plots are made
+names(MSEv_plots)
+```
+The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
+we have only averaged over the observations or the combinations (both as bar and line plots).
+
+```{r}
+# The main plot of the overall MSEv averaged over both the combinations and observations
+MSEv_plots$MSEv_bar
+
+# The MSEv averaged over only the explicands for each combinations
+MSEv_plots$MSEv_combination_bar
+
+# The MSEv averaged over only the combinations for each observation/explicand
+MSEv_plots$MSEv_explicand_bar
+
+# To see which coalition S each of the `id_combination` corresponds to,
+# i.e., which features that are conditions on.
+explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination", "features")]
+```
+
+We can specify the `index_x_explain` and `id_combination` parameters in `plot_MSEv_eval_crit()` to only plot 
+certain test observations and combinations, respectively.
+
+```{r}
+# We can specify which test observations or combinations to plot
+plot_MSEv_eval_crit(explanation_list_named,
+  plot_type = "explicand",
+  index_x_explain = c(1, 3:4, 6),
+  CI_level = 0.95
+)$MSEv_explicand_bar
+plot_MSEv_eval_crit(explanation_list_named,
+  plot_type = "comb",
+  id_combination = c(3, 4, 9, 13:15),
+  CI_level = 0.95
+)$MSEv_combination_bar
+```
+
+
+We can also alter the plots design-wise as we do in the code below.
+
+```{r}
+bar_text_n_decimals <- 1
+CI_level <- 0.95
+MSEv_plot <- plot_MSEv_eval_crit(explanation_list_named, CI_level = CI_level)$MSEv_bar
+MSEv_plot +
+  ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plot$data$Method))) +
+  ggplot2::coord_flip() +
+  ggplot2::scale_fill_brewer(palette = "Paired") +
+  ggplot2::theme_minimal() + # This must be set before other theme calls
+  ggplot2::theme(
+    plot.title = ggplot2::element_text(size = 10),
+    legend.position = "bottom"
+  ) +
+  ggplot2::geom_text(
+    ggplot2::aes(label = sprintf(
+      paste("%.", sprintf("%d", bar_text_n_decimals), "f", sep = ""),
+      round(MSEv, bar_text_n_decimals)
+    )),
+    vjust = -0.35, # This number might need altering for different plots sizes
+    hjust = 1.1, # This number might need altering for different plots sizes
+    color = "black",
+    position = ggplot2::position_dodge(0.9),
+    size = 4
+  )
 ```
 
 ## Main arguments in `explain`
