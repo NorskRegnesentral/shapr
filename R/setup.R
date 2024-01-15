@@ -166,6 +166,7 @@ check_n_combinations <- function(internal) {
   n_combinations <- internal$parameters$n_combinations
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
+  shap_approach <- internal$parameters$shap_approach
 
   type <- internal$parameters$type
 
@@ -176,12 +177,13 @@ check_n_combinations <- function(internal) {
     xreg <- internal$data$xreg
 
     if (!is_groupwise) {
-      if (n_combinations <= n_features) {
+      if (shap_approach=="kernel" && n_combinations <= n_features) {
         stop(paste0(
           "`n_combinations` (", n_combinations, ") has to be greater than the number of components to decompose ",
           " the forecast onto:\n",
           "`horizon` (", horizon, ") + `explain_y_lags` (", explain_y_lags, ") ",
-          "+ sum(`explain_xreg_lags`) (", sum(explain_xreg_lags), ").\n"
+          "+ sum(`explain_xreg_lags`) (", sum(explain_xreg_lags), ")\n",
+          "for shap_approach = 'kernel'."
         ))
       }
     } else {
@@ -195,8 +197,8 @@ check_n_combinations <- function(internal) {
     }
   } else {
     if (!is_groupwise) {
-      if (n_combinations <= n_features) {
-        stop("`n_combinations` has to be greater than the number of features.")
+      if (shap_approach=="kernel" && n_combinations <= n_features) {
+        stop("`n_combinations` has to be greater than the number of features for shap_approach = 'kernel'.")
       }
     } else {
       if (n_combinations <= n_groups) {

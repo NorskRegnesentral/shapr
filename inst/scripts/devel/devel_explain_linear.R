@@ -29,6 +29,8 @@ test <-explain(model = model_lm_numeric,
                shap_approach = "permutation",
                prediction_zero = p0)
 
+debugonce(explain_linear)
+
 test2 <-explain_linear(model = model_lm_numeric,
                        x_explain = x_explain_numeric,
                        x_train = x_train_numeric,
