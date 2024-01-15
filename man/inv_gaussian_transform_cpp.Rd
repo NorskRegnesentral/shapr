@@ -17,9 +17,6 @@ arma::mat of the same dimension as \code{z}
 \description{
 Transforms new data to a standardized normal distribution
 }
-\details{
-The function uses \code{arma::quantile(...)} which corresponds to R's \code{stats::quantile(..., type = 5)}.
-}
 \author{
 Lars Henry Berge Olsen
 }
