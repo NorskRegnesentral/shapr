@@ -118,19 +118,20 @@ get_p <- function(dt_vS, internal) {
 compute_shapley_permutation <- function(internal,dt_vS){
   feature_names <- internal$parameters$feature_names
   X_perm <- internal$objects$X_perm
-  n_permutations <- internal$parameters$n_permutations
   n_features <- internal$parameters$n_features
   n_explain <- internal$parameters$n_explain
   max_id_combination <- internal$parameters$n_combinations
   S <- internal$objects$S
   phi0 <- internal$parameters$prediction_zero
 
+  n_permutations_used <- X_perm[,max(permute_id,na.rm = TRUE)]
+
 
   apply_cols <- names(dt_vS)[-1]
 
   kshap <- matrix(0,ncol=n_explain,nrow=n_features)
 
-  for(i in seq(n_permutations)){
+  for(i in seq(n_permutations_used)){
     # Find id combinations that are permuted
     these_id_combs <- c(1,X_perm[permute_id==i,id_combination],max_id_combination)
 
@@ -149,7 +150,7 @@ compute_shapley_permutation <- function(internal,dt_vS){
     reordered_contribs <- as.matrix(these_contribs[reorder_vec,])
     kshap <- kshap + reordered_contribs
   }
-  kshap <- kshap/n_permutations
+  kshap <- kshap/n_permutations_used
 
 
 
