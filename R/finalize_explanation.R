@@ -140,9 +140,6 @@ compute_shapley_permutation <- function(internal,dt_vS){
     contributes_to <- apply(mapping_mat,FUN=function(x) which(x==1),MARGIN=1)
     reorder_vec <- order(contributes_to)
 
-    #### LOOK HERE: OK, something is off here, I think it might be the merging that is messing up the order
-    # I need the order to be such that the X_perm always have the smallest feature numbers first.
-
     # Find the corresponding rows in dt_vS and get the contribution
     these_vS <- dt_vS[id_combination %in% these_id_combs]
     these_contribs <- these_vS[,lapply(.SD,diff),.SDcols=apply_cols]
