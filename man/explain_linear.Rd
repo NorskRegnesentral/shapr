@@ -8,7 +8,6 @@ explain_linear(
   model,
   x_explain,
   x_train,
-  paired_shap_sampling = FALSE,
   prediction_zero,
   n_combinations = NULL,
   n_permutations = NULL,

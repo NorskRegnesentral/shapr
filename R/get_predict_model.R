@@ -80,3 +80,50 @@ test_predict_model <- function(x_test, predict_model, model, internal) {
     )
   }
 }
+
+#' Model testing function
+#'
+#' @inheritParams default_doc
+#' @keywords internal
+test_predict_linear_model <- function(x_test, predict_model, model,linear_model_coef, internal) {
+  # Tests prediction with some data
+
+  if(class(model)[1]!="lm"){
+    stop(paste0("explain_linear_gaussian is only applicable with 'model' of class 'lm'."))
+  }
+
+  tmp <- tryCatch(predict_model(model, x_test), error = errorfun)
+  if (class(tmp)[1] == "error") {
+    stop(paste0(
+      "The predict_model function of class `", class(model), "` is invalid.\n",
+      "A basic function test threw the following error:\n", as.character(tmp[[1]])
+    ))
+  }
+
+
+
+
+  if (!((all(sapply(tmp, is.numeric))) &&
+        (length(tmp) == 2 || (!is.null(dim(tmp)) && nrow(tmp) == 2 && ncol(tmp) == internal$parameters$output_size)))) {
+    stop(
+      paste0(
+        "The predict_model function of class `", class(model),
+        "` does not return a numeric output of the desired length.\n",
+        "See the 'Advanced usage' section of the vignette:\n",
+        "vignette('understanding_shapr', package = 'shapr')\n\n",
+        "for more information on running shapr with custom models.\n"
+      )
+    )
+  }
+
+  manual_pred <- as.vector(cbind(1,as.matrix(x_test))%*%linear_model_coef)
+
+  if(isFALSE(all.equal(manual_pred,tmp,check.attributes = FALSE))){
+    stop(
+        "Prediction with the extracted model coefficients does not match the prediction with the predict_model function.\n",
+        "This suggests interactions, quadratic effects or other non-linearities in the model.\n",
+        "explain_linear_gaussian is only applicable with pure linear models.\n",
+      )
+  }
+}
+

@@ -9,7 +9,6 @@
 explain_linear <- function(model,
                            x_explain,
                            x_train,
-                           paired_shap_sampling = FALSE,
                            prediction_zero,
                            n_combinations = NULL,
                            n_permutations = NULL,
@@ -45,7 +44,7 @@ explain_linear <- function(model,
     x_explain = x_explain,
     approach = "gaussian", # always set to "gaussian" although we never really use this argument for linear_gaussian
     shap_approach = "permutation", # Always use the permute shap_approach
-    paired_shap_sampling = paired_shap_sampling,
+    paired_shap_sampling = TRUE, # Always use paired sampling since simplified computation of the required Q and U objects requires it
     prediction_zero = prediction_zero,
     n_combinations = n_combinations, # We always set the n_permutations instead
     n_permutations = n_permutations,
@@ -73,10 +72,11 @@ explain_linear <- function(model,
   # same predictions as using the coefficients
 
   # Checks that predict_model gives correct format
-  test_predict_model(
+  test_predict_linear_model(
     x_test = head(internal$data$x_train, 2),
     predict_model = predict_model,
     model = model,
+    linear_model_coef = linear_model_coef,
     internal = internal
   )
 
