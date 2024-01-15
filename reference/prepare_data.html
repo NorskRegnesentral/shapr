@@ -69,7 +69,7 @@
 <span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, index_features <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for copula</span></span>
-<span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, index_features <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, <span class="va">index_features</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for ctree</span></span>
 <span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, index_features <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -78,7 +78,7 @@
 <span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, index_features <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for gaussian</span></span>
-<span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, index_features <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, <span class="va">index_features</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for independence</span></span>
 <span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">internal</span>, index_features <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -108,6 +108,10 @@ apply to the present method. <code>NULL</code> means all combinations. Only used
 
 <p>A data.table containing simulated data used to estimate
 the contribution function by Monte Carlo integration.</p>
+    </div>
+    <div id="author">
+    <h2>Author</h2>
+    <p>Lars Henry Berge Olsen</p>
     </div>
 
   </div>

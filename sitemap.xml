@@ -121,7 +121,7 @@
     <loc>https://norskregnesentral.github.io/shapr/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr/reference/inv_gaussian_transform.html</loc>
+    <loc>https://norskregnesentral.github.io/shapr/reference/inv_gaussian_transform_cpp.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/lag_data.html</loc>
@@ -151,7 +151,16 @@
     <loc>https://norskregnesentral.github.io/shapr/reference/prepare_data.html</loc>
   </url>
   <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/prepare_data_copula_cpp.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/prepare_data_gaussian_cpp.html</loc>
+  </url>
+  <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/process_factor_data.html</loc>
+  </url>
+  <url>
+    <loc>https://norskregnesentral.github.io/shapr/reference/quantile_type7_cpp.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/reg_forecast_setup.html</loc>
@@ -163,13 +172,7 @@
     <loc>https://norskregnesentral.github.io/shapr/reference/sample_combinations.html</loc>
   </url>
   <url>
-    <loc>https://norskregnesentral.github.io/shapr/reference/sample_copula.html</loc>
-  </url>
-  <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/sample_ctree.html</loc>
-  </url>
-  <url>
-    <loc>https://norskregnesentral.github.io/shapr/reference/sample_gaussian.html</loc>
   </url>
   <url>
     <loc>https://norskregnesentral.github.io/shapr/reference/setup.html</loc>
