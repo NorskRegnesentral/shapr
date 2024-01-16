@@ -320,3 +320,62 @@ compute_MSEv_eval_crit <- function(internal,
     MSEv_combination = MSEv_combination
   ))
 }
+
+
+#' Computes the Shapley values for the linear Gaussian method
+#'
+#' @inherit explain
+#' @inheritParams default_doc
+#' @param vS_list List
+#' Output from [compute_vS()]
+#'
+#' @export
+compute_shapley_linear_gaussian <- function(internal) {
+
+  # Inputs
+  mu <- internal$parameters$gaussian.mu
+  n_features <- internal$parameters$n_features
+  n_explain <- internal$parameters$n_explain
+  x_explain <- internal$data$x_explain
+  Tmu_list <- internal$objects$Tmu_list
+  Tx_list <- internal$objects$Tx_list
+  coefs <- internal$parameters$linear_model_coef
+  feature_names <- internal$parameters$feature_names
+
+  # Convert inputs
+  beta <- coefs[-1]
+  x_explain_mat <- as.matrix(x_explain)
+
+  # Get the prediction
+
+  p <- as.numeric(coefs[1] + x_explain_mat%*%beta)
+
+  # Compute phi0
+  phi0 <- as.numeric(coefs[1]+t(beta)%*%mu)
+  shapley_mat <- matrix(0, nrow = n_explain, ncol = n_features)
+  colnames(shapley_mat) <- feature_names
+
+  for(j in seq_len(n_features)) {
+
+    # Consider moving the computation of the first and all but the multiplication of the second term to the pre-processing function
+    shapley_mat[,j] <- as.numeric(t(beta)%*%Tmu_list[[j]]%*%mu) + x_explain_mat%*%t(Tx_list[[j]])%*%beta
+
+  }
+
+  dt_shapley <- data.table(
+    none = phi0,
+    shapley_mat
+    )
+
+  output <- list(
+    shapley_values = dt_shapley,
+    internal = internal,
+    pred_explain = p
+  )
+  attr(output, "class") <- c("shapr", "list")
+
+  return(output)
+
+}
+
+

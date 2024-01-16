@@ -27,17 +27,22 @@ test <-explain(model = model_lm_numeric,
                x_train = x_train_numeric,
                approach = "gaussian",
                shap_approach = "permutation",
-               prediction_zero = p0)
+               prediction_zero = p0,n_samples = 10^4)
+test
 
 
-
-debugonce(explain_linear)
+#debugonce(explain_linear)
 
 test2 <-explain_linear(model = model_lm_numeric,
                        x_explain = x_explain_numeric,
                        x_train = x_train_numeric,
-                       prediction_zero = p0,
-                       n_permutations = 3)
+                       prediction_zero = p0)
+
+test2
+
+### We don't get the same results... Investigating by looking at the v(S) we get:
+
+test$internal$output$dt_vS
 
 
-
+test2$internal$objects$

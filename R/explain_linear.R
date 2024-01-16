@@ -83,16 +83,13 @@ explain_linear <- function(model,
   timing_list$test_prediction <- Sys.time()
 
 
-  # Sets up the Shapley (sampling) framework and prepares the
-  # conditional expectation computation for the chosen approach
-  # Note: model and predict_model are ONLY used by the AICc-methods of approach empirical to find optimal parameters
+  # Computes the necessary objects for the linear Gaussian approach
   internal <- setup_computation_linear_gaussian(internal)
 
   timing_list$setup_computation <- Sys.time()
 
-  # Compute Shapley values based on conditional expectations (v(S))
-  # Organize function output
-  output <- comoute_shapley_linear_gaussian(internal = internal) # Not yet created
+  # Compute Shapley values with the linear Gaussian method
+  output <- compute_shapley_linear_gaussian(internal = internal)
 
   timing_list$shapley_computation <- Sys.time()
 
