@@ -24,7 +24,7 @@ setup_linear_gaussian <- function(internal,
   X_perm <- internal$objects$X_perm
 
   max_id_combination <- X[,.N]
-  n_permutations <- X_perm[,max(permute_id,na.rm=TRUE)]
+  n_permutations_used <- X_perm[,max(permute_id,na.rm=TRUE)]
 
   # For consistency
   defaults <- mget(c("gaussian.mu", "gaussian.cov_mat"))
@@ -56,7 +56,7 @@ setup_linear_gaussian <- function(internal,
 
   # Counting the number of repetitions of each row in S
   id_combination_reps <- X_perm[,.N,by=id_combination]
-  id_combination_reps[c(1,.N),N:=n_permutations]
+  id_combination_reps[c(1,.N),N:=n_permutations_used]
 
   # Computing the US and QS objects
 
@@ -84,17 +84,72 @@ setup_linear_gaussian <- function(internal,
   # Thus, we can easily find all the rows that contain feature j, and those that don't to then compute Q and U differences
   # without having to map the permutations to the subsets.
 
+  perm_dt <- internal$objects$perm_dt
+
   Tmu_list <- Tx_list <- list()
+  these_id_combinations_mat <- list()
   for(j in seq_len(n_features)){
+    Tmu_list[[j]] <- Tx_list[[j]] <- matrix(0,nrow = n_features,ncol = n_features)
+    these_id_combinations_mat[[j]] <- numeric(0)
+    for(i in seq(n_permutations_used)){
 
-    includes_j <- S[,j]==1 # Find all subsets that include feature j
-    id_combination_reps[id_combination%in%which(includes_j),N]
+      perm0 <- perm_dt[permute_id==i,perm][[1]]
 
-    Qdiff <- Reduce("+",QS_list[includes_j])-Reduce("+",QS_list[!includes_j])
-    Udiff <- Reduce("+",US_list[includes_j])-Reduce("+",US_list[!includes_j])
+      position <- which(perm0==j)
+      if(position==1){
+        this_S <- integer(0)
+        this_S_plus_j <- sort(perm0[seq_len(position)])
+        this_Sbar <- sort(perm0)
+        this_Sbar_min_j <- sort(perm0[-seq_len(position)])
+      } else {
+        this_S <- sort(perm0[seq_len(position-1)])
+        this_S_plus_j <- sort(perm0[seq_len(position)])
+        this_Sbar <- sort(perm0[-seq_len(position-1)])
+        this_Sbar_min_j <- sort(perm0[-seq_len(position)])
+      }
 
-    Tmu_list[[j]] <- (Qdiff-Udiff) / nrow(S)
-    Tx_list[[j]] <- (Qdiff+Udiff) / nrow(S)
+      vec <- c(paste0(this_S,collapse = " "),
+               paste0(this_S_plus_j,collapse = " "),
+               paste0(this_Sbar,collapse = " "),
+               paste0(this_Sbar_min_j,collapse = " "))
+
+      merge_dt <- data.table(features_tmp=vec,id=seq_along(vec))
+
+      comb_dt <- merge(merge_dt,X[,.(id_combination,features_tmp)],by="features_tmp",all.x=TRUE)
+      data.table::setorderv(comb_dt,"id")
+
+      these_id_combinations <- comb_dt[,id_combination]
+      S_id_comb <- these_id_combinations[1]
+      S_plus_j_id_comb <- these_id_combinations[2]
+      Sbar_id_comb <- these_id_combinations[3]
+      Sbar_min_j_id_comb <- these_id_combinations[4]
+
+      Qdiff1 <- QS_list[[Sbar_min_j_id_comb]]-QS_list[[Sbar_id_comb]]
+      Qdiff2 <- QS_list[[S_plus_j_id_comb]]-QS_list[[S_id_comb]]
+      Udiff <- US_list[[S_plus_j_id_comb]]-US_list[[S_id_comb]]
+
+      Tmu_list[[j]] <- Tmu_list[[j]] + (Qdiff1-Udiff)/ n_permutations_used
+      Tx_list[[j]] <- Tx_list[[j]]+ (Qdiff2+Udiff)/ n_permutations_used
+
+      #Tmu_list[[j]] <- Tmu_list[[j]] + (Qdiff1-Udiff)/ n_permutations_used
+      #Tx_list[[j]] <- Tx_list[[j]]+ (Qdiff2-Udiff)/ n_permutations_used
+
+      # Udiff <- Reduce("+",US_list[includes_j])-Reduce("+",US_list[!includes_j])
+      #
+      # Tmu_list[[j]] <- (Qdiff-Udiff) / n_permutations_used
+      # Tx_list[[j]] <- (Qdiff+Udiff) / n_permutations_used
+
+      these_id_combinations_mat[[j]] <- rbind(these_id_combinations_mat[[j]],these_id_combinations)
+    }
+
+    # includes_j <- S[,j]==1 # Find all subsets that include feature j
+    # id_combination_reps[id_combination%in%which(includes_j),N]
+    #
+    # Qdiff <- Reduce("+",QS_list[includes_j])-Reduce("+",QS_list[!includes_j])
+    # Udiff <- Reduce("+",US_list[includes_j])-Reduce("+",US_list[!includes_j])
+    #
+    # Tmu_list[[j]] <- (Qdiff-Udiff) / n_permutations_used
+    # Tx_list[[j]] <- (Qdiff+Udiff) / n_permutations_used
 
   }
 

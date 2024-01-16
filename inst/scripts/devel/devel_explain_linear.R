@@ -22,23 +22,32 @@ model_lm_numeric <- lm(lm_formula_numeric, data = data_complete)
 
 p0 <- data_train[, mean(get(y_var_numeric))]
 
+x_explain_numeric_new <- rbind(x_explain_numeric,t(rep(0,4)),t(rep(1,4)),use.names=FALSE)
+
+
+
+
+
 test <-explain(model = model_lm_numeric,
-               x_explain = x_explain_numeric,
+               x_explain = x_explain_numeric_new,
                x_train = x_train_numeric,
                approach = "gaussian",
                shap_approach = "permutation",
-               prediction_zero = p0)#n_samples = 10^5)
+               prediction_zero = p0,n_samples = 10^5)
 test
 
 
 #debugonce(explain_linear)
 
+
 test2 <-explain_linear(model = model_lm_numeric,
-                       x_explain = x_explain_numeric,
+                       x_explain = x_explain_numeric_new,
                        x_train = x_train_numeric,
                        prediction_zero = p0)
-
 test2
+
+test2$internal$objects$US_list
+
 
 ### We don't get the same results... Investigating by looking at the v(S) we get:
 

@@ -346,8 +346,8 @@ X_from_perm_dt <- function(perm_dt) {
   X_perm[, rowid:=NULL]
   X[, rowid:=NULL]
 
-  X_perm[, features_tmp := NULL]
-  X[, features_tmp := NULL]
+  #X_perm[, features_tmp := NULL]
+  #X[, features_tmp := NULL]
 
   setcolorder(X,c("id_combination","permute_id", "features", "n_features"))
 
