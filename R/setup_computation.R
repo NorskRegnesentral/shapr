@@ -27,8 +27,8 @@ setup_computation_linear_gaussian <- function(internal){
   # setup the Shapley framework
   internal <- shapley_setup(internal)
 
-  # Setup for approach
-  internal <- setup_linear_gaussian(internal) # Not created yet
+  # Setup for the linear gaussian method: compute U, Q, Tx and Tmu
+  internal <- setup_linear_gaussian(internal)
 
 
 }
@@ -162,6 +162,7 @@ shapley_setup <- function(internal) {
     )
   X <- X_list$X
   internal$objects$X_perm <- X_list$X_perm
+  internal$objects$perm_dt <- X_list$perm_dt
   W <- NULL
 
   } else {

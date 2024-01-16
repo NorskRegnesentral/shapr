@@ -23,7 +23,7 @@ setup_linear_gaussian <- function(internal,
   X <- internal$objects$X
   X_perm <- internal$objects$X_perm
 
-  max_id_combinations <- X[,.N]
+  max_id_combination <- X[,.N]
 
   # For consistency
   defaults <- mget(c("gaussian.mu", "gaussian.cov_mat"))
@@ -59,7 +59,8 @@ setup_linear_gaussian <- function(internal,
 
 
   # To get rid of the smallest and largest subset
-  S <- S[-c(1,max_id_combinations),]
+  #Sorg <- S # keeping the original one
+  #S <- S[-c(1,max_id_combination),]
   Sbar <- 1-S
 
 
@@ -71,34 +72,53 @@ setup_linear_gaussian <- function(internal,
 
   # TODO: Should do this in rcpp for speed up later
   US_list <- QS_list <- QSbar_list <- list()
-  for (i in seq_len(nrow(S))){
-    US_list[[i]] <- t(PSbar[[i]])%*%PSbar[[i]]%*%gaussian.cov_mat%*%t(PS[[i]])%*%solve(PS[[i]]%*%gaussian.cov_mat%*%t(PS[[i]]))
+  US_list[[1]] <- US_list[[nrow(S)]] <- QS_list[[1]] <- matrix(0,nrow = n_features,ncol = n_features)
+  QS_list[[nrow(S)]] <-  diag(n_features)
+  for (i in seq(2,nrow(S)-1)){
+    US_list[[i]] <- t(PSbar[[i]])%*%PSbar[[i]]%*%gaussian.cov_mat%*%t(PS[[i]])%*%solve(PS[[i]]%*%gaussian.cov_mat%*%t(PS[[i]]))%*%PS[[i]]
     QS_list[[i]] <- t(PS[[i]])%*%PS[[i]]
-    QSbar_list[[i]] <- t(PSbar[[i]])%*%PSbar[[i]] # Make this every time as well since it is fast to do, even though it could be extracted from QS_list if it is always present. Change this later
+#    QSbar_list[[i]] <- t(PSbar[[i]])%*%PSbar[[i]] # Make this every time as well since it is fast to do, even though it could be extracted from QS_list if it is always present. Change this later
   }
 
   ### Computing the Tmu and Tx objects
-  # Loop over each feature and create Tmu and Tx lists
-  # Need to do some mapping from the permutations to the SRbar, SRbar+i, SRbar+i, SRbar+i subsets, probably similar to
-  # That done in compute_shapley_permutation()
+  # A rewrite of eq (9) in the true to the model or data paper: https://arxiv.org/pdf/2006.16234.pdf shows that
+  # when we force paired sampling, the Tmu and Tx objects gets a simplified formula.
+  # Another trick is that since the full S matrix is constructed based on the permutations,
+  # any row in S that contains features j, will have a corresponding row that does not contain feature j.
+  # Thus, we can easily find all the rows that contain feature j, and those that don't to then compute Q and U differences
+  # without having to map the permutations to the subsets.
 
   Tmu_list <- Tx_list <- list()
   for(j in seq_len(n_features)){
-    for(i in seq(n_permutations_used)){
 
-      #### JUST SOME COPIED CODE BELOW. NEED TO CONTINUE FROM HERE, figuring out how to map the permutations to the subsets
+    includes_j <- S[,j]==1 # Find all subsets that include feature j
 
-      # Find id combinations that are permuted
-      these_id_combs <- c(1,X_perm[permute_id==i,id_combination],max_id_combination)
+    Qdiff <- Reduce("+",QS_list[includes_j])-Reduce("+",QS_list[!includes_j])
+    Udiff <- Reduce("+",US_list[includes_j])-Reduce("+",US_list[!includes_j])
 
-      # Find the feature to map the contributions to
-      mapping_mat <- apply(S[these_id_combs,],FUN=diff,MARGIN=2)
-      contributes_to <- apply(mapping_mat,FUN=function(x) which(x==1),MARGIN=1)
-      reorder_vec <- order(contributes_to)
+    Tmu_list[[j]] <- (Qdiff-Udiff) / nrow(S)
+    Tx_list[[j]] <- (Qdiff+Udiff) / nrow(S)
 
   }
 
+  internal$objects$US_list <- US_list
+  internal$objects$QS_list <- QS_list
+  internal$objects$Tmu_list <- Tmu_list
+  internal$objects$Tx_list <- Tx_list
+  internal$parameters$gaussian.mu <- gaussian.mu
+  internal$parameters$gaussian.cov_mat <- gaussian.cov_mat
+
   return(internal)
+}
+
+SRfun <- function(permute_id0=1,feature=3,max_id_combination=X[,.N]){
+  perm0 <- perm_dt[permute_id==permute_id0,perm]
+  position <- which(perm[[1]]==feature)
+
+  these_id_combinations <- c(1,X_perm[permute_id==permute_id0,id_combination],max_id_combination)
+  SR_and_SRi <- these_id_combinations[c(position,position+1)]
+
+  return(SR_and_SRi)
 }
 
 

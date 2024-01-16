@@ -90,22 +90,9 @@ explain_linear <- function(model,
 
   timing_list$setup_computation <- Sys.time()
 
-
-  # Compute the v(S):
-  # Get the samples for the conditional distributions with the specified approach
-  # Predict with these samples
-  # Perform MC integration on these to estimate the conditional expectation (v(S))
-  vS_list <- compute_vS(internal, model, predict_model)
-
-  timing_list$compute_vS <- Sys.time()
-
-
   # Compute Shapley values based on conditional expectations (v(S))
   # Organize function output
-  output <- finalize_explanation(
-    vS_list = vS_list,
-    internal = internal
-  )
+  output <- comoute_shapley_linear_gaussian(internal = internal) # Not yet created
 
   timing_list$shapley_computation <- Sys.time()
 
