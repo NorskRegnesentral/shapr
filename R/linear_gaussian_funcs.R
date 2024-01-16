@@ -24,6 +24,7 @@ setup_linear_gaussian <- function(internal,
   X_perm <- internal$objects$X_perm
 
   max_id_combination <- X[,.N]
+  n_permutations <- X_perm[,max(permute_id,na.rm=TRUE)]
 
   # For consistency
   defaults <- mget(c("gaussian.mu", "gaussian.cov_mat"))
@@ -53,16 +54,11 @@ setup_linear_gaussian <- function(internal,
     gaussian.cov_mat <- get_cov_mat(x_train)
   }
 
+  # Counting the number of repetitions of each row in S
+  id_combination_reps <- X_perm[,.N,by=id_combination]
+  id_combination_reps[c(1,.N),N:=n_permutations]
+
   # Computing the US and QS objects
-
-
-
-
-  # To get rid of the smallest and largest subset
-  #Sorg <- S # keeping the original one
-  #S <- S[-c(1,max_id_combination),]
-  Sbar <- 1-S
-
 
   # Now using the formulas form True to the model or true to the data paper: https://arxiv.org/pdf/2006.16234.pdf
   # Consider whether doing this with sparse matrices is faster
@@ -92,6 +88,7 @@ setup_linear_gaussian <- function(internal,
   for(j in seq_len(n_features)){
 
     includes_j <- S[,j]==1 # Find all subsets that include feature j
+    id_combination_reps[id_combination%in%which(includes_j),N]
 
     Qdiff <- Reduce("+",QS_list[includes_j])-Reduce("+",QS_list[!includes_j])
     Udiff <- Reduce("+",US_list[includes_j])-Reduce("+",US_list[!includes_j])

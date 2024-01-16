@@ -68,9 +68,6 @@ explain_linear <- function(model,
     model = model
   )
 
-  #TODO Make test for the linear model, checking whether predict() gives the
-  # same predictions as using the coefficients
-
   # Checks that predict_model gives correct format
   test_predict_linear_model(
     x_test = head(internal$data$x_train, 2),
