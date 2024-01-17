@@ -234,7 +234,8 @@ feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL,pai
     perm_dt <- feature_permute_samp(m, n_permutations,paired_shap_sampling)
   }
 
-  ret <- X_from_perm_dt(perm_dt)
+  #ret <- X_from_perm_dt(perm_dt)
+  ret <- X_from_perm_dt_linear_gaussian(perm_dt) # May use this also for the regular permutation approach, to simplify the computation in the end but need to check that first
 
   ret$perm_dt = perm_dt
 
@@ -306,19 +307,15 @@ all_permutations <- function(x) {
 X_from_perm_dt_linear_gaussian <- function(perm_dt){
   m <- length(perm_dt[["perm"]][[1]])
 
-  perm_list<- list()
+  perm_list<- list() # The perm_list includes, for all features, the S+j sets that are mapped from the permutations. The first element is the empty set to also include that
   for (j in seq_len(m)){
-    perm_list[[j]] <- list()
+    perm_list[[j]] <- list(numeric(0))
   }
-  for(i in 1:nrow(perm_dt)){
+  for(i in seq_len(nrow(perm_dt))){
     perm0 <- perm_dt[i, perm][[1]]
     for (j in seq_len(m)){
       position <- which(perm0==j)
-      if(position==1){
-        perm_list[[j]][[i]] <- numeric(0)
-      } else {
-        perm_list[[j]][[i]] <- sort(perm0[seq_len(position-1)])
-      }
+      perm_list[[j]][[i+1]] <- sort(perm0[seq_len(position)])
     }
   }
 
@@ -327,16 +324,39 @@ X_from_perm_dt_linear_gaussian <- function(perm_dt){
     X_perm_list[[j]] <-   data.table(n_features = sapply(perm_list[[j]], length))
     X_perm_list[[j]][, n_features := as.integer(n_features)]
     X_perm_list[[j]][, features := perm_list[[j]]]
-    X_perm_list[[j]][, permute_id := seq_len(nrow(perm_dt))]
+    X_perm_list[[j]][, permute_id := c(NA,seq_len(nrow(perm_dt)))]
     data.table::setkeyv(X_perm_list[[j]], c("n_features","permute_id"))
     X_perm_list[[j]][!is.finite(permute_id), permute_id := NA]
 
     # Temporary create a character string to merge back on below (cannot merge on lists)
     X_perm_list[[j]][, features_tmp := sapply(features, paste, collapse = " ")]
-    X_perm_list[[j]][, rowid:=.I]
     X_perm_list[[j]][, feature_contrib:=j]
 
   }
+
+
+  X_perm <- rbindlist(X_perm_list)
+  data.table::setkeyv(X_perm, c("n_features","permute_id"))
+
+  X_perm[,is_duplicate:=duplicated(features_tmp)]
+  X_perm[, rowid:=.I]
+  X <- copy(X_perm[is_duplicate==FALSE])
+  X[,id_combination:=.I]
+  X[, is_duplicate := NULL]
+
+  # Merge back to get the id_combination mapping also in X_perm
+  X_perm <- merge(X_perm,X[,.(features_tmp,id_combination)],by="features_tmp",all.x=TRUE)
+  data.table::setorderv(X_perm, "rowid")
+  X_perm[, rowid:=NULL]
+  X[, rowid:=NULL]
+
+  #X_perm[, features_tmp := NULL]
+  #X[, features_tmp := NULL]
+
+  setcolorder(X,c("id_combination","permute_id", "features", "n_features"))
+
+
+  ret <- list(X=X[],X_perm=X_perm[])
 
 }
 
