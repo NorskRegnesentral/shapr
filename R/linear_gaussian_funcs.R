@@ -88,9 +88,13 @@ setup_linear_gaussian <- function(internal,
 
   Tmu_list <- Tx_list <- list()
   these_id_combinations_mat <- list()
+  tmp_lists <- list()
   for(j in seq_len(n_features)){
     Tmu_list[[j]] <- Tx_list[[j]] <- matrix(0,nrow = n_features,ncol = n_features)
     these_id_combinations_mat[[j]] <- numeric(0)
+    tmp_lists[[j]] <- list(Qdiff1=list(),
+                           Qdiff2=list(),
+                           Udiff=list())
     for(i in seq(n_permutations_used)){
 
       perm0 <- perm_dt[permute_id==i,perm][[1]]
@@ -140,6 +144,9 @@ setup_linear_gaussian <- function(internal,
       # Tx_list[[j]] <- (Qdiff+Udiff) / n_permutations_used
 
       these_id_combinations_mat[[j]] <- rbind(these_id_combinations_mat[[j]],these_id_combinations)
+      tmp_lists[[j]]$Qdiff1[[i]] <- Qdiff1
+      tmp_lists[[j]]$Qdiff2[[i]] <- Qdiff2
+      tmp_lists[[j]]$Udiff[[i]] <- Udiff
     }
 
     # includes_j <- S[,j]==1 # Find all subsets that include feature j
@@ -157,6 +164,9 @@ setup_linear_gaussian <- function(internal,
   internal$objects$QS_list <- QS_list
   internal$objects$Tmu_list <- Tmu_list
   internal$objects$Tx_list <- Tx_list
+  internal$objects$these_id_combinations_mat <- these_id_combinations_mat
+  internal$objects$tmp_lists <- tmp_lists
+
   internal$parameters$gaussian.mu <- gaussian.mu
   internal$parameters$gaussian.cov_mat <- gaussian.cov_mat
 
