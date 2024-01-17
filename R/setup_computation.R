@@ -303,6 +303,43 @@ all_permutations <- function(x) {
   }
 }
 
+X_from_perm_dt_linear_gaussian <- function(perm_dt){
+  m <- length(perm_dt[["perm"]][[1]])
+
+  perm_list<- list()
+  for (j in seq_len(m)){
+    perm_list[[j]] <- list()
+  }
+  for(i in 1:nrow(perm_dt)){
+    perm0 <- perm_dt[i, perm][[1]]
+    for (j in seq_len(m)){
+      position <- which(perm0==j)
+      if(position==1){
+        perm_list[[j]][[i]] <- numeric(0)
+      } else {
+        perm_list[[j]][[i]] <- sort(perm0[seq_len(position-1)])
+      }
+    }
+  }
+
+  X_perm_list <- list()
+  for (j in seq_len(m)){
+    X_perm_list[[j]] <-   data.table(n_features = sapply(perm_list[[j]], length))
+    X_perm_list[[j]][, n_features := as.integer(n_features)]
+    X_perm_list[[j]][, features := perm_list[[j]]]
+    X_perm_list[[j]][, permute_id := seq_len(nrow(perm_dt))]
+    data.table::setkeyv(X_perm_list[[j]], c("n_features","permute_id"))
+    X_perm_list[[j]][!is.finite(permute_id), permute_id := NA]
+
+    # Temporary create a character string to merge back on below (cannot merge on lists)
+    X_perm_list[[j]][, features_tmp := sapply(features, paste, collapse = " ")]
+    X_perm_list[[j]][, rowid:=.I]
+    X_perm_list[[j]][, feature_contrib:=j]
+
+  }
+
+}
+
 
 X_from_perm_dt <- function(perm_dt) {
   m <- length(perm_dt[["perm"]][[1]])
