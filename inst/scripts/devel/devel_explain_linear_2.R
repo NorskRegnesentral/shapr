@@ -2,10 +2,15 @@ set.seed(12345)
 
 p <- 4
 n_train <- 10^3
-beta <- rep(1,4)
-b <- 1
-mu <- rep(1,4)
-Sig <- diag(4)
+beta <- rnorm(p)#rep(1,p)
+b <- rnorm(1)
+mu <- rnorm(p)#rep(1,p)
+
+# Random covariance matrix
+A <- matrix(runif(p^2,min = -1,max=1), ncol=p)
+Sig <- t(A) %*% A
+#Sig <- diag(4)
+
 
 data <- as.data.table(mvtnorm::rmvnorm(n_train,mean=mu,sigma=Sig))
 
@@ -16,23 +21,22 @@ model <- lm(y~., data = cbind(y,data))
 p0 <- as.numeric(b+mu%*%beta)
 
 x_explain <- rbind(head(data,2),
-                  t(rep(0,4)),
-                  t(rep(1,4)),
-                  t(1:4),
+                  t(rep(0,p)),
+                  t(rep(1,p)),
+                  t(1:p),
                   use.names=FALSE)
 
 
-test <-explain(model = model,
-               x_explain = x_explain,
-               x_train = data,
-               approach = "gaussian",
-               shap_approach = "permutation",
-               prediction_zero = p0,
-               gaussian.cov_mat=Sig,
-               gaussian.mu = mu,
-               n_samples = 10^5)
-test
-
+# test <-explain(model = model,
+#                x_explain = x_explain,
+#                x_train = data,
+#                approach = "gaussian",
+#                shap_approach = "permutation",
+#                prediction_zero = p0,
+#                gaussian.cov_mat=Sig,
+#                gaussian.mu = mu,
+#                n_samples = 10^4)
+# test
 
 #debugonce(explain_linear)
 
@@ -42,9 +46,30 @@ test2 <-explain_linear(model = model,
                        x_train = data,
                        prediction_zero = p0, # this is not used
                        gaussian.cov_mat=Sig,
-                       gaussian.mu=mu,
+                       gaussian.mu=mu,n_permutations = 6
 )
-test2
+test2$internal$objects$perm_dt[,.N]
+
+all_lists <- NULL
+for(i in 1:p){
+  all_lists <- c(all_lists,test2$internal$objects$tmp_lists[[i]]$Udiff)
+}
+length(unique(all_lists))
+
+test2$internal$objects$tmp_lists[[1]]$Udiff[[1]]+test2$internal$objects$tmp_lists[[1]]$Udiff[[2]]
+test2$internal$objects$tmp_lists[[1]]$Udiff[[3]]+test2$internal$objects$tmp_lists[[1]]$Udiff[[4]]
+test2$internal$objects$tmp_lists[[1]]$Udiff[[5]]+test2$internal$objects$tmp_lists[[1]]$Udiff[[6]]
+
+test2$internal$objects$tmp_lists[[2]]$Udiff[[1]]+test2$internal$objects$tmp_lists[[2]]$Udiff[[2]]
+test2$internal$objects$tmp_lists[[2]]$Udiff[[3]]+test2$internal$objects$tmp_lists[[2]]$Udiff[[4]]
+test2$internal$objects$tmp_lists[[2]]$Udiff[[5]]+test2$internal$objects$tmp_lists[[2]]$Udiff[[6]]
+
+
+
+length(unique(test2$internal$objects$tmp_lists[[1]]$Udiff))
+length(unique(test2$internal$objects$tmp_lists[[2]]$Udiff))
+length(unique(test2$internal$objects$tmp_lists[[3]]$Udiff))
+length(unique(test2$internal$objects$tmp_lists[[4]]$Udiff))
 
 test2$internal$objects$US_list
 test2$internal$objects$QS_list

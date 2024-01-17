@@ -7,7 +7,7 @@ data_complete <- data_complete[sample(seq_len(.N))] # Sh
 
 y_var_numeric <- "Ozone"
 
-x_var_numeric <- c("Solar.R", "Wind", "Temp", "Month")#, "Day")
+x_var_numeric <- c("Solar.R", "Wind", "Temp", "Month", "Day")
 
 data_train <- head(data_complete, -3)
 data_explain <- tail(data_complete, 3)
@@ -22,7 +22,7 @@ model_lm_numeric <- lm(lm_formula_numeric, data = data_complete)
 
 p0 <- data_train[, mean(get(y_var_numeric))]
 
-x_explain_numeric_new <- rbind(x_explain_numeric,t(rep(0,4)),t(rep(1,4)),use.names=FALSE)
+x_explain_numeric_new <- rbind(x_explain_numeric,t(rep(0,length(x_var_numeric))),t(rep(1,length(x_var_numeric))),use.names=FALSE)
 
 
 
@@ -33,8 +33,15 @@ test <-explain(model = model_lm_numeric,
                x_train = x_train_numeric,
                approach = "gaussian",
                shap_approach = "permutation",
-               prediction_zero = p0,n_samples = 10^5)
+               prediction_zero = p0,n_samples = 10^4)
 test
+#none Solar.R    Wind       Temp   Month
+#1: 42.44  -8.379   7.944   15.29533  0.6522
+#2: 42.44   4.919  -4.755  -11.00089 -1.0133
+#3: 42.44   7.302 -25.612   -0.08335 -0.5415
+#4: 42.44 -12.371  72.269 -154.31630 -6.0802
+#5: 42.44 -11.922  67.037 -153.72291 -6.2782
+
 
 
 #debugonce(explain_linear)
@@ -43,10 +50,20 @@ test
 test2 <-explain_linear(model = model_lm_numeric,
                        x_explain = x_explain_numeric_new,
                        x_train = x_train_numeric,
-                       prediction_zero = p0,n_permutations=4)
+                       prediction_zero = p0,
+                       n_permutations=4,
+                       )
 test2
 
-test2$internal$objects$US_list
+test2 <-explain_linear(model = model_lm_numeric,
+                       x_explain = x_explain_numeric_new,
+                       x_train = x_train_numeric,
+                       prediction_zero = p0,
+)
+test2
+
+
+unique(test2$internal$objects$US_list)
 
 
 ### We don't get the same results... Investigating by looking at the v(S) we get:

@@ -91,10 +91,14 @@ setup_linear_gaussian <- function(internal,
   tmp_lists <- list()
   for(j in seq_len(n_features)){
     Tmu_list[[j]] <- Tx_list[[j]] <- matrix(0,nrow = n_features,ncol = n_features)
+    Tmu_list[[j]][j,j] <- -1
+    Tx_list[[j]][j,j] <- 1
+
     these_id_combinations_mat[[j]] <- numeric(0)
     tmp_lists[[j]] <- list(Qdiff1=list(),
                            Qdiff2=list(),
                            Udiff=list())
+
     for(i in seq(n_permutations_used)){
 
       perm0 <- perm_dt[permute_id==i,perm][[1]]
@@ -128,12 +132,12 @@ setup_linear_gaussian <- function(internal,
       Sbar_id_comb <- these_id_combinations[3]
       Sbar_min_j_id_comb <- these_id_combinations[4]
 
-      Qdiff1 <- QS_list[[Sbar_min_j_id_comb]]-QS_list[[Sbar_id_comb]]
-      Qdiff2 <- QS_list[[S_plus_j_id_comb]]-QS_list[[S_id_comb]]
+      #Qdiff1 <- QS_list[[Sbar_min_j_id_comb]]-QS_list[[Sbar_id_comb]]
+      #Qdiff2 <- QS_list[[S_plus_j_id_comb]]-QS_list[[S_id_comb]]
       Udiff <- US_list[[S_plus_j_id_comb]]-US_list[[S_id_comb]]
 
-      Tmu_list[[j]] <- Tmu_list[[j]] + (Qdiff1-Udiff)/ n_permutations_used
-      Tx_list[[j]] <- Tx_list[[j]]+ (Qdiff2+Udiff)/ n_permutations_used
+      Tmu_list[[j]] <- Tmu_list[[j]] -Udiff/ n_permutations_used
+      Tx_list[[j]] <- Tx_list[[j]] +Udiff/ n_permutations_used
 
       #Tmu_list[[j]] <- Tmu_list[[j]] + (Qdiff1-Udiff)/ n_permutations_used
       #Tx_list[[j]] <- Tx_list[[j]]+ (Qdiff2-Udiff)/ n_permutations_used

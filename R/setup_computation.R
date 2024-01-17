@@ -234,8 +234,8 @@ feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL,pai
     perm_dt <- feature_permute_samp(m, n_permutations,paired_shap_sampling)
   }
 
-  #ret <- X_from_perm_dt(perm_dt)
-  ret <- X_from_perm_dt_linear_gaussian(perm_dt) # May use this also for the regular permutation approach, to simplify the computation in the end but need to check that first
+  ret <- X_from_perm_dt(perm_dt)
+  #ret <- X_from_perm_dt_linear_gaussian(perm_dt) # May use this also for the regular permutation approach, to simplify the computation in the end but need to check that first
 
   ret$perm_dt = perm_dt
 
