@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac_torch_modules.R
 \name{GaussCatLoss}
 \alias{GaussCatLoss}
-\title{A torch::nn_module Representing a GaussCatLoss}
+\title{A \link[torch:nn_module]{torch::nn_module} Representing a GaussCatLoss}
 \usage{
 GaussCatLoss(one_hot_max_sizes, min_sigma = 1e-04, min_prob = 1e-04)
 }

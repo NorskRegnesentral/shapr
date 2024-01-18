@@ -2,17 +2,18 @@
 % Please edit documentation in R/approach_vaeac_torch_modules.R
 \name{Specified_prob_mask_generator}
 \alias{Specified_prob_mask_generator}
-\title{A torch::nn_module Representing a Specified_prob_mask_generator}
+\title{A \link[torch:nn_module]{torch::nn_module} Representing a Specified_prob_mask_generator}
 \usage{
 Specified_prob_mask_generator(masking_probs, paired_sampling = FALSE)
 }
 \arguments{
-\item{masking_probs}{An M+1 numerics containing the probabilities masking 'd' (0,...M) entries for each observation.}
+\item{masking_probs}{An M+1 numerics containing the probabilities masking 'd' of the (0,...M) entries
+for each observation.}
 
 \item{paired_sampling}{Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
 If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
 the first half and second half of the rows are duplicates of each other. That is,
-batch = \link{row1, row1, row2, row2, row3, row3, ...}.}
+\verb{batch = [row1, row1, row2, row2, row3, row3, ...]}.}
 }
 \description{
 A mask generator which masks the entries based on specified probabilities.
@@ -26,7 +27,7 @@ the 'M'-dimensional observation 'x' in the batch based on the given M+1 probabil
 'd' masked are uniformly sampled from the 'M' possible feature indices. The d'th entry
 of the probability of having d-1 masked values.
 
-Note that MCAR_mask_generator with p = 0.5 is the same as using \code{\link{Specified_prob_mask_generator}}
+Note that MCAR_mask_generator with p = 0.5 is the same as using \code{\link[=Specified_prob_mask_generator]{Specified_prob_mask_generator()}}
 with \code{masking_ratio} = choose(M, 0:M), where M is the number of features. This function was initially
 created to check if increasing the probability of having a masks with many masked features improved
 vaeac's performance by focusing more on these situations during training.

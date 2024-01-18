@@ -24,7 +24,7 @@ The function also clamps the probabilities between a minimum and maximum probabi
 them afterward, so the final probabilities can be marginally below or above the thresholds.
 }
 \details{
-Take a Tensor (e. g. a part of neural network output) and return \code{\link[torch]{distr_categorical}}
+Take a Tensor (e. g. a part of neural network output) and return \code{\link[torch:distr_categorical]{torch::distr_categorical()}}
 distribution. The input tensor after applying softmax over the last axis contains a batch of the categorical
 probabilities. So there are no restrictions on the input tensor. Technically, this function treats the last axis as
 the categorical probabilities, but Categorical takes only 2D input where the first axis is the batch axis and the

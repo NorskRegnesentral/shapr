@@ -10,7 +10,7 @@ MCAR_mask_generator(masking_ratio = 0.5, paired_sampling = FALSE)
 \item{masking_ratio}{Numeric between 0 and 1. The probability for an entry in the generated mask to be 1 (masked).}
 
 \item{paired_sampling}{Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
-If \code{TRUE}, then \code{batch} must be sampled using \code{\link{paired_sampler}} which ensures that the \code{batch} contains
+If \code{TRUE}, then \code{batch} must be sampled using \code{\link[=paired_sampler]{paired_sampler()}} which ensures that the \code{batch} contains
 two instances for each original observation. That is, \code{batch} \eqn{= [X_1, X_1, X_2, X_2, X_3, X_3, ...]}, where
 each entry \eqn{X_j} is a row of dimension \eqn{p} (i.e., the number of features).}
 }

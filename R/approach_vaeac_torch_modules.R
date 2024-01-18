@@ -11,20 +11,23 @@
 #' and the provided parameters for the networks. It also creates, e.g., reconstruction log probability function,
 #' methods for sampling from the decoder output, and then use these to create the vaeac model.
 #'
-#' @param one_hot_max_sizes A torch tensor of dimension p containing the one hot sizes of the p features.
-#' The sizes for the continuous features can either be '0' or '1'.
+#' @param one_hot_max_sizes A torch tensor of dimension p containing the one hot sizes of the `M` features.
+#' The sizes for the continuous features can either be `0` or `1`.
 #' @param width Integer. The number of neurons in each hidden layer in the neural networks
 #' of the masked encoder, full encoder, and decoder.
 #' @param depth Integer. The number of hidden layers in the neural networks of the
 #' masked encoder, full encoder, and decoder.
 #' @param latent_dim Integer. The number of dimensions in the latent space.
-#' @param activation_function An \code{\link[torch]{nn_module}} representing an activation function such as, e.g.,
-#' \code{\link[torch]{nn_relu}}, \code{\link[torch]{nn_leaky_relu}}, \code{\link[torch]{nn_selu}},
-#' \code{\link[torch]{nn_sigmoid}}.
-#' @param use_skip_connections Boolean. If we are to use skip connections in each layer. If true, then we add the input
-#' to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.
-#' @param skip_connection_masked_enc_dec Boolean. If we are to apply concatenate skip
-#' connections between the layers in the masked encoder and decoder.
+#' @param activation_function A [torch::nn_module()] representing an activation function such as, e.g.,
+#' [torch::nn_relu()], [torch::nn_leaky_relu()], [torch::nn_selu()],
+#' [torch::nn_sigmoid()].
+#' @param use_skip_connections Boolean. If we are to use skip connections in each layer, see [shapr::SkipConnection()].
+#' If `TRUE`, then we add the input to the outcome of each hidden layer, so the output becomes
+#' \eqn{X + \operatorname{activation}(WX + b)}. I.e., the identity skip connection.
+#' @param skip_connection_masked_enc_dec Boolean. If we are to apply concatenating skip
+#' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
+#' linked to the last layer of the decoder. The second layer of the masked encoder will be
+#' linked to the second to last layer of the decoder, and so on.
 #' @param use_batch_normalization Boolean. If we are to use batch normalization after the activation function.
 #' Note that if \code{use_skip_connections} is TRUE, then the normalization is
 #' done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).
@@ -52,7 +55,7 @@
 #' Apply Mask to Batch to Create Observed Batch
 #'
 #' Compute the parameters for the latent normal distributions inferred by the encoders.
-#' If \code{only_masked_encoder = TRUE}, then we only compute the latent normal distributions inferred by the
+#' If `only_masked_encoder = TRUE`, then we only compute the latent normal distributions inferred by the
 #' masked encoder. This is used in the deployment phase when we do not have access to the full observation.
 #'
 #' @section make_latent_distributions:
@@ -82,7 +85,7 @@
 #' Compute IWAE log likelihood estimate with K samples per object.
 #'
 #' Technically, it is differentiable, but it is recommended to use it for
-#' evaluation purposes inside torch.no_grad in order to save memory. With torch::with_no_grad
+#' evaluation purposes inside torch.no_grad in order to save memory. With [torch::with_no_grad()]
 #' the method almost doesn't require extra memory for very large K. The method makes K independent
 #' passes through decoder network, so the batch size is the same as for training with batch_vlb.
 #' IWAE is an abbreviation for Importance Sampling Estimator:
@@ -96,8 +99,9 @@
 #' =
 #' \operatorname{logsumexp}(\log[p_\theta(x|z_i, y)] + \log[p_\psi(z_i|y)] - \log[q_\phi(z_i|x,y)]) - \log(K) \newline
 #' =
-#' \operatorname{logsumexp}(rec\_loss + prior\_log\_prob - proposal\_log\_prob) - \log(K),}
-#' where \eqn{z_i ~ q_\phi(z|x,y)}.
+#' \operatorname{logsumexp}(\text{rec}\_\text{loss} + \text{prior}\_\text{log}\_\text{prob} -
+#'  \text{proposal}\_\text{log}\_\text{prob}) - \log(K),}
+#' where \eqn{z_i \sim q_\phi(z|x,y)}.
 #'
 #' @section generate_samples_params:
 #' Generate the parameters of the generative distributions for samples from the batch.
@@ -107,8 +111,8 @@
 #' I.e., means and variances for the normal distributions (continuous features) and probabilities
 #' for the categorical distribution (categorical features).
 #' The second axis is used to index samples for an object, i.e. if the batch shape is \[n x D1 x D2\], then
-#' the result shape is \[n x K x D1 x D2\]. It is better to use it inside torch::with_no_grad in order to save
-#' memory. With torch::with_no_grad the method doesn't require extra memory except the memory for the result.
+#' the result shape is \[n x K x D1 x D2\]. It is better to use it inside [torch::with_no_grad()] in order to save
+#' memory. With [torch::with_no_grad()] the method doesn't require extra memory except the memory for the result.
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
@@ -1131,15 +1135,15 @@ exp_trans_cont_features_func <- function(data, one_hot_max_sizes) {
 #' Dataset Used by the Vaeac Model
 #'
 #' @description
-#' Convert a the data into a \code{\link[torch]{dataset}} which the vaeac model creates batches from.
+#' Convert a the data into a [torch::dataset()] which the vaeac model creates batches from.
 #'
 #' @details
-#' This function creates a \code{\link[torch]{dataset}} object that represent a map from keys to data samples.
-#' It is used by the \code{\link[torch]{dataloader}} to load data which should be used to extract the
+#' This function creates a [torch::dataset()] object that represent a map from keys to data samples.
+#' It is used by the [torch::dataloader()] to load data which should be used to extract the
 #' batches for all epochs in the training phase of the neural network. Note that a dataset object
 #' is an R6 instanc, see \url{https://r6.r-lib.org/articles/Introduction.html}, which is classical
-#' object-oriented programming, with self reference. I.e, \code{\link{vaeac_dataset}} is a subclass
-#' of type \code{\link[torch]{dataset}}.
+#' object-oriented programming, with self reference. I.e, [shapr::vaeac_dataset()] is a subclass
+#' of type [torch::dataset()].
 #'
 #' @param X A torch_tensor contain the data of shape N x p, where N and p are the number
 #' of observations and features, respectively.
@@ -1207,13 +1211,13 @@ vaeac_dataset <- torch::dataset(
 #'
 #' @details
 #' A sampler object that allows for paired sampling by always including each observation from the
-#' \code{\link{vaeac_dataset}} twice.
-#' A \code{\link[torch]{sampler}} object can be used with \code{\link[torch]{dataloader}}
-#' when creating batches from a torch dataset \code{\link[torch]{dataset}}. See more on
+#' [shapr::vaeac_dataset()] twice.
+#' A [torch::sampler()] object can be used with [torch::dataloader()]
+#' when creating batches from a torch dataset [torch::dataset()]. See more on
 #' \url{https://rdrr.io/cran/torch/src/R/utils-data-sampler.R}.
 #' This function does not use batch iterators, which might increase the speed.
 #'
-#' @param vaeac_dataset_object A \code{\link{vaeac_dataset}} object containing the data.
+#' @param vaeac_dataset_object A [shapr::vaeac_dataset()] object containing the data.
 #' @param shuffle Boolean. If `TRUE`, then the data is shuffled. If `FALSE`,
 #' then the data is returned in chronological order.
 #'
@@ -1280,7 +1284,7 @@ paired_sampler <- torch::sampler(
 
 # Neural Network Utility Functions ====================================================================================
 ##  MemoryLayer -------------------------------------------------------------------------------------------------------
-#' A torch::nn_module Representing a Memory Layer
+#' A [torch::nn_module] Representing a Memory Layer
 #'
 #' @description The layer is used to make skip-connections inside torch::nn_sequential network
 #' or between several torch::nn_sequential networks without unnecessary code complication.
@@ -1398,14 +1402,14 @@ MemoryLayer <- torch::nn_module(
 )
 
 ## SkipConnection -----------------------------------------------------------------------------------------------------
-#' A torch::nn_module representing a Skip Connection
+#' A [torch::nn_module] Representing a skip connection
 #'
 #' @description
-#' Skip-connection over the sequence of layers in the constructor. The module passes
+#' Skip connection over the sequence of layers in the constructor. The module passes
 #' input data sequentially through these layers and then adds original data to the result.
 #'
-#' @param ... network modules such as, e.g., \code{\link[torch]{nn_linear}}, \code{\link[torch]{nn_relu}},
-#' and \code{\link{MemoryLayer}} objects. See \code{\link{get_imputation_networks}} for more information.
+#' @param ... network modules such as, e.g., [torch::nn_linear()], [torch::nn_relu()],
+#' and [shapr::MemoryLayer()] objects. See [shapr::vaeac()] for more information.
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
@@ -1430,11 +1434,11 @@ SkipConnection <- torch::nn_module(
 #' Extends Incomplete Batches by Sampling Extra Data from Dataloader
 #'
 #' @description If the height of the `batch` is less than `batch_size`, this function extends the `batch` with
-#' data from the \code{\link[torch]{dataloader}} until the `batch` reaches the required size.
+#' data from the [torch::dataloader()] until the `batch` reaches the required size.
 #' Note that `batch` is a tensor.
 #'
 #' @param batch The batch we want to check if has the right size, and if not extend it until it has the right size.
-#' @param dataloader A \code{\link[torch]{dataloader}} object from which we can create an iterator object
+#' @param dataloader A [torch::dataloader()] object from which we can create an iterator object
 #' and load data to extend the batch.
 #' @param batch_size Integer. The number of samples to include in each batch.
 #'
@@ -1571,7 +1575,7 @@ get_validation_iwae <- function(val_dataloader,
 #' are clamped with `min_sigma` to ensure stable results. If `params` is of dimensions batch_size x 8, the function
 #' will create 4 independent normal distributions for each of the observation (`batch_size` observations in total).
 #'
-#' @details Take a Tensor (e.g. neural network output) and return a \code{\link[torch]{distr_normal}} distribution.
+#' @details Take a Tensor (e.g. neural network output) and return a [torch::distr_normal()] distribution.
 #' This normal distribution is component-wise independent, and its dimensionality depends on the input shape.
 #' First half of channels is mean (\eqn{\mu}) of the distribution, the softplus of the second half is
 #' std (\eqn{\sigma}), so there is no restrictions on the input tensor. \code{min_sigma} is the minimal value of
@@ -1582,7 +1586,7 @@ get_validation_iwae <- function(val_dataloader,
 #' @param params Tensor containing the parameters for the normal distributions.
 #' @param min_sigma The minimal variance allowed.
 #'
-#' @return \code{\link[torch]{distr_normal}} distributions with the provided means and standard deviations.
+#' @return [torch::distr_normal()] distributions with the provided means and standard deviations.
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
@@ -1616,7 +1620,7 @@ normal_parse_params <- function(params,
 #' The function also clamps the probabilities between a minimum and maximum probability. Note that we still normalize
 #' them afterward, so the final probabilities can be marginally below or above the thresholds.
 #'
-#' @details Take a Tensor (e. g. a part of neural network output) and return \code{\link[torch]{distr_categorical}}
+#' @details Take a Tensor (e. g. a part of neural network output) and return [torch::distr_categorical()]
 #' distribution. The input tensor after applying softmax over the last axis contains a batch of the categorical
 #' probabilities. So there are no restrictions on the input tensor. Technically, this function treats the last axis as
 #' the categorical probabilities, but Categorical takes only 2D input where the first axis is the batch axis and the
@@ -1664,8 +1668,8 @@ categorical_parse_params_col <- function(params, min_prob = 0, max_prob = 1) {
 #' @description Computes the KL divergence between univariate normal distributions using the analytical formula,
 #' see \url{https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence#Multivariate_normal_distributions}.
 #'
-#' @param p a \code{\link[torch]{distr_normal}} object.
-#' @param q a \code{\link[torch]{distr_normal}} object.
+#' @param p a [torch::distr_normal()] object.
+#' @param q a [torch::distr_normal()] object.
 #'
 #' @return The KL divergence between the two Gaussian distributions.
 #'
@@ -1679,7 +1683,7 @@ kl_normal_normal <- function(p, q) {
 
 # Neural Network Modules ==============================================================================================
 ## GaussCatSampler -----------------------------------------------------------------------------------------
-#' A torch::nn_module Representing a GaussCatSampler
+#' A [torch::nn_module] Representing a GaussCatSampler
 #'
 #' @description
 #' The GaussCatSampler generates a sample from the generative distribution defined by
@@ -1797,7 +1801,7 @@ GaussCatSampler <- torch::nn_module(
 
 
 ## GaussCatSamplerMostLikely -------------------------------------------------------------------------------
-#' A torch::nn_module Representing a GaussCatSamplerMostLikely
+#' A [torch::nn_module] Representing a GaussCatSamplerMostLikely
 #'
 #' @description
 #' The GaussCatSamplerrMostLikely generates the most likely samples from
@@ -1894,7 +1898,7 @@ GaussCatSamplerMostLikely <- torch::nn_module(
 )
 
 ## GaussCatSamplerRandom -----------------------------------------------------------------------------------
-#' A torch::nn_module Representing a GaussCatSamplerRandom
+#' A [torch::nn_module] Representing a GaussCatSamplerRandom
 #'
 #' @description
 #' The GaussCatSamplerRandom generates random samples from the generative
@@ -1994,10 +1998,8 @@ GaussCatSamplerRandom <- torch::nn_module(
 )
 
 
-
-
 ## GaussCatParameters --------------------------------------------------------------------------------------
-#' A torch::nn_module Representing a GaussCatParameters
+#' A [torch::nn_module] Representing a GaussCatParameters
 #'
 #' @description
 #' The GaussCatParameters module extracts the parameters
@@ -2099,7 +2101,7 @@ GaussCatParameters <- torch::nn_module(
 
 
 ## GaussCatLoss --------------------------------------------------------------------------------------------
-#' A torch::nn_module Representing a GaussCatLoss
+#' A [torch::nn_module] Representing a GaussCatLoss
 #'
 #' @description
 #' The GaussCatLoss module/layer computes the log probability
@@ -2245,7 +2247,7 @@ GaussCatLoss <- torch::nn_module(
 
 
 ## CategoricalToOneHotLayer -------------------------------------------------------------------------------------------
-#' A torch::nn_module Representing a CategoricalToOneHotLayer
+#' A [torch::nn_module] Representing a CategoricalToOneHotLayer
 #'
 #' @description
 #' The CategoricalToOneHotLayer module/layer expands categorical features into one-hot vectors,
@@ -2411,7 +2413,7 @@ CategoricalToOneHotLayer <- torch::nn_module(
 #'
 #' @param masking_ratio Numeric between 0 and 1. The probability for an entry in the generated mask to be 1 (masked).
 #' @param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
-#' If `TRUE`, then `batch` must be sampled using \code{\link{paired_sampler}} which ensures that the `batch` contains
+#' If `TRUE`, then `batch` must be sampled using [shapr::paired_sampler()] which ensures that the `batch` contains
 #' two instances for each original observation. That is, `batch` \eqn{= [X_1, X_1, X_2, X_2, X_3, X_3, ...]}, where
 #' each entry \eqn{X_j} is a row of dimension \eqn{p} (i.e., the number of features).
 #'
@@ -2534,8 +2536,7 @@ MCAR_mask_generator <- torch::nn_module(
 
 
 ## Specified_prob_mask_generator -------------------------------------------------------------------------------
-
-#' A torch::nn_module Representing a Specified_prob_mask_generator
+#' A [torch::nn_module] Representing a Specified_prob_mask_generator
 #'
 #' @description A mask generator which masks the entries based on specified probabilities.
 #'
@@ -2548,17 +2549,17 @@ MCAR_mask_generator <- torch::nn_module(
 #' 'd' masked are uniformly sampled from the 'M' possible feature indices. The d'th entry
 #' of the probability of having d-1 masked values.
 #'
-#' Note that MCAR_mask_generator with p = 0.5 is the same as using \code{\link{Specified_prob_mask_generator}}
+#' Note that MCAR_mask_generator with p = 0.5 is the same as using [shapr::Specified_prob_mask_generator()]
 #' with `masking_ratio` = choose(M, 0:M), where M is the number of features. This function was initially
 #' created to check if increasing the probability of having a masks with many masked features improved
 #' vaeac's performance by focusing more on these situations during training.
 #'
-#'
-#' @param masking_probs An M+1 numerics containing the probabilities masking 'd' (0,...M) entries for each observation.
+#' @param masking_probs An M+1 numerics containing the probabilities masking 'd' of the (0,...M) entries
+#' for each observation.
 #' @param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
 #' If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
 #' the first half and second half of the rows are duplicates of each other. That is,
-#' batch = [row1, row1, row2, row2, row3, row3, ...].
+#' `batch = [row1, row1, row2, row2, row3, row3, ...]`.
 #'
 #' @examples
 #' # probs <- c(1, 8, 6, 3, 2)
@@ -2613,7 +2614,7 @@ Specified_prob_mask_generator <- torch::nn_module(
   # @param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
   # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
   # the first half and second half of the rows are duplicates of each other. That is,
-  # batch = [row1, row1, row2, row2, row3, row3, ...].
+  # `batch = [row1, row1, row2, row2, row3, row3, ...]`.
   #
   # @examples Specified_prob_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
   #
@@ -2683,7 +2684,7 @@ Specified_prob_mask_generator <- torch::nn_module(
 )
 
 ## Specified_masks_mask_generator -------------------------------------------------------------------------------------
-#' A torch::nn_module Representing a Specified_masks_mask_generator
+#' A [torch::nn_module] Representing a Specified_masks_mask_generator
 #'
 #' @description
 #' A mask generator which masks the entries based on sampling provided 1D masks with corresponding probabilities.
@@ -2697,7 +2698,7 @@ Specified_prob_mask_generator <- torch::nn_module(
 #' @param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
 #' If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
 #' the first half and second half of the rows are duplicates of each other. That is,
-#' batch = [row1, row1, row2, row2, row3, row3, ...].
+#' `batch = [row1, row1, row2, row2, row3, row3, ...]`.
 #' @param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
 #' entries are missing. If any are missing, then the returned mask will ensure that
 #' these missing entries are masked.

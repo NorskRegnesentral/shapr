@@ -12,7 +12,7 @@ normal_parse_params(params, min_sigma = 0.001)
 \item{min_sigma}{The minimal variance allowed.}
 }
 \value{
-\code{\link[torch]{distr_normal}} distributions with the provided means and standard deviations.
+\code{\link[torch:distr_normal]{torch::distr_normal()}} distributions with the provided means and standard deviations.
 }
 \description{
 Function that takes in the a tensor where the first half of the columns contains the means of the
@@ -21,7 +21,7 @@ are clamped with \code{min_sigma} to ensure stable results. If \code{params} is 
 will create 4 independent normal distributions for each of the observation (\code{batch_size} observations in total).
 }
 \details{
-Take a Tensor (e.g. neural network output) and return a \code{\link[torch]{distr_normal}} distribution.
+Take a Tensor (e.g. neural network output) and return a \code{\link[torch:distr_normal]{torch::distr_normal()}} distribution.
 This normal distribution is component-wise independent, and its dimensionality depends on the input shape.
 First half of channels is mean (\eqn{\mu}) of the distribution, the softplus of the second half is
 std (\eqn{\sigma}), so there is no restrictions on the input tensor. \code{min_sigma} is the minimal value of

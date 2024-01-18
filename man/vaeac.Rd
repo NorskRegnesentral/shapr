@@ -24,8 +24,8 @@ vaeac(
 )
 }
 \arguments{
-\item{one_hot_max_sizes}{A torch tensor of dimension p containing the one hot sizes of the p features.
-The sizes for the continuous features can either be '0' or '1'.}
+\item{one_hot_max_sizes}{A torch tensor of dimension p containing the one hot sizes of the \code{M} features.
+The sizes for the continuous features can either be \code{0} or \code{1}.}
 
 \item{width}{Integer. The number of neurons in each hidden layer in the neural networks
 of the masked encoder, full encoder, and decoder.}
@@ -35,15 +35,18 @@ masked encoder, full encoder, and decoder.}
 
 \item{latent_dim}{Integer. The number of dimensions in the latent space.}
 
-\item{activation_function}{An \code{\link[torch]{nn_module}} representing an activation function such as, e.g.,
-\code{\link[torch]{nn_relu}}, \code{\link[torch]{nn_leaky_relu}}, \code{\link[torch]{nn_selu}},
-\code{\link[torch]{nn_sigmoid}}.}
+\item{activation_function}{A \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
+\code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}},
+\code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
-\item{use_skip_connections}{Boolean. If we are to use skip connections in each layer. If true, then we add the input
-to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.}
+\item{use_skip_connections}{Boolean. If we are to use skip connections in each layer, see \code{\link[=SkipConnection]{SkipConnection()}}.
+If \code{TRUE}, then we add the input to the outcome of each hidden layer, so the output becomes
+\eqn{X + \operatorname{activation}(WX + b)}. I.e., the identity skip connection.}
 
-\item{skip_connection_masked_enc_dec}{Boolean. If we are to apply concatenate skip
-connections between the layers in the masked encoder and decoder.}
+\item{skip_connection_masked_enc_dec}{Boolean. If we are to apply concatenating skip
+connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
+linked to the last layer of the decoder. The second layer of the masked encoder will be
+linked to the second to last layer of the decoder, and so on.}
 
 \item{use_batch_normalization}{Boolean. If we are to use batch normalization after the activation function.
 Note that if \code{use_skip_connections} is TRUE, then the normalization is
@@ -130,7 +133,7 @@ Used as the (negative) loss function for training the vaeac model.
 Compute IWAE log likelihood estimate with K samples per object.
 
 Technically, it is differentiable, but it is recommended to use it for
-evaluation purposes inside torch.no_grad in order to save memory. With torch::with_no_grad
+evaluation purposes inside torch.no_grad in order to save memory. With \code{\link[torch:with_no_grad]{torch::with_no_grad()}}
 the method almost doesn't require extra memory for very large K. The method makes K independent
 passes through decoder network, so the batch size is the same as for training with batch_vlb.
 IWAE is an abbreviation for Importance Sampling Estimator:
@@ -144,8 +147,9 @@ IWAE is an abbreviation for Importance Sampling Estimator:
 =
 \operatorname{logsumexp}(\log[p_\theta(x|z_i, y)] + \log[p_\psi(z_i|y)] - \log[q_\phi(z_i|x,y)]) - \log(K) \newline
 =
-\operatorname{logsumexp}(rec\_loss + prior\_log\_prob - proposal\_log\_prob) - \log(K),}
-where \eqn{z_i ~ q_\phi(z|x,y)}.
+\operatorname{logsumexp}(\text{rec}\_\text{loss} + \text{prior}\_\text{log}\_\text{prob} -
+ \text{proposal}\_\text{log}\_\text{prob}) - \log(K),}
+where \eqn{z_i \sim q_\phi(z|x,y)}.
 }
 
 \section{generate_samples_params}{
@@ -157,8 +161,8 @@ latent representations through the decoder to obtain the parameters for the gene
 I.e., means and variances for the normal distributions (continuous features) and probabilities
 for the categorical distribution (categorical features).
 The second axis is used to index samples for an object, i.e. if the batch shape is [n x D1 x D2], then
-the result shape is [n x K x D1 x D2]. It is better to use it inside torch::with_no_grad in order to save
-memory. With torch::with_no_grad the method doesn't require extra memory except the memory for the result.
+the result shape is [n x K x D1 x D2]. It is better to use it inside \code{\link[torch:with_no_grad]{torch::with_no_grad()}} in order to save
+memory. With \code{\link[torch:with_no_grad]{torch::with_no_grad()}} the method doesn't require extra memory except the memory for the result.
 }
 
 \author{

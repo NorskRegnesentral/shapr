@@ -14,15 +14,15 @@ of observations and features, respectively.}
 the p features. The sizes for the continuous features can either be 0 or 1.}
 }
 \description{
-Convert a the data into a \code{\link[torch]{dataset}} which the vaeac model creates batches from.
+Convert a the data into a \code{\link[torch:dataset]{torch::dataset()}} which the vaeac model creates batches from.
 }
 \details{
-This function creates a \code{\link[torch]{dataset}} object that represent a map from keys to data samples.
-It is used by the \code{\link[torch]{dataloader}} to load data which should be used to extract the
+This function creates a \code{\link[torch:dataset]{torch::dataset()}} object that represent a map from keys to data samples.
+It is used by the \code{\link[torch:dataloader]{torch::dataloader()}} to load data which should be used to extract the
 batches for all epochs in the training phase of the neural network. Note that a dataset object
 is an R6 instanc, see \url{https://r6.r-lib.org/articles/Introduction.html}, which is classical
-object-oriented programming, with self reference. I.e, \code{\link{vaeac_dataset}} is a subclass
-of type \code{\link[torch]{dataset}}.
+object-oriented programming, with self reference. I.e, \code{\link[=vaeac_dataset]{vaeac_dataset()}} is a subclass
+of type \code{\link[torch:dataset]{torch::dataset()}}.
 }
 \examples{
 # p <- 5

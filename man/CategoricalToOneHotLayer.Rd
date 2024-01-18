@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac_torch_modules.R
 \name{CategoricalToOneHotLayer}
 \alias{CategoricalToOneHotLayer}
-\title{A torch::nn_module Representing a CategoricalToOneHotLayer}
+\title{A \link[torch:nn_module]{torch::nn_module} Representing a CategoricalToOneHotLayer}
 \usage{
 CategoricalToOneHotLayer(one_hot_max_sizes, add_nans_map_for_columns = NULL)
 }

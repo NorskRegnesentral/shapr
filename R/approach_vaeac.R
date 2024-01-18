@@ -5,10 +5,10 @@
 #' @param vaeac.width Integer. The number of neurons in each hidden layer in the neural networks
 #'  of the masked encoder, full encoder, and decoder.
 #' @param vaeac.latent_dim Integer. The number of dimensions in the latent space.
-#' @param vaeac.lr Numeric. The learning rate used in the \code{\link[torch]{optim_adam}} optimizer.
-#' @param vaeac.activation_function An \code{\link[torch]{nn_module}} representing an activation
-#'  function such as, e.g., \code{\link[torch]{nn_relu}}, \code{\link[torch]{nn_leaky_relu}},
-#'  \code{\link[torch]{nn_selu}}, and \code{\link[torch]{nn_sigmoid}}.
+#' @param vaeac.lr Numeric. The learning rate used in the [torch::optim_adam()] optimizer.
+#' @param vaeac.activation_function An [torch::nn_module()] representing an activation
+#'  function such as, e.g., [torch::nn_relu()], [torch::nn_leaky_relu()],
+#'  [torch::nn_selu()], and [torch::nn_sigmoid()].
 #' @param vaeac.num_vaeacs_initiate Integer. The number of different vaeac models to initiate
 #'  in the start. Pick the best performing one after `vaeac.extra_parameters$epochs_initiation_phase`
 #'  epochs (default is `2`) and continue training that one.
@@ -721,18 +721,18 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' @param width Integer. The number of neurons in each hidden layer in
 #' the neural networks of the masked encoder, full encoder, and decoder.
 #' @param latent_dim Integer. The number of dimensions in the latent space.
-#' @param lr Numeric. The learning rate used in the \code{\link[torch]{optim_adam}} optimizer.
+#' @param lr Numeric. The learning rate used in the [torch::optim_adam()] optimizer.
 #' @param batch_size Integer. The number of samples to include in each batch.
 #' @param running_avg_num_values Integer. How many of the previous values to include when we compute the running means.
-#' @param activation_function An \code{\link[torch]{nn_module}} representing an activation function such as, e.g.,
-#' \code{\link[torch]{nn_relu}}, \code{\link[torch]{nn_leaky_relu}}, \code{\link[torch]{nn_selu}}, and
-#' \code{\link[torch]{nn_sigmoid}}.
+#' @param activation_function An [torch::nn_module()] representing an activation function such as, e.g.,
+#' [torch::nn_relu()], [torch::nn_leaky_relu()], [torch::nn_selu()], and
+#' [torch::nn_sigmoid()].
 #' @param use_skip_connections Boolean. If we are to use skip connections in each layer. If true, then we add the input
 #' to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.
 #' @param skip_connection_masked_enc_dec Boolean. If we are to apply concatenate skip
 #' connections between the layers in the masked encoder and decoder.
 #' @param use_batch_normalization Boolean. If we are to use batch normalization after the activation function.
-#' Note that if \code{use_skip_connections} is TRUE, then the normalization is
+#' Note that if `use_skip_connections` is TRUE, then the normalization is
 #' done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).
 #' @param paired_sampling Boolean. Default is `TRUE`. If we are doing paired sampling. I.e.,
 #  each batch contains two versions of the same training observation, but where the first one is
@@ -741,11 +741,11 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' stable, but slower due to more complex implementation.
 #' @param masking_ratio Probability of masking a feature in the MCAR mask generator.
 #' Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-#' This is overruled if \code{mask_gen_these_coalitions} is specified.
+#' This is overruled if `mask_gen_these_coalitions` is specified.
 #' @param mask_gen_these_coalitions Matrix containing the different coalitions to learn.
 #' @param mask_gen_these_coalitions_prob Numerics containing the probabilities for
-#' sampling each mask in \code{mask_gen_these_coalitions}.
-#' Array containing the probabilities for sampling the coalitions in \code{mask_gen_these_coalitions}.
+#' sampling each mask in `mask_gen_these_coalitions`.
+#' Array containing the probabilities for sampling the coalitions in `mask_gen_these_coalitions`.
 #' @param sigma_mu Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
 #' see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 #' @param sigma_sigma Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
@@ -753,9 +753,10 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' @param save_data Boolean. If we are to save the data together with the model. Useful if one are to continue
 #' to train the model later.
 #' @param transform_all_cont_features Boolean. If we are to log transform all continuous features before
-#' sending the data to vaeac. vaeac creates unbounded values, so if the continuous features are strictly positive,
-#' as for Burr and Abalone data, it can be advantageous to log-transform the data to unbounded form before using vaeac.
-#' If `TRUE`, then \code{vaeac_postprocess_data} will take the exp of the results
+#' sending the data to the vaeac using the [shapr::vaeac_postprocess_data()] function. The vaeac method creates
+#' unbounded values, so if the continuous features are strictly positive, as for Burr and Abalone data, it can be
+#' advantageous to log-transform the data to unbounded form before using vaeac.
+#' If `TRUE`, then [shapr::vaeac_postprocess_data()] will take the exp of the results
 #' to get back to strictly positive values when using the vaeac model to impute missing values.
 #' @param verbose Boolean. If we are to print the progress of the initialization of different vaeac models,
 #' the training of the final vaeac model, and summary of the training progress.
@@ -2255,7 +2256,7 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 #' \[(`nrow(x_explain_with_NaNs)` \eqn{\times} `n_samples`), `n_features`\].
 #' @param return_as_postprocessed_dt Boolean. If we are to postprocess the data, i.e.,
 #' convert categorical features to factors with correct level names (and transform continuous features
-#' back to original scale). The returned object will then be a \code{\link[data.table]{data.table}}.
+#' back to original scale). The returned object will then be a [data.table::data.table()].
 #' @param batch_size Integer. The number of samples in each batch.
 #' If `NULL`, then use the same value saved in the vaeac object.
 #' We recommend a large number because of a lot of overhead for small batch sizes, that is,
@@ -2882,13 +2883,13 @@ extract_several_vaeac_VLB_IWAE <- function(explanation_list) {
 
 #' Plot Pairwise Plots for Imputed and True Data
 #'
-#' @description A function that creates a matrix of plots (\code{GGally::\link[GGally]{ggpairs}}) from
+#' @description A function that creates a matrix of plots ([GGally::ggpairs()]) from
 #' generated imputations from the unconditioned distribution \eqn{p(\boldsymbol{x})} estimated by
 #' a vaeac model, and then compares the imputed values with data from the true distribution (if provided).
 #'
 #' @details
 #' See \href{https://www.blopig.com/blog/2019/06/a-brief-introduction-to-ggpairs/}{ggpairs} for an
-#' introduction to \code{GGally::\link[GGally]{ggpairs}}, and the corresponding
+#' introduction to [GGally::ggpairs()], and the corresponding
 #' \href{https://ggobi.github.io/ggally/articles/ggally_plots.html}{vignette}.
 #'
 #' Each combination of variables are plotted according to whether they are:
@@ -2900,17 +2901,15 @@ extract_several_vaeac_VLB_IWAE <- function(explanation_list) {
 #' \item{discrete}{exactly one of ('ratio', 'facetbar', or 'blank')}
 #' }
 #'
-#'
 #' Plots on the diagonal can either be:
 #' \describe{
 #'  \item{continuous}{exactly one of ('densityDiag', 'barDiag', 'blankDiag').
 #'  This option is used for continuous X data.}
 #'  \item{discrete}{exactly one of ('barDiag', 'blankDiag'). This option is used for categorical X and Y data.}
-#'  \item{na}{exactly one of ('naDiag', 'blankDiag').  This option is used when all X data is \code{NA}.}
+#'  \item{na}{exactly one of ('naDiag', 'blankDiag').  This option is used when all X data is `NA`.}
 #' }
 #'
-#'
-#' @param explanation List. The output list from the \code{\link{explain}} function.
+#' @param explanation List. The output list from the [shapr::explain()] function.
 #' @param which_vaeac_model String. Indicating which vaeac model to use when generating the samples.
 #' @param true_data Matrix/data.frame containing the data from the distribution that the vaeac model is fitted to.
 #' @param return_figures Boolean. If we are to return the figures in a list.
@@ -2926,7 +2925,7 @@ extract_several_vaeac_VLB_IWAE <- function(explanation_list) {
 #' @param diag_cont Type of plot to use on the diagonal for continuous features.
 #' @param diag_cat Type of plot to use on the diagonal for categorical features.
 #' @param cor_method Type of correlation measure.
-#' @param ... Extra parameters sent to ggsave function.
+#' @param ... Extra parameters sent to the [ggplot2::ggsave()] function.
 #'
 #' @return A list containing the figures if `return_figures` = `TRUE`.
 #' @export

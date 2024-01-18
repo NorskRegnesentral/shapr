@@ -2,16 +2,16 @@
 % Please edit documentation in R/approach_vaeac_torch_modules.R
 \name{SkipConnection}
 \alias{SkipConnection}
-\title{A torch::nn_module representing a Skip Connection}
+\title{A \link[torch:nn_module]{torch::nn_module} Representing a skip connection}
 \usage{
 SkipConnection(...)
 }
 \arguments{
-\item{...}{network modules such as, e.g., \code{\link[torch]{nn_linear}}, \code{\link[torch]{nn_relu}},
-and \code{\link{MemoryLayer}} objects. See \code{\link{get_imputation_networks}} for more information.}
+\item{...}{network modules such as, e.g., \code{\link[torch:nn_linear]{torch::nn_linear()}}, \code{\link[torch:nn_relu]{torch::nn_relu()}},
+and \code{\link[=MemoryLayer]{MemoryLayer()}} objects. See \code{\link[=vaeac]{vaeac()}} for more information.}
 }
 \description{
-Skip-connection over the sequence of layers in the constructor. The module passes
+Skip connection over the sequence of layers in the constructor. The module passes
 input data sequentially through these layers and then adds original data to the result.
 }
 \author{

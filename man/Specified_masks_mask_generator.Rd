@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac_torch_modules.R
 \name{Specified_masks_mask_generator}
 \alias{Specified_masks_mask_generator}
-\title{A torch::nn_module Representing a Specified_masks_mask_generator}
+\title{A \link[torch:nn_module]{torch::nn_module} Representing a Specified_masks_mask_generator}
 \usage{
 Specified_masks_mask_generator(masks, masks_probs, paired_sampling = FALSE)
 }
@@ -16,7 +16,7 @@ They are scaled, hence, they only need to be positive.}
 \item{paired_sampling}{Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
 If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
 the first half and second half of the rows are duplicates of each other. That is,
-batch = \link{row1, row1, row2, row2, row3, row3, ...}.}
+\verb{batch = [row1, row1, row2, row2, row3, row3, ...]}.}
 
 \item{batch}{Matrix/Tensor. Only used to get the dimensions and to check if any of the
 entries are missing. If any are missing, then the returned mask will ensure that

@@ -9,7 +9,7 @@ extend_batch(batch, dataloader, batch_size)
 \arguments{
 \item{batch}{The batch we want to check if has the right size, and if not extend it until it has the right size.}
 
-\item{dataloader}{A \code{\link[torch]{dataloader}} object from which we can create an iterator object
+\item{dataloader}{A \code{\link[torch:dataloader]{torch::dataloader()}} object from which we can create an iterator object
 and load data to extend the batch.}
 
 \item{batch_size}{Integer. The number of samples to include in each batch.}
@@ -19,7 +19,7 @@ Returns the extended batch with the correct batch_size.
 }
 \description{
 If the height of the \code{batch} is less than \code{batch_size}, this function extends the \code{batch} with
-data from the \code{\link[torch]{dataloader}} until the \code{batch} reaches the required size.
+data from the \code{\link[torch:dataloader]{torch::dataloader()}} until the \code{batch} reaches the required size.
 Note that \code{batch} is a tensor.
 }
 \author{
