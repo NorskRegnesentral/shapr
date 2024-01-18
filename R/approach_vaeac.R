@@ -376,19 +376,22 @@ call to the `explain()` function. This is fixed internally.\n",
     # Extract the training data from the explainer object
     x_train <- internal$data$x_train
 
+
+    # TODO: SJEKK!
+    # TA KLOKKEN OF SÅ TA DIFF.
+    # Extract the parameters related to veaac.
+    parameters_temp <- parameters[grepl("vaeac.", names(parameters))]
+
+    # Remove "vaeac." from the names
+    # Note that this can be dangerous if there is another variable which matches the name.
+    # I.e., if we have a variable called "verbose" and "vaeac.verbose", then these will
+    # after running this code have the same name.
+    # But we only use the variables that had vaeac in their names, so not a problem.
+    updated_names <- sapply(strsplit(names(parameters_temp), "\\."), "[", 2)
+    names(parameters_temp)[!is.na(updated_names)] <- updated_names[!is.na(updated_names)]
+
     # Fit/train the vaeac model with the provided model parameters
     vaeac_training_time <- system.time({
-      # Extract the parameters related to veaac.
-      parameters_temp <- parameters[grepl("vaeac.", names(parameters))]
-
-      # Remove "vaeac." from the names
-      # Note that this can be dangerous if there is another variable which matches the name.
-      # I.e., if we have a variable called "verbose" and "vaeac.verbose", then these will
-      # after running this code have the same name.
-      # But we only use the variables that had vaeac in their names, so not a problem.
-      updated_names <- sapply(strsplit(names(parameters_temp), "\\."), "[", 2)
-      names(parameters_temp)[!is.na(updated_names)] <- updated_names[!is.na(updated_names)]
-
       vaeac_model <- do.call(vaeac_train_model, c(parameters_temp, list(training_data = x_train)))
     })
 
