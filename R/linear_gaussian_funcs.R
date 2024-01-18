@@ -1,6 +1,221 @@
 # Here I put both the setup functios and the compute_linear_gaussian functions
 
 
+#' @rdname setup_approach
+#'
+#' @inheritParams default_doc_explain
+#' @inheritParams setup_approach.gaussian
+#'
+#' @export
+setup_linear_gaussian_new <- function(internal,
+                                  gaussian.mu = NULL,
+                                  gaussian.cov_mat = NULL, ...) {
+
+  x_train <- internal$data$x_train
+  n_explain <- internal$parameters$n_explain
+  gaussian.cov_mat <- internal$parameters$gaussian.cov_mat
+  gaussian.mu <- internal$parameters$gaussian.mu
+  n_features <- internal$parameters$n_features
+  linear_model_coef <- internal$parameters$linear_model_coef
+  perm_dt <- internal$objects$perm_dt
+
+  n_permutations_used <- perm_dt[,.N]
+
+  # For consistency
+  defaults <- mget(c("gaussian.mu", "gaussian.cov_mat"))
+  internal <- insert_defaults(internal, defaults)
+
+  x_train <- internal$data$x_train
+  feature_specs <- internal$objects$feature_specs
+
+  # Checking if factor features are present
+  if (any(feature_specs$classes == "factor")) {
+    factor_features <- names(which(feature_specs$classes == "factor"))
+    factor_approaches <- get_factor_approaches()
+    stop(paste0(
+      "The following feature(s) are factor(s): ", factor_features, ".\n",
+      "approach = 'linear_gaussian' does not support factor features.\n",
+      "Please change approach to one of ", paste0(factor_approaches, collapse = ", "), "."
+    ))
+  }
+
+  # If gaussian.mu is not provided directly in internal list, use mean of training data
+  if (is.null(gaussian.mu)) {
+    gaussian.mu <- get_mu_vec(x_train)
+  }
+
+  # If gaussian.cov_mat is not provided directly in internal list, use sample covariance of training data
+  if (is.null(gaussian.cov_mat)) {
+    gaussian.cov_mat <- get_cov_mat(x_train)
+  }
+
+  Tmu_list <- Tx_list <- list()
+  for(j in 1:n_features){
+    Tmu_list[[j]] <- Tx_list[[j]] <- matrix(0,nrow = n_features,ncol = n_features)
+    Tmu_list[[j]][j,j] <- -1
+    Tx_list[[j]][j,j] <- 1
+
+   for(i in seq_len(n_permutations_used)){
+     perm0 <- perm_dt[,perm][[i]]
+
+     position <- which(perm0==j)
+     PS <- PSj <- diag(n_features)*0
+
+     if(position==1){
+       diag(PSj)[j] <- 1
+     } else {
+       diag(PS)[perm0[seq_len(position-1)]] <- 1
+       diag(PSj)[perm0[seq_len(position)]] <- 1
+     }
+
+     PS_bar <- diag(n_features)-PS
+     PSj_bar <- diag(n_features)-PSj
+
+
+     U_S <- t(PS_bar)%*%PS_bar%*%gaussian.cov_mat%*%t(PS)%*%solve(PS%*%gaussian.cov_mat%*%t(PS))%*%PS
+     U_Sj <- t(PSj_bar)%*%PSj_bar%*%gaussian.cov_mat%*%t(PSj)%*%solve(PSj%*%gaussian.cov_mat%*%t(PSj))%*%PSj
+
+     # Could compute these here as well, and then DO not use paired sampling, but I do assume the U-computation is the most expensive part anyway, so will not do it here now.
+     #U_Sbar <- t(PS)%*%PS%*%gaussian.cov_mat%*%t(PS_bar)%*%solve(PS_bar%*%gaussian.cov_mat%*%t(PS_bar))%*%PS_bar
+     #U_Sj_bar <- t(PSj)%*%PSj%*%gaussian.cov_mat%*%t(PSj_bar)%*%solve(PSj_bar%*%gaussian.cov_mat%*%t(PSj_bar))%*%PSj_bar
+
+     Udiff <- U_Sj-U_S
+
+     Tmu_list[[j]] <- Tmu_list[[j]] -Udiff/ n_permutations_used
+     Tx_list[[j]] <- Tx_list[[j]] +Udiff/ n_permutations_used
+   }
+
+
+  }
+
+
+
+
+
+
+
+  # Counting the number of repetitions of each row in S
+  id_combination_reps <- X_perm[,.N,by=id_combination]
+  id_combination_reps[c(1,.N),N:=n_permutations_used]
+
+  # Computing the US and QS objects
+
+  # Now using the formulas form True to the model or true to the data paper: https://arxiv.org/pdf/2006.16234.pdf
+  # Consider whether doing this with sparse matrices is faster
+  PS_full <- diag(n_features)
+  PS <- apply(S,FUN = function(x)PS_full[which(x==1),,drop = FALSE],MARGIN = 1)
+  PSbar <- apply(1-S,FUN = function(x)PS_full[which(x==1),,drop = FALSE],MARGIN = 1)
+
+  # TODO: Should do this in rcpp for speed up later
+  US_list <- QS_list <- QSbar_list <- list()
+  US_list[[1]] <- US_list[[nrow(S)]] <- QS_list[[1]] <- matrix(0,nrow = n_features,ncol = n_features)
+  QS_list[[nrow(S)]] <-  diag(n_features)
+  for (i in seq(2,nrow(S)-1)){
+    US_list[[i]] <- t(PSbar[[i]])%*%PSbar[[i]]%*%gaussian.cov_mat%*%t(PS[[i]])%*%solve(PS[[i]]%*%gaussian.cov_mat%*%t(PS[[i]]))%*%PS[[i]]
+    QS_list[[i]] <- t(PS[[i]])%*%PS[[i]]
+    #    QSbar_list[[i]] <- t(PSbar[[i]])%*%PSbar[[i]] # Make this every time as well since it is fast to do, even though it could be extracted from QS_list if it is always present. Change this later
+  }
+
+  ### Computing the Tmu and Tx objects
+  # A rewrite of eq (9) in the true to the model or data paper: https://arxiv.org/pdf/2006.16234.pdf shows that
+  # when we force paired sampling, the Tmu and Tx objects gets a simplified formula.
+  # Another trick is that since the full S matrix is constructed based on the permutations,
+  # any row in S that contains features j, will have a corresponding row that does not contain feature j.
+  # Thus, we can easily find all the rows that contain feature j, and those that don't to then compute Q and U differences
+  # without having to map the permutations to the subsets.
+
+  perm_dt <- internal$objects$perm_dt
+
+  Tmu_list <- Tx_list <- list()
+  these_id_combinations_mat <- list()
+  tmp_lists <- list()
+  for(j in seq_len(n_features)){
+    Tmu_list[[j]] <- Tx_list[[j]] <- matrix(0,nrow = n_features,ncol = n_features)
+    Tmu_list[[j]][j,j] <- -1
+    Tx_list[[j]][j,j] <- 1
+
+    these_id_combinations_mat[[j]] <- numeric(0)
+    tmp_lists[[j]] <- list(Qdiff1=list(),
+                           Qdiff2=list(),
+                           Udiff=list())
+
+    for(i in seq(n_permutations_used)){
+
+      perm0 <- perm_dt[permute_id==i,perm][[1]]
+
+      position <- which(perm0==j)
+      if(position==1){
+        this_S <- integer(0)
+        this_S_plus_j <- sort(perm0[seq_len(position)])
+        this_Sbar <- sort(perm0)
+        this_Sbar_min_j <- sort(perm0[-seq_len(position)])
+      } else {
+        this_S <- sort(perm0[seq_len(position-1)])
+        this_S_plus_j <- sort(perm0[seq_len(position)])
+        this_Sbar <- sort(perm0[-seq_len(position-1)])
+        this_Sbar_min_j <- sort(perm0[-seq_len(position)])
+      }
+
+      vec <- c(paste0(this_S,collapse = " "),
+               paste0(this_S_plus_j,collapse = " "),
+               paste0(this_Sbar,collapse = " "),
+               paste0(this_Sbar_min_j,collapse = " "))
+
+      merge_dt <- data.table(features_tmp=vec,id=seq_along(vec))
+
+      comb_dt <- merge(merge_dt,X[,.(id_combination,features_tmp)],by="features_tmp",all.x=TRUE)
+      data.table::setorderv(comb_dt,"id")
+
+      these_id_combinations <- comb_dt[,id_combination]
+      S_id_comb <- these_id_combinations[1]
+      S_plus_j_id_comb <- these_id_combinations[2]
+      Sbar_id_comb <- these_id_combinations[3]
+      Sbar_min_j_id_comb <- these_id_combinations[4]
+
+      #Qdiff1 <- QS_list[[Sbar_min_j_id_comb]]-QS_list[[Sbar_id_comb]]
+      #Qdiff2 <- QS_list[[S_plus_j_id_comb]]-QS_list[[S_id_comb]]
+      Udiff <- US_list[[S_plus_j_id_comb]]-US_list[[S_id_comb]]
+
+      Tmu_list[[j]] <- Tmu_list[[j]] -Udiff/ n_permutations_used
+      Tx_list[[j]] <- Tx_list[[j]] +Udiff/ n_permutations_used
+
+      #Tmu_list[[j]] <- Tmu_list[[j]] + (Qdiff1-Udiff)/ n_permutations_used
+      #Tx_list[[j]] <- Tx_list[[j]]+ (Qdiff2-Udiff)/ n_permutations_used
+
+      # Udiff <- Reduce("+",US_list[includes_j])-Reduce("+",US_list[!includes_j])
+      #
+      # Tmu_list[[j]] <- (Qdiff-Udiff) / n_permutations_used
+      # Tx_list[[j]] <- (Qdiff+Udiff) / n_permutations_used
+
+      these_id_combinations_mat[[j]] <- rbind(these_id_combinations_mat[[j]],these_id_combinations)
+      tmp_lists[[j]]$Qdiff1[[i]] <- Qdiff1
+      tmp_lists[[j]]$Qdiff2[[i]] <- Qdiff2
+      tmp_lists[[j]]$Udiff[[i]] <- Udiff
+    }
+
+    # includes_j <- S[,j]==1 # Find all subsets that include feature j
+    # id_combination_reps[id_combination%in%which(includes_j),N]
+    #
+    # Qdiff <- Reduce("+",QS_list[includes_j])-Reduce("+",QS_list[!includes_j])
+    # Udiff <- Reduce("+",US_list[includes_j])-Reduce("+",US_list[!includes_j])
+    #
+    # Tmu_list[[j]] <- (Qdiff-Udiff) / n_permutations_used
+    # Tx_list[[j]] <- (Qdiff+Udiff) / n_permutations_used
+
+  }
+
+  internal$objects$US_list <- US_list
+  internal$objects$QS_list <- QS_list
+  internal$objects$Tmu_list <- Tmu_list
+  internal$objects$Tx_list <- Tx_list
+  internal$objects$these_id_combinations_mat <- these_id_combinations_mat
+  internal$objects$tmp_lists <- tmp_lists
+
+  internal$parameters$gaussian.mu <- gaussian.mu
+  internal$parameters$gaussian.cov_mat <- gaussian.cov_mat
+
+  return(internal)
+}
 
 
 #' @rdname setup_approach
