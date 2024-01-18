@@ -1,4 +1,5 @@
 set.seed(12345)
+library(data.table)
 
 p <- 8
 n_train <- 10^3
@@ -26,28 +27,32 @@ x_explain <- rbind(head(data,2),
                   t(1:p),
                   use.names=FALSE)
 
+profvis({
+ test <-explain(model = model,
+                x_explain = x_explain,
+                x_train = data,
+                approach = "gaussian",
+                shap_approach = "permutation",
+                prediction_zero = p0,
+                gaussian.cov_mat=Sig,
+                gaussian.mu = mu,
+                n_samples = 10^4,
+                n_permutations=100)
+})
 
-# test <-explain(model = model,
-#                x_explain = x_explain,
-#                x_train = data,
-#                approach = "gaussian",
-#                shap_approach = "permutation",
-#                prediction_zero = p0,
-#                gaussian.cov_mat=Sig,
-#                gaussian.mu = mu,
-#                n_samples = 10^4)
-# test
+ test
 
 #debugonce(explain_linear)
 
-
+profvis({
 test2 <-explain_linear(model = model,
                        x_explain = x_explain,
                        x_train = data,
                        prediction_zero = p0, # this is not used
                        gaussian.cov_mat=Sig,
-                       gaussian.mu=mu,n_permutations = 500
+                       gaussian.mu=mu,n_permutations = 5000
 )
+})
 test2$internal$objects$perm_dt[,.N]
 
 all_lists <- NULL

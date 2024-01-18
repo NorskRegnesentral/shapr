@@ -1,0 +1,14 @@
+TODO: permute-branch
+
+- General:
+	- Make sampling permutations faster (Rcpp). This could very well also be a matrix.
+	- Clean up unused stuff
+	- Merge master branch in
+	- Make the creation of the S and X matrices faster
+	- Think about how to do the looping with
+
+- LinearGaussian:
+	- write the looping over Tmu/Tmx in Rcpp for speed
+
+- Permute:
+	- make finalization part faster

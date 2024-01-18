@@ -17,9 +17,9 @@ setup_linear_gaussian_new <- function(internal,
   gaussian.mu <- internal$parameters$gaussian.mu
   n_features <- internal$parameters$n_features
   linear_model_coef <- internal$parameters$linear_model_coef
-  perm_dt <- internal$objects$perm_dt
+  perm_list <- internal$objects$perm_list
 
-  n_permutations_used <- perm_dt[,.N]
+  n_permutations_used <- length(perm_list)
 
   # For consistency
   defaults <- mget(c("gaussian.mu", "gaussian.cov_mat"))
@@ -56,7 +56,7 @@ setup_linear_gaussian_new <- function(internal,
     Tx_list[[j]][j,j] <- 1
 
    for(i in seq_len(n_permutations_used)){
-     perm0 <- perm_dt[,perm][[i]]
+     perm0 <- perm_list[[i]]
 
      position <- which(perm0==j)
      PSfull <- diag(n_features)

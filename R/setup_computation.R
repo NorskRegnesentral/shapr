@@ -24,14 +24,32 @@ setup_computation <- function(internal, model, predict_model) {
 
 setup_computation_linear_gaussian <- function(internal){
 
-  # setup the Shapley framework
-  internal <- shapley_setup(internal)
+  # setup the Shapley framework (only appending the perm_list)
+  internal <- shapley_setup_linear_gaussian(internal)
 
   # Setup for the linear gaussian method: compute U, Q, Tx and Tmu
   #internal <- setup_linear_gaussian(internal)
   internal <- setup_linear_gaussian_new(internal)
 
 }
+
+shapley_setup_linear_gaussian <- function(internal) {
+  exact <- internal$parameters$exact
+  n_features0 <- internal$parameters$n_features
+  n_permutations <- internal$parameters$n_permutations
+
+  perm_list <- feature_combinations_perm(
+    m = n_features0,
+    exact = exact,
+    n_permutations = n_permutations,
+    paired_shap_sampling = TRUE,
+    return_perm_list_only = TRUE
+  )
+  internal$objects$perm_list <- perm_list
+
+  return(internal)
+}
+
 
 #' @keywords internal
 shapley_setup_forecast <- function(internal) {
@@ -211,7 +229,8 @@ shapley_setup <- function(internal) {
   return(internal)
 }
 
-feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL,paired_shap_sampling=FALSE) {
+
+feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL,paired_shap_sampling=FALSE,return_perm_list_only = FALSE) {
 
   if (!exact) {
       # Switch to exact for feature-wise method
@@ -229,23 +248,32 @@ feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL,pai
   }
 
   if (exact) {
-    perm_dt <- feature_permute_exact(m)
+    perm_list <- feature_permute_exact(m)
   } else {
-    perm_dt <- feature_permute_samp(m, n_permutations,paired_shap_sampling)
+    perm_list <- feature_permute_samp(m, n_permutations,paired_shap_sampling)
   }
+  if(return_perm_list_only == TRUE){
+    ret <- perm_list
+  } else {
 
-  ret <- X_from_perm_dt(perm_dt)
-  #ret <- X_from_perm_dt_linear_gaussian(perm_dt) # May use this also for the regular permutation approach, to simplify the computation in the end but need to check that first
+    perm_dt <- data.table(
+      permute_id = seq_along(perm_list),
+      perm = as.list(perm_list)
+    )
 
-  ret$perm_dt = perm_dt
+    ret <- X_from_perm_dt(perm_dt)
+    ret$perm_list = perm_list
+    ret$perm_dt = perm_dt # Here this is a data.table of the permutations
+
+  }
 
   return(ret)
 }
 
 
-feature_permute_samp <- function(m, n_permutations,paired_shap_sampling) {
+feature_permute_samp <- function(m, n_permutations,paired_shap_sampling=TRUE) {
   x <- seq(m)
-  perms <- perms_paired <- vector("list", n_permutations)
+  perms <- vector("list", n_permutations)
   perms[[1]] <- sample(x)
   perms[[2]] <- rev(perms[[1]])
 
@@ -266,27 +294,13 @@ feature_permute_samp <- function(m, n_permutations,paired_shap_sampling) {
     }
   }
 
-  # Create data.table with id_combination and features columns
-  dt <- data.table(
-    permute_id = seq(n_permutations),
-    perm = perms
-  )
-
-  return(dt)
+  return(perms)
 }
 
 feature_permute_exact <- function(m) {
 
   # Generate all possible combinations
-  perms <- all_permutations(seq(m))
-
-  # Create data.table with id_combination and features columns
-  dt <- data.table(
-    permute_id = seq_along(perms),
-    perm = as.list(perms)
-  )
-
-  return(dt)
+  return(all_permutations(seq(m)))
 }
 
 all_permutations <- function(x) {
