@@ -7,7 +7,7 @@ data_complete <- data_complete[sample(seq_len(.N))] # Sh
 
 y_var_numeric <- "Ozone"
 
-x_var_numeric <- c("Solar.R", "Wind", "Temp", "Month", "Day")
+x_var_numeric <- c("Solar.R", "Wind", "Temp", "Month")#, "Day")
 
 data_train <- head(data_complete, -3)
 data_explain <- tail(data_complete, 3)

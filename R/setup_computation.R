@@ -28,8 +28,8 @@ setup_computation_linear_gaussian <- function(internal){
   internal <- shapley_setup(internal)
 
   # Setup for the linear gaussian method: compute U, Q, Tx and Tmu
-  internal <- setup_linear_gaussian(internal)
-
+  #internal <- setup_linear_gaussian(internal)
+  internal <- setup_linear_gaussian_new(internal)
 
 }
 

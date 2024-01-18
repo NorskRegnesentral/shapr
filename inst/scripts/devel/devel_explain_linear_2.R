@@ -1,6 +1,6 @@
 set.seed(12345)
 
-p <- 4
+p <- 8
 n_train <- 10^3
 beta <- rnorm(p)#rep(1,p)
 b <- rnorm(1)
@@ -46,7 +46,7 @@ test2 <-explain_linear(model = model,
                        x_train = data,
                        prediction_zero = p0, # this is not used
                        gaussian.cov_mat=Sig,
-                       gaussian.mu=mu,n_permutations = 6
+                       gaussian.mu=mu,n_permutations = 500
 )
 test2$internal$objects$perm_dt[,.N]
 
