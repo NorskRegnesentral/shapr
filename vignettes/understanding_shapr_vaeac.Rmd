@@ -825,25 +825,27 @@ Here we look at mixed data and compare with ctree approach.
 
 ```{r ctree mixed data, cache = TRUE}
 library(ranger)
-data("Boston", package = "MASS")
-x_var <- c("lstat", "rm", "dis", "indus")
-y_var <- "medv"
+data <- data.table::as.data.table(airquality)
+data <- data[complete.cases(data), ]
 
-# Convert two features as factors
-dt <- Boston[, c(x_var, y_var)]
-dt$rm <- as.factor(round(dt$rm / 3))
-dt$dis <- as.factor(round(dt$dis / 4))
+# convert the month variable to a factor
+data[, Month_factor := as.factor(Month)]
 
-xy_train_cat <- dt[-1:-6, ]
-y_train_cat <- dt[-1:-6, y_var]
-x_train_cat <- dt[-1:-6, x_var]
-x_test_cat <- dt[1:6, x_var]
+x_var_cat <- c("Solar.R", "Wind", "Temp", "Month_factor")
+y_var <- "Ozone"
 
-# Fit a basic linear regression model to the training data
-model <- ranger(medv ~ lstat + rm + dis + indus, data = xy_train_cat)
+ind_x_explain = 1:6
+
+data_train_cat = data[-ind_x_explain, ]
+x_train_cat <- data_train_cat[, ..x_var_cat]
+x_explain_cat <- data[ind_x_explain, ][, ..x_var_cat]
+
+# Fit a random forest model to the training data
+model <- ranger(as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " + "))),
+                data = data_train_cat)
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-p0 <- mean(y_train_cat)
+p0 <- mean(data_train_cat[,get(y_var)])
 
 approach <- "ctree"
 prediction_zero <- p0
@@ -861,7 +863,7 @@ is_python <- FALSE
 # Here we use the ctree approach
 expl_ctree <- explain(
   model = model,
-  x_explain = x_test_cat,
+  x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "ctree",
   prediction_zero = p0,
@@ -884,7 +886,7 @@ plot(expl_ctree, plot_phi0 = FALSE)
 # Then we use the vaeac approach
 expl_vaeac <- explain(
   model = model,
-  x_explain = x_test_cat,
+  x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "vaeac",
   prediction_zero = p0,
@@ -915,14 +917,13 @@ print(expl_vaeac$shapley_values)
 plot(expl_vaeac, plot_phi0 = FALSE)
 ```
 
-Make a more complex vaeac model and train it for longer
-
+We now make a more complex vaeac model and train it for longer to obtain better results (GJØR VI DET? ALTSÅ BEDRE RESULTATER?)
 
 ```{r complex vaeac, cache = TRUE}
 # Here we fit a more complex vaeac method
 expl_vaeac_complex <- explain(
   model = model,
-  x_explain = x_test_cat,
+  x_explain = x_explain_cat,
   x_train = x_train_cat,
   approach = "vaeac",
   prediction_zero = p0,
@@ -978,4 +979,4 @@ plot_SV_several_approaches(list(
 
 
 # Future Updates
--   Add support for GPU in vaeac. I have not had access to GPU, so have only used CPU.
+-   Add support for GPU in vaeac. We have not had access to GPU, so have only used CPU.

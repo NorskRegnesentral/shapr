@@ -455,7 +455,7 @@ scatter_hist showing the distribution of the feature data:
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
-We can use mixed (i.e continuous, categorical, ordinal) data with ctree.
+We can use mixed (i.e continuous, categorical, ordinal) data with ctree or vaeac.
 Use ctree with mixed data in the following manner:
 
 ```{r}
