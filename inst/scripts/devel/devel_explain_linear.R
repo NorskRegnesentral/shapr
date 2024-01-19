@@ -50,7 +50,6 @@ test
 test2 <-explain_linear(model = model_lm_numeric,
                        x_explain = x_explain_numeric_new,
                        x_train = x_train_numeric,
-                       prediction_zero = p0,
                        n_permutations=4,
                        )
 test2

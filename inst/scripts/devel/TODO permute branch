@@ -3,12 +3,15 @@ TODO: permute-branch
 - General:
 	- Make sampling permutations faster (Rcpp). This could very well also be a matrix.
 	- Clean up unused stuff
-	- Merge master branch in
+	- Merge master branch in here
 	- Make the creation of the S and X matrices faster
 	- Think about how to do the looping with
+	- Implement grouping
+	- Create a function which takes the explain object, and a new x_explain input and allows computing the shapley values for that super-fast using the Tmx&Tmu lists.
 
 - LinearGaussian:
 	- write the looping over Tmu/Tmx in Rcpp for speed
+	- Add MSE computation
 
 - Permute:
 	- make finalization part faster

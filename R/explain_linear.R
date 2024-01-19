@@ -9,14 +9,10 @@
 explain_linear <- function(model,
                            x_explain,
                            x_train,
-                           prediction_zero,
-                           n_combinations = NULL,
                            n_permutations = NULL,
                            group = NULL,
-                           n_samples = 1e3,
                            n_batches = NULL,
                            seed = 1,
-                           keep_samp_for_vS = FALSE,
                            predict_model = NULL,
                            get_model_specs = NULL,
                            MSEv_uniform_comb_weights = TRUE,
@@ -45,14 +41,14 @@ explain_linear <- function(model,
     approach = "gaussian", # always set to "gaussian" although we never really use this argument for linear_gaussian
     shap_approach = "permutation", # Always use the permute shap_approach
     paired_shap_sampling = TRUE, # Always use paired sampling since simplified computation of the required Q and U objects requires it
-    prediction_zero = prediction_zero,
-    n_combinations = n_combinations, # We always set the n_permutations instead
+    prediction_zero = 0, # Never used, we extract this from the model object instead.
+    n_combinations = NULL, # We always set the n_permutations instead
     n_permutations = n_permutations,
     group = group,
-    n_samples = n_samples,
+    n_samples = 1, # Not applicable for the linear_gaussian method as no sampling is done
     n_batches = n_batches,
     seed = seed,
-    keep_samp_for_vS = keep_samp_for_vS,
+    keep_samp_for_vS = FALSE, # Not applicable for the linear_gaussian method as no sampling is done
     feature_specs = feature_specs,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
@@ -79,7 +75,6 @@ explain_linear <- function(model,
 
   timing_list$test_prediction <- Sys.time()
 
-
   # Computes the necessary objects for the linear Gaussian approach
   internal <- setup_computation_linear_gaussian(internal)
 
@@ -94,11 +89,6 @@ explain_linear <- function(model,
     output$timing <- compute_time(timing_list)
   }
 
-  # Temporary to avoid failing tests
-
-  output$internal$objects$id_combination_mapper_dt <- NULL
-  output$internal$objects$cols_per_horizon <- NULL
-  output$internal$objects$W_list <- NULL
 
   return(output)
 }
