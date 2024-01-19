@@ -23,6 +23,8 @@
 #'
 #' @importFrom stats sd qt pt
 #'
+#' @importFrom stats rnorm
+#'
 #' @importFrom Rcpp sourceCpp
 #'
 #' @keywords internal

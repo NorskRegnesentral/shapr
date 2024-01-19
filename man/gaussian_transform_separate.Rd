@@ -10,7 +10,7 @@ gaussian_transform_separate(yx, n_y)
 \item{yx}{Numeric vector. The first \code{n_y} items is the data that is transformed, and last
 part is the data with the original transformation.}
 
-\item{n_y}{Positive integer. Number of elements of \code{yx} that belongs to the gaussian data.}
+\item{n_y}{Positive integer. Number of elements of \code{yx} that belongs to the Gaussian data.}
 }
 \value{
 Vector of back-transformed Gaussian data

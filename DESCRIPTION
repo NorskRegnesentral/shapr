@@ -32,8 +32,6 @@ Imports:
     stats,
     data.table,
     Rcpp (>= 0.12.15),
-    condMVNorm,
-    mvnfast,
     Matrix,
     future.apply
 Suggests: 

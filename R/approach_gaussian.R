@@ -45,46 +45,47 @@ setup_approach.gaussian <- function(internal,
   return(internal)
 }
 
+#' @inheritParams default_doc
 #' @rdname prepare_data
 #' @export
-prepare_data.gaussian <- function(internal, index_features = NULL, ...) {
-  x_train <- internal$data$x_train
-  x_explain <- internal$data$x_explain
+#' @author Lars Henry Berge Olsen
+prepare_data.gaussian <- function(internal, index_features, ...) {
+  # Extract used variables
+  S <- internal$objects$S[index_features, , drop = FALSE]
+  feature_names <- internal$parameters$feature_names
   n_explain <- internal$parameters$n_explain
-  gaussian.cov_mat <- internal$parameters$gaussian.cov_mat
-  n_samples <- internal$parameters$n_samples
-  gaussian.mu <- internal$parameters$gaussian.mu
   n_features <- internal$parameters$n_features
+  n_samples <- internal$parameters$n_samples
+  n_combinations_now <- length(index_features)
+  x_explain_mat <- as.matrix(internal$data$x_explain)
+  mu <- internal$parameters$gaussian.mu
+  cov_mat <- internal$parameters$gaussian.cov_mat
 
-  X <- internal$objects$X
+  # Generate the MC samples from N(0, 1)
+  MC_samples_mat <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
 
-  x_explain0 <- as.matrix(x_explain)
-  dt_l <- list()
+  # Use Cpp to convert the MC samples to N(mu_{Sbar|S}, Sigma_{Sbar|S}) for all coalitions and explicands.
+  # The object `dt` is a 3D array of dimension (n_samples, n_explain * n_coalitions, n_features).
+  dt <- prepare_data_gaussian_cpp(
+    MC_samples_mat = MC_samples_mat,
+    x_explain_mat = x_explain_mat,
+    S = S,
+    mu = mu,
+    cov_mat = cov_mat
+  )
 
-  if (is.null(index_features)) {
-    features <- X$features
-  } else {
-    features <- X$features[index_features]
-  }
+  # Reshape `dt` to a 2D array of dimension (n_samples * n_explain * n_coalitions, n_features).
+  dim(dt) <- c(n_combinations_now * n_explain * n_samples, n_features)
 
-  for (i in seq_len(n_explain)) {
-    l <- lapply(
-      X = features,
-      FUN = sample_gaussian,
-      n_samples = n_samples,
-      mu = gaussian.mu,
-      cov_mat = gaussian.cov_mat,
-      m = n_features,
-      x_explain = x_explain0[i, , drop = FALSE]
-    )
+  # Convert to a data.table and add extra identification columns
+  dt <- data.table::as.data.table(dt)
+  data.table::setnames(dt, feature_names)
+  dt[, id_combination := rep(seq_len(nrow(S)), each = n_samples * n_explain)]
+  dt[, id := rep(seq(n_explain), each = n_samples, times = nrow(S))]
+  dt[, w := 1 / n_samples]
+  dt[, id_combination := index_features[id_combination]]
+  data.table::setcolorder(dt, c("id_combination", "id", feature_names))
 
-    dt_l[[i]] <- data.table::rbindlist(l, idcol = "id_combination")
-    dt_l[[i]][, w := 1 / n_samples]
-    dt_l[[i]][, id := i]
-    if (!is.null(index_features)) dt_l[[i]][, id_combination := index_features[id_combination]]
-  }
-
-  dt <- data.table::rbindlist(dt_l, use.names = TRUE, fill = TRUE)
   return(dt)
 }
 
@@ -110,48 +111,4 @@ get_cov_mat <- function(x_train, min_eigen_value = 1e-06) {
 #' @export
 get_mu_vec <- function(x_train) {
   unname(colMeans(x_train))
-}
-
-#' Sample conditional Gaussian variables
-#'
-#' @inheritParams sample_copula
-#'
-#' @return data.table
-#'
-#' @keywords internal
-#'
-#' @author Martin Jullum
-sample_gaussian <- function(index_given, n_samples, mu, cov_mat, m, x_explain) {
-  # Check input
-  stopifnot(is.matrix(x_explain))
-
-  # Handles the unconditional and full conditional separtely when predicting
-  cnms <- colnames(x_explain)
-  if (length(index_given) %in% c(0, m)) {
-    return(data.table::as.data.table(x_explain))
-  }
-
-  dependent_ind <- seq_along(mu)[-index_given]
-  x_explain_gaussian <- x_explain[index_given]
-  tmp <- condMVNorm::condMVN(
-    mean = mu,
-    sigma = cov_mat,
-    dependent.ind = dependent_ind,
-    given.ind = index_given,
-    X.given = x_explain_gaussian
-  )
-
-  # Makes the conditional covariance matrix symmetric in the rare case where numerical instability made it unsymmetric
-  if (!isSymmetric(tmp[["condVar"]])) {
-    tmp[["condVar"]] <- Matrix::symmpart(tmp$condVar)
-  }
-
-  ret0 <- mvnfast::rmvn(n = n_samples, mu = tmp$condMean, sigma = tmp$condVar)
-
-  ret <- matrix(NA, ncol = m, nrow = n_samples)
-  ret[, index_given] <- rep(x_explain_gaussian, each = n_samples)
-  ret[, dependent_ind] <- ret0
-
-  colnames(ret) <- cnms
-  return(as.data.table(ret))
 }

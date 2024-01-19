@@ -162,3 +162,6 @@ This is useful if the underlying time series are scaled between 0 and 1, for exa
 The different choices of \code{approach} takes different (optional) parameters,
 which are forwarded from \code{\link[=explain]{explain()}}.
 }
+\author{
+Martin Jullum
+}
