@@ -19,13 +19,13 @@ prepare_data(internal, index_features = NULL, ...)
 
 \method{prepare_data}{categorical}(internal, index_features = NULL, ...)
 
-\method{prepare_data}{copula}(internal, index_features = NULL, ...)
+\method{prepare_data}{copula}(internal, index_features, ...)
 
 \method{prepare_data}{ctree}(internal, index_features = NULL, ...)
 
 \method{prepare_data}{empirical}(internal, index_features = NULL, ...)
 
-\method{prepare_data}{gaussian}(internal, index_features = NULL, ...)
+\method{prepare_data}{gaussian}(internal, index_features, ...)
 
 \method{prepare_data}{independence}(internal, index_features = NULL, ...)
 

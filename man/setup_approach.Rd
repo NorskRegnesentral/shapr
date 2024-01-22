@@ -299,5 +299,5 @@ so on.}
 }
 
 \author{
-Lars Henry Berge Olsen
+Martin Jullum, Lars Henry Berge Olsen
 }
