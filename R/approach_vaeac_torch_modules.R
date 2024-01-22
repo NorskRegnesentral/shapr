@@ -29,19 +29,19 @@
 #' linked to the last layer of the decoder. The second layer of the masked encoder will be
 #' linked to the second to last layer of the decoder, and so on.
 #' @param use_batch_normalization Boolean. If we are to use batch normalization after the activation function.
-#' Note that if \code{use_skip_connections} is TRUE, then the normalization is
+#' Note that if `use_skip_connections` is TRUE, then the normalization is
 #' done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).
 #' @param paired_sampling Boolean. If we are doing paired sampling. I.e., if we are to include both coalition S
 #' and \eqn{\bar{S}} when we sample coalitions during training for each batch.
 #' @param mask_generator_name String specifying the type of mask generator to use. Need to be one of
 #' 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specified_masks_mask_generator'.
 #' @param masking_ratio Scalar. The probability for an entry in the generated mask to be 1 (masked).
-#' Not used if \code{mask_gen_these_coalitions} is given.
+#' Not used if `mask_gen_these_coalitions` is given.
 #' @param mask_gen_these_coalitions Matrix containing the different coalitions to learn.
-#' Must be given if \code{mask_generator_name} = 'Specified_masks_mask_generator'.
+#' Must be given if `mask_generator_name = 'Specified_masks_mask_generator'`.
 #' @param mask_gen_these_coalitions_prob Numerics containing the probabilities
-#' for sampling each mask in \code{mask_gen_these_coalitions}.
-#' Array containing the probabilities for sampling the coalitions in \code{mask_gen_these_coalitions}.
+#' for sampling each mask in `mask_gen_these_coalitions`.
+#' Array containing the probabilities for sampling the coalitions in `mask_gen_these_coalitions`.
 #' @param sigma_mu Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
 #' see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 #' @param sigma_sigma Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
@@ -62,7 +62,7 @@
 #' Compute the Latent Distributions Inferred by the Encoders
 #'
 #' Compute the parameters for the latent normal distributions inferred by the encoders.
-#' If \code{only_masked_encoder = TRUE}, then we only compute the latent normal distributions inferred by the
+#' If `only_masked_encoder = TRUE`, then we only compute the latent normal distributions inferred by the
 #' masked encoder. This is used in the deployment phase when we do not have access to the full observation.
 #'
 #' @section masked_encoder_regularization:
@@ -528,7 +528,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
   # Compute the Latent Distributions Inferred by the Encoders
   #
   # @description Compute the parameters for the latent normal distributions inferred by the encoders.
-  # If \code{only_masked_encoder = TRUE}, then we only compute the latent normal distributions inferred by the
+  # If `only_masked_encoder = TRUE`, then we only compute the latent normal distributions inferred by the
   # masked encoder. This is used in the deployment phase when we do not have access to the full observation.
   #
   # @param batch Tensor of dimension batch_size x num_features containing a batch of observations.
@@ -855,7 +855,7 @@ compute_normalization <- function(data,
 #' @param transform_all_cont_features Boolean. If we are to log transform all continuous
 #' features before sending the data to vaeac. vaeac creates unbounded values, so if the continuous
 #' features are strictly positive, as for Burr and Abalone data, it can be advantageous to log-transform
-#' the data to unbounded form before using vaeac. If TRUE, then \code{vaeac_postprocess_data} will
+#' the data to unbounded form before using vaeac. If TRUE, then `vaeac_postprocess_data` will
 #' take the exp of the results to get back to strictly positive values.
 #'
 #' @return list containing data which can be used in vaeac, maps between original and new class
@@ -1158,10 +1158,17 @@ exp_trans_cont_features_func <- function(data, one_hot_max_sizes) {
 #' # N <- 14
 #' # batch_size <- 10
 #' # one_hot_max_sizes <- rep(1, p)
-#' # vaeac_ds <- vaeac_dataset(torch_tensor(matrix(rnorm(p * N), ncol = p), dtype = torch_float()), one_hot_max_sizes)
+#' # vaeac_ds <- vaeac_dataset(
+#' #   torch_tensor(matrix(rnorm(p * N), ncol = p),
+#' #                dtype = torch_float()),
+#' #   one_hot_max_sizes)
 #' # vaeac_ds
 #'
-#' # vaeac_dl <- torch::dataloader(vaeac_ds, batch_size = batch_size, shuffle = TRUE, drop_last = FALSE)
+#' # vaeac_dl <- torch::dataloader(
+#' #   vaeac_ds,
+#' #   batch_size = batch_size,
+#' #   shuffle = TRUE,
+#' #   drop_last = FALSE)
 #' # vaeac_dl$.length()
 #' # vaeac_dl$.iter()
 #'
@@ -1228,7 +1235,8 @@ vaeac_dataset <- torch::dataset(
 #' # num_featuers <- 3
 #' # num_observations <- 5
 #' # shuffle <- TRUE
-#' # data <- torch_tensor(matrix(rep(seq(num_observations), each = num_featuers), ncol = num_featuers, byrow = TRUE))
+#' # data <- torch_tensor(matrix(rep(seq(num_observations), each = num_featuers),
+#' #                             ncol = num_featuers, byrow = TRUE))
 #' # data
 #' # dataset <- vaeac_dataset(data, rep(1, num_featuers))
 #' # dataload <- torch::dataloader(dataset,
@@ -1286,22 +1294,24 @@ paired_sampler <- torch::sampler(
 ##  MemoryLayer -------------------------------------------------------------------------------------------------------
 #' A [torch::nn_module] Representing a Memory Layer
 #'
-#' @description The layer is used to make skip-connections inside torch::nn_sequential network
-#' or between several torch::nn_sequential networks without unnecessary code complication.
+#' @description
+#' The layer is used to make skip-connections inside a [torch::nn_sequential] network
+#' or between several [torch::nn_sequential] networks without unnecessary code complication.
 #'
-#' @details If \code{output = FALSE}, this layer stores its input in a static list
-#' \code{storage} with the key \code{id} and then passes the input to the next layer.
+#' @details
+#' If `output = FALSE`, this layer stores its input in a static list
+#' `storage` with the key `id`` and then passes the input to the next layer.
 #' I.e., when memory layer is used in the masked encoder.
-#' If \code{output = TRUE}, this layer takes stored tensor from the storage.
+#' If `output = TRUE`, this layer takes stored tensor from the storage.
 #' I.e., when memory layer is used in the decoder.
-#' If \code{add = TRUE}, it returns sum of the stored vector and an \code{input},
-#' otherwise it returns their concatenation. If the tensor with specified \code{id}
-#' is not in storage when the layer with \code{output = TRUE} is called, it would cause an exception.
+#' If `add = TRUE`, it returns sum of the stored vector and an `input`,
+#' otherwise it returns their concatenation. If the tensor with specified `id`
+#' is not in storage when the layer with `output = TRUE` is called, it would cause an exception.
 #'
 #' @param id A unique id to use as a key in the storage list.
 #' @param output Boolean variable indicating if the memory layer is to store input in storage or extract from storage.
 #' @param add Boolean variable indicating if the extracted value are to be added or concatenated to the input.
-#' Only applicable when \code{output = TRUE}.
+#' Only applicable when `output = TRUE`.
 #' @param verbose Boolean variable indicating if we want to give printouts to the user.
 #'
 #' @keywords internal
@@ -1310,11 +1320,13 @@ paired_sampler <- torch::sampler(
 #' @examples
 #' # net1 <- torch::nn_sequential(
 #' #   MemoryLayer("#1"),
-#' #  MemoryLayer("#0.1"),
+#' #   MemoryLayer("#0.1"),
 #' #   torch::nn_linear(512, 256),
 #' #   torch::nn_leaky_relu(),
-#' #   MemoryLayer("#0.1", output = TRUE, add = FALSE), # here add cannot be TRUE because the dimensions mismatch
-#' #   torch::nn_linear(768, 256), # the dimension after the concatenation with skip-connection is 512 + 256 = 768
+#' #   # here add cannot be TRUE because the dimensions mismatch
+#' #   MemoryLayer("#0.1", output = TRUE, add = FALSE),
+#' #   torch::nn_linear(768, 256),
+#' #   # the dimension after the concatenation with skip-connection is 512 + 256 = 768
 #' # )
 #' # net2 <- torch::nn_equential(
 #' #   torch::nn_linear(512, 512),
@@ -1322,7 +1334,8 @@ paired_sampler <- torch::sampler(
 #' #   ...
 #' # )
 #' # b <- net1(a)
-#' # d <- net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
+#' # d <- net2(c)
+#' # # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
 MemoryLayer <- torch::nn_module(
   # @field classname Name of the of torch::nn_module object.
   classname = "MemoryLayer",
@@ -1334,7 +1347,7 @@ MemoryLayer <- torch::nn_module(
   # @param id A unique id to use as a key in the storage list.
   # @param output Boolean variable indicating if the memory layer is to store input in storage or extract from storage.
   # @param add Boolean variable indicating if the extracted value are to be added or concatenated to the input.
-  # Only applicable when \code{output = TRUE}.
+  # Only applicable when `output = TRUE`.
   # @param verbose Boolean variable indicating if we want to give printouts to the user.
   initialize = function(id,
                         output = FALSE,
@@ -1578,9 +1591,9 @@ get_validation_iwae <- function(val_dataloader,
 #' @details Take a Tensor (e.g. neural network output) and return a [torch::distr_normal()] distribution.
 #' This normal distribution is component-wise independent, and its dimensionality depends on the input shape.
 #' First half of channels is mean (\eqn{\mu}) of the distribution, the softplus of the second half is
-#' std (\eqn{\sigma}), so there is no restrictions on the input tensor. \code{min_sigma} is the minimal value of
+#' std (\eqn{\sigma}), so there is no restrictions on the input tensor. `min_sigma` is the minimal value of
 #' \eqn{\sigma}. I.e., if the above softplus is less than `min_sigma`, then \eqn{\sigma} is clipped
-#' from below with value \code{min_sigma}. This regularization is required for the numerical stability and may
+#' from below with value `min_sigma`. This regularization is required for the numerical stability and may
 #' be considered as a neural network architecture choice without any change to the probabilistic model.
 #'
 #' @param params Tensor containing the parameters for the normal distributions.
@@ -2704,7 +2717,7 @@ Specified_prob_mask_generator <- torch::nn_module(
 #' these missing entries are masked.
 #'
 #' @examples
-#' # masks <- torch::torch_tensor(matrix(c(0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1), nrow = 3, ncol = 4, byrow = TRUE))
+#' # masks <- torch_tensor(matrix(c(0,0,1,0, 1,0,1,0, 1,1,1,1), nrow = 3, ncol = 4, byrow = TRUE))
 #' # masks_probs <- c(3, 1, 6)
 #' # mask_gen <- Specified_masks_mask_generator(masks = masks, masks_probs = masks_probs)
 #' # empirical_prob <- table(as.array(mask_gen(torch::torch_randn(c(10000, ncol(masks))))$sum(-1)))

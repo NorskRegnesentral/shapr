@@ -99,7 +99,7 @@
 #'  transform all continuous features before sending the data to `vaeac`. The `vaeac` model creates
 #'  unbounded MC samples values, so if the continuous features are strictly positive, as for Burr
 #'  distributed data and the Abalone data set, it can be advantageous to log-transform the data to
-#'  unbounded form before using `vaeac`. If `TRUE`, then \code{vaeac_postprocess_data} will take
+#'  unbounded form before using `vaeac`. If `TRUE`, then `vaeac_postprocess_data` will take
 #'  the exp of the results to get back to strictly positive values when using the vaeac model to
 #'  impute missing values.}
 #'  \item{vaeac.sample_random}{Default is `TRUE`. Boolean. If we are to generate random samples
@@ -268,7 +268,7 @@ The function proceeds using the values in `vaeac.extra_parameters`.\n",
   # For does parameter that actually are main parameters, we include them and give a message
   if (length(main_para_in_unknown_para) > 0) {
     # Insert the misplaced main parameters to the correct place.
-    internal$parameters <- modifyList(
+    internal$parameters <- utils::modifyList(
       internal$parameters,
       internal$parameters$vaeac.extra_parameters[main_para_in_unknown_para]
     )
@@ -298,7 +298,7 @@ call to the `explain()` function. This is fixed internally.\n",
 
   # Combine the provided extra parameter values with the default values. Overwrite the default values.
   internal$parameters$vaeac.extra_parameters <-
-    modifyList(vaeac.extra_parameters_default, internal$parameters$vaeac.extra_parameters, keep.null = TRUE)
+    utils::modifyList(vaeac.extra_parameters_default, internal$parameters$vaeac.extra_parameters, keep.null = TRUE)
 
   # The mget extract the default values defined for the variables to this function into a named list.
   defaults <- mget(main_parameters)
@@ -318,7 +318,7 @@ call to the `explain()` function. This is fixed internally.\n",
   # which is needed if the user forgot to use vaeac.extra_parameters, otherwise, the values
   # of the user would be overwritten by the default values.
   # We then remove the vaeac.extra_parameters list.
-  parameters <- modifyList(parameters$vaeac.extra_parameters, parameters, keep.null = TRUE)
+  parameters <- utils::modifyList(parameters$vaeac.extra_parameters, parameters, keep.null = TRUE)
   parameters$vaeac.extra_parameters <- NULL
 
   # Chaos in the list order, so reorder such that vaeac entries come at the end of the list
@@ -697,18 +697,19 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' `num_vaeacs_initiate` vaeac models are compared and the function continues to only train the best performing
 #' one for a total of `epochs` epochs. The networks are trained using the ADAM optimizer with the learning rate is `lr`.
 #'
-#' @param training_data A matrix or data.frame containing the data. Categorical data must have class names 1,2,...,K.
+#' @param training_data A matrix or data.frame containing the data.
+#' Categorical data must have class names \eqn{1,2,\dots,K}.
 #' @param model_description String containing, e.g., the name of the data distribution or
 #' additional parameter information. Used in the save name of the fitted model.
 #' @param folder_to_save_model String specifying a path to a folder where
 #' the function is to save the fitted vaeac model.
 #' @param use_cuda Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!
 #' @param num_vaeacs_initiate Integer. The number of different vaeac models to initiate in the start.
-#' Pick the best performing one after \code{epochs_initiation_phase } and continue training that one.
-#' @param epochs_initiation_phase Integer. The number of epochs to run each of the \code{num_vaeacs_initiate}
+#' Pick the best performing one after `epochs_initiation_phase` and continue training that one.
+#' @param epochs_initiation_phase Integer. The number of epochs to run each of the `num_vaeacs_initiate`
 #' vaeac models before only continuing training the best one.
 #' @param epochs Integer. The number of epochs to train the final vaeac model.
-#' This includes \code{epochs_initiation_phase}.
+#' This includes `epochs_initiation_phase`.
 #' @param epochs_early_stopping Integer. The training stops if there has been no improvement in the validation IWAE
 #' for `epochs_early_stopping` epochs. If the user wants the training process to be solely based on this, then `epochs`
 #' should be set to a large number.
@@ -1352,7 +1353,7 @@ epoch might require a lot of disk storage if data is large.\n",
   state_list <- c(state_list, list("num_trainable_parameters" = model$num_train_param))
 
   # Send the model to the GPU, if we have access to it.
-  if (use_cuda) model <- model.cuda()
+  if (use_cuda) model = model$cuda()
 
   # Check if we are printing detailed debug information
   if (verbose) {
@@ -1668,12 +1669,13 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 }
 
 
-#' Continue to Train the Vaeac model
+#' Continue to Train the Vaeac Model
 #'
 #' @description Function that loads a previously trained vaeac model and continue the training, either
 #' on new data or on the same dataset as it was trained on before. If we are given a new dataset, then
 #' we assume that new dataset has the same distribution and one_hot_max_sizes as the original dataset.
 #'
+#' @param explanation A [shapr::explain()] object and `vaeac` must be the used approach.
 #' @param epochs_new Integer. The number of extra epochs to conduct.
 #' @param lr_new Numeric. If we are to overwrite the old learning rate in the adam optimizer.
 #' @param training_data Matrix/data.frame containing new training data. If not present,
@@ -1689,8 +1691,7 @@ vaeac_continue_train_model <- function(explanation,
                                        lr_new = NULL,
                                        training_data = NULL,
                                        save_data = FALSE,
-                                       verbose = FALSE,
-                                       ...) {
+                                       verbose = FALSE) {
   # Keep track of how much time we use training
   new_training_time <- system.time({
     # Extract the vaeac list
@@ -2710,9 +2711,11 @@ as user set `return_as_postprocessed_dt = TRUE`.")
 #' # # See that the paired samplign often produce more stable results
 #' # plot_several_vaeacs_VLB_IWAE(explanation_list = explanation_list_named)
 #' #
-#' # # The function also works if we have only one method, but then one should only look at the method plot
-#' # plot_several_vaeacs_VLB_IWAE(explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
-#' #                              plot_type = "method")
+#' # # The function also works if we have only one method,
+#' # # but then one should only look at the method plot
+#' # plot_several_vaeacs_VLB_IWAE(
+#' #   explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
+#' #   plot_type = "method")
 #' #
 #' # # Can alter the plot
 #' # plot_several_vaeacs_VLB_IWAE(
