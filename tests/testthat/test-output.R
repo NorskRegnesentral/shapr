@@ -385,7 +385,7 @@ test_that("output_lm_mixed_vaeac", {
       vaeac.num_vaeacs_initiate = 2, # Low value here to speed up the time
       vaeac.save_model = FALSE,
       vaeac.extra_parameters = list(
-        vaeac.epochs_initiation_phase = 2, # Low value here to speed up the time
+        vaeac.epochs_initiation_phase = 2 # Low value here to speed up the time
       )
     ),
     "output_lm_mixed_vaeac"
