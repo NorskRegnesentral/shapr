@@ -69,6 +69,7 @@ setup_approach(internal, ...)
   vaeac.lr = 0.001,
   vaeac.num_vaeacs_initiate = 10,
   vaeac.epochs = 200,
+  vaeac.save_model = TRUE,
   vaeac.extra_parameters = list(),
   ...
 )
@@ -184,6 +185,10 @@ epochs (default is \code{2}) and continue training that one.}
 
 \item{vaeac.epochs}{Integer. The number of epochs to train the final vaeac model. This includes
 \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
+
+\item{vaeac.save_model}{Boolean. If \code{TRUE} (default), the \code{vaeac} model will be saved either in a temp
+folder or in a user specified location specified in \code{vaeac.folder_to_save_model}. If \code{FALSE}, then the
+paths to model and the model will will be deleted from the returned object from \code{\link[=explain]{explain()}}.}
 
 \item{vaeac.extra_parameters}{Named list with extra parameters to the \code{vaeac} approach. See
 section "The \code{vaeac} approach" in \code{\link[=setup_approach]{setup_approach()}} for description of possible additional

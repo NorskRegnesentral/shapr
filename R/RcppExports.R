@@ -14,7 +14,7 @@
 #' @return Matrix of dimension \code{ncol(X)*ncol(X)}
 #' @author Martin Jullum
 hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
-  .Call(`_shapr_hat_matrix_cpp`, X, mcov, S_scale_dist, h)
+    .Call(`_shapr_hat_matrix_cpp`, X, mcov, S_scale_dist, h)
 }
 
 #' sigma_hat_sq-function
@@ -29,7 +29,7 @@ hat_matrix_cpp <- function(X, mcov, S_scale_dist, h) {
 #'
 #' @author Martin Jullum
 rss_cpp <- function(H, y) {
-  .Call(`_shapr_rss_cpp`, H, y)
+    .Call(`_shapr_rss_cpp`, H, y)
 }
 
 #' correction term with trace_input in AICc formula
@@ -42,7 +42,7 @@ rss_cpp <- function(H, y) {
 #' @return Scalar
 #' @author Martin Jullum
 correction_matrix_cpp <- function(tr_H, n) {
-  .Call(`_shapr_correction_matrix_cpp`, tr_H, n)
+    .Call(`_shapr_correction_matrix_cpp`, tr_H, n)
 }
 
 #'  Temp-function for computing the full AICc with several X's etc
@@ -59,7 +59,7 @@ correction_matrix_cpp <- function(tr_H, n) {
 #' @return Scalar with the numeric value of the AICc formula
 #' @author Martin Jullum
 aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
-  .Call(`_shapr_aicc_full_single_cpp`, X, mcov, S_scale_dist, h, y)
+    .Call(`_shapr_aicc_full_single_cpp`, X, mcov, S_scale_dist, h, y)
 }
 
 #'  AICc formula for several sets, alternative definition
@@ -77,7 +77,7 @@ aicc_full_single_cpp <- function(X, mcov, S_scale_dist, h, y) {
 #'
 #' @author Martin Jullum
 aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) {
-  .Call(`_shapr_aicc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
+    .Call(`_shapr_aicc_full_cpp`, h, X_list, mcov_list, S_scale_dist, y_list, negative)
 }
 
 #' Compute the quantiles using quantile type seven
@@ -92,7 +92,7 @@ aicc_full_cpp <- function(h, X_list, mcov_list, S_scale_dist, y_list, negative) 
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 quantile_type7_cpp <- function(x, probs) {
-  .Call(`_shapr_quantile_type7_cpp`, x, probs)
+    .Call(`_shapr_quantile_type7_cpp`, x, probs)
 }
 
 #' Transforms new data to a standardized normal distribution
@@ -105,7 +105,7 @@ quantile_type7_cpp <- function(x, probs) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 inv_gaussian_transform_cpp <- function(z, x) {
-  .Call(`_shapr_inv_gaussian_transform_cpp`, z, x)
+    .Call(`_shapr_inv_gaussian_transform_cpp`, z, x)
 }
 
 #' Generate (Gaussian) Copula MC samples
@@ -135,7 +135,7 @@ inv_gaussian_transform_cpp <- function(z, x) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat) {
-  .Call(`_shapr_prepare_data_copula_cpp`, MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat)
+    .Call(`_shapr_prepare_data_copula_cpp`, MC_samples_mat, x_explain_mat, x_explain_gaussian_mat, x_train_mat, S, mu, cov_mat)
 }
 
 #' Generate Gaussian MC samples
@@ -159,7 +159,7 @@ prepare_data_copula_cpp <- function(MC_samples_mat, x_explain_mat, x_explain_gau
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data_gaussian_cpp <- function(MC_samples_mat, x_explain_mat, S, mu, cov_mat) {
-  .Call(`_shapr_prepare_data_gaussian_cpp`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
+    .Call(`_shapr_prepare_data_gaussian_cpp`, MC_samples_mat, x_explain_mat, S, mu, cov_mat)
 }
 
 #' (Generalized) Mahalanobis distance
@@ -179,12 +179,12 @@ prepare_data_gaussian_cpp <- function(MC_samples_mat, x_explain_mat, S, mu, cov_
 #' @return Array of three dimensions. Contains the squared distance for between all training and test observations for all feature combinations passed to the function.
 #' @author Martin Jullum
 mahalanobis_distance_cpp <- function(featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist) {
-  .Call(`_shapr_mahalanobis_distance_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
+    .Call(`_shapr_mahalanobis_distance_cpp`, featureList, Xtrain_mat, Xtest_mat, mcov, S_scale_dist)
 }
 
 #' @keywords internal
 sample_features_cpp <- function(m, n_features) {
-  .Call(`_shapr_sample_features_cpp`, m, n_features)
+    .Call(`_shapr_sample_features_cpp`, m, n_features)
 }
 
 #' Get imputed data
@@ -223,7 +223,7 @@ sample_features_cpp <- function(m, n_features) {
 #'
 #' @author Nikolai Sellereite
 observation_impute_cpp <- function(index_xtrain, index_s, xtrain, xtest, S) {
-  .Call(`_shapr_observation_impute_cpp`, index_xtrain, index_s, xtrain, xtest, S)
+    .Call(`_shapr_observation_impute_cpp`, index_xtrain, index_s, xtrain, xtest, S)
 }
 
 #' Calculate weight matrix
@@ -242,7 +242,7 @@ observation_impute_cpp <- function(index_xtrain, index_s, xtrain, xtest, S) {
 #' @return Matrix of dimension n x m + 1
 #' @author Nikolai Sellereite
 weight_matrix_cpp <- function(subsets, m, n, w) {
-  .Call(`_shapr_weight_matrix_cpp`, subsets, m, n, w)
+    .Call(`_shapr_weight_matrix_cpp`, subsets, m, n, w)
 }
 
 #' Get feature matrix
@@ -256,5 +256,6 @@ weight_matrix_cpp <- function(subsets, m, n, w) {
 #' @return Matrix
 #' @author Nikolai Sellereite
 feature_matrix_cpp <- function(features, m) {
-  .Call(`_shapr_feature_matrix_cpp`, features, m)
+    .Call(`_shapr_feature_matrix_cpp`, features, m)
 }
+

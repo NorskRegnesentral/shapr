@@ -14,6 +14,9 @@
 #'  epochs (default is `2`) and continue training that one.
 #' @param vaeac.epochs Integer. The number of epochs to train the final vaeac model. This includes
 #' `vaeac.extra_parameters$epochs_initiation_phase`, where the default is `2`.
+#' @param vaeac.save_model Boolean. If `TRUE` (default), the `vaeac` model will be saved either in a temp
+#' folder or in a user specified location specified in `vaeac.folder_to_save_model`. If `FALSE`, then the
+#' paths to model and the model will will be deleted from the returned object from [shapr::explain()].
 #' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach. See
 #' section "The `vaeac` approach" in [setup_approach()] for description of possible additional
 #' parameters.
@@ -133,6 +136,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
                                  vaeac.lr = 0.001,
                                  vaeac.num_vaeacs_initiate = 10,
                                  vaeac.epochs = 200,
+                                 vaeac.save_model = TRUE,
                                  vaeac.extra_parameters = list(),
                                  ...) {
   # A function that sets up and calls the function builds the models used by the vaeac approach.

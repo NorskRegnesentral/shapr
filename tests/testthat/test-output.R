@@ -182,12 +182,9 @@ test_that("output_lm_numeric_vaeac", {
       n_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.num_vaeacs_initiate = 2, # Low value here to speed up the time
+      vaeac.save_model = FALSE,
       vaeac.extra_parameters = list(
-        vaeac.epochs_initiation_phase = 2, # Low value here to speed up the time
-        # Add this since otherwise it gets set to the time, which would break the test.
-        vaeac.model_description = "test",
-        # Save the model in the current folder to avoid a OS specific tempdir to be set randomly
-        vaeac.folder_to_save_model = "."
+        vaeac.epochs_initiation_phase = 2 # Low value here to speed up the time
       )
     ),
     "output_lm_numeric_vaeac"
@@ -231,12 +228,9 @@ test_that("output_lm_categorical_vaeac", {
       n_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.num_vaeacs_initiate = 2, # Low value here to speed up the time
+      vaeac.save_model = FALSE,
       vaeac.extra_parameters = list(
-        vaeac.epochs_initiation_phase = 2, # Low value here to speed up the time
-        # Add this since otherwise it gets set to the time, which would break the test.
-        vaeac.model_description = "test",
-        # Save the model in the current folder to avoid a OS specific tempdir to be set randomly
-        vaeac.folder_to_save_model = "."
+        vaeac.epochs_initiation_phase = 2 # Low value here to speed up the time
       )
     ),
     "output_lm_categorical_vaeac"
@@ -389,12 +383,9 @@ test_that("output_lm_mixed_vaeac", {
       n_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.num_vaeacs_initiate = 2, # Low value here to speed up the time
+      vaeac.save_model = FALSE,
       vaeac.extra_parameters = list(
         vaeac.epochs_initiation_phase = 2, # Low value here to speed up the time
-        # Add this since otherwise it gets set to the time, which would break the test.
-        vaeac.model_description = "test",
-        # Save the model in the current folder to avoid a OS specific tempdir to be set randomly
-        vaeac.folder_to_save_model = "."
       )
     ),
     "output_lm_mixed_vaeac"
