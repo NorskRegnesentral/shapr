@@ -3,7 +3,7 @@
 #'
 #' @importFrom graphics plot hist rect
 #'
-#' @importFrom utils head tail methods
+#' @importFrom utils head tail methods modifyList
 #'
 #' @importFrom stats predict
 #'
