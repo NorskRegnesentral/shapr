@@ -834,18 +834,19 @@ data[, Month_factor := as.factor(Month)]
 x_var_cat <- c("Solar.R", "Wind", "Temp", "Month_factor")
 y_var <- "Ozone"
 
-ind_x_explain = 1:6
+ind_x_explain <- 1:6
 
-data_train_cat = data[-ind_x_explain, ]
+data_train_cat <- data[-ind_x_explain, ]
 x_train_cat <- data_train_cat[, ..x_var_cat]
 x_explain_cat <- data[ind_x_explain, ][, ..x_var_cat]
 
 # Fit a random forest model to the training data
 model <- ranger(as.formula(paste0(y_var, " ~ ", paste0(x_var_cat, collapse = " + "))),
-                data = data_train_cat)
+  data = data_train_cat
+)
 
 # Specifying the phi_0, i.e. the expected prediction without any features
-p0 <- mean(data_train_cat[,get(y_var)])
+p0 <- mean(data_train_cat[, get(y_var)])
 
 approach <- "ctree"
 prediction_zero <- p0

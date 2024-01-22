@@ -2069,5 +2069,4 @@ test_that("vaeac_pretreained_vaeac_model", {
 
   # Check for equal Shapley values
   expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac$shapley_values)
-
 })

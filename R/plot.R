@@ -1784,7 +1784,8 @@ create_feature_descriptions_dt <- function(explanation_list,
                                            horizontal_bars,
                                            digits) {
   # Get the explicands
-  x_explain <- explanation_list[[1]]$internal$data$x_explain[index_explicands, only_these_features_wo_none, with = FALSE]
+  x_explain <-
+    explanation_list[[1]]$internal$data$x_explain[index_explicands, only_these_features_wo_none, with = FALSE]
 
   # Converting and melting the explicands
   desc_mat <- trimws(format(x_explain, digits = digits))

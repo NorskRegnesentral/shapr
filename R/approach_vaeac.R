@@ -585,7 +585,6 @@ We set 'which_vaeac_model = best' and continue.\n",
         vaeac.which_vaeac_model,
         paste(names(vaeac_list$models), collapse = ", ")
       ))
-
     }
   }
 
@@ -1353,7 +1352,7 @@ epoch might require a lot of disk storage if data is large.\n",
   state_list <- c(state_list, list("num_trainable_parameters" = model$num_train_param))
 
   # Send the model to the GPU, if we have access to it.
-  if (use_cuda) model = model$cuda()
+  if (use_cuda) model <- model$cuda()
 
   # Check if we are printing detailed debug information
   if (verbose) {
@@ -1506,9 +1505,9 @@ epoch might require a lot of disk storage if data is large.\n",
       filename_best_running <-
         make.names(
           paste(make.names(model_description), "p", p,
-                "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr,
-                "best_running.pt",
-                sep = "_"
+            "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr,
+            "best_running.pt",
+            sep = "_"
           )
         )
 

@@ -131,9 +131,11 @@ vaeac <- torch::nn_module(
                         skip_connection_masked_enc_dec = FALSE,
                         use_batch_normalization = FALSE,
                         paired_sampling = FALSE,
-                        mask_generator_name = c("MCAR_mask_generator",
-                                                "Specified_prob_mask_generator",
-                                                "Specified_masks_mask_generator"),
+                        mask_generator_name = c(
+                          "MCAR_mask_generator",
+                          "Specified_prob_mask_generator",
+                          "Specified_masks_mask_generator"
+                        ),
                         masking_ratio = 0.5,
                         mask_gen_these_coalitions = NULL,
                         mask_gen_these_coalitions_prob = NULL,
@@ -210,9 +212,11 @@ must be provided when using 'Specified_masks_mask_generator'.\n")
       self$masks_probs <- mask_gen_these_coalitions_prob
     } else {
       # Print error to user.
-      stop(sprintf("Maske geneartor '%s' is not supported.
+      stop(sprintf(
+        "Maske geneartor '%s' is not supported.
 Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specified_masks_mask_generator'.\n",
-                   mask_generator))
+        mask_generator
+      ))
     }
 
     ##### Full Encoder
@@ -224,9 +228,11 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
       name = "input_layer_cat_to_one_hot"
     )
     full_encoder_network$add_module(
-      module = torch::nn_linear(in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) +
-                                  num_features * 2,
-                                out_features = width),
+      module = torch::nn_linear(
+        in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) +
+          num_features * 2,
+        out_features = width
+      ),
       name = "input_layer_linear"
     )
     full_encoder_network$add_module(
@@ -293,9 +299,11 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
       )
     }
     masked_encoder_network$add_module(
-      module = torch::nn_linear(in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) +
-                                  num_features,
-                                out_features = width),
+      module = torch::nn_linear(
+        in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) +
+          num_features,
+        out_features = width
+      ),
       name = "input_layer_linear"
     )
     masked_encoder_network$add_module(
@@ -2378,7 +2386,6 @@ CategoricalToOneHotLayer <- torch::nn_module(
         out_col <- matrix(0, nrow = n, ncol = size)
         out_col[cbind(seq(n), as.matrix(cat_idx))] <- 1
         out_col <- torch::torch_tensor(out_col, device = input$device)
-
       }
 
       # append this feature column to the result
@@ -2635,9 +2642,9 @@ Specified_prob_mask_generator <- torch::nn_module(
   # observed feature value will be masked. '0' means that the entry is NOT masked,
   # i.e., the feature value will be observed/given/available.
   Specified_prob_mask_generator_function = function(batch,
-                                                           masking_probs,
-                                                           seed = NULL,
-                                                           paired_sampling = FALSE) {
+                                                    masking_probs,
+                                                    seed = NULL,
+                                                    paired_sampling = FALSE) {
     # # Check for valid input.
     # if (ncol(batch) != (length(masking_probs)-1)) {
     #   stop(sprintf("Number of probabilities should be one more than the number of features: %d != 1 + %d.\n",
