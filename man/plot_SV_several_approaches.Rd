@@ -187,14 +187,16 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
     axis_labels_rotate_angle = 45
   )
 
-  # We can change the order of the features by specifying the order using the `only_these_features` parameter.
+  # We can change the order of the features by specifying the
+  # order using the `only_these_features` parameter.
   plot_SV_several_approaches(explanation_list,
     index_explicands = c(1:2, 5, 10),
     only_these_features = c("Temp", "Solar.R", "Month", "Wind")
   )
 
-  # We can also remove certain features if we are not interested in them or want to focus on, e.g., two features.
-  # The function will give a message to if the user specifies non-valid feature names.
+  # We can also remove certain features if we are not interested in them
+  # or want to focus on, e.g., two features. The function will give a
+  # message to if the user specifies non-valid feature names.
   plot_SV_several_approaches(explanation_list,
     index_explicands = c(1:2, 5, 10),
     only_these_features = c("Temp", "Solar.R"),

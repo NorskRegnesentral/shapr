@@ -17,27 +17,23 @@ Only applicable when \code{output = TRUE}.}
 \item{verbose}{Boolean variable indicating if we want to give printouts to the user.}
 }
 \description{
-The layer is used to make skip-connections inside torch::nn_sequential network
-or between several torch::nn_sequential networks without unnecessary code complication.
+The layer is used to make skip-connections inside a \link[torch:nn_sequential]{torch::nn_sequential} network
+or between several \link[torch:nn_sequential]{torch::nn_sequential} networks without unnecessary code complication.
 }
 \details{
 If \code{output = FALSE}, this layer stores its input in a static list
-\code{storage} with the key \code{id} and then passes the input to the next layer.
-I.e., when memory layer is used in the masked encoder.
-If \code{output = TRUE}, this layer takes stored tensor from the storage.
-I.e., when memory layer is used in the decoder.
-If \code{add = TRUE}, it returns sum of the stored vector and an \code{input},
-otherwise it returns their concatenation. If the tensor with specified \code{id}
-is not in storage when the layer with \code{output = TRUE} is called, it would cause an exception.
+\code{storage} with the key \verb{id`` and then passes the input to the next layer. I.e., when memory layer is used in the masked encoder. If }output = TRUE\verb{, this layer takes stored tensor from the storage. I.e., when memory layer is used in the decoder. If }add = TRUE\verb{, it returns sum of the stored vector and an }input\verb{, otherwise it returns their concatenation. If the tensor with specified }id\verb{is not in storage when the layer with}output = TRUE` is called, it would cause an exception.
 }
 \examples{
 # net1 <- torch::nn_sequential(
 #   MemoryLayer("#1"),
-#  MemoryLayer("#0.1"),
+#   MemoryLayer("#0.1"),
 #   torch::nn_linear(512, 256),
 #   torch::nn_leaky_relu(),
-#   MemoryLayer("#0.1", output = TRUE, add = FALSE), # here add cannot be TRUE because the dimensions mismatch
-#   torch::nn_linear(768, 256), # the dimension after the concatenation with skip-connection is 512 + 256 = 768
+#   # here add cannot be TRUE because the dimensions mismatch
+#   MemoryLayer("#0.1", output = TRUE, add = FALSE),
+#   torch::nn_linear(768, 256),
+#   # the dimension after the concatenation with skip-connection is 512 + 256 = 768
 # )
 # net2 <- torch::nn_equential(
 #   torch::nn_linear(512, 512),
@@ -45,7 +41,8 @@ is not in storage when the layer with \code{output = TRUE} is called, it would c
 #   ...
 # )
 # b <- net1(a)
-# d <- net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
+# d <- net2(c)
+# # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
 }
 \author{
 Lars Henry Berge Olsen

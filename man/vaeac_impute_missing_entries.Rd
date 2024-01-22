@@ -36,7 +36,7 @@ or if we are to sample the most likely values (mean for continuous and class wit
 
 \item{return_as_postprocessed_dt}{Boolean. If we are to postprocess the data, i.e.,
 convert categorical features to factors with correct level names (and transform continuous features
-back to original scale). The returned object will then be a \code{\link[data.table]{data.table}}.}
+back to original scale). The returned object will then be a \code{\link[data.table:data.table]{data.table::data.table()}}.}
 
 \item{batch_size}{Integer. The number of samples in each batch.
 If \code{NULL}, then use the same value saved in the vaeac object.

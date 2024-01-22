@@ -169,9 +169,11 @@ See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al.
 # # See that the paired samplign often produce more stable results
 # plot_several_vaeacs_VLB_IWAE(explanation_list = explanation_list_named)
 #
-# # The function also works if we have only one method, but then one should only look at the method plot
-# plot_several_vaeacs_VLB_IWAE(explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
-#                              plot_type = "method")
+# # The function also works if we have only one method,
+# # but then one should only look at the method plot
+# plot_several_vaeacs_VLB_IWAE(
+#   explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
+#   plot_type = "method")
 #
 # # Can alter the plot
 # plot_several_vaeacs_VLB_IWAE(

@@ -62,7 +62,7 @@ and \eqn{\bar{S}} when we sample coalitions during training for each batch.}
 Not used if \code{mask_gen_these_coalitions} is given.}
 
 \item{mask_gen_these_coalitions}{Matrix containing the different coalitions to learn.
-Must be given if \code{mask_generator_name} = 'Specified_masks_mask_generator'.}
+Must be given if \code{mask_generator_name = 'Specified_masks_mask_generator'}.}
 
 \item{mask_gen_these_coalitions_prob}{Numerics containing the probabilities
 for sampling each mask in \code{mask_gen_these_coalitions}.

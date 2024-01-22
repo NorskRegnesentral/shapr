@@ -26,7 +26,7 @@ plot_vaeac_imputed_ggpairs(
 )
 }
 \arguments{
-\item{explanation}{List. The output list from the \code{\link{explain}} function.}
+\item{explanation}{List. The output list from the \code{\link[=explain]{explain()}} function.}
 
 \item{which_vaeac_model}{String. Indicating which vaeac model to use when generating the samples.}
 
@@ -57,19 +57,19 @@ If TRUE, then we create the figures twice, so the run time will double.}
 
 \item{cor_method}{Type of correlation measure.}
 
-\item{...}{Extra parameters sent to ggsave function.}
+\item{...}{Extra parameters sent to the \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}} function.}
 }
 \value{
 A list containing the figures if \code{return_figures} = \code{TRUE}.
 }
 \description{
-A function that creates a matrix of plots (\code{GGally::\link[GGally]{ggpairs}}) from
+A function that creates a matrix of plots (\code{\link[GGally:ggpairs]{GGally::ggpairs()}}) from
 generated imputations from the unconditioned distribution \eqn{p(\boldsymbol{x})} estimated by
 a vaeac model, and then compares the imputed values with data from the true distribution (if provided).
 }
 \details{
 See \href{https://www.blopig.com/blog/2019/06/a-brief-introduction-to-ggpairs/}{ggpairs} for an
-introduction to \code{GGally::\link[GGally]{ggpairs}}, and the corresponding
+introduction to \code{\link[GGally:ggpairs]{GGally::ggpairs()}}, and the corresponding
 \href{https://ggobi.github.io/ggally/articles/ggally_plots.html}{vignette}.
 
 Each combination of variables are plotted according to whether they are:

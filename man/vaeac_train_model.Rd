@@ -40,7 +40,8 @@ vaeac_train_model(
 )
 }
 \arguments{
-\item{training_data}{A matrix or data.frame containing the data. Categorical data must have class names 1,2,...,K.}
+\item{training_data}{A matrix or data.frame containing the data.
+Categorical data must have class names \eqn{1,2,\dots,K}.}
 
 \item{model_description}{String containing, e.g., the name of the data distribution or
 additional parameter information. Used in the save name of the fitted model.}
@@ -51,7 +52,7 @@ the function is to save the fitted vaeac model.}
 \item{use_cuda}{Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!}
 
 \item{num_vaeacs_initiate}{Integer. The number of different vaeac models to initiate in the start.
-Pick the best performing one after \code{epochs_initiation_phase } and continue training that one.}
+Pick the best performing one after \code{epochs_initiation_phase} and continue training that one.}
 
 \item{epochs_initiation_phase}{Integer. The number of epochs to run each of the \code{num_vaeacs_initiate}
 vaeac models before only continuing training the best one.}
@@ -79,15 +80,15 @@ the neural networks of the masked encoder, full encoder, and decoder.}
 
 \item{latent_dim}{Integer. The number of dimensions in the latent space.}
 
-\item{lr}{Numeric. The learning rate used in the \code{\link[torch]{optim_adam}} optimizer.}
+\item{lr}{Numeric. The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
 
 \item{batch_size}{Integer. The number of samples to include in each batch.}
 
 \item{running_avg_num_values}{Integer. How many of the previous values to include when we compute the running means.}
 
-\item{activation_function}{An \code{\link[torch]{nn_module}} representing an activation function such as, e.g.,
-\code{\link[torch]{nn_relu}}, \code{\link[torch]{nn_leaky_relu}}, \code{\link[torch]{nn_selu}}, and
-\code{\link[torch]{nn_sigmoid}}.}
+\item{activation_function}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
+\code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, and
+\code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
 \item{use_skip_connections}{Boolean. If we are to use skip connections in each layer. If true, then we add the input
 to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.}
@@ -124,9 +125,10 @@ see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.
 to train the model later.}
 
 \item{transform_all_cont_features}{Boolean. If we are to log transform all continuous features before
-sending the data to vaeac. vaeac creates unbounded values, so if the continuous features are strictly positive,
-as for Burr and Abalone data, it can be advantageous to log-transform the data to unbounded form before using vaeac.
-If \code{TRUE}, then \code{vaeac_postprocess_data} will take the exp of the results
+sending the data to the vaeac using the \code{\link[=vaeac_postprocess_data]{vaeac_postprocess_data()}} function. The vaeac method creates
+unbounded values, so if the continuous features are strictly positive, as for Burr and Abalone data, it can be
+advantageous to log-transform the data to unbounded form before using vaeac.
+If \code{TRUE}, then \code{\link[=vaeac_postprocess_data]{vaeac_postprocess_data()}} will take the exp of the results
 to get back to strictly positive values when using the vaeac model to impute missing values.}
 
 \item{verbose}{Boolean. If we are to print the progress of the initialization of different vaeac models,

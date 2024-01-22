@@ -172,11 +172,11 @@ of the masked encoder, full encoder, and decoder.}
 
 \item{vaeac.latent_dim}{Integer. The number of dimensions in the latent space.}
 
-\item{vaeac.activation_function}{An \code{\link[torch]{nn_module}} representing an activation
-function such as, e.g., \code{\link[torch]{nn_relu}}, \code{\link[torch]{nn_leaky_relu}},
-\code{\link[torch]{nn_selu}}, and \code{\link[torch]{nn_sigmoid}}.}
+\item{vaeac.activation_function}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation
+function such as, e.g., \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}},
+\code{\link[torch:nn_selu]{torch::nn_selu()}}, and \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
-\item{vaeac.lr}{Numeric. The learning rate used in the \code{\link[torch]{optim_adam}} optimizer.}
+\item{vaeac.lr}{Numeric. The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
 
 \item{vaeac.num_vaeacs_initiate}{Integer. The number of different vaeac models to initiate
 in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}

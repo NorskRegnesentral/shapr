@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac.R
 \name{vaeac_continue_train_model}
 \alias{vaeac_continue_train_model}
-\title{Continue to Train the Vaeac model}
+\title{Continue to Train the Vaeac Model}
 \usage{
 vaeac_continue_train_model(
   explanation,
@@ -10,11 +10,12 @@ vaeac_continue_train_model(
   lr_new = NULL,
   training_data = NULL,
   save_data = FALSE,
-  verbose = FALSE,
-  ...
+  verbose = FALSE
 )
 }
 \arguments{
+\item{explanation}{A \code{\link[=explain]{explain()}} object and \code{vaeac} must be the used approach.}
+
 \item{epochs_new}{Integer. The number of extra epochs to conduct.}
 
 \item{lr_new}{Numeric. If we are to overwrite the old learning rate in the adam optimizer.}

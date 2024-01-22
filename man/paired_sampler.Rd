@@ -30,7 +30,8 @@ This function does not use batch iterators, which might increase the speed.
 # num_featuers <- 3
 # num_observations <- 5
 # shuffle <- TRUE
-# data <- torch_tensor(matrix(rep(seq(num_observations), each = num_featuers), ncol = num_featuers, byrow = TRUE))
+# data <- torch_tensor(matrix(rep(seq(num_observations), each = num_featuers),
+#                             ncol = num_featuers, byrow = TRUE))
 # data
 # dataset <- vaeac_dataset(data, rep(1, num_featuers))
 # dataload <- torch::dataloader(dataset,

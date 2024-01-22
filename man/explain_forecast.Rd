@@ -192,10 +192,10 @@ encoder, full encoder, and decoder.}
     \item{\code{vaeac.width}}{Integer. The number of neurons in each hidden layer in the neural networks
 of the masked encoder, full encoder, and decoder.}
     \item{\code{vaeac.latent_dim}}{Integer. The number of dimensions in the latent space.}
-    \item{\code{vaeac.lr}}{Numeric. The learning rate used in the \code{\link[torch]{optim_adam}} optimizer.}
-    \item{\code{vaeac.activation_function}}{An \code{\link[torch]{nn_module}} representing an activation
-function such as, e.g., \code{\link[torch]{nn_relu}}, \code{\link[torch]{nn_leaky_relu}},
-\code{\link[torch]{nn_selu}}, and \code{\link[torch]{nn_sigmoid}}.}
+    \item{\code{vaeac.lr}}{Numeric. The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
+    \item{\code{vaeac.activation_function}}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation
+function such as, e.g., \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}},
+\code{\link[torch:nn_selu]{torch::nn_selu()}}, and \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
     \item{\code{vaeac.num_vaeacs_initiate}}{Integer. The number of different vaeac models to initiate
 in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
 epochs (default is \code{2}) and continue training that one.}
