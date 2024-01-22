@@ -982,10 +982,6 @@ plot_MSEv_eval_crit <- function(explanation_list,
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
   }
 
-  if (!requireNamespace("data.table", quietly = TRUE)) {
-    stop("data.table is not installed. Please run install.packages('data.table')")
-  }
-
   # Check for valid plot type argument
   unknown_plot_type <- plot_type[!(plot_type %in% c("overall", "comb", "explicand"))]
   if (length(unknown_plot_type) > 0) {
@@ -1525,10 +1521,6 @@ plot_SV_several_approaches <- function(explanation_list,
   # Check that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
-  }
-
-  if (!requireNamespace("data.table", quietly = TRUE)) {
-    stop("data.table is not installed. Please run install.packages('data.table')")
   }
 
   # Ensure that even a single explanation object is in a list
