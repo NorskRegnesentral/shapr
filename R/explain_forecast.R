@@ -194,6 +194,12 @@ explain_forecast <- function(model,
     output$timing <- compute_time(timing_list)
   }
 
+  # Temporary to avoid failing tests
+  if (isFALSE(output$internal$parameters$vaeac.save_model)) {
+    output$internal$parameters$vaeac$models <- NULL
+    output$internal$parameters$vaeac$parameters$folder_to_save_model <- NULL
+    output$internal$parameters$vaeac$parameters$model_description <- NULL
+  }
 
   return(output)
 }
