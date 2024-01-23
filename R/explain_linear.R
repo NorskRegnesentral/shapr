@@ -76,9 +76,14 @@ explain_linear <- function(model,
   timing_list$test_prediction <- Sys.time()
 
   # Computes the necessary objects for the linear Gaussian approach
-  internal <- setup_computation_linear_gaussian(internal)
+  internal <- shapley_setup_linear_gaussian(internal)
 
   timing_list$setup_computation <- Sys.time()
+
+  internal <- compute_linear_gaussian_Tmu_Tx(internal,...)
+
+  timing_list$compute_Tmu_Tx <- Sys.time()
+
 
   # Compute Shapley values with the linear Gaussian method
   output <- compute_shapley_linear_gaussian(internal = internal)

@@ -36,8 +36,8 @@ profvis({
                 prediction_zero = p0,
                 gaussian.cov_mat=Sig,
                 gaussian.mu = mu,
-                n_samples = 10^4,
-                n_permutations=100)
+                n_samples = 10,
+                n_permutations=10^4)
 })
 
  test
@@ -48,9 +48,8 @@ profvis({
 test2 <-explain_linear(model = model,
                        x_explain = x_explain,
                        x_train = data,
-                       prediction_zero = p0, # this is not used
                        gaussian.cov_mat=Sig,
-                       gaussian.mu=mu,n_permutations = 5000
+                       gaussian.mu=mu,n_permutations = 10^4
 )
 })
 test2$internal$objects$perm_dt[,.N]

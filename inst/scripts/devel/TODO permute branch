@@ -1,9 +1,9 @@
 TODO: permute-branch
 
 - General:
-	- Make sampling permutations faster (Rcpp). This could very well also be a matrix.
+	- Make sampling permutations faster (Rcpp). This could very well also be a matrix. Moreover, look at what is the slow part of the sampling-code using Rprof(vis)
 	- Clean up unused stuff
-	- Merge master branch in here
+	X- Merge master branch in here
 	- Make the creation of the S and X matrices faster
 	- Think about how to do the looping with
 	- Implement grouping

@@ -33,7 +33,7 @@ test <-explain(model = model_lm_numeric,
                x_train = x_train_numeric,
                approach = "gaussian",
                shap_approach = "permutation",
-               prediction_zero = p0,n_samples = 10^5)
+               prediction_zero = p0,n_samples = 10^4)
 test
 #none Solar.R    Wind       Temp   Month
 #1: 42.44  -8.379   7.944   15.29533  0.6522
@@ -57,7 +57,6 @@ test2
 test2 <-explain_linear(model = model_lm_numeric,
                        x_explain = x_explain_numeric_new,
                        x_train = x_train_numeric,
-                       prediction_zero = p0,
 )
 test2
 

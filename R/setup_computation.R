@@ -22,30 +22,20 @@ setup_computation <- function(internal, model, predict_model) {
   return(internal)
 }
 
-setup_computation_linear_gaussian <- function(internal){
-
-  # setup the Shapley framework (only appending the perm_list)
-  internal <- shapley_setup_linear_gaussian(internal)
-
-  # Setup for the linear gaussian method: compute U, Q, Tx and Tmu
-  #internal <- setup_linear_gaussian(internal)
-  internal <- setup_linear_gaussian_new(internal)
-
-}
 
 shapley_setup_linear_gaussian <- function(internal) {
   exact <- internal$parameters$exact
   n_features0 <- internal$parameters$n_features
   n_permutations <- internal$parameters$n_permutations
 
-  perm_list <- feature_combinations_perm(
+  perms_mat <- feature_combinations_perm(
     m = n_features0,
     exact = exact,
     n_permutations = n_permutations,
     paired_shap_sampling = TRUE,
     return_perm_list_only = TRUE
   )
-  internal$objects$perm_list <- perm_list
+  internal$objects$perms_mat <- perms_mat
 
   return(internal)
 }
@@ -235,7 +225,8 @@ feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL,pai
   if (!exact) {
       # Switch to exact for feature-wise method
       if (n_permutations >= factorial(m)) {
-        n_combinations <- factorial(m)
+        n_combinations <- 2^m
+        n_permutations <- factorial(m)
         exact <- TRUE
         message(
           paste0(
@@ -248,13 +239,18 @@ feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL,pai
   }
 
   if (exact) {
-    perm_list <- feature_permute_exact(m)
+    perms_mat <- feature_permute_exact(m)
   } else {
-    perm_list <- feature_permute_samp(m, n_permutations,paired_shap_sampling)
+    perms_mat <- feature_permute_samp(m, n_permutations,paired_shap_sampling)
   }
   if(return_perm_list_only == TRUE){
-    ret <- perm_list
+    return(perms_mat)
   } else {
+
+    # Convert the matrix to a list of row vectors
+    perm_list <- lapply(seq_len(nrow(perms_mat)), function(i) perms_mat[i, ])
+    # TODO: rewrite code using this to work direcrly with the perms_mat
+
 
     perm_dt <- data.table(
       permute_id = seq_along(perm_list),
@@ -270,52 +266,68 @@ feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL,pai
   return(ret)
 }
 
+unrank_permutations_mat <- function(ranks, n) {
+  # Precompute factorials
+  factorials <- sapply(0:(n-1), factorial)
+
+  # Initialize the matrix of permutations
+  permutations <- matrix(nrow = length(ranks), ncol = n)
+
+  for (r in seq_along(ranks)) {
+    rank <- ranks[r]
+    elements <- 1:n
+    permutation <- integer(n)
+
+    for(i in seq_len(n)){
+      factorial <- factorials[n - i + 1]
+      index <- rank %/% factorial
+      rank <- rank %% factorial
+      permutation[i] <- elements[index + 1]
+      elements <- elements[-(index + 1)]
+    }
+
+    permutations[r, ] <- permutation
+  }
+
+  return(permutations)
+}
 
 feature_permute_samp <- function(m, n_permutations,paired_shap_sampling=TRUE) {
-  x <- seq(m)
-  perms <- vector("list", n_permutations)
-  perms[[1]] <- sample(x)
-  perms[[2]] <- rev(perms[[1]])
+  # This function generates random permutations of the features using the
+  # ranking/unranking approach
+
+  tot_no_permutations <- factorial(m)
+
+  # Generate unique random permutation rankings that ought to be transformed to permutations
+  ranks = sample.int(tot_no_permutations, n_permutations, replace = FALSE)-1
+
+  # Generates the permutations
+  perms <- unrank_permutations_mat(ranks,m)
 
   if(paired_shap_sampling==TRUE){
-    for_seq <- seq(3,n_permutations,by=2)
+    # Gets the reverse (paired) permutations
+    rev_perms <- perms[,seq(m,1)]
+
+    # Since there is no guarantee that the reverse permutations are not sampled in perms,
+    # we combine the two one by one to ensure that the reverse permutations are always
+    # present
+    # Note that we sample 2*n_permutations permutations also in the case of paired_shap_sampling = TRUE since we need to guarantee that we at least have n_permutations unique permutations
+    comb_perms <- matrix(NA,nrow=2*n_permutations,ncol=m)
+    comb_perms[seq(1,2*n_permutations-1,by=2),] <- perms
+    comb_perms[seq(2,2*n_permutations,by=2),] <- rev_perms
+
+    final_perms_mat <- unique(comb_perms)[seq_len(n_permutations),]
+    return(final_perms_mat)
   } else {
-    for_seq <- seq(2,n_permutations,by=1)
+    return(perms)
   }
-
-  for (i in for_seq) {
-    perm <- sample(x)
-    while (any(sapply(perms[1:(i-1)], function(p) all(p == perm)))) { # not perfect as does not check the rev_perm, but OK for now
-      perm <- sample(x)    # repeat until we get a unique sample
-    }
-    perms[[i]] <- perm
-    if(paired_shap_sampling==TRUE){
-      perms[[i+1]] <- rev(perm)
-    }
-  }
-
-  return(perms)
 }
 
 feature_permute_exact <- function(m) {
+  # Generate all possible combinations of the features using the ranking/unranking approach
 
-  # Generate all possible combinations
-  return(all_permutations(seq(m)))
-}
-
-all_permutations <- function(x) {
-  if (length(x) <= 1) {
-    return(list(x))
-  } else {
-    perms <- list()
-    for (i in seq_along(x)) {
-      sub_perms <- all_permutations(x[-i])
-      for (j in seq_along(sub_perms)) {
-        perms[[length(perms) + 1]] <- c(x[i], sub_perms[[j]])
-      }
-    }
-    return(perms)
-  }
+  ranks <- seq(factorial(m))-1
+  return(unrank_permutations_mat(ranks = ranks, n = m))
 }
 
 X_from_perm_dt_linear_gaussian <- function(perm_dt){
