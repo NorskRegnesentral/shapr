@@ -89,6 +89,12 @@
 #'
 #' @param timing Logical.
 #' Whether the timing of the different parts of the `explain()` should saved in the model object.
+#'
+#' @param verbose An integer specifying the level of verbosity. If `0`, `shapr` will stay silent.
+#' If `1`, it will print information about performance. If `2`, some additional information will be printed out.
+#' Use `0` (default) for no verbosity, `1` for low verbose, and `2` for high verbose.
+#' TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.
+#'
 #' @param ... Further arguments passed to specific approaches
 #'
 #' @inheritDotParams setup_approach.empirical
@@ -267,6 +273,7 @@ explain <- function(model,
                     get_model_specs = NULL,
                     MSEv_uniform_comb_weights = TRUE,
                     timing = TRUE,
+                    verbose = 0,
                     ...) { # ... is further arguments passed to specific approaches
 
   timing_list <- list(
@@ -296,6 +303,7 @@ explain <- function(model,
     feature_specs = feature_specs,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
+    verbose = verbose,
     ...
   )
 
@@ -359,6 +367,9 @@ explain <- function(model,
     output$internal$parameters$vaeac$parameters$folder_to_save_model <- NULL
     output$internal$parameters$vaeac$parameters$model_description <- NULL
   }
+
+  # TODO: REMOVE THIS IN THE END
+  output$internal$parameters$verbose = NULL
 
   return(output)
 }
