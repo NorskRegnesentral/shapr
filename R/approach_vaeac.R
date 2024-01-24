@@ -14,115 +14,20 @@
 #'  epochs (default is `2`) and continue training that one.
 #' @param vaeac.epochs Integer. The number of epochs to train the final vaeac model. This includes
 #' `vaeac.extra_parameters$epochs_initiation_phase`, where the default is `2`.
-#' @param vaeac.save_model Boolean. If `TRUE` (default), the `vaeac` model will be saved either in a temp
-#' folder or in a user specified location specified in `vaeac.folder_to_save_model`. If `FALSE`, then the
-#' paths to model and the model will will be deleted from the returned object from [shapr::explain()].
-#' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach. See
-#' section "The `vaeac` approach" in [setup_approach()] for description of possible additional
-#' parameters.
+#' @param vaeac.save_model Boolean. If `TRUE` (default), the `vaeac` model will be saved either in a
+#' [base::tempdir()] folder or in a user specified location in `vaeac.folder_to_save_model`. If `FALSE`, then
+#' the paths to model and the model will will be deleted from the returned object from [shapr::explain()].
+#' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach.
+#' See [shapr::vaeac_extra_para_default()] for description of possible additional parameters.
 #'
 #' @section The vaeac approach:
-#' The function creates three neural network (a full encoder, a masked encoder, and a decoder) based
-#' on the provided `vaeac.depth` and `vaeac.width`. The encoders maps the full and masked input
-#' representations to latent representations, where the dimension is given by `vaeac.latent_dim`.
+#' The `vaeac` model consists of three neural network (a full encoder, a masked encoder, and a decoder) based
+#' on the provided `vaeac.depth` and `vaeac.width`. The encoders map the full and masked input
+#' representations to latent representations, respectively, where the dimension is given by `vaeac.latent_dim`.
 #' The latent representations are sent to the decoder to go back to the real feature space and
-#' provide a samplable probabilistic representation, from which the MC samples are generated.
+#' provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
 #' We use the `vaeac` method at the epoch with the lowest validation error (IWAE) by default, but
 #' other possibilities are available but setting the `vaeac.which_vaeac_model` parameter.
-#'
-#' Here we provide a list of the extra parameters that can be provided as a named list
-#' `vaeac.extra_parameters` to the [explain()] function when using `approach = "vaeac"`.
-#' \describe{
-#'  \item{vaeac.model_description}{Default is `NULL`. String containing, e.g., the name of the data
-#'   distribution or additional parameter information. Used in the save name of the fitted model.}
-#'  \item{vaeac.folder_to_save_model}{Default is `NULL`. String specifying a path to a folder where
-#'   the function is to save the fitted vaeac model.}
-#'  \item{vaeac.pretrained_vaeac_model}{Default is `NULL`. This can either be a list of type
-#'  `vaeac`, i.e., the list stored in `explanation$internal$parameters$vaeac` from an earlier call
-#'  to the [explain()] function. Or it can be a string containing the path to where the `vaeac`
-#'  model is stored on disk, for example, `explanation$internal$parameters$vaeac$models$best`.}
-#'  \item{vaeac.use_cuda}{Default is `FALSE`. Boolean. If we are to use cuda (GPU) if available.
-#'  NOTE: not supported in the current version of the `shapr` package.}
-#'  \item{vaeac.epochs_initiation_phase}{Default is `2`. Integer. The number of epochs to run each
-#'   of the `vaeac.num_vaeacs_initiate` vaeac models before only continuing training the
-#'   best one.}
-#'  \item{vaeac.epochs_early_stopping}{Default is `NULL`. Integer. The training stops if there has
-#'   been no improvement in the validation IWAE for `vaeac.epochs_early_stopping` epochs. If the user wants
-#'  the training process to be solely based on this, then `vaeac.epochs` should be set to a large number.}
-#'  \item{vaeac.save_every_nth_epoch}{Default is `NULL`. Integer. If we are to save the vaeac
-#'   model after every nth epoch.}
-#'  \item{vaeac.batch_size}{Default is `64`. Integer. The number of samples to include in each batch
-#'   during the training of the vaeac model.
-#'   Larger batches results in the training process to take less time, but it can result in a less
-#'   precise `vaeac` model.}
-#'  \item{vaeac.batch_size_sampling}{Default is `NULL`. Integer. The number of samples to include in
-#'   each batch when generating the MC samples. If `NULL` (default), then we generate MC samples for
-#'   the provided coalitions and all explicands at the time. The number of coalitions are determined
-#'   by `n_batches`. We recommend to rather tweak `n_batches` than `vaeac.batch_size_sampling`.}
-#'  \item{vaeac.validation_ratio}{Default is `0.25`. Scalar between 0 and 1 indicating the ratio of
-#'   instances from data which will be used as validation data.}
-#'  \item{vaeac.validation_iwae_num_samples}{Default is `25`. Integer. The number of samples used
-#'   to compute the IWAE when validating the vaeac model on the validation data.}
-#'  \item{vaeac.running_avg_num_values}{Default is `5`. Integer. How many of the previous values/
-#'   epochs to include when we compute the running means of the IWAE score.}
-#'  \item{use_skip_connections}{Default is `TRUE`. Boolean. If we are to use skip connections in
-#'   each layer. If true, then we add the input to the outcome of each hidden layer, so the output
-#'   becomes X + activation(WX + b). I.e., identity skip connection.}
-#'  \item{vaeac.skip_connection_masked_enc_dec}{Default is `TRUE`. Boolean.
-#'   If we are to apply concatenate skip connections between the layers in the masked encoder
-#'   and decoder.}
-#'  \item{vaeac.use_batch_normalization}{Default is `FALSE`. Boolean. If we are to use batch
-#'   normalization after the activation function. Note that if
-#'   `vaeac.extra_parameters$use_skip_connections` is TRUE, then the normalization is done after
-#'   the adding from the skip connection. I.e, we batch normalize the whole quantity
-#'   X + activation(WX + b).}
-#'  \item{vaeac.paired_sampling}{Default is `TRUE`. Boolean. If we are doing paired sampling. I.e.,
-#'   each batch contains two versions of the same training observation,  but where the first one is
-#'   masked by \eqn{S} and the second one is masked by \eqn{\bar{S}}, the complement, see
-#'   \href{https://arxiv.org/pdf/2107.07436.pdf}{Jethani et al. (2022)}. Training becomes more
-#'   stable, but slower due to more complex implementation.}
-#'  \item{vaeac.masking_ratio}{Default is `0.5`. Probability of masking a feature in the MCAR mask
-#'   generator. Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-#'   Is overruled if `vaeac.extra_parameters$mask_gen_these_coalitions` is specified.}
-#'  \item{vaeac.mask_gen_these_coalitions}{Default is `NULL`. Matrix containing the
-#'   the only coalitions which the `vaeac` model will be trained on. Used when `n_combinations`
-#'   is less then \eqn{2^{n_\text{features}}} and for group Shapley.}
-#'  \item{vaeac.mask_gen_these_coalitions_prob}{Default is `NULL`. Numerical
-#'   array containing the probabilities for sampling the coalitions in
-#'   `vaeac.extra_parameters$mask_gen_these_coalitions`.}
-#'  \item{vaeac.sigma_mu}{Default is `1e4`. Numeric representing a hyperparameter in the
-#'   normal-gamma prior used on the masked encoder, see Section 3.3.1 in
-#'   \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
-#'  \item{vaeac.sigma_sigma}{Default is `1e-4`. Numeric representing a hyperparameter in the
-#'   normal-gamma prior used on the masked encoder, see Section 3.3.1 in
-#'   \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
-#'  \item{vaeac.save_data}{Default is `FALSE`. Boolean. If we are to save the data together with
-#'   the model. Useful if one are to continue to train the model later.}
-#'  \item{vaeac.transform_all_cont_features}{Default is `FALSE`. Boolean. If we are to log
-#'  transform all continuous features before sending the data to `vaeac`. The `vaeac` model creates
-#'  unbounded MC samples values, so if the continuous features are strictly positive, as for Burr
-#'  distributed data and the Abalone data set, it can be advantageous to log-transform the data to
-#'  unbounded form before using `vaeac`. If `TRUE`, then `vaeac_postprocess_data` will take
-#'  the exp of the results to get back to strictly positive values when using the vaeac model to
-#'  impute missing values.}
-#'  \item{vaeac.sample_random}{Default is `TRUE`. Boolean. If we are to generate random samples
-#'   from the inferred generative distributions, or if we are to sample the most likely values.
-#'   That is, the mean and class with highest probability for continuous and categorical,
-#'   respectively.}
-#'  \item{vaeac.verbose}{Default is `FALSE`. Boolean. If we are to print the progress of the
-#'   initialization of different vaeac models, the training of the final vaeac model,
-#'   and summary of the training progress. This works independently of the
-#'   [progressr::progressr()] package, which is supported by `shapr`.}
-#'  \item{vaeac.seed}{Default is `NULL`. Integer. Seed for reproducibility. If `vaeac.seed = NULL`,
-#'   then use the same seed as in [explain()].}
-#'  \item{vaeac.which_vaeac_model}{Default is `NULL`. String. Which of the returned `vaeac` models
-#'  (snapshots from different epochs) to use when generating the MC samples. The choices are `best`,
-#'  `best_running`, and `last`. Here, `best` reflects the epoch with the lowest IWAE score, and is
-#'  the default choice. Note that additional choices are available if
-#'  `vaeac.save_every_nth_epoch` is provided. E.g., if `vaeac.save_every_nth_epoch = 5`,
-#'  then `vaeac.which_vaeac_model` can also take the values `epoch_5`, `epoch_10`, `epoch_15`, and
-#'  so on.}
-#' }
 #'
 #' @inheritParams default_doc_explain
 #'
@@ -139,170 +44,201 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
                                  vaeac.save_model = TRUE,
                                  vaeac.extra_parameters = list(),
                                  ...) {
+
+  # The idea here is that internal$parameters contains user specified main parameters and the extra parameters list.
+  # If they are not provided by the user, then we will set them to the default main parameter values specified above
+  # and the vaeac_extra_para_default default values.
+
   # A function that sets up and calls the function builds the models used by the vaeac approach.
 
+  # Check that torch is installed
+  if (!requireNamespace("torch", quietly = TRUE)) stop("`torch` is not installed. Please run install.packages('torch')")
+  if (!torch::torch_is_installed()) torch::install_torch()
 
-  # The names of the main parameters for the `vaeac` approach
-  main_parameters <- c(
-    "vaeac.depth",
-    "vaeac.width",
-    "vaeac.latent_dim",
-    "vaeac.activation_function",
-    "vaeac.lr",
-    "vaeac.num_vaeacs_initiate",
-    "vaeac.epochs"
-  )
+  # Extract the parameters list
+  parameters = internal$parameters
 
-  # List of the default values for the extra parameters in the vaeac approach
-  vaeac.extra_parameters_default <- list(
-    "vaeac.model_description" = NULL,
-    "vaeac.folder_to_save_model" = NULL,
-    "vaeac.pretrained_vaeac_model" = NULL,
-    "vaeac.use_cuda" = FALSE,
-    "vaeac.epochs_initiation_phase" = 2,
-    "vaeac.epochs_early_stopping" = NULL,
-    "vaeac.save_every_nth_epoch" = NULL,
-    "vaeac.validation_ratio" = 0.25,
-    "vaeac.validation_iwae_num_samples" = 25,
-    "vaeac.batch_size" = 64,
-    "vaeac.batch_size_sampling" = NULL,
-    "vaeac.running_avg_num_values" = 5,
-    "vaeac.use_skip_connections" = TRUE,
-    "vaeac.skip_connection_masked_enc_dec" = TRUE,
-    "vaeac.use_batch_normalization" = FALSE,
-    "vaeac.paired_sampling" = TRUE,
-    "vaeac.masking_ratio" = 0.5,
-    "vaeac.mask_gen_these_coalitions" = NULL,
-    "vaeac.mask_gen_these_coalitions_prob" = NULL,
-    "vaeac.sigma_mu" = 1e4,
-    "vaeac.sigma_sigma" = 1e-4,
-    "vaeac.save_data" = FALSE,
-    "vaeac.transform_all_cont_features" = FALSE,
-    "vaeac.verbose" = FALSE,
-    "vaeac.seed" = NULL,
-    "vaeac.which_vaeac_model" = NULL
-  )
+  # Ensure that `parameters$vaeac.extra_parameters` is a named list
+  if (!is.list(parameters$vaeac.extra_parameters)) stop("`vaeac.extra_parameters` must be a list.")
+  if (is.null(parameters$vaeac.extra_parameters)) parameters$vaeac.extra_parameters <- list()
+  if (length(parameters$vaeac.extra_parameters) > 0) vaeac_check_extra_named_list(parameters$vaeac.extra_parameters)
 
-  # User has provided a vaeac.extra_parameters object. Check that it is a named list.
-  if (length(internal$parameters$vaeac.extra_parameters) > 0) {
-    if (is.null(names(internal$parameters$vaeac.extra_parameters))) {
-      stop("The parameter `vaeac.extra_parameters` is not a named list.")
-    }
-    if (any(names(internal$parameters$vaeac.extra_parameters) == "")) {
-      stop("Not all parameters in the list `vaeac.extra_parameters` are named.")
-    }
+  # Ensure that all vaeac parameters are in their right location
+  parameters = vaeac_update_para_locations(parameters = parameters)
+
+  # Extract the default values defined for the vaeac parameters in this function
+  defaults <- mget(c("vaeac.depth", "vaeac.width", "vaeac.latent_dim", "vaeac.activation_function", "vaeac.lr",
+                     "vaeac.num_vaeacs_initiate", "vaeac.epochs", "vaeac.save_model", "vaeac.extra_parameters"))
+
+  # defaults = list(vaeac.depth = 3,
+  #                 vaeac.width = 32,
+  #                 vaeac.latent_dim = 8,
+  #                 vaeac.activation_function = torch::nn_relu,
+  #                 vaeac.lr = 0.001,
+  #                 vaeac.num_vaeacs_initiate = 10,
+  #                 vaeac.epochs = 200,
+  #                 vaeac.save_model = TRUE,
+  #                 vaeac.extra_parameters = list())
+
+  # Add the default extra parameter values for the non-user specified extra parameters
+  parameters$vaeac.extra_parameters = modifyList(vaeac_extra_para_default(),
+                                                 parameters$vaeac.extra_parameters,
+                                                 keep.null = TRUE)
+
+  # Add the default main parameter values for the non-user specified main parameters
+  parameters = modifyList(defaults, parameters, keep.null = TRUE)
+
+  # Reorder them such that the vaeac parameters are at the end of the parameters list
+  parameters = c(parameters[(length(defaults)+1):length(parameters)], parameters[1:length(defaults)])
+
+  parameters_flatten =
+
+
+  #
+  print("DONE")
+  print(parameters)
+
+  stop("DONE")
+
+
+
+#
+#
+#   ## Checking location of vaeac arguments ----------------------------------------------------------------------------
+#   # Get the name of the main parameters for the `vaeac` approach
+#   vaeac.main_para_default_names = formalArgs(setup_approach.vaeac)
+#   vaeac.main_para_default_names =
+#     vaeac.main_para_default_names[!vaeac.main_para_default_names %in% c("internal", "vaeac.extra_parameters", "...")]
+#   #main_parameters = vaeac.main_para_default_names
+#
+#   # Get the default values for vaeac's main parameters defined above into a named list.
+#   vaeac.main_para_default <- mget(vaeac.main_para_default_names)
+#   defaults = vaeac.main_para_default
+#
+#   as.list(sys.call(-1))[-1]
+#
+#   # Get the default values for vaeac's extra parameters into a named list
+#   vaeac.extra_para_default = vaeac_extra_para_default()
+#   vaeac.extra_para_default_names = names(vaeac.extra_para_default)
+#
+#   # Get the names of the extra parameters provided by the user
+#   vaeac.extra_para_user_names = names(vaeac.extra_parameters)
+#
+#   # Get the names of all parameters to explain
+#   vaeac.main_para_user_names = names(internal$parameters)
+#   vaeac.main_para_user_names = vaeac.main_para_user_names[grepl("vaeac.", vaeac.main_para_user_names)]
+#
+#
+#
+#
+#   # Check for parameters in vaeac.extra_parameters which are not in the default list
+#   unknown_extra_para <- vaeac.extra_para_user_names[!(vaeac.extra_para_user_names %in% vaeac.extra_para_default_names)]
+#
+#   # Divide the unknown parameters into whether they are main parameters or completely unknown.
+#   main_para_in_extra_para <- unknown_extra_para[unknown_extra_para %in% vaeac.main_para_default_names]
+#   not_main_para_in_extra_para <- unknown_extra_para[!unknown_extra_para %in% vaeac.main_para_default_names]
+#
+#   # Give a message to the user about the unknown extra parameters
+#   if (length(not_main_para_in_extra_para) > 0) {
+#     message(paste0("The following parameters in `vaeac.extra_parameters` are not recognized: ",
+#                    paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "
+#                    ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
+#   }
+#
+#   # Check for parameters in vaeac.extra_parameters that are actually main parameters. Note that it technically does
+#   # not matter as the vaeac.extra_parameters list is flatten to be individual elements in internal$parameters.
+#   extra_para_in_main_para = vaeac.main_para_user_name[vaeac.main_para_user_name %in% vaeac.extra_para_default_names]
+#   if (length(misplaced_parameters) > 0) {
+#     message(paste0("The following parameters were given as main parameters in `explain()`, but they should have been ",
+#                    "included in the `vaeac.extra_parameters` list (this is fixed internally): ",
+#                    paste(strsplit(paste(paste0("`", extra_para_in_main_para , "`"), collapse = ", "),
+#                                   ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
+#   }
+#
+#   # Check for parameters that have been provided as both main and extra parameter
+#   both_main_and_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_user_name]
+#
+#   # Print a message to the user and tell them that we use those in `vaeac.extra_parameters`.
+#   if (length(both_main_and_extra_para > 0)) {
+#     message(paste0("The following parameters were given as both main and extra `vaeac` parameters to `explain()`: ",
+#                    paste(strsplit(paste(paste0("`", extra_para_in_main_para , "`"), collapse = ", "),
+#                                   ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"),
+#                    ".\nThe function proceeds using the values in `vaeac.extra_parameters`.\n"))
+#   }
+#
+#
+#   # Give a message to the user about the misplaced main parameters in the extra list
+#   if (length(main_para_in_extra_para) > 0) {
+#     message(paste0("The following parameters in `vaeac.extra_parameters` should have been main parameters",
+#                    "(this is fixed internally): ",
+#                    paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "
+#                    ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
+#   }
+#
+#
+#   # Insert the misplaced main parameters from the extra parameters to the to the correct place.
+#   internal$parameters <- utils::modifyList(
+#     internal$parameters,
+#     vaeac.extra_parameters[main_para_in_extra_para]
+#   )
+#
+
+
+
+
+
+  # # Combine the provided extra parameter values with the default values. Overwrite the default values.
+  # vaeac.extra_parameters <- utils::modifyList(vaeac.extra_para_default, vaeac.extra_parameters, keep.null = TRUE)
+  #
+  #
+  #
+  #
+  # tmp_list = list(a = 1, b = 2)
+  # utils::modifyList(tmp_list,
+  #   list()
+  # )
+  #
+  # internal$parameters
+  # main_para_in_extra_para
+  #
+  #
+  #
+
+
+
+
+
+  #
+  #
+  #   print(vaeac.main_parameters_names)
+  #   print(mget(main_parameters))
+  #   print()
+  #   stop()
+  #
+
+
+
+  ## Checking validity of vaeac arguments ----------------------------------------------------------------------------
+
+
+  # Transform vaeac.activation_function from a string into the activation function object
+  if (!exists("nn_relu", envir = asNamespace("torch"))) {
+    stop(paste0("The activation function `", vaeac.activation_function, "` does not exist in `torch`."))
   }
+  vaeac.activation_function = get("nn_relu", envir = asNamespace("torch"))
 
-  # Check if user has provided named objects in vaeac.extra_parameters which are not in the default list.
-  unknown_parameters <-
-    names(internal$parameters$vaeac.extra_parameters)[!(names(internal$parameters$vaeac.extra_parameters)
-    %in% names(vaeac.extra_parameters_default))]
 
-  # Divide the unknown parameters into whether they are main parameters or completely unknown.
-  main_para_in_unknown_para <- unknown_parameters[unknown_parameters %in% main_parameters]
-  not_main_para_in_unknown_para <- unknown_parameters[!unknown_parameters %in% main_parameters]
 
-  # For those parameters that are completely unknown, we give a message to the user.
-  if (length(not_main_para_in_unknown_para) > 0) {
-    if (length(not_main_para_in_unknown_para) == 1) {
-      message(sprintf(
-        "The extra parameter `%s` is not recognized by the `vaeac` approach.\n",
-        not_main_para_in_unknown_para
-      ))
-    } else {
-      message(sprintf(
-        "The extra parameters %s are not recognized by the `vaeac` approach.\n",
-        paste(strsplit(paste(paste0("`", not_main_para_in_unknown_para, "`"),
-          collapse = ", "
-        ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and")
-      ))
-    }
-  }
 
-  # Check if user specified some vaeac parameters to `explain` which should have been specified
-  # in the vaeac.extra_parameters list. Note that in the end it really does not matter as the
-  # vaeac.extra_parameters list is flatten to be individual elements in internal$parameters.
-  misplaced_parameters <-
-    names(internal$parameters)[names(internal$parameters) %in% names(vaeac.extra_parameters_default)]
-  if (length(misplaced_parameters) > 0) {
-    if (length(misplaced_parameters) == 1) {
-      message(sprintf(
-        "The vaeac extra parameter `%s` should have been placed in the
-`vaeac.extra_parameters` list in the call to the `explain()` function. This is fixed internally.\n",
-        misplaced_parameters
-      ))
-    } else {
-      message(sprintf(
-        "The vaeac extra parameters %s should have been placed in the
-`vaeac.extra_parameters` list in the call to the `explain()` function. This is fixed internally.\n",
-        paste(strsplit(paste(paste0("`", misplaced_parameters, "`"), collapse = ", "),
-          ",(?=[^,]+$)",
-          perl = TRUE
-        )[[1]], collapse = " and")
-      ))
-    }
-  }
 
-  # Check if user has provided the same parameter twice, both as a main and extra parameter
-  given_as_main_and_extra_para <-
-    names(internal$parameters$vaeac.extra_parameters)[names(internal$parameters$vaeac.extra_parameters)
-    %in% names(internal$parameters)]
 
-  # Print a message to the user and tell them that we use those in `vaeac.extra_parameters`.
-  if (length(given_as_main_and_extra_para) > 0) {
-    if (length(given_as_main_and_extra_para) == 1) {
-      message(sprintf(
-        "The parameter `%s` has been provided as both a separete parameter and in the
-`vaeac.extra_parameters` list in the call to the `explain()` function.
-The function proceeds using the value in `vaeac.extra_parameters`.\n",
-        given_as_main_and_extra_para
-      ))
-    } else {
-      message(sprintf(
-        "The parameters %s have been provided as both separete parameters and in the
-`vaeac.extra_parameters` list in the call to the `explain()` function.
-The function proceeds using the values in `vaeac.extra_parameters`.\n",
-        paste(strsplit(paste(paste0("`", given_as_main_and_extra_para, "`"),
-          collapse = ", "
-        ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and")
-      ))
-    }
-  }
 
-  # For does parameter that actually are main parameters, we include them and give a message
-  if (length(main_para_in_unknown_para) > 0) {
-    # Insert the misplaced main parameters to the correct place.
-    internal$parameters <- utils::modifyList(
-      internal$parameters,
-      internal$parameters$vaeac.extra_parameters[main_para_in_unknown_para]
-    )
 
-    if (length(main_para_in_unknown_para) == 1) {
-      message(sprintf(
-        "The extra parameter `%s` is a main parameter to the `vaeac` approach and should not
-be included in the `vaeac.extra_parameters` list, but rather as a separate parameter in the
-call to the `explain()` function. This is fixed internally.\n",
-        main_para_in_unknown_para
-      ))
-    } else {
-      message(sprintf(
-        "The extra parameters %s are main parameters to the `vaeac` approach and should not
-be included in the `vaeac.extra_parameters` list, but rather as separate parameters in the
-call to the `explain()` function. This is fixed internally.\n",
-        paste(strsplit(paste(paste0("`", main_para_in_unknown_para, "`"), collapse = ", "),
-          ",(?=[^,]+$)",
-          perl = TRUE
-        )[[1]], collapse = " and")
-      ))
-    }
-  }
 
-  # Ensure that internal$parameters$vaeac.extra_parameters is a list, as `modifyList` only works with lists
-  if (is.null(internal$parameters$vaeac.extra_parameters)) internal$parameters$vaeac.extra_parameters <- list()
 
-  # Combine the provided extra parameter values with the default values. Overwrite the default values.
-  internal$parameters$vaeac.extra_parameters <-
-    utils::modifyList(vaeac.extra_parameters_default, internal$parameters$vaeac.extra_parameters, keep.null = TRUE)
+
+
+  vaeac.extra_parameters_default
 
   # The mget extract the default values defined for the variables to this function into a named list.
   defaults <- mget(main_parameters)
@@ -310,7 +246,7 @@ call to the `explain()` function. This is fixed internally.\n",
   # If a variable has not been specified by the user, then we use the default values extracted above.
   internal <- insert_defaults(internal, defaults)
 
-  # Extract the parameters list which, e.g., contains user-provided  parameters for the vaeac approach.
+  # Extract the parameters list which, e.g., contains user-provided parameters for the vaeac approach.
   parameters <- internal$parameters
 
   # TODO: NEED TO SET UP THE vaeac.folder_to_save_model HERE AND CHECK THAT IT EXISTS OF TEMP FOLDER
@@ -361,7 +297,7 @@ call to the `explain()` function. This is fixed internally.\n",
     # Normalize the weights/probabilities such that they sum to one.
     parameters$vaeac.mask_gen_these_coalitions_prob <-
       parameters$vaeac.mask_gen_these_coalitions_prob /
-        sum(parameters$vaeac.mask_gen_these_coalitions_prob)
+      sum(parameters$vaeac.mask_gen_these_coalitions_prob)
   } else {
     # All 2^M coalitions are to be estimated using a vaeac model with a MCAR(0.5) masking scheme.
     # I.e., the corresponding vaeac model will support arbitrary conditioning as every coalition
@@ -554,158 +490,268 @@ of the data used to train the provided vaeac model (%s).\n",
 }
 
 
-#' Title
+#' Function to specify the extra parameters in the `vaeac` model
 #'
-#' @param vaeac.model_description String (default = `NULL`). String containing, e.g., the name of the
+#' @description In this function, we specify the default values for the extra parameters used in [shapr::explain()]
+#' for `approach = "vaeac"`.
+#'
+#' @param vaeac.model_description String (default is `NULL`). String containing, e.g., the name of the
 #' data distribution or additional parameter information. Used in the save name of the fitted model.
-#' @param vaeac.folder_to_save_model String (default = `NULL`). String specifying a path to a folder where
+#' @param vaeac.folder_to_save_model String (default is `NULL`). String specifying a path to a folder where
 #' the function is to save the fitted vaeac model. If `NULL`, then a [base::tempdir()] is created. Note that
 #' the path will be removed from the returned [shapr::explain()] object if `vaeac.save_model = FALSE`.
-#' @param vaeac.pretrained_vaeac_model List or String (default = `NULL`). 1) Either a list of class
+#' @param vaeac.pretrained_vaeac_model List or String (default is `NULL`). 1) Either a list of class
 #' `vaeac`, i.e., the list stored in `explanation$internal$parameters$vaeac` where `explanation` is the returned list
 #' from an earlier call to the [shapr::explain()] function. 2) A string containing the path to where the `vaeac`
 #' model is stored on disk, for example, `explanation$internal$parameters$vaeac$models$best`.
-#' @param vaeac.use_cuda Logical (default = `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
+#' @param vaeac.use_cuda Logical (default is `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
 #' If [torch::cuda_is_available()] is `FALSE`, the we fall back to use CPU. If `FALSE`, we use the CPU. Often this is
 #' faster for tabular data sets. Note, cuda is not not supported in the current version of the `shapr` package.
 #' TODO: Update this when this is done.
-#' @param vaeac.epochs_initiation_phase Positive integer (default = `2`). The number of epochs to run each of the
+#' @param vaeac.epochs_initiation_phase Positive integer (default is `2`). The number of epochs to run each of the
 #' `vaeac.num_vaeacs_initiate` `vaeac` models before continuing to train only the best performing model.
-#' @param vaeac.epochs_early_stopping Positive integer (default = `NULL`). The training stops if there has been no improvement
+#' @param vaeac.epochs_early_stopping Positive integer (default is `NULL`). The training stops if there has been no improvement
 #' in the validation IWAE for `vaeac.epochs_early_stopping` epochs. If the user wants the training process to be
 #' solely based on this training criterion, then `vaeac.epochs` in [shapr::explain()] should be set to a large number.
-#' @param vaeac.save_every_nth_epoch Positive integer (default = `NULL`). If provided, then the vaeac model after
+#' @param vaeac.save_every_nth_epoch Positive integer (default is `NULL`). If provided, then the vaeac model after
 #' every `vaeac.save_every_nth_epoch`th epoch will be saved.
-#' @param vaeac.validation_ratio Numeric (default = `0.25`). Scalar between `0` and `1` indicating the ratio of
+#' @param vaeac.validation_ratio Numeric (default is `0.25`). Scalar between `0` and `1` indicating the ratio of
 #' instances from the input data which will be used as validation data. That is, `vaeac.validation_ratio = 0.25` means
 #' that `75%` of the provided data is used as training data, while the remaining `25%` is used as validation data.
-#' @param vaeac.validation_iwae_num_samples Positive integer (default = `25`). The number of generated samples used
+#' @param vaeac.validation_iwae_num_samples Positive integer (default is `25`). The number of generated samples used
 #' to compute the IWAE criterion when validating the vaeac model on the validation data.
-#' @param vaeac.batch_size Positive integer (default = `64`). The number of samples to include in each batch
+#' @param vaeac.batch_size Positive integer (default is `64`). The number of samples to include in each batch
 #' during the training of the vaeac model. Used in [torch::dataloader()].
-#' @param vaeac.batch_size_sampling Positive integer (default = `NULL`) The number of samples to include in
+#' @param vaeac.batch_size_sampling Positive integer (default is `NULL`) The number of samples to include in
 #' each batch when generating the Monte Carlo samples. If `NULL`, then the function generates the Monte Carlo samples
 #' for the provided coalitions/combinations and all explicands sent to [shapr::explain()] at the time.
 #' The number of coalitions are determined by `n_batches` in [shapr::explain()]. We recommend to tweak
 #' `n_batches` rather  than `vaeac.batch_size_sampling`.
-#' @param vaeac.running_avg_num_values Positive integer (default = `5`). The number of previous IWAE values to include
+#' @param vaeac.running_avg_num_values Positive integer (default is `5`). The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
-#' @param vaeac.use_skip_connections Logical (default = `TRUE`). If `TRUE`, we apply identity skip connections in each
+#' @param vaeac.use_skip_connections Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
 #' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 #' so the output becomes \eqn{X + activation(WX + b)}.
-#' @param vaeac.skip_connection_masked_enc_dec Logical (default = `TRUE`). If `TRUE`, we apply concatenate skip
+#' @param vaeac.skip_connection_masked_enc_dec Logical (default is `TRUE`). If `TRUE`, we apply concatenate skip
 #' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
 #' linked to the last layer of the decoder. The second layer of the masked encoder will be
 #' linked to the second to last layer of the decoder, and so on.
-#' @param vaeac.use_batch_normalization Logical (default = `FALSE`). If `TRUE`, we apply batch normalization after the
+#' @param vaeac.use_batch_normalization Logical (default is `FALSE`). If `TRUE`, we apply batch normalization after the
 #' activation function. Note that if `vaeac.use_skip_connections = TRUE`, then the normalization is applied after the
 #' inclusion of the skip connection. That is, we batch normalize the whole quantity \eqn{X + activation(WX + b)}.
-#' @param vaeac.paired_sampling Logical (default = `TRUE`). If `TRUE`, we apply paired sampling to the training
+#' @param vaeac.paired_sampling Logical (default is `TRUE`). If `TRUE`, we apply paired sampling to the training
 #' batches. That is, the training observations in each batch will be duplicated, where the first instance will be masked
 #' by \eqn{S} while the second instance will be masked by \eqn{\bar{S}}. This ensures that the training of the
 #' `vaeac` model becomes more stable as the model has access to the full version of each training observation. However,
 #' this will increase the training time due to more complex implementation and doubling the size of each batch. See
 #' [shapr::paired_sampler()] for more information.
+#' @param vaeac.masking_ratio Numeric (default is `0.5`). Probability of masking a feature in the
+#' [shapr::MCAR_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
+#' model can do arbitrary conditioning as all coalitions will be trained. `vaeac.masking_ratio` will be overruled if
+#' `vaeac.mask_gen_these_coalitions` is specified.
+#' @param vaeac.mask_gen_these_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
+#' `vaeac` model will be trained on, see [shapr::Specified_masks_mask_generator()]. This parameter is used internally
+#' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
+#' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+#' when `group` is specified in [shapr::explain()].
+#' @param vaeac.mask_gen_these_coalitions_prob Numeric array (default is `NULL`). Array of length equal to the height
+#' of `vaeac.mask_gen_these_coalitions` containing the probabilities of sampling the corresponding coalitions in
+#' `vaeac.mask_gen_these_coalitions`.
+#' @param vaeac.sigma_mu Numeric (default is `1e4`). One of two hyperparameter values in the normal-gamma prior
+#' used in the masked encoder, see Section 3.3.1 in
+#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
+#' @param vaeac.sigma_sigma Numeric (default is `1e-4`). One of two hyperparameter values in the normal-gamma prior
+#' used in the masked encoder, see Section 3.3.1 in
+#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
+#' @param vaeac.save_data Logical (default is `FALSE`). If `TRUE`, then the data is stored together with
+#' the model. Useful if one are to continue to train the model later using [shapr::vaeac_continue_train_model()].
+#' TODO: Check if we actually use this later. I think I use the one in `explanation`...
+#' @param vaeac.transform_all_cont_features Logical (default is `FALSE`). If we are to \eqn{\log} transform all
+#' continuous features before sending the data to [shapr::vaeac()]. The `vaeac` model creates unbounded Monte Carlo
+#' sample values. Thus, if the continuous features are strictly positive (as for, e.g., the Burr distribution and
+#' Abalone data set), it can be advantageous to \eqn{\log} transform the data to unbounded form before using `vaeac`.
+#' If `TRUE`, then [shapr::vaeac_postprocess_data()] will take the \eqn{\exp} of the results to get back to strictly
+#' positive values when using the `vaeac` model to impute missing values/generate the Monte Carlo samples.
+#' @param vaeac.verbose Logical (default is `FALSE`). If `TRUE`, the function prints the progress of the initialization
+#' of the different `vaeac` models, the training of the final `vaeac` model, and summary of the training progress.
+#' This works independently of the [progressr::progressr()] package, which is supported by `shapr`.
+#' TODO: THIS MUST BE FIXED. WE WANT TO USE THE VEBOSITY PAREMETER IN SHAPR.
+#' @param vaeac.seed Integer (default is `NULL`). Seed for reproducibility. If `NULL`, then we use the same seed as
+#' in [shapr::explain()].
+#' @param vaeac.sample_random Logcial (default is `TRUE`). If `TRUE`, the function generates random Monte Carlo samples
+#' from the inferred generative distributions. If `FALSE`, the function use the most likely values, i.e., the mean and
+#' class with highest probability for continuous and categorical, respectively.
+#' @param vaeac.which_vaeac_model String (default is `NULL`). The name of the `vaeac` model (snapshots from different
+#' epochs) to use when generating the Monte Carlo samples. The standard choices are: `"best"` (epoch with lowest IWAE),
+#' `"best_running"` (epoch with lowest running IWAE, see `vaeac.running_avg_num_values`), and `last` (the last epoch).
+#' Note that additional choices are available if `vaeac.save_every_nth_epoch` is provided. For example, if
+#' `vaeac.save_every_nth_epoch = 5`, then `vaeac.which_vaeac_model` can also take the values `"epoch_5"`, `"epoch_10"`,
+#' `"epoch_15"`, and so on.
 #'
-#' access to the whole training
-#'
-#' contains two versions of the same training observation,  but where the first one is
-#'   masked by \eqn{S} and the second one is masked by \eqn{\bar{S}}, the complement, see
-#'   \href{https://arxiv.org/pdf/2107.07436.pdf}{Jethani et al. (2022)}. Training becomes more
-#'   stable, but slower due to more complex implementation.
-#' @param vaeac.masking_ratio
-#' @param vaeac.mask_gen_these_coalitions
-#' @param vaeac.mask_gen_these_coalitions_prob
-#' @param vaeac.sigma_mu
-#' @param vaeac.sigma_sigma
-#' @param vaeac.save_data
-#' @param vaeac.transform_all_cont_features
-#' @param vaeac.verbose
-#' @param vaeac.seed
-#' @param vaeac.which_vaeac_model
-#'
-#' \describe{
-
-#'  \item{vaeac.skip_connection_masked_enc_dec}{}
-#'  \item{vaeac.use_batch_normalization}{}
-#'  \item{vaeac.paired_sampling}{}
-#'  \item{vaeac.masking_ratio}{(default = `0.5`). Probability of masking a feature in the MCAR mask
-#'   generator. Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-#'   Is overruled if `vaeac.extra_parameters$mask_gen_these_coalitions` is specified.}
-#'  \item{vaeac.mask_gen_these_coalitions}{(default = `NULL`). Matrix containing the
-#'   the only coalitions which the `vaeac` model will be trained on. Used when `n_combinations`
-#'   is less then \eqn{2^{n_\text{features}}} and for group Shapley.}
-#'  \item{vaeac.mask_gen_these_coalitions_prob}{(default = `NULL`). Numerical
-#'   array containing the probabilities for sampling the coalitions in
-#'   `vaeac.extra_parameters$mask_gen_these_coalitions`.}
-#'  \item{vaeac.sigma_mu}{(default = `1e4`). Numeric representing a hyperparameter in the
-#'   normal-gamma prior used on the masked encoder, see Section 3.3.1 in
-#'   \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
-#'  \item{vaeac.sigma_sigma}{(default = `1e-4`). Numeric representing a hyperparameter in the
-#'   normal-gamma prior used on the masked encoder, see Section 3.3.1 in
-#'   \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
-#'  \item{vaeac.save_data}{(default = `FALSE`). Boolean. If we are to save the data together with
-#'   the model. Useful if one are to continue to train the model later.}
-#'  \item{vaeac.transform_all_cont_features}{(default = `FALSE`). Boolean. If we are to log
-#'  transform all continuous features before sending the data to `vaeac`. The `vaeac` model creates
-#'  unbounded MC samples values, so if the continuous features are strictly positive, as for Burr
-#'  distributed data and the Abalone data set, it can be advantageous to log-transform the data to
-#'  unbounded form before using `vaeac`. If `TRUE`, then `vaeac_postprocess_data` will take
-#'  the exp of the results to get back to strictly positive values when using the vaeac model to
-#'  impute missing values.}
-#'  \item{vaeac.sample_random}{(default = `TRUE`). Boolean. If we are to generate random samples
-#'   from the inferred generative distributions, or if we are to sample the most likely values.
-#'   That is, the mean and class with highest probability for continuous and categorical,
-#'   respectively.}
-#'  \item{vaeac.verbose}{(default = `FALSE`). Boolean. If we are to print the progress of the
-#'   initialization of different vaeac models, the training of the final vaeac model,
-#'   and summary of the training progress. This works independently of the
-#'   [progressr::progressr()] package, which is supported by `shapr`.}
-#'  \item{vaeac.seed}{(default = `NULL`). Integer. Seed for reproducibility. If `vaeac.seed = NULL`,
-#'   then use the same seed as in [explain()].}
-#'  \item{vaeac.which_vaeac_model}{(default = `NULL`). String. Which of the returned `vaeac` models
-#'  (snapshots from different epochs) to use when generating the MC samples. The choices are `best`,
-#'  `best_running`, and `last`. Here, `best` reflects the epoch with the lowest IWAE score, and is
-#'  the default choice. Note that additional choices are available if
-#'  `vaeac.save_every_nth_epoch` is provided. E.g., if `vaeac.save_every_nth_epoch = 5`,
-#'  then `vaeac.which_vaeac_model` can also take the values `epoch_5`, `epoch_10`, `epoch_15`, and
-#'  so on.}
-#'
-#' @return
+#' @return TODO: SOMETHING
 #' @export
-#'
-#' @examples
-vaeac_extra_paramters = function(vaeac.model_description = NULL,
-                                 vaeac.folder_to_save_model = NULL,
-                                 vaeac.pretrained_vaeac_model = NULL,
-                                 vaeac.use_cuda = FALSE,
-                                 vaeac.epochs_initiation_phase = 2,
-                                 vaeac.epochs_early_stopping = NULL,
-                                 vaeac.save_every_nth_epoch = NULL,
-                                 vaeac.validation_ratio = 0.25,
-                                 vaeac.validation_iwae_num_samples = 25,
-                                 vaeac.batch_size = 64,
-                                 vaeac.batch_size_sampling = NULL,
-                                 vaeac.running_avg_num_values = 5,
-                                 vaeac.use_skip_connections = TRUE,
-                                 vaeac.skip_connection_masked_enc_dec = TRUE,
-                                 vaeac.use_batch_normalization = FALSE,
-                                 vaeac.paired_sampling = TRUE,
-                                 vaeac.masking_ratio = 0.5,
-                                 vaeac.mask_gen_these_coalitions = NULL,
-                                 vaeac.mask_gen_these_coalitions_prob = NULL,
-                                 vaeac.sigma_mu = 1e4,
-                                 vaeac.sigma_sigma = 1e-4,
-                                 vaeac.save_data = FALSE,
-                                 vaeac.transform_all_cont_features = FALSE,
-                                 vaeac.verbose = FALSE,
-                                 vaeac.seed = NULL,
-                                 vaeac.which_vaeac_model = NULL) {
-
-
-
+#' @author Lars Henry Berge Olsen
+vaeac_extra_para_default = function(vaeac.model_description = NULL,
+                                    vaeac.folder_to_save_model = NULL,
+                                    vaeac.pretrained_vaeac_model = NULL,
+                                    vaeac.use_cuda = FALSE,
+                                    vaeac.epochs_initiation_phase = 2,
+                                    vaeac.epochs_early_stopping = NULL,
+                                    vaeac.save_every_nth_epoch = NULL,
+                                    vaeac.validation_ratio = 0.25,
+                                    vaeac.validation_iwae_num_samples = 25,
+                                    vaeac.batch_size = 64,
+                                    vaeac.batch_size_sampling = NULL,
+                                    vaeac.running_avg_num_values = 5,
+                                    vaeac.use_skip_connections = TRUE,
+                                    vaeac.skip_connection_masked_enc_dec = TRUE,
+                                    vaeac.use_batch_normalization = FALSE,
+                                    vaeac.paired_sampling = TRUE,
+                                    vaeac.masking_ratio = 0.5,
+                                    vaeac.mask_gen_these_coalitions = NULL,
+                                    vaeac.mask_gen_these_coalitions_prob = NULL,
+                                    vaeac.sigma_mu = 1e4,
+                                    vaeac.sigma_sigma = 1e-4,
+                                    vaeac.sample_random = TRUE,
+                                    vaeac.save_data = FALSE,
+                                    vaeac.transform_all_cont_features = FALSE,
+                                    vaeac.verbose = FALSE,
+                                    vaeac.seed = NULL,
+                                    vaeac.which_vaeac_model = "best") {
+  # Return a named list with the extra parameters to the vaeac model
+  return(formals(vaeac_extra_para_default))
 }
 
+
+
+#' Check vaeac.extra_parameters list
+#'
+#' @param vaeac.extra_parameters List containing the extra parameters to the `vaeac` approach
+#'
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+vaeac_check_extra_named_list = function(vaeac.extra_parameters) {
+  if (is.null(names(vaeac.extra_parameters))) {
+    stop("The parameter `vaeac.extra_parameters` is not a named list.")
+  }
+  if (any(names(vaeac.extra_parameters) == "")) {
+    stop("Not all parameters in the list `vaeac.extra_parameters` are named.")
+  }
+}
+
+#' Move `vaeac` parameters to correct location
+#'
+#' @description
+#' This function ensures that the main and extra parameters for the `vaeac`
+#' approach is located at their right locations.
+#'
+#' @param parameters List. The `internal$parameters` list created inside the [shapr::explain()] function.
+#'
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+vaeac_update_para_locations = function(parameters) {
+
+  # Get the name of the main parameters for the `vaeac` approach
+  vaeac.main_para_default_names = formalArgs(setup_approach.vaeac) # TODO: check if I need to add "shapr:::"
+  vaeac.main_para_default_names =
+    vaeac.main_para_default_names[!vaeac.main_para_default_names %in% c("internal", "vaeac.extra_parameters", "...")]
+
+  # Get the default values for vaeac's main parameters defined above into a named list
+  vaeac.main_para_default = as.list(formals(sys.function(sys.parent())))
+  vaeac.main_para_default = vaeac.main_para_default[vaeac.main_para_default %in% vaeac.main_para_default_names]
+  # vaeac.main_para_default <- mget(vaeac.main_para_default_names)
+  # defaults = vaeac.main_para_default
+
+  # Get the names of the vaeac's main parameters provided by the user
+  vaeac.main_para_user_names = names(parameters)
+  vaeac.main_para_user_names = vaeac.main_para_user_names[grepl("vaeac.", vaeac.main_para_user_names)]
+  vaeac.main_para_user_names = vaeac.main_para_user_names[!vaeac.main_para_user_names %in% "vaeac.extra_parameters"]
+
+  # Get the default values for vaeac's extra parameters into a named list
+  vaeac.extra_para_default = vaeac_extra_parameters()
+  vaeac.extra_para_default_names = names(vaeac.extra_para_default)
+
+  # Get the names of the extra parameters provided by the user
+  vaeac.extra_para_user_names = names(parameters$vaeac.extra_parameters)
+
+  # Get the names of all parameters and the user specified parameters
+  vaeav.all_para_default_names = c(vaeac.main_para_default_names, vaeac.extra_para_default_names)
+
+  # Check if any of the main parameters with the "vaeac." prefix is unknown (i.e., not main or extra parameter)
+  not_extra_para_in_main_para <-
+    vaeac.main_para_user_names[!vaeac.main_para_user_names %in% vaeav.all_para_default_names]
+  if (length(not_extra_para_in_main_para) > 0) {
+    # Give a message to the user about the unknown extra parameters
+    warning(paste0("The following vaeac main parameters are not recognized (`shapr` removes them): ",
+                   paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "
+                   ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
+
+    # Delete the unknown extra parameters
+    parameters[not_extra_para_in_main_para] = NULL
+  }
+
+  # Check if any of the extra parameters with the "vaeac." prefix is unknown (i.e., not main or extra parameter)
+  not_main_para_in_extra_para <-
+    vaeac.extra_para_user_names[!vaeac.extra_para_user_names %in% vaeav.all_para_default_names]
+  if (length(not_main_para_in_extra_para) > 0) {
+    # Give a message to the user about the unknown extra parameters
+    warning(paste0("The following vaeac extra parameters are not recognized (`shapr` removes them): ",
+                   paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "
+                   ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
+
+    # Delete the unknown extra parameters
+    parameters$vaeac.extra_parameters[not_main_para_in_extra_para] = NULL
+  }
+
+  # Check for parameters that have been provided as both main and extra parameter
+  both_main_and_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_user_names]
+  if (length(both_main_and_extra_para > 0)) {
+    # Print a message to the user and tell them that we use those in `vaeac.extra_parameters`.
+    warning(paste0("The following vaeac parameters were given as both main and extra parameters (`shapr` uses the ",
+                   "values at the correct location ): ",
+                   paste(strsplit(paste(paste0("`", both_main_and_extra_para, "`"), collapse = ", "),
+                                  ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
+
+    # Note that we do not move it here as the moving will be fixed in the next two if-clauses
+  }
+
+  # Check if any any extra parameters have been given as main parameters
+  extra_para_in_main_para = vaeac.main_para_user_names[vaeac.main_para_user_names %in% vaeac.extra_para_default_names]
+  if (length(extra_para_in_main_para) > 0) {
+    warning(paste0("The following vaeac parameters were given as main parameters but should have been extra ",
+                   "parameters (`shapr` fixes this): ",
+                   paste(strsplit(paste(paste0("`", extra_para_in_main_para , "`"), collapse = ", "),
+                                  ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
+
+    # Move extra parameter from the main parameters to extra_parameters list if they have NOT been specified already
+    parameters$vaeac.extra_parameters[extra_para_in_main_para[!extra_para_in_main_para %in% vaeac.extra_para_user_names]] =
+      parameters[extra_para_in_main_para[!extra_para_in_main_para %in% vaeac.extra_para_user_names]]
+
+    # Remove the extra parameter from the main parameters
+    parameters[extra_para_in_main_para] = NULL
+  }
+
+  # Check if any any main parameters have been given as extra parameters
+  main_para_in_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_default_names]
+  if (length(main_para_in_extra_para) > 0) {
+    # Give a message to the user about the misplaced main parameters in the extra list
+    warning(paste0("The following vaeac parameters were given as extra parameters but should have been main ",
+                   "parameters (`shapr` fixes this): ",
+                   paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "
+                   ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
+
+    # Move main parameters from the extra_parameters list to main parameters if they have NOT been specified already
+    parameters[main_para_in_extra_para[!main_para_in_extra_para %in% vaeac.main_para_user_names]] =
+      parameters$vaeac.extra_parameters[main_para_in_extra_para[!main_para_in_extra_para
+                                                                %in% vaeac.main_para_user_names]]
+
+    # Remove the main parameter from the extra list
+    parameters$vaeac.extra_parameters[main_para_in_extra_para] = NULL
+  }
+
+  # Return the fixed parameters list
+  return(parameters)
+}
 
 
 #' @inheritParams default_doc
@@ -1203,12 +1249,12 @@ vaeac_train_model <- function(training_data,
   if (paired_sampling) {
     # Use paired sampling
     train_dataloader <- torch::dataloader(train_dataset,
-      batch_size = batch_size,
-      sampler = paired_sampler(train_dataset, shuffle = TRUE)
+                                          batch_size = batch_size,
+                                          sampler = paired_sampler(train_dataset, shuffle = TRUE)
     )
     val_dataloader <- torch::dataloader(val_dataset,
-      batch_size = batch_size,
-      sampler = paired_sampler(val_dataset, shuffle = FALSE)
+                                        batch_size = batch_size,
+                                        sampler = paired_sampler(val_dataset, shuffle = FALSE)
     )
   } else {
     # Usual approach
@@ -1462,7 +1508,7 @@ epoch might require a lot of disk storage if data is large.\n",
       # Compute the running validation IWAE
       val_iwae_running <- validation_iwae[
         (-min(length(validation_iwae), running_avg_num_values) +
-          length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
+           length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
         drop = FALSE
       ]$mean()$view(1)
       validation_iwae_running_avg <- torch::torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
@@ -1610,7 +1656,7 @@ epoch might require a lot of disk storage if data is large.\n",
     # Compute the running validation IWAE.
     val_iwae_running <- validation_iwae[
       (-min(length(validation_iwae), running_avg_num_values) +
-        length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
+         length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
       drop = FALSE
     ]$mean()$view(1)
 
@@ -1637,8 +1683,8 @@ epoch might require a lot of disk storage if data is large.\n",
       # Create the file name
       filename_best <-
         paste(make.names(model_description), "p", p,
-          "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
-          sep = "_"
+              "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
+              sep = "_"
         )
 
       # Combine the file name with the folder path to form the final save file name.
@@ -1666,9 +1712,9 @@ epoch might require a lot of disk storage if data is large.\n",
       filename_best_running <-
         make.names(
           paste(make.names(model_description), "p", p,
-            "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr,
-            "best_running.pt",
-            sep = "_"
+                "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr,
+                "best_running.pt",
+                sep = "_"
           )
         )
 
@@ -1696,9 +1742,9 @@ epoch might require a lot of disk storage if data is large.\n",
 
         # Create the file name
         filename_nth <- paste(make.names(model_description), "_p_", p,
-          "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
-          "_epoch_", epoch, ".pt",
-          sep = ""
+                              "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
+                              "_epoch_", epoch, ".pt",
+                              sep = ""
         )
 
         # Combine the file name with the folder path to form the final save file name.
@@ -1774,8 +1820,8 @@ epoch might require a lot of disk storage if data is large.\n",
 
   # Create the file name
   filename_last <- paste(make.names(model_description), "p", p,
-    "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
-    sep = "_"
+                         "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
+                         sep = "_"
   )
 
   # Combine the file name with the folder path to form the final save file name.
@@ -1986,12 +2032,12 @@ vaeac_continue_train_model <- function(explanation,
     if (paired_sampling) {
       # Use paired sampling
       train_dataloader <- torch::dataloader(train_dataset,
-        batch_size = batch_size,
-        sampler = paired_sampler(train_dataset, shuffle = TRUE)
+                                            batch_size = batch_size,
+                                            sampler = paired_sampler(train_dataset, shuffle = TRUE)
       )
       val_dataloader <- torch::dataloader(val_dataset,
-        batch_size = batch_size,
-        sampler = paired_sampler(val_dataset, shuffle = FALSE)
+                                          batch_size = batch_size,
+                                          sampler = paired_sampler(val_dataset, shuffle = FALSE)
       )
     } else {
       # Usual approach
@@ -2200,7 +2246,7 @@ epoch might require a lot of disk storage if data is large.\n",
       # Compute the running validation IWAE.
       val_iwae_running <- validation_iwae[
         (-min(length(validation_iwae), running_avg_num_values) +
-          length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
+           length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
         drop = FALSE
       ]$mean()$view(1)
 
@@ -2226,8 +2272,8 @@ epoch might require a lot of disk storage if data is large.\n",
 
         # Create the file name
         filename_best <- paste(make.names(model_description), "p", p,
-          "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
-          sep = "_"
+                               "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
+                               sep = "_"
         )
 
         # Combine the file name with the folder path to form the final save file name.
@@ -2288,9 +2334,9 @@ epoch might require a lot of disk storage if data is large.\n",
 
           # Create the file name
           filename_nth <- paste(make.names(model_description), "_p_", p,
-            "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
-            "_epoch_", epoch, ".pt",
-            sep = ""
+                                "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
+                                "_epoch_", epoch, ".pt",
+                                sep = ""
           )
 
           # Combine the file name with the folder path to form the final save file name.
@@ -2335,8 +2381,8 @@ epoch might require a lot of disk storage if data is large.\n",
 
     # Create the file name
     filename_last <- paste(make.names(model_description), "p", p,
-      "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
-      sep = "_"
+                           "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
+                           sep = "_"
     )
 
     # Combine the file name with the folder path to form the final save file name.
@@ -2752,6 +2798,7 @@ as user set `return_as_postprocessed_dt = TRUE`.")
 #' `plot_type` parameter.
 #'
 #' @examples
+#' \dontrun{
 #' # library(xgboost)
 #' # data("airquality")
 #' # data <- data.table::as.data.table(airquality)
@@ -2904,6 +2951,7 @@ as user set `return_as_postprocessed_dt = TRUE`.")
 #' #   explanation_list = explanation_list_named,
 #' #   criteria = "VLB",
 #' #   plot_type = "criterion")
+#' }
 #'
 #' @author Lars Henry Berge Olsen
 #' @export
@@ -3200,7 +3248,7 @@ We set 'which_vaeac_model = best' and continue.\n",
 
     # Add a variable indicating if the values are from the true distribution or if they have been sampled.
     combined_data$type <- factor(rep(c("True", "Imputed"),
-      times = c(ifelse(is.null(nrow(true_data)), 0, nrow(true_data)), num_samples)
+                                     times = c(ifelse(is.null(nrow(true_data)), 0, nrow(true_data)), num_samples)
     ))
 
     # Extract what to include as title in the figure.
@@ -3208,24 +3256,24 @@ We set 'which_vaeac_model = best' and continue.\n",
 
     # Create the ggparis figure.
     figure <- GGally::ggpairs(combined_data,
-      columns = seq(vaeac_model$p),
-      mapping = ggplot2::aes(color = type),
-      diag = list(
-        continuous = GGally::wrap(diag_cont, alpha = 0.5),
-        discrete = GGally::wrap(diag_cat, alpha = 1.0)
-      ),
-      upper = list(
-        combo = GGally::wrap(upper_mix, alpha = 1.0),
-        discrete = GGally::wrap(upper_cat, alpha = 1.0),
-        continuous = GGally::wrap(upper_cont, method = cor_method, size = 3.65)
-      ),
-      lower = list(
-        continuous = GGally::wrap(lower_cont, alpha = 0.25),
-        discrete = GGally::wrap(lower_cat, alpha = 1.0),
-        combo = GGally::wrap(lower_mix, alpha = 1)
-      ),
-      title = figure_title,
-      proportions = rep(1, vaeac_model$p)
+                              columns = seq(vaeac_model$p),
+                              mapping = ggplot2::aes(color = type),
+                              diag = list(
+                                continuous = GGally::wrap(diag_cont, alpha = 0.5),
+                                discrete = GGally::wrap(diag_cat, alpha = 1.0)
+                              ),
+                              upper = list(
+                                combo = GGally::wrap(upper_mix, alpha = 1.0),
+                                discrete = GGally::wrap(upper_cat, alpha = 1.0),
+                                continuous = GGally::wrap(upper_cont, method = cor_method, size = 3.65)
+                              ),
+                              lower = list(
+                                continuous = GGally::wrap(lower_cont, alpha = 0.25),
+                                discrete = GGally::wrap(lower_cat, alpha = 1.0),
+                                combo = GGally::wrap(lower_mix, alpha = 1)
+                              ),
+                              title = figure_title,
+                              proportions = rep(1, vaeac_model$p)
     ) +
       # theme(plot.title = element_text(size=22),
       #       text = element_text(size = 16),
