@@ -39,8 +39,6 @@ explain_linear <- function(model,
     x_train = x_train,
     x_explain = x_explain,
     approach = "gaussian", # always set to "gaussian" although we never really use this argument for linear_gaussian
-    shap_approach = "permutation", # Always use the permute shap_approach
-    paired_shap_sampling = TRUE, # Always use paired sampling since simplified computation of the required Q and U objects requires it
     prediction_zero = 0, # Never used, we extract this from the model object instead.
     n_combinations = NULL, # We always set the n_permutations instead
     n_permutations = n_permutations,
