@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac_torch_modules.R
 \name{Specified_masks_mask_generator}
 \alias{Specified_masks_mask_generator}
-\title{A \link[torch:nn_module]{torch::nn_module} Representing a Specified_masks_mask_generator}
+\title{A \code{\link[torch:nn_module]{torch::nn_module()}} Representing a Specified_masks_mask_generator}
 \usage{
 Specified_masks_mask_generator(masks, masks_probs, paired_sampling = FALSE)
 }

@@ -25,6 +25,7 @@ explain_forecast(
   predict_model = NULL,
   get_model_specs = NULL,
   timing = TRUE,
+  verbose = 0,
   ...
 )
 }
@@ -137,6 +138,11 @@ Can also be used to override the default function for natively supported model c
 \item{timing}{Logical.
 Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
 
+\item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
+If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
+Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
+TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
+
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}, \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}
   \describe{
@@ -201,12 +207,11 @@ in the start. Pick the best performing one after \code{vaeac.extra_parameters$ep
 epochs (default is \code{2}) and continue training that one.}
     \item{\code{vaeac.epochs}}{Integer. The number of epochs to train the final vaeac model. This includes
 \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
-    \item{\code{vaeac.save_model}}{Boolean. If \code{TRUE} (default), the \code{vaeac} model will be saved either in a temp
-folder or in a user specified location specified in \code{vaeac.folder_to_save_model}. If \code{FALSE}, then the
-paths to model and the model will will be deleted from the returned object from \code{\link[=explain]{explain()}}.}
-    \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach. See
-section "The \code{vaeac} approach" in \code{\link[=setup_approach]{setup_approach()}} for description of possible additional
-parameters.}
+    \item{\code{vaeac.save_model}}{Boolean. If \code{TRUE} (default), the \code{vaeac} model will be saved either in a
+\code{\link[base:tempfile]{base::tempdir()}} folder or in a user specified location in \code{vaeac.folder_to_save_model}. If \code{FALSE}, then
+the paths to model and the model will will be deleted from the returned object from \code{\link[=explain]{explain()}}.}
+    \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach.
+See \code{\link[=vaeac_extra_para_default]{vaeac_extra_para_default()}} for description of possible additional parameters.}
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
 values.

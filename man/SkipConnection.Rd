@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac_torch_modules.R
 \name{SkipConnection}
 \alias{SkipConnection}
-\title{A \link[torch:nn_module]{torch::nn_module} Representing a skip connection}
+\title{A \code{\link[torch:nn_module]{torch::nn_module()}} Representing a skip connection}
 \usage{
 SkipConnection(...)
 }

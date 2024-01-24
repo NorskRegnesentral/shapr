@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac_torch_modules.R
 \name{MemoryLayer}
 \alias{MemoryLayer}
-\title{A \link[torch:nn_module]{torch::nn_module} Representing a Memory Layer}
+\title{A \code{\link[torch:nn_module]{torch::nn_module()}} Representing a Memory Layer}
 \usage{
 MemoryLayer(id, output = FALSE, add = FALSE, verbose = FALSE)
 }

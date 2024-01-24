@@ -50,6 +50,7 @@ See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al.
 \href{https://borea17.github.io/paper_summaries/iwae/}{blog post} for a summary of the VLB and IWAE.
 }
 \examples{
+\dontrun{
 # library(xgboost)
 # data("airquality")
 # data <- data.table::as.data.table(airquality)
@@ -202,6 +203,7 @@ See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al.
 #   explanation_list = explanation_list_named,
 #   criteria = "VLB",
 #   plot_type = "criterion")
+}
 
 }
 \author{

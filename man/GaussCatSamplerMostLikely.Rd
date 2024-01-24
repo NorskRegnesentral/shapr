@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac_torch_modules.R
 \name{GaussCatSamplerMostLikely}
 \alias{GaussCatSamplerMostLikely}
-\title{A \link[torch:nn_module]{torch::nn_module} Representing a GaussCatSamplerMostLikely}
+\title{A \code{\link[torch:nn_module]{torch::nn_module()}} Representing a GaussCatSamplerMostLikely}
 \usage{
 GaussCatSamplerMostLikely(
   one_hot_max_sizes,
