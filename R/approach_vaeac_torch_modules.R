@@ -1300,7 +1300,7 @@ paired_sampler <- torch::sampler(
 
 # Neural Network Utility Functions ====================================================================================
 ##  MemoryLayer -------------------------------------------------------------------------------------------------------
-#' A [torch::nn_module] Representing a Memory Layer
+#' A [torch::nn_module()] Representing a Memory Layer
 #'
 #' @description
 #' The layer is used to make skip-connections inside a [torch::nn_sequential] network
@@ -1423,7 +1423,7 @@ MemoryLayer <- torch::nn_module(
 )
 
 ## SkipConnection -----------------------------------------------------------------------------------------------------
-#' A [torch::nn_module] Representing a skip connection
+#' A [torch::nn_module()] Representing a skip connection
 #'
 #' @description
 #' Skip connection over the sequence of layers in the constructor. The module passes
@@ -1704,7 +1704,7 @@ kl_normal_normal <- function(p, q) {
 
 # Neural Network Modules ==============================================================================================
 ## GaussCatSampler -----------------------------------------------------------------------------------------
-#' A [torch::nn_module] Representing a GaussCatSampler
+#' A [torch::nn_module()] Representing a GaussCatSampler
 #'
 #' @description
 #' The GaussCatSampler generates a sample from the generative distribution defined by
@@ -1822,7 +1822,7 @@ GaussCatSampler <- torch::nn_module(
 
 
 ## GaussCatSamplerMostLikely -------------------------------------------------------------------------------
-#' A [torch::nn_module] Representing a GaussCatSamplerMostLikely
+#' A [torch::nn_module()] Representing a GaussCatSamplerMostLikely
 #'
 #' @description
 #' The GaussCatSamplerrMostLikely generates the most likely samples from
@@ -1919,7 +1919,7 @@ GaussCatSamplerMostLikely <- torch::nn_module(
 )
 
 ## GaussCatSamplerRandom -----------------------------------------------------------------------------------
-#' A [torch::nn_module] Representing a GaussCatSamplerRandom
+#' A [torch::nn_module()] Representing a GaussCatSamplerRandom
 #'
 #' @description
 #' The GaussCatSamplerRandom generates random samples from the generative
@@ -2020,7 +2020,7 @@ GaussCatSamplerRandom <- torch::nn_module(
 
 
 ## GaussCatParameters --------------------------------------------------------------------------------------
-#' A [torch::nn_module] Representing a GaussCatParameters
+#' A [torch::nn_module()] Representing a GaussCatParameters
 #'
 #' @description
 #' The GaussCatParameters module extracts the parameters
@@ -2122,7 +2122,7 @@ GaussCatParameters <- torch::nn_module(
 
 
 ## GaussCatLoss --------------------------------------------------------------------------------------------
-#' A [torch::nn_module] Representing a GaussCatLoss
+#' A [torch::nn_module()] Representing a GaussCatLoss
 #'
 #' @description
 #' The GaussCatLoss module/layer computes the log probability
@@ -2268,7 +2268,7 @@ GaussCatLoss <- torch::nn_module(
 
 
 ## CategoricalToOneHotLayer -------------------------------------------------------------------------------------------
-#' A [torch::nn_module] Representing a CategoricalToOneHotLayer
+#' A [torch::nn_module()] Representing a CategoricalToOneHotLayer
 #'
 #' @description
 #' The CategoricalToOneHotLayer module/layer expands categorical features into one-hot vectors,
@@ -2556,7 +2556,7 @@ MCAR_mask_generator <- torch::nn_module(
 
 
 ## Specified_prob_mask_generator -------------------------------------------------------------------------------
-#' A [torch::nn_module] Representing a Specified_prob_mask_generator
+#' A [torch::nn_module()] Representing a Specified_prob_mask_generator
 #'
 #' @description A mask generator which masks the entries based on specified probabilities.
 #'
@@ -2704,12 +2704,11 @@ Specified_prob_mask_generator <- torch::nn_module(
 )
 
 ## Specified_masks_mask_generator -------------------------------------------------------------------------------------
-#' A [torch::nn_module] Representing a Specified_masks_mask_generator
+#' A [torch::nn_module()] Representing a Specified_masks_mask_generator
 #'
 #' @description
 #' A mask generator which masks the entries based on sampling provided 1D masks with corresponding probabilities.
 #' Used for Shapley value estimation when only a subset of coalitions are used to compute the Shapley values.
-#'
 #'
 #' @param masks Matrix/Tensor of possible/allowed 'masks' which we sample from.
 #' @param masks_probs Array of 'probabilities' for each of the masks specified in 'masks'.
