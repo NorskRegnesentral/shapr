@@ -104,6 +104,7 @@ explain_forecast <- function(model,
                              predict_model = NULL,
                              get_model_specs = NULL,
                              timing = TRUE,
+                             verbose = 0,
                              ...) { # ... is further arguments passed to specific approaches
   timing_list <- list(
     init_time = Sys.time()
@@ -144,6 +145,7 @@ explain_forecast <- function(model,
     group_lags = group_lags,
     group = group,
     timing = timing,
+    verbose = verbose,
     ...
   )
 
