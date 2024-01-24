@@ -5,8 +5,8 @@
 \title{Function to specify the extra parameters in the \code{vaeac} model}
 \usage{
 vaeac_extra_para_default(
-  vaeac.model_description = NULL,
-  vaeac.folder_to_save_model = NULL,
+  vaeac.model_description = make.names(Sys.time()),
+  vaeac.folder_to_save_model = tempdir(),
   vaeac.pretrained_vaeac_model = NULL,
   vaeac.use_cuda = FALSE,
   vaeac.epochs_initiation_phase = 2,
@@ -35,12 +35,13 @@ vaeac_extra_para_default(
 )
 }
 \arguments{
-\item{vaeac.model_description}{String (default is \code{NULL}). String containing, e.g., the name of the
-data distribution or additional parameter information. Used in the save name of the fitted model.}
+\item{vaeac.model_description}{String (default is \code{make.names(Sys.time())}). String containing, e.g., the name of the
+data distribution or additional parameter information. Used in the save name of the fitted model. If not provided,
+then a name will be generated based on \code{\link[base:Sys.time]{base::Sys.time()}} to ensure a unique name.}
 
-\item{vaeac.folder_to_save_model}{String (default is \code{NULL}). String specifying a path to a folder where
-the function is to save the fitted vaeac model. If \code{NULL}, then a \code{\link[base:tempfile]{base::tempdir()}} is created. Note that
-the path will be removed from the returned \code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}.}
+\item{vaeac.folder_to_save_model}{String (default is \code{\link[base:tempfile]{base::tempdir()}}). String specifying a path to a folder where
+the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
+\code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}.}
 
 \item{vaeac.pretrained_vaeac_model}{List or String (default is \code{NULL}). 1) Either a list of class
 \code{vaeac}, i.e., the list stored in \code{explanation$internal$parameters$vaeac} where \code{explanation} is the returned list

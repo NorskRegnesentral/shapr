@@ -91,6 +91,16 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Reorder them such that the vaeac parameters are at the end of the parameters list
   parameters = c(parameters[(length(defaults)+1):length(parameters)], parameters[1:length(defaults)])
 
+
+  #
+  parameters$vaeac.extra_parameters$vaeac.seed = parameters$seed
+
+
+
+
+
+
+
   parameters_flatten =
 
 
@@ -100,125 +110,6 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 
   stop("DONE")
 
-
-
-#
-#
-#   ## Checking location of vaeac arguments ----------------------------------------------------------------------------
-#   # Get the name of the main parameters for the `vaeac` approach
-#   vaeac.main_para_default_names = formalArgs(setup_approach.vaeac)
-#   vaeac.main_para_default_names =
-#     vaeac.main_para_default_names[!vaeac.main_para_default_names %in% c("internal", "vaeac.extra_parameters", "...")]
-#   #main_parameters = vaeac.main_para_default_names
-#
-#   # Get the default values for vaeac's main parameters defined above into a named list.
-#   vaeac.main_para_default <- mget(vaeac.main_para_default_names)
-#   defaults = vaeac.main_para_default
-#
-#   as.list(sys.call(-1))[-1]
-#
-#   # Get the default values for vaeac's extra parameters into a named list
-#   vaeac.extra_para_default = vaeac_extra_para_default()
-#   vaeac.extra_para_default_names = names(vaeac.extra_para_default)
-#
-#   # Get the names of the extra parameters provided by the user
-#   vaeac.extra_para_user_names = names(vaeac.extra_parameters)
-#
-#   # Get the names of all parameters to explain
-#   vaeac.main_para_user_names = names(internal$parameters)
-#   vaeac.main_para_user_names = vaeac.main_para_user_names[grepl("vaeac.", vaeac.main_para_user_names)]
-#
-#
-#
-#
-#   # Check for parameters in vaeac.extra_parameters which are not in the default list
-#   unknown_extra_para <- vaeac.extra_para_user_names[!(vaeac.extra_para_user_names %in% vaeac.extra_para_default_names)]
-#
-#   # Divide the unknown parameters into whether they are main parameters or completely unknown.
-#   main_para_in_extra_para <- unknown_extra_para[unknown_extra_para %in% vaeac.main_para_default_names]
-#   not_main_para_in_extra_para <- unknown_extra_para[!unknown_extra_para %in% vaeac.main_para_default_names]
-#
-#   # Give a message to the user about the unknown extra parameters
-#   if (length(not_main_para_in_extra_para) > 0) {
-#     message(paste0("The following parameters in `vaeac.extra_parameters` are not recognized: ",
-#                    paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "
-#                    ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
-#   }
-#
-#   # Check for parameters in vaeac.extra_parameters that are actually main parameters. Note that it technically does
-#   # not matter as the vaeac.extra_parameters list is flatten to be individual elements in internal$parameters.
-#   extra_para_in_main_para = vaeac.main_para_user_name[vaeac.main_para_user_name %in% vaeac.extra_para_default_names]
-#   if (length(misplaced_parameters) > 0) {
-#     message(paste0("The following parameters were given as main parameters in `explain()`, but they should have been ",
-#                    "included in the `vaeac.extra_parameters` list (this is fixed internally): ",
-#                    paste(strsplit(paste(paste0("`", extra_para_in_main_para , "`"), collapse = ", "),
-#                                   ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
-#   }
-#
-#   # Check for parameters that have been provided as both main and extra parameter
-#   both_main_and_extra_para <- vaeac.extra_para_user_names[vaeac.extra_para_user_names %in% vaeac.main_para_user_name]
-#
-#   # Print a message to the user and tell them that we use those in `vaeac.extra_parameters`.
-#   if (length(both_main_and_extra_para > 0)) {
-#     message(paste0("The following parameters were given as both main and extra `vaeac` parameters to `explain()`: ",
-#                    paste(strsplit(paste(paste0("`", extra_para_in_main_para , "`"), collapse = ", "),
-#                                   ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"),
-#                    ".\nThe function proceeds using the values in `vaeac.extra_parameters`.\n"))
-#   }
-#
-#
-#   # Give a message to the user about the misplaced main parameters in the extra list
-#   if (length(main_para_in_extra_para) > 0) {
-#     message(paste0("The following parameters in `vaeac.extra_parameters` should have been main parameters",
-#                    "(this is fixed internally): ",
-#                    paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "
-#                    ), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"))
-#   }
-#
-#
-#   # Insert the misplaced main parameters from the extra parameters to the to the correct place.
-#   internal$parameters <- utils::modifyList(
-#     internal$parameters,
-#     vaeac.extra_parameters[main_para_in_extra_para]
-#   )
-#
-
-
-
-
-
-  # # Combine the provided extra parameter values with the default values. Overwrite the default values.
-  # vaeac.extra_parameters <- utils::modifyList(vaeac.extra_para_default, vaeac.extra_parameters, keep.null = TRUE)
-  #
-  #
-  #
-  #
-  # tmp_list = list(a = 1, b = 2)
-  # utils::modifyList(tmp_list,
-  #   list()
-  # )
-  #
-  # internal$parameters
-  # main_para_in_extra_para
-  #
-  #
-  #
-
-
-
-
-
-  #
-  #
-  #   print(vaeac.main_parameters_names)
-  #   print(mget(main_parameters))
-  #   print()
-  #   stop()
-  #
-
-
-
-  ## Checking validity of vaeac arguments ----------------------------------------------------------------------------
 
 
   # Transform vaeac.activation_function from a string into the activation function object
@@ -233,21 +124,6 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 
 
 
-
-
-
-
-
-  vaeac.extra_parameters_default
-
-  # The mget extract the default values defined for the variables to this function into a named list.
-  defaults <- mget(main_parameters)
-
-  # If a variable has not been specified by the user, then we use the default values extracted above.
-  internal <- insert_defaults(internal, defaults)
-
-  # Extract the parameters list which, e.g., contains user-provided parameters for the vaeac approach.
-  parameters <- internal$parameters
 
   # TODO: NEED TO SET UP THE vaeac.folder_to_save_model HERE AND CHECK THAT IT EXISTS OF TEMP FOLDER
 
@@ -495,11 +371,13 @@ of the data used to train the provided vaeac model (%s).\n",
 #' @description In this function, we specify the default values for the extra parameters used in [shapr::explain()]
 #' for `approach = "vaeac"`.
 #'
-#' @param vaeac.model_description String (default is `NULL`). String containing, e.g., the name of the
-#' data distribution or additional parameter information. Used in the save name of the fitted model.
-#' @param vaeac.folder_to_save_model String (default is `NULL`). String specifying a path to a folder where
-#' the function is to save the fitted vaeac model. If `NULL`, then a [base::tempdir()] is created. Note that
-#' the path will be removed from the returned [shapr::explain()] object if `vaeac.save_model = FALSE`.
+#' @param vaeac.model_description String (default is `make.names(Sys.time())`). String containing, e.g., the name of the
+#' data distribution or additional parameter information. Used in the save name of the fitted model. If not provided,
+#' then a name will be generated based on [base::Sys.time()] to ensure a unique name. We use [base::make.names()] to
+#' ensure a valid file name for all operating systems.
+#' @param vaeac.folder_to_save_model String (default is [base::tempdir()]). String specifying a path to a folder where
+#' the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
+#' [shapr::explain()] object if `vaeac.save_model = FALSE`.
 #' @param vaeac.pretrained_vaeac_model List or String (default is `NULL`). 1) Either a list of class
 #' `vaeac`, i.e., the list stored in `explanation$internal$parameters$vaeac` where `explanation` is the returned list
 #' from an earlier call to the [shapr::explain()] function. 2) A string containing the path to where the `vaeac`
@@ -591,8 +469,8 @@ of the data used to train the provided vaeac model (%s).\n",
 #' @return TODO: SOMETHING
 #' @export
 #' @author Lars Henry Berge Olsen
-vaeac_extra_para_default = function(vaeac.model_description = NULL,
-                                    vaeac.folder_to_save_model = NULL,
+vaeac_extra_para_default = function(vaeac.model_description = make.names(Sys.time()),
+                                    vaeac.folder_to_save_model = tempdir(),
                                     vaeac.pretrained_vaeac_model = NULL,
                                     vaeac.use_cuda = FALSE,
                                     vaeac.epochs_initiation_phase = 2,
@@ -619,7 +497,7 @@ vaeac_extra_para_default = function(vaeac.model_description = NULL,
                                     vaeac.seed = NULL,
                                     vaeac.which_vaeac_model = "best") {
   # Return a named list with the extra parameters to the vaeac model
-  return(formals(vaeac_extra_para_default))
+  return(mget(formalArgs(vaeac_extra_para_default)))
 }
 
 
