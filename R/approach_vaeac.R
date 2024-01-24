@@ -91,9 +91,10 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Reorder them such that the vaeac parameters are at the end of the parameters list
   parameters = c(parameters[(length(defaults)+1):length(parameters)], parameters[1:length(defaults)])
 
-
-  #
+  # Set the vaeac seed to be equal to the seed used in `shapr`
   parameters$vaeac.extra_parameters$vaeac.seed = parameters$seed
+
+
 
 
 
@@ -919,21 +920,22 @@ vaeac_train_model <- function(training_data,
     epochs <- epochs_initiation_phase + 1
   }
 
-  # If no folder has been provided, we save the model in a temporary directory
-  # which will be deleted when the R session is closed.
-  if (is.null(folder_to_save_model)) {
-    folder_to_save_model <- tempdir()
-    used_tempdir <- TRUE
-  } else {
-    used_tempdir <- FALSE
-  }
-
-  # If no model_description has been provided, then we use the current time.
-  if (is.null(model_description)) {
-    options(digits.secs = 3)
-    model_description <- gsub("\\.", "_", gsub(" ", "_", Sys.time()))
-    options(digits.secs = 0)
-  }
+  # THIS SHOULD NO LONGER BE NEEDED AS FOLDER AND DESCRIPTION WILL ALWAYS BE PROVIDED
+  # # If no folder has been provided, we save the model in a temporary directory
+  # # which will be deleted when the R session is closed.
+  # if (is.null(folder_to_save_model)) {
+  #   folder_to_save_model <- tempdir()
+  #   used_tempdir <- TRUE
+  # } else {
+  #   used_tempdir <- FALSE
+  # }
+  #
+  # # If no model_description has been provided, then we use the current time.
+  # if (is.null(model_description)) {
+  #   options(digits.secs = 3)
+  #   model_description <- gsub("\\.", "_", gsub(" ", "_", Sys.time()))
+  #   options(digits.secs = 0)
+  # }
 
   # Preprocess the data. This function turns factor names into numerics 1,2,...,K,
   # as vaeac only accepts numerics, and keep track of the maping of names.
