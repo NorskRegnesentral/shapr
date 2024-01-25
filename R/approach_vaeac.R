@@ -177,7 +177,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 
     # Fit/train the vaeac model with the provided model parameters
     vaeac_training_time <- system.time({
-      vaeac_model <- do.call(vaeac_train_model, c(vaeac_all_parameters, list(training_data = x_train)))
+      vaeac_model <- do.call(vaeac_train_model, c(vaeac_all_parameters, list(x_train = x_train)))
     })
 
     # Extract the paths to the trained vaeac models.
@@ -730,7 +730,7 @@ We set 'which_vaeac_model = best' and continue.\n",
 #'
 #' @details
 #' The vaeac model consists of three neural networks, i.e., a masked encoder, a full encoder, and a decoder.
-#' The networks have shared `depth`, `width`, and `activation_function`. The encoders maps the `training_data`
+#' The networks have shared `depth`, `width`, and `activation_function`. The encoders maps the `x_train`
 #' to a latent representation of dimension `latent_dim`, while the decoder maps the latent representations
 #' back to the feature space. See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}
 #' for more details. The function first initiates `num_vaeacs_initiate` vaeac models with different randomly
@@ -738,7 +738,7 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' `num_vaeacs_initiate` vaeac models are compared and the function continues to only train the best performing
 #' one for a total of `epochs` epochs. The networks are trained using the ADAM optimizer with the learning rate is `lr`.
 #'
-#' @param training_data A matrix or data.frame containing the data.
+#' @param x_train A matrix or data.frame containing the data.
 #' Categorical data must have class names \eqn{1,2,\dots,K}.
 #' @param model_description String containing, e.g., the name of the data distribution or
 #' additional parameter information. Used in the save name of the fitted model.
@@ -809,7 +809,7 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' @return A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.
 #' @export
 #' @author Lars Henry Berge Olsen
-vaeac_train_model <- function(training_data,
+vaeac_train_model <- function(x_train,
                               model_description,
                               folder_to_save_model,
                               use_cuda = FALSE,
@@ -851,71 +851,17 @@ vaeac_train_model <- function(training_data,
   # Check all the vaeac parameters
   do.call(vaeac_check_parameters, mget(names(formals())))
 
+  # Preprocess the data. Turns factor names into numerics 1,2,...,K, as vaeac only accepts numerics,
+  # and keep track of the maping of names. Optionally log-transform the continuous features.
+  preprocessed_data <- vaeac_preprocess_data(data = as.data.table(x_train),
+                                             transform_all_cont_features = transform_all_cont_features)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  # THIS SHOULD NO LONGER BE NEEDED AS FOLDER AND DESCRIPTION WILL ALWAYS BE PROVIDED
-  # # If no folder has been provided, we save the model in a temporary directory
-  # # which will be deleted when the R session is closed.
-  # if (is.null(folder_to_save_model)) {
-  #   folder_to_save_model <- tempdir()
-  #   used_tempdir <- TRUE
-  # } else {
-  #   used_tempdir <- FALSE
-  # }
-  #
-  # # If no model_description has been provided, then we use the current time.
-  # if (is.null(model_description)) {
-  #   options(digits.secs = 3)
-  #   model_description <- gsub("\\.", "_", gsub(" ", "_", Sys.time()))
-  #   options(digits.secs = 0)
-  # }
-
-  # Preprocess the data. This function turns factor names into numerics 1,2,...,K,
-  # as vaeac only accepts numerics, and keep track of the maping of names.
-  # And optionally log-transform all continuous features. Usual for strictly positive
-  # data set like Burr and Abalone, such that vaeac does not impute negative values.
-  preprocessed_data <- vaeac_preprocess_data(as.data.table(training_data), transform_all_cont_features)
-
-  # Extract the training data where all the
-  training_data <- preprocessed_data$data_preprocessed
+  # Extract the preprocessed training data
+  x_train <- preprocessed_data$data_preprocessed
 
   # A torch tensor of dimension p containing the one hot sizes of the p features.
   # The sizes for the continuous features can either be '0' or '1'.
   one_hot_max_sizes <- preprocessed_data$one_hot_max_sizes
-
-  ##### Do some checks for invalid input parameter values
-  # Do not check that integers are integers and that strings are strings.
-  # Take for granted that the user reads the documentation.
-
-  # Check for a valid file path
-  if (!dir.exists(folder_to_save_model)) {
-    stop(sprintf("Directory '%s' in `folder_to_save_model` does not exist.\n", folder_to_save_model))
-  }
-
-  # Remove trailing slash on path name if there are any.
-  if (endsWith(folder_to_save_model, "/")) {
-    folder_to_save_model <- substr(folder_to_save_model, 1, nchar(folder_to_save_model) - 1)
-  }
-
-  # Check that we initiate at least one vaeac model in the
-  if (num_vaeacs_initiate < 1) {
-    stop(sprintf(
-      "The parameter 'num_vaeacs_initiate' (%d) must be equal or larger than 1.",
-      num_vaeacs_initiate
-    ))
-  }
 
   # Check if cuda/GPU is available on the current system
   cuda_available <- torch::cuda_is_available()
@@ -923,28 +869,21 @@ vaeac_train_model <- function(training_data,
   # Give message to user if asked to run on cuda, but cuda is not available.
   if (isFALSE(cuda_available) && isTRUE(use_cuda)) {
     use_cuda <- FALSE
-    message("Cuda/GPU is not available. Uses CPU instead.", immediate. = TRUE)
+    message("Cuda/GPU is not available (`shapr` uses CPU instead).", immediate. = TRUE)
   }
 
+
+
   # Check for coinciding number of features in data and the number of features specified in one_hot_max_sizes.
-  if (ncol(training_data) != length(one_hot_max_sizes)) {
+  if (ncol(x_train) != length(one_hot_max_sizes)) {
     stop(sprintf(
-      "The number of features in training_data must match the length of `one_hot_max_sizes`: %d != %s.\n",
-      ncol(training_data),
+      "The number of features in x_train must match the length of `one_hot_max_sizes`: %d != %s.\n",
+      ncol(x_train),
       length(one_hot_max_sizes)
     ))
   }
 
-  # Check if
-  if (xor(
-    !is.null(mask_gen_these_coalitions),
-    !is.null(mask_gen_these_coalitions_prob)
-  )) {
-    stop(paste0(
-      "User need to provided both 'mask_gen_these_coalitions' and ",
-      "'mask_gen_these_coalitions_prob' for specified masking to function."
-    ))
-  }
+
 
   ##### Figure out what kind of mask generator we are going to use.
   if (!is.null(mask_gen_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
@@ -992,7 +931,7 @@ vaeac_train_model <- function(training_data,
       mask_generator_name <- "MCAR_mask_generator"
     } else {
       # Check that we have received a masking ratio for each feature
-      if (length(masking_ratio) == ncol(training_data)) {
+      if (length(masking_ratio) == ncol(x_train)) {
         # We have an array of masking ratios. Then we are using the Specified_prob_mask_generator.
         if (verbose) {
           message(sprintf(
@@ -1004,19 +943,19 @@ vaeac_train_model <- function(training_data,
       } else {
         stop(paste0(
           "'Masking_ratio' contains masking ratios for ',", length(masking_ratio), "' features, ",
-          "but there are '", ncol(training_data), "' features in 'training_data'.\n"
+          "but there are '", ncol(x_train), "' features in 'x_train'.\n"
         ))
       }
     }
   }
 
-  #### Normalize training_data
-  # Get the dimensions of the training_data
-  n <- nrow(training_data)
-  p <- ncol(training_data)
+  #### Normalize x_train
+  # Get the dimensions of the x_train
+  n <- nrow(x_train)
+  p <- ncol(x_train)
 
   # Convert X to tensor
-  data_torch <- torch::torch_tensor(as.matrix(training_data))
+  data_torch <- torch::torch_tensor(as.matrix(x_train))
 
   # Compute the mean and std for each continuous feature in the data
   # The categorical features will have mean zero and std 1.
@@ -1145,7 +1084,7 @@ vaeac_train_model <- function(training_data,
   # If we are also to save the data to state_list.
   if (save_data) {
     state_list <- c(state_list, list(
-      "training_data" = training_data,
+      "x_train" = x_train,
       "normalized_data" = data
     ))
 
@@ -1711,7 +1650,7 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 #' @param explanation A [shapr::explain()] object and `vaeac` must be the used approach.
 #' @param epochs_new Integer. The number of extra epochs to conduct.
 #' @param lr_new Numeric. If we are to overwrite the old learning rate in the adam optimizer.
-#' @param training_data Matrix/data.frame containing new training data. If not present,
+#' @param x_train Matrix/data.frame containing new training data. If not present,
 #' then we try to load training data from the vaeac_model.
 #' @param save_data Boolean. If we are to save the training data.
 #' @param verbose Boolean. If we are to print out information to the user.
@@ -1722,7 +1661,7 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 vaeac_continue_train_model <- function(explanation,
                                        epochs_new,
                                        lr_new = NULL,
-                                       training_data = NULL,
+                                       x_train = NULL,
                                        save_data = FALSE,
                                        verbose = FALSE) {
   # Keep track of how much time we use training
@@ -1734,7 +1673,7 @@ vaeac_continue_train_model <- function(explanation,
     checkpoint <- torch::torch_load(vaeac_model$models$last)
 
     # Check that we have access to training data
-    if (is.null(checkpoint$normalized_data) & is.null(training_data)) {
+    if (is.null(checkpoint$normalized_data) & is.null(x_train)) {
       stop(paste(
         "The save file did not include data (set 'save_data' = TRUE in 'vaeac_train_model)",
         "and data was not provided to this function."
@@ -1742,13 +1681,13 @@ vaeac_continue_train_model <- function(explanation,
     }
 
     # We have two training datasets
-    if (!is.null(checkpoint$training_data) & !is.null(data)) {
+    if (!is.null(checkpoint$x_train) & !is.null(data)) {
       message("The save file includes data and data was not provided to this function. We only use the latter.")
     }
 
-    # If training_data is not provided to this function, then we load the training_data from the save file.
-    if (is.null(training_data)) {
-      training_data <- checkpoint$training_data
+    # If x_train is not provided to this function, then we load the x_train from the save file.
+    if (is.null(x_train)) {
+      x_train <- checkpoint$x_train
     }
 
     # Preprocess the data. This function turns factor names into numerics 1,2,...,K,
@@ -1756,12 +1695,12 @@ vaeac_continue_train_model <- function(explanation,
     # And optionally log-transform all continuous features. Usual for strictly positive
     # data set like Burr and Abalone, such that vaeac does not impute negative values.
     preprocessed_data <- vaeac_preprocess_data(
-      as.data.table(training_data),
+      as.data.table(x_train),
       checkpoint$transform_all_cont_features
     )
 
     # Extract the training data where all the
-    training_data <- preprocessed_data$data_preprocessed
+    x_train <- preprocessed_data$data_preprocessed
 
     # Extract relevant information from the checkpoint
     batch_size <- checkpoint$batch_size
@@ -1787,10 +1726,10 @@ vaeac_continue_train_model <- function(explanation,
       message("Cuda/GPU is not available. Uses CPU instead.", immediate. = TRUE)
     }
 
-    #### Normalize training_data
-    # Get the dimensions of the training_data
-    n <- nrow(training_data)
-    p <- ncol(training_data)
+    #### Normalize x_train
+    # Get the dimensions of the x_train
+    n <- nrow(x_train)
+    p <- ncol(x_train)
 
     # Test for right number of features.
     if (p != checkpoint$p) {
@@ -1801,7 +1740,7 @@ vaeac_continue_train_model <- function(explanation,
     }
 
     # Convert X to tensor
-    data_torch <- torch::torch_tensor(as.matrix(training_data))
+    data_torch <- torch::torch_tensor(as.matrix(x_train))
 
     # Compute the mean and std for each continuous feature in the data
     # The categorical features will have mean zero and std 1.
@@ -1816,7 +1755,7 @@ vaeac_continue_train_model <- function(explanation,
     data <- (data_torch - norm_mean) / norm_std
 
     #### Split Training & Validation Data
-    if (!is.null(checkpoint$training_data) | n == checkpoint$n) {
+    if (!is.null(checkpoint$x_train) | n == checkpoint$n) {
       # We are using the data from the saved object, or the new
       # data has the same number of training observations.
 
@@ -1887,7 +1826,7 @@ vaeac_continue_train_model <- function(explanation,
     # If we are also to save the data to state_list.
     if (save_data) {
       state_list_new <- c(state_list_new, list(
-        "training_data" = training_data,
+        "x_train" = x_train,
         "normalized_data" = data
       ))
 
@@ -2446,7 +2385,7 @@ vaeac_check_activation_func = function(activation_function) {
 #' @return The function does not return anything.
 #' @export
 #' @author Lars Henry Berge Olsen
-vaeac_check_mask_gen = function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, training_data) {
+vaeac_check_mask_gen = function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, x_train) {
   masks = mask_gen_these_coalitions
   probs = mask_gen_these_coalitions_prob
 
@@ -2464,9 +2403,9 @@ vaeac_check_mask_gen = function(mask_gen_these_coalitions, mask_gen_these_coalit
            "`vaeac.mask_gen_these_coalitions_prob`.")
     }
 
-    if (ncol(masks) != ncol(training_data)) {
+    if (ncol(masks) != ncol(x_train)) {
       stop("the number of columns in `vaeac.mask_gen_these_coalitions` must be equal to the number of ",
-           "columns in the `training_data`. That is, the number of features.")
+           "columns in the `x_train`. That is, the number of features.")
     }
   }
 }
@@ -2510,7 +2449,7 @@ vaeac_check_save_names = function(folder_to_save_model, model_description) {
 #' @return The function does not return anything.
 #' @export
 #' @author Lars Henry Berge Olsen
-vaeac_check_parameters = function(training_data,
+vaeac_check_parameters = function(x_train,
                                   model_description,
                                   folder_to_save_model,
                                   use_cuda,
@@ -2561,7 +2500,7 @@ vaeac_check_parameters = function(training_data,
   # Check the mask_gen_these_coalitions and mask_gen_these_coalitions_prob parameters
   vaeac_check_mask_gen(mask_gen_these_coalitions = mask_gen_these_coalitions,
                        mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
-                       training_data = training_data)
+                       x_train = x_train)
 
   # Check the logical parameters
   vaeac_check_logicals(list(use_cuda = use_cuda,

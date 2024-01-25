@@ -7,7 +7,7 @@
 vaeac_check_mask_gen(
   mask_gen_these_coalitions,
   mask_gen_these_coalitions_prob,
-  training_data
+  x_train
 )
 }
 \arguments{
@@ -17,7 +17,7 @@ vaeac_check_mask_gen(
 sampling each mask in \code{mask_gen_these_coalitions}.
 Array containing the probabilities for sampling the coalitions in \code{mask_gen_these_coalitions}.}
 
-\item{training_data}{A matrix or data.frame containing the data.
+\item{x_train}{A matrix or data.frame containing the data.
 Categorical data must have class names \eqn{1,2,\dots,K}.}
 }
 \value{

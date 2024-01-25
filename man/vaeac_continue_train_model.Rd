@@ -8,7 +8,7 @@ vaeac_continue_train_model(
   explanation,
   epochs_new,
   lr_new = NULL,
-  training_data = NULL,
+  x_train = NULL,
   save_data = FALSE,
   verbose = FALSE
 )
@@ -20,7 +20,7 @@ vaeac_continue_train_model(
 
 \item{lr_new}{Numeric. If we are to overwrite the old learning rate in the adam optimizer.}
 
-\item{training_data}{Matrix/data.frame containing new training data. If not present,
+\item{x_train}{Matrix/data.frame containing new training data. If not present,
 then we try to load training data from the vaeac_model.}
 
 \item{save_data}{Boolean. If we are to save the training data.}

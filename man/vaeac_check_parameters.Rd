@@ -5,7 +5,7 @@
 \title{Function that calls all vaeac parameters check functions}
 \usage{
 vaeac_check_parameters(
-  training_data,
+  x_train,
   model_description,
   folder_to_save_model,
   use_cuda,
@@ -40,7 +40,7 @@ vaeac_check_parameters(
 )
 }
 \arguments{
-\item{training_data}{A matrix or data.frame containing the data.
+\item{x_train}{A matrix or data.frame containing the data.
 Categorical data must have class names \eqn{1,2,\dots,K}.}
 
 \item{model_description}{String containing, e.g., the name of the data distribution or

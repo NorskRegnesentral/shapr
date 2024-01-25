@@ -5,7 +5,7 @@
 \title{Train the Vaeac Model}
 \usage{
 vaeac_train_model(
-  training_data,
+  x_train,
   model_description,
   folder_to_save_model,
   use_cuda = FALSE,
@@ -40,7 +40,7 @@ vaeac_train_model(
 )
 }
 \arguments{
-\item{training_data}{A matrix or data.frame containing the data.
+\item{x_train}{A matrix or data.frame containing the data.
 Categorical data must have class names \eqn{1,2,\dots,K}.}
 
 \item{model_description}{String containing, e.g., the name of the data distribution or
@@ -147,7 +147,7 @@ as described in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{
 }
 \details{
 The vaeac model consists of three neural networks, i.e., a masked encoder, a full encoder, and a decoder.
-The networks have shared \code{depth}, \code{width}, and \code{activation_function}. The encoders maps the \code{training_data}
+The networks have shared \code{depth}, \code{width}, and \code{activation_function}. The encoders maps the \code{x_train}
 to a latent representation of dimension \code{latent_dim}, while the decoder maps the latent representations
 back to the feature space. See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}
 for more details. The function first initiates \code{num_vaeacs_initiate} vaeac models with different randomly

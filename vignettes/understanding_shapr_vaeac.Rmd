@@ -174,11 +174,17 @@ explanation <- explain(
   n_batches = n_batches,
   keep_samp_for_vS = keep_samp_for_vS,
   seed = seed,
-  vaeac.epochs = vaeac.epochs,
-  vaeac.num_vaeacs_initiate = vaeac.num_vaeacs_initiate,
+  vaeac.epochs = 123,
+  vaeac.width = 123,
+  vaeac.save_every_nth_epoch = 10000000,
+  vaeac.blaa2 = 1000000000,
   vaeac.extra_parameters = list(
-    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
-    vaeac.verbose = vaeac.verbose
+    vaeac.width = 1000000000,
+    vaeac.save_every_nth_epoch = 123,
+    vaeac.masking_ratio = 123,
+    vaeac.batch_size = 123,
+    vaeac.depth = 123,
+    vaeac.blaa = 1000000000
   )
 )
 ```
@@ -593,7 +599,7 @@ expl_train_more$internal$parameters$vaeac <-
   vaeac_continue_train_model(
     explanation = expl_train_more,
     epochs_new = 5,
-    training_data = x_train,
+    x_train = x_train,
     verbose = TRUE
   )
 
@@ -633,7 +639,7 @@ expl_train_even_more$internal$parameters$vaeac <-
   vaeac_continue_train_model(
     explanation = expl_train_even_more,
     epochs_new = 10,
-    training_data = x_train,
+    x_train = x_train,
     verbose = TRUE
   )
 
@@ -728,7 +734,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
   vaeac_continue_train_model(
     explanation = expl_early_stopping_train_more,
     epochs_new = 15,
-    training_data = x_train,
+    x_train = x_train,
     verbose = TRUE
   )
 
@@ -736,7 +742,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
   vaeac_continue_train_model(
     explanation = expl_early_stopping_train_more,
     epochs_new = 10,
-    training_data = x_train,
+    x_train = x_train,
     verbose = TRUE
   )
 
