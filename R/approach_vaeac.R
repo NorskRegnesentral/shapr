@@ -853,77 +853,44 @@ vaeac_train_model <- function(x_train,
   # Check all the vaeac parameters
   do.call(vaeac_check_parameters, mget(names(formals())))
 
-  # Preprocess the data. Turns factor names into numerics 1,2,...,K, as vaeac only accepts numerics,
+  # Check if we can use cuda
+  if (use_cuda) use_cuda = vaeac_check_use_cuda(use_cuda)
+
+  # Preprocess x_train. Turns factor names into numerics 1,2,...,K, as vaeac only accepts numerics,
   # and keep track of the maping of names. Optionally log-transform the continuous features.
   x_train_preprocessed <- vaeac_preprocess_data(data = x_train,
                                              transform_all_cont_features = transform_all_cont_features)
 
-  # Extract the preprocessed training data
+  # Extract the preprocessed x_train
   x_train <- x_train_preprocessed$data_preprocessed
 
   # A torch tensor of dimension p containing the one hot sizes of the p features.
   # The sizes for the continuous features can either be '0' or '1'.
   one_hot_max_sizes <- x_train_preprocessed$one_hot_max_sizes
 
-  # Check if cuda/GPU is available on the current system
-  cuda_available <- torch::cuda_is_available()
-
-  # Give message to user if asked to run on cuda, but cuda is not available.
-  if (isFALSE(cuda_available) && isTRUE(use_cuda)) {
-    use_cuda <- FALSE
-    message("Cuda/GPU is not available (`shapr` uses CPU instead).", immediate. = TRUE)
-  }
-
-
-
-  # Check for coinciding number of features in data and the number of features specified in one_hot_max_sizes.
-  if (ncol(x_train) != length(one_hot_max_sizes)) {
-    stop(sprintf(
-      "The number of features in x_train must match the length of `one_hot_max_sizes`: %d != %s.\n",
-      ncol(x_train),
-      length(one_hot_max_sizes)
-    ))
-  }
-
 
 
   ##### Figure out what kind of mask generator we are going to use.
+
+  vaeac_get_mask_generator = function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob) {
+
+  }
+
+
+
+
   if (!is.null(mask_gen_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
-    # Both are provided and we want to use Specified_masks_mask_generator
-
-    # Check that the possible masks that are provided is given as a matrix
-    if (!any(class(mask_gen_these_coalitions) == "matrix")) {
-      stop(sprintf(
-        "The 'mask_gen_these_coalitions' must be of class 'matrix', not %s.\n",
-        paste(class(mask_gen_these_coalitions), collapse = ", ")
-      ))
-    }
-
-    # Check that the number of masks and corresponding number of probabilities match.
-    if (nrow(mask_gen_these_coalitions) != length(mask_gen_these_coalitions_prob)) {
-      stop(sprintf(
-        "The number of coalitions ('%d') does not match with the number of provided probabilites ('%d').\n",
-        nrow(mask_gen_these_coalitions), length(mask_gen_these_coalitions_prob)
-      ))
-    }
-
-    # We are given possible coalitions and corresponding probabilities.
-    # Then we are using the Specified_masks_mask_generator.
-    if (verbose) {
-      message(sprintf(
-        "Use 'Specified_masks_mask_generator' mask generator with '%d' different possible coalitions.\n",
-        nrow(mask_gen_these_coalitions)
-      ))
-    }
+    # User have provided mask_gen_these_coalitions (and mask_gen_these_coalitions_prob),
+    # and we want to use Specified_masks_mask_generator
     mask_generator_name <- "Specified_masks_mask_generator"
+
+    # Small printout
+    if (verbose == 2) {
+      message(paste0("Use 'Specified_masks_mask_generator' with '%d' coalitions.\n", nrow(mask_gen_these_coalitions)))
+    }
   } else {
     # We are NOT going to use 'Specified_masks_mask_generator'. Figure out if we are using
     # 'MCAR_mask_generator' or 'Specified_prob_mask_generator' and check for valid input.
-
-    # Check that masking_ratio is numeric.
-    if (all(class(masking_ratio) != "numeric")) {
-      stop(sprintf("class of 'masking_ratio' must be numeric, not %s.\n", class(masking_ratio)))
-    }
 
     # Masking ration is then either a scalar or array of scalar.
     if (length(masking_ratio) == 1) {
@@ -2224,94 +2191,64 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 vaeac_check_extra_named_list = function(vaeac.extra_parameters) {
-  if (is.null(names(vaeac.extra_parameters))) {
-    stop("The parameter `vaeac.extra_parameters` is not a named list.")
-  }
-  if (any(names(vaeac.extra_parameters) == "")) {
-    stop("Not all parameters in the list `vaeac.extra_parameters` are named.")
-  }
+  names = names(vaeac.extra_parameters)
+  if (is.null(names)) stop("The parameter `vaeac.extra_parameters` is not a named list.")
+  if (any(names == "")) stop("Not all parameters in the list `vaeac.extra_parameters` are named.")
 }
 
 #' Function that checks positive integers
 #'
 #' @param named_list_positive_integers List containing named entries. I.e., `list(a = 1, b = 2)`.
 #'
-#' @return The entries in `named_list_positive_integers` as of class integer if `return_as_class_integer = TRUE`.
+#' @return The function does not return anything.
 #' @export
 #' @author Lars Henry Berge Olsen
-vaeac_check_positive_integers <- function(named_list_positive_integers, return_as_class_integer = FALSE) {
+vaeac_check_positive_integers <- function(named_list_positive_integers) {
   param_names <- names(named_list_positive_integers)
-
-  checked_as_postitive_integers =
-    lapply(seq_len(length(named_list_positive_integers)), function(idx) {
-      param_name = param_names[idx]
-      value = named_list_positive_integers[[param_name]]
-
-      if (!is.numeric(value) || length(value) != 1 || value <= 0 || !is.finite(value) || value %% 1 != 0) {
-        stop(paste0("'vaeac.", param_name, "' must be a positive integer."))
-      }
-      return(as.integer(value))
-    })
-
-  if (return_as_class_integer) {
-    names(checked_as_postitive_integers) = param_names
-    return(checked_as_postitive_integers)
+  for (idx in seq_len(length(named_list_positive_integers))) {
+    param_name = param_names[idx]
+    value = named_list_positive_integers[[param_name]]
+    if (!is.numeric(value) || length(value) != 1 || value <= 0 || !is.finite(value) || value %% 1 != 0) {
+      stop(paste0("'vaeac.", param_name, "' must be a positive integer."))
+    }
   }
 }
-
 
 #' Function that checks positive numerics
 #'
 #' @param named_list_positive_numerics List containing named entries. I.e., `list(a = 0.2, b = 10^3)`.
 #'
-#' @return The entries in `named_list_positive_numerics` as of class integer if `return_as_class_numeric = TRUE`.
+#' @return The function does not return anything.
 #' @export
 #' @author Lars Henry Berge Olsen
-vaeac_check_positive_numerics <- function(named_list_positive_numerics, return_as_class_numeric = FALSE) {
+vaeac_check_positive_numerics <- function(named_list_positive_numerics) {
   param_names <- names(named_list_positive_numerics)
-
-  checked_as_postitive_numerics =
-    lapply(seq_len(length(named_list_positive_numerics)), function(idx) {
-      param_name = param_names[idx]
-      value = named_list_positive_numerics[[param_name]]
-
-      if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value <= 0) {
-        stop(paste0("'vaeac.", param_name, "' must be a positive numeric."))
-      }
-      return(as.integer(value))
-    })
-
-  if (return_as_class_numeric) {
-    names(checked_as_postitive_numerics) = param_names
-    return(checked_as_postitive_numerics)
+  for (idx in seq_len(length(named_list_positive_numerics))) {
+    param_name = param_names[idx]
+    value = named_list_positive_numerics[[param_name]]
+    if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value <= 0) {
+      stop(paste0("'vaeac.", param_name, "' must be a positive numeric."))
+    }
   }
 }
-
 
 #' Function that checks probabilities
 #'
 #' @param named_list_probabilities List containing named entries. I.e., `list(a = 0.2, b = 0.9)`.
 #'
-#' @return The entries in `named_list_probabilities` as of class numerics if `named_list_probabilities = TRUE`.
+#' @return The function does not return anything.
 #' @export
 #' @author Lars Henry Berge Olsen
-vaeac_check_probabilities <- function(named_list_probabilities, return_as_class_numeric = FALSE) {
-  param_names <- names(named_list_probabilities)
-
-  checked_as_probabilities =
-    lapply(seq_len(length(named_list_probabilities)), function(idx) {
-      param_name = param_names[idx]
-      value = named_list_probabilities[[param_name]]
-
-      if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value < 0 || value > 1) {
-        stop(paste0("'vaeac.", param_name, "' must be a valid probability (a number between 0 and 1)."))
-      }
-      return(as.numeric(value))
-    })
-
-  if(return_as_class_numeric) {
-    names(checked_as_probabilities) = param_names
-    return(checked_as_probabilities)
+vaeac_check_probabilities <- function(named_list_probabilities) {
+  # Trick needed for entries that can be vectors (i.e., `vaeac.masking_ratio`)
+  named_list_probabilities_tmp = as.list(unlist(named_list_probabilities))
+  param_names <- names(named_list_probabilities_tmp)
+  for (idx in seq_len(length(named_list_probabilities_tmp))) {
+    param_name = param_names[idx]
+    value = named_list_probabilities_tmp[[param_name]]
+    if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value < 0 || value > 1) {
+      stop(paste0("'vaeac.", param_name, "' must be a valid probability (a number between 0 and 1)."))
+    }
   }
 }
 
@@ -2319,29 +2256,19 @@ vaeac_check_probabilities <- function(named_list_probabilities, return_as_class_
 #'
 #' @param named_list_logicals List containing named entries. I.e., `list(a = TRUE, b = FALSE)`.
 #'
-#' @return The entries in `named_list_logicals` as of class numerics if `named_list_logicals = TRUE`.
+#' @return The function does not return anything.
 #' @export
 #' @author Lars Henry Berge Olsen
-vaeac_check_logicals <- function(named_list_logicals, return_as_class_logical = FALSE) {
+vaeac_check_logicals <- function(named_list_logicals) {
   param_names <- names(named_list_logicals)
-
-  checked_as_logicals =
-    lapply(seq_len(length(named_list_logicals)), function(idx) {
-      param_name = param_names[idx]
-      value = named_list_logicals[[param_name]]
-
-      if (!is.logical(value) || length(value) != 1) {
-        stop(paste0("'vaeac.", param_name, "' must be a boolean (i.e., `TRUE` or `FALSE`)."))
-      }
-      return(as.logical(value))
-    })
-
-  if (return_as_class_logical) {
-    names(checked_as_logicals) = param_names
-    return(checked_as_logicals)
+  for (idx in seq_len(length(named_list_logicals))) {
+    param_name = param_names[idx]
+    value = named_list_logicals[[param_name]]
+    if (!is.logical(value) || length(value) != 1) {
+      stop(paste0("'vaeac.", param_name, "' must be a boolean (i.e., `TRUE` or `FALSE`)."))
+    }
   }
 }
-
 
 #' Function that checks provided epoch arguments
 #'
@@ -2372,12 +2299,9 @@ vaeac_check_epoch_values = function(epochs, epochs_initiation_phase, epochs_earl
 #' @export
 #' @author Lars Henry Berge Olsen
 vaeac_check_activation_func = function(activation_function) {
-  # Check that activation function is an nn_module
-  if (!any("nn_module" %in% class(activation_function))) {
-    stop("`vaeac.activation_function` is not an `nn_module`.")
-  }
-
   # TODO: In future, check that it is one of the activation functions and not just a nn_module
+  # Check that activation function is an nn_module
+  if (!any("nn_module" %in% class(activation_function))) stop("`vaeac.activation_function` is not an `nn_module`.")
 }
 
 #' Function that checks the specified masking scheme
@@ -2533,6 +2457,26 @@ vaeac_check_parameters = function(x_train,
   vaeac_check_epoch_values(epochs = epochs,
                            epochs_initiation_phase = epochs_initiation_phase,
                            epochs_early_stopping = epochs_early_stopping)
+}
+
+#' Function that checks for access to CUDA
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_use_cuda = funtion(use_cuda){
+  # Check if cuda/GPU is available on the current system
+  cuda_available <- torch::cuda_is_available()
+
+  # Give message to user if asked to run on cuda, but cuda is not available.
+  if (isFALSE(cuda_available) && isTRUE(use_cuda)) {
+    use_cuda <- FALSE
+    message("Cuda/GPU is not available (`shapr` uses CPU instead).", immediate. = TRUE)
+  }
+
+  return(use_cuda)
 }
 
 
