@@ -8,14 +8,10 @@ explain_linear(
   model,
   x_explain,
   x_train,
-  prediction_zero,
-  n_combinations = NULL,
   n_permutations = NULL,
   group = NULL,
-  n_samples = 1000,
   n_batches = NULL,
   seed = 1,
-  keep_samp_for_vS = FALSE,
   predict_model = NULL,
   get_model_specs = NULL,
   MSEv_uniform_comb_weights = TRUE,
@@ -37,27 +33,11 @@ Contains the the features, whose predictions ought to be explained.}
 Contains the data used to estimate the (conditional) distributions for the features
 needed to properly estimate the conditional expectations in the Shapley formula.}
 
-\item{prediction_zero}{Numeric.
-The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
-features.
-Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable.}
-
-\item{n_combinations}{Integer.
-If \code{group = NULL}, \code{n_combinations} represents the number of unique feature combinations to sample.
-If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
-If \code{n_combinations = NULL}, the exact method is used and all combinations are considered.
-The maximum number of combinations equals \code{2^m}, where \code{m} is the number of features.}
-
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
 If provided, group wise Shapley values are computed. \code{group} then has length equal to
 the number of groups. The list element contains character vectors with the features included
 in each of the different groups.}
-
-\item{n_samples}{Positive integer.
-Indicating the maximum number of samples to use in the
-Monte Carlo integration for every conditional expectation. See also details.}
 
 \item{n_batches}{Positive integer (or NULL).
 Specifies how many batches the total number of feature combinations should be split into when calculating the
@@ -70,10 +50,6 @@ This typically comes with a small increase in computation time.}
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
 If \code{NULL} the seed will be inherited from the calling environment.}
-
-\item{keep_samp_for_vS}{Logical.
-Indicates whether the samples used in the Monte Carlo estimation of v_S should be returned
-(in \code{internal$output})}
 
 \item{predict_model}{Function.
 The prediction function used when \code{model} is not natively supported.

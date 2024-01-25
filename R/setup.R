@@ -22,8 +22,8 @@ setup <- function(x_train,
                   approach,
                   prediction_zero,
                   output_size = 1,
-                  n_combinations,
-                  n_permutations,
+                  n_combinations = NULL,
+                  n_permutations = NULL,
                   group,
                   n_samples,
                   n_batches,
@@ -122,35 +122,47 @@ check_and_set_parameters <- function(internal) {
   n_groups <- internal$parameters$n_groups
   is_groupwise <- internal$parameters$is_groupwise
   exact <- internal$parameters$exact
+  type <- internal$parameters$type
 
 
   if (!is.null(group)) {
     check_groups(feature_names, group)
   }
 
-  if (!exact) {
-    if (!is_groupwise) {
-      internal$parameters$used_n_combinations <- min(2^n_features, n_combinations)
+  if(type!="linear_gaussian"){
+    if (!exact) {
+      if (!is_groupwise) {
+        internal$parameters$used_n_combinations <- min(2^n_features, n_combinations)
+      } else {
+        internal$parameters$used_n_combinations <- min(2^n_groups, n_combinations)
+      }
+      check_n_combinations(internal)
     } else {
-      internal$parameters$used_n_combinations <- min(2^n_groups, n_combinations)
+      if (!is_groupwise) {
+        internal$parameters$used_n_combinations <- 2^n_features
+      } else {
+        internal$parameters$used_n_combinations <- 2^n_groups
+      }
     }
-    check_n_combinations(internal)
+
+    # Check approach
+    check_approach(internal)
+
+    # Setting default value for n_batches (when NULL)
+    internal <- set_defaults(internal)
+
+    # Checking n_batches vs n_combinations etc
+    check_n_batches(internal)
+
+
   } else {
-    if (!is_groupwise) {
-      internal$parameters$used_n_combinations <- 2^n_features
-    } else {
-      internal$parameters$used_n_combinations <- 2^n_groups
+    if (!exact) {
     }
   }
 
-  # Check approach
-  check_approach(internal)
 
-  # Setting default value for n_batches (when NULL)
-  internal <- set_defaults(internal)
-
-  # Checking n_batches vs n_combinations etc
-  check_n_batches(internal)
+  if(type!="linear_gaussian"){
+  }
 
 
   return(internal)
@@ -199,6 +211,7 @@ check_n_combinations <- function(internal) {
     }
   }
 }
+
 
 
 
@@ -709,7 +722,7 @@ set_defaults <- function(internal) {
   n_batches <- internal$parameters$n_batches
 
   # n_batches
-  if (is.null(n_batches)) {
+  if(is.null(n_batches)){
     internal$parameters$n_batches <- get_default_n_batches(approach, n_unique_approaches, used_n_combinations)
   }
 

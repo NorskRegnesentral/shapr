@@ -9,8 +9,7 @@ feature_combinations(
   exact = TRUE,
   n_combinations = 200,
   weight_zero_m = 10^6,
-  group_num = NULL,
-  paired_shap_sampling = FALSE
+  group_num = NULL
 )
 }
 \arguments{

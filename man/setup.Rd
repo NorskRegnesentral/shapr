@@ -8,8 +8,6 @@ setup(
   x_train,
   x_explain,
   approach,
-  shap_approach,
-  paired_shap_sampling,
   prediction_zero,
   output_size = 1,
   n_combinations,

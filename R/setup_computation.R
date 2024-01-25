@@ -32,8 +32,7 @@ shapley_setup_linear_gaussian <- function(internal) {
     m = n_features0,
     exact = exact,
     n_permutations = n_permutations,
-    paired_shap_sampling = TRUE,
-    return_perm_list_only = TRUE
+    paired_shap_sampling = TRUE
   )
   internal$objects$perms_mat <- perms_mat
 

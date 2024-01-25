@@ -26,15 +26,23 @@ x_explain_numeric_new <- rbind(x_explain_numeric,t(rep(0,length(x_var_numeric)))
 
 
 
+set.seed(12345)
 
 
 test <-explain(model = model_lm_numeric,
                x_explain = x_explain_numeric_new,
                x_train = x_train_numeric,
                approach = "gaussian",
-               shap_approach = "permutation",
-               prediction_zero = p0,n_samples = 10^4)
+               prediction_zero = p0,n_samples = 10^5)
 test
+#none Solar.R    Wind       Temp   Month
+#1: 42.44  -8.387   7.926   15.29260  0.6811
+#2: 42.44   4.905  -4.747  -11.01098 -0.9976
+#3: 42.44   7.240 -25.590   -0.07569 -0.5092
+#4: 42.44 -12.375  72.276 -154.31314 -6.0853
+#5: 42.44 -11.955  67.031 -153.70286 -6.2599
+
+# Permutation res (no longer implemented)
 #none Solar.R    Wind       Temp   Month
 #1: 42.44  -8.379   7.944   15.29533  0.6522
 #2: 42.44   4.919  -4.755  -11.00089 -1.0133

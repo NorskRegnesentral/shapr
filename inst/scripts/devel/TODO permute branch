@@ -1,17 +1,13 @@
-TODO: permute-branch
+TODO
 
-- General:
-	- Make sampling permutations faster (Rcpp). This could very well also be a matrix. Moreover, look at what is the slow part of the sampling-code using Rprof(vis)
-	- Clean up unused stuff
-	X- Merge master branch in here
-	- Make the creation of the S and X matrices faster
-	- Think about how to do the looping with
-	- Implement grouping
-	- Create a function which takes the explain object, and a new x_explain input and allows computing the shapley values for that super-fast using the Tmx&Tmu lists.
-
-- LinearGaussian:
+  X- update devel testing scripts to use the kernel approach as the truth
+	- Implement the permutation sampling in Rcpp.
 	- write the looping over Tmu/Tmx in Rcpp for speed
 	- Add MSE computation
+	- Implement grouping
+	- Create a function which takes the explain object, and a new x_explain input and allows computing the shapley values for that super-fast using the Tmx&Tmu lists.
+	- make the naming of functions consistent linear_gaussian or lingauss?
+	- Clean up unused stuff
+	- Write tests
 
-- Permute:
-	- make finalization part faster
+
