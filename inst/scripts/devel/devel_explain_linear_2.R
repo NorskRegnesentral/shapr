@@ -1,5 +1,6 @@
 set.seed(12345)
 library(data.table)
+library(profvis)
 
 p <- 8
 n_train <- 10^3
@@ -32,26 +33,35 @@ profvis({
                 x_explain = x_explain,
                 x_train = data,
                 approach = "gaussian",
-                shap_approach = "permutation",
                 prediction_zero = p0,
                 gaussian.cov_mat=Sig,
                 gaussian.mu = mu,
-                n_samples = 10,
-                n_permutations=10^4)
+                n_samples = 10)
 })
 
  test
 
 #debugonce(explain_linear)
 
-profvis({
-test2 <-explain_linear(model = model,
-                       x_explain = x_explain,
-                       x_train = data,
-                       gaussian.cov_mat=Sig,
-                       gaussian.mu=mu,n_permutations = 10^4
+#profvis({
+  test2 <-explain_lingauss(model = model,
+                           x_explain = x_explain,
+                           x_train = data,
+                           gaussian.cov_mat=Sig,
+                           gaussian.mu=mu,n_permutations = 10^4
+  )
+#})
+
+test3 <-explain_lingauss_precomputed(test2,
+                                     x_explain = x_explain[rep(seq_len(5),each=2*10^5)]
+
 )
-})
+# 10^6 explanations in 2 seconds in plain R
+test3$timing$total_time_secs
+
+
+
+
 test2$internal$objects$perm_dt[,.N]
 
 all_lists <- NULL
@@ -98,7 +108,7 @@ US <- test2$internal$objects$US_list[[2]]
 mu <- test2$internal$parameters$gaussian.mu
 Sig <- test2$internal$parameters$gaussian.cov
 x <- unlist(test2$internal$data$x_explain[1,])
-coefs <- test2$internal$parameters$linear_model_coef
+coefs <- test2$internal$parameters$lingauss_model_coef
 b <- coefs[1]
 beta <- coefs[-1]
 

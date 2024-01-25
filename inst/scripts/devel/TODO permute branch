@@ -3,11 +3,12 @@ TODO
   X- update devel testing scripts to use the kernel approach as the truth
 	- Implement the permutation sampling in Rcpp.
 	- write the looping over Tmu/Tmx in Rcpp for speed
-	- Add MSE computation
+	- Add MSE computation? We don't have the v(S) directly computes, and probably don't want to compute it either, but can we simplify the MSE computation in this case under the assumption on the model being linear, but without assuming the features are gaussian (in practice)? I do think that might be possible -- look at the formulas to verify this.
 	- Implement grouping
-	- Create a function which takes the explain object, and a new x_explain input and allows computing the shapley values for that super-fast using the Tmx&Tmu lists.
-	- make the naming of functions consistent linear_gaussian or lingauss?
-	- Clean up unused stuff
+	X - Create a function which takes the explain object, and a new x_explain input and allows computing the shapley values for that super-fast using the Tmx&Tmu lists.
+	X - Make lingauss_model_coeff a proper input argument to setup
+	X - make the naming of functions consistent linear_gaussian or lingauss?
+	X- Clean up unused stuff
 	- Write tests
-
+  - Document the used function properly
 

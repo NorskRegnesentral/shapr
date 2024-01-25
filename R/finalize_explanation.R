@@ -284,7 +284,7 @@ compute_MSEv_eval_crit <- function(internal,
 #' @inheritParams default_doc
 #'
 #' @export
-compute_shapley_linear_gaussian <- function(internal) {
+compute_shapley_lingauss <- function(internal) {
 
   # Inputs
   mu <- internal$parameters$gaussian.mu
@@ -293,19 +293,21 @@ compute_shapley_linear_gaussian <- function(internal) {
   x_explain <- internal$data$x_explain
   Tmu_list <- internal$objects$Tmu_list
   Tx_list <- internal$objects$Tx_list
-  coefs <- internal$parameters$linear_model_coef
+  lingauss_model_coef <- internal$parameters$lingauss_model_coef
   feature_names <- internal$parameters$feature_names
 
   # Convert inputs
-  beta <- coefs[-1]
+  alpha <- lingauss_model_coef$intercept
+  beta <- lingauss_model_coef$feature_coef
+
   x_explain_mat <- as.matrix(x_explain)
 
   # Get the prediction
 
-  p <- as.numeric(coefs[1] + x_explain_mat%*%beta)
+  p <- as.numeric(alpha + x_explain_mat%*%beta)
 
   # Compute phi0
-  phi0 <- as.numeric(coefs[1]+t(beta)%*%mu)
+  phi0 <- as.numeric(alpha+t(beta)%*%mu)
   shapley_mat <- matrix(0, nrow = n_explain, ncol = n_features)
   colnames(shapley_mat) <- feature_names
 
@@ -326,7 +328,7 @@ compute_shapley_linear_gaussian <- function(internal) {
     internal = internal,
     pred_explain = p
   )
-  attr(output, "class") <- c("shapr", "list")
+  attr(output, "class") <- c("shapr","lingauss", "list")
 
   return(output)
 

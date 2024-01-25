@@ -1,4 +1,4 @@
-#' Explain the output of a linear model with  Shapley values
+#' Explain the output of a linear model with Gaussian distributed features, using Shapley values values
 #'
 #' @inheritParams explain
 #'
@@ -6,7 +6,7 @@
 #'
 #' @author Martin Jullum
 #'
-explain_linear <- function(model,
+explain_lingauss <- function(model,
                            x_explain,
                            x_train,
                            n_permutations = NULL,
@@ -15,7 +15,6 @@ explain_linear <- function(model,
                            seed = 1,
                            predict_model = NULL,
                            get_model_specs = NULL,
-                           MSEv_uniform_comb_weights = TRUE,
                            timing = TRUE,
                            ...) { # ... is further arguments passed to specific approaches
 
@@ -28,29 +27,27 @@ explain_linear <- function(model,
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
 
-  linear_model_coef <- get_linear_coeff(model)
+  lingauss_model_coef <- get_linear_coef(model,feature_specs)
 
   null_object <- NULL
   # Sets up and organizes input parameters
   # Checks the input parameters and their compatability
   # Checks data/model compatability
   internal <- setup(
-    type = "linear_gaussian",
+    type = "lingauss",
     x_train = x_train,
     x_explain = x_explain,
-    approach = "gaussian", # always set to "gaussian" although we never really use this argument for linear_gaussian
+    approach = "gaussian", # always set to "gaussian" although we never really use this argument for lingauss
     prediction_zero = 0, # Never used, we extract this from the model object instead.
-    n_combinations = NULL, # We always set the n_permutations instead
     n_permutations = n_permutations,
     group = group,
-    n_samples = 1, # Not applicable for the linear_gaussian method as no sampling is done
+    n_samples = 1, # Not applicable for the lingauss method as no sampling is done
     n_batches = n_batches,
     seed = seed,
-    keep_samp_for_vS = FALSE, # Not applicable for the linear_gaussian method as no sampling is done
+    keep_samp_for_vS = FALSE, # Not applicable for the lingauss method as no sampling is done
     feature_specs = feature_specs,
-    MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
-    linear_model_coef = linear_model_coef, # TODO: Make this a proper input argument in setup(). For now this is just included through ... so no checking performed
+    lingauss_model_coef = lingauss_model_coef,
     ...
   )
 
@@ -63,28 +60,28 @@ explain_linear <- function(model,
   )
 
   # Checks that predict_model gives correct format
-  test_predict_linear_model(
+  test_predict_lingauss_model(
     x_test = head(internal$data$x_train, 2),
     predict_model = predict_model,
     model = model,
-    linear_model_coef = linear_model_coef,
+    lingauss_model_coef = lingauss_model_coef,
     internal = internal
   )
 
   timing_list$test_prediction <- Sys.time()
 
   # Computes the necessary objects for the linear Gaussian approach
-  internal <- shapley_setup_linear_gaussian(internal)
+  internal <- shapley_setup_lingauss(internal)
 
   timing_list$setup_computation <- Sys.time()
 
-  internal <- compute_linear_gaussian_Tmu_Tx(internal,...)
+  internal <- compute_lingauss_Tmu_Tx(internal,...)
 
   timing_list$compute_Tmu_Tx <- Sys.time()
 
 
   # Compute Shapley values with the linear Gaussian method
-  output <- compute_shapley_linear_gaussian(internal = internal)
+  output <- compute_shapley_lingauss(internal = internal)
 
   timing_list$shapley_computation <- Sys.time()
 
@@ -95,3 +92,46 @@ explain_linear <- function(model,
 
   return(output)
 }
+
+
+#' Function for Lightning fast explanation of linear model with gaussian data from pre-computed explain_lingauss object
+#'
+#' @param explain_lingauss_object output from explain_lingauss
+#' @inherit explain
+explain_lingauss_precomputed <- function(explain_lingauss_object,
+                                         x_explain,
+                                         timing = TRUE
+                                         ){
+  timing_list <- list(
+    init_time = Sys.time()
+  )
+
+  # Check that object is of correct class
+  if (!inherits(explain_lingauss_object, "lingauss")) {
+    stop("'object' must be of the shapr class lingauss, as outputted by explain_ligauss()")
+  }
+
+  internal <- explain_lingauss_object$internal
+  internal$data <- get_data(
+    internal$data$x_train,
+    x_explain
+  )
+
+  check_data(internal)
+
+  internal <- get_extra_parameters(internal) # Needed to reset the n_explain parameter
+
+  timing_list$setup <- Sys.time()
+
+  output <- compute_shapley_lingauss(internal = internal)
+
+  timing_list$shapley_computation <- Sys.time()
+
+  if (timing == TRUE) {
+    output$timing <- compute_time(timing_list)
+  }
+
+
+  return(output)
+}
+

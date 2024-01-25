@@ -1,11 +1,11 @@
-# Here I put both the setup functios and the compute_linear_gaussian functions
+# Here I put both the setup functios and the compute_lingauss functions
 
 
 #' @inheritParams default_doc_explain
 #' @inheritParams setup_approach.gaussian
 #'
 #' @export
-compute_linear_gaussian_Tmu_Tx <- function(internal,
+compute_lingauss_Tmu_Tx <- function(internal,
                                            gaussian.mu = NULL,
                                            gaussian.cov_mat = NULL, ...) {
 
@@ -14,7 +14,6 @@ compute_linear_gaussian_Tmu_Tx <- function(internal,
   gaussian.cov_mat <- internal$parameters$gaussian.cov_mat
   gaussian.mu <- internal$parameters$gaussian.mu
   n_features <- internal$parameters$n_features
-  linear_model_coef <- internal$parameters$linear_model_coef
   perms_mat <- internal$objects$perms_mat
 
   n_permutations_used <- nrow(perms_mat)
@@ -32,7 +31,7 @@ compute_linear_gaussian_Tmu_Tx <- function(internal,
     factor_approaches <- get_factor_approaches()
     stop(paste0(
       "The following feature(s) are factor(s): ", factor_features, ".\n",
-      "approach = 'linear_gaussian' does not support factor features.\n",
+      "approach = 'lingauss' does not support factor features.\n",
       "Please change approach to one of ", paste0(factor_approaches, collapse = ", "), "."
     ))
   }
@@ -112,4 +111,7 @@ compute_linear_gaussian_Tmu_Tx <- function(internal,
 
   return(internal)
 }
+
+
+
 

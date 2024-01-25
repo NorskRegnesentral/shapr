@@ -10,8 +10,8 @@ setup(
   approach,
   prediction_zero,
   output_size = 1,
-  n_combinations,
-  n_permutations,
+  n_combinations = NULL,
+  n_permutations = NULL,
   group,
   n_samples,
   n_batches,
@@ -28,6 +28,7 @@ setup(
   explain_y_lags = NULL,
   explain_xreg_lags = NULL,
   group_lags = NULL,
+  lingauss_model_coef = NULL,
   timing,
   is_python = FALSE,
   ...

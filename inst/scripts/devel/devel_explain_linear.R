@@ -55,18 +55,24 @@ test
 #debugonce(explain_linear)
 
 
-test2 <-explain_linear(model = model_lm_numeric,
-                       x_explain = x_explain_numeric_new,
-                       x_train = x_train_numeric,
-                       n_permutations=4,
-                       )
-test2
-
-test2 <-explain_linear(model = model_lm_numeric,
-                       x_explain = x_explain_numeric_new,
-                       x_train = x_train_numeric,
+test2 <-explain_lingauss(model = model_lm_numeric,
+                         x_explain = x_explain_numeric_new,
+                         x_train = x_train_numeric,
+                         n_permutations=100,
 )
 test2
+
+test2 <-explain_lingauss(model = model_lm_numeric,
+                         x_explain = x_explain_numeric_new,
+                         x_train = x_train_numeric,
+)
+test2
+
+test3 <-explain_lingauss_precomputed(test2,
+                                     x_explain = x_explain_numeric_new
+
+)
+
 
 
 unique(test2$internal$objects$US_list)
@@ -86,7 +92,7 @@ US <- test2$internal$objects$US_list[[2]]
 mu <- test2$internal$parameters$gaussian.mu
 Sig <- test2$internal$parameters$gaussian.cov
 x <- unlist(test2$internal$data$x_explain[1,])
-coefs <- test2$internal$parameters$linear_model_coef
+coefs <- test2$internal$parameters$lingauss_model_coef
 b <- coefs[1]
 beta <- coefs[-1]
 

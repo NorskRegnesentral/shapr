@@ -23,7 +23,7 @@ setup_computation <- function(internal, model, predict_model) {
 }
 
 
-shapley_setup_linear_gaussian <- function(internal) {
+shapley_setup_lingauss <- function(internal) {
   exact <- internal$parameters$exact
   n_features0 <- internal$parameters$n_features
   n_permutations <- internal$parameters$n_permutations

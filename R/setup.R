@@ -40,6 +40,7 @@ setup <- function(x_train,
                   explain_y_lags = NULL,
                   explain_xreg_lags = NULL,
                   group_lags = NULL,
+                  lingauss_model_coef = NULL,
                   timing,
                   is_python = FALSE,
                   ...) {
@@ -64,6 +65,7 @@ setup <- function(x_train,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
+    lingauss_model_coef = lingauss_model_coef,
     timing = timing,
     is_python = is_python,
     ...
@@ -129,7 +131,7 @@ check_and_set_parameters <- function(internal) {
     check_groups(feature_names, group)
   }
 
-  if(type!="linear_gaussian"){
+  if(type!="lingauss"){
     if (!exact) {
       if (!is_groupwise) {
         internal$parameters$used_n_combinations <- min(2^n_features, n_combinations)
@@ -155,13 +157,6 @@ check_and_set_parameters <- function(internal) {
     check_n_batches(internal)
 
 
-  } else {
-    if (!exact) {
-    }
-  }
-
-
-  if(type!="linear_gaussian"){
   }
 
 
@@ -211,8 +206,6 @@ check_n_combinations <- function(internal) {
     }
   }
 }
-
-
 
 
 #' @keywords internal
@@ -400,7 +393,7 @@ get_extra_parameters <- function(internal) {
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, n_permutations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
-                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing, is_python, ...) {
+                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, lingauss_model_coef, timing, is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -460,8 +453,8 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   }
 
   # type
-  if (!(type %in% c("normal", "forecast","linear_gaussian"))) {
-    stop("`type` must be either `normal`, `forecast` or `linear_gaussian`.\n")
+  if (!(type %in% c("normal", "forecast","lingauss"))) {
+    stop("`type` must be either `normal`, `forecast` or `lingauss`.\n")
   }
 
   # parameters only used for type "forecast"
@@ -529,6 +522,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     horizon = horizon,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
+    lingauss_model_coef = lingauss_model_coef,
     timing = timing
   )
 
@@ -536,7 +530,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   parameters <- append(parameters, list(...))
 
   # Setting exact based on n_combinations (TRUE if NULL)
-  if(type=="linear_gaussian"){
+  if(type=="lingauss"){
     parameters$exact <- ifelse(is.null(parameters$n_permutations), TRUE, FALSE)
   } else {
     parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)

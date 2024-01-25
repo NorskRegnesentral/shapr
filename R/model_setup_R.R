@@ -69,12 +69,27 @@ get_feature_specs <- function(get_model_specs, model) {
 
 
 
-get_linear_coeff <- function(model){
+get_linear_coef <- function(model,feature_specs){
   # Checks that model is of class 'lm'
   if(class(model)[1] != "lm"){
-    stop("explain_linear only supports explaining models of class 'lm'")
+    stop("explain_lingauss only supports explaining models of class 'lm'")
+  }
+  features <- feature_specs$labels
+
+  all_coef <- model$coefficients
+  feature_coef <- all_coef[features]
+  intercept <- ifelse("(Intercept)"%in%names(all_coef),all_coef["(Intercept)"],0)
+
+  # check if there are any other terms than single feature terms
+  other_terms <- !(names(feature_coef) %in% features)
+  if(any(other_terms)){
+    stop(paste0("explain_lingauss does not support other terms than single feature terms, ",
+                "i.e. not interaction terms, quadratic terms, etc.",
+                "However, the following non-single-feature terms where found: ",
+                names(feature_coef)[other_terms],"."))
   }
 
+
   # Extracts the coefficients from a linear model
-  return(model$coefficients)
+  return(list(feature_coef = feature_coef, intercept = intercept))
 }
