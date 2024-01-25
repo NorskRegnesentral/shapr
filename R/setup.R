@@ -111,6 +111,10 @@ setup <- function(x_train,
 
   internal <- check_and_set_parameters(internal)
 
+  # Clears out NULL parameters
+  internal$parameters[sapply(internal$parameters, is.null)] <- NULL
+
+
   return(internal)
 }
 
@@ -535,6 +539,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   } else {
     parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
   }
+
 
   return(parameters)
 }
