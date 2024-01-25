@@ -738,7 +738,7 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' `num_vaeacs_initiate` vaeac models are compared and the function continues to only train the best performing
 #' one for a total of `epochs` epochs. The networks are trained using the ADAM optimizer with the learning rate is `lr`.
 #'
-#' @param x_train A matrix or data.frame containing the data.
+#' @param x_train A data.table containing the data. Categorical names
 #' Categorical data must have class names \eqn{1,2,\dots,K}.
 #' @param model_description String containing, e.g., the name of the data distribution or
 #' additional parameter information. Used in the save name of the fitted model.
@@ -844,7 +844,9 @@ vaeac_train_model <- function(x_train,
 
   # Set epochs_early_stopping to epochs to ensure that early stopping never occurs
   if (is.null(epochs_early_stopping)) epochs_early_stopping <- epochs
-  early_stopping_applied <- NULL # Variable to store if early stopping was conducted
+
+  # Variable to store if early stopping was conducted
+  early_stopping_applied <- NULL
 
   # TODO: REMOVE list2env(vaeac_all_parameters, envir = .GlobalEnv)
 
@@ -853,15 +855,15 @@ vaeac_train_model <- function(x_train,
 
   # Preprocess the data. Turns factor names into numerics 1,2,...,K, as vaeac only accepts numerics,
   # and keep track of the maping of names. Optionally log-transform the continuous features.
-  preprocessed_data <- vaeac_preprocess_data(data = as.data.table(x_train),
+  x_train_preprocessed <- vaeac_preprocess_data(data = x_train,
                                              transform_all_cont_features = transform_all_cont_features)
 
   # Extract the preprocessed training data
-  x_train <- preprocessed_data$data_preprocessed
+  x_train <- x_train_preprocessed$data_preprocessed
 
   # A torch tensor of dimension p containing the one hot sizes of the p features.
   # The sizes for the continuous features can either be '0' or '1'.
-  one_hot_max_sizes <- preprocessed_data$one_hot_max_sizes
+  one_hot_max_sizes <- x_train_preprocessed$one_hot_max_sizes
 
   # Check if cuda/GPU is available on the current system
   cuda_available <- torch::cuda_is_available()
@@ -1067,15 +1069,15 @@ vaeac_train_model <- function(x_train,
     "save_every_nth_epoch" = save_every_nth_epoch,
     "sigma_mu" = sigma_mu,
     "sigma_sigma" = sigma_sigma,
-    "feature_list" = preprocessed_data$feature_list,
-    "col_cat_names" = preprocessed_data$col_cat_names,
-    "col_cont_names" = preprocessed_data$col_cont_names,
-    "col_cat" = preprocessed_data$col_cat,
-    "col_cont" = preprocessed_data$col_cont,
-    "cat_in_dataset" = preprocessed_data$cat_in_dataset,
-    "map_new_to_original_names" = preprocessed_data$map_new_to_original_names,
-    "map_original_to_new_names" = preprocessed_data$map_original_to_new_names,
-    "transform_all_cont_features" = preprocessed_data$transform_all_cont_features,
+    "feature_list" = x_train_preprocessed$feature_list,
+    "col_cat_names" = x_train_preprocessed$col_cat_names,
+    "col_cont_names" = x_train_preprocessed$col_cont_names,
+    "col_cat" = x_train_preprocessed$col_cat,
+    "col_cont" = x_train_preprocessed$col_cont,
+    "cat_in_dataset" = x_train_preprocessed$cat_in_dataset,
+    "map_new_to_original_names" = x_train_preprocessed$map_new_to_original_names,
+    "map_original_to_new_names" = x_train_preprocessed$map_original_to_new_names,
+    "transform_all_cont_features" = x_train_preprocessed$transform_all_cont_features,
     "save_data" = save_data,
     "verbose" = verbose,
     "seed" = seed
@@ -1694,13 +1696,13 @@ vaeac_continue_train_model <- function(explanation,
     # as vaeac only accepts numerics, and keep track of the maping of names.
     # And optionally log-transform all continuous features. Usual for strictly positive
     # data set like Burr and Abalone, such that vaeac does not impute negative values.
-    preprocessed_data <- vaeac_preprocess_data(
+    x_train_preprocessed <- vaeac_preprocess_data(
       as.data.table(x_train),
       checkpoint$transform_all_cont_features
     )
 
     # Extract the training data where all the
-    x_train <- preprocessed_data$data_preprocessed
+    x_train <- x_train_preprocessed$data_preprocessed
 
     # Extract relevant information from the checkpoint
     batch_size <- checkpoint$batch_size
