@@ -81,12 +81,12 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   #                 vaeac.extra_parameters = list())
 
   # Add the default extra parameter values for the non-user specified extra parameters
-  parameters$vaeac.extra_parameters = modifyList(vaeac_extra_para_default(),
+  parameters$vaeac.extra_parameters = utils::modifyList(vaeac_extra_para_default(),
                                                  parameters$vaeac.extra_parameters,
                                                  keep.null = TRUE)
 
   # Add the default main parameter values for the non-user specified main parameters
-  parameters = modifyList(defaults, parameters, keep.null = TRUE)
+  parameters = utils::modifyList(defaults, parameters, keep.null = TRUE)
 
   # Reorder them such that the vaeac parameters are at the end of the parameters list
   parameters = c(parameters[(length(defaults)+1):length(parameters)], parameters[1:length(defaults)])
@@ -94,15 +94,14 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Set the vaeac seed to be equal to the seed used in `shapr`
   parameters$vaeac.extra_parameters$vaeac.seed = parameters$seed
 
+  # Flatten the vaeac extra parameter list
+  # TODO: Discuss this with Martin. Then technically everything above is not that much needed.
+  # It is just a lot mess if I am to have two lists of parameters.
+  # The regular parameters and then parameters$vaeac.extra_parameters
+  parameters = utils::modifyList(parameters, parameters$vaeac.extra_parameters, keep.null = TRUE)
+  parameters$vaeac.extra_parameters <- NULL
 
 
-
-
-
-
-
-
-  parameters_flatten =
 
 
   #
@@ -112,41 +111,15 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   stop("DONE")
 
 
-
-  # Transform vaeac.activation_function from a string into the activation function object
-  if (!exists("nn_relu", envir = asNamespace("torch"))) {
-    stop(paste0("The activation function `", vaeac.activation_function, "` does not exist in `torch`."))
-  }
-  vaeac.activation_function = get("nn_relu", envir = asNamespace("torch"))
-
-
+  #  TROLIG BEST Å HA DET SOM FUNKSJON SIDEN NOEN ACTIVATION FUNCTIONS HAS PARAMETERS
+  #   # Transform vaeac.activation_function from a string into the activation function object
+  #   if (!exists("nn_relu", envir = asNamespace("torch"))) {
+  #     stop(paste0("The activation function `", vaeac.activation_function, "` does not exist in `torch`."))
+  #   }
+  #   vaeac.activation_function = get("nn_relu", envir = asNamespace("torch"))
 
 
 
-
-
-
-  # TODO: NEED TO SET UP THE vaeac.folder_to_save_model HERE AND CHECK THAT IT EXISTS OF TEMP FOLDER
-
-  # I extract the vaeac.extra_parameters list to not have to rewrite a lot of code to work with
-  # some of the parameters being in the the internal$parameter list while other are in the
-  # internal$parameter$vaeac.extra_parameters list.
-  # Want to flatten the list, as `vaeac.extra_parameters` is now a list inside a list.
-  # We set `keep.null = TRUE` as some of the entries are `NULL`, which would be dropped otherwise.
-  # We overwrite the parameters in `parameters$vaeac.extra_parameters` with those in `parameters`,
-  # which is needed if the user forgot to use vaeac.extra_parameters, otherwise, the values
-  # of the user would be overwritten by the default values.
-  # We then remove the vaeac.extra_parameters list.
-  parameters <- utils::modifyList(parameters$vaeac.extra_parameters, parameters, keep.null = TRUE)
-  parameters$vaeac.extra_parameters <- NULL
-
-  # Chaos in the list order, so reorder such that vaeac entries come at the end of the list
-  shapr_indices <- seq_along(parameters)[!grepl("vaeac", names(parameters))]
-  vaeac_indices <- seq_along(parameters)[grepl("vaeac", names(parameters))]
-  parameters <- parameters[c(shapr_indices, vaeac_indices)]
-
-  # We use the same seed for vaeac as the one specified for shapr::explain if not both has been provided.
-  if (is.null(parameters$vaeac.seed)) parameters$vaeac.seed <- parameters$seed
 
   # Extract the objects list which, e.g., contains information about the possible coalitions.
   objects <- internal$objects
@@ -162,8 +135,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # 3) using a combination of approaches where vaeac is only used on a subset of the coalitions.
     # Here, objects$S contains the coalitions while objects$X contains the information about the approach.
 
-    # Extract the the coalitions / masks which are estimated using vaeac,
-    # and we use drop = FALSE to ensure that the output is a matrix.
+    # Extract the the coalitions / masks which are estimated using vaeac as a matrix
     parameters$vaeac.mask_gen_these_coalitions <-
       objects$S[objects$X[approach == "vaeac"]$id_combination, , drop = FALSE]
 
@@ -172,22 +144,26 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
       objects$X$shapley_weight[objects$X[approach == "vaeac"]$id_combination]
 
     # Normalize the weights/probabilities such that they sum to one.
-    parameters$vaeac.mask_gen_these_coalitions_prob <-
-      parameters$vaeac.mask_gen_these_coalitions_prob /
+    parameters$vaeac.mask_gen_these_coalitions_prob <- parameters$vaeac.mask_gen_these_coalitions_prob /
       sum(parameters$vaeac.mask_gen_these_coalitions_prob)
+
   } else {
     # All 2^M coalitions are to be estimated using a vaeac model with a MCAR(0.5) masking scheme.
     # I.e., the corresponding vaeac model will support arbitrary conditioning as every coalition
     # will be trained with the same probability, also the empty and grand coalition.
+    # Unless user sets `vaeac.masking_ratio` to a value very close to 0 or 1.
     parameters$vaeac.mask_gen_these_coalitions <- NULL
     parameters$vaeac.mask_gen_these_coalitions_prob <- NULL
   }
 
+
+
+
+
+
   # Check if user provided a pre-trained vaeac model, otherwise, we train one from scratch.
   if (is.null(parameters$vaeac.pretrained_vaeac_model)) {
-    # User did not provide pre-trained model.
-    # We train a vaeac model based on the given hyper-parameters, or use
-    # the default hyper-parameter values if nothing has been provided.
+    # We train a vaeac model with the parameters in `parameters`, as user did not provide pre-trained vaeacc model
 
     # Boolean representing that a pre-trained vaeac model was NOT provided.
     parameters$vaeac.user_provided_pretrained_vaeac_model <- FALSE
@@ -195,23 +171,13 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # Extract the training data from the explainer object
     x_train <- internal$data$x_train
 
-
-    # TODO: SJEKK!
-    # TA KLOKKEN OF SÅ TA DIFF.
-    # Extract the parameters related to veaac.
-    parameters_temp <- parameters[grepl("vaeac.", names(parameters))]
-
-    # Remove "vaeac." from the names
-    # Note that this can be dangerous if there is another variable which matches the name.
-    # I.e., if we have a variable called "verbose" and "vaeac.verbose", then these will
-    # after running this code have the same name.
-    # But we only use the variables that had vaeac in their names, so not a problem.
-    updated_names <- sapply(strsplit(names(parameters_temp), "\\."), "[", 2)
-    names(parameters_temp)[!is.na(updated_names)] <- updated_names[!is.na(updated_names)]
+    # Extract the veaac parameters and remove the "vaeac." prefix as the names need to mach the parameters in "do.call"
+    vaeac_all_parameters <- parameters[grepl("vaeac.", names(parameters))]
+    names(vaeac_all_parameters) <- sub("vaeac\\.", "", names(vaeac_all_parameters))
 
     # Fit/train the vaeac model with the provided model parameters
     vaeac_training_time <- system.time({
-      vaeac_model <- do.call(vaeac_train_model, c(parameters_temp, list(training_data = x_train)))
+      vaeac_model <- do.call(vaeac_train_model, c(vaeac_all_parameters, list(training_data = x_train)))
     })
 
     # Extract the paths to the trained vaeac models.
@@ -389,9 +355,11 @@ of the data used to train the provided vaeac model (%s).\n",
 #' TODO: Update this when this is done.
 #' @param vaeac.epochs_initiation_phase Positive integer (default is `2`). The number of epochs to run each of the
 #' `vaeac.num_vaeacs_initiate` `vaeac` models before continuing to train only the best performing model.
-#' @param vaeac.epochs_early_stopping Positive integer (default is `NULL`). The training stops if there has been no improvement
-#' in the validation IWAE for `vaeac.epochs_early_stopping` epochs. If the user wants the training process to be
-#' solely based on this training criterion, then `vaeac.epochs` in [shapr::explain()] should be set to a large number.
+#' @param vaeac.epochs_early_stopping Positive integer (default is `NULL`). The training stops if there has been no
+#' improvement in the validation IWAE for `vaeac.epochs_early_stopping` epochs. If the user wants the training process
+#' to be solely based on this training criterion, then `vaeac.epochs` in [shapr::explain()] should be set to a large
+#' number. If `NULL`, then `shapr` will internally set `vaeac.epochs_early_stopping = vaeac.epochs` such that early
+#' stopping does not occur.
 #' @param vaeac.save_every_nth_epoch Positive integer (default is `NULL`). If provided, then the vaeac model after
 #' every `vaeac.save_every_nth_epoch`th epoch will be saved.
 #' @param vaeac.validation_ratio Numeric (default is `0.25`). Scalar between `0` and `1` indicating the ratio of
@@ -502,22 +470,6 @@ vaeac_extra_para_default = function(vaeac.model_description = make.names(Sys.tim
 }
 
 
-
-#' Check vaeac.extra_parameters list
-#'
-#' @param vaeac.extra_parameters List containing the extra parameters to the `vaeac` approach
-#'
-#' @author Lars Henry Berge Olsen
-#' @keywords internal
-vaeac_check_extra_named_list = function(vaeac.extra_parameters) {
-  if (is.null(names(vaeac.extra_parameters))) {
-    stop("The parameter `vaeac.extra_parameters` is not a named list.")
-  }
-  if (any(names(vaeac.extra_parameters) == "")) {
-    stop("Not all parameters in the list `vaeac.extra_parameters` are named.")
-  }
-}
-
 #' Move `vaeac` parameters to correct location
 #'
 #' @description
@@ -528,6 +480,7 @@ vaeac_check_extra_named_list = function(vaeac.extra_parameters) {
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
+#' @author Lars Henry Berge Olsen
 vaeac_update_para_locations = function(parameters) {
 
   # Get the name of the main parameters for the `vaeac` approach
@@ -631,6 +584,9 @@ vaeac_update_para_locations = function(parameters) {
   # Return the fixed parameters list
   return(parameters)
 }
+
+
+
 
 
 #' @inheritParams default_doc
@@ -766,7 +722,7 @@ We set 'which_vaeac_model = best' and continue.\n",
 }
 
 
-# Train vaeac model ===================================================================================================
+# Train vaeac model ====================================================================================================
 #' Train the Vaeac Model
 #'
 #' @description Function that fits a vaeac model to the given dataset based on the provided parameters,
@@ -846,22 +802,22 @@ We set 'which_vaeac_model = best' and continue.\n",
 #' to get back to strictly positive values when using the vaeac model to impute missing values.
 #' @param verbose Boolean. If we are to print the progress of the initialization of different vaeac models,
 #' the training of the final vaeac model, and summary of the training progress.
-#' @param save_vaeac_every_nth_epoch Integer. If we are to save the vaeac model after every nth epoch.
-#' @param seed Integer. Seed for reproducibility.
+#' @param save_every_nth_epoch Integer. If we are to save the vaeac model after every nth epoch.
+#' @param seed Positive integer (default is `1`). Seed for reproducibility.
 #' @param ... List of extra parameters, currently not used.
 #'
 #' @return A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.
 #' @export
 #' @author Lars Henry Berge Olsen
 vaeac_train_model <- function(training_data,
-                              model_description = NULL,
-                              folder_to_save_model = NULL,
+                              model_description,
+                              folder_to_save_model,
                               use_cuda = FALSE,
                               num_vaeacs_initiate = 10,
                               epochs_initiation_phase = 2,
                               epochs = 200,
                               epochs_early_stopping = NULL,
-                              save_vaeac_every_nth_epoch = NULL,
+                              save_every_nth_epoch = NULL,
                               validation_ratio = 0.25,
                               validation_iwae_num_samples = 25,
                               depth = 3,
@@ -883,42 +839,31 @@ vaeac_train_model <- function(training_data,
                               save_data = FALSE,
                               transform_all_cont_features = FALSE,
                               verbose = FALSE,
-                              seed = NULL,
+                              seed = 1,
                               ...) {
-  # Some checks. Not an exhaustive list of checks.
+
+  # Set epochs_early_stopping to epochs to ensure that early stopping never occurs
   if (is.null(epochs_early_stopping)) epochs_early_stopping <- epochs
-  if (epochs_early_stopping > epochs) {
-    message(sprintf(
-      "No early stopping as `epochs_early_stopping` (%d) is larger than `epochs` (%d).",
-      epochs_early_stopping, epochs
-    ))
-  }
+  early_stopping_applied <- NULL # Variable to store if early stopping was conducted
 
-  # Variable to store if early stopping was conducted
-  early_stopping_applied <- NULL
+  # TODO: REMOVE list2env(vaeac_all_parameters, envir = .GlobalEnv)
 
-  if (!is.numeric(num_vaeacs_initiate)) {
-    stop(sprintf(
-      "The 'num_vaeacs_initiate' parameter must be of type numeric, and not of type %s.\n",
-      paste(class(num_vaeacs_initiate), collapse = ", ")
-    ))
-  } else if (num_vaeacs_initiate < 1) {
-    message(sprintf(
-      "The 'num_vaeacs_initiate' (%g) parameter must be a positive integer. We set it to 1.\n",
-      num_vaeacs_initiate
-    ))
-    num_vaeacs_initiate <- 1
-  }
+  # Check all the vaeac parameters
+  do.call(vaeac_check_parameters, mget(names(formals())))
 
-  if (epochs_initiation_phase >= epochs) {
-    message(sprintf(
-      "The 'epochs_initiation_phase' (%g) parameter must be strictly lower than 'epochs' (%g). We set epochs = %g.\n",
-      epochs_initiation_phase,
-      epochs,
-      epochs_initiation_phase + 1
-    ))
-    epochs <- epochs_initiation_phase + 1
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   # THIS SHOULD NO LONGER BE NEEDED AS FOLDER AND DESCRIPTION WILL ALWAYS BE PROVIDED
   # # If no folder has been provided, we save the model in a temporary directory
@@ -1180,7 +1125,7 @@ vaeac_train_model <- function(training_data,
     "use_cuda" = use_cuda,
     "train_indices" = train_indices,
     "val_indices" = val_indices,
-    "save_vaeac_every_nth_epoch" = save_vaeac_every_nth_epoch,
+    "save_every_nth_epoch" = save_every_nth_epoch,
     "sigma_mu" = sigma_mu,
     "sigma_sigma" = sigma_sigma,
     "feature_list" = preprocessed_data$feature_list,
@@ -1205,36 +1150,38 @@ vaeac_train_model <- function(training_data,
     ))
 
     # Just a small message regarding large disk usage
-    if (!is.null(save_vaeac_every_nth_epoch)) {
+    if (!is.null(save_every_nth_epoch)) {
       message(sprintf(
         "Both having 'save_data = TRUE' and saving the vaeac model every '%d'
 epoch might require a lot of disk storage if data is large.\n",
-        save_vaeac_every_nth_epoch
+        save_every_nth_epoch
       ), immediate. = TRUE)
     }
   }
 
   # Check if we are to save vaeac model every n'th epoch.
-  if (!is.null(save_vaeac_every_nth_epoch)) {
-    # List of file names for vaeac models after every n'th epoch (save_vaeac_every_nth_epoch).
+  if (!is.null(save_every_nth_epoch)) {
+    # List of file names for vaeac models after every n'th epoch (save_every_nth_epoch).
     filename_nth_list <- list()
 
-    # Check that save_vaeac_every_nth_epoch is positive.
-    if (save_vaeac_every_nth_epoch <= 0) {
+    # Check that save_every_nth_epoch is positive.
+    if (save_every_nth_epoch <= 0) {
       stop(sprintf(
-        "The value 'save_vaeac_every_nth_epoch' must be strictly positive, not '%d'.\n",
-        save_vaeac_every_nth_epoch
+        "The value 'save_every_nth_epoch' must be strictly positive, not '%d'.\n",
+        save_every_nth_epoch
       ))
     }
 
-    # Ensure a valid value for save_vaeac_every_nth_epoch.
-    if (save_vaeac_every_nth_epoch > epochs) {
+    # Ensure a valid value for save_every_nth_epoch.
+    if (save_every_nth_epoch > epochs) {
       stop(sprintf(
-        "Number of 'epochs' is less than 'save_vaeac_every_nth_epoch': %d < %d.\n",
-        epochs, save_vaeac_every_nth_epoch
+        "Number of 'epochs' is less than 'save_every_nth_epoch': %d < %d.\n",
+        epochs, save_every_nth_epoch
       ))
     }
   }
+
+
 
   ##### Initializing vaeac models
   # Initialize several vaeac models and keep the one with the best training variational lower bound
@@ -1605,8 +1552,8 @@ epoch might require a lot of disk storage if data is large.\n",
     }
 
     # If we are to save and we are in an n'th epoch, then we save the model.
-    if (!is.null(save_vaeac_every_nth_epoch)) {
-      if (epoch %% save_vaeac_every_nth_epoch == 0) {
+    if (!is.null(save_every_nth_epoch)) {
+      if (epoch %% save_every_nth_epoch == 0) {
         nth_state <- c(
           list(
             "epoch" = epoch,
@@ -1743,7 +1690,7 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
   )
 
   # If we are to add the 'filename_nth_list' list to the return list.
-  if (!is.null(save_vaeac_every_nth_epoch)) {
+  if (!is.null(save_every_nth_epoch)) {
     return_list <- append(return_list, filename_nth_list, 3)
   }
 
@@ -1819,7 +1766,7 @@ vaeac_continue_train_model <- function(explanation,
     # Extract relevant information from the checkpoint
     batch_size <- checkpoint$batch_size
     one_hot_max_sizes <- checkpoint$one_hot_max_sizes
-    save_vaeac_every_nth_epoch <- checkpoint$save_vaeac_every_nth_epoch
+    save_every_nth_epoch <- checkpoint$save_every_nth_epoch
     validation_iwae_num_samples <- checkpoint$validation_iwae_num_samples
     running_avg_num_values <- checkpoint$running_avg_num_values
     use_cuda <- checkpoint$use_cuda
@@ -1945,11 +1892,11 @@ vaeac_continue_train_model <- function(explanation,
       ))
 
       # Just a small message regarding large disk usage
-      if (!is.null(save_vaeac_every_nth_epoch)) {
+      if (!is.null(save_every_nth_epoch)) {
         message(sprintf(
           "Both having 'save_data = TRUE' and saving the vaeac model every '%d'
 epoch might require a lot of disk storage if data is large.\n",
-          save_vaeac_every_nth_epoch
+          save_every_nth_epoch
         ), immediate. = TRUE)
       }
     }
@@ -1961,8 +1908,8 @@ epoch might require a lot of disk storage if data is large.\n",
     state_list[[state_list_new_name]] <- state_list_new
 
     # Check if we are to save vaeac model every n'th epoch.
-    if (!is.null(save_vaeac_every_nth_epoch)) {
-      # List of file names for vaeac models after every n'th epoch (save_vaeac_every_nth_epoch).
+    if (!is.null(save_every_nth_epoch)) {
+      # List of file names for vaeac models after every n'th epoch (save_every_nth_epoch).
       filename_nth_list <- list()
     }
 
@@ -2197,8 +2144,8 @@ epoch might require a lot of disk storage if data is large.\n",
       }
 
       # If we are to save and we are in an n'th epoch, then we save the model.
-      if (!is.null(save_vaeac_every_nth_epoch)) {
-        if (epoch %% save_vaeac_every_nth_epoch == 0) {
+      if (!is.null(save_every_nth_epoch)) {
+        if (epoch %% save_every_nth_epoch == 0) {
           nth_state <- c(
             list(
               "epoch" = epoch,
@@ -2306,7 +2253,7 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
     return_parameters <- state_list[-seq(2:7)]
 
     # If we are to add the 'filename_nth_list' list to the return list.
-    if (!is.null(save_vaeac_every_nth_epoch)) {
+    if (!is.null(save_every_nth_epoch)) {
       filename_nth_list <- c(vaeac_model$models[grepl("epoch", names(vaeac_model$models))], filename_nth_list)
       return_models <- append(return_models, filename_nth_list, 3)
     }
@@ -2326,7 +2273,329 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
   return(return_list)
 }
 
-# Compute Imputations =================================================================================================
+
+
+# Check functions ======================================================================================================
+#' Check vaeac.extra_parameters list
+#'
+#' @param vaeac.extra_parameters List containing the extra parameters to the `vaeac` approach
+#'
+#' @author Lars Henry Berge Olsen
+#' @keywords internal
+vaeac_check_extra_named_list = function(vaeac.extra_parameters) {
+  if (is.null(names(vaeac.extra_parameters))) {
+    stop("The parameter `vaeac.extra_parameters` is not a named list.")
+  }
+  if (any(names(vaeac.extra_parameters) == "")) {
+    stop("Not all parameters in the list `vaeac.extra_parameters` are named.")
+  }
+}
+
+#' Function that checks positive integers
+#'
+#' @param named_list_positive_integers List containing named entries. I.e., `list(a = 1, b = 2)`.
+#'
+#' @return The entries in `named_list_positive_integers` as of class integer if `return_as_class_integer = TRUE`.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_positive_integers <- function(named_list_positive_integers, return_as_class_integer = FALSE) {
+  param_names <- names(named_list_positive_integers)
+
+  checked_as_postitive_integers =
+    lapply(seq_len(length(named_list_positive_integers)), function(idx) {
+      param_name = param_names[idx]
+      value = named_list_positive_integers[[param_name]]
+
+      if (!is.numeric(value) || length(value) != 1 || value <= 0 || !is.finite(value) || value %% 1 != 0) {
+        stop(paste0("'vaeac.", param_name, "' must be a positive integer."))
+      }
+      return(as.integer(value))
+    })
+
+  if (return_as_class_integer) {
+    names(checked_as_postitive_integers) = param_names
+    return(checked_as_postitive_integers)
+  }
+}
+
+
+#' Function that checks positive numerics
+#'
+#' @param named_list_positive_numerics List containing named entries. I.e., `list(a = 0.2, b = 10^3)`.
+#'
+#' @return The entries in `named_list_positive_numerics` as of class integer if `return_as_class_numeric = TRUE`.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_positive_numerics <- function(named_list_positive_numerics, return_as_class_numeric = FALSE) {
+  param_names <- names(named_list_positive_numerics)
+
+  checked_as_postitive_numerics =
+    lapply(seq_len(length(named_list_positive_numerics)), function(idx) {
+      param_name = param_names[idx]
+      value = named_list_positive_numerics[[param_name]]
+
+      if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value <= 0) {
+        stop(paste0("'vaeac.", param_name, "' must be a positive numeric."))
+      }
+      return(as.integer(value))
+    })
+
+  if (return_as_class_numeric) {
+    names(checked_as_postitive_numerics) = param_names
+    return(checked_as_postitive_numerics)
+  }
+}
+
+
+#' Function that checks probabilities
+#'
+#' @param named_list_probabilities List containing named entries. I.e., `list(a = 0.2, b = 0.9)`.
+#'
+#' @return The entries in `named_list_probabilities` as of class numerics if `named_list_probabilities = TRUE`.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_probabilities <- function(named_list_probabilities, return_as_class_numeric = FALSE) {
+  param_names <- names(named_list_probabilities)
+
+  checked_as_probabilities =
+    lapply(seq_len(length(named_list_probabilities)), function(idx) {
+      param_name = param_names[idx]
+      value = named_list_probabilities[[param_name]]
+
+      if (!is.numeric(value) || length(value) != 1 || !is.finite(value) || value < 0 || value > 1) {
+        stop(paste0("'vaeac.", param_name, "' must be a valid probability (a number between 0 and 1)."))
+      }
+      return(as.numeric(value))
+    })
+
+  if(return_as_class_numeric) {
+    names(checked_as_probabilities) = param_names
+    return(checked_as_probabilities)
+  }
+}
+
+#' Function that checks logicals
+#'
+#' @param named_list_logicals List containing named entries. I.e., `list(a = TRUE, b = FALSE)`.
+#'
+#' @return The entries in `named_list_logicals` as of class numerics if `named_list_logicals = TRUE`.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_logicals <- function(named_list_logicals, return_as_class_logical = FALSE) {
+  param_names <- names(named_list_logicals)
+
+  checked_as_logicals =
+    lapply(seq_len(length(named_list_logicals)), function(idx) {
+      param_name = param_names[idx]
+      value = named_list_logicals[[param_name]]
+
+      if (!is.logical(value) || length(value) != 1) {
+        stop(paste0("'vaeac.", param_name, "' must be a boolean (i.e., `TRUE` or `FALSE`)."))
+      }
+      return(as.logical(value))
+    })
+
+  if (return_as_class_logical) {
+    names(checked_as_logicals) = param_names
+    return(checked_as_logicals)
+  }
+}
+
+
+#' Function that checks provided epoch arguments
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_epoch_values = function(epochs, epochs_initiation_phase, epochs_early_stopping) {
+  if (epochs_initiation_phase >= epochs) {
+    stop(paste0("'vaeac.epochs_initiation_phase' (", epochs_initiation_phase, ") must be strictly less than ",
+                "'vaeac.epochs' (", epochs, ")."))
+  }
+
+  if (epochs_early_stopping > epochs) {
+    message(paste0(
+      "No early stopping as `vaeac.epochs_early_stopping` (", epochs_early_stopping, ") is larger than ",
+      "`vaeac.epochs` (", epochs, ")."
+    ))
+  }
+}
+
+#' Function that checks the provided activation function
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_activation_func = function(activation_function) {
+  # Check that activation function is an nn_module
+  if (!any("nn_module" %in% class(activation_function))) {
+    stop("`vaeac.activation_function` is not an `nn_module`.")
+  }
+
+  # TODO: In future, check that it is one of the activation functions and not just a nn_module
+}
+
+#' Function that checks the specified masking scheme
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_mask_gen = function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, training_data) {
+  masks = mask_gen_these_coalitions
+  probs = mask_gen_these_coalitions_prob
+
+  if (!is.null(masks) || !is.null(probs)) {
+    if (xor(is.null(masks), is.null(probs))) {
+      stop("either both `vaeac.mask_gen_these_coalitions` and `vaeac.mask_gen_these_coalitions_prob` need to `NULL` ",
+           "or both have to be specified.")
+    }
+
+    if (!is.matrix(masks)) stop("`vaeac.mask_gen_these_coalitions` must be a matrix.")
+    if (!is.numeric(probs)) stop("`vaeac.mask_gen_these_coalitions_prob` must be an array.")
+
+    if (nrow(masks) != length(probs)) {
+      stop("the number of rows in `vaeac.mask_gen_these_coalitions` must be equal to the length of ",
+           "`vaeac.mask_gen_these_coalitions_prob`.")
+    }
+
+    if (ncol(masks) != ncol(training_data)) {
+      stop("the number of columns in `vaeac.mask_gen_these_coalitions` must be equal to the number of ",
+           "columns in the `training_data`. That is, the number of features.")
+    }
+  }
+}
+
+#' Function the checks the verbose parameter
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_verbose = function(verbose) {
+  if (!is.numeric(verbose) || !(verbose %in% c(0, 1, 2))) {
+    stop("`vaeac.verbose` must be either `0` (no verbosity), `1` (low verbosity), or `2` (high verbosity).")
+  }
+}
+
+#' Function that checks that the save folder exists and for a valid file name
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_save_names = function(folder_to_save_model, model_description) {
+  if (!is.character(folder_to_save_model)) stop("`vaeac.folder_to_save_model` must be a string.")
+  if (!is.character(model_description)) stop("`vaeac.model_description` must be a string.")
+  if (!dir.exists(folder_to_save_model)) {
+    stop(paste0("the folder `vaeac.folder_to_save_model` ('", folder_to_save_model, "') does not exist."))
+  }
+  if (!grepl("^[A-Za-z0-9._-]+$", model_description)) {
+    stop(paste0("`vaeac.model_description` can only contain uppercase and lowercase letters, ",
+                "digits, dots, underscores, and hyphens."))
+  }
+}
+
+#' Function that calls all vaeac parameters check functions
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_check_parameters = function(training_data,
+                                  model_description,
+                                  folder_to_save_model,
+                                  use_cuda,
+                                  num_vaeacs_initiate,
+                                  epochs_initiation_phase,
+                                  epochs,
+                                  epochs_early_stopping,
+                                  save_every_nth_epoch,
+                                  validation_ratio,
+                                  validation_iwae_num_samples,
+                                  depth,
+                                  width,
+                                  latent_dim,
+                                  lr,
+                                  batch_size,
+                                  running_avg_num_values,
+                                  activation_function,
+                                  use_skip_connections,
+                                  skip_connection_masked_enc_dec,
+                                  use_batch_normalization,
+                                  paired_sampling,
+                                  masking_ratio,
+                                  mask_gen_these_coalitions,
+                                  mask_gen_these_coalitions_prob,
+                                  sigma_mu,
+                                  sigma_sigma,
+                                  save_data,
+                                  transform_all_cont_features,
+                                  verbose,
+                                  seed,
+                                  ...) {
+
+  # Check verbose parameter
+  vaeac_check_verbose(verbose = verbose)
+
+  # Check that the activation function is valid torch::nn_module object
+  vaeac_check_activation_func(activation_function = activation_function)
+
+  # Check that the save folder exists and for a valid file name
+  vaeac_check_save_names(folder_to_save_model = folder_to_save_model, model_description = model_description)
+
+  # Check the probability parameters
+  vaeac_check_probabilities(list(validation_ratio = validation_ratio, masking_ratio = masking_ratio))
+
+  # Check the positive numeric parameters
+  vaeac_check_positive_numerics(list(lr = lr, sigma_mu = sigma_mu, sigma_sigma = sigma_sigma))
+
+  # Check the mask_gen_these_coalitions and mask_gen_these_coalitions_prob parameters
+  vaeac_check_mask_gen(mask_gen_these_coalitions = mask_gen_these_coalitions,
+                       mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
+                       training_data = training_data)
+
+  # Check the logical parameters
+  vaeac_check_logicals(list(use_cuda = use_cuda,
+                            use_skip_connections = use_skip_connections,
+                            skip_connection_masked_enc_dec = skip_connection_masked_enc_dec,
+                            use_batch_normalization = use_batch_normalization,
+                            paired_sampling = paired_sampling,
+                            save_data = save_data,
+                            transform_all_cont_features = transform_all_cont_features))
+
+  # Check the positive integer parameters
+  unchecked_positive_integers = list(
+    num_vaeacs_initiate = num_vaeacs_initiate,
+    epochs = epochs,
+    epochs_early_stopping = epochs_early_stopping,
+    epochs_initiation_phase = epochs_initiation_phase,
+    validation_iwae_num_samples = validation_iwae_num_samples,
+    depth = depth,
+    width = width,
+    latent_dim = latent_dim,
+    batch_size = batch_size,
+    running_avg_num_values = running_avg_num_values,
+    seed = seed)
+  if (!is.null(save_every_nth_epoch)) unchecked_positive_integers$save_every_nth_epoch = save_every_nth_epoch
+  vaeac_check_positive_integers(unchecked_positive_integers)
+
+  # Check the epoch values
+  vaeac_check_epoch_values(epochs = epochs,
+                           epochs_initiation_phase = epochs_initiation_phase,
+                           epochs_early_stopping = epochs_early_stopping)
+}
+
+
+# Compute Imputations ==================================================================================================
 #' Impute Missing Values Using Vaeac
 #'
 #' @details  Function that imputes the missing values in 2D matrix where each row constitute an individual.
@@ -2645,7 +2914,7 @@ as user set `return_as_postprocessed_dt = TRUE`.")
 }
 
 
-# Plot functions ======================================================================================================
+# Plot functions =======================================================================================================
 
 
 #' Plot the training VLB and validation IWAE for `vaeac` models

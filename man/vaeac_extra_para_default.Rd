@@ -37,7 +37,8 @@ vaeac_extra_para_default(
 \arguments{
 \item{vaeac.model_description}{String (default is \code{make.names(Sys.time())}). String containing, e.g., the name of the
 data distribution or additional parameter information. Used in the save name of the fitted model. If not provided,
-then a name will be generated based on \code{\link[base:Sys.time]{base::Sys.time()}} to ensure a unique name.}
+then a name will be generated based on \code{\link[base:Sys.time]{base::Sys.time()}} to ensure a unique name. We use \code{\link[base:make.names]{base::make.names()}} to
+ensure a valid file name for all operating systems.}
 
 \item{vaeac.folder_to_save_model}{String (default is \code{\link[base:tempfile]{base::tempdir()}}). String specifying a path to a folder where
 the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
@@ -56,9 +57,11 @@ TODO: Update this when this is done.}
 \item{vaeac.epochs_initiation_phase}{Positive integer (default is \code{2}). The number of epochs to run each of the
 \code{vaeac.num_vaeacs_initiate} \code{vaeac} models before continuing to train only the best performing model.}
 
-\item{vaeac.epochs_early_stopping}{Positive integer (default is \code{NULL}). The training stops if there has been no improvement
-in the validation IWAE for \code{vaeac.epochs_early_stopping} epochs. If the user wants the training process to be
-solely based on this training criterion, then \code{vaeac.epochs} in \code{\link[=explain]{explain()}} should be set to a large number.}
+\item{vaeac.epochs_early_stopping}{Positive integer (default is \code{NULL}). The training stops if there has been no
+improvement in the validation IWAE for \code{vaeac.epochs_early_stopping} epochs. If the user wants the training process
+to be solely based on this training criterion, then \code{vaeac.epochs} in \code{\link[=explain]{explain()}} should be set to a large
+number. If \code{NULL}, then \code{shapr} will internally set \code{vaeac.epochs_early_stopping = vaeac.epochs} such that early
+stopping does not occur.}
 
 \item{vaeac.save_every_nth_epoch}{Positive integer (default is \code{NULL}). If provided, then the vaeac model after
 every \code{vaeac.save_every_nth_epoch}th epoch will be saved.}
