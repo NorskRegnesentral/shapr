@@ -14,7 +14,7 @@ setup(
   n_permutations = NULL,
   group,
   n_samples,
-  n_batches,
+  n_batches = 1,
   seed,
   keep_samp_for_vS,
   feature_specs,
@@ -60,6 +60,11 @@ If \code{group = NULL}, \code{n_combinations} represents the number of unique fe
 If \code{group != NULL}, \code{n_combinations} represents the number of unique group combinations to sample.
 If \code{n_combinations = NULL}, the exact method is used and all combinations are considered.
 The maximum number of combinations equals \code{2^m}, where \code{m} is the number of features.}
+
+\item{n_permutations}{Integer. Number of permutations to sample when estimating the Shapley values with
+the permutation approach. If \code{NULL}, all permutations are used, which corresponds to exact computation of the
+Shapley values (under the linear + Gaussian assumption).
+The maximum number of permutations equals \verb{m!}, where \code{m} is the number of features.}
 
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
@@ -145,6 +150,9 @@ never changed when calling the function via \code{explain()} in R. The parameter
 running the AICc-versions of the empirical as that requires data based optimization.}
 
 \item{...}{Further arguments passed to specific approaches}
+
+\item{get_linear_coef}{List. The output from \code{\link[=get_linear_coef]{get_linear_coef()}} containing the coefficents of the linear model.
+Only used by \code{\link[=explain_lingauss]{explain_lingauss()}}.}
 }
 \description{
 check_setup

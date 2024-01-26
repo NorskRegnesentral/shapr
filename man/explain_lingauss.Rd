@@ -10,7 +10,6 @@ explain_lingauss(
   x_train,
   n_permutations = NULL,
   group = NULL,
-  n_batches = NULL,
   seed = 1,
   predict_model = NULL,
   get_model_specs = NULL,
@@ -32,19 +31,16 @@ Contains the the features, whose predictions ought to be explained.}
 Contains the data used to estimate the (conditional) distributions for the features
 needed to properly estimate the conditional expectations in the Shapley formula.}
 
+\item{n_permutations}{Integer. Number of permutations to sample when estimating the Shapley values with
+the permutation approach. If \code{NULL}, all permutations are used, which corresponds to exact computation of the
+Shapley values (under the linear + Gaussian assumption).
+The maximum number of permutations equals \verb{m!}, where \code{m} is the number of features.}
+
 \item{group}{List.
 If \code{NULL} regular feature wise Shapley values are computed.
 If provided, group wise Shapley values are computed. \code{group} then has length equal to
 the number of groups. The list element contains character vectors with the features included
 in each of the different groups.}
-
-\item{n_batches}{Positive integer (or NULL).
-Specifies how many batches the total number of feature combinations should be split into when calculating the
-contribution function for each test observation.
-The default value is NULL which uses a reasonable trade-off between RAM allocation and computation speed,
-which depends on \code{approach} and \code{n_combinations}.
-For models with many features, increasing the number of batches reduces the RAM allocation significantly.
-This typically comes with a small increase in computation time.}
 
 \item{seed}{Positive integer.
 Specifies the seed before any randomness based code is being run.
