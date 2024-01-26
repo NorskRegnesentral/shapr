@@ -455,7 +455,7 @@ vaeac_get_current_save_state = function(environment) {
 #' @param save_vaeac_models
 #' @param vaeac_save_file_names
 #' @param state_list
-#' @param early_stopping
+#' @param epochs_early_stopping
 #' @param initialization
 #' @param num_vaeacs_initiate
 #'
@@ -472,11 +472,11 @@ vaeac_train <- function(vaeac_model,
                         verbose,
                         progressr_bar,
                         epochs,
+                        epochs_early_stopping,
                         epochs_start = 1,
                         save_vaeac_models = FALSE,
                         vaeac_save_file_names = NULL,
                         state_list = NULL,
-                        early_stopping = FALSE,
                         initialization = NULL,
                         num_vaeacs_initiate = NULL,
                         train_vlb = NULL,

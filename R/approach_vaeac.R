@@ -1076,9 +1076,14 @@ vaeac_train_model <- function(x_train,
     if (use_cuda) vaeac_model <- vaeac_model$cuda()
     # TODO: we need to check this + we need to send the data too
 
-    # Print the number of trainable parameters to the user
-    if (verbose == 1 && initlization == 1) {
-      message(paste0("The vaeac model contains ", vaeac_model$num_train_param[1, 1] ," trainable parameters."))
+    # Add the number of trainable parameters in the vaeac model to the state list
+    if (initlization == 1) {
+      state_list$num_trainable_parameters <- vaeac_model$num_train_param
+
+      # Print the number of trainable parameters to the user
+      if (verbose == 1) {
+        message(paste0("The vaeac model contains ", vaeac_model$num_train_param[1, 1] ," trainable parameters."))
+      }
     }
 
     # Print which initialization vaeac the function is working on
@@ -1103,10 +1108,10 @@ vaeac_train_model <- function(x_train,
       val_dataloader = val_dataloader,
       validation_iwae_num_samples = validation_iwae_num_samples,
       running_avg_num_values = running_avg_num_values,
+      epochs_early_stopping = FALSE, # Do not want to do early stopping during initialization
       verbose = verbose,
       progressr_bar = NULL,
       save_vaeac_models = FALSE, # Do not want to save during initialization
-      early_stopping = FALSE, # Do not want to do early stopping during initialization
       initialization = initialization,
       num_vaeacs_initiate = num_vaeacs_initiate,
       train_vlb = NULL, # We start from scratch
@@ -1124,19 +1129,20 @@ vaeac_train_model <- function(x_train,
 
   stop()
 
+  names(vaeac_model_best_list)
+
   # Load the best initialized vaeac model and continue training.
   # networks = best_networks
-  model <- best_model
-  validation_iwae <- best_validation_iwae
-  validation_iwae_running_avg <- best_validation_iwae_run_avg
-  train_vlb <- best_train_vlb
-  optimizer <- best_optimizer
+  #model <- best_model
+  #validation_iwae <- best_validation_iwae
+  #validation_iwae_running_avg <- best_validation_iwae_run_avg
+  #train_vlb <- best_train_vlb
+  #optimizer <- best_optimizer
   batch_size <- best_batch_size
-  mask_generator <- best_mask_generator
+  #mask_generator <- best_mask_generator
   vlb_scale_factor <- best_vlb_scale_factor
 
-  # Include the number of trainable parameters in the state list.
-  state_list <- c(state_list, list("num_trainable_parameters" = model$num_train_param))
+
 
   # Send the model to the GPU, if we have access to it.
   # TODO: IT should be there already?
@@ -1144,16 +1150,40 @@ vaeac_train_model <- function(x_train,
 
   # Check if we are printing detailed debug information
   # Small printout to the user stating which initiated vaeac model was the best.
-  if (verbose == 2) {
+  if (verbose == 1) {
     message(paste0(
-      "Best vaeac inititation was number ", best_iteration, " (of ", num_vaeacs_initiate, ") with a training VLB = ",
-      round(best_train_vlb[-1], 3), " after ", epochs_initiation_phase, " epochs. Continue to train this initiation."
+      "Best vaeac inititation was number ", vaeac_model_best_list$initialization, " (of ", num_vaeacs_initiate,
+      ") with a training VLB = ", round(best_train_vlb[-1], 3), " after ", epochs_initiation_phase, " epochs. ",
+      "Continue to train this initiation."
     ))
   }
 
 
-  vaeac_train(epochs_start = epochs_initiation_phase + 1,
-              epochs = epochs)
+  vaeac_train(
+    vaeac_model = vaeac_model_best_list$vaeac_model,
+    optimizer = vaeac_model_best_list$optimizer,
+    train_dataloader = train_dataloader,
+    val_dataloader = val_dataloader,
+    validation_iwae_num_samples = validation_iwae_num_samples,
+    running_avg_num_values = running_avg_num_values,
+    verbose = verbose,
+    progressr_bar = progressr_bar,
+    epochs = epochs,
+    epochs_start = epochs_initiation_phase + 1,
+    epochs_early_stopping = epochs_early_stopping,
+    save_vaeac_models = TRUE, # We want to save the vaeac models
+    vaeac_save_file_names = vaeac_save_file_names, # Provide the save names for the models
+    state_list = state_list, # Need to provide the state list as it will be saved together with the models
+    initialization = NULL, # Do not need to specify it as we are not doing the initialization now
+    num_vaeacs_initiate = NULL, # Do not need to specify it as we are not doing the initialization now
+    train_vlb = vaeac_model_best_list$train_vlb, # Send in the array from the best initiated vaeac model
+    validation_iwae = vaeac_model_best_list$validation_iwae,
+    validation_iwae_running_avg = vaeac_model_best_list$validation_iwae_running_avg
+  )
+
+
+
+
 
 
   # Continue training the best vaeac model
@@ -1392,7 +1422,7 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 }
 
 
-#' Continue to Train the Vaeac Model
+#' Continue to Train the vaeac Model
 #'
 #' @description Function that loads a previously trained vaeac model and continue the training, either
 #' on new data or on the same dataset as it was trained on before. If we are given a new dataset, then
