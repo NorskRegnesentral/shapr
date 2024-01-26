@@ -1,6 +1,7 @@
 #' check_setup
 #' @inheritParams explain
 #' @inheritParams explain_forecast
+#' @inheritParams explain_lingauss
 #' @inheritParams default_doc
 #' @param type Character.
 #' Either "normal" or "forecast" corresponding to function `setup()` is called from,
@@ -13,6 +14,9 @@
 #'   \item{classes}{Character vector with the classes of each features.}
 #'   \item{factor_levels}{Character vector with the levels for any categorical features.}
 #'   }
+#' @param get_linear_coef List. The output from [get_linear_coef()] containing the coefficents of the linear model.
+#' Only used by [explain_lingauss()].
+#'
 #' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 #' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
@@ -26,7 +30,7 @@ setup <- function(x_train,
                   n_permutations = NULL,
                   group,
                   n_samples,
-                  n_batches,
+                  n_batches = 1,
                   seed,
                   keep_samp_for_vS,
                   feature_specs,
@@ -395,7 +399,8 @@ get_extra_parameters <- function(internal) {
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, n_permutations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
-                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, lingauss_model_coef, timing, is_python, ...) {
+                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, lingauss_model_coef,
+                           timing, is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later

@@ -1965,3 +1965,72 @@ test_that("counting the number of unique approaches", {
   expect_equal(explanation_combined_5$internal$parameters$n_approaches, 4)
   expect_equal(explanation_combined_5$internal$parameters$n_unique_approaches, 2)
 })
+
+test_that("explain_lingauss with `n_permutations` >= m! uses exact approach", {
+
+  # Create three explainer object: one with exact mode, one with
+  # `n_combinations` = 2^m, and one with `n_combinations` > 2^m
+  # No message as n_combination = NULL sets exact mode
+  expect_no_message(
+    object = {
+      exp_exact <- explain_lingauss(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        timing = FALSE
+      )
+      }
+  )
+
+  # We should get a message saying that we are using the exact mode.
+  # The `regexp` format match the one written in `feature_combinations()`.
+  expect_message(
+    object = {
+      exp_equal <- explain_lingauss(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        timing = FALSE,
+        n_permutations = factorial(ncol(x_explain_numeric))
+      )
+    },
+    regexp = "Success with message:\nn_permutations is larger than or equal to m! = 120. \nUsing exact instead."
+  )
+
+  # We should get a message saying that we are using the exact mode.
+  # The `regexp` format match the one written in `feature_combinations()`.
+  expect_message(
+    object = {
+      exp_larger <- explain_lingauss(
+        model = model_lm_numeric,
+        x_explain = x_explain_numeric,
+        x_train = x_train_numeric,
+        timing = FALSE,
+        n_permutations = factorial(ncol(x_explain_numeric))+1
+      )
+    },
+    regexp = "Success with message:\nn_permutations is larger than or equal to m! = 120. \nUsing exact instead."
+  )
+
+  # Test that returned objects are identical (including all using the exact option and having the same Shapley weights)
+  expect_equal(
+    exp_exact,
+    exp_equal
+  )
+  expect_equal(
+    exp_exact,
+    exp_larger
+  )
+
+  # Explicitly check that exact mode is set and that n_permutations equals factorial(ncol(x_explain_numeric)) (120)
+  # Since all 3 explanation objects are equal (per the above test) it suffices to do this for explanation_exact
+  expect_true(
+    exp_exact$internal$parameters$exact
+  )
+  expect_equal(
+    exp_exact$internal$parameters$n_permutations,
+    factorial(ncol(x_explain_numeric))
+  )
+})
+
+

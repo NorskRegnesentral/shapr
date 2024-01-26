@@ -1,6 +1,6 @@
-# Here I put both the setup functios and the compute_lingauss functions
 
 
+#' Compute Tmu and Tx for lingauss approach
 #' @inheritParams default_doc_explain
 #' @inheritParams setup_approach.gaussian
 #'
@@ -72,7 +72,8 @@ compute_lingauss_Tmu_Tx <- function(internal,
 
         #       U_Sj <- t(PSj_bar)%*%PSj_bar%*%gaussian.cov_mat%*%t(PSj)%*%solve(PSj%*%gaussian.cov_mat%*%t(PSj))%*%PSj
 
-        Udiff <- t(PSj_bar) %*% PSj_bar %*% gaussian.cov_mat %*% t(PSj) %*% solve(PSj %*% gaussian.cov_mat %*% t(PSj)) %*% PSj
+        Udiff <- t(PSj_bar) %*% PSj_bar %*% gaussian.cov_mat %*% t(PSj) %*%
+          solve(PSj %*% gaussian.cov_mat %*% t(PSj)) %*% PSj
       } else {
         this_S <- sort(perm0[seq_len(position - 1)])
         this_Sj <- sort(perm0[seq_len(position)])
@@ -85,14 +86,17 @@ compute_lingauss_Tmu_Tx <- function(internal,
         PSj_bar <- PSfull[this_Sj_bar, , drop = FALSE]
 
         U_S <- t(PS_bar) %*% PS_bar %*% gaussian.cov_mat %*% t(PS) %*% solve(PS %*% gaussian.cov_mat %*% t(PS)) %*% PS
-        U_Sj <- t(PSj_bar) %*% PSj_bar %*% gaussian.cov_mat %*% t(PSj) %*% solve(PSj %*% gaussian.cov_mat %*% t(PSj)) %*% PSj
+        U_Sj <- t(PSj_bar) %*% PSj_bar %*% gaussian.cov_mat %*% t(PSj) %*%
+          solve(PSj %*% gaussian.cov_mat %*% t(PSj)) %*% PSj
         Udiff <- U_Sj - U_S
       }
 
 
-      # Could compute these here as well, and then DO not use paired sampling, but I do assume the U-computation is the most expensive part anyway, so will not do it here now.
+      # Could compute these here as well, and then DO not use paired sampling, but I do assume the U-computation is the
+      # most expensive part anyway, so will not do it here now.
       # U_Sbar <- t(PS)%*%PS%*%gaussian.cov_mat%*%t(PS_bar)%*%solve(PS_bar%*%gaussian.cov_mat%*%t(PS_bar))%*%PS_bar
-      # U_Sj_bar <- t(PSj)%*%PSj%*%gaussian.cov_mat%*%t(PSj_bar)%*%solve(PSj_bar%*%gaussian.cov_mat%*%t(PSj_bar))%*%PSj_bar
+      # U_Sj_bar <- t(PSj)%*%PSj%*%gaussian.cov_mat%*%t(PSj_bar)%*%
+      #                 solve(PSj_bar%*%gaussian.cov_mat%*%t(PSj_bar))%*%PSj_bar
 
 
       Tmu_list[[j]] <- Tmu_list[[j]] - Udiff / n_permutations_used

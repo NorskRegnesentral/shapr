@@ -36,6 +36,13 @@ shapley_setup_lingauss <- function(internal) {
   )
   internal$objects$perms_mat <- perms_mat
 
+  # Updating parameters$exact as done in feature_combinations
+  if (!exact && n_permutations >= factorial(n_features0)) {
+    internal$parameters$exact <- TRUE
+  }
+  internal$parameters$n_permutations <- nrow(perms_mat) # Updating this parameter in the end based on what is actually used.
+
+
   return(internal)
 }
 
@@ -268,7 +275,8 @@ feature_permute_samp <- function(m, n_permutations, paired_shap_sampling = TRUE)
     # Since there is no guarantee that the reverse permutations are not sampled in perms,
     # we combine the two one by one to ensure that the reverse permutations are always
     # present
-    # Note that we sample 2*n_permutations permutations also in the case of paired_shap_sampling = TRUE since we need to guarantee that we at least have n_permutations unique permutations
+    # Note that we sample 2*n_permutations permutations also in the case of paired_shap_sampling = TRUE
+    # since we need to guarantee that we at least have n_permutations unique permutations
     comb_perms <- matrix(NA, nrow = 2 * n_permutations, ncol = m)
     comb_perms[seq(1, 2 * n_permutations - 1, by = 2), ] <- perms
     comb_perms[seq(2, 2 * n_permutations, by = 2), ] <- rev_perms

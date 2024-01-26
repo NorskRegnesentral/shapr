@@ -2,6 +2,11 @@
 #'
 #' @inheritParams explain
 #'
+#' @param n_permutations Integer. Number of permutations to sample when estimating the Shapley values with
+#' the permutation approach. If `NULL`, all permutations are used, which corresponds to exact computation of the
+#' Shapley values (under the linear + Gaussian assumption).
+#' The maximum number of permutations equals `m!`, where `m` is the number of features.
+#'
 #' @export
 #'
 #' @author Martin Jullum
@@ -11,7 +16,6 @@ explain_lingauss <- function(model,
                              x_train,
                              n_permutations = NULL,
                              group = NULL,
-                             n_batches = NULL,
                              seed = 1,
                              predict_model = NULL,
                              get_model_specs = NULL,
@@ -42,7 +46,6 @@ explain_lingauss <- function(model,
     n_permutations = n_permutations,
     group = group,
     n_samples = 1, # Not applicable for the lingauss method as no sampling is done
-    n_batches = n_batches,
     seed = seed,
     keep_samp_for_vS = FALSE, # Not applicable for the lingauss method as no sampling is done
     feature_specs = feature_specs,

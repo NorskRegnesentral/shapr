@@ -116,8 +116,8 @@ test_predict_lingauss_model <- function(x_test, predict_model, model, lingauss_m
 
   if (isFALSE(all.equal(manual_pred, tmp, check.attributes = FALSE))) {
     stop(
-      "Prediction with the extracted model coefficients does not match the prediction with the predict_model function.\n",
-      "This suggests interactions, quadratic effects or other non-linearities in the model.\n",
+      "Prediction with the extracted model coefficients does not match the prediction with the predict_model\n ",
+      "function. This suggests interactions, quadratic effects or other non-linearities in the model.\n",
       "explain_lingauss is only applicable with pure linear models.\n",
     )
   }

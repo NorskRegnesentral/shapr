@@ -532,3 +532,61 @@ test_that("output_lm_numeric_independence_keep_samp_for_vS", {
 
   expect_false(is.null(out$internal$output$dt_samp_for_vS))
 })
+
+
+test_that("output_lingaus_full_also_with_precomputed", {
+  expect_snapshot_rds(
+    (exp_lingaus <- explain_lingauss(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      timing = FALSE
+    )),
+    "output_lingaus_full"
+  )
+
+  expect_snapshot_rds(
+    (exp_lingaus_precomp <- explain_lingauss_precomputed(exp_lingaus,
+                                                        x_explain_numeric,
+                                                        timing = FALSE
+    )),
+    "output_lingaus_precomputed_full"
+  )
+
+  expect_equal(
+    exp_lingaus,
+    exp_lingaus_precomp
+  )
+
+
+})
+
+test_that("output_lingaus_10_perms_also_with_precomputed", {
+  expect_snapshot_rds(
+    (exp_lingaus <- explain_lingauss(
+      model = model_lm_numeric,
+      x_explain = x_explain_numeric,
+      x_train = x_train_numeric,
+      timing = FALSE,
+      n_permutations = 10
+    )),
+    "output_lingaus_10_perms"
+  )
+
+  expect_snapshot_rds(
+    (exp_lingaus_precomp <- explain_lingauss_precomputed(exp_lingaus,
+                                                         x_explain_numeric,
+                                                         timing = FALSE
+    )),
+    "output_lingaus_precomputed_10_perms"
+  )
+
+  expect_equal(
+    exp_lingaus,
+    exp_lingaus_precomp
+  )
+
+
+})
+
+

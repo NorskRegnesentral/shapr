@@ -311,7 +311,7 @@ compute_shapley_lingauss <- function(internal) {
   colnames(shapley_mat) <- feature_names
 
   for (j in seq_len(n_features)) {
-    # Consider moving the computation of the first and all but the multiplication of the second term to the pre-processing function
+    # Consider moving the computation of  all but the multiplication of the second term to the pre-processing function
     shapley_mat[, j] <- as.numeric(t(beta) %*% Tmu_list[[j]] %*% mu) + x_explain_mat %*% t(Tx_list[[j]]) %*% beta
   }
 
