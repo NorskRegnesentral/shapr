@@ -111,8 +111,6 @@ setup <- function(x_train,
 
   internal <- check_and_set_parameters(internal)
 
-  # Clears out NULL parameters
-  internal$parameters[sapply(internal$parameters, is.null)] <- NULL
 
 
   return(internal)
