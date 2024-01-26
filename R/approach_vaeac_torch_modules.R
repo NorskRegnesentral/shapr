@@ -1555,7 +1555,7 @@ extend_batch <- function(batch,
 #' uses to evaluate its performance on the validation data.
 #'
 #' @details Compute mean IWAE log likelihood estimation of the validation set.
-#' Takes validation data loader, mask generator, batch size, model (vaeac)
+#' Takes validation data loader, mask generator, batch size, vaeac_model (vaeac)
 #' and number of IWAE latent samples per object.Returns one the estimation (float).
 #' IWAE is an abbreviation for Importance Sampling Estimator
 #' \deqn{\log p_{\theta, \psi}(x|y) \approx
@@ -1566,18 +1566,18 @@ extend_batch <- function(batch,
 #' @param val_dataloader A torch dataloader which loads the validation data.
 #' @param mask_generator A mask generator object that generates the masks.
 #' @param batch_size Integer. The number of samples to include in each batch.
-#' @param model The vaeac model.
-#' @param num_samples Number of samples to generate for computing the IWAE for each validation sample.
+#' @param vaeac_model The vaeac model.
+#' @param validation_iwae_num_samples Number of samples to generate for computing the IWAE for each validation sample.
 #'
 #' @return The average iwae over all instances in the validation dataset.
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-get_validation_iwae <- function(val_dataloader,
+vaeac_get_validation_iwae <- function(val_dataloader,
                                 mask_generator,
                                 batch_size,
-                                model,
-                                num_samples) {
+                                vaeac_model,
+                                validation_iwae_num_samples) {
 
   # Set variables to store the number of instances evaluated and avg_iwae
   cum_size <- 0
@@ -1597,9 +1597,9 @@ get_validation_iwae <- function(val_dataloader,
     # Mask consists of zeros (observed) and ones (missing or masked)
     mask <- mask_generator(batch)
 
-    # If the model.parameters are located on a Nivida GPU, then
+    # If the vaeac_model$parameters are located on a Nivida GPU, then
     # we send batch and mask to GPU, as it is faster than CPU.
-    if (model$parameters[[1]]$is_cuda) {
+    if (vaeac_model$parameters[[1]]$is_cuda) {
       batch <- batch$cuda()
       mask <- mask$cuda()
     }
@@ -1608,25 +1608,19 @@ get_validation_iwae <- function(val_dataloader,
     # want to compute the gradients, as they are not important
     # / not needed for doing backpropagation.
     torch::with_no_grad({
-      # Get the iwae for each instance in the current batch
-      # but save only the first init_size, as the other are
-      # just arbitrary instances we "padded" the batch with
-      # to get the appropriate shape.
-      iwae <- model$batch_iwae(batch, mask, num_samples)[1:init_size, drop = FALSE]
+      # Get the iwae for each instance in the current batch, but save only the first init_size, as the other are
+      # just arbitrary instances we "padded" the batch with to get the appropriate shape.
+      iwae <- vaeac_model$batch_iwae(batch, mask, validation_iwae_num_samples)[1:init_size, drop = FALSE]
 
-      # Update the average iwae over all batches (over all instances)
-      # This is called recursive/online updating of the mean.
-      # I have verified the method. Takes the
-      # old average * cum_size to get old sum of iwae
-      # adds the sum of newly computed iwae. Then divide the
-      # total iwae by the number of instances: cum_size + iwae.shape[0])
+      # Update the average iwae over all batches (over all instances). This is called recursive/online updating of
+      # the mean. Takes the old average * cum_size to get old sum of iwae and adds the sum of newly computed iwae.
+      # Then divide the total iwae by the number of instances: cum_size + iwae.shape[0]
       avg_iwae <- (avg_iwae * (cum_size / (cum_size + iwae$shape[1])) + iwae$sum() / (cum_size + iwae$shape[1]))
 
       # Update the number of instances evaluated
       cum_size <- cum_size + iwae$shape[1]
     }) # End with_no_grad
   }) # End iterating over the validation samples
-
 
   # return the average iwae over all instances in the validation set.
   return(avg_iwae$to(dtype = torch::torch_float()))
