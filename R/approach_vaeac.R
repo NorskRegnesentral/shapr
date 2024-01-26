@@ -435,7 +435,9 @@ of the data used to train the provided vaeac model (%s).\n",
 #' `vaeac.save_every_nth_epoch = 5`, then `vaeac.which_vaeac_model` can also take the values `"epoch_5"`, `"epoch_10"`,
 #' `"epoch_15"`, and so on.
 #'
-#' @return TODO: SOMETHING
+#' @return Named list of the default values `vaeac` extra parameter arguments specified in this function call.
+#' Note that both `vaeac.model_description` and `vaeac.folder_to_save_model` will change with time and R session.
+#'
 #' @export
 #' @author Lars Henry Berge Olsen
 vaeac_extra_para_default = function(vaeac.model_description = make.names(Sys.time()),
@@ -469,7 +471,6 @@ vaeac_extra_para_default = function(vaeac.model_description = make.names(Sys.tim
   return(mget(formalArgs(vaeac_extra_para_default)))
 }
 
-
 #' Move `vaeac` parameters to correct location
 #'
 #' @description
@@ -478,7 +479,8 @@ vaeac_extra_para_default = function(vaeac.model_description = make.names(Sys.tim
 #'
 #' @param parameters List. The `internal$parameters` list created inside the [shapr::explain()] function.
 #'
-#' @author Lars Henry Berge Olsen
+#' @return Updated version of `parameters` where all `vaeac` parameters are located at the correct location.
+#'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_update_para_locations = function(parameters) {
@@ -585,9 +587,50 @@ vaeac_update_para_locations = function(parameters) {
   return(parameters)
 }
 
+#' Function that determines which mask generator to use
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_get_mask_generator_name = function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, masking_ratio) {
+  if (!is.null(mask_gen_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
+    # User have provided mask_gen_these_coalitions (and mask_gen_these_coalitions_prob),
+    # and we want to use Specified_masks_mask_generator
+    mask_generator_name <- "Specified_masks_mask_generator"
 
+    # Small printout
+    if (verbose == 2) {
+      message(paste0("Use 'Specified_masks_mask_generator' with '", nrow(mask_gen_these_coalitions), "' coalitions."))
+    }
+  }
+  else if (length(masking_ratio) == 1) {
+    # We are going to use 'MCAR_mask_generator' as masking_ratio is a singleton.
+    # I.e., all feature values are equally likely to be masked based on masking_ratio.
+    mask_generator_name <- "MCAR_mask_generator"
 
+    # Small printout
+    if (verbose == 2) message(paste0("Use 'MCAR_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
+  }
+  else if (length(masking_ratio) > 1) {
+    # We are going to use 'Specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
+    # I.e., masking_ratio[5] specifies the probability of masking 5 features
+    mask_generator_name <- "Specified_prob_mask_generator"
 
+    # We have an array of masking ratios. Then we are using the Specified_prob_mask_generator.
+    if (verbose == 2) {
+      message(paste0("Use 'Specified_prob_mask_generator' mask generator with 'masking_ratio = [",
+                     paste(masking_ratio, collapse = ", "), "]'."))
+    }
+  }
+  else {
+    stop("`vaeac` could not determine which masking scheme to use based on the givene parameter arguments.")
+  }
+
+  return(mask_generator_name)
+}
 
 #' @inheritParams default_doc
 #'
@@ -842,6 +885,10 @@ vaeac_train_model <- function(x_train,
                               seed = 1,
                               ...) {
 
+  # Set seed for reproducibility for both R and torch
+  set.seed(seed)
+  torch::torch_manual_seed(seed)
+
   # Set epochs_early_stopping to epochs to ensure that early stopping never occurs
   if (is.null(epochs_early_stopping)) epochs_early_stopping <- epochs
 
@@ -856,238 +903,131 @@ vaeac_train_model <- function(x_train,
   # Check if we can use cuda
   if (use_cuda) use_cuda = vaeac_check_use_cuda(use_cuda)
 
-  # Preprocess x_train. Turns factor names into numerics 1,2,...,K, as vaeac only accepts numerics,
-  # and keep track of the maping of names. Optionally log-transform the continuous features.
-  x_train_preprocessed <- vaeac_preprocess_data(data = x_train,
-                                             transform_all_cont_features = transform_all_cont_features)
+  # Determine which mask generator to use
+  mask_generator_name = vaeac_get_mask_generator_name(
+    mask_gen_these_coalitions = mask_gen_these_coalitions,
+    mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
+    masking_ratio = masking_ratio)
 
-  # Extract the preprocessed x_train
-  x_train <- x_train_preprocessed$data_preprocessed
+  # Get the dimensions of the x_train
+  n <- nrow(x_train)
+  p <- ncol(x_train)
+  n_train <- nrow(x_train)
+  n_features <- ncol(x_train)
+
+  # Preprocess x_train. The function turns factor names into numerics 1,2,...,K, as vaeac only accepts numerics,
+  # and keep track of the maping of names. Optionally log-transform the continuous features.
+  # And finally normalize the data.
+  x_train_preprocessed <- vaeac_preprocess_data(data = x_train,
+                                                transform_all_cont_features = transform_all_cont_features,
+                                                normalize = TRUE)
+
+  # Extract the preprocessed and normalized x_train as a torch tensor
+  x_train_torch <- x_train_preprocessed$data_normalized_torch
+  data = x_train_torch
 
   # A torch tensor of dimension p containing the one hot sizes of the p features.
   # The sizes for the continuous features can either be '0' or '1'.
   one_hot_max_sizes <- x_train_preprocessed$one_hot_max_sizes
 
+  # Splitting the input into a training and validation data sets
+  val_size <- ceiling(n_train * validation_ratio) # Number of observations in the validation set
+  val_indices <- sample(n_train, val_size, replace = FALSE) # Sample indices for the validation set
+  val_dataset <- vaeac_dataset(x_train_torch[val_indices], one_hot_max_sizes) # Create a torch::dataset() for vaeac
+  train_indices <- seq(n_train)[-val_indices] # The remaining indices constitutes the training set
+  train_dataset <- vaeac_dataset(x_train_torch[train_indices], one_hot_max_sizes) # Create a torch::dataset() for vaeac
 
-
-  ##### Figure out what kind of mask generator we are going to use.
-
-  vaeac_get_mask_generator = function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob) {
-
+  # Ensure a valid batch size
+  if (batch_size > length(train_indices)) {
+    message(paste0("Decrease `batch_size` (", batch_size, ") to largest allowed value (", length(train_indices), "), ",
+                   "i.e., the number of training observations."))
+    batch_size = length(train_indices)
   }
 
+  # Create the Data Loader objects which iterate over the data in the Data Set objects
+  train_dataloader <- torch::dataloader(
+    dataset = train_dataset,
+    batch_size = batch_size,
+    shuffle = if (paired_sampling) FALSE else TRUE, # Must be `FALSE` when `sampler` is specified
+    sampler = if (paired_sampling) paired_sampler(train_dataset, shuffle = TRUE) else NULL)
 
+  val_dataloader <- torch::dataloader(
+    dataset = val_dataset,
+    batch_size = batch_size,
+    shuffle = FALSE,
+    sampler = if (paired_sampling) paired_sampler(val_dataset, shuffle = FALSE) else NULL)
 
-
-  if (!is.null(mask_gen_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
-    # User have provided mask_gen_these_coalitions (and mask_gen_these_coalitions_prob),
-    # and we want to use Specified_masks_mask_generator
-    mask_generator_name <- "Specified_masks_mask_generator"
-
-    # Small printout
-    if (verbose == 2) {
-      message(paste0("Use 'Specified_masks_mask_generator' with '%d' coalitions.\n", nrow(mask_gen_these_coalitions)))
-    }
-  } else {
-    # We are NOT going to use 'Specified_masks_mask_generator'. Figure out if we are using
-    # 'MCAR_mask_generator' or 'Specified_prob_mask_generator' and check for valid input.
-
-    # Masking ration is then either a scalar or array of scalar.
-    if (length(masking_ratio) == 1) {
-      # Only one masking ration, so we are going to use MCAR_mask_generator where each feature value
-      # is going to be masked with this probability independently of if another features is masked.
-      if (verbose) message(sprintf("Use 'MCAR_mask_generator' with 'masking_ratio = %g'.\n", masking_ratio))
-      mask_generator_name <- "MCAR_mask_generator"
-    } else {
-      # Check that we have received a masking ratio for each feature
-      if (length(masking_ratio) == ncol(x_train)) {
-        # We have an array of masking ratios. Then we are using the Specified_prob_mask_generator.
-        if (verbose) {
-          message(sprintf(
-            "Use 'Specified_prob_mask_generator' mask generator with 'masking_ratios = {%s}'.\n",
-            paste(masking_ratio, collapse = ", ")
-          ))
-        }
-        mask_generator_name <- "Specified_prob_mask_generator"
-      } else {
-        stop(paste0(
-          "'Masking_ratio' contains masking ratios for ',", length(masking_ratio), "' features, ",
-          "but there are '", ncol(x_train), "' features in 'x_train'.\n"
-        ))
-      }
-    }
-  }
-
-  #### Normalize x_train
-  # Get the dimensions of the x_train
-  n <- nrow(x_train)
-  p <- ncol(x_train)
-
-  # Convert X to tensor
-  data_torch <- torch::torch_tensor(as.matrix(x_train))
-
-  # Compute the mean and std for each continuous feature in the data
-  # The categorical features will have mean zero and std 1.
-  mean_and_sd <- compute_normalization(data_torch, one_hot_max_sizes)
-  norm_mean <- mean_and_sd$norm_vector_mean
-  norm_std <- mean_and_sd$norm_vector_std
-
-  # Make sure that the standard deviation is not too low, in that case clip it.
-  norm_std <- norm_std$max(other = torch::torch_tensor(1e-9))
-
-  # normalize the data to have mean = 0 and std = 1.
-  data <- (data_torch - norm_mean) / norm_std
-
-  #### Split Training & Validation Data
-  # Splitting the input data into training and validation sets
-  # Find the number of instances in the validation set
-  val_size <- ceiling(n * validation_ratio)
-
-  # Set seed for reproducibility
-  if (!is.null(seed)) {
-    set.seed(seed)
-    torch::torch_manual_seed(seed)
-  }
-
-  # randomly sample indices for the validation set
-  val_indices <- sample(n, val_size, replace = FALSE)
-
-  # Get the indices that are not in the validation set.
-  train_indices <- seq(n)[-val_indices]
-
-  # Split the data into a training and validation set
-  train_data <- data[train_indices]
-  val_data <- data[val_indices]
-
-  ##### Datasets and Dataloaders
-  if (length(train_indices) <= batch_size) {
-    if (length(train_indices) %% 2 != 0) {
-      batch_size_new <- (length(train_indices) + 1) / 2
-    } else {
-      batch_size_new <- length(train_indices) / 2
-    }
-    message(sprintf(
-      "Provided batch_size (%d) is larger than the number of training observations (%d). Set batch_size = %d.\n",
-      batch_size, length(train_indices), batch_size_new
-    ), immediate. = TRUE)
-    batch_size <- batch_size_new
-  }
-
-  # Create the Data Set objects
-  train_dataset <- vaeac_dataset(train_data, one_hot_max_sizes)
-  val_dataset <- vaeac_dataset(val_data, one_hot_max_sizes)
-
-  # Create the Data Loader object which can iterate over the data in the Data Set object
-  # See more parameters here '?dataloader', but these are the most important.
-  if (paired_sampling) {
-    # Use paired sampling
-    train_dataloader <- torch::dataloader(train_dataset,
-                                          batch_size = batch_size,
-                                          sampler = paired_sampler(train_dataset, shuffle = TRUE)
-    )
-    val_dataloader <- torch::dataloader(val_dataset,
-                                        batch_size = batch_size,
-                                        sampler = paired_sampler(val_dataset, shuffle = FALSE)
-    )
-  } else {
-    # Usual approach
-    train_dataloader <- torch::dataloader(train_dataset, batch_size = batch_size, shuffle = TRUE)
-    val_dataloader <- torch::dataloader(val_dataset, batch_size = batch_size, shuffle = FALSE)
-  }
+  # Get all the file names for the vaeac objects we are going to save
+  vaeac_save_file_names = vaeac_get_save_file_names(
+    epochs = epochs,
+    save_every_nth_epoch = save_every_nth_epoch,
+    folder_to_save_model = folder_to_save_model)
 
 
   ##### List that stores needed information for save and load the model
   # List to values saved to disk together with the vaeac models below.
   state_list <- list(
-    "norm_mean" = norm_mean,
-    "norm_std" = norm_std,
-    "model_description" = model_description,
-    "folder_to_save_model" = folder_to_save_model,
-    "used_tempdir" = used_tempdir,
-    "n" = n,
-    "p" = p,
-    "one_hot_max_sizes" = one_hot_max_sizes,
-    "epochs" = epochs,
-    "epochs_specified" = epochs,
-    "epochs_early_stopping" = epochs_early_stopping,
-    "running_avg_num_values" = running_avg_num_values,
-    "paired_sampling" = paired_sampling,
-    "mask_generator_name" = mask_generator_name,
-    "masking_ratio" = masking_ratio,
-    "mask_gen_these_coalitions" = mask_gen_these_coalitions,
-    "mask_gen_these_coalitions_prob" = mask_gen_these_coalitions_prob,
-    "validation_ratio" = validation_ratio,
-    "validation_iwae_num_samples" = validation_iwae_num_samples,
-    "num_vaeacs_initiate" = num_vaeacs_initiate,
-    "epochs_initiation_phase" = epochs_initiation_phase,
-    "width" = width,
-    "depth" = depth,
-    "latent_dim" = latent_dim,
-    "activation_function" = activation_function,
-    "activation_function_string" = activation_function$classname,
-    "lr" = lr,
-    "batch_size" = batch_size,
-    "use_skip_connections" = use_skip_connections,
-    "skip_connection_masked_enc_dec" = skip_connection_masked_enc_dec,
-    "use_batch_normalization" = use_batch_normalization,
-    "use_cuda" = use_cuda,
-    "train_indices" = train_indices,
-    "val_indices" = val_indices,
-    "save_every_nth_epoch" = save_every_nth_epoch,
-    "sigma_mu" = sigma_mu,
-    "sigma_sigma" = sigma_sigma,
-    "feature_list" = x_train_preprocessed$feature_list,
-    "col_cat_names" = x_train_preprocessed$col_cat_names,
-    "col_cont_names" = x_train_preprocessed$col_cont_names,
-    "col_cat" = x_train_preprocessed$col_cat,
-    "col_cont" = x_train_preprocessed$col_cont,
-    "cat_in_dataset" = x_train_preprocessed$cat_in_dataset,
-    "map_new_to_original_names" = x_train_preprocessed$map_new_to_original_names,
-    "map_original_to_new_names" = x_train_preprocessed$map_original_to_new_names,
-    "transform_all_cont_features" = x_train_preprocessed$transform_all_cont_features,
-    "save_data" = save_data,
-    "verbose" = verbose,
-    "seed" = seed
+    norm_mean = norm_mean,
+    norm_std = norm_std,
+    model_description = model_description,
+    folder_to_save_model = folder_to_save_model,
+    used_tempdir = used_tempdir,
+    n_train = n_train,
+    n_features = n_features,
+    one_hot_max_sizes = one_hot_max_sizes,
+    epochs = epochs,
+    epochs_specified = epochs,
+    epochs_early_stopping = epochs_early_stopping,
+    running_avg_num_values = running_avg_num_values,
+    paired_sampling = paired_sampling,
+    mask_generator_name = mask_generator_name,
+    masking_ratio = masking_ratio,
+    mask_gen_these_coalitions = mask_gen_these_coalitions,
+    mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
+    validation_ratio = validation_ratio,
+    validation_iwae_num_samples = validation_iwae_num_samples,
+    num_vaeacs_initiate = num_vaeacs_initiate,
+    epochs_initiation_phase = epochs_initiation_phase,
+    width = width,
+    depth = depth,
+    latent_dim = latent_dim,
+    activation_function = activation_function,
+    activation_function_string = activation_function$classname,
+    lr = lr,
+    batch_size = batch_size,
+    use_skip_connections = use_skip_connections,
+    skip_connection_masked_enc_dec = skip_connection_masked_enc_dec,
+    use_batch_normalization = use_batch_normalization,
+    use_cuda = use_cuda,
+    train_indices = train_indices,
+    val_indices = val_indices,
+    save_every_nth_epoch = save_every_nth_epoch,
+    sigma_mu = sigma_mu,
+    sigma_sigma = sigma_sigma,
+    feature_list = x_train_preprocessed$feature_list,
+    col_cat_names = x_train_preprocessed$col_cat_names,
+    col_cont_names = x_train_preprocessed$col_cont_names,
+    col_cat = x_train_preprocessed$col_cat,
+    col_cont = x_train_preprocessed$col_cont,
+    cat_in_dataset = x_train_preprocessed$cat_in_dataset,
+    map_new_to_original_names = x_train_preprocessed$map_new_to_original_names,
+    map_original_to_new_names = x_train_preprocessed$map_original_to_new_names,
+    transform_all_cont_features = x_train_preprocessed$transform_all_cont_features,
+    save_data = save_data,
+    verbose = verbose,
+    seed = seed,
+    vaeac_save_file_names = vaeac_save_file_names
   )
 
-  # If we are also to save the data to state_list.
-  if (save_data) {
-    state_list <- c(state_list, list(
-      "x_train" = x_train,
-      "normalized_data" = data
-    ))
 
-    # Just a small message regarding large disk usage
-    if (!is.null(save_every_nth_epoch)) {
-      message(sprintf(
-        "Both having 'save_data = TRUE' and saving the vaeac model every '%d'
-epoch might require a lot of disk storage if data is large.\n",
-        save_every_nth_epoch
-      ), immediate. = TRUE)
-    }
-  }
 
-  # Check if we are to save vaeac model every n'th epoch.
-  if (!is.null(save_every_nth_epoch)) {
-    # List of file names for vaeac models after every n'th epoch (save_every_nth_epoch).
-    filename_nth_list <- list()
+  # Check if we are to add the training data to the state list
+  if (save_data) state_list <- c(state_list, list(x_train = x_train, x_train_torch = x_train_torch))
+  # normalized_data = x_train_torch
 
-    # Check that save_every_nth_epoch is positive.
-    if (save_every_nth_epoch <= 0) {
-      stop(sprintf(
-        "The value 'save_every_nth_epoch' must be strictly positive, not '%d'.\n",
-        save_every_nth_epoch
-      ))
-    }
-
-    # Ensure a valid value for save_every_nth_epoch.
-    if (save_every_nth_epoch > epochs) {
-      stop(sprintf(
-        "Number of 'epochs' is less than 'save_every_nth_epoch': %d < %d.\n",
-        epochs, save_every_nth_epoch
-      ))
-    }
-  }
+  # Check if we are to save the vaeac model every n'th epoch.
+  # Create a list of file names for vaeac models after every n'th epoch (save_every_nth_epoch).
+  if (!is.null(save_every_nth_epoch)) filename_nth_list <- list()
 
 
 
@@ -1125,18 +1065,31 @@ epoch might require a lot of disk storage if data is large.\n",
       sigma_sigma = sigma_sigma
     )
 
+    # Print the number of trainable parameters to the user
+    if (verbose == 2 && initlization == 1) {
+      message(paste0("The number of trainable parameters in the vaeac model is '", model$num_train_param[1, 1] ,"'."))
+      # UNSURE IF I WANT THIS TO BE A MESSAGE OR A STICKY
+      # progressr_bar(message = paste0("The number of trainable parameters in the vaeac model is '",
+      #                                model$num_train_param[1, 1] ,"'."),
+      #               class = "sticky",
+      #               amount = 0)
+    }
+
+    # Print which initialization vaeac the function is working on
+    if (verbose == 1) {
+      message(paste0("Initializing vaeac number ", initialization, " of ", num_vaeacs_initiate, "."))
+      # UNSURE IF I WANT THIS TO BE A MESSAGE OR A STICKY
+      # progressr_bar(message = paste0("Initializing vaeac number ", initialization, " of ", num_vaeacs_initiate, "."),
+      #               class = "sticky",
+      #               amount = 0)
+
+    }
+
     # Check if we are providing more output for easier debugging
     if (verbose) {
-      # Print the number of trainable parameters to the user
-      if (initialization == 1) {
-        message(sprintf(
-          "The number of trainable parameters in the vaeac model is '%d'.",
-          model$num_train_param[1, 1]
-        ))
-      }
 
-      # Print which initialization vaeac the function is working on
-      message(sprintf("\nInitializing vaeac number %d...", initialization))
+
+
 
       # Create a progress bar for the individual initialization vaeac.
       # Note that we will not see this `progress::progress_bar` move/update if
@@ -1160,15 +1113,10 @@ epoch might require a lot of disk storage if data is large.\n",
     vlb_scale_factor <- model$vlb_scale_factor
     mask_generator <- model$mask_generator
 
+
     # Create the ADAM optimizer
-    optimizer <- torch::optim_adam(
-      params = model$parameters,
-      lr = lr,
-      betas = c(0.9, 0.999),
-      eps = 1e-08,
-      weight_decay = 0,
-      amsgrad = FALSE
-    )
+    optimizer = vaeac_get_optimizer(optimizer_name = "ADAM")
+
 
     # An array to store the regular and running validation IWAE errors
     validation_iwae <- c()
@@ -1404,7 +1352,7 @@ epoch might require a lot of disk storage if data is large.\n",
     if ((max(validation_iwae) <= val_iwae)$item() || is.null(best_state)) {
       best_state <- c(
         list(
-          "epoch" = epoch,
+          epoch = epoch,
           "model_state_dict" = model$state_dict(),
           "optimizer_state_dict" = optimizer$state_dict(),
           "validation_iwae" = validation_iwae,
@@ -1415,17 +1363,8 @@ epoch might require a lot of disk storage if data is large.\n",
         state_list
       )
 
-      # Create the file name
-      filename_best <-
-        paste(make.names(model_description), "p", p,
-              "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
-              sep = "_"
-        )
-
-      # Combine the file name with the folder path to form the final save file name.
-      filename_best <- file.path(folder_to_save_model, filename_best)
       class(best_state) <- c(class(best_state), "R_vaeac", "vaeac")
-      torch::torch_save(best_state, filename_best)
+      torch::torch_save(best_state, vaeac_save_file_names[1])
     }
 
     # Save if current vaeac model has the lowest validation IWAE error
@@ -1442,21 +1381,8 @@ epoch might require a lot of disk storage if data is large.\n",
         ),
         state_list
       )
-
-      # Create the file name
-      filename_best_running <-
-        make.names(
-          paste(make.names(model_description), "p", p,
-                "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr,
-                "best_running.pt",
-                sep = "_"
-          )
-        )
-
-      # Combine the file name with the folder path to form the final save file name.
-      filename_best_running <- file.path(folder_to_save_model, filename_best_running)
       class(best_state_running) <- c(class(best_state_running), "R_vaeac", "vaeac")
-      torch::torch_save(best_state_running, filename_best_running)
+      torch::torch_save(best_state_running, vaeac_save_file_names[2])
     }
 
     # If we are to save and we are in an n'th epoch, then we save the model.
@@ -1474,21 +1400,11 @@ epoch might require a lot of disk storage if data is large.\n",
           ),
           state_list
         )
-
-        # Create the file name
-        filename_nth <- paste(make.names(model_description), "_p_", p,
-                              "_n_", n, "_depth_", depth, "_width_", width, "_latent_", latent_dim, "_lr_", lr,
-                              "_epoch_", epoch, ".pt",
-                              sep = ""
-        )
-
-        # Combine the file name with the folder path to form the final save file name.
-        filename_nth <- file.path(folder_to_save_model, filename_nth)
         class(nth_state) <- c(class(nth_state), "R_vaeac", "vaeac")
-        torch::torch_save(nth_state, filename_nth)
+        torch::torch_save(nth_state, vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
 
         # Add file name to list over file names.
-        tmp_list <- list(filename_nth)
+        tmp_list <- list(vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
         names(tmp_list) <- paste("filename_epoch_", epoch, sep = "")
         filename_nth_list <- append(filename_nth_list, tmp_list)
       }
@@ -1553,16 +1469,8 @@ epoch might require a lot of disk storage if data is large.\n",
     state_list
   )
 
-  # Create the file name
-  filename_last <- paste(make.names(model_description), "p", p,
-                         "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
-                         sep = "_"
-  )
-
-  # Combine the file name with the folder path to form the final save file name.
-  filename_last <- file.path(folder_to_save_model, filename_last)
   class(last_state) <- c(class(last_state), "R_vaeac", "vaeac")
-  torch::torch_save(last_state, filename_last)
+  torch::torch_save(last_state, vaeac_save_file_names[3])
 
   # Printout to the user
   if (verbose) {
@@ -1588,9 +1496,9 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 
   # Create a return list
   return_list <- list(
-    "filename_best" = filename_best,
-    "filename_best_running" = filename_best_running,
-    "filename_last" = filename_last,
+    "filename_best" = vaeac_save_file_names[1],
+    "filename_best_running" = vaeac_save_file_names[2],
+    "filename_last" = vaeac_save_file_names[3],
     "train_vlb" = as.array(train_vlb),
     "validation_iwae" = as.array(validation_iwae),
     "validation_iwae_running_avg" = as.array(validation_iwae_running_avg),
@@ -1713,7 +1621,7 @@ vaeac_continue_train_model <- function(explanation,
 
     # Compute the mean and std for each continuous feature in the data
     # The categorical features will have mean zero and std 1.
-    mean_and_sd <- compute_normalization(data_torch, one_hot_max_sizes)
+    mean_and_sd <- vaeac_compute_normalization(data_torch, one_hot_max_sizes)
     norm_mean <- mean_and_sd$norm_vector_mean
     norm_std <- mean_and_sd$norm_vector_std
 
@@ -1809,6 +1717,9 @@ epoch might require a lot of disk storage if data is large.\n",
       }
     }
 
+    # TODO: NEED TO REMEBER TO update the vaeac_save_file_names. The simplest idea is just to call
+    # the function again but this time with a higher/the new number of epochs.
+
     # Add the new state list as a list to the checkpoint
     num_times_continued_trained <- sum(grepl("state_list_new", names(checkpoint)))
     state_list_new_name <- paste("state_list_new", num_times_continued_trained + 1, sep = "_")
@@ -1886,10 +1797,8 @@ epoch might require a lot of disk storage if data is large.\n",
     state_list$epochs <- epochs_total
 
     # Load the best states from the vaeac model
-    filename_best <- vaeac_model$models$best
-    best_state <- torch::torch_load(filename_best)
-    filename_best_running <- vaeac_model$models$best_running
-    best_state_running <- torch::torch_load(filename_best_running)
+    best_state <- torch::torch_load(vaeac_model$models$best)
+    best_state_running <- torch::torch_load(vaeac_model$models$best_running)
 
     # If the user has put the function in verbose mode
     if (verbose) {
@@ -2005,16 +1914,8 @@ epoch might require a lot of disk storage if data is large.\n",
           state_list
         )
 
-        # Create the file name
-        filename_best <- paste(make.names(model_description), "p", p,
-                               "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "best.pt",
-                               sep = "_"
-        )
-
-        # Combine the file name with the folder path to form the final save file name.
-        filename_best <- file.path(folder_to_save_model, filename_best)
         class(best_state) <- c(class(best_state), "R_vaeac", "vaeac")
-        torch::torch_save(best_state, filename_best)
+        torch::torch_save(best_state, vaeac_save_file_names[1])
       }
 
       # Save if current vaeac model has the lowest validation IWAE error
@@ -2031,24 +1932,8 @@ epoch might require a lot of disk storage if data is large.\n",
           ),
           state_list
         )
-
-        # Create the file name
-        filename_best_running <- paste(
-          make.names(model_description),
-          "p", p,
-          "n", n,
-          "depth", depth,
-          "width", width,
-          "latent", latent_dim,
-          "lr", lr,
-          "best_running.pt",
-          sep = "_"
-        )
-
-        # Combine the file name with the folder path to form the final save file name.
-        filename_best_running <- file.path(folder_to_save_model, filename_best_running)
         class(best_state_running) <- c(class(best_state_running), "R_vaeac", "vaeac")
-        torch::torch_save(best_state_running, filename_best_running)
+        torch::torch_save(best_state_running, vaeac_save_file_names[2])
       }
 
       # If we are to save and we are in an n'th epoch, then we save the model.
@@ -2075,7 +1960,7 @@ epoch might require a lot of disk storage if data is large.\n",
           )
 
           # Combine the file name with the folder path to form the final save file name.
-          filename_nth <- file.path(folder_to_save_model, filename_nth)
+          filename_nth <- file.path(folder_to_save_model, vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
           class(nth_state) <- c(class(nth_state), "R_vaeac", "vaeac")
           torch::torch_save(nth_state, filename_nth)
 
@@ -2114,16 +1999,8 @@ epoch might require a lot of disk storage if data is large.\n",
       state_list
     )
 
-    # Create the file name
-    filename_last <- paste(make.names(model_description), "p", p,
-                           "n", n, "depth", depth, "width", width, "latent", latent_dim, "lr", lr, "last.pt",
-                           sep = "_"
-    )
-
-    # Combine the file name with the folder path to form the final save file name.
-    filename_last <- file.path(folder_to_save_model, filename_last)
     class(last_state) <- c(class(last_state), "R_vaeac", "vaeac")
-    torch::torch_save(last_state, filename_last)
+    torch::torch_save(last_state, vaeac_save_file_names[3])
 
     # Printout to the user
     if (verbose) {
@@ -2149,9 +2026,9 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 
     # Create a return list
     return_models <- list(
-      "best" = filename_best,
-      "best_running" = filename_best_running,
-      "last" = filename_last
+      "best" = vaeac_save_file_names[1],
+      "best_running" = vaeac_save_file_names[2],
+      "last" =vaeac_save_file_names[3]
     )
     return_results <- list(
       "train_vlb" = as.array(train_vlb),
@@ -2201,7 +2078,7 @@ vaeac_check_extra_named_list = function(vaeac.extra_parameters) {
 #' @param named_list_positive_integers List containing named entries. I.e., `list(a = 1, b = 2)`.
 #'
 #' @return The function does not return anything.
-#' @export
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_positive_integers <- function(named_list_positive_integers) {
   param_names <- names(named_list_positive_integers)
@@ -2219,7 +2096,8 @@ vaeac_check_positive_integers <- function(named_list_positive_integers) {
 #' @param named_list_positive_numerics List containing named entries. I.e., `list(a = 0.2, b = 10^3)`.
 #'
 #' @return The function does not return anything.
-#' @export
+#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_positive_numerics <- function(named_list_positive_numerics) {
   param_names <- names(named_list_positive_numerics)
@@ -2237,7 +2115,8 @@ vaeac_check_positive_numerics <- function(named_list_positive_numerics) {
 #' @param named_list_probabilities List containing named entries. I.e., `list(a = 0.2, b = 0.9)`.
 #'
 #' @return The function does not return anything.
-#' @export
+#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_probabilities <- function(named_list_probabilities) {
   # Trick needed for entries that can be vectors (i.e., `vaeac.masking_ratio`)
@@ -2257,7 +2136,8 @@ vaeac_check_probabilities <- function(named_list_probabilities) {
 #' @param named_list_logicals List containing named entries. I.e., `list(a = TRUE, b = FALSE)`.
 #'
 #' @return The function does not return anything.
-#' @export
+#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_logicals <- function(named_list_logicals) {
   param_names <- names(named_list_logicals)
@@ -2275,20 +2155,27 @@ vaeac_check_logicals <- function(named_list_logicals) {
 #' @inheritParams vaeac_train_model
 #'
 #' @return The function does not return anything.
-#' @export
+#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_epoch_values = function(epochs, epochs_initiation_phase, epochs_early_stopping) {
+vaeac_check_epoch_values = function(epochs, epochs_initiation_phase, epochs_early_stopping, save_every_nth_epoch) {
   if (epochs_initiation_phase >= epochs) {
     stop(paste0("'vaeac.epochs_initiation_phase' (", epochs_initiation_phase, ") must be strictly less than ",
                 "'vaeac.epochs' (", epochs, ")."))
   }
 
   if (epochs_early_stopping > epochs) {
-    message(paste0(
-      "No early stopping as `vaeac.epochs_early_stopping` (", epochs_early_stopping, ") is larger than ",
+    message(paste0("No early stopping as `vaeac.epochs_early_stopping` (", epochs_early_stopping, ") is larger than ",
       "`vaeac.epochs` (", epochs, ")."
     ))
   }
+
+  # Ensure a valid value for save_every_nth_epoch.
+  if (!is.null(save_every_nth_epoch) && save_every_nth_epoch > epochs) {
+    stop(paste0("Number of 'epochs' (", epochs, ") is less than 'save_every_nth_epoch' (", save_every_nth_epoch ,")."))
+  }
+
+  save_every_nth_epoch > epochs
 }
 
 #' Function that checks the provided activation function
@@ -2296,7 +2183,8 @@ vaeac_check_epoch_values = function(epochs, epochs_initiation_phase, epochs_earl
 #' @inheritParams vaeac_train_model
 #'
 #' @return The function does not return anything.
-#' @export
+#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_activation_func = function(activation_function) {
   # TODO: In future, check that it is one of the activation functions and not just a nn_module
@@ -2309,7 +2197,8 @@ vaeac_check_activation_func = function(activation_function) {
 #' @inheritParams vaeac_train_model
 #'
 #' @return The function does not return anything.
-#' @export
+#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_mask_gen = function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, x_train) {
   masks = mask_gen_these_coalitions
@@ -2341,7 +2230,8 @@ vaeac_check_mask_gen = function(mask_gen_these_coalitions, mask_gen_these_coalit
 #' @inheritParams vaeac_train_model
 #'
 #' @return The function does not return anything.
-#' @export
+#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_verbose = function(verbose) {
   if (!is.numeric(verbose) || !(verbose %in% c(0, 1, 2))) {
@@ -2354,7 +2244,8 @@ vaeac_check_verbose = function(verbose) {
 #' @inheritParams vaeac_train_model
 #'
 #' @return The function does not return anything.
-#' @export
+#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_save_names = function(folder_to_save_model, model_description) {
   if (!is.character(folder_to_save_model)) stop("`vaeac.folder_to_save_model` must be a string.")
@@ -2373,7 +2264,8 @@ vaeac_check_save_names = function(folder_to_save_model, model_description) {
 #' @inheritParams vaeac_train_model
 #'
 #' @return The function does not return anything.
-#' @export
+#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_parameters = function(x_train,
                                   model_description,
@@ -2420,6 +2312,9 @@ vaeac_check_parameters = function(x_train,
   # Check the probability parameters
   vaeac_check_probabilities(list(validation_ratio = validation_ratio, masking_ratio = masking_ratio))
 
+  # Check the masking ratio
+  vaeac_check_masking_ratio(masking_ratio = masking_ratio, n_features = ncol(x_train))
+
   # Check the positive numeric parameters
   vaeac_check_positive_numerics(list(lr = lr, sigma_mu = sigma_mu, sigma_sigma = sigma_sigma))
 
@@ -2457,16 +2352,24 @@ vaeac_check_parameters = function(x_train,
   vaeac_check_epoch_values(epochs = epochs,
                            epochs_initiation_phase = epochs_initiation_phase,
                            epochs_early_stopping = epochs_early_stopping)
+
+  # Check the save parameters
+  vaeac_check_save_parameters(save_data = save_data,
+                              epochs_initiation_phase = epochs_initiation_phase,
+                              x_train_size = format(object.size(x_train), units = "auto"))
+
 }
+
 
 #' Function that checks for access to CUDA
 #'
 #' @inheritParams vaeac_train_model
 #'
 #' @return The function does not return anything.
-#' @export
+#'
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_use_cuda = funtion(use_cuda){
+vaeac_check_use_cuda = funtion(use_cuda) {
   # Check if cuda/GPU is available on the current system
   cuda_available <- torch::cuda_is_available()
 
@@ -2479,6 +2382,96 @@ vaeac_check_use_cuda = funtion(use_cuda){
   return(use_cuda)
 }
 
+#' Function that checks that the masking ratio argument is valid
+#'
+#' @inheritParams vaeac_train_model
+#' @param n_features The number of features, i.e., the number of columns in the training data.
+#'
+#' @return The function does not return anything.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_check_masking_ratio = function(masking_ratio, n_features) {
+  if (length(masking_ratio) > 1 && length(masking_ratio) != ncol(x_train)) {
+    stop(paste0("'Masking_ratio' contains masking ratios for ',", length(masking_ratio), "' features, ",
+                "but there are '", ncol(x_train), "' features in 'x_train'."))
+  }
+}
+
+#' Function that gives a warning about disk usage
+#'
+#' @param x_train_size The object size of the `x_train` object.
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_check_save_parameters = function(save_data, save_every_nth_epoch, x_train_size) {
+  if (save_data && !is.null(save_every_nth_epoch) && epochs / save_every_nth_epoch > 5) {
+    message(paste0("Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might requirer ",
+                   "a lot of disk storage if `x_train` (", x_train_size ,") is large."))
+  }
+}
+
+#' Function that creates the save file names for the `vaeac` model
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return Array of string containing the save files to use when training the `vaeac` model. The first three names
+#' corresponds to the best, best_running, and last epochs, in that order.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_get_save_file_names = function(epochs, save_every_nth_epoch, folder_to_save_model = NULL) {
+  file_names = c("best", "best_running", "last") # The standard epochs we save the vaeac model
+
+  # Add the optional epochs to save the model
+  if (!is.null(save_every_nth_epoch)) {
+    file_names = c(file_names, seq(from = save_every_nth_epoch,
+                                   by = save_every_nth_epoch,
+                                   length.out = floor(epochs/save_every_nth_epoch)))
+  }
+
+  # Create the file names
+  file_names = paste0(make.names(model_description), "_n_features_", n_features, "_n_train_", n_train, "_depth_", depth,
+                      "_width_", width, "_latent_", latent_dim, "_lr_", lr, "_epoch_", file_names, ".pt")
+
+  # Add the (optional) path to the folder to the name
+  if (!is.null(folder_to_save_model)) file_names = file.path(folder_to_save_model, file_names)
+
+  return(file_names)
+}
+
+#' Function to create the optimizer used to train `vaeac`
+#'
+#' @description
+#' Only [torch::optim_adam()] is currently supported. But it is easy to add an additional option later.
+#'
+#' @param optimizer_name String containing the name of the [torch::optimizer()] to use.
+#'
+#' @return Array of string containing the save files to use when training the `vaeac` model. The first three names
+#' corresponds to the best, best_running, and last epochs, in that order.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_get_optimizer = function(optimizer_name = "ADAM") {
+  if (optimizer_name == ADAM) {
+    # Create the ADAM optimizer
+    optimizer <- torch::optim_adam(
+      params = model$parameters,
+      lr = lr,
+      betas = c(0.9, 0.999),
+      eps = 1e-08,
+      weight_decay = 0,
+      amsgrad = FALSE
+    )
+  } else {
+    stop("Only the ADAM optimizer has been implemented for the `vaeac` approach.")
+  }
+
+  return(optimizer)
+}
 
 # Compute Imputations ==================================================================================================
 #' Impute Missing Values Using Vaeac
@@ -2833,158 +2826,158 @@ as user set `return_as_postprocessed_dt = TRUE`.")
 #'
 #' @examples
 #' \dontrun{
-#' # library(xgboost)
-#' # data("airquality")
-#' # data <- data.table::as.data.table(airquality)
-#' # data <- data[complete.cases(data), ]
-#' #
-#' # x_var <- c("Solar.R", "Wind", "Temp", "Month")
-#' # y_var <- "Ozone"
-#' #
-#' # ind_x_explain <- 1:6
-#' # x_train <- data[-ind_x_explain, ..x_var]
-#' # y_train <- data[-ind_x_explain, get(y_var)]
-#' # x_explain <- data[ind_x_explain, ..x_var]
-#' #
-#' # # Fitting a basic xgboost model to the training data
-#' # model <- xgboost(
-#' #   data = as.matrix(x_train),
-#' #   label = y_train,
-#' #   nround = 100,
-#' #   verbose = FALSE
-#' # )
-#' #
-#' # # Specifying the phi_0, i.e. the expected prediction without any features
-#' # p0 <- mean(y_train)
-#' #
-#' # # Train several different NN
-#' # explanation_paired_sampling_TRUE <- explain(
-#' #   model = model,
-#' #   x_explain = x_explain,
-#' #   x_train = x_train,
-#' #   approach = approach,
-#' #   prediction_zero = p0,
-#' #   n_batches = 2,
-#' #   n_samples = 1, #' As we are only interested in the training of the vaeac
-#' #   vaeac.epochs = 25, #' Should be higher in applications.
-#' #   vaeac.num_vaeacs_initiate = 5,
-#' #   vaeac.extra_parameters = list(
-#' #     vaeac.paired_sampling = TRUE,
-#' #     vaeac.verbose = TRUE
-#' #   )
-#' # )
-#' #
-#' # explanation_paired_sampling_FALSE <- explain(
-#' #   model = model,
-#' #   x_explain = x_explain,
-#' #   x_train = x_train,
-#' #   approach = approach,
-#' #   prediction_zero = p0,
-#' #   n_batches = 2,
-#' #   n_samples = 1, #' As we are only interested in the training of the vaeac
-#' #   vaeac.epochs = 25, #' Should be higher in applications.
-#' #   vaeac.num_vaeacs_initiate = 5,
-#' #   vaeac.extra_parameters = list(
-#' #     vaeac.paired_sampling = FALSE,
-#' #     vaeac.verbose = TRUE
-#' #   )
-#' # )
-#' #
-#' # # Other networks have 4.76 times more parameters.
-#' # explanation_paired_sampling_FALSE_small <- explain(
-#' #   model = model,
-#' #   x_explain = x_explain,
-#' #   x_train = x_train,
-#' #   approach = approach,
-#' #   prediction_zero = p0,
-#' #   n_batches = 2,
-#' #   n_samples = 1, #' As we are only interested in the training of the vaeac
-#' #   vaeac.epochs = 25, #' Should be higher in applications.
-#' #   vaeac.width = 16, #' Default is 32
-#' #   vaeac.depth = 2, #' Default is 3
-#' #   vaeac.latent_dim = 4, #' Default is 8
-#' #   vaeac.num_vaeacs_initiate = 5,
-#' #   vaeac.extra_parameters = list(
-#' #     vaeac.paired_sampling = FALSE,
-#' #     vaeac.verbose = TRUE
-#' #   )
-#' # )
-#' #
-#' # explanation_paired_sampling_TRUE_small <- explain(
-#' #   model = model,
-#' #   x_explain = x_explain,
-#' #   x_train = x_train,
-#' #   approach = approach,
-#' #   prediction_zero = p0,
-#' #   n_batches = 2,
-#' #   n_samples = 1, #' As we are only interested in the training of the vaeac
-#' #   vaeac.epochs = 25, #' Should be higher in applications.
-#' #   vaeac.width = 16, #' Default is 32
-#' #   vaeac.depth = 2, #' Default is 3
-#' #   vaeac.latent_dim = 4, #' Default is 8
-#' #   vaeac.num_vaeacs_initiate = 5,
-#' #   vaeac.extra_parameters = list(
-#' #     vaeac.paired_sampling = TRUE,
-#' #     vaeac.verbose = TRUE
-#' #   )
-#' # )
-#' #
-#' # # Collect the explanation objects in an unnamed list
-#' # explanation_list_unnamed <- list(
-#' #   explanation_paired_sampling_FALSE,
-#' #   explanation_paired_sampling_FALSE_small,
-#' #   explanation_paired_sampling_TRUE,
-#' #   explanation_paired_sampling_TRUE_small
-#' # )
-#' #
-#' # # Collect the explanation objects in an named list
-#' # explanation_list_named <- list(
-#' #   "Regular samp. & large NN" = explanation_paired_sampling_FALSE,
-#' #   "Regular samp. & small NN" = explanation_paired_sampling_FALSE_small,
-#' #   "Paired samp. & large NN" = explanation_paired_sampling_TRUE,
-#' #   "Paired samp. & small NN" = explanation_paired_sampling_TRUE_small
-#' # )
-#' #
-#' # # Call the function with the unnamed list, will create names
-#' # plot_several_vaeacs_VLB_IWAE(explanation_list = explanation_list_unnamed)
-#' #
-#' # # Call the function with the named list, will use the provided names
-#' # # See that the paired samplign often produce more stable results
-#' # plot_several_vaeacs_VLB_IWAE(explanation_list = explanation_list_named)
-#' #
-#' # # The function also works if we have only one method,
-#' # # but then one should only look at the method plot
-#' # plot_several_vaeacs_VLB_IWAE(
-#' #   explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
-#' #   plot_type = "method")
-#' #
-#' # # Can alter the plot
-#' # plot_several_vaeacs_VLB_IWAE(
-#' #   explanation_list = explanation_list_named,
-#' #   plot_from_nth_epoch = 5,
-#' #   plot_every_nth_epoch = 3,
-#' #   facet_wrap_scales = "free"
-#' # )
-#' #
-#' # # If we want only want the criterion version
-#' # tmp_fig_criterion = plot_several_vaeacs_VLB_IWAE(
-#' #   explanation_list = explanation_list_named,
-#' #   plot_type = "criterion")
-#' #
-#' # # We can add points
-#' # tmp_fig_criterion + ggplot2::geom_point(shape = "circle", size = 1, ggplot2::aes(col = Method))
-#' #
-#' # # If we rather want smooths with se bands
-#' # tmp_fig_criterion$layers[[1]] = NULL
-#' # tmp_fig_criterion + ggplot2::geom_smooth(method = "loess", formula = y ~ x, se = TRUE) +
-#' #   ggplot2::scale_color_brewer(palette = "Set1") +
-#' #   ggplot2::theme_minimal()
-#' #
-#' # # If we only want the VLB
-#' # plot_several_vaeacs_VLB_IWAE(
-#' #   explanation_list = explanation_list_named,
-#' #   criteria = "VLB",
-#' #   plot_type = "criterion")
+#' library(xgboost)
+#' data("airquality")
+#' data <- data.table::as.data.table(airquality)
+#' data <- data[complete.cases(data), ]
+#'
+#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#' y_var <- "Ozone"
+#'
+#' ind_x_explain <- 1:6
+#' x_train <- data[-ind_x_explain, ..x_var]
+#' y_train <- data[-ind_x_explain, get(y_var)]
+#' x_explain <- data[ind_x_explain, ..x_var]
+#'
+#' # Fitting a basic xgboost model to the training data
+#' model <- xgboost(
+#'   data = as.matrix(x_train),
+#'   label = y_train,
+#'   nround = 100,
+#'   verbose = FALSE
+#' )
+#'
+#' # Specifying the phi_0, i.e. the expected prediction without any features
+#' p0 <- mean(y_train)
+#'
+#' # Train several different NN
+#' explanation_paired_sampling_TRUE <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = approach,
+#'   prediction_zero = p0,
+#'   n_batches = 2,
+#'   n_samples = 1, #' As we are only interested in the training of the vaeac
+#'   vaeac.epochs = 25, #' Should be higher in applications.
+#'   vaeac.num_vaeacs_initiate = 5,
+#'   vaeac.extra_parameters = list(
+#'     vaeac.paired_sampling = TRUE,
+#'     vaeac.verbose = TRUE
+#'   )
+#' )
+#'
+#' explanation_paired_sampling_FALSE <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = approach,
+#'   prediction_zero = p0,
+#'   n_batches = 2,
+#'   n_samples = 1, #' As we are only interested in the training of the vaeac
+#'   vaeac.epochs = 25, #' Should be higher in applications.
+#'   vaeac.num_vaeacs_initiate = 5,
+#'   vaeac.extra_parameters = list(
+#'     vaeac.paired_sampling = FALSE,
+#'     vaeac.verbose = TRUE
+#'   )
+#' )
+#'
+#' # Other networks have 4.76 times more parameters.
+#' explanation_paired_sampling_FALSE_small <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = approach,
+#'   prediction_zero = p0,
+#'   n_batches = 2,
+#'   n_samples = 1, #' As we are only interested in the training of the vaeac
+#'   vaeac.epochs = 25, #' Should be higher in applications.
+#'   vaeac.width = 16, #' Default is 32
+#'   vaeac.depth = 2, #' Default is 3
+#'   vaeac.latent_dim = 4, #' Default is 8
+#'   vaeac.num_vaeacs_initiate = 5,
+#'   vaeac.extra_parameters = list(
+#'     vaeac.paired_sampling = FALSE,
+#'     vaeac.verbose = TRUE
+#'   )
+#' )
+#'
+#' explanation_paired_sampling_TRUE_small <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = approach,
+#'   prediction_zero = p0,
+#'   n_batches = 2,
+#'   n_samples = 1, #' As we are only interested in the training of the vaeac
+#'   vaeac.epochs = 25, #' Should be higher in applications.
+#'   vaeac.width = 16, #' Default is 32
+#'   vaeac.depth = 2, #' Default is 3
+#'   vaeac.latent_dim = 4, #' Default is 8
+#'   vaeac.num_vaeacs_initiate = 5,
+#'   vaeac.extra_parameters = list(
+#'     vaeac.paired_sampling = TRUE,
+#'     vaeac.verbose = TRUE
+#'   )
+#' )
+#'
+#' # Collect the explanation objects in an unnamed list
+#' explanation_list_unnamed <- list(
+#'   explanation_paired_sampling_FALSE,
+#'   explanation_paired_sampling_FALSE_small,
+#'   explanation_paired_sampling_TRUE,
+#'   explanation_paired_sampling_TRUE_small
+#' )
+#'
+#' # Collect the explanation objects in an named list
+#' explanation_list_named <- list(
+#'   "Regular samp. & large NN" = explanation_paired_sampling_FALSE,
+#'   "Regular samp. & small NN" = explanation_paired_sampling_FALSE_small,
+#'   "Paired samp. & large NN" = explanation_paired_sampling_TRUE,
+#'   "Paired samp. & small NN" = explanation_paired_sampling_TRUE_small
+#' )
+#'
+#' # Call the function with the unnamed list, will create names
+#' plot_several_vaeacs_VLB_IWAE(explanation_list = explanation_list_unnamed)
+#'
+#' # Call the function with the named list, will use the provided names
+#' # See that the paired samplign often produce more stable results
+#' plot_several_vaeacs_VLB_IWAE(explanation_list = explanation_list_named)
+#'
+#' # The function also works if we have only one method,
+#' # but then one should only look at the method plot
+#' plot_several_vaeacs_VLB_IWAE(
+#'   explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
+#'   plot_type = "method")
+#'
+#' # Can alter the plot
+#' plot_several_vaeacs_VLB_IWAE(
+#'   explanation_list = explanation_list_named,
+#'   plot_from_nth_epoch = 5,
+#'   plot_every_nth_epoch = 3,
+#'   facet_wrap_scales = "free"
+#' )
+#'
+#' # If we want only want the criterion version
+#' tmp_fig_criterion = plot_several_vaeacs_VLB_IWAE(
+#'   explanation_list = explanation_list_named,
+#'   plot_type = "criterion")
+#'
+#' # We can add points
+#' tmp_fig_criterion + ggplot2::geom_point(shape = "circle", size = 1, ggplot2::aes(col = Method))
+#'
+#' # If we rather want smooths with se bands
+#' tmp_fig_criterion$layers[[1]] = NULL
+#' tmp_fig_criterion + ggplot2::geom_smooth(method = "loess", formula = y ~ x, se = TRUE) +
+#'   ggplot2::scale_color_brewer(palette = "Set1") +
+#'   ggplot2::theme_minimal()
+#'
+#' # If we only want the VLB
+#' plot_several_vaeacs_VLB_IWAE(
+#'   explanation_list = explanation_list_named,
+#'   criteria = "VLB",
+#'   plot_type = "criterion")
 #' }
 #'
 #' @author Lars Henry Berge Olsen
