@@ -198,35 +198,34 @@ shapley_setup <- function(internal) {
   return(internal)
 }
 
-feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL,paired_shap_sampling=FALSE) {
-
+feature_combinations_perm <- function(m, exact = TRUE, n_permutations = NULL, paired_shap_sampling = FALSE) {
   if (!exact) {
-      # Switch to exact for feature-wise method
-      if (n_permutations >= factorial(m)) {
-        n_combinations <- 2^m
-        n_permutations <- factorial(m)
-        exact <- TRUE
-        message(
-          paste0(
-            "Success with message:\n",
-            "n_permutations is larger than or equal to m! = ", factorial(m), ". \n",
-            "Using exact instead.\n"
-          )
+    # Switch to exact for feature-wise method
+    if (n_permutations >= factorial(m)) {
+      n_combinations <- 2^m
+      n_permutations <- factorial(m)
+      exact <- TRUE
+      message(
+        paste0(
+          "Success with message:\n",
+          "n_permutations is larger than or equal to m! = ", factorial(m), ". \n",
+          "Using exact instead.\n"
         )
-      }
+      )
+    }
   }
 
   if (exact) {
     perms_mat <- feature_permute_exact(m)
   } else {
-    perms_mat <- feature_permute_samp(m, n_permutations,paired_shap_sampling)
+    perms_mat <- feature_permute_samp(m, n_permutations, paired_shap_sampling)
   }
   return(perms_mat)
 }
 
 unrank_permutations_mat <- function(ranks, n) {
   # Precompute factorials
-  factorials <- sapply(0:(n-1), factorial)
+  factorials <- sapply(0:(n - 1), factorial)
 
   # Initialize the matrix of permutations
   permutations <- matrix(nrow = length(ranks), ncol = n)
@@ -236,7 +235,7 @@ unrank_permutations_mat <- function(ranks, n) {
     elements <- 1:n
     permutation <- integer(n)
 
-    for(i in seq_len(n)){
+    for (i in seq_len(n)) {
       factorial <- factorials[n - i + 1]
       index <- rank %/% factorial
       rank <- rank %% factorial
@@ -250,31 +249,31 @@ unrank_permutations_mat <- function(ranks, n) {
   return(permutations)
 }
 
-feature_permute_samp <- function(m, n_permutations,paired_shap_sampling=TRUE) {
+feature_permute_samp <- function(m, n_permutations, paired_shap_sampling = TRUE) {
   # This function generates random permutations of the features using the
   # ranking/unranking approach
 
   tot_no_permutations <- factorial(m)
 
   # Generate unique random permutation rankings that ought to be transformed to permutations
-  ranks = sample.int(tot_no_permutations, n_permutations, replace = FALSE)-1
+  ranks <- sample.int(tot_no_permutations, n_permutations, replace = FALSE) - 1
 
   # Generates the permutations
-  perms <- unrank_permutations_mat(ranks,m)
+  perms <- unrank_permutations_mat(ranks, m)
 
-  if(paired_shap_sampling==TRUE){
+  if (paired_shap_sampling == TRUE) {
     # Gets the reverse (paired) permutations
-    rev_perms <- perms[,seq(m,1)]
+    rev_perms <- perms[, seq(m, 1)]
 
     # Since there is no guarantee that the reverse permutations are not sampled in perms,
     # we combine the two one by one to ensure that the reverse permutations are always
     # present
     # Note that we sample 2*n_permutations permutations also in the case of paired_shap_sampling = TRUE since we need to guarantee that we at least have n_permutations unique permutations
-    comb_perms <- matrix(NA,nrow=2*n_permutations,ncol=m)
-    comb_perms[seq(1,2*n_permutations-1,by=2),] <- perms
-    comb_perms[seq(2,2*n_permutations,by=2),] <- rev_perms
+    comb_perms <- matrix(NA, nrow = 2 * n_permutations, ncol = m)
+    comb_perms[seq(1, 2 * n_permutations - 1, by = 2), ] <- perms
+    comb_perms[seq(2, 2 * n_permutations, by = 2), ] <- rev_perms
 
-    final_perms_mat <- unique(comb_perms)[seq_len(n_permutations),]
+    final_perms_mat <- unique(comb_perms)[seq_len(n_permutations), ]
     return(final_perms_mat)
   } else {
     return(perms)
@@ -284,7 +283,7 @@ feature_permute_samp <- function(m, n_permutations,paired_shap_sampling=TRUE) {
 feature_permute_exact <- function(m) {
   # Generate all possible combinations of the features using the ranking/unranking approach
 
-  ranks <- seq(factorial(m))-1
+  ranks <- seq(factorial(m)) - 1
   return(unrank_permutations_mat(ranks = ranks, n = m))
 }
 

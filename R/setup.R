@@ -133,7 +133,7 @@ check_and_set_parameters <- function(internal) {
     check_groups(feature_names, group)
   }
 
-  if(type!="lingauss"){
+  if (type != "lingauss") {
     if (!exact) {
       if (!is_groupwise) {
         internal$parameters$used_n_combinations <- min(2^n_features, n_combinations)
@@ -157,8 +157,6 @@ check_and_set_parameters <- function(internal) {
 
     # Checking n_batches vs n_combinations etc
     check_n_batches(internal)
-
-
   }
 
 
@@ -186,7 +184,8 @@ check_n_combinations <- function(internal) {
           "`n_combinations` (", n_combinations, ") has to be greater than the number of components to decompose ",
           " the forecast onto:\n",
           "`horizon` (", horizon, ") + `explain_y_lags` (", explain_y_lags, ") ",
-          "+ sum(`explain_xreg_lags`) (", sum(explain_xreg_lags), ").\n"        ))
+          "+ sum(`explain_xreg_lags`) (", sum(explain_xreg_lags), ").\n"
+        ))
       }
     } else {
       if (n_combinations <= n_groups) {
@@ -200,7 +199,8 @@ check_n_combinations <- function(internal) {
   } else {
     if (!is_groupwise) {
       if (n_combinations <= n_features) {
-        stop("`n_combinations` has to be greater than the number of features.")      }
+        stop("`n_combinations` has to be greater than the number of features.")
+      }
     } else {
       if (n_combinations <= n_groups) {
         stop("`n_combinations` has to be greater than the number of groups.")
@@ -411,10 +411,10 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
 
   # n_permutations
   if (!is.null(n_permutations) &&
-      !(is.wholenumber(n_permutations) &&
-        length(n_permutations) == 1 &&
-        !is.na(n_permutations) &&
-        n_permutations > 0)) {
+    !(is.wholenumber(n_permutations) &&
+      length(n_permutations) == 1 &&
+      !is.na(n_permutations) &&
+      n_permutations > 0)) {
     stop("`n_permutations` must be NULL or a single positive integer.")
   }
 
@@ -455,7 +455,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   }
 
   # type
-  if (!(type %in% c("normal", "forecast","lingauss"))) {
+  if (!(type %in% c("normal", "forecast", "lingauss"))) {
     stop("`type` must be either `normal`, `forecast` or `lingauss`.\n")
   }
 
@@ -532,7 +532,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   parameters <- append(parameters, list(...))
 
   # Setting exact based on n_combinations (TRUE if NULL)
-  if(type=="lingauss"){
+  if (type == "lingauss") {
     parameters$exact <- ifelse(is.null(parameters$n_permutations), TRUE, FALSE)
   } else {
     parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
@@ -719,7 +719,7 @@ set_defaults <- function(internal) {
   n_batches <- internal$parameters$n_batches
 
   # n_batches
-  if(is.null(n_batches)){
+  if (is.null(n_batches)) {
     internal$parameters$n_batches <- get_default_n_batches(approach, n_unique_approaches, used_n_combinations)
   }
 

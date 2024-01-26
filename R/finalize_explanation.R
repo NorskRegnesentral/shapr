@@ -285,7 +285,6 @@ compute_MSEv_eval_crit <- function(internal,
 #'
 #' @export
 compute_shapley_lingauss <- function(internal) {
-
   # Inputs
   mu <- internal$parameters$gaussian.mu
   n_features <- internal$parameters$n_features
@@ -304,18 +303,16 @@ compute_shapley_lingauss <- function(internal) {
 
   # Get the prediction
 
-  p <- as.numeric(alpha + x_explain_mat%*%beta)
+  p <- as.numeric(alpha + x_explain_mat %*% beta)
 
   # Compute phi0
-  phi0 <- as.numeric(alpha+t(beta)%*%mu)
+  phi0 <- as.numeric(alpha + t(beta) %*% mu)
   shapley_mat <- matrix(0, nrow = n_explain, ncol = n_features)
   colnames(shapley_mat) <- feature_names
 
-  for(j in seq_len(n_features)) {
-
+  for (j in seq_len(n_features)) {
     # Consider moving the computation of the first and all but the multiplication of the second term to the pre-processing function
-    shapley_mat[,j] <- as.numeric(t(beta)%*%Tmu_list[[j]]%*%mu) + x_explain_mat%*%t(Tx_list[[j]])%*%beta
-
+    shapley_mat[, j] <- as.numeric(t(beta) %*% Tmu_list[[j]] %*% mu) + x_explain_mat %*% t(Tx_list[[j]]) %*% beta
   }
 
   dt_shapley <- data.table(
@@ -328,9 +325,7 @@ compute_shapley_lingauss <- function(internal) {
     internal = internal,
     pred_explain = p
   )
-  attr(output, "class") <- c("shapr","lingauss", "list")
+  attr(output, "class") <- c("shapr", "lingauss", "list")
 
   return(output)
-
 }
-

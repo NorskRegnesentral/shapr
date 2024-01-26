@@ -7,16 +7,16 @@
 #' @author Martin Jullum
 #'
 explain_lingauss <- function(model,
-                           x_explain,
-                           x_train,
-                           n_permutations = NULL,
-                           group = NULL,
-                           n_batches = NULL,
-                           seed = 1,
-                           predict_model = NULL,
-                           get_model_specs = NULL,
-                           timing = TRUE,
-                           ...) { # ... is further arguments passed to specific approaches
+                             x_explain,
+                             x_train,
+                             n_permutations = NULL,
+                             group = NULL,
+                             n_batches = NULL,
+                             seed = 1,
+                             predict_model = NULL,
+                             get_model_specs = NULL,
+                             timing = TRUE,
+                             ...) { # ... is further arguments passed to specific approaches
 
   timing_list <- list(
     init_time = Sys.time()
@@ -27,7 +27,7 @@ explain_lingauss <- function(model,
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
 
-  lingauss_model_coef <- get_linear_coef(model,feature_specs)
+  lingauss_model_coef <- get_linear_coef(model, feature_specs)
 
   null_object <- NULL
   # Sets up and organizes input parameters
@@ -75,7 +75,7 @@ explain_lingauss <- function(model,
 
   timing_list$setup_computation <- Sys.time()
 
-  internal <- compute_lingauss_Tmu_Tx(internal,...)
+  internal <- compute_lingauss_Tmu_Tx(internal, ...)
 
   timing_list$compute_Tmu_Tx <- Sys.time()
 
@@ -100,8 +100,7 @@ explain_lingauss <- function(model,
 #' @inherit explain
 explain_lingauss_precomputed <- function(explain_lingauss_object,
                                          x_explain,
-                                         timing = TRUE
-                                         ){
+                                         timing = TRUE) {
   timing_list <- list(
     init_time = Sys.time()
   )
@@ -134,4 +133,3 @@ explain_lingauss_precomputed <- function(explain_lingauss_object,
 
   return(output)
 }
-
