@@ -40,7 +40,7 @@ shapley_setup_lingauss <- function(internal) {
   if (!exact && n_permutations >= factorial(n_features0)) {
     internal$parameters$exact <- TRUE
   }
-  internal$parameters$n_permutations <- nrow(perms_mat) # Updating this parameter in the end based on what is actually used.
+  internal$parameters$n_permutations <- nrow(perms_mat) # Updating based on what is actually used.
 
 
   return(internal)
