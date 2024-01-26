@@ -1568,7 +1568,6 @@ extend_batch <- function(batch,
 #' @param batch_size Integer. The number of samples to include in each batch.
 #' @param model The vaeac model.
 #' @param num_samples Number of samples to generate for computing the IWAE for each validation sample.
-#' @param verbose Boolean. If we are to print results to the user.
 #'
 #' @return The average iwae over all instances in the validation dataset.
 #'
@@ -1578,8 +1577,8 @@ get_validation_iwae <- function(val_dataloader,
                                 mask_generator,
                                 batch_size,
                                 model,
-                                num_samples,
-                                verbose = FALSE) {
+                                num_samples) {
+
   # Set variables to store the number of instances evaluated and avg_iwae
   cum_size <- 0
   avg_iwae <- 0

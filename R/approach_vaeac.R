@@ -1046,8 +1046,9 @@ vaeac_train_model <- function(x_train,
   # Iterate over the initializations.
   initialization <- 1
   for (initialization in seq(num_vaeacs_initiate)) {
+
     # Initialize a new vaeac model
-    model <- vaeac(
+    vaeac_model <- vaeac(
       one_hot_max_sizes = one_hot_max_sizes,
       width = width,
       depth = depth,
@@ -1065,167 +1066,49 @@ vaeac_train_model <- function(x_train,
       sigma_sigma = sigma_sigma
     )
 
+    # Send the model to the GPU, if we have access to it.
+    if (use_cuda) vaeac_model <- vaeac_model$cuda()
+    # TODO: we need to check this + we need to send the data too
+
     # Print the number of trainable parameters to the user
-    if (verbose == 2 && initlization == 1) {
-      message(paste0("The number of trainable parameters in the vaeac model is '", model$num_train_param[1, 1] ,"'."))
-      # UNSURE IF I WANT THIS TO BE A MESSAGE OR A STICKY
-      # progressr_bar(message = paste0("The number of trainable parameters in the vaeac model is '",
-      #                                model$num_train_param[1, 1] ,"'."),
-      #               class = "sticky",
-      #               amount = 0)
-    }
+    if (verbose == 2 && initlization == 1)
+      message(paste0("The vaeac model contains ", vaeac_model$num_train_param[1, 1] ," trainable parameters."))
 
     # Print which initialization vaeac the function is working on
-    if (verbose == 1) {
-      message(paste0("Initializing vaeac number ", initialization, " of ", num_vaeacs_initiate, "."))
-      # UNSURE IF I WANT THIS TO BE A MESSAGE OR A STICKY
-      # progressr_bar(message = paste0("Initializing vaeac number ", initialization, " of ", num_vaeacs_initiate, "."),
-      #               class = "sticky",
-      #               amount = 0)
-
-    }
-
-    # Check if we are providing more output for easier debugging
-    if (verbose) {
-
-
-
-
-      # Create a progress bar for the individual initialization vaeac.
-      # Note that we will not see this `progress::progress_bar` move/update if
-      # the `progressr` library is used. Then this will just print out
-      # the finished `progress::progress_bar`.
-      pb <- progress::progress_bar$new(
-        format = paste(
-          "(:spin) [:bar] :percent [vaeac: #:initialization | time: :elapsedfull |",
-          "ETR: :eta | Epoch: :epoch | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]"
-        ),
-        total = epochs_initiation_phase,
-        complete = "=", # Completion bar character
-        incomplete = "-", # Incomplete bar character
-        current = ">", # Current bar character
-        clear = FALSE, # If TRUE, clears the bar when finish
-        width = 125
-      ) # Width of the progress bar
-    }
-
-    # Extract the variational lower bound scale factor and mask generator from the vaeac model object.
-    vlb_scale_factor <- model$vlb_scale_factor
-    mask_generator <- model$mask_generator
-
+    if (verbose == 1) message(paste0("Initializing vaeac number ", initialization, " of ", num_vaeacs_initiate, "."))
+    #paste0("vaeac: #", initialization, " | Epoch: ", epoch, " | VLB: ", vlb, " | IWAE: ", iwae, " | IWAE_R: ", runningiwae)
 
     # Create the ADAM optimizer
     optimizer = vaeac_get_optimizer(optimizer_name = "ADAM")
 
+    # Train the current initialized vaeac model
+    vaeac_model_now_list = vaeac_train(
+      vaeac_model = vaeac_model,
+      optimizer = optimizer,
+      epochs = epochs,
+      train_dataloader = train_dataloader,
+      val_dataloader = val_dataloader,
+      validation_iwae_num_samples = validation_iwae_num_samples,
+      running_avg_num_values = running_avg_num_values,
+      verbose = verbose,
+      progressr_bar = progressr_bar,
+      save_models = FALSE, # Do not want to save during initialization
+      early_stopping = FALSE, # Do not want to do early stopping during initialization
+      initialization = initialization,
+      num_vaeacs_initiate = num_vaeacs_initiate,
+      train_vlb = NULL, # We start from scratch
+      validation_iwae = NULL, # We start from scratch
+      validation_iwae_running_avg = NULL # We start from scratch
+    )
 
-    # An array to store the regular and running validation IWAE errors
-    validation_iwae <- c()
-    validation_iwae_running_avg <- c()
-
-    # An array of running variational lower bounds on the train set
-    train_vlb <- c()
-
-    epoch <- 1
-    # Start the training loop
-    for (epoch in seq(epochs_initiation_phase)) {
-      ## First we do one epoch of training before
-      # Set average variational lower bound to 0 for this epoch
-      avg_vlb <- 0
-
-      # Array to keep track of the training errors (i.e., VLB)
-      training_error_batch <- c()
-
-      # Index to keep track of which batch we are working on. Only used for progress bar.
-      batch_index <- 1
-
-      batch <- train_dataloader$.iter()$.next()
-      # Iterate over the training data
-      coro::loop(for (batch in train_dataloader) {
-        # If batch size is less than batch_size, extend it with objects from the beginning of the dataset
-        if (batch$shape[1] < batch_size) {
-          batch <- extend_batch(
-            batch = batch,
-            dataloader = train_dataloader,
-            batch_size = batch_size
-          )
-        }
-
-        # Generate mask and do an optimizer step over the mask and the batch
-        mask <- mask_generator(batch)
-
-        # Set all previous gradients to zero.
-        optimizer$zero_grad()
-
-        # Compute the variational lower bound for the batch given the mask
-        vlb <- model$batch_vlb(batch, mask)$mean()
-
-        # Backpropagation: minimize the negative vlb.
-        vlb_loss <- (-vlb / vlb_scale_factor)
-        vlb_loss$backward()
-
-        # Update the model parameters by using ADAM.
-        optimizer$step()
-
-        # Update running variational lower bound average
-        avg_vlb <- avg_vlb + (vlb$to(dtype = torch::torch_float())$clone()$detach() - avg_vlb) / batch_index
-
-        # Update the batch index.
-        batch_index <- batch_index + 1
-      })
-
-      ## Done one new epoch of training. Time to evaluate the model on the validation data.
-      # Compute the validation iwae
-      val_iwae <- get_validation_iwae(
-        val_dataloader,
-        mask_generator,
-        batch_size,
-        model,
-        validation_iwae_num_samples,
-        verbose
-      )
-
-      # Add the current validation_iwae and train_vlb to the lists.
-      validation_iwae <- torch::torch_cat(c(validation_iwae, val_iwae), -1)
-      train_vlb <- torch::torch_cat(c(train_vlb, avg_vlb), -1)
-
-      # Compute the running validation IWAE
-      val_iwae_running <- validation_iwae[
-        (-min(length(validation_iwae), running_avg_num_values) +
-           length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
-        drop = FALSE
-      ]$mean()$view(1)
-      validation_iwae_running_avg <- torch::torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
-
-      # If printing debug messages
-      if (verbose) {
-        # Updates the current state of the progress bar for the individual vaeac initialization model
-        pb$tick(tokens = list(
-          initialization = initialization,
-          epoch = epoch,
-          vlb = round(avg_vlb$item(), 3),
-          iwae = round(val_iwae$item(), 3),
-          runningiwae = round(validation_iwae_running_avg[-1]$item(), 3)
-        ))
-      }
-
-      # Update the overall `progressr::progressor`.
-      progressr_bar(message = sprintf("Training vaeac (init. %d of %d) ", initialization, num_vaeacs_initiate))
-    } # Done with initial training of a single vaeac model
-
-    # Save the current vaeac model, if it is the best initialized version so far.
-    if ((best_vlb <= avg_vlb)$item()) {
-      best_vlb <- avg_vlb
-      best_iteration <- initialization
-      best_model <- model
-      best_validation_iwae <- validation_iwae
-      best_validation_iwae_run_avg <- validation_iwae_running_avg
-      best_train_vlb <- train_vlb
-      best_optimizer <- optimizer
-      best_batch_size <- batch_size
-      best_mask_generator <- mask_generator
-      best_vlb_scale_factor <- vlb_scale_factor
+    # If the new initialization have lower training VLB than previous initializations, then we keep it.
+    if ((best_vlb <= vaeac_model_now_list$avg_vlb)$item()) {
+      vaeac_model_best_list = vaeac_model_now_list
     }
   } # Done with initial training of all vaeac models
+
+
+  stop()
 
   # Load the best initialized vaeac model and continue training.
   # networks = best_networks
@@ -1253,23 +1136,6 @@ vaeac_train_model <- function(x_train,
       "\nContinue with training the best initiation."
     ))
 
-    # Create a progress bar for the remaining epochs for the final/used vaeac model.
-    # Note that we will not see this `progress::progress_bar` move/update if
-    # the `progressr` library is used. Then this will just print out
-    # the finished `progress::progress_bar`.
-    # Should maybe include width, depth, latent_dim, lr, if doing hyperparameter tuning.
-    pb <- progress::progress_bar$new(
-      format = paste(
-        "(:spin) [:bar] :percent [time: :elapsedfull | ETR: :eta |",
-        "Epoch: :epoch | Best epoch: :be | VLB: :vlb | IWAE: :iwae | IWAE_R: :runningiwae]"
-      ),
-      total = (epochs - epochs_initiation_phase),
-      complete = "=", # Completion bar character
-      incomplete = "-", # Incomplete bar character
-      current = ">", # Current bar character
-      clear = FALSE, # If TRUE, clears the bar when finish
-      width = 125
-    ) # Width of the progress bar
   }
 
   # Continue training the best vaeac model
@@ -1327,14 +1193,7 @@ vaeac_train_model <- function(x_train,
 
     # Done with one new epoch of training. Time to use the model on the validation data.
     # Time to evaluate the model on the validation data. Compute the validation IWAE.
-    val_iwae <- get_validation_iwae(
-      val_dataloader,
-      mask_generator,
-      batch_size,
-      model,
-      validation_iwae_num_samples,
-      verbose
-    )
+    val_iwae <- get_validation_iwae(val_dataloader, mask_generator, batch_size, model, validation_iwae_num_samples)
 
     # Compute the running validation IWAE.
     val_iwae_running <- validation_iwae[
@@ -2471,6 +2330,175 @@ vaeac_get_optimizer = function(optimizer_name = "ADAM") {
   }
 
   return(optimizer)
+}
+
+#' Title
+#'
+#'
+#' @param vaeac_model
+#' @param optimizer
+#' @param epochs
+#' @param train_dataloader
+#' @param val_dataloader
+#' @param validation_iwae_num_samples
+#' @param verbose
+#' @param train_vlb torch::tensor 1D
+#' @param validation_iwae torch::tensor 1D
+#' @param validation_iwae_running_avg torch::tensor 1D
+#'
+#' @return
+#' @export
+#'
+#' @examples
+vaeac_train <- function(vaeac_model,
+                        optimizer,
+                        epochs,
+                        train_dataloader,
+                        val_dataloader,
+                        validation_iwae_num_samples,
+                        running_avg_num_values,
+                        verbose,
+                        progressr_bar,
+                        save_models = FALSE,
+                        early_stopping = FALSE,
+                        initialization = NULL,
+                        num_vaeacs_initiate = NULL,
+                        train_vlb = NULL,
+                        validation_iwae = NULL,
+                        validation_iwae_running_avg = NULL) {
+  # Check for valid input
+  if (xor(!is.null(initialization), !is.null(num_vaeacs_initiate))) {
+    stop("Either none or both of `initialization` and `num_vaeacs_initiate` must be given.")
+  }
+
+  if (xor(!is.null(train_vlb), !is.null(validation_iwae), !is.null(validation_iwae_running_avg))) {
+    stop("Either none or all of `train_vlb`, `validation_iwae`, and `validation_iwae_running_avg` must be given.")
+  }
+
+  # Arrays to store the running VLB and IWAE errors if they are not provided
+  if (is.null(train_vlb)) train_vlb <- c()
+  if (is.null(validation_iwae)) validation_iwae <- c()
+  if (is.null(validation_iwae_running_avg)) validation_iwae_running_avg <- c()
+
+  # Get the batch size
+  batch_size <- train_dataloader$batch_size
+
+  # Extract the variational lower bound scale factor and mask generator from the vaeac model object.
+  vlb_scale_factor <- vaeac_model$vlb_scale_factor
+  mask_generator <- vaeac_model$mask_generator
+
+
+  # Start the training loop
+  for (epoch in seq(epochs_initiation_phase)) {
+    # Set average variational lower bound to 0 for this epoch
+    avg_vlb <- 0
+
+    # Array to keep track of the training errors (i.e., VLB)
+    training_error_batch <- c()
+
+    # Index to keep track of which batch we are working on.
+    batch_index <- 1
+
+    # batch <- train_dataloader$.iter()$.next()
+
+    # Iterate over the training data
+    coro::loop(for (batch in train_dataloader) {
+      # If batch size is less than batch_size, extend it with objects from the beginning of the dataset
+      if (batch$shape[1] < batch_size) {
+        batch <- extend_batch(batch = batch, dataloader = train_dataloader, batch_size = batch_size)
+      }
+
+      # Generate mask and do an optimizer step over the mask and the batch
+      mask <- mask_generator(batch)
+
+      # Set all previous gradients to zero.
+      optimizer$zero_grad()
+
+      # Compute the variational lower bound for the batch given the mask
+      vlb <- vaeac_model$batch_vlb(batch, mask)$mean()
+
+      # Backpropagation: minimize the negative vlb.
+      vlb_loss <- (-vlb / vlb_scale_factor)
+      vlb_loss$backward()
+
+      # Update the vaeac_model parameters by using ADAM.
+      optimizer$step()
+
+      # Update running variational lower bound average
+      avg_vlb <- avg_vlb + (vlb$to(dtype = torch::torch_float())$clone()$detach() - avg_vlb) / batch_index
+
+      # Update the batch index.
+      batch_index <- batch_index + 1
+    })
+
+    ## Done one new epoch of training. Time to evaluate the vaeac_model on the validation data.
+    # Compute the validation IWAE
+    val_iwae <- get_validation_iwae(
+      val_dataloader = val_dataloader,
+      mask_generator = mask_generator,
+      batch_size = batch_size,
+      vaeac_model = vaeac_model,
+      validation_iwae_num_samples = validation_iwae_num_samples
+    )
+
+    # Add the current validation_iwae and train_vlb to the lists.
+    validation_iwae <- torch::torch_cat(c(validation_iwae, val_iwae), -1)
+    train_vlb <- torch::torch_cat(c(train_vlb, avg_vlb), -1)
+
+    # Compute the running validation IWAE
+    val_iwae_running <-
+      validation_iwae[
+        (-min(length(validation_iwae), running_avg_num_values) +
+           length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
+        drop = FALSE
+      ]$mean()$view(1)
+    validation_iwae_running_avg <- torch::torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
+
+
+    # ADD SOME KIND OF EARLY STOPPING HERE(?)
+
+    # ADD SAVE MODELS and best_epoch
+
+
+
+
+    # How to handle the message to the progress bar
+    if (!is.null(progressr_bar)) {
+      if (!is.null(initialization)) {
+        progressr_bar(paste0(
+          "Training vaeac (init. ", initialization, " of ", num_vaeacs_initiate, "): Epoch: ", epoch,
+          " | VLB: ", round(avg_vlb$item(), 3), " | IWAE: ", round(val_iwae$item(), 3)
+        ))
+      } else {
+        progressr_bar(paste0(
+          "Training vaeac (final model): Epoch: ", epoch, " | best epoch: ", best_epoch,
+          " | VLB: ", round(avg_vlb$item(), 3), " | IWAE: ", round(val_iwae$item(), 3)
+        ))
+      }
+    }
+  } # Done with initial training of a single vaeac model
+
+
+  # best_vlb <- avg_vlb
+  # best_iteration <- initialization
+  # best_model <- model
+  # best_validation_iwae <- validation_iwae
+  # best_validation_iwae_run_avg <- validation_iwae_running_avg
+  # best_train_vlb <- train_vlb
+  # best_optimizer <- optimizer
+  # best_batch_size <- batch_size
+  # best_mask_generator <- mask_generator
+  # best_vlb_scale_factor <- vlb_scale_factor
+
+  return(list(
+    vaeac_model = vaeac_model,
+    optimizer = optimizer,
+    train_vlb = train_vlb,
+    validation_iwae = validation_iwae,
+    validation_iwae_running_avg = validation_iwae_running_avg,
+    avg_vlb = avg_vlb,
+    initialization = initialization
+  ))
 }
 
 # Compute Imputations ==================================================================================================
