@@ -547,8 +547,8 @@ test_that("output_lingaus_full_also_with_precomputed", {
 
   expect_snapshot_rds(
     (exp_lingaus_precomp <- explain_lingauss_precomputed(exp_lingaus,
-                                                        x_explain_numeric,
-                                                        timing = FALSE
+      x_explain_numeric,
+      timing = FALSE
     )),
     "output_lingaus_precomputed_full"
   )
@@ -557,8 +557,6 @@ test_that("output_lingaus_full_also_with_precomputed", {
     exp_lingaus,
     exp_lingaus_precomp
   )
-
-
 })
 
 test_that("output_lingaus_10_perms_also_with_precomputed", {
@@ -575,8 +573,8 @@ test_that("output_lingaus_10_perms_also_with_precomputed", {
 
   expect_snapshot_rds(
     (exp_lingaus_precomp <- explain_lingauss_precomputed(exp_lingaus,
-                                                         x_explain_numeric,
-                                                         timing = FALSE
+      x_explain_numeric,
+      timing = FALSE
     )),
     "output_lingaus_precomputed_10_perms"
   )
@@ -585,8 +583,4 @@ test_that("output_lingaus_10_perms_also_with_precomputed", {
     exp_lingaus,
     exp_lingaus_precomp
   )
-
-
 })
-
-

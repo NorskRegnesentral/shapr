@@ -1,5 +1,3 @@
-
-
 #' Compute Tmu and Tx for lingauss approach
 #' @inheritParams default_doc_explain
 #' @inheritParams setup_approach.gaussian

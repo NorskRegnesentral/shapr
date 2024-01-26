@@ -1967,7 +1967,6 @@ test_that("counting the number of unique approaches", {
 })
 
 test_that("explain_lingauss with `n_permutations` >= m! uses exact approach", {
-
   # Create three explainer object: one with exact mode, one with
   # `n_combinations` = 2^m, and one with `n_combinations` > 2^m
   # No message as n_combination = NULL sets exact mode
@@ -1979,7 +1978,7 @@ test_that("explain_lingauss with `n_permutations` >= m! uses exact approach", {
         x_train = x_train_numeric,
         timing = FALSE
       )
-      }
+    }
   )
 
   # We should get a message saying that we are using the exact mode.
@@ -2006,7 +2005,7 @@ test_that("explain_lingauss with `n_permutations` >= m! uses exact approach", {
         x_explain = x_explain_numeric,
         x_train = x_train_numeric,
         timing = FALSE,
-        n_permutations = factorial(ncol(x_explain_numeric))+1
+        n_permutations = factorial(ncol(x_explain_numeric)) + 1
       )
     },
     regexp = "Success with message:\nn_permutations is larger than or equal to m! = 120. \nUsing exact instead."
@@ -2032,5 +2031,3 @@ test_that("explain_lingauss with `n_permutations` >= m! uses exact approach", {
     factorial(ncol(x_explain_numeric))
   )
 })
-
-
