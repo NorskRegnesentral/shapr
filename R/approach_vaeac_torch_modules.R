@@ -896,7 +896,7 @@ vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE,
   one_hot_max_sizes[one_hot_max_sizes == 0] <- 1
   return_list$one_hot_max_sizes <- as.integer(one_hot_max_sizes)
 
-  # col_cat = unname(return_list$feature_list$classes == "factor")
+  # Ge the categorical and continuous features
   col_cat <- sapply(data, is.factor)
   col_cont <- sapply(data, is.numeric)
   cat_in_dataset <- sum(col_cat) > 0
@@ -906,13 +906,8 @@ vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE,
   col_cont_names <- names(col_cont[col_cont])
 
   if (cat_in_dataset) {
-    # Data table contains one or several categorical features.
-    # For vaeac to work, these must have levels 1,2, ..., K,
-    # so we transform the levels to the desired form.
-
-    # # Get the indices of the columns that are categorical
-    # col_cat_indices = seq_along(col_cat)[col_cat]
-    # col_cont_indices = seq_along(col_cont)[col_cont]
+    # Data table contains one or several categorical features and we
+    # need to ensure that these have levels 1,2, ..., K for vaeac to work.
 
     # Lists that will store maps between the original and new class names for categorical features
     map_original_to_new_names <- list()
@@ -929,9 +924,6 @@ vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE,
       map_new_to_original_names[[col_cat_name]] <- as.list(levels(data[[col_cat_name]]))
       names(map_new_to_original_names[[col_cat_name]]) <- seq_along(levels(data[[col_cat_name]]))
       map_new_to_original_names[[col_cat_name]]
-
-      # Update the names of the levels. Faster to use the method with as.numeric bellow.
-      # levels(data[[col_cat_name]]) = unlist(map_original_to_new_names[[col_cat_name]])
     }
 
     # Convert the categorical features to numeric. Automatically gets class levels 1,2,...,K.
@@ -944,13 +936,18 @@ vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE,
 
   # Check if we are to log transform all continuous features.
   if (transform_all_cont_features) {
-    # This is not the best way. We only give an error when all features are known, i.e., during training.
-    # During imputations we do not worry, as we are going to impute the NA values.
-    if (!is.na(suppressWarnings(any(data[, col_cont_names, with = FALSE] <= 0)))) {
-      # Small check that all continues features are strictly positive
-      if (suppressWarnings(any(data[, col_cont_names, with = FALSE] <= 0))) {
-        stop("The continuous features in data is not strictly positive. Cannot log-transform them.")
-      }
+    # # This is not the best way. We only give an error when all features are known, i.e., during training.
+    # # During imputations we do not worry, as we are going to impute the NA values.
+    # if (!is.na(suppressWarnings(any(data[, ..col_cont_names] <= 0)))) {
+    #   # Small check that all continues features are strictly positive
+    #   if (suppressWarnings(any(data[, ..col_cont_names] <= 0))) {
+    #     stop("The continuous features in `data` are not strictly positive. Cannot log-transform them.")
+    #   }
+    # }
+
+    # Check for non-positive features
+    if (any(data[, ..col_cont_names] <= 0)) {
+      stop("The continuous features cannot be log-transformed as they are not strictly positive.")
     }
 
     # Log-transform the continuous features.
