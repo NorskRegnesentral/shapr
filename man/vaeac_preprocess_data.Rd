@@ -4,7 +4,13 @@
 \alias{vaeac_preprocess_data}
 \title{Preprocess Data for the vaeac approach}
 \usage{
-vaeac_preprocess_data(data, transform_all_cont_features = FALSE)
+vaeac_preprocess_data(
+  data,
+  transform_all_cont_features = FALSE,
+  normalize = TRUE,
+  norm_mean = NULL,
+  norm_std = NULL
+)
 }
 \arguments{
 \item{data}{matrix/data.frame/data.table containing the training data. Only the features and
@@ -15,6 +21,12 @@ features before sending the data to vaeac. vaeac creates unbounded values, so if
 features are strictly positive, as for Burr and Abalone data, it can be advantageous to log-transform
 the data to unbounded form before using vaeac. If TRUE, then \code{vaeac_postprocess_data} will
 take the exp of the results to get back to strictly positive values.}
+
+\item{norm_mean}{Torch tensor (optional). A 1D array containing the means of the columns of \code{x_torch}.}
+
+\item{norm_std}{Torch tensor (optional). A 1D array containing the stds of the columns of \code{x_torch}.}
+
+\item{x_torch}{Torch tensor. A 2D matrix containing the data to normalize.}
 }
 \value{
 list containing data which can be used in vaeac, maps between original and new class

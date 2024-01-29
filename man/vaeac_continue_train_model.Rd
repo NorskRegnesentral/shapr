@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac.R
 \name{vaeac_continue_train_model}
 \alias{vaeac_continue_train_model}
-\title{Continue to Train the Vaeac Model}
+\title{Continue to Train the vaeac Model}
 \usage{
 vaeac_continue_train_model(
   explanation,

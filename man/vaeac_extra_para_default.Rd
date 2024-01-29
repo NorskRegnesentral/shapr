@@ -159,7 +159,8 @@ Note that additional choices are available if \code{vaeac.save_every_nth_epoch} 
 \code{"epoch_15"}, and so on.}
 }
 \value{
-TODO: SOMETHING
+Named list of the default values \code{vaeac} extra parameter arguments specified in this function call.
+Note that both \code{vaeac.model_description} and \code{vaeac.folder_to_save_model} will change with time and R session.
 }
 \description{
 In this function, we specify the default values for the extra parameters used in \code{\link[=explain]{explain()}}

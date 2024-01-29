@@ -894,6 +894,9 @@ vaeac_train_model <- function(x_train,
 
   # TODO: REMOVE list2env(vaeac_all_parameters, envir = .GlobalEnv)
 
+  # TODO: if Martin wants to then this can moved to setup_approach.vaeac().
+  # I still sort of prefer to have it here as then vaeac_train_model() works as
+  # a separate function outside the shapr::explain() call that also does the checking.
   # Check all the vaeac parameters
   do.call(vaeac_check_parameters, mget(names(formals())))
 
@@ -961,73 +964,63 @@ vaeac_train_model <- function(x_train,
 
 
   ##### List that stores needed information for save and load the model
-  # List to values saved to disk together with the vaeac models below.
+  # List of values saved to disk together with the vaeac models below.
 
   # TODO: GO THOUGH AND CHECK WHAT WE NEED AND DONT
-  state_list <- list(
-    norm_mean = norm_mean,
-    norm_std = norm_std,
-    model_description = model_description,
-    folder_to_save_model = folder_to_save_model,
-    n_train = n_train,
-    n_features = n_features,
-    one_hot_max_sizes = one_hot_max_sizes,
-    epochs = epochs,
-    epochs_specified = epochs,
-    epochs_early_stopping = epochs_early_stopping,
-    running_avg_num_values = running_avg_num_values,
-    paired_sampling = paired_sampling,
-    mask_generator_name = mask_generator_name,
-    masking_ratio = masking_ratio,
-    mask_gen_these_coalitions = mask_gen_these_coalitions,
-    mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
-    validation_ratio = validation_ratio,
-    validation_iwae_num_samples = validation_iwae_num_samples,
-    num_vaeacs_initiate = num_vaeacs_initiate,
-    epochs_initiation_phase = epochs_initiation_phase,
-    width = width,
-    depth = depth,
-    latent_dim = latent_dim,
-    activation_function = activation_function,
-    activation_function_string = activation_function$classname,
-    lr = lr,
-    batch_size = batch_size,
-    use_skip_connections = use_skip_connections,
-    skip_connection_masked_enc_dec = skip_connection_masked_enc_dec,
-    use_batch_normalization = use_batch_normalization,
-    use_cuda = use_cuda,
-    train_indices = train_indices,
-    val_indices = val_indices,
-    save_every_nth_epoch = save_every_nth_epoch,
-    sigma_mu = sigma_mu,
-    sigma_sigma = sigma_sigma,
-    feature_list = x_train_preprocessed$feature_list,
-    col_cat_names = x_train_preprocessed$col_cat_names,
-    col_cont_names = x_train_preprocessed$col_cont_names,
-    col_cat = x_train_preprocessed$col_cat,
-    col_cont = x_train_preprocessed$col_cont,
-    cat_in_dataset = x_train_preprocessed$cat_in_dataset,
-    map_new_to_original_names = x_train_preprocessed$map_new_to_original_names,
-    map_original_to_new_names = x_train_preprocessed$map_original_to_new_names,
-    transform_all_cont_features = x_train_preprocessed$transform_all_cont_features,
-    save_data = save_data,
-    verbose = verbose,
-    seed = seed,
-    vaeac_save_file_names = vaeac_save_file_names
-  )
-
-  names(state_list)
-  char_vector <- c("norm_mean", "norm_std", "model_description", "folder_to_save_model", "n_train",
-                   "n_features", "one_hot_max_sizes", "epochs", "epochs_specified", "epochs_early_stopping",
-                   "running_avg_num_values", "paired_sampling", "mask_generator_name", "masking_ratio",
-                   "mask_gen_these_coalitions", "mask_gen_these_coalitions_prob", "validation_ratio",
-                   "validation_iwae_num_samples", "num_vaeacs_initiate", "epochs_initiation_phase",
-                   "width", "depth", "latent_dim", "activation_function", "activation_function_string",
-                   "lr", "batch_size", "use_skip_connections", "skip_connection_masked_enc_dec",
-                   "use_batch_normalization", "use_cuda", "train_indices", "val_indices", "save_every_nth_epoch",
-                   "sigma_mu", "sigma_sigma", "feature_list", "col_cat_names", "col_cont_names", "col_cat",
-                   "col_cont", "cat_in_dataset", "map_new_to_original_names", "map_original_to_new_names",
-                   "transform_all_cont_features", "save_data", "verbose", "seed", "vaeac_save_file_names")
+  # Information saved together with the vaeac model to make it possible to load the model from disk later.
+  # Note that some of the parameters could be derived from others, but for simplicity we store all needed objects.
+  state_list = vaeac_get_full_state_list()
+  # state_list <- list(
+  #   norm_mean = norm_mean,
+  #   norm_std = norm_std,
+  #   model_description = model_description,
+  #   folder_to_save_model = folder_to_save_model,
+  #   n_train = n_train,
+  #   n_features = n_features,
+  #   one_hot_max_sizes = one_hot_max_sizes,
+  #   epochs = epochs,
+  #   epochs_specified = epochs,
+  #   epochs_early_stopping = epochs_early_stopping,
+  #   running_avg_num_values = running_avg_num_values,
+  #   paired_sampling = paired_sampling,
+  #   mask_generator_name = mask_generator_name,
+  #   masking_ratio = masking_ratio,
+  #   mask_gen_these_coalitions = mask_gen_these_coalitions,
+  #   mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
+  #   validation_ratio = validation_ratio,
+  #   validation_iwae_num_samples = validation_iwae_num_samples,
+  #   num_vaeacs_initiate = num_vaeacs_initiate,
+  #   epochs_initiation_phase = epochs_initiation_phase,
+  #   width = width,
+  #   depth = depth,
+  #   latent_dim = latent_dim,
+  #   activation_function = activation_function,
+  #   activation_function_string = activation_function$classname,
+  #   lr = lr,
+  #   batch_size = batch_size,
+  #   use_skip_connections = use_skip_connections,
+  #   skip_connection_masked_enc_dec = skip_connection_masked_enc_dec,
+  #   use_batch_normalization = use_batch_normalization,
+  #   use_cuda = use_cuda,
+  #   train_indices = train_indices,
+  #   val_indices = val_indices,
+  #   save_every_nth_epoch = save_every_nth_epoch,
+  #   sigma_mu = sigma_mu,
+  #   sigma_sigma = sigma_sigma,
+  #   feature_list = x_train_preprocessed$feature_list,
+  #   col_cat_names = x_train_preprocessed$col_cat_names,
+  #   col_cont_names = x_train_preprocessed$col_cont_names,
+  #   col_cat = x_train_preprocessed$col_cat,
+  #   col_cont = x_train_preprocessed$col_cont,
+  #   cat_in_dataset = x_train_preprocessed$cat_in_dataset,
+  #   map_new_to_original_names = x_train_preprocessed$map_new_to_original_names,
+  #   map_original_to_new_names = x_train_preprocessed$map_original_to_new_names,
+  #   transform_all_cont_features = x_train_preprocessed$transform_all_cont_features,
+  #   save_data = save_data,
+  #   verbose = verbose,
+  #   seed = seed,
+  #   vaeac_save_file_names = vaeac_save_file_names
+  # )
 
 
 
@@ -1159,7 +1152,7 @@ vaeac_train_model <- function(x_train,
   }
 
 
-  vaeac_train(
+  return_list <- vaeac_train(
     vaeac_model = vaeac_model_best_list$vaeac_model,
     optimizer = vaeac_model_best_list$optimizer,
     train_dataloader = train_dataloader,
@@ -1184,235 +1177,231 @@ vaeac_train_model <- function(x_train,
 
 
 
+#   # Continue training the best vaeac model
+#   for (epoch in seq(epochs_initiation_phase + 1, epochs)) {
+#     # Set average variational lower bound to 0 for this epoch
+#     avg_vlb <- 0
+#
+#     # index to keep track of which batch we are working on
+#     batch_index <- 1
+#
+#     # Iterate over the training data
+#     coro::loop(for (batch in train_dataloader) {
+#
+#       # If batch size is less than batch_size, extend it with objects from the beginning of the dataset
+#       if (batch$shape[1] < batch_size) {
+#         batch <- extend_batch(batch = batch, dataloader = train_dataloader, batch_size = batch_size)
+#       }
+#
+#       # Generate mask and do an optimizer step over the mask and the batch
+#       mask <- mask_generator(batch)
+#
+#       # Send the batch and mask to Nvida GPU if we have. Would be faster.
+#       if (use_cuda) {
+#         batch <- batch$cuda()
+#         mask <- mask$cuda()
+#       }
+#
+#       # Set all previous gradients to zero.
+#       optimizer$zero_grad()
+#
+#       # Compute the variational lower bound for the batch given the mask
+#       vlb <- model$batch_vlb(batch, mask)$mean()
+#
+#       # Backpropagation: minimize the negative vlb.
+#       vlb_loss <- (-vlb / vlb_scale_factor)
+#       vlb_loss$backward()
+#
+#       # Update the model parameters by using the optimizer.
+#       optimizer$step()
+#
+#       # Update running variational lower bound average
+#       # a + (new - a)/(i+1) = {(i+1)a + new - a}/(i+1) = { a(i) + new}/(i+1) = a *i/(i+1) + new/(i+1)
+#       # recursive average formula/update.
+#       avg_vlb <- avg_vlb + (vlb$to(dtype = torch::torch_float())$clone()$detach() - avg_vlb) / batch_index
+#
+#       # Update the batch index.
+#       batch_index <- batch_index + 1
+#     })
+#
+#     # Done with one new epoch of training. Time to use the model on the validation data.
+#     # Time to evaluate the model on the validation data. Compute the validation IWAE.
+#     val_iwae <- vaeac_get_validation_iwae(val_dataloader, mask_generator, batch_size, model, validation_iwae_num_samples)
+#
+#     # Compute the running validation IWAE.
+#     val_iwae_running <- validation_iwae[
+#       (-min(length(validation_iwae), running_avg_num_values) +
+#          length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
+#       drop = FALSE
+#     ]$mean()$view(1)
+#
+#     # Add the current validation_iwae and train_vlb to the lists.
+#     validation_iwae <- torch::torch_cat(c(validation_iwae, val_iwae), -1)
+#     train_vlb <- torch::torch_cat(c(train_vlb, avg_vlb), -1)
+#     validation_iwae_running_avg <- torch::torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
+#
+#     # Save if current vaeac model has the lowest validation IWAE error
+#     if ((max(validation_iwae) <= val_iwae)$item() || is.null(best_state)) {
+#       best_state <- c(
+#         list(
+#           epoch = epoch,
+#           "model_state_dict" = model$state_dict(),
+#           "optimizer_state_dict" = optimizer$state_dict(),
+#           "validation_iwae" = validation_iwae,
+#           "validation_iwae_running_avg" = validation_iwae_running_avg,
+#           "running_avg_num_values" = running_avg_num_values,
+#           "train_vlb" = train_vlb
+#         ),
+#         state_list
+#       )
+#
+#       class(best_state) <- c(class(best_state), "R_vaeac", "vaeac")
+#       torch::torch_save(best_state, vaeac_save_file_names[1])
+#     }
+#
+#     # Save if current vaeac model has the lowest running validation IWAE error
+#     if ((max(validation_iwae_running_avg) <= val_iwae_running)$item() || is.null(best_state_running)) {
+#       best_state_running <- c(
+#         list(
+#           "epoch" = epoch,
+#           "model_state_dict" = model$state_dict(),
+#           "optimizer_state_dict" = optimizer$state_dict(),
+#           "validation_iwae" = validation_iwae,
+#           "validation_iwae_running_avg" = validation_iwae_running_avg,
+#           "running_avg_num_values" = running_avg_num_values,
+#           "train_vlb" = train_vlb
+#         ),
+#         state_list
+#       )
+#       class(best_state_running) <- c(class(best_state_running), "R_vaeac", "vaeac")
+#       torch::torch_save(best_state_running, vaeac_save_file_names[2])
+#     }
+#
+#     # If we are to save and we are in an n'th epoch, then we save the model.
+#     if (!is.null(save_every_nth_epoch)) {
+#       if (epoch %% save_every_nth_epoch == 0) {
+#         nth_state <- c(
+#           list(
+#             "epoch" = epoch,
+#             "model_state_dict" = model$state_dict(),
+#             "optimizer_state_dict" = optimizer$state_dict(),
+#             "validation_iwae" = validation_iwae,
+#             "validation_iwae_running_avg" = validation_iwae_running_avg,
+#             "running_avg_num_values" = running_avg_num_values,
+#             "train_vlb" = train_vlb
+#           ),
+#           state_list
+#         )
+#         class(nth_state) <- c(class(nth_state), "R_vaeac", "vaeac")
+#         torch::torch_save(nth_state, vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
+#
+#         # Add file name to list over file names.
+#         tmp_list <- list(vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
+#         names(tmp_list) <- paste("filename_epoch_", epoch, sep = "")
+#         filename_nth_list <- append(filename_nth_list, tmp_list)
+#       }
+#     }
+#
+#     # If printing debug messages
+#     if (verbose) {
+#       # Updates the current state of the progress bar for the final/used vaeac initialization model
+#       pb$tick(tokens = list(
+#         epoch = epoch,
+#         be = best_state$epoch,
+#         vlb = round(avg_vlb$item(), 3),
+#         iwae = round(val_iwae$item(), 3),
+#         runningiwae = round(validation_iwae_running_avg[-1]$item(), 3)
+#       ))
+#     }
+#
+#     # Update the overall `progressr::progressor`.
+#     progressr_bar(message = sprintf("Training vaeac (final version)"))
+#
+#     # Early stopping
+#     if (epoch - best_state$epoch >= epochs_early_stopping) {
+#       if (verbose) {
+#         # Small printout to the user
+#         message(sprintf(
+#           "\n\nEarly stopping at epoch %d. No validation improvment has been made in %d epochs.",
+#           epoch, epochs_early_stopping
+#         ))
+#         # Terminate the progress bar
+#         pb$terminate()
+#       }
+#       # Change the message in the progressr bar
+#       progressr_bar(message = sprintf("Training vaeac (early stopping)"))
+#
+#       # Add that we did early stopping
+#       early_stopping_applied <- TRUE
+#
+#       # Stop the training loop
+#       break
+#     }
+#   } # Done with training
+#   # If it is still null, then early stopping was not applied
+#   if (is.null(early_stopping_applied)) early_stopping_applied <- FALSE
+#
+#   # Include if early stopping was conducted in the state list.
+#   state_list <- c(state_list, list("early_stopping_applied" = early_stopping_applied))
+#   # Update the number of used epochs.
+#   state_list$epochs <- epoch
+#
+#   # Save the model at the last epoch
+#   last_state <- c(
+#     list(
+#       "epoch" = epoch,
+#       "model_state_dict" = model$state_dict(),
+#       "optimizer_state_dict" = optimizer$state_dict(),
+#       "validation_iwae" = validation_iwae,
+#       "validation_iwae_running_avg" = validation_iwae_running_avg,
+#       "running_avg_num_values" = running_avg_num_values,
+#       "train_vlb" = train_vlb
+#     ),
+#     state_list
+#   )
+#
+#   class(last_state) <- c(class(last_state), "R_vaeac", "vaeac")
+#   torch::torch_save(last_state, vaeac_save_file_names[3])
+#
+#   # Printout to the user
+#   if (verbose == 1) {
+#     message(sprintf(
+#       "\nResults:
+# Best epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.
+# Best running avg epoch: %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.
+# Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n",
+#       best_state$epoch,
+#       best_state$train_vlb[-1],
+#       best_state$validation_iwae[-1],
+#       best_state$validation_iwae_running_avg[-1],
+#       best_state_running$epoch,
+#       best_state_running$train_vlb[-1],
+#       best_state_running$validation_iwae[-1],
+#       best_state_running$validation_iwae_running_avg[-1],
+#       last_state$epoch,
+#       last_state$train_vlb[-1],
+#       last_state$validation_iwae[-1],
+#       last_state$validation_iwae_running_avg[-1]
+#     ))
+#   }
 
 
-  # Continue training the best vaeac model
-  for (epoch in seq(epochs_initiation_phase + 1, epochs)) {
-    # Set average variational lower bound to 0 for this epoch
-    avg_vlb <- 0
-
-    # index to keep track of which batch we are working on
-    batch_index <- 1
-
-    # Iterate over the training data
-    coro::loop(for (batch in train_dataloader) {
-      # If batch size is less than batch_size, extend it with objects from the beginning of the dataset
-      if (batch$shape[1] < batch_size) {
-        batch <- extend_batch(batch = batch, dataloader = train_dataloader, batch_size = batch_size)
-      }
-
-      # Generate mask and do an optimizer step over the mask and the batch
-      mask <- mask_generator(batch)
-
-      # Send the batch and mask to Nvida GPU if we have. Would be faster.
-      if (use_cuda) {
-        batch <- batch$cuda()
-        mask <- mask$cuda()
-      }
-
-      # Set all previous gradients to zero.
-      optimizer$zero_grad()
-
-      # Compute the variational lower bound for the batch given the mask
-      vlb <- model$batch_vlb(batch, mask)$mean()
-
-      # Backpropagation: minimize the negative vlb.
-      vlb_loss <- (-vlb / vlb_scale_factor)
-      vlb_loss$backward()
-
-      # Update the model parameters by using the optimizer.
-      optimizer$step()
-
-      # Update running variational lower bound average
-      # a + (new - a)/(i+1) = {(i+1)a + new - a}/(i+1) = { a(i) + new}/(i+1) = a *i/(i+1) + new/(i+1)
-      # recursive average formula/update.
-      avg_vlb <- avg_vlb + (vlb$to(dtype = torch::torch_float())$clone()$detach() - avg_vlb) / batch_index
-
-      # Update the batch index.
-      batch_index <- batch_index + 1
-    })
-
-    # Done with one new epoch of training. Time to use the model on the validation data.
-    # Time to evaluate the model on the validation data. Compute the validation IWAE.
-    val_iwae <- vaeac_get_validation_iwae(val_dataloader, mask_generator, batch_size, model, validation_iwae_num_samples)
-
-    # Compute the running validation IWAE.
-    val_iwae_running <- validation_iwae[
-      (-min(length(validation_iwae), running_avg_num_values) +
-         length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
-      drop = FALSE
-    ]$mean()$view(1)
-
-    # Add the current validation_iwae and train_vlb to the lists.
-    validation_iwae <- torch::torch_cat(c(validation_iwae, val_iwae), -1)
-    train_vlb <- torch::torch_cat(c(train_vlb, avg_vlb), -1)
-    validation_iwae_running_avg <- torch::torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
-
-    # Save if current vaeac model has the lowest validation IWAE error
-    if ((max(validation_iwae) <= val_iwae)$item() || is.null(best_state)) {
-      best_state <- c(
-        list(
-          epoch = epoch,
-          "model_state_dict" = model$state_dict(),
-          "optimizer_state_dict" = optimizer$state_dict(),
-          "validation_iwae" = validation_iwae,
-          "validation_iwae_running_avg" = validation_iwae_running_avg,
-          "running_avg_num_values" = running_avg_num_values,
-          "train_vlb" = train_vlb
-        ),
-        state_list
-      )
-
-      class(best_state) <- c(class(best_state), "R_vaeac", "vaeac")
-      torch::torch_save(best_state, vaeac_save_file_names[1])
-    }
-
-    # Save if current vaeac model has the lowest running validation IWAE error
-    if ((max(validation_iwae_running_avg) <= val_iwae_running)$item() || is.null(best_state_running)) {
-      best_state_running <- c(
-        list(
-          "epoch" = epoch,
-          "model_state_dict" = model$state_dict(),
-          "optimizer_state_dict" = optimizer$state_dict(),
-          "validation_iwae" = validation_iwae,
-          "validation_iwae_running_avg" = validation_iwae_running_avg,
-          "running_avg_num_values" = running_avg_num_values,
-          "train_vlb" = train_vlb
-        ),
-        state_list
-      )
-      class(best_state_running) <- c(class(best_state_running), "R_vaeac", "vaeac")
-      torch::torch_save(best_state_running, vaeac_save_file_names[2])
-    }
-
-    # If we are to save and we are in an n'th epoch, then we save the model.
-    if (!is.null(save_every_nth_epoch)) {
-      if (epoch %% save_every_nth_epoch == 0) {
-        nth_state <- c(
-          list(
-            "epoch" = epoch,
-            "model_state_dict" = model$state_dict(),
-            "optimizer_state_dict" = optimizer$state_dict(),
-            "validation_iwae" = validation_iwae,
-            "validation_iwae_running_avg" = validation_iwae_running_avg,
-            "running_avg_num_values" = running_avg_num_values,
-            "train_vlb" = train_vlb
-          ),
-          state_list
-        )
-        class(nth_state) <- c(class(nth_state), "R_vaeac", "vaeac")
-        torch::torch_save(nth_state, vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
-
-        # Add file name to list over file names.
-        tmp_list <- list(vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
-        names(tmp_list) <- paste("filename_epoch_", epoch, sep = "")
-        filename_nth_list <- append(filename_nth_list, tmp_list)
-      }
-    }
-
-    # If printing debug messages
-    if (verbose) {
-      # Updates the current state of the progress bar for the final/used vaeac initialization model
-      pb$tick(tokens = list(
-        epoch = epoch,
-        be = best_state$epoch,
-        vlb = round(avg_vlb$item(), 3),
-        iwae = round(val_iwae$item(), 3),
-        runningiwae = round(validation_iwae_running_avg[-1]$item(), 3)
-      ))
-    }
-
-    # Update the overall `progressr::progressor`.
-    progressr_bar(message = sprintf("Training vaeac (final version)"))
-
-    # Early stopping
-    if (epoch - best_state$epoch >= epochs_early_stopping) {
-      if (verbose) {
-        # Small printout to the user
-        message(sprintf(
-          "\n\nEarly stopping at epoch %d. No validation improvment has been made in %d epochs.",
-          epoch, epochs_early_stopping
-        ))
-        # Terminate the progress bar
-        pb$terminate()
-      }
-      # Change the message in the progressr bar
-      progressr_bar(message = sprintf("Training vaeac (early stopping)"))
-
-      # Add that we did early stopping
-      early_stopping_applied <- TRUE
-
-      # Stop the training loop
-      break
-    }
-  } # Done with training
-
-
-
-
-
-  # If it is still null, then early stopping was not applied
-  if (is.null(early_stopping_applied)) early_stopping_applied <- FALSE
-
-  # Include if early stopping was conducted in the state list.
-  state_list <- c(state_list, list("early_stopping_applied" = early_stopping_applied))
-  # Update the number of used epochs.
-  state_list$epochs <- epoch
-
-  # Save the model at the last epoch
-  last_state <- c(
-    list(
-      "epoch" = epoch,
-      "model_state_dict" = model$state_dict(),
-      "optimizer_state_dict" = optimizer$state_dict(),
-      "validation_iwae" = validation_iwae,
-      "validation_iwae_running_avg" = validation_iwae_running_avg,
-      "running_avg_num_values" = running_avg_num_values,
-      "train_vlb" = train_vlb
-    ),
-    state_list
-  )
-
-  class(last_state) <- c(class(last_state), "R_vaeac", "vaeac")
-  torch::torch_save(last_state, vaeac_save_file_names[3])
-
-  # Printout to the user
-  if (verbose == 1) {
-    message(sprintf(
-      "\nResults:
-Best epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.
-Best running avg epoch: %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.
-Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n",
-      best_state$epoch,
-      best_state$train_vlb[-1],
-      best_state$validation_iwae[-1],
-      best_state$validation_iwae_running_avg[-1],
-      best_state_running$epoch,
-      best_state_running$train_vlb[-1],
-      best_state_running$validation_iwae[-1],
-      best_state_running$validation_iwae_running_avg[-1],
-      last_state$epoch,
-      last_state$train_vlb[-1],
-      last_state$validation_iwae[-1],
-      last_state$validation_iwae_running_avg[-1]
-    ))
-  }
-
-  # Create a return list
-  return_list <- list(
-    "filename_best" = vaeac_save_file_names[1],
-    "filename_best_running" = vaeac_save_file_names[2],
-    "filename_last" = vaeac_save_file_names[3],
-    "train_vlb" = as.array(train_vlb),
-    "validation_iwae" = as.array(validation_iwae),
-    "validation_iwae_running_avg" = as.array(validation_iwae_running_avg),
-    "parameters" = state_list
-  )
-
-  # If we are to add the 'filename_nth_list' list to the return list.
-  if (!is.null(save_every_nth_epoch)) {
-    return_list <- append(return_list, filename_nth_list, 3)
-  }
+#
+#   # Create a return list
+#   return_list <- list(
+#     "filename_best" = vaeac_save_file_names[1],
+#     "filename_best_running" = vaeac_save_file_names[2],
+#     "filename_last" = vaeac_save_file_names[3],
+#     "train_vlb" = as.array(train_vlb),
+#     "validation_iwae" = as.array(validation_iwae),
+#     "validation_iwae_running_avg" = as.array(validation_iwae_running_avg),
+#     "parameters" = state_list
+#   )
+#
+#   # If we are to add the 'filename_nth_list' list to the return list.
+#   if (!is.null(save_every_nth_epoch)) {
+#     return_list <- append(return_list, filename_nth_list, 3)
+#   }
 
   # Update the class of the returned object
   attr(return_list, "class") <- c("R_vaeac", "vaeac", "list")
@@ -1445,6 +1434,7 @@ vaeac_continue_train_model <- function(explanation,
                                        x_train = NULL,
                                        save_data = FALSE,
                                        verbose = FALSE) {
+  # TODO: HER TAR JEG TIDEN AV ABSOLUT ALT. Det er jeg usikker på om jeg bør gjøre egentlig.
   # Keep track of how much time we use training
   new_training_time <- system.time({
     # Extract the vaeac list

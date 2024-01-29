@@ -40,7 +40,7 @@ vaeac_train_model(
 )
 }
 \arguments{
-\item{x_train}{A matrix or data.frame containing the data.
+\item{x_train}{A data.table containing the data. Categorical names
 Categorical data must have class names \eqn{1,2,\dots,K}.}
 
 \item{model_description}{String containing, e.g., the name of the data distribution or

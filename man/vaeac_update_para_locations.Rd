@@ -9,6 +9,9 @@ vaeac_update_para_locations(parameters)
 \arguments{
 \item{parameters}{List. The \code{internal$parameters} list created inside the \code{\link[=explain]{explain()}} function.}
 }
+\value{
+Updated version of \code{parameters} where all \code{vaeac} parameters are located at the correct location.
+}
 \description{
 This function ensures that the main and extra parameters for the \code{vaeac}
 approach is located at their right locations.

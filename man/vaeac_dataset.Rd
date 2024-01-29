@@ -2,7 +2,7 @@
 % Please edit documentation in R/approach_vaeac_torch_modules.R
 \name{vaeac_dataset}
 \alias{vaeac_dataset}
-\title{Dataset Used by the Vaeac Model}
+\title{Dataset used by the \code{vaeac} model}
 \usage{
 vaeac_dataset(X, one_hot_max_sizes)
 }
