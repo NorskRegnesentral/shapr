@@ -739,21 +739,21 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       # Save if current vaeac model has the lowest validation IWAE error
       if ((max(validation_iwae) <= validation_iwae_now)$item() || is.null(best_state)) {
         best_state = c(vaeac_get_current_save_state(environment()), state_list)
-        class(best_state) <- c(class(best_state), "R_vaeac", "vaeac")
+        class(best_state) <- c(class(best_state), "vaeac")
         torch::torch_save(best_state, vaeac_save_file_names[1])
       }
 
       # Save if current vaeac model has the lowest running validation IWAE error
       if ((max(validation_iwae_running) <= validation_iwae_running_now)$item() || is.null(best_state_running)) {
         best_state_running = c(vaeac_get_current_save_state(environment()), state_list)
-        class(best_state_running) <- c(class(best_state_running), "R_vaeac", "vaeac")
+        class(best_state_running) <- c(class(best_state_running), "vaeac")
         torch::torch_save(best_state_running, vaeac_save_file_names[2])
       }
 
       # Save if we are in an n'th epoch and are to save every n'th epoch
       if (is.integer(save_every_nth_epoch) && epoch %% save_every_nth_epoch == 0) {
         nth_state <- c(vaeac_get_current_save_state(environment()), state_list)
-        class(nth_state) <- c(class(nth_state), "R_vaeac", "vaeac")
+        class(nth_state) <- c(class(nth_state), "vaeac")
         torch::torch_save(nth_state, vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
       }
     }
@@ -801,7 +801,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
   } else {
     # Save the vaeac model at the last epoch
     last_state <- c(vaeac_get_current_save_state(environment()), state_list)
-    class(last_state) <- c(class(last_state), "R_vaeac", "vaeac")
+    class(last_state) <- c(class(last_state), "vaeac")
     torch::torch_save(last_state, vaeac_save_file_names[3])
 
     # Summary printout

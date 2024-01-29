@@ -312,6 +312,9 @@ of the data used to train the provided vaeac model (%s).\n",
 
   if (isTRUE(parameters$vaeac.verbose)) message(sprintf("Done with 'setup_approach.vaeac'.\n"))
 
+
+  kk = torch::torch_load(vaeac_model$models$best)
+
   # Return the updated internal list.
   return(internal)
 }
@@ -969,7 +972,7 @@ vaeac_train_model <- function(x_train,
   )
 
   # Update the class of the returned object
-  attr(return_list, "class") <- c("R_vaeac", "vaeac", class(return_list))
+  attr(return_list, "class") <- c("vaeac", class(return_list))
 
   # Return the paths where the models are saved and the training/validation errors.
   return(return_list)
@@ -1371,7 +1374,7 @@ epoch might require a lot of disk storage if data is large.\n",
           state_list
         )
 
-        class(best_state) <- c(class(best_state), "R_vaeac", "vaeac")
+        class(best_state) <- c(class(best_state), "vaeac")
         torch::torch_save(best_state, vaeac_save_file_names[1])
       }
 
@@ -1389,7 +1392,7 @@ epoch might require a lot of disk storage if data is large.\n",
           ),
           state_list
         )
-        class(best_state_running) <- c(class(best_state_running), "R_vaeac", "vaeac")
+        class(best_state_running) <- c(class(best_state_running), "vaeac")
         torch::torch_save(best_state_running, vaeac_save_file_names[2])
       }
 
@@ -1418,7 +1421,7 @@ epoch might require a lot of disk storage if data is large.\n",
 
           # Combine the file name with the folder path to form the final save file name.
           filename_nth <- file.path(folder_to_save_model, vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
-          class(nth_state) <- c(class(nth_state), "R_vaeac", "vaeac")
+          class(nth_state) <- c(class(nth_state), "vaeac")
           torch::torch_save(nth_state, filename_nth)
 
           # Add file name to list over file names.
@@ -1456,7 +1459,7 @@ epoch might require a lot of disk storage if data is large.\n",
       state_list
     )
 
-    class(last_state) <- c(class(last_state), "R_vaeac", "vaeac")
+    class(last_state) <- c(class(last_state), "vaeac")
     torch::torch_save(last_state, vaeac_save_file_names[3])
 
     # Printout to the user
@@ -1509,7 +1512,7 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
   )
 
   # Update the class of the returned object
-  attr(return_list, "class") <- c("R_vaeac", "vaeac", "list")
+  attr(return_list, "class") <- c("vaeac", class(return_list))
 
   # Return the paths where the models are saved and the training/validation errors.
   return(return_list)
