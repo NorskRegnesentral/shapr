@@ -971,7 +971,8 @@ vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE,
     data_norm_list = vaeac_normalize_data(
       data_torch = torch::torch_tensor(return_list$data_preprocessed),
       norm_mean = norm_mean,
-      norm_std = norm_std)
+      norm_std = norm_std,
+      one_hot_max_sizes = one_hot_max_sizes)
     return_list = c(return_list, data_norm_list)
   }
 
@@ -984,13 +985,14 @@ vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE,
 #' @description
 #' Compute the mean and std for each continuous feature, while the categorical features will have mean 0 and std 1.
 #'
-#' @inheritParams vaeac_preprocess_data
+#' @inheritParams vaeac_preprocess_data,
+#' @inheritParams vaeac
 #'
 #' @return A list containing the normalized version of `x_torch`, `norm_mean` and `norm_std`.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_normalize_data = function(data_torch, norm_mean = NULL, norm_std = NULL) {
+vaeac_normalize_data = function(data_torch, one_hot_max_sizes, norm_mean = NULL, norm_std = NULL) {
   if (xor(!is.null(norm_mean), !is.null(norm_std))) stop("Both `norm_mean` and `norm_std` must be provided.")
 
   if (is.null(norm_mean) && is.null(norm_std)) {

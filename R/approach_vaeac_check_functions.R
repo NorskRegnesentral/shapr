@@ -112,8 +112,6 @@ vaeac_check_epoch_values = function(epochs, epochs_initiation_phase, epochs_earl
   if (!is.null(save_every_nth_epoch) && save_every_nth_epoch > epochs) {
     stop(paste0("Number of 'epochs' (", epochs, ") is less than 'save_every_nth_epoch' (", save_every_nth_epoch ,")."))
   }
-
-  save_every_nth_epoch > epochs
 }
 
 #' Function that checks the provided activation function
@@ -289,7 +287,8 @@ vaeac_check_parameters = function(x_train,
   # Check the epoch values
   vaeac_check_epoch_values(epochs = epochs,
                            epochs_initiation_phase = epochs_initiation_phase,
-                           epochs_early_stopping = epochs_early_stopping)
+                           epochs_early_stopping = epochs_early_stopping,
+                           save_every_nth_epoch = save_every_nth_epoch)
 
   # Check the save parameters
   vaeac_check_save_parameters(save_data = save_data,
@@ -350,6 +349,51 @@ vaeac_check_save_parameters = function(save_data, save_every_nth_epoch, x_train_
     message(paste0("Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might requirer ",
                    "a lot of disk storage if `x_train` (", x_train_size ,") is large."))
   }
+}
+
+#' Function that determines which mask generator to use
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_get_mask_generator_name = function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, masking_ratio) {
+  if (!is.null(mask_gen_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
+    # User have provided mask_gen_these_coalitions (and mask_gen_these_coalitions_prob),
+    # and we want to use Specified_masks_mask_generator
+    mask_generator_name <- "Specified_masks_mask_generator"
+
+    # Small printout
+    if (verbose == 2) {
+      message(paste0("Use 'Specified_masks_mask_generator' with '", nrow(mask_gen_these_coalitions), "' coalitions."))
+    }
+  }
+  else if (length(masking_ratio) == 1) {
+    # We are going to use 'MCAR_mask_generator' as masking_ratio is a singleton.
+    # I.e., all feature values are equally likely to be masked based on masking_ratio.
+    mask_generator_name <- "MCAR_mask_generator"
+
+    # Small printout
+    if (verbose == 2) message(paste0("Use 'MCAR_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
+  }
+  else if (length(masking_ratio) > 1) {
+    # We are going to use 'Specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
+    # I.e., masking_ratio[5] specifies the probability of masking 5 features
+    mask_generator_name <- "Specified_prob_mask_generator"
+
+    # We have an array of masking ratios. Then we are using the Specified_prob_mask_generator.
+    if (verbose == 2) {
+      message(paste0("Use 'Specified_prob_mask_generator' mask generator with 'masking_ratio = [",
+                     paste(masking_ratio, collapse = ", "), "]'."))
+    }
+  }
+  else {
+    stop("`vaeac` could not determine which masking scheme to use based on the givene parameter arguments.")
+  }
+
+  return(mask_generator_name)
 }
 
 #' Function that creates the save file names for the `vaeac` model
@@ -419,7 +463,7 @@ vaeac_get_optimizer = function(vaeac_model, optimizer_name = "adam") {
 #' @description
 #' The function extract the objects that we are going to save together with the `vaeac` model to make it possible to
 #' train the model further and to evaluate it.
-#' The environment should be the local environment inside the [shapr::vaeac_train()] function.
+#' The environment should be the local environment inside the [shapr::vaeac_train_model_auxiliary()] function.
 #'
 #' @inheritParams vaeac_get_full_state_list
 #'
@@ -432,8 +476,8 @@ vaeac_get_current_save_state = function(environment) {
   object_names = c("epoch", "train_vlb", "validation_iwae", "validation_iwae_running_avg")
   objects = lapply(object_names, function(name) environment[[name]])
   names(objects) = object_names
-  objects$model_state_dict = environment[[vaeac_model]]$state_dict()
-  objects$optimizer_state_dict = environment[[optimizer]]$state_dict()
+  objects$model_state_dict = environment[["vaeac_model"]]$state_dict()
+  objects$optimizer_state_dict = environment[["optimizer"]]$state_dict()
   return(objects)
 }
 
@@ -442,7 +486,7 @@ vaeac_get_current_save_state = function(environment) {
 #' #' @description
 #' The function extract the objects that we are going to save together with the `vaeac` model to make it possible to
 #' train the model further and to evaluate it.
-#' The environment should be the local environment inside the [shapr::vaeac_train()] function.
+#' The environment should be the local environment inside the [shapr::vaeac_train_model_auxiliary()] function.
 #'
 #' @param environment The [base::environment()] where the objects are stored.
 #'
@@ -506,7 +550,7 @@ vaeac_get_full_state_list = function(environment) {
 #' a list of where the `vaeac` models are stored on disk and the parameters of the model.
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_train <- function(vaeac_model,
+vaeac_train_model_auxiliary <- function(vaeac_model,
                         optimizer,
                         train_dataloader,
                         val_dataloader,
@@ -576,6 +620,8 @@ vaeac_train <- function(vaeac_model,
 
     # Iterate over the training data
     coro::loop(for (batch in train_dataloader) {
+      print(iii)
+      iii = iii + 1
 
       # If batch size is less than batch_size, extend it with objects from the beginning of the dataset
       if (batch$shape[1] < batch_size) {
@@ -636,39 +682,26 @@ vaeac_train <- function(vaeac_model,
       ]$mean()$view(1)
     validation_iwae_running_avg <- torch::torch_cat(c(validation_iwae_running_avg, val_iwae_running), -1)
 
-
-    # ADD SAVE MODELS and best_epoch
+    # Check if we are to save the models
     if (isTRUE(save_vaeac_models)) {
 
       # Save if current vaeac model has the lowest validation IWAE error
       if ((max(validation_iwae) <= val_iwae)$item() || is.null(best_state)) {
-        # best_state <- c(
-        #   list(
-        #     epoch = epoch,
-        #     model_state_dict = model$state_dict(),
-        #     optimizer_state_dict = optimizer$state_dict(),
-        #     train_vlb = train_vlb,
-        #     validation_iwae = validation_iwae,
-        #     validation_iwae_running_avg = validation_iwae_running_avg
-        #   ),
-        #   state_list
-        # )
-
-        best_state = c(vaeac_get_current_state(environment()), state_list)
+        best_state = c(vaeac_get_current_save_state(environment()), state_list)
         class(best_state) <- c(class(best_state), "R_vaeac", "vaeac")
         torch::torch_save(best_state, vaeac_save_file_names[1])
       }
 
       # Save if current vaeac model has the lowest running validation IWAE error
       if ((max(validation_iwae_running_avg) <= val_iwae_running)$item() || is.null(best_state_running)) {
-        best_state_running = c(vaeac_get_current_state(environment()), state_list)
+        best_state_running = c(vaeac_get_current_save_state(environment()), state_list)
         class(best_state_running) <- c(class(best_state_running), "R_vaeac", "vaeac")
         torch::torch_save(best_state_running, vaeac_save_file_names[2])
       }
 
       # Save if we are in an n'th epoch and are to save every n'th epoch
       if (is.integer(save_every_nth_epoch) && epoch %% save_every_nth_epoch == 0) {
-        nth_state <- c(vaeac_get_current_state(environment()), state_list)
+        nth_state <- c(vaeac_get_current_save_state(environment()), state_list)
         class(nth_state) <- c(class(nth_state), "R_vaeac", "vaeac")
         torch::torch_save(nth_state, vaeac_save_file_names[3 + epoch %/% save_every_nth_epoch])
       }
@@ -687,22 +720,24 @@ vaeac_train <- function(vaeac_model,
     }
 
     # Check if we are to apply early stopping, i.e., no improvement in the IWAE for `epochs_early_stopping` epochs.
-    if (epoch - best_state$epoch >= epochs_early_stopping) {
-      if (verbose == 1) {
-        message(paste0("No IWAE improvment in ", epochs_early_stopping, " epochs. Apply early stopping at epoch ",
-                       epoch, "."))
+    if (is.integer(epochs_early_stopping)) {
+      if (epoch - best_state$epoch >= epochs_early_stopping) {
+        if (verbose == 1) {
+          message(paste0("No IWAE improvment in ", epochs_early_stopping, " epochs. Apply early stopping at epoch ",
+                         epoch, "."))
+        }
+        if (!is.null(progressr_bar)) progressr_bar("Training vaeac (early stopping)", amount = epochs - epoch)
+        state_list$early_stopping_applied <- TRUE # Add that we did early stopping to the state list
+        state_list$epochs <- epoch # Update the number of used epochs.
+        break # Stop the training loop
       }
-      if (is.null(progressr_bar)) progressr_bar("Training vaeac (early stopping)", amount = epochs - epoch)
-      state_list$early_stopping_applied <- TRUE # Add that we did early stopping to the state list
-      state_list$epochs <- epoch # Update the number of used epochs.
-      break # Stop the training loop
-      }
+    }
   } # Done with all epochs in training phase
 
 
   # Find out what to return
   if (initialization) {
-    # Here we return the models and the optimizer
+    # Here we return the models and the optimizer which we will train further if this was the best initialization
     return_list = list(
       vaeac_model = vaeac_model,
       optimizer = optimizer,
@@ -715,7 +750,7 @@ vaeac_train <- function(vaeac_model,
     )
   } else {
     # Save the vaeac model at the last epoch
-    last_state <- c(vaeac_get_current_state(environment()), state_list)
+    last_state <- c(vaeac_get_current_save_state(environment()), state_list)
     class(last_state) <- c(class(last_state), "R_vaeac", "vaeac")
     torch::torch_save(last_state, vaeac_save_file_names[3])
 
@@ -774,4 +809,49 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
     last_state$validation_iwae[-1],
     last_state$validation_iwae_running_avg[-1]
   ))
+}
+
+#' Function that determines which mask generator to use
+#'
+#' @inheritParams vaeac_train_model
+#'
+#' @return The function does not return anything.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_get_mask_generator_name = function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, masking_ratio) {
+  if (!is.null(mask_gen_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
+    # User have provided mask_gen_these_coalitions (and mask_gen_these_coalitions_prob),
+    # and we want to use Specified_masks_mask_generator
+    mask_generator_name <- "Specified_masks_mask_generator"
+
+    # Small printout
+    if (verbose == 2) {
+      message(paste0("Use 'Specified_masks_mask_generator' with '", nrow(mask_gen_these_coalitions), "' coalitions."))
+    }
+  }
+  else if (length(masking_ratio) == 1) {
+    # We are going to use 'MCAR_mask_generator' as masking_ratio is a singleton.
+    # I.e., all feature values are equally likely to be masked based on masking_ratio.
+    mask_generator_name <- "MCAR_mask_generator"
+
+    # Small printout
+    if (verbose == 2) message(paste0("Use 'MCAR_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
+  }
+  else if (length(masking_ratio) > 1) {
+    # We are going to use 'Specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
+    # I.e., masking_ratio[5] specifies the probability of masking 5 features
+    mask_generator_name <- "Specified_prob_mask_generator"
+
+    # We have an array of masking ratios. Then we are using the Specified_prob_mask_generator.
+    if (verbose == 2) {
+      message(paste0("Use 'Specified_prob_mask_generator' mask generator with 'masking_ratio = [",
+                     paste(masking_ratio, collapse = ", "), "]'."))
+    }
+  }
+  else {
+    stop("`vaeac` could not determine which masking scheme to use based on the givene parameter arguments.")
+  }
+
+  return(mask_generator_name)
 }

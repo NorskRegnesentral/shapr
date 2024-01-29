@@ -63,6 +63,10 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   if (is.null(parameters$vaeac.extra_parameters)) parameters$vaeac.extra_parameters <- list()
   if (length(parameters$vaeac.extra_parameters) > 0) vaeac_check_extra_named_list(parameters$vaeac.extra_parameters)
 
+  # Add the shapr specified values
+  parameters$vaeac.extra_parameters$seed = parameters$seed
+  parameters$vaeac.extra_parameters$verbose = parameters$verbose
+
   # Ensure that all vaeac parameters are in their right location
   parameters = vaeac_update_para_locations(parameters = parameters)
 
@@ -82,8 +86,8 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 
   # Add the default extra parameter values for the non-user specified extra parameters
   parameters$vaeac.extra_parameters = utils::modifyList(vaeac_extra_para_default(),
-                                                 parameters$vaeac.extra_parameters,
-                                                 keep.null = TRUE)
+                                                        parameters$vaeac.extra_parameters,
+                                                        keep.null = TRUE)
 
   # Add the default main parameter values for the non-user specified main parameters
   parameters = utils::modifyList(defaults, parameters, keep.null = TRUE)
@@ -101,14 +105,10 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   parameters = utils::modifyList(parameters, parameters$vaeac.extra_parameters, keep.null = TRUE)
   parameters$vaeac.extra_parameters <- NULL
 
+  # parameters_flatten = utils::modifyList(parameters, parameters$vaeac.extra_parameters, keep.null = TRUE)
+  # parameters_flatten$vaeac.extra_parameters <- NULL
 
 
-
-  #
-  print("DONE")
-  print(parameters)
-
-  stop("DONE")
 
 
   #  TROLIG BEST Å HA DET SOM FUNKSJON SIDEN NOEN ACTIVATION FUNCTIONS HAS PARAMETERS
@@ -419,12 +419,10 @@ of the data used to train the provided vaeac model (%s).\n",
 #' Abalone data set), it can be advantageous to \eqn{\log} transform the data to unbounded form before using `vaeac`.
 #' If `TRUE`, then [shapr::vaeac_postprocess_data()] will take the \eqn{\exp} of the results to get back to strictly
 #' positive values when using the `vaeac` model to impute missing values/generate the Monte Carlo samples.
-#' @param vaeac.verbose Logical (default is `FALSE`). If `TRUE`, the function prints the progress of the initialization
-#' of the different `vaeac` models, the training of the final `vaeac` model, and summary of the training progress.
-#' This works independently of the [progressr::progressr()] package, which is supported by `shapr`.
-#' TODO: THIS MUST BE FIXED. WE WANT TO USE THE VEBOSITY PAREMETER IN SHAPR.
-#' @param vaeac.seed Integer (default is `NULL`). Seed for reproducibility. If `NULL`, then we use the same seed as
-#' in [shapr::explain()].
+#' @param vaeac.verbose An integer specifying the level of verbosity (default is the same as specified in
+#' [shapr::explain()]). If `0`, `shapr` will stay silent. If `1`, it will print information about performance.
+#' If `2`, some additional information will be printed out.
+#' @param vaeac.seed Integer (default is the same as specified in [shapr::explain()]). Seed for reproducibility.
 #' @param vaeac.sample_random Logcial (default is `TRUE`). If `TRUE`, the function generates random Monte Carlo samples
 #' from the inferred generative distributions. If `FALSE`, the function use the most likely values, i.e., the mean and
 #' class with highest probability for continuous and categorical, respectively.
@@ -464,8 +462,8 @@ vaeac_extra_para_default = function(vaeac.model_description = make.names(Sys.tim
                                     vaeac.sample_random = TRUE,
                                     vaeac.save_data = FALSE,
                                     vaeac.transform_all_cont_features = FALSE,
-                                    vaeac.verbose = FALSE,
-                                    vaeac.seed = NULL,
+                                    vaeac.verbose = 0,
+                                    vaeac.seed = 1,
                                     vaeac.which_vaeac_model = "best") {
   # Return a named list with the extra parameters to the vaeac model
   return(mget(formalArgs(vaeac_extra_para_default)))
@@ -502,7 +500,7 @@ vaeac_update_para_locations = function(parameters) {
   vaeac.main_para_user_names = vaeac.main_para_user_names[!vaeac.main_para_user_names %in% "vaeac.extra_parameters"]
 
   # Get the default values for vaeac's extra parameters into a named list
-  vaeac.extra_para_default = vaeac_extra_parameters()
+  vaeac.extra_para_default = vaeac_extra_para_default()
   vaeac.extra_para_default_names = names(vaeac.extra_para_default)
 
   # Get the names of the extra parameters provided by the user
@@ -587,50 +585,7 @@ vaeac_update_para_locations = function(parameters) {
   return(parameters)
 }
 
-#' Function that determines which mask generator to use
-#'
-#' @inheritParams vaeac_train_model
-#'
-#' @return The function does not return anything.
-#'
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-vaeac_get_mask_generator_name = function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, masking_ratio) {
-  if (!is.null(mask_gen_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
-    # User have provided mask_gen_these_coalitions (and mask_gen_these_coalitions_prob),
-    # and we want to use Specified_masks_mask_generator
-    mask_generator_name <- "Specified_masks_mask_generator"
 
-    # Small printout
-    if (verbose == 2) {
-      message(paste0("Use 'Specified_masks_mask_generator' with '", nrow(mask_gen_these_coalitions), "' coalitions."))
-    }
-  }
-  else if (length(masking_ratio) == 1) {
-    # We are going to use 'MCAR_mask_generator' as masking_ratio is a singleton.
-    # I.e., all feature values are equally likely to be masked based on masking_ratio.
-    mask_generator_name <- "MCAR_mask_generator"
-
-    # Small printout
-    if (verbose == 2) message(paste0("Use 'MCAR_mask_generator' with 'masking_ratio = ", masking_ratio, "'."))
-  }
-  else if (length(masking_ratio) > 1) {
-    # We are going to use 'Specified_prob_mask_generator' as masking_ratio is a vector (of same length as ncol(x_train).
-    # I.e., masking_ratio[5] specifies the probability of masking 5 features
-    mask_generator_name <- "Specified_prob_mask_generator"
-
-    # We have an array of masking ratios. Then we are using the Specified_prob_mask_generator.
-    if (verbose == 2) {
-      message(paste0("Use 'Specified_prob_mask_generator' mask generator with 'masking_ratio = [",
-                     paste(masking_ratio, collapse = ", "), "]'."))
-    }
-  }
-  else {
-    stop("`vaeac` could not determine which masking scheme to use based on the givene parameter arguments.")
-  }
-
-  return(mask_generator_name)
-}
 
 #' @inheritParams default_doc
 #'
@@ -898,7 +853,7 @@ vaeac_train_model <- function(x_train,
   # I still sort of prefer to have it here as then vaeac_train_model() works as
   # a separate function outside the shapr::explain() call that also does the checking.
   # Check all the vaeac parameters
-  do.call(vaeac_check_parameters, mget(names(formals())))
+  do.call(vaeac_check_parameters, mget(formalArgs(vaeac_train_model)))
 
   # Check if we can use cuda
   if (use_cuda) use_cuda = vaeac_check_use_cuda(use_cuda)
@@ -910,17 +865,15 @@ vaeac_train_model <- function(x_train,
     masking_ratio = masking_ratio)
 
   # Get the dimensions of the x_train
-  # n <- nrow(x_train)
-  # p <- ncol(x_train)
   n_train <- nrow(x_train)
   n_features <- ncol(x_train)
 
-  # Preprocess x_train. The function turns factor names into numerics 1,2,...,K, as vaeac only accepts numerics,
-  # and keep track of the maping of names. Optionally log-transform the continuous features.
-  # And finally normalize the data.
-  x_train_preprocessed <- vaeac_preprocess_data(data = x_train,
-                                                transform_all_cont_features = transform_all_cont_features,
-                                                normalize = TRUE)
+  # Preprocess x_train. Turn factor names into numerics 1,2,...,K, (vaeac only accepts numerics) and keep track
+  # of the maping of names. Optionally log-transform the continuous features. Then, finally, normalize the data.
+  x_train_preprocessed <- vaeac_preprocess_data(
+    data = x_train,
+    transform_all_cont_features = transform_all_cont_features,
+    normalize = TRUE)
 
   # Extract the preprocessed and normalized x_train as a torch tensor
   x_train_torch <- x_train_preprocessed$data_normalized_torch
@@ -969,7 +922,10 @@ vaeac_train_model <- function(x_train,
   # TODO: GO THOUGH AND CHECK WHAT WE NEED AND DONT
   # Information saved together with the vaeac model to make it possible to load the model from disk later.
   # Note that some of the parameters could be derived from others, but for simplicity we store all needed objects.
-  state_list = vaeac_get_full_state_list()
+  state_list = vaeac_get_full_state_list(environment())
+
+  print(state_list)
+  stop("HALLA")
   # state_list <- list(
   #   norm_mean = norm_mean,
   #   norm_std = norm_std,
@@ -1065,15 +1021,13 @@ vaeac_train_model <- function(x_train,
       sigma_sigma = sigma_sigma
     )
 
+    # TODO: we need to check this + we need to send the data too
     # Send the model to the GPU, if we have access to it.
     if (use_cuda) vaeac_model <- vaeac_model$cuda()
-    # TODO: we need to check this + we need to send the data too
 
     # Add the number of trainable parameters in the vaeac model to the state list
-    if (initlization == 1) {
+    if (initialization == 1) {
       state_list$num_trainable_parameters <- vaeac_model$num_train_param
-
-      # Print the number of trainable parameters to the user
       if (verbose == 1) {
         message(paste0("The vaeac model contains ", vaeac_model$num_train_param[1, 1] ," trainable parameters."))
       }
@@ -1092,18 +1046,18 @@ vaeac_train_model <- function(x_train,
 
       progressr_bar <- progressr::progressor(steps = epochs_initiation_phase)
     # Train the current initialized vaeac model
-    vaeac_model_now_list = vaeac_train(
+    vaeac_model_now_list = vaeac_train_model_auxiliary(
       vaeac_model = vaeac_model,
       optimizer = optimizer,
       epochs = epochs_initiation_phase,
-      epochs_start = 1,
+      epochs_start = 1, # All the vaeacs should start from scratch
       train_dataloader = train_dataloader,
       val_dataloader = val_dataloader,
       validation_iwae_num_samples = validation_iwae_num_samples,
       running_avg_num_values = running_avg_num_values,
       epochs_early_stopping = FALSE, # Do not want to do early stopping during initialization
       verbose = verbose,
-      progressr_bar = NULL,
+      progressr_bar = progressr_bar,
       save_vaeac_models = FALSE, # Do not want to save during initialization
       initialization = initialization,
       num_vaeacs_initiate = num_vaeacs_initiate,
@@ -1152,7 +1106,7 @@ vaeac_train_model <- function(x_train,
   }
 
 
-  return_list <- vaeac_train(
+  return_list <- vaeac_train_model_auxiliary(
     vaeac_model = vaeac_model_best_list$vaeac_model,
     optimizer = vaeac_model_best_list$optimizer,
     train_dataloader = train_dataloader,

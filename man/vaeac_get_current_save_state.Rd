@@ -16,7 +16,7 @@ and the \code{state_dict()} of the vaeac model and optimizer.
 \description{
 The function extract the objects that we are going to save together with the \code{vaeac} model to make it possible to
 train the model further and to evaluate it.
-The environment should be the local environment inside the \code{\link[=vaeac_train]{vaeac_train()}} function.
+The environment should be the local environment inside the \code{\link[=vaeac_train_model_auxiliary]{vaeac_train_model_auxiliary()}} function.
 }
 \author{
 Lars Henry Berge Olsen
