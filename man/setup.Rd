@@ -142,6 +142,9 @@ If \code{xreg != NULL}, denotes the number of lags that should be used for each 
 If \code{TRUE} all lags of each variable are grouped together and explained as a group.
 If \code{FALSE} all lags of each variable are explained individually.}
 
+\item{lingauss_model_coef}{List. The output from \code{\link[=get_linear_coef]{get_linear_coef()}} containing the coefficents of the linear model.
+Only used by \code{\link[=explain_lingauss]{explain_lingauss()}}.}
+
 \item{timing}{Logical.
 Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
 
@@ -150,9 +153,6 @@ never changed when calling the function via \code{explain()} in R. The parameter
 running the AICc-versions of the empirical as that requires data based optimization.}
 
 \item{...}{Further arguments passed to specific approaches}
-
-\item{get_linear_coef}{List. The output from \code{\link[=get_linear_coef]{get_linear_coef()}} containing the coefficents of the linear model.
-Only used by \code{\link[=explain_lingauss]{explain_lingauss()}}.}
 }
 \description{
 check_setup

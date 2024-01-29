@@ -68,7 +68,9 @@ get_feature_specs <- function(get_model_specs, model) {
 }
 
 
-
+#' Extracts the (purely) linear model coefficients
+#'
+#' @keywords internal
 get_linear_coef <- function(model, feature_specs) {
   # Checks that model is of class 'lm'
   if (class(model)[1] != "lm") {

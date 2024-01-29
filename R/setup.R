@@ -14,7 +14,7 @@
 #'   \item{classes}{Character vector with the classes of each features.}
 #'   \item{factor_levels}{Character vector with the levels for any categorical features.}
 #'   }
-#' @param get_linear_coef List. The output from [get_linear_coef()] containing the coefficents of the linear model.
+#' @param lingauss_model_coef List. The output from [get_linear_coef()] containing the coefficents of the linear model.
 #' Only used by [explain_lingauss()].
 #'
 #' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
