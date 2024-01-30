@@ -982,7 +982,7 @@ vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE,
 #' @description
 #' Compute the mean and std for each continuous feature, while the categorical features will have mean 0 and std 1.
 #'
-#' @inheritParams vaeac_preprocess_data,
+#' @inheritParams vaeac_preprocess_data
 #' @inheritParams vaeac
 #'
 #' @return A list containing the normalized version of `x_torch`, `norm_mean` and `norm_std`.
