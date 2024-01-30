@@ -29,8 +29,8 @@ vaeac_extra_para_default(
   vaeac.sample_random = TRUE,
   vaeac.save_data = FALSE,
   vaeac.transform_all_cont_features = FALSE,
-  vaeac.verbose = FALSE,
-  vaeac.seed = NULL,
+  vaeac.verbose = 0,
+  vaeac.seed = 1,
   vaeac.which_vaeac_model = "best"
 )
 }
@@ -143,13 +143,11 @@ Abalone data set), it can be advantageous to \eqn{\log} transform the data to un
 If \code{TRUE}, then \code{\link[=vaeac_postprocess_data]{vaeac_postprocess_data()}} will take the \eqn{\exp} of the results to get back to strictly
 positive values when using the \code{vaeac} model to impute missing values/generate the Monte Carlo samples.}
 
-\item{vaeac.verbose}{Logical (default is \code{FALSE}). If \code{TRUE}, the function prints the progress of the initialization
-of the different \code{vaeac} models, the training of the final \code{vaeac} model, and summary of the training progress.
-This works independently of the \code{\link[progressr:progressr]{progressr::progressr()}} package, which is supported by \code{shapr}.
-TODO: THIS MUST BE FIXED. WE WANT TO USE THE VEBOSITY PAREMETER IN SHAPR.}
+\item{vaeac.verbose}{An integer specifying the level of verbosity (default is the same as specified in
+\code{\link[=explain]{explain()}}). If \code{0}, \code{shapr} will stay silent. If \code{1}, it will print information about performance.
+If \code{2}, some additional information will be printed out.}
 
-\item{vaeac.seed}{Integer (default is \code{NULL}). Seed for reproducibility. If \code{NULL}, then we use the same seed as
-in \code{\link[=explain]{explain()}}.}
+\item{vaeac.seed}{Integer (default is the same as specified in \code{\link[=explain]{explain()}}). Seed for reproducibility.}
 
 \item{vaeac.which_vaeac_model}{String (default is \code{NULL}). The name of the \code{vaeac} model (snapshots from different
 epochs) to use when generating the Monte Carlo samples. The standard choices are: \code{"best"} (epoch with lowest IWAE),

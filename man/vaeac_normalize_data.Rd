@@ -4,9 +4,17 @@
 \alias{vaeac_normalize_data}
 \title{Normalize mixed data for \code{vaeac}}
 \usage{
-vaeac_normalize_data(data_torch, norm_mean = NULL, norm_std = NULL)
+vaeac_normalize_data(
+  data_torch,
+  one_hot_max_sizes,
+  norm_mean = NULL,
+  norm_std = NULL
+)
 }
 \arguments{
+\item{one_hot_max_sizes}{A torch tensor of dimension p containing the one hot sizes of the \code{M} features.
+The sizes for the continuous features can either be \code{0} or \code{1}.}
+
 \item{norm_mean}{Torch tensor (optional). A 1D array containing the means of the columns of \code{x_torch}.}
 
 \item{norm_std}{Torch tensor (optional). A 1D array containing the stds of the columns of \code{x_torch}.}

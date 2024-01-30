@@ -174,7 +174,8 @@ plot_several_vaeacs_VLB_IWAE(explanation_list = explanation_list_named)
 # but then one should only look at the method plot
 plot_several_vaeacs_VLB_IWAE(
   explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
-  plot_type = "method")
+  plot_type = "method"
+)
 
 # Can alter the plot
 plot_several_vaeacs_VLB_IWAE(
@@ -185,15 +186,16 @@ plot_several_vaeacs_VLB_IWAE(
 )
 
 # If we want only want the criterion version
-tmp_fig_criterion = plot_several_vaeacs_VLB_IWAE(
+tmp_fig_criterion <- plot_several_vaeacs_VLB_IWAE(
   explanation_list = explanation_list_named,
-  plot_type = "criterion")
+  plot_type = "criterion"
+)
 
 # We can add points
 tmp_fig_criterion + ggplot2::geom_point(shape = "circle", size = 1, ggplot2::aes(col = Method))
 
 # If we rather want smooths with se bands
-tmp_fig_criterion$layers[[1]] = NULL
+tmp_fig_criterion$layers[[1]] <- NULL
 tmp_fig_criterion + ggplot2::geom_smooth(method = "loess", formula = y ~ x, se = TRUE) +
   ggplot2::scale_color_brewer(palette = "Set1") +
   ggplot2::theme_minimal()
@@ -202,7 +204,8 @@ tmp_fig_criterion + ggplot2::geom_smooth(method = "loess", formula = y ~ x, se =
 plot_several_vaeacs_VLB_IWAE(
   explanation_list = explanation_list_named,
   criteria = "VLB",
-  plot_type = "criterion")
+  plot_type = "criterion"
+)
 }
 
 }

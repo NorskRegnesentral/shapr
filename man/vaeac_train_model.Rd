@@ -34,6 +34,7 @@ vaeac_train_model(
   sigma_sigma = 1e-04,
   save_data = FALSE,
   transform_all_cont_features = FALSE,
+  which_vaeac_model = "best",
   verbose = FALSE,
   seed = 1,
   ...

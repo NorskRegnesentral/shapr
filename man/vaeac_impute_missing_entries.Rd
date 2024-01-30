@@ -6,13 +6,15 @@
 \usage{
 vaeac_impute_missing_entries(
   x_explain_with_NaNs,
+  n_explain,
   path_vaeac_model,
+  vaeac_checkpoint,
+  vaeac_model,
   n_samples,
-  use_cuda = FALSE,
+  batch_size,
   sample_random = TRUE,
   convert_to_2D = TRUE,
   return_as_postprocessed_dt = TRUE,
-  batch_size = NULL,
   verbose = FALSE,
   seed = NULL,
   index_features = NULL
@@ -25,7 +27,10 @@ vaeac_impute_missing_entries(
 
 \item{n_samples}{Integer. The number of imputed versions we create for each row in \code{x_explain_with_NaNs}.}
 
-\item{use_cuda}{Boolean. If we are to use cuda. NOTE PROPERLY TESTED IN CURRENT VERSION.}
+\item{batch_size}{Integer. The number of samples in each batch.
+If \code{NULL}, then use the same value saved in the vaeac object.
+We recommend a large number because of a lot of overhead for small batch sizes, that is,
+\code{batch_size} should be much larger than the batch size used during the training. checkpoint$batch_size}
 
 \item{sample_random}{Boolean. If we are to generate random samples from the inferred generative distributions,
 or if we are to sample the most likely values (mean for continuous and class with highest prob for categorical).}
@@ -38,16 +43,13 @@ or if we are to sample the most likely values (mean for continuous and class wit
 convert categorical features to factors with correct level names (and transform continuous features
 back to original scale). The returned object will then be a \code{\link[data.table:data.table]{data.table::data.table()}}.}
 
-\item{batch_size}{Integer. The number of samples in each batch.
-If \code{NULL}, then use the same value saved in the vaeac object.
-We recommend a large number because of a lot of overhead for small batch sizes, that is,
-\code{batch_size} should be much larger than the batch size used during the training.}
-
 \item{verbose}{Boolean. If we are to print the progress to the user.}
 
 \item{seed}{Integer. Seed used before generating the MC samples.}
 
 \item{index_features}{Optional integer vector. Used internally in shapr package to index the coalitions.}
+
+\item{use_cuda}{Boolean. If we are to use cuda. NOTE PROPERLY TESTED IN CURRENT VERSION.}
 }
 \value{
 A 2D or 3D array or 2D data.table where the missing values (\code{NaN}) in \code{x_explain_with_NaNs}
