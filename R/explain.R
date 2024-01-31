@@ -285,7 +285,6 @@ explain <- function(model,
   # Gets and check feature specs from the model
   feature_specs <- get_feature_specs(get_model_specs, model)
 
-
   # Sets up and organizes input parameters
   # Checks the input parameters and their compatability
   # Checks data/model compatability
@@ -362,7 +361,7 @@ explain <- function(model,
   output$internal$objects$cols_per_horizon <- NULL
   output$internal$objects$W_list <- NULL
 
-  if (isFALSE(output$internal$parameters$vaeac.save_model)) {
+  if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
     output$internal$parameters$vaeac$models <- NULL
     output$internal$parameters$vaeac$parameters$folder_to_save_model <- NULL
     output$internal$parameters$vaeac$parameters$model_description <- NULL
