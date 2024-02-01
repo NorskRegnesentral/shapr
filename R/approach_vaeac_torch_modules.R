@@ -518,10 +518,10 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
   # Apply Mask to Batch to Create Observed Batch
   #
-  # @description Clones the batch and applies the mask to set masked entries to 0 to create the observed batch.
+  # description Clones the batch and applies the mask to set masked entries to 0 to create the observed batch.
   #
-  # @param batch Tensor of dimension batch_size x num_features containing a batch of observations.
-  # @param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
+  # param batch Tensor of dimension batch_size x num_features containing a batch of observations.
+  # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
   make_observed = function(batch, mask) {
     # Clone and detach the batch from the graph (removes the gradient element for the tensor).
     observed <- batch$clone()$detach()
@@ -535,13 +535,13 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
   # Compute the Latent Distributions Inferred by the Encoders
   #
-  # @description Compute the parameters for the latent normal distributions inferred by the encoders.
+  # description Compute the parameters for the latent normal distributions inferred by the encoders.
   # If `only_masked_encoder = TRUE`, then we only compute the latent normal distributions inferred by the
   # masked encoder. This is used in the deployment phase when we do not have access to the full observation.
   #
-  # @param batch Tensor of dimension batch_size x num_features containing a batch of observations.
-  # @param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
-  # @param only_masked_encoder Boolean. If we are only to compute the latent distributions for the masked encoder.
+  # param batch Tensor of dimension batch_size x num_features containing a batch of observations.
+  # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
+  # param only_masked_encoder Boolean. If we are only to compute the latent distributions for the masked encoder.
   # Used in deployment phase when we do not have access to the full data. Always FALSE in the training phase.
   make_latent_distributions = function(batch, mask, only_masked_encoder = FALSE) {
     # Artificially mask the observations where mask == 1 to create the observed batch values.
@@ -588,14 +588,14 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
   # Compute the Regularizes for the Latent Distribution Inferred by the Masked Encoder.
   #
-  # @description The masked encoder (prior) distribution regularization in the latent space.
+  # description The masked encoder (prior) distribution regularization in the latent space.
   # This is used to compute the extended variational lower bound used to train vaeac, see
   # Section 3.3.1 in Olsen et al. (2022).
   # Though regularizing prevents the masked encoder distribution parameters from going to infinity,
   # the model usually doesn't diverge even without this regularization. It almost doesn't affect
   # learning process near zero with default regularization parameters which are recommended to be used.
   #
-  # @param masked_encoder The torch_Normal object returned when calling the masked encoder.
+  # param masked_encoder The torch_Normal object returned when calling the masked encoder.
   masked_encoder_regularization = function(masked_encoder) {
     # Extract the number of observations. Same as batch_size.
     num_observations <- masked_encoder$mean$shape[1]
@@ -622,11 +622,11 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
   # Compute the Variational Lower Bound for the Observations in the Batch
   #
-  # @description Compute differentiable lower bound for the given batch of objects and mask.
+  # description Compute differentiable lower bound for the given batch of objects and mask.
   # Used as the (negative) loss function for training the vaeac model.
   #
-  # @param batch Tensor of dimension batch_size x num_features containing a batch of observations.
-  # @param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
+  # param batch Tensor of dimension batch_size x num_features containing a batch of observations.
+  # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
   batch_vlb = function(batch, mask) {
     # Compute the latent normal distributions obtained from the full and masked encoder
     encoders_list <- self$make_latent_distributions(batch = batch, mask = mask)
@@ -669,9 +669,9 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
   # Compute the Importance Sampling Estimator for the Observations in the Batch
   #
-  # @description Compute IWAE log likelihood estimate with K samples per object.
+  # description Compute IWAE log likelihood estimate with K samples per object.
   #
-  # @details Technically, it is differentiable, but it is recommended to use it for
+  # details Technically, it is differentiable, but it is recommended to use it for
   # evaluation purposes inside torch.no_grad in order to save memory. With torch::with_no_grad
   # the method almost doesn't require extra memory for very large K. The method makes K independent
   # passes through decoder network, so the batch size is the same as for training with batch_vlb.
@@ -684,9 +684,9 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
   # logsumexp(rec_loss + prior_log_prob - proposal_log_prob) - log(K),
   # where z_i ~ q_phi(z|x,y).
   #
-  # @param batch Tensor of dimension batch_size x num_features containing a batch of observations.
-  # @param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
-  # @param K Integer. The number of samples generated to compute the IWAE for each observation in `batch`.
+  # param batch Tensor of dimension batch_size x num_features containing a batch of observations.
+  # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
+  # param K Integer. The number of samples generated to compute the IWAE for each observation in `batch`.
   batch_iwae = function(batch, mask, K) {
     # Compute the latent normal distributions obtained from the full and masked encoder
     encoders_list <- self$make_latent_distributions(batch = batch, mask = mask)
@@ -753,9 +753,9 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
   # Generate the Parameters of the Generative Distributions
   #
-  # @description Generate the parameters of the generative distributions for samples from the batch.
+  # description Generate the parameters of the generative distributions for samples from the batch.
   #
-  # @details The function makes K latent representation for each object from the batch, send these
+  # details The function makes K latent representation for each object from the batch, send these
   # latent representations through the decoder to obtain the parameters for the generative distributions.
   # I.e., means and variances for the normal distributions (continuous features) and probabilities
   # for the categorical distribution (categorical features).
@@ -763,9 +763,9 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
   # the result shape is [n x K x D1 x D2]. It is better to use it inside torch::with_no_grad in order to save
   # memory. With torch::with_no_grad the method doesn't require extra memory except the memory for the result.
   #
-  # @param batch Tensor of dimension batch_size x num_features containing a batch of observations.
-  # @param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
-  # @param K Integer. The number of imputations to be done for each observation in batch.
+  # param batch Tensor of dimension batch_size x num_features containing a batch of observations.
+  # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
+  # param K Integer. The number of imputations to be done for each observation in batch.
   generate_samples_params = function(batch, mask, K = 1) {
     # Compute the latent normal distributions obtained from only the masked encoder.
     encoders_list <- self$make_latent_distributions(batch = batch, mask = mask, only_masked_encoder = TRUE)
@@ -1240,12 +1240,12 @@ exp_trans_cont_features_func <- function(data, one_hot_max_sizes) {
 #' }
 vaeac_dataset <- torch::dataset(
 
-  # @field name The name of the `torch::dataset`.
+  # field name The name of the `torch::dataset`.
   name = "vaeac_dataset",
 
-  # @description Create a new vaeac_dataset object.
-  # @param X A torch_tensor contain the data
-  # @param one_hot_max_sizes A torch tensor of dimension p containing the one hot sizes of the p features.
+  # description Create a new vaeac_dataset object.
+  # param X A torch_tensor contain the data
+  # param one_hot_max_sizes A torch tensor of dimension p containing the one hot sizes of the p features.
   # The sizes for the continuous features can either be '0' or '1'.
   initialize = function(X,
                         one_hot_max_sizes) {
@@ -1261,11 +1261,11 @@ vaeac_dataset <- torch::dataset(
     # Save the dataset
     self$X <- X
   },
-  # @description How to fetch a data sample for a given key/index.
+  # description How to fetch a data sample for a given key/index.
   .getitem = function(index) {
     X <- self$X[index, ]
   },
-  # @description Return the size of the dataset
+  # description Return the size of the dataset
   .length = function() {
     nrow(self$X)
   }
@@ -1320,19 +1320,19 @@ vaeac_dataset <- torch::dataset(
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 paired_sampler <- torch::sampler(
-  # @field Name of the object
+  # field Name of the object
   classname = "paired_sampler",
-  # @description Initialize the paired_sampler object
+  # description Initialize the paired_sampler object
   initialize = function(vaeac_dataset_object, shuffle = FALSE) {
     self$vaeac_dataset_object <- vaeac_dataset_object
     self$shuffle <- shuffle
   },
-  # @description Get the number of observations in the datasaet
+  # description Get the number of observations in the datasaet
   .length = function() {
     # Multiply by two do to the sampling
     length(self$vaeac_dataset_object) * 2
   },
-  # @description Function to iterate over the data
+  # description Function to iterate over the data
   .iter = function() {
     # Get the number of observations in the data
     n <- length(self$vaeac_dataset_object)
@@ -1402,18 +1402,18 @@ paired_sampler <- torch::sampler(
 #' d <- net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
 #' }
 MemoryLayer <- torch::nn_module(
-  # @field classname Name of the of torch::nn_module object.
+  # field classname Name of the of torch::nn_module object.
   classname = "MemoryLayer",
 
-  # @field shared_env A shared environment for all instances of MemoryLayers.
+  # field shared_env A shared environment for all instances of MemoryLayers.
   shared_env = new.env(),
 
-  # @description Create a new MemoryLayer object.
-  # @param id A unique id to use as a key in the storage list.
-  # @param output Boolean variable indicating if the memory layer is to store input in storage or extract from storage.
-  # @param add Boolean variable indicating if the extracted value are to be added or concatenated to the input.
+  # description Create a new MemoryLayer object.
+  # param id A unique id to use as a key in the storage list.
+  # param output Boolean variable indicating if the memory layer is to store input in storage or extract from storage.
+  # param add Boolean variable indicating if the extracted value are to be added or concatenated to the input.
   # Only applicable when `output = TRUE`.
-  # @param verbose Boolean variable indicating if we want to give printouts to the user.
+  # param verbose Boolean variable indicating if we want to give printouts to the user.
   initialize = function(id,
                         output = FALSE,
                         add = FALSE,
@@ -1492,14 +1492,14 @@ MemoryLayer <- torch::nn_module(
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 SkipConnection <- torch::nn_module(
-  # @field classname Name of the of torch::nn_module object.
+  # field classname Name of the of torch::nn_module object.
   classname = "SkipConnection",
 
-  # @description Initialize a new SkipConnection module
+  # description Initialize a new SkipConnection module
   initialize = function(...) {
     self$inner_net <- torch::nn_sequential(...)
   },
-  # @description What to do when a SkipConnection module is called
+  # description What to do when a SkipConnection module is called
   forward = function(input) {
     return(input + self$inner_net(input))
   }
@@ -1780,7 +1780,7 @@ GaussCatSampler <- torch::nn_module(
   #' @field classname Type of torch::nn_module
   classname = "GaussCatSampler",
 
-  # @description Initialize a GaussCatSampler which generates a sample from the generative
+  # description Initialize a GaussCatSampler which generates a sample from the generative
   # distribution defined by the output of the neural network.
   initialize = function(one_hot_max_sizes,
                         sample_most_probable = FALSE,
@@ -1801,11 +1801,11 @@ GaussCatSampler <- torch::nn_module(
     self$min_prob <- min_prob
   },
 
-  # @param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p),
+  # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p),
   # when only considering continuous features.
   # For categorical features, we do NOT have mu and sigma for the decoder at the end of the vaeac,
   # but rather logits for the categorical distribution.
-  # @return A tensor containing the generated data.
+  # return A tensor containing the generated data.
   forward = function(distr_params) {
     # A counter to keep track of which
     cur_distr_col <- 1
@@ -1893,10 +1893,10 @@ GaussCatSampler <- torch::nn_module(
 #' @author Lars Henry Berge Olsen
 GaussCatSamplerMostLikely <- torch::nn_module(
 
-  # @field classname Type of torch::nn_module
+  # field classname Type of torch::nn_module
   classname = "GaussCatSamplerMostLikely",
 
-  # @description Initialize a GaussCatSamplerMostLikely which generates the most likely
+  # description Initialize a GaussCatSamplerMostLikely which generates the most likely
   # sample from the generative distribution defined by the output of the neural network.
   initialize = function(one_hot_max_sizes,
                         min_sigma = 1e-4,
@@ -1911,11 +1911,11 @@ GaussCatSamplerMostLikely <- torch::nn_module(
   },
 
 
-  # @param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p),
+  # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p),
   # when only considering continuous features.
   # For categorical features, we do NOT have mu and sigma for the decoder at the end of the vaeac,
   # but rather logits for the categorical distribution.
-  # @return A tensor containing the generated data.
+  # return A tensor containing the generated data.
   forward = function(distr_params) {
     # A counter to keep track of which
     cur_distr_col <- 1
@@ -1987,13 +1987,13 @@ GaussCatSamplerMostLikely <- torch::nn_module(
 #' @keywords internal
 GaussCatSamplerRandom <- torch::nn_module(
 
-  # @field classname Type of torch::nn_module
+  # field classname Type of torch::nn_module
   classname = "GaussCatSamplerRandom",
 
-  # @description
+  # description
   # Initialize a GaussCatSamplerRandom which generates a sample from the
   # generative distribution defined by the output of the neural network by random sampling.
-  # @return A new `GaussCatSamplerRandom` object.
+  # return A new `GaussCatSamplerRandom` object.
   initialize = function(one_hot_max_sizes,
                         min_sigma = 1e-4,
                         min_prob = 1e-4) {
@@ -2008,11 +2008,11 @@ GaussCatSamplerRandom <- torch::nn_module(
 
 
 
-  # @param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p),
+  # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p),
   # when only considering continuous features.
   # For categorical features, we do NOT have mu and sigma for the decoder at the end of the vaeac,
   # but rather logits for the categorical distribution.
-  # @return A tensor containing the generated data.
+  # return A tensor containing the generated data.
   forward = function(distr_params) {
     # A counter to keep track of which
     cur_distr_col <- 1
@@ -2094,13 +2094,13 @@ GaussCatSamplerRandom <- torch::nn_module(
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 GaussCatParameters <- torch::nn_module(
-  # @field classname Type of torch::nn_module
+  # field classname Type of torch::nn_module
   classname = "GaussCatParameters",
 
-  # @description
+  # description
   # Initialize a `GaussCatParameters` which extract the parameters from the
   # generative distribution defined by the output of the neural network.
-  # @return A new `GaussCatParameters` object.
+  # return A new `GaussCatParameters` object.
   initialize = function(one_hot_max_sizes,
                         min_sigma = 1e-4,
                         min_prob = 1e-4) {
@@ -2114,10 +2114,10 @@ GaussCatParameters <- torch::nn_module(
   },
 
 
-  # @param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p), when only
+  # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p), when only
   # considering continuous features. For categorical features, we do NOT have mu and sigma for the
   # decoder at the end of the vaeac, but rather logits for the categorical distribution.
-  # @return A tensor containing the final parameters of the generative distributions (after transformations).
+  # return A tensor containing the final parameters of the generative distributions (after transformations).
   forward = function(distr_params) {
     # A counter to keep track of which
     cur_distr_col <- 1
@@ -2195,11 +2195,11 @@ GaussCatParameters <- torch::nn_module(
 #' @keywords internal
 GaussCatLoss <- torch::nn_module(
 
-  # @field classname Type of torch::nn_module
+  # field classname Type of torch::nn_module
   classname = "GaussCatLoss",
 
-  # @description Initialize a `GaussCatLoss`.
-  # @return A new `GaussCatLoss` object.
+  # description Initialize a `GaussCatLoss`.
+  # return A new `GaussCatLoss` object.
   initialize = function(one_hot_max_sizes, min_sigma = 1e-4, min_prob = 1e-4) {
     self$one_hot_max_sizes <- one_hot_max_sizes
     self$min_sigma <- min_sigma
@@ -2341,7 +2341,7 @@ GaussCatLoss <- torch::nn_module(
 #' @keywords internal
 CategoricalToOneHotLayer <- torch::nn_module(
 
-  # @field classname Type of torch::nn_module
+  # field classname Type of torch::nn_module
   classname = "CategoricalToOneHotLayer",
   initialize = function(one_hot_max_sizes, add_nans_map_for_columns = NULL) {
     # Here one_hot_max_sizes includes zeros at the end of the list
@@ -2502,26 +2502,26 @@ CategoricalToOneHotLayer <- torch::nn_module(
 #' @keywords internal
 MCAR_mask_generator <- torch::nn_module(
 
-  # @field name Type of mask generator
+  # field name Type of mask generator
   name = "MCAR_mask_generator",
 
-  # @description
+  # description
   # Initialize a missing completely at random mask generator.
-  # @param masking_ratio The probability for an entry in the generated mask to be 1 (masked).
-  # @param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
+  # param masking_ratio The probability for an entry in the generated mask to be 1 (masked).
+  # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
   # If TRUE, then batch must be sampled using `paired_sampler` which creates batches where
   # the first half and second half of the rows are duplicates of each other. That is,
   # batch = [row1, row1, row2, row2, row3, row3, ...].
-  # @return A new `MCAR_mask_generator` object.
+  # return A new `MCAR_mask_generator` object.
   initialize = function(masking_ratio = 0.5,
                         paired_sampling = FALSE) {
     self$masking_ratio <- masking_ratio
     self$paired_sampling <- paired_sampling
   },
 
-  # @description
+  # description
   # Generates a MCAR mask by calling self$MCAR_mask_generator_function function.
-  # @param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
   # entries are missing. If any are missing, then the returned mask will ensure that
   # these missing entries are masked.
   forward = function(batch) {
@@ -2531,10 +2531,10 @@ MCAR_mask_generator <- torch::nn_module(
     )
   },
 
-  # @description Missing Completely At Random Mask Generator: A mask generator where the masking
+  # description Missing Completely At Random Mask Generator: A mask generator where the masking
   # is determined by component-wise independent Bernoulli distribution.
   #
-  # @details
+  # details
   # Function that takes in a batch of observations and the probability
   # of masking each element based on a component-wise independent Bernoulli
   # distribution. Default value is 0.5, so all masks are equally likely to be trained.
@@ -2542,21 +2542,21 @@ MCAR_mask_generator <- torch::nn_module(
   # Note that the batch can contain missing values, indicated by the "NaN" token.
   # The mask will always mask missing values.
   #
-  # @param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
   # entries are missing. If any are missing, then the returned mask will ensure that
   # these missing entries are masked.
-  # @param prob Numeric between 0 and 1. The probability that an entry will be masked.
-  # @param seed Integer. Used to set the seed for the sampling process such that we
+  # param prob Numeric between 0 and 1. The probability that an entry will be masked.
+  # param seed Integer. Used to set the seed for the sampling process such that we
   # can reproduce the same masks.
-  # @param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
+  # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \eqn{\bar{S}}.
   # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
   # the first half and second half of the rows are duplicates of each other. That is,
   # batch = [row1, row1, row2, row2, row3, row3, ...].
   #
-  # @examples
+  # examples
   # MCAR_mask_generator_function(torch::torch_rand(c(5, 3)))
   #
-  # @return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
+  # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   # observed feature value will be masked. '0' means that the entry is NOT masked,
   # i.e., the feature value will be observed/given/available.
   MCAR_mask_generator_function = function(batch,
@@ -2646,19 +2646,19 @@ MCAR_mask_generator <- torch::nn_module(
 #' @keywords internal
 Specified_prob_mask_generator <- torch::nn_module(
 
-  # @field name Type of mask generator
+  # field name Type of mask generator
   name = "Specified_prob_mask_generator",
 
-  # @description Initialize a specified_probability mask generator.
+  # description Initialize a specified_probability mask generator.
   initialize = function(masking_probs,
                         paired_sampling = FALSE) {
     self$masking_probs <- masking_probs / sum(masking_probs)
     self$paired_sampling <- paired_sampling
   },
 
-  # @description Generates a specified probability mask by calling the
+  # description Generates a specified probability mask by calling the
   # self$Specified_prob_mask_generator_function.
-  # @param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the entries are
+  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the entries are
   # missing. If any are missing, then the returned mask will ensure that these missing entries are masked.
   forward = function(batch) {
     self$Specified_prob_mask_generator_function(batch,
@@ -2668,31 +2668,31 @@ Specified_prob_mask_generator <- torch::nn_module(
   },
 
 
-  # @description Specified Probability Mask Generator:
+  # description Specified Probability Mask Generator:
   # A mask generator that first samples the number of entries 'd' to be masked in
   # the 'M'-dimensional observation 'x' in the batch based on the given M+1 probabilities. The
   # 'd' masked are uniformly sampled from the 'M' possible feature indices. The d'th entry
   # of the probability of having d-1 masked values.
   #
-  # @details Note that MCAR_mask_generator with p = 0.5 is the same as using Specified_prob_mask_generator
+  # details Note that MCAR_mask_generator with p = 0.5 is the same as using Specified_prob_mask_generator
   # with masking_ratio = choose(M, 0:M), where M is the number of features. This function was initially
   # created to check if increasing the probability of having a masks with many masked features improved
   # vaeac's performance by focusing more on these situations during training.
   #
-  # @param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
   # entries are missing. If any are missing, then the returned mask will ensure that
   # these missing entries are masked.
-  # @param masking_probs An M+1 numerics containing the probabilities masking 'd' (0,...M) entries for each observation.
-  # @param seed Integer. Used to set the seed for the sampling process such that we
+  # param masking_probs An M+1 numerics containing the probabilities masking 'd' (0,...M) entries for each observation.
+  # param seed Integer. Used to set the seed for the sampling process such that we
   # can reproduce the same masks.
-  # @param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
+  # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
   # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
   # the first half and second half of the rows are duplicates of each other. That is,
   # `batch = [row1, row1, row2, row2, row3, row3, ...]`.
   #
-  # @examples Specified_prob_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
+  # examples Specified_prob_mask_generator_function(torch::torch_rand(c(5, 4)), masking_probs = c(2,7,5,3,3))
   #
-  # @return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
+  # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   # observed feature value will be masked. '0' means that the entry is NOT masked,
   # i.e., the feature value will be observed/given/available.
   Specified_prob_mask_generator_function = function(batch,
@@ -2802,8 +2802,8 @@ Specified_masks_mask_generator <- torch::nn_module(
     self$paired_sampling <- paired_sampling
   },
 
-  # @description Generates a mask by calling self$Specified_masks_mask_generator_function function.
-  # @param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+  # description Generates a mask by calling self$Specified_masks_mask_generator_function function.
+  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
   # entries are missing. If any are missing, then the returned mask will ensure that
   # these missing entries are masked.
   forward = function(batch) {
@@ -2814,29 +2814,29 @@ Specified_masks_mask_generator <- torch::nn_module(
     )
   },
 
-  # @description
+  # description
   # Sampling Masks from the Provided Masks with the Given Probabilities
   #
-  # @details
+  # details
   # Function that takes in a 'batch' of observations and matrix of possible/allowed
   # 'masks' which we are going to sample from based on the provided probability in 'masks_probs'.
   # Function returns a mask of same shape as batch. Note that the batch can contain missing values,
   # indicated by the "NaN" token. The mask will always mask missing values.
   #
-  # @param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
+  # param batch Matrix/Tensor. Only used to get the dimensions and to check if any of the
   # entries are missing. If any are missing, then the returned mask will ensure that
   # these missing entries are masked.
-  # @param masks Matrix/Tensor of possible/allowed 'masks' which we sample from.
-  # @param masks_probs Array of 'probabilities' for each of the masks specified in 'masks'.
+  # param masks Matrix/Tensor of possible/allowed 'masks' which we sample from.
+  # param masks_probs Array of 'probabilities' for each of the masks specified in 'masks'.
   # Note that they do not need to be between 0 and 1. They are scaled, hence, they only need to be positive.
-  # @param seed Integer. Used to set the seed for the sampling process such that we
+  # param seed Integer. Used to set the seed for the sampling process such that we
   # can reproduce the same masks.
-  # @param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
+  # param paired_sampling Boolean. If we are doing paired sampling. So include both S and \bar{S}.
   # If TRUE, then batch must be sampled using 'paired_sampler' which creates batches where
   # the first half and second half of the rows are duplicates of each other. That is,
   # batch = [row1, row1, row2, row2, row3, row3, ...].
   #
-  # @return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
+  # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   # observed feature value will be masked. '0' means that the entry is NOT masked,
   # i.e., the feature value will be observed/given/available.
   Specified_masks_mask_generator_function = function(batch,
