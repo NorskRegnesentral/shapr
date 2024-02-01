@@ -109,7 +109,7 @@ vaeac_check_which_vaeac_model <- function(which_vaeac_model, epochs, save_every_
     )
   }
 
-  if (!is.null(vaeac.which_vaeac_model) && !is.character(vaeac.which_vaeac_model)) {
+  if (!is.null(which_vaeac_model) && !is.character(which_vaeac_model)) {
     stop("`vaeac.which_vaeac_model` must be a string.")
   }
 
@@ -303,6 +303,36 @@ vaeac_check_save_parameters <- function(save_data, save_every_nth_epoch, x_train
   }
 }
 
+#' Function that checks the feature names of data and `vaeac` model
+#'
+#' @param feature_names_vaeac Array of strings containing the feature names of the `vaeac` model.
+#' @param feature_names_new Array of strings containing the feature names to compare with.
+#'
+#' @return The function does not return anything.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_check_x_train_names = function(feature_names_vaeac, feature_names_new) {
+  n_features_vaeac = length(feature_names_vaeac)
+  n_features_new = length(feature_names_new)
+
+  # Check for equal number of features
+  if (n_features_new != n_features_vaeac) {
+    stop(paste0(
+      "The provided `vaeac` model is trainined on a ", n_features_vaeac, "-dimensional dataset, but the current ",
+      "dataset is ", n_features_new, "-dimensional."
+    ))
+  }
+
+  # Check that the feature names of x_train matches the names of the training data used to train the vaeac model
+  if (!all.equal(feature_names_vaeac, feature_names_new)) {
+    stop(paste0(
+      "The training data's feature names (`", paste(feature_names_new, collapse = "`, `"), "`) do not match the ",
+      "names of the `vaeac` model's original training data (`", paste(feature_names_vaeac, collapse = "`, `"), "`)."
+    ))
+  }
+}
+
 #' Function that calls all vaeac parameters check functions
 #'
 #' @inheritParams vaeac_train_model
@@ -416,7 +446,8 @@ vaeac_check_parameters <- function(x_train,
   vaeac_check_which_vaeac_model(
     which_vaeac_model = which_vaeac_model,
     epochs = epochs,
-    save_every_nth_epoch = save_every_nth_epoch)
+    save_every_nth_epoch = save_every_nth_epoch
+  )
 }
 
 # Get functions ========================================================================================================
@@ -473,7 +504,16 @@ vaeac_get_mask_generator_name <- function(mask_gen_these_coalitions, mask_gen_th
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_get_save_file_names <- function(epochs, save_every_nth_epoch, folder_to_save_model = NULL) {
+vaeac_get_save_file_names <- function(model_description,
+                                      n_features,
+                                      n_train,
+                                      depth,
+                                      width,
+                                      latent_dim,
+                                      lr,
+                                      epochs,
+                                      save_every_nth_epoch,
+                                      folder_to_save_model = NULL) {
   file_names <- c("best", "best_running", "last") # The standard epochs we save the vaeac model
 
   # Add the optional epochs to save the model
@@ -502,6 +542,7 @@ vaeac_get_save_file_names <- function(epochs, save_every_nth_epoch, folder_to_sa
 #' @description
 #' Only [torch::optim_adam()] is currently supported. But it is easy to add an additional option later.
 #'
+#' @inheritParams vaeac_train_model
 #' @param vaeac_model A `vaeac` model created using [vaeac()].
 #' @param optimizer_name String containing the name of the [torch::optimizer()] to use.
 #'
@@ -510,7 +551,7 @@ vaeac_get_save_file_names <- function(epochs, save_every_nth_epoch, folder_to_sa
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_get_optimizer <- function(vaeac_model, optimizer_name = "adam") {
+vaeac_get_optimizer <- function(vaeac_model, lr, optimizer_name = "adam") {
   if (optimizer_name == "adam") {
     # Create the adam optimizer
     optimizer <- torch::optim_adam(
@@ -605,10 +646,11 @@ vaeac_get_full_state_list <- function(environment) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_get_x_explain_extended = function(x_explain, S, index_features) {
+vaeac_get_x_explain_extended <- function(x_explain, S, index_features) {
   n_coaltions <- length(index_features) # Get the number of active coalitions
+  n_explain <- nrow(x_explain) # Get the number of explicands
   mask <- S[index_features, , drop = FALSE] # Get the masks/coalitions we are to generate MC samples for
-  mask[mask == 0] <- NaN  # Set zeros to `NaN` to indicate that they are missing and to be imputed by `vaeac`
+  mask[mask == 0] <- NaN # Set zeros to `NaN` to indicate that they are missing and to be imputed by `vaeac`
   x_explain_extended <-
     x_explain[rep(seq_len(nrow(x_explain)), each = n_coaltions), ] # Extend the explicands `n_coalitions` times
   mask_extended <- mask[rep(seq(n_coaltions), times = n_explain), ] # Extend the masks `n_expliand` times
@@ -658,6 +700,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
                                         validation_iwae_num_samples,
                                         running_avg_num_values,
                                         verbose,
+                                        use_cuda,
                                         epochs,
                                         save_every_nth_epoch,
                                         epochs_early_stopping,
@@ -896,10 +939,10 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
 #' @author Lars Henry Berge Olsen
 vaeac_train_print_summary <- function(best_state, best_state_running, last_state) {
   message(sprintf(
-    "\nResults:
-Best epoch:             %d. \tVLB = %.3f. \tIWAE = %.3f \tIWAE_running = %.3f.
-Best running avg epoch: %d. \tVLB = %.3f. \tIWAE = %.3f \tIWAE_running = %.3f.
-Last epoch:             %d. \tVLB = %.3f. \tIWAE = %.3f \tIWAE_running = %.3f.\n",
+    "\nResults of the `vaeac` training process:
+Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
+Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
+Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     best_state$epoch,
     best_state$train_vlb[-1],
     best_state$validation_iwae[-1],
@@ -1045,43 +1088,32 @@ vaeac_update_para_locations <- function(parameters) {
 #' Function that checks and adds a pre-trained `vaeac` model
 #'
 #' @param parameters List containing the parameters used within [shapr::explain()].
-#' @param vaeac_object List or String. 1) Either a list of class
-#' `vaeac`, i.e., the list stored in `explanation$internal$parameters$vaeac` where `explanation` is the returned list
-#' from an earlier call to the [shapr::explain()] function. 2) A string containing the path to where the `vaeac`
-#' model is stored on disk, for example, `explanation$internal$parameters$vaeac$models$best`.
 #'
-#' @return This function adds a valid pre-trained vaeac model to the `parameter`
+#' @return This function adds a valid pre-trained vaeac model to the `parameter`.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_update_pretrained_model <- function(vaeac_object, parameters) {
+vaeac_update_pretrained_model <- function(parameters) {
+  # Extract the provided pre-trained vaeac model
+  vaeac_object = parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model
+
+  # Check that it is either a list or string
   if (!(is.list(vaeac_object) || is.character(vaeac_object))) {
-    stop("The `vaeac.pretrained_vaeac_model` parameter must be either a list or a string. Read documentation.")
+    stop("The `vaeac.pretrained_vaeac_model` parameter must be either a list or a string. Read the documentation.")
   }
 
   # Check if we are given a list
   if (is.list(vaeac_object)) {
     # Check for list of type vaeac
     if (!("vaeac" %in% class(vaeac_object))) stop("The `vaeac.pretrained_vaeac_model` list is not of type `vaeac`.")
-
-    if (parameters$n_features != vaeac_object$parameters$n_features) {
-      stop(paste0(
-        "The provided `vaeac` model is trainined on a ", vaeac_object$parameters$n_features,
-        "-dimensional dataset, but the current dataset is ", parameters$n_features, "-dimensional."
-      ))
-    }
-
-    # Check that the labels of x_train matches the labels of the training data used to train the vaeac model.
-    if (!all.equal(parameters$feature_names, vaeac_object$parameters$feature_list$labels)) {
-      stop(paste0(
-        "The labels of the training data ('", paste(parameters$feature_names, collapse = "', '"), "') ",
-        "do not match the labels of the `vaeac` model's training data (`",
-        paste(vaeac_object$parameters$feature_list$labels, collapse = "', '"), "`)."
-      ))
-    }
+    vaeac_check_x_train_names(feature_names_vaeac = vaeac_object$parameters$feature_list$labels,
+                              feature_names_new = parameters$feature_names)
 
     # Add the pre-trained valid vaeac model to the parameters list
-    parameters$vaeac <- parameters$vaeac.pretrained_vaeac_model
+    parameters$vaeac <- parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model
+
+    # Remove the pre-trained vaeac model as it has been approved as a vaeac model
+    parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model = NULL
   }
 
 
@@ -1103,22 +1135,9 @@ vaeac_update_pretrained_model <- function(vaeac_object, parameters) {
       stop("The provided file is not a vaeac model as it is missing, e.g., the `optimizer_state_dict` entry.")
     }
 
-    # Check that the provided vaeac model is trained on a dataset with the same number of features.
-    if (parameters$n_features != vaeac_model$n_features) {
-      stop(paste0(
-        "The provided `vaeac` model is trainined on a ", vaeac_model$n_features, "-dimensional ",
-        "dataset, but the current dataset is ", parameters$n_features, "-dimensional."
-      ))
-    }
-
-    # Check that the labels of x_train matches the labels of the training data used to train the vaeac model.
-    if (!all.equal(parameters$feature_names, vaeac_model$feature_list$labels)) {
-      stop(paste0(
-        "The labels of the training data ('", paste(parameters$feature_names, collapse = "', '"), "') ",
-        "do not match the labels of the `vaeac` model's training data (`",
-        paste(vaeac_model$feature_list$labels, collapse = "', '"), "`)."
-      ))
-    }
+    # Check that the provided vaeac model is trained on a dataset with the same feature names
+    vaeac_check_x_train_names(feature_names_vaeac = vaeac_model$feature_list$labels,
+                              feature_names_new = parameters$feature_names)
 
     # Extract the training/validation results
     evaluation_criterions <- c("train_vlb", "validation_iwae", "validation_iwae_running")
