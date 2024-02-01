@@ -4,11 +4,19 @@
 \alias{vaeac_check_save_parameters}
 \title{Function that gives a warning about disk usage}
 \usage{
-vaeac_check_save_parameters(save_data, save_every_nth_epoch, x_train_size)
+vaeac_check_save_parameters(
+  save_data,
+  epochs,
+  save_every_nth_epoch,
+  x_train_size
+)
 }
 \arguments{
 \item{save_data}{Boolean. If we are to save the data together with the model. Useful if one are to continue
 to train the model later.}
+
+\item{epochs}{Integer. The number of epochs to train the final vaeac model.
+This includes \code{epochs_initiation_phase}.}
 
 \item{save_every_nth_epoch}{Integer. If we are to save the vaeac model after every nth epoch.}
 

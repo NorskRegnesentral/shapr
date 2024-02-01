@@ -1026,11 +1026,14 @@ vaeac_normalize_data = function(data_torch, one_hot_max_sizes, norm_mean = NULL,
 #' @author Lars Henry Berge Olsen
 #'
 #' @examples
-#' # preprocessed <- vaeac_preprocess_data(abalone[, -1])
-#' # preprocessed$data_preprocessed
-#' # postprocessed <- vaeac_postprocess_data(preprocessed$data_preprocessed, preprocessed)
-#' # postprocessed
-#' # all.equal(abalone[, -1], postprocessed)
+#' \dontrun{
+#' data = data.table(matrix(rgamma(500 * 3, 2), ncol = 3))
+#' preprocessed <- vaeac_preprocess_data(data)
+#' preprocessed$data_preprocessed
+#' postprocessed <- vaeac_postprocess_data(preprocessed$data_preprocessed, preprocessed)
+#' postprocessed
+#' all.equal(data, postprocessed)
+#' }
 vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
   # Go from vaeac type data back to data.table used in shapr
   data_dt <- as.data.table(data)
@@ -1082,16 +1085,18 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
 #' @author Lars Henry Berge Olsen
 #'
 #' @examples
-#' # data <- data.frame(matrix(rgamma(1000 * 3, 2), ncol = 3)) # Simulate positive data
-#' # data$X2 <- factor(data$X2 >= 2) # Create a factor, larger than mean
-#' # one_hot_max_sizes <- c(1, 2, 1)
-#' # print(data)
-#' # data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
-#' # print(data_unbounded)
-#' # data <- as.data.table(data) # convert to data table. Same functions works then too
-#' # print(data)
-#' # data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
-#' # print(data_unbounded)
+#' \dontrun{
+#' data <- data.frame(matrix(rgamma(1000 * 3, 2), ncol = 3)) # Simulate positive data
+#' data$X2 <- factor(data$X2 >= 2) # Create a factor, larger than mean
+#' one_hot_max_sizes <- c(1, 2, 1)
+#' print(data)
+#' data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
+#' print(data_unbounded)
+#' data <- as.data.table(data) # convert to data table. Same functions works then too
+#' print(data)
+#' data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
+#' print(data_unbounded)
+#' }
 log_trans_cont_features_func <- function(data, one_hot_max_sizes) {
   # Check if data is data.table or matrix/data.frame.
   if (any(class(data) == "data.table")) {
@@ -1143,22 +1148,24 @@ log_trans_cont_features_func <- function(data, one_hot_max_sizes) {
 #' @author Lars Henry Berge Olsen
 #'
 #' @examples
-#' # data <- data.frame(matrix(rgamma(500 * 3, 2), ncol = 3)) # Simulate positive data
-#' # data$X2 <- factor(data$X2 >= 2) # Create a factor, larger than mean
-#' # one_hot_max_sizes <- c(1, 2, 1)
-#' # print(data)
-#' # data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
-#' # print(data_unbounded)
-#' # data_bounded <- exp_trans_cont_features_func(data_unbounded, one_hot_max_sizes)
-#' # print(data_bounded)
-#' # all.equal(data, data_bounded)
-#' # data <- as.data.table(data) # convert to data table. Same functions works then too
-#' # print(data)
-#' # data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
-#' # print(data_unbounded)
-#' # data_bounded <- exp_trans_cont_features_func(data_unbounded, one_hot_max_sizes)
-#' # print(data_bounded)
-#' # all.equal(data, data_bounded)
+#' \dontrun{
+#' data <- data.frame(matrix(rgamma(500 * 3, 2), ncol = 3)) # Simulate positive data
+#' data$X2 <- factor(data$X2 >= 2) # Create a factor, larger than mean
+#' one_hot_max_sizes <- c(1, 2, 1)
+#' print(data)
+#' data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
+#' print(data_unbounded)
+#' data_bounded <- exp_trans_cont_features_func(data_unbounded, one_hot_max_sizes)
+#' print(data_bounded)
+#' all.equal(data, data_bounded)
+#' data <- as.data.table(data) # convert to data table. Same functions works then too
+#' print(data)
+#' data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
+#' print(data_unbounded)
+#' data_bounded <- exp_trans_cont_features_func(data_unbounded, one_hot_max_sizes)
+#' print(data_bounded)
+#' all.equal(data, data_bounded)
+#' }
 exp_trans_cont_features_func <- function(data, one_hot_max_sizes) {
   # Check if data is data.table or matrix/data.frame.
   if (any(class(data) == "data.table")) {
@@ -1207,28 +1214,30 @@ exp_trans_cont_features_func <- function(data, one_hot_max_sizes) {
 #' @author Lars Henry Berge Olsen
 #'
 #' @examples
-#' # p <- 5
-#' # N <- 14
-#' # batch_size <- 10
-#' # one_hot_max_sizes <- rep(1, p)
-#' # vaeac_ds <- vaeac_dataset(
-#' #   torch_tensor(matrix(rnorm(p * N), ncol = p),
-#' #                dtype = torch_float()),
-#' #   one_hot_max_sizes)
-#' # vaeac_ds
+#' \dontrun{
+#' p <- 5
+#' N <- 14
+#' batch_size <- 10
+#' one_hot_max_sizes <- rep(1, p)
+#' vaeac_ds <- vaeac_dataset(
+#'   torch_tensor(matrix(rnorm(p * N), ncol = p),
+#'                dtype = torch_float()),
+#'   one_hot_max_sizes)
+#' vaeac_ds
 #'
-#' # vaeac_dl <- torch::dataloader(
-#' #   vaeac_ds,
-#' #   batch_size = batch_size,
-#' #   shuffle = TRUE,
-#' #   drop_last = FALSE)
-#' # vaeac_dl$.length()
-#' # vaeac_dl$.iter()
+#' vaeac_dl <- torch::dataloader(
+#'   vaeac_ds,
+#'   batch_size = batch_size,
+#'   shuffle = TRUE,
+#'   drop_last = FALSE)
+#' vaeac_dl$.length()
+#' vaeac_dl$.iter()
 #'
-#' # vaeac_iterator <- vaeac_dl$.iter()
-#' # vaeac_iterator$.next() # batch1
-#' # vaeac_iterator$.next() # batch2
-#' # vaeac_iterator$.next() # Empty
+#' vaeac_iterator <- vaeac_dl$.iter()
+#' vaeac_iterator$.next() # batch1
+#' vaeac_iterator$.next() # batch2
+#' vaeac_iterator$.next() # Empty
+#' }
 vaeac_dataset <- torch::dataset(
 
   # @field name The name of the `torch::dataset`.
@@ -1282,29 +1291,31 @@ vaeac_dataset <- torch::dataset(
 #' then the data is returned in chronological order.
 #'
 #' @examples
-#' # Example how to use it combined with mask generators with paired sampling activated
-#' # batch_size <- 4
-#' # if (batch_size %% 2 == 1) batch_size <- batch_size - 1 # Make sure that batch size is even
-#' # num_featuers <- 3
-#' # num_observations <- 5
-#' # shuffle <- TRUE
-#' # data <- torch_tensor(matrix(rep(seq(num_observations), each = num_featuers),
-#' #                             ncol = num_featuers, byrow = TRUE))
-#' # data
-#' # dataset <- vaeac_dataset(data, rep(1, num_featuers))
-#' # dataload <- torch::dataloader(dataset,
-#' #   batch_size = batch_size,
-#' #   sampler = paired_sampler(dataset,
-#' #     shuffle = shuffle
-#' #   )
-#' # )
-#' # dataload$.length() # Number of batches, same as ceiling((2 * num_observation) / batch_size)
-#' # mask_generator <- MCAR_mask_generator(paired = TRUE)
-#' # coro::loop(for (batch in dataload) {
-#' #   mask <- mask_generator(batch)
-#' #   obs <- mask * batch
-#' #   print(torch::torch_cat(c(batch, mask, obs), -1))
-#' # })
+#' \dontrun{
+#' Example how to use it combined with mask generators with paired sampling activated
+#' batch_size <- 4
+#' if (batch_size %% 2 == 1) batch_size <- batch_size - 1 # Make sure that batch size is even
+#' num_featuers <- 3
+#' num_observations <- 5
+#' shuffle <- TRUE
+#' data <- torch_tensor(matrix(rep(seq(num_observations), each = num_featuers),
+#'                             ncol = num_featuers, byrow = TRUE))
+#' data
+#' dataset <- vaeac_dataset(data, rep(1, num_featuers))
+#' dataload <- torch::dataloader(dataset,
+#'   batch_size = batch_size,
+#'   sampler = paired_sampler(dataset,
+#'     shuffle = shuffle
+#'   )
+#' )
+#' dataload$.length() # Number of batches, same as ceiling((2 * num_observation) / batch_size)
+#' mask_generator <- MCAR_mask_generator(paired = TRUE)
+#' coro::loop(for (batch in dataload) {
+#'   mask <- mask_generator(batch)
+#'   obs <- mask * batch
+#'   print(torch::torch_cat(c(batch, mask, obs), -1))
+#' })
+#' }
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
@@ -1371,24 +1382,25 @@ paired_sampler <- torch::sampler(
 #' @author Lars Henry Berge Olsen
 #'
 #' @examples
-#' # net1 <- torch::nn_sequential(
-#' #   MemoryLayer("#1"),
-#' #   MemoryLayer("#0.1"),
-#' #   torch::nn_linear(512, 256),
-#' #   torch::nn_leaky_relu(),
-#' #   # here add cannot be TRUE because the dimensions mismatch
-#' #   MemoryLayer("#0.1", output = TRUE, add = FALSE),
-#' #   torch::nn_linear(768, 256),
-#' #   # the dimension after the concatenation with skip-connection is 512 + 256 = 768
-#' # )
-#' # net2 <- torch::nn_equential(
-#' #   torch::nn_linear(512, 512),
-#' #   MemoryLayer("#1", output = TRUE, add = TRUE),
-#' #   ...
-#' # )
-#' # b <- net1(a)
-#' # d <- net2(c)
-#' # # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
+#' \dontrun{
+#' net1 <- torch::nn_sequential(
+#'   MemoryLayer("#1"),
+#'   MemoryLayer("#0.1"),
+#'   torch::nn_linear(512, 256),
+#'   torch::nn_leaky_relu(),
+#'   # here add cannot be TRUE because the dimensions mismatch
+#'   MemoryLayer("#0.1", output = TRUE, add = FALSE),
+#'   torch::nn_linear(768, 256),
+#'   # the dimension after the concatenation with skip-connection is 512 + 256 = 768
+#' )
+#' net2 <- torch::nn_equential(
+#'   torch::nn_linear(512, 512),
+#'   MemoryLayer("#1", output = TRUE, add = TRUE),
+#'   ...
+#' )
+#' b <- net1(a)
+#' d <- net2(c) # net2 must be called after net1, otherwise tensor '#1' will not be in storage.
+#' }
 MemoryLayer <- torch::nn_module(
   # @field classname Name of the of torch::nn_module object.
   classname = "MemoryLayer",
@@ -2480,9 +2492,11 @@ CategoricalToOneHotLayer <- torch::nn_module(
 #' - Output: \eqn{(N, p)}, same shape as the input
 #'
 #' @examples
-#' # mask_gen <- MCAR_mask_generator(masking_ratio = 0.5, paired_sampling = FALSE)
-#' # batch <- torch::torch_randn(c(5, 3))
-#' # mask_gen(batch)
+#' \dontrun{
+#' mask_gen <- MCAR_mask_generator(masking_ratio = 0.5, paired_sampling = FALSE)
+#' batch <- torch::torch_randn(c(5, 3))
+#' mask_gen(batch)
+#' }
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
@@ -2620,12 +2634,14 @@ MCAR_mask_generator <- torch::nn_module(
 #' `batch = [row1, row1, row2, row2, row3, row3, ...]`.
 #'
 #' @examples
-#' # probs <- c(1, 8, 6, 3, 2)
-#' # mask_gen <- Specified_prob_mask_generator(probs)
-#' # masks <- mask_gen(torch::torch_randn(c(10000, length(probs)) - 1))
-#' # empirical_prob <- table(as.array(masks$sum(2)))
-#' # empirical_prob / sum(empirical_prob)
-#' # probs / sum(probs)
+#' \dontrun{
+#' probs <- c(1, 8, 6, 3, 2)
+#' mask_gen <- Specified_prob_mask_generator(probs)
+#' masks <- mask_gen(torch::torch_randn(c(10000, length(probs)) - 1))
+#' empirical_prob <- table(as.array(masks$sum(2)))
+#' empirical_prob / sum(empirical_prob)
+#' probs / sum(probs)
+#' }
 #'
 #' @keywords internal
 Specified_prob_mask_generator <- torch::nn_module(
@@ -2761,12 +2777,14 @@ Specified_prob_mask_generator <- torch::nn_module(
 #' these missing entries are masked.
 #'
 #' @examples
-#' # masks <- torch_tensor(matrix(c(0,0,1,0, 1,0,1,0, 1,1,1,1), nrow = 3, ncol = 4, byrow = TRUE))
-#' # masks_probs <- c(3, 1, 6)
-#' # mask_gen <- Specified_masks_mask_generator(masks = masks, masks_probs = masks_probs)
-#' # empirical_prob <- table(as.array(mask_gen(torch::torch_randn(c(10000, ncol(masks))))$sum(-1)))
-#' # empirical_prob / sum(empirical_prob)
-#' # masks_probs / sum(masks_probs)
+#' \dontrun{
+#' masks <- torch_tensor(matrix(c(0,0,1,0, 1,0,1,0, 1,1,1,1), nrow = 3, ncol = 4, byrow = TRUE))
+#' masks_probs <- c(3, 1, 6)
+#' mask_gen <- Specified_masks_mask_generator(masks = masks, masks_probs = masks_probs)
+#' empirical_prob <- table(as.array(mask_gen(torch::torch_randn(c(10000, ncol(masks))))$sum(-1)))
+#' empirical_prob / sum(empirical_prob)
+#' masks_probs / sum(masks_probs)
+#' }
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal

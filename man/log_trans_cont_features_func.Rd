@@ -23,16 +23,18 @@ This ensures that strictly positive values are unbounded after the transformatio
 Used for, e.g., Burr data and Abalone data.
 }
 \examples{
-# data <- data.frame(matrix(rgamma(1000 * 3, 2), ncol = 3)) # Simulate positive data
-# data$X2 <- factor(data$X2 >= 2) # Create a factor, larger than mean
-# one_hot_max_sizes <- c(1, 2, 1)
-# print(data)
-# data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
-# print(data_unbounded)
-# data <- as.data.table(data) # convert to data table. Same functions works then too
-# print(data)
-# data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
-# print(data_unbounded)
+\dontrun{
+data <- data.frame(matrix(rgamma(1000 * 3, 2), ncol = 3)) # Simulate positive data
+data$X2 <- factor(data$X2 >= 2) # Create a factor, larger than mean
+one_hot_max_sizes <- c(1, 2, 1)
+print(data)
+data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
+print(data_unbounded)
+data <- as.data.table(data) # convert to data table. Same functions works then too
+print(data)
+data_unbounded <- log_trans_cont_features_func(data, one_hot_max_sizes)
+print(data_unbounded)
+}
 }
 \author{
 Lars Henry Berge Olsen

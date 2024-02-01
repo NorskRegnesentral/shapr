@@ -10,7 +10,8 @@ vaeac_continue_train_model(
   lr_new = NULL,
   x_train = NULL,
   save_data = FALSE,
-  verbose = FALSE
+  verbose = 0,
+  seed = 1
 )
 }
 \arguments{

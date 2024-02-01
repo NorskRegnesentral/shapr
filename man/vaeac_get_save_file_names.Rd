@@ -5,12 +5,32 @@
 \title{Function that creates the save file names for the \code{vaeac} model}
 \usage{
 vaeac_get_save_file_names(
+  model_description,
+  n_features,
+  n_train,
+  depth,
+  width,
+  latent_dim,
+  lr,
   epochs,
   save_every_nth_epoch,
   folder_to_save_model = NULL
 )
 }
 \arguments{
+\item{model_description}{String containing, e.g., the name of the data distribution or
+additional parameter information. Used in the save name of the fitted model.}
+
+\item{depth}{Integer. The number of hidden layers in the neural
+networks of the masked encoder, full encoder, and decoder.}
+
+\item{width}{Integer. The number of neurons in each hidden layer in
+the neural networks of the masked encoder, full encoder, and decoder.}
+
+\item{latent_dim}{Integer. The number of dimensions in the latent space.}
+
+\item{lr}{Numeric. The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
+
 \item{epochs}{Integer. The number of epochs to train the final vaeac model.
 This includes \code{epochs_initiation_phase}.}
 

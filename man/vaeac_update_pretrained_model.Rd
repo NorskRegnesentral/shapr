@@ -4,18 +4,13 @@
 \alias{vaeac_update_pretrained_model}
 \title{Function that checks and adds a pre-trained \code{vaeac} model}
 \usage{
-vaeac_update_pretrained_model(vaeac_object, parameters)
+vaeac_update_pretrained_model(parameters)
 }
 \arguments{
-\item{vaeac_object}{List or String. 1) Either a list of class
-\code{vaeac}, i.e., the list stored in \code{explanation$internal$parameters$vaeac} where \code{explanation} is the returned list
-from an earlier call to the \code{\link[=explain]{explain()}} function. 2) A string containing the path to where the \code{vaeac}
-model is stored on disk, for example, \code{explanation$internal$parameters$vaeac$models$best}.}
-
 \item{parameters}{List containing the parameters used within \code{\link[=explain]{explain()}}.}
 }
 \value{
-This function adds a valid pre-trained vaeac model to the \code{parameter}
+This function adds a valid pre-trained vaeac model to the \code{parameter}.
 }
 \description{
 Function that checks and adds a pre-trained \code{vaeac} model

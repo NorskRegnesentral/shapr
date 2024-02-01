@@ -207,11 +207,8 @@ in the start. Pick the best performing one after \code{vaeac.extra_parameters$ep
 epochs (default is \code{2}) and continue training that one.}
     \item{\code{vaeac.epochs}}{Integer. The number of epochs to train the final vaeac model. This includes
 \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
-    \item{\code{vaeac.save_model}}{Boolean. If \code{TRUE} (default), the \code{vaeac} model will be saved either in a
-\code{\link[base:tempfile]{base::tempdir()}} folder or in a user specified location in \code{vaeac.folder_to_save_model}. If \code{FALSE}, then
-the paths to model and the model will will be deleted from the returned object from \code{\link[=explain]{explain()}}.}
     \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach.
-See \code{\link[=vaeac_extra_para_default]{vaeac_extra_para_default()}} for description of possible additional parameters.}
+See \code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters.}
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
 values.

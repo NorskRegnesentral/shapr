@@ -294,7 +294,7 @@ vaeac_check_masking_ratio <- function(masking_ratio, n_features) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_save_parameters <- function(save_data, save_every_nth_epoch, x_train_size) {
+vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch, x_train_size) {
   if (save_data && !is.null(save_every_nth_epoch) && epochs / save_every_nth_epoch > 5) {
     message(paste0(
       "Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might requirer ",
@@ -438,6 +438,7 @@ vaeac_check_parameters <- function(x_train,
   # Check the save parameters
   vaeac_check_save_parameters(
     save_data = save_data,
+    epochs = epochs,
     save_every_nth_epoch = save_every_nth_epoch,
     x_train_size = format(object.size(x_train), units = "auto")
   )
@@ -451,6 +452,140 @@ vaeac_check_parameters <- function(x_train,
 }
 
 # Get functions ========================================================================================================
+#' Function to specify the extra parameters in the `vaeac` model
+#'
+#' @description In this function, we specify the default values for the extra parameters used in [shapr::explain()]
+#' for `approach = "vaeac"`.
+#'
+#' @param vaeac.model_description String (default is `make.names(Sys.time())`). String containing, e.g., the name of the
+#' data distribution or additional parameter information. Used in the save name of the fitted model. If not provided,
+#' then a name will be generated based on [base::Sys.time()] to ensure a unique name. We use [base::make.names()] to
+#' ensure a valid file name for all operating systems.
+#' @param vaeac.folder_to_save_model String (default is [base::tempdir()]). String specifying a path to a folder where
+#' the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
+#' [shapr::explain()] object if `vaeac.save_model = FALSE`.
+#' @param vaeac.pretrained_vaeac_model List or String (default is `NULL`). 1) Either a list of class
+#' `vaeac`, i.e., the list stored in `explanation$internal$parameters$vaeac` where `explanation` is the returned list
+#' from an earlier call to the [shapr::explain()] function. 2) A string containing the path to where the `vaeac`
+#' model is stored on disk, for example, `explanation$internal$parameters$vaeac$models$best`.
+#' @param vaeac.use_cuda Logical (default is `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
+#' If [torch::cuda_is_available()] is `FALSE`, the we fall back to use CPU. If `FALSE`, we use the CPU. Often this is
+#' faster for tabular data sets. Note, cuda is not not supported in the current version of the `shapr` package.
+#' TODO: Update this when this is done.
+#' @param vaeac.epochs_initiation_phase Positive integer (default is `2`). The number of epochs to run each of the
+#' `vaeac.num_vaeacs_initiate` `vaeac` models before continuing to train only the best performing model.
+#' @param vaeac.epochs_early_stopping Positive integer (default is `NULL`). The training stops if there has been no
+#' improvement in the validation IWAE for `vaeac.epochs_early_stopping` epochs. If the user wants the training process
+#' to be solely based on this training criterion, then `vaeac.epochs` in [shapr::explain()] should be set to a large
+#' number. If `NULL`, then `shapr` will internally set `vaeac.epochs_early_stopping = vaeac.epochs` such that early
+#' stopping does not occur.
+#' @param vaeac.save_every_nth_epoch Positive integer (default is `NULL`). If provided, then the vaeac model after
+#' every `vaeac.save_every_nth_epoch`th epoch will be saved.
+#' @param vaeac.validation_ratio Numeric (default is `0.25`). Scalar between `0` and `1` indicating the ratio of
+#' instances from the input data which will be used as validation data. That is, `vaeac.validation_ratio = 0.25` means
+#' that `75%` of the provided data is used as training data, while the remaining `25%` is used as validation data.
+#' @param vaeac.validation_iwae_num_samples Positive integer (default is `25`). The number of generated samples used
+#' to compute the IWAE criterion when validating the vaeac model on the validation data.
+#' @param vaeac.batch_size Positive integer (default is `64`). The number of samples to include in each batch
+#' during the training of the vaeac model. Used in [torch::dataloader()].
+#' @param vaeac.batch_size_sampling Positive integer (default is `NULL`) The number of samples to include in
+#' each batch when generating the Monte Carlo samples. If `NULL`, then the function generates the Monte Carlo samples
+#' for the provided coalitions/combinations and all explicands sent to [shapr::explain()] at the time.
+#' The number of coalitions are determined by `n_batches` in [shapr::explain()]. We recommend to tweak `n_batches`
+#' rather  than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
+#' @param vaeac.running_avg_num_values Positive integer (default is `5`). The number of previous IWAE values to include
+#' when we compute the running means of the IWAE criterion.
+#' @param vaeac.use_skip_connections Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
+#' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
+#' so the output becomes \eqn{X + activation(WX + b)}.
+#' @param vaeac.skip_connection_masked_enc_dec Logical (default is `TRUE`). If `TRUE`, we apply concatenate skip
+#' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
+#' linked to the last layer of the decoder. The second layer of the masked encoder will be
+#' linked to the second to last layer of the decoder, and so on.
+#' @param vaeac.use_batch_normalization Logical (default is `FALSE`). If `TRUE`, we apply batch normalization after the
+#' activation function. Note that if `vaeac.use_skip_connections = TRUE`, then the normalization is applied after the
+#' inclusion of the skip connection. That is, we batch normalize the whole quantity \eqn{X + activation(WX + b)}.
+#' @param vaeac.paired_sampling Logical (default is `TRUE`). If `TRUE`, we apply paired sampling to the training
+#' batches. That is, the training observations in each batch will be duplicated, where the first instance will be masked
+#' by \eqn{S} while the second instance will be masked by \eqn{\bar{S}}. This ensures that the training of the
+#' `vaeac` model becomes more stable as the model has access to the full version of each training observation. However,
+#' this will increase the training time due to more complex implementation and doubling the size of each batch. See
+#' [shapr::paired_sampler()] for more information.
+#' @param vaeac.masking_ratio Numeric (default is `0.5`). Probability of masking a feature in the
+#' [shapr::MCAR_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
+#' model can do arbitrary conditioning as all coalitions will be trained. `vaeac.masking_ratio` will be overruled if
+#' `vaeac.mask_gen_these_coalitions` is specified.
+#' @param vaeac.mask_gen_these_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
+#' `vaeac` model will be trained on, see [shapr::Specified_masks_mask_generator()]. This parameter is used internally
+#' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
+#' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+#' when `group` is specified in [shapr::explain()].
+#' @param vaeac.mask_gen_these_coalitions_prob Numeric array (default is `NULL`). Array of length equal to the height
+#' of `vaeac.mask_gen_these_coalitions` containing the probabilities of sampling the corresponding coalitions in
+#' `vaeac.mask_gen_these_coalitions`.
+#' @param vaeac.sigma_mu Numeric (default is `1e4`). One of two hyperparameter values in the normal-gamma prior
+#' used in the masked encoder, see Section 3.3.1 in
+#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
+#' @param vaeac.sigma_sigma Numeric (default is `1e-4`). One of two hyperparameter values in the normal-gamma prior
+#' used in the masked encoder, see Section 3.3.1 in
+#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
+#' @param vaeac.save_data Logical (default is `FALSE`). If `TRUE`, then the data is stored together with
+#' the model. Useful if one are to continue to train the model later using [shapr::vaeac_continue_train_model()].
+#' TODO: Check if we actually use this later. I think I use the one in `explanation`...
+#' @param vaeac.transform_all_cont_features Logical (default is `FALSE`). If we are to \eqn{\log} transform all
+#' continuous features before sending the data to [shapr::vaeac()]. The `vaeac` model creates unbounded Monte Carlo
+#' sample values. Thus, if the continuous features are strictly positive (as for, e.g., the Burr distribution and
+#' Abalone data set), it can be advantageous to \eqn{\log} transform the data to unbounded form before using `vaeac`.
+#' If `TRUE`, then [shapr::vaeac_postprocess_data()] will take the \eqn{\exp} of the results to get back to strictly
+#' positive values when using the `vaeac` model to impute missing values/generate the Monte Carlo samples.
+#' @param vaeac.sample_random Logcial (default is `TRUE`). If `TRUE`, the function generates random Monte Carlo samples
+#' from the inferred generative distributions. If `FALSE`, the function use the most likely values, i.e., the mean and
+#' class with highest probability for continuous and categorical, respectively.
+#' @param vaeac.which_vaeac_model String (default is `NULL`). The name of the `vaeac` model (snapshots from different
+#' epochs) to use when generating the Monte Carlo samples. The standard choices are: `"best"` (epoch with lowest IWAE),
+#' `"best_running"` (epoch with lowest running IWAE, see `vaeac.running_avg_num_values`), and `last` (the last epoch).
+#' Note that additional choices are available if `vaeac.save_every_nth_epoch` is provided. For example, if
+#' `vaeac.save_every_nth_epoch = 5`, then `vaeac.which_vaeac_model` can also take the values `"epoch_5"`, `"epoch_10"`,
+#' `"epoch_15"`, and so on.
+#' @param vaeac.save_model Boolean. If `TRUE` (default), the `vaeac` model will be saved either in a
+#' [base::tempdir()] folder or in a user specified location in `vaeac.folder_to_save_model`. If `FALSE`, then
+#' the paths to model and the model will will be deleted from the returned object from [shapr::explain()].
+#'
+#' @return Named list of the default values `vaeac` extra parameter arguments specified in this function call.
+#' Note that both `vaeac.model_description` and `vaeac.folder_to_save_model` will change with time and R session.
+#'
+#' @export
+#' @author Lars Henry Berge Olsen
+vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sys.time()),
+                                         vaeac.folder_to_save_model = tempdir(),
+                                         vaeac.pretrained_vaeac_model = NULL,
+                                         vaeac.use_cuda = FALSE,
+                                         vaeac.epochs_initiation_phase = 2,
+                                         vaeac.epochs_early_stopping = NULL,
+                                         vaeac.save_every_nth_epoch = NULL,
+                                         vaeac.validation_ratio = 0.25,
+                                         vaeac.validation_iwae_num_samples = 25,
+                                         vaeac.batch_size = 64,
+                                         vaeac.batch_size_sampling = NULL,
+                                         vaeac.running_avg_num_values = 5,
+                                         vaeac.use_skip_connections = TRUE,
+                                         vaeac.skip_connection_masked_enc_dec = TRUE,
+                                         vaeac.use_batch_normalization = FALSE,
+                                         vaeac.paired_sampling = TRUE,
+                                         vaeac.masking_ratio = 0.5,
+                                         vaeac.mask_gen_these_coalitions = NULL,
+                                         vaeac.mask_gen_these_coalitions_prob = NULL,
+                                         vaeac.sigma_mu = 1e4,
+                                         vaeac.sigma_sigma = 1e-4,
+                                         vaeac.sample_random = TRUE,
+                                         vaeac.save_data = FALSE,
+                                         vaeac.transform_all_cont_features = FALSE,
+                                         vaeac.which_vaeac_model = "best",
+                                         vaeac.save_model = TRUE) {
+  # Return a named list with the extra parameters to the vaeac model
+  return(mget(formalArgs(vaeac_get_extra_para_default)))
+}
+
 #' Function that determines which mask generator to use
 #'
 #' @inheritParams vaeac_train_model
@@ -657,6 +792,50 @@ vaeac_get_x_explain_extended <- function(x_explain, S, index_features) {
   x_explain_extended[is.na(mask_extended)] <- NaN # Apply the mask. The NaNs are features outside coalition S.
   return(x_explain_extended)
 }
+
+#' Extract the Training VLB and Validation IWAE from a list of explanations objects using the vaeac approach
+#'
+#' @param explanation_list A list of [explain()] objects applied to the same data, model, and
+#' `vaeac` must be the used approach. If the entries in the list is named, then the function use
+#' these names. Otherwise, it defaults to the approach names (with integer suffix for duplicates)
+#' for the explanation objects in `explanation_list`.
+#'
+#' @return A data.table containing the training VLB, validation IWAE, and running validation IWAE at each epoch for
+#' each vaeac model.
+#' @author Lars Henry Berge Olsen
+#' @export
+vaeac_get_evaluation_criteria <- function(explanation_list) {
+  # Check if user only provided a single explanation and did not put it in a list
+  if ("shapr" %in% class(explanation_list)) explanation_list <- list(explanation_list)
+
+  # Check that all explanation objects use the `vaeac` approach
+  explanation_approaches <- sapply(explanation_list, function(explanation) explanation$internal$parameters$approach)
+  if (any(explanation_approaches != "vaeac")) {
+    stop(sprintf(
+      "Explanation object number `%d` in the `explanation_list` does not use the `vaeac` approach.",
+      seq_along(explanation_approaches)[explanation_approaches != "vaeac"][1]
+    ))
+  }
+
+  # Name the elements in the explanation_list if no names have been provided
+  if (is.null(names(explanation_list))) explanation_list <- MSEv_name_explanation_list(explanation_list)
+
+  # Extract the evaluation criteria and put them into a data.table
+  vaeac_VLB_IWAE_dt <- data.table::rbindlist(
+    lapply(explanation_list, function(explanation) {
+      data.table::data.table(do.call(cbind, explanation$internal$parameters$vaeac$results))[, Epoch := .I]
+    }),
+    use.names = TRUE,
+    idcol = "Method",
+  )
+  names(vaeac_VLB_IWAE_dt)[2:4] <- c("VLB", "IWAE", "IWAE_running")
+  vaeac_VLB_IWAE_dt$Method <- factor(vaeac_VLB_IWAE_dt$Method, levels = names(explanation_list))
+  data.table::setkeyv(vaeac_VLB_IWAE_dt, c("Method", "Epoch"))
+  data.table::setcolorder(vaeac_VLB_IWAE_dt, c("Method", "Epoch"))
+
+  return(vaeac_VLB_IWAE_dt)
+}
+
 
 
 
@@ -896,7 +1075,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     torch::torch_save(last_state, vaeac_save_file_names[3])
 
     # Summary printout
-    vaeac_train_print_summary(best_state, best_state_running, last_state)
+    vaeac_print_train_summary(best_state, best_state_running, last_state)
 
     # Create a return list
     return_list <- list(
@@ -924,6 +1103,9 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
   return(return_list)
 }
 
+
+
+# Print functions -------------------------------------------------------------------------------------------------
 #' Function to printout a training summary for the `vaeac` model
 #'
 #' @param best_state The state list (i.e., the saved `vaeac` object) of the `vaeac`
@@ -937,7 +1119,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_train_print_summary <- function(best_state, best_state_running, last_state) {
+vaeac_print_train_summary <- function(best_state, best_state_running, last_state) {
   message(sprintf(
     "\nResults of the `vaeac` training process:
 Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
@@ -989,7 +1171,7 @@ vaeac_update_para_locations <- function(parameters) {
   vaeac.main_para_user_names <- vaeac.main_para_user_names[!vaeac.main_para_user_names %in% "vaeac.extra_parameters"]
 
   # Get the default values for vaeac's extra parameters into a named list
-  vaeac.extra_para_default <- vaeac_extra_para_default()
+  vaeac.extra_para_default <- vaeac_get_extra_para_default()
   vaeac.extra_para_default_names <- names(vaeac.extra_para_default)
 
   # Get the names of the extra parameters provided by the user
