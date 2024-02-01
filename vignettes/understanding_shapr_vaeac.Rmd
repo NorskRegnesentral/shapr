@@ -154,6 +154,8 @@ vaeac.num_vaeacs_initiate <- 2
 
 # If we are to print the progress
 vaeac.verbose <- TRUE
+
+verbose = 2
 ```
 
 
@@ -162,7 +164,7 @@ vaeac.verbose <- TRUE
 Then we explain the model using the vaeac method.
 
 ```{r first vaeac, cache = TRUE}
-explanation <- explain(
+explanation2 <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -174,16 +176,18 @@ explanation <- explain(
   n_batches = n_batches,
   keep_samp_for_vS = keep_samp_for_vS,
   seed = seed,
-  vaeac.epochs = 123,
-  vaeac.width = 123,
+  verbose = verbose,
+  vaeac.epochs = 20,
+  vaeac.num_vaeacs_initiate = 2,
+  vaeac.width = 16,
   vaeac.save_every_nth_epoch = 10000000,
   vaeac.blaa2 = 1000000000,
   vaeac.extra_parameters = list(
     vaeac.width = 1000000000,
-    vaeac.save_every_nth_epoch = 123,
-    vaeac.masking_ratio = 123,
-    vaeac.batch_size = 123,
-    vaeac.depth = 123,
+    vaeac.save_every_nth_epoch = 8,
+    vaeac.masking_ratio = 0.7,
+    vaeac.batch_size = 32,
+    vaeac.depth = 2,
     vaeac.blaa = 1000000000
   )
 )
@@ -222,6 +226,7 @@ expl_pretrained_vaeac <- explain(
   n_samples = n_samples,
   keep_samp_for_vS = keep_samp_for_vS,
   seed = seed,
+  verbose = 2,
   vaeac.extra_parameters = list(
     vaeac.verbose = vaeac.verbose,
     vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_model
