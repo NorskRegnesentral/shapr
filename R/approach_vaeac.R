@@ -15,9 +15,6 @@
 #'  epochs (default is `2`) and continue training that one.
 #' @param vaeac.epochs Integer. The number of epochs to train the final vaeac model. This includes
 #' `vaeac.extra_parameters$epochs_initiation_phase`, where the default is `2`.
-#' @param vaeac.save_model Boolean. If `TRUE` (default), the `vaeac` model will be saved either in a
-#' [base::tempdir()] folder or in a user specified location in `vaeac.folder_to_save_model`. If `FALSE`, then
-#' the paths to model and the model will will be deleted from the returned object from [shapr::explain()].
 #' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach.
 #' See [shapr::vaeac_extra_para_default()] for description of possible additional parameters.
 #'
@@ -42,49 +39,45 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
                                  vaeac.lr = 0.001,
                                  vaeac.num_vaeacs_initiate = 10,
                                  vaeac.epochs = 200,
-                                 vaeac.save_model = TRUE,
                                  vaeac.extra_parameters = list(),
                                  ...) {
-  # The idea here is that internal$parameters contains user specified main parameters and the extra parameters list.
-  # If they are not provided by the user, then we will set them to the default main parameter values specified above
-  # and the vaeac_extra_para_default default values.
-
-  # A function that sets up and calls the function builds the models used by the vaeac approach.
 
   # Check that torch is installed
   if (!requireNamespace("torch", quietly = TRUE)) stop("`torch` is not installed. Please run install.packages('torch')")
   if (!torch::torch_is_installed()) torch::install_torch()
 
-  # Extract the parameters list
+  # Extract the objects we will use later
+  S <- internal$objects$S
+  X <- internal$objects$X
   parameters <- internal$parameters
 
-  # Ensure that `parameters$vaeac.extra_parameters` is a named list
-  if (!is.list(parameters$vaeac.extra_parameters)) stop("`vaeac.extra_parameters` must be a list.")
-  if (is.null(parameters$vaeac.extra_parameters)) parameters$vaeac.extra_parameters <- list()
-  if (length(parameters$vaeac.extra_parameters) > 0) vaeac_check_extra_named_list(parameters$vaeac.extra_parameters)
+  # Small printout to user
+  if (parameters$verbose > 0) message("Starting 'setup_approach.vaeac'.")
 
-  # Add the shapr specified values
-  parameters$vaeac.extra_parameters$vaeac.seed <- parameters$seed
-  parameters$vaeac.extra_parameters$vaeac.verbose <- parameters$verbose
+  # Check if we are doing a combination of approaches
+  combined_approaches <- length(internal$parameters$approach) > 1
+
+  # Ensure that `parameters$vaeac.extra_parameters` is a named list
+  if (is.null(parameters$vaeac.extra_parameters)) parameters$vaeac.extra_parameters <- list()
+  if (!is.list(parameters$vaeac.extra_parameters)) stop("`vaeac.extra_parameters` must be a list.")
+  if (length(parameters$vaeac.extra_parameters) > 0) vaeac_check_extra_named_list(parameters$vaeac.extra_parameters)
 
   # Ensure that all vaeac parameters are in their right location
   parameters <- vaeac_update_para_locations(parameters = parameters)
 
   # Extract the default values defined for the vaeac parameters in this function
-  defaults <- mget(c(
-    "vaeac.depth", "vaeac.width", "vaeac.latent_dim", "vaeac.activation_function", "vaeac.lr",
-    "vaeac.num_vaeacs_initiate", "vaeac.epochs", "vaeac.save_model", "vaeac.extra_parameters"
-  ))
-  #
-  # defaults = list(vaeac.depth = 3,
-  #                 vaeac.width = 32,
-  #                 vaeac.latent_dim = 8,
-  #                 vaeac.activation_function = torch::nn_relu,
-  #                 vaeac.lr = 0.001,
-  #                 vaeac.num_vaeacs_initiate = 10,
-  #                 vaeac.epochs = 200,
-  #                 vaeac.save_model = TRUE,
-  #                 vaeac.extra_parameters = list())
+  vaeac_main_para_names = formalArgs(setup_approach.vaeac)
+  vaeac_main_para_names = vaeac_main_para_names[!vaeac_main_para_names %in% c("internal", "...")]
+  vaeac_main_para <- mget(vaeac_main_para_names)
+
+  # vaeac_main_para = list(vaeac.depth = 3,
+  #                        vaeac.width = 32,
+  #                        vaeac.latent_dim = 8,
+  #                        vaeac.activation_function = torch::nn_relu,
+  #                        vaeac.lr = 0.001,
+  #                        vaeac.num_vaeacs_initiate = 10,
+  #                        vaeac.epochs = 200,
+  #                        vaeac.extra_parameters = list())
 
   # Add the default extra parameter values for the non-user specified extra parameters
   parameters$vaeac.extra_parameters <- utils::modifyList(vaeac_extra_para_default(),
@@ -93,42 +86,24 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   )
 
   # Add the default main parameter values for the non-user specified main parameters
-  parameters <- utils::modifyList(defaults, parameters, keep.null = TRUE)
+  parameters <- utils::modifyList(vaeac_main_para, parameters, keep.null = TRUE)
 
   # Reorder them such that the vaeac parameters are at the end of the parameters list
-  parameters <- c(parameters[(length(defaults) + 1):length(parameters)], parameters[1:length(defaults)])
-
-  # Flatten the vaeac extra parameter list
-  # TODO: Discuss this with Martin. Then technically everything above is not that much needed.
-  # It is just a lot mess if I am to have two lists of parameters.
-  # The regular parameters and then parameters$vaeac.extra_parameters
-  parameters <- utils::modifyList(parameters, parameters$vaeac.extra_parameters, keep.null = TRUE)
-  parameters$vaeac.extra_parameters <- NULL
-
-  # parameters_flatten = utils::modifyList(parameters, parameters$vaeac.extra_parameters, keep.null = TRUE)
-  # parameters_flatten$vaeac.extra_parameters <- NULL
-
-  # Extract the objects list which, e.g., contains information about the possible coalitions.
-  objects <- internal$objects
-
-  # Variable to store if we are doing a combination of approaches
-  combined_approaches <- any(objects$X$approach[-c(1, parameters$n_combinations)] != "vaeac")
+  parameters <- c(parameters[(length(vaeac_main_para) + 1):length(parameters)], parameters[1:length(vaeac_main_para)])
 
   # Check if vaeac is to be applied on a subset of coalitions.
   if (!parameters$exact || parameters$is_groupwise || combined_approaches) {
     # We have either:
-    # 1) sampled `n_combinations` different subsets of coalitions,
+    # 1) sampled `n_combinations` different subsets of coalitions (i.e., not exact),
     # 2) using the coalitions which respects the groups in group Shapley values, and/or
     # 3) using a combination of approaches where vaeac is only used on a subset of the coalitions.
     # Here, objects$S contains the coalitions while objects$X contains the information about the approach.
 
     # Extract the the coalitions / masks which are estimated using vaeac as a matrix
-    parameters$vaeac.mask_gen_these_coalitions <-
-      objects$S[objects$X[approach == "vaeac"]$id_combination, , drop = FALSE]
+    parameters$vaeac.mask_gen_these_coalitions <- S[X[approach == "vaeac"]$id_combination, , drop = FALSE]
 
     # Extract the weights for the corresponding coalitions / masks.
-    parameters$vaeac.mask_gen_these_coalitions_prob <-
-      objects$X$shapley_weight[objects$X[approach == "vaeac"]$id_combination]
+    parameters$vaeac.mask_gen_these_coalitions_prob <- X$shapley_weight[X[approach == "vaeac"]$id_combination]
 
     # Normalize the weights/probabilities such that they sum to one.
     parameters$vaeac.mask_gen_these_coalitions_prob <- parameters$vaeac.mask_gen_these_coalitions_prob /
@@ -139,22 +114,25 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   }
 
   # Check if user provided a pre-trained vaeac model, otherwise, we train one from scratch.
-  if (is.null(parameters$vaeac.pretrained_vaeac_model)) {
-
+  if (is.null(parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model)) {
     # We train a vaeac model with the parameters in `parameters`, as user did not provide pre-trained vaeac model
-    parameters$vaeac.user_provided_pretrained_vaeac_model <- FALSE # Specify that a vaeac model was NOT provided
-    x_train <- internal$data$x_train # Extract the training data from the explainer object
+    if (parameters$verbose > 0) message("Training a `vaeac` model with the provided parameters from scratch.")
 
-    # Extract the veaac parameters and remove the "vaeac." prefix as the names need to mach the parameters in "do.call"
-    vaeac_all_parameters <- parameters[grepl("vaeac.", names(parameters))]
+    # Specify that a vaeac model was NOT provided
+    parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided <- FALSE
+
+    # Extract all veaac parameters and remove the "vaeac." prefix as the names need to mach the parameters in "do.call"
+    vaeac_all_parameters = c(parameters$vaeac.extra_parameters,
+      parameters[vaeac_main_para_names[vaeac_main_para_names != "vaeac.extra_parameters"]])
     names(vaeac_all_parameters) <- sub("vaeac\\.", "", names(vaeac_all_parameters))
+    vaeac_all_parameters = c(vaeac_all_parameters, parameters[c("seed", "verbose")]) # Add seed and verbose
 
     # Fit/train the vaeac model with the provided model parameters
-    vaeac_model <- do.call(vaeac_train_model, c(vaeac_all_parameters, list(x_train = x_train)))
+    vaeac_model <- do.call(vaeac_train_model, c(vaeac_all_parameters, list(x_train = internal$data$x_train)))
 
     # Add this to the explainer object
     parameters$vaeac <- list(
-      models = vaeac_model[1:(grep("train_vlb", names(vaeac_model))-1)], # Models are all entries before `train_vlb`
+      models = vaeac_model[1:(grep("train_vlb", names(vaeac_model)) - 1)], # Models are all entries before `train_vlb`
       results = vaeac_model[c("train_vlb", "validation_iwae", "validation_iwae_running")], # The train & val results
       parameters = vaeac_model$parameters # List of all the parameters used to train the vaeac model
     )
@@ -167,22 +145,23 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # The pre-trained vaeac model is either:
     # 1. The explanation$internal$parameters$vaeac list of type "vaeac" from an earlier call to explain().
     # 2. A string containing the path to where the "vaeac" model is stored on disk.
+    if (parameters$verbose > 0) message("Loading the provided `vaeac` model.")
 
     # Boolean representing that a pre-trained vaeac model was provided
-    parameters$vaeac.user_provided_pretrained_vaeac_model <- TRUE
+    parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided <- TRUE
 
-    # Check the provided vaeac model. Note that the extension is not exhaustive.
-    # The valid pre-trained vaeac model will be added to the parameters list if it passes the checks.
-    parameters <- vaeac_update_pretrained_model(parameters$vaeac.pretrained_vaeac_model)
+    # Check some aspects of the pre-trained vaeac model and add it to the parameters list if it passes the checks
+    parameters <- vaeac_update_pretrained_model(parameters = parameters)
   }
 
-  # Set up the final model such that it is loaded before calling the `prepare_data.vaeac()` function.
-  if (verbose == 2) message("Setup step: loading the `vaeac` model.") # Small printout to the user
+  # Get which vaeac model we are to use
+  vaeac_checkpoint <-
+    torch::torch_load(parameters$vaeac$models[[parameters$vaeac.extra_parameters$vaeac.which_vaeac_model]])
 
-  # Get the model we are to use
-  vaeac_checkpoint = torch::torch_load(parameters$vaeac$models[[parameters$vaeac.which_vaeac_model]])
+  # Store the checkpoint
+  parameters$vaeac.checkpoint <- vaeac_checkpoint
 
-  # Set up the vaeac model
+  # Set up the model such that it is loaded before calling the `prepare_data.vaeac()` function.
   vaeac_model <- vaeac(
     one_hot_max_sizes = vaeac_checkpoint$one_hot_max_sizes,
     width = vaeac_checkpoint$width,
@@ -200,7 +179,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     sigma_sigma = vaeac_checkpoint$sigma_sigma
   )
 
-  # Update the model's state dictionary to the one provided by the user. Updates the weights and biases in the networks.
+  # Set the state of the vaeac model (setting the weights and biases in the networks)
   vaeac_model$load_state_dict(vaeac_checkpoint$model_state_dict)
 
   # Apply the evaluation mode which effects certain modules (deactivates dropout layers, how batch norm is conducted...)
@@ -210,18 +189,21 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   if (vaeac_checkpoint$use_cuda) vaeac_model <- vaeac_model$cuda()
 
   # Store the model
-  parameters$vaeac.vaeac_model = vaeac_model
+  parameters$vaeac.model <- vaeac_model
 
   # Extract and save sampling method. That is, if we are to sample randomly from the inferred generative distributions
   # or if we are to sample the most likely values (mean for cont and class with highest prob for cat features).
-  parameters$vaeac.sampler <-
-    if (parameters$vaeac.sample_random) vaeac_model$sampler_random else vaeac_model$sampler_most_likely
+  parameters$vaeac.sampler <- if (parameters$vaeac.extra_parameters$vaeac.sample_random) {
+    vaeac_model$sampler_random
+  } else {
+    vaeac_model$sampler_most_likely
+  }
 
   # Update/overwrite the parameters list in the internal list.
   internal$parameters <- parameters
 
   # Small printout to user
-  if (parameters$verbose == 1) message("Done with 'setup_approach.vaeac'.")
+  if (parameters$verbose > 0) message("Done with 'setup_approach.vaeac'.\n")
 
   # Return the updated internal list.
   return(internal)
@@ -267,8 +249,8 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 #' @param vaeac.batch_size_sampling Positive integer (default is `NULL`) The number of samples to include in
 #' each batch when generating the Monte Carlo samples. If `NULL`, then the function generates the Monte Carlo samples
 #' for the provided coalitions/combinations and all explicands sent to [shapr::explain()] at the time.
-#' The number of coalitions are determined by `n_batches` in [shapr::explain()]. We recommend to tweak
-#' `n_batches` rather  than `vaeac.batch_size_sampling`.
+#' The number of coalitions are determined by `n_batches` in [shapr::explain()]. We recommend to tweak `n_batches`
+#' rather  than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
 #' @param vaeac.running_avg_num_values Positive integer (default is `5`). The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
 #' @param vaeac.use_skip_connections Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
@@ -314,10 +296,6 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 #' Abalone data set), it can be advantageous to \eqn{\log} transform the data to unbounded form before using `vaeac`.
 #' If `TRUE`, then [shapr::vaeac_postprocess_data()] will take the \eqn{\exp} of the results to get back to strictly
 #' positive values when using the `vaeac` model to impute missing values/generate the Monte Carlo samples.
-#' @param vaeac.verbose An integer specifying the level of verbosity (default is the same as specified in
-#' [shapr::explain()]). If `0`, `shapr` will stay silent. If `1`, it will print information about performance.
-#' If `2`, some additional information will be printed out.
-#' @param vaeac.seed Integer (default is the same as specified in [shapr::explain()]). Seed for reproducibility.
 #' @param vaeac.sample_random Logcial (default is `TRUE`). If `TRUE`, the function generates random Monte Carlo samples
 #' from the inferred generative distributions. If `FALSE`, the function use the most likely values, i.e., the mean and
 #' class with highest probability for continuous and categorical, respectively.
@@ -327,6 +305,9 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 #' Note that additional choices are available if `vaeac.save_every_nth_epoch` is provided. For example, if
 #' `vaeac.save_every_nth_epoch = 5`, then `vaeac.which_vaeac_model` can also take the values `"epoch_5"`, `"epoch_10"`,
 #' `"epoch_15"`, and so on.
+#' @param vaeac.save_model Boolean. If `TRUE` (default), the `vaeac` model will be saved either in a
+#' [base::tempdir()] folder or in a user specified location in `vaeac.folder_to_save_model`. If `FALSE`, then
+#' the paths to model and the model will will be deleted from the returned object from [shapr::explain()].
 #'
 #' @return Named list of the default values `vaeac` extra parameter arguments specified in this function call.
 #' Note that both `vaeac.model_description` and `vaeac.folder_to_save_model` will change with time and R session.
@@ -357,9 +338,8 @@ vaeac_extra_para_default <- function(vaeac.model_description = make.names(Sys.ti
                                      vaeac.sample_random = TRUE,
                                      vaeac.save_data = FALSE,
                                      vaeac.transform_all_cont_features = FALSE,
-                                     vaeac.verbose = 0,
-                                     vaeac.seed = 1,
-                                     vaeac.which_vaeac_model = "best") {
+                                     vaeac.which_vaeac_model = "best",
+                                     vaeac.save_model = TRUE) {
   # Return a named list with the extra parameters to the vaeac model
   return(mget(formalArgs(vaeac_extra_para_default)))
 }
@@ -371,97 +351,48 @@ vaeac_extra_para_default <- function(vaeac.model_description = make.names(Sys.ti
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
-  # A function that generates the Monte Carlo samples using the vaeac approach.
+  # If not provided, then set `index_features` to all non trivial coalitions
+  if (is.null(index_features)) index_features <- seq(2, internal$parameters$n_combinations - 1)
 
+  # Extract objects we are going to need later
+  S <- internal$objects$S
+  seed <- internal$parameters$seed
+  verbose <- internal$parameters$verbose
   x_explain <- internal$data$x_explain
   n_explain <- internal$parameters$n_explain
-  n_features <- internal$parameters$n_features
   n_samples <- internal$parameters$n_samples
-  seed <- internal$parameters$seed
-  S <- internal$objects$S
+  vaeac.model <- internal$parameters$vaeac.model
+  vaeac.sampler <- internal$parameters$vaeac.sampler
+  vaeac.checkpoint <- internal$parameters$vaeac.checkpoint
+  vaeac.batch_size_sampling <- internal$parameters$vaeac.extra_parameters$vaeac.batch_size_sampling
 
-  vaeac_list <- internal$parameters$vaeac # the trained vaeac model
-  vaeac.which_vaeac_model <- internal$parameters$vaeac.which_vaeac_model
-  vaeac.batch_size_sampling <- internal$parameters$vaeac.batch_size_sampling
-  vaeac.sample_random <- internal$parameters$vaeac.sample_random
-  vaeac.verbose <- internal$parameters$vaeac.verbose
-
-
-
-  # Create a path entry with the path to the vaeac model that we are to use.
-  vaeac_list$path <- vaeac_list$models[[which_vaeac_model]]
-
-  # This should clause should never occur as this function is only called inside the shapr package,
-  # and then `index_features` will always be provided. However, I include this clause as
-  # the other approaches test for this and I copy their setup and use all coalitions.
-  if (is.null(index_features)) index_features <- seq(2, internal$parameters$n_combinations)
-
-  # Get the index of the current batch
-  current_batch_index <- internal$objects$X[id_combination == index_features[1]]$batch
-
-  # Check if we are going to print out process to the user
-  if (vaeac.verbose == 2) {
-    message(paste0("Starting 'prepare_data.vaeac' for batch ", current_batch_index ," of ",
-                   internal$parameters$n_batches, "."))
+  # Small printout to the user
+  if (verbose > 1) {
+    message(paste0(
+      "Working on batch ", internal$objects$X[id_combination == index_features[1]]$batch, " of ",
+      internal$parameters$n_batches, " in `prepare_data.vaeac()`."
+    ))
   }
 
   # Apply all coalitions to all explicands to get a data table where `vaeac` will impute the `NaN` values
-  x_explain_extended =
-    vaeac_get_x_explain_extended(x_explain = x_explain, S = internal$objects$S, index_features = index_features)
+  x_explain_extended <-
+    vaeac_get_x_explain_extended(x_explain = x_explain, S = S, index_features = index_features)
 
-
-
-
-
-
-
-
-
-
-
-
-  # Get the number of observations, after applying the mask, we are to generate MC samples for.
+  # Set the number of observations do generate the MC samples for at the time.
   n_explain_extended <- nrow(x_explain_extended)
-
-
-
-  # Extract/set the batch size. Larger batch sizes is often much faster provided sufficient memory.
-  if (is.null(vaeac.batch_size_sampling)) {
-    # If user has not specified a desired size, then we do the whole batch in one go.
-    # This is also indirectly controlled by n_batches in explain.
-    batch_size <- n_explain_extended
-  } else {
-    # Use the user provided batch size
-    batch_size <- vaeac.batch_size_sampling
-
-    # Check/set valid batch size
-    if (batch_size > n_explain_extended) batch_size <- n_explain_extended
-  }
-
-  # Extract if we are doing random sampling when we are generating the MC samples
-  # I.e., if we are to generate random samples from the inferred generative distributions,
-  # or if we are to sample the most likely values (mean for cont, class with highest prob for cat).
-  # We will always use random unless user specify otherwise.
-  sample_random <- if (is.null(vaeac.sample_random)) TRUE else vaeac.sample_random
-
-  # Check that `sample_random` is a boolean, otherwise we set it to true.
-  if (!is.logical(sample_random)) {
-    message(sprintf("The user-provided entry for 'sample_random' is not logical. We set it to TRUE.\n"))
-    sample_random <- TRUE
-  }
+  batch_size <- if (is.null(vaeac.batch_size_sampling)) n_explain_extended else vaeac.batch_size_sampling
+  if (batch_size > n_explain_extended) batch_size <- n_explain_extended
 
   # Impute the missing entries using the vaeac approach.
   x_explain_with_MC_samples_dt <- vaeac_impute_missing_entries(
     x_explain_with_NaNs = x_explain_extended,
-    n_explain = internal$parameters$n_explain,
-    path_vaeac_model = vaeac_list$path,
+    n_explain = n_explain,
     n_samples = n_samples,
-    use_cuda = vaeac_list$parameters$use_cuda,
-    sample_random = sample_random,
-    convert_to_2D = TRUE,
-    return_as_postprocessed_dt = TRUE,
+    vaeac_model = vaeac.model,
+    vaeac_checkpoint = vaeac.checkpoint,
+    sampler = vaeac.sampler,
     batch_size = batch_size,
-    verbose = vaeac.verbose,
+    verbose = verbose,
     seed = seed,
     index_features = index_features
   )
@@ -668,11 +599,17 @@ vaeac_train_model <- function(x_train,
 
   # Get all the file names for the vaeac objects we are going to save
   vaeac_save_file_names <- vaeac_get_save_file_names(
+    model_description = model_description,
+    n_features = n_features,
+    n_train = n_train,
+    depth = depth,
+    width = width,
+    latent_dim = latent_dim,
+    lr = lr,
     epochs = epochs,
     save_every_nth_epoch = save_every_nth_epoch,
     folder_to_save_model = folder_to_save_model
   )
-
 
   ##### List that stores needed information for save and load the model
   # List of values saved to disk together with the vaeac models below.
@@ -786,7 +723,7 @@ vaeac_train_model <- function(x_train,
     }
 
     # Create the ADAM optimizer
-    optimizer <- vaeac_get_optimizer(vaeac_model = vaeac_model, optimizer_name = "adam")
+    optimizer <- vaeac_get_optimizer(vaeac_model = vaeac_model, lr = lr, optimizer_name = "adam")
 
     # Train the current initialized vaeac model
     vaeac_model_now_list <- vaeac_train_model_auxiliary(
@@ -800,6 +737,7 @@ vaeac_train_model <- function(x_train,
       running_avg_num_values = running_avg_num_values,
       epochs_early_stopping = FALSE, # Do not want to do early stopping during initialization
       verbose = verbose,
+      use_cuda = use_cuda,
       progressr_bar = progressr_bar,
       save_every_nth_epoch = save_every_nth_epoch,
       initialization_idx = initialization_idx,
@@ -837,6 +775,7 @@ vaeac_train_model <- function(x_train,
     validation_iwae_num_samples = validation_iwae_num_samples,
     running_avg_num_values = running_avg_num_values,
     verbose = verbose,
+    use_cuda = use_cuda,
     progressr_bar = progressr_bar,
     epochs = epochs,
     epochs_start = epochs_initiation_phase + 1,
@@ -882,28 +821,35 @@ vaeac_continue_train_model <- function(explanation,
                                        x_train = NULL,
                                        save_data = FALSE,
                                        verbose = FALSE) {
-  # Extract the vaeac list
-  vaeac_model <- explanation$internal$parameters$vaeac
 
-  # Load the vaeac model from provided disk location.
+  # Check the input
+  if (!"shapr" %in% class(explanation)) stop("`explanation` must be a list of class `shapr`.")
+  if (!"vaeac" %in% explanation_list$internal$parameters$approach) stop("`vaeac` is not an approach in `explanation`.")
+  if (!is.null(lr_new)) vaeac_check_positive_numerics(list(lr_new = lr_new))
+  if (!is.null(x_train) && !data.table::is.data.table(x_train)) stop("`x_train` must be a `data.table` object.")
+  vaeac_check_positive_integers(list(epochs_new = epochs_new))
+  vaeac_check_verbose(list(verbose = verbose))
+  vaeac_check_logicals(list(save_data = save_data))
+
+  # Extract the vaeac list and load the model at the last epoch
+  vaeac_model <- explanation$internal$parameters$vaeac
   checkpoint <- torch::torch_load(vaeac_model$models$last)
 
-  # Check that we have access to training data
-  if (is.null(checkpoint$normalized_data) & is.null(x_train)) {
+  # Check for access to a single training data set and use the data from the checkpoint if `x_train` is not provided
+  if (is.null(checkpoint$normalized_data) && is.null(x_train)) {
     stop("The `vaeac` model did not include data (set `vaeac.save_data = TRUE in `explain()`) and `x_train = NULL`.")
   }
-
-  # We have two training datasets
-  if (!is.null(checkpoint$x_train) & !is.null(x_train)) {
+  if (!is.null(checkpoint$x_train) && !is.null(x_train)) {
     message("The `vaeac` model includes data and `x_train` was provided to this function. We only use `x_train`.")
   }
-
-  # If x_train is not provided to this function, then we load the x_train from the save file.
   if (is.null(x_train)) x_train <- checkpoint$x_train
 
+  # Check that the provided vaeac model is trained on a dataset with the same feature names
+  vaeac_check_x_train_names(feature_names_vaeac = checkpoint$feature_list$labels,
+                            feature_names_new = names(x_train))
 
 
-
+  x_train
 
 
 
@@ -1407,17 +1353,9 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 #' The values are sampled from the conditional distribution estimated by a vaeac model.
 #'
 #' @param x_explain_with_NaNs A 2D matrix, where the missing entries to impute are represented by `NaN`.
-#' @param path_vaeac_model String. The location of the saved vaeac model.
 #' @param n_samples Integer. The number of imputed versions we create for each row in `x_explain_with_NaNs`.
-#' @param use_cuda Boolean. If we are to use cuda. NOTE PROPERLY TESTED IN CURRENT VERSION.
 #' @param sample_random Boolean. If we are to generate random samples from the inferred generative distributions,
 #' or if we are to sample the most likely values (mean for continuous and class with highest prob for categorical).
-#' @param convert_to_2D Boolean. If the returned results should be of shape
-#' \[`nrow(x_explain_with_NaNs)`, `n_samples`, `n_features`\] or
-#' \[(`nrow(x_explain_with_NaNs)` \eqn{\times} `n_samples`), `n_features`\].
-#' @param return_as_postprocessed_dt Boolean. If we are to postprocess the data, i.e.,
-#' convert categorical features to factors with correct level names (and transform continuous features
-#' back to original scale). The returned object will then be a [data.table::data.table()].
 #' @param batch_size Integer. The number of samples in each batch.
 #' If `NULL`, then use the same value saved in the vaeac object.
 #' We recommend a large number because of a lot of overhead for small batch sizes, that is,
@@ -1425,6 +1363,10 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 #' @param verbose Boolean. If we are to print the progress to the user.
 #' @param seed Integer. Seed used before generating the MC samples.
 #' @param index_features Optional integer vector. Used internally in shapr package to index the coalitions.
+#' @param n_explain
+#' @param vaeac_model
+#' @param vaeac_checkpoint
+#' @param sampler
 #'
 #' @return A 2D or 3D array or 2D data.table where the missing values (`NaN`) in `x_explain_with_NaNs`
 #' have been imputed `n_samples` times. The dimension of the returned object depends on the
@@ -1434,24 +1376,14 @@ Last epoch:             %d. \tVLB = %.4f. \tIWAE = %.4f \tIWAE_running = %.4f.\n
 #' @author Lars Henry Berge Olsen
 vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
                                          n_explain,
-                                         path_vaeac_model, # DENNE SKAL VEKK
-                                         vaeac_checkpoint,
-                                         vaeac_model,
                                          n_samples,
+                                         vaeac_model,
+                                         vaeac_checkpoint,
+                                         sampler,
                                          batch_size,
-                                         sample_random = TRUE,
-                                         convert_to_2D = TRUE,
-                                         return_as_postprocessed_dt = TRUE,
-                                         verbose = FALSE,
+                                         verbose = 0,
                                          seed = NULL,
                                          index_features = NULL) {
-  # TODO: discuss with martin verbose level. Here we might want to use 2.
-  # As this part of the code can be run in parallel via future, so a lot of prinouts can appear.
-
-
-  # Check/set valid batch size
-  if (batch_size > nrow(x_explain_with_NaNs)) batch_size <- nrow(x_explain_with_NaNs)
-
   # Set seed for reproducibility if provided by the user. Both in R and torch.
   if (!is.null(seed)) {
     set.seed(seed)
@@ -1463,18 +1395,18 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
   # Preprocess `x_explain_with_NaNs`. Turn factor names into numerics 1,2,...,K, (vaeac only accepts numerics) and keep
   # track of the maping of names. Optionally log-transform the continuous features. Then, finally, normalize the data
-  # using the training means and stds. I.e., we assume that the new data follow the same distribution as the training
-  # data. If this is NOT the case, then vaeac will generate unreasonable imputations.
+  # using the training means and standard deviations. I.e., we assume that the new data follow the same distribution as
+  # the training data. If this is NOT the case, then vaeac will generate unreasonable imputations.
   x_explain_with_NaNs_processed <- vaeac_preprocess_data(
     data = x_explain_with_NaNs,
     transform_all_cont_features = vaeac_checkpoint$transform_all_cont_features,
     normalize = TRUE,
-    norm_mean = vaeac_checkpoint$norm_mean, # We normalize using the mean of the training data
-    norm_std = vaeac_checkpoint$norm_std # We normalize using the standard deviation of the training data
+    norm_mean = vaeac_checkpoint$norm_mean, # Normalize using training data means
+    norm_std = vaeac_checkpoint$norm_std # Normalize using training data standard deviations
   )$data_normalized_torch
 
   # Create the data set object
-  dataset <- vaeac_dataset(X = x_explain_NaNs_preproc_norm, one_hot_max_sizes = vaeac_checkpoint$one_hot_max_sizes)
+  dataset <- vaeac_dataset(X = x_explain_with_NaNs_processed, one_hot_max_sizes = vaeac_checkpoint$one_hot_max_sizes)
 
   # Create a data loader that load/iterate over the data set in chronological order.
   dataloader <- torch::dataloader(dataset = dataset, batch_size = batch_size, shuffle = FALSE)
@@ -1511,7 +1443,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
       # This is a tensor of shape [batch_size, n_samples, num_generative_parameters]. Note that, for only continuous
       # features we have that num_generative_parameters = 2*num_features, but for categorical data the number depends
       # on the number of categories.
-      samples_params <- model$generate_samples_params(batch = batch_extended, mask = mask_extended, K = n_samples)
+      samples_params <- vaeac_model$generate_samples_params(batch = batch_extended, mask = mask_extended, K = n_samples)
 
       # Remove the parameters belonging to added instances in batch_extended.
       samples_params <- samples_params[1:batch$shape[1], , ]
@@ -1803,6 +1735,9 @@ plot_several_vaeacs_VLB_IWAE <- function(explanation_list,
       "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
     ))
   }
+
+  # Ensure that even a single explanation object is in a list
+  if ("shapr" %in% class(explanation_list)) explanation_list <- list(explanation_list)
 
   ## Create data.tables
   # Extract the VLB and IWAE
