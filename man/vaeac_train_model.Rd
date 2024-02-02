@@ -8,7 +8,7 @@ vaeac_train_model(
   x_train,
   model_description,
   folder_to_save_model,
-  use_cuda = FALSE,
+  cuda = FALSE,
   num_vaeacs_initiate = 10,
   epochs_initiation_phase = 2,
   epochs = 200,
@@ -50,7 +50,7 @@ additional parameter information. Used in the save name of the fitted model.}
 \item{folder_to_save_model}{String specifying a path to a folder where
 the function is to save the fitted vaeac model.}
 
-\item{use_cuda}{Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!}
+\item{cuda}{Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!}
 
 \item{num_vaeacs_initiate}{Integer. The number of different vaeac models to initiate in the start.
 Pick the best performing one after \code{epochs_initiation_phase} and continue training that one.}

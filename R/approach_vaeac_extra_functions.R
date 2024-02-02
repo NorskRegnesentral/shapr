@@ -254,17 +254,17 @@ vaeac_check_save_names <- function(folder_to_save_model, model_description) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_use_cuda <- function(use_cuda) {
+vaeac_check_cuda <- function(cuda) {
   # Check if cuda/GPU is available on the current system
   cuda_available <- torch::cuda_is_available()
 
   # Give message to user if asked to run on cuda, but cuda is not available.
-  if (isFALSE(cuda_available) && isTRUE(use_cuda)) {
-    use_cuda <- FALSE
+  if (isFALSE(cuda_available) && isTRUE(cuda)) {
+    cuda <- FALSE
     message("Cuda/GPU is not available (`shapr` uses CPU instead).", immediate. = TRUE)
   }
 
-  return(use_cuda)
+  return(cuda)
 }
 
 #' Function that checks that the masking ratio argument is valid
@@ -344,7 +344,7 @@ vaeac_check_x_train_names = function(feature_names_vaeac, feature_names_new) {
 vaeac_check_parameters <- function(x_train,
                                    model_description,
                                    folder_to_save_model,
-                                   use_cuda,
+                                   cuda,
                                    num_vaeacs_initiate,
                                    epochs_initiation_phase,
                                    epochs,
@@ -401,7 +401,7 @@ vaeac_check_parameters <- function(x_train,
 
   # Check the logical parameters
   vaeac_check_logicals(list(
-    use_cuda = use_cuda,
+    cuda = cuda,
     skip_connection_layer = skip_connection_layer,
     skip_connection_masked_enc_dec = skip_connection_masked_enc_dec,
     batch_normalization = batch_normalization,
@@ -468,7 +468,7 @@ vaeac_check_parameters <- function(x_train,
 #' `vaeac`, i.e., the list stored in `explanation$internal$parameters$vaeac` where `explanation` is the returned list
 #' from an earlier call to the [shapr::explain()] function. 2) A string containing the path to where the `vaeac`
 #' model is stored on disk, for example, `explanation$internal$parameters$vaeac$models$best`.
-#' @param vaeac.use_cuda Logical (default is `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
+#' @param vaeac.cuda Logical (default is `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
 #' If [torch::cuda_is_available()] is `FALSE`, the we fall back to use CPU. If `FALSE`, we use the CPU. Often this is
 #' faster for tabular data sets. Note, cuda is not not supported in the current version of the `shapr` package.
 #' TODO: Update this when this is done.
@@ -559,7 +559,7 @@ vaeac_check_parameters <- function(x_train,
 vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sys.time()),
                                          vaeac.folder_to_save_model = tempdir(),
                                          vaeac.pretrained_vaeac_model = NULL,
-                                         vaeac.use_cuda = FALSE,
+                                         vaeac.cuda = FALSE,
                                          vaeac.epochs_initiation_phase = 2,
                                          vaeac.epochs_early_stopping = NULL,
                                          vaeac.save_every_nth_epoch = NULL,
@@ -594,13 +594,13 @@ vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sy
 #' If `FALSE`, the returned `vaeac` model is set to be in evaluation mode.
 #'
 #' @return A `vaeac` model with the correct state (based on `checkpoint`), sent to the desired hardware (based on
-#' `use_cuda`), and in the right mode (based on `mode_train`).
+#' `cuda`), and in the right mode (based on `mode_train`).
 #' @export
 #'
 #' @examples
-vaeac_get_model_from_checkp = function(checkpoint, use_cuda, mode_train) {
+vaeac_get_model_from_checkp = function(checkpoint, cuda, mode_train) {
   # Check parameters
-  vaeac_check_logicals(list(use_cuda = use_cuda, mode_train = mode_train))
+  vaeac_check_logicals(list(cuda = cuda, mode_train = mode_train))
 
   # Set up the model such that it is loaded before calling the `prepare_data.vaeac()` function.
   vaeac_model <- vaeac(
@@ -629,7 +629,7 @@ vaeac_get_model_from_checkp = function(checkpoint, use_cuda, mode_train) {
   if (mode_train) vaeac_model$train() else vaeac_model$eval()
 
   # Send the model to the GPU, if we are supposed to. Otherwise use CPU
-  if (use_cuda) vaeac_model <- vaeac_model$cuda() else vaeac_model <- vaeac_model$cpu()
+  if (cuda) vaeac_model <- vaeac_model$cuda() else vaeac_model <- vaeac_model$cpu()
 
   # Return the model
   return (vaeac_model)
@@ -792,7 +792,7 @@ vaeac_get_current_save_state <- function(environment) {
 #' `early_stopping_applied`, `running_avg_num_values`, `paired_sampling`, `mask_generator_name`, `masking_ratio`,
 #' `mask_gen_these_coalitions`, `mask_gen_these_coalitions_prob`, `validation_ratio`, `validation_iwae_num_samples`,
 #' `num_vaeacs_initiate`, `epochs_initiation_phase`, `width`, `depth`, `latent_dim`, `activation_function`,
-#' `lr`, `batch_size`, `skip_connection_layer`, `skip_connection_masked_enc_dec`, `batch_normalization`, `use_cuda`,
+#' `lr`, `batch_size`, `skip_connection_layer`, `skip_connection_masked_enc_dec`, `batch_normalization`, `cuda`,
 #' `train_indices`, `val_indices`, `save_every_nth_epoch`, `sigma_mu`,
 #' `sigma_sigma`, `feature_list`, `col_cat_names`, `col_cont_names`, `col_cat`, `col_cont`, `cat_in_dataset`,
 #' `map_new_to_original_names`, `map_original_to_new_names`, `log_exp_cont_feat`, `save_data`, `verbose`,
@@ -807,7 +807,7 @@ vaeac_get_full_state_list <- function(environment) {
     "paired_sampling", "mask_generator_name", "masking_ratio", "mask_gen_these_coalitions",
     "mask_gen_these_coalitions_prob", "validation_ratio", "validation_iwae_num_samples", "num_vaeacs_initiate",
     "epochs_initiation_phase", "width", "depth", "latent_dim", "activation_function",
-    "lr", "batch_size", "skip_connection_layer", "skip_connection_masked_enc_dec", "batch_normalization", "use_cuda",
+    "lr", "batch_size", "skip_connection_layer", "skip_connection_masked_enc_dec", "batch_normalization", "cuda",
     "train_indices", "val_indices", "save_every_nth_epoch", "sigma_mu", "sigma_sigma", "feature_list", "col_cat_names",
     "col_cont_names", "col_cat", "col_cont", "cat_in_dataset", "map_new_to_original_names", "map_original_to_new_names",
     "log_exp_cont_feat", "save_data", "verbose", "seed", "vaeac_save_file_names"
@@ -928,7 +928,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
                                         validation_iwae_num_samples,
                                         running_avg_num_values,
                                         verbose,
-                                        use_cuda,
+                                        cuda,
                                         epochs,
                                         save_every_nth_epoch,
                                         epochs_early_stopping,
@@ -997,7 +997,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       mask <- mask_generator(batch)
 
       # TODO: Send the batch and mask to Nvida GPU if we have. IS it here it should be?
-      if (use_cuda) {
+      if (cuda) {
         batch <- batch$cuda()
         mask <- mask$cuda()
       }

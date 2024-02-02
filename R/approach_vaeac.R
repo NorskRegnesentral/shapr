@@ -160,7 +160,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 
   # Set up and store the vaeac model such that it is loaded before calling the `prepare_data.vaeac()` function.
   parameters$vaeac.model <-
-    vaeac_get_model_from_checkp(checkpoint = checkpoint, use_cuda = checkpoint$use_cuda, mode_train = FALSE)
+    vaeac_get_model_from_checkp(checkpoint = checkpoint, cuda = checkpoint$cuda, mode_train = FALSE)
 
   # Extract and save sampling method. That is, if we are to sample randomly from the inferred generative distributions
   # or if we are to sample the most likely values (mean for cont and class with highest prob for cat features).
@@ -260,7 +260,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' additional parameter information. Used in the save name of the fitted model.
 #' @param folder_to_save_model String specifying a path to a folder where
 #' the function is to save the fitted vaeac model.
-#' @param use_cuda Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!
+#' @param cuda Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!
 #' @param num_vaeacs_initiate Integer. The number of different vaeac models to initiate in the start.
 #' Pick the best performing one after `epochs_initiation_phase` and continue training that one.
 #' @param epochs_initiation_phase Integer. The number of epochs to run each of the `num_vaeacs_initiate`
@@ -329,7 +329,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 vaeac_train_model <- function(x_train,
                               model_description,
                               folder_to_save_model,
-                              use_cuda = FALSE,
+                              cuda = FALSE,
                               num_vaeacs_initiate = 10,
                               epochs_initiation_phase = 2,
                               epochs = 200,
@@ -375,7 +375,7 @@ vaeac_train_model <- function(x_train,
   do.call(vaeac_check_parameters, mget(formalArgs(vaeac_train_model)))
 
   # Check if we can use cuda
-  if (use_cuda) use_cuda <- vaeac_check_use_cuda(use_cuda)
+  if (cuda) cuda <- vaeac_check_cuda(cuda)
 
   # Determine which mask generator to use
   mask_generator_name <- vaeac_get_mask_generator_name(
@@ -488,7 +488,7 @@ vaeac_train_model <- function(x_train,
 
     # TODO: we need to check this + we need to send the data too
     # Send the model to the GPU, if we have access to it.
-    if (use_cuda) vaeac_model <- vaeac_model$cuda()
+    if (cuda) vaeac_model <- vaeac_model$cuda()
 
     # Add the number of trainable parameters in the vaeac model to the state list
     if (initialization_idx == 1) {
@@ -518,7 +518,7 @@ vaeac_train_model <- function(x_train,
       running_avg_num_values = running_avg_num_values,
       epochs_early_stopping = FALSE, # Do not want to do early stopping during initialization
       verbose = verbose,
-      use_cuda = use_cuda,
+      cuda = cuda,
       progressr_bar = progressr_bar,
       save_every_nth_epoch = save_every_nth_epoch,
       initialization_idx = initialization_idx,
@@ -536,7 +536,7 @@ vaeac_train_model <- function(x_train,
 
   # Send the model to the GPU, if we have access to it.
   # TODO: IT should be there already?
-  if (use_cuda) vaeac_model_best_list$model <- vaeac_model_best_listmodel$cuda()
+  if (cuda) vaeac_model_best_list$model <- vaeac_model_best_listmodel$cuda()
 
   # Check if we are printing detailed debug information
   # Small printout to the user stating which initiated vaeac model was the best.
@@ -556,7 +556,7 @@ vaeac_train_model <- function(x_train,
     validation_iwae_num_samples = validation_iwae_num_samples,
     running_avg_num_values = running_avg_num_values,
     verbose = verbose,
-    use_cuda = use_cuda,
+    cuda = cuda,
     progressr_bar = progressr_bar,
     epochs = epochs,
     epochs_start = epochs_initiation_phase + 1,
@@ -748,7 +748,7 @@ vaeac_continue_train_model <- function(explanation,
 
 
   # Set up the vaeac model in training mode and based on the parameters stored in the chekpoint
-  vaeac_model <- vaeac_get_model_from_checkp(checkpoint = checkpoint, use_cuda = checkpoint$use_cuda, mode_train = TRUE)
+  vaeac_model <- vaeac_get_model_from_checkp(checkpoint = checkpoint, cuda = checkpoint$cuda, mode_train = TRUE)
 
   # Create a vaeac model
   model <- explanation$internal$parameters$vaeac.model
@@ -820,7 +820,7 @@ vaeac_continue_train_model <- function(explanation,
     validation_iwae_num_samples = validation_iwae_num_samples,
     running_avg_num_values = running_avg_num_values,
     verbose = verbose,
-    use_cuda = use_cuda,
+    cuda = cuda,
     progressr_bar = progressr_bar,
     epochs = epochs_total,
     epochs_start = epochs_old + 1,
@@ -860,7 +860,7 @@ vaeac_continue_train_model <- function(explanation,
 #       mask <- mask_generator(batch)
 #
 #       # Send the batch and mask to Nvida GPU if we have. Would be faster.
-#       if (use_cuda) {
+#       if (cuda) {
 #         batch <- batch$cuda()
 #         mask <- mask$cuda()
 #       }
@@ -1149,7 +1149,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     }
 
     # Send the original and extended batch to GPU if applicable.
-    if (vaeac_checkpoint$use_cuda) {
+    if (vaeac_checkpoint$cuda) {
       batch <- batch$cuda()
       batch_extended <- batch_extended$cuda()
     }
@@ -1659,7 +1659,7 @@ We set 'which_vaeac_model = best' and continue.\n",
       x_explain_with_NaNs = matrix(NaN, num_samples, vaeac_model$p), # instances_to_impute,
       path_vaeac_model = vaeac_model_path,
       n_samples = 1,
-      use_cuda = FALSE,
+      cuda = FALSE,
       convert_to_2D = TRUE,
       return_as_postprocessed_dt = TRUE,
       batch_size = num_samples,

@@ -8,7 +8,7 @@ vaeac_get_extra_para_default(
   vaeac.model_description = make.names(Sys.time()),
   vaeac.folder_to_save_model = tempdir(),
   vaeac.pretrained_vaeac_model = NULL,
-  vaeac.use_cuda = FALSE,
+  vaeac.cuda = FALSE,
   vaeac.epochs_initiation_phase = 2,
   vaeac.epochs_early_stopping = NULL,
   vaeac.save_every_nth_epoch = NULL,
@@ -48,7 +48,7 @@ the function is to save the fitted vaeac model. Note that  the path will be remo
 from an earlier call to the \code{\link[=explain]{explain()}} function. 2) A string containing the path to where the \code{vaeac}
 model is stored on disk, for example, \code{explanation$internal$parameters$vaeac$models$best}.}
 
-\item{vaeac.use_cuda}{Logical (default is \code{FALSE}). If \code{TRUE}, then the \code{vaeac} model will be trained using cuda/GPU.
+\item{vaeac.cuda}{Logical (default is \code{FALSE}). If \code{TRUE}, then the \code{vaeac} model will be trained using cuda/GPU.
 If \code{\link[torch:cuda_is_available]{torch::cuda_is_available()}} is \code{FALSE}, the we fall back to use CPU. If \code{FALSE}, we use the CPU. Often this is
 faster for tabular data sets. Note, cuda is not not supported in the current version of the \code{shapr} package.
 TODO: Update this when this is done.}

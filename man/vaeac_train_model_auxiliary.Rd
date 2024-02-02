@@ -12,7 +12,7 @@ vaeac_train_model_auxiliary(
   validation_iwae_num_samples,
   running_avg_num_values,
   verbose,
-  use_cuda,
+  cuda,
   epochs,
   save_every_nth_epoch,
   epochs_early_stopping,
@@ -44,7 +44,7 @@ IWAE when validating the vaeac model on the validation data.}
 \item{verbose}{Boolean. If we are to print the progress of the initialization of different vaeac models,
 the training of the final vaeac model, and summary of the training progress.}
 
-\item{use_cuda}{Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!}
+\item{cuda}{Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!}
 
 \item{epochs}{Integer. The number of epochs to train the final vaeac model.
 This includes \code{epochs_initiation_phase}.}
