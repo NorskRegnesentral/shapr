@@ -24,29 +24,31 @@ when creating batches from a torch dataset \code{\link[torch:dataset]{torch::dat
 This function does not use batch iterators, which might increase the speed.
 }
 \examples{
-# Example how to use it combined with mask generators with paired sampling activated
-# batch_size <- 4
-# if (batch_size \%\% 2 == 1) batch_size <- batch_size - 1 # Make sure that batch size is even
-# num_featuers <- 3
-# num_observations <- 5
-# shuffle <- TRUE
-# data <- torch_tensor(matrix(rep(seq(num_observations), each = num_featuers),
-#                             ncol = num_featuers, byrow = TRUE))
-# data
-# dataset <- vaeac_dataset(data, rep(1, num_featuers))
-# dataload <- torch::dataloader(dataset,
-#   batch_size = batch_size,
-#   sampler = paired_sampler(dataset,
-#     shuffle = shuffle
-#   )
-# )
-# dataload$.length() # Number of batches, same as ceiling((2 * num_observation) / batch_size)
-# mask_generator <- MCAR_mask_generator(paired = TRUE)
-# coro::loop(for (batch in dataload) {
-#   mask <- mask_generator(batch)
-#   obs <- mask * batch
-#   print(torch::torch_cat(c(batch, mask, obs), -1))
-# })
+\dontrun{
+Example how to use it combined with mask generators with paired sampling activated
+batch_size <- 4
+if (batch_size \%\% 2 == 1) batch_size <- batch_size - 1 # Make sure that batch size is even
+num_featuers <- 3
+num_observations <- 5
+shuffle <- TRUE
+data <- torch_tensor(matrix(rep(seq(num_observations), each = num_featuers),
+                            ncol = num_featuers, byrow = TRUE))
+data
+dataset <- vaeac_dataset(data, rep(1, num_featuers))
+dataload <- torch::dataloader(dataset,
+  batch_size = batch_size,
+  sampler = paired_sampler(dataset,
+    shuffle = shuffle
+  )
+)
+dataload$.length() # Number of batches, same as ceiling((2 * num_observation) / batch_size)
+mask_generator <- MCAR_mask_generator(paired = TRUE)
+coro::loop(for (batch in dataload) {
+  mask <- mask_generator(batch)
+  obs <- mask * batch
+  print(torch::torch_cat(c(batch, mask, obs), -1))
+})
+}
 
 }
 \author{

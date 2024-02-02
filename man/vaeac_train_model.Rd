@@ -23,9 +23,9 @@ vaeac_train_model(
   batch_size = 64,
   running_avg_num_values = 5,
   activation_function = torch::nn_relu,
-  use_skip_connections = TRUE,
+  skip_connection_layer = TRUE,
   skip_connection_masked_enc_dec = TRUE,
-  use_batch_normalization = FALSE,
+  batch_normalization = FALSE,
   paired_sampling = TRUE,
   masking_ratio = 0.5,
   mask_gen_these_coalitions = NULL,
@@ -33,7 +33,7 @@ vaeac_train_model(
   sigma_mu = 10000,
   sigma_sigma = 1e-04,
   save_data = FALSE,
-  transform_all_cont_features = FALSE,
+  log_exp_cont_feat = FALSE,
   which_vaeac_model = "best",
   verbose = FALSE,
   seed = 1,
@@ -91,14 +91,14 @@ the neural networks of the masked encoder, full encoder, and decoder.}
 \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, and
 \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
-\item{use_skip_connections}{Boolean. If we are to use skip connections in each layer. If true, then we add the input
+\item{skip_connection_layer}{Boolean. If we are to use skip connections in each layer. If true, then we add the input
 to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.}
 
 \item{skip_connection_masked_enc_dec}{Boolean. If we are to apply concatenate skip
 connections between the layers in the masked encoder and decoder.}
 
-\item{use_batch_normalization}{Boolean. If we are to use batch normalization after the activation function.
-Note that if \code{use_skip_connections} is TRUE, then the normalization is
+\item{batch_normalization}{Boolean. If we are to use batch normalization after the activation function.
+Note that if \code{skip_connection_layer} is TRUE, then the normalization is
 done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).}
 
 \item{paired_sampling}{Boolean. Default is \code{TRUE}. If we are doing paired sampling. I.e.,
@@ -125,7 +125,7 @@ see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.
 \item{save_data}{Boolean. If we are to save the data together with the model. Useful if one are to continue
 to train the model later.}
 
-\item{transform_all_cont_features}{Boolean. If we are to log transform all continuous features before
+\item{log_exp_cont_feat}{Boolean. If we are to log transform all continuous features before
 sending the data to the vaeac using the \code{\link[=vaeac_postprocess_data]{vaeac_postprocess_data()}} function. The vaeac method creates
 unbounded values, so if the continuous features are strictly positive, as for Burr and Abalone data, it can be
 advantageous to log-transform the data to unbounded form before using vaeac.

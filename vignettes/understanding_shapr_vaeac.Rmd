@@ -912,7 +912,7 @@ expl_vaeac <- explain(
   vaeac.depth = 2,
   vaeac.latent_dim = 4,
   vaeac.extra_parameters = list(
-    vaeac.use_skip_connections = FALSE,
+    vaeac.skip_connection_layer = FALSE,
     vaeac.skip_connection_masked_enc_dec = FALSE,
     vaeac.verbose = TRUE
   )
@@ -950,7 +950,7 @@ expl_vaeac_complex <- explain(
   vaeac.depth = 2,
   vaeac.latent_dim = 4,
   vaeac.extra_parameters = list(
-    vaeac.use_skip_connections = TRUE,
+    vaeac.skip_connection_layer = TRUE,
     vaeac.skip_connection_masked_enc_dec = TRUE,
     vaeac.verbose = TRUE
   )

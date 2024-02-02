@@ -20,11 +20,14 @@ vaeac generates numerical values. This function converts categorical features
 to from numerics with class labels 1,2,...,K, to factors with the original and class labels.
 }
 \examples{
-# preprocessed <- vaeac_preprocess_data(abalone[, -1])
-# preprocessed$data_preprocessed
-# postprocessed <- vaeac_postprocess_data(preprocessed$data_preprocessed, preprocessed)
-# postprocessed
-# all.equal(abalone[, -1], postprocessed)
+\dontrun{
+data = data.table(matrix(rgamma(500 * 3, 2), ncol = 3))
+preprocessed <- vaeac_preprocess_data(data)
+preprocessed$data_preprocessed
+postprocessed <- vaeac_postprocess_data(preprocessed$data_preprocessed, preprocessed)
+postprocessed
+all.equal(data, postprocessed)
+}
 }
 \author{
 Lars Henry Berge Olsen

@@ -21,15 +21,15 @@
 #' @param activation_function A [torch::nn_module()] representing an activation function such as, e.g.,
 #' [torch::nn_relu()], [torch::nn_leaky_relu()], [torch::nn_selu()],
 #' [torch::nn_sigmoid()].
-#' @param use_skip_connections Boolean. If we are to use skip connections in each layer, see [shapr::SkipConnection()].
+#' @param skip_connection_layer Boolean. If we are to use skip connections in each layer, see [shapr::SkipConnection()].
 #' If `TRUE`, then we add the input to the outcome of each hidden layer, so the output becomes
 #' \eqn{X + \operatorname{activation}(WX + b)}. I.e., the identity skip connection.
 #' @param skip_connection_masked_enc_dec Boolean. If we are to apply concatenating skip
 #' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
 #' linked to the last layer of the decoder. The second layer of the masked encoder will be
 #' linked to the second to last layer of the decoder, and so on.
-#' @param use_batch_normalization Boolean. If we are to use batch normalization after the activation function.
-#' Note that if `use_skip_connections` is TRUE, then the normalization is
+#' @param batch_normalization Boolean. If we are to use batch normalization after the activation function.
+#' Note that if `skip_connection_layer` is TRUE, then the normalization is
 #' done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).
 #' @param paired_sampling Boolean. If we are doing paired sampling. I.e., if we are to include both coalition S
 #' and \eqn{\bar{S}} when we sample coalitions during training for each batch.
@@ -127,9 +127,9 @@ vaeac <- torch::nn_module(
                         depth = 3,
                         latent_dim = 8,
                         activation_function = torch::nn_relu,
-                        use_skip_connections = FALSE,
+                        skip_connection_layer = FALSE,
                         skip_connection_masked_enc_dec = FALSE,
-                        use_batch_normalization = FALSE,
+                        batch_normalization = FALSE,
                         paired_sampling = FALSE,
                         mask_generator_name = c(
                           "MCAR_mask_generator",
@@ -150,7 +150,7 @@ vaeac <- torch::nn_module(
     # Extra strings to add to names of layers depending on if we use memory layers and/or batch normalization.
     # If FALSE, they are just an empty string and do not effect the names.
     name_extra_memory_layer <- ifelse(skip_connection_masked_enc_dec, "_and_memory", "")
-    name_extra_batch_normalize <- ifelse(use_batch_normalization, "_and_batch_norm", "")
+    name_extra_batch_normalize <- ifelse(batch_normalization, "_and_batch_norm", "")
 
     # Save some of the initializing hyperparameters to the vaeac object. Others are saved later.
     self$one_hot_max_sizes <- one_hot_max_sizes
@@ -158,9 +158,9 @@ vaeac <- torch::nn_module(
     self$width <- width
     self$latent_dim <- latent_dim
     self$activation_function <- activation_function
-    self$use_skip_connections <- use_skip_connections
+    self$skip_connection_layer <- skip_connection_layer
     self$skip_connection_masked_enc_dec <- skip_connection_masked_enc_dec
-    self$use_batch_normalization <- use_batch_normalization
+    self$batch_normalization <- batch_normalization
     self$sigma_mu <- sigma_mu
     self$sigma_sigma <- sigma_sigma
     self$paired_sampling <- paired_sampling
@@ -239,7 +239,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
       module = activation_function(),
       name = "input_layer_layer_activation"
     )
-    if (use_batch_normalization) {
+    if (batch_normalization) {
       full_encoder_network$add_module(
         module = torch::nn_batch_norm1d(num_features = width),
         name = "input_layer_layer_batch_norm"
@@ -248,14 +248,14 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
     # Full Encoder: Hidden layers
     for (i in seq(depth)) {
-      if (use_skip_connections) {
+      if (skip_connection_layer) {
         # Add identity skip connection. Such that the input is added to the output of the linear layer
         # and activation function: output = X + activation(WX + b).
         full_encoder_network$add_module(
           module = SkipConnection(
             torch::nn_linear(width, width),
             activation_function(),
-            if (use_batch_normalization) torch::nn_batch_norm1d(num_features = width)
+            if (batch_normalization) torch::nn_batch_norm1d(num_features = width)
           ),
           name = paste0("hidden_layer_", i, "_skip_connection_with_linear_and_activation", name_extra_batch_normalize)
         )
@@ -269,7 +269,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
           module = activation_function(),
           name = paste0("hidden_layer_", i, "_activation")
         )
-        if (use_batch_normalization) {
+        if (batch_normalization) {
           full_encoder_network$add_module(
             module = torch::nn_batch_norm1d(num_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm")
@@ -310,7 +310,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
       module = activation_function(),
       name = "input_layer_activation"
     )
-    if (use_batch_normalization) {
+    if (batch_normalization) {
       masked_encoder_network$add_module(
         module = torch::nn_batch_norm1d(num_features = width),
         name = "input_layer_batch_norm"
@@ -319,7 +319,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
     # Masked Encoder: Hidden layers
     for (i in seq(depth)) {
-      if (use_skip_connections) {
+      if (skip_connection_layer) {
         # Add identity skip connection. Such that the input is added to the output of the linear layer
         # and activation function: output = X + activation(WX + b).
         # Also check inside SkipConnection if we are to use MemoryLayer. I.e., skip connection with
@@ -332,7 +332,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
           ),
           name = paste0("hidden_layer_", i, "_skip_connection_with_linear_and_activation", name_extra_memory_layer)
         )
-        if (use_batch_normalization) {
+        if (batch_normalization) {
           masked_encoder_network$add_module(
             module = torch::nn_batch_norm1d(num_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm")
@@ -354,7 +354,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
           module = activation_function(),
           name = paste0("hidden_layer_", i, "_activation")
         )
-        if (use_batch_normalization) {
+        if (batch_normalization) {
           masked_encoder_network$add_module(
             module = torch::nn_batch_norm1d(num_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm")
@@ -387,7 +387,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
       module = activation_function(),
       name = "latent_space_layer_activation"
     )
-    if (use_batch_normalization) {
+    if (batch_normalization) {
       decoder_network$add_module(
         module = torch::nn_batch_norm1d(num_features = width),
         name = "latent_space_layer_batch_norm"
@@ -411,7 +411,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
     # Decoder: Hidden layers
     for (i in seq(depth_decoder)) {
-      if (use_skip_connections) {
+      if (skip_connection_layer) {
         # Add identity skip connection. Such that the input is added to the output of the linear layer
         # and activation function: output = X + activation(WX + b).
         # Also check inside SkipConnection if we are to use MemoryLayer. I.e., skip connection with
@@ -433,7 +433,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
           ),
           name = paste0("hidden_layer_", i, "_skip_connection_with_linear_and_activation", name_extra_memory_layer)
         )
-        if (use_batch_normalization) {
+        if (batch_normalization) {
           decoder_network$add_module(
             module = torch::nn_batch_norm1d(num_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm")
@@ -455,7 +455,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
           module = activation_function(),
           name = paste0("hidden_layer_", i, "_activation")
         )
-        if (use_batch_normalization) {
+        if (batch_normalization) {
           decoder_network$add_module(
             module = torch::nn_batch_norm1d(num_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm")
@@ -860,7 +860,7 @@ vaeac_compute_normalization <- function(data,
 #'
 #' @param data matrix/data.frame/data.table containing the training data. Only the features and
 #' not the response.
-#' @param transform_all_cont_features Boolean. If we are to log transform all continuous
+#' @param log_exp_cont_feat Boolean. If we are to log transform all continuous
 #' features before sending the data to vaeac. vaeac creates unbounded values, so if the continuous
 #' features are strictly positive, as for Burr and Abalone data, it can be advantageous to log-transform
 #' the data to unbounded form before using vaeac. If TRUE, then `vaeac_postprocess_data` will
@@ -874,7 +874,7 @@ vaeac_compute_normalization <- function(data,
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE,
+vaeac_preprocess_data <- function(data, log_exp_cont_feat = FALSE,
                                   normalize = TRUE, norm_mean = NULL, norm_std = NULL) {
   # Ensure that data is data.table object
   data <- data.table::copy(data.table::as.data.table(data))
@@ -935,27 +935,15 @@ vaeac_preprocess_data <- function(data, transform_all_cont_features = FALSE,
   }
 
   # Check if we are to log transform all continuous features.
-  if (transform_all_cont_features) {
-    # # This is not the best way. We only give an error when all features are known, i.e., during training.
-    # # During imputations we do not worry, as we are going to impute the NA values.
-    # if (!is.na(suppressWarnings(any(data[, ..col_cont_names] <= 0)))) {
-    #   # Small check that all continues features are strictly positive
-    #   if (suppressWarnings(any(data[, ..col_cont_names] <= 0))) {
-    #     stop("The continuous features in `data` are not strictly positive. Cannot log-transform them.")
-    #   }
-    # }
-
-    # Check for non-positive features
+  if (log_exp_cont_feat) {
     if (any(data[, ..col_cont_names] <= 0)) {
       stop("The continuous features cannot be log-transformed as they are not strictly positive.")
     }
-
-    # Log-transform the continuous features.
     data[, (col_cont_names) := lapply(.SD, log), .SDcols = col_cont_names]
   }
 
   # Add the numerical data table to the return_list object, and some other variables.
-  return_list$transform_all_cont_features <- transform_all_cont_features
+  return_list$log_exp_cont_feat <- log_exp_cont_feat
   return_list$data_preprocessed <- as.matrix(data)
   return_list$col_cat <- col_cat
   return_list$col_cat_names <- col_cat_names
@@ -1057,7 +1045,7 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
 
   # If we log transformed the continuous features in the pre-processing, we need to
   # undo the transformation by exp-transforming the features back to strictly positives.
-  if (vaeac_model_state_list$transform_all_cont_features) {
+  if (vaeac_model_state_list$log_exp_cont_feat) {
     # Exp-transform the continuous features.
     data_dt[, (col_cont_names) := lapply(.SD, exp), .SDcols = col_cont_names]
   }

@@ -272,7 +272,6 @@ are required to "refit" the model at any given time index. This allows the diffe
 approaches to work in the same way they do for time-invariant models.
 }
 \examples{
-
 # Load example data
 data("airquality")
 data <- data.table::as.data.table(airquality)

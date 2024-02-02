@@ -33,12 +33,14 @@ created to check if increasing the probability of having a masks with many maske
 vaeac's performance by focusing more on these situations during training.
 }
 \examples{
-# probs <- c(1, 8, 6, 3, 2)
-# mask_gen <- Specified_prob_mask_generator(probs)
-# masks <- mask_gen(torch::torch_randn(c(10000, length(probs)) - 1))
-# empirical_prob <- table(as.array(masks$sum(2)))
-# empirical_prob / sum(empirical_prob)
-# probs / sum(probs)
+\dontrun{
+probs <- c(1, 8, 6, 3, 2)
+mask_gen <- Specified_prob_mask_generator(probs)
+masks <- mask_gen(torch::torch_randn(c(10000, length(probs)) - 1))
+empirical_prob <- table(as.array(masks$sum(2)))
+empirical_prob / sum(empirical_prob)
+probs / sum(probs)
+}
 
 }
 \keyword{internal}

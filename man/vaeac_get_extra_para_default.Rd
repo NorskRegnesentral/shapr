@@ -17,9 +17,9 @@ vaeac_get_extra_para_default(
   vaeac.batch_size = 64,
   vaeac.batch_size_sampling = NULL,
   vaeac.running_avg_num_values = 5,
-  vaeac.use_skip_connections = TRUE,
+  vaeac.skip_connection_layer = TRUE,
   vaeac.skip_connection_masked_enc_dec = TRUE,
-  vaeac.use_batch_normalization = FALSE,
+  vaeac.batch_normalization = FALSE,
   vaeac.paired_sampling = TRUE,
   vaeac.masking_ratio = 0.5,
   vaeac.mask_gen_these_coalitions = NULL,
@@ -28,7 +28,7 @@ vaeac_get_extra_para_default(
   vaeac.sigma_sigma = 1e-04,
   vaeac.sample_random = TRUE,
   vaeac.save_data = FALSE,
-  vaeac.transform_all_cont_features = FALSE,
+  vaeac.log_exp_cont_feat = FALSE,
   vaeac.which_vaeac_model = "best",
   vaeac.save_model = TRUE
 )
@@ -84,7 +84,7 @@ rather  than \code{vaeac.batch_size_sampling}. Larger batch sizes are often much
 \item{vaeac.running_avg_num_values}{Positive integer (default is \code{5}). The number of previous IWAE values to include
 when we compute the running means of the IWAE criterion.}
 
-\item{vaeac.use_skip_connections}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply identity skip connections in each
+\item{vaeac.skip_connection_layer}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply identity skip connections in each
 layer, see \code{\link[=SkipConnection]{SkipConnection()}}. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 so the output becomes \eqn{X + activation(WX + b)}.}
 
@@ -93,8 +93,8 @@ connections between the layers in the masked encoder and decoder. The first laye
 linked to the last layer of the decoder. The second layer of the masked encoder will be
 linked to the second to last layer of the decoder, and so on.}
 
-\item{vaeac.use_batch_normalization}{Logical (default is \code{FALSE}). If \code{TRUE}, we apply batch normalization after the
-activation function. Note that if \code{vaeac.use_skip_connections = TRUE}, then the normalization is applied after the
+\item{vaeac.batch_normalization}{Logical (default is \code{FALSE}). If \code{TRUE}, we apply batch normalization after the
+activation function. Note that if \code{vaeac.skip_connection_layer = TRUE}, then the normalization is applied after the
 inclusion of the skip connection. That is, we batch normalize the whole quantity \eqn{X + activation(WX + b)}.}
 
 \item{vaeac.paired_sampling}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply paired sampling to the training
@@ -135,7 +135,7 @@ class with highest probability for continuous and categorical, respectively.}
 the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_continue_train_model]{vaeac_continue_train_model()}}.
 TODO: Check if we actually use this later. I think I use the one in \code{explanation}...}
 
-\item{vaeac.transform_all_cont_features}{Logical (default is \code{FALSE}). If we are to \eqn{\log} transform all
+\item{vaeac.log_exp_cont_feat}{Logical (default is \code{FALSE}). If we are to \eqn{\log} transform all
 continuous features before sending the data to \code{\link[=vaeac]{vaeac()}}. The \code{vaeac} model creates unbounded Monte Carlo
 sample values. Thus, if the continuous features are strictly positive (as for, e.g., the Burr distribution and
 Abalone data set), it can be advantageous to \eqn{\log} transform the data to unbounded form before using \code{vaeac}.

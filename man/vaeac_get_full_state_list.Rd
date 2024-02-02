@@ -15,10 +15,10 @@ List containing the values of \code{norm_mean}, \code{norm_std}, \code{model_des
 \code{early_stopping_applied}, \code{running_avg_num_values}, \code{paired_sampling}, \code{mask_generator_name}, \code{masking_ratio},
 \code{mask_gen_these_coalitions}, \code{mask_gen_these_coalitions_prob}, \code{validation_ratio}, \code{validation_iwae_num_samples},
 \code{num_vaeacs_initiate}, \code{epochs_initiation_phase}, \code{width}, \code{depth}, \code{latent_dim}, \code{activation_function},
-\code{lr}, \code{batch_size}, \code{use_skip_connections}, \code{skip_connection_masked_enc_dec}, \code{use_batch_normalization}, \code{use_cuda},
+\code{lr}, \code{batch_size}, \code{skip_connection_layer}, \code{skip_connection_masked_enc_dec}, \code{batch_normalization}, \code{use_cuda},
 \code{train_indices}, \code{val_indices}, \code{save_every_nth_epoch}, \code{sigma_mu},
 \code{sigma_sigma}, \code{feature_list}, \code{col_cat_names}, \code{col_cont_names}, \code{col_cat}, \code{col_cont}, \code{cat_in_dataset},
-\code{map_new_to_original_names}, \code{map_original_to_new_names}, \code{transform_all_cont_features}, \code{save_data}, \code{verbose},
+\code{map_new_to_original_names}, \code{map_original_to_new_names}, \code{log_exp_cont_feat}, \code{save_data}, \code{verbose},
 \code{seed}, and \code{vaeac_save_file_names}.
 }
 \description{

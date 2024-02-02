@@ -359,9 +359,9 @@ vaeac_check_parameters <- function(x_train,
                                    batch_size,
                                    running_avg_num_values,
                                    activation_function,
-                                   use_skip_connections,
+                                   skip_connection_layer,
                                    skip_connection_masked_enc_dec,
-                                   use_batch_normalization,
+                                   batch_normalization,
                                    paired_sampling,
                                    masking_ratio,
                                    mask_gen_these_coalitions,
@@ -369,7 +369,7 @@ vaeac_check_parameters <- function(x_train,
                                    sigma_mu,
                                    sigma_sigma,
                                    save_data,
-                                   transform_all_cont_features,
+                                   log_exp_cont_feat,
                                    which_vaeac_model,
                                    verbose,
                                    seed,
@@ -402,12 +402,12 @@ vaeac_check_parameters <- function(x_train,
   # Check the logical parameters
   vaeac_check_logicals(list(
     use_cuda = use_cuda,
-    use_skip_connections = use_skip_connections,
+    skip_connection_layer = skip_connection_layer,
     skip_connection_masked_enc_dec = skip_connection_masked_enc_dec,
-    use_batch_normalization = use_batch_normalization,
+    batch_normalization = batch_normalization,
     paired_sampling = paired_sampling,
     save_data = save_data,
-    transform_all_cont_features = transform_all_cont_features
+    log_exp_cont_feat = log_exp_cont_feat
   ))
 
   # Check the positive integer parameters
@@ -495,15 +495,15 @@ vaeac_check_parameters <- function(x_train,
 #' rather  than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
 #' @param vaeac.running_avg_num_values Positive integer (default is `5`). The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
-#' @param vaeac.use_skip_connections Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
+#' @param vaeac.skip_connection_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
 #' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 #' so the output becomes \eqn{X + activation(WX + b)}.
 #' @param vaeac.skip_connection_masked_enc_dec Logical (default is `TRUE`). If `TRUE`, we apply concatenate skip
 #' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
 #' linked to the last layer of the decoder. The second layer of the masked encoder will be
 #' linked to the second to last layer of the decoder, and so on.
-#' @param vaeac.use_batch_normalization Logical (default is `FALSE`). If `TRUE`, we apply batch normalization after the
-#' activation function. Note that if `vaeac.use_skip_connections = TRUE`, then the normalization is applied after the
+#' @param vaeac.batch_normalization Logical (default is `FALSE`). If `TRUE`, we apply batch normalization after the
+#' activation function. Note that if `vaeac.skip_connection_layer = TRUE`, then the normalization is applied after the
 #' inclusion of the skip connection. That is, we batch normalize the whole quantity \eqn{X + activation(WX + b)}.
 #' @param vaeac.paired_sampling Logical (default is `TRUE`). If `TRUE`, we apply paired sampling to the training
 #' batches. That is, the training observations in each batch will be duplicated, where the first instance will be masked
@@ -532,7 +532,7 @@ vaeac_check_parameters <- function(x_train,
 #' @param vaeac.save_data Logical (default is `FALSE`). If `TRUE`, then the data is stored together with
 #' the model. Useful if one are to continue to train the model later using [shapr::vaeac_continue_train_model()].
 #' TODO: Check if we actually use this later. I think I use the one in `explanation`...
-#' @param vaeac.transform_all_cont_features Logical (default is `FALSE`). If we are to \eqn{\log} transform all
+#' @param vaeac.log_exp_cont_feat Logical (default is `FALSE`). If we are to \eqn{\log} transform all
 #' continuous features before sending the data to [shapr::vaeac()]. The `vaeac` model creates unbounded Monte Carlo
 #' sample values. Thus, if the continuous features are strictly positive (as for, e.g., the Burr distribution and
 #' Abalone data set), it can be advantageous to \eqn{\log} transform the data to unbounded form before using `vaeac`.
@@ -568,9 +568,9 @@ vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sy
                                          vaeac.batch_size = 64,
                                          vaeac.batch_size_sampling = NULL,
                                          vaeac.running_avg_num_values = 5,
-                                         vaeac.use_skip_connections = TRUE,
+                                         vaeac.skip_connection_layer = TRUE,
                                          vaeac.skip_connection_masked_enc_dec = TRUE,
-                                         vaeac.use_batch_normalization = FALSE,
+                                         vaeac.batch_normalization = FALSE,
                                          vaeac.paired_sampling = TRUE,
                                          vaeac.masking_ratio = 0.5,
                                          vaeac.mask_gen_these_coalitions = NULL,
@@ -579,11 +579,60 @@ vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sy
                                          vaeac.sigma_sigma = 1e-4,
                                          vaeac.sample_random = TRUE,
                                          vaeac.save_data = FALSE,
-                                         vaeac.transform_all_cont_features = FALSE,
+                                         vaeac.log_exp_cont_feat = FALSE,
                                          vaeac.which_vaeac_model = "best",
                                          vaeac.save_model = TRUE) {
   # Return a named list with the extra parameters to the vaeac model
   return(mget(formalArgs(vaeac_get_extra_para_default)))
+}
+
+#' Function to load a `vaeac` model and set it in the right state and mode
+#'
+#' @inheritParams vaeac_train_model
+#' @param checkpoint List. This must be a loaded `vaeac` save object. That is, `torch::torch_load('vaeac_save_path')`.
+#' @param mode_train Logical. If `TRUE`, the returned `vaeac` model is set to be in training mode.
+#' If `FALSE`, the returned `vaeac` model is set to be in evaluation mode.
+#'
+#' @return A `vaeac` model with the correct state (based on `checkpoint`), sent to the desired hardware (based on
+#' `use_cuda`), and in the right mode (based on `mode_train`).
+#' @export
+#'
+#' @examples
+vaeac_get_model_from_checkp = function(checkpoint, use_cuda, mode_train) {
+  # Check parameters
+  vaeac_check_logicals(list(use_cuda = use_cuda, mode_train = mode_train))
+
+  # Set up the model such that it is loaded before calling the `prepare_data.vaeac()` function.
+  vaeac_model <- vaeac(
+    one_hot_max_sizes = checkpoint$one_hot_max_sizes,
+    width = checkpoint$width,
+    depth = checkpoint$depth,
+    latent_dim = checkpoint$latent_dim,
+    activation_function = checkpoint$activation_function,
+    skip_connection_layer = checkpoint$skip_connection_layer,
+    skip_connection_masked_enc_dec = checkpoint$skip_connection_masked_enc_dec,
+    batch_normalization = checkpoint$batch_normalization,
+    paired_sampling = checkpoint$paired_sampling,
+    mask_generator_name = checkpoint$mask_generator_name,
+    masking_ratio = checkpoint$masking_ratio,
+    mask_gen_these_coalitions = checkpoint$mask_gen_these_coalitions,
+    mask_gen_these_coalitions_prob = checkpoint$mask_gen_these_coalitions_prob,
+    sigma_mu = checkpoint$sigma_mu,
+    sigma_sigma = vaeac_checkpoint$sigma_sigma
+  )
+
+  # Set the state of the vaeac model (setting the weights and biases in the networks)
+  vaeac_model$load_state_dict(checkpoint$model_state_dict)
+
+  # Apply the mode. Evaluation mode effects certain modules by, e.g., deactivating dropout layers,
+  # how batch norm is conducted, and so on...
+  if (mode_train) vaeac_model$train() else vaeac_model$eval()
+
+  # Send the model to the GPU, if we are supposed to. Otherwise use CPU
+  if (use_cuda) vaeac_model <- vaeac_model$cuda() else vaeac_model <- vaeac_model$cpu()
+
+  # Return the model
+  return (vaeac_model)
 }
 
 #' Function that determines which mask generator to use
@@ -743,10 +792,10 @@ vaeac_get_current_save_state <- function(environment) {
 #' `early_stopping_applied`, `running_avg_num_values`, `paired_sampling`, `mask_generator_name`, `masking_ratio`,
 #' `mask_gen_these_coalitions`, `mask_gen_these_coalitions_prob`, `validation_ratio`, `validation_iwae_num_samples`,
 #' `num_vaeacs_initiate`, `epochs_initiation_phase`, `width`, `depth`, `latent_dim`, `activation_function`,
-#' `lr`, `batch_size`, `use_skip_connections`, `skip_connection_masked_enc_dec`, `use_batch_normalization`, `use_cuda`,
+#' `lr`, `batch_size`, `skip_connection_layer`, `skip_connection_masked_enc_dec`, `batch_normalization`, `use_cuda`,
 #' `train_indices`, `val_indices`, `save_every_nth_epoch`, `sigma_mu`,
 #' `sigma_sigma`, `feature_list`, `col_cat_names`, `col_cont_names`, `col_cat`, `col_cont`, `cat_in_dataset`,
-#' `map_new_to_original_names`, `map_original_to_new_names`, `transform_all_cont_features`, `save_data`, `verbose`,
+#' `map_new_to_original_names`, `map_original_to_new_names`, `log_exp_cont_feat`, `save_data`, `verbose`,
 #' `seed`, and `vaeac_save_file_names`.
 #'
 #' @keywords internal
@@ -758,10 +807,10 @@ vaeac_get_full_state_list <- function(environment) {
     "paired_sampling", "mask_generator_name", "masking_ratio", "mask_gen_these_coalitions",
     "mask_gen_these_coalitions_prob", "validation_ratio", "validation_iwae_num_samples", "num_vaeacs_initiate",
     "epochs_initiation_phase", "width", "depth", "latent_dim", "activation_function",
-    "lr", "batch_size", "use_skip_connections", "skip_connection_masked_enc_dec", "use_batch_normalization", "use_cuda",
+    "lr", "batch_size", "skip_connection_layer", "skip_connection_masked_enc_dec", "batch_normalization", "use_cuda",
     "train_indices", "val_indices", "save_every_nth_epoch", "sigma_mu", "sigma_sigma", "feature_list", "col_cat_names",
     "col_cont_names", "col_cat", "col_cont", "cat_in_dataset", "map_new_to_original_names", "map_original_to_new_names",
-    "transform_all_cont_features", "save_data", "verbose", "seed", "vaeac_save_file_names"
+    "log_exp_cont_feat", "save_data", "verbose", "seed", "vaeac_save_file_names"
   )
   objects <- lapply(object_names, function(name) environment[[name]])
   names(objects) <- object_names

@@ -6,7 +6,7 @@
 \usage{
 vaeac_preprocess_data(
   data,
-  transform_all_cont_features = FALSE,
+  log_exp_cont_feat = FALSE,
   normalize = TRUE,
   norm_mean = NULL,
   norm_std = NULL
@@ -16,7 +16,7 @@ vaeac_preprocess_data(
 \item{data}{matrix/data.frame/data.table containing the training data. Only the features and
 not the response.}
 
-\item{transform_all_cont_features}{Boolean. If we are to log transform all continuous
+\item{log_exp_cont_feat}{Boolean. If we are to log transform all continuous
 features before sending the data to vaeac. vaeac creates unbounded values, so if the continuous
 features are strictly positive, as for Burr and Abalone data, it can be advantageous to log-transform
 the data to unbounded form before using vaeac. If TRUE, then \code{vaeac_postprocess_data} will

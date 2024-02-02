@@ -10,9 +10,9 @@ vaeac(
   depth = 3,
   latent_dim = 8,
   activation_function = torch::nn_relu,
-  use_skip_connections = FALSE,
+  skip_connection_layer = FALSE,
   skip_connection_masked_enc_dec = FALSE,
-  use_batch_normalization = FALSE,
+  batch_normalization = FALSE,
   paired_sampling = FALSE,
   mask_generator_name = c("MCAR_mask_generator", "Specified_prob_mask_generator",
     "Specified_masks_mask_generator"),
@@ -39,7 +39,7 @@ masked encoder, full encoder, and decoder.}
 \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}},
 \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
-\item{use_skip_connections}{Boolean. If we are to use skip connections in each layer, see \code{\link[=SkipConnection]{SkipConnection()}}.
+\item{skip_connection_layer}{Boolean. If we are to use skip connections in each layer, see \code{\link[=SkipConnection]{SkipConnection()}}.
 If \code{TRUE}, then we add the input to the outcome of each hidden layer, so the output becomes
 \eqn{X + \operatorname{activation}(WX + b)}. I.e., the identity skip connection.}
 
@@ -48,8 +48,8 @@ connections between the layers in the masked encoder and decoder. The first laye
 linked to the last layer of the decoder. The second layer of the masked encoder will be
 linked to the second to last layer of the decoder, and so on.}
 
-\item{use_batch_normalization}{Boolean. If we are to use batch normalization after the activation function.
-Note that if \code{use_skip_connections} is TRUE, then the normalization is
+\item{batch_normalization}{Boolean. If we are to use batch normalization after the activation function.
+Note that if \code{skip_connection_layer} is TRUE, then the normalization is
 done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).}
 
 \item{paired_sampling}{Boolean. If we are doing paired sampling. I.e., if we are to include both coalition S
