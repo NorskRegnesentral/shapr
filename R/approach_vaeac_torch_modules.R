@@ -1221,8 +1221,7 @@ vaeac_dataset <- torch::dataset(
   # param X A torch_tensor contain the data
   # param one_hot_max_sizes A torch tensor of dimension p containing the one hot sizes of the p features.
   # The sizes for the continuous features can either be '0' or '1'.
-  initialize = function(X,
-                        one_hot_max_sizes) {
+  initialize = function(X, one_hot_max_sizes) {
     # Save the number of observations in X
     self$N <- nrow(X)
 
@@ -1311,14 +1310,8 @@ paired_sampler <- torch::sampler(
     # Get the number of observations in the data
     n <- length(self$vaeac_dataset_object)
 
-    # Check if the indices are to be shuffled
-    if (self$shuffle) {
-      # Sample a random order for the indices
-      indices <- sample.int(n)
-    } else {
-      # Take the indices in increasing order
-      indices <- seq_len(n)
-    }
+    # If shuffle, then randomly sample the indices, otherwise we takne the in increasing order
+    indices <- if (self$shuffle) sample.int(n) else seq_len(n)
 
     # Duplicate each index and return an iterator
     coro::as_iterator(rep(indices, each = 2))
@@ -1727,124 +1720,6 @@ kl_normal_normal <- function(p, q) {
 }
 
 # Neural Network Modules ==============================================================================================
-## GaussCatSampler -----------------------------------------------------------------------------------------
-#' A [torch::nn_module()] Representing a GaussCatSampler
-#'
-#' @description
-#' The GaussCatSampler generates a sample from the generative distribution defined by
-#' the output of the vaeac. It can either return/generate the most likely values or use random sampling.
-#'
-#' @param one_hot_max_sizes A vector of integers where the i-th entry is
-#' the number of one-hot encoding for the i-th feature.
-#' I.e., a categorical feature with 5 levels will have a one_hot_max_size of 5.
-#' A feature with a one_hot_max_size of either 0 or 1 will be treated as a continuous feature.
-#' @param min_sigma For stability it might be desirable that the minimal sigma is not too close to zero.
-#' @param min_prob For stability it might be desirable that the minimal probability is not too close to zero.
-#' @param sample_most_probable A boolean indicating if we are to return the mean and most probable class of
-#' the Gaussian and categorical distributions, respectively (`TRUE`), or if sampling from the Gaussian and categorical
-#' distributions is to be performed (`FALSE`).
-#'
-#' @return
-#' A `GaussCatSampler` object.
-#'
-#' @author Lars Henry Berge Olsen
-#' @keywords internal
-GaussCatSampler <- torch::nn_module(
-
-  #' @field classname Type of torch::nn_module
-  classname = "GaussCatSampler",
-
-  # description Initialize a GaussCatSampler which generates a sample from the generative
-  # distribution defined by the output of the neural network.
-  initialize = function(one_hot_max_sizes,
-                        sample_most_probable = FALSE,
-                        min_sigma = 1e-4,
-                        min_prob = 1e-4) {
-    # one-hot max size of i-th feature, if i-th feature is categorical,
-    # and 0 or 1 if i-th feature is real-valued.
-    self$one_hot_max_sizes <- one_hot_max_sizes
-
-    # We set this to TRUE when we use this class.
-    # So just return the mean for Gaussian.
-    # This is not what we want in case of SHAPLEY.
-    # SO WE SHOULD USE FALSE
-    self$sample_most_probable <- sample_most_probable
-
-    # We use the default values, both 1e-4.
-    self$min_sigma <- min_sigma
-    self$min_prob <- min_prob
-  },
-
-  # param dist_params A matrix of form batch_size x (mu_1, sigma_1, ..., mu_p, sigma_p),
-  # when only considering continuous features.
-  # For categorical features, we do NOT have mu and sigma for the decoder at the end of the vaeac,
-  # but rather logits for the categorical distribution.
-  # return A tensor containing the generated data.
-  forward = function(distr_params) {
-    # A counter to keep track of which
-    cur_distr_col <- 1
-
-    # List to store all the samples sampled from the
-    # normal distribution with parameters from distr_params.
-    sample <- list()
-
-    # Iterate over the features
-    for (i in seq_along(self$one_hot_max_sizes)) {
-      size <- self$one_hot_max_sizes[i]
-
-      if (size <= 1) {
-        # Continuous
-        # Gaussian distribution
-        # Get the mu and sigma for the current feature, for each instance
-        params <- distr_params[, cur_distr_col:(cur_distr_col + 1)]
-        cur_distr_col <- cur_distr_col + 2
-
-        # generative model distribution for the feature
-        # so create batch_size number of normal distributions.
-        distr <- normal_parse_params(params, self$min_sigma)
-
-        # If we are going to sample the mean or do a random sampling
-        if (self$sample_most_probable) {
-          col_sample <- distr$mean
-        } else {
-          # Use rsample() here as it seems that sample() does not respect manual set seeds. Only for normal.
-          # They have fixed the mistake.
-          col_sample <- distr$sample()
-        }
-      } else {
-        # Categorical distribution
-
-        # Extract the logits of the different classes for the ith categorical variable
-        params <- distr_params[, cur_distr_col:(cur_distr_col + size - 1)]
-        cur_distr_col <- cur_distr_col + size
-
-        # Generate the categorical distribution based on the logits, which are
-        # transformed and clamped in the 'categorical_parse_params_col' function.
-        # distr is a "torch::distr_categorical" distribution.
-        distr <- categorical_parse_params_col(params, self$min_prob)
-
-        # If we are to return the class with highest probability or sample a
-        # class from the distribution based on each class' probabilities.
-        if (self$sample_most_probable) {
-          # By doing [, NULL], we add an extra dimension such that the tensor is a column vector.
-          col_sample <- torch::torch_max(distr$probs, -1)[[2]][, NULL]$to(dtype = torch::torch_float())
-        } else {
-          # Here we can use $sample() as it respects manual set seeds.
-          col_sample <- distr$sample()[, NULL]$to(dtype = torch::torch_float())
-        }
-      }
-
-      # Add the vector of sampled values for the i´th
-      # feature to the sample list.
-      sample <- append(sample, col_sample)
-    }
-
-    # Create a matrix by column binding the vectors in the list
-    return(torch::torch_cat(sample, -1))
-  }
-)
-
-
 ## GaussCatSamplerMostLikely -------------------------------------------------------------------------------
 #' A [torch::nn_module()] Representing a GaussCatSamplerMostLikely
 #'
@@ -2341,9 +2216,7 @@ CategoricalToOneHotLayer <- torch::nn_module(
     # Get the number of instances in the input batch.
     n <- input$shape[1]
 
-    # variable to store the outcolumns.
-    # that is the input columns / one hot encoding
-    # + is nan.mask.
+    # variable to store the out columns, i.e., the input columns / one hot encoding + is nan.mask.
     out_cols <- NULL
 
     # We iterate over the features and get the number
