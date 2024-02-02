@@ -367,8 +367,5 @@ explain <- function(model,
     output$internal$parameters$vaeac$parameters$model_description <- NULL
   }
 
-  # TODO: REMOVE THIS IN THE END
-  output$internal$parameters$verbose = NULL
-
   return(output)
 }
