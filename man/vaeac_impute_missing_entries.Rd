@@ -24,9 +24,11 @@ vaeac_impute_missing_entries(
 
 \item{n_samples}{Integer. The number of imputed versions we create for each row in \code{x_explain_with_NaNs}.}
 
+\item{vaeac_model}{ADD TEXT}
+
 \item{vaeac_checkpoint}{List containing the}
 
-\item{sampler}{}
+\item{sampler}{ADD TEXT}
 
 \item{batch_size}{Integer. The number of samples in each batch.
 If \code{NULL}, then use the same value saved in the vaeac object.

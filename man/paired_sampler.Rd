@@ -41,7 +41,7 @@ dataload <- torch::dataloader(dataset,
     shuffle = shuffle
   )
 )
-dataload$.length() # Number of batches, same as ceiling((2 * num_observation) / batch_size)
+dataload$.length() # Number of batches, same as ceiling((2 * n_observations) / batch_size)
 mask_generator <- MCAR_mask_generator(paired = TRUE)
 coro::loop(for (batch in dataload) {
   mask <- mask_generator(batch)

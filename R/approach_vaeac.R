@@ -819,9 +819,9 @@ vaeac_continue_train_model <- function(explanation,
 #' @param seed Integer. Seed used before generating the MC samples.
 #' @param index_features Optional integer vector. Used internally in shapr package to index the coalitions.
 #' @param n_explain Positive integer. The number of explicands.
-#' @param vaeac_model
+#' @param vaeac_model ADD TEXT
 #' @param vaeac_checkpoint List containing the
-#' @param sampler
+#' @param sampler ADD TEXT
 #'
 #' @return A 2D or 3D array or 2D data.table where the missing values (`NaN`) in `x_explain_with_NaNs`
 #' have been imputed `n_samples` times. The dimension of the returned object depends on the

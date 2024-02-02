@@ -21,3 +21,7 @@ A \code{vaeac} model with the correct state (based on \code{checkpoint}), sent t
 \description{
 Function to load a \code{vaeac} model and set it in the right state and mode
 }
+\author{
+Lars Henry Berge Olsen
+}
+\keyword{internal}

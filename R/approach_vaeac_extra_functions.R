@@ -595,9 +595,9 @@ vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sy
 #'
 #' @return A `vaeac` model with the correct state (based on `checkpoint`), sent to the desired hardware (based on
 #' `cuda`), and in the right mode (based on `mode_train`).
-#' @export
 #'
-#' @examples
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
 vaeac_get_model_from_checkp = function(checkpoint, cuda, mode_train) {
   # Check parameters
   vaeac_check_logicals(list(cuda = cuda, mode_train = mode_train))
