@@ -291,32 +291,32 @@ plot.shapr <- function(x,
   return(gg)
 }
 
-get_num_breaks <- function(dt_plot, feature_name) {
+get_n_breaks <- function(dt_plot, feature_name) {
   n_feat_vals <- length(dt_plot[variable == feature_name, unique(feature_value)]) # number of unique points to plot
   type <- dt_plot[variable == feature_name, type][1]
 
   if (type == "numeric") {
     if (n_feat_vals > 500) {
-      num_breaks <- 50
+      n_breaks <- 50
     } else if (n_feat_vals > 200) {
-      num_breaks <- 20
+      n_breaks <- 20
     } else if (n_feat_vals > 100) {
-      num_breaks <- 10
+      n_breaks <- 10
     } else {
-      num_breaks <- min(5, n_feat_vals + 2)
+      n_breaks <- min(5, n_feat_vals + 2)
     }
   } else { # If factor
-    num_breaks <- n_feat_vals
+    n_breaks <- n_feat_vals
   }
 
-  return(num_breaks)
+  return(n_breaks)
 }
 
 
 compute_scatter_hist_values <- function(dt_plot, scatter_features) {
   dt_scatter_hist_list <- list()
   for (feature_name in scatter_features) {
-    num_breaks <- get_num_breaks(dt_plot, feature_name)
+    n_breaks <- get_n_breaks(dt_plot, feature_name)
 
     x <- dt_plot[variable == feature_name, feature_value]
 
@@ -325,7 +325,7 @@ compute_scatter_hist_values <- function(dt_plot, scatter_features) {
       # scatter_hist_object$breaks = c(x[1] - .Machine$double.eps*10^10, x[1] + .Machine$double.eps*10^10)
       scatter_hist_object$breaks <- c(x[1] - 0.01, x[1] + 0.01)
     } else {
-      step <- (max(x) - min(x)) / (num_breaks - 1)
+      step <- (max(x) - min(x)) / (n_breaks - 1)
       scatter_hist_object <- hist(x, breaks = seq(min(x) - step / 2, max(x) + step / 2, by = step), plot = FALSE)
     }
 

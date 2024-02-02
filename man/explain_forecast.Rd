@@ -202,7 +202,7 @@ of the masked encoder, full encoder, and decoder.}
     \item{\code{vaeac.activation_function}}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation
 function such as, e.g., \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}},
 \code{\link[torch:nn_selu]{torch::nn_selu()}}, and \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
-    \item{\code{vaeac.num_vaeacs_initiate}}{Integer. The number of different vaeac models to initiate
+    \item{\code{vaeac.n_vaeacs_initialize}}{Integer. The number of different vaeac models to initiate
 in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
 epochs (default is \code{2}) and continue training that one.}
     \item{\code{vaeac.epochs}}{Integer. The number of epochs to train the final vaeac model. This includes
@@ -272,6 +272,7 @@ are required to "refit" the model at any given time index. This allows the diffe
 approaches to work in the same way they do for time-invariant models.
 }
 \examples{
+
 # Load example data
 data("airquality")
 data <- data.table::as.data.table(airquality)

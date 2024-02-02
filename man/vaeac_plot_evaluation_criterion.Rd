@@ -85,7 +85,7 @@ explanation_paired_sampling_TRUE <- explain(
   n_batches = 2,
   n_samples = 1, #' As we are only interested in the training of the vaeac
   vaeac.epochs = 25, #' Should be higher in applications.
-  vaeac.num_vaeacs_initiate = 5,
+  vaeac.n_vaeacs_initialize = 5,
   vaeac.extra_parameters = list(
     vaeac.paired_sampling = TRUE,
     vaeac.verbose = TRUE
@@ -101,7 +101,7 @@ explanation_paired_sampling_FALSE <- explain(
   n_batches = 2,
   n_samples = 1, #' As we are only interested in the training of the vaeac
   vaeac.epochs = 25, #' Should be higher in applications.
-  vaeac.num_vaeacs_initiate = 5,
+  vaeac.n_vaeacs_initialize = 5,
   vaeac.extra_parameters = list(
     vaeac.paired_sampling = FALSE,
     vaeac.verbose = TRUE
@@ -121,7 +121,7 @@ explanation_paired_sampling_FALSE_small <- explain(
   vaeac.width = 16, #' Default is 32
   vaeac.depth = 2, #' Default is 3
   vaeac.latent_dim = 4, #' Default is 8
-  vaeac.num_vaeacs_initiate = 5,
+  vaeac.n_vaeacs_initialize = 5,
   vaeac.extra_parameters = list(
     vaeac.paired_sampling = FALSE,
     vaeac.verbose = TRUE
@@ -140,7 +140,7 @@ explanation_paired_sampling_TRUE_small <- explain(
   vaeac.width = 16, #' Default is 32
   vaeac.depth = 2, #' Default is 3
   vaeac.latent_dim = 4, #' Default is 8
-  vaeac.num_vaeacs_initiate = 5,
+  vaeac.n_vaeacs_initialize = 5,
   vaeac.extra_parameters = list(
     vaeac.paired_sampling = TRUE,
     vaeac.verbose = TRUE

@@ -186,7 +186,7 @@ vaeac_check_mask_gen <- function(mask_gen_these_coalitions, mask_gen_these_coali
   if (!is.null(masks) || !is.null(probs)) {
     if (xor(is.null(masks), is.null(probs))) {
       stop(
-        "either both `vaeac.mask_gen_these_coalitions` and `vaeac.mask_gen_these_coalitions_prob` need to `NULL` ",
+        "Either both `vaeac.mask_gen_these_coalitions` and `vaeac.mask_gen_these_coalitions_prob` need to `NULL` ",
         "or both have to be specified."
       )
     }
@@ -196,14 +196,14 @@ vaeac_check_mask_gen <- function(mask_gen_these_coalitions, mask_gen_these_coali
 
     if (nrow(masks) != length(probs)) {
       stop(
-        "the number of rows in `vaeac.mask_gen_these_coalitions` must be equal to the length of ",
+        "The number of rows in `vaeac.mask_gen_these_coalitions` must be equal to the length of ",
         "`vaeac.mask_gen_these_coalitions_prob`."
       )
     }
 
     if (ncol(masks) != ncol(x_train)) {
       stop(
-        "the number of columns in `vaeac.mask_gen_these_coalitions` must be equal to the number of ",
+        "The number of columns in `vaeac.mask_gen_these_coalitions` must be equal to the number of ",
         "columns in the `x_train`. That is, the number of features."
       )
     }
@@ -345,19 +345,19 @@ vaeac_check_parameters <- function(x_train,
                                    model_description,
                                    folder_to_save_model,
                                    cuda,
-                                   num_vaeacs_initiate,
+                                   n_vaeacs_initialize,
                                    epochs_initiation_phase,
                                    epochs,
                                    epochs_early_stopping,
                                    save_every_nth_epoch,
                                    validation_ratio,
-                                   validation_iwae_num_samples,
+                                   validation_iwae_n_samples,
                                    depth,
                                    width,
                                    latent_dim,
                                    lr,
                                    batch_size,
-                                   running_avg_num_values,
+                                   running_avg_n_values,
                                    activation_function,
                                    skip_connection_layer,
                                    skip_connection_masked_enc_dec,
@@ -412,16 +412,16 @@ vaeac_check_parameters <- function(x_train,
 
   # Check the positive integer parameters
   unchecked_positive_integers <- list(
-    num_vaeacs_initiate = num_vaeacs_initiate,
+    n_vaeacs_initialize = n_vaeacs_initialize,
     epochs = epochs,
     epochs_early_stopping = epochs_early_stopping,
     epochs_initiation_phase = epochs_initiation_phase,
-    validation_iwae_num_samples = validation_iwae_num_samples,
+    validation_iwae_n_samples = validation_iwae_n_samples,
     depth = depth,
     width = width,
     latent_dim = latent_dim,
     batch_size = batch_size,
-    running_avg_num_values = running_avg_num_values,
+    running_avg_n_values = running_avg_n_values,
     seed = seed
   )
   if (!is.null(save_every_nth_epoch)) unchecked_positive_integers$save_every_nth_epoch <- save_every_nth_epoch
@@ -473,7 +473,7 @@ vaeac_check_parameters <- function(x_train,
 #' faster for tabular data sets. Note, cuda is not not supported in the current version of the `shapr` package.
 #' TODO: Update this when this is done.
 #' @param vaeac.epochs_initiation_phase Positive integer (default is `2`). The number of epochs to run each of the
-#' `vaeac.num_vaeacs_initiate` `vaeac` models before continuing to train only the best performing model.
+#' `vaeac.n_vaeacs_initialize` `vaeac` models before continuing to train only the best performing model.
 #' @param vaeac.epochs_early_stopping Positive integer (default is `NULL`). The training stops if there has been no
 #' improvement in the validation IWAE for `vaeac.epochs_early_stopping` epochs. If the user wants the training process
 #' to be solely based on this training criterion, then `vaeac.epochs` in [shapr::explain()] should be set to a large
@@ -484,7 +484,7 @@ vaeac_check_parameters <- function(x_train,
 #' @param vaeac.validation_ratio Numeric (default is `0.25`). Scalar between `0` and `1` indicating the ratio of
 #' instances from the input data which will be used as validation data. That is, `vaeac.validation_ratio = 0.25` means
 #' that `75%` of the provided data is used as training data, while the remaining `25%` is used as validation data.
-#' @param vaeac.validation_iwae_num_samples Positive integer (default is `25`). The number of generated samples used
+#' @param vaeac.validation_iwae_n_samples Positive integer (default is `25`). The number of generated samples used
 #' to compute the IWAE criterion when validating the vaeac model on the validation data.
 #' @param vaeac.batch_size Positive integer (default is `64`). The number of samples to include in each batch
 #' during the training of the vaeac model. Used in [torch::dataloader()].
@@ -493,7 +493,7 @@ vaeac_check_parameters <- function(x_train,
 #' for the provided coalitions/combinations and all explicands sent to [shapr::explain()] at the time.
 #' The number of coalitions are determined by `n_batches` in [shapr::explain()]. We recommend to tweak `n_batches`
 #' rather  than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
-#' @param vaeac.running_avg_num_values Positive integer (default is `5`). The number of previous IWAE values to include
+#' @param vaeac.running_avg_n_values Positive integer (default is `5`). The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
 #' @param vaeac.skip_connection_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
 #' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
@@ -543,7 +543,7 @@ vaeac_check_parameters <- function(x_train,
 #' class with highest probability for continuous and categorical, respectively.
 #' @param vaeac.which_vaeac_model String (default is `NULL`). The name of the `vaeac` model (snapshots from different
 #' epochs) to use when generating the Monte Carlo samples. The standard choices are: `"best"` (epoch with lowest IWAE),
-#' `"best_running"` (epoch with lowest running IWAE, see `vaeac.running_avg_num_values`), and `last` (the last epoch).
+#' `"best_running"` (epoch with lowest running IWAE, see `vaeac.running_avg_n_values`), and `last` (the last epoch).
 #' Note that additional choices are available if `vaeac.save_every_nth_epoch` is provided. For example, if
 #' `vaeac.save_every_nth_epoch = 5`, then `vaeac.which_vaeac_model` can also take the values `"epoch_5"`, `"epoch_10"`,
 #' `"epoch_15"`, and so on.
@@ -564,10 +564,10 @@ vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sy
                                          vaeac.epochs_early_stopping = NULL,
                                          vaeac.save_every_nth_epoch = NULL,
                                          vaeac.validation_ratio = 0.25,
-                                         vaeac.validation_iwae_num_samples = 25,
+                                         vaeac.validation_iwae_n_samples = 25,
                                          vaeac.batch_size = 64,
                                          vaeac.batch_size_sampling = NULL,
-                                         vaeac.running_avg_num_values = 5,
+                                         vaeac.running_avg_n_values = 5,
                                          vaeac.skip_connection_layer = TRUE,
                                          vaeac.skip_connection_masked_enc_dec = TRUE,
                                          vaeac.batch_normalization = FALSE,
@@ -618,7 +618,7 @@ vaeac_get_model_from_checkp = function(checkpoint, cuda, mode_train) {
     mask_gen_these_coalitions = checkpoint$mask_gen_these_coalitions,
     mask_gen_these_coalitions_prob = checkpoint$mask_gen_these_coalitions_prob,
     sigma_mu = checkpoint$sigma_mu,
-    sigma_sigma = vaeac_checkpoint$sigma_sigma
+    sigma_sigma = checkpoint$sigma_sigma
   )
 
   # Set the state of the vaeac model (setting the weights and biases in the networks)
@@ -789,9 +789,9 @@ vaeac_get_current_save_state <- function(environment) {
 #'
 #' @return List containing the values of `norm_mean`, `norm_std`, `model_description`, `folder_to_save_model`,
 #' `n_train`, `n_features`, `one_hot_max_sizes`, `epochs`, `epochs_specified`, `epochs_early_stopping`,
-#' `early_stopping_applied`, `running_avg_num_values`, `paired_sampling`, `mask_generator_name`, `masking_ratio`,
-#' `mask_gen_these_coalitions`, `mask_gen_these_coalitions_prob`, `validation_ratio`, `validation_iwae_num_samples`,
-#' `num_vaeacs_initiate`, `epochs_initiation_phase`, `width`, `depth`, `latent_dim`, `activation_function`,
+#' `early_stopping_applied`, `running_avg_n_values`, `paired_sampling`, `mask_generator_name`, `masking_ratio`,
+#' `mask_gen_these_coalitions`, `mask_gen_these_coalitions_prob`, `validation_ratio`, `validation_iwae_n_samples`,
+#' `n_vaeacs_initialize`, `epochs_initiation_phase`, `width`, `depth`, `latent_dim`, `activation_function`,
 #' `lr`, `batch_size`, `skip_connection_layer`, `skip_connection_masked_enc_dec`, `batch_normalization`, `cuda`,
 #' `train_indices`, `val_indices`, `save_every_nth_epoch`, `sigma_mu`,
 #' `sigma_sigma`, `feature_list`, `col_cat_names`, `col_cont_names`, `col_cat`, `col_cont`, `cat_in_dataset`,
@@ -803,9 +803,9 @@ vaeac_get_current_save_state <- function(environment) {
 vaeac_get_full_state_list <- function(environment) {
   object_names <- c(
     "norm_mean", "norm_std", "model_description", "folder_to_save_model", "n_train", "n_features", "one_hot_max_sizes",
-    "epochs", "epochs_specified", "epochs_early_stopping", "early_stopping_applied", "running_avg_num_values",
+    "epochs", "epochs_specified", "epochs_early_stopping", "early_stopping_applied", "running_avg_n_values",
     "paired_sampling", "mask_generator_name", "masking_ratio", "mask_gen_these_coalitions",
-    "mask_gen_these_coalitions_prob", "validation_ratio", "validation_iwae_num_samples", "num_vaeacs_initiate",
+    "mask_gen_these_coalitions_prob", "validation_ratio", "validation_iwae_n_samples", "n_vaeacs_initialize",
     "epochs_initiation_phase", "width", "depth", "latent_dim", "activation_function",
     "lr", "batch_size", "skip_connection_layer", "skip_connection_masked_enc_dec", "batch_normalization", "cuda",
     "train_indices", "val_indices", "save_every_nth_epoch", "sigma_mu", "sigma_sigma", "feature_list", "col_cat_names",
@@ -925,8 +925,8 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
                                         optimizer,
                                         train_dataloader,
                                         val_dataloader,
-                                        validation_iwae_num_samples,
-                                        running_avg_num_values,
+                                        validation_iwae_n_samples,
+                                        running_avg_n_values,
                                         verbose,
                                         cuda,
                                         epochs,
@@ -937,13 +937,13 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
                                         vaeac_save_file_names = NULL,
                                         state_list = NULL,
                                         initialization_idx = NULL,
-                                        num_vaeacs_initiate = NULL,
+                                        n_vaeacs_initialize = NULL,
                                         train_vlb = NULL,
                                         validation_iwae = NULL,
                                         validation_iwae_running = NULL) {
   # Check for valid input
-  if (xor(is.null(initialization_idx), is.null(num_vaeacs_initiate))) {
-    stop("Either none or both of `initialization_idx` and `num_vaeacs_initiate` must be given.")
+  if (xor(is.null(initialization_idx), is.null(n_vaeacs_initialize))) {
+    stop("Either none or both of `initialization_idx` and `n_vaeacs_initialize` must be given.")
   }
 
   if (is.null(state_list) && is.null(initialization_idx)) {
@@ -1034,14 +1034,14 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       mask_generator = mask_generator,
       batch_size = batch_size,
       vaeac_model = vaeac_model,
-      validation_iwae_num_samples = validation_iwae_num_samples
+      validation_iwae_n_samples = validation_iwae_n_samples
     )
     validation_iwae <- torch::torch_cat(c(validation_iwae, validation_iwae_now), -1)
 
     # Compute the running validation IWAE
     validation_iwae_running_now <-
       validation_iwae[
-        (-min(length(validation_iwae), running_avg_num_values) +
+        (-min(length(validation_iwae), running_avg_n_values) +
           length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
         drop = FALSE
       ]$mean()$view(1)
@@ -1075,7 +1075,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     if (!is.null(progressr_bar)) {
       update_message <- if (!is.null(initialization_idx)) {
         paste0(
-          "Training vaeac (init. ", initialization_idx, " of ", num_vaeacs_initiate, "): Epoch: ", epoch,
+          "Training vaeac (init. ", initialization_idx, " of ", n_vaeacs_initialize, "): Epoch: ", epoch,
           " | VLB: ", round(avg_vlb$item(), 3), " | IWAE: ", round(validation_iwae_now$item(), 3)
         )
       } else {
@@ -1148,6 +1148,9 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
         3
       )
     }
+
+    # Update the class of the returned object
+    attr(return_list, "class") <- c("vaeac", class(return_list))
   }
   return(return_list)
 }

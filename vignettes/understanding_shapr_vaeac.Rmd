@@ -69,7 +69,7 @@ parameters are the the number of layers in the networks (`vaeac.depth`), the wid
 (`vaeac.width`), the number of dimensions in the latent space (`vaeac.latent_dim`),
 the activation function between the layers in the networks (`vaeac.activation_function`), 
 the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
-to remedy poorly initiated model parameter values (`vaeac.num_vaeacs_initiate`), and
+to remedy poorly initiated model parameter values (`vaeac.n_vaeacs_initialize`), and
 the number of learning epochs (`vaeac.epochs`).
 
 There are additional extra parameters which can be set by including a named list in the call to
@@ -150,7 +150,7 @@ vaeac.save_every_nth_epoch <- 3
 
 # To stabilize the initialization process of the vaeac approach, several networks are initialized and trained
 # for some epochs, and then we continue to only train the best version.
-vaeac.num_vaeacs_initiate <- 2
+vaeac.n_vaeacs_initialize <- 2
 
 # If we are to print the progress
 vaeac.verbose <- TRUE
@@ -178,7 +178,7 @@ explanation <- explain(
   seed = seed,
   verbose = verbose,
   vaeac.epochs = 20,
-  vaeac.num_vaeacs_initiate = 2,
+  vaeac.n_vaeacs_initialize = 2,
   vaeac.width = 16,
   vaeac.save_every_nth_epoch = 10000000,
   vaeac.blaa2 = 1000000000,
@@ -341,7 +341,7 @@ expl_misplaced_parameters <- explain(
   n_samples = n_samples,
   n_batches = n_batches,
   seed = seed,
-  vaeac.num_vaeacs_initiate = vaeac.num_vaeacs_initiate,
+  vaeac.n_vaeacs_initialize = vaeac.n_vaeacs_initialize,
   vaeac.epochs = 7, # Duplicate
   vaeac.verbose = FALSE, # Should have been an extra parameter
   vaeac.extra_parameters = list(
@@ -377,7 +377,7 @@ expl_paired_sampling_TRUE <- explain(
   n_batches = n_batches,
   seed = seed,
   vaeac.epochs = 100,
-  vaeac.num_vaeacs_initiate = 5,
+  vaeac.n_vaeacs_initialize = 5,
   vaeac.extra_parameters = list(
     vaeac.verbose = FALSE,
     vaeac.paired_sampling = TRUE
@@ -395,7 +395,7 @@ expl_paired_sampling_FALSE <- explain(
   n_batches = n_batches,
   seed = seed,
   vaeac.epochs = 100,
-  vaeac.num_vaeacs_initiate = 5,
+  vaeac.n_vaeacs_initialize = 5,
   vaeac.extra_parameters = list(
     vaeac.verbose = FALSE,
     vaeac.paired_sampling = FALSE
@@ -443,7 +443,7 @@ expl_without_messages <- explain(
   n_batches = 5,
   seed = seed,
   vaeac.epochs = 10,
-  vaeac.num_vaeacs_initiate = 2,
+  vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(
     vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
     vaeac.verbose = FALSE
@@ -467,7 +467,7 @@ expl_with_messages <- explain(
   n_batches = 5,
   seed = seed,
   vaeac.epochs = 10,
-  vaeac.num_vaeacs_initiate = 2,
+  vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(
     vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
     vaeac.verbose = TRUE
@@ -511,7 +511,7 @@ with_progress({
     n_batches = 5,
     seed = seed,
     vaeac.epochs = 10,
-    vaeac.num_vaeacs_initiate = 2,
+    vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(
       vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
       vaeac.verbose = FALSE
@@ -539,7 +539,7 @@ with_progress({
     n_batches = 5,
     seed = seed,
     vaeac.epochs = 10,
-    vaeac.num_vaeacs_initiate = 2,
+    vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(
       vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
       vaeac.verbose = TRUE
@@ -573,11 +573,11 @@ expl_litle_training <- explain(
   n_samples = 250,
   n_batches = n_batches,
   seed = seed,
+  verbose = 2,
   vaeac.epochs = 3,
-  vaeac.num_vaeacs_initiate = 2,
+  vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(
-    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
-    vaeac.verbose = vaeac.verbose
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch
   )
 )
 
@@ -717,7 +717,7 @@ expl_early_stopping <- explain(
   n_batches = n_batches,
   seed = seed,
   vaeac.epochs = 1000, # Set it to a big number
-  vaeac.num_vaeacs_initiate = 2,
+  vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(
     vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
     vaeac.verbose = vaeac.verbose,
@@ -814,7 +814,7 @@ expl_group <- explain(
   n_samples = n_samples,
   keep_samp_for_vS = keep_samp_for_vS,
   vaeac.epochs = 10,
-  vaeac.num_vaeacs_initiate = 3,
+  vaeac.n_vaeacs_initialize = 3,
   vaeac.verbose = TRUE
 )
 # expl_group$internal$objects
@@ -907,7 +907,7 @@ expl_vaeac <- explain(
   n_samples = n_samples,
   keep_samp_for_vS = keep_samp_for_vS,
   vaeac.epochs = 20,
-  vaeac.num_vaeacs_initiate = 5,
+  vaeac.n_vaeacs_initialize = 5,
   vaeac.width = 10,
   vaeac.depth = 2,
   vaeac.latent_dim = 4,
@@ -945,7 +945,7 @@ expl_vaeac_complex <- explain(
   keep_samp_for_vS = keep_samp_for_vS,
   group = group,
   vaeac.epochs = 100,
-  vaeac.num_vaeacs_initiate = 4,
+  vaeac.n_vaeacs_initialize = 4,
   vaeac.width = 10,
   vaeac.depth = 2,
   vaeac.latent_dim = 4,

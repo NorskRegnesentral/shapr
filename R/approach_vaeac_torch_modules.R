@@ -145,7 +145,7 @@ vaeac <- torch::nn_module(
     mask_generator_name <- match.arg(mask_generator_name)
 
     # Get the number of features
-    num_features <- length(one_hot_max_sizes)
+    n_features <- length(one_hot_max_sizes)
 
     # Extra strings to add to names of layers depending on if we use memory layers and/or batch normalization.
     # If FALSE, they are just an empty string and do not effect the names.
@@ -170,8 +170,8 @@ vaeac <- torch::nn_module(
     self$sampler_most_likely <- GaussCatSamplerMostLikely(one_hot_max_sizes)
     self$sampler_random <- GaussCatSamplerRandom(one_hot_max_sizes)
     self$generative_parameters <- GaussCatParameters(one_hot_max_sizes)
-    self$num_features <- num_features
-    self$vlb_scale_factor <- 1 / num_features
+    self$n_features <- n_features
+    self$vlb_scale_factor <- 1 / n_features
 
     ##### Generate the mask generator
     if (mask_generator_name == "MCAR_mask_generator") {
@@ -196,8 +196,8 @@ vaeac <- torch::nn_module(
     } else if (mask_generator_name == "Specified_masks_mask_generator") {
       # Small check that they have been provided.
       if (is.null(mask_gen_these_coalitions) | is.null(mask_gen_these_coalitions_prob)) {
-        stop("Both 'mask_gen_these_coalitions' and 'mask_gen_these_coalitions_prob'
-must be provided when using 'Specified_masks_mask_generator'.\n")
+        stop(paste0("Both 'mask_gen_these_coalitions' and 'mask_gen_these_coalitions_prob' ",
+                    "must be provided when using 'Specified_masks_mask_generator'."))
       }
 
       # Create a Specified_masks_mask_generator and attach it to the vaeac object.
@@ -212,10 +212,8 @@ must be provided when using 'Specified_masks_mask_generator'.\n")
       self$masks_probs <- mask_gen_these_coalitions_prob
     } else {
       # Print error to user.
-      stop(sprintf(
-        "Maske geneartor '%s' is not supported.
-Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specified_masks_mask_generator'.\n",
-        mask_generator
+      stop(paste0("`mask_generator_name` must be one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', or ",
+                  "'Specified_masks_mask_generator', and not '", mask_generator_name, "'."
       ))
     }
 
@@ -224,13 +222,12 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
     # Full Encoder: Input layer
     full_encoder_network$add_module(
-      module = CategoricalToOneHotLayer(c(one_hot_max_sizes, rep(0, num_features)), seq(num_features)),
+      module = CategoricalToOneHotLayer(c(one_hot_max_sizes, rep(0, n_features)), seq(n_features)),
       name = "input_layer_cat_to_one_hot"
     )
     full_encoder_network$add_module(
       module = torch::nn_linear(
-        in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) +
-          num_features * 2,
+        in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features * 2,
         out_features = width
       ),
       name = "input_layer_linear"
@@ -241,7 +238,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
     )
     if (batch_normalization) {
       full_encoder_network$add_module(
-        module = torch::nn_batch_norm1d(num_features = width),
+        module = torch::nn_batch_norm1d(width),
         name = "input_layer_layer_batch_norm"
       )
     }
@@ -255,7 +252,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
           module = SkipConnection(
             torch::nn_linear(width, width),
             activation_function(),
-            if (batch_normalization) torch::nn_batch_norm1d(num_features = width)
+            if (batch_normalization) torch::nn_batch_norm1d(width)
           ),
           name = paste0("hidden_layer_", i, "_skip_connection_with_linear_and_activation", name_extra_batch_normalize)
         )
@@ -271,7 +268,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
         )
         if (batch_normalization) {
           full_encoder_network$add_module(
-            module = torch::nn_batch_norm1d(num_features = width),
+            module = torch::nn_batch_norm1d(width),
             name = paste0("hidden_layer_", i, "_batch_norm")
           )
         }
@@ -289,7 +286,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
 
     # Masked Encoder: Input layer
     masked_encoder_network$add_module(
-      module = CategoricalToOneHotLayer(c(one_hot_max_sizes, rep(0, num_features))),
+      module = CategoricalToOneHotLayer(c(one_hot_max_sizes, rep(0, n_features))),
       name = "input_layer_cat_to_one_hot"
     )
     if (skip_connection_masked_enc_dec) {
@@ -300,8 +297,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
     }
     masked_encoder_network$add_module(
       module = torch::nn_linear(
-        in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) +
-          num_features,
+        in_features = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features,
         out_features = width
       ),
       name = "input_layer_linear"
@@ -312,7 +308,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
     )
     if (batch_normalization) {
       masked_encoder_network$add_module(
-        module = torch::nn_batch_norm1d(num_features = width),
+        module = torch::nn_batch_norm1d(width),
         name = "input_layer_batch_norm"
       )
     }
@@ -334,7 +330,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
         )
         if (batch_normalization) {
           masked_encoder_network$add_module(
-            module = torch::nn_batch_norm1d(num_features = width),
+            module = torch::nn_batch_norm1d(width),
             name = paste0("hidden_layer_", i, "_batch_norm")
           )
         }
@@ -356,7 +352,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
         )
         if (batch_normalization) {
           masked_encoder_network$add_module(
-            module = torch::nn_batch_norm1d(num_features = width),
+            module = torch::nn_batch_norm1d(width),
             name = paste0("hidden_layer_", i, "_batch_norm")
           )
         }
@@ -389,7 +385,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
     )
     if (batch_normalization) {
       decoder_network$add_module(
-        module = torch::nn_batch_norm1d(num_features = width),
+        module = torch::nn_batch_norm1d(width),
         name = "latent_space_layer_batch_norm"
       )
     }
@@ -401,7 +397,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
     # Same for the input dimension to the last layer in decoder that yields the distribution params.
     extra_params_skip_con_mask_enc <-
       ifelse(test = skip_connection_masked_enc_dec,
-        yes = sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) + num_features,
+        yes = sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) + n_features,
         no = 0
       )
 
@@ -435,7 +431,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
         )
         if (batch_normalization) {
           decoder_network$add_module(
-            module = torch::nn_batch_norm1d(num_features = width),
+            module = torch::nn_batch_norm1d(n_features = width),
             name = paste0("hidden_layer_", i, "_batch_norm")
           )
         }
@@ -457,7 +453,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
         )
         if (batch_normalization) {
           decoder_network$add_module(
-            module = torch::nn_batch_norm1d(num_features = width),
+            module = torch::nn_batch_norm1d(width),
             name = paste0("hidden_layer_", i, "_batch_norm")
           )
         }
@@ -473,15 +469,15 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
       )
     }
     # Linear layer to the parameters of the generative distributions Gaussian and Categorical.
-    # Note that sum(apply(rbind(one_hot_max_sizes, rep(1, num_features)), 2, max)) is the number of
-    # one hot variables to the masked encoder and num_features represents the binary variables if
+    # Note that sum(apply(rbind(one_hot_max_sizes, rep(1, n_features)), 2, max)) is the number of
+    # one hot variables to the masked encoder and n_features represents the binary variables if
     # the features was masked/missing or not when they entered the masked encoder.
     # The output dimension is 2 for the continuous features and K_i for categorical feature X_i,
     # where K_i is the number of classes the i'th categorical feature can take on.
     decoder_network$add_module(
       module = torch::nn_linear(
         in_features = width + extra_params_skip_con_mask_enc,
-        out_features = sum(apply(rbind(one_hot_max_sizes, rep(2, num_features)), 2, max))
+        out_features = sum(apply(rbind(one_hot_max_sizes, rep(2, n_features)), 2, max))
       ),
       name = "output_layer_linear"
     )
@@ -491,22 +487,12 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
     self$masked_encoder_network <- masked_encoder_network
     self$decoder_network <- decoder_network
 
-    # Compute the number of trainable parameters in the different networks
-    num_train_param_full_encoder <- sum(sapply(full_encoder_network$parameters, function(p) prod(p$size())))
-    num_train_param_masked_encoder <- sum(sapply(masked_encoder_network$parameters, function(p) prod(p$size())))
-    num_train_param_decoder <- sum(sapply(decoder_network$parameters, function(p) prod(p$size())))
-    num_train_param_total <- num_train_param_full_encoder +
-      num_train_param_masked_encoder +
-      num_train_param_decoder
-    num_train_param <- rbind(
-      num_train_param_total,
-      num_train_param_full_encoder,
-      num_train_param_masked_encoder,
-      num_train_param_decoder
-    )
-
-    # Save the number of parameters to the vaeac object
-    self$num_train_param <- num_train_param
+    # Compute the number of trainable parameters in the different networks and save them
+    n_para_full_encoder <- sum(sapply(full_encoder_network$parameters, function(p) prod(p$size())))
+    n_para_masked_encoder <- sum(sapply(masked_encoder_network$parameters, function(p) prod(p$size())))
+    n_para_decoder <- sum(sapply(decoder_network$parameters, function(p) prod(p$size())))
+    n_para_total <- n_para_full_encoder + n_para_masked_encoder + n_para_decoder
+    self$n_train_param <- rbind(n_para_total, n_para_full_encoder, n_para_masked_encoder, n_para_decoder)
   },
 
   # Forward functions are required in torch::nn_modules,
@@ -520,7 +506,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
   #
   # description Clones the batch and applies the mask to set masked entries to 0 to create the observed batch.
   #
-  # param batch Tensor of dimension batch_size x num_features containing a batch of observations.
+  # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
   # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
   make_observed = function(batch, mask) {
     # Clone and detach the batch from the graph (removes the gradient element for the tensor).
@@ -539,7 +525,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
   # If `only_masked_encoder = TRUE`, then we only compute the latent normal distributions inferred by the
   # masked encoder. This is used in the deployment phase when we do not have access to the full observation.
   #
-  # param batch Tensor of dimension batch_size x num_features containing a batch of observations.
+  # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
   # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
   # param only_masked_encoder Boolean. If we are only to compute the latent distributions for the masked encoder.
   # Used in deployment phase when we do not have access to the full data. Always FALSE in the training phase.
@@ -598,22 +584,22 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
   # param masked_encoder The torch_Normal object returned when calling the masked encoder.
   masked_encoder_regularization = function(masked_encoder) {
     # Extract the number of observations. Same as batch_size.
-    num_observations <- masked_encoder$mean$shape[1]
+    n_observations <- masked_encoder$mean$shape[1]
 
     # Extract the number of dimension in the latent space.
-    num_latent_dimensions <- masked_encoder$mean$shape[2]
+    n_latent_dimensions <- masked_encoder$mean$shape[2]
 
     # Extract means and ensure correct shape (batch_size x latent_dim).
-    mu <- masked_encoder$mean$view(c(num_observations, num_latent_dimensions))
+    mu <- masked_encoder$mean$view(c(n_observations, n_latent_dimensions))
 
     # Extract the sigmas and ensure correct shape (batch_size x latent_dim).
-    sigma <- masked_encoder$scale$view(c(num_observations, num_latent_dimensions))
+    sigma <- masked_encoder$scale$view(c(n_observations, n_latent_dimensions))
 
     # Note that sum(-1) indicates that we sum together the columns.
-    # mu_regularizer is then a tensor of length num_observations
+    # mu_regularizer is then a tensor of length n_observations
     mu_regularizer <- -(mu^2)$sum(-1) / (2 * self$sigma_mu^2)
 
-    # sigma_regularizer is then also a tensor of length num_observations.
+    # sigma_regularizer is then also a tensor of length n_observations.
     sigma_regularizer <- (sigma$log() - sigma)$sum(-1) * self$sigma_sigma
 
     # Add the regularization terms together and return them.
@@ -625,7 +611,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
   # description Compute differentiable lower bound for the given batch of objects and mask.
   # Used as the (negative) loss function for training the vaeac model.
   #
-  # param batch Tensor of dimension batch_size x num_features containing a batch of observations.
+  # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
   # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
   batch_vlb = function(batch, mask) {
     # Compute the latent normal distributions obtained from the full and masked encoder
@@ -646,7 +632,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
     # i.e.,  we get a tensor of dimension batch_size x latent_dim.
     latent <- full_encoder$rsample()
 
-    # Send the latent samples through the decoder and get the batch_size x 2*num_features (in cont case)
+    # Send the latent samples through the decoder and get the batch_size x 2*n_features (in cont case)
     # where we for each row have a normal dist on each feature The form will be (mu_1, sigma_1, ..., mu_p, sigma_p)
     reconstruction_params <- self$decoder_network(latent)
 
@@ -684,7 +670,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
   # logsumexp(rec_loss + prior_log_prob - proposal_log_prob) - log(K),
   # where z_i ~ q_phi(z|x,y).
   #
-  # param batch Tensor of dimension batch_size x num_features containing a batch of observations.
+  # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
   # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
   # param K Integer. The number of samples generated to compute the IWAE for each observation in `batch`.
   batch_iwae = function(batch, mask, K) {
@@ -704,7 +690,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
       # full encoder; z_i ~ q_phi(z|x,y). We get a tensor of dimension batch_size x latent_dim.
       latent <- full_encoder$rsample()
 
-      # Send the latent samples through the decoder and get the batch_size x 2*num_features (in cont case)
+      # Send the latent samples through the decoder and get the batch_size x 2*n_features (in cont case)
       # where we for each row have a normal dist on each feature The form will be (mu_1, sigma_1, ..., mu_p, sigma_p)
       reconstruction_params <- self$decoder_network(latent)
 
@@ -763,7 +749,7 @@ Chose one of 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specif
   # the result shape is [n x K x D1 x D2]. It is better to use it inside torch::with_no_grad in order to save
   # memory. With torch::with_no_grad the method doesn't require extra memory except the memory for the result.
   #
-  # param batch Tensor of dimension batch_size x num_features containing a batch of observations.
+  # param batch Tensor of dimension batch_size x n_features containing a batch of observations.
   # param mask Tensor of zeros and ones indicating which entries in batch to mask. Same dimension as `batch`.
   # param K Integer. The number of imputations to be done for each observation in batch.
   generate_samples_params = function(batch, mask, K = 1) {
@@ -1283,20 +1269,20 @@ vaeac_dataset <- torch::dataset(
 #' Example how to use it combined with mask generators with paired sampling activated
 #' batch_size <- 4
 #' if (batch_size %% 2 == 1) batch_size <- batch_size - 1 # Make sure that batch size is even
-#' num_featuers <- 3
-#' num_observations <- 5
+#' n_features <- 3
+#' n_observations <- 5
 #' shuffle <- TRUE
-#' data <- torch_tensor(matrix(rep(seq(num_observations), each = num_featuers),
-#'                             ncol = num_featuers, byrow = TRUE))
+#' data <- torch_tensor(matrix(rep(seq(n_observations), each = n_features),
+#'                             ncol = n_features, byrow = TRUE))
 #' data
-#' dataset <- vaeac_dataset(data, rep(1, num_featuers))
+#' dataset <- vaeac_dataset(data, rep(1, n_features))
 #' dataload <- torch::dataloader(dataset,
 #'   batch_size = batch_size,
 #'   sampler = paired_sampler(dataset,
 #'     shuffle = shuffle
 #'   )
 #' )
-#' dataload$.length() # Number of batches, same as ceiling((2 * num_observation) / batch_size)
+#' dataload$.length() # Number of batches, same as ceiling((2 * n_observations) / batch_size)
 #' mask_generator <- MCAR_mask_generator(paired = TRUE)
 #' coro::loop(for (batch in dataload) {
 #'   mask <- mask_generator(batch)
@@ -1417,7 +1403,7 @@ MemoryLayer <- torch::nn_module(
       # We are to insert input into the storage list.
 
       # Small printout to the user
-      if (self$verbose) message(sprintf("Inserting data to memory layer 'self$id = %s'.\n", self$id))
+      if (self$verbose) message(paste0("Inserting data to memory layer `self$id = ", self$id, "`."))
 
       # Save the input in the shared environment of the MemoryLayer class in the storage list.
       # Note that we do not check if self$id is unique.
@@ -1429,13 +1415,13 @@ MemoryLayer <- torch::nn_module(
       # We are to extract data from the storage list.
 
       # Small printout to the user
-      if (self$verbose) message(sprintf("Extracting data from memory layer 'self$id = %s'. ", self$id))
+      if (self$verbose) message(paste0("Extracting data to memory layer `self$id = ", self$id, "`."))
 
       # Check that the memory layer has data is stored in it. If not, then thorw error.
       if (!self$id %in% names(self$shared_env$storage)) {
-        stop(sprintf(
-          "ValueError: Looking for memory layer 'self$id = %s', but only available memory layers are: %s.",
-          self$id, paste(names(self$shared_env$storage), collapse = ", ")
+        stop(paste0(
+          "ValueError: Looking for memory layer `self$id = ", self$id, "`, but the only available memory layers are: ",
+          paste(names(self$shared_env$storage), collapse = "`, `"), "`."
         ))
       }
 
@@ -1447,7 +1433,7 @@ MemoryLayer <- torch::nn_module(
         # We are to concatenate the tensors.
 
         # Small printout to the user
-        if (self$verbose) message(sprintf("Concatenates the tensors.\n"))
+        if (self$verbose) message("Concatenating the tensors.")
 
         # Concatenate the columns of the tensors.
         data <- torch::torch_cat(c(input, stored), -1)
@@ -1455,7 +1441,7 @@ MemoryLayer <- torch::nn_module(
         # We are to add the tensors.
 
         # Small printout to the user
-        if (self$verbose) message(sprintf("Adds the tensors.\n"))
+        if (self$verbose) message("Adding the tensors.")
 
         # Add the tensors together.
         data <- input + stored
@@ -1566,7 +1552,7 @@ extend_batch <- function(batch,
 #' @param mask_generator A mask generator object that generates the masks.
 #' @param batch_size Integer. The number of samples to include in each batch.
 #' @param vaeac_model The vaeac model.
-#' @param validation_iwae_num_samples Number of samples to generate for computing the IWAE for each validation sample.
+#' @param validation_iwae_n_samples Number of samples to generate for computing the IWAE for each validation sample.
 #'
 #' @return The average iwae over all instances in the validation dataset.
 #'
@@ -1576,7 +1562,7 @@ vaeac_get_validation_iwae <- function(val_dataloader,
                                 mask_generator,
                                 batch_size,
                                 vaeac_model,
-                                validation_iwae_num_samples) {
+                                validation_iwae_n_samples) {
 
   # Set variables to store the number of instances evaluated and avg_iwae
   cum_size <- 0
@@ -1609,7 +1595,7 @@ vaeac_get_validation_iwae <- function(val_dataloader,
     torch::with_no_grad({
       # Get the iwae for each instance in the current batch, but save only the first init_size, as the other are
       # just arbitrary instances we "padded" the batch with to get the appropriate shape.
-      iwae <- vaeac_model$batch_iwae(batch, mask, validation_iwae_num_samples)[1:init_size, drop = FALSE]
+      iwae <- vaeac_model$batch_iwae(batch, mask, validation_iwae_n_samples)[1:init_size, drop = FALSE]
 
       # Update the average iwae over all batches (over all instances). This is called recursive/online updating of
       # the mean. Takes the old average * cum_size to get old sum of iwae and adds the sum of newly computed iwae.
@@ -1657,7 +1643,7 @@ normal_parse_params <- function(params,
   # Then get the dimension of the parameters
   d <- params$shape[2]
 
-  # Use double dash to get integer. Do not need it as we by construction always have 2*num_dim_latent_space
+  # Use double dash to get integer. Do not need it as we by construction always have 2*n_dim_latent_space
   mu <- params[, 1:(d %/% 2)] # Get the first halves which are the means
 
   # Get the second half which are transformed sigmas
@@ -2292,7 +2278,7 @@ GaussCatLoss <- torch::nn_module(
       # (for those instances that are masked) into log_prob list
       # log_prob.append(col_log_prob)
       log_prob <- append(log_prob, col_log_prob)
-      # log_prob is now a list of length num_features, where each
+      # log_prob is now a list of length n_features, where each
       # element is a tensor batch_size x 1 containing the log-lik
       # of the parameters of masked values.
     }
@@ -2362,8 +2348,8 @@ CategoricalToOneHotLayer <- torch::nn_module(
 
     # We iterate over the features and get the number
     # of categories for each feature.
-    # so i goes from 0 to 2*num_features-1
-    # For i in [num_features, 2*num_features-1] will have size <= 1,
+    # so i goes from 0 to 2*n_features-1
+    # For i in [n_features, 2*n_features-1] will have size <= 1,
     # even for categorical features.
     i <- 1
     for (i in seq_along(self$one_hot_max_sizes)) {
@@ -2427,13 +2413,13 @@ CategoricalToOneHotLayer <- torch::nn_module(
       }
 
       # append this feature column to the result
-      # out_col is n x size = batch_size x num_categories_for_this_feature
+      # out_col is n x size = batch_size x n_categories_for_this_feature
       out_cols <- torch::torch_cat(c(out_cols, out_col), dim = -1)
 
       # if necessary, append isnan mask of this feature to the result
       # which we always do for the proposal network.
       # This only happens for the first half of the i's,
-      # so for i = 1, ..., num_features.
+      # so for i = 1, ..., n_features.
       if (i %in% self$add_nans_map_for_columns) {
         # so we add the columns of nan_mask
         out_cols <- torch::torch_cat(c(out_cols, nan_mask$to(dtype = torch::torch_float())), dim = -1)
@@ -2441,10 +2427,10 @@ CategoricalToOneHotLayer <- torch::nn_module(
     }
 
     # ONLY FOR CONTINUOUS FEATURES.
-    # out_cols now is a list of num_features tensors of shape n x size
+    # out_cols now is a list of n_features tensors of shape n x size
     # = n x 1 for continuous variables. So we concatenate them
-    # to get a matrix of dim n x 2*num_features (in cont case) for
-    # prior net, but for proposal net, it is n x 3*num_features
+    # to get a matrix of dim n x 2*n_features (in cont case) for
+    # prior net, but for proposal net, it is n x 3*n_features
     # They take the form  [batch1, is.nan1, batch2, is.nan2, …,
     # batch12, is.nan12, mask1, mask2, …, mask12]
     return(out_cols)
@@ -2563,29 +2549,20 @@ MCAR_mask_generator <- torch::nn_module(
     # Check for missing values in the batch
     nan_mask <- batch$isnan()$to(torch::torch_float())
 
-    # # Torch version, but marginally slower than r version when batch_size <= 128 and num_features <= 50
+    # # Torch version, but marginally slower than r version when batch_size <= 128 and n_features <= 50
     # mask = torch::torch_bernoulli(torch::torch_full_like(batch, prob))
 
     # Create the Bernoulli mask where an element is masked (1) with probability 'prob'.
     mask <- torch::torch_tensor(
-      matrix(
-        sample(c(0, 1),
-          size = size,
-          replace = TRUE,
-          prob = c(prob, 1 - prob)
-        ),
-        ncol = ncol(batch)
-      ),
+      matrix(sample(c(0, 1), size = size, replace = TRUE, prob = c(prob, 1 - prob)), ncol = ncol(batch)),
       dtype = torch::torch_float()
     )
 
     # If paired sampling, then concatenate the inverse mask.
     if (paired_sampling) {
-      # Create the new order to ensure correct order [m1, !m1, m2, !m2, ...].
-      new_order <- c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE))
-
-      # Concatenate the inverse mask and reorder.
-      mask <- torch::torch_cat(c(mask, !mask), 1L)[new_order, ]
+      # Concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
+      # TODO: Check if we need this order
+      mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
     }
 
     # Final mask all entries that is either missing or artificially masked
@@ -2715,28 +2692,21 @@ Specified_prob_mask_generator <- torch::nn_module(
     if (paired_sampling) size <- size / 2
 
     # Sample the number of masked features in each row.
-    num_masked_each_row <- sample(
-      x = seq(0, n_features),
-      size = size,
-      replace = TRUE,
-      prob = masking_probs
-    )
+    n_masked_each_row <- sample(x = seq(0, n_features), size = size, replace = TRUE, prob = masking_probs)
 
     # Crate the mask matrix
     mask <- torch::torch_zeros_like(batch)
     for (i in seq(size)) {
-      if (num_masked_each_row[i] != 0) {
-        mask[i, sample(n_features, size = num_masked_each_row[i], replace = FALSE)] <- 1
+      if (n_masked_each_row[i] != 0) {
+        mask[i, sample(n_features, size = n_masked_each_row[i], replace = FALSE)] <- 1
       }
     }
 
     # If paired sampling, then concatenate the inverse mask.
     if (paired_sampling) {
-      # Create the new order to ensure correct order [m1, !m1, m2, !m2, ...].
-      new_order <- c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE))
-
-      # Concatenate the inverse mask and reorder.
-      mask <- torch::torch_cat(c(mask, !mask), 1L)[new_order, ]
+      # Concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
+      # TODO: Check if we need this order
+      mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
     }
 
     # Final mask masks all entries that is either missing or artificially masked
@@ -2862,21 +2832,14 @@ Specified_masks_mask_generator <- torch::nn_module(
 
     # Sample 'n_observation' masks from the possible masks by first sampling the row indices
     # based on the given mask probabilities and then use these indices to extract the masks.
-    mask_rows_indices <- sample.int(
-      n = n_masks,
-      size = size,
-      replace = TRUE,
-      prob = masks_probs
-    )
+    mask_rows_indices <- sample.int(n = n_masks, size = size, replace = TRUE, prob = masks_probs)
     mask <- torch::torch_tensor(masks[mask_rows_indices, ], dtype = torch::torch_float())
 
     # If paired sampling, then concatenate the inverse mask.
     if (paired_sampling) {
-      # Create the new order to ensure correct order [m1, !m1, m2, !m2, ...].
-      new_order <- c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE))
-
-      # Concatenate the inverse mask and reorder.
-      mask <- torch::torch_cat(c(mask, !mask), 1L)[new_order, ]
+      # Concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
+      # TODO: Check if we need this order
+      mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
     }
 
     # Final mask masks all entries that is either missing or artificially masked

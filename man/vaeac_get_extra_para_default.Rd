@@ -13,10 +13,10 @@ vaeac_get_extra_para_default(
   vaeac.epochs_early_stopping = NULL,
   vaeac.save_every_nth_epoch = NULL,
   vaeac.validation_ratio = 0.25,
-  vaeac.validation_iwae_num_samples = 25,
+  vaeac.validation_iwae_n_samples = 25,
   vaeac.batch_size = 64,
   vaeac.batch_size_sampling = NULL,
-  vaeac.running_avg_num_values = 5,
+  vaeac.running_avg_n_values = 5,
   vaeac.skip_connection_layer = TRUE,
   vaeac.skip_connection_masked_enc_dec = TRUE,
   vaeac.batch_normalization = FALSE,
@@ -54,7 +54,7 @@ faster for tabular data sets. Note, cuda is not not supported in the current ver
 TODO: Update this when this is done.}
 
 \item{vaeac.epochs_initiation_phase}{Positive integer (default is \code{2}). The number of epochs to run each of the
-\code{vaeac.num_vaeacs_initiate} \code{vaeac} models before continuing to train only the best performing model.}
+\code{vaeac.n_vaeacs_initialize} \code{vaeac} models before continuing to train only the best performing model.}
 
 \item{vaeac.epochs_early_stopping}{Positive integer (default is \code{NULL}). The training stops if there has been no
 improvement in the validation IWAE for \code{vaeac.epochs_early_stopping} epochs. If the user wants the training process
@@ -69,7 +69,7 @@ every \code{vaeac.save_every_nth_epoch}th epoch will be saved.}
 instances from the input data which will be used as validation data. That is, \code{vaeac.validation_ratio = 0.25} means
 that \verb{75\%} of the provided data is used as training data, while the remaining \verb{25\%} is used as validation data.}
 
-\item{vaeac.validation_iwae_num_samples}{Positive integer (default is \code{25}). The number of generated samples used
+\item{vaeac.validation_iwae_n_samples}{Positive integer (default is \code{25}). The number of generated samples used
 to compute the IWAE criterion when validating the vaeac model on the validation data.}
 
 \item{vaeac.batch_size}{Positive integer (default is \code{64}). The number of samples to include in each batch
@@ -81,7 +81,7 @@ for the provided coalitions/combinations and all explicands sent to \code{\link[
 The number of coalitions are determined by \code{n_batches} in \code{\link[=explain]{explain()}}. We recommend to tweak \code{n_batches}
 rather  than \code{vaeac.batch_size_sampling}. Larger batch sizes are often much faster provided sufficient memory.}
 
-\item{vaeac.running_avg_num_values}{Positive integer (default is \code{5}). The number of previous IWAE values to include
+\item{vaeac.running_avg_n_values}{Positive integer (default is \code{5}). The number of previous IWAE values to include
 when we compute the running means of the IWAE criterion.}
 
 \item{vaeac.skip_connection_layer}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply identity skip connections in each
@@ -144,7 +144,7 @@ positive values when using the \code{vaeac} model to impute missing values/gener
 
 \item{vaeac.which_vaeac_model}{String (default is \code{NULL}). The name of the \code{vaeac} model (snapshots from different
 epochs) to use when generating the Monte Carlo samples. The standard choices are: \code{"best"} (epoch with lowest IWAE),
-\code{"best_running"} (epoch with lowest running IWAE, see \code{vaeac.running_avg_num_values}), and \code{last} (the last epoch).
+\code{"best_running"} (epoch with lowest running IWAE, see \code{vaeac.running_avg_n_values}), and \code{last} (the last epoch).
 Note that additional choices are available if \code{vaeac.save_every_nth_epoch} is provided. For example, if
 \code{vaeac.save_every_nth_epoch = 5}, then \code{vaeac.which_vaeac_model} can also take the values \code{"epoch_5"}, \code{"epoch_10"},
 \code{"epoch_15"}, and so on.}

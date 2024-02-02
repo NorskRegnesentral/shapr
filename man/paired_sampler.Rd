@@ -28,13 +28,13 @@ This function does not use batch iterators, which might increase the speed.
 Example how to use it combined with mask generators with paired sampling activated
 batch_size <- 4
 if (batch_size \%\% 2 == 1) batch_size <- batch_size - 1 # Make sure that batch size is even
-num_featuers <- 3
-num_observations <- 5
+n_features <- 3
+n_observations <- 5
 shuffle <- TRUE
-data <- torch_tensor(matrix(rep(seq(num_observations), each = num_featuers),
-                            ncol = num_featuers, byrow = TRUE))
+data <- torch_tensor(matrix(rep(seq(n_observations), each = n_features),
+                            ncol = n_features, byrow = TRUE))
 data
-dataset <- vaeac_dataset(data, rep(1, num_featuers))
+dataset <- vaeac_dataset(data, rep(1, n_features))
 dataload <- torch::dataloader(dataset,
   batch_size = batch_size,
   sampler = paired_sampler(dataset,

@@ -9,19 +9,19 @@ vaeac_check_parameters(
   model_description,
   folder_to_save_model,
   cuda,
-  num_vaeacs_initiate,
+  n_vaeacs_initialize,
   epochs_initiation_phase,
   epochs,
   epochs_early_stopping,
   save_every_nth_epoch,
   validation_ratio,
-  validation_iwae_num_samples,
+  validation_iwae_n_samples,
   depth,
   width,
   latent_dim,
   lr,
   batch_size,
-  running_avg_num_values,
+  running_avg_n_values,
   activation_function,
   skip_connection_layer,
   skip_connection_masked_enc_dec,
@@ -52,10 +52,10 @@ the function is to save the fitted vaeac model.}
 
 \item{cuda}{Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!}
 
-\item{num_vaeacs_initiate}{Integer. The number of different vaeac models to initiate in the start.
+\item{n_vaeacs_initialize}{Integer. The number of different vaeac models to initiate in the start.
 Pick the best performing one after \code{epochs_initiation_phase} and continue training that one.}
 
-\item{epochs_initiation_phase}{Integer. The number of epochs to run each of the \code{num_vaeacs_initiate}
+\item{epochs_initiation_phase}{Integer. The number of epochs to run each of the \code{n_vaeacs_initialize}
 vaeac models before only continuing training the best one.}
 
 \item{epochs}{Integer. The number of epochs to train the final vaeac model.
@@ -70,7 +70,7 @@ should be set to a large number.}
 \item{validation_ratio}{Scalar between 0 and 1 indicating the ratio of
 instances from data which will be used as validation data.}
 
-\item{validation_iwae_num_samples}{Integer. The number of samples used to compute the
+\item{validation_iwae_n_samples}{Integer. The number of samples used to compute the
 IWAE when validating the vaeac model on the validation data.}
 
 \item{depth}{Integer. The number of hidden layers in the neural
@@ -85,7 +85,7 @@ the neural networks of the masked encoder, full encoder, and decoder.}
 
 \item{batch_size}{Integer. The number of samples to include in each batch.}
 
-\item{running_avg_num_values}{Integer. How many of the previous values to include when we compute the running means.}
+\item{running_avg_n_values}{Integer. How many of the previous values to include when we compute the running means.}
 
 \item{activation_function}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
 \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, and
@@ -125,7 +125,8 @@ see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.
 \item{save_data}{Boolean. If we are to save the data together with the model. Useful if one are to continue
 to train the model later.}
 
-\item{log_exp_cont_feat}{Boolean. If we are to log transform all continuous features before
+\item{log_exp_cont_feat}{Boolean. If we are to log transform all continuous
+features before
 sending the data to the vaeac using the \code{\link[=vaeac_postprocess_data]{vaeac_postprocess_data()}} function. The vaeac method creates
 unbounded values, so if the continuous features are strictly positive, as for Burr and Abalone data, it can be
 advantageous to log-transform the data to unbounded form before using vaeac.

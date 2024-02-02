@@ -9,8 +9,8 @@ vaeac_train_model_auxiliary(
   optimizer,
   train_dataloader,
   val_dataloader,
-  validation_iwae_num_samples,
-  running_avg_num_values,
+  validation_iwae_n_samples,
+  running_avg_n_values,
   verbose,
   cuda,
   epochs,
@@ -21,7 +21,7 @@ vaeac_train_model_auxiliary(
   vaeac_save_file_names = NULL,
   state_list = NULL,
   initialization_idx = NULL,
-  num_vaeacs_initiate = NULL,
+  n_vaeacs_initialize = NULL,
   train_vlb = NULL,
   validation_iwae = NULL,
   validation_iwae_running = NULL
@@ -36,10 +36,10 @@ vaeac_train_model_auxiliary(
 
 \item{val_dataloader}{A \code{\link[torch:dataloader]{torch::dataloader()}} containing the validation data for the \code{vaeac} model.}
 
-\item{validation_iwae_num_samples}{Integer. The number of samples used to compute the
+\item{validation_iwae_n_samples}{Integer. The number of samples used to compute the
 IWAE when validating the vaeac model on the validation data.}
 
-\item{running_avg_num_values}{Integer. How many of the previous values to include when we compute the running means.}
+\item{running_avg_n_values}{Integer. How many of the previous values to include when we compute the running means.}
 
 \item{verbose}{Boolean. If we are to print the progress of the initialization of different vaeac models,
 the training of the final vaeac model, and summary of the training progress.}
@@ -66,7 +66,7 @@ should be set to a large number.}
 \item{initialization_idx}{Positive integer (default is \code{NULL}). The index
 of the current \code{vaeac} model in the initialization phase.}
 
-\item{num_vaeacs_initiate}{Integer. The number of different vaeac models to initiate in the start.
+\item{n_vaeacs_initialize}{Integer. The number of different vaeac models to initiate in the start.
 Pick the best performing one after \code{epochs_initiation_phase} and continue training that one.}
 
 \item{train_vlb}{A \code{\link[torch:torch_tensor]{torch::torch_tensor()}} (default is \code{NULL})

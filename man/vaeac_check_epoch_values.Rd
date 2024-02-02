@@ -15,7 +15,7 @@ vaeac_check_epoch_values(
 \item{epochs}{Integer. The number of epochs to train the final vaeac model.
 This includes \code{epochs_initiation_phase}.}
 
-\item{epochs_initiation_phase}{Integer. The number of epochs to run each of the \code{num_vaeacs_initiate}
+\item{epochs_initiation_phase}{Integer. The number of epochs to run each of the \code{n_vaeacs_initialize}
 vaeac models before only continuing training the best one.}
 
 \item{epochs_early_stopping}{Integer. The training stops if there has been no improvement in the validation IWAE

@@ -9,7 +9,7 @@ vaeac_get_validation_iwae(
   mask_generator,
   batch_size,
   vaeac_model,
-  validation_iwae_num_samples
+  validation_iwae_n_samples
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ vaeac_get_validation_iwae(
 
 \item{vaeac_model}{The vaeac model.}
 
-\item{validation_iwae_num_samples}{Number of samples to generate for computing the IWAE for each validation sample.}
+\item{validation_iwae_n_samples}{Number of samples to generate for computing the IWAE for each validation sample.}
 }
 \value{
 The average iwae over all instances in the validation dataset.

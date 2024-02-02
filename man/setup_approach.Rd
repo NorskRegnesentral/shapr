@@ -67,7 +67,7 @@ setup_approach(internal, ...)
   vaeac.latent_dim = 8,
   vaeac.activation_function = torch::nn_relu,
   vaeac.lr = 0.001,
-  vaeac.num_vaeacs_initiate = 10,
+  vaeac.n_vaeacs_initialize = 10,
   vaeac.epochs = 200,
   vaeac.extra_parameters = list(),
   ...
@@ -178,7 +178,7 @@ function such as, e.g., \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\li
 
 \item{vaeac.lr}{Numeric. The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
 
-\item{vaeac.num_vaeacs_initiate}{Integer. The number of different vaeac models to initiate
+\item{vaeac.n_vaeacs_initialize}{Integer. The number of different vaeac models to initiate
 in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
 epochs (default is \code{2}) and continue training that one.}
 

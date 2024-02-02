@@ -20,7 +20,11 @@ vaeac_impute_missing_entries(
 \arguments{
 \item{x_explain_with_NaNs}{A 2D matrix, where the missing entries to impute are represented by \code{NaN}.}
 
+\item{n_explain}{Positive integer. The number of explicands.}
+
 \item{n_samples}{Integer. The number of imputed versions we create for each row in \code{x_explain_with_NaNs}.}
+
+\item{vaeac_checkpoint}{List containing the}
 
 \item{sampler}{}
 

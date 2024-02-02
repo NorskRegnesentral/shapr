@@ -317,7 +317,7 @@ parameters are the the number of layers in the networks (`vaeac.depth`), the wid
 (`vaeac.width`), the number of dimensions in the latent space (`vaeac.latent_dim`),
 the activation function between the layers in the networks (`vaeac.activation_function`), 
 the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
-to remedy poorly initiated model parameter values (`vaeac.num_vaeacs_initiate`), and
+to remedy poorly initiated model parameter values (`vaeac.n_vaeacs_initialize`), and
 the number of learning epochs (`vaeac.epochs`).
 
 There are additional extra parameters which can be set by including a named list in the call to
@@ -1316,7 +1316,7 @@ parameters are the the number of layers in the networks (`vaeac.depth`), the wid
 (`vaeac.width`), the number of dimensions in the latent space (`vaeac.latent_dim`),
 the activation function between the layers in the networks (`vaeac.activation_function`), 
 the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
-to remedy poorly initiated model parameter values (`vaeac.num_vaeacs_initiate`), and
+to remedy poorly initiated model parameter values (`vaeac.n_vaeacs_initialize`), and
 the number of learning epochs (`vaeac.epochs`).
 
 There are additional extra parameters which can be set by including a named list in the call to
@@ -1339,7 +1339,7 @@ explanation_vaeac <- explain(
   vaeac.depth = 2,
   vaeac.latent.dim = 4,
   vaeac.epochs = 3,
-  vaeac.num_vaeacs_initiate = 2,
+  vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(
     vaeac.batch_size = 32,
     vaeac.verbose = FALSE
@@ -1381,7 +1381,7 @@ explanation_vaeac_early_stop <- explain(
   vaeac.depth = 2,
   vaeac.latent.dim = 4,
   vaeac.epochs = 1000, # Set it to a large number
-  vaeac.num_vaeacs_initiate = 2,
+  vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(
     vaeac.batch_size = 32,
     vaeac.verbose = TRUE,

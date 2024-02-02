@@ -1980,7 +1980,7 @@ test_that("vaeac_set_seed_works", {
     n_batches = 2,
     seed = 1,
     vaeac.epochs = 4,
-    vaeac.num_vaeacs_initiate = 2,
+    vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     )
@@ -1996,7 +1996,7 @@ test_that("vaeac_set_seed_works", {
     n_batches = 2,
     seed = 1,
     vaeac.epochs = 4,
-    vaeac.num_vaeacs_initiate = 2,
+    vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     )
@@ -2020,7 +2020,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     n_batches = 2,
     seed = 1,
     vaeac.epochs = 4,
-    vaeac.num_vaeacs_initiate = 2,
+    vaeac.n_vaeacs_initialize = 2,
     vaeac.extra_parameters = list(
       vaeac.epochs_initiation_phase = 2
     )
