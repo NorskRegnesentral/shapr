@@ -88,8 +88,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   parameters <- utils::modifyList(vaeac_main_para, parameters, keep.null = TRUE)
 
   # Reorder them such that the vaeac parameters are at the end of the parameters list
-  parameters <- c(parameters[(length(vaeac_main_para) + 1):length(parameters)],
-                  parameters[seq_along(length(vaeac_main_para))])
+  parameters <- c(parameters[(length(vaeac_main_para) + 1):length(parameters)], parameters[seq_along(vaeac_main_para)])
 
   # Check if vaeac is to be applied on a subset of coalitions.
   if (!parameters$exact || parameters$is_groupwise || combined_approaches) {
