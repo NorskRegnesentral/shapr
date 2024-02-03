@@ -1000,7 +1000,6 @@ vaeac_normalize_data = function(data_torch, one_hot_max_sizes, norm_mean = NULL,
 #'
 #' @examples
 #' \dontrun{
-#'
 #' data = data.table(matrix(rgamma(500 * 3, 2), ncol = 3))
 #' preprocessed <- vaeac_preprocess_data(data)
 #' preprocessed$data_preprocessed
@@ -1156,7 +1155,6 @@ vaeac_dataset <- torch::dataset(
 #'   print(torch::torch_cat(c(batch, mask, obs), -1))
 #' })
 #' }
-#'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 paired_sampler <- torch::sampler(
@@ -1184,8 +1182,6 @@ paired_sampler <- torch::sampler(
     coro::as_iterator(rep(indices, each = 2))
   }
 )
-
-
 
 
 # Neural Network Utility Functions ====================================================================================
@@ -1257,22 +1253,16 @@ MemoryLayer <- torch::nn_module(
   forward = function(input) {
     # Check if we are going to insert input into the storage or extract data from the storage.
     if (!self$output) {
-      # We are to insert input into the storage list.
-
-      # Small printout to the user
       if (self$verbose) message(paste0("Inserting data to memory layer `self$id = ", self$id, "`."))
 
-      # Save the input in the shared environment of the MemoryLayer class in the storage list.
+      # Insert the input into the storage list which is in the shared environment of the MemoryLayer class.
       # Note that we do not check if self$id is unique.
       self$shared_env$storage[[self$id]] <- input
-
-      # Return/send the input to the next layer in the network.
-      return(input)
+      return(input)  # Return/send the input to the next layer in the network.
     } else {
       # We are to extract data from the storage list.
-
-      # Small printout to the user
-      if (self$verbose) message(paste0("Extracting data to memory layer `self$id = ", self$id, "`."))
+      if (self$verbose) message(paste0("Extracting data to memory layer `self$id = ", self$id, "`. Using ",
+                                       " concatination = ", !self$add, "."))
 
       # Check that the memory layer has data is stored in it. If not, then thorw error.
       if (!self$id %in% names(self$shared_env$storage)) {
@@ -1282,27 +1272,9 @@ MemoryLayer <- torch::nn_module(
         ))
       }
 
-      # Extract the stored data for the given memory layer
+      # Extract the stored data for the given memory layer and check if we are to concatenate or add the input
       stored <- self$shared_env$storage[[self$id]]
-
-      # If we are concatenate the input to the extracted data or add it
-      if (!self$add) {
-        # We are to concatenate the tensors.
-
-        # Small printout to the user
-        if (self$verbose) message("Concatenating the tensors.")
-
-        # Concatenate the columns of the tensors.
-        data <- torch::torch_cat(c(input, stored), -1)
-      } else {
-        # We are to add the tensors.
-
-        # Small printout to the user
-        if (self$verbose) message("Adding the tensors.")
-
-        # Add the tensors together.
-        data <- input + stored
-      }
+      data = if (self$add) input + stored else torch::torch_cat(c(input, stored), -1)
 
       # Return the data
       return(data)
@@ -1463,8 +1435,7 @@ vaeac_get_validation_iwae <- function(val_dataloader,
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-vaeac_normal_parse_params <- function(params,
-                                min_sigma = 0.001) {
+vaeac_normal_parse_params <- function(params, min_sigma = 0.001) {
   # Get the number of instances
   n <- params$shape[1]
 
@@ -1515,24 +1486,20 @@ vaeac_normal_parse_params <- function(params,
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 vaeac_categorical_parse_params <- function(params, min_prob = 0, max_prob = 1) {
+  # TODO: One option here is to directly use that 'dist_categorical' supports logits. I.e., we could have used
+  # `distr = torch::distr_categorical(logits = params)` and then been done. However, we would then not be able
+  # to clamp the probabilities. In test, this is 30% faster and min prob is seldom reached, and we get the same values.
+
   # Send the parameters through the softmax to get normalized probabilities
   params <- torch::nnf_softmax(params, dim = -1)
 
-  # Ensure that the probabilities are between the minimum and maximum allowed probabilities
+  # Ensure that the probabilities are between the minimum and maximum allowed probabilities and that they sum to one
   params <- torch::torch_clamp(params, min = min_prob, max = max_prob)
-
-  # Make sure that parms sum to 1 after the clamping.
   params <- params / torch::torch_sum(params, dim = -1, keepdim = TRUE)
 
-  # Then create a categorical distribution which will have len(params)
-  # number of categories and the probability for each of them is given in params.
+  # Create a categorical dist with len(params) number of levels where the prob for each level is given by params.
   distr <- torch::distr_categorical(probs = params)
 
-  # # Could have directly used that 'dist_categorical' supports logits. But then
-  # # we would not be able to clamp the probabilities. This version is 30% faster.
-  # distr = torch::distr_categorical(logits = params)
-
-  # Return the distribution
   return(distr)
 }
 
@@ -1541,8 +1508,8 @@ vaeac_categorical_parse_params <- function(params, min_prob = 0, max_prob = 1) {
 #' @description Computes the KL divergence between univariate normal distributions using the analytical formula,
 #' see \url{https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence#Multivariate_normal_distributions}.
 #'
-#' @param p a [torch::distr_normal()] object.
-#' @param q a [torch::distr_normal()] object.
+#' @param p A [torch::distr_normal()] object.
+#' @param q A [torch::distr_normal()] object.
 #'
 #' @return The KL divergence between the two Gaussian distributions.
 #'
@@ -2141,8 +2108,7 @@ MCAR_mask_generator <- torch::nn_module(
   # the first half and second half of the rows are duplicates of each other. That is,
   # batch = [row1, row1, row2, row2, row3, row3, ...].
   # return A new `MCAR_mask_generator` object.
-  initialize = function(masking_ratio = 0.5,
-                        paired_sampling = FALSE) {
+  initialize = function(masking_ratio = 0.5, paired_sampling = FALSE) {
     self$masking_ratio <- masking_ratio
     self$paired_sampling <- paired_sampling
   },
@@ -2153,10 +2119,7 @@ MCAR_mask_generator <- torch::nn_module(
   # entries are missing. If any are missing, then the returned mask will ensure that
   # these missing entries are masked.
   forward = function(batch) {
-    self$MCAR_mask_generator_function(batch,
-      prob = self$masking_ratio,
-      paired_sampling = self$paired_sampling
-    )
+    self$MCAR_mask_generator_function(batch, prob = self$masking_ratio, paired_sampling = self$paired_sampling)
   },
 
   # description Missing Completely At Random Mask Generator: A mask generator where the masking
@@ -2187,10 +2150,7 @@ MCAR_mask_generator <- torch::nn_module(
   # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   # observed feature value will be masked. '0' means that the entry is NOT masked,
   # i.e., the feature value will be observed/given/available.
-  MCAR_mask_generator_function = function(batch,
-                                          prob = 0.5,
-                                          seed = NULL,
-                                          paired_sampling = FALSE) {
+  MCAR_mask_generator_function = function(batch, prob = 0.5, seed = NULL, paired_sampling = FALSE) {
     # If the user specify a seed for reproducibility
     if (!is.null(seed)) set.seed(seed)
 
@@ -2205,22 +2165,19 @@ MCAR_mask_generator <- torch::nn_module(
 
     # # Torch version, but marginally slower than r version when batch_size <= 128 and n_features <= 50
     # mask = torch::torch_bernoulli(torch::torch_full_like(batch, prob))
-
     # Create the Bernoulli mask where an element is masked (1) with probability 'prob'.
     mask <- torch::torch_tensor(
       matrix(sample(c(0, 1), size = size, replace = TRUE, prob = c(prob, 1 - prob)), ncol = ncol(batch)),
       dtype = torch::torch_float()
     )
 
-    # If paired sampling, then concatenate the inverse mask.
+    # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
     if (paired_sampling) {
-      # Concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
       # TODO: Check if we need this order
       mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
     }
 
-    # Final mask all entries that is either missing or artificially masked
-    # by the Bernoulli mask. A value of 1 means that the entry is masked.
+    # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
     return(mask + nan_mask >= 1)
   }
 )
@@ -2269,8 +2226,7 @@ Specified_prob_mask_generator <- torch::nn_module(
   name = "Specified_prob_mask_generator",
 
   # description Initialize a specified_probability mask generator.
-  initialize = function(masking_probs,
-                        paired_sampling = FALSE) {
+  initialize = function(masking_probs, paired_sampling = FALSE) {
     self$masking_probs <- masking_probs / sum(masking_probs)
     self$paired_sampling <- paired_sampling
   },
@@ -2314,33 +2270,17 @@ Specified_prob_mask_generator <- torch::nn_module(
   # return A binary matrix of the same size as 'batch'. An entry of '1' indicates that the
   # observed feature value will be masked. '0' means that the entry is NOT masked,
   # i.e., the feature value will be observed/given/available.
-  Specified_prob_mask_generator_function = function(batch,
-                                                    masking_probs,
-                                                    seed = NULL,
-                                                    paired_sampling = FALSE) {
-    # # Check for valid input.
-    # if (ncol(batch) != (length(masking_probs)-1)) {
-    #   stop(sprintf("Number of probabilities should be one more than the number of features: %d != 1 + %d.\n",
-    #        length(masking_probs), ncol(batch)))
-    # }
+  Specified_prob_mask_generator_function = function(batch, masking_probs, seed = NULL, paired_sampling = FALSE) {
 
     # If the user specify a seed for reproducibility
     if (!is.null(seed)) set.seed(seed)
 
-    # Check if we are doing paired sampling.
-    if (paired_sampling) {
-      # Divide the size by two as we later concatenate with the inverse mask.
-      size <- size / 2
-    }
+    # Get the number of features and observations in the batch
+    n_features <- ncol(batch)
+    size <- nrow(batch)
 
     # Check for missing values in the batch
     nan_mask <- batch$isnan()$to(torch::torch_float())
-
-    # Get the number of features
-    n_features <- ncol(batch)
-
-    # Get the number of observations in the batch
-    size <- nrow(batch)
 
     # If doing paired sampling, divide size by two as we later concatenate with the inverse mask.
     if (paired_sampling) size <- size / 2
@@ -2351,20 +2291,16 @@ Specified_prob_mask_generator <- torch::nn_module(
     # Crate the mask matrix
     mask <- torch::torch_zeros_like(batch)
     for (i in seq(size)) {
-      if (n_masked_each_row[i] != 0) {
-        mask[i, sample(n_features, size = n_masked_each_row[i], replace = FALSE)] <- 1
-      }
+      if (n_masked_each_row[i] != 0) mask[i, sample(n_features, size = n_masked_each_row[i], replace = FALSE)] <- 1
     }
 
-    # If paired sampling, then concatenate the inverse mask.
+    # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
     if (paired_sampling) {
-      # Concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
       # TODO: Check if we need this order
       mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
     }
 
-    # Final mask masks all entries that is either missing or artificially masked
-    # by the generated mask. A value of 1 means that the entry is going to be masked.
+    # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
     return(mask + nan_mask >= 1)
   }
 )
@@ -2406,9 +2342,7 @@ Specified_masks_mask_generator <- torch::nn_module(
   name = "Specified_masks_mask_generator",
 
   #' @description Initialize a specified masks mask generator.
-  initialize = function(masks,
-                        masks_probs,
-                        paired_sampling = FALSE) {
+  initialize = function(masks, masks_probs, paired_sampling = FALSE) {
     self$masks <- masks
     self$masks_probs <- masks_probs / sum(masks_probs)
     self$paired_sampling <- paired_sampling
@@ -2456,18 +2390,6 @@ Specified_masks_mask_generator <- torch::nn_module(
                                                      masks_probs,
                                                      seed = NULL,
                                                      paired_sampling = FALSE) {
-    # Hashed out as we checking takes extra time
-    # # Some check for valid inputs.
-    # if (ncol(batch) != ncol(masks)) {
-    #   stop(sprintf("The number of features in the 'batch' and 'masks' are incompatible: %d != %d.",
-    #                ncol(batch), ncol(masks)))
-    # }
-    #
-    # if (nrow(masks) != length(masks_probs)) {
-    #   stop(sprintf("The number of masks in 'masks' and the number of probabilities
-    #                 in 'masks_probs' are incompatible: %d != %d.",
-    #                nrow(masks), length(masks_probs)))
-    # }
 
     # Set seed if the user specifies a seed for reproducibility.
     if (!is.null(seed)) set.seed(seed)
@@ -2489,15 +2411,13 @@ Specified_masks_mask_generator <- torch::nn_module(
     mask_rows_indices <- sample.int(n = n_masks, size = size, replace = TRUE, prob = masks_probs)
     mask <- torch::torch_tensor(masks[mask_rows_indices, ], dtype = torch::torch_float())
 
-    # If paired sampling, then concatenate the inverse mask.
+    # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
     if (paired_sampling) {
-      # Concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
       # TODO: Check if we need this order
       mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
     }
 
-    # Final mask masks all entries that is either missing or artificially masked
-    # by the generated mask. A value of 1 means that the entry is going to be masked.
+    # Mask all entries that are missing or artificially masked by the Bernoulli mask. 1 means that the entry is masked.
     return(mask + nan_mask >= 1)
   }
 )
