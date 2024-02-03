@@ -153,7 +153,7 @@ vaeac.save_every_nth_epoch <- 3
 vaeac.n_vaeacs_initialize <- 2
 
 # The level of verbosity
-verbose = 2
+verbose <- 2
 ```
 
 
@@ -858,8 +858,8 @@ expl_vaeac <- explain(
   vaeac.depth = 2,
   vaeac.latent_dim = 4,
   vaeac.extra_parameters = list(
-    vaeac.skip_connection_layer = FALSE,
-    vaeac.skip_connection_masked_enc_dec = FALSE,
+    vaeac.skip_conn_layer = FALSE,
+    vaeac.skip_conn_masked_enc_dec = FALSE,
     vaeac.verbose = TRUE
   )
 )
@@ -896,8 +896,8 @@ expl_vaeac_complex <- explain(
   vaeac.depth = 2,
   vaeac.latent_dim = 4,
   vaeac.extra_parameters = list(
-    vaeac.skip_connection_layer = TRUE,
-    vaeac.skip_connection_masked_enc_dec = TRUE,
+    vaeac.skip_conn_layer = TRUE,
+    vaeac.skip_conn_masked_enc_dec = TRUE,
     vaeac.verbose = TRUE
   )
 )

@@ -9,7 +9,7 @@ vaeac_train_model_auxiliary(
   optimizer,
   train_dataloader,
   val_dataloader,
-  validation_iwae_n_samples,
+  val_iwae_n_samples,
   running_avg_n_values,
   verbose,
   cuda,
@@ -23,8 +23,8 @@ vaeac_train_model_auxiliary(
   initialization_idx = NULL,
   n_vaeacs_initialize = NULL,
   train_vlb = NULL,
-  validation_iwae = NULL,
-  validation_iwae_running = NULL
+  val_iwae = NULL,
+  val_iwae_running = NULL
 )
 }
 \arguments{
@@ -36,7 +36,7 @@ vaeac_train_model_auxiliary(
 
 \item{val_dataloader}{A \code{\link[torch:dataloader]{torch::dataloader()}} containing the validation data for the \code{vaeac} model.}
 
-\item{validation_iwae_n_samples}{Integer. The number of samples used to compute the
+\item{val_iwae_n_samples}{Integer. The number of samples used to compute the
 IWAE when validating the vaeac model on the validation data.}
 
 \item{running_avg_n_values}{Integer. How many of the previous values to include when we compute the running means.}
@@ -72,10 +72,10 @@ Pick the best performing one after \code{epochs_initiation_phase} and continue t
 \item{train_vlb}{A \code{\link[torch:torch_tensor]{torch::torch_tensor()}} (default is \code{NULL})
 of one dimension containing previous values for the training VLB.}
 
-\item{validation_iwae}{A \code{\link[torch:torch_tensor]{torch::torch_tensor()}} (default is \code{NULL})
+\item{val_iwae}{A \code{\link[torch:torch_tensor]{torch::torch_tensor()}} (default is \code{NULL})
 of one dimension containing previous values for the validation IWAE.}
 
-\item{validation_iwae_running}{A \code{\link[torch:torch_tensor]{torch::torch_tensor()}} (default is \code{NULL})
+\item{val_iwae_running}{A \code{\link[torch:torch_tensor]{torch::torch_tensor()}} (default is \code{NULL})
 of one dimension containing previous values for the running validation IWAE.}
 }
 \value{

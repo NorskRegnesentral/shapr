@@ -5,17 +5,17 @@
 \title{Function that checks the specified masking scheme}
 \usage{
 vaeac_check_mask_gen(
-  mask_gen_these_coalitions,
-  mask_gen_these_coalitions_prob,
+  mask_gen_coalitions,
+  mask_gen_coalitions_prob,
   x_train
 )
 }
 \arguments{
-\item{mask_gen_these_coalitions}{Matrix containing the different coalitions to learn.}
+\item{mask_gen_coalitions}{Matrix containing the different coalitions to learn.}
 
-\item{mask_gen_these_coalitions_prob}{Numerics containing the probabilities for
-sampling each mask in \code{mask_gen_these_coalitions}.
-Array containing the probabilities for sampling the coalitions in \code{mask_gen_these_coalitions}.}
+\item{mask_gen_coalitions_prob}{Numerics containing the probabilities for
+sampling each mask in \code{mask_gen_coalitions}.
+Array containing the probabilities for sampling the coalitions in \code{mask_gen_coalitions}.}
 
 \item{x_train}{A data.table containing the data. Categorical names
 Categorical data must have class names \eqn{1,2,\dots,K}.}

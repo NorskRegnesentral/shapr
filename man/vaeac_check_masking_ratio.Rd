@@ -9,7 +9,7 @@ vaeac_check_masking_ratio(masking_ratio, n_features)
 \arguments{
 \item{masking_ratio}{Probability of masking a feature in the MCAR mask generator.
 Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-This is overruled if \code{mask_gen_these_coalitions} is specified.}
+This is overruled if \code{mask_gen_coalitions} is specified.}
 
 \item{n_features}{The number of features, i.e., the number of columns in the training data.}
 }

@@ -41,7 +41,6 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
                                  vaeac.epochs = 200,
                                  vaeac.extra_parameters = list(),
                                  ...) {
-
   # Check that torch is installed
   if (!requireNamespace("torch", quietly = TRUE)) stop("`torch` is not installed. Please run install.packages('torch')")
   if (!torch::torch_is_installed()) torch::install_torch()
@@ -66,8 +65,8 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   parameters <- vaeac_update_para_locations(parameters = parameters)
 
   # Extract the default values defined for the vaeac parameters in this function
-  vaeac_main_para_names = formalArgs(setup_approach.vaeac)
-  vaeac_main_para_names = vaeac_main_para_names[!vaeac_main_para_names %in% c("internal", "...")]
+  vaeac_main_para_names <- formalArgs(setup_approach.vaeac)
+  vaeac_main_para_names <- vaeac_main_para_names[!vaeac_main_para_names %in% c("internal", "...")]
   vaeac_main_para <- mget(vaeac_main_para_names)
 
   # vaeac_main_para = list(vaeac.depth = 3,
@@ -81,15 +80,16 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 
   # Add the default extra parameter values for the non-user specified extra parameters
   parameters$vaeac.extra_parameters <- utils::modifyList(vaeac_get_extra_para_default(),
-                                                         parameters$vaeac.extra_parameters,
-                                                         keep.null = TRUE
+    parameters$vaeac.extra_parameters,
+    keep.null = TRUE
   )
 
   # Add the default main parameter values for the non-user specified main parameters
   parameters <- utils::modifyList(vaeac_main_para, parameters, keep.null = TRUE)
 
   # Reorder them such that the vaeac parameters are at the end of the parameters list
-  parameters <- c(parameters[(length(vaeac_main_para) + 1):length(parameters)], parameters[1:length(vaeac_main_para)])
+  parameters <- c(parameters[(length(vaeac_main_para) + 1):length(parameters)],
+                  parameters[seq_along(length(vaeac_main_para))])
 
   # Check if vaeac is to be applied on a subset of coalitions.
   if (!parameters$exact || parameters$is_groupwise || combined_approaches) {
@@ -100,17 +100,17 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # Here, objects$S contains the coalitions while objects$X contains the information about the approach.
 
     # Extract the the coalitions / masks which are estimated using vaeac as a matrix
-    parameters$vaeac.mask_gen_these_coalitions <- S[X[approach == "vaeac"]$id_combination, , drop = FALSE]
+    parameters$vaeac.mask_gen_coalitions <- S[X[approach == "vaeac"]$id_combination, , drop = FALSE]
 
     # Extract the weights for the corresponding coalitions / masks.
-    parameters$vaeac.mask_gen_these_coalitions_prob <- X$shapley_weight[X[approach == "vaeac"]$id_combination]
+    parameters$vaeac.mask_gen_coalitions_prob <- X$shapley_weight[X[approach == "vaeac"]$id_combination]
 
     # Normalize the weights/probabilities such that they sum to one.
-    parameters$vaeac.mask_gen_these_coalitions_prob <- parameters$vaeac.mask_gen_these_coalitions_prob /
-      sum(parameters$vaeac.mask_gen_these_coalitions_prob)
+    parameters$vaeac.mask_gen_coalitions_prob <- parameters$vaeac.mask_gen_coalitions_prob /
+      sum(parameters$vaeac.mask_gen_coalitions_prob)
   } else {
     # We are going to use the MCAR(`masking_ratio`) masking scheme. Set the variables to `NULL` as we do not need them.
-    parameters$vaeac.mask_gen_these_coalitions <- parameters$vaeac.mask_gen_these_coalitions_prob <- NULL
+    parameters$vaeac.mask_gen_coalitions <- parameters$vaeac.mask_gen_coalitions_prob <- NULL
   }
 
   # Check if user provided a pre-trained vaeac model, otherwise, we train one from scratch.
@@ -122,10 +122,12 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided <- FALSE
 
     # Extract all veaac parameters and remove the "vaeac." prefix as the names need to mach the parameters in "do.call"
-    vaeac_all_parameters = c(parameters$vaeac.extra_parameters,
-                             parameters[vaeac_main_para_names[vaeac_main_para_names != "vaeac.extra_parameters"]])
+    vaeac_all_parameters <- c(
+      parameters$vaeac.extra_parameters,
+      parameters[vaeac_main_para_names[vaeac_main_para_names != "vaeac.extra_parameters"]]
+    )
     names(vaeac_all_parameters) <- sub("vaeac\\.", "", names(vaeac_all_parameters))
-    vaeac_all_parameters = c(vaeac_all_parameters, parameters[c("seed", "verbose")]) # Add seed and verbose
+    vaeac_all_parameters <- c(vaeac_all_parameters, parameters[c("seed", "verbose")]) # Add seed and verbose
 
     # Fit/train the vaeac model with the provided model parameters
     vaeac_model <- do.call(vaeac_train_model, c(vaeac_all_parameters, list(x_train = internal$data$x_train)))
@@ -133,7 +135,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # Add this to the explainer object
     parameters$vaeac <- list(
       models = vaeac_model[1:(grep("train_vlb", names(vaeac_model)) - 1)], # Models are all entries before `train_vlb`
-      results = vaeac_model[c("train_vlb", "validation_iwae", "validation_iwae_running")], # The train & val results
+      results = vaeac_model[c("train_vlb", "val_iwae", "val_iwae_running")], # The train & val results
       parameters = vaeac_model$parameters # List of all the parameters used to train the vaeac model
     )
 
@@ -280,9 +282,9 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' @param epochs_early_stopping Integer. The training stops if there has been no improvement in the validation IWAE
 #' for `epochs_early_stopping` epochs. If the user wants the training process to be solely based on this, then `epochs`
 #' should be set to a large number.
-#' @param validation_ratio Scalar between 0 and 1 indicating the ratio of
+#' @param val_ratio Scalar between 0 and 1 indicating the ratio of
 #' instances from data which will be used as validation data.
-#' @param validation_iwae_n_samples Integer. The number of samples used to compute the
+#' @param val_iwae_n_samples Integer. The number of samples used to compute the
 #' IWAE when validating the vaeac model on the validation data.
 #' @param depth Integer. The number of hidden layers in the neural
 #' networks of the masked encoder, full encoder, and decoder.
@@ -295,12 +297,12 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' @param activation_function An [torch::nn_module()] representing an activation function such as, e.g.,
 #' [torch::nn_relu()], [torch::nn_leaky_relu()], [torch::nn_selu()], and
 #' [torch::nn_sigmoid()].
-#' @param skip_connection_layer Boolean. If we are to use skip connections in each layer. If true, then we add the input
+#' @param skip_conn_layer Boolean. If we are to use skip connections in each layer. If true, then we add the input
 #' to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.
-#' @param skip_connection_masked_enc_dec Boolean. If we are to apply concatenate skip
+#' @param skip_conn_masked_enc_dec Boolean. If we are to apply concatenate skip
 #' connections between the layers in the masked encoder and decoder.
 #' @param batch_normalization Boolean. If we are to use batch normalization after the activation function.
-#' Note that if `skip_connection_layer` is TRUE, then the normalization is
+#' Note that if `skip_conn_layer` is TRUE, then the normalization is
 #' done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).
 #' @param paired_sampling Boolean. Default is `TRUE`. If we are doing paired sampling. I.e.,
 #  each batch contains two versions of the same training observation, but where the first one is
@@ -309,11 +311,11 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' stable, but slower due to more complex implementation.
 #' @param masking_ratio Probability of masking a feature in the MCAR mask generator.
 #' Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-#' This is overruled if `mask_gen_these_coalitions` is specified.
-#' @param mask_gen_these_coalitions Matrix containing the different coalitions to learn.
-#' @param mask_gen_these_coalitions_prob Numerics containing the probabilities for
-#' sampling each mask in `mask_gen_these_coalitions`.
-#' Array containing the probabilities for sampling the coalitions in `mask_gen_these_coalitions`.
+#' This is overruled if `mask_gen_coalitions` is specified.
+#' @param mask_gen_coalitions Matrix containing the different coalitions to learn.
+#' @param mask_gen_coalitions_prob Numerics containing the probabilities for
+#' sampling each mask in `mask_gen_coalitions`.
+#' Array containing the probabilities for sampling the coalitions in `mask_gen_coalitions`.
 #' @param sigma_mu Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
 #' see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 #' @param sigma_sigma Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
@@ -345,8 +347,8 @@ vaeac_train_model <- function(x_train,
                               epochs = 200,
                               epochs_early_stopping = NULL,
                               save_every_nth_epoch = NULL,
-                              validation_ratio = 0.25,
-                              validation_iwae_n_samples = 25,
+                              val_ratio = 0.25,
+                              val_iwae_n_samples = 25,
                               depth = 3,
                               width = 32,
                               latent_dim = 8,
@@ -354,13 +356,13 @@ vaeac_train_model <- function(x_train,
                               batch_size = 64,
                               running_avg_n_values = 5,
                               activation_function = torch::nn_relu,
-                              skip_connection_layer = TRUE,
-                              skip_connection_masked_enc_dec = TRUE,
+                              skip_conn_layer = TRUE,
+                              skip_conn_masked_enc_dec = TRUE,
                               batch_normalization = FALSE,
                               paired_sampling = TRUE,
                               masking_ratio = 0.5,
-                              mask_gen_these_coalitions = NULL,
-                              mask_gen_these_coalitions_prob = NULL,
+                              mask_gen_coalitions = NULL,
+                              mask_gen_coalitions_prob = NULL,
                               sigma_mu = 1e4,
                               sigma_sigma = 1e-4,
                               save_data = FALSE,
@@ -369,7 +371,6 @@ vaeac_train_model <- function(x_train,
                               verbose = 0,
                               seed = 1,
                               ...) {
-
   # TODO: REMOVE list2env(vaeac_all_parameters, envir = .GlobalEnv)
 
 
@@ -388,8 +389,8 @@ vaeac_train_model <- function(x_train,
 
   # Determine which mask generator to use
   mask_generator_name <- vaeac_get_mask_generator_name(
-    mask_gen_these_coalitions = mask_gen_these_coalitions,
-    mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
+    mask_gen_coalitions = mask_gen_coalitions,
+    mask_gen_coalitions_prob = mask_gen_coalitions_prob,
     masking_ratio = masking_ratio,
     verbose = verbose
   )
@@ -407,7 +408,7 @@ vaeac_train_model <- function(x_train,
   one_hot_max_sizes <- x_train_preprocessed$one_hot_max_sizes
 
   # Splitting the input into a training and validation data sets
-  val_size <- ceiling(n_train * validation_ratio) # Number of observations in the validation set
+  val_size <- ceiling(n_train * val_ratio) # Number of observations in the validation set
   val_indices <- sample(n_train, val_size, replace = FALSE) # Sample indices for the validation set
   val_dataset <- vaeac_dataset(x_train_torch[val_indices], one_hot_max_sizes) # Create a torch::dataset() for vaeac
   train_indices <- seq(n_train)[-val_indices] # The remaining indices constitutes the training set
@@ -480,14 +481,14 @@ vaeac_train_model <- function(x_train,
       depth = depth,
       latent_dim = latent_dim,
       activation_function = activation_function,
-      skip_connection_layer = skip_connection_layer,
-      skip_connection_masked_enc_dec = skip_connection_masked_enc_dec,
+      skip_conn_layer = skip_conn_layer,
+      skip_conn_masked_enc_dec = skip_conn_masked_enc_dec,
       batch_normalization = batch_normalization,
       paired_sampling = paired_sampling,
       mask_generator_name = mask_generator_name,
       masking_ratio = masking_ratio,
-      mask_gen_these_coalitions = mask_gen_these_coalitions,
-      mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
+      mask_gen_coalitions = mask_gen_coalitions,
+      mask_gen_coalitions_prob = mask_gen_coalitions_prob,
       sigma_mu = sigma_mu,
       sigma_sigma = sigma_sigma
     )
@@ -520,7 +521,7 @@ vaeac_train_model <- function(x_train,
       epochs_start = 1, # All the vaeacs should start from scratch
       train_dataloader = train_dataloader,
       val_dataloader = val_dataloader,
-      validation_iwae_n_samples = validation_iwae_n_samples,
+      val_iwae_n_samples = val_iwae_n_samples,
       running_avg_n_values = running_avg_n_values,
       epochs_early_stopping = FALSE, # Do not want to do early stopping during initialization
       verbose = verbose,
@@ -530,8 +531,8 @@ vaeac_train_model <- function(x_train,
       initialization_idx = initialization_idx,
       n_vaeacs_initialize = n_vaeacs_initialize,
       train_vlb = NULL, # We start from scratch
-      validation_iwae = NULL, # We start from scratch
-      validation_iwae_running = NULL # We start from scratch
+      val_iwae = NULL, # We start from scratch
+      val_iwae_running = NULL # We start from scratch
     )
 
     # If the new initialization have lower training VLB than previous initializations, then we keep it.
@@ -559,7 +560,7 @@ vaeac_train_model <- function(x_train,
     optimizer = vaeac_model_best_list$optimizer,
     train_dataloader = train_dataloader,
     val_dataloader = val_dataloader,
-    validation_iwae_n_samples = validation_iwae_n_samples,
+    val_iwae_n_samples = val_iwae_n_samples,
     running_avg_n_values = running_avg_n_values,
     verbose = verbose,
     cuda = cuda,
@@ -573,8 +574,8 @@ vaeac_train_model <- function(x_train,
     initialization_idx = NULL, # Do not need to specify it as we are not doing the initialization now
     n_vaeacs_initialize = NULL, # Do not need to specify it as we are not doing the initialization now
     train_vlb = vaeac_model_best_list$train_vlb, # Send in the array from the best initiated vaeac model
-    validation_iwae = vaeac_model_best_list$validation_iwae,
-    validation_iwae_running = vaeac_model_best_list$validation_iwae_running
+    val_iwae = vaeac_model_best_list$val_iwae,
+    val_iwae_running = vaeac_model_best_list$val_iwae_running
   )
 
   # Return the paths where the models are saved and the training/validation errors.
@@ -606,7 +607,6 @@ vaeac_continue_train_model <- function(explanation,
                                        save_data = FALSE,
                                        verbose = 0,
                                        seed = 1) {
-
   # Check the input
   if (!"shapr" %in% class(explanation)) stop("`explanation` must be a list of class `shapr`.")
   if (!"vaeac" %in% explanation$internal$parameters$approach) stop("`vaeac` is not an approach in `explanation`.")
@@ -633,11 +633,13 @@ vaeac_continue_train_model <- function(explanation,
   if (is.null(x_train)) x_train <- checkpoint$x_train
 
   # Check that the provided vaeac model is trained on a dataset with the same feature names
-  vaeac_check_x_train_names(feature_names_vaeac = checkpoint$feature_list$labels,
-                            feature_names_new = names(x_train))
+  vaeac_check_x_train_names(
+    feature_names_vaeac = checkpoint$feature_list$labels,
+    feature_names_new = names(x_train)
+  )
 
   # Specify the learning rate the function will use now
-  lr_now = if (!is.null(lr_new)) lr_new else checkpoint$lr
+  lr_now <- if (!is.null(lr_new)) lr_new else checkpoint$lr
 
 
 
@@ -650,7 +652,7 @@ vaeac_continue_train_model <- function(explanation,
   # EVERYTHING WITH SETUP X CAN BE A SEPARATE FUNCITON
 
   # Get the number of training observations
-  n_train = nrow(x_train)
+  n_train <- nrow(x_train)
 
   # Preprocess x_train. Turn factor names into numerics 1,2,...,K, (vaeac only accepts numerics) and keep track
   # of the maping of names. Optionally log-transform the continuous features. Then, finally, normalize the data.
@@ -671,7 +673,7 @@ vaeac_continue_train_model <- function(explanation,
     train_indices <- checkpoint$train_indices
   } else {
     # Generate new validation and training indices
-    val_size <- ceiling(n_train * validation_ratio) # Number of observations in the validation set
+    val_size <- ceiling(n_train * val_ratio) # Number of observations in the validation set
     val_indices <- sample(n_train, val_size, replace = FALSE) # Sample indices for the validation set
     train_indices <- seq(n_train)[-val_indices] # The remaining indices constitutes the training set
   }
@@ -723,13 +725,14 @@ vaeac_continue_train_model <- function(explanation,
       save_data = save_data,
       epochs = epochs_new,
       save_every_nth_epoch = checkpoint$save_every_nth_epoch,
-      x_train_size = format(object.size(x_train), units = "auto"))
+      x_train_size = format(object.size(x_train), units = "auto")
+    )
   }
 
 
   # TODO: NEED TO REMEBER TO update the vaeac_save_file_names. The simplest idea is just to call
   # the function again but this time with a higher/the new number of epochs.
-  checkpoint$vaeac_save_file_names = vaeac_get_save_file_names(
+  checkpoint$vaeac_save_file_names <- vaeac_get_save_file_names(
     model_description = checkpoint$model_description,
     n_features = checkpoint$n_features,
     n_train = checkpoint$n_train,
@@ -778,12 +781,12 @@ vaeac_continue_train_model <- function(explanation,
   progressr_bar <- progressr::progressor(steps = epochs_new)
 
 
-  return_list = vaeac_train_model_auxiliary(
+  return_list <- vaeac_train_model_auxiliary(
     vaeac_model = vaeac_model,
     optimizer = optimizer,
     train_dataloader = train_dataloader,
     val_dataloader = val_dataloader,
-    validation_iwae_n_samples = checkpoint$validation_iwae_n_samples,
+    val_iwae_n_samples = checkpoint$val_iwae_n_samples,
     running_avg_n_values = checkpoint$running_avg_n_values,
     verbose = verbose,
     cuda = checkpoint$cuda,
@@ -797,8 +800,8 @@ vaeac_continue_train_model <- function(explanation,
     initialization_idx = NULL, # Do not need to specify it as we are not doing the initialization now
     n_vaeacs_initialize = NULL, # Do not need to specify it as we are not doing the initialization now
     train_vlb = checkpoint$train_vlb,
-    validation_iwae = checkpoint$validation_iwae,
-    validation_iwae_running = checkpoint$validation_iwae_running
+    val_iwae = checkpoint$val_iwae,
+    val_iwae_running = checkpoint$val_iwae_running
   )
 
 
@@ -837,7 +840,6 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
                                          seed = NULL,
                                          n_explain = NULL,
                                          index_features = NULL) {
-
   # We only need `n_explain` when `index_features` is provided
   if (xor(is.null(index_features), is.null(n_explain))) {
     stop("Either none or both of `index_features` and `n_explain` must be given.")
@@ -966,5 +968,3 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
   return(result)
 }
-
-

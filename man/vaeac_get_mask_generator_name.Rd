@@ -5,22 +5,22 @@
 \title{Function that determines which mask generator to use}
 \usage{
 vaeac_get_mask_generator_name(
-  mask_gen_these_coalitions,
-  mask_gen_these_coalitions_prob,
+  mask_gen_coalitions,
+  mask_gen_coalitions_prob,
   masking_ratio,
   verbose
 )
 }
 \arguments{
-\item{mask_gen_these_coalitions}{Matrix containing the different coalitions to learn.}
+\item{mask_gen_coalitions}{Matrix containing the different coalitions to learn.}
 
-\item{mask_gen_these_coalitions_prob}{Numerics containing the probabilities for
-sampling each mask in \code{mask_gen_these_coalitions}.
-Array containing the probabilities for sampling the coalitions in \code{mask_gen_these_coalitions}.}
+\item{mask_gen_coalitions_prob}{Numerics containing the probabilities for
+sampling each mask in \code{mask_gen_coalitions}.
+Array containing the probabilities for sampling the coalitions in \code{mask_gen_coalitions}.}
 
 \item{masking_ratio}{Probability of masking a feature in the MCAR mask generator.
 Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-This is overruled if \code{mask_gen_these_coalitions} is specified.}
+This is overruled if \code{mask_gen_coalitions} is specified.}
 
 \item{verbose}{Boolean. If we are to print the progress of the initialization of different vaeac models,
 the training of the final vaeac model, and summary of the training progress.}

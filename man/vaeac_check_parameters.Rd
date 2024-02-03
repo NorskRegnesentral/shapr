@@ -14,8 +14,8 @@ vaeac_check_parameters(
   epochs,
   epochs_early_stopping,
   save_every_nth_epoch,
-  validation_ratio,
-  validation_iwae_n_samples,
+  val_ratio,
+  val_iwae_n_samples,
   depth,
   width,
   latent_dim,
@@ -23,13 +23,13 @@ vaeac_check_parameters(
   batch_size,
   running_avg_n_values,
   activation_function,
-  skip_connection_layer,
-  skip_connection_masked_enc_dec,
+  skip_conn_layer,
+  skip_conn_masked_enc_dec,
   batch_normalization,
   paired_sampling,
   masking_ratio,
-  mask_gen_these_coalitions,
-  mask_gen_these_coalitions_prob,
+  mask_gen_coalitions,
+  mask_gen_coalitions_prob,
   sigma_mu,
   sigma_sigma,
   save_data,
@@ -67,10 +67,10 @@ should be set to a large number.}
 
 \item{save_every_nth_epoch}{Integer. If we are to save the vaeac model after every nth epoch.}
 
-\item{validation_ratio}{Scalar between 0 and 1 indicating the ratio of
+\item{val_ratio}{Scalar between 0 and 1 indicating the ratio of
 instances from data which will be used as validation data.}
 
-\item{validation_iwae_n_samples}{Integer. The number of samples used to compute the
+\item{val_iwae_n_samples}{Integer. The number of samples used to compute the
 IWAE when validating the vaeac model on the validation data.}
 
 \item{depth}{Integer. The number of hidden layers in the neural
@@ -91,14 +91,14 @@ the neural networks of the masked encoder, full encoder, and decoder.}
 \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, and
 \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
-\item{skip_connection_layer}{Boolean. If we are to use skip connections in each layer. If true, then we add the input
+\item{skip_conn_layer}{Boolean. If we are to use skip connections in each layer. If true, then we add the input
 to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.}
 
-\item{skip_connection_masked_enc_dec}{Boolean. If we are to apply concatenate skip
+\item{skip_conn_masked_enc_dec}{Boolean. If we are to apply concatenate skip
 connections between the layers in the masked encoder and decoder.}
 
 \item{batch_normalization}{Boolean. If we are to use batch normalization after the activation function.
-Note that if \code{skip_connection_layer} is TRUE, then the normalization is
+Note that if \code{skip_conn_layer} is TRUE, then the normalization is
 done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).}
 
 \item{paired_sampling}{Boolean. Default is \code{TRUE}. If we are doing paired sampling. I.e.,
@@ -108,13 +108,13 @@ stable, but slower due to more complex implementation.}
 
 \item{masking_ratio}{Probability of masking a feature in the MCAR mask generator.
 Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-This is overruled if \code{mask_gen_these_coalitions} is specified.}
+This is overruled if \code{mask_gen_coalitions} is specified.}
 
-\item{mask_gen_these_coalitions}{Matrix containing the different coalitions to learn.}
+\item{mask_gen_coalitions}{Matrix containing the different coalitions to learn.}
 
-\item{mask_gen_these_coalitions_prob}{Numerics containing the probabilities for
-sampling each mask in \code{mask_gen_these_coalitions}.
-Array containing the probabilities for sampling the coalitions in \code{mask_gen_these_coalitions}.}
+\item{mask_gen_coalitions_prob}{Numerics containing the probabilities for
+sampling each mask in \code{mask_gen_coalitions}.
+Array containing the probabilities for sampling the coalitions in \code{mask_gen_coalitions}.}
 
 \item{sigma_mu}{Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
 see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}

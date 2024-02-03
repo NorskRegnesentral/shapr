@@ -10,15 +10,15 @@ vaeac(
   depth = 3,
   latent_dim = 8,
   activation_function = torch::nn_relu,
-  skip_connection_layer = FALSE,
-  skip_connection_masked_enc_dec = FALSE,
+  skip_conn_layer = FALSE,
+  skip_conn_masked_enc_dec = FALSE,
   batch_normalization = FALSE,
   paired_sampling = FALSE,
   mask_generator_name = c("MCAR_mask_generator", "Specified_prob_mask_generator",
     "Specified_masks_mask_generator"),
   masking_ratio = 0.5,
-  mask_gen_these_coalitions = NULL,
-  mask_gen_these_coalitions_prob = NULL,
+  mask_gen_coalitions = NULL,
+  mask_gen_coalitions_prob = NULL,
   sigma_mu = 10000,
   sigma_sigma = 1e-04
 )
@@ -39,17 +39,17 @@ masked encoder, full encoder, and decoder.}
 \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}},
 \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
-\item{skip_connection_layer}{Boolean. If we are to use skip connections in each layer, see \code{\link[=SkipConnection]{SkipConnection()}}.
+\item{skip_conn_layer}{Boolean. If we are to use skip connections in each layer, see \code{\link[=SkipConnection]{SkipConnection()}}.
 If \code{TRUE}, then we add the input to the outcome of each hidden layer, so the output becomes
 \eqn{X + \operatorname{activation}(WX + b)}. I.e., the identity skip connection.}
 
-\item{skip_connection_masked_enc_dec}{Boolean. If we are to apply concatenating skip
+\item{skip_conn_masked_enc_dec}{Boolean. If we are to apply concatenating skip
 connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
 linked to the last layer of the decoder. The second layer of the masked encoder will be
 linked to the second to last layer of the decoder, and so on.}
 
 \item{batch_normalization}{Boolean. If we are to use batch normalization after the activation function.
-Note that if \code{skip_connection_layer} is TRUE, then the normalization is
+Note that if \code{skip_conn_layer} is TRUE, then the normalization is
 done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).}
 
 \item{paired_sampling}{Boolean. If we are doing paired sampling. I.e., if we are to include both coalition S
@@ -59,14 +59,14 @@ and \eqn{\bar{S}} when we sample coalitions during training for each batch.}
 'MCAR_mask_generator', 'Specified_prob_mask_generator', and 'Specified_masks_mask_generator'.}
 
 \item{masking_ratio}{Scalar. The probability for an entry in the generated mask to be 1 (masked).
-Not used if \code{mask_gen_these_coalitions} is given.}
+Not used if \code{mask_gen_coalitions} is given.}
 
-\item{mask_gen_these_coalitions}{Matrix containing the different coalitions to learn.
+\item{mask_gen_coalitions}{Matrix containing the different coalitions to learn.
 Must be given if \code{mask_generator_name = 'Specified_masks_mask_generator'}.}
 
-\item{mask_gen_these_coalitions_prob}{Numerics containing the probabilities
-for sampling each mask in \code{mask_gen_these_coalitions}.
-Array containing the probabilities for sampling the coalitions in \code{mask_gen_these_coalitions}.}
+\item{mask_gen_coalitions_prob}{Numerics containing the probabilities
+for sampling each mask in \code{mask_gen_coalitions}.
+Array containing the probabilities for sampling the coalitions in \code{mask_gen_coalitions}.}
 
 \item{sigma_mu}{Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
 see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}

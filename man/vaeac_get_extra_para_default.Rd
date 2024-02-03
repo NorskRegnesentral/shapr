@@ -12,18 +12,18 @@ vaeac_get_extra_para_default(
   vaeac.epochs_initiation_phase = 2,
   vaeac.epochs_early_stopping = NULL,
   vaeac.save_every_nth_epoch = NULL,
-  vaeac.validation_ratio = 0.25,
-  vaeac.validation_iwae_n_samples = 25,
+  vaeac.val_ratio = 0.25,
+  vaeac.val_iwae_n_samples = 25,
   vaeac.batch_size = 64,
   vaeac.batch_size_sampling = NULL,
   vaeac.running_avg_n_values = 5,
-  vaeac.skip_connection_layer = TRUE,
-  vaeac.skip_connection_masked_enc_dec = TRUE,
+  vaeac.skip_conn_layer = TRUE,
+  vaeac.skip_conn_masked_enc_dec = TRUE,
   vaeac.batch_normalization = FALSE,
   vaeac.paired_sampling = TRUE,
   vaeac.masking_ratio = 0.5,
-  vaeac.mask_gen_these_coalitions = NULL,
-  vaeac.mask_gen_these_coalitions_prob = NULL,
+  vaeac.mask_gen_coalitions = NULL,
+  vaeac.mask_gen_coalitions_prob = NULL,
   vaeac.sigma_mu = 10000,
   vaeac.sigma_sigma = 1e-04,
   vaeac.sample_random = TRUE,
@@ -65,11 +65,11 @@ stopping does not occur.}
 \item{vaeac.save_every_nth_epoch}{Positive integer (default is \code{NULL}). If provided, then the vaeac model after
 every \code{vaeac.save_every_nth_epoch}th epoch will be saved.}
 
-\item{vaeac.validation_ratio}{Numeric (default is \code{0.25}). Scalar between \code{0} and \code{1} indicating the ratio of
-instances from the input data which will be used as validation data. That is, \code{vaeac.validation_ratio = 0.25} means
+\item{vaeac.val_ratio}{Numeric (default is \code{0.25}). Scalar between \code{0} and \code{1} indicating the ratio of
+instances from the input data which will be used as validation data. That is, \code{vaeac.val_ratio = 0.25} means
 that \verb{75\%} of the provided data is used as training data, while the remaining \verb{25\%} is used as validation data.}
 
-\item{vaeac.validation_iwae_n_samples}{Positive integer (default is \code{25}). The number of generated samples used
+\item{vaeac.val_iwae_n_samples}{Positive integer (default is \code{25}). The number of generated samples used
 to compute the IWAE criterion when validating the vaeac model on the validation data.}
 
 \item{vaeac.batch_size}{Positive integer (default is \code{64}). The number of samples to include in each batch
@@ -84,17 +84,17 @@ rather  than \code{vaeac.batch_size_sampling}. Larger batch sizes are often much
 \item{vaeac.running_avg_n_values}{Positive integer (default is \code{5}). The number of previous IWAE values to include
 when we compute the running means of the IWAE criterion.}
 
-\item{vaeac.skip_connection_layer}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply identity skip connections in each
+\item{vaeac.skip_conn_layer}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply identity skip connections in each
 layer, see \code{\link[=SkipConnection]{SkipConnection()}}. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 so the output becomes \eqn{X + activation(WX + b)}.}
 
-\item{vaeac.skip_connection_masked_enc_dec}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply concatenate skip
+\item{vaeac.skip_conn_masked_enc_dec}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply concatenate skip
 connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
 linked to the last layer of the decoder. The second layer of the masked encoder will be
 linked to the second to last layer of the decoder, and so on.}
 
 \item{vaeac.batch_normalization}{Logical (default is \code{FALSE}). If \code{TRUE}, we apply batch normalization after the
-activation function. Note that if \code{vaeac.skip_connection_layer = TRUE}, then the normalization is applied after the
+activation function. Note that if \code{vaeac.skip_conn_layer = TRUE}, then the normalization is applied after the
 inclusion of the skip connection. That is, we batch normalize the whole quantity \eqn{X + activation(WX + b)}.}
 
 \item{vaeac.paired_sampling}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply paired sampling to the training
@@ -107,17 +107,17 @@ this will increase the training time due to more complex implementation and doub
 \item{vaeac.masking_ratio}{Numeric (default is \code{0.5}). Probability of masking a feature in the
 \code{\link[=MCAR_mask_generator]{MCAR_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
 model can do arbitrary conditioning as all coalitions will be trained. \code{vaeac.masking_ratio} will be overruled if
-\code{vaeac.mask_gen_these_coalitions} is specified.}
+\code{vaeac.mask_gen_coalitions} is specified.}
 
-\item{vaeac.mask_gen_these_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
+\item{vaeac.mask_gen_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
 \code{vaeac} model will be trained on, see \code{\link[=Specified_masks_mask_generator]{Specified_masks_mask_generator()}}. This parameter is used internally
 in \code{shapr} when we only consider a subset of coalitions/combinations, i.e., when
 \code{n_combinations} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 when \code{group} is specified in \code{\link[=explain]{explain()}}.}
 
-\item{vaeac.mask_gen_these_coalitions_prob}{Numeric array (default is \code{NULL}). Array of length equal to the height
-of \code{vaeac.mask_gen_these_coalitions} containing the probabilities of sampling the corresponding coalitions in
-\code{vaeac.mask_gen_these_coalitions}.}
+\item{vaeac.mask_gen_coalitions_prob}{Numeric array (default is \code{NULL}). Array of length equal to the height
+of \code{vaeac.mask_gen_coalitions} containing the probabilities of sampling the corresponding coalitions in
+\code{vaeac.mask_gen_coalitions}.}
 
 \item{vaeac.sigma_mu}{Numeric (default is \code{1e4}). One of two hyperparameter values in the normal-gamma prior
 used in the masked encoder, see Section 3.3.1 in

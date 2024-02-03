@@ -10,7 +10,7 @@ vaeac_get_current_save_state(environment)
 \item{environment}{The \code{\link[base:environment]{base::environment()}} where the objects are stored.}
 }
 \value{
-List containing the values of \code{epoch}, \code{train_vlb}, \code{validation_iwae}, \code{validation_iwae_running},
+List containing the values of \code{epoch}, \code{train_vlb}, \code{val_iwae}, \code{val_iwae_running},
 and the \code{state_dict()} of the vaeac model and optimizer.
 }
 \description{

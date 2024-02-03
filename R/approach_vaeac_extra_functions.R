@@ -179,31 +179,31 @@ vaeac_check_activation_func <- function(activation_function) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_mask_gen <- function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, x_train) {
-  masks <- mask_gen_these_coalitions
-  probs <- mask_gen_these_coalitions_prob
+vaeac_check_mask_gen <- function(mask_gen_coalitions, mask_gen_coalitions_prob, x_train) {
+  masks <- mask_gen_coalitions
+  probs <- mask_gen_coalitions_prob
 
   if (!is.null(masks) || !is.null(probs)) {
     if (xor(is.null(masks), is.null(probs))) {
       stop(
-        "Either both `vaeac.mask_gen_these_coalitions` and `vaeac.mask_gen_these_coalitions_prob` need to `NULL` ",
+        "Either both `vaeac.mask_gen_coalitions` and `vaeac.mask_gen_coalitions_prob` need to `NULL` ",
         "or both have to be specified."
       )
     }
 
-    if (!is.matrix(masks)) stop("`vaeac.mask_gen_these_coalitions` must be a matrix.")
-    if (!is.numeric(probs)) stop("`vaeac.mask_gen_these_coalitions_prob` must be an array.")
+    if (!is.matrix(masks)) stop("`vaeac.mask_gen_coalitions` must be a matrix.")
+    if (!is.numeric(probs)) stop("`vaeac.mask_gen_coalitions_prob` must be an array.")
 
     if (nrow(masks) != length(probs)) {
       stop(
-        "The number of rows in `vaeac.mask_gen_these_coalitions` must be equal to the length of ",
-        "`vaeac.mask_gen_these_coalitions_prob`."
+        "The number of rows in `vaeac.mask_gen_coalitions` must be equal to the length of ",
+        "`vaeac.mask_gen_coalitions_prob`."
       )
     }
 
     if (ncol(masks) != ncol(x_train)) {
       stop(
-        "The number of columns in `vaeac.mask_gen_these_coalitions` must be equal to the number of ",
+        "The number of columns in `vaeac.mask_gen_coalitions` must be equal to the number of ",
         "columns in the `x_train`. That is, the number of features."
       )
     }
@@ -312,9 +312,9 @@ vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch,
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_check_x_train_names = function(feature_names_vaeac, feature_names_new) {
-  n_features_vaeac = length(feature_names_vaeac)
-  n_features_new = length(feature_names_new)
+vaeac_check_x_train_names <- function(feature_names_vaeac, feature_names_new) {
+  n_features_vaeac <- length(feature_names_vaeac)
+  n_features_new <- length(feature_names_new)
 
   # Check for equal number of features
   if (n_features_new != n_features_vaeac) {
@@ -350,8 +350,8 @@ vaeac_check_parameters <- function(x_train,
                                    epochs,
                                    epochs_early_stopping,
                                    save_every_nth_epoch,
-                                   validation_ratio,
-                                   validation_iwae_n_samples,
+                                   val_ratio,
+                                   val_iwae_n_samples,
                                    depth,
                                    width,
                                    latent_dim,
@@ -359,13 +359,13 @@ vaeac_check_parameters <- function(x_train,
                                    batch_size,
                                    running_avg_n_values,
                                    activation_function,
-                                   skip_connection_layer,
-                                   skip_connection_masked_enc_dec,
+                                   skip_conn_layer,
+                                   skip_conn_masked_enc_dec,
                                    batch_normalization,
                                    paired_sampling,
                                    masking_ratio,
-                                   mask_gen_these_coalitions,
-                                   mask_gen_these_coalitions_prob,
+                                   mask_gen_coalitions,
+                                   mask_gen_coalitions_prob,
                                    sigma_mu,
                                    sigma_sigma,
                                    save_data,
@@ -384,7 +384,7 @@ vaeac_check_parameters <- function(x_train,
   vaeac_check_save_names(folder_to_save_model = folder_to_save_model, model_description = model_description)
 
   # Check the probability parameters
-  vaeac_check_probabilities(list(validation_ratio = validation_ratio, masking_ratio = masking_ratio))
+  vaeac_check_probabilities(list(val_ratio = val_ratio, masking_ratio = masking_ratio))
 
   # Check the masking ratio
   vaeac_check_masking_ratio(masking_ratio = masking_ratio, n_features = ncol(x_train))
@@ -392,18 +392,18 @@ vaeac_check_parameters <- function(x_train,
   # Check the positive numeric parameters
   vaeac_check_positive_numerics(list(lr = lr, sigma_mu = sigma_mu, sigma_sigma = sigma_sigma))
 
-  # Check the mask_gen_these_coalitions and mask_gen_these_coalitions_prob parameters
+  # Check the mask_gen_coalitions and mask_gen_coalitions_prob parameters
   vaeac_check_mask_gen(
-    mask_gen_these_coalitions = mask_gen_these_coalitions,
-    mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
+    mask_gen_coalitions = mask_gen_coalitions,
+    mask_gen_coalitions_prob = mask_gen_coalitions_prob,
     x_train = x_train
   )
 
   # Check the logical parameters
   vaeac_check_logicals(list(
     cuda = cuda,
-    skip_connection_layer = skip_connection_layer,
-    skip_connection_masked_enc_dec = skip_connection_masked_enc_dec,
+    skip_conn_layer = skip_conn_layer,
+    skip_conn_masked_enc_dec = skip_conn_masked_enc_dec,
     batch_normalization = batch_normalization,
     paired_sampling = paired_sampling,
     save_data = save_data,
@@ -416,7 +416,7 @@ vaeac_check_parameters <- function(x_train,
     epochs = epochs,
     epochs_early_stopping = epochs_early_stopping,
     epochs_initiation_phase = epochs_initiation_phase,
-    validation_iwae_n_samples = validation_iwae_n_samples,
+    val_iwae_n_samples = val_iwae_n_samples,
     depth = depth,
     width = width,
     latent_dim = latent_dim,
@@ -481,10 +481,10 @@ vaeac_check_parameters <- function(x_train,
 #' stopping does not occur.
 #' @param vaeac.save_every_nth_epoch Positive integer (default is `NULL`). If provided, then the vaeac model after
 #' every `vaeac.save_every_nth_epoch`th epoch will be saved.
-#' @param vaeac.validation_ratio Numeric (default is `0.25`). Scalar between `0` and `1` indicating the ratio of
-#' instances from the input data which will be used as validation data. That is, `vaeac.validation_ratio = 0.25` means
+#' @param vaeac.val_ratio Numeric (default is `0.25`). Scalar between `0` and `1` indicating the ratio of
+#' instances from the input data which will be used as validation data. That is, `vaeac.val_ratio = 0.25` means
 #' that `75%` of the provided data is used as training data, while the remaining `25%` is used as validation data.
-#' @param vaeac.validation_iwae_n_samples Positive integer (default is `25`). The number of generated samples used
+#' @param vaeac.val_iwae_n_samples Positive integer (default is `25`). The number of generated samples used
 #' to compute the IWAE criterion when validating the vaeac model on the validation data.
 #' @param vaeac.batch_size Positive integer (default is `64`). The number of samples to include in each batch
 #' during the training of the vaeac model. Used in [torch::dataloader()].
@@ -495,15 +495,15 @@ vaeac_check_parameters <- function(x_train,
 #' rather  than `vaeac.batch_size_sampling`. Larger batch sizes are often much faster provided sufficient memory.
 #' @param vaeac.running_avg_n_values Positive integer (default is `5`). The number of previous IWAE values to include
 #' when we compute the running means of the IWAE criterion.
-#' @param vaeac.skip_connection_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
+#' @param vaeac.skip_conn_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
 #' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 #' so the output becomes \eqn{X + activation(WX + b)}.
-#' @param vaeac.skip_connection_masked_enc_dec Logical (default is `TRUE`). If `TRUE`, we apply concatenate skip
+#' @param vaeac.skip_conn_masked_enc_dec Logical (default is `TRUE`). If `TRUE`, we apply concatenate skip
 #' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
 #' linked to the last layer of the decoder. The second layer of the masked encoder will be
 #' linked to the second to last layer of the decoder, and so on.
 #' @param vaeac.batch_normalization Logical (default is `FALSE`). If `TRUE`, we apply batch normalization after the
-#' activation function. Note that if `vaeac.skip_connection_layer = TRUE`, then the normalization is applied after the
+#' activation function. Note that if `vaeac.skip_conn_layer = TRUE`, then the normalization is applied after the
 #' inclusion of the skip connection. That is, we batch normalize the whole quantity \eqn{X + activation(WX + b)}.
 #' @param vaeac.paired_sampling Logical (default is `TRUE`). If `TRUE`, we apply paired sampling to the training
 #' batches. That is, the training observations in each batch will be duplicated, where the first instance will be masked
@@ -514,15 +514,15 @@ vaeac_check_parameters <- function(x_train,
 #' @param vaeac.masking_ratio Numeric (default is `0.5`). Probability of masking a feature in the
 #' [shapr::MCAR_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
 #' model can do arbitrary conditioning as all coalitions will be trained. `vaeac.masking_ratio` will be overruled if
-#' `vaeac.mask_gen_these_coalitions` is specified.
-#' @param vaeac.mask_gen_these_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
+#' `vaeac.mask_gen_coalitions` is specified.
+#' @param vaeac.mask_gen_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
 #' `vaeac` model will be trained on, see [shapr::Specified_masks_mask_generator()]. This parameter is used internally
 #' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
 #' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
 #' when `group` is specified in [shapr::explain()].
-#' @param vaeac.mask_gen_these_coalitions_prob Numeric array (default is `NULL`). Array of length equal to the height
-#' of `vaeac.mask_gen_these_coalitions` containing the probabilities of sampling the corresponding coalitions in
-#' `vaeac.mask_gen_these_coalitions`.
+#' @param vaeac.mask_gen_coalitions_prob Numeric array (default is `NULL`). Array of length equal to the height
+#' of `vaeac.mask_gen_coalitions` containing the probabilities of sampling the corresponding coalitions in
+#' `vaeac.mask_gen_coalitions`.
 #' @param vaeac.sigma_mu Numeric (default is `1e4`). One of two hyperparameter values in the normal-gamma prior
 #' used in the masked encoder, see Section 3.3.1 in
 #' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
@@ -563,18 +563,18 @@ vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sy
                                          vaeac.epochs_initiation_phase = 2,
                                          vaeac.epochs_early_stopping = NULL,
                                          vaeac.save_every_nth_epoch = NULL,
-                                         vaeac.validation_ratio = 0.25,
-                                         vaeac.validation_iwae_n_samples = 25,
+                                         vaeac.val_ratio = 0.25,
+                                         vaeac.val_iwae_n_samples = 25,
                                          vaeac.batch_size = 64,
                                          vaeac.batch_size_sampling = NULL,
                                          vaeac.running_avg_n_values = 5,
-                                         vaeac.skip_connection_layer = TRUE,
-                                         vaeac.skip_connection_masked_enc_dec = TRUE,
+                                         vaeac.skip_conn_layer = TRUE,
+                                         vaeac.skip_conn_masked_enc_dec = TRUE,
                                          vaeac.batch_normalization = FALSE,
                                          vaeac.paired_sampling = TRUE,
                                          vaeac.masking_ratio = 0.5,
-                                         vaeac.mask_gen_these_coalitions = NULL,
-                                         vaeac.mask_gen_these_coalitions_prob = NULL,
+                                         vaeac.mask_gen_coalitions = NULL,
+                                         vaeac.mask_gen_coalitions_prob = NULL,
                                          vaeac.sigma_mu = 1e4,
                                          vaeac.sigma_sigma = 1e-4,
                                          vaeac.sample_random = TRUE,
@@ -598,7 +598,7 @@ vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sy
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_get_model_from_checkp = function(checkpoint, cuda, mode_train) {
+vaeac_get_model_from_checkp <- function(checkpoint, cuda, mode_train) {
   # Check parameters
   vaeac_check_logicals(list(cuda = cuda, mode_train = mode_train))
 
@@ -609,14 +609,14 @@ vaeac_get_model_from_checkp = function(checkpoint, cuda, mode_train) {
     depth = checkpoint$depth,
     latent_dim = checkpoint$latent_dim,
     activation_function = checkpoint$activation_function,
-    skip_connection_layer = checkpoint$skip_connection_layer,
-    skip_connection_masked_enc_dec = checkpoint$skip_connection_masked_enc_dec,
+    skip_conn_layer = checkpoint$skip_conn_layer,
+    skip_conn_masked_enc_dec = checkpoint$skip_conn_masked_enc_dec,
     batch_normalization = checkpoint$batch_normalization,
     paired_sampling = checkpoint$paired_sampling,
     mask_generator_name = checkpoint$mask_generator_name,
     masking_ratio = checkpoint$masking_ratio,
-    mask_gen_these_coalitions = checkpoint$mask_gen_these_coalitions,
-    mask_gen_these_coalitions_prob = checkpoint$mask_gen_these_coalitions_prob,
+    mask_gen_coalitions = checkpoint$mask_gen_coalitions,
+    mask_gen_coalitions_prob = checkpoint$mask_gen_coalitions_prob,
     sigma_mu = checkpoint$sigma_mu,
     sigma_sigma = checkpoint$sigma_sigma
   )
@@ -632,7 +632,7 @@ vaeac_get_model_from_checkp = function(checkpoint, cuda, mode_train) {
   if (cuda) vaeac_model <- vaeac_model$cuda() else vaeac_model <- vaeac_model$cpu()
 
   # Return the model
-  return (vaeac_model)
+  return(vaeac_model)
 }
 
 #' Function that determines which mask generator to use
@@ -643,16 +643,18 @@ vaeac_get_model_from_checkp = function(checkpoint, cuda, mode_train) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_get_mask_generator_name <-
-  function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, masking_ratio, verbose) {
-  if (!is.null(mask_gen_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
-    # User have provided mask_gen_these_coalitions (and mask_gen_these_coalitions_prob),
+vaeac_get_mask_generator_name <- function(mask_gen_coalitions,
+                                          mask_gen_coalitions_prob,
+                                          masking_ratio,
+                                          verbose) {
+  if (!is.null(mask_gen_coalitions) && !is.null(mask_gen_coalitions_prob)) {
+    # User have provided mask_gen_coalitions (and mask_gen_coalitions_prob),
     # and we want to use Specified_masks_mask_generator
     mask_generator_name <- "Specified_masks_mask_generator"
 
     # Small printout
     if (verbose == 2) {
-      message(paste0("Using 'Specified_masks_mask_generator' with '", nrow(mask_gen_these_coalitions), "' coalitions."))
+      message(paste0("Using 'Specified_masks_mask_generator' with '", nrow(mask_gen_coalitions), "' coalitions."))
     }
   } else if (length(masking_ratio) == 1) {
     # We are going to use 'MCAR_mask_generator' as masking_ratio is a singleton.
@@ -765,13 +767,13 @@ vaeac_get_optimizer <- function(vaeac_model, lr, optimizer_name = "adam") {
 #'
 #' @inheritParams vaeac_get_full_state_list
 #'
-#' @return List containing the values of `epoch`, `train_vlb`, `validation_iwae`, `validation_iwae_running`,
+#' @return List containing the values of `epoch`, `train_vlb`, `val_iwae`, `val_iwae_running`,
 #' and the `state_dict()` of the vaeac model and optimizer.
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_get_current_save_state <- function(environment) {
-  object_names <- c("epoch", "train_vlb", "validation_iwae", "validation_iwae_running")
+  object_names <- c("epoch", "train_vlb", "val_iwae", "val_iwae_running")
   objects <- lapply(object_names, function(name) environment[[name]])
   names(objects) <- object_names
   objects$model_state_dict <- environment[["vaeac_model"]]$state_dict()
@@ -791,9 +793,9 @@ vaeac_get_current_save_state <- function(environment) {
 #' @return List containing the values of `norm_mean`, `norm_std`, `model_description`, `folder_to_save_model`,
 #' `n_train`, `n_features`, `one_hot_max_sizes`, `epochs`, `epochs_specified`, `epochs_early_stopping`,
 #' `early_stopping_applied`, `running_avg_n_values`, `paired_sampling`, `mask_generator_name`, `masking_ratio`,
-#' `mask_gen_these_coalitions`, `mask_gen_these_coalitions_prob`, `validation_ratio`, `validation_iwae_n_samples`,
+#' `mask_gen_coalitions`, `mask_gen_coalitions_prob`, `val_ratio`, `val_iwae_n_samples`,
 #' `n_vaeacs_initialize`, `epochs_initiation_phase`, `width`, `depth`, `latent_dim`, `activation_function`,
-#' `lr`, `batch_size`, `skip_connection_layer`, `skip_connection_masked_enc_dec`, `batch_normalization`, `cuda`,
+#' `lr`, `batch_size`, `skip_conn_layer`, `skip_conn_masked_enc_dec`, `batch_normalization`, `cuda`,
 #' `train_indices`, `val_indices`, `save_every_nth_epoch`, `sigma_mu`,
 #' `sigma_sigma`, `feature_list`, `col_cat_names`, `col_cont_names`, `col_cat`, `col_cont`, `cat_in_dataset`,
 #' `map_new_to_original_names`, `map_original_to_new_names`, `log_exp_cont_feat`, `save_data`, `verbose`,
@@ -805,10 +807,10 @@ vaeac_get_full_state_list <- function(environment) {
   object_names <- c(
     "norm_mean", "norm_std", "model_description", "folder_to_save_model", "n_train", "n_features", "one_hot_max_sizes",
     "epochs", "epochs_specified", "epochs_early_stopping", "early_stopping_applied", "running_avg_n_values",
-    "paired_sampling", "mask_generator_name", "masking_ratio", "mask_gen_these_coalitions",
-    "mask_gen_these_coalitions_prob", "validation_ratio", "validation_iwae_n_samples", "n_vaeacs_initialize",
+    "paired_sampling", "mask_generator_name", "masking_ratio", "mask_gen_coalitions",
+    "mask_gen_coalitions_prob", "val_ratio", "val_iwae_n_samples", "n_vaeacs_initialize",
     "epochs_initiation_phase", "width", "depth", "latent_dim", "activation_function",
-    "lr", "batch_size", "skip_connection_layer", "skip_connection_masked_enc_dec", "batch_normalization", "cuda",
+    "lr", "batch_size", "skip_conn_layer", "skip_conn_masked_enc_dec", "batch_normalization", "cuda",
     "train_indices", "val_indices", "save_every_nth_epoch", "sigma_mu", "sigma_sigma", "feature_list", "col_cat_names",
     "col_cont_names", "col_cat", "col_cont", "cat_in_dataset", "map_new_to_original_names", "map_original_to_new_names",
     "log_exp_cont_feat", "save_data", "verbose", "seed", "vaeac_save_file_names"
@@ -907,9 +909,9 @@ vaeac_get_evaluation_criteria <- function(explanation_list) {
 #' @param val_dataloader A [torch::dataloader()] containing the validation data for the `vaeac` model.
 #' @param train_vlb A [torch::torch_tensor()] (default is `NULL`)
 #' of one dimension containing previous values for the training VLB.
-#' @param validation_iwae A [torch::torch_tensor()] (default is `NULL`)
+#' @param val_iwae A [torch::torch_tensor()] (default is `NULL`)
 #' of one dimension containing previous values for the validation IWAE.
-#' @param validation_iwae_running A [torch::torch_tensor()] (default is `NULL`)
+#' @param val_iwae_running A [torch::torch_tensor()] (default is `NULL`)
 #' of one dimension containing previous values for the running validation IWAE.
 #' @param progressr_bar A [progressr::progressor()] object (default is `NULL`) to keep track of progress.
 #' @param epochs_start Positive integer (default is `1`). At which epoch the training is starting at.
@@ -926,7 +928,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
                                         optimizer,
                                         train_dataloader,
                                         val_dataloader,
-                                        validation_iwae_n_samples,
+                                        val_iwae_n_samples,
                                         running_avg_n_values,
                                         verbose,
                                         cuda,
@@ -940,8 +942,8 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
                                         initialization_idx = NULL,
                                         n_vaeacs_initialize = NULL,
                                         train_vlb = NULL,
-                                        validation_iwae = NULL,
-                                        validation_iwae_running = NULL) {
+                                        val_iwae = NULL,
+                                        val_iwae_running = NULL) {
   # Check for valid input
   if (xor(is.null(initialization_idx), is.null(n_vaeacs_initialize))) {
     stop("Either none or both of `initialization_idx` and `n_vaeacs_initialize` must be given.")
@@ -958,9 +960,9 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     ))
   }
 
-  if (!((is.null(train_vlb) && is.null(validation_iwae) && is.null(validation_iwae_running)) ||
-    (!is.null(train_vlb) && !is.null(validation_iwae) && !is.null(validation_iwae_running)))) {
-    stop("Either none or all of `train_vlb`, `validation_iwae`, and `validation_iwae_running` must be given.")
+  if (!((is.null(train_vlb) && is.null(val_iwae) && is.null(val_iwae_running)) ||
+    (!is.null(train_vlb) && !is.null(val_iwae) && !is.null(val_iwae_running)))) {
+    stop("Either none or all of `train_vlb`, `val_iwae`, and `val_iwae_running` must be given.")
   }
 
   # Variable that we change to `TRUE` if early stopping is applied
@@ -1030,35 +1032,35 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     train_vlb <- torch::torch_cat(c(train_vlb, avg_vlb), -1)
 
     # Compute the validation IWAE
-    validation_iwae_now <- vaeac_get_validation_iwae(
+    val_iwae_now <- vaeac_get_val_iwae(
       val_dataloader = val_dataloader,
       mask_generator = mask_generator,
       batch_size = batch_size,
       vaeac_model = vaeac_model,
-      validation_iwae_n_samples = validation_iwae_n_samples
+      val_iwae_n_samples = val_iwae_n_samples
     )
-    validation_iwae <- torch::torch_cat(c(validation_iwae, validation_iwae_now), -1)
+    val_iwae <- torch::torch_cat(c(val_iwae, val_iwae_now), -1)
 
     # Compute the running validation IWAE
-    validation_iwae_running_now <-
-      validation_iwae[
-        (-min(length(validation_iwae), running_avg_n_values) +
-          length(validation_iwae) + 1):(-1 + length(validation_iwae) + 1),
+    val_iwae_running_now <-
+      val_iwae[
+        (-min(length(val_iwae), running_avg_n_values) +
+          length(val_iwae) + 1):(-1 + length(val_iwae) + 1),
         drop = FALSE
       ]$mean()$view(1)
-    validation_iwae_running <- torch::torch_cat(c(validation_iwae_running, validation_iwae_running_now), -1)
+    val_iwae_running <- torch::torch_cat(c(val_iwae_running, val_iwae_running_now), -1)
 
     # Check if we are to save the models
     if (is.null(initialization_idx)) {
       # Save if current vaeac model has the lowest validation IWAE error
-      if ((max(validation_iwae) <= validation_iwae_now)$item() || is.null(best_state)) {
+      if ((max(val_iwae) <= val_iwae_now)$item() || is.null(best_state)) {
         best_state <- c(vaeac_get_current_save_state(environment()), state_list)
         class(best_state) <- c(class(best_state), "vaeac")
         torch::torch_save(best_state, vaeac_save_file_names[1])
       }
 
       # Save if current vaeac model has the lowest running validation IWAE error
-      if ((max(validation_iwae_running) <= validation_iwae_running_now)$item() || is.null(best_state_running)) {
+      if ((max(val_iwae_running) <= val_iwae_running_now)$item() || is.null(best_state_running)) {
         best_state_running <- c(vaeac_get_current_save_state(environment()), state_list)
         class(best_state_running) <- c(class(best_state_running), "vaeac")
         torch::torch_save(best_state_running, vaeac_save_file_names[2])
@@ -1077,12 +1079,12 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       update_message <- if (!is.null(initialization_idx)) {
         paste0(
           "Training vaeac (init. ", initialization_idx, " of ", n_vaeacs_initialize, "): Epoch: ", epoch,
-          " | VLB: ", round(avg_vlb$item(), 3), " | IWAE: ", round(validation_iwae_now$item(), 3)
+          " | VLB: ", round(avg_vlb$item(), 3), " | IWAE: ", round(val_iwae_now$item(), 3)
         )
       } else {
         paste0(
           "Training vaeac (final model): Epoch: ", epoch, " | best epoch: ", best_state$epoch,
-          " | VLB: ", round(avg_vlb$item(), 3), " | IWAE: ", round(validation_iwae_now$item(), 3)
+          " | VLB: ", round(avg_vlb$item(), 3), " | IWAE: ", round(val_iwae_now$item(), 3)
         )
       }
       progressr_bar(message = update_message)
@@ -1112,8 +1114,8 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       vaeac_model = vaeac_model,
       optimizer = optimizer,
       train_vlb = train_vlb,
-      validation_iwae = validation_iwae,
-      validation_iwae_running = validation_iwae_running,
+      val_iwae = val_iwae,
+      val_iwae_running = val_iwae_running,
       avg_vlb = avg_vlb,
       initialization_idx = initialization_idx,
       state_list = state_list
@@ -1133,8 +1135,8 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       best_running = vaeac_save_file_names[2],
       last = vaeac_save_file_names[3],
       train_vlb = as.array(train_vlb),
-      validation_iwae = as.array(validation_iwae),
-      validation_iwae_running = as.array(validation_iwae_running),
+      val_iwae = as.array(val_iwae),
+      val_iwae_running = as.array(val_iwae_running),
       parameters = state_list
     )
 
@@ -1180,16 +1182,16 @@ Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
 Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     best_state$epoch,
     best_state$train_vlb[-1],
-    best_state$validation_iwae[-1],
-    best_state$validation_iwae_running[-1],
+    best_state$val_iwae[-1],
+    best_state$val_iwae_running[-1],
     best_state_running$epoch,
     best_state_running$train_vlb[-1],
-    best_state_running$validation_iwae[-1],
-    best_state_running$validation_iwae_running[-1],
+    best_state_running$val_iwae[-1],
+    best_state_running$val_iwae_running[-1],
     last_state$epoch,
     last_state$train_vlb[-1],
-    last_state$validation_iwae[-1],
-    last_state$validation_iwae_running[-1]
+    last_state$val_iwae[-1],
+    last_state$val_iwae_running[-1]
   ))
 }
 
@@ -1240,7 +1242,10 @@ vaeac_update_para_locations <- function(parameters) {
     # Give a message to the user about the unknown extra parameters
     warning(paste0(
       "The following vaeac main parameters are not recognized (`shapr` removes them): ",
-      paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"
+      paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "),
+        ",(?=[^,]+$)",
+        perl = TRUE
+      )[[1]], collapse = " and"), ".\n"
     ))
 
     # Delete the unknown extra parameters
@@ -1254,7 +1259,10 @@ vaeac_update_para_locations <- function(parameters) {
     # Give a message to the user about the unknown extra parameters
     warning(paste0(
       "The following vaeac extra parameters are not recognized (`shapr` removes them): ",
-      paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"
+      paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "),
+        ",(?=[^,]+$)",
+        perl = TRUE
+      )[[1]], collapse = " and"), ".\n"
     ))
 
     # Delete the unknown extra parameters
@@ -1290,7 +1298,8 @@ vaeac_update_para_locations <- function(parameters) {
     ))
 
     # Move extra parameter from the main parameters to extra_parameters list if they have NOT been specified already
-    parameters$vaeac.extra_parameters[extra_para_in_main_para[!extra_para_in_main_para %in% vaeac.extra_para_user_names]] <-
+    parameters$vaeac.extra_parameters[extra_para_in_main_para[!extra_para_in_main_para %in%
+      vaeac.extra_para_user_names]] <-
       parameters[extra_para_in_main_para[!extra_para_in_main_para %in% vaeac.extra_para_user_names]]
 
     # Remove the extra parameter from the main parameters
@@ -1304,7 +1313,10 @@ vaeac_update_para_locations <- function(parameters) {
     warning(paste0(
       "The following vaeac parameters were given as extra parameters but should have been main ",
       "parameters (`shapr` fixes this): ",
-      paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "), ",(?=[^,]+$)", perl = TRUE)[[1]], collapse = " and"), ".\n"
+      paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "),
+        ",(?=[^,]+$)",
+        perl = TRUE
+      )[[1]], collapse = " and"), ".\n"
     ))
 
     # Move main parameters from the extra_parameters list to main parameters if they have NOT been specified already
@@ -1330,7 +1342,7 @@ vaeac_update_para_locations <- function(parameters) {
 #' @author Lars Henry Berge Olsen
 vaeac_update_pretrained_model <- function(parameters) {
   # Extract the provided pre-trained vaeac model
-  vaeac_object = parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model
+  vaeac_object <- parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model
 
   # Check that it is either a list or string
   if (!(is.list(vaeac_object) || is.character(vaeac_object))) {
@@ -1341,14 +1353,16 @@ vaeac_update_pretrained_model <- function(parameters) {
   if (is.list(vaeac_object)) {
     # Check for list of type vaeac
     if (!("vaeac" %in% class(vaeac_object))) stop("The `vaeac.pretrained_vaeac_model` list is not of type `vaeac`.")
-    vaeac_check_x_train_names(feature_names_vaeac = vaeac_object$parameters$feature_list$labels,
-                              feature_names_new = parameters$feature_names)
+    vaeac_check_x_train_names(
+      feature_names_vaeac = vaeac_object$parameters$feature_list$labels,
+      feature_names_new = parameters$feature_names
+    )
 
     # Add the pre-trained valid vaeac model to the parameters list
     parameters$vaeac <- parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model
 
     # Remove the pre-trained vaeac model as it has been approved as a vaeac model
-    parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model = NULL
+    parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model <- NULL
   }
 
 
@@ -1371,11 +1385,13 @@ vaeac_update_pretrained_model <- function(parameters) {
     }
 
     # Check that the provided vaeac model is trained on a dataset with the same feature names
-    vaeac_check_x_train_names(feature_names_vaeac = vaeac_model$feature_list$labels,
-                              feature_names_new = parameters$feature_names)
+    vaeac_check_x_train_names(
+      feature_names_vaeac = vaeac_model$feature_list$labels,
+      feature_names_new = parameters$feature_names
+    )
 
     # Extract the training/validation results
-    evaluation_criterions <- c("train_vlb", "validation_iwae", "validation_iwae_running")
+    evaluation_criterions <- c("train_vlb", "val_iwae", "val_iwae_running")
     vaeac_model_results <- lapply(vaeac_model[evaluation_criterions], as.array)
 
     # Save path to the vaeac approach to use to generate the MC samples.
@@ -1624,13 +1640,15 @@ vaeac_plot_evaluation_criteria <- function(explanation_list,
 #' @param upper_cat String. Type of plot to use in upper triangle for categorical features, see [GGally::ggpairs()].
 #' Possible options are: `'count'` (default), `'cross'`, `'ratio'`, `'facetbar'`, and `'blank'`.
 #' @param upper_mix String. Type of plot to use in upper triangle for mixed features, see [GGally::ggpairs()].
-#' Possible options are: `'box'` (default), `'box_no_facet'`, `'dot'`, `'dot_no_facet'`, `'facethist'`, `'facetdensity'`, `'denstrip'`, and `'blank'`
+#' Possible options are: `'box'` (default), `'box_no_facet'`, `'dot'`, `'dot_no_facet'`, `'facethist'`,
+#'  `'facetdensity'`, `'denstrip'`, and `'blank'`
 #' @param lower_cont String. Type of plot to use in lower triangle for continuous features, see [GGally::ggpairs()].
 #' Possible options are: `'points'` (default), `'smooth'`, `'smooth_loess'`, `'density'`, `'cor'`, and `'blank'`.
 #' @param lower_cat String. Type of plot to use in lower triangle for categorical features, see [GGally::ggpairs()].
 #' Possible options are: `'facetbar'` (default), `'ratio'`, `'count'`, `'cross'`, and `'blank'`.
 #' @param lower_mix String. Type of plot to use in lower triangle for mixed features, see [GGally::ggpairs()].
-#' Possible options are: `'facetdensity'` (default), `'box'`, `'box_no_facet'`, `'dot'`, `'dot_no_facet'`, `'facethist'`, `'denstrip'`, and `'blank'`.
+#' Possible options are: `'facetdensity'` (default), `'box'`, `'box_no_facet'`, `'dot'`, `'dot_no_facet'`,
+#'  `'facethist'`, `'denstrip'`, and `'blank'`.
 #' @param diag_cont String. Type of plot to use on the diagonal for continuous features, see [GGally::ggpairs()].
 #' Possible options are: `'densityDiag'` (default), `'barDiag'`, and `'blankDiag'`.
 #' @param diag_cat String. Type of plot to use on the diagonal for categorical features, see [GGally::ggpairs()].
@@ -1683,10 +1701,12 @@ vaeac_plot_evaluation_criteria <- function(explanation_list,
 #' )
 #'
 #' # Plot the results
-#' figure = vaeac_plot_imputed_ggpairs(explanation = explanation,
-#'                                     which_vaeac_model = "best",
-#'                                     x_true = x_train,
-#'                                     add_title = TRUE)
+#' figure <- vaeac_plot_imputed_ggpairs(
+#'   explanation = explanation,
+#'   which_vaeac_model = "best",
+#'   x_true = x_train,
+#'   add_title = TRUE
+#' )
 #' figure
 #'
 #' # Note that this is an ggplot2 object which we can alter, e.g., we can change the colors.
@@ -1709,7 +1729,6 @@ vaeac_plot_imputed_ggpairs <- function(
     diag_cont = c("densityDiag", "barDiag", "blankDiag"),
     diag_cat = c("barDiag", "blankDiag"),
     cor_method = c("pearson", "kendall", "spearman")) {
-
   # Check that ggplot2 and GGally are installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
@@ -1735,8 +1754,10 @@ vaeac_plot_imputed_ggpairs <- function(
 
   # Check if the vaeac model is expected to give a reasonable figure.
   if (!explanation$internal$parameters$exact || explanation$internal$parameters$is_groupwise) {
-    message("The vaeac model has not been trained on the empty colition, hence, the figure can be missleading. ",
-            "The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in the explanation call.")
+    message(
+      "The vaeac model has not been trained on the empty colition, hence, the figure can be missleading. ",
+      "The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in the explanation call."
+    )
   }
 
   # Extract the vaeac list from the explanation list
@@ -1744,27 +1765,30 @@ vaeac_plot_imputed_ggpairs <- function(
 
   # Check that `which_vaeac_model` is a valid vaeac model name and then load the vaeac checkpoint
   if (!is.character(which_vaeac_model) || !which_vaeac_model %in% names(vaeac_list$models)) {
-    stop(paste0("The parameter `which_vaeac_model` ('", which_vaeac_model ,"') must be one of the following: '",
-                paste(names(vaeac_list$models), collapse = "', '"), "'."))
+    stop(paste0(
+      "The parameter `which_vaeac_model` ('", which_vaeac_model, "') must be one of the following: '",
+      paste(names(vaeac_list$models), collapse = "', '"), "'."
+    ))
   }
   vaeac_model_path <- vaeac_list$models[[which_vaeac_model]]
   checkpoint <- torch::torch_load(vaeac_model_path)
 
   # Get the number of observations in the x_true and features
   n_samples <- if (is.null(x_true)) 500 else nrow(x_true)
-  n_features = checkpoint$n_features
+  n_features <- checkpoint$n_features
 
   # Checking for valid dimension
   if (!is.null(x_true) && ncol(x_true) != n_features) {
     stop(paste0(
-      "Different number of columns in the vaeac model (", n_features ,") and `x_true` (", ncol(x_true), ")."))
+      "Different number of columns in the vaeac model (", n_features, ") and `x_true` (", ncol(x_true), ")."
+    ))
   }
 
   # Set up the vaeac model
-  vaeac_model = vaeac_get_model_from_checkp(checkpoint = checkpoint, cuda = FALSE, mode_train = FALSE)
+  vaeac_model <- vaeac_get_model_from_checkp(checkpoint = checkpoint, cuda = FALSE, mode_train = FALSE)
 
   # Impute the missing entries using the vaeac approach. Here we generate x from p(x), so no conditioning.
-  imputed_values = vaeac_impute_missing_entries(
+  imputed_values <- vaeac_impute_missing_entries(
     x_explain_with_NaNs = matrix(NaN, n_samples, checkpoint$n_features),
     n_samples = 1,
     vaeac_model = vaeac_model,
@@ -1777,8 +1801,8 @@ vaeac_plot_imputed_ggpairs <- function(
 
   # Combine the true (if there are any) adn imputed data and ensure that the categorical features are marked as factors.
   combined_data <- data.table(rbind(x_true, imputed_values))
-  col_cat_names = checkpoint$col_cat_names
-  if (length(col_cat_names) > 0) combined_data[,(col_cat_names) := lapply(.SD, as.factor), .SDcols = col_cat_names]
+  col_cat_names <- checkpoint$col_cat_names
+  if (length(col_cat_names) > 0) combined_data[, (col_cat_names) := lapply(.SD, as.factor), .SDcols = col_cat_names]
 
   # Add type variable representing if they are imputed samples or from `x_true`
   combined_data$type <-
@@ -1793,9 +1817,7 @@ vaeac_plot_imputed_ggpairs <- function(
     upper = list(combo = upper_mix, discrete = upper_cat, continuous = GGally::wrap(upper_cont, method = cor_method)),
     lower = list(combo = lower_mix, discrete = lower_cat, continuous = GGally::wrap(lower_cont, alpha = alpha))
   )
-  if (add_title) figure = figure + ggplot2::ggtitle(tools::file_path_sans_ext(basename(vaeac_model_path)))
+  if (add_title) figure <- figure + ggplot2::ggtitle(tools::file_path_sans_ext(basename(vaeac_model_path)))
 
   return(figure)
 }
-
-
