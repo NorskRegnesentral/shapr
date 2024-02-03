@@ -12,7 +12,7 @@ vaeac_normalize_data(
 )
 }
 \arguments{
-\item{one_hot_max_sizes}{A torch tensor of dimension p containing the one hot sizes of the \code{M} features.
+\item{one_hot_max_sizes}{A torch tensor of dimension p containing the one hot sizes of the \code{n_features} features.
 The sizes for the continuous features can either be \code{0} or \code{1}.}
 
 \item{norm_mean}{Torch tensor (optional). A 1D array containing the means of the columns of \code{x_torch}.}

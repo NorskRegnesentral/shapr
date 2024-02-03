@@ -24,7 +24,7 @@ vaeac(
 )
 }
 \arguments{
-\item{one_hot_max_sizes}{A torch tensor of dimension p containing the one hot sizes of the \code{M} features.
+\item{one_hot_max_sizes}{A torch tensor of dimension p containing the one hot sizes of the \code{n_features} features.
 The sizes for the continuous features can either be \code{0} or \code{1}.}
 
 \item{width}{Integer. The number of neurons in each hidden layer in the neural networks

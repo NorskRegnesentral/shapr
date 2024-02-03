@@ -7,10 +7,9 @@
 vaeac_plot_imputed_ggpairs(
   explanation,
   which_vaeac_model = "best",
-  true_data = NULL,
-  return_figures = TRUE,
-  save_figures = FALSE,
-  show_figures = FALSE,
+  x_true = NULL,
+  add_title = TRUE,
+  alpha = 0.5,
   upper_cont = c("cor", "points", "smooth", "smooth_loess", "density", "blank"),
   upper_cat = c("count", "cross", "ratio", "facetbar", "blank"),
   upper_mix = c("box", "box_no_facet", "dot", "dot_no_facet", "facethist",
@@ -21,72 +20,109 @@ vaeac_plot_imputed_ggpairs(
     "facethist", "denstrip", "blank"),
   diag_cont = c("densityDiag", "barDiag", "blankDiag"),
   diag_cat = c("barDiag", "blankDiag"),
-  cor_method = c("pearson", "kendall", "spearman"),
-  ...
+  cor_method = c("pearson", "kendall", "spearman")
 )
 }
 \arguments{
-\item{explanation}{List. The output list from the \code{\link[=explain]{explain()}} function.}
+\item{explanation}{Shapr list. The output list from the \code{\link[=explain]{explain()}} function.}
 
-\item{which_vaeac_model}{String. Indicating which vaeac model to use when generating the samples.}
+\item{which_vaeac_model}{String. Indicating which \code{vaeac} model to use when generating the samples.
+Possible options are always \code{'best'}, \code{'best_running'}, and \code{'last'}. All possible options can be obtained
+by calling \code{names(explanation$internal$parameters$vaeac$models)}.}
 
-\item{true_data}{Matrix/data.frame containing the data from the distribution that the vaeac model is fitted to.}
+\item{x_true}{Data.table containing the data from the distribution that the \code{vaeac} model is fitted to.}
 
-\item{return_figures}{Boolean. If we are to return the figures in a list.}
+\item{add_title}{Logical. If \code{TRUE}, then a title is added to the plot based on the internal description
+of the \code{vaeac} model specified in \code{which_vaeac_model}.}
 
-\item{save_figures}{Boolean. If we are to save the figures as png files.}
+\item{alpha}{Numeric between \code{0} and \code{1} (default is \code{0.5}). The degree of color transparency.}
 
-\item{show_figures}{Boolean. If we are to show the figures while making them.
-If TRUE, then we create the figures twice, so the run time will double.}
+\item{upper_cont}{String. Type of plot to use in upper triangle for continuous features, see \code{\link[GGally:ggpairs]{GGally::ggpairs()}}.
+Possible options are: \code{'cor'} (default), \code{'points'}, \code{'smooth'}, \code{'smooth_loess'}, \code{'density'}, and \code{'blank'}.}
 
-\item{upper_cont}{Type of plot to use in upper triangle for continuous features.}
+\item{upper_cat}{String. Type of plot to use in upper triangle for categorical features, see \code{\link[GGally:ggpairs]{GGally::ggpairs()}}.
+Possible options are: \code{'count'} (default), \code{'cross'}, \code{'ratio'}, \code{'facetbar'}, and \code{'blank'}.}
 
-\item{upper_cat}{Type of plot to use in upper triangle for categorical features.}
+\item{upper_mix}{String. Type of plot to use in upper triangle for mixed features, see \code{\link[GGally:ggpairs]{GGally::ggpairs()}}.
+Possible options are: \code{'box'} (default), \code{'box_no_facet'}, \code{'dot'}, \code{'dot_no_facet'}, \code{'facethist'}, \code{'facetdensity'}, \code{'denstrip'}, and \code{'blank'}}
 
-\item{upper_mix}{Type of plot to use in upper triangle for mixed features.}
+\item{lower_cont}{String. Type of plot to use in lower triangle for continuous features, see \code{\link[GGally:ggpairs]{GGally::ggpairs()}}.
+Possible options are: \code{'points'} (default), \code{'smooth'}, \code{'smooth_loess'}, \code{'density'}, \code{'cor'}, and \code{'blank'}.}
 
-\item{lower_cont}{Type of plot to use in lower triangle for continuous features.}
+\item{lower_cat}{String. Type of plot to use in lower triangle for categorical features, see \code{\link[GGally:ggpairs]{GGally::ggpairs()}}.
+Possible options are: \code{'facetbar'} (default), \code{'ratio'}, \code{'count'}, \code{'cross'}, and \code{'blank'}.}
 
-\item{lower_cat}{Type of plot to use in lower triangle for categorical features.}
+\item{lower_mix}{String. Type of plot to use in lower triangle for mixed features, see \code{\link[GGally:ggpairs]{GGally::ggpairs()}}.
+Possible options are: \code{'facetdensity'} (default), \code{'box'}, \code{'box_no_facet'}, \code{'dot'}, \code{'dot_no_facet'}, \code{'facethist'}, \code{'denstrip'}, and \code{'blank'}.}
 
-\item{lower_mix}{Type of plot to use in lower triangle for mixed features.}
+\item{diag_cont}{String. Type of plot to use on the diagonal for continuous features, see \code{\link[GGally:ggpairs]{GGally::ggpairs()}}.
+Possible options are: \code{'densityDiag'} (default), \code{'barDiag'}, and \code{'blankDiag'}.}
 
-\item{diag_cont}{Type of plot to use on the diagonal for continuous features.}
+\item{diag_cat}{String. Type of plot to use on the diagonal for categorical features, see \code{\link[GGally:ggpairs]{GGally::ggpairs()}}.
+Possible options are: \code{'barDiag'} (default) and \code{'blankDiag'}.}
 
-\item{diag_cat}{Type of plot to use on the diagonal for categorical features.}
-
-\item{cor_method}{Type of correlation measure.}
-
-\item{...}{Extra parameters sent to the \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}} function.}
+\item{cor_method}{String. Type of correlation measure, see \code{\link[GGally:ggpairs]{GGally::ggpairs()}}.
+Possible options are: \code{'pearson'} (default), \code{'kendall'}, and \code{'spearman'}.}
 }
 \value{
-A list containing the figures if \code{return_figures} = \code{TRUE}.
+A \code{\link[GGally:ggpairs]{GGally::ggpairs()}} figure.
 }
 \description{
 A function that creates a matrix of plots (\code{\link[GGally:ggpairs]{GGally::ggpairs()}}) from
 generated imputations from the unconditioned distribution \eqn{p(\boldsymbol{x})} estimated by
 a vaeac model, and then compares the imputed values with data from the true distribution (if provided).
-}
-\details{
 See \href{https://www.blopig.com/blog/2019/06/a-brief-introduction-to-ggpairs/}{ggpairs} for an
 introduction to \code{\link[GGally:ggpairs]{GGally::ggpairs()}}, and the corresponding
 \href{https://ggobi.github.io/ggally/articles/ggally_plots.html}{vignette}.
-
-Each combination of variables are plotted according to whether they are:
-\describe{
-\item{continuous}{exactly one of ('points' (lower default), 'smooth', 'smooth_loess',
-'density', 'cor' (upper default), or 'blank').}
-\item{combo}{exactly one of ('box', 'box_no_facet' (upper default), 'dot', 'dot_no_facet',
-'facethist', 'facetdensity', 'denstrip', or 'blank').}
-\item{discrete}{exactly one of ('ratio', 'facetbar', or 'blank')}
 }
+\examples{
+\dontrun{
+library(xgboost)
+library(data.table)
+library(shapr)
 
-Plots on the diagonal can either be:
-\describe{
-\item{continuous}{exactly one of ('densityDiag', 'barDiag', 'blankDiag').
-This option is used for continuous X data.}
-\item{discrete}{exactly one of ('barDiag', 'blankDiag'). This option is used for categorical X and Y data.}
-\item{na}{exactly one of ('naDiag', 'blankDiag').  This option is used when all X data is \code{NA}.}
+data("airquality")
+data <- data.table::as.data.table(airquality)
+data <- data[complete.cases(data), ]
+
+x_var <- c("Solar.R", "Wind", "Temp", "Month")
+y_var <- "Ozone"
+
+ind_x_explain <- 1:6
+x_train <- data[-ind_x_explain, ..x_var]
+y_train <- data[-ind_x_explain, get(y_var)]
+x_explain <- data[ind_x_explain, ..x_var]
+
+# Fitting a basic xgboost model to the training data
+model <- xgboost(
+  data = as.matrix(x_train),
+  label = y_train,
+  nround = 100,
+  verbose = FALSE
+)
+
+explanation <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "vaeac",
+  prediction_zero = mean(y_train),
+  n_samples = 1,
+  vaeac.epochs = 10,
+  vaeac.n_vaeacs_initialize = 1
+)
+
+# Plot the results
+figure = vaeac_plot_imputed_ggpairs(explanation = explanation,
+                                    which_vaeac_model = "best",
+                                    x_true = x_train,
+                                    add_title = TRUE)
+figure
+
+# Note that this is an ggplot2 object which we can alter. E.g., we can change the colors
+figure +
+  ggplot2::scale_color_manual(values = c("#E69F00", "#999999")) +
+  ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))
 }
 }
 \author{

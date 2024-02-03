@@ -6,27 +6,25 @@
 \usage{
 vaeac_impute_missing_entries(
   x_explain_with_NaNs,
-  n_explain,
   n_samples,
   vaeac_model,
-  vaeac_checkpoint,
+  checkpoint,
   sampler,
   batch_size,
   verbose = 0,
   seed = NULL,
+  n_explain = NULL,
   index_features = NULL
 )
 }
 \arguments{
 \item{x_explain_with_NaNs}{A 2D matrix, where the missing entries to impute are represented by \code{NaN}.}
 
-\item{n_explain}{Positive integer. The number of explicands.}
-
 \item{n_samples}{Integer. The number of imputed versions we create for each row in \code{x_explain_with_NaNs}.}
 
 \item{vaeac_model}{ADD TEXT}
 
-\item{vaeac_checkpoint}{List containing the}
+\item{checkpoint}{List containing the}
 
 \item{sampler}{ADD TEXT}
 
@@ -38,6 +36,8 @@ We recommend a large number because of a lot of overhead for small batch sizes, 
 \item{verbose}{Boolean. If we are to print the progress to the user.}
 
 \item{seed}{Integer. Seed used before generating the MC samples.}
+
+\item{n_explain}{Positive integer. The number of explicands.}
 
 \item{index_features}{Optional integer vector. Used internally in shapr package to index the coalitions.}
 
