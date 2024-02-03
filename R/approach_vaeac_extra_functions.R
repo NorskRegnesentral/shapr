@@ -1125,7 +1125,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     torch::torch_save(last_state, vaeac_save_file_names[3])
 
     # Summary printout
-    vaeac_print_train_summary(best_state, best_state_running, last_state)
+    if (verbose == 2) vaeac_print_train_summary(best_state, best_state_running, last_state)
 
     # Create a return list
     return_list <- list(

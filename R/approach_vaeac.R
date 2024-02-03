@@ -929,7 +929,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     } # End of iterating over the n_samples
   }) # End of iterating over the batches. Done imputing.
 
-  if (verbose == 2) message("Concatenating the Monte Carlo samples.")
+  if (verbose == 2) message("Postprocessing the Monte Carlo samples.")
 
   # Order the MC samples into a tensor of shape [nrow(x_explain_with_NaNs), n_samples, n_features]. The lapply function
   # creates a list of tensors of shape [nrow(x_explain_with_NaNs), 1, n_features] by concatenating the batches for the
@@ -945,8 +945,6 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
   # Convert from a tensor of shape [nrow(x_explain_with_NaNs), n_samples, n_features]
   # to a matrix of shape [(nrow(x_explain_with_NaNs) * n_samples), n_features].
   result <- as.data.table(as.matrix(result$view(c(result$shape[1] * result$shape[2], result$shape[3]))$detach()$cpu()))
-
-  if (verbose == 2) message("Postprocessing the Monte Carlo samples.")
 
   # Post-process the data such that categorical features have original level names and convert to a data table.
   result <- vaeac_postprocess_data(data = result, vaeac_model_state_list = checkpoint)

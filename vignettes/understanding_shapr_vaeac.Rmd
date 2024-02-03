@@ -152,9 +152,7 @@ vaeac.save_every_nth_epoch <- 3
 # for some epochs, and then we continue to only train the best version.
 vaeac.n_vaeacs_initialize <- 2
 
-# If we are to print the progress
-vaeac.verbose <- TRUE
-
+# The level of verbosity
 verbose = 2
 ```
 
@@ -177,19 +175,8 @@ explanation <- explain(
   keep_samp_for_vS = keep_samp_for_vS,
   seed = seed,
   verbose = verbose,
-  vaeac.epochs = 20,
-  vaeac.n_vaeacs_initialize = 2,
-  vaeac.width = 16,
-  vaeac.save_every_nth_epoch = 10000000,
-  vaeac.blaa2 = 1000000000,
-  vaeac.extra_parameters = list(
-    vaeac.width = 1000000000,
-    vaeac.save_every_nth_epoch = 8,
-    vaeac.masking_ratio = 0.7,
-    vaeac.batch_size = 32,
-    vaeac.depth = 2,
-    vaeac.blaa = 1000000000
-  )
+  vaeac.epochs = 3,
+  vaeac.n_vaeacs_initialize = 2
 )
 ```
 
@@ -228,7 +215,6 @@ expl_pretrained_vaeac <- explain(
   seed = seed,
   verbose = 2,
   vaeac.extra_parameters = list(
-    vaeac.verbose = vaeac.verbose,
     vaeac.pretrained_vaeac_model = vaeac.pretrained_vaeac_model
   )
 )
@@ -406,7 +392,7 @@ expl_paired_sampling_FALSE <- explain(
 We can compare the results by looking at the training and validation errors and by the $\opertorname{MSE}_v$ evaluation criterion. 
 ```{r paired sampling plotting, cache = TRUE}
 explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE, "Paired samp." = expl_paired_sampling_TRUE)
-vaeac_plot_evaluation_criterion(explanation_list)
+vaeac_plot_evaluation_criteria(explanation_list)
 plot_MSEv_eval_crit(explanation_list)
 ```
 
@@ -424,12 +410,11 @@ rbind(
 ## Progressr
 
 The `shapr` package provides progress updates of the computation of the Shapley
-values through the R-package `progressr`. The `vaeac`approach also supports this,
-but in addition it has its own verbose mode which is activated through `vaeac.verbose = TRUE`.
-It is possible to use either method or both at the same time.
+values through the R-package `progressr`. If the user also sets `verbose = 2` in `explain()`, then we will get 
+extra information related to the `vaeac` approach. The `verbose` parameter works independently of the `progressr` 
+package.
 
-First we look at the printout if `vaeac.verbose = FALSE` (default).
-```{r progressr false verbose false, cache = TRUE}
+```{r progressr false verbose 0, cache = TRUE}
 library(progressr)
 handlers("void") # To silence all progressr updates
 expl_without_messages <- explain(
@@ -442,19 +427,13 @@ expl_without_messages <- explain(
   n_samples = 100,
   n_batches = 5,
   seed = seed,
+  verbose = 0,
   vaeac.epochs = 10,
-  vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(
-    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
-    vaeac.verbose = FALSE
-  )
+  vaeac.n_vaeacs_initialize = 4
 )
 ```
-Then we get no messages as wanted.
-
-
-Then we look at the printout if `vaeac.verbose = TRUE`, then we get the old type of printouts.
-```{r progressr false verbose true, cache = TRUE}
+By setting `verbose = 2`, we will get messages about the progress.
+```{r progressr false verbose 2, cache = TRUE}
 handlers("void") # To silence all progressr updates
 expl_with_messages <- explain(
   model = model,
@@ -466,20 +445,17 @@ expl_with_messages <- explain(
   n_samples = 100,
   n_batches = 5,
   seed = seed,
+  verbose = 2,
   vaeac.epochs = 10,
-  vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(
-    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
-    vaeac.verbose = TRUE
-  )
+  vaeac.n_vaeacs_initialize = 4
 )
 all.equal(expl_without_messages$shapley_values, expl_with_messages$shapley_values)
 ```
 
-
-
-Let us take a look at when we using `progressr`.
-```{r progressr true verbose false, cache = TRUE}
+For more visual information, we can use the `progressr` package too. This can help us see the progress of the training 
+step for the final `vaeac` model. Note that one can set `verbose = 0` to not get any sticky messages from the `vaeac`
+approach and only get the progress bars.
+```{r progressr true verbose 2, cache = TRUE}
 progressr::handlers("cli")
 # If no progression handler is specified, the txtprogressbar is used
 # Other progression handlers:
@@ -487,19 +463,19 @@ progressr::handlers("cli")
 # progressr::handlers('handler_winprogressbar') # Window only
 # progressr::handlers('cli') # requires the 'cli' package
 #
-# Another progressbar with sound
-# handlers(list(
-#   handler_pbcol(
+# Another progressbar with sound which requires that `beepr` is installed
+# progressr::handlers(list(
+#   progressr::handler_pbcol(
 #       adjust = 1.0,
 #     complete = function(s) cli::bg_red(cli::col_black(s)),
 #   incomplete = function(s) cli::bg_cyan(cli::col_black(s))
 # ),
-#   handler_beepr(
+#   progressr::handler_beepr(
 #     finish   = "wilhelm",
 #     interval = 2.0
 #   )
 # ))
-with_progress({
+progressr::with_progress({
   expl_with_progressr <- explain(
     model = model,
     x_explain = x_explain,
@@ -510,45 +486,13 @@ with_progress({
     n_samples = 100,
     n_batches = 5,
     seed = seed,
+    verbose = 0,
     vaeac.epochs = 10,
-    vaeac.n_vaeacs_initialize = 2,
-    vaeac.extra_parameters = list(
-      vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
-      vaeac.verbose = FALSE
-    )
+    vaeac.n_vaeacs_initialize = 4
   )
 })
 all.equal(expl_without_messages$shapley_values, expl_with_progressr$shapley_values)
 ```
-
-We can also use `progressr` together with the `progress` bars that are created 
-when `vaeac.verbose == TRUE`, but then we will only see the `progressr` get updates
-while the `progress` bars will just be printed. Note that there an be some minor visual 
-artifacts.
-```{r progressr true verbose true, cache = TRUE}
-handlers("progress")
-with_progress({
-  expl_with_progressr_verbose <- explain(
-    model = model,
-    x_explain = x_explain,
-    x_train = x_train,
-    approach = approach,
-    prediction_zero = p0,
-    n_combinations = n_combinations,
-    n_samples = 100,
-    n_batches = 5,
-    seed = seed,
-    vaeac.epochs = 10,
-    vaeac.n_vaeacs_initialize = 2,
-    vaeac.extra_parameters = list(
-      vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
-      vaeac.verbose = TRUE
-    )
-  )
-})
-all.equal(expl_without_messages$shapley_values, expl_with_progressr_verbose$shapley_values)
-```
-
 
 ## Continue the training of the vaeac approach
 
@@ -577,7 +521,8 @@ expl_litle_training <- explain(
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(
-    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
+    vaeac.log_exp_cont_feat = TRUE
   )
 )
 
@@ -585,11 +530,12 @@ expl_litle_training <- explain(
 vaeac_plot_imputed_ggpairs(
   explanation = expl_litle_training,
   which_vaeac_model = "best",
-  true_data = x_train
+  true_data = x_train,
+  add_title = TRUE
 )
 
 # Look at the training and validation errors. Not happy and want to train more.
-vaeac_plot_evaluation_criterion(list("Original" = expl_litle_training))
+vaeac_plot_evaluation_criteria(list("Original" = expl_litle_training))
 
 # Can look at the saved models, training/validation errors, and the training time
 expl_litle_training$internal$parameters$vaeac$models
@@ -615,7 +561,7 @@ expl_train_more$internal$parameters$vaeac$results
 
 # Look at the training and validation errors. Still not sure
 # Note that the lines are obviously overlapping
-vaeac_plot_evaluation_criterion(list(
+vaeac_plot_evaluation_criteria(list(
   "Original" = expl_litle_training,
   "More epochs" = expl_train_more
 ))
@@ -654,7 +600,7 @@ expl_train_even_more$internal$parameters$vaeac$models
 expl_train_even_more$internal$parameters$vaeac$results
 
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criterion(list(
+vaeac_plot_evaluation_criteria(list(
   "Original" = expl_litle_training,
   "More epochs" = expl_train_more,
   "Even more epochs" = expl_train_even_more
@@ -726,7 +672,7 @@ expl_early_stopping <- explain(
 )
 
 # Look at the training and validation errors. We are quite happy with it.
-vaeac_plot_evaluation_criterion(list("Vaeac early stopping" = expl_early_stopping))
+vaeac_plot_evaluation_criteria(list("Vaeac early stopping" = expl_early_stopping))
 ```
 
 However, we can train it further for a fixed amount of epochs if desired.
@@ -752,7 +698,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
   )
 
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criterion(list(
+vaeac_plot_evaluation_criteria(list(
   "Vaeac early stopping" = expl_early_stopping,
   "Vaeac early stopping more epochs" = expl_early_stopping_train_more
 ))
@@ -919,7 +865,7 @@ expl_vaeac <- explain(
 )
 
 # We see that the networks are still learning
-vaeac_plot_evaluation_criterion(list("Simple vaeac" = expl_vaeac))
+vaeac_plot_evaluation_criteria(list("Simple vaeac" = expl_vaeac))
 
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
@@ -956,7 +902,7 @@ expl_vaeac_complex <- explain(
   )
 )
 
-vaeac_plot_evaluation_criterion(list(
+vaeac_plot_evaluation_criteria(list(
   "Vaeac w.o. skip-con." = expl_vaeac,
   "Vaeac w. skip-con." = expl_vaeac_complex
 ))
