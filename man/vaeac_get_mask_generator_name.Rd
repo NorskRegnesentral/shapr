@@ -7,7 +7,8 @@
 vaeac_get_mask_generator_name(
   mask_gen_these_coalitions,
   mask_gen_these_coalitions_prob,
-  masking_ratio
+  masking_ratio,
+  verbose
 )
 }
 \arguments{
@@ -20,6 +21,9 @@ Array containing the probabilities for sampling the coalitions in \code{mask_gen
 \item{masking_ratio}{Probability of masking a feature in the MCAR mask generator.
 Default masking scheme which ensures that vaeac can do arbitrary conditioning.
 This is overruled if \code{mask_gen_these_coalitions} is specified.}
+
+\item{verbose}{Boolean. If we are to print the progress of the initialization of different vaeac models,
+the training of the final vaeac model, and summary of the training progress.}
 }
 \value{
 The function does not return anything.

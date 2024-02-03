@@ -25,14 +25,15 @@ This function does not use batch iterators, which might increase the speed.
 }
 \examples{
 \dontrun{
-Example how to use it combined with mask generators with paired sampling activated
+# Example how to use it combined with mask generators with paired sampling activated
 batch_size <- 4
 if (batch_size \%\% 2 == 1) batch_size <- batch_size - 1 # Make sure that batch size is even
 n_features <- 3
 n_observations <- 5
 shuffle <- TRUE
 data <- torch_tensor(matrix(rep(seq(n_observations), each = n_features),
-                            ncol = n_features, byrow = TRUE))
+  ncol = n_features, byrow = TRUE
+))
 data
 dataset <- vaeac_dataset(data, rep(1, n_features))
 dataload <- torch::dataloader(dataset,
@@ -49,7 +50,6 @@ coro::loop(for (batch in dataload) {
   print(torch::torch_cat(c(batch, mask, obs), -1))
 })
 }
-
 }
 \author{
 Lars Henry Berge Olsen

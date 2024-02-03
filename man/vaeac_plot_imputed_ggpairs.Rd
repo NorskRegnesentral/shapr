@@ -119,7 +119,7 @@ figure = vaeac_plot_imputed_ggpairs(explanation = explanation,
                                     add_title = TRUE)
 figure
 
-# Note that this is an ggplot2 object which we can alter. E.g., we can change the colors
+# Note that this is an ggplot2 object which we can alter, e.g., we can change the colors.
 figure +
   ggplot2::scale_color_manual(values = c("#E69F00", "#999999")) +
   ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))

@@ -111,18 +111,18 @@ explanation_list_named <- list(
 )
 
 # Call the function with the unnamed list, will create names
-vaeac_plot_evaluation_criterion(explanation_list = explanation_list_unnamed)
+vaeac_plot_evaluation_criteria(explanation_list = explanation_list_unnamed)
 
 # Call the function with the named list, will use the provided names
 # See that the paired samplign often produce more stable results
-vaeac_plot_evaluation_criterion(explanation_list = explanation_list_named)
+vaeac_plot_evaluation_criteria(explanation_list = explanation_list_named)
 
 # The function also works if we have only one method, but then one should only look at the method plot
-vaeac_plot_evaluation_criterion(explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
+vaeac_plot_evaluation_criteria(explanation_list = list("Paired samp. & large NN" = explanation_paired_sampling_TRUE),
                              plot_type = "method")
 
 # Can alter the plot
-vaeac_plot_evaluation_criterion(
+vaeac_plot_evaluation_criteria(
   explanation_list = explanation_list_named,
   plot_from_nth_epoch = 5,
   plot_every_nth_epoch = 3,
@@ -130,7 +130,7 @@ vaeac_plot_evaluation_criterion(
 )
 
 # If we want only want the criterion version
-tmp_fig_criterion = vaeac_plot_evaluation_criterion(
+tmp_fig_criterion = vaeac_plot_evaluation_criteria(
   explanation_list = explanation_list_named,
   plot_type = "criterion")
 
@@ -144,7 +144,7 @@ tmp_fig_criterion + ggplot2::geom_smooth(method = "loess", formula = y ~ x, se =
   ggplot2::theme_minimal()
 
 # If we only want the VLB
-vaeac_plot_evaluation_criterion(
+vaeac_plot_evaluation_criteria(
   explanation_list = explanation_list_named,
   criteria = "VLB",
   plot_type = "criterion")

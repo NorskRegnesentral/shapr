@@ -35,7 +35,7 @@ vaeac_train_model(
   save_data = FALSE,
   log_exp_cont_feat = FALSE,
   which_vaeac_model = "best",
-  verbose = FALSE,
+  verbose = 0,
   seed = 1,
   ...
 )

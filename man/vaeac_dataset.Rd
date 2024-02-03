@@ -32,15 +32,18 @@ batch_size <- 10
 one_hot_max_sizes <- rep(1, p)
 vaeac_ds <- vaeac_dataset(
   torch_tensor(matrix(rnorm(p * N), ncol = p),
-               dtype = torch_float()),
-  one_hot_max_sizes)
+    dtype = torch_float()
+  ),
+  one_hot_max_sizes
+)
 vaeac_ds
 
 vaeac_dl <- torch::dataloader(
   vaeac_ds,
   batch_size = batch_size,
   shuffle = TRUE,
-  drop_last = FALSE)
+  drop_last = FALSE
+)
 vaeac_dl$.length()
 vaeac_dl$.iter()
 

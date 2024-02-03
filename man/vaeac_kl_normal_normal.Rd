@@ -7,9 +7,9 @@
 vaeac_kl_normal_normal(p, q)
 }
 \arguments{
-\item{p}{a \code{\link[torch:distr_normal]{torch::distr_normal()}} object.}
+\item{p}{A \code{\link[torch:distr_normal]{torch::distr_normal()}} object.}
 
-\item{q}{a \code{\link[torch:distr_normal]{torch::distr_normal()}} object.}
+\item{q}{A \code{\link[torch:distr_normal]{torch::distr_normal()}} object.}
 }
 \value{
 The KL divergence between the two Gaussian distributions.
