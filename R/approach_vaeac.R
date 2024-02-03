@@ -849,8 +849,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     torch::torch_manual_seed(seed)
   }
 
-  # Small printout to the user.
-  if (verbose == 2) message("Monte Carlo step: pre-processing the explicands.")
+  if (verbose == 2) message("Preprocessing the explicands.")
 
   # Preprocess `x_explain_with_NaNs`. Turn factor names into numerics 1,2,...,K, (vaeac only accepts numerics) and keep
   # track of the maping of names. Optionally log-transform the continuous features. Then, finally, normalize the data
@@ -870,8 +869,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
   # Create a data loader that load/iterate over the data set in chronological order.
   dataloader <- torch::dataloader(dataset = dataset, batch_size = batch_size, shuffle = FALSE)
 
-  # Small printout to the user
-  if (verbose == 2) message("Monte Carlo step: generating the MC samples.")
+  if (verbose == 2) message("Generating the MC samples.")
 
   # Create an auxiliary list of lists to store the imputed values combined with the original values. The structure is
   # [[i'th MC sample]][[b'th batch]], where the entries are tensors of dimension batch_size x n_features.
@@ -933,8 +931,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     } # End of iterating over the n_samples
   }) # End of iterating over the batches. Done imputing.
 
-  # Small printout to the user
-  if (verbose == 2) message("Monte Carlo step: concatenating the MC samples.")
+  if (verbose == 2) message("Concatenating the Monte Carlo samples.")
 
   # Order the MC samples into a tensor of shape [nrow(x_explain_with_NaNs), n_samples, n_features]. The lapply function
   # creates a list of tensors of shape [nrow(x_explain_with_NaNs), 1, n_features] by concatenating the batches for the
@@ -950,6 +947,8 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
   # Convert from a tensor of shape [nrow(x_explain_with_NaNs), n_samples, n_features]
   # to a matrix of shape [(nrow(x_explain_with_NaNs) * n_samples), n_features].
   result <- as.data.table(as.matrix(result$view(c(result$shape[1] * result$shape[2], result$shape[3]))$detach()$cpu()))
+
+  if (verbose == 2) message("Postprocessing the Monte Carlo samples.")
 
   # Post-process the data such that categorical features have original level names and convert to a data table.
   result <- vaeac_postprocess_data(data = result, vaeac_model_state_list = checkpoint)
