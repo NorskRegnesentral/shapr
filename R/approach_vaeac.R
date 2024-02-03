@@ -52,7 +52,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   parameters <- internal$parameters
 
   # Small printout to user
-  if (parameters$verbose > 0) message("Starting 'setup_approach.vaeac'.")
+  if (parameters$verbose == 2) message("Starting 'setup_approach.vaeac'.")
 
   # Check if we are doing a combination of approaches
   combined_approaches <- length(internal$parameters$approach) > 1
@@ -116,7 +116,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   # Check if user provided a pre-trained vaeac model, otherwise, we train one from scratch.
   if (is.null(parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model)) {
     # We train a vaeac model with the parameters in `parameters`, as user did not provide pre-trained vaeac model
-    if (parameters$verbose > 0) message("Training a `vaeac` model with the provided parameters from scratch.")
+    if (parameters$verbose == 2) message("Training a `vaeac` model with the provided parameters from scratch.")
 
     # Specify that a vaeac model was NOT provided
     parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided <- FALSE
@@ -145,7 +145,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # The pre-trained vaeac model is either:
     # 1. The explanation$internal$parameters$vaeac list of type "vaeac" from an earlier call to explain().
     # 2. A string containing the path to where the "vaeac" model is stored on disk.
-    if (parameters$verbose > 0) message("Loading the provided `vaeac` model.")
+    if (parameters$verbose == 2) message("Loading the provided `vaeac` model.")
 
     # Boolean representing that a pre-trained vaeac model was provided
     parameters$vaeac.extra_parameters$vaeac.pretrained_vaeac_model_provided <- TRUE
@@ -174,7 +174,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   internal$parameters <- parameters
 
   # Small printout to user
-  if (parameters$verbose > 0) message("Done with 'setup_approach.vaeac'.\n")
+  if (parameters$verbose == 2) message("Done with 'setup_approach.vaeac'.\n")
 
   # Return the updated internal list.
   return(internal)
@@ -203,7 +203,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
   vaeac.batch_size_sampling <- internal$parameters$vaeac.extra_parameters$vaeac.batch_size_sampling
 
   # Small printout to the user
-  if (verbose > 1) {
+  if (verbose == 2) {
     message(paste0(
       "Working on batch ", internal$objects$X[id_combination == index_features[1]]$batch, " of ",
       internal$parameters$n_batches, " in `prepare_data.vaeac()`."
@@ -356,7 +356,7 @@ vaeac_train_model <- function(x_train,
                               save_data = FALSE,
                               log_exp_cont_feat = FALSE,
                               which_vaeac_model = "best",
-                              verbose = FALSE,
+                              verbose = 0,
                               seed = 1,
                               ...) {
   # Set seed for reproducibility for both R and torch
@@ -378,7 +378,8 @@ vaeac_train_model <- function(x_train,
   mask_generator_name <- vaeac_get_mask_generator_name(
     mask_gen_these_coalitions = mask_gen_these_coalitions,
     mask_gen_these_coalitions_prob = mask_gen_these_coalitions_prob,
-    masking_ratio = masking_ratio
+    masking_ratio = masking_ratio,
+    verbose = verbose
   )
 
   # Get the dimensions of the x_train
@@ -490,13 +491,13 @@ vaeac_train_model <- function(x_train,
     # Add the number of trainable parameters in the vaeac model to the state list
     if (initialization_idx == 1) {
       state_list$n_trainable_parameters <- vaeac_model$n_train_param
-      if (verbose == 1) {
+      if (verbose == 2) {
         message(paste0("The vaeac model contains ", vaeac_model$n_train_param[1, 1], " trainable parameters."))
       }
     }
 
     # Print which initialization vaeac the function is working on
-    if (verbose == 1) {
+    if (verbose == 2) {
       message(paste0("Initializing vaeac number ", initialization_idx, " of ", n_vaeacs_initialize, "."))
     }
 
@@ -537,7 +538,7 @@ vaeac_train_model <- function(x_train,
 
   # Check if we are printing detailed debug information
   # Small printout to the user stating which initiated vaeac model was the best.
-  if (verbose > 0) {
+  if (verbose == 2) {
     message(paste0(
       "Best vaeac inititalization was number ", vaeac_model_best_list$initialization_idx, " (of ", n_vaeacs_initialize,
       ") with a training VLB = ", round(as.numeric(vaeac_model_best_list$train_vlb[-1]), 3), " after ",
@@ -883,7 +884,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
     # If batch size is less than batch_size, extend it with objects from the beginning of the dataset.
     if (batch_extended$shape[1] < batch_size) {
-      batch_extended <- extend_batch(batch = batch_extended, dataloader = dataloader, batch_size = batch_size)
+      batch_extended <- vaeac_extend_batch(batch = batch_extended, dataloader = dataloader, batch_size = batch_size)
     }
 
     # Send the original and extended batch to GPU if applicable.
@@ -948,7 +949,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
   # Convert from a tensor of shape [nrow(x_explain_with_NaNs), n_samples, n_features]
   # to a matrix of shape [(nrow(x_explain_with_NaNs) * n_samples), n_features].
-  result <- as.matrix(result$view(c(result$shape[1] * result$shape[2], result$shape[3]))$detach()$cpu())
+  result <- as.data.table(as.matrix(result$view(c(result$shape[1] * result$shape[2], result$shape[3]))$detach()$cpu()))
 
   # Post-process the data such that categorical features have original level names and convert to a data table.
   result <- vaeac_postprocess_data(data = result, vaeac_model_state_list = checkpoint)

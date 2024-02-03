@@ -643,7 +643,8 @@ vaeac_get_model_from_checkp = function(checkpoint, cuda, mode_train) {
 #'
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
-vaeac_get_mask_generator_name <- function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, masking_ratio) {
+vaeac_get_mask_generator_name <-
+  function(mask_gen_these_coalitions, mask_gen_these_coalitions_prob, masking_ratio, verbose) {
   if (!is.null(mask_gen_these_coalitions) && !is.null(mask_gen_these_coalitions_prob)) {
     # User have provided mask_gen_these_coalitions (and mask_gen_these_coalitions_prob),
     # and we want to use Specified_masks_mask_generator
@@ -990,7 +991,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     coro::loop(for (batch in train_dataloader) {
       # If batch size is less than batch_size, extend it with objects from the beginning of the dataset
       if (batch$shape[1] < batch_size) {
-        batch <- extend_batch(batch = batch, dataloader = train_dataloader, batch_size = batch_size)
+        batch <- vaeac_extend_batch(batch = batch, dataloader = train_dataloader, batch_size = batch_size)
       }
 
       # Generate mask and do an optimizer step over the mask and the batch
@@ -1090,7 +1091,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     # Check if we are to apply early stopping, i.e., no improvement in the IWAE for `epochs_early_stopping` epochs.
     if (is.integer(epochs_early_stopping)) {
       if (epoch - best_state$epoch >= epochs_early_stopping) {
-        if (verbose == 1) {
+        if (verbose == 2) {
           message(paste0(
             "No IWAE improvment in ", epochs_early_stopping, " epochs. Apply early stopping at epoch ",
             epoch, "."
