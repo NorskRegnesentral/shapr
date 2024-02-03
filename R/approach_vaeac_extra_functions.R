@@ -1393,3 +1393,409 @@ vaeac_update_pretrained_model <- function(parameters) {
   # Return the updated parameters list
   return(parameters)
 }
+
+# Plot functions =======================================================================================================
+
+
+#' Plot the training VLB and validation IWAE for `vaeac` models
+#'
+#' @description
+#' This function makes ([ggplot2::ggplot()]) figures of the training VLB and the validation IWAE for a list
+#' of [shapr::explain()] objects with `approach = "vaeac"`. See [setup_approach()] for more information about the
+#' `vaeac` approach. Two figures are returned by the function. In the figure, each object in `explanation_list` gets
+#' its own facet, while in the second figure, we plot the criteria in each facet for all objects.
+#'
+#' @details
+#' See \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} or the
+#' \href{https://borea17.github.io/paper_summaries/iwae/}{blog post} for a summary of the VLB and IWAE.
+#'
+#' @param explanation_list A list of [explain()] objects applied to the same data, model, and
+#' `vaeac` must be the used approach. If the entries in the list is named, then the function use
+#' these names. Otherwise, it defaults to the approach names (with integer suffix for duplicates)
+#' for the explanation objects in `explanation_list`.
+#' @param plot_from_nth_epoch Integer. If we are only plot the results form the nth epoch and so forth.
+#' The first epochs can be large in absolute value and make the rest of the plot difficult to interpret.
+#' @param plot_every_nth_epoch Integer. If we are only to plot every nth epoch. Usefully to illustrate
+#' the overall trend, as there can be a lot of fluctuation and oscillation in the values between each epoch.
+#' @param facet_wrap_scales String. Should the scales be fixed ("`fixed`", the default),
+#' free ("`free`"), or free in one dimension ("`free_x`", "`free_y`").
+#' @param facet_wrap_ncol Integer. Number of columns in the facet wrap.
+#' @param criteria Character vector. The possible options are "VLB", "IWAE", "IWAE_running". Default is the first two.
+#' @param plot_type Character vector. The possible options are "method" and "criterion". Default is to plot both.
+#'
+#' @return Either a single [ggplot2::ggplot()] object or a list of [ggplot2::ggplot()] objects based on the
+#' `plot_type` parameter.
+#'
+#' @examples
+#' \dontrun{
+#' library(xgboost)
+#' library(data.table)
+#' library(shapr)
+#'
+#' data("airquality")
+#' data <- data.table::as.data.table(airquality)
+#' data <- data[complete.cases(data), ]
+#'
+#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#' y_var <- "Ozone"
+#'
+#' ind_x_explain <- 1:6
+#' x_train <- data[-ind_x_explain, ..x_var]
+#' y_train <- data[-ind_x_explain, get(y_var)]
+#' x_explain <- data[ind_x_explain, ..x_var]
+#'
+#' # Fitting a basic xgboost model to the training data
+#' model <- xgboost(data = as.matrix(x_train), label = y_train, nround = 100, verbose = FALSE)
+#'
+#' # Specifying the phi_0, i.e. the expected prediction without any features
+#' p0 <- mean(y_train)
+#'
+#' # Train vaeac with and without paired sampling
+#' explanation_paired <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = approach,
+#'   prediction_zero = p0,
+#'   n_samples = 1, # As we are only interested in the training of the vaeac
+#'   vaeac.epochs = 10, # Should be higher in applications.
+#'   vaeac.n_vaeacs_initialize = 1,
+#'   vaeac.width = 16,
+#'   vaeac.depth = 2,
+#'   vaeac.extra_parameters = list(vaeac.paired_sampling = TRUE)
+#' )
+#'
+#' explanation_regular <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = approach,
+#'   prediction_zero = p0,
+#'   n_samples = 1, # As we are only interested in the training of the vaeac
+#'   vaeac.epochs = 10, # Should be higher in applications.
+#'   vaeac.width = 16,
+#'   vaeac.depth = 2,
+#'   vaeac.n_vaeacs_initialize = 1,
+#'   vaeac.extra_parameters = list(vaeac.paired_sampling = FALSE)
+#' )
+#'
+#' # Collect the explanation objects in an named list
+#' explanation_list <- list("Regular sampling" = explanation_regular, "Paired sampling" = explanation_paired)
+#'
+#' # Call the function with the named list, will use the provided names
+#' vaeac_plot_evaluation_criteria(explanation_list = explanation_list)
+#'
+#' # The function also works if we have only one method, but then one should only look at the method plot.
+#' vaeac_plot_evaluation_criteria(explanation_list = explanation_list[2], plot_type = "method")
+#'
+#' # Can alter the plot
+#' vaeac_plot_evaluation_criteria(
+#'   explanation_list = explanation_list,
+#'   plot_from_nth_epoch = 2,
+#'   plot_every_nth_epoch = 2,
+#'   facet_wrap_scales = "free"
+#' )
+#'
+#' # If we only want the VLB
+#' vaeac_plot_evaluation_criteria(explanation_list = explanation_list, criteria = "VLB", plot_type = "criterion")
+#'
+#' # If we want only want the criterion version
+#' tmp_fig_criterion <- vaeac_plot_evaluation_criteria(explanation_list = explanation_list, plot_type = "criterion")
+#'
+#' # Since `tmp_fig_criterion` is a ggplot2 object, we can alter it by, e.g,. adding points or smooths with se bands
+#' tmp_fig_criterion + ggplot2::geom_point(shape = "circle", size = 1, ggplot2::aes(col = Method))
+#' tmp_fig_criterion$layers[[1]] <- NULL
+#' tmp_fig_criterion + ggplot2::geom_smooth(method = "loess", formula = y ~ x, se = TRUE) +
+#'   ggplot2::scale_color_brewer(palette = "Set1") +
+#'   ggplot2::theme_minimal()
+#' }
+#'
+#' @author Lars Henry Berge Olsen
+#' @export
+vaeac_plot_evaluation_criteria <- function(explanation_list,
+                                           plot_from_nth_epoch = 1,
+                                           plot_every_nth_epoch = 1,
+                                           criteria = c("VLB", "IWAE"),
+                                           plot_type = c("method", "criterion"),
+                                           facet_wrap_scales = "fixed",
+                                           facet_wrap_ncol = NULL) {
+  ## Checks
+  # Check that ggplot2 is installed
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+  }
+
+  # Check for valid criteria argument
+  unknown_criteria <- criteria[!(criteria %in% c("VLB", "IWAE", "IWAE_running"))]
+  if (length(unknown_criteria) > 0) {
+    error(paste0(
+      "The `criteria` must be one (or several) of 'VLB', 'IWAE', and 'IWAE_running'. ",
+      "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
+    ))
+  }
+
+  # Check for valid plot type argument
+  unknown_plot_type <- plot_type[!(plot_type %in% c("method", "criterion"))]
+  if (length(unknown_plot_type) > 0) {
+    error(paste0(
+      "The `plot_type` must be one (or several) of 'method' and 'criterion'. ",
+      "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
+    ))
+  }
+
+  # Ensure that even a single explanation object is in a list
+  if ("shapr" %in% class(explanation_list)) explanation_list <- list(explanation_list)
+
+  ## Create data.tables
+  # Extract the VLB and IWAE
+  vaeac_VLB_IWAE_dt <- vaeac_get_evaluation_criteria(explanation_list)
+
+  # Get the relevant criteria
+  keep_these_columns <- c("Method", "Epoch", criteria)
+  vaeac_VLB_IWAE_dt <- vaeac_VLB_IWAE_dt[, keep_these_columns, with = FALSE]
+
+  # Check for valid `plot_from_nth_epoch`
+  max_epoch <- max(vaeac_VLB_IWAE_dt$Epoch)
+  if (plot_from_nth_epoch > max_epoch) {
+    stop(sprintf(
+      "`plot_from_nth_epoch` (%d) is larger than the number of epochs (%d)",
+      plot_from_nth_epoch, max_epoch
+    ))
+  }
+
+  # Remove entries with too low epoch
+  vaeac_VLB_IWAE_dt <- vaeac_VLB_IWAE_dt[Epoch >= plot_from_nth_epoch, ]
+
+  # If we are only to plot every nth epoch
+  vaeac_VLB_IWAE_dt <- vaeac_VLB_IWAE_dt[Epoch %% plot_every_nth_epoch == 0]
+
+  # Convert it from wide to long
+  vaeac_VLB_IWAE_dt_long <- data.table::melt(
+    data = vaeac_VLB_IWAE_dt,
+    id.vars = c("Method", "Epoch"),
+    variable.name = "Criterion",
+    variable.factor = TRUE,
+    value.name = "Value"
+  )
+
+  ## Plot
+  return_object <- list()
+
+  # Make the figure where each explanation object has its own facet
+  if ("method" %in% plot_type) {
+    return_object$figure_each_method <-
+      ggplot2::ggplot(vaeac_VLB_IWAE_dt_long, ggplot2::aes(x = Epoch, y = Value, col = Criterion)) +
+      ggplot2::labs(title = "The evaluation criterions for different vaeac models") +
+      ggplot2::geom_line(ggplot2::aes(group = Criterion, col = Criterion)) +
+      ggplot2::facet_wrap(ggplot2::vars(Method), ncol = facet_wrap_ncol, scales = facet_wrap_scales)
+  }
+
+  # Make the figure where each criterion has its own facet
+  if ("criterion" %in% plot_type) {
+    return_object$figure_each_criterion <-
+      ggplot2::ggplot(vaeac_VLB_IWAE_dt_long, ggplot2::aes(x = Epoch, y = Value, col = Method)) +
+      ggplot2::labs(title = "The evaluation criterions for different vaeac models") +
+      ggplot2::geom_line(ggplot2::aes(group = Method, col = Method)) +
+      ggplot2::facet_wrap(ggplot2::vars(Criterion), ncol = facet_wrap_ncol, scales = facet_wrap_scales)
+  }
+
+  # If only made one figure, then we directly return that object and not a list
+  if (length(return_object) == 1) return_object <- return_object[[1]]
+
+  return(return_object)
+}
+
+#' Plot Pairwise Plots for Imputed and True Data
+#'
+#' @description A function that creates a matrix of plots ([GGally::ggpairs()]) from
+#' generated imputations from the unconditioned distribution \eqn{p(\boldsymbol{x})} estimated by
+#' a `vaeac` model, and then compares the imputed values with data from the true distribution (if provided).
+#' See \href{https://www.blopig.com/blog/2019/06/a-brief-introduction-to-ggpairs/}{ggpairs} for an
+#' introduction to [GGally::ggpairs()], and the corresponding
+#' \href{https://ggobi.github.io/ggally/articles/ggally_plots.html}{vignette}.
+#'
+#' @param explanation Shapr list. The output list from the [shapr::explain()] function.
+#' @param which_vaeac_model String. Indicating which `vaeac` model to use when generating the samples.
+#' Possible options are always `'best'`, `'best_running'`, and `'last'`. All possible options can be obtained
+#' by calling `names(explanation$internal$parameters$vaeac$models)`.
+#' @param x_true Data.table containing the data from the distribution that the `vaeac` model is fitted to.
+#' @param upper_cont String. Type of plot to use in upper triangle for continuous features, see [GGally::ggpairs()].
+#' Possible options are: `'cor'` (default), `'points'`, `'smooth'`, `'smooth_loess'`, `'density'`, and `'blank'`.
+#' @param upper_cat String. Type of plot to use in upper triangle for categorical features, see [GGally::ggpairs()].
+#' Possible options are: `'count'` (default), `'cross'`, `'ratio'`, `'facetbar'`, and `'blank'`.
+#' @param upper_mix String. Type of plot to use in upper triangle for mixed features, see [GGally::ggpairs()].
+#' Possible options are: `'box'` (default), `'box_no_facet'`, `'dot'`, `'dot_no_facet'`, `'facethist'`, `'facetdensity'`, `'denstrip'`, and `'blank'`
+#' @param lower_cont String. Type of plot to use in lower triangle for continuous features, see [GGally::ggpairs()].
+#' Possible options are: `'points'` (default), `'smooth'`, `'smooth_loess'`, `'density'`, `'cor'`, and `'blank'`.
+#' @param lower_cat String. Type of plot to use in lower triangle for categorical features, see [GGally::ggpairs()].
+#' Possible options are: `'facetbar'` (default), `'ratio'`, `'count'`, `'cross'`, and `'blank'`.
+#' @param lower_mix String. Type of plot to use in lower triangle for mixed features, see [GGally::ggpairs()].
+#' Possible options are: `'facetdensity'` (default), `'box'`, `'box_no_facet'`, `'dot'`, `'dot_no_facet'`, `'facethist'`, `'denstrip'`, and `'blank'`.
+#' @param diag_cont String. Type of plot to use on the diagonal for continuous features, see [GGally::ggpairs()].
+#' Possible options are: `'densityDiag'` (default), `'barDiag'`, and `'blankDiag'`.
+#' @param diag_cat String. Type of plot to use on the diagonal for categorical features, see [GGally::ggpairs()].
+#' Possible options are: `'barDiag'` (default) and `'blankDiag'`.
+#' @param cor_method String. Type of correlation measure, see [GGally::ggpairs()].
+#' Possible options are: `'pearson'` (default), `'kendall'`, and `'spearman'`.
+#' @param add_title Logical. If `TRUE`, then a title is added to the plot based on the internal description
+#' of the `vaeac` model specified in `which_vaeac_model`.
+#' @param alpha Numeric between `0` and `1` (default is `0.5`). The degree of color transparency.
+#'
+#' @return A [GGally::ggpairs()] figure.
+#' @export
+#' @author Lars Henry Berge Olsen
+#'
+#' @examples
+#' \dontrun{
+#' library(xgboost)
+#' library(data.table)
+#' library(shapr)
+#'
+#' data("airquality")
+#' data <- data.table::as.data.table(airquality)
+#' data <- data[complete.cases(data), ]
+#'
+#' x_var <- c("Solar.R", "Wind", "Temp", "Month")
+#' y_var <- "Ozone"
+#'
+#' ind_x_explain <- 1:6
+#' x_train <- data[-ind_x_explain, ..x_var]
+#' y_train <- data[-ind_x_explain, get(y_var)]
+#' x_explain <- data[ind_x_explain, ..x_var]
+#'
+#' # Fitting a basic xgboost model to the training data
+#' model <- xgboost(
+#'   data = as.matrix(x_train),
+#'   label = y_train,
+#'   nround = 100,
+#'   verbose = FALSE
+#' )
+#'
+#' explanation <- explain(
+#'   model = model,
+#'   x_explain = x_explain,
+#'   x_train = x_train,
+#'   approach = "vaeac",
+#'   prediction_zero = mean(y_train),
+#'   n_samples = 1,
+#'   vaeac.epochs = 10,
+#'   vaeac.n_vaeacs_initialize = 1
+#' )
+#'
+#' # Plot the results
+#' figure = vaeac_plot_imputed_ggpairs(explanation = explanation,
+#'                                     which_vaeac_model = "best",
+#'                                     x_true = x_train,
+#'                                     add_title = TRUE)
+#' figure
+#'
+#' # Note that this is an ggplot2 object which we can alter, e.g., we can change the colors.
+#' figure +
+#'   ggplot2::scale_color_manual(values = c("#E69F00", "#999999")) +
+#'   ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))
+#' }
+vaeac_plot_imputed_ggpairs <- function(
+    explanation,
+    which_vaeac_model = "best",
+    x_true = NULL,
+    add_title = TRUE,
+    alpha = 0.5,
+    upper_cont = c("cor", "points", "smooth", "smooth_loess", "density", "blank"),
+    upper_cat = c("count", "cross", "ratio", "facetbar", "blank"),
+    upper_mix = c("box", "box_no_facet", "dot", "dot_no_facet", "facethist", "facetdensity", "denstrip", "blank"),
+    lower_cont = c("points", "smooth", "smooth_loess", "density", "cor", "blank"),
+    lower_cat = c("facetbar", "ratio", "count", "cross", "blank"),
+    lower_mix = c("facetdensity", "box", "box_no_facet", "dot", "dot_no_facet", "facethist", "denstrip", "blank"),
+    diag_cont = c("densityDiag", "barDiag", "blankDiag"),
+    diag_cat = c("barDiag", "blankDiag"),
+    cor_method = c("pearson", "kendall", "spearman")) {
+
+  # Check that ggplot2 and GGally are installed
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop("ggplot2 is not installed. Please run install.packages('ggplot2')")
+  }
+  if (!requireNamespace("GGally", quietly = TRUE)) {
+    stop("GGally is not installed. Please run install.packages('GGally')")
+  }
+
+  # Check all input parameters except `which_vaeac_model`
+  if (!"shapr" %in% class(explanation)) stop("`explanation` must be an object of type `shapr`.")
+  if (!is.null(x_true) && !is.data.table(x_true)) stop("`x_true` must be an object of type `data.table`.")
+  vaeac_check_logicals(list(add_title = add_title))
+  vaeac_check_probabilities(list(alpha = alpha))
+  upper_cont <- match.arg(upper_cont)
+  upper_cat <- match.arg(upper_cat)
+  upper_mix <- match.arg(upper_mix)
+  lower_cont <- match.arg(lower_cont)
+  lower_cat <- match.arg(lower_cat)
+  lower_mix <- match.arg(lower_mix)
+  diag_cont <- match.arg(diag_cont)
+  diag_cat <- match.arg(diag_cat)
+  cor_method <- match.arg(cor_method)
+
+  # Check if the vaeac model is expected to give a reasonable figure.
+  if (!explanation$internal$parameters$exact || explanation$internal$parameters$is_groupwise) {
+    message("The vaeac model has not been trained on the empty colition, hence, the figure can be missleading. ",
+            "The figure is only reasonable if 'n_combintations = NULL' and 'group = NULL' in the explanation call.")
+  }
+
+  # Extract the vaeac list from the explanation list
+  vaeac_list <- explanation$internal$parameters$vaeac
+
+  # Check that `which_vaeac_model` is a valid vaeac model name and then load the vaeac checkpoint
+  if (!is.character(which_vaeac_model) || !which_vaeac_model %in% names(vaeac_list$models)) {
+    stop(paste0("The parameter `which_vaeac_model` ('", which_vaeac_model ,"') must be one of the following: '",
+                paste(names(vaeac_list$models), collapse = "', '"), "'."))
+  }
+  vaeac_model_path <- vaeac_list$models[[which_vaeac_model]]
+  checkpoint <- torch::torch_load(vaeac_model_path)
+
+  # Get the number of observations in the x_true and features
+  n_samples <- if (is.null(x_true)) 500 else nrow(x_true)
+  n_features = checkpoint$n_features
+
+  # Checking for valid dimension
+  if (!is.null(x_true) && ncol(x_true) != n_features) {
+    stop(paste0(
+      "Different number of columns in the vaeac model (", n_features ,") and `x_true` (", ncol(x_true), ")."))
+  }
+
+  # Set up the vaeac model
+  vaeac_model = vaeac_get_model_from_checkp(checkpoint = checkpoint, cuda = FALSE, mode_train = FALSE)
+
+  # Impute the missing entries using the vaeac approach. Here we generate x from p(x), so no conditioning.
+  imputed_values = vaeac_impute_missing_entries(
+    x_explain_with_NaNs = matrix(NaN, n_samples, checkpoint$n_features),
+    n_samples = 1,
+    vaeac_model = vaeac_model,
+    checkpoint = checkpoint,
+    sampler = explanation$internal$parameters$vaeac.sampler,
+    batch_size = n_samples,
+    verbose = explanation$internal$parameters$verbose,
+    seed = explanation$internal$parameters$seed
+  )
+
+  # Combine the true (if there are any) adn imputed data and ensure that the categorical features are marked as factors.
+  combined_data <- data.table(rbind(x_true, imputed_values))
+  col_cat_names = checkpoint$col_cat_names
+  if (length(col_cat_names) > 0) combined_data[,(col_cat_names) := lapply(.SD, as.factor), .SDcols = col_cat_names]
+
+  # Add type variable representing if they are imputed samples or from `x_true`
+  combined_data$type <-
+    factor(rep(c("True", "Imputed"), times = c(ifelse(is.null(nrow(x_true)), 0, nrow(x_true)), n_samples)))
+
+  # Create the ggpairs figure and potentially add title based on the description of the used vaeac model
+  figure <- GGally::ggpairs(
+    combined_data,
+    columns = seq(n_features),
+    mapping = ggplot2::aes(color = type),
+    diag = list(continuous = GGally::wrap(diag_cont, alpha = alpha), discrete = diag_cat),
+    upper = list(combo = upper_mix, discrete = upper_cat, continuous = GGally::wrap(upper_cont, method = cor_method)),
+    lower = list(combo = lower_mix, discrete = lower_cat, continuous = GGally::wrap(lower_cont, alpha = alpha))
+  )
+  if (add_title) figure = figure + ggplot2::ggtitle(tools::file_path_sans_ext(basename(vaeac_model_path)))
+
+  return(figure)
+}
+
+
