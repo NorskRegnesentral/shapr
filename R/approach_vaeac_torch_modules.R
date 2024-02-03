@@ -1341,12 +1341,11 @@ SkipConnection <- torch::nn_module(
 #'
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
-vaeac_extend_batch <- function(batch,
-                               dataloader,
-                               batch_size) {
+vaeac_extend_batch <- function(batch, dataloader, batch_size) {
   # Check if the batch contains too few observations and in that case add the missing number of obs from a new batch
-  if (batch$shape[1] < batch_size) {
-    batch <- torch::torch_cat(c(batch, (dataloader$.iter()$.next())[seq(batch_size - batch$shape[1]), ]), 1)
+  while (batch$shape[1] < batch_size) { # Use while in case a single extra batch is not enough to get to `batch_size`
+    batch_extra = dataloader$.iter()$.next()
+    batch <- torch::torch_cat(c(batch, batch_extra[seq(min(nrow(batch_extra), batch_size - batch$shape[1])), ]), 1)
   }
 
   # The returned batch is gauranteed to contain `batch_size` observations
@@ -1393,10 +1392,10 @@ vaeac_get_validation_iwae <- function(val_dataloader,
     init_size <- batch$shape[1]
 
     # Extend the with observations from `val_dataloader` to ensure that batch contains `batch_size` observations
-    batch <- vaeac_extend_batch(batch, val_dataloader, batch_size)
+    batch <- vaeac_extend_batch(batch = batch, dataloader = val_dataloader, batch_size = batch_size)
 
     # Create the mask for the current batch. Mask consists of zeros (observed) and ones (missing or masked)
-    mask <- mask_generator(batch)
+    mask <- mask_generator(batch = batch)
 
     # If the vaeac_model$parameters are located on a GPU, then we send batch and mask to the GPU too
     if (vaeac_model$parameters[[1]]$is_cuda) {

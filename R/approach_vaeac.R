@@ -359,14 +359,16 @@ vaeac_train_model <- function(x_train,
                               verbose = 0,
                               seed = 1,
                               ...) {
+
+  # TODO: REMOVE list2env(vaeac_all_parameters, envir = .GlobalEnv)
+
+
   # Set seed for reproducibility for both R and torch
   set.seed(seed)
   torch::torch_manual_seed(seed)
 
   # Set epochs_early_stopping to epochs to ensure that early stopping never occurs
   if (is.null(epochs_early_stopping)) epochs_early_stopping <- epochs
-
-  # TODO: REMOVE list2env(vaeac_all_parameters, envir = .GlobalEnv)
 
   # Check all the vaeac parameters
   do.call(vaeac_check_parameters, mget(formalArgs(vaeac_train_model)))
@@ -385,8 +387,6 @@ vaeac_train_model <- function(x_train,
   # Get the dimensions of the x_train
   n_train <- nrow(x_train)
   n_features <- ncol(x_train)
-
-
 
   # Preprocess x_train. Turn factor names into numerics 1,2,...,K, (vaeac only accepts numerics) and keep track
   # of the maping of names. Optionally log-transform the continuous features. Then, finally, normalize the data.
@@ -440,8 +440,6 @@ vaeac_train_model <- function(x_train,
     save_every_nth_epoch = save_every_nth_epoch,
     folder_to_save_model = folder_to_save_model
   )
-
-
 
   ##### List that stores needed information for save and load the model
   # List of values saved to disk together with the vaeac models below.
