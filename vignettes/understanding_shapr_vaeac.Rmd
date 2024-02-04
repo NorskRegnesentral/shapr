@@ -117,6 +117,7 @@ First we set up the model we want to explain.
 ```{r setup2, cache = TRUE}
 library(xgboost)
 library(data.table)
+# devtools::load_all(".") 
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -206,8 +207,7 @@ We can also just provide a path to the stored `vaeac` model. This is beneficial 
 model on the computer but not the whole `explanation` object. The possible save paths are stored in `explanation$internal$parameters$vaeac$model`. Note that if we set `verbose = 2` in `explain()`, then `shapr` will give a message that it loads a pretrained `vaeac` model instead of training it from scratch.
 
 ```{r pretrained vaeac path, cache = TRUE}
-explanation$internal$parameters$vaeac$model # Look at the possible vaeac models. We use `best` below
-
+# Call `explanation$internal$parameters$vaeac$model` to see possible vaeac models. We use `best` below.
 # send the pre-trained vaeac path
 expl_pretrained_vaeac_path <- explain(
   model = model,
@@ -579,7 +579,7 @@ expl_early_stopping_train_more$internal$parameters$vaeac <-
     verbose = 2
   )
 
-# Look at the training and validation errors. We see some improvment
+# Look at the training and validation errors. We see some improvement
 vaeac_plot_evaluation_criteria(list(
   "Vaeac early stopping" = expl_early_stopping,
   "Vaeac early stopping more epochs" = expl_early_stopping_train_more

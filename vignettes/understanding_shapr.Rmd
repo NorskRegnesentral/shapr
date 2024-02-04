@@ -1332,12 +1332,10 @@ explanation_vaeac <- explain(
   approach = "vaeac",
   prediction_zero = p0,
   n_samples = 100,
-  vaeac.width = 8,
+  vaeac.width = 16,
   vaeac.depth = 2,
-  vaeac.latent.dim = 4,
   vaeac.epochs = 3,
-  vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.batch_size = 32)
+  vaeac.n_vaeacs_initialize = 2
 )
 ```
 
@@ -1354,11 +1352,12 @@ vaeac_plot_evaluation_criteria(list("Vaeac 3 epochs" = explanation_vaeac), plot_
 If we are uncertain about the choice of `vaeac.epochs`, we can rather use `vaeac` with early stopping.
 We will then set `vaeac.epochs` to a large number which will act as a maximum number of allowed epochs 
 and in the `vaeac.extra_parameters` list, we set `vaeac.epochs_early_stopping` the number of epochs we 
-allow the `vaeac` model to not improve its validation score. That is, if `vaeac.epochs_early_stopping = 3`,
+allow the `vaeac` model to not improve its validation score. That is, if `vaeac.epochs_early_stopping = 2`,
 then `vaeac` will stop the training procedure if there has been no improvement in the validation score 
-for `3` consecutive epochs, of if `vaeac.epochs` is reached. Note that if using early stopping and progress
+for `2` consecutive epochs, of if `vaeac.epochs` is reached. Note that if using early stopping and progress
 updates simultaneously, then the estimated timer remaining will obviously be incorrect if early stopping 
-is applied.
+is applied. Furthermore, a value of `2` is too low for real world applications, but we set it so low here
+to make the vignette faster to build.
 
 ```{r}
 explanation_vaeac_early_stop <- explain(
@@ -1368,12 +1367,11 @@ explanation_vaeac_early_stop <- explain(
   approach = "vaeac",
   prediction_zero = p0,
   n_samples = 100,
-  vaeac.width = 8,
+  vaeac.width = 16,
   vaeac.depth = 2,
-  vaeac.latent.dim = 4,
   vaeac.epochs = 1000, # Set it to a large number
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.batch_size = 32, vaeac.epochs_early_stopping = 3)
+  vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
 )
 ```
 
@@ -1381,15 +1379,12 @@ Can compare with the previous version and see that the results are more stable n
 ```{r,eval = FALSE}
 # Look at the training and validation errors.
 vaeac_plot_evaluation_criteria(
-  list(
-    "Vaeac 3 epochs" = explanation_vaeac,
-    "Vaeac early stopping" = explanation_vaeac_early_stop
-  ),
+  list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop),
   plot_type = "method"
 )
 ```
 
-Can also compare the $\operatorname{MSE}_{v}$ evaluation scores.
+Can also compare the $MSE_{v}$ evaluation scores.
 
 ```{r}
 plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop))
