@@ -69,15 +69,6 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   vaeac_main_para_names <- vaeac_main_para_names[!vaeac_main_para_names %in% c("internal", "...")]
   vaeac_main_para <- mget(vaeac_main_para_names)
 
-  # vaeac_main_para = list(vaeac.depth = 3,
-  #                        vaeac.width = 32,
-  #                        vaeac.latent_dim = 8,
-  #                        vaeac.activation_function = torch::nn_relu,
-  #                        vaeac.lr = 0.001,
-  #                        vaeac.n_vaeacs_initialize = 10,
-  #                        vaeac.epochs = 100,
-  #                        vaeac.extra_parameters = list())
-
   # Add the default extra parameter values for the non-user specified extra parameters
   parameters$vaeac.extra_parameters <- utils::modifyList(vaeac_get_extra_para_default(),
     parameters$vaeac.extra_parameters,
