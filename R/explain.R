@@ -362,9 +362,10 @@ explain <- function(model,
   output$internal$objects$W_list <- NULL
 
   if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
-    output$internal$parameters$vaeac$models <- NULL
-    output$internal$parameters$vaeac$parameters$folder_to_save_model <- NULL
-    output$internal$parameters$vaeac$parameters$model_description <- NULL
+    output$internal$parameters$vaeac <- NULL
+    output$internal$parameters$vaeac.checkpoint <- NULL
+    output$internal$parameters$vaeac.extra_parameters$folder_to_save_model <- NULL
+    output$internal$parameters$vaeac.extra_parameters$vaeac.model_description <- NULL
   }
 
   return(output)

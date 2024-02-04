@@ -161,15 +161,6 @@ test_that("output_lm_numeric_ctree", {
 })
 
 test_that("output_lm_numeric_vaeac", {
-  # Note that I am not certain if this will run as the path for where the vaeac model is saved on
-  # disk is tempdir(), so it might change when we run this at separate times.
-  # There are two solutions I can think about.
-  # 1.
-  # We use explanation = explain(...), and then set explanation$internal$parameters$vaeac$models = NULL
-  # This removes the paths to where the vaeac models are stored on disk.
-  # 2.
-  # We can specify a folder within the shapr package to store the files. It is about 600KB of data.
-  # We then need to set `vaeac.folder_to_save_model = "path"`
   expect_snapshot_rds(
     explain(
       model = model_lm_numeric,
@@ -182,9 +173,9 @@ test_that("output_lm_numeric_vaeac", {
       n_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.n_vaeacs_initialize = 2, # Low value here to speed up the time
-      vaeac.save_model = FALSE,
       vaeac.extra_parameters = list(
-        vaeac.epochs_initiation_phase = 2 # Low value here to speed up the time
+        vaeac.epochs_initiation_phase = 2, # Low value here to speed up the time
+        vaeac.save_model = FALSE # Removes names and objects such as tmpdir and tmpfile
       )
     ),
     "output_lm_numeric_vaeac"
@@ -207,15 +198,6 @@ test_that("output_lm_categorical_ctree", {
 })
 
 test_that("output_lm_categorical_vaeac", {
-  # Note that I am not certain if this will run as the path for where the vaeac model is saved on
-  # disk is tempdir(), so it might change when we run this at separate times.
-  # There are two solutions I can think about.
-  # 1.
-  # We use explanation = explain(...), and then set explanation$internal$parameters$vaeac$models = NULL
-  # This removes the paths to where the vaeac models are stored on disk.
-  # 2.
-  # We can specify a folder within the shapr package to store the files. It is about 600KB of data.
-  # We then need to set `vaeac.folder_to_save_model = "path"`
   expect_snapshot_rds(
     explain(
       model = model_lm_categorical,
@@ -228,9 +210,9 @@ test_that("output_lm_categorical_vaeac", {
       n_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.n_vaeacs_initialize = 2, # Low value here to speed up the time
-      vaeac.save_model = FALSE,
       vaeac.extra_parameters = list(
-        vaeac.epochs_initiation_phase = 2 # Low value here to speed up the time
+        vaeac.epochs_initiation_phase = 2, # Low value here to speed up the time
+        vaeac.save_model = FALSE # Removes tmpdir and tmpfiles
       )
     ),
     "output_lm_categorical_vaeac"
@@ -362,15 +344,6 @@ test_that("output_lm_mixed_ctree", {
 })
 
 test_that("output_lm_mixed_vaeac", {
-  # Note that I am not certain if this will run as the path for where the vaeac model is saved on
-  # disk is tempdir(), so it might change when we run this at separate times.
-  # There are two solutions I can think about.
-  # 1.
-  # We use explanation = explain(...), and then set explanation$internal$parameters$vaeac$models = NULL
-  # This removes the paths to where the vaeac models are stored on disk.
-  # 2.
-  # We can specify a folder within the shapr package to store the files. It is about 600KB of data.
-  # We then need to set `vaeac.folder_to_save_model = "path"`
   expect_snapshot_rds(
     explain(
       model = model_lm_mixed,
@@ -383,9 +356,9 @@ test_that("output_lm_mixed_vaeac", {
       n_samples = 10, # Low value here to speed up the time
       vaeac.epochs = 4, # Low value here to speed up the time
       vaeac.n_vaeacs_initialize = 2, # Low value here to speed up the time
-      vaeac.save_model = FALSE,
       vaeac.extra_parameters = list(
-        vaeac.epochs_initiation_phase = 2 # Low value here to speed up the time
+        vaeac.epochs_initiation_phase = 2, # Low value here to speed up the time
+        vaeac.save_model = FALSE # Removes tmpdir and tmpfiles
       )
     ),
     "output_lm_mixed_vaeac"

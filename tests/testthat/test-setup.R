@@ -2026,7 +2026,7 @@ test_that("vaeac_pretreained_vaeac_model", {
     )
   )
 
-  #### We can do this by reusing the vaeac model OBJECT ####
+  #### We can do this by reusing the vaeac model OBJECT
   # Get the pretrained vaeac model object
   vaeac.pretrained_vaeac_model <- explanation_vaeac_1$internal$parameters$vaeac
 
@@ -2048,7 +2048,7 @@ test_that("vaeac_pretreained_vaeac_model", {
   # Check for equal Shapley values
   expect_equal(explanation_vaeac_1$shapley_values, explanation_pretrained_vaeac$shapley_values)
 
-  #### We can also do this by reusing the vaeac model PATH ####
+  #### We can also do this by reusing the vaeac model PATH
   # Get the pre-trained vaeac model path
   vaeac.pretrained_vaeac_path <- explanation_vaeac_1$internal$parameters$vaeac$models$best
 
