@@ -1,22 +1,21 @@
 # SHAPR functions -------------------------------------------------------------------------------------------------
 #' @rdname setup_approach
 #'
-#' @param vaeac.depth Integer. The number of hidden layers in the neural networks of the masked
-#'  encoder, full encoder, and decoder.
-#' @param vaeac.width Integer. The number of neurons in each hidden layer in the neural networks
-#'  of the masked encoder, full encoder, and decoder.
-#' @param vaeac.latent_dim Integer. The number of dimensions in the latent space.
-#' @param vaeac.lr Numeric. The learning rate used in the [torch::optim_adam()] optimizer.
-#' @param vaeac.activation_function An [torch::nn_module()] representing an activation
-#'  function such as, e.g., [torch::nn_relu()], [torch::nn_leaky_relu()],
-#'  [torch::nn_selu()], and [torch::nn_sigmoid()].
-#' @param vaeac.n_vaeacs_initialize Integer. The number of different vaeac models to initiate
+#' @param vaeac.depth Positive integer (default is `3`). The number of hidden layers
+#' in the neural networks of the masked encoder, full encoder, and decoder.
+#' @param vaeac.width Positive integer (default is `32`). The number of neurons in each
+#' hidden layer in the neural networks of the masked encoder, full encoder, and decoder.
+#' @param vaeac.latent_dim Positive integer (default is `8`). The number of dimensions in the latent space.
+#' @param vaeac.lr Positive numeric (default is `0.001`). The learning rate used in the [torch::optim_adam()] optimizer.
+#' @param vaeac.activation_function An [torch::nn_module()] representing an activation function such as, e.g.,
+#' [torch::nn_relu()] (default), [torch::nn_leaky_relu()], [torch::nn_selu()], or [torch::nn_sigmoid()].
+#' @param vaeac.n_vaeacs_initialize Positive integer (default is `4`). The number of different vaeac models to initiate
 #'  in the start. Pick the best performing one after `vaeac.extra_parameters$epochs_initiation_phase`
 #'  epochs (default is `2`) and continue training that one.
-#' @param vaeac.epochs Integer. The number of epochs to train the final vaeac model. This includes
-#' `vaeac.extra_parameters$epochs_initiation_phase`, where the default is `2`.
-#' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach.
-#' See [shapr::vaeac_get_extra_para_default()] for description of possible additional parameters.
+#' @param vaeac.epochs Positive integer (default is `100`). The number of epochs to train the final vaeac model.
+#' This includes `vaeac.extra_parameters$epochs_initiation_phase`, where the default is `2`.
+#' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach. See
+#'  [shapr::vaeac_get_extra_para_default()] for description of possible additional parameters and their default values.
 #'
 #' @section The vaeac approach:
 #' The `vaeac` model consists of three neural network (a full encoder, a masked encoder, and a decoder) based
@@ -25,7 +24,8 @@
 #' The latent representations are sent to the decoder to go back to the real feature space and
 #' provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
 #' We use the `vaeac` method at the epoch with the lowest validation error (IWAE) by default, but
-#' other possibilities are available but setting the `vaeac.which_vaeac_model` parameter.
+#' other possibilities are available but setting the `vaeac.which_vaeac_model` parameter. See
+#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
 #'
 #' @inheritParams default_doc_explain
 #'
@@ -37,8 +37,8 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
                                  vaeac.latent_dim = 8,
                                  vaeac.activation_function = torch::nn_relu,
                                  vaeac.lr = 0.001,
-                                 vaeac.n_vaeacs_initialize = 10,
-                                 vaeac.epochs = 200,
+                                 vaeac.n_vaeacs_initialize = 4,
+                                 vaeac.epochs = 100,
                                  vaeac.extra_parameters = list(),
                                  ...) {
   # Check that torch is installed
@@ -75,7 +75,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   #                        vaeac.activation_function = torch::nn_relu,
   #                        vaeac.lr = 0.001,
   #                        vaeac.n_vaeacs_initialize = 10,
-  #                        vaeac.epochs = 200,
+  #                        vaeac.epochs = 100,
   #                        vaeac.extra_parameters = list())
 
   # Add the default extra parameter values for the non-user specified extra parameters
@@ -99,14 +99,17 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # Here, objects$S contains the coalitions while objects$X contains the information about the approach.
 
     # Extract the the coalitions / masks which are estimated using vaeac as a matrix
-    parameters$vaeac.mask_gen_coalitions <- S[X[approach == "vaeac"]$id_combination, , drop = FALSE]
+    parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions <-
+      S[X[approach == "vaeac"]$id_combination, , drop = FALSE]
 
     # Extract the weights for the corresponding coalitions / masks.
-    parameters$vaeac.mask_gen_coalitions_prob <- X$shapley_weight[X[approach == "vaeac"]$id_combination]
+    parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob <-
+      X$shapley_weight[X[approach == "vaeac"]$id_combination]
 
     # Normalize the weights/probabilities such that they sum to one.
-    parameters$vaeac.mask_gen_coalitions_prob <- parameters$vaeac.mask_gen_coalitions_prob /
-      sum(parameters$vaeac.mask_gen_coalitions_prob)
+    parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob <-
+      parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob /
+        sum(parameters$vaeac.extra_parameters$vaeac.mask_gen_coalitions_prob)
   } else {
     # We are going to use the MCAR(`masking_ratio`) masking scheme. Set the variables to `NULL` as we do not need them.
     parameters$vaeac.mask_gen_coalitions <- parameters$vaeac.mask_gen_coalitions_prob <- NULL
@@ -170,16 +173,6 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   } else {
     parameters$vaeac.model$sampler_most_likely
   }
-
-
-
-  # LEGG TIL PREPROCCESSING AV EXPLICANDS
-
-
-
-
-
-
 
   # Update/overwrite the parameters list in the internal list.
   internal$parameters <- parameters
@@ -253,7 +246,9 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' Train the Vaeac Model
 #'
 #' @description Function that fits a vaeac model to the given dataset based on the provided parameters,
-#' as described in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
+#' as described in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}. Note that
+#' all default parameters specified below origin from [shapr:setup_approach.vaeac()] and
+#' [shapr::vaeac_get_extra_para_default()].
 #'
 #' @details
 #' The vaeac model consists of three neural networks, i.e., a masked encoder, a full encoder, and a decoder.
@@ -265,73 +260,98 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' `n_vaeacs_initialize` vaeac models are compared and the function continues to only train the best performing
 #' one for a total of `epochs` epochs. The networks are trained using the ADAM optimizer with the learning rate is `lr`.
 #'
-#' @param x_train A data.table containing the data. Categorical names
-#' Categorical data must have class names \eqn{1,2,\dots,K}.
-#' @param model_description String containing, e.g., the name of the data distribution or
-#' additional parameter information. Used in the save name of the fitted model.
-#' @param folder_to_save_model String specifying a path to a folder where
-#' the function is to save the fitted vaeac model.
-#' @param cuda Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!
-#' @param n_vaeacs_initialize Integer. The number of different vaeac models to initiate in the start.
-#' Pick the best performing one after `epochs_initiation_phase` and continue training that one.
-#' @param epochs_initiation_phase Integer. The number of epochs to run each of the `n_vaeacs_initialize`
-#' vaeac models before only continuing training the best one.
-#' @param epochs Integer. The number of epochs to train the final vaeac model.
-#' This includes `epochs_initiation_phase`.
-#' @param epochs_early_stopping Integer. The training stops if there has been no improvement in the validation IWAE
-#' for `epochs_early_stopping` epochs. If the user wants the training process to be solely based on this, then `epochs`
-#' should be set to a large number.
-#' @param val_ratio Scalar between 0 and 1 indicating the ratio of
-#' instances from data which will be used as validation data.
-#' @param val_iwae_n_samples Integer. The number of samples used to compute the
-#' IWAE when validating the vaeac model on the validation data.
-#' @param depth Integer. The number of hidden layers in the neural
-#' networks of the masked encoder, full encoder, and decoder.
-#' @param width Integer. The number of neurons in each hidden layer in
-#' the neural networks of the masked encoder, full encoder, and decoder.
-#' @param latent_dim Integer. The number of dimensions in the latent space.
-#' @param lr Numeric. The learning rate used in the [torch::optim_adam()] optimizer.
-#' @param batch_size Integer. The number of samples to include in each batch.
-#' @param running_avg_n_values Integer. How many of the previous values to include when we compute the running means.
+#' @param depth Positive integer (default is `3`). The number of hidden layers
+#' in the neural networks of the masked encoder, full encoder, and decoder.
+#' @param width Positive integer (default is `32`). The number of neurons in each
+#' hidden layer in the neural networks of the masked encoder, full encoder, and decoder.
+#' @param latent_dim Positive integer (default is `8`). The number of dimensions in the latent space.
+#' @param lr Positive numeric (default is `0.001`). The learning rate used in the [torch::optim_adam()] optimizer.
 #' @param activation_function An [torch::nn_module()] representing an activation function such as, e.g.,
-#' [torch::nn_relu()], [torch::nn_leaky_relu()], [torch::nn_selu()], and
-#' [torch::nn_sigmoid()].
-#' @param skip_conn_layer Boolean. If we are to use skip connections in each layer. If true, then we add the input
-#' to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.
-#' @param skip_conn_masked_enc_dec Boolean. If we are to apply concatenate skip
-#' connections between the layers in the masked encoder and decoder.
-#' @param batch_normalization Boolean. If we are to use batch normalization after the activation function.
-#' Note that if `skip_conn_layer` is TRUE, then the normalization is
-#' done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).
-#' @param paired_sampling Boolean. Default is `TRUE`. If we are doing paired sampling. I.e.,
-#  each batch contains two versions of the same training observation, but where the first one is
-#' masked by \eqn{S} and the second one is masked by \eqn{\bar{S}}, the complement, see
-#' \href{https://arxiv.org/pdf/2107.07436.pdf}{Jethani et al. (2022)}. Training becomes more
-#' stable, but slower due to more complex implementation.
-#' @param masking_ratio Probability of masking a feature in the MCAR mask generator.
-#' Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-#' This is overruled if `mask_gen_coalitions` is specified.
-#' @param mask_gen_coalitions Matrix containing the different coalitions to learn.
-#' @param mask_gen_coalitions_prob Numerics containing the probabilities for
-#' sampling each mask in `mask_gen_coalitions`.
-#' Array containing the probabilities for sampling the coalitions in `mask_gen_coalitions`.
-#' @param sigma_mu Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
-#' see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
-#' @param sigma_sigma Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
-#' see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
-#' @param save_data Boolean. If we are to save the data together with the model. Useful if one are to continue
-#' to train the model later.
-#' @param log_exp_cont_feat Boolean. If we are to log transform all continuous
-#' features before
-#' sending the data to the vaeac using the [shapr::vaeac_postprocess_data()] function. The vaeac method creates
-#' unbounded values, so if the continuous features are strictly positive, as for Burr and Abalone data, it can be
-#' advantageous to log-transform the data to unbounded form before using vaeac.
-#' If `TRUE`, then [shapr::vaeac_postprocess_data()] will take the exp of the results
-#' to get back to strictly positive values when using the vaeac model to impute missing values.
-#' @param verbose Boolean. If we are to print the progress of the initialization of different vaeac models,
-#' the training of the final vaeac model, and summary of the training progress.
-#' @param save_every_nth_epoch Integer. If we are to save the vaeac model after every nth epoch.
-#' @param seed Positive integer (default is `1`). Seed for reproducibility.
+#' [torch::nn_relu()] (default), [torch::nn_leaky_relu()], [torch::nn_selu()], or [torch::nn_sigmoid()].
+#' @param n_vaeacs_initialize Positive integer (default is `4`). The number of different vaeac models to initiate
+#'  in the start. Pick the best performing one after `epochs_initiation_phase`
+#'  epochs (default is `2`) and continue training that one.
+#' @param epochs Positive integer (default is `100`). The number of epochs to train the final vaeac model.
+#' This includes `epochs_initiation_phase`, where the default is `2`.
+#' @param x_train A data.table containing the training data. Categorical data must have class names \eqn{1,2,\dots,K}.
+#' @param model_description String (default is `make.names(Sys.time())`). String containing, e.g., the name of the
+#' data distribution or additional parameter information. Used in the save name of the fitted model. If not provided,
+#' then a name will be generated based on [base::Sys.time()] to ensure a unique name. We use [base::make.names()] to
+#' ensure a valid file name for all operating systems.
+#' @param folder_to_save_model String (default is [base::tempdir()]). String specifying a path to a folder where
+#' the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
+#' [shapr::explain()] object if `vaeac.save_model = FALSE`.
+#' @param cuda cuda Logical (default is `FALSE`). If `TRUE`, then the `vaeac` model will be trained using cuda/GPU.
+#' If [torch::cuda_is_available()] is `FALSE`, the we fall back to use CPU. If `FALSE`, we use the CPU. Often this is
+#' faster for tabular data sets. Note, cuda is not not supported in the current version of the `shapr` package.
+#' TODO: Update this when this is done.
+#' @param epochs_initiation_phase Positive integer (default is `2`). The number of epochs to run each of the
+#' `n_vaeacs_initialize` `vaeac` models before continuing to train only the best performing model.
+#' @param epochs_early_stopping Positive integer (default is `NULL`). The training stops if there has been no
+#' improvement in the validation IWAE for `epochs_early_stopping` epochs. If the user wants the training process
+#' to be solely based on this training criterion, then `epochs` in [shapr::explain()] should be set to a large
+#' number. If `NULL`, then `shapr` will internally set `epochs_early_stopping = vaeac.epochs` such that early
+#' stopping does not occur.
+#' @param save_every_nth_epoch Positive integer (default is `NULL`). If provided, then the vaeac model after
+#' every `save_every_nth_epoch`th epoch will be saved.
+#' @param val_ratio Numeric (default is `0.25`). Scalar between `0` and `1` indicating the ratio of
+#' instances from the input data which will be used as validation data. That is, `val_ratio = 0.25` means
+#' that `75%` of the provided data is used as training data, while the remaining `25%` is used as validation data.
+#' @param val_iwae_n_samples Positive integer (default is `25`). The number of generated samples used
+#' to compute the IWAE criterion when validating the vaeac model on the validation data.
+#' @param batch_size Positive integer (default is `64`). The number of samples to include in each batch
+#' during the training of the vaeac model. Used in [torch::dataloader()].
+#'
+#'
+#' @param skip_conn_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
+#' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
+#' so the output becomes \eqn{X + activation(WX + b)}.
+#' @param skip_conn_masked_enc_dec Logical (default is `TRUE`). If `TRUE`, we apply concatenate skip
+#' connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
+#' linked to the last layer of the decoder. The second layer of the masked encoder will be
+#' linked to the second to last layer of the decoder, and so on.
+#' @param batch_normalization Logical (default is `FALSE`). If `TRUE`, we apply batch normalization after the
+#' activation function. Note that if `skip_conn_layer = TRUE`, then the normalization is applied after the
+#' inclusion of the skip connection. That is, we batch normalize the whole quantity \eqn{X + activation(WX + b)}.
+#' @param paired_sampling Logical (default is `TRUE`). If `TRUE`, we apply paired sampling to the training
+#' batches. That is, the training observations in each batch will be duplicated, where the first instance will be masked
+#' by \eqn{S} while the second instance will be masked by \eqn{\bar{S}}. This ensures that the training of the
+#' `vaeac` model becomes more stable as the model has access to the full version of each training observation. However,
+#' this will increase the training time due to more complex implementation and doubling the size of each batch. See
+#' [shapr::paired_sampler()] for more information.
+#' @param running_avg_n_values running_avg_n_values Positive integer (default is `5`).
+#' The number of previous IWAE values to include
+#' when we compute the running means of the IWAE criterion.
+#' @param masking_ratio Numeric (default is `0.5`). Probability of masking a feature in the
+#' [shapr::MCAR_mask_generator()] (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that `vaeac`
+#' model can do arbitrary conditioning as all coalitions will be trained. `masking_ratio` will be overruled if
+#' `mask_gen_coalitions` is specified.
+#' @param mask_gen_coalitions Matrix (default is `NULL`). Matrix containing the coalitions that the
+#' `vaeac` model will be trained on, see [shapr::Specified_masks_mask_generator()]. This parameter is used internally
+#' in `shapr` when we only consider a subset of coalitions/combinations, i.e., when
+#' `n_combinations` \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+#' when `group` is specified in [shapr::explain()].
+#' @param mask_gen_coalitions_prob Numeric array (default is `NULL`). Array of length equal to the height
+#' of `mask_gen_coalitions` containing the probabilities of sampling the corresponding coalitions in
+#' `mask_gen_coalitions`.
+#' @param sigma_mu Numeric (default is `1e4`). One of two hyperparameter values in the normal-gamma prior
+#' used in the masked encoder, see Section 3.3.1 in
+#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
+#' @param sigma_sigma Numeric (default is `1e-4`). One of two hyperparameter values in the normal-gamma prior
+#' used in the masked encoder, see Section 3.3.1 in
+#' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
+#' @param save_data Logical (default is `FALSE`). If `TRUE`, then the data is stored together with
+#' the model. Useful if one are to continue to train the model later using [shapr::vaeac_continue_train_model()].
+#' @param log_exp_cont_feat Logical (default is `FALSE`). If we are to \eqn{\log} transform all
+#' continuous features before sending the data to [shapr::vaeac()]. The `vaeac` model creates unbounded Monte Carlo
+#' sample values. Thus, if the continuous features are strictly positive (as for, e.g., the Burr distribution and
+#' Abalone data set), it can be advantageous to \eqn{\log} transform the data to unbounded form before using `vaeac`.
+#' If `TRUE`, then [shapr::vaeac_postprocess_data()] will take the \eqn{\exp} of the results to get back to strictly
+#' positive values when using the `vaeac` model to impute missing values/generate the Monte Carlo samples.
+#' @param verbose Boolean. An integer specifying the level of verbosity. Use `0` (default) for no verbosity,
+#' `1` for low verbose, and `2` for high verbose.
+#' @param seed Positive integer (default is `1`). Seed for reproducibility. Specifies the seed before any randomness
+#' based code is being run.
 #' @param ... List of extra parameters, currently not used.
 #'
 #' @return A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.
@@ -340,35 +360,35 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 vaeac_train_model <- function(x_train,
                               model_description,
                               folder_to_save_model,
-                              cuda = FALSE,
-                              n_vaeacs_initialize = 10,
-                              epochs_initiation_phase = 2,
-                              epochs = 200,
-                              epochs_early_stopping = NULL,
-                              save_every_nth_epoch = NULL,
-                              val_ratio = 0.25,
-                              val_iwae_n_samples = 25,
-                              depth = 3,
-                              width = 32,
-                              latent_dim = 8,
-                              lr = 0.001,
-                              batch_size = 64,
-                              running_avg_n_values = 5,
-                              activation_function = torch::nn_relu,
-                              skip_conn_layer = TRUE,
-                              skip_conn_masked_enc_dec = TRUE,
-                              batch_normalization = FALSE,
-                              paired_sampling = TRUE,
-                              masking_ratio = 0.5,
-                              mask_gen_coalitions = NULL,
-                              mask_gen_coalitions_prob = NULL,
-                              sigma_mu = 1e4,
-                              sigma_sigma = 1e-4,
-                              save_data = FALSE,
-                              log_exp_cont_feat = FALSE,
-                              which_vaeac_model = "best",
-                              verbose = 0,
-                              seed = 1,
+                              cuda,
+                              n_vaeacs_initialize,
+                              epochs_initiation_phase,
+                              epochs,
+                              epochs_early_stopping,
+                              save_every_nth_epoch,
+                              val_ratio,
+                              val_iwae_n_samples,
+                              depth,
+                              width,
+                              latent_dim,
+                              lr,
+                              batch_size,
+                              running_avg_n_values,
+                              activation_function,
+                              skip_conn_layer,
+                              skip_conn_masked_enc_dec,
+                              batch_normalization,
+                              paired_sampling,
+                              masking_ratio,
+                              mask_gen_coalitions,
+                              mask_gen_coalitions_prob,
+                              sigma_mu,
+                              sigma_sigma,
+                              save_data,
+                              log_exp_cont_feat,
+                              which_vaeac_model,
+                              verbose,
+                              seed,
                               ...) {
   # TODO: REMOVE list2env(vaeac_all_parameters, envir = .GlobalEnv)
 
@@ -394,68 +414,29 @@ vaeac_train_model <- function(x_train,
     verbose = verbose
   )
 
-  # Get the dimensions of the x_train
-  n_train <- nrow(x_train)
-  n_features <- ncol(x_train)
-
-  # Preprocess x_train. Turn factor names into numerics 1,2,...,K, (vaeac only accepts numerics) and keep track
-  # of the maping of names. Optionally log-transform the continuous features. Then, finally, normalize the data.
-  x_train_preprocessed <- vaeac_preprocess_data(data = x_train, log_exp_cont_feat = log_exp_cont_feat, normalize = TRUE)
-
-  # Extract the preprocessed and normalized x_train as a torch tensor and the one-hot feature sizes (cont have size 1)
-  x_train_torch <- x_train_preprocessed$data_normalized_torch
-  one_hot_max_sizes <- x_train_preprocessed$one_hot_max_sizes
-
-  # Splitting the input into a training and validation data sets
-  val_size <- ceiling(n_train * val_ratio) # Number of observations in the validation set
-  val_indices <- sample(n_train, val_size, replace = FALSE) # Sample indices for the validation set
-  val_dataset <- vaeac_dataset(x_train_torch[val_indices], one_hot_max_sizes) # Create a torch::dataset() for vaeac
-  train_indices <- seq(n_train)[-val_indices] # The remaining indices constitutes the training set
-  train_dataset <- vaeac_dataset(x_train_torch[train_indices], one_hot_max_sizes) # Create a torch::dataset() for vaeac
-
-  # Ensure a valid batch size
-  if (batch_size > length(train_indices)) {
-    message(paste0(
-      "Decrease `batch_size` (", batch_size, ") to largest allowed value (", length(train_indices), "), ",
-      "i.e., the number of training observations."
-    ))
-    batch_size <- length(train_indices)
-  }
-
-  # Create the Data Loader objects which iterate over the data in the Data Set objects
-  train_dataloader <- torch::dataloader(
-    dataset = train_dataset,
-    batch_size = batch_size,
-    shuffle = if (paired_sampling) FALSE else TRUE, # Must be `FALSE` when `sampler` is specified
-    sampler = if (paired_sampling) paired_sampler(train_dataset, shuffle = TRUE) else NULL
+  # Set up the data loaders and get the save file names and load them into the local environment
+  list2env(
+    vaeac_get_data_objects(
+      x_train = x_train,
+      log_exp_cont_feat = log_exp_cont_feat,
+      val_ratio = val_ratio,
+      batch_size = batch_size,
+      paired_sampling = paired_sampling,
+      model_description = model_description,
+      depth = depth,
+      width = width,
+      latent_dim = latent_dim,
+      lr = lr,
+      epochs = epochs,
+      save_every_nth_epoch = save_every_nth_epoch,
+      folder_to_save_model = folder_to_save_model,
+      train_indices = NULL,
+      val_indices = NULL
+    ),
+    envir = environment()
   )
 
-  val_dataloader <- torch::dataloader(
-    dataset = val_dataset,
-    batch_size = batch_size,
-    shuffle = FALSE,
-    sampler = if (paired_sampling) paired_sampler(val_dataset, shuffle = FALSE) else NULL
-  )
-
-  # Get all the file names for the vaeac objects we are going to save
-  vaeac_save_file_names <- vaeac_get_save_file_names(
-    model_description = model_description,
-    n_features = n_features,
-    n_train = n_train,
-    depth = depth,
-    width = width,
-    latent_dim = latent_dim,
-    lr = lr,
-    epochs = epochs,
-    save_every_nth_epoch = save_every_nth_epoch,
-    folder_to_save_model = folder_to_save_model
-  )
-
-  ##### List that stores needed information for save and load the model
-  # List of values saved to disk together with the vaeac models below.
-
-  # TODO: GO THOUGH AND CHECK WHAT WE NEED AND DONT
-  # Information saved together with the vaeac model to make it possible to load the model from disk later.
+  # Get information saved together with the vaeac model to make it possible to load the model from disk later.
   # Note that some of the parameters could be derived from others, but for simplicity we store all needed objects.
   state_list <- vaeac_get_full_state_list(environment())
 
@@ -581,7 +562,6 @@ vaeac_train_model <- function(x_train,
   return(return_list)
 }
 
-
 #' Continue to Train the vaeac Model
 #'
 #' @description Function that loads a previously trained vaeac model and continue the training, either
@@ -622,6 +602,9 @@ vaeac_continue_train_model <- function(explanation,
   vaeac_model <- explanation$internal$parameters$vaeac
   checkpoint <- torch::torch_load(vaeac_model$models$last)
 
+  # If we applied early stopping before and are calling this function, then we turn early stopping off
+  if (isTRUE(checkpoint$early_stopping_applied)) checkpoint$epochs_early_stopping <- epochs_new
+
   # Check for access to a single training data set and use the data from the checkpoint if `x_train` is not provided
   if (is.null(checkpoint$normalized_data) && is.null(x_train)) {
     stop("The `vaeac` model did not include data (set `vaeac.save_data = TRUE in `explain()`) and `x_train = NULL`.")
@@ -632,75 +615,36 @@ vaeac_continue_train_model <- function(explanation,
   if (is.null(x_train)) x_train <- checkpoint$x_train
 
   # Check that the provided vaeac model is trained on a dataset with the same feature names
-  vaeac_check_x_train_names(
-    feature_names_vaeac = checkpoint$feature_list$labels,
-    feature_names_new = names(x_train)
-  )
+  vaeac_check_x_train_names(feature_names_vaeac = checkpoint$feature_list$labels, feature_names_new = names(x_train))
 
-  # Specify the learning rate the function will use now
-  lr_now <- if (!is.null(lr_new)) lr_new else checkpoint$lr
-
-
-
-
-
-
-
-
-
-  # EVERYTHING WITH SETUP X CAN BE A SEPARATE FUNCITON
-
-  # Get the number of training observations
-  n_train <- nrow(x_train)
-
-  # Preprocess x_train. Turn factor names into numerics 1,2,...,K, (vaeac only accepts numerics) and keep track
-  # of the maping of names. Optionally log-transform the continuous features. Then, finally, normalize the data.
-  x_train_preprocessed <- vaeac_preprocess_data(
-    data = x_train,
-    log_exp_cont_feat = checkpoint$log_exp_cont_feat,
-    normalize = TRUE
-  )
-
-  # Extract the preprocessed and normalized x_train as a torch tensor, and the one-hot sizes
-  x_train_torch <- x_train_preprocessed$data_normalized_torch
-  one_hot_max_sizes <- x_train_preprocessed$one_hot_max_sizes
-
-  # Splitting the input into a training and validation data sets
-  if (!is.null(checkpoint$x_train) || n_train == checkpoint$n_train) {
-    # Reuse the original validation and training indices
+  # Check if we can reuse the original validation and training indices
+  if (!is.null(checkpoint$x_train) || nrow(x_train) == checkpoint$n_train) {
     val_indices <- checkpoint$val_indices
     train_indices <- checkpoint$train_indices
   } else {
-    # Generate new validation and training indices
-    val_size <- ceiling(n_train * val_ratio) # Number of observations in the validation set
-    val_indices <- sample(n_train, val_size, replace = FALSE) # Sample indices for the validation set
-    train_indices <- seq(n_train)[-val_indices] # The remaining indices constitutes the training set
-  }
-  val_dataset <- vaeac_dataset(x_train_torch[val_indices], one_hot_max_sizes) # Create a torch::dataset() for vaeac
-  train_dataset <- vaeac_dataset(x_train_torch[train_indices], one_hot_max_sizes) # Create a torch::dataset() for vaeac
-
-  # Ensure a valid batch size
-  if (checkpoint$batch_size > length(train_indices)) {
-    message(paste0(
-      "Decrease `batch_size` (", batch_size, ") to largest allowed value (", length(train_indices), "), ",
-      "i.e., the number of training observations."
-    ))
-    checkpoint$batch_size <- length(train_indices)
+    val_indices <- train_indices <- NULL
   }
 
-  # Create the Data Loader objects which iterate over the data in the Data Set objects
-  train_dataloader <- torch::dataloader(
-    dataset = train_dataset,
-    batch_size = checkpoint$batch_size,
-    shuffle = if (checkpoint$paired_sampling) FALSE else TRUE, # Must be `FALSE` when `sampler` is specified
-    sampler = if (checkpoint$paired_sampling) paired_sampler(train_dataset, shuffle = TRUE) else NULL
-  )
-
-  val_dataloader <- torch::dataloader(
-    dataset = val_dataset,
-    batch_size = checkpoint$batch_size,
-    shuffle = FALSE,
-    sampler = if (checkpoint$paired_sampling) paired_sampler(val_dataset, shuffle = FALSE) else NULL
+  # Set up the data loaders and get the save file names and load them into the local environment
+  list2env(
+    vaeac_get_data_objects(
+      x_train = x_train,
+      log_exp_cont_feat = checkpoint$log_exp_cont_feat,
+      val_ratio = checkpoint$val_ratio,
+      batch_size = checkpoint$batch_size,
+      paired_sampling = checkpoint$paired_sampling,
+      model_description = checkpoint$ model_description,
+      depth = checkpoint$depth,
+      width = checkpoint$width,
+      latent_dim = checkpoint$latent_dim,
+      lr = checkpoint$lr, # Use the old one as this parameter is used in the filenames
+      epochs = checkpoint$epochs + epochs_new,
+      save_every_nth_epoch = checkpoint$save_every_nth_epoch,
+      folder_to_save_model = checkpoint$folder_to_save_model,
+      train_indices = train_indices,
+      val_indices = val_indices
+    ),
+    envir = environment()
   )
 
   # List to values saved to disk together with the vaeac models below.
@@ -713,7 +657,6 @@ vaeac_continue_train_model <- function(explanation,
     val_indices = val_indices,
     lr_new = lr_new
   )
-
 
   # If we are also to save the data to state_list.
   if (save_data) {
@@ -728,59 +671,30 @@ vaeac_continue_train_model <- function(explanation,
     )
   }
 
-
-  # TODO: NEED TO REMEBER TO update the vaeac_save_file_names. The simplest idea is just to call
-  # the function again but this time with a higher/the new number of epochs.
-  checkpoint$vaeac_save_file_names <- vaeac_get_save_file_names(
-    model_description = checkpoint$model_description,
-    n_features = checkpoint$n_features,
-    n_train = checkpoint$n_train,
-    depth = checkpoint$depth,
-    width = checkpoint$width,
-    latent_dim = checkpoint$latent_dim,
-    lr = checkpoint$lr,
-    epochs = checkpoint$epochs + epochs_new,
-    save_every_nth_epoch = checkpoint$save_every_nth_epoch,
-    folder_to_save_model = checkpoint$folder_to_save_model
-  )
-
   # Add the new state list as a list to the checkpoint
   n_times_continued_trained <- sum(grepl("state_list_new", names(checkpoint)))
   state_list_new_name <- paste("state_list_new", n_times_continued_trained + 1, sep = "_")
   state_list <- checkpoint
   state_list[[state_list_new_name]] <- state_list_new
 
-
-
-
-
-
-
-
-
-
   # Set up the vaeac model in training mode and based on the parameters stored in the checkpoint
   vaeac_model <- vaeac_get_model_from_checkp(checkpoint = checkpoint, cuda = checkpoint$cuda, mode_train = TRUE)
 
-  # Create the an adam optimizer and insert the state
+  # Specify the learning rate we will use, create the an adam optimizer, and insert the stored optimizer state.
+  lr_now <- if (!is.null(lr_new)) lr_new else checkpoint$lr
   optimizer <- vaeac_get_optimizer(vaeac_model = vaeac_model, lr = lr_now, optimizer_name = "adam")
   optimizer$load_state_dict(checkpoint$optimizer_state_dict)
-
-
-
 
   # Compute the new number of epochs
   epochs_old <- checkpoint$epochs
   epochs <- epochs_old + epochs_new
   state_list$epochs <- epochs
 
-
-
   # Create a `progressr::progressor()` to keep track of the new training
   progressr_bar <- progressr::progressor(steps = epochs_new)
 
-
-  return_list <- vaeac_train_model_auxiliary(
+  # Train the vaeac model for `epochs_new` number of epochs
+  vaeac_tmp <- vaeac_train_model_auxiliary(
     vaeac_model = vaeac_model,
     optimizer = optimizer,
     train_dataloader = train_dataloader,
@@ -790,11 +704,11 @@ vaeac_continue_train_model <- function(explanation,
     verbose = verbose,
     cuda = checkpoint$cuda,
     progressr_bar = progressr_bar,
-    epochs = epochs_total,
+    epochs = epochs,
     epochs_start = epochs_old + 1,
     epochs_early_stopping = checkpoint$epochs_early_stopping,
     save_every_nth_epoch = checkpoint$save_every_nth_epoch,
-    vaeac_save_file_names = checkpoint$vaeac_save_file_names, # Provide the save names for the models
+    vaeac_save_file_names = vaeac_save_file_names, # Provide the save names for the models
     state_list = state_list, # Need to provide the state list as it will be saved together with the models
     initialization_idx = NULL, # Do not need to specify it as we are not doing the initialization now
     n_vaeacs_initialize = NULL, # Do not need to specify it as we are not doing the initialization now
@@ -803,6 +717,16 @@ vaeac_continue_train_model <- function(explanation,
     val_iwae_running = checkpoint$val_iwae_running
   )
 
+  # Create the return list
+  return_list <- list(
+    models = vaeac_tmp[1:(grep("train_vlb", names(vaeac_tmp)) - 1)], # Models are all entries before `train_vlb`
+    results = vaeac_tmp[c("train_vlb", "val_iwae", "val_iwae_running")], # The train & val results
+    parameters = vaeac_tmp$parameters # List of all the parameters used to train the vaeac model
+  )
+
+  # Add `vaeac` as a class to the object. We use this to validate the input when
+  # `vaeac.pretrained_vaeac_model` is given to the `shapr::explain()` function.
+  class(return_list) <- c(class(return_list), "vaeac")
 
   # Return the paths where the models are saved and the training/validation errors.
   return(return_list)
@@ -820,14 +744,14 @@ vaeac_continue_train_model <- function(explanation,
 #' @param n_samples Integer. The number of imputed versions we create for each row in `x_explain_with_NaNs`.
 #' @param index_features Optional integer vector. Used internally in shapr package to index the coalitions.
 #' @param n_explain Positive integer. The number of explicands.
-#' @param vaeac_model ADD TEXT
-#' @param checkpoint List containing the
-#' @param sampler ADD TEXT
+#' @param vaeac_model An initialized `vaeac` model that we are going to use to generate the MC samples.
+#' @param checkpoint List containing the parameters of the `vaeac` model.
+#' @param sampler A sampler object used to sample the MC samples.
 #'
 #' @return A data.table where the missing values (`NaN`) in `x_explain_with_NaNs` have been imputed `n_samples` times.
 #' The data table will contain extra id columns if `index_features` and `n_explain` are provided.
 #'
-#' @export
+#' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
                                          n_samples,

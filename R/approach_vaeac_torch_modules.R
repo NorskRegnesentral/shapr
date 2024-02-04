@@ -1016,7 +1016,7 @@ vaeac_normalize_data <- function(data_torch, one_hot_max_sizes, norm_mean = NULL
 #' }
 vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
   # Go from vaeac type data back to data.table used in shapr
-  data <- as.data.table(data)
+  if (!"data.table" %in% class(data)) data <- as.data.table(data)
   colnames(data) <- vaeac_model_state_list$feature_list$labels
 
   # Extract the column names for the categorical and continuous features, and the map from new to original name
@@ -1024,11 +1024,14 @@ vaeac_postprocess_data <- function(data, vaeac_model_state_list) {
   col_cont_names <- vaeac_model_state_list$col_cont_names
   map_new_to_original_names <- vaeac_model_state_list$map_new_to_original_names
 
-  # Convert all categorical features (if there are any) from numeric back to factors
-  if (length(col_cat_names) > 0) data[, (col_cat_names) := lapply(.SD, factor), .SDcols = col_cat_names]
-
-  # Iterate over the categorical features and map the class labels names back to the original names
-  for (col_cat_name in col_cat_names) levels(data[[col_cat_name]]) <- unlist(map_new_to_original_names[[col_cat_name]])
+  # Convert all categorical features (if there are any) from numeric back to factors with the original class names
+  if (length(col_cat_names) > 0) {
+    lapply(col_cat_names, function(col_cat_name) {
+      data[, (col_cat_name) := lapply(.SD, factor, labels = map_new_to_original_names[[col_cat_name]]),
+        .SDcols = col_cat_name
+      ]
+    })
+  }
 
   # Apply the exp transformation if we applied the log transformation in the pre-processing to the positive features
   if (vaeac_model_state_list$log_exp_cont_feat) data[, (col_cont_names) := lapply(.SD, exp), .SDcols = col_cont_names]

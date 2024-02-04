@@ -985,7 +985,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
   # Check for valid plot type argument
   unknown_plot_type <- plot_type[!(plot_type %in% c("overall", "comb", "explicand"))]
   if (length(unknown_plot_type) > 0) {
-    error(paste0(
+    stop(paste0(
       "The `plot_type` must be one (or several) of 'overall', 'comb', 'explicand'. ",
       "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
     ))
