@@ -1500,7 +1500,7 @@ vaeac_normal_parse_params <- function(params, min_sigma = 0.001) {
 #' @author Lars Henry Berge Olsen
 #' @keywords internal
 vaeac_categorical_parse_params <- function(params, min_prob = 0, max_prob = 1) {
-  # TODO: One option here is to directly use that 'dist_categorical' supports logits. I.e., we could have used
+  # One option here is to directly use that 'dist_categorical' supports logits. I.e., we could have used
   # `distr = torch::distr_categorical(logits = params)` and then been done. However, we would then not be able
   # to clamp the probabilities. In test, this is 30% faster and min prob is seldom reached, and we get the same values.
 
@@ -2017,27 +2017,6 @@ CategoricalToOneHotLayer <- torch::nn_module(
         # Check if any of the categories are nan / missing
         nan_mask <- torch::torch_isnan(cat_idx)
 
-        # TODO:
-        # THIS DOES NOT WORK BECAUSE, WHEN WE APPLY A MASK WE SET UNOBSERVED CATEGORICAL
-        # FEATEURS TO CLASS 0. (AS WE MULITPLY WITH 0), BUT THEN NNF_ONE_HOT DOES NOT WORK
-        # AS IT ONLY TAKES CLASSES 1,2,...,K.
-        # # Done it using two approaches. One using torch, which is faster, so use it.
-        # # Then we do the following:
-        # {
-        #   # Set the nan values to category one.
-        #   # This will be overwritten below, but needed for nnf_one_hot to work
-        #   # as it does not support observations without a class.
-        #   cat_idx[nan_mask] = 1
-        #
-        #   # Generate the one hot encoding
-        #   out_col = nnf_one_hot(cat_idx$to(dtype = torch::torch_long()),
-        #                                    size)$to(dtype = torch::torch_bool())$squeeze()
-        #
-        #   # Overwrite the entries which we said belonged to category one, but was actually missing.
-        #   out_col[torch::torch_repeat_interleave(nan_mask, as.integer(size), dim = -1)] = 0
-        # }
-        # or we can use the default R. THIS IS A BIT SLOWER. LOOK MORE INTO IT!
-
         # Set the nan values to 0
         cat_idx[nan_mask] <- 0
 
@@ -2187,7 +2166,6 @@ MCAR_mask_generator <- torch::nn_module(
 
     # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
     if (paired_sampling) {
-      # TODO: Check if we need this order
       mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
     }
 
@@ -2309,7 +2287,6 @@ Specified_prob_mask_generator <- torch::nn_module(
 
     # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
     if (paired_sampling) {
-      # TODO: Check if we need this order
       mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
     }
 
@@ -2421,7 +2398,6 @@ Specified_masks_mask_generator <- torch::nn_module(
 
     # If paired sampling, then concatenate the inverse mask and reorder to ensure correct order [m1, !m1, m2, !m2, ...].
     if (paired_sampling) {
-      # TODO: Check if we need this order
       mask <- torch::torch_cat(c(mask, !mask), 1L)[c(matrix(seq_len(nrow(batch)), nrow = 2, byrow = TRUE)), ]
     }
 

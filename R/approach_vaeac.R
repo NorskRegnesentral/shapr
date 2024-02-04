@@ -301,8 +301,6 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' to compute the IWAE criterion when validating the vaeac model on the validation data.
 #' @param batch_size Positive integer (default is `64`). The number of samples to include in each batch
 #' during the training of the vaeac model. Used in [torch::dataloader()].
-#'
-#'
 #' @param skip_conn_layer Logical (default is `TRUE`). If `TRUE`, we apply identity skip connections in each
 #' layer, see [shapr::SkipConnection()]. That is, we add the input \eqn{X} to the outcome of each hidden layer,
 #' so the output becomes \eqn{X + activation(WX + b)}.
@@ -390,8 +388,6 @@ vaeac_train_model <- function(x_train,
                               verbose,
                               seed,
                               ...) {
-  # TODO: REMOVE list2env(vaeac_all_parameters, envir = .GlobalEnv)
-
 
   # Set seed for reproducibility for both R and torch
   set.seed(seed)
@@ -522,7 +518,7 @@ vaeac_train_model <- function(x_train,
   } # Done with initial training of all vaeac models
 
   # Send the model to the GPU, if we have access to it.
-  # TODO: IT should be there already?
+  # TODO: Check that this when we get access to GPU
   if (cuda) vaeac_model_best_list$model <- vaeac_model_best_listmodel$cuda()
 
   # Check if we are printing detailed debug information

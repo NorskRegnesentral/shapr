@@ -318,15 +318,13 @@ parameters are the the number of layers in the networks (`vaeac.depth`), the wid
 the activation function between the layers in the networks (`vaeac.activation_function`), 
 the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
 to remedy poorly initiated model parameter values (`vaeac.n_vaeacs_initialize`), and
-the number of learning epochs (`vaeac.epochs`).
+the number of learning epochs (`vaeac.epochs`). Call `?shapr::setup_approach.vaeac` for 
+a more detailed description of the parameters.
 
 There are additional extra parameters which can be set by including a named list in the call to
-the `explain()` function. For example, we can make the `vaeac` print out additional information
-and change the batch size to 32 by including
-`vaeac.extra_parameters = list(vaeac.verbose = TRUE, vaeac.batch_size = 32)`
-as a parameter in the call the `explain()` function. See `?shapr::setup_approach.vaeac()`
-for a description of the possible extra parameters to the `vaeac` approach.
-
+the `explain()` function. For example, we can the change the batch size to 32 by including
+`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
+extra parameters to the `vaeac` approach. We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function, while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach will try to correct for misplaced and duplicated parameters and give warnings to the user.
 
 ## Categorical Approach
 
@@ -1317,14 +1315,13 @@ parameters are the the number of layers in the networks (`vaeac.depth`), the wid
 the activation function between the layers in the networks (`vaeac.activation_function`), 
 the learning rate in the ADAM optimizer (`vaeac.lr`), the number of `vaeac` models to initiate
 to remedy poorly initiated model parameter values (`vaeac.n_vaeacs_initialize`), and
-the number of learning epochs (`vaeac.epochs`).
+the number of learning epochs (`vaeac.epochs`). Call `?shapr::setup_approach.vaeac` for 
+a more detailed description of the parameters.
 
 There are additional extra parameters which can be set by including a named list in the call to
-the `explain()` function. For example, we can make the `vaeac` print out additional information
-and change the batch size to `32` by including
-`vaeac.extra_parameters = list(vaeac.verbose = TRUE, vaeac.batch_size = 32)`
-as a parameter in the call the `explain()` function. See `?shapr::setup_approach.vaeac()`
-for a description of the possible extra parameters to the `vaeac` approach.
+the `explain()` function. For example, we can the change the batch size to 32 by including
+`vaeac.extra_parameters = list(vaeac.batch_size = 32)` as a parameter in the call the `explain()` function. See `?shapr::vaeac_get_extra_para_default` for a description of the possible
+extra parameters to the `vaeac` approach. We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function, while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach will try to correct for misplaced and duplicated parameters and give warnings to the user.
 
 
 ```{r}
@@ -1340,19 +1337,14 @@ explanation_vaeac <- explain(
   vaeac.latent.dim = 4,
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(
-    vaeac.batch_size = 32,
-    vaeac.verbose = FALSE
-  )
+  vaeac.extra_parameters = list(vaeac.batch_size = 32)
 )
 ```
 
-Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 10` is likely to few epochs as it still seems like the `vaeac` model is learning.
+Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 3` is likely to few epochs as it still seems like the `vaeac` model is learning.
 ```{r,eval = FALSE}
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criteria(list("Vaeac 3 epochs" = explanation_vaeac),
-  plot_type = "method"
-)
+vaeac_plot_evaluation_criteria(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
 ```
 
 
@@ -1368,7 +1360,6 @@ for `3` consecutive epochs, of if `vaeac.epochs` is reached. Note that if using 
 updates simultaneously, then the estimated timer remaining will obviously be incorrect if early stopping 
 is applied.
 
-
 ```{r}
 explanation_vaeac_early_stop <- explain(
   model = model,
@@ -1382,11 +1373,7 @@ explanation_vaeac_early_stop <- explain(
   vaeac.latent.dim = 4,
   vaeac.epochs = 1000, # Set it to a large number
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(
-    vaeac.batch_size = 32,
-    vaeac.verbose = TRUE,
-    vaeac.epochs_early_stopping = 3
-  )
+  vaeac.extra_parameters = list(vaeac.batch_size = 32, vaeac.epochs_early_stopping = 3)
 )
 ```
 
@@ -1405,15 +1392,8 @@ vaeac_plot_evaluation_criteria(
 Can also compare the $\operatorname{MSE}_{v}$ evaluation scores.
 
 ```{r}
-plot_MSEv_eval_crit(
-  list(
-    "Vaeac 3 epochs" = explanation_vaeac,
-    "Vaeac early stopping" = explanation_vaeac_early_stop
-  ),
-  plot_type = c("overall")
-)
+plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop))
 ```
-
 
 
 
@@ -1550,14 +1530,6 @@ explanation <- explain(
 handlers("progress")
 #| [=================================>----------------------]  60% Estimating v(S)
 ```
-
-Note: if `approach = vaeac`, then `progressr` will display two progress bars.
-The first progress bar displays the training progress of the `vaeac` model, while
-the second displays the progress of estimating the contribution functions.
-Only the second progress bar are displayed for the other approaches. Furthermore,
-if `vaeac.verbose = TRUE` in the call to `explain`, then double sets of progress
-bars will be shown.
-
 
 
 

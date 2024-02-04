@@ -166,7 +166,7 @@ vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_ear
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_check_activation_func <- function(activation_function) {
-  # TODO: In future, check that it is one of the activation functions and not just a nn_module
+  # In future, check that it is one of the activation functions and not just a nn_module
   # Check that activation function is an nn_module
   if (!any("nn_module" %in% class(activation_function))) stop("`vaeac.activation_function` is not an `nn_module`.")
 }
@@ -531,7 +531,6 @@ vaeac_check_parameters <- function(x_train,
 #' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 #' @param vaeac.save_data Logical (default is `FALSE`). If `TRUE`, then the data is stored together with
 #' the model. Useful if one are to continue to train the model later using [shapr::vaeac_continue_train_model()].
-#' TODO: Check if we actually use this later. I think I use the one in `explanation`...
 #' @param vaeac.log_exp_cont_feat Logical (default is `FALSE`). If we are to \eqn{\log} transform all
 #' continuous features before sending the data to [shapr::vaeac()]. The `vaeac` model creates unbounded Monte Carlo
 #' sample values. Thus, if the continuous features are strictly positive (as for, e.g., the Burr distribution and
@@ -1338,7 +1337,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' @author Lars Henry Berge Olsen
 vaeac_update_para_locations <- function(parameters) {
   # Get the name of the main parameters for the `vaeac` approach
-  vaeac.main_para_default_names <- formalArgs(setup_approach.vaeac) # TODO: check if I need to add "shapr:::"
+  vaeac.main_para_default_names <- formalArgs(setup_approach.vaeac)
   vaeac.main_para_default_names <-
     vaeac.main_para_default_names[!vaeac.main_para_default_names %in% c("internal", "vaeac.extra_parameters", "...")]
 
