@@ -117,7 +117,7 @@ First we set up the model we want to explain.
 ```{r setup2, cache = TRUE}
 library(xgboost)
 library(data.table)
-# devtools::load_all(".") 
+# devtools::load_all(".")
 
 data("airquality")
 data <- data.table::as.data.table(airquality)

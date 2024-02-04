@@ -388,7 +388,6 @@ vaeac_train_model <- function(x_train,
                               verbose,
                               seed,
                               ...) {
-
   # Set seed for reproducibility for both R and torch
   set.seed(seed)
   torch::torch_manual_seed(seed)
