@@ -12,13 +12,14 @@ vaeac_check_save_parameters(
 )
 }
 \arguments{
-\item{save_data}{Boolean. If we are to save the data together with the model. Useful if one are to continue
-to train the model later.}
+\item{save_data}{Logical (default is \code{FALSE}). If \code{TRUE}, then the data is stored together with
+the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_continue_train_model]{vaeac_continue_train_model()}}.}
 
-\item{epochs}{Integer. The number of epochs to train the final vaeac model.
-This includes \code{epochs_initiation_phase}.}
+\item{epochs}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
+This includes \code{epochs_initiation_phase}, where the default is \code{2}.}
 
-\item{save_every_nth_epoch}{Integer. If we are to save the vaeac model after every nth epoch.}
+\item{save_every_nth_epoch}{Positive integer (default is \code{NULL}). If provided, then the vaeac model after
+every \code{save_every_nth_epoch}th epoch will be saved.}
 
 \item{x_train_size}{The object size of the \code{x_train} object.}
 }

@@ -41,102 +41,133 @@ vaeac_check_parameters(
 )
 }
 \arguments{
-\item{x_train}{A data.table containing the data. Categorical names
-Categorical data must have class names \eqn{1,2,\dots,K}.}
+\item{x_train}{A data.table containing the training data. Categorical data must have class names \eqn{1,2,\dots,K}.}
 
-\item{model_description}{String containing, e.g., the name of the data distribution or
-additional parameter information. Used in the save name of the fitted model.}
+\item{model_description}{String (default is \code{make.names(Sys.time())}). String containing, e.g., the name of the
+data distribution or additional parameter information. Used in the save name of the fitted model. If not provided,
+then a name will be generated based on \code{\link[base:Sys.time]{base::Sys.time()}} to ensure a unique name. We use \code{\link[base:make.names]{base::make.names()}} to
+ensure a valid file name for all operating systems.}
 
-\item{folder_to_save_model}{String specifying a path to a folder where
-the function is to save the fitted vaeac model.}
+\item{folder_to_save_model}{String (default is \code{\link[base:tempfile]{base::tempdir()}}). String specifying a path to a folder where
+the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
+\code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}.}
 
-\item{cuda}{Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!}
+\item{cuda}{cuda Logical (default is \code{FALSE}). If \code{TRUE}, then the \code{vaeac} model will be trained using cuda/GPU.
+If \code{\link[torch:cuda_is_available]{torch::cuda_is_available()}} is \code{FALSE}, the we fall back to use CPU. If \code{FALSE}, we use the CPU. Often this is
+faster for tabular data sets. Note, cuda is not not supported in the current version of the \code{shapr} package.
+TODO: Update this when this is done.}
 
-\item{n_vaeacs_initialize}{Integer. The number of different vaeac models to initiate in the start.
-Pick the best performing one after \code{epochs_initiation_phase} and continue training that one.}
+\item{n_vaeacs_initialize}{Positive integer (default is \code{4}). The number of different vaeac models to initiate
+in the start. Pick the best performing one after \code{epochs_initiation_phase}
+epochs (default is \code{2}) and continue training that one.}
 
-\item{epochs_initiation_phase}{Integer. The number of epochs to run each of the \code{n_vaeacs_initialize}
-vaeac models before only continuing training the best one.}
+\item{epochs_initiation_phase}{Positive integer (default is \code{2}). The number of epochs to run each of the
+\code{n_vaeacs_initialize} \code{vaeac} models before continuing to train only the best performing model.}
 
-\item{epochs}{Integer. The number of epochs to train the final vaeac model.
-This includes \code{epochs_initiation_phase}.}
+\item{epochs}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
+This includes \code{epochs_initiation_phase}, where the default is \code{2}.}
 
-\item{epochs_early_stopping}{Integer. The training stops if there has been no improvement in the validation IWAE
-for \code{epochs_early_stopping} epochs. If the user wants the training process to be solely based on this, then \code{epochs}
-should be set to a large number.}
+\item{epochs_early_stopping}{Positive integer (default is \code{NULL}). The training stops if there has been no
+improvement in the validation IWAE for \code{epochs_early_stopping} epochs. If the user wants the training process
+to be solely based on this training criterion, then \code{epochs} in \code{\link[=explain]{explain()}} should be set to a large
+number. If \code{NULL}, then \code{shapr} will internally set \code{epochs_early_stopping = vaeac.epochs} such that early
+stopping does not occur.}
 
-\item{save_every_nth_epoch}{Integer. If we are to save the vaeac model after every nth epoch.}
+\item{save_every_nth_epoch}{Positive integer (default is \code{NULL}). If provided, then the vaeac model after
+every \code{save_every_nth_epoch}th epoch will be saved.}
 
-\item{val_ratio}{Scalar between 0 and 1 indicating the ratio of
-instances from data which will be used as validation data.}
+\item{val_ratio}{Numeric (default is \code{0.25}). Scalar between \code{0} and \code{1} indicating the ratio of
+instances from the input data which will be used as validation data. That is, \code{val_ratio = 0.25} means
+that \verb{75\%} of the provided data is used as training data, while the remaining \verb{25\%} is used as validation data.}
 
-\item{val_iwae_n_samples}{Integer. The number of samples used to compute the
-IWAE when validating the vaeac model on the validation data.}
+\item{val_iwae_n_samples}{Positive integer (default is \code{25}). The number of generated samples used
+to compute the IWAE criterion when validating the vaeac model on the validation data.}
 
-\item{depth}{Integer. The number of hidden layers in the neural
-networks of the masked encoder, full encoder, and decoder.}
+\item{depth}{Positive integer (default is \code{3}). The number of hidden layers
+in the neural networks of the masked encoder, full encoder, and decoder.}
 
-\item{width}{Integer. The number of neurons in each hidden layer in
-the neural networks of the masked encoder, full encoder, and decoder.}
+\item{width}{Positive integer (default is \code{32}). The number of neurons in each
+hidden layer in the neural networks of the masked encoder, full encoder, and decoder.}
 
-\item{latent_dim}{Integer. The number of dimensions in the latent space.}
+\item{latent_dim}{Positive integer (default is \code{8}). The number of dimensions in the latent space.}
 
-\item{lr}{Numeric. The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
+\item{lr}{Positive numeric (default is \code{0.001}). The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
 
-\item{batch_size}{Integer. The number of samples to include in each batch.}
+\item{batch_size}{Positive integer (default is \code{64}). The number of samples to include in each batch
+during the training of the vaeac model. Used in \code{\link[torch:dataloader]{torch::dataloader()}}.}
 
-\item{running_avg_n_values}{Integer. How many of the previous values to include when we compute the running means.}
+\item{running_avg_n_values}{running_avg_n_values Positive integer (default is \code{5}).
+The number of previous IWAE values to include
+when we compute the running means of the IWAE criterion.}
 
 \item{activation_function}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
-\code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, and
-\code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
+\code{\link[torch:nn_relu]{torch::nn_relu()}} (default), \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, or \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
-\item{skip_conn_layer}{Boolean. If we are to use skip connections in each layer. If true, then we add the input
-to the outcome of each hidden layer, so the output becomes X + activation(WX + b). I.e., identity skip connection.}
+\item{skip_conn_layer}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply identity skip connections in each
+layer, see \code{\link[=SkipConnection]{SkipConnection()}}. That is, we add the input \eqn{X} to the outcome of each hidden layer,
+so the output becomes \eqn{X + activation(WX + b)}.}
 
-\item{skip_conn_masked_enc_dec}{Boolean. If we are to apply concatenate skip
-connections between the layers in the masked encoder and decoder.}
+\item{skip_conn_masked_enc_dec}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply concatenate skip
+connections between the layers in the masked encoder and decoder. The first layer of the masked encoder will be
+linked to the last layer of the decoder. The second layer of the masked encoder will be
+linked to the second to last layer of the decoder, and so on.}
 
-\item{batch_normalization}{Boolean. If we are to use batch normalization after the activation function.
-Note that if \code{skip_conn_layer} is TRUE, then the normalization is
-done after the adding from the skip connection. I.e, we batch normalize the whole quantity X + activation(WX + b).}
+\item{batch_normalization}{Logical (default is \code{FALSE}). If \code{TRUE}, we apply batch normalization after the
+activation function. Note that if \code{skip_conn_layer = TRUE}, then the normalization is applied after the
+inclusion of the skip connection. That is, we batch normalize the whole quantity \eqn{X + activation(WX + b)}.}
 
-\item{paired_sampling}{Boolean. Default is \code{TRUE}. If we are doing paired sampling. I.e.,
-masked by \eqn{S} and the second one is masked by \eqn{\bar{S}}, the complement, see
-\href{https://arxiv.org/pdf/2107.07436.pdf}{Jethani et al. (2022)}. Training becomes more
-stable, but slower due to more complex implementation.}
+\item{paired_sampling}{Logical (default is \code{TRUE}). If \code{TRUE}, we apply paired sampling to the training
+batches. That is, the training observations in each batch will be duplicated, where the first instance will be masked
+by \eqn{S} while the second instance will be masked by \eqn{\bar{S}}. This ensures that the training of the
+\code{vaeac} model becomes more stable as the model has access to the full version of each training observation. However,
+this will increase the training time due to more complex implementation and doubling the size of each batch. See
+\code{\link[=paired_sampler]{paired_sampler()}} for more information.}
 
-\item{masking_ratio}{Probability of masking a feature in the MCAR mask generator.
-Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-This is overruled if \code{mask_gen_coalitions} is specified.}
+\item{masking_ratio}{Numeric (default is \code{0.5}). Probability of masking a feature in the
+\code{\link[=MCAR_mask_generator]{MCAR_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
+model can do arbitrary conditioning as all coalitions will be trained. \code{masking_ratio} will be overruled if
+\code{mask_gen_coalitions} is specified.}
 
-\item{mask_gen_coalitions}{Matrix containing the different coalitions to learn.}
+\item{mask_gen_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
+\code{vaeac} model will be trained on, see \code{\link[=Specified_masks_mask_generator]{Specified_masks_mask_generator()}}. This parameter is used internally
+in \code{shapr} when we only consider a subset of coalitions/combinations, i.e., when
+\code{n_combinations} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+when \code{group} is specified in \code{\link[=explain]{explain()}}.}
 
-\item{mask_gen_coalitions_prob}{Numerics containing the probabilities for
-sampling each mask in \code{mask_gen_coalitions}.
-Array containing the probabilities for sampling the coalitions in \code{mask_gen_coalitions}.}
+\item{mask_gen_coalitions_prob}{Numeric array (default is \code{NULL}). Array of length equal to the height
+of \code{mask_gen_coalitions} containing the probabilities of sampling the corresponding coalitions in
+\code{mask_gen_coalitions}.}
 
-\item{sigma_mu}{Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
-see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
+\item{sigma_mu}{Numeric (default is \code{1e4}). One of two hyperparameter values in the normal-gamma prior
+used in the masked encoder, see Section 3.3.1 in
+\href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
 
-\item{sigma_sigma}{Numeric representing a hyperparameter in the normal-gamma prior used on the masked encoder,
-see Section 3.3.1 in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
+\item{sigma_sigma}{Numeric (default is \code{1e-4}). One of two hyperparameter values in the normal-gamma prior
+used in the masked encoder, see Section 3.3.1 in
+\href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.}
 
-\item{save_data}{Boolean. If we are to save the data together with the model. Useful if one are to continue
-to train the model later.}
+\item{save_data}{Logical (default is \code{FALSE}). If \code{TRUE}, then the data is stored together with
+the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_continue_train_model]{vaeac_continue_train_model()}}.}
 
-\item{log_exp_cont_feat}{Boolean. If we are to log transform all continuous
-features before
-sending the data to the vaeac using the \code{\link[=vaeac_postprocess_data]{vaeac_postprocess_data()}} function. The vaeac method creates
-unbounded values, so if the continuous features are strictly positive, as for Burr and Abalone data, it can be
-advantageous to log-transform the data to unbounded form before using vaeac.
-If \code{TRUE}, then \code{\link[=vaeac_postprocess_data]{vaeac_postprocess_data()}} will take the exp of the results
-to get back to strictly positive values when using the vaeac model to impute missing values.}
+\item{log_exp_cont_feat}{Logical (default is \code{FALSE}). If we are to \eqn{\log} transform all
+continuous features before sending the data to \code{\link[=vaeac]{vaeac()}}. The \code{vaeac} model creates unbounded Monte Carlo
+sample values. Thus, if the continuous features are strictly positive (as for, e.g., the Burr distribution and
+Abalone data set), it can be advantageous to \eqn{\log} transform the data to unbounded form before using \code{vaeac}.
+If \code{TRUE}, then \code{\link[=vaeac_postprocess_data]{vaeac_postprocess_data()}} will take the \eqn{\exp} of the results to get back to strictly
+positive values when using the \code{vaeac} model to impute missing values/generate the Monte Carlo samples.}
 
-\item{verbose}{Boolean. If we are to print the progress of the initialization of different vaeac models,
-the training of the final vaeac model, and summary of the training progress.}
+\item{which_vaeac_model}{String (default is \code{best}). The name of the \code{vaeac} model (snapshots from different
+epochs) to use when generating the Monte Carlo samples. The standard choices are: \code{"best"} (epoch with lowest IWAE),
+\code{"best_running"} (epoch with lowest running IWAE, see \code{vaeac.running_avg_n_values}), and \code{last} (the last epoch).
+Note that additional choices are available if \code{vaeac.save_every_nth_epoch} is provided. For example, if
+\code{vaeac.save_every_nth_epoch = 5}, then \code{vaeac.which_vaeac_model} can also take the values \code{"epoch_5"}, \code{"epoch_10"},
+\code{"epoch_15"}, and so on.}
 
-\item{seed}{Positive integer (default is \code{1}). Seed for reproducibility.}
+\item{verbose}{Boolean. An integer specifying the level of verbosity. Use \code{0} (default) for no verbosity,
+\code{1} for low verbose, and \code{2} for high verbose.}
+
+\item{seed}{Positive integer (default is \code{1}). Seed for reproducibility. Specifies the seed before any randomness
+based code is being run.}
 
 \item{...}{List of extra parameters, currently not used.}
 }

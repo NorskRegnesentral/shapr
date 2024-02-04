@@ -7,7 +7,10 @@
 vaeac_check_cuda(cuda)
 }
 \arguments{
-\item{cuda}{Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!}
+\item{cuda}{cuda Logical (default is \code{FALSE}). If \code{TRUE}, then the \code{vaeac} model will be trained using cuda/GPU.
+If \code{\link[torch:cuda_is_available]{torch::cuda_is_available()}} is \code{FALSE}, the we fall back to use CPU. If \code{FALSE}, we use the CPU. Often this is
+faster for tabular data sets. Note, cuda is not not supported in the current version of the \code{shapr} package.
+TODO: Update this when this is done.}
 }
 \value{
 The function does not return anything.

@@ -34,7 +34,8 @@ Imports:
     data.table,
     Rcpp (>= 0.12.15),
     Matrix,
-    future.apply
+    future.apply,
+    methods
 Suggests: 
     ranger,
     xgboost,

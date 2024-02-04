@@ -4,21 +4,20 @@
 \alias{vaeac_check_mask_gen}
 \title{Function that checks the specified masking scheme}
 \usage{
-vaeac_check_mask_gen(
-  mask_gen_coalitions,
-  mask_gen_coalitions_prob,
-  x_train
-)
+vaeac_check_mask_gen(mask_gen_coalitions, mask_gen_coalitions_prob, x_train)
 }
 \arguments{
-\item{mask_gen_coalitions}{Matrix containing the different coalitions to learn.}
+\item{mask_gen_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
+\code{vaeac} model will be trained on, see \code{\link[=Specified_masks_mask_generator]{Specified_masks_mask_generator()}}. This parameter is used internally
+in \code{shapr} when we only consider a subset of coalitions/combinations, i.e., when
+\code{n_combinations} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+when \code{group} is specified in \code{\link[=explain]{explain()}}.}
 
-\item{mask_gen_coalitions_prob}{Numerics containing the probabilities for
-sampling each mask in \code{mask_gen_coalitions}.
-Array containing the probabilities for sampling the coalitions in \code{mask_gen_coalitions}.}
+\item{mask_gen_coalitions_prob}{Numeric array (default is \code{NULL}). Array of length equal to the height
+of \code{mask_gen_coalitions} containing the probabilities of sampling the corresponding coalitions in
+\code{mask_gen_coalitions}.}
 
-\item{x_train}{A data.table containing the data. Categorical names
-Categorical data must have class names \eqn{1,2,\dots,K}.}
+\item{x_train}{A data.table containing the training data. Categorical data must have class names \eqn{1,2,\dots,K}.}
 }
 \value{
 The function does not return anything.

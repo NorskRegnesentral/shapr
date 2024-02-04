@@ -7,8 +7,8 @@
 vaeac_check_verbose(verbose)
 }
 \arguments{
-\item{verbose}{Boolean. If we are to print the progress of the initialization of different vaeac models,
-the training of the final vaeac model, and summary of the training progress.}
+\item{verbose}{Boolean. An integer specifying the level of verbosity. Use \code{0} (default) for no verbosity,
+\code{1} for low verbose, and \code{2} for high verbose.}
 }
 \value{
 The function does not return anything.

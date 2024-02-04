@@ -7,11 +7,14 @@
 vaeac_check_save_names(folder_to_save_model, model_description)
 }
 \arguments{
-\item{folder_to_save_model}{String specifying a path to a folder where
-the function is to save the fitted vaeac model.}
+\item{folder_to_save_model}{String (default is \code{\link[base:tempfile]{base::tempdir()}}). String specifying a path to a folder where
+the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
+\code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}.}
 
-\item{model_description}{String containing, e.g., the name of the data distribution or
-additional parameter information. Used in the save name of the fitted model.}
+\item{model_description}{String (default is \code{make.names(Sys.time())}). String containing, e.g., the name of the
+data distribution or additional parameter information. Used in the save name of the fitted model. If not provided,
+then a name will be generated based on \code{\link[base:Sys.time]{base::Sys.time()}} to ensure a unique name. We use \code{\link[base:make.names]{base::make.names()}} to
+ensure a valid file name for all operating systems.}
 }
 \value{
 The function does not return anything.

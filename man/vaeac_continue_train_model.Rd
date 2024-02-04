@@ -17,16 +17,20 @@ vaeac_continue_train_model(
 \arguments{
 \item{explanation}{A \code{\link[=explain]{explain()}} object and \code{vaeac} must be the used approach.}
 
-\item{epochs_new}{Integer. The number of extra epochs to conduct.}
+\item{epochs_new}{Positive integer. The number of extra epochs to conduct.}
 
-\item{lr_new}{Numeric. If we are to overwrite the old learning rate in the adam optimizer.}
+\item{lr_new}{Positive numeric. If we are to overwrite the old learning rate in the adam optimizer.}
 
-\item{x_train}{Matrix/data.frame containing new training data. If not present,
-then we try to load training data from the vaeac_model.}
+\item{x_train}{A data.table containing the training data. Categorical data must have class names \eqn{1,2,\dots,K}.}
 
-\item{save_data}{Boolean. If we are to save the training data.}
+\item{save_data}{Logical (default is \code{FALSE}). If \code{TRUE}, then the data is stored together with
+the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_continue_train_model]{vaeac_continue_train_model()}}.}
 
-\item{verbose}{Boolean. If we are to print out information to the user.}
+\item{verbose}{Boolean. An integer specifying the level of verbosity. Use \code{0} (default) for no verbosity,
+\code{1} for low verbose, and \code{2} for high verbose.}
+
+\item{seed}{Positive integer (default is \code{1}). Seed for reproducibility. Specifies the seed before any randomness
+based code is being run.}
 }
 \value{
 A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.

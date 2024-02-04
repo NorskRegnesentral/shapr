@@ -9,7 +9,7 @@ vaeac_get_optimizer(vaeac_model, lr, optimizer_name = "adam")
 \arguments{
 \item{vaeac_model}{A \code{vaeac} model created using \code{\link[=vaeac]{vaeac()}}.}
 
-\item{lr}{Numeric. The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
+\item{lr}{Positive numeric (default is \code{0.001}). The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
 
 \item{optimizer_name}{String containing the name of the \code{\link[torch:optimizer]{torch::optimizer()}} to use.}
 }

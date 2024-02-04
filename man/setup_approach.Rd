@@ -67,8 +67,8 @@ setup_approach(internal, ...)
   vaeac.latent_dim = 8,
   vaeac.activation_function = torch::nn_relu,
   vaeac.lr = 0.001,
-  vaeac.n_vaeacs_initialize = 10,
-  vaeac.epochs = 200,
+  vaeac.n_vaeacs_initialize = 4,
+  vaeac.epochs = 100,
   vaeac.extra_parameters = list(),
   ...
 )
@@ -164,29 +164,28 @@ If one or both of these bounds are not NULL, we restrict the sampled time series
 between these bounds.
 This is useful if the underlying time series are scaled between 0 and 1, for example.}
 
-\item{vaeac.depth}{Integer. The number of hidden layers in the neural networks of the masked
-encoder, full encoder, and decoder.}
+\item{vaeac.depth}{Positive integer (default is \code{3}). The number of hidden layers
+in the neural networks of the masked encoder, full encoder, and decoder.}
 
-\item{vaeac.width}{Integer. The number of neurons in each hidden layer in the neural networks
-of the masked encoder, full encoder, and decoder.}
+\item{vaeac.width}{Positive integer (default is \code{32}). The number of neurons in each
+hidden layer in the neural networks of the masked encoder, full encoder, and decoder.}
 
-\item{vaeac.latent_dim}{Integer. The number of dimensions in the latent space.}
+\item{vaeac.latent_dim}{Positive integer (default is \code{8}). The number of dimensions in the latent space.}
 
-\item{vaeac.activation_function}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation
-function such as, e.g., \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}},
-\code{\link[torch:nn_selu]{torch::nn_selu()}}, and \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
+\item{vaeac.activation_function}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
+\code{\link[torch:nn_relu]{torch::nn_relu()}} (default), \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, or \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 
-\item{vaeac.lr}{Numeric. The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
+\item{vaeac.lr}{Positive numeric (default is \code{0.001}). The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
 
-\item{vaeac.n_vaeacs_initialize}{Integer. The number of different vaeac models to initiate
+\item{vaeac.n_vaeacs_initialize}{Positive integer (default is \code{4}). The number of different vaeac models to initiate
 in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
 epochs (default is \code{2}) and continue training that one.}
 
-\item{vaeac.epochs}{Integer. The number of epochs to train the final vaeac model. This includes
-\code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
+\item{vaeac.epochs}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
+This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
 
-\item{vaeac.extra_parameters}{Named list with extra parameters to the \code{vaeac} approach.
-See \code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters.}
+\item{vaeac.extra_parameters}{Named list with extra parameters to the \code{vaeac} approach. See
+\code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
 }
 \description{
 The different choices of \code{approach} takes different (optional) parameters,
@@ -200,7 +199,8 @@ representations to latent representations, respectively, where the dimension is 
 The latent representations are sent to the decoder to go back to the real feature space and
 provide a samplable probabilistic representation, from which the Monte Carlo samples are generated.
 We use the \code{vaeac} method at the epoch with the lowest validation error (IWAE) by default, but
-other possibilities are available but setting the \code{vaeac.which_vaeac_model} parameter.
+other possibilities are available but setting the \code{vaeac.which_vaeac_model} parameter. See
+\href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} for more details.
 }
 
 \author{

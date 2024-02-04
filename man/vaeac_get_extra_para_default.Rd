@@ -132,8 +132,7 @@ from the inferred generative distributions. If \code{FALSE}, the function use th
 class with highest probability for continuous and categorical, respectively.}
 
 \item{vaeac.save_data}{Logical (default is \code{FALSE}). If \code{TRUE}, then the data is stored together with
-the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_continue_train_model]{vaeac_continue_train_model()}}.
-TODO: Check if we actually use this later. I think I use the one in \code{explanation}...}
+the model. Useful if one are to continue to train the model later using \code{\link[=vaeac_continue_train_model]{vaeac_continue_train_model()}}.}
 
 \item{vaeac.log_exp_cont_feat}{Logical (default is \code{FALSE}). If we are to \eqn{\log} transform all
 continuous features before sending the data to \code{\link[=vaeac]{vaeac()}}. The \code{vaeac} model creates unbounded Monte Carlo
@@ -142,7 +141,7 @@ Abalone data set), it can be advantageous to \eqn{\log} transform the data to un
 If \code{TRUE}, then \code{\link[=vaeac_postprocess_data]{vaeac_postprocess_data()}} will take the \eqn{\exp} of the results to get back to strictly
 positive values when using the \code{vaeac} model to impute missing values/generate the Monte Carlo samples.}
 
-\item{vaeac.which_vaeac_model}{String (default is \code{NULL}). The name of the \code{vaeac} model (snapshots from different
+\item{vaeac.which_vaeac_model}{String (default is \code{best}). The name of the \code{vaeac} model (snapshots from different
 epochs) to use when generating the Monte Carlo samples. The standard choices are: \code{"best"} (epoch with lowest IWAE),
 \code{"best_running"} (epoch with lowest running IWAE, see \code{vaeac.running_avg_n_values}), and \code{last} (the last epoch).
 Note that additional choices are available if \code{vaeac.save_every_nth_epoch} is provided. For example, if

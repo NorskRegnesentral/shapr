@@ -167,22 +167,21 @@ If FALSE and the number of observations in the leaf node is more than \code{n_sa
 the method will sample \code{n_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample} = FALSE AND the number of obs in the node is less than \code{n_samples}.}
-    \item{\code{vaeac.depth}}{Integer. The number of hidden layers in the neural networks of the masked
-encoder, full encoder, and decoder.}
-    \item{\code{vaeac.width}}{Integer. The number of neurons in each hidden layer in the neural networks
-of the masked encoder, full encoder, and decoder.}
-    \item{\code{vaeac.latent_dim}}{Integer. The number of dimensions in the latent space.}
-    \item{\code{vaeac.lr}}{Numeric. The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
-    \item{\code{vaeac.activation_function}}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation
-function such as, e.g., \code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}},
-\code{\link[torch:nn_selu]{torch::nn_selu()}}, and \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
-    \item{\code{vaeac.n_vaeacs_initialize}}{Integer. The number of different vaeac models to initiate
+    \item{\code{vaeac.depth}}{Positive integer (default is \code{3}). The number of hidden layers
+in the neural networks of the masked encoder, full encoder, and decoder.}
+    \item{\code{vaeac.width}}{Positive integer (default is \code{32}). The number of neurons in each
+hidden layer in the neural networks of the masked encoder, full encoder, and decoder.}
+    \item{\code{vaeac.latent_dim}}{Positive integer (default is \code{8}). The number of dimensions in the latent space.}
+    \item{\code{vaeac.lr}}{Positive numeric (default is \code{0.001}). The learning rate used in the \code{\link[torch:optim_adam]{torch::optim_adam()}} optimizer.}
+    \item{\code{vaeac.activation_function}}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
+\code{\link[torch:nn_relu]{torch::nn_relu()}} (default), \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, or \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
+    \item{\code{vaeac.n_vaeacs_initialize}}{Positive integer (default is \code{4}). The number of different vaeac models to initiate
 in the start. Pick the best performing one after \code{vaeac.extra_parameters$epochs_initiation_phase}
 epochs (default is \code{2}) and continue training that one.}
-    \item{\code{vaeac.epochs}}{Integer. The number of epochs to train the final vaeac model. This includes
-\code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
-    \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach.
-See \code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters.}
+    \item{\code{vaeac.epochs}}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
+This includes \code{vaeac.extra_parameters$epochs_initiation_phase}, where the default is \code{2}.}
+    \item{\code{vaeac.extra_parameters}}{Named list with extra parameters to the \code{vaeac} approach. See
+\code{\link[=vaeac_get_extra_para_default]{vaeac_get_extra_para_default()}} for description of possible additional parameters and their default values.}
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
 values.

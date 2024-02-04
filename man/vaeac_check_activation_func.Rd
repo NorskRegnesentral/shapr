@@ -8,8 +8,7 @@ vaeac_check_activation_func(activation_function)
 }
 \arguments{
 \item{activation_function}{An \code{\link[torch:nn_module]{torch::nn_module()}} representing an activation function such as, e.g.,
-\code{\link[torch:nn_relu]{torch::nn_relu()}}, \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, and
-\code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
+\code{\link[torch:nn_relu]{torch::nn_relu()}} (default), \code{\link[torch:nn_leaky_relu]{torch::nn_leaky_relu()}}, \code{\link[torch:nn_selu]{torch::nn_selu()}}, or \code{\link[torch:nn_sigmoid]{torch::nn_sigmoid()}}.}
 }
 \value{
 The function does not return anything.

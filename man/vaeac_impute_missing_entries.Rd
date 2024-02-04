@@ -22,32 +22,28 @@ vaeac_impute_missing_entries(
 
 \item{n_samples}{Integer. The number of imputed versions we create for each row in \code{x_explain_with_NaNs}.}
 
-\item{vaeac_model}{ADD TEXT}
+\item{vaeac_model}{An initialized \code{vaeac} model that we are going to use to generate the MC samples.}
 
-\item{checkpoint}{List containing the}
+\item{checkpoint}{List containing the parameters of the \code{vaeac} model.}
 
-\item{sampler}{ADD TEXT}
+\item{sampler}{A sampler object used to sample the MC samples.}
 
-\item{batch_size}{Integer. The number of samples in each batch.
-If \code{NULL}, then use the same value saved in the vaeac object.
-We recommend a large number because of a lot of overhead for small batch sizes, that is,
-\code{batch_size} should be much larger than the batch size used during the training. checkpoint$batch_size}
+\item{batch_size}{Positive integer (default is \code{64}). The number of samples to include in each batch
+during the training of the vaeac model. Used in \code{\link[torch:dataloader]{torch::dataloader()}}.}
 
-\item{verbose}{Boolean. If we are to print the progress to the user.}
+\item{verbose}{Boolean. An integer specifying the level of verbosity. Use \code{0} (default) for no verbosity,
+\code{1} for low verbose, and \code{2} for high verbose.}
 
-\item{seed}{Integer. Seed used before generating the MC samples.}
+\item{seed}{Positive integer (default is \code{1}). Seed for reproducibility. Specifies the seed before any randomness
+based code is being run.}
 
 \item{n_explain}{Positive integer. The number of explicands.}
 
 \item{index_features}{Optional integer vector. Used internally in shapr package to index the coalitions.}
-
-\item{sample_random}{Boolean. If we are to generate random samples from the inferred generative distributions,
-or if we are to sample the most likely values (mean for continuous and class with highest prob for categorical).}
 }
 \value{
-A 2D or 3D array or 2D data.table where the missing values (\code{NaN}) in \code{x_explain_with_NaNs}
-have been imputed \code{n_samples} times. The dimension of the returned object depends on the
-boolean parameters \code{convert_to_2D} and \code{return_as_postprocessed_dt}.
+A data.table where the missing values (\code{NaN}) in \code{x_explain_with_NaNs} have been imputed \code{n_samples} times.
+The data table will contain extra id columns if \code{index_features} and \code{n_explain} are provided.
 }
 \description{
 Impute Missing Values Using Vaeac
@@ -59,3 +55,4 @@ The values are sampled from the conditional distribution estimated by a vaeac mo
 \author{
 Lars Henry Berge Olsen
 }
+\keyword{internal}

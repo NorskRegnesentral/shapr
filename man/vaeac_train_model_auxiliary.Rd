@@ -36,24 +36,32 @@ vaeac_train_model_auxiliary(
 
 \item{val_dataloader}{A \code{\link[torch:dataloader]{torch::dataloader()}} containing the validation data for the \code{vaeac} model.}
 
-\item{val_iwae_n_samples}{Integer. The number of samples used to compute the
-IWAE when validating the vaeac model on the validation data.}
+\item{val_iwae_n_samples}{Positive integer (default is \code{25}). The number of generated samples used
+to compute the IWAE criterion when validating the vaeac model on the validation data.}
 
-\item{running_avg_n_values}{Integer. How many of the previous values to include when we compute the running means.}
+\item{running_avg_n_values}{running_avg_n_values Positive integer (default is \code{5}).
+The number of previous IWAE values to include
+when we compute the running means of the IWAE criterion.}
 
-\item{verbose}{Boolean. If we are to print the progress of the initialization of different vaeac models,
-the training of the final vaeac model, and summary of the training progress.}
+\item{verbose}{Boolean. An integer specifying the level of verbosity. Use \code{0} (default) for no verbosity,
+\code{1} for low verbose, and \code{2} for high verbose.}
 
-\item{cuda}{Boolean. If we are to use cuda (GPU) if available. STILL IN DEVELOPMENT!}
+\item{cuda}{cuda Logical (default is \code{FALSE}). If \code{TRUE}, then the \code{vaeac} model will be trained using cuda/GPU.
+If \code{\link[torch:cuda_is_available]{torch::cuda_is_available()}} is \code{FALSE}, the we fall back to use CPU. If \code{FALSE}, we use the CPU. Often this is
+faster for tabular data sets. Note, cuda is not not supported in the current version of the \code{shapr} package.
+TODO: Update this when this is done.}
 
-\item{epochs}{Integer. The number of epochs to train the final vaeac model.
-This includes \code{epochs_initiation_phase}.}
+\item{epochs}{Positive integer (default is \code{100}). The number of epochs to train the final vaeac model.
+This includes \code{epochs_initiation_phase}, where the default is \code{2}.}
 
-\item{save_every_nth_epoch}{Integer. If we are to save the vaeac model after every nth epoch.}
+\item{save_every_nth_epoch}{Positive integer (default is \code{NULL}). If provided, then the vaeac model after
+every \code{save_every_nth_epoch}th epoch will be saved.}
 
-\item{epochs_early_stopping}{Integer. The training stops if there has been no improvement in the validation IWAE
-for \code{epochs_early_stopping} epochs. If the user wants the training process to be solely based on this, then \code{epochs}
-should be set to a large number.}
+\item{epochs_early_stopping}{Positive integer (default is \code{NULL}). The training stops if there has been no
+improvement in the validation IWAE for \code{epochs_early_stopping} epochs. If the user wants the training process
+to be solely based on this training criterion, then \code{epochs} in \code{\link[=explain]{explain()}} should be set to a large
+number. If \code{NULL}, then \code{shapr} will internally set \code{epochs_early_stopping = vaeac.epochs} such that early
+stopping does not occur.}
 
 \item{epochs_start}{Positive integer (default is \code{1}). At which epoch the training is starting at.}
 
@@ -66,8 +74,9 @@ should be set to a large number.}
 \item{initialization_idx}{Positive integer (default is \code{NULL}). The index
 of the current \code{vaeac} model in the initialization phase.}
 
-\item{n_vaeacs_initialize}{Integer. The number of different vaeac models to initiate in the start.
-Pick the best performing one after \code{epochs_initiation_phase} and continue training that one.}
+\item{n_vaeacs_initialize}{Positive integer (default is \code{4}). The number of different vaeac models to initiate
+in the start. Pick the best performing one after \code{epochs_initiation_phase}
+epochs (default is \code{2}) and continue training that one.}
 
 \item{train_vlb}{A \code{\link[torch:torch_tensor]{torch::torch_tensor()}} (default is \code{NULL})
 of one dimension containing previous values for the training VLB.}

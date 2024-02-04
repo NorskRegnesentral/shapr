@@ -65,7 +65,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
   parameters <- vaeac_update_para_locations(parameters = parameters)
 
   # Extract the default values defined for the vaeac parameters in this function
-  vaeac_main_para_names <- formalArgs(setup_approach.vaeac)
+  vaeac_main_para_names <- methods::formalArgs(setup_approach.vaeac)
   vaeac_main_para_names <- vaeac_main_para_names[!vaeac_main_para_names %in% c("internal", "...")]
   vaeac_main_para <- mget(vaeac_main_para_names)
 
@@ -247,7 +247,7 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #'
 #' @description Function that fits a vaeac model to the given dataset based on the provided parameters,
 #' as described in \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}. Note that
-#' all default parameters specified below origin from [shapr:setup_approach.vaeac()] and
+#' all default parameters specified below origin from [shapr::setup_approach.vaeac()] and
 #' [shapr::vaeac_get_extra_para_default()].
 #'
 #' @details
@@ -350,6 +350,12 @@ prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
 #' `1` for low verbose, and `2` for high verbose.
 #' @param seed Positive integer (default is `1`). Seed for reproducibility. Specifies the seed before any randomness
 #' based code is being run.
+#' @param which_vaeac_model String (default is `best`). The name of the `vaeac` model (snapshots from different
+#' epochs) to use when generating the Monte Carlo samples. The standard choices are: `"best"` (epoch with lowest IWAE),
+#' `"best_running"` (epoch with lowest running IWAE, see `vaeac.running_avg_n_values`), and `last` (the last epoch).
+#' Note that additional choices are available if `vaeac.save_every_nth_epoch` is provided. For example, if
+#' `vaeac.save_every_nth_epoch = 5`, then `vaeac.which_vaeac_model` can also take the values `"epoch_5"`, `"epoch_10"`,
+#' `"epoch_15"`, and so on.
 #' @param ... List of extra parameters, currently not used.
 #'
 #' @return A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.
@@ -396,7 +402,7 @@ vaeac_train_model <- function(x_train,
   if (is.null(epochs_early_stopping)) epochs_early_stopping <- epochs
 
   # Check all the vaeac parameters
-  do.call(vaeac_check_parameters, mget(formalArgs(vaeac_train_model)))
+  do.call(vaeac_check_parameters, mget(methods::formalArgs(vaeac_train_model)))
 
   # Check if we can use cuda
   if (cuda) cuda <- vaeac_check_cuda(cuda)
@@ -563,13 +569,10 @@ vaeac_train_model <- function(x_train,
 #' on new data or on the same dataset as it was trained on before. If we are given a new dataset, then
 #' we assume that new dataset has the same distribution and one_hot_max_sizes as the original dataset.
 #'
+#' @inheritParams vaeac_train_model
 #' @param explanation A [shapr::explain()] object and `vaeac` must be the used approach.
-#' @param epochs_new Integer. The number of extra epochs to conduct.
-#' @param lr_new Numeric. If we are to overwrite the old learning rate in the adam optimizer.
-#' @param x_train Matrix/data.frame containing new training data. If not present,
-#' then we try to load training data from the vaeac_model.
-#' @param save_data Boolean. If we are to save the training data.
-#' @param verbose Boolean. If we are to print out information to the user.
+#' @param epochs_new Positive integer. The number of extra epochs to conduct.
+#' @param lr_new Positive numeric. If we are to overwrite the old learning rate in the adam optimizer.
 #'
 #' @return A list containing the training/validation errors and paths to where the vaeac models are saved on the disk.
 #' @export
@@ -662,7 +665,7 @@ vaeac_continue_train_model <- function(explanation,
       save_data = save_data,
       epochs = epochs_new,
       save_every_nth_epoch = checkpoint$save_every_nth_epoch,
-      x_train_size = format(object.size(x_train), units = "auto")
+      x_train_size = format(utils::object.size(x_train), units = "auto")
     )
   }
 
@@ -866,7 +869,8 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
 
   # Convert from a tensor of shape [nrow(x_explain_with_NaNs), n_samples, n_features]
   # to a matrix of shape [(nrow(x_explain_with_NaNs) * n_samples), n_features].
-  result <- as.data.table(as.matrix(result$view(c(result$shape[1] * result$shape[2], result$shape[3]))$detach()$cpu()))
+  result <- data.table::as.data.table(as.matrix(result$view(c(result$shape[1] * result$shape[2],
+                                                              result$shape[3]))$detach()$cpu()))
 
   # Post-process the data such that categorical features have original level names and convert to a data table.
   result <- vaeac_postprocess_data(data = result, vaeac_model_state_list = checkpoint)
@@ -881,7 +885,7 @@ vaeac_impute_missing_entries <- function(x_explain_with_NaNs,
     )]
 
     # Set the key in the data table
-    setkeyv(result, c("id", "id_combination"))
+    data.table::setkeyv(result, c("id", "id_combination"))
   }
 
   return(result)

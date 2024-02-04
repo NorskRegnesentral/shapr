@@ -12,18 +12,23 @@ vaeac_get_mask_generator_name(
 )
 }
 \arguments{
-\item{mask_gen_coalitions}{Matrix containing the different coalitions to learn.}
+\item{mask_gen_coalitions}{Matrix (default is \code{NULL}). Matrix containing the coalitions that the
+\code{vaeac} model will be trained on, see \code{\link[=Specified_masks_mask_generator]{Specified_masks_mask_generator()}}. This parameter is used internally
+in \code{shapr} when we only consider a subset of coalitions/combinations, i.e., when
+\code{n_combinations} \eqn{< 2^{n_{\text{features}}}}, and for group Shapley, i.e.,
+when \code{group} is specified in \code{\link[=explain]{explain()}}.}
 
-\item{mask_gen_coalitions_prob}{Numerics containing the probabilities for
-sampling each mask in \code{mask_gen_coalitions}.
-Array containing the probabilities for sampling the coalitions in \code{mask_gen_coalitions}.}
+\item{mask_gen_coalitions_prob}{Numeric array (default is \code{NULL}). Array of length equal to the height
+of \code{mask_gen_coalitions} containing the probabilities of sampling the corresponding coalitions in
+\code{mask_gen_coalitions}.}
 
-\item{masking_ratio}{Probability of masking a feature in the MCAR mask generator.
-Default masking scheme which ensures that vaeac can do arbitrary conditioning.
-This is overruled if \code{mask_gen_coalitions} is specified.}
+\item{masking_ratio}{Numeric (default is \code{0.5}). Probability of masking a feature in the
+\code{\link[=MCAR_mask_generator]{MCAR_mask_generator()}} (MCAR = Missing Completely At Random). The MCAR masking scheme ensures that \code{vaeac}
+model can do arbitrary conditioning as all coalitions will be trained. \code{masking_ratio} will be overruled if
+\code{mask_gen_coalitions} is specified.}
 
-\item{verbose}{Boolean. If we are to print the progress of the initialization of different vaeac models,
-the training of the final vaeac model, and summary of the training progress.}
+\item{verbose}{Boolean. An integer specifying the level of verbosity. Use \code{0} (default) for no verbosity,
+\code{1} for low verbose, and \code{2} for high verbose.}
 }
 \value{
 The function does not return anything.

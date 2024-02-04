@@ -440,7 +440,7 @@ vaeac_check_parameters <- function(x_train,
     save_data = save_data,
     epochs = epochs,
     save_every_nth_epoch = save_every_nth_epoch,
-    x_train_size = format(object.size(x_train), units = "auto")
+    x_train_size = format(utils::object.size(x_train), units = "auto")
   )
 
   # Check that user want to use the vaeac model at a valid checkpoint
@@ -540,7 +540,7 @@ vaeac_check_parameters <- function(x_train,
 #' @param vaeac.sample_random Logcial (default is `TRUE`). If `TRUE`, the function generates random Monte Carlo samples
 #' from the inferred generative distributions. If `FALSE`, the function use the most likely values, i.e., the mean and
 #' class with highest probability for continuous and categorical, respectively.
-#' @param vaeac.which_vaeac_model String (default is `NULL`). The name of the `vaeac` model (snapshots from different
+#' @param vaeac.which_vaeac_model String (default is `best`). The name of the `vaeac` model (snapshots from different
 #' epochs) to use when generating the Monte Carlo samples. The standard choices are: `"best"` (epoch with lowest IWAE),
 #' `"best_running"` (epoch with lowest running IWAE, see `vaeac.running_avg_n_values`), and `last` (the last epoch).
 #' Note that additional choices are available if `vaeac.save_every_nth_epoch` is provided. For example, if
@@ -582,7 +582,7 @@ vaeac_get_extra_para_default <- function(vaeac.model_description = make.names(Sy
                                          vaeac.which_vaeac_model = "best",
                                          vaeac.save_model = TRUE) {
   # Return a named list with the extra parameters to the vaeac model
-  return(mget(formalArgs(vaeac_get_extra_para_default)))
+  return(mget(methods::formalArgs(vaeac_get_extra_para_default)))
 }
 
 #' Function to load a `vaeac` model and set it in the right state and mode
@@ -1337,7 +1337,7 @@ Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
 #' @author Lars Henry Berge Olsen
 vaeac_update_para_locations <- function(parameters) {
   # Get the name of the main parameters for the `vaeac` approach
-  vaeac.main_para_default_names <- formalArgs(setup_approach.vaeac)
+  vaeac.main_para_default_names <- methods::formalArgs(setup_approach.vaeac)
   vaeac.main_para_default_names <-
     vaeac.main_para_default_names[!vaeac.main_para_default_names %in% c("internal", "vaeac.extra_parameters", "...")]
 
@@ -1535,6 +1535,7 @@ vaeac_update_pretrained_model <- function(parameters) {
   return(parameters)
 }
 
+
 # Plot functions =======================================================================================================
 #' Plot the training VLB and validation IWAE for `vaeac` models
 #'
@@ -1619,13 +1620,20 @@ vaeac_update_pretrained_model <- function(parameters) {
 #' )
 #'
 #' # Collect the explanation objects in an named list
-#' explanation_list <- list("Regular sampling" = explanation_regular, "Paired sampling" = explanation_paired)
+#' explanation_list <- list(
+#'   "Regular sampling" = explanation_regular,
+#'   "Paired sampling" = explanation_paired
+#' )
 #'
 #' # Call the function with the named list, will use the provided names
 #' vaeac_plot_evaluation_criteria(explanation_list = explanation_list)
 #'
-#' # The function also works if we have only one method, but then one should only look at the method plot.
-#' vaeac_plot_evaluation_criteria(explanation_list = explanation_list[2], plot_type = "method")
+#' # The function also works if we have only one method,
+#' # but then one should only look at the method plot.
+#' vaeac_plot_evaluation_criteria(
+#'   explanation_list = explanation_list[2],
+#'   plot_type = "method"
+#' )
 #'
 #' # Can alter the plot
 #' vaeac_plot_evaluation_criteria(
@@ -1636,12 +1644,18 @@ vaeac_update_pretrained_model <- function(parameters) {
 #' )
 #'
 #' # If we only want the VLB
-#' vaeac_plot_evaluation_criteria(explanation_list = explanation_list, criteria = "VLB", plot_type = "criterion")
+#' vaeac_plot_evaluation_criteria(
+#'   explanation_list = explanation_list,
+#'   criteria = "VLB",
+#'   plot_type = "criterion"
+#' )
 #'
 #' # If we want only want the criterion version
-#' tmp_fig_criterion <- vaeac_plot_evaluation_criteria(explanation_list = explanation_list, plot_type = "criterion")
+#' tmp_fig_criterion <-
+#'   vaeac_plot_evaluation_criteria(explanation_list = explanation_list, plot_type = "criterion")
 #'
-#' # Since `tmp_fig_criterion` is a ggplot2 object, we can alter it by, e.g,. adding points or smooths with se bands
+#' # Since tmp_fig_criterion is a ggplot2 object, we can alter it
+#' # by, e.g,. adding points or smooths with se bands
 #' tmp_fig_criterion + ggplot2::geom_point(shape = "circle", size = 1, ggplot2::aes(col = Method))
 #' tmp_fig_criterion$layers[[1]] <- NULL
 #' tmp_fig_criterion + ggplot2::geom_smooth(method = "loess", formula = y ~ x, se = TRUE) +
