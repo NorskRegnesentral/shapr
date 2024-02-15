@@ -14,7 +14,7 @@ df_shapley, pred_explain, internal, timing = explain(
     x_train = dfx_train,
     x_explain = dfx_test,
     approach = 'empirical',
-    prediction_zero = dfy_train.mean().item(),
+    prediction_zero = dfy_train.mean().item()
 )
 print(df_shapley)
 
@@ -32,4 +32,29 @@ print(df_shapley)
 3  0.147927   0.290942  
 4  0.118805   0.203213  
 5  0.099410   0.315230   
+"""
+
+# Now do this for grouping as well
+
+group = {'A': ['MedInc','HouseAge','AveRooms'],
+         'B': ['AveBedrms','Population','AveOccup'],
+         'C': ['Latitude','Longitude']}
+
+df_shapley_g, pred_explain_g, internal_g, timing_g = explain(
+    model = model,
+    x_train = dfx_train,
+    x_explain = dfx_test,
+    approach = 'empirical',
+    prediction_zero = dfy_train.mean().item(),
+    group = group
+)
+print(df_shapley_g)
+
+"""
+       none         A         B         C
+1  2.205937 -0.593807 -0.209397 -0.683844
+2  2.205938 -1.227960 -0.206201  0.247563
+3  2.205938  0.918459  0.650756  0.491075
+4  2.205938  0.206152  0.007262  0.259368
+5  2.205938 -0.535351 -0.014697  0.620540
 """
