@@ -7,6 +7,8 @@ import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
 from rpy2.rinterface import NULL, NA
 from .utils import r2py, py2r, recurse_r_tree
+from rpy2.robjects.vectors import StrVector, ListVector
+
 data_table = importr('data.table')
 shapr = importr('shapr')
 utils = importr('utils')
@@ -28,7 +30,7 @@ def explain(
     approach: str,
     prediction_zero: float,
     n_combinations: int | None = None,
-    group: list | None = None,
+    group: dict | None = None,
     n_samples: int = 1e3,
     n_batches: int | None = None,
     seed: int | None = 1,
@@ -61,9 +63,8 @@ def explain(
       If `n_combinations = None`, the exact method is used and all combinations are considered.
       The maximum number of combinations equals `2^m`, where `m` is the number of features.
     group: If `None` regular feature wise Shapley values are computed.
-      If provided, group wise Shapley values are computed. `group` then has length equal to
-      the number of groups. TODO: Edit this: The list element contains character vectors with the features included
-      in each of the different groups.
+      If a dict is provided, group wise Shapley values are computed. `group` then contains lists of unique feature names with the 
+      features included in each of the different groups. The length of the dict equals the number of groups.
     n_samples: Indicating the maximum number of samples to use in the
       Monte Carlo integration for every conditional expectation.
     n_batches: Specifies how many batches the total number of feature combinations should be split into when calculating the
@@ -108,15 +109,21 @@ def explain(
 
     rfeature_specs = get_feature_specs(get_model_specs, model)
 
+    # Fixes the conversion from dict to a named list of vectors in R
+    if group is None:
+      r_group = NULL
+    else:
+      r_group = ListVector({key: StrVector(value) for key, value in group.items()})
+
     rinternal = shapr.setup(
         x_train = py2r(x_train),
         x_explain = py2r(x_explain),
         approach = approach,
         prediction_zero = prediction_zero,
         n_combinations = maybe_null(n_combinations),
-        group = maybe_null(n_combinations),
+        group = r_group,
         n_samples = n_samples,
-        n_batches = maybe_null(n_combinations),
+        n_batches = maybe_null(n_batches),
         seed = seed,
         keep_samp_for_vS = keep_samp_for_vS,
         feature_specs = rfeature_specs,
