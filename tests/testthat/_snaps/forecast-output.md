@@ -8,6 +8,7 @@
       
     Output
          explain_idx horizon  none  Temp.1  Temp.2
+               <int>   <int> <num>   <num>   <num>
       1:         152       1 77.88 -0.3972 -1.3912
       2:         153       1 77.88 -6.6177 -0.1835
       3:         152       2 77.88 -0.3285 -1.2034
@@ -25,6 +26,7 @@
       
     Output
          explain_idx horizon  none  Temp.1 Temp.2  Wind.1  Wind.2 Wind.F1 Wind.F2
+               <int>   <int> <num>   <num>  <num>   <num>   <num>   <num>   <num>
       1:         149       1 77.88 -0.9588 -5.044  1.0543 -2.8958 -2.6627      NA
       2:         150       1 77.88  1.1553 -3.137 -2.8802  0.7196 -1.4930      NA
       3:         149       2 77.88  0.1327 -5.048  0.3337 -2.8249 -2.3014 -1.1764
@@ -32,6 +34,7 @@
       5:         149       3 77.88 -1.3878 -5.014  0.7964 -1.3881 -1.9652 -0.3295
       6:         150       3 77.88  1.6690 -2.556 -2.3821  0.3835 -0.8644 -0.1648
          Wind.F3
+           <num>
       1:      NA
       2:      NA
       3:      NA
@@ -49,6 +52,7 @@
       
     Output
          explain_idx horizon  none  Temp.1 Temp.2
+               <int>   <int> <num>   <num>  <num>
       1:         149       1 77.88 -1.7273 -7.033
       2:         150       1 77.88 -0.2229 -4.492
       3:         149       2 77.88 -1.7273 -7.033
@@ -66,6 +70,7 @@
       
     Output
          explain_idx horizon  none    Temp   Wind
+               <int>   <int> <num>   <num>  <num>
       1:         149       1 77.88 -5.3063 -5.201
       2:         150       1 77.88 -1.4435 -4.192
       3:         149       2 77.88 -3.6824 -7.202
@@ -3620,6 +3625,7 @@
       data length [2] is not a sub-multiple or multiple of the number of rows [3]
     Output
          explain_idx horizon  none Wind.F1 Wind.F2 Wind.F3
+               <int>   <int> <num>   <num>   <num>   <num>
       1:         149       1 77.88  -9.391      NA      NA
       2:         150       1 77.88  -4.142      NA      NA
       3:         149       2 77.88  -4.699 -4.6989      NA
