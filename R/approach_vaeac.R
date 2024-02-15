@@ -179,7 +179,6 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
 #'
 #' @rdname prepare_data
 #' @export
-#' @keywords internal
 #' @author Lars Henry Berge Olsen
 prepare_data.vaeac <- function(internal, index_features = NULL, ...) {
   # If not provided, then set `index_features` to all non trivial coalitions
