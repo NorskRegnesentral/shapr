@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7,
   fig.height = 5,
+  # fig.path = "", # Added this line to ensure figures in the right path as this vignette will be built manually TODO
   warning = FALSE,
   message = FALSE,
   eval = FALSE # Temporary don't run the chunks in the vignette at all for fast building

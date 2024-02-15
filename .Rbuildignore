@@ -22,3 +22,5 @@ inst/compare_lundberg\.xgb\.obj
 ^CRAN-SUBMISSION$
 ^.Rprofile
 ^python$
+R/rebuild-long-running-vignette.R
+vignettes/understanding_shapr_vaeac.Rmd.orig
