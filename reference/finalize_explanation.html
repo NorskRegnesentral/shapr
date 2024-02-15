@@ -242,6 +242,7 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
 <span class="r-in"><span><span class="co"># Print the Shapley values</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explain1</span><span class="op">$</span><span class="va">shapley_values</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        none   Solar.R       Wind       Temp     Month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       &lt;num&gt;     &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 42.78704  6.124296 -20.137653  -5.033967 -5.987303</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: 42.78704 -1.470838  11.525868  -9.487924 -5.597657</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: 42.78704  3.524599  -5.335059 -16.599988 -8.703929</span>
@@ -269,6 +270,7 @@ More accurate approximations to Shapley values. Artificial Intelligence, 298, 10
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explain_groups</span><span class="op">$</span><span class="va">shapley_values</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        none         A          B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       &lt;num&gt;     &lt;num&gt;      &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 42.78704 -11.63856 -13.396062</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: 42.78704 -10.36824   5.337683</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: 42.78704 -25.79874  -1.315633</span>

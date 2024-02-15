@@ -452,6 +452,7 @@ or <code>"independence"</code> in the code below.</p>
 <span><span class="co"># For more information about the interpretation of the values in the table, see ?shapr::explain.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        none    Solar.R      Wind      Temp      Month</span></span>
+<span><span class="co">#&gt;       &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1: 43.08571 13.2117337  4.785645 -25.57222  -5.599230</span></span>
 <span><span class="co">#&gt; 2: 43.08571 -9.9727747  5.830694 -11.03873  -7.829954</span></span>
 <span><span class="co">#&gt; 3: 43.08571 -2.2916185 -7.053393 -10.15035  -4.452481</span></span>
@@ -881,6 +882,7 @@ observations or the combinations (both as bar and line plots).</p>
 <span><span class="co"># i.e., which features that are conditions on.</span></span>
 <span><span class="va">explanation_list_named</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">MSEv</span><span class="op">$</span><span class="va">MSEv_combination</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id_combination"</span>, <span class="st">"features"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;     id_combination features</span></span>
+<span><span class="co">#&gt;              &lt;int&gt;   &lt;list&gt;</span></span>
 <span><span class="co">#&gt;  1:              2        1</span></span>
 <span><span class="co">#&gt;  2:              3        2</span></span>
 <span><span class="co">#&gt;  3:              4        3</span></span>
@@ -1056,6 +1058,7 @@ rather than each lag of each variable. This can be done by setting
 <span><span class="op">)</span></span>
 <span><span class="va">explanation_forecast</span></span>
 <span><span class="co">#&gt;    explain_idx horizon    none     Y.1      Y.2</span></span>
+<span><span class="co">#&gt;          &lt;int&gt;   &lt;int&gt;   &lt;num&gt;   &lt;num&gt;    &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1:         499       1 0.04018  0.5053 -0.07659</span></span>
 <span><span class="co">#&gt; 2:         500       1 0.04018 -0.3622  0.02497</span></span>
 <span><span class="co">#&gt; 3:         499       2 0.04018  0.5053 -0.07659</span></span>
@@ -1131,6 +1134,7 @@ separately.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    explain_idx horizon  none Temp.1  Temp.2</span></span>
+<span><span class="co">#&gt;          &lt;num&gt;   &lt;num&gt; &lt;num&gt;  &lt;num&gt;   &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1:         153       1 77.88 -6.622 -0.1788</span></span>
 <span><span class="co">#&gt; 2:         153       2 77.88 -6.025 -0.3327</span></span></code></pre></div>
 <p>The results are presented per value of <code>explain_idx</code> and
@@ -1189,9 +1193,11 @@ during the forecasting period.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    explain_idx horizon     none     Temp.1     Temp.2    Wind.1   Wind.F1</span></span>
+<span><span class="co">#&gt;          &lt;num&gt;   &lt;num&gt;    &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1:         151       1 77.96026 -0.6779272 -0.6734041 -1.268789 0.4934084</span></span>
 <span><span class="co">#&gt; 2:         151       2 77.96026  0.3996832 -0.5005937 -1.465464 0.0659129</span></span>
 <span><span class="co">#&gt;       Wind.F2</span></span>
+<span><span class="co">#&gt;         &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1:         NA</span></span>
 <span><span class="co">#&gt; 2: -0.4742238</span></span></code></pre></div>
 <p><a id="advanced"></a></p>
@@ -1284,6 +1290,7 @@ easy using <code>shapr</code>:</p>
 <span><span class="co"># Prints the group-wise explanations</span></span>
 <span><span class="va">explanation_group</span></span>
 <span><span class="co">#&gt;      none       A        B</span></span>
+<span><span class="co">#&gt;     &lt;num&gt;   &lt;num&gt;    &lt;num&gt;</span></span>
 <span><span class="co">#&gt;  1: 47.27 -29.588  13.1628</span></span>
 <span><span class="co">#&gt;  2: 47.27 -11.834 -15.7011</span></span>
 <span><span class="co">#&gt;  3: 47.27 -15.976 -17.5729</span></span>
