@@ -1599,7 +1599,7 @@ test_that("parallelization gives same output for any approach", {
     timing = FALSE
   )
 
-  future::plan("multisession", workers = 5) # Parallelized with 2 cores
+  future::plan("multisession", workers = 2) # Parallelized with 2 cores
   explain.ctree_multisession <- explain(
     model = model_lm_numeric,
     x_explain = x_explain_numeric,
