@@ -18,7 +18,8 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7,
   fig.height = 5,
-  # fig.path = "", # Added this line to ensure figures in the right path as this vignette will be built manually TODO
+  fig.path = "figure_vaeac/", # Ensure that figures are saved in the right folder (this vignette will be built manually)
+  cache.path = "cache_vaeac/", # Ensure that cached objects are saved in the right folder
   warning = FALSE,
   message = FALSE
   )
@@ -117,7 +118,6 @@ First we set up the model we want to explain.
 ```{r setup-2, cache = TRUE}
 library(xgboost)
 library(data.table)
-# devtools::load_all(".")
 
 data("airquality")
 data <- data.table::as.data.table(airquality)
@@ -271,7 +271,7 @@ Note that if we train a `vaeac` model from scratch with the setup above, then th
 the "Specified_masks_mask_generator" which ensures that the `vaeac` model only train on a specified set of coalitions.
 In this case, it will be the `n_combinations - 2` sampled coalitions. The minus two is because the `vaeac` model will
 not train on the empty and grand coalitions as they are not needed in the Shapley value computations.
-```{r}
+```{r check-n_combinations-and-more-batches-2, cache = TRUE}
 expl_batches_combinations_2 <- explain(
   model = model,
   x_explain = x_explain,

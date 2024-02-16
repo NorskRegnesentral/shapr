@@ -18,7 +18,8 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7,
   fig.height = 3,
-  # fig.path = "", # Added this line to ensure figures in the right path as this vignette will be built manually TODO
+  fig.path = "figure_main/", # Ensure that figures are saved in the right folder (this vignette will be built manually)
+  cache.path = "cache_main/", # Ensure that cached objects are saved in the right folder
   warning = FALSE,
   message = FALSE
 )
@@ -1324,7 +1325,7 @@ the `explain()` function. For example, we can the change the batch size to 32 by
 extra parameters to the `vaeac` approach. We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function, while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach will try to correct for misplaced and duplicated parameters and give warnings to the user.
 
 
-```{r}
+```{r vaeac-train-first-time, cache = TRUE}
 explanation_vaeac <- explain(
   model = model,
   x_explain = x_explain,
@@ -1340,7 +1341,7 @@ explanation_vaeac <- explain(
 ```
 
 Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 3` is likely to few epochs as it still seems like the `vaeac` model is learning.
-```{r,eval = FALSE}
+```{r vaeac-plot-1, cache = TRUE}
 # Look at the training and validation errors.
 vaeac_plot_evaluation_criteria(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
 ```
@@ -1359,7 +1360,7 @@ updates simultaneously, then the estimated timer remaining will obviously be inc
 is applied. Furthermore, a value of `2` is too low for real world applications, but we set it so low here
 to make the vignette faster to build.
 
-```{r}
+```{r vaeac-early-stop, cache = TRUE}
 explanation_vaeac_early_stop <- explain(
   model = model,
   x_explain = x_explain,
@@ -1376,7 +1377,7 @@ explanation_vaeac_early_stop <- explain(
 ```
 
 Can compare with the previous version and see that the results are more stable now.
-```{r,eval = FALSE}
+```{r vaeac-plot-2, cache = TRUE}
 # Look at the training and validation errors.
 vaeac_plot_evaluation_criteria(
   list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop),
@@ -1386,7 +1387,7 @@ vaeac_plot_evaluation_criteria(
 
 Can also compare the $MSE_{v}$ evaluation scores.
 
-```{r}
+```{r vaeac-plot-3, cache = TRUE}
 plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop))
 ```
 
