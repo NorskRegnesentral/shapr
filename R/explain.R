@@ -364,7 +364,7 @@ explain <- function(model,
   if (isFALSE(output$internal$parameters$vaeac.extra_parameters$vaeac.save_model)) {
     output$internal$parameters$vaeac <- NULL
     output$internal$parameters$vaeac.checkpoint <- NULL
-    output$internal$parameters$vaeac.extra_parameters$folder_to_save_model <- NULL
+    output$internal$parameters$vaeac.extra_parameters$vaeac.folder_to_save_model <- NULL
     output$internal$parameters$vaeac.extra_parameters$vaeac.model_description <- NULL
   }
 
