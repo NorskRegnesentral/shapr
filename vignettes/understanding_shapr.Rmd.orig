@@ -12,9 +12,21 @@ editor_options:
     wrap: 72
 ---
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 3,
+  # fig.path = "", # Added this line to ensure figures in the right path as this vignette will be built manually TODO
+  warning = FALSE,
+  message = FALSE
+)
+```
 
-
-
+```{r setup, include=FALSE, warning=FALSE}
+library(shapr)
+```
 
 > [Introduction](#intro)
 
@@ -356,8 +368,7 @@ used instead by setting the argument `approach` to either `"gaussian"`,
 `"copula"`, `"ctree"`, `"categorical"` or `"independence"` in the code
 below.
 
-
-```r
+```{r, warning=FALSE}
 library(xgboost)
 library(data.table)
 
@@ -397,20 +408,10 @@ explanation <- explain(
 # Printing the Shapley values for the test data.
 # For more information about the interpretation of the values in the table, see ?shapr::explain.
 print(explanation$shapley_values)
-#>        none    Solar.R      Wind      Temp      Month
-#>       <num>      <num>     <num>     <num>      <num>
-#> 1: 43.08571 13.2117337  4.785645 -25.57222  -5.599230
-#> 2: 43.08571 -9.9727747  5.830694 -11.03873  -7.829954
-#> 3: 43.08571 -2.2916185 -7.053393 -10.15035  -4.452481
-#> 4: 43.08571  3.3254595 -3.240879 -10.22492  -6.663488
-#> 5: 43.08571  4.3039571 -2.627764 -14.15166 -12.266855
-#> 6: 43.08571  0.4786417 -5.248686 -12.55344  -6.645738
 
 # Plot the resulting explanations for observations 1 and 6
 plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
-
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
 
 There are multiple plot options specified by the `plot_type` argument in
 `plot`. The `waterfall` option shows the changes in the prediction score
@@ -419,12 +420,9 @@ due to each features contribution (their Shapley values):
 There are multiple plot options specified by the `plot_type` argument in `plot`.
 The `waterfall` option shows the changes in the prediction score due to each features contribution (their Shapley values):
 
-
-```r
+```{r}
 plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
 ```
-
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
 
 The other two plot options, `"beeswarm"` and `"scatter"`, can be useful
 when you have many observations that you want to explain. For the
@@ -435,8 +433,7 @@ values along the x-axis across all features. Each point gives the
 Shapley value of a given instance, where the points are colored by the
 feature value of that instance:
 
-
-```r
+```{r}
 x_explain_many <- data[, ..x_var]
 explanation_plot <- explain(
   model = model,
@@ -448,24 +445,18 @@ explanation_plot <- explain(
 plot(explanation_plot, plot_type = "beeswarm")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
-
 The `plot_type = "scatter"` plots the feature values on the x-axis and
 Shapley values on the y-axis, as well as (optionally) a background
 scatter_hist showing the distribution of the feature data:
 
-
-```r
+```{r}
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
-
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
 
 We can use mixed (i.e continuous, categorical, ordinal) data with ctree or vaeac.
 Use ctree with mixed data in the following manner:
 
-
-```r
+```{r}
 # convert the month variable to a factor
 data[, Month_factor := as.factor(Month)]
 
@@ -497,14 +488,11 @@ explanation_lm_cat <- explain(
 plot(explanation_lm_cat, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
-
 We can specify parameters used to build the conditional inference trees
 in the following manner. Default values are based on
 @hothorn2006unbiased.
 
-
-```r
+```{r}
 # Use the conditional inference tree approach
 # We can specify parameters used to building trees by specifying mincriterion,
 # minsplit, minbucket
@@ -527,8 +515,7 @@ explanation_ctree <- explain(
 If **all** features are categorical, one may use the categorical
 approach as follows:
 
-
-```r
+```{r}
 # For the sake of illustration, convert ALL features to factors
 data[, Solar.R_factor := as.factor(cut(Solar.R, 10))]
 data[, Wind_factor := as.factor(cut(Wind, 3))]
@@ -569,8 +556,7 @@ achieved through the `group` attribute. Other optional parameters of
 `timeseries.bounds` (a vector indicating upper and lower bounds of the
 time series if necessary).
 
-
-```r
+```{r}
 # Simulate time series data with AR(1)-structure
 set.seed(1)
 data_ts <- data.frame(matrix(NA, ncol = 41, nrow = 4))
@@ -700,8 +686,7 @@ each observation, as each combination is a different prediction tasks.
 ### MSEv examples
 
 Start by explaining the predictions by using different methods and combining them into lists.
-
-```r
+```{r}
 # We use more explicands here for more stable confidence intervals
 ind_x_explain <- 1:25
 x_train <- data[-ind_x_explain, ..x_var]
@@ -792,8 +777,7 @@ explanation_list_named <- list(
 
 We can then compare the different approaches by creating plots of the $\operatorname{MSE}_{v}$ evaluation criterion.
 
-
-```r
+```{r}
 # Create the MSEv plots with approximate 95% confidence intervals
 MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
   plot_type = c("overall", "comb", "explicand"),
@@ -802,74 +786,35 @@ MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
 
 # 5 plots are made
 names(MSEv_plots)
-#> [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"   "MSEv_combination_bar"        "MSEv_combination_line_point" "MSEv_bar"
 ```
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
 we have only averaged over the observations or the combinations (both as bar and line plots).
 
-
-```r
+```{r}
 # The main plot of the overall MSEv averaged over both the combinations and observations
 MSEv_plots$MSEv_bar
-```
-
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
-
-```r
 
 # The MSEv averaged over only the explicands for each combinations
 MSEv_plots$MSEv_combination_bar
-```
-
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-2.png)
-
-```r
 
 # The MSEv averaged over only the combinations for each observation/explicand
 MSEv_plots$MSEv_explicand_bar
-```
-
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-3.png)
-
-```r
 
 # To see which coalition S each of the `id_combination` corresponds to,
 # i.e., which features that are conditions on.
 explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination", "features")]
-#>     id_combination features
-#>              <int>   <list>
-#>  1:              2        1
-#>  2:              3        2
-#>  3:              4        3
-#>  4:              5        4
-#>  5:              6      1,2
-#>  6:              7      1,3
-#>  7:              8      1,4
-#>  8:              9      2,3
-#>  9:             10      2,4
-#> 10:             11      3,4
-#> 11:             12    1,2,3
-#> 12:             13    1,2,4
-#> 13:             14    1,3,4
-#> 14:             15    2,3,4
 ```
 
 We can specify the `index_x_explain` and `id_combination` parameters in `plot_MSEv_eval_crit()` to only plot
 certain test observations and combinations, respectively.
 
-
-```r
+```{r}
 # We can specify which test observations or combinations to plot
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "explicand",
   index_x_explain = c(1, 3:4, 6),
   CI_level = 0.95
 )$MSEv_explicand_bar
-```
-
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
-
-```r
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "comb",
   id_combination = c(3, 4, 9, 13:15),
@@ -877,13 +822,10 @@ plot_MSEv_eval_crit(explanation_list_named,
 )$MSEv_combination_bar
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-2.png)
-
 
 We can also alter the plots design-wise as we do in the code below.
 
-
-```r
+```{r}
 bar_text_n_decimals <- 1
 plot_MSEv_eval_crit(explanation_list_named) +
   ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plots$MSEv_bar$data$Method))) +
@@ -906,8 +848,6 @@ plot_MSEv_eval_crit(explanation_list_named) +
     size = 4
   )
 ```
-
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
 
 
 ## Main arguments in `explain`
@@ -992,8 +932,7 @@ may be of more interesting to explain the impact of each variable,
 rather than each lag of each variable. This can be done by setting
 `group_lags = TRUE`.
 
-
-```r
+```{r}
 # Simulate time series data with AR(1)-structure.
 set.seed(1)
 data_ts <- data.frame(Y = arima.sim(list(order = c(1, 0, 0), ar = .5), n = 500))
@@ -1020,14 +959,6 @@ explanation_forecast <- explain_forecast(
   group_lags = FALSE
 )
 explanation_forecast
-#>    explain_idx horizon    none     Y.1      Y.2
-#>          <int>   <int>   <num>   <num>    <num>
-#> 1:         499       1 0.04018  0.5053 -0.07659
-#> 2:         500       1 0.04018 -0.3622  0.02497
-#> 3:         499       2 0.04018  0.5053 -0.07659
-#> 4:         500       2 0.04018 -0.3622  0.02497
-#> 5:         499       3 0.04018  0.5053 -0.07659
-#> 6:         500       3 0.04018 -0.3622  0.02497
 ```
 
 Note that for a multivariate model such as a VAR (Vector AutoRegressive
@@ -1050,18 +981,12 @@ model is then used to make a forecast of the temperature of the day that
 comes after the last day in the data, this forecast starts from index
 153.
 
-
-```r
+```{r}
 data <- data.table::as.data.table(airquality)
 
 model_ar_temp <- ar(data$Temp, order = 2)
 
 predict(model_ar_temp, n.ahead = 2)$pred
-#> Time Series:
-#> Start = 154 
-#> End = 155 
-#> Frequency = 1 
-#> [1] 71.08111 71.52445
 ```
 
 First, we pass the model and the data as `model` and `y`. Since we have
@@ -1088,8 +1013,7 @@ explained separately. Grouping lags may be more interesting to do in a
 model with multiple variables, as it is then possible to explain each
 variable separately.
 
-
-```r
+```{r}
 explanation <- explain_forecast(
   model = model_ar_temp,
   y = data[, "Temp"],
@@ -1105,10 +1029,6 @@ explanation <- explain_forecast(
 )
 
 print(explanation)
-#>    explain_idx horizon  none Temp.1  Temp.2
-#>          <num>   <num> <num>  <num>   <num>
-#> 1:         153       1 77.88 -6.622 -0.1788
-#> 2:         153       2 77.88 -6.025 -0.3327
 ```
 
 The results are presented per value of `explain_idx` and forecast
@@ -1125,8 +1045,7 @@ regressor must be available for the predicted time points, the model is
 just fit on the 151 first observations, leaving two observations of
 `Wind` to be used as exogenous values during the prediction phase.
 
-
-```r
+```{r}
 data <- data.table::as.data.table(airquality)
 
 data_fit <- data[seq_len(151), ]
@@ -1136,11 +1055,6 @@ model_arimax_temp <- arima(data_fit$Temp, order = c(2, 0, 0), xreg = data_fit$Wi
 newxreg <- data[-seq_len(151), "Wind", drop = FALSE]
 
 predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
-#> Time Series:
-#> Start = 152 
-#> End = 153 
-#> Frequency = 1 
-#> [1] 77.49992 76.38062
 ```
 
 The `shapr` package can then explain not only the two autoregressive
@@ -1152,8 +1066,7 @@ makes it possible for `shapr` to not only explain the effect of the
 first lag of the exogenous variable, but also the contemporary effect
 during the forecasting period.
 
-
-```r
+```{r}
 explanation <- explain_forecast(
   model = model_ar_temp,
   y = data_fit[, "Temp"],
@@ -1171,10 +1084,6 @@ explanation <- explain_forecast(
 )
 
 print(explanation$shapley_values)
-#>    explain_idx horizon     none     Temp.1     Temp.2    Wind.1   Wind.F1    Wind.F2
-#>          <num>   <num>    <num>      <num>      <num>     <num>     <num>      <num>
-#> 1:         151       1 77.96026 -0.6779272 -0.6734041 -1.268789 0.4934084         NA
-#> 2:         151       2 77.96026  0.3996832 -0.5005937 -1.465464 0.0659129 -0.4742238
 ```
 
 <a id="advanced"></a>
@@ -1214,8 +1123,7 @@ The code below exemplifies this approach for a case where there are four
 features, using `"empirical", "copula"` and `"gaussian"` when
 conditioning on respectively 1, 2 and 3 features.
 
-
-```r
+```{r}
 # Use the combined approach
 explanation_combined <- explain(
   model = model,
@@ -1229,13 +1137,10 @@ explanation_combined <- explain(
 plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)
-
 As a second example using `"ctree"` to conditin on 1 and 2 features, and
 `"empirical"` when conditioning on 3 features:
 
-
-```r
+```{r}
 # Use the combined approach
 explanation_combined <- explain(
   model = model,
@@ -1254,8 +1159,7 @@ features instead of single features, see (@jullum2021efficient) for
 intuition and real world examples. Explaining prediction in terms of
 groups of features is very easy using `shapr`:
 
-
-```r
+```{r}
 # Define the feature groups
 group_list <- list(
   A = c("Temp", "Month"),
@@ -1273,39 +1177,9 @@ explanation_group <- explain(
 )
 # Prints the group-wise explanations
 explanation_group
-#>      none       A        B
-#>     <num>   <num>    <num>
-#>  1: 47.27 -29.588  13.1628
-#>  2: 47.27 -11.834 -15.7011
-#>  3: 47.27 -15.976 -17.5729
-#>  4: 47.27 -25.067  -5.1374
-#>  5: 47.27 -35.848  20.2892
-#>  6: 47.27 -27.257  -8.4830
-#>  7: 47.27 -14.960 -21.3995
-#>  8: 47.27 -18.325   7.3791
-#>  9: 47.27 -23.012   9.6591
-#> 10: 47.27 -16.189  -5.6100
-#> 11: 47.27 -25.607 -10.1334
-#> 12: 47.27 -25.065  -5.1394
-#> 13: 47.27 -25.841  -0.7281
-#> 14: 47.27 -21.518 -13.3293
-#> 15: 47.27 -21.248  -1.3199
-#> 16: 47.27 -13.676 -16.9497
-#> 17: 47.27 -13.899 -14.8890
-#> 18: 47.27 -12.276  -8.2472
-#> 19: 47.27 -13.768 -13.5242
-#> 20: 47.27 -24.866 -10.8744
-#> 21: 47.27 -14.486 -22.7674
-#> 22: 47.27  -4.122 -14.2893
-#> 23: 47.27 -11.218  22.4682
-#> 24: 47.27 -33.002  14.2114
-#> 25: 47.27 -16.251  -8.6796
-#>      none       A        B
 # Plots the group-wise explanations
 plot(explanation_group, bar_plot_phi0 = TRUE, index_x_explain = c(1, 6))
 ```
-
-![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
 
 ## Explain custom models
 
@@ -1355,10 +1229,8 @@ and a minimal version which skips the `get_model_specs` function. We do
 this for the `gbm` model class from the `gbm` package, fitted to the
 same airquality data set as used above.
 
-
-```r
+```{r,warning=TRUE, message=TRUE}
 library(gbm)
-#> Loaded gbm 2.1.8.1
 
 formula_gbm <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
 # Fitting a gbm model
@@ -1407,16 +1279,9 @@ explanation_custom <- explain(
   predict_model = MY_predict_model,
   get_model_specs = MY_get_model_specs
 )
-#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
-#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
 # Plot results
 plot(explanation_custom, index_x_explain = c(1, 6))
-```
-
-![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23-1.png)
-
-```r
 
 
 #### Minimal version of the three required model functions ####
@@ -1437,16 +1302,10 @@ explanation_custom_minimal <- explain(
   prediction_zero = p0,
   predict_model = MY_MINIMAL_predict_model
 )
-#> Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
-#> Consistency checks between model and data is therefore disabled.
-#> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
-#> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
 # Plot results
 plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 ```
-
-![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23-2.png)
 
 ## The parameters of the `vaeac` approach
 
@@ -1465,8 +1324,7 @@ the `explain()` function. For example, we can the change the batch size to 32 by
 extra parameters to the `vaeac` approach. We strongly encourage the user to specify the main and extra parameters to the `vaeac` approach at the correct place in the call to the `explain()` function. That is, the main parameters are directly entered to the `explain()` function, while the extra parameters are included in a named list called `vaeac.extra_parameters`. However, the `vaeac` approach will try to correct for misplaced and duplicated parameters and give warnings to the user.
 
 
-
-```r
+```{r}
 explanation_vaeac <- explain(
   model = model,
   x_explain = x_explain,
@@ -1482,8 +1340,7 @@ explanation_vaeac <- explain(
 ```
 
 Can look at the training and validation error for the trained `vaeac` model and see that `vaeac.epochs = 3` is likely to few epochs as it still seems like the `vaeac` model is learning.
-
-```r
+```{r,eval = FALSE}
 # Look at the training and validation errors.
 vaeac_plot_evaluation_criteria(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
 ```
@@ -1502,8 +1359,7 @@ updates simultaneously, then the estimated timer remaining will obviously be inc
 is applied. Furthermore, a value of `2` is too low for real world applications, but we set it so low here
 to make the vignette faster to build.
 
-
-```r
+```{r}
 explanation_vaeac_early_stop <- explain(
   model = model,
   x_explain = x_explain,
@@ -1520,8 +1376,7 @@ explanation_vaeac_early_stop <- explain(
 ```
 
 Can compare with the previous version and see that the results are more stable now.
-
-```r
+```{r,eval = FALSE}
 # Look at the training and validation errors.
 vaeac_plot_evaluation_criteria(
   list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop),
@@ -1531,12 +1386,9 @@ vaeac_plot_evaluation_criteria(
 
 Can also compare the $MSE_{v}$ evaluation scores.
 
-
-```r
+```{r}
 plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop))
 ```
-
-![plot of chunk unnamed-chunk-28](figure/unnamed-chunk-28-1.png)
 
 
 
@@ -1571,8 +1423,7 @@ computation speed and memory consumption which depends on
 is most apparent for models with more than say 6-7 features. Below we a
 basic example where `n_batches=10`:
 
-
-```r
+```{r}
 explanation_batch <- explain(
   model = model,
   x_explain = x_explain,
@@ -1606,8 +1457,7 @@ advice that `n_batches` equals some positive integer multiplied by the
 number of workers. Below is a basic example of a parallelization with
 two workers.
 
-
-```r
+```{r}
 library(future)
 future::plan(multisession, workers = 2)
 
@@ -1655,8 +1505,7 @@ options available with `progressr`, see the `progressr`
 [vignette](https://cran.r-project.org/web/packages/progressr/vignettes/progressr-intro.html).
 A full code example of using `progressr` with `shapr` is shown below:
 
-
-```r
+```{r,eval = FALSE}
 library(progressr)
 progressr::handlers(global = TRUE)
 # If no progression handler is specified, the txtprogressbar is used

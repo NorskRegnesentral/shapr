@@ -8,4 +8,7 @@ setwd("vignettes/")
 knitr::knit("understanding_shapr_vaeac.Rmd.orig", output = "understanding_shapr_vaeac.Rmd")
 knitr::purl("understanding_shapr_vaeac.Rmd.orig", output = "understanding_shapr_vaeac.R")
 
+knitr::knit("understanding_shapr.Rmd.orig", output = "understanding_shapr.Rmd")
+knitr::purl("understanding_shapr.Rmd.orig", output = "understanding_shapr.R")
+
 setwd(old_wd)
