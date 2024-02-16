@@ -379,13 +379,13 @@ explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE, "Paired s
 vaeac_plot_evaluation_criteria(explanation_list, plot_type = "criterion")
 ```
 
-![plot of chunk paired sampling plotting](figure/paired sampling plotting-1.png)
+![plot of chunk paired-sampling-plotting](figure/paired-sampling-plotting-1.png)
 
 ```r
 plot_MSEv_eval_crit(explanation_list)
 ```
 
-![plot of chunk paired sampling plotting](figure/paired sampling plotting-2.png)
+![plot of chunk paired-sampling-plotting](figure/paired-sampling-plotting-2.png)
 
 By looking at the time, we see that the paired version takes (a bit) longer time in the `setup_computation`
 phase, that is, in the training phase.
@@ -395,8 +395,8 @@ rbind(
   "Paired" = expl_paired_sampling_TRUE$timing$timing_secs, "Regular" = expl_paired_sampling_FALSE$timing$timing_secs
 )
 #>              setup test_prediction setup_computation compute_vS shapley_computation
-#> Paired  0.06571436      0.04333425          9.018855  0.3187792         0.004562378
-#> Regular 0.04860353      0.03768158          7.413082  0.3773353         0.004824638
+#> Paired  0.04665375      0.03533936          7.306652  0.2972858         0.004440546
+#> Regular 0.04672217      0.03511620          6.786264  0.3175933         0.004562140
 ```
 
 
