@@ -24,3 +24,4 @@ inst/compare_lundberg\.xgb\.obj
 ^python$
 ^rebuild-long-running-vignette\.R$
 ^vignettes/understanding_shapr_vaeac\.Rmd\.orig$
+^vignettes/understanding_shapr\.Rmd\.orig$
