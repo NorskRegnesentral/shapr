@@ -410,7 +410,7 @@ print(explanation$shapley_values)
 plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+![](figure_main/unnamed-chunk-2-1.png)
 
 There are multiple plot options specified by the `plot_type` argument in
 `plot`. The `waterfall` option shows the changes in the prediction score
@@ -424,7 +424,7 @@ The `waterfall` option shows the changes in the prediction score due to each fea
 plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
+![](figure_main/unnamed-chunk-3-1.png)
 
 The other two plot options, `"beeswarm"` and `"scatter"`, can be useful
 when you have many observations that you want to explain. For the
@@ -448,7 +448,7 @@ explanation_plot <- explain(
 plot(explanation_plot, plot_type = "beeswarm")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+![](figure_main/unnamed-chunk-4-1.png)
 
 The `plot_type = "scatter"` plots the feature values on the x-axis and
 Shapley values on the y-axis, as well as (optionally) a background
@@ -459,7 +459,7 @@ scatter_hist showing the distribution of the feature data:
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+![](figure_main/unnamed-chunk-5-1.png)
 
 We can use mixed (i.e continuous, categorical, ordinal) data with ctree or vaeac.
 Use ctree with mixed data in the following manner:
@@ -497,7 +497,7 @@ explanation_lm_cat <- explain(
 plot(explanation_lm_cat, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
+![](figure_main/unnamed-chunk-6-1.png)
 
 We can specify parameters used to build the conditional inference trees
 in the following manner. Default values are based on
@@ -802,7 +802,8 @@ MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
 
 # 5 plots are made
 names(MSEv_plots)
-#> [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"   "MSEv_combination_bar"        "MSEv_combination_line_point" "MSEv_bar"
+#> [1] "MSEv_explicand_bar"          "MSEv_explicand_line_point"   "MSEv_combination_bar"        "MSEv_combination_line_point"
+#> [5] "MSEv_bar"
 ```
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
 we have only averaged over the observations or the combinations (both as bar and line plots).
@@ -813,7 +814,7 @@ we have only averaged over the observations or the combinations (both as bar and
 MSEv_plots$MSEv_bar
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
+![](figure_main/unnamed-chunk-12-1.png)
 
 ```r
 
@@ -821,7 +822,7 @@ MSEv_plots$MSEv_bar
 MSEv_plots$MSEv_combination_bar
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-2.png)
+![](figure_main/unnamed-chunk-12-2.png)
 
 ```r
 
@@ -829,7 +830,7 @@ MSEv_plots$MSEv_combination_bar
 MSEv_plots$MSEv_explicand_bar
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-3.png)
+![](figure_main/unnamed-chunk-12-3.png)
 
 ```r
 
@@ -867,7 +868,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 )$MSEv_explicand_bar
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
+![](figure_main/unnamed-chunk-13-1.png)
 
 ```r
 plot_MSEv_eval_crit(explanation_list_named,
@@ -877,7 +878,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 )$MSEv_combination_bar
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-2.png)
+![](figure_main/unnamed-chunk-13-2.png)
 
 
 We can also alter the plots design-wise as we do in the code below.
@@ -907,7 +908,7 @@ plot_MSEv_eval_crit(explanation_list_named) +
   )
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
+![](figure_main/unnamed-chunk-14-1.png)
 
 
 ## Main arguments in `explain`
@@ -1229,7 +1230,7 @@ explanation_combined <- explain(
 plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)
+![](figure_main/unnamed-chunk-20-1.png)
 
 As a second example using `"ctree"` to conditin on 1 and 2 features, and
 `"empirical"` when conditioning on 3 features:
@@ -1305,7 +1306,7 @@ explanation_group
 plot(explanation_group, bar_plot_phi0 = TRUE, index_x_explain = c(1, 6))
 ```
 
-![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
+![](figure_main/unnamed-chunk-22-1.png)
 
 ## Explain custom models
 
@@ -1358,7 +1359,6 @@ same airquality data set as used above.
 
 ```r
 library(gbm)
-#> Loaded gbm 2.1.8.1
 
 formula_gbm <- as.formula(paste0(y_var, "~", paste0(x_var, collapse = "+")))
 # Fitting a gbm model
@@ -1414,7 +1414,7 @@ explanation_custom <- explain(
 plot(explanation_custom, index_x_explain = c(1, 6))
 ```
 
-![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23-1.png)
+![](figure_main/unnamed-chunk-23-1.png)
 
 ```r
 
@@ -1439,6 +1439,7 @@ explanation_custom_minimal <- explain(
 )
 #> Note: You passed a model to explain() which is not natively supported, and did not supply a 'get_model_specs' function to explain().
 #> Consistency checks between model and data is therefore disabled.
+#> 
 #> Setting parameter 'n_batches' to 2 as a fair trade-off between memory consumption and computation time.
 #> Reducing 'n_batches' typically reduces the computation time at the cost of increased memory consumption.
 
@@ -1446,7 +1447,7 @@ explanation_custom_minimal <- explain(
 plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 ```
 
-![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23-2.png)
+![](figure_main/unnamed-chunk-23-2.png)
 
 ## The parameters of the `vaeac` approach
 
@@ -1487,6 +1488,8 @@ Can look at the training and validation error for the trained `vaeac` model and 
 # Look at the training and validation errors.
 vaeac_plot_evaluation_criteria(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
 ```
+
+![](figure_main/vaeac-plot-1-1.png)
 
 
 
@@ -1529,6 +1532,8 @@ vaeac_plot_evaluation_criteria(
 )
 ```
 
+![](figure_main/vaeac-plot-2-1.png)
+
 Can also compare the $MSE_{v}$ evaluation scores.
 
 
@@ -1536,7 +1541,7 @@ Can also compare the $MSE_{v}$ evaluation scores.
 plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop))
 ```
 
-![plot of chunk unnamed-chunk-28](figure/unnamed-chunk-28-1.png)
+![](figure_main/vaeac-plot-3-1.png)
 
 
 
