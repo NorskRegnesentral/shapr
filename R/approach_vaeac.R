@@ -1946,7 +1946,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
   }
 
   if (!((is.null(train_vlb) && is.null(val_iwae) && is.null(val_iwae_running)) ||
-        (!is.null(train_vlb) && !is.null(val_iwae) && !is.null(val_iwae_running)))) {
+    (!is.null(train_vlb) && !is.null(val_iwae) && !is.null(val_iwae_running)))) {
     stop("Either none or all of `train_vlb`, `val_iwae`, and `val_iwae_running` must be given.")
   }
 
@@ -2030,7 +2030,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     val_iwae_running_now <-
       val_iwae[
         (-min(length(val_iwae), running_avg_n_values) +
-           length(val_iwae) + 1):(-1 + length(val_iwae) + 1),
+          length(val_iwae) + 1):(-1 + length(val_iwae) + 1),
         drop = FALSE
       ]$mean()$view(1)
     val_iwae_running <- torch::torch_cat(c(val_iwae_running, val_iwae_running_now), -1)
@@ -2253,8 +2253,8 @@ vaeac_update_para_locations <- function(parameters) {
     warning(paste0(
       "The following vaeac main parameters are not recognized (`shapr` removes them): ",
       paste(strsplit(paste(paste0("`", not_extra_para_in_main_para, "`"), collapse = ", "),
-                     ",(?=[^,]+$)",
-                     perl = TRUE
+        ",(?=[^,]+$)",
+        perl = TRUE
       )[[1]], collapse = " and"), ".\n"
     ))
 
@@ -2270,8 +2270,8 @@ vaeac_update_para_locations <- function(parameters) {
     warning(paste0(
       "The following vaeac extra parameters are not recognized (`shapr` removes them): ",
       paste(strsplit(paste(paste0("`", not_main_para_in_extra_para, "`"), collapse = ", "),
-                     ",(?=[^,]+$)",
-                     perl = TRUE
+        ",(?=[^,]+$)",
+        perl = TRUE
       )[[1]], collapse = " and"), ".\n"
     ))
 
@@ -2287,8 +2287,8 @@ vaeac_update_para_locations <- function(parameters) {
       "The following vaeac parameters were given as both main and extra parameters (`shapr` uses the ",
       "values at the correct location ): ",
       paste(strsplit(paste(paste0("`", both_main_and_extra_para, "`"), collapse = ", "),
-                     ",(?=[^,]+$)",
-                     perl = TRUE
+        ",(?=[^,]+$)",
+        perl = TRUE
       )[[1]], collapse = " and"), ".\n"
     ))
 
@@ -2302,14 +2302,14 @@ vaeac_update_para_locations <- function(parameters) {
       "The following vaeac parameters were given as main parameters but should have been extra ",
       "parameters (`shapr` fixes this): ",
       paste(strsplit(paste(paste0("`", extra_para_in_main_para, "`"), collapse = ", "),
-                     ",(?=[^,]+$)",
-                     perl = TRUE
+        ",(?=[^,]+$)",
+        perl = TRUE
       )[[1]], collapse = " and"), ".\n"
     ))
 
     # Move extra parameter from the main parameters to extra_parameters list if they have NOT been specified already
     parameters$vaeac.extra_parameters[extra_para_in_main_para[!extra_para_in_main_para %in%
-                                                                vaeac.extra_para_user_names]] <-
+      vaeac.extra_para_user_names]] <-
       parameters[extra_para_in_main_para[!extra_para_in_main_para %in% vaeac.extra_para_user_names]]
 
     # Remove the extra parameter from the main parameters
@@ -2324,15 +2324,15 @@ vaeac_update_para_locations <- function(parameters) {
       "The following vaeac parameters were given as extra parameters but should have been main ",
       "parameters (`shapr` fixes this): ",
       paste(strsplit(paste(paste0("`", main_para_in_extra_para, "`"), collapse = ", "),
-                     ",(?=[^,]+$)",
-                     perl = TRUE
+        ",(?=[^,]+$)",
+        perl = TRUE
       )[[1]], collapse = " and"), ".\n"
     ))
 
     # Move main parameters from the extra_parameters list to main parameters if they have NOT been specified already
     parameters[main_para_in_extra_para[!main_para_in_extra_para %in% vaeac.main_para_user_names]] <-
       parameters$vaeac.extra_parameters[main_para_in_extra_para[!main_para_in_extra_para
-                                                                %in% vaeac.main_para_user_names]]
+      %in% vaeac.main_para_user_names]]
 
     # Remove the main parameter from the extra list
     parameters$vaeac.extra_parameters[main_para_in_extra_para] <- NULL
