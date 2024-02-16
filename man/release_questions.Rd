@@ -7,6 +7,7 @@
 release_questions()
 }
 \description{
-Function that question if the vaeac vignette has been built using \code{rebuild-long-running-vignette.R}.
-This is only useful when using devtools to release \code{shapr} to cran. See \code{\link[devtools:release]{devtools::release()}} for more information.
+Function that question if the main and vaeac vignette has been built using the
+\code{rebuild-long-running-vignette.R} function. This is only useful when using devtools to release
+\code{shapr} to cran. See \code{\link[devtools:release]{devtools::release()}} for more information.
 }
