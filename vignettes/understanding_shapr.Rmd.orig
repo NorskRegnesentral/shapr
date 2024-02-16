@@ -16,8 +16,9 @@ editor_options:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,
-  fig.height = 3,
+  fig.cap = "",
+  fig.width = 9,
+  fig.height = 5,
   fig.path = "figure_main/", # Ensure that figures are saved in the right folder (this vignette will be built manually)
   cache.path = "cache_main/", # Ensure that cached objects are saved in the right folder
   warning = FALSE,
