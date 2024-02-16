@@ -6,6 +6,6 @@ old_wd <- getwd()
 
 setwd("vignettes/")
 knitr::knit("understanding_shapr_vaeac.Rmd.orig", output = "understanding_shapr_vaeac.Rmd")
-knitr::purl("understanding_shapr_vaeac.Rmd.orig", output = "understanding_shapr_vaeact.R")
+knitr::purl("understanding_shapr_vaeac.Rmd.orig", output = "understanding_shapr_vaeac.R")
 
 setwd(old_wd)

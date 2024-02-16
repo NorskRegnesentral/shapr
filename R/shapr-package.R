@@ -27,8 +27,6 @@
 #'
 #' @importFrom Rcpp sourceCpp
 #'
-#' @importFrom methods formalArgs
-#'
 #' @keywords internal
 #'
 #' @useDynLib shapr, .registration = TRUE
