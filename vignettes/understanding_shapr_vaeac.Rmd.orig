@@ -33,25 +33,25 @@ library(shapr)
 
 > [Code](#Code)
 
-> [Basic Example](##basicexample)
+> [Basic Example](#basicexample)
 
-> [Pretrained vaeac](##pretrained_vaeac)
+> [Pretrained vaeac](#pretrained_vaeac)
 
-> [Pretrained vaeac (path)](##pretrained_vaeac_path)
+> [Pretrained vaeac (path)](#pretrained_vaeac_path)
 
-> [Subset of coalitions](##n_combinations)
+> [Subset of coalitions](#n_combinations)
 
-> [Paired sampling](##paired_sampling)
+> [Paired sampling](#paired_sampling)
 
-> [Progress bar](##progress_bar)
+> [Progress bar](#progress_bar)
 
-> [Continue training](##continue_training)
+> [Continue training](#continue_training)
 
-> [Early stopping](##early_stopping)
+> [Early stopping](#early_stopping)
 
-> [Grouping of features](##grouping_of_features)
+> [Grouping of features](#grouping_of_features)
 
-> [Mixed data](##mixed_data)
+> [Mixed data](#mixed_data)
 
 > [Future Updates](#FutureUpdates)
 
@@ -110,7 +110,7 @@ extra parameters to the `vaeac` approach. We strongly encourage the user to spec
 We now demonstrate the `vaeac` approach on several different use cases.
 
 
-## Basic Example {##basicexample}
+## Basic Example {#basicexample}
 Here we go through how to use the `vaeac` approach on the same data as in the main vignette
 
 First we set up the model we want to explain.
@@ -178,7 +178,7 @@ plot(explanation)
 ```
 
 
-## Pre-trained vaeac {##pretrained_vaeac}
+## Pre-trained vaeac {#pretrained_vaeac}
 If the user has a pre-trained `vaeac` model (from a previous run), the user can send that to the `explain()` function
 and `shapr` will skip the training of a new `vaeac` model and rather use the provided `vaeac` model. The `vaeac` model
 is accessible via `explanation$internal$parameters$vaeac`. Note that if we set `verbose = 2` in `explain()`, then `shapr` will give a message that it loads a pretrained `vaeac` model instead of training it from scratch.
@@ -202,7 +202,7 @@ expl_pretrained_vaeac <- explain(
 all.equal(explanation$shapley_values, expl_pretrained_vaeac$shapley_values)
 ```
 
-## Pre-trained vaeac (path) {##pretrained_vaeac_path}
+## Pre-trained vaeac (path) {#pretrained_vaeac_path}
 We can also just provide a path to the stored `vaeac` model. This is beneficial if we have only stored the `vaeac`
 model on the computer but not the whole `explanation` object. The possible save paths are stored in `explanation$internal$parameters$vaeac$model`. Note that if we set `verbose = 2` in `explain()`, then `shapr` will give a message that it loads a pretrained `vaeac` model instead of training it from scratch.
 
@@ -226,7 +226,7 @@ all.equal(explanation$shapley_values, expl_pretrained_vaeac_path$shapley_values)
 
 
 
-## Specified n_combinations and more batches {##n_combinations}
+## Specified n_combinations and more batches {#n_combinations}
 
 The user can limit the Shapley value computations to only a subset of coalitions by setting the
 `n_combinations` parameter to a value lower than $2^{n_\text{features}}$. To lower the memory
@@ -289,7 +289,7 @@ expl_batches_combinations_2 <- explain(
 
 
 
-## Paired sampling {##paired_sampling}
+## Paired sampling {#paired_sampling}
 
 The `vaeac` approach can use paired sampling to improve the stability of the training procedure.
 When using paired sampling, each observation in the training batches will be duplicated, but the first version will
@@ -343,7 +343,7 @@ rbind(
 
 
 
-## Progressr {##progress_bar}
+## Progressr {#progress_bar}
 
 The `shapr` package provides progress updates of the computation of the Shapley
 values through the R-package `progressr`. If the user also sets `verbose = 2` in `explain()`, then we will get
@@ -426,7 +426,7 @@ progressr::with_progress({
 all.equal(expl_without_messages$shapley_values, expl_with_progressr$shapley_values)
 ```
 
-## Continue the training of the vaeac approach {##continue_training}
+## Continue the training of the vaeac approach {#continue_training}
 
 In the case the user has set a too low number of training epochs and sees that the network is still learning,
 then the user can continue to train the network from where it stopped. Thus, a good workflow can therefore
@@ -529,7 +529,7 @@ plot_SV_several_approaches(list(
 ```
 
 
-## Vaeac with early stopping {##early_stopping}
+## Vaeac with early stopping {#early_stopping}
 If we do not want to specify the number of `epochs`, as we are uncertain how many `epochs` it will take before the
 `vaeac` model is properly trained, a good choice is to rather use early stopping. This means that we can set
 `vaeac.epochs` to a large number and let `vaeac.epochs_early_stopping` be for example `5`. This means that the `vaeac`
@@ -620,7 +620,7 @@ plot_SV_several_approaches(list(
 
 
 
-## Grouping of features {##grouping_of_features}
+## Grouping of features {#grouping_of_features}
 When we train a `vaeac` model to explain groups of features, then the `vaeac` model will use
 the "Specified_masks_mask_generator" which ensures that the `vaeac` model only train on a specified set of coalitions.
 In this case, it will ensure that all features in group A will always either be conditioned on or be unconditioned.
@@ -648,7 +648,7 @@ plot(expl_group)
 
 
 
-## Mixed Data {##mixed_data}
+## Mixed Data {#mixed_data}
 Here we look at a setup with mixed data, i.e., the data contains both categorical and continuous features. First we set up the data and the model.
 ```{r ctree-mixed-data, cache = TRUE}
 library(ranger)
