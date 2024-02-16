@@ -22,6 +22,8 @@ on:
     branches: [main, master, cranversion, devel]
   pull_request:
     branches: [main, master, cranversion, devel]
+    types: [ready_for_review]
+
 
 name: R-CMD-check
 

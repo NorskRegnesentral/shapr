@@ -1,6 +1,7 @@
 #' check_setup
 #' @inheritParams explain
 #' @inheritParams explain_forecast
+#' @inheritParams explain_lingauss
 #' @inheritParams default_doc
 #' @param type Character.
 #' Either "normal" or "forecast" corresponding to function `setup()` is called from,
@@ -13,6 +14,9 @@
 #'   \item{classes}{Character vector with the classes of each features.}
 #'   \item{factor_levels}{Character vector with the levels for any categorical features.}
 #'   }
+#' @param lingauss_model_coef List. The output from [get_linear_coef()] containing the coefficents of the linear model.
+#' Only used by [explain_lingauss()].
+#'
 #' @param is_python Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 #' never changed when calling the function via `explain()` in R. The parameter is later used to disallow
 #' running the AICc-versions of the empirical as that requires data based optimization.
@@ -22,10 +26,11 @@ setup <- function(x_train,
                   approach,
                   prediction_zero,
                   output_size = 1,
-                  n_combinations,
+                  n_combinations = NULL,
+                  n_permutations = NULL,
                   group,
                   n_samples,
-                  n_batches,
+                  n_batches = 1,
                   seed,
                   keep_samp_for_vS,
                   feature_specs,
@@ -39,6 +44,7 @@ setup <- function(x_train,
                   explain_y_lags = NULL,
                   explain_xreg_lags = NULL,
                   group_lags = NULL,
+                  lingauss_model_coef = NULL,
                   timing,
                   is_python = FALSE,
                   ...) {
@@ -49,6 +55,7 @@ setup <- function(x_train,
     prediction_zero = prediction_zero,
     output_size = output_size,
     n_combinations = n_combinations,
+    n_permutations = n_permutations,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -62,6 +69,7 @@ setup <- function(x_train,
     explain_xreg_lags = explain_xreg_lags,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
+    lingauss_model_coef = lingauss_model_coef,
     timing = timing,
     is_python = is_python,
     ...
@@ -107,6 +115,8 @@ setup <- function(x_train,
 
   internal <- check_and_set_parameters(internal)
 
+
+
   return(internal)
 }
 
@@ -120,35 +130,38 @@ check_and_set_parameters <- function(internal) {
   n_groups <- internal$parameters$n_groups
   is_groupwise <- internal$parameters$is_groupwise
   exact <- internal$parameters$exact
+  type <- internal$parameters$type
 
 
   if (!is.null(group)) {
     check_groups(feature_names, group)
   }
 
-  if (!exact) {
-    if (!is_groupwise) {
-      internal$parameters$used_n_combinations <- min(2^n_features, n_combinations)
+  if (type != "lingauss") {
+    if (!exact) {
+      if (!is_groupwise) {
+        internal$parameters$used_n_combinations <- min(2^n_features, n_combinations)
+      } else {
+        internal$parameters$used_n_combinations <- min(2^n_groups, n_combinations)
+      }
+      check_n_combinations(internal)
     } else {
-      internal$parameters$used_n_combinations <- min(2^n_groups, n_combinations)
+      if (!is_groupwise) {
+        internal$parameters$used_n_combinations <- 2^n_features
+      } else {
+        internal$parameters$used_n_combinations <- 2^n_groups
+      }
     }
-    check_n_combinations(internal)
-  } else {
-    if (!is_groupwise) {
-      internal$parameters$used_n_combinations <- 2^n_features
-    } else {
-      internal$parameters$used_n_combinations <- 2^n_groups
-    }
+
+    # Check approach
+    check_approach(internal)
+
+    # Setting default value for n_batches (when NULL)
+    internal <- set_defaults(internal)
+
+    # Checking n_batches vs n_combinations etc
+    check_n_batches(internal)
   }
-
-  # Check approach
-  check_approach(internal)
-
-  # Setting default value for n_batches (when NULL)
-  internal <- set_defaults(internal)
-
-  # Checking n_batches vs n_combinations etc
-  check_n_batches(internal)
 
 
   return(internal)
@@ -199,7 +212,6 @@ check_n_combinations <- function(internal) {
     }
   }
 }
-
 
 
 #' @keywords internal
@@ -385,9 +397,10 @@ get_extra_parameters <- function(internal) {
 }
 
 #' @keywords internal
-get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
+get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, n_permutations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
-                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing, is_python, ...) {
+                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, lingauss_model_coef,
+                           timing, is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -400,6 +413,16 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
       n_combinations > 0)) {
     stop("`n_combinations` must be NULL or a single positive integer.")
   }
+
+  # n_permutations
+  if (!is.null(n_permutations) &&
+    !(is.wholenumber(n_permutations) &&
+      length(n_permutations) == 1 &&
+      !is.na(n_permutations) &&
+      n_permutations > 0)) {
+    stop("`n_permutations` must be NULL or a single positive integer.")
+  }
+
 
   # group (checked more thoroughly later)
   if (!is.null(group) &&
@@ -437,8 +460,8 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   }
 
   # type
-  if (!(type %in% c("normal", "forecast"))) {
-    stop("`type` must be either `normal` or `forecast`.\n")
+  if (!(type %in% c("normal", "forecast", "lingauss"))) {
+    stop("`type` must be either `normal`, `forecast` or `lingauss`.\n")
   }
 
   # parameters only used for type "forecast"
@@ -494,6 +517,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     approach = approach,
     prediction_zero = prediction_zero,
     n_combinations = n_combinations,
+    n_permutations = n_permutations,
     group = group,
     n_samples = n_samples,
     n_batches = n_batches,
@@ -505,6 +529,7 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     horizon = horizon,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
+    lingauss_model_coef = lingauss_model_coef,
     timing = timing
   )
 
@@ -512,7 +537,12 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   parameters <- append(parameters, list(...))
 
   # Setting exact based on n_combinations (TRUE if NULL)
-  parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
+  if (type == "lingauss") {
+    parameters$exact <- ifelse(is.null(parameters$n_permutations), TRUE, FALSE)
+  } else {
+    parameters$exact <- ifelse(is.null(parameters$n_combinations), TRUE, FALSE)
+  }
+
 
   return(parameters)
 }
