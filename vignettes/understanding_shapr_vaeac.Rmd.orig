@@ -298,7 +298,7 @@ be masked by $S$ and the second one is masked by the complement $\bar{S}$. The m
 Furthermore, the masks are randomly selected for each observation in the batch. The training time when using paired
 sampling is higher in comparison to random sampling due to more complex implementation.
 
-```{r paired sampling training, cache = TRUE}
+```{r paired-sampling-training, cache = TRUE}
 expl_paired_sampling_TRUE <- explain(
   model = model,
   x_explain = x_explain,
@@ -327,7 +327,7 @@ expl_paired_sampling_FALSE <- explain(
 ```
 
 We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
-```{r paired sampling plotting, cache = TRUE}
+```{r paired-sampling-plotting, cache = TRUE}
 explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE, "Paired samp." = expl_paired_sampling_TRUE)
 vaeac_plot_evaluation_criteria(explanation_list, plot_type = "criterion")
 plot_MSEv_eval_crit(explanation_list)
@@ -335,7 +335,7 @@ plot_MSEv_eval_crit(explanation_list)
 
 By looking at the time, we see that the paired version takes (a bit) longer time in the `setup_computation`
 phase, that is, in the training phase.
-```{r paired sampling timing}
+```{r paired-sampling-timing}
 rbind(
   "Paired" = expl_paired_sampling_TRUE$timing$timing_secs, "Regular" = expl_paired_sampling_FALSE$timing$timing_secs
 )
@@ -351,7 +351,7 @@ extra information related to the `vaeac` approach. The `verbose` parameter works
 package.
 
 In this setup, we get no progress updates.
-```{r progressr false verbose 0, cache = TRUE}
+```{r progressr-false-verbose-0, cache = TRUE}
 library(progressr)
 handlers("void") # To silence all progressr updates
 expl_without_messages <- explain(
@@ -369,7 +369,7 @@ expl_without_messages <- explain(
 ```
 
 By setting `verbose = 2`, we will get messages about the progress.
-```{r progressr false verbose 2, cache = TRUE}
+```{r progressr-false-verbose-2, cache = TRUE}
 handlers("void") # To silence all progressr updates
 expl_with_messages <- explain(
   model = model,
@@ -389,7 +389,7 @@ all.equal(expl_without_messages$shapley_values, expl_with_messages$shapley_value
 For more visual information, we can use the `progressr` package. This can help us see the progress of the training
 step for the final `vaeac` model. Note that one can set `verbose = 0` to not get any messages from the `vaeac`
 approach and only get the progress bars.
-```{r progressr true verbose 2, cache = TRUE}
+```{r progressr-true-verbose-2, cache = TRUE}
 progressr::handlers("cli")
 # If no progression handler is specified, the txtprogressbar is used
 # Other progression handlers:
