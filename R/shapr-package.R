@@ -5,25 +5,7 @@
 #'
 #' @importFrom utils head tail methods modifyList
 #'
-#' @importFrom stats predict
-#'
-#' @importFrom stats as.formula
-#'
-#' @importFrom stats formula
-#'
-#' @importFrom stats model.matrix
-#'
-#' @importFrom stats model.frame
-#'
-#' @importFrom stats setNames
-#'
-#' @importFrom stats contrasts
-#'
-#' @importFrom stats embed
-#'
-#' @importFrom stats sd qt pt
-#'
-#' @importFrom stats rnorm
+#' @importFrom stats predict as.formula formula model.matrix model.frame setNames contrasts embed sd qt pt rnorm
 #'
 #' @importFrom Rcpp sourceCpp
 #'
