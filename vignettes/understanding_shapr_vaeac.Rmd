@@ -162,7 +162,7 @@ We can look at the Shapley values.
 
 
 ```r
-# Printing and ploting the Shapley values. see ?shapr::explain for interpretation of the values.
+# Printing and ploting the Shapley values. See ?shapr::explain for interpretation of the values.
 print(explanation$shapley_values)
 #>        none   Solar.R      Wind       Temp      Month
 #>       <num>     <num>     <num>      <num>      <num>
@@ -394,8 +394,8 @@ rbind(
   "Paired" = expl_paired_sampling_TRUE$timing$timing_secs, "Regular" = expl_paired_sampling_FALSE$timing$timing_secs
 )
 #>              setup test_prediction setup_computation compute_vS shapley_computation
-#> Paired  0.10554790      0.06238222         10.776925  0.4035740         0.006369114
-#> Regular 0.07739019      0.06001687          9.007903  0.4133561         0.008683920
+#> Paired  0.05959797      0.04166913          10.23135   0.431824         0.006705999
+#> Regular 0.05183983      0.04031301          10.10933   0.437362         0.008903980
 ```
 
 

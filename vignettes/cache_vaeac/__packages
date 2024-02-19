@@ -1,14 +1,5 @@
-shapr
 data.table
-mvtnorm
-condMVNorm
-nlme
-mgcv
-ggplot2
-future
-future.apply
-testthat
+shapr
 xgboost
 progressr
 ranger
-gbm
