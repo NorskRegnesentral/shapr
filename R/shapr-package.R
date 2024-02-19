@@ -26,5 +26,3 @@ release_questions <- function() {
     "`rebuild-long-running-vignette.R`?"
   ))
 }
-
-
