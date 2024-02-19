@@ -25,15 +25,7 @@ these missing entries are masked.}
 \description{
 A mask generator which masks the entries based on sampling provided 1D masks with corresponding probabilities.
 Used for Shapley value estimation when only a subset of coalitions are used to compute the Shapley values.
-
-Initialize a specified masks mask generator.
 }
-\section{Fields}{
-
-\describe{
-\item{\code{name}}{Type of mask generator}
-}}
-
 \examples{
 \dontrun{
 masks <- torch_tensor(matrix(c(0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1),

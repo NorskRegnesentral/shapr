@@ -22,15 +22,14 @@ A mask generator which masks the entries based on specified probabilities.
 A class that takes in the probabilities of having d masked observations.  I.e., for M dimensional data,
 masking_probs is of length M+1, where the d'th entry is the probability of having d-1 masked values.
 
-A mask generator that first samples the number of entries 'd' to be masked in
-the 'M'-dimensional observation 'x' in the batch based on the given M+1 probabilities. The
-'d' masked are uniformly sampled from the 'M' possible feature indices. The d'th entry
-of the probability of having d-1 masked values.
+A mask generator that first samples the number of entries 'd' to be masked in the 'M'-dimensional observation 'x' in
+the batch based on the given M+1 probabilities. The 'd' masked are uniformly sampled from the 'M' possible feature
+indices. The d'th entry of the probability of having d-1 masked values.
 
-Note that MCAR_mask_generator with p = 0.5 is the same as using \code{\link[=Specified_prob_mask_generator]{Specified_prob_mask_generator()}}
-with \code{masking_ratio} = choose(M, 0:M), where M is the number of features. This function was initially
-created to check if increasing the probability of having a masks with many masked features improved
-vaeac's performance by focusing more on these situations during training.
+Note that MCAR_mask_generator with p = 0.5 is the same as using \code{\link[=Specified_prob_mask_generator]{Specified_prob_mask_generator()}} with
+\code{masking_ratio} = choose(M, 0:M), where M is the number of features. This function was initially created to check if
+increasing the probability of having a masks with many masked features improved vaeac's performance by focusing more
+on these situations during training.
 }
 \examples{
 \dontrun{

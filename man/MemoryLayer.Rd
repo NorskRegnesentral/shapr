@@ -21,8 +21,7 @@ The layer is used to make skip-connections inside a \link[torch:nn_sequential]{t
 or between several \link[torch:nn_sequential]{torch::nn_sequential} networks without unnecessary code complication.
 }
 \details{
-If \code{output = FALSE}, this layer stores its input in a static list
-\code{storage} with the key \verb{id`` and then passes the input to the next layer. I.e., when memory layer is used in the masked encoder. If }output = TRUE\verb{, this layer takes stored tensor from the storage. I.e., when memory layer is used in the decoder. If }add = TRUE\verb{, it returns sum of the stored vector and an }input\verb{, otherwise it returns their concatenation. If the tensor with specified }id\verb{is not in storage when the layer with}output = TRUE` is called, it would cause an exception.
+If \code{output = FALSE}, this layer stores its input in a static list \code{storage} with the key \verb{id`` and then passes the input to the next layer. I.e., when memory layer is used in the masked encoder. If }output = TRUE\verb{, this layer takes stored tensor from the storage. I.e., when memory layer is used in the decoder. If }add = TRUE\verb{, it returns sum of the stored vector and an }input\verb{, otherwise it returns their concatenation. If the tensor with specified }id\verb{is not in storage when the layer with}output = TRUE` is called, it would cause an exception.
 }
 \examples{
 \dontrun{

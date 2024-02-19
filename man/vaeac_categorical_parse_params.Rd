@@ -7,15 +7,15 @@
 vaeac_categorical_parse_params(params, min_prob = 0, max_prob = 1)
 }
 \arguments{
-\item{params}{Tensor of \verb{dimension batch_size} x \code{K} containing the logits for each
-of the \code{K} classes and \code{batch_size} observations.}
+\item{params}{Tensor of dimension \code{batch_size} x \code{K} containing the logits for each of the \code{K} classes and
+\code{batch_size} observations.}
 
-\item{min_prob}{For stability it might be desirable that the minimal probability is not exactly zero.}
+\item{min_prob}{For stability it might be desirable that the minimal probability is not too close to zero.}
 
-\item{max_prob}{For stability it might be desirable that the maximal probability is not exactly zero.}
+\item{max_prob}{For stability it might be desirable that the maximal probability is not too close to one.}
 }
 \value{
-torch::distr_categorical distributions with the provided probabilities for each class.
+A \link[torch:distr_categorical]{torch::distr_categorical} distributions with the provided probabilities for each class.
 }
 \description{
 Function that takes in a tensor containing the logits for each of the K classes. Each row corresponds to

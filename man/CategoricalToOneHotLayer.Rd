@@ -7,14 +7,13 @@
 CategoricalToOneHotLayer(one_hot_max_sizes, add_nans_map_for_columns = NULL)
 }
 \arguments{
-\item{one_hot_max_sizes}{A vector of integers where the i-th entry is the number of
-one-hot encoding for the i-th feature.
-I.e., a categorical feature with 5 levels will have a one_hot_max_size of 5.
-A feature with a one_hot_max_size of either 0 or 1 will be treated as a continuous feature.}
+\item{one_hot_max_sizes}{A torch tensor of dimension \code{n_features} containing the one hot sizes of the \code{n_features}
+features. That is, if the \code{i}th feature is a categorical feature with 5 levels, then \code{one_hot_max_sizes[i] = 5}.
+While the size for continuous features can either be \code{0} or \code{1}.}
 
-\item{add_nans_map_for_columns}{Optional list which contains indices of columns which
-is_nan masks are to be appended to the result tensor. This option is necessary for the full
-encoder to distinguish whether value is to be reconstructed or not.}
+\item{add_nans_map_for_columns}{Optional list which contains indices of columns which is_nan masks are to be appended
+to the result tensor. This option is necessary for the full encoder to distinguish whether value is to be
+reconstructed or not.}
 }
 \description{
 The CategoricalToOneHotLayer module/layer expands categorical features into one-hot vectors,

@@ -4,15 +4,16 @@
 \alias{vaeac_normal_parse_params}
 \title{Creates Normal Distributions}
 \usage{
-vaeac_normal_parse_params(params, min_sigma = 0.001)
+vaeac_normal_parse_params(params, min_sigma = 1e-04)
 }
 \arguments{
-\item{params}{Tensor containing the parameters for the normal distributions.}
+\item{params}{Tensor of dimension \code{batch_size} x \code{2*n_featuers} containing the means and standard deviations
+to be used in the normal distributions for of the \code{batch_size} observations.}
 
-\item{min_sigma}{The minimal variance allowed.}
+\item{min_sigma}{For stability it might be desirable that the minimal sigma is not too close to zero.}
 }
 \value{
-\code{\link[torch:distr_normal]{torch::distr_normal()}} distributions with the provided means and standard deviations.
+A \code{\link[torch:distr_normal]{torch::distr_normal()}} distribution with the provided means and standard deviations.
 }
 \description{
 Function that takes in the a tensor where the first half of the columns contains the means of the

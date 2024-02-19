@@ -10,8 +10,9 @@ vaeac_dataset(X, one_hot_max_sizes)
 \item{X}{A torch_tensor contain the data of shape N x p, where N and p are the number
 of observations and features, respectively.}
 
-\item{one_hot_max_sizes}{A torch tensor of dimension p containing the one hot sizes of
-the p features. The sizes for the continuous features can either be 0 or 1.}
+\item{one_hot_max_sizes}{A torch tensor of dimension \code{n_features} containing the one hot sizes of the \code{n_features}
+features. That is, if the \code{i}th feature is a categorical feature with 5 levels, then \code{one_hot_max_sizes[i] = 5}.
+While the size for continuous features can either be \code{0} or \code{1}.}
 }
 \description{
 Convert a the data into a \code{\link[torch:dataset]{torch::dataset()}} which the vaeac model creates batches from.

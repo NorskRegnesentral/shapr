@@ -7,17 +7,18 @@
 vaeac_compute_normalization(data, one_hot_max_sizes)
 }
 \arguments{
-\item{data}{A torch_tensor of dimension N x p containing the data.}
+\item{data}{A torch_tensor of dimension \code{n_observation} x \code{n_features} containing the data.}
 
-\item{one_hot_max_sizes}{A torch tensor of dimension p containing the one hot sizes of the p features.
-The sizes for the continuous features can either be '0' or '1'.}
+\item{one_hot_max_sizes}{A torch tensor of dimension \code{n_features} containing the one hot sizes of the \code{n_features}
+features. That is, if the \code{i}th feature is a categorical feature with 5 levels, then \code{one_hot_max_sizes[i] = 5}.
+While the size for continuous features can either be \code{0} or \code{1}.}
 }
 \value{
 List containing the means and the standard deviations of the different features.
 }
 \description{
 Returns the means and standard deviations for all continuous features in the data set.
-Categorical features get mean=0 and sd=1 by default.
+Categorical features get \eqn{mean = 0} and \eqn{sd = 1} by default.
 }
 \author{
 Lars Henry Berge Olsen

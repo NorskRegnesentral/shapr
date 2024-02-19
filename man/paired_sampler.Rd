@@ -17,11 +17,9 @@ A sampler used to samples the batches where each instances is sampled twice
 }
 \details{
 A sampler object that allows for paired sampling by always including each observation from the
-\code{\link[=vaeac_dataset]{vaeac_dataset()}} twice.
-A \code{\link[torch:sampler]{torch::sampler()}} object can be used with \code{\link[torch:dataloader]{torch::dataloader()}}
-when creating batches from a torch dataset \code{\link[torch:dataset]{torch::dataset()}}. See more on
-\url{https://rdrr.io/cran/torch/src/R/utils-data-sampler.R}.
-This function does not use batch iterators, which might increase the speed.
+\code{\link[=vaeac_dataset]{vaeac_dataset()}} twice. A \code{\link[torch:sampler]{torch::sampler()}} object can be used with \code{\link[torch:dataloader]{torch::dataloader()}} when creating
+batches from a torch dataset \code{\link[torch:dataset]{torch::dataset()}}. See \url{https://rdrr.io/cran/torch/src/R/utils-data-sampler.R} for
+more information. This function does not use batch iterators, which might increase the speed.
 }
 \examples{
 \dontrun{

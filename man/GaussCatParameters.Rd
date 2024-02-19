@@ -7,19 +7,17 @@
 GaussCatParameters(one_hot_max_sizes, min_sigma = 1e-04, min_prob = 1e-04)
 }
 \arguments{
-\item{one_hot_max_sizes}{A vector of integers where the i-th entry is the number of
-one-hot encoding for the i-th feature.
-I.e., a categorical feature with 5 levels will have a one_hot_max_size of 5.
-A feature with a one_hot_max_size of either 0 or 1 will be treated as a continuous feature.}
+\item{one_hot_max_sizes}{A torch tensor of dimension \code{n_features} containing the one hot sizes of the \code{n_features}
+features. That is, if the \code{i}th feature is a categorical feature with 5 levels, then \code{one_hot_max_sizes[i] = 5}.
+While the size for continuous features can either be \code{0} or \code{1}.}
 
 \item{min_sigma}{For stability it might be desirable that the minimal sigma is not too close to zero.}
 
 \item{min_prob}{For stability it might be desirable that the minimal probability is not too close to zero.}
 }
 \description{
-The GaussCatParameters module extracts the parameters
-from the inferred generative Gaussian and categorical distributions for the
-continuous and categorical features, respectively.
+The GaussCatParameters module extracts the parameters from the inferred generative Gaussian and
+categorical distributions for the continuous and categorical features, respectively.
 
 If \code{one_hot_max_sizes} is \eqn{[4, 1, 1, 2]}, then the inferred distribution parameters for one observation is the
 vector \eqn{[p_{00}, p_{01}, p_{02}, p_{03}, \mu_1, \sigma_1, \mu_2, \sigma_2, p_{30}, p_{31}]}, where

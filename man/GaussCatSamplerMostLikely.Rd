@@ -11,9 +11,9 @@ GaussCatSamplerMostLikely(
 )
 }
 \arguments{
-\item{one_hot_max_sizes}{A vector of integers where the i-th entry is the number of one-hot encoding
-for the i-th feature. I.e., a categorical feature with 5 levels will have a one_hot_max_size of 5.
-A feature with a one_hot_max_size of either 0 or 1 will be treated as a continuous feature.}
+\item{one_hot_max_sizes}{A torch tensor of dimension \code{n_features} containing the one hot sizes of the \code{n_features}
+features. That is, if the \code{i}th feature is a categorical feature with 5 levels, then \code{one_hot_max_sizes[i] = 5}.
+While the size for continuous features can either be \code{0} or \code{1}.}
 
 \item{min_sigma}{For stability it might be desirable that the minimal sigma is not too close to zero.}
 
@@ -23,10 +23,9 @@ A feature with a one_hot_max_size of either 0 or 1 will be treated as a continuo
 A \code{GaussCatSamplerMostLikely} object.
 }
 \description{
-The GaussCatSamplerMostLikely generates the most likely samples from
-the generative distribution defined by the output of the vaeac.
-I.e., the layer will return the mean and most probable class for the Gaussian (continuous features)
-and categorical (categorical features) distributions, respectively.
+The GaussCatSamplerMostLikely generates the most likely samples from the generative distribution defined
+by the output of the vaeac. I.e., the layer will return the mean and most probable class for the Gaussian (continuous
+features) and categorical (categorical features) distributions, respectively.
 }
 \author{
 Lars Henry Berge Olsen

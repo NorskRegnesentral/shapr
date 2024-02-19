@@ -31,13 +31,9 @@ Compute the Importance Sampling Estimator which the vaeac model
 uses to evaluate its performance on the validation data.
 }
 \details{
-Compute mean IWAE log likelihood estimation of the validation set.
-Takes validation data loader, mask generator, batch size, vaeac_model (vaeac)
-and number of IWAE latent samples per object.Returns one the estimation (float).
-IWAE is an abbreviation for Importance Sampling Estimator
-\deqn{\log p_{\theta, \psi}(x|y) \approx
-\log {\frac{1}{S}\sum_{i=1}^S p_\theta(x|z_i, y) p_\psi(z_i|y) \big/ q_\phi(z_i|x,y),}}
-where \eqn{z_i \sim q_\phi(z|x,y)}.
+Compute mean IWAE log likelihood estimation of the validation set. IWAE is an abbreviation for Importance
+Sampling Estimator \deqn{\log p_{\theta, \psi}(x|y) \approx \log {\frac{1}{S}\sum_{i=1}^S
+p_\theta(x|z_i, y) p_\psi(z_i|y) \big/ q_\phi(z_i|x,y),}} where \eqn{z_i \sim q_\phi(z|x,y)}.
 For more details, see \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)}.
 }
 \author{
