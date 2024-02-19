@@ -173,7 +173,7 @@ explanation <- explain(
 We can look at the Shapley values.
 
 ```{r first-vaeac-plots, cache = TRUE}
-# Printing and ploting the Shapley values. see ?shapr::explain for interpretation of the values.
+# Printing and ploting the Shapley values. See ?shapr::explain for interpretation of the values.
 print(explanation$shapley_values)
 plot(explanation)
 ```
