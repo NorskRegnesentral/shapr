@@ -82,7 +82,29 @@
       "Method",
       "MSEv",
       "MSEv_sd",
-      "error"
+      "error",
+      ".header",
+      ".id",
+      ".pred",
+      ".only_these_features_wo_none",
+      ".only_these_columns",
+      "Epoch",
+      ".description",
+      ".phi",
+      ".method",
+      "Value",
+      "Criterion",
+      "checkpoint",
+      "..col_cont_names",
+      "n_train",
+      "one_hot_max_sizes",
+      "train_dataloader",
+      "vaeac_model_best_listmodel",
+      "vaeac_save_file_names",
+      "val_dataloader",
+      "x_train",
+      "x_train_preprocessed",
+      "x_train_torch"
     )
   )
   invisible()

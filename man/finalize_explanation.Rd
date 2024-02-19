@@ -42,7 +42,7 @@ It's equal for all observations and set by the user through the argument \code{p
 The difference between the prediction and \code{none} is distributed among the other features.
 In theory this value should be the expected prediction without conditioning on any features.
 Typically we set this value equal to the mean of the response variable in our training data, but other choices
-such as the mean of the predictions in the training data are also reasonable. \code{\link[=explain]{explain()}} \code{\link[=explain]{explain()}}
+such as the mean of the predictions in the training data are also reasonable.
 }
 \description{
 Computes dependence-aware Shapley values for observations in \code{x_explain} from the specified
@@ -51,7 +51,7 @@ Computes dependence-aware Shapley values for observations in \code{x_explain} fr
 \details{
 The most important thing to notice is that \code{shapr} has implemented six different
 approaches for estimating the conditional distributions of the data, namely \code{"empirical"},
-\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
+\code{"gaussian"}, \code{"copula"}, \code{"ctree"}, \code{"vaeac"}, \code{"categorical"}, \code{"timeseries"}, and \code{"independence"}.
 In addition, the user also has the option of combining the different approaches.
 E.g., if you're in a situation where you have trained a model that consists of 10 features,
 and you'd like to use the \code{"gaussian"} approach when you condition on a single feature,

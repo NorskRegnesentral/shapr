@@ -116,6 +116,17 @@
       2: 42.44   5.342  -6.097 -8.232 -2.8129 -2.079
       3: 42.44   6.901 -21.079 -4.687  0.1494  1.146
 
+# output_lm_numeric_vaeac
+
+    Code
+      (out <- code)
+    Output
+          none Solar.R    Wind    Temp  Month     Day
+         <num>   <num>   <num>   <num>  <num>   <num>
+      1: 42.44  -6.534   9.146 18.8166 -5.238 -3.5884
+      2: 42.44   1.421  -5.329 -6.8472 -3.668  0.5436
+      3: 42.44   7.073 -18.914 -0.6391 -6.038  0.9493
+
 # output_lm_categorical_ctree
 
     Code
@@ -126,6 +137,17 @@
       1: 42.44       -6.206              15.38         -6.705      -2.973
       2: 42.44       -5.764             -17.71         21.866     -13.219
       3: 42.44        7.101             -21.78          1.730      -5.413
+
+# output_lm_categorical_vaeac
+
+    Code
+      (out <- code)
+    Output
+          none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+         <num>        <num>              <num>          <num>       <num>
+      1: 42.44        1.795              10.32         -6.919      -5.704
+      2: 42.44       -2.438             -18.15         20.755     -14.999
+      3: 42.44        8.299             -23.71          8.751     -11.708
 
 # output_lm_categorical_categorical
 
@@ -213,6 +235,17 @@
       1: 42.44  -9.165  11.815 13.184 -0.4473       -4.802
       2: 42.44   3.652  -5.782 -6.524 -0.4349       -6.295
       3: 42.44   6.268 -21.441 -7.323  1.6330       10.262
+
+# output_lm_mixed_vaeac
+
+    Code
+      (out <- code)
+    Output
+          none Solar.R    Wind   Temp     Day Month_factor
+         <num>   <num>   <num>  <num>   <num>        <num>
+      1: 42.44  -3.629   8.898 17.330 -2.5409      -9.4742
+      2: 42.44   3.938  -3.933 -8.190  0.6284      -7.8259
+      3: 42.44   5.711 -15.928 -3.216  2.2431       0.5899
 
 # output_lm_mixed_comb
 

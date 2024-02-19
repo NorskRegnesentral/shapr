@@ -44,6 +44,7 @@
 #' @inheritDotParams setup_approach.gaussian
 #' @inheritDotParams setup_approach.copula
 #' @inheritDotParams setup_approach.ctree
+#' @inheritDotParams setup_approach.vaeac
 #' @inheritDotParams setup_approach.categorical
 #' @inheritDotParams setup_approach.timeseries
 #'
@@ -103,6 +104,7 @@ explain_forecast <- function(model,
                              predict_model = NULL,
                              get_model_specs = NULL,
                              timing = TRUE,
+                             verbose = 0,
                              ...) { # ... is further arguments passed to specific approaches
   timing_list <- list(
     init_time = Sys.time()
@@ -143,6 +145,7 @@ explain_forecast <- function(model,
     group_lags = group_lags,
     group = group,
     timing = timing,
+    verbose = verbose,
     ...
   )
 
@@ -193,6 +196,12 @@ explain_forecast <- function(model,
     output$timing <- compute_time(timing_list)
   }
 
+  # Temporary to avoid failing tests
+  if (isFALSE(output$internal$parameters$vaeac.save_model)) {
+    output$internal$parameters$vaeac$models <- NULL
+    output$internal$parameters$vaeac$parameters$folder_to_save_model <- NULL
+    output$internal$parameters$vaeac$parameters$model_description <- NULL
+  }
 
   return(output)
 }

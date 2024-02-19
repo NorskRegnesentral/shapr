@@ -179,7 +179,7 @@
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries 
+       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
        or a vector of length one less than the number of features ( 4 ), with only the above strings.
 
 ---
@@ -192,7 +192,7 @@
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries 
+       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
        or a vector of length one less than the number of features ( 4 ), with only the above strings.
 
 ---
@@ -205,7 +205,7 @@
     Condition
       Error in `check_approach()`:
       ! `approach` must be one of the following: 
-       categorical, copula, ctree, empirical, gaussian, independence, timeseries 
+       categorical, copula, ctree, empirical, gaussian, independence, timeseries, vaeac 
        or a vector of length one less than the number of features ( 4 ), with only the above strings.
 
 # erroneous input: `prediction_zero`
@@ -822,7 +822,7 @@
       Error in `setup_approach.gaussian()`:
       ! The following feature(s) are factor(s): Month_factor.
       approach = 'gaussian' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree', 'categorical'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical'.
 
 ---
 
@@ -835,7 +835,7 @@
       Error in `setup_approach.empirical()`:
       ! The following feature(s) are factor(s): Month_factor.
       approach = 'empirical' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree', 'categorical'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical'.
 
 ---
 
@@ -848,5 +848,5 @@
       Error in `setup_approach.copula()`:
       ! The following feature(s) are factor(s): Month_factor.
       approach = 'copula' does not support factor features.
-      Please change approach to one of 'independence' (not recommended), 'ctree', 'categorical'.
+      Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical'.
 

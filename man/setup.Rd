@@ -28,6 +28,7 @@ setup(
   explain_xreg_lags = NULL,
   group_lags = NULL,
   timing,
+  verbose,
   is_python = FALSE,
   ...
 )
@@ -41,8 +42,8 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 Contains the the features, whose predictions ought to be explained.}
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
-All elements should,
-either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
+All elements should, either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
+\code{"categorical"}, \code{"timeseries"}, or \code{"independence"}.
 See details for more information.}
 
 \item{prediction_zero}{Numeric.
@@ -137,6 +138,11 @@ If \code{FALSE} all lags of each variable are explained individually.}
 
 \item{timing}{Logical.
 Whether the timing of the different parts of the \code{explain()} should saved in the model object.}
+
+\item{verbose}{An integer specifying the level of verbosity. If \code{0}, \code{shapr} will stay silent.
+If \code{1}, it will print information about performance. If \code{2}, some additional information will be printed out.
+Use \code{0} (default) for no verbosity, \code{1} for low verbose, and \code{2} for high verbose.
+TODO: Make this clearer when we end up fixing this and if they should force a progressr bar.}
 
 \item{is_python}{Logical. Indicates whether the function is called from the Python wrapper. Default is FALSE which is
 never changed when calling the function via \code{explain()} in R. The parameter is later used to disallow

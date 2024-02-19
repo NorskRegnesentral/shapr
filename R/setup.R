@@ -40,6 +40,7 @@ setup <- function(x_train,
                   explain_xreg_lags = NULL,
                   group_lags = NULL,
                   timing,
+                  verbose,
                   is_python = FALSE,
                   ...) {
   internal <- list()
@@ -63,6 +64,7 @@ setup <- function(x_train,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
     timing = timing,
+    verbose = verbose,
     is_python = is_python,
     ...
   )
@@ -387,7 +389,8 @@ get_extra_parameters <- function(internal) {
 #' @keywords internal
 get_parameters <- function(approach, prediction_zero, output_size = 1, n_combinations, group, n_samples,
                            n_batches, seed, keep_samp_for_vS, type, horizon, train_idx, explain_idx, explain_y_lags,
-                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing, is_python, ...) {
+                           explain_xreg_lags, group_lags = NULL, MSEv_uniform_comb_weights, timing, verbose,
+                           is_python, ...) {
   # Check input type for approach
 
   # approach is checked more comprehensively later
@@ -439,6 +442,11 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
   # type
   if (!(type %in% c("normal", "forecast"))) {
     stop("`type` must be either `normal` or `forecast`.\n")
+  }
+
+  # verbose
+  if (!is.numeric(verbose) || !(verbose %in% c(0, 1, 2))) {
+    stop("`verbose` must be either `0` (no verbosity), `1` (low verbosity), or `2` (high verbosity).")
   }
 
   # parameters only used for type "forecast"
@@ -505,7 +513,8 @@ get_parameters <- function(approach, prediction_zero, output_size = 1, n_combina
     horizon = horizon,
     group_lags = group_lags,
     MSEv_uniform_comb_weights = MSEv_uniform_comb_weights,
-    timing = timing
+    timing = timing,
+    verbose = verbose
   )
 
   # Getting additional parameters from ...
