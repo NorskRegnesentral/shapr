@@ -1,11 +1,11 @@
 #' @importFrom data.table data.table fread fwrite setnames := year month
 #' uniqueN setkey as.data.table copy between is.data.table setcolorder rbindlist
 #'
-#' @importFrom graphics plot hist rect
+#' @importFrom graphics plot hist
 #'
 #' @importFrom utils head tail methods modifyList
 #'
-#' @importFrom stats predict as.formula formula model.matrix setNames contrasts embed sd qt pt rnorm
+#' @importFrom stats predict as.formula formula model.matrix setNames embed sd qt pt rnorm
 #'
 #' @importFrom Rcpp sourceCpp
 #'
