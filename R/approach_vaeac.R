@@ -850,6 +850,9 @@ vaeac_train_model_continue <- function(explanation,
   vaeac_model <- explanation$internal$parameters$vaeac
   checkpoint <- torch::torch_load(vaeac_model$models$last)
 
+  # Get which device we are to continue to train the model
+  device = ifelse(checkpoint$cuda, "cuda", "cpu")
+
   # If we applied early stopping before and are calling this function, then we turn early stopping off
   if (isTRUE(checkpoint$early_stopping_applied)) checkpoint$epochs_early_stopping <- epochs_new
 
@@ -928,6 +931,14 @@ vaeac_train_model_continue <- function(explanation,
   # Set up the vaeac model in training mode and based on the parameters stored in the checkpoint
   vaeac_model <- vaeac_get_model_from_checkp(checkpoint = checkpoint, cuda = checkpoint$cuda, mode_train = TRUE)
 
+  # Send the loaded optimizer parameters to GPU if necessary
+  if (checkpoint$cuda) {
+    checkpoint$optimizer_state_dict$state = lapply(
+      checkpoint$optimizer_state_dict$state,
+      function(x) lapply(x, function(y) if("torch_tensor" %in% class(y)) y$cuda() else y)
+      )
+  }
+
   # Specify the learning rate we will use, create the an adam optimizer, and insert the stored optimizer state.
   lr_now <- if (!is.null(lr_new)) lr_new else checkpoint$lr
   optimizer <- vaeac_get_optimizer(vaeac_model = vaeac_model, lr = lr_now, optimizer_name = "adam")
@@ -960,9 +971,9 @@ vaeac_train_model_continue <- function(explanation,
     state_list = state_list, # Need to provide the state list as it will be saved together with the models
     initialization_idx = NULL, # Do not need to specify it as we are not doing the initialization now
     n_vaeacs_initialize = NULL, # Do not need to specify it as we are not doing the initialization now
-    train_vlb = checkpoint$train_vlb,
-    val_iwae = checkpoint$val_iwae,
-    val_iwae_running = checkpoint$val_iwae_running
+    train_vlb = checkpoint$train_vlb$to(device = device), # Send to correct device such that we can append new values
+    val_iwae = checkpoint$val_iwae$to(device = device),
+    val_iwae_running = checkpoint$val_iwae_running$to(device = device)
   )
 
   # Create the return list

@@ -1739,7 +1739,7 @@ CategoricalToOneHotLayer <- torch::nn_module(
 
         # Create a matrix, where the jth row is the one-hot encoding of the ith feature of the jth instance.
         out_col <- matrix(0, nrow = n, ncol = size)
-        out_col[cbind(seq(n), as.matrix(cat_idx))] <- 1
+        out_col[cbind(seq(n), as.matrix(cat_idx$cpu()))] <- 1
         out_col <- torch::torch_tensor(out_col, device = input$device)
       }
 
