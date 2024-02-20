@@ -54,14 +54,13 @@ library(shapr)
 
 > [Mixed data](#mixed_data)
 
-> [Future Updates](#FutureUpdates)
+> [Comparing CPU and GPU](#cpu_vs_gpu)
 
 <a id="intro"></a>
 
 In this vignette, we elaborate and illustrate the `vaeac` approach in more depth than in the main vignette.
 In the main vignette, only a few basic examples of using `vaeac` is included, while we here showcase more
 advanced usage. See the overview above for what topics that are covered in this vignette.
-
 
 
 
@@ -149,12 +148,14 @@ prediction_zero <- mean(y_train)
 
 We are now going to explain predictions made by the model using the `vaeac` approach.
 
+
 ```{r first-vaeac, cache = TRUE}
 n_samples <- 25 # Low number of MC samples to make the vignette build faster
 n_batches <- 1 # Do all coalitions in one batch
-vaeac.save_every_nth_epoch <- 3 # Save the vaeac model every 3th epoch + best and last epoch
-vaeac.n_vaeacs_initialize <- 2 # Number of vaeacs to initialize to counteract bad initialization values (extra para)
-vaeac.epochs <- 4 # The number of epochs
+vaeac.save_every_nth_epoch <- 3 # Save every 3th epoch + best and last epoch
+vaeac.n_vaeacs_initialize <- 2 # Initialize several vaeacs to counteract bad initialization values
+vaeac.epochs <- 4 # The number of training epochs
+vaeac.cuda <- FALSE # We run everything on CPU, but all code below works on GPU to 
 
 explanation <- explain(
   model = model,
@@ -166,14 +167,18 @@ explanation <- explain(
   n_batches = n_batches,
   vaeac.epochs = vaeac.epochs,
   vaeac.n_vaeacs_initialize = vaeac.n_vaeacs_initialize,
-  vaeac.extra_parameters = list(vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch)
+  vaeac.extra_parameters = list(
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
+    vaeac.cuda = vaeac.cuda
+  ) 
 )
 ```
 
 We can look at the Shapley values.
 
 ```{r first-vaeac-plots, cache = TRUE}
-# Printing and ploting the Shapley values. See ?shapr::explain for interpretation of the values.
+# Printing and ploting the Shapley values.
+# See ?shapr::explain for interpretation of the values.
 print(explanation$shapley_values)
 plot(explanation)
 ```
@@ -196,7 +201,9 @@ expl_pretrained_vaeac <- explain(
   prediction_zero = prediction_zero,
   n_batches = n_batches,
   n_samples = n_samples,
-  vaeac.extra_parameters = list(vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac)
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
+  )
 )
 
 # Check that this version provides the same Shapley values
@@ -218,7 +225,9 @@ expl_pretrained_vaeac_path <- explain(
   prediction_zero = prediction_zero,
   n_batches = n_batches,
   n_samples = n_samples,
-  vaeac.extra_parameters = list(vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac$models$best)
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac$models$best
+  )
 )
 
 # Check that this version provides the same Shapley values
@@ -250,9 +259,9 @@ expl_batches_combinations <- explain(
   n_combinations = 10,
   n_batches = 5,
   n_samples = n_samples,
-  verbose = 2,
   vaeac.extra_parameters = list(
-    vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac
+    vaeac.pretrained_vaeac_model = explanation$internal$parameters$vaeac,
+    vaeac.cuda = vaeac.cuda
   )
 )
 
@@ -284,7 +293,8 @@ expl_batches_combinations_2 <- explain(
   n_samples = n_samples,
   vaeac.n_vaeacs_initialize = 1,
   vaeac.epochs = 3,
-  verbose = 2
+  verbose = 2,
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
 ```
 
@@ -310,7 +320,10 @@ expl_paired_sampling_TRUE <- explain(
   n_batches = n_batches,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
-  vaeac.extra_parameters = list(vaeac.paired_sampling = TRUE)
+  vaeac.extra_parameters = list(
+    vaeac.paired_sampling = TRUE,
+    vaeac.cuda = vaeac.cuda
+  )
 )
 
 expl_paired_sampling_FALSE <- explain(
@@ -323,13 +336,17 @@ expl_paired_sampling_FALSE <- explain(
   n_batches = n_batches,
   vaeac.epochs = 10,
   vaeac.n_vaeacs_initialize = 1,
-  vaeac.extra_parameters = list(vaeac.paired_sampling = FALSE)
+  vaeac.extra_parameters = list(
+    vaeac.paired_sampling = FALSE,
+    vaeac.cuda = vaeac.cuda
+  )
 )
 ```
 
 We can compare the results by looking at the training and validation errors and by the $MSE_v$ evaluation criterion.
 ```{r paired-sampling-plotting, cache = TRUE}
-explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE, "Paired samp." = expl_paired_sampling_TRUE)
+explanation_list <- list("Regular samp." = expl_paired_sampling_FALSE,
+                         "Paired samp." = expl_paired_sampling_TRUE)
 vaeac_plot_evaluation_criteria(explanation_list, plot_type = "criterion")
 plot_MSEv_eval_crit(explanation_list)
 ```
@@ -338,7 +355,8 @@ By looking at the time, we see that the paired version takes (a bit) longer time
 phase, that is, in the training phase.
 ```{r paired-sampling-timing}
 rbind(
-  "Paired" = expl_paired_sampling_TRUE$timing$timing_secs, "Regular" = expl_paired_sampling_FALSE$timing$timing_secs
+  "Paired" = expl_paired_sampling_TRUE$timing$timing_secs,
+  "Regular" = expl_paired_sampling_FALSE$timing$timing_secs
 )
 ```
 
@@ -365,7 +383,8 @@ expl_without_messages <- explain(
   n_batches = 5,
   verbose = 0,
   vaeac.epochs = 5,
-  vaeac.n_vaeacs_initialize = 2
+  vaeac.n_vaeacs_initialize = 2,
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
 ```
 
@@ -382,7 +401,8 @@ expl_with_messages <- explain(
   n_batches = 5,
   verbose = 2,
   vaeac.epochs = 5,
-  vaeac.n_vaeacs_initialize = 2
+  vaeac.n_vaeacs_initialize = 2,
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
 all.equal(expl_without_messages$shapley_values, expl_with_messages$shapley_values)
 ```
@@ -421,7 +441,8 @@ progressr::with_progress({
     n_batches = 5,
     verbose = 2,
     vaeac.epochs = 5,
-    vaeac.n_vaeacs_initialize = 2
+    vaeac.n_vaeacs_initialize = 2,
+    vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
   )
 })
 all.equal(expl_without_messages$shapley_values, expl_with_progressr$shapley_values)
@@ -438,7 +459,7 @@ as illustrated above. Note that we have set the number of `vaeac.epochs` to be v
 recommend to use many more epochs.
 
 
-```{r continue-training, cache = TRUE}
+```{r continue-training, cache=FALSE}
 expl_little_training <- explain(
   model = model,
   x_explain = x_explain,
@@ -449,19 +470,30 @@ expl_little_training <- explain(
   n_batches = n_batches,
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch)
+  vaeac.extra_parameters = list(
+    vaeac.save_every_nth_epoch = vaeac.save_every_nth_epoch,
+    vaeac.cuda = vaeac.cuda
+  )
 )
 
 # Look at the training and validation errors. Not happy and want to train more.
 vaeac_plot_evaluation_criteria(list("Original" = expl_little_training), plot_type = "method")
 
 # Can also see how well vaeac generates data from the full joint distribution. Quite good.
-vaeac_plot_imputed_ggpairs(explanation = expl_little_training, which_vaeac_model = "best", x_true = x_train)
+vaeac_plot_imputed_ggpairs(
+  explanation = expl_little_training,
+  which_vaeac_model = "best",
+  x_true = x_train
+)
 
 # Make a copy of the explanation object and continue to train the vaeac model some more epochs
 expl_train_more <- expl_little_training
 expl_train_more$internal$parameters$vaeac <-
-  vaeac_continue_train_model(explanation = expl_train_more, epochs_new = 5, x_train = x_train, verbose = 0)
+  vaeac_train_model_continue(
+    explanation = expl_train_more,
+    epochs_new = 5,
+    x_train = x_train
+  )
 
 # Compute the Shapley values again but this time using the extra trained vaeac model
 expl_train_more_vaeac <- explain(
@@ -472,23 +504,24 @@ expl_train_more_vaeac <- explain(
   prediction_zero = prediction_zero,
   n_batches = n_batches,
   n_samples = 250,
-  verbose = 0,
-  vaeac.extra_parameters = list(vaeac.pretrained_vaeac_model = expl_train_more$internal$parameters$vaeac)
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = expl_train_more$internal$parameters$vaeac
+  )
 )
 
 # Look at the training and validation errors and conclude that we want to train some more
-vaeac_plot_evaluation_criteria(list("Original" = expl_little_training, "More epochs" = expl_train_more),
+vaeac_plot_evaluation_criteria(
+  list("Original" = expl_little_training, "More epochs" = expl_train_more),
   plot_type = "method"
 )
 
 # Continue to train the vaeac model some more epochs
 expl_train_even_more <- expl_train_more
 expl_train_even_more$internal$parameters$vaeac <-
-  vaeac_continue_train_model(
+  vaeac_train_model_continue(
     explanation = expl_train_even_more,
     epochs_new = 10,
-    x_train = x_train,
-    verbose = 0
+    x_train = x_train
   )
 
 # Compute the Shapley values again but this time using the even more trained vaeac model
@@ -500,19 +533,27 @@ expl_train_even_more_vaeac <- explain(
   prediction_zero = prediction_zero,
   n_batches = n_batches,
   n_samples = 250,
-  verbose = 0,
-  vaeac.extra_parameters = list(vaeac.pretrained_vaeac_model = expl_train_even_more$internal$parameters$vaeac)
+  vaeac.extra_parameters = list(
+    vaeac.pretrained_vaeac_model = expl_train_even_more$internal$parameters$vaeac
+  )
 )
 
 # Look at the training and validation errors.
-vaeac_plot_evaluation_criteria(list(
-  "Original" = expl_little_training,
-  "More epochs" = expl_train_more,
-  "Even more epochs" = expl_train_even_more
-), plot_type = "method")
+vaeac_plot_evaluation_criteria(
+  list(
+    "Original" = expl_little_training,
+    "More epochs" = expl_train_more,
+    "Even more epochs" = expl_train_even_more
+  ),
+  plot_type = "method"
+)
 
 # Can also see how well vaeac generates data from the full joint distribution
-vaeac_plot_imputed_ggpairs(explanation = expl_train_even_more, which_vaeac_model = "best", x_true = x_train)
+vaeac_plot_imputed_ggpairs(
+  explanation = expl_train_even_more,
+  which_vaeac_model = "best",
+  x_true = x_train
+)
 
 # Can see that the extra training has decreased the MSEv score.
 plot_MSEv_eval_crit(list(
@@ -548,11 +589,17 @@ expl_early_stopping <- explain(
   verbose = 2,
   vaeac.epochs = 1000, # Set it to a big number
   vaeac.n_vaeacs_initialize = 2,
-  vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2) # Low value here for faster building of the vignette
+  vaeac.extra_parameters = list(
+    vaeac.epochs_early_stopping = 2, # Low value here for faster building of the vignette
+    vaeac.cuda = vaeac.cuda
+  )
 )
 
 # Look at the training and validation errors. We are quite happy with it.
-vaeac_plot_evaluation_criteria(list("Vaeac early stopping" = expl_early_stopping), plot_type = "method")
+vaeac_plot_evaluation_criteria(
+  list("Vaeac early stopping" = expl_early_stopping),
+  plot_type = "method"
+)
 ```
 
 However, we can train it further for a fixed amount of epochs if desired. This can be in a setting where we are not
@@ -564,27 +611,30 @@ expl_early_stopping_train_more <- expl_early_stopping
 
 # Continue to train the vaeac model some more epochs
 expl_early_stopping_train_more$internal$parameters$vaeac <-
-  vaeac_continue_train_model(
+  vaeac_train_model_continue(
     explanation = expl_early_stopping_train_more,
     epochs_new = 15,
     x_train = x_train,
-    verbose = 2
+    verbose = 0
   )
 
 # Can even do it twice if desired
 expl_early_stopping_train_more$internal$parameters$vaeac <-
-  vaeac_continue_train_model(
+  vaeac_train_model_continue(
     explanation = expl_early_stopping_train_more,
     epochs_new = 10,
     x_train = x_train,
-    verbose = 2
+    verbose = 0
   )
 
 # Look at the training and validation errors. We see some improvement
-vaeac_plot_evaluation_criteria(list(
-  "Vaeac early stopping" = expl_early_stopping,
-  "Vaeac early stopping more epochs" = expl_early_stopping_train_more
-), plot_type = "method")
+vaeac_plot_evaluation_criteria(
+  list(
+    "Vaeac early stopping" = expl_early_stopping,
+    "Vaeac early stopping more epochs" = expl_early_stopping_train_more
+  ),
+  plot_type = "method"
+)
 ```
 
 We can then use the extra trained version to compute the Shapley value explanations and compare it with the previous
@@ -641,6 +691,7 @@ expl_group <- explain(
   verbose = 2,
   vaeac.epochs = 4,
   vaeac.n_vaeacs_initialize = 2,
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
 
 # Plot the resulting explanations
@@ -702,7 +753,8 @@ expl_vaeac_with <- explain(
   n_batches = 1,
   n_samples = 250,
   vaeac.epochs = 50,
-  vaeac.n_vaeacs_initialize = 4
+  vaeac.n_vaeacs_initialize = 4,
+  vaeac.extra_parameters = list(vaeac.cuda = vaeac.cuda)
 )
 
 # Then we use the vaeac approach
@@ -716,14 +768,21 @@ expl_vaeac_without <- explain(
   n_samples = 250,
   vaeac.epochs = 50,
   vaeac.n_vaeacs_initialize = 4,
-  vaeac.extra_parameters = list(vaeac.skip_conn_layer = FALSE, vaeac.skip_conn_masked_enc_dec = FALSE)
+  vaeac.extra_parameters = list(
+    vaeac.skip_conn_layer = FALSE,
+    vaeac.skip_conn_masked_enc_dec = FALSE,
+    vaeac.cuda = vaeac.cuda
+  )
 )
 
 # We see that the `vaeac` model without the skip connections perform worse
-vaeac_plot_evaluation_criteria(list(
-  "Vaeac w.o. skip-con." = expl_vaeac_without,
-  "Vaeac w. skip-con." = expl_vaeac_with
-), plot_type = "criterion")
+vaeac_plot_evaluation_criteria(
+  list(
+    "Vaeac w.o. skip-con." = expl_vaeac_without,
+    "Vaeac w. skip-con." = expl_vaeac_with
+  ),
+  plot_type = "criterion"
+)
 
 # The vaeac model with skip connections have the lowest/best MSE_Frye evaluation criterion score
 plot_MSEv_eval_crit(list(
@@ -733,15 +792,122 @@ plot_MSEv_eval_crit(list(
 ))
 
 # Can compare the Shapley values. Ctree and vaeac with skip connections produce similar explanations
-plot_SV_several_approaches(list(
-  "Vaeac w.o. skip-con." = expl_vaeac_without,
-  "Vaeac w. skip-con." = expl_vaeac_with,
-  "Ctree" = expl_ctree
-), index_explicands = 1:6)
+plot_SV_several_approaches(
+  list(
+    "Vaeac w.o. skip-con." = expl_vaeac_without,
+    "Vaeac w. skip-con." = expl_vaeac_with,
+    "Ctree" = expl_ctree
+  ),
+  index_explicands = 1:6
+)
+```
+
+
+## CPU vs GPU {#cpu_vs_gpu}
+In this section, we create a small setup for comparing the efficiency of using GPU and CPU. For small tabular data sets,
+there are often no benefit of using a GPU. However, this depends on what kind of CPU and GPU the user has access to.
+Furthermore, the times depends on several factors, e.g., the number of training observations, explicands, features, and
+batches.
+
+```{r}
+# Load necessary library
+library(mvtnorm)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Number of observations
+n_train <- 1000
+n_explain <- 50
+
+# Number of variables
+p <- 10
+
+# Generate random data from a multivariate normal distribution
+mean <- rep(0, p) # mean vector
+rho <- 0.7
+sigma <- matrix(c(rho), nrow = p, ncol = p) # covariance matrix
+diag(sigma) <- 1
+x_train <- mvtnorm::rmvnorm(n, mean, sigma)
+x_explain <- mvtnorm::rmvnorm(n, mean, sigma)
+
+# Create response variable based on linear combinations of variables
+coefficients <- rep(1, p)
+y_train <- x_train %*% coefficients
+y_explain <- x_explain %*% coefficients
+
+# Combine data and response into a data table
+dt_train <- data.table(y_train, x_train)
+dt_explain <- data.table(y_explain, x_explain)
+colnames(dt_train) <- colnames(dt_explain) <- c("y", paste0("X", seq(p)))
+x_train <- dt_train[, -1]
+x_explain <- dt_explain[, -1]
+
+# Create model
+model <- lm(y ~ ., dt_train)
+
+# Specifying the phi_0, i.e. the expected prediction without any features
+prediction_zero <- mean(y_train)
+
+# Fit vaeac model using the CPU
+time_cpu <- system.time({
+  explanation_cpu <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "vaeac",
+    prediction_zero = prediction_zero,
+    n_samples = 100,
+    n_batches = 5,
+    vaeac.epochs = 50,
+    vaeac.n_vaeacs_initialize = 2,
+    vaeac.extra_parameters = list(
+      vaeac.cuda = FALSE
+    )
+  )
+})
+
+# Fit vaeac model using the GPU
+time_cuda <- system.time({
+  explanation_cuda <- explain(
+    model = model,
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "vaeac",
+    prediction_zero = prediction_zero,
+    n_samples = 100,
+    n_batches = 5,
+    vaeac.epochs = 50,
+    vaeac.n_vaeacs_initialize = 2,
+    vaeac.extra_parameters = list(
+      vaeac.cuda = TRUE
+    )
+  )
+})
+
+# Look at the internal and external timing. See that the times comparable.
+# Note that these times highly depend on the CPU/GPU version.
+rbind("Vaeac CPU" = explanation_cpu$timing$timing_secs, "Vaeac GPU" = explanation_cuda$timing$timing_secs)
+rbind("Vaeac CPU" = time_cpu, "Vaeac GPU" = time_cuda)
+
+# It is no possible to set same random state on the CPU and GPU, hence, the results
+# are not equivalent. The difference is due to different initialization values.
+vaeac_plot_evaluation_criteria(
+  list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
+  plot_type = "criterion"
+)
+
+# Almost identical MSEv values
+plot_MSEv_eval_crit(list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda))
+
+# Can compare the Shapley values and see that we get comparable values
+plot_SV_several_approaches(
+  list("Vaeac CPU" = explanation_cpu, "Vaeac GPU" = explanation_cuda),
+  index_explicands = 1:3,
+  facet_ncol = 3
+)
 ```
 
 
 
 
-# Future Updates {#future}
--   Add support for GPU in vaeac. We have not had access to GPU, so have only used CPU.
