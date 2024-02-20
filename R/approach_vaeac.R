@@ -464,9 +464,8 @@ vaeac_train_model <- function(x_train,
       sigma_sigma = sigma_sigma
     )
 
-    # TODO: we need to check this + we need to send the data too
-    # Send the model to the GPU, if we have access to it.
-    if (cuda) vaeac_model <- vaeac_model$cuda()
+    # Send the model to the GPU, if we have access to it and user wants to
+    if (cuda) vaeac_model$cuda()
 
     # Add the number of trainable parameters in the vaeac model to the state list
     if (initialization_idx == 1) {
@@ -512,17 +511,13 @@ vaeac_train_model <- function(x_train,
     }
   } # Done with initial training of all vaeac models
 
-  # Send the model to the GPU, if we have access to it.
-  # TODO: Check that this when we get access to GPU
-  if (cuda) vaeac_model_best_list$model <- vaeac_model_best_listmodel$cuda()
-
   # Check if we are printing detailed debug information
   # Small printout to the user stating which initiated vaeac model was the best.
   if (verbose == 2) {
     message(paste0(
       "Best vaeac inititalization was number ", vaeac_model_best_list$initialization_idx, " (of ", n_vaeacs_initialize,
-      ") with a training VLB = ", round(as.numeric(vaeac_model_best_list$train_vlb[-1]), 3), " after ",
-      epochs_initiation_phase, " epochs. Continue to train this inititalization."
+      ") with a training VLB = ", round(as.numeric(vaeac_model_best_list$train_vlb[-1]$cpu()), 3),
+      " after ", epochs_initiation_phase, " epochs. Continue to train this inititalization."
     ))
   }
 
@@ -1877,6 +1872,17 @@ vaeac_get_data_objects <- function(x_train,
   ))
 }
 
+#' Function to get string of values with specific number of decimals
+#'
+#' @param value The number to get `n_decimals` for.
+#' @param n_decimals Positive integer. The number of decimals. Default is three.
+#'
+#' @return String of `value` with `n_decimals` decimals.
+#'
+#' @keywords internal
+#' @author Lars Henry Berge Olsen
+vaeac_get_n_decimals <- function(value, n_decimals = 3) trimws(format(round(value, n_decimals), nsmall = n_decimals))
+
 
 # Train functions ======================================================================================================
 #' Function used to train a `vaeac` model
@@ -1964,15 +1970,9 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
   vlb_scale_factor <- vaeac_model$vlb_scale_factor
 
   # Start the training loop
-  epoch <- 1
   for (epoch in seq(from = epochs_start, to = epochs)) {
-    # Set average variational lower bound to 0 for this epoch
-    avg_vlb <- 0
-
-    # Index to keep track of which batch we are working on.
-    batch_index <- 1
-
-    # batch <- train_dataloader$.iter()$.next()
+    avg_vlb <- 0 # Set average variational lower bound to 0 for this epoch
+    batch_index <- 1 # Index to keep track of which batch we are working on
 
     # Iterate over the training data
     coro::loop(for (batch in train_dataloader) {
@@ -1984,7 +1984,7 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       # Generate mask and do an optimizer step over the mask and the batch
       mask <- mask_generator(batch)
 
-      # TODO: Send the batch and mask to Nvida GPU if we have. IS it here it should be?
+      # Send the batch and mask to GPU if we have access to it and user wants to
       if (cuda) {
         batch <- batch$cuda()
         mask <- mask$cuda()
@@ -2117,9 +2117,9 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
       best = vaeac_save_file_names[1],
       best_running = vaeac_save_file_names[2],
       last = vaeac_save_file_names[3],
-      train_vlb = as.array(train_vlb),
-      val_iwae = as.array(val_iwae),
-      val_iwae_running = as.array(val_iwae_running),
+      train_vlb = as.array(train_vlb$cpu()),
+      val_iwae = as.array(val_iwae$cpu()),
+      val_iwae_running = as.array(val_iwae_running$cpu()),
       parameters = last_state
     )
 
@@ -2139,19 +2139,6 @@ vaeac_train_model_auxiliary <- function(vaeac_model,
     attr(return_list, "class") <- c("vaeac", class(return_list))
   }
   return(return_list)
-}
-
-#' Function to get string of values with specific number of decimals
-#'
-#' @param value The number to get `n_decimals` for.
-#' @param n_decimals Positive integer. The number of decimals. Default is three.
-#'
-#' @return String of `value` with `n_decimals` decimals.
-#'
-#' @keywords internal
-#' @author Lars Henry Berge Olsen
-vaeac_get_n_decimals <- function(value, n_decimals = 3) {
-  trimws(format(round(value, n_decimals), nsmall = n_decimals))
 }
 
 # Save functions =======================================================================================================
@@ -2193,17 +2180,17 @@ Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
 Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
 Last epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f\n",
     best_epoch,
-    last_state$train_vlb[best_epoch],
-    last_state$val_iwae[best_epoch],
-    last_state$val_iwae_running[best_epoch],
+    last_state$train_vlb[best_epoch]$cpu(),
+    last_state$val_iwae[best_epoch]$cpu(),
+    last_state$val_iwae_running[best_epoch]$cpu(),
     best_epoch_running,
-    last_state$train_vlb[best_epoch_running],
-    last_state$val_iwae[best_epoch_running],
-    last_state$val_iwae_running[best_epoch_running],
+    last_state$train_vlb[best_epoch_running]$cpu(),
+    last_state$val_iwae[best_epoch_running]$cpu(),
+    last_state$val_iwae_running[best_epoch_running]$cpu(),
     last_state$epoch,
-    last_state$train_vlb[-1],
-    last_state$val_iwae[-1],
-    last_state$val_iwae_running[-1]
+    last_state$train_vlb[-1]$cpu(),
+    last_state$val_iwae[-1]$cpu(),
+    last_state$val_iwae_running[-1]$cpu()
   ))
 }
 
