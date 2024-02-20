@@ -154,7 +154,7 @@ setup_approach.vaeac <- function(internal, # add default values for vaeac here.
     # Small prinout informing about the location of the model
     if (parameters$verbose == 2) {
       message(paste0("The provided vaeac model is located on the ",
-                     ifelse(parameters$vaeac.extra_parameter$vaeac.cuda, "GPU", "CPU"), "."))
+                     ifelse(parameters$vaeac$parameters$cuda, "GPU", "CPU"), "."))
     }
   }
 
@@ -1773,7 +1773,7 @@ vaeac_get_model_from_checkp <- function(checkpoint, cuda, mode_train) {
   if (mode_train) vaeac_model$train() else vaeac_model$eval()
 
   # Send the model to the GPU, if we are supposed to. Otherwise use CPU
-  if (cuda) vaeac_model <- vaeac_model$cuda() else vaeac_model <- vaeac_model$cpu()
+  if (cuda) vaeac_model$cuda() else vaeac_model$cpu()
 
   # Return the model
   return(vaeac_model)
@@ -2798,7 +2798,7 @@ vaeac_plot_imputed_ggpairs <- function(
   }
 
   # Set up the vaeac model
-  vaeac_model <- vaeac_get_model_from_checkp(checkpoint = checkpoint, cuda = FALSE, mode_train = FALSE)
+  vaeac_model <- vaeac_get_model_from_checkp(checkpoint = checkpoint, cuda = checkpoint$cuda, mode_train = FALSE)
 
   # Impute the missing entries using the vaeac approach. Here we generate x from p(x), so no conditioning.
   imputed_values <- vaeac_impute_missing_entries(
